@@ -1,0 +1,9 @@
+[package]
+name = "kv9-raft"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "kv9 consensus abstraction: RaftGroup trait + a single-node stub impl (DESIGN §6.1)."
+
+[dependencies]
+kv9-common.workspace = true

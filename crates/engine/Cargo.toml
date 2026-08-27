@@ -1,0 +1,10 @@
+[package]
+name = "kv9-engine"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "kv9 storage engine: Engine trait + MemEngine, MVCC column-family layout (default/lock/write), WriteBatch (DESIGN §6.2, §8.1)."
+
+[dependencies]
+kv9-common.workspace = true
+thiserror.workspace = true

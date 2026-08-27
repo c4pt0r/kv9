@@ -1,0 +1,10 @@
+[package]
+name = "kv9-common"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "kv9 common types: ids, tenant/keyspace/api_type, key codec, timestamp/HLC, errors, config (DESIGN §3, §7, §10)."
+
+[dependencies]
+thiserror.workspace = true
+serde.workspace = true

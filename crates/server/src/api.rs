@@ -1,0 +1,93 @@
+//! The v0 API surface as Rust traits (DESIGN §11).
+//!
+//! Transport is gRPC, but defining the surface as traits lets the skeleton compile
+//! without a protoc toolchain; a thin wire adapter is added next. Every data request
+//! carries `(keyspace_id, region_epoch)` so the router can resolve keyspace→region,
+//! epoch-check, and validate the API type against the keyspace declaration.
+
+use kv9_common::{KeyspaceId, Result, TimeStamp, UserKey, Value};
+use kv9_region::RegionEpoch;
+
+/// Context threaded on every data request (DESIGN §11).
+#[derive(Debug, Clone)]
+pub struct RequestContext {
+    pub keyspace: KeyspaceId,
+    pub region_epoch: RegionEpoch,
+    /// Authenticated caller identity (auth is in scope from day one — DESIGN §11,
+    /// §13 principle 9).
+    pub caller: Option<String>,
+}
+
+/// The transactional API for `txn` keyspaces (DESIGN §11 Txn surface).
+pub trait TxnApi {
+    fn kv_get(&self, ctx: &RequestContext, key: &[u8], start_ts: TimeStamp) -> Result<Option<Value>>;
+    fn kv_batch_get(
+        &self,
+        ctx: &RequestContext,
+        keys: &[UserKey],
+        start_ts: TimeStamp,
+    ) -> Result<Vec<Option<Value>>>;
+    fn kv_scan(
+        &self,
+        ctx: &RequestContext,
+        start: &[u8],
+        end: &[u8],
+        limit: usize,
+        start_ts: TimeStamp,
+    ) -> Result<Vec<(UserKey, Value)>>;
+    fn kv_prewrite(&self, ctx: &RequestContext, mutations: &[(UserKey, Option<Value>)], primary: &[u8], start_ts: TimeStamp) -> Result<()>;
+    fn kv_commit(&self, ctx: &RequestContext, keys: &[UserKey], start_ts: TimeStamp, commit_ts: TimeStamp) -> Result<()>;
+    fn kv_pessimistic_lock(&self, ctx: &RequestContext, keys: &[UserKey], start_ts: TimeStamp) -> Result<()>;
+    fn kv_pessimistic_rollback(&self, ctx: &RequestContext, keys: &[UserKey], start_ts: TimeStamp) -> Result<()>;
+    fn kv_resolve_lock(&self, ctx: &RequestContext, start_ts: TimeStamp, commit_ts: Option<TimeStamp>) -> Result<()>;
+    fn kv_cleanup(&self, ctx: &RequestContext, key: &[u8], start_ts: TimeStamp) -> Result<()>;
+    fn kv_check_txn_status(&self, ctx: &RequestContext, primary: &[u8], lock_ts: TimeStamp) -> Result<()>;
+}
+
+/// The raw API for `raw` keyspaces (DESIGN §11 Raw surface).
+pub trait RawApi {
+    fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>>;
+    fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>>;
+    fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<()>;
+    fn raw_batch_put(&self, ctx: &RequestContext, kvs: &[(UserKey, Value)]) -> Result<()>;
+    fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<()>;
+    fn raw_scan(&self, ctx: &RequestContext, start: &[u8], end: &[u8], limit: usize) -> Result<Vec<(UserKey, Value)>>;
+    fn raw_delete_range(&self, ctx: &RequestContext, start: &[u8], end: &[u8]) -> Result<()>;
+}
+
+/// A resolved region location handed back by routing (DESIGN §11 `GetRegion`).
+#[derive(Debug, Clone)]
+pub struct RegionLocation {
+    pub region: kv9_common::RegionId,
+    pub epoch: RegionEpoch,
+    pub leader: Option<kv9_common::NodeId>,
+}
+
+/// The admin / meta API (DESIGN §11 Admin surface). Authenticated from day one.
+pub trait AdminApi {
+    fn create_keyspace(
+        &self,
+        caller: &str,
+        name: &str,
+        tenant: kv9_common::TenantId,
+        api_type: kv9_common::ApiType,
+        txn_group: kv9_common::TxnGroupId,
+    ) -> Result<KeyspaceId>;
+    fn list_keyspaces(&self, caller: &str) -> Result<Vec<kv9_common::Keyspace>>;
+    fn get_region(&self, caller: &str, keyspace: KeyspaceId, key: &[u8]) -> Result<RegionLocation>;
+    fn split_region(&self, caller: &str, region: kv9_common::RegionId, split_key: UserKey) -> Result<()>;
+    fn cluster_info(&self, caller: &str) -> Result<ClusterInfo>;
+}
+
+/// A snapshot of cluster state (DESIGN §11 `ClusterInfo`).
+#[derive(Debug, Clone, Default)]
+pub struct ClusterInfo {
+    pub node_count: usize,
+    pub keyspace_count: usize,
+    pub region_count: usize,
+}
+
+/// The router API: locate a region for a key (DESIGN §11 Router surface).
+pub trait RouterApi {
+    fn locate(&self, keyspace: KeyspaceId, key: &[u8]) -> Result<RegionLocation>;
+}

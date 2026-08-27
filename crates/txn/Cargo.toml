@@ -1,0 +1,11 @@
+[package]
+name = "kv9-txn"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "kv9 transaction executors: Percolator 2PC (txn keyspaces) with txn-group confinement + a raw executor (DESIGN §9)."
+
+[dependencies]
+kv9-common.workspace = true
+kv9-engine.workspace = true
+kv9-region.workspace = true
