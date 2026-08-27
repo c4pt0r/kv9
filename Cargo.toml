@@ -1,0 +1,52 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/common",
+    "crates/meta",
+    "crates/engine",
+    "crates/raft",
+    "crates/region",
+    "crates/txn",
+    "crates/server",
+]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/kv9/kv9"
+description = "kv9 — a single-binary, multi-tenant distributed key-value engine (design skeleton)."
+
+# Minimal, pure-Rust dependencies only. No protoc/cmake/native build deps.
+[workspace.dependencies]
+thiserror = "1"
+serde = { version = "1", features = ["derive"] }
+
+# Internal crates
+kv9-common = { path = "crates/common" }
+kv9-meta = { path = "crates/meta" }
+kv9-engine = { path = "crates/engine" }
+kv9-raft = { path = "crates/raft" }
+kv9-region = { path = "crates/region" }
+kv9-txn = { path = "crates/txn" }
+kv9-server = { path = "crates/server" }
+
+[package]
+name = "kv9"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "kv9 single binary."
+
+[[bin]]
+name = "kv9"
+path = "src/main.rs"
+
+[dependencies]
+kv9-common.workspace = true
+kv9-meta.workspace = true
+kv9-engine.workspace = true
+kv9-raft.workspace = true
+kv9-region.workspace = true
+kv9-txn.workspace = true
+kv9-server.workspace = true

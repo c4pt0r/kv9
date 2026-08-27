@@ -1,0 +1,11 @@
+[package]
+name = "kv9-meta"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "kv9 self-hosted metadata plane: membership, keyspace catalog, routing table, placement/scheduler, multi-level metadata (L0/L1), election-first bootstrap, MetaLeader, sharded TSO (DESIGN §5, §8, §10)."
+
+[dependencies]
+kv9-common.workspace = true
+kv9-region.workspace = true
+kv9-raft.workspace = true
