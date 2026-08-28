@@ -673,14 +673,20 @@ impl NodeRuntime {
             // must never render as a healthy follower (task #24).
             Role::Unconfigured => "unconfigured",
         };
-        let meta_voters = format_node_ids(&self.voters);
+        // Once raft is initialized, its committed ConfState is the membership
+        // authority. `self.voters` is only the boot-time seed declaration and
+        // becomes stale after the first learner/promotion change.
+        let meta_voters = format_u64_ids(&raft.voters);
+        let meta_learners = format_u64_ids(&raft.learners);
         let body = format!(
-            "pid={}\nnode_id={}\nleader_id={}\nrole={}\nmeta_voters={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\nfatal={}\n",
+            "pid={}\nnode_id={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\nfatal={}\n",
             std::process::id(),
             raft.node_id.0,
             raft.leader_id.map_or(0, |id| id.0),
             role,
             meta_voters,
+            meta_learners,
+            raft.conf_index,
             raft.term,
             raft.raft_committed,
             raft.applied_index,
@@ -695,8 +701,8 @@ impl NodeRuntime {
     }
 }
 
-fn format_node_ids(nodes: &[NodeId]) -> String {
-    let mut ids: Vec<u64> = nodes.iter().map(|node| node.0).collect();
+fn format_u64_ids(nodes: &[u64]) -> String {
+    let mut ids = nodes.to_vec();
     ids.sort_unstable();
     ids.into_iter()
         .map(|id| id.to_string())
@@ -797,8 +803,10 @@ mod tests {
     }
 
     #[test]
-    fn status_meta_voters_are_canonical_regardless_of_cli_order() {
-        assert_eq!(format_node_ids(&[NodeId(5), NodeId(1), NodeId(3)]), "1,3,5");
+    fn status_membership_is_canonical_regardless_of_source_order() {
+        assert_eq!(format_u64_ids(&[5, 1, 3]), "1,3,5");
+        assert_eq!(format_u64_ids(&[9, 4, 7]), "4,7,9");
+        assert_eq!(format_u64_ids(&[]), "");
     }
 
     #[test]
