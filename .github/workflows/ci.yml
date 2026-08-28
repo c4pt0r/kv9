@@ -85,7 +85,7 @@ jobs:
         run: cargo clippy --workspace --all-targets -- -D warnings
 
   # Informational on purpose. `cargo fmt --check` does NOT pass on this tree: when this
-  # workflow landed there were 159 diff hunks across 27 files, spanning all four crate
+  # workflow landed there were 159 diff hunks across 39 files, spanning all four crate
   # lanes. Making that blocking would paint CI red on day one for changes that did not
   # cause it -- the exact failure mode described in the header.
   #
