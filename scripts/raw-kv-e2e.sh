@@ -144,6 +144,41 @@ echo "Created raw keyspace ${keyspace}."
 key_hex="$(hex alpha)"
 value_hex="$(hex first-value)"
 
+# ------------------------------------------------- context gate (real path)
+# The gate is only worth having if it refuses the wrong context, so check that it does
+# through the same gRPC path a client uses -- not by unit-testing the predicate alone.
+
+# An unknown keyspace must be refused, not silently written into a keyspace that will
+# exist later.
+set +e
+unknown_output="$(client "$leader" raw-get --keyspace 999 --key-hex "$key_hex" 2>&1)"
+unknown_rc=$?
+set -e
+test "$unknown_rc" -ne 0 || { echo "FAIL: unknown keyspace was served: $unknown_output" >&2; exit 1; }
+
+# A txn keyspace must refuse raw writes: Percolator expects its own lock/write structure
+# there, and raw bytes would corrupt that silently.
+txn_out="$(KV9_CLIENT_TOKEN="$client_token" timeout 30 "$bin" client create-keyspace \
+  --addr "127.0.0.1:$((base_port + leader))" --name raw-e2e-txn --api-type txn)"
+txn_keyspace="$(awk -F= '$1 == "keyspace_id" { print $2 }' <<<"$txn_out")"
+test -n "$txn_keyspace" || { echo "FAIL: could not create the txn keyspace" >&2; exit 1; }
+set +e
+mismatch_output="$(client "$leader" raw-put --keyspace "$txn_keyspace" \
+  --key-hex "$key_hex" --value-hex "$value_hex" 2>&1)"
+mismatch_rc=$?
+set -e
+test "$mismatch_rc" -ne 0 || {
+  echo "FAIL: raw write accepted into a txn keyspace: $mismatch_output" >&2; exit 1; }
+
+# Control: a valid context on the same path answers normally (the key is not written
+# yet, so `found=false` IS the successful answer). Without this the two refusals above
+# would be consistent with "everything fails".
+control="$(client "$leader" raw-get --keyspace "$keyspace" --key-hex "$key_hex")"
+test "$control" = "found=false" || {
+  echo "FAIL: control read broke, the refusals prove nothing: $control" >&2; exit 1; }
+echo "Context gate refuses unknown and txn keyspaces; raw keyspace still served."
+
+
 # ---------------------------------------------------------------- write + read back
 put_output="$(client "$leader" raw-put --keyspace "$keyspace" --key-hex "$key_hex" --value-hex "$value_hex")"
 got="$(client "$leader" raw-get --keyspace "$keyspace" --key-hex "$key_hex")"
