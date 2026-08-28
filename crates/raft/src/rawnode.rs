@@ -41,9 +41,20 @@ use crate::{CommittedEntry, EntryKind, LogIndex, RaftGroup, Role};
 pub trait PersistentRaftStorage: raft::Storage + Send + Sync + 'static {
     fn append(&self, entries: &[Entry]) -> Result<()>;
     fn set_hardstate(&self, hs: &HardState) -> Result<()>;
-    /// Durably record a post-conf-change `ConfState` (task #24). Last write
-    /// wins on replay; without this a restart resurrects the old membership.
-    fn set_conf_state(&self, cs: &ConfState) -> Result<()>;
+    /// Durably record a post-conf-change `ConfState` **paired with the log
+    /// index it took effect at** (task #24). The pair must be one crash-safe
+    /// record: ConfState without its index cannot gate replay, and a restart
+    /// that re-applies old conf entries onto the final membership can demote
+    /// or poison (Tess's P0 review of 107b161). Last write wins on replay.
+    fn set_conf_state(&self, cs: &ConfState, at_index: u64) -> Result<()>;
+
+    /// The conf-apply boundary recovered at open: the highest `at_index` ever
+    /// recorded by [`Self::set_conf_state`] (0 for a fresh store / volatile
+    /// impls). Conf entries at or below it are already reflected in the
+    /// initial ConfState and must be skipped on replay.
+    fn recovered_conf_index(&self) -> u64 {
+        0
+    }
 }
 
 impl PersistentRaftStorage for MemStorage {
@@ -51,7 +62,7 @@ impl PersistentRaftStorage for MemStorage {
         self.wl().append(entries).map_err(raft_err)
     }
 
-    fn set_conf_state(&self, cs: &ConfState) -> Result<()> {
+    fn set_conf_state(&self, cs: &ConfState, _at_index: u64) -> Result<()> {
         self.wl().set_conf_state(cs.clone());
         Ok(())
     }
@@ -74,6 +85,31 @@ pub struct ProposedAt {
     pub index: LogIndex,
 }
 
+/// A single-lock snapshot of everything the status surface reads from the
+/// peer (see [`RaftPeer::status_snapshot`]).
+#[derive(Debug, Clone)]
+pub struct PeerSnapshot {
+    pub node_id: NodeId,
+    pub leader_hint: Option<NodeId>,
+    pub raw_role: Role,
+    pub term: u64,
+    pub committed: u64,
+    pub step_errors: u64,
+    pub promotable: bool,
+    /// Highest conf-change index applied (0 = still on the seeded config).
+    pub conf_applied: u64,
+    pub voters: Vec<u64>,
+    pub learners: Vec<u64>,
+}
+
+fn role_of(state: StateRole) -> Role {
+    match state {
+        StateRole::Leader => Role::Leader,
+        StateRole::Follower => Role::Follower,
+        StateRole::Candidate | StateRole::PreCandidate => Role::Candidate,
+    }
+}
+
 /// One member of a raft-rs group on one node, driven by an external pump
 /// ([`InProcessCluster::round`] in Phase-1 tests/harness).
 pub struct RaftPeer<S: PersistentRaftStorage = MemStorage> {
@@ -93,6 +129,11 @@ struct PeerInner<S: PersistentRaftStorage> {
     /// Highest apply progress reported to raft via [`RaftPeer::applied_to`]
     /// (monotonic guard; raft's one-at-a-time conf-change gate reads it).
     applied_reported: u64,
+    /// Highest conf-change log index already applied (recovered from storage
+    /// at open). The replay guard: a conf entry at or below this is already
+    /// reflected in the current ConfState and is skipped — re-applying
+    /// relative conf ops onto the final membership demotes or poisons.
+    conf_applied: u64,
     /// Count of inbound messages `RawNode::step` rejected. Dropping one is
     /// protocol-sanctioned (indistinguishable from packet loss; the sender
     /// retransmits) — but a PERSISTENTLY growing count means a real problem
@@ -106,7 +147,14 @@ impl RaftPeer<MemStorage> {
     /// Build a peer for `region` on `node`, with the (fixed, Phase-1) voter set,
     /// on volatile in-memory storage (tests / in-process clusters).
     pub fn new(node: NodeId, region: RegionId, voters: &[NodeId]) -> Result<RaftPeer> {
-        let ids: Vec<u64> = voters.iter().map(|n| n.0).collect();
+        let ids = validate_voter_declaration(voters)?;
+        if !ids.contains(&node.0) {
+            return Err(Error::Raft(format!(
+                "initial-bootstrap mode requires self ({}) in the declared voter set; \
+                 a node joining an existing cluster must use new_joining",
+                node.0
+            )));
+        }
         let storage = MemStorage::new_with_conf_state(ConfState::from((ids, vec![])));
         RaftPeer::with_storage(node, region, storage)
     }
@@ -131,11 +179,17 @@ impl RaftPeer<MemStorage> {
         region: RegionId,
         bootstrap_voters: &[NodeId],
     ) -> Result<RaftPeer> {
-        let ids: Vec<u64> = bootstrap_voters.iter().map(|n| n.0).collect();
-        debug_assert!(
-            !ids.contains(&node.0),
-            "a joining node must not declare itself a bootstrap voter"
-        );
+        let ids = validate_voter_declaration(bootstrap_voters)?;
+        // Typed error, not an assert: in release a self-including declaration
+        // would silently seed the joiner AS A VOTER — the exact fail-open the
+        // join-existing mode exists to prevent (Tess's review of 107b161).
+        if ids.contains(&node.0) {
+            return Err(Error::Raft(format!(
+                "join-existing mode: node {} must NOT be in the declared \
+                 bootstrap voter set (the asymmetry IS the mode marker)",
+                node.0
+            )));
+        }
         let storage = MemStorage::new_with_conf_state(ConfState::from((ids, vec![])));
         RaftPeer::with_storage(node, region, storage)
     }
@@ -159,6 +213,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         cfg.validate().map_err(raft_err)?;
         let logger = Logger::root(Discard, o!());
         let raw = RawNode::new(&cfg, storage, &logger).map_err(raft_err)?;
+        let conf_applied = raw.store().recovered_conf_index();
         Ok(RaftPeer {
             node,
             region,
@@ -168,6 +223,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 outbox: Vec::new(),
                 alive: true,
                 applied_reported: 0,
+                conf_applied,
                 step_errors: 0,
             }),
         })
@@ -335,8 +391,20 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         &self,
         kind: EntryKind,
         data: &[u8],
+        index: u64,
     ) -> Result<(Vec<u64>, Vec<u64>)> {
         let mut g = self.lock();
+        // Replay guard: at or below the recovered boundary this change is
+        // already reflected in the ConfState we opened with. Single-step conf
+        // ops are RELATIVE (AddLearner on a voter is a demotion), so
+        // re-application onto the final membership is not idempotent.
+        if index <= g.conf_applied {
+            let cs = g.raw.raft.prs().conf().to_conf_state();
+            let (mut v, mut l) = (cs.voters.to_vec(), cs.learners.to_vec());
+            v.sort_unstable();
+            l.sort_unstable();
+            return Ok((v, l));
+        }
         let cs = match kind {
             EntryKind::ConfChangeV1 => {
                 let cc = ConfChange::parse_from_bytes(data)
@@ -354,8 +422,12 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 )))
             }
         };
-        g.raw.store().set_conf_state(&cs)?;
-        Ok((cs.voters.to_vec(), cs.learners.to_vec()))
+        g.raw.store().set_conf_state(&cs, index)?;
+        g.conf_applied = index;
+        let (mut v, mut l) = (cs.voters.to_vec(), cs.learners.to_vec());
+        v.sort_unstable();
+        l.sort_unstable();
+        Ok((v, l))
     }
 
     /// The current membership as raft sees it: `(voters, learners)`, sorted.
@@ -366,6 +438,31 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         v.sort_unstable();
         l.sort_unstable();
         (v, l)
+    }
+
+    /// Everything the status surface needs from the peer, read under ONE lock
+    /// acquisition — during a conf apply, piecemeal reads can tear (role from
+    /// before the change, membership from after) and misreport a healthy node
+    /// as follower/unconfigured for an instant (Tess's review of 107b161).
+    pub fn status_snapshot(&self) -> PeerSnapshot {
+        let g = self.lock();
+        let cs = g.raw.raft.prs().conf().to_conf_state();
+        let (mut voters, mut learners) = (cs.voters.to_vec(), cs.learners.to_vec());
+        voters.sort_unstable();
+        learners.sort_unstable();
+        let leader = g.raw.raft.leader_id;
+        PeerSnapshot {
+            node_id: self.node,
+            leader_hint: if leader == 0 { None } else { Some(NodeId(leader)) },
+            raw_role: role_of(g.raw.raft.state),
+            term: g.raw.raft.term,
+            committed: g.raw.raft.raft_log.committed,
+            step_errors: g.step_errors,
+            promotable: g.raw.raft.promotable(),
+            conf_applied: g.conf_applied,
+            voters,
+            learners,
+        }
     }
 
     /// Whether this node may campaign (it is a voter in the current config and
@@ -530,6 +627,23 @@ impl InProcessCluster {
 
 fn raft_err(e: raft::Error) -> Error {
     Error::Raft(e.to_string())
+}
+
+/// Validate a declared voter set at a peer-construction entry point: non-empty
+/// and duplicate-free, regardless of what the CLI did upstream (fail closed at
+/// the library boundary, not only at the flag parser).
+fn validate_voter_declaration(voters: &[NodeId]) -> Result<Vec<u64>> {
+    if voters.is_empty() {
+        return Err(Error::Raft("declared voter set must not be empty".into()));
+    }
+    let mut ids: Vec<u64> = voters.iter().map(|n| n.0).collect();
+    ids.sort_unstable();
+    if ids.windows(2).any(|w| w[0] == w[1]) {
+        return Err(Error::Raft(
+            "declared voter set contains duplicate node ids".into(),
+        ));
+    }
+    Ok(ids)
 }
 
 /// Map a raft entry to the typed committed item the apply loop consumes.

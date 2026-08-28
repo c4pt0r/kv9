@@ -51,6 +51,10 @@ pub struct NodeStatus {
     /// Inbound messages rejected by raft `step` (dropped, sender retransmits).
     /// Diagnostic: persistent growth signals stale peers / version skew.
     pub step_errors: u64,
+    /// Highest conf-change log index applied here (0 = still on the seeded
+    /// configuration). The pair (`voters`,`learners`) took effect at exactly
+    /// this index.
+    pub conf_index: u64,
     /// Current raft voter set (sorted node ids), from the live ConfState.
     /// Post-initialization membership authority is THIS (the raft-committed
     /// configuration), never the boot-time declared seed list (task #24).
@@ -63,6 +67,20 @@ pub struct NodeStatus {
 /// How many recently applied `(index, term)` pairs are retained for proposal
 /// verification (correlation is by term+index, never position alone).
 const APPLIED_RING: usize = 1024;
+
+/// How many conf-change receipts are retained (membership changes are rare;
+/// a waiter that lags 64 changes behind has bigger problems).
+const CONF_RECEIPTS: usize = 64;
+
+/// A conf change applied HERE: its exact position and the membership
+/// `apply_conf_change` actually produced at that moment.
+#[derive(Debug, Clone)]
+struct ConfReceiptEntry {
+    index: u64,
+    term: u64,
+    voters: Vec<u64>,
+    learners: Vec<u64>,
+}
 
 pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngine> {
     peer: Arc<RaftPeer<S>>,
@@ -82,6 +100,11 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngi
     /// ONLY successfully applied entries enter this ring — a failed decode or
     /// apply must never be reported as success by `wait_applied`.
     applied: Mutex<Vec<(u64, u64)>>,
+    /// Conf-change receipts by exact (index, term) — the correlation store for
+    /// [`Self::wait_conf_applied`]. Conf entries NEVER enter the command ring:
+    /// `applied_index`/`applied_term` must remain a same-entry pair.
+    /// Lock order: leaf — never held while acquiring `applied`/`sm`/peer.
+    conf_receipts: Mutex<Vec<ConfReceiptEntry>>,
     /// First fatal apply-path error; poisons the driver (pump stops).
     fatal: Mutex<Option<String>>,
     stop: AtomicBool,
@@ -98,6 +121,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             transport,
             sm: Mutex::new(sm),
             applied: Mutex::new(Vec::new()),
+            conf_receipts: Mutex::new(Vec::new()),
             fatal: Mutex::new(None),
             stop: AtomicBool::new(false),
         })
@@ -168,12 +192,29 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
                     push_ring(&mut applied, entry.index.0, entry.term);
                 }
                 EntryKind::ConfChangeV1 | EntryKind::ConfChangeV2 => {
-                    // Peer call first (no driver locks held), then the ring.
-                    match self.peer.apply_conf_change_bytes(entry.kind, &entry.data) {
-                        Ok(_membership) => {
-                            let mut applied =
-                                self.applied.lock().expect("applied poisoned");
-                            push_ring(&mut applied, entry.index.0, entry.term);
+                    // Peer call first (no driver locks held). The result goes
+                    // into the CONF receipt ring only — never the command
+                    // ring: `applied_index`/`applied_term` must stay a
+                    // same-entry pair from the last Command, and a conf term
+                    // paired with an older command index would fabricate a
+                    // position that never existed (Tess's review).
+                    match self
+                        .peer
+                        .apply_conf_change_bytes(entry.kind, &entry.data, entry.index.0)
+                    {
+                        Ok((voters, learners)) => {
+                            let mut receipts =
+                                self.conf_receipts.lock().expect("receipts poisoned");
+                            receipts.push(ConfReceiptEntry {
+                                index: entry.index.0,
+                                term: entry.term,
+                                voters,
+                                learners,
+                            });
+                            let len = receipts.len();
+                            if len > CONF_RECEIPTS {
+                                receipts.drain(..len - CONF_RECEIPTS);
+                            }
                         }
                         Err(e) => return Err(self.poison(entry.term, entry.index.0, &e)),
                     }
@@ -221,19 +262,48 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         at: ProposedAt,
         deadline: Duration,
     ) -> Result<ConfChangeReceipt> {
-        if self.wait_applied(at, deadline)? {
-            let (voters, learners) = self.peer.membership();
-            Ok(ConfChangeReceipt {
-                applied: at,
-                conf_index: at.index.0,
-                voters,
-                learners,
-            })
-        } else {
-            Err(Error::Raft(format!(
-                "conf change at term {} index {} was overwritten by another leader",
-                at.term, at.index.0
-            )))
+        let start = Instant::now();
+        loop {
+            if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
+                return Err(Error::Raft(format!("driver is poisoned: {f}")));
+            }
+            {
+                // The receipt captured AT APPLY TIME for this exact position —
+                // never the live membership, which may already reflect a later
+                // change by the time the waiter wakes (Tess's review).
+                let receipts = self.conf_receipts.lock().expect("receipts poisoned");
+                if let Some(r) = receipts.iter().find(|r| r.index == at.index.0) {
+                    if r.term != at.term {
+                        return Err(Error::Raft(format!(
+                            "conf change at term {} index {} was overwritten by another leader",
+                            at.term, at.index.0
+                        )));
+                    }
+                    return Ok(ConfChangeReceipt {
+                        applied: at,
+                        conf_index: r.index,
+                        voters: r.voters.clone(),
+                        learners: r.learners.clone(),
+                    });
+                }
+            }
+            // Position passed without a conf receipt: the slot went to a
+            // different (non-conf or other-leader) entry.
+            if self.peer.status_snapshot().conf_applied > at.index.0
+                || self.sm.lock().expect("sm poisoned").applied_index().0 >= at.index.0
+            {
+                return Err(Error::Raft(format!(
+                    "conf change at term {} index {} was overwritten by another leader",
+                    at.term, at.index.0
+                )));
+            }
+            if start.elapsed() > deadline {
+                return Err(Error::Raft(format!(
+                    "wait_conf_applied deadline: index {} not reached",
+                    at.index.0
+                )));
+            }
+            std::thread::sleep(Duration::from_millis(1));
         }
     }
 
@@ -286,44 +356,38 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
 
     /// The queryable status surface.
     pub fn status(&self) -> NodeStatus {
-        // All peer reads happen FIRST, before any driver lock is taken: peer
-        // never nests with driver locks in either direction (the applied→peer
-        // edge was the #23 audit's fourth-lock hazard — eliminated here rather
-        // than declared). The five peer reads were always five independent
-        // lock acquisitions, so no cross-field atomicity is lost by moving them.
-        let node_id = self.peer.node_id();
-        let leader_id = self.peer.leader_hint();
-        let raw_role = self.peer.role();
-        let term = self.peer.term();
-        let raft_committed = self.peer.raft_committed().0;
-        let step_errors = self.peer.step_errors();
-        let (voters, learners) = self.peer.membership();
-        let promotable = self.peer.promotable();
+        // ONE peer lock acquisition for everything peer-side: piecemeal reads
+        // can tear during a conf apply (role from before, membership from
+        // after) and misreport a healthy node for an instant. Peer never
+        // nests with driver locks in either direction, so the snapshot is
+        // taken before any driver lock.
+        let p = self.peer.status_snapshot();
         // Membership-first role derivation (三分, Ren's rule): a learner is a
         // follower whose id is in the learner set; a node in NEITHER set is a
         // config-identity fault and must never masquerade as a healthy
         // follower (removed node, wrong config, stale ConfState).
-        let me = node_id.0;
-        let role = if learners.contains(&me) {
+        let me = p.node_id.0;
+        let role = if p.learners.contains(&me) {
             Role::Learner
-        } else if !promotable && !voters.contains(&me) {
+        } else if !p.promotable && !p.voters.contains(&me) {
             Role::Unconfigured
         } else {
-            raw_role
+            p.raw_role
         };
         let applied = self.applied.lock().expect("applied poisoned");
         NodeStatus {
-            node_id,
-            leader_id,
+            node_id: p.node_id,
+            leader_id: p.leader_hint,
             role,
-            term,
-            raft_committed,
+            term: p.term,
+            raft_committed: p.committed,
             applied_index: self.sm.lock().expect("sm poisoned").applied_index().0,
             applied_term: applied.last().map_or(0, |(_, term)| *term),
             fatal: self.fatal.lock().expect("fatal poisoned").clone(),
-            step_errors,
-            voters,
-            learners,
+            step_errors: p.step_errors,
+            conf_index: p.conf_applied,
+            voters: p.voters,
+            learners: p.learners,
         }
     }
 
