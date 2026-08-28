@@ -12,3 +12,11 @@ kv9-engine.workspace = true
 kv9-raft.workspace = true
 kv9-region.workspace = true
 kv9-txn.workspace = true
+prost.workspace = true
+tokio.workspace = true
+tokio-stream.workspace = true
+tonic.workspace = true
+tonic-prost.workspace = true
+
+[build-dependencies]
+tonic-prost-build.workspace = true

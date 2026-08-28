@@ -13,7 +13,7 @@ pub mod ids;
 pub mod keyspace;
 pub mod time;
 
-pub use config::Config;
+pub use config::{Config, SeedPeer};
 pub use error::{Error, Result};
 pub use ids::{
     KeyspaceId, NodeId, RegionId, TenantId, TimelineId, TsoProviderId, TxnGroupId, META_REGION_0,

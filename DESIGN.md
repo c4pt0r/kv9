@@ -242,7 +242,9 @@ metadata server**, and the winner performs metadata initialization and a simple 
 `docs/ARCHITECTURE.md` §4.)
 
 - `META_REGION_0` has a **fixed, well-known region id** and covers the system key range. Its initial member set is
-  the join-set, so no routing lookup is needed to form it.
+  the join-set, so no routing lookup is needed to form it. Every process declares that complete voter set before
+  any RPC as `node-id@ip:port` pairs; discovery may verify the mapping but must never infer membership from only
+  the peers that happened to answer (a silent seed remains in the quorum denominator).
 - **BootstrapElection = Raft leader election over the (empty) `META_REGION_0` log** — the same Raft that replicates
   data. The winner is the metadata server.
 - The winner **initializes metadata** as the first Raft-committed entries: create the system keyspace, the default
@@ -675,8 +677,9 @@ Global throughput scaling (goal #4) and capacity isolation (goal #1) meet here.
 
 ## 11. API surface (v0)
 
-Transport is gRPC, but the skeleton defines the surface as Rust traits so it compiles without a protoc toolchain; a
-thin wire adapter is added next.
+Transport is gRPC. The Rust traits remain the synchronous core contract; tonic adapters isolate those calls on
+blocking workers, and a single server listener registers the public and node-internal services. Authentication
+interceptors establish trusted request identities outside protobuf bodies.
 
 - **Txn:** `KvGet, KvBatchGet, KvScan, KvPrewrite, KvCommit, KvPessimisticLock, KvPessimisticRollback,
   KvResolveLock, KvCleanup, KvCheckTxnStatus`.
@@ -712,7 +715,7 @@ kv9/
 │   ├── region/   ← Region, RegionRouter, epoch, split/merge (throughput-aware), WalStream/WalPool (§6.4)
 │   ├── txn/      ← Percolator 2PC (txn keyspaces) + txn-group confinement; raw executor
 │   └── server/   ← Node assembly, API traits (Txn/Raw/Admin/Router), request routing
-└── src/ (bin `kv9`) ← main.rs: single binary; CLI (--join, --data-dir, --addr)
+└── src/ (bin `kv9`) ← main.rs: single binary; node CLI (--node-id, --join, --data-dir, --addr)
 ```
 
 `cargo check --workspace` passing is the milestone's definition of done. Method bodies may be `unimplemented!()`

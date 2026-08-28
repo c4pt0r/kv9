@@ -7,11 +7,40 @@
 
 pub mod cf;
 pub mod mem;
+pub mod persist;
+pub mod testing;
+pub mod wal;
 pub mod write_batch;
 
 pub use cf::ColumnFamily;
 pub use mem::MemEngine;
+pub use persist::WalEngine;
+pub use testing::FaultyEngine;
+pub use wal::{Replay, Wal};
 pub use write_batch::{Mutation, WriteBatch};
+
+/// Whether an engine's accepted writes survive a restart (DESIGN §13 principle 14,
+/// "flushed/persisted-index that gates truncation").
+///
+/// This exists so a volatile engine cannot be *mistaken* for a durable one. The raft log
+/// may only be truncated to the extent the state machine has actually landed its data;
+/// asking an engine that keeps everything in memory to answer that question with a number
+/// invites the answer "0", which reads as a legitimate watermark. Making the volatile case
+/// a distinct variant means the caller has to handle it, and the illegal state — a
+/// volatile engine authorising truncation — cannot be written down (principle 16).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Durability {
+    /// Nothing survives a restart; the log must **never** be truncated on this engine's
+    /// account.
+    Volatile,
+    /// Every write accepted before the call is on stable storage.
+    ///
+    /// Deliberately not a raft index: `write` is not told one, so an engine reporting an
+    /// index would be reporting a number it inferred rather than one it knows. A caller
+    /// that tracks which entries it applied can combine that with this answer. Carrying
+    /// the index explicitly is a Phase-2 refinement, alongside flush-to-SST.
+    DurableThroughLastWrite,
+}
 
 use kv9_common::{Result, UserKey, Value};
 
@@ -142,7 +171,28 @@ pub trait Engine: Send + Sync {
 
     /// A cheap checksum over a physical key range, used by the replica scrubber
     /// (DESIGN §6.3, continuous verification).
+    ///
+    /// **Keys beginning with `0x00` are reserved for internal state and must be excluded
+    /// from any cross-replica comparison.** Every *physical* key starts with a mode byte
+    /// (`'t'`/`'r'`/`'s'` — see `kv9_common::codec`), so `0x00` cannot collide with data;
+    /// that space holds per-node bookkeeping such as the applied-index watermark, which is
+    /// written in the same batch as the data it describes.
+    ///
+    /// The consequence for a scrubber: two replicas holding *identical data* legitimately
+    /// sit at different applied indices, so a checksum over a range that swept in the
+    /// reserved prefix would differ between healthy peers. DESIGN §6.3 has divergence
+    /// trigger re-fetch/re-snapshot, so that false positive would move real data for no
+    /// reason. Compare data ranges, not `[0x00.., ..]`.
+    ///
+    /// Nothing calls this yet — the scrubber is unimplemented — which is precisely why the
+    /// constraint is recorded here rather than discovered later.
     fn checksum(&self, cf: ColumnFamily, start: &[u8], end: &[u8]) -> Result<u64>;
+
+    /// Whether this engine's accepted writes survive a restart.
+    ///
+    /// Callers deciding raft-log truncation must consult this: truncating past what the
+    /// state machine has durably applied is silent data loss on the next restart.
+    fn durability(&self) -> Durability;
 
     /// Take a consistent [`ReadView`]; all reads through it observe one version of the
     /// data.

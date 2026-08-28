@@ -1,7 +1,7 @@
 //! The v0 API surface as Rust traits (DESIGN §11).
 //!
-//! Transport is gRPC, but defining the surface as traits lets the skeleton compile
-//! without a protoc toolchain; a thin wire adapter is added next. Every data request
+//! Transport is gRPC; these traits are the synchronous core contract behind tonic's
+//! blocking boundary. Every data request
 //! carries `(keyspace_id, region_epoch)` so the router can resolve keyspace→region,
 //! epoch-check, and validate the API type against the keyspace declaration.
 
@@ -20,7 +20,12 @@ pub struct RequestContext {
 
 /// The transactional API for `txn` keyspaces (DESIGN §11 Txn surface).
 pub trait TxnApi {
-    fn kv_get(&self, ctx: &RequestContext, key: &[u8], start_ts: TimeStamp) -> Result<Option<Value>>;
+    fn kv_get(
+        &self,
+        ctx: &RequestContext,
+        key: &[u8],
+        start_ts: TimeStamp,
+    ) -> Result<Option<Value>>;
     fn kv_batch_get(
         &self,
         ctx: &RequestContext,
@@ -35,13 +40,45 @@ pub trait TxnApi {
         limit: usize,
         start_ts: TimeStamp,
     ) -> Result<Vec<(UserKey, Value)>>;
-    fn kv_prewrite(&self, ctx: &RequestContext, mutations: &[(UserKey, Option<Value>)], primary: &[u8], start_ts: TimeStamp) -> Result<()>;
-    fn kv_commit(&self, ctx: &RequestContext, keys: &[UserKey], start_ts: TimeStamp, commit_ts: TimeStamp) -> Result<()>;
-    fn kv_pessimistic_lock(&self, ctx: &RequestContext, keys: &[UserKey], start_ts: TimeStamp) -> Result<()>;
-    fn kv_pessimistic_rollback(&self, ctx: &RequestContext, keys: &[UserKey], start_ts: TimeStamp) -> Result<()>;
-    fn kv_resolve_lock(&self, ctx: &RequestContext, start_ts: TimeStamp, commit_ts: Option<TimeStamp>) -> Result<()>;
+    fn kv_prewrite(
+        &self,
+        ctx: &RequestContext,
+        mutations: &[(UserKey, Option<Value>)],
+        primary: &[u8],
+        start_ts: TimeStamp,
+    ) -> Result<()>;
+    fn kv_commit(
+        &self,
+        ctx: &RequestContext,
+        keys: &[UserKey],
+        start_ts: TimeStamp,
+        commit_ts: TimeStamp,
+    ) -> Result<()>;
+    fn kv_pessimistic_lock(
+        &self,
+        ctx: &RequestContext,
+        keys: &[UserKey],
+        start_ts: TimeStamp,
+    ) -> Result<()>;
+    fn kv_pessimistic_rollback(
+        &self,
+        ctx: &RequestContext,
+        keys: &[UserKey],
+        start_ts: TimeStamp,
+    ) -> Result<()>;
+    fn kv_resolve_lock(
+        &self,
+        ctx: &RequestContext,
+        start_ts: TimeStamp,
+        commit_ts: Option<TimeStamp>,
+    ) -> Result<()>;
     fn kv_cleanup(&self, ctx: &RequestContext, key: &[u8], start_ts: TimeStamp) -> Result<()>;
-    fn kv_check_txn_status(&self, ctx: &RequestContext, primary: &[u8], lock_ts: TimeStamp) -> Result<()>;
+    fn kv_check_txn_status(
+        &self,
+        ctx: &RequestContext,
+        primary: &[u8],
+        lock_ts: TimeStamp,
+    ) -> Result<()>;
 }
 
 /// The raw API for `raw` keyspaces (DESIGN §11 Raw surface).
@@ -51,7 +88,13 @@ pub trait RawApi {
     fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<()>;
     fn raw_batch_put(&self, ctx: &RequestContext, kvs: &[(UserKey, Value)]) -> Result<()>;
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<()>;
-    fn raw_scan(&self, ctx: &RequestContext, start: &[u8], end: &[u8], limit: usize) -> Result<Vec<(UserKey, Value)>>;
+    fn raw_scan(
+        &self,
+        ctx: &RequestContext,
+        start: &[u8],
+        end: &[u8],
+        limit: usize,
+    ) -> Result<Vec<(UserKey, Value)>>;
     fn raw_delete_range(&self, ctx: &RequestContext, start: &[u8], end: &[u8]) -> Result<()>;
 }
 
@@ -63,6 +106,22 @@ pub struct RegionLocation {
     pub leader: Option<kv9_common::NodeId>,
 }
 
+/// Result of creating a keyspace. Production returns the exact Raft proposal
+/// identity so acceptance and clients can correlate the write across failover.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CreateKeyspaceResult {
+    pub keyspace: KeyspaceId,
+    pub proposed: Option<AppliedPosition>,
+}
+
+/// A Raft position is identified by term and index; index alone is unsafe after
+/// leader failover because the new leader may overwrite an uncommitted slot.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct AppliedPosition {
+    pub term: u64,
+    pub index: u64,
+}
+
 /// The admin / meta API (DESIGN §11 Admin surface). Authenticated from day one.
 pub trait AdminApi {
     fn create_keyspace(
@@ -72,10 +131,15 @@ pub trait AdminApi {
         tenant: kv9_common::TenantId,
         api_type: kv9_common::ApiType,
         txn_group: kv9_common::TxnGroupId,
-    ) -> Result<KeyspaceId>;
+    ) -> Result<CreateKeyspaceResult>;
     fn list_keyspaces(&self, caller: &str) -> Result<Vec<kv9_common::Keyspace>>;
     fn get_region(&self, caller: &str, keyspace: KeyspaceId, key: &[u8]) -> Result<RegionLocation>;
-    fn split_region(&self, caller: &str, region: kv9_common::RegionId, split_key: UserKey) -> Result<()>;
+    fn split_region(
+        &self,
+        caller: &str,
+        region: kv9_common::RegionId,
+        split_key: UserKey,
+    ) -> Result<()>;
     fn cluster_info(&self, caller: &str) -> Result<ClusterInfo>;
 }
 

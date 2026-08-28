@@ -10,3 +10,12 @@ kv9-common.workspace = true
 kv9-engine.workspace = true
 raft.workspace = true
 slog.workspace = true
+protobuf.workspace = true
+prost.workspace = true
+tokio.workspace = true
+tokio-stream.workspace = true
+tonic.workspace = true
+tonic-prost.workspace = true
+
+[build-dependencies]
+tonic-prost-build.workspace = true

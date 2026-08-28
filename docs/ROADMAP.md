@@ -26,7 +26,9 @@ testing** — then bring in the disaggregated object-storage engine (the thesis)
   model. Until then the raft state machine runs on the Phase 1 simple WAL engine (`MemEngine` remains for
   tests and the in-process harness).
 - **Object storage (Phase 3+):** the `object_store` crate (pure-Rust S3/GCS/Azure/local) behind `ObjectStore`.
-- **Async I/O:** `tokio`. **Wire (later):** `tonic` gRPC.
+- **Async I/O:** `tokio`. **Wire (Phase 1-final onward):** pure-Rust `tonic` gRPC for both public APIs and
+  node-internal Raft/discovery. The server owns one listener and registers all services; Raft uses long-lived
+  client streams with byte/count batching, while the synchronous core is reached only through channels.
 
 ## Phases
 
@@ -83,8 +85,8 @@ object store); split/merge (throughput-aware) + pre-shard; rebalance (damped).
 
 ### Phase 5 — Scale & multi-tenant hardening
 Distributed + L1-sharded scheduler; **sharded TSO** (per-txn-group timelines, provider pool); **idle-region
-quiescing**; full **token flow-control** (cross-node GAC, fair queue, cache-fill); per-tenant metrics; **wire layer
-(`tonic`)** + auth.
+quiescing**; full **token flow-control** (cross-node GAC, fair queue, cache-fill); per-tenant metrics; production
+TLS/mTLS and authorization hardening on the existing gRPC wire.
 - *Demo:* elastic, multi-tenant, throughput-scaling cluster with predictable QoS.
 
 ## Cross-cutting from day one

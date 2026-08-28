@@ -11,7 +11,11 @@
 //! Phase-1 adapter is tikv/raft-rs (`RawNode`/`Ready`) behind the same pull interface.
 
 pub mod command;
+pub mod driver;
+pub mod grpc;
 pub mod rawnode;
+pub mod storage;
+pub mod transport;
 pub mod state_machine;
 
 pub use command::{cf_code, cf_from_code, Command, KvOp};

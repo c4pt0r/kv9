@@ -19,6 +19,11 @@ use kv9_common::Result;
 use crate::command::Command;
 use crate::{CommittedEntry, LogIndex};
 
+/// Engine key holding the durably applied watermark. The `0x00` first byte
+/// cannot collide with any `mode_byte`-encoded physical key (`'t'`/`'r'`/`'s'`),
+/// so catalog scans never see it.
+pub const APPLIED_INDEX_KEY: &[u8] = b"\x00kv9\x00applied_index";
+
 /// The outcome of applying one committed entry to the state machine (ROADMAP Phase 1).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ApplyResult {
@@ -64,10 +69,8 @@ pub struct MemStateMachine<E: Engine = MemEngine> {
 impl MemStateMachine<MemEngine> {
     /// A fresh state machine over a new in-memory engine (ROADMAP Phase 1 first task).
     pub fn new() -> Self {
-        MemStateMachine {
-            engine: Arc::new(MemEngine::new()),
-            applied: LogIndex(0),
-        }
+        MemStateMachine::with_engine(Arc::new(MemEngine::new()))
+            .expect("a fresh MemEngine has no watermark to corrupt")
     }
 }
 
@@ -80,11 +83,34 @@ impl Default for MemStateMachine<MemEngine> {
 impl<E: Engine> MemStateMachine<E> {
     /// Build a state machine over an existing shared engine (so the `meta` catalog and
     /// the raft apply loop observe the *same* KV).
-    pub fn with_engine(engine: Arc<E>) -> Self {
-        MemStateMachine {
+    ///
+    /// Recovers the durably applied watermark from the engine: data and
+    /// watermark are written in ONE atomic batch (see [`Self::apply_command`]),
+    /// so on a durable engine they are physically inseparable — a restarted
+    /// node resumes from where its data actually is, instead of reporting 0
+    /// over a full store (the "durable data, volatile watermark" mismatch).
+    ///
+    /// Construction is fallible: an engine read error or a malformed watermark
+    /// value REFUSES to open — silently coercing either to "watermark 0" would
+    /// re-apply the whole log over unknown state (guessing is worse than
+    /// stopping). A missing key is genuinely fresh and starts at 0.
+    pub fn with_engine(engine: Arc<E>) -> Result<Self> {
+        let applied = match engine.get(ColumnFamily::Default, APPLIED_INDEX_KEY)? {
+            None => 0,
+            Some(v) => {
+                let bytes: [u8; 8] = v.try_into().map_err(|v: Vec<u8>| {
+                    kv9_common::Error::Engine(format!(
+                        "corrupt applied watermark: {} bytes (want 8)",
+                        v.len()
+                    ))
+                })?;
+                u64::from_be_bytes(bytes)
+            }
+        };
+        Ok(MemStateMachine {
             engine,
-            applied: LogIndex(0),
-        }
+            applied: LogIndex(applied),
+        })
     }
 
     /// The backing engine — the KV the `meta` catalog reads/writes (ROADMAP Phase 1).
@@ -94,11 +120,29 @@ impl<E: Engine> MemStateMachine<E> {
 
     /// Apply an already-decoded command at `index` (used by the propose→apply path and
     /// by tests that construct commands directly, avoiding the entry codec stub).
+    ///
+    /// Idempotent under redelivery: an entry at or below the applied watermark
+    /// is skipped — after a restart, log replay fast-forwards past everything
+    /// the engine already holds, and a future NON-idempotent command stays
+    /// correct instead of silently double-applying. The watermark rides in the
+    /// SAME atomic batch as the data (cross-CF batch atomicity is the engine's
+    /// contract), so the two cannot diverge on disk.
     pub fn apply_command(&mut self, index: LogIndex, cmd: &Command) -> Result<ApplyResult> {
-        let batch = cmd.to_write_batch();
-        if !batch.is_empty() {
-            self.engine.write(batch)?;
+        if index <= self.applied {
+            return Ok(ApplyResult::write_ok(index));
         }
+        // EVERY applied entry advances the durable watermark — including
+        // commands with no data mutations (Noop/ConfChange). Advancing those
+        // only in memory would regress the watermark on restart and re-deliver
+        // entries the group considers applied; correctness would again rest on
+        // the all-commands-are-idempotent coincidence this change removes.
+        let mut batch = cmd.to_write_batch();
+        batch.put(
+            ColumnFamily::Default,
+            APPLIED_INDEX_KEY.to_vec(),
+            index.0.to_be_bytes().to_vec(),
+        );
+        self.engine.write(batch)?;
         self.applied = index;
         Ok(ApplyResult::write_ok(index))
     }
@@ -146,6 +190,129 @@ mod tests {
     use super::*;
     use crate::{RaftGroup, SingleNodeRaft};
     use kv9_common::{NodeId, RegionId};
+
+    /// The applied watermark rides in the same batch as the data: a state
+    /// machine re-created over the SAME engine resumes at the durable
+    /// watermark instead of 0 (the durable-data/volatile-watermark mismatch).
+    #[test]
+    fn applied_watermark_recovers_with_the_engine() {
+        let engine = Arc::new(MemEngine::new());
+        let mut sm = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
+        let cmd = Command::Put {
+            cf: 0,
+            key: b"k".to_vec(),
+            value: b"v1".to_vec(),
+        };
+        sm.apply_command(LogIndex(3), &cmd).unwrap();
+        drop(sm);
+
+        let sm2 = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
+        assert_eq!(sm2.applied_index(), LogIndex(3));
+        // Control (sensitivity): a fresh engine reports 0 — recovery reads
+        // real state, not a constant.
+        let fresh = MemStateMachine::with_engine(Arc::new(MemEngine::new())).unwrap();
+        assert_eq!(fresh.applied_index(), LogIndex(0));
+    }
+
+    /// A corrupt watermark value refuses to open (typed error) — never
+    /// silently coerces to 0 and replays the log over unknown state.
+    #[test]
+    fn corrupt_watermark_refuses_to_open() {
+        let engine = Arc::new(MemEngine::new());
+        let mut batch = kv9_engine::WriteBatch::new();
+        batch.put(
+            ColumnFamily::Default,
+            APPLIED_INDEX_KEY.to_vec(),
+            vec![1, 2, 3], // wrong width
+        );
+        engine.write(batch).unwrap();
+        assert!(MemStateMachine::with_engine(Arc::clone(&engine)).is_err());
+        // Control: a valid 8-byte watermark opens fine.
+        let mut batch = kv9_engine::WriteBatch::new();
+        batch.put(
+            ColumnFamily::Default,
+            APPLIED_INDEX_KEY.to_vec(),
+            9u64.to_be_bytes().to_vec(),
+        );
+        engine.write(batch).unwrap();
+        assert_eq!(
+            MemStateMachine::with_engine(engine).unwrap().applied_index(),
+            LogIndex(9)
+        );
+    }
+
+    /// Commands with NO data mutations (Noop) must still advance the durable
+    /// watermark — otherwise a restart regresses it and re-delivers entries
+    /// the group considers applied.
+    #[test]
+    fn empty_batch_commands_persist_the_watermark() {
+        let engine = Arc::new(MemEngine::new());
+        let mut sm = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
+        sm.apply_command(
+            LogIndex(1),
+            &Command::Put {
+                cf: 0,
+                key: b"k".to_vec(),
+                value: b"v".to_vec(),
+            },
+        )
+        .unwrap();
+        sm.apply_command(LogIndex(2), &Command::Noop).unwrap();
+        drop(sm);
+        // Restart: the watermark reflects the Noop, not just the last data write.
+        let sm2 = MemStateMachine::with_engine(engine).unwrap();
+        assert_eq!(sm2.applied_index(), LogIndex(2));
+    }
+
+    /// Redelivery at or below the watermark is skipped — replay after restart
+    /// cannot double-apply. Sensitivity: the skipped command carries a
+    /// DIFFERENT value; if it were re-applied the assertion would see it.
+    #[test]
+    fn replayed_entries_below_watermark_are_skipped() {
+        let engine = Arc::new(MemEngine::new());
+        let mut sm = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
+        sm.apply_command(
+            LogIndex(5),
+            &Command::Put {
+                cf: 0,
+                key: b"k".to_vec(),
+                value: b"original".to_vec(),
+            },
+        )
+        .unwrap();
+
+        // Restarted state machine over the same engine replays the log; a
+        // conflicting rewrite of index 5 must be ignored.
+        let mut sm2 = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
+        sm2.apply_command(
+            LogIndex(5),
+            &Command::Put {
+                cf: 0,
+                key: b"k".to_vec(),
+                value: b"DOUBLE-APPLIED".to_vec(),
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            sm2.get(ColumnFamily::Default, b"k").unwrap(),
+            Some(b"original".to_vec()),
+            "entries at/below the watermark must not re-apply"
+        );
+        // …while a NEW index applies normally (a watermark, not a wall).
+        sm2.apply_command(
+            LogIndex(6),
+            &Command::Put {
+                cf: 0,
+                key: b"k".to_vec(),
+                value: b"next".to_vec(),
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            sm2.get(ColumnFamily::Default, b"k").unwrap(),
+            Some(b"next".to_vec())
+        );
+    }
 
     /// Phase-1 milestone (ROADMAP): the first concrete task — a single-node raft with a
     /// `MemEngine` state machine and a `propose(put) → apply → get` round-trip, through
