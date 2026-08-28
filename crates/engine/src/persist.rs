@@ -311,6 +311,89 @@ mod tests {
         assert_eq!(MemEngine::new().durability(), Durability::Volatile);
     }
 
+    /// The state machine stores its applied-index watermark under a `0x00`-prefixed key in
+    /// the *data* column family, written in the same batch as the data it describes
+    /// (`kv9_raft`'s `APPLIED_INDEX_KEY`). That pairing is what stops "durable data,
+    /// volatile watermark" — but it only holds if such a key survives this engine's
+    /// append/replay like any other.
+    ///
+    /// Nothing had exercised that: the watermark change was verified against `MemEngine`,
+    /// where there is no log to round-trip through. `0x00` is not a byte any *physical*
+    /// key starts with (those begin with a mode byte), so it is precisely the shape least
+    /// likely to have been covered by accident.
+    #[test]
+    fn a_reserved_prefix_key_survives_replay_with_its_data() {
+        let path = tmpdir("watermark").join("wal");
+        let watermark = b"\x00kv9\x00applied_index".to_vec();
+        // Precondition, not decoration: this test writes and reads the *same* literal, so
+        // a mis-escaped key would sail through while exercising an ordinary key instead of
+        // the reserved prefix. Pin that the first byte really is NUL.
+        assert_eq!(watermark[0], 0u8, "the reserved prefix must be a NUL byte");
+        {
+            let (e, _) = WalEngine::open(&path).unwrap();
+            // Exactly the shape the state machine writes: data and watermark, one batch.
+            let mut b = WriteBatch::new();
+            b.put(ColumnFamily::Default, b"tkey".to_vec(), b"row".to_vec());
+            b.put(ColumnFamily::Default, watermark.clone(), 7u64.to_be_bytes().to_vec());
+            e.write(b).unwrap();
+
+            // A second round, to catch a replay that only ever restores the first record.
+            let mut b = WriteBatch::new();
+            b.put(ColumnFamily::Default, b"tkey".to_vec(), b"row2".to_vec());
+            b.put(ColumnFamily::Default, watermark.clone(), 9u64.to_be_bytes().to_vec());
+            e.write(b).unwrap();
+        }
+
+        let (e, replay) = WalEngine::open(&path).unwrap();
+        assert_eq!(replay.discarded_tail_bytes, 0);
+        assert_eq!(
+            e.get(ColumnFamily::Default, &watermark).unwrap(),
+            Some(9u64.to_be_bytes().to_vec()),
+            "the watermark must come back at its latest value, not its first"
+        );
+        assert_eq!(
+            e.get(ColumnFamily::Default, b"tkey").unwrap(),
+            Some(b"row2".to_vec()),
+            "and the data it describes must come back with it"
+        );
+    }
+
+    /// The pairing, not just the presence: a torn tail must not restore the data of a
+    /// batch while losing its watermark, or the two would disagree after a crash — the
+    /// exact mismatch writing them in one batch is meant to prevent.
+    #[test]
+    fn data_and_watermark_are_lost_together_or_not_at_all() {
+        let path = tmpdir("watermark-torn").join("wal");
+        let watermark = b"\x00kv9\x00applied_index".to_vec();
+        {
+            let (e, _) = WalEngine::open(&path).unwrap();
+            let mut b = WriteBatch::new();
+            b.put(ColumnFamily::Default, b"tkey".to_vec(), b"row".to_vec());
+            b.put(ColumnFamily::Default, watermark.clone(), 1u64.to_be_bytes().to_vec());
+            e.write(b).unwrap();
+
+            let mut b = WriteBatch::new();
+            b.put(ColumnFamily::Default, b"tkey".to_vec(), b"row2".to_vec());
+            b.put(ColumnFamily::Default, watermark.clone(), 2u64.to_be_bytes().to_vec());
+            e.write(b).unwrap();
+        }
+        // Cut inside the second record so it cannot be recovered.
+        let len = std::fs::metadata(&path).unwrap().len();
+        let f = std::fs::OpenOptions::new().write(true).open(&path).unwrap();
+        f.set_len(len - 1).unwrap();
+        drop(f);
+
+        let (e, _) = WalEngine::open(&path).unwrap();
+        let data = e.get(ColumnFamily::Default, b"tkey").unwrap();
+        let mark = e.get(ColumnFamily::Default, &watermark).unwrap();
+        assert_eq!(data, Some(b"row".to_vec()), "the first batch stands");
+        assert_eq!(
+            mark,
+            Some(1u64.to_be_bytes().to_vec()),
+            "the watermark must match the data: both at the first batch, never split"
+        );
+    }
+
     #[test]
     fn snapshots_work_on_the_durable_engine_too() {
         let path = tmpdir("snap").join("wal");
@@ -325,3 +408,4 @@ mod tests {
         );
     }
 }
+
