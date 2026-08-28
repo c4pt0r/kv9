@@ -94,7 +94,10 @@ impl<E: Engine> MetaRaft<E> {
     pub fn with_raft(raft: Arc<dyn RaftGroup>, engine: Arc<E>) -> Self {
         MetaRaft {
             raft,
-            sm: Mutex::new(MemStateMachine::with_engine(engine.clone())),
+            sm: Mutex::new(
+                MemStateMachine::with_engine(engine.clone())
+                    .expect("in-process MemEngine watermark is absent or apply-written (8 bytes)"),
+            ),
             store: MetaStore::new(engine),
             catalog_txn: Mutex::new(()),
         }
