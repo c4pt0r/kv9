@@ -543,71 +543,13 @@ impl<E: Engine> crate::api::AdminApi for Node<E> {
     }
 }
 
-/// Data-plane adapters are intentionally thin: routing/epoch validation belongs
-/// above the executors, while the executors own raw and Percolator semantics. The
-/// Phase-1 executors still return typed `NotImplemented` errors; exposing them over
-/// gRPC must preserve that error rather than panic or manufacture success.
-impl<E: Engine> crate::api::RawApi for Node<E> {
-    fn raw_get(&self, _ctx: &crate::api::RequestContext, key: &[u8]) -> Result<Option<Vec<u8>>> {
-        self.raw.get(key)
-    }
-
-    fn raw_batch_get(
-        &self,
-        _ctx: &crate::api::RequestContext,
-        keys: &[Vec<u8>],
-    ) -> Result<Vec<Option<Vec<u8>>>> {
-        keys.iter().map(|key| self.raw.get(key)).collect()
-    }
-
-    fn raw_put(
-        &self,
-        _ctx: &crate::api::RequestContext,
-        key: Vec<u8>,
-        value: Vec<u8>,
-    ) -> Result<()> {
-        self.raw
-            .put(key, value, kv9_txn::RawWriteOptions::default())
-    }
-
-    fn raw_batch_put(
-        &self,
-        _ctx: &crate::api::RequestContext,
-        kvs: &[(Vec<u8>, Vec<u8>)],
-    ) -> Result<()> {
-        for (key, value) in kvs {
-            self.raw.put(
-                key.clone(),
-                value.clone(),
-                kv9_txn::RawWriteOptions::default(),
-            )?;
-        }
-        Ok(())
-    }
-
-    fn raw_delete(&self, _ctx: &crate::api::RequestContext, key: &[u8]) -> Result<()> {
-        self.raw.delete(key)
-    }
-
-    fn raw_scan(
-        &self,
-        _ctx: &crate::api::RequestContext,
-        start: &[u8],
-        end: &[u8],
-        limit: usize,
-    ) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
-        self.raw.scan(start, end, limit)
-    }
-
-    fn raw_delete_range(
-        &self,
-        _ctx: &crate::api::RequestContext,
-        start: &[u8],
-        end: &[u8],
-    ) -> Result<()> {
-        self.raw.delete_range(start, end)
-    }
-}
+// `RawApi` is deliberately NOT implemented for `Node`.
+//
+// `Node` has no raft driver, so any implementation here could only write the local
+// engine — applying a mutation on one replica and letting the others diverge with no
+// error and no log line. Leaving a `NotImplemented` shell behind would be no safer: it
+// keeps a plausible-looking entry point that a future caller can wire up by accident.
+// The only production `RawApi` is `RuntimeBackend`, which holds the driver (task #25).
 
 impl<E: Engine> crate::api::TxnApi for Node<E> {
     fn kv_get(

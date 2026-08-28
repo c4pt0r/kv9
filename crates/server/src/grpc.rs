@@ -362,10 +362,30 @@ fn error_status(error: Error) -> Status {
         Error::TsoUnavailable(_) | Error::MetaNotReady(_) | Error::Raft(_) => {
             Status::unavailable(message)
         }
+        // Deliberately *not* `unavailable`: this follower is perfectly healthy, the
+        // request simply arrived at the wrong node. `unavailable` invites a client to
+        // transparently retry the same address, and reports a working node as broken.
+        Error::NotLeader { leader } => {
+            let mut status = Status::failed_precondition(message);
+            // Machine-readable redirect. The human message is prose and may be reworded;
+            // a client that parsed it would break silently when someone edits the text.
+            if let Some(node_id) = leader {
+                if let Ok(value) = node_id.to_string().parse() {
+                    status.metadata_mut().insert(LEADER_HINT_KEY, value);
+                }
+            }
+            status
+        }
         Error::Engine(_) => Status::internal(message),
         Error::NotImplemented(_) => Status::unimplemented(message),
     }
 }
+
+/// Response metadata carrying the node a client should retry against, when known.
+///
+/// Absent when this node does not know who leads (e.g. mid-election): the client should
+/// re-run discovery rather than hot-loop against a node that just refused it.
+pub const LEADER_HINT_KEY: &str = "kv9-leader-node-id";
 
 fn api_type(value: i32) -> Result<ApiType, Status> {
     match proto::ApiType::try_from(value) {
