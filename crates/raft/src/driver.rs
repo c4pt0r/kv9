@@ -62,6 +62,12 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngi
     /// directly in the apply downstream — the server passes a state machine
     /// sharing ONE engine instance with its MetaStore, or catalog reads and
     /// applied writes would land in different engines.
+    /// LOCK ORDER: `applied` before `sm`, always. Every site that holds both
+    /// (`step`, `status`, `wait_applied`) must acquire in that order — the
+    /// pump and the status/wait readers run on different threads, and one
+    /// reversed pair is an AB-BA deadlock that freezes the whole node
+    /// silently (found live under load; the acceptance-flake root cause).
+    /// `fatal` is a leaf: never held while acquiring either of the others.
     sm: Mutex<MemStateMachine<E>>,
     /// Recently applied (index, term) pairs, for (term, index) verification.
     /// ONLY successfully applied entries enter this ring — a failed decode or
@@ -115,8 +121,10 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         if entries.is_empty() {
             return Ok(());
         }
-        let mut sm = self.sm.lock().expect("sm poisoned");
+        // Both guards span the whole batch so readers see watermark and ring
+        // move together; `applied` first per the declared lock order.
         let mut applied = self.applied.lock().expect("applied poisoned");
+        let mut sm = self.sm.lock().expect("sm poisoned");
         for entry in entries {
             let outcome =
                 Command::decode(&entry.data).and_then(|cmd| sm.apply_command(entry.index, &cmd));
