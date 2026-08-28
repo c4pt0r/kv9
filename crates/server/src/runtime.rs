@@ -153,7 +153,7 @@ impl NodeRuntime {
         let driver = NodeDriver::new(
             peer,
             transport.clone(),
-            MemStateMachine::with_engine(engine),
+            MemStateMachine::with_engine(engine)?,
         );
         let driver_thread = Some(driver.spawn(TICK));
         let status_path = data_dir.join("status");
@@ -183,6 +183,10 @@ impl NodeRuntime {
     /// because both durable logs fsync before visibility/messages.
     pub fn run(mut self) -> Result<()> {
         loop {
+            if let Some(fatal) = self.driver.status().fatal {
+                self.write_status()?;
+                return Err(Error::Raft(fatal));
+            }
             self.advance_bootstrap()?;
             self.write_status()?;
             std::thread::sleep(TICK);
@@ -353,7 +357,7 @@ impl NodeRuntime {
             Role::Learner => "learner",
         };
         let body = format!(
-            "pid={}\nnode_id={}\nleader_id={}\nrole={}\nterm={}\nraft_committed={}\napplied_index={}\nbootstrap_state={:?}\n",
+            "pid={}\nnode_id={}\nleader_id={}\nrole={}\nterm={}\nraft_committed={}\napplied_index={}\nbootstrap_state={:?}\nfatal={}\n",
             std::process::id(),
             raft.node_id.0,
             raft.leader_id.map_or(0, |id| id.0),
@@ -362,6 +366,7 @@ impl NodeRuntime {
             raft.raft_committed,
             raft.applied_index,
             bootstrap,
+            raft.fatal.as_deref().unwrap_or(""),
         );
         let tmp = self.data_dir.join("status.tmp");
         fs::write(&tmp, body)
