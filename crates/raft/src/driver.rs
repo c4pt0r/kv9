@@ -34,6 +34,9 @@ pub struct NodeStatus {
     /// silently diverge this replica from the group. The server surfaces this
     /// and exits non-zero.
     pub fatal: Option<String>,
+    /// Inbound messages rejected by raft `step` (dropped, sender retransmits).
+    /// Diagnostic: persistent growth signals stale peers / version skew.
+    pub step_errors: u64,
 }
 
 /// How many recently applied `(index, term)` pairs are retained for proposal
@@ -180,6 +183,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             raft_committed: self.peer.raft_committed().0,
             applied_index: self.sm.lock().expect("sm poisoned").applied_index().0,
             fatal: self.fatal.lock().expect("fatal poisoned").clone(),
+            step_errors: self.peer.step_errors(),
         }
     }
 
