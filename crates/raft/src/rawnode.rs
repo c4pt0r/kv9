@@ -17,13 +17,16 @@
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use raft::prelude::{ConfState, Entry, HardState, Message};
+use protobuf::Message as PbMessage;
+use raft::eraftpb::EntryType;
+use raft::prelude::{ConfChange, ConfChangeV2};
 use raft::storage::MemStorage;
 use raft::{Config, RawNode, StateRole};
 use slog::{o, Discard, Logger};
 
 use kv9_common::{Error, NodeId, RegionId, Result};
 
-use crate::{CommittedEntry, LogIndex, RaftGroup, Role};
+use crate::{CommittedEntry, EntryKind, LogIndex, RaftGroup, Role};
 
 /// A raft-rs [`raft::Storage`] that can also **persist** what the Ready loop
 /// hands it: log entries and the HardState (term + vote + commit).
@@ -38,11 +41,19 @@ use crate::{CommittedEntry, LogIndex, RaftGroup, Role};
 pub trait PersistentRaftStorage: raft::Storage + Send + Sync + 'static {
     fn append(&self, entries: &[Entry]) -> Result<()>;
     fn set_hardstate(&self, hs: &HardState) -> Result<()>;
+    /// Durably record a post-conf-change `ConfState` (task #24). Last write
+    /// wins on replay; without this a restart resurrects the old membership.
+    fn set_conf_state(&self, cs: &ConfState) -> Result<()>;
 }
 
 impl PersistentRaftStorage for MemStorage {
     fn append(&self, entries: &[Entry]) -> Result<()> {
         self.wl().append(entries).map_err(raft_err)
+    }
+
+    fn set_conf_state(&self, cs: &ConfState) -> Result<()> {
+        self.wl().set_conf_state(cs.clone());
+        Ok(())
     }
 
     fn set_hardstate(&self, hs: &HardState) -> Result<()> {
@@ -79,6 +90,9 @@ struct PeerInner<S: PersistentRaftStorage> {
     outbox: Vec<Message>,
     /// Harness kill switch: a dead peer neither ticks nor receives messages.
     alive: bool,
+    /// Highest apply progress reported to raft via [`RaftPeer::applied_to`]
+    /// (monotonic guard; raft's one-at-a-time conf-change gate reads it).
+    applied_reported: u64,
     /// Count of inbound messages `RawNode::step` rejected. Dropping one is
     /// protocol-sanctioned (indistinguishable from packet loss; the sender
     /// retransmits) — but a PERSISTENTLY growing count means a real problem
@@ -93,6 +107,35 @@ impl RaftPeer<MemStorage> {
     /// on volatile in-memory storage (tests / in-process clusters).
     pub fn new(node: NodeId, region: RegionId, voters: &[NodeId]) -> Result<RaftPeer> {
         let ids: Vec<u64> = voters.iter().map(|n| n.0).collect();
+        let storage = MemStorage::new_with_conf_state(ConfState::from((ids, vec![])));
+        RaftPeer::with_storage(node, region, storage)
+    }
+
+    /// Build a peer that **joins an existing cluster** (task #24): it is
+    /// seeded with the cluster's **log-start (bootstrap) voter set** — which
+    /// deliberately does NOT include itself — and becomes somebody only when
+    /// a committed conf change admits it. It cannot campaign (`promotable()`
+    /// is false) and never counts in any quorum denominator.
+    ///
+    /// Why the seed is REQUIRED (found empirically, not designed): the
+    /// bootstrap voter set never exists as log entries — it lives in the
+    /// initial ConfState. AppendEntries replays data and *subsequent* conf
+    /// changes, but not that base: a truly-empty joiner applying the first
+    /// AddLearner would produce a zero-voter config and be refused by raft
+    /// ("removed all voters"). Without log truncation this seed is the only
+    /// missing piece; once truncation exists, a snapshot's ConfState replaces
+    /// it. The runtime passes the declared `--join` set (the joiner's own id
+    /// absent from it — that asymmetry IS the join-existing mode marker).
+    pub fn new_joining(
+        node: NodeId,
+        region: RegionId,
+        bootstrap_voters: &[NodeId],
+    ) -> Result<RaftPeer> {
+        let ids: Vec<u64> = bootstrap_voters.iter().map(|n| n.0).collect();
+        debug_assert!(
+            !ids.contains(&node.0),
+            "a joining node must not declare itself a bootstrap voter"
+        );
         let storage = MemStorage::new_with_conf_state(ConfState::from((ids, vec![])));
         RaftPeer::with_storage(node, region, storage)
     }
@@ -124,6 +167,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 ready: Vec::new(),
                 outbox: Vec::new(),
                 alive: true,
+                applied_reported: 0,
                 step_errors: 0,
             }),
         })
@@ -225,31 +269,112 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         }
         // 2. Only now hand messages to the transport.
         msgs.extend(ready.take_persisted_messages());
-        // 3. Committed entries → the take_ready queue (skip no-op barriers).
+        // 3. Committed entries → the take_ready queue, typed by raft entry kind
+        //    so the apply loop can route them (conf changes must reach
+        //    `apply_conf_change`, never `Command::decode`). No-op barriers are
+        //    queued too: the driver needs their indexes to advance raft's
+        //    applied progress, even though they never touch the state machine.
         let mut committed: Vec<CommittedEntry> = Vec::new();
         for e in ready.take_committed_entries() {
-            if !e.data.is_empty() {
-                committed.push(CommittedEntry {
-                    index: LogIndex(e.index),
-                    term: e.term,
-                    data: e.data.to_vec(),
-                });
-            }
+            committed.push(classify_entry(e));
         }
-        let mut light = g.raw.advance(ready);
+        // `advance_append`, NOT `advance`: `advance()` internally marks apply
+        // progress as caught up, but our apply happens later, when the driver
+        // drains `take_ready`. raft-rs gates one-at-a-time conf-change safety
+        // on the applied index, so marking early would let a second conf
+        // change in before the first is truly applied. The driver reports real
+        // progress via [`RaftPeer::applied_to`].
+        let mut light = g.raw.advance_append(ready);
         msgs.extend(light.take_messages());
         for e in light.take_committed_entries() {
-            if !e.data.is_empty() {
-                committed.push(CommittedEntry {
-                    index: LogIndex(e.index),
-                    term: e.term,
-                    data: e.data.to_vec(),
-                });
-            }
+            committed.push(classify_entry(e));
         }
-        g.raw.advance_apply();
         g.ready.extend(committed);
         g.outbox.extend(msgs);
+    }
+
+    /// Report real apply progress to raft (task #24). Call ONLY after the
+    /// entries up to `idx` have actually been applied (state machine writes
+    /// done, conf changes applied) — raft uses this to gate the next
+    /// one-at-a-time configuration change. Never called with a lower index
+    /// than a previous call (monotonic; regressions are skipped defensively).
+    ///
+    /// Lock discipline: takes only `peer.inner`. Callers must NOT hold the
+    /// driver's `applied`/`sm` locks (peer never nests with driver locks).
+    pub fn applied_to(&self, idx: u64) {
+        let mut g = self.lock();
+        if idx > g.applied_reported {
+            g.applied_reported = idx;
+            g.raw.advance_apply_to(idx);
+        }
+    }
+
+    /// Propose a raft configuration change (AddLearnerNode / AddNode / …),
+    /// correlated by `(term, index)` exactly like [`Self::propose_traced`].
+    pub fn propose_conf_change_traced(&self, cc: ConfChangeV2) -> Result<ProposedAt> {
+        let mut g = self.lock();
+        let term = g.raw.raft.term;
+        g.raw
+            .propose_conf_change(Vec::new(), cc)
+            .map_err(raft_err)?;
+        let index = g.raw.raft.raft_log.last_index();
+        Ok(ProposedAt {
+            term,
+            index: LogIndex(index),
+        })
+    }
+
+    /// Apply a committed configuration-change entry (called by the driver's
+    /// apply loop, in log order) and durably persist the resulting
+    /// `ConfState`. Returns the post-change `(voters, learners)`.
+    ///
+    /// The persistence is NOT optional: raft-rs only mutates the in-memory
+    /// tracker; without an on-disk ConfState record a restart would resurrect
+    /// the pre-change membership (Tess's #24 finding).
+    pub fn apply_conf_change_bytes(
+        &self,
+        kind: EntryKind,
+        data: &[u8],
+    ) -> Result<(Vec<u64>, Vec<u64>)> {
+        let mut g = self.lock();
+        let cs = match kind {
+            EntryKind::ConfChangeV1 => {
+                let cc = ConfChange::parse_from_bytes(data)
+                    .map_err(|e| Error::Raft(format!("undecodable ConfChange: {e}")))?;
+                g.raw.apply_conf_change(&cc).map_err(raft_err)?
+            }
+            EntryKind::ConfChangeV2 => {
+                let cc = ConfChangeV2::parse_from_bytes(data)
+                    .map_err(|e| Error::Raft(format!("undecodable ConfChangeV2: {e}")))?;
+                g.raw.apply_conf_change(&cc).map_err(raft_err)?
+            }
+            other => {
+                return Err(Error::Raft(format!(
+                    "apply_conf_change_bytes called with non-conf kind {other:?}"
+                )))
+            }
+        };
+        g.raw.store().set_conf_state(&cs)?;
+        Ok((cs.voters.to_vec(), cs.learners.to_vec()))
+    }
+
+    /// The current membership as raft sees it: `(voters, learners)`, sorted.
+    pub fn membership(&self) -> (Vec<u64>, Vec<u64>) {
+        let g = self.lock();
+        let cs = g.raw.raft.prs().conf().to_conf_state();
+        let (mut v, mut l) = (cs.voters.to_vec(), cs.learners.to_vec());
+        v.sort_unstable();
+        l.sort_unstable();
+        (v, l)
+    }
+
+    /// Whether this node may campaign (it is a voter in the current config and
+    /// present in the progress list). `false` for learners AND for a node that
+    /// is in neither set — callers must distinguish those two via
+    /// [`Self::membership`]: "not in the config at all" must never be reported
+    /// as an ordinary follower (Ren's #23 finding).
+    pub fn promotable(&self) -> bool {
+        self.lock().raw.raft.promotable()
     }
 
     /// Feed one raft message from the transport into this peer.
@@ -405,6 +530,23 @@ impl InProcessCluster {
 
 fn raft_err(e: raft::Error) -> Error {
     Error::Raft(e.to_string())
+}
+
+/// Map a raft entry to the typed committed item the apply loop consumes.
+/// Runs outside any lock; pure classification.
+fn classify_entry(e: Entry) -> CommittedEntry {
+    let kind = match e.get_entry_type() {
+        EntryType::EntryNormal if e.data.is_empty() => EntryKind::Noop,
+        EntryType::EntryNormal => EntryKind::Command,
+        EntryType::EntryConfChange => EntryKind::ConfChangeV1,
+        EntryType::EntryConfChangeV2 => EntryKind::ConfChangeV2,
+    };
+    CommittedEntry {
+        index: LogIndex(e.index),
+        term: e.term,
+        kind,
+        data: e.data.to_vec(),
+    }
 }
 
 #[cfg(test)]

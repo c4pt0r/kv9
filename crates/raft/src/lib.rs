@@ -31,11 +31,34 @@ pub enum Role {
     Follower,
     Candidate,
     Learner,
+    /// This node is in NEITHER the voter nor the learner set of the live
+    /// configuration (removed from membership, wrong config, or stale
+    /// ConfState). Reported distinctly because a healthy follower and a node
+    /// that isn't part of the cluster at all must never look the same
+    /// (task #24; Ren's three-way rule).
+    Unconfigured,
 }
 
 /// A committed log index.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct LogIndex(pub u64);
+
+/// What a committed entry carries — the raft-level entry type, preserved so the
+/// apply loop can route it (task #24: a real `EntryConfChange` must reach
+/// `apply_conf_change`, never `Command::decode`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum EntryKind {
+    /// A normal entry with an application command payload.
+    Command,
+    /// A leader-election no-op barrier (empty normal entry). Carried so raft's
+    /// applied progress can advance through it; it never reaches the state
+    /// machine and never advances the durable watermark.
+    Noop,
+    /// A raft `EntryConfChange` (protobuf `ConfChange` payload).
+    ConfChangeV1,
+    /// A raft `EntryConfChangeV2` (protobuf `ConfChangeV2` payload).
+    ConfChangeV2,
+}
 
 /// A ready-to-apply committed entry handed to the region apply loop (DESIGN §6.1, §6.2).
 #[derive(Debug, Clone)]
@@ -46,7 +69,10 @@ pub struct CommittedEntry {
     /// different leader's entry, so position alone never confirms a proposal
     /// (see [`rawnode::ProposedAt`]).
     pub term: u64,
-    /// Opaque command bytes (a serialized region command / write batch).
+    /// How to interpret `data` (command vs. configuration change vs. barrier).
+    pub kind: EntryKind,
+    /// Opaque payload bytes: a serialized [`Command`] for `Command`, a protobuf
+    /// `ConfChange(V2)` for the conf kinds, empty for `Noop`.
     pub data: Vec<u8>,
 }
 
@@ -131,6 +157,7 @@ impl RaftGroup for SingleNodeRaft {
         log.ready.push(CommittedEntry {
             index: idx,
             term: 1,
+            kind: EntryKind::Command,
             data,
         });
         Ok(idx)
