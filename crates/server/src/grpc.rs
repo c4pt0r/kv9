@@ -355,7 +355,13 @@ impl RawClient {
             );
             match build(client, metadata).await {
                 Ok(value) => Ok(RawClientOutcome::Ok(value)),
-                Err(status) if status.code() == tonic::Code::FailedPrecondition => {
+                // The marker, not the code: stale epoch and API-type mismatch also map to
+                // FAILED_PRECONDITION, so treating the code as "not leader" would silently
+                // convert a real rejection into a pointless redirect.
+                Err(status)
+                    if status.code() == tonic::Code::FailedPrecondition
+                        && status.metadata().get(NOT_LEADER_KEY).is_some() =>
+                {
                     // Read the hint from metadata, never by parsing the message: the
                     // prose is for humans and may be reworded.
                     let leader = status
@@ -547,6 +553,14 @@ fn error_status(error: Error) -> Status {
         // transparently retry the same address, and reports a working node as broken.
         Error::NotLeader { leader } => {
             let mut status = Status::failed_precondition(message);
+            // A marker that is ALWAYS present, because the status code alone cannot carry
+            // this: stale epoch and API-type mismatch are failed-precondition too, and the
+            // leader hint is absent mid-election — so "failed_precondition without a hint"
+            // is ambiguous between "wrong node" and "wrong request". A client keying on
+            // the code alone would misroute every one of them.
+            status
+                .metadata_mut()
+                .insert(NOT_LEADER_KEY, "true".parse().expect("static ascii"));
             // Machine-readable redirect. The human message is prose and may be reworded;
             // a client that parsed it would break silently when someone edits the text.
             if let Some(node_id) = leader {
@@ -566,6 +580,13 @@ fn error_status(error: Error) -> Status {
 /// Absent when this node does not know who leads (e.g. mid-election): the client should
 /// re-run discovery rather than hot-loop against a node that just refused it.
 pub const LEADER_HINT_KEY: &str = "kv9-leader-node-id";
+
+/// Marks a refusal as "you reached a node that does not lead", independent of the hint.
+///
+/// Present on every `NotLeader` status, including when no leader is known. Without it a
+/// client cannot separate a misdirected request from a genuinely failed precondition,
+/// since both share `FAILED_PRECONDITION`.
+pub const NOT_LEADER_KEY: &str = "kv9-not-leader";
 
 fn api_type(value: i32) -> Result<ApiType, Status> {
     match proto::ApiType::try_from(value) {

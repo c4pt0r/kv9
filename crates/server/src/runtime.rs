@@ -33,7 +33,7 @@ use kv9_raft::grpc::{
 };
 use kv9_raft::storage::DiskRaftStorage;
 use kv9_raft::transport::voter_set_fingerprint;
-use kv9_raft::{cf_code, Command, KvOp, MemStateMachine, ProposedAt, RaftGroup, RaftPeer, Role};
+use kv9_raft::{Command, MemStateMachine, ProposedAt, RaftGroup, RaftPeer, Role};
 use tonic::metadata::MetadataMap;
 use tonic::Status;
 
@@ -480,6 +480,30 @@ const RAW_DELETE_RANGE_CHUNK: usize = 1024;
 /// propose it, and wait for *that exact* `(term, index)` to apply. Writing the local
 /// engine directly would be faster and would silently fork the cluster.
 impl RuntimeBackend {
+    /// Validate the request context before any key is encoded.
+    ///
+    /// The context arrived from the wire and was only *deserialized*; nothing had checked
+    /// that the keyspace exists or that it is a raw keyspace. Encoding
+    /// `ctx.keyspace` straight into a physical key means a client can name a keyspace that
+    /// was never created, or write raw bytes into a `txn` keyspace where Percolator
+    /// expects its own lock/write structure — neither of which would error anywhere.
+    ///
+    /// Every raw entry point goes through here: point, batch and range alike. A gate that
+    /// only some callers use is not a gate.
+    fn validated_context(&self, ctx: &RequestContext) -> Result<()> {
+        let keyspaces = self.node.list_keyspaces("raw")?;
+        let keyspace = keyspaces
+            .iter()
+            .find(|candidate| candidate.id == ctx.keyspace)
+            .ok_or(Error::KeyspaceNotFound(ctx.keyspace))?;
+        if keyspace.api_type != ApiType::Raw {
+            return Err(Error::ApiTypeMismatch {
+                keyspace: ctx.keyspace,
+            });
+        }
+        Ok(())
+    }
+
     /// A read view over applied state, refused unless this node currently leads.
     ///
     /// Not linearizable: `check_quorum` bounds how long a deposed leader keeps believing
@@ -497,26 +521,10 @@ impl RuntimeBackend {
         if batch.mutations().is_empty() {
             return Ok(());
         }
-        // Deliberately NOT `Command::from_batch`, which builds a `CatalogTxn`. User data
-        // must ride its own wire tag: sharing the catalog's command would replay raw
-        // writes through the catalog path and its serializing lock. If a third caller
-        // ever needs this, it should move into `command.rs` next to `from_batch`.
-        let ops = batch
-            .mutations()
-            .iter()
-            .map(|mutation| match mutation {
-                kv9_engine::Mutation::Put { cf, key, value } => KvOp::Put {
-                    cf: cf_code(*cf),
-                    key: key.clone(),
-                    value: value.clone(),
-                },
-                kv9_engine::Mutation::Delete { cf, key } => KvOp::Delete {
-                    cf: cf_code(*cf),
-                    key: key.clone(),
-                },
-            })
-            .collect();
-        let command = Command::Write { ops };
+        // `write_from_batch`, not `from_batch`: the latter yields a `CatalogTxn`, and
+        // sharing the catalog's wire tag would replay user data through the catalog path
+        // and inherit its serializing lock.
+        let command = Command::write_from_batch(&batch);
         let proposed = self.driver.propose(&command)?;
         match self.driver.wait_applied(proposed, RAW_APPLY_DEADLINE)? {
             true => Ok(()),
@@ -535,29 +543,34 @@ const RAW_APPLY_DEADLINE: Duration = Duration::from_secs(10);
 
 impl RawApi for RuntimeBackend {
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>> {
+        self.validated_context(ctx)?;
         let (view, hint, is_leader) = self.leader_read()?;
         let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
         RawExecutor.get(&read, ctx.keyspace, key)
     }
 
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>> {
+        self.validated_context(ctx)?;
         let (view, hint, is_leader) = self.leader_read()?;
         let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
         RawExecutor.batch_get(&read, ctx.keyspace, keys)
     }
 
     fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<()> {
+        self.validated_context(ctx)?;
         let plan = RawExecutor.plan_put(ctx.keyspace, &key, value, RawWriteOptions::default())?;
         self.commit_batch(plan)
     }
 
     fn raw_batch_put(&self, ctx: &RequestContext, pairs: &[(UserKey, Value)]) -> Result<()> {
+        self.validated_context(ctx)?;
         // One batch ⇒ one entry ⇒ all of these land together or none do.
         let plan = RawExecutor.plan_batch_put(ctx.keyspace, pairs, RawWriteOptions::default())?;
         self.commit_batch(plan)
     }
 
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<()> {
+        self.validated_context(ctx)?;
         let plan = RawExecutor.plan_delete(ctx.keyspace, key)?;
         self.commit_batch(plan)
     }
@@ -569,28 +582,47 @@ impl RawApi for RuntimeBackend {
         end: &[u8],
         limit: usize,
     ) -> Result<Vec<(UserKey, Value)>> {
+        self.validated_context(ctx)?;
         let (view, hint, is_leader) = self.leader_read()?;
         let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
         RawExecutor.scan(&read, ctx.keyspace, start, end, limit)
     }
 
     fn raw_delete_range(&self, ctx: &RequestContext, start: &[u8], end: &[u8]) -> Result<()> {
-        // Planning reads the range first, so it needs the same leader gate as a scan.
-        let plans = {
-            let (view, hint, is_leader) = self.leader_read()?;
-            let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
-            RawExecutor.plan_delete_range(
-                &read,
-                ctx.keyspace,
-                start,
-                end,
-                RAW_DELETE_RANGE_CHUNK,
-            )?
-        };
-        for plan in plans {
-            self.commit_batch(plan)?;
+        self.validated_context(ctx)?;
+        // One chunk in memory at a time: read a bounded chunk, commit it, resume strictly
+        // after the last key it covered. Planning the whole range up front bounded the
+        // raft *entry* while leaving the planner unbounded.
+        let mut cursor: Option<UserKey> = None;
+        let mut committed_chunks = 0usize;
+        loop {
+            // Planning reads the range, so it needs the same leader gate as a scan.
+            let planned = {
+                let (view, hint, is_leader) = self.leader_read()?;
+                let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
+                RawExecutor.plan_delete_range_chunk(
+                    &read,
+                    ctx.keyspace,
+                    cursor.as_deref(),
+                    start,
+                    end,
+                    RAW_DELETE_RANGE_CHUNK,
+                )?
+            };
+            let Some((batch, last_key)) = planned else {
+                return Ok(());
+            };
+
+            // A mid-range failure must not read as "nothing happened": report how far it
+            // got, so a half-finished delete is observable rather than invisible.
+            self.commit_batch(batch).map_err(|error| {
+                Error::Raft(format!(
+                    "raw delete_range stopped after {committed_chunks} committed chunk(s): {error}"
+                ))
+            })?;
+            committed_chunks += 1;
+            cursor = Some(last_key);
         }
-        Ok(())
     }
 }
 
