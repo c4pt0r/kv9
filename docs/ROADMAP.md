@@ -94,6 +94,10 @@ Unit + property tests; **per-tenant metrics**; versioned on-disk/raft formats (n
 unquota'd in-memory path. Early in Phase 4, invest in a **deterministic simulation harness** (FoundationDB /
 TigerBeetle style) for raft/failure paths — it pays for itself.
 
+What makes a test *count as evidence* is not decided here: **[docs/TESTING.md](TESTING.md)** is the single
+authority on verification and acceptance criteria. This section says which kinds of testing the project
+commits to; that file says when a red, a green, or a gate may be believed. Do not restate its criteria here.
+
 ## Maps to DESIGN milestones
 Phase 1 ≈ M2/M4 backbone (raft + bootstrap + MetaLeader, simple WAL storage) · Phase 2 ≈ M1/M2 storage ·
 Phase 3 ≈ M1 txn + M2 persistence · Phase 4 ≈ M3 multi-region/split/rebalance · Phase 5 ≈ M4/M5 (sharded TSO, GAC,
