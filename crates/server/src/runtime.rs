@@ -49,7 +49,12 @@ const DISCOVERY_TIMEOUT: Duration = Duration::from_millis(50);
 struct RuntimeDiscovery {
     node: NodeId,
     initialized: AtomicBool,
-    voter_fp: u64,
+    /// The bootstrap fingerprint — present ONLY until initialization:
+    /// `set_cluster_id` takes it, so the post-init zero in answers comes
+    /// from the value being GONE, not from a condition someone can delete
+    /// or invert (structural, per the Cindy/Tess retirement criterion; the
+    /// old `if initialized` guard is deliberately absent, not stacked).
+    voter_fp: Mutex<Option<u64>>,
     /// The cluster identity, set exactly once at/after initialization; the
     /// discovery contract couples it to `initialized` (an initialized answer
     /// MUST name its cluster — the service refuses otherwise).
@@ -61,28 +66,27 @@ impl RuntimeDiscovery {
         Self {
             node,
             initialized: AtomicBool::new(initialized),
-            voter_fp,
+            voter_fp: Mutex::new(if initialized { None } else { Some(voter_fp) }),
             cluster_id: Mutex::new(None),
         }
     }
 
     fn set_cluster_id(&self, id: kv9_common::ClusterId) {
         *self.cluster_id.lock().expect("cluster id poisoned") = Some(id);
+        // Retirement moment: the fingerprint ceases to exist here.
+        self.voter_fp.lock().expect("fp poisoned").take();
         self.initialized.store(true, Ordering::Release);
     }
 }
 
 impl GrpcDiscoveryState for RuntimeDiscovery {
     fn answer(&self) -> (NodeId, bool, u64) {
-        let initialized = self.initialized.load(Ordering::Acquire);
         (
             self.node,
-            initialized,
-            // Fingerprint authority ENDS at initialization (its whole job is
-            // fencing uninitialized cross-endorsement): a post-init answer
-            // publishes 0, so nothing downstream can keep consuming it as
-            // identity. Post-init identity is `cluster_id`.
-            if initialized { 0 } else { self.voter_fp },
+            self.initialized.load(Ordering::Acquire),
+            // 0 after initialization because the value is GONE (taken at
+            // `set_cluster_id`), not because a branch remembered to zero it.
+            self.voter_fp.lock().expect("fp poisoned").unwrap_or(0),
         )
     }
 

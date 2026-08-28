@@ -124,18 +124,53 @@ pub struct RegistrationReceipt {
     pub learners: Vec<u64>,
 }
 
+/// Why a registration failed — TYPED, because the wire contract depends on
+/// the distinction: a follower's refusal is retryable with a redirect and
+/// carries a machine-readable marker; an ordinary precondition failure is
+/// not, and must never be mistaken for one (clients check code AND marker,
+/// never parse strings — the same double-condition rule as the raw path).
+///
+/// CONVERGENCE OBLIGATION (Cindy/Tess, 2026-08-28): this is a branch-local
+/// typed result, kept independent only so the seam did not wait on another
+/// lane. The common target ALREADY EXISTS on the raw line (`d1731dc`:
+/// `kv9_common::Error::NotLeader { leader: Option<u64> }` with the identical
+/// `kv9-not-leader=true` / optional `kv9-leader-node-id` wire convention —
+/// this type reuses those key strings and semantics VERBATIM). At the
+/// raw+membership combination this enum must collapse into that Error
+/// variant; Tess owns the combination and the single client path. Payload is
+/// `Option<NodeId>` so the collapse is a promotion, not a translation.
+#[derive(Debug)]
+pub enum RegistrationError {
+    /// This node is not the leader; retry against `leader` if known. Maps to
+    /// FAILED_PRECONDITION + `kv9-not-leader: true` (+ optional leader id).
+    NotLeader { leader: Option<NodeId> },
+    /// Any other refusal (admission missing/expired/wrong cluster, …). Same
+    /// gRPC code, NO marker — machine-distinguishable from NotLeader.
+    Failed(Error),
+}
+
+/// gRPC metadata key marking a machine-readable not-leader refusal. The
+/// marker's VALUE must be ASCII `true`; presence alone is not enough
+/// (a `false` asserts the opposite).
+pub const NOT_LEADER_KEY: &str = "kv9-not-leader";
+/// gRPC metadata key carrying the redirect hint (decimal node id). ABSENT
+/// when the leader is unknown — never "0" (clients must distinguish
+/// "retry node 7" from "rediscover").
+pub const LEADER_NODE_ID_KEY: &str = "kv9-leader-node-id";
+
 /// The seam the server injects (trait here, implementation there — the
 /// division that keeps this crate free of catalog/runtime knowledge): consume
 /// the caller's admission and commit its membership registration, returning
 /// the exact applied receipt. Implementations run on the LEADER's committed
-/// path only; a follower returns a NotLeader-style typed error upstream.
+/// path only; a follower returns `RegistrationError::NotLeader` so the
+/// handler can emit the machine-readable redirect.
 pub trait RegistrationBackend: Send + Sync + 'static {
     fn register(
         &self,
         node: NodeId,
         addr: &str,
         cluster_id: ClusterId,
-    ) -> Result<RegistrationReceipt>;
+    ) -> std::result::Result<RegistrationReceipt, RegistrationError>;
 }
 
 /// The inbound half: implements the generated service. Holds ONLY a channel
@@ -293,9 +328,31 @@ impl Kv9Raft for RaftGrpcService {
                 "node registration is not served by this build",
             ));
         };
-        let receipt = backend
-            .register(authenticated, &req.addr, cluster_id)
-            .map_err(|e| Status::failed_precondition(e.to_string()))?;
+        let receipt = match backend.register(authenticated, &req.addr, cluster_id) {
+            Ok(r) => r,
+            Err(RegistrationError::NotLeader { leader }) => {
+                let mut status = Status::failed_precondition("not the leader");
+                status
+                    .metadata_mut()
+                    .insert(NOT_LEADER_KEY, "true".parse().expect("ascii"));
+                if let Some(leader) = leader {
+                    status.metadata_mut().insert(
+                        LEADER_NODE_ID_KEY,
+                        leader
+                            .0
+                            .to_string()
+                            .parse()
+                            .expect("a decimal u64 is valid ASCII metadata"),
+                    );
+                }
+                return Err(status);
+            }
+            // Ordinary refusal: same code, NO marker — never mistakable for
+            // a redirect.
+            Err(RegistrationError::Failed(e)) => {
+                return Err(Status::failed_precondition(e.to_string()))
+            }
+        };
         Ok(Response::new(pb::RegisterReceipt {
             applied_term: receipt.applied_term,
             applied_index: receipt.applied_index,
@@ -366,6 +423,89 @@ pub fn grpc_discover(
         tokio::time::timeout(timeout, fut)
             .await
             .map_err(|_| Error::Raft(format!("discovery timeout {addr}")))?
+    })
+}
+
+/// A registration attempt's machine-readable outcome. `NotLeader` is decoded
+/// from code + marker (BOTH required — other FAILED_PRECONDITION refusals
+/// share the code and must surface as plain errors, never as redirects).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RegisterOutcome {
+    Registered(RegistrationReceipt),
+    NotLeader { leader: Option<NodeId> },
+}
+
+/// One-shot registration call (blocking wrapper, like [`grpc_discover`]).
+/// Decodes the not-leader redirect strictly: marker must be ASCII `true`;
+/// a present-but-garbled leader id is a protocol error, never a silent
+/// `None` (guessing "rediscover" when the server named a leader hides a
+/// half-broken deployment).
+pub fn grpc_register(
+    handle: &tokio::runtime::Handle,
+    me: NodeId,
+    addr: SocketAddr,
+    listen_addr: &str,
+    cluster_id: ClusterId,
+    timeout: Duration,
+    token: Option<String>,
+) -> Result<RegisterOutcome> {
+    let url = format!("http://{addr}");
+    let listen_addr = listen_addr.to_string();
+    handle.block_on(async move {
+        let fut = async {
+            let mut client = Kv9RaftClient::connect(url)
+                .await
+                .map_err(|e| Error::Raft(format!("register connect {addr}: {e}")))?;
+            let mut req = Request::new(pb::RegisterRequest {
+                node_id: me.0,
+                addr: listen_addr,
+                cluster_id: cluster_id.as_bytes().to_vec(),
+            });
+            attach_auth(&mut req, &token, me);
+            match client.register(req).await {
+                Ok(resp) => {
+                    let r = resp.into_inner();
+                    Ok(RegisterOutcome::Registered(RegistrationReceipt {
+                        applied_term: r.applied_term,
+                        applied_index: r.applied_index,
+                        voters: r.voters,
+                        learners: r.learners,
+                    }))
+                }
+                Err(status) => {
+                    let marker_true = status
+                        .metadata()
+                        .get(NOT_LEADER_KEY)
+                        .and_then(|v| v.to_str().ok())
+                        == Some("true");
+                    if status.code() == tonic::Code::FailedPrecondition && marker_true {
+                        let leader = match status.metadata().get(LEADER_NODE_ID_KEY) {
+                            None => None,
+                            Some(v) => {
+                                let id = v
+                                    .to_str()
+                                    .ok()
+                                    .and_then(|s| s.parse::<u64>().ok())
+                                    .ok_or_else(|| {
+                                        Error::Raft(
+                                            "not-leader answer carries an unreadable \
+                                             leader id"
+                                                .into(),
+                                        )
+                                    })?;
+                                Some(NodeId(id))
+                            }
+                        };
+                        Ok(RegisterOutcome::NotLeader { leader })
+                    } else {
+                        Err(Error::Raft(format!("register rpc {addr}: {status}")))
+                    }
+                }
+            }
+        };
+        tokio::time::timeout(timeout, fut)
+            .await
+            .map_err(|_| Error::Raft(format!("register timeout {addr}")))?
     })
 }
 
@@ -594,19 +734,34 @@ mod tests {
         }
     }
 
-    /// Stub registration backend recording the call it served.
-    struct StubRegistration(std::sync::Mutex<Vec<(NodeId, String, ClusterId)>>);
+    /// Stub registration backend recording the call it served; the response
+    /// is scripted per call so one server exercises every outcome.
+    struct StubRegistration {
+        calls: std::sync::Mutex<Vec<(NodeId, String, ClusterId)>>,
+        script: std::sync::Mutex<Vec<std::result::Result<(), RegistrationError>>>,
+    }
+    impl StubRegistration {
+        fn ok_only() -> Self {
+            StubRegistration {
+                calls: std::sync::Mutex::new(Vec::new()),
+                script: std::sync::Mutex::new(Vec::new()),
+            }
+        }
+    }
     impl RegistrationBackend for StubRegistration {
         fn register(
             &self,
             node: NodeId,
             addr: &str,
             cluster_id: ClusterId,
-        ) -> Result<RegistrationReceipt> {
-            self.0
+        ) -> std::result::Result<RegistrationReceipt, RegistrationError> {
+            self.calls
                 .lock()
                 .unwrap()
                 .push((node, addr.to_string(), cluster_id));
+            if let Some(step) = self.script.lock().unwrap().pop() {
+                step?;
+            }
             Ok(RegistrationReceipt {
                 applied_term: 3,
                 applied_index: 17,
@@ -973,7 +1128,7 @@ mod tests {
         }
         // Server WITH a stub backend.
         let addr = free_addr();
-        let backend = Arc::new(StubRegistration(std::sync::Mutex::new(Vec::new())));
+        let backend = Arc::new(StubRegistration::ok_only());
         {
             let (tx, _rx) = mpsc::unbounded_channel();
             let svc = RaftGrpcService::new(
@@ -1021,14 +1176,14 @@ mod tests {
             register(addr, 4, 9).unwrap_err().code(),
             tonic::Code::PermissionDenied
         );
-        assert!(backend.0.lock().unwrap().is_empty());
+        assert!(backend.calls.lock().unwrap().is_empty());
         // Happy path: the backend's exact receipt comes back, call recorded.
         let receipt = register(addr, 4, 4).unwrap().into_inner();
         assert_eq!((receipt.applied_term, receipt.applied_index), (3, 17));
         assert_eq!(receipt.voters, vec![1, 2, 3]);
         assert_eq!(receipt.learners, vec![4]);
         assert_eq!(
-            backend.0.lock().unwrap().as_slice(),
+            backend.calls.lock().unwrap().as_slice(),
             &[(NodeId(4), "127.0.0.1:9009".to_string(), test_cid())]
         );
     }
@@ -1102,5 +1257,83 @@ mod tests {
             Some("test-cluster-token".into()),
         )
         .is_err());
+    }
+
+
+    /// The machine-readable not-leader contract, both directions (Tess's
+    /// seam blocker on dd69bcd): a follower's refusal decodes to a TYPED
+    /// redirect — with and without a leader hint — while an ordinary
+    /// precondition refusal (same gRPC code, no marker) surfaces as a plain
+    /// error. Sensitivity is the third call: if the client keyed on the code
+    /// alone, that call would decode as NotLeader and the assert would fail.
+    #[test]
+    fn register_not_leader_redirect_is_machine_readable() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+        let addr = free_addr();
+        let backend = Arc::new(StubRegistration::ok_only());
+        // Script (popped in reverse order): hinted redirect, hintless
+        // redirect, ordinary failure.
+        *backend.script.lock().unwrap() = vec![
+            Err(RegistrationError::Failed(Error::Config(
+                "admission expired".into(),
+            ))),
+            Err(RegistrationError::NotLeader { leader: None }),
+            Err(RegistrationError::NotLeader {
+                leader: Some(NodeId(7)),
+            }),
+        ];
+        {
+            let backend = backend.clone() as Arc<dyn RegistrationBackend>;
+            let (tx, _rx) = mpsc::unbounded_channel();
+            let svc = RaftGrpcService::new(
+                NodeId(1),
+                tx,
+                Arc::new(NamedDiscovery(NodeId(1), test_cid())),
+            )
+            .with_registration(backend);
+            handle.spawn(async move {
+                tonic::transport::Server::builder()
+                    .add_service(Kv9RaftServer::with_interceptor(
+                        svc,
+                        cluster_token_interceptor("test-cluster-token".into()),
+                    ))
+                    .serve(addr)
+                    .await
+                    .ok();
+            });
+        }
+        std::thread::sleep(Duration::from_millis(100));
+
+        let call = || {
+            grpc_register(
+                &handle,
+                NodeId(4),
+                addr,
+                "127.0.0.1:9009",
+                test_cid(),
+                Duration::from_secs(2),
+                Some("test-cluster-token".into()),
+            )
+        };
+
+        // Hinted redirect: typed, with the leader id.
+        assert_eq!(
+            call().unwrap(),
+            RegisterOutcome::NotLeader {
+                leader: Some(NodeId(7))
+            }
+        );
+        // Hintless redirect: typed, leader None (absent key, never "0").
+        assert_eq!(call().unwrap(), RegisterOutcome::NotLeader { leader: None });
+        // Ordinary precondition refusal — same code, NO marker: a plain
+        // error, not a redirect (code-only decoding would fail here).
+        let err = call().unwrap_err().to_string();
+        assert!(
+            err.contains("admission expired"),
+            "ordinary refusal lost its cause: {err}"
+        );
+        // Control: after the script drains, the same wire registers fine.
+        assert!(matches!(call().unwrap(), RegisterOutcome::Registered(_)));
     }
 }
