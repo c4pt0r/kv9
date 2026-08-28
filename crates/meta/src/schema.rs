@@ -116,6 +116,13 @@ pub const TASKS: TableId = TableId(10);
 pub const GAC_ALLOTMENTS: TableId = TableId(11);
 pub const SCHEMA_VERSION_TABLE: TableId = TableId(12);
 pub const ID_SEQUENCES: TableId = TableId(13);
+/// Singleton cluster identity (task #24, gate 2): one row, pk 0, holding the
+/// immutable 16-byte ClusterId minted by the bootstrap winner.
+pub const CLUSTER_META: TableId = TableId(14);
+/// Node-admission records (task #24, gate 3): a leader-committed approval that
+/// binds `cluster + node_id + address + role` BEFORE the node may join.
+/// A valid cluster token alone is never admission.
+pub const NODE_ADMISSIONS: TableId = TableId(15);
 
 // ---------------------------------------------------------------------------
 // Column descriptors, grouped per table. Column ids are table-local tags.
@@ -232,6 +239,21 @@ mod cols {
     ];
 
     /// System id sequences (one row per [`crate::store::SequenceKind`]).
+    pub const CLUSTER_META: &[ColumnDesc] = &[
+        col!(1, "id", Uint, pk),        // always 0: singleton
+        col!(2, "cluster_id", Bytes),   // 16 raw bytes (kv9_common::ClusterId)
+        col!(3, "created_unix", Uint),
+    ];
+
+    pub const NODE_ADMISSIONS: &[ColumnDesc] = &[
+        col!(1, "node_id", Uint, pk),
+        col!(2, "addr", Text),
+        col!(3, "role", Uint),        // AdmittedRole: 1 learner, 2 voter(post-promote)
+        col!(4, "state", Uint),       // AdmissionState: 1 pending, 2 consumed, 3 revoked
+        col!(5, "nonce_hash", Bytes), // FNV-1a-64 of the one-time join ticket nonce
+        col!(6, "expires_unix", Uint),
+    ];
+
     pub const ID_SEQUENCES: &[ColumnDesc] = &[
         col!(1, "kind", Uint, pk),
         col!(2, "next", Uint),
@@ -431,6 +453,22 @@ pub const ID_SEQUENCES_DESC: TableDesc = TableDesc {
     fks: fk::NONE,
 };
 
+pub const CLUSTER_META_DESC: TableDesc = TableDesc {
+    id: CLUSTER_META,
+    name: "cluster_meta",
+    columns: cols::CLUSTER_META,
+    indexes: idx::NONE,
+    fks: fk::NONE,
+};
+
+pub const NODE_ADMISSIONS_DESC: TableDesc = TableDesc {
+    id: NODE_ADMISSIONS,
+    name: "node_admissions",
+    columns: cols::NODE_ADMISSIONS,
+    indexes: idx::NONE,
+    fks: fk::NONE,
+};
+
 /// Every catalog table descriptor, in stable id order (METADATA-CATALOG §2). Used to
 /// bootstrap the catalog and to drive generic codec/migration passes.
 pub const ALL_TABLES: &[TableDesc] = &[
@@ -447,6 +485,8 @@ pub const ALL_TABLES: &[TableDesc] = &[
     GAC_ALLOTMENTS_DESC,
     SCHEMA_VERSION_DESC,
     ID_SEQUENCES_DESC,
+    CLUSTER_META_DESC,
+    NODE_ADMISSIONS_DESC,
 ];
 
 /// Look up a table descriptor by its stable id (METADATA-CATALOG §2).

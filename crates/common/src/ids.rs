@@ -117,11 +117,21 @@ impl std::str::FromStr for ClusterId {
     type Err = crate::Error;
 
     fn from_str(s: &str) -> crate::Result<ClusterId> {
-        if s.len() != 32 || !s.bytes().all(|b| b.is_ascii_hexdigit()) {
+        // Never echo the rejected input: the most common way to reach this
+        // error is a value pasted into the wrong slot — and the value sitting
+        // next to `--cluster-id` in a join config is the one-time join
+        // ticket, which must never appear in logs. Length + first bad offset
+        // diagnose the mistake without reproducing the secret (Cindy's
+        // review of d504d9e).
+        if s.len() != 32 {
             return Err(crate::Error::Config(format!(
-                "cluster id must be exactly 32 hex characters, got {:?} ({} chars)",
-                s,
+                "cluster id must be exactly 32 hex characters (got {} chars)",
                 s.len()
+            )));
+        }
+        if let Some(bad) = s.bytes().position(|b| !b.is_ascii_hexdigit()) {
+            return Err(crate::Error::Config(format!(
+                "cluster id must be hex; invalid character at offset {bad}"
             )));
         }
         let mut bytes = [0u8; 16];
