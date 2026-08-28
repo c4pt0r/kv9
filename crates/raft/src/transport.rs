@@ -63,7 +63,10 @@ const DISCOVERY_RESP_LEN: u32 = 18; // ver(1) + node(8) + initialized(1) + voter
 /// cryptographic commitment and must not be "upgraded" to one: the threat is
 /// configuration accidents, not adversaries, and 64-bit FNV is exactly enough
 /// for that. An adversarial peer defeats any hash here equally, because it can
-/// simply echo whatever fingerprint it is asked for.
+/// simply echo whatever fingerprint it is asked for. If discovery ever has to
+/// face untrusted peers, the correct move is control-plane authentication
+/// (DESIGN principle 9, "Auth on the control/management plane from day one") —
+/// not a wider hash.
 pub fn voter_set_fingerprint(declared: &[(u64, SocketAddr)]) -> u64 {
     let mut entries: Vec<(u64, String)> =
         declared.iter().map(|(id, a)| (*id, a.to_string())).collect();
