@@ -393,3 +393,103 @@ fn catalog_initialized(node: &Node<WalEngine>) -> Result<bool> {
         .get(&SCHEMA_VERSION_DESC, &[memcmp_uint(0)])?
         .is_some())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use kv9_common::RegionId;
+    use kv9_engine::testing::FaultyEngine;
+    use kv9_engine::{ColumnFamily, Engine};
+    use kv9_raft::transport::{InProcHub, RaftTransport};
+    use kv9_raft::Command;
+
+    #[test]
+    fn wal_apply_failure_poisons_the_driver_without_false_success() {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-server-faulty-wal-{}-{:?}",
+            std::process::id(),
+            std::thread::current().id()
+        ));
+        let _ = fs::remove_dir_all(&dir);
+        let (wal, _) = WalEngine::open(dir.join("catalog.wal")).unwrap();
+        let engine = Arc::new(FaultyEngine::new(wal));
+
+        let hub = InProcHub::new();
+        let peer = Arc::new(RaftPeer::new(NodeId(1), RegionId(1), &[NodeId(1)]).unwrap());
+        let endpoint = hub.endpoint(NodeId(1));
+        let driver = NodeDriver::new(
+            peer,
+            Arc::new(endpoint) as Arc<dyn RaftTransport>,
+            MemStateMachine::with_engine(engine.clone()).unwrap(),
+        );
+        driver.peer().campaign().unwrap();
+        for _ in 0..50 {
+            driver.tick_and_step().unwrap();
+            if driver.status().role == Role::Leader {
+                break;
+            }
+        }
+        assert_eq!(driver.status().role, Role::Leader);
+
+        let healthy = driver
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"healthy".to_vec(),
+                value: b"landed".to_vec(),
+            })
+            .unwrap();
+        for _ in 0..50 {
+            driver.tick_and_step().unwrap();
+            if driver
+                .wait_applied(healthy, Duration::from_millis(1))
+                .unwrap_or(false)
+            {
+                break;
+            }
+        }
+        assert!(driver
+            .wait_applied(healthy, Duration::from_millis(5))
+            .unwrap());
+        let healthy_watermark = driver.status().applied_index;
+        let attempts_before = engine.write_attempts();
+
+        engine.start_failing_writes();
+        let failed = driver
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"must-not-land".to_vec(),
+                value: b"lie".to_vec(),
+            })
+            .unwrap();
+        let mut saw_fatal = false;
+        for _ in 0..50 {
+            if driver.tick_and_step().is_err() {
+                saw_fatal = true;
+                break;
+            }
+        }
+        assert!(saw_fatal, "the real-WAL apply failure must poison the pump");
+        assert_eq!(
+            engine.write_attempts(),
+            attempts_before + 1,
+            "the failure path must have actually attempted the durable write"
+        );
+        assert_eq!(driver.status().applied_index, healthy_watermark);
+        assert!(driver
+            .wait_applied(failed, Duration::from_millis(1))
+            .is_err());
+        assert_eq!(
+            engine.get(ColumnFamily::Default, b"must-not-land").unwrap(),
+            None
+        );
+
+        // Clearing the simulated disk fault must not silently unpoison a replica
+        // that has already skipped a committed entry; recovery requires restart.
+        engine.stop_failing_writes();
+        assert!(driver.tick_and_step().is_err());
+        assert!(driver.status().fatal.is_some());
+        drop(driver);
+        drop(engine);
+        let _ = fs::remove_dir_all(&dir);
+    }
+}
