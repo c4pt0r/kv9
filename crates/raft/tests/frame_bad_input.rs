@@ -48,14 +48,16 @@ fn err(bytes: &[u8]) -> String {
 fn every_kind_round_trips() {
     let frames = [
         Frame::Raft(vec![0xDE, 0xAD, 0xBE, 0xEF]),
-        Frame::DiscoveryReq { from: NodeId(7) },
+        Frame::DiscoveryReq { from: NodeId(7), voter_fp: 7 },
         Frame::DiscoveryResp {
             node: NodeId(9),
             initialized: true,
+            voter_fp: 7,
         },
         Frame::DiscoveryResp {
             node: NodeId(9),
             initialized: false,
+            voter_fp: 7,
         },
         // A zero-length raft payload is legal, and an easy off-by-one to get wrong.
         Frame::Raft(Vec::new()),
@@ -108,7 +110,7 @@ fn oversized_raft_length_is_rejected() {
 /// "unexpected". Both directions matter: too short and too long.
 #[test]
 fn wrong_discovery_lengths_are_rejected() {
-    for (kind, correct) in [(2u8, 9u32), (3u8, 10u32)] {
+    for (kind, correct) in [(2u8, 17u32), (3u8, 18u32)] {
         for wrong in [0, correct - 1, correct + 1, 1024] {
             let bytes = header(FRAME_MAGIC, FRAME_VERSION, kind, wrong);
             assert!(
@@ -144,7 +146,7 @@ fn oversized_discovery_is_refused_before_reading_payload() {
 
 #[test]
 fn truncated_header_is_rejected() {
-    let full = encode_frame(&Frame::DiscoveryReq { from: NodeId(3) });
+    let full = encode_frame(&Frame::DiscoveryReq { from: NodeId(3), voter_fp: 7 });
     for cut in 0..8 {
         let message = err(&full[..cut]);
         assert!(
@@ -161,6 +163,7 @@ fn lying_length_prefix_is_rejected() {
     let full = encode_frame(&Frame::DiscoveryResp {
         node: NodeId(5),
         initialized: true,
+        voter_fp: 7,
     });
     // Keep the full header, drop part of the payload.
     for cut in 8..full.len() {
@@ -196,10 +199,11 @@ fn unknown_discovery_payload_version_is_rejected() {
 #[test]
 fn garbled_initialized_byte_is_an_error_not_an_answer() {
     for bad in [2u8, 3, 0x37, 0xFF] {
-        let mut bytes = header(FRAME_MAGIC, FRAME_VERSION, 3, 10);
+        let mut bytes = header(FRAME_MAGIC, FRAME_VERSION, 3, 18);
         bytes.push(1); // inner version
         bytes.extend_from_slice(&9u64.to_be_bytes()); // node id
         bytes.push(bad);
+        bytes.extend_from_slice(&7u64.to_be_bytes()); // voter-set fingerprint
         let message = err(&bytes);
         assert!(
             message.contains("initialized"),
@@ -210,15 +214,17 @@ fn garbled_initialized_byte_is_an_error_not_an_answer() {
     // Control: the two legal values still decode, and to the right booleans — otherwise
     // the assertions above would hold against a decoder that rejected 0 and 1 too.
     for (byte, want) in [(0u8, false), (1u8, true)] {
-        let mut bytes = header(FRAME_MAGIC, FRAME_VERSION, 3, 10);
+        let mut bytes = header(FRAME_MAGIC, FRAME_VERSION, 3, 18);
         bytes.push(1);
         bytes.extend_from_slice(&9u64.to_be_bytes());
         bytes.push(byte);
+        bytes.extend_from_slice(&7u64.to_be_bytes());
         assert_eq!(
             read(&bytes).unwrap(),
             Frame::DiscoveryResp {
                 node: NodeId(9),
-                initialized: want
+                initialized: want,
+                voter_fp: 7,
             }
         );
     }
@@ -247,22 +253,24 @@ fn arbitrary_garbage_never_panics() {
 /// or mistaken for part of this one.
 #[test]
 fn a_frame_does_not_consume_the_next_one() {
-    let mut stream = encode_frame(&Frame::DiscoveryReq { from: NodeId(1) });
+    let mut stream = encode_frame(&Frame::DiscoveryReq { from: NodeId(1), voter_fp: 7 });
     stream.extend_from_slice(&encode_frame(&Frame::DiscoveryResp {
         node: NodeId(2),
         initialized: false,
+        voter_fp: 7,
     }));
 
     let mut cursor = Cursor::new(stream);
     assert_eq!(
         read_frame(&mut cursor).unwrap(),
-        Frame::DiscoveryReq { from: NodeId(1) }
+        Frame::DiscoveryReq { from: NodeId(1), voter_fp: 7 }
     );
     assert_eq!(
         read_frame(&mut cursor).unwrap(),
         Frame::DiscoveryResp {
             node: NodeId(2),
-            initialized: false
+            initialized: false,
+            voter_fp: 7,
         }
     );
 }
