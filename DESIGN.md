@@ -90,7 +90,11 @@ CREATE KEYSPACE <name> WITH tenant = <tenant_id>, api = txn | raw [, txn_group =
 ```
 
 - `api = txn`  → MVCC + Percolator 2PC + Snapshot Isolation. The engine manages versions; keys carry no user ts.
-- `api = raw`  → direct KV, optional TTL, optional causal timestamps. No transactions.
+- `api = raw`  → direct KV, optional TTL, optional causal timestamps. **No transactions.**
+
+**The keyspace is the absolute transaction boundary.** A `txn` keyspace supports Snapshot-Isolation transactions
+*within itself only* — a transaction **never** crosses a keyspace (not even within one tenant); a `raw` keyspace
+supports none. Keyspace > txn group: a keyspace *contains* txn groups (§3.6), which merely shard its TSO.
 
 A keyspace maps to a numeric `keyspace_id` and a **contiguous key range** in the global keyspace via a prefix
 encoding (§3.4). All of a keyspace's regions live within that range.
@@ -120,21 +124,27 @@ One `kv9` process = one node, simultaneously: (1) a **Store** hosting region rep
 (2) a **member** of the system-keyspace Raft groups (candidate MetaLeader), (3) a **router**. One binary, one node
 type; roles are behaviors, not deployables.
 
-### 3.6 Txn group (transaction domain = timestamp shard)
-The transaction model is **identical to TiKV's** (Percolator 2PC, Snapshot Isolation, MVCC — §9). kv9 adds a
-first-class knob to make the timestamp path scale per tenant: the **txn group**.
+### 3.6 Txn group (a TSO shard *inside* a keyspace)
+The transaction model is Percolator 2PC / Snapshot Isolation / MVCC (§9). The concept hierarchy is
+**tenant → keyspace → txn group → timeline**, and the keyspace is the hard boundary:
 
-- A **txn group** is a transaction/consistency domain. Every `txn` keyspace belongs to exactly one txn group; the
-  default is `default`.
-- **Invariant: a single transaction never crosses a txn group.** Cross-group transactions are rejected. (A txn may
-  still span multiple regions and keyspaces *within one group* — full TiKV semantics there.)
-- Because no transaction spans two groups, each group's transactions need ordering only among themselves — so **each
-  txn group gets its own independent, sharded TSO timeline** (§8). No cross-group timestamp comparison ever happens,
-  which is what removes the single-global-TSO bottleneck.
+- **The keyspace is the absolute transaction boundary — a transaction NEVER crosses a keyspace** (not even within one
+  tenant). Each keyspace is an independent transaction/consistency domain; this is a hard multi-tenant isolation
+  guarantee.
+- **Only a `txn` keyspace has txn groups.** A `raw` keyspace supports **no transactions at all** (§3.2) — it has no
+  txn group and no TSO timeline (at most a per-key causal timestamp). The txn group is strictly a sub-concept of a
+  `txn` keyspace, which is another reason the keyspace is the larger concept.
+- A `txn` keyspace contains **one or more txn groups** (default: exactly one). A **txn group** is a *subdivision of a
+  txn keyspace's transaction domain that shards its TSO* — each txn group owns its own timeline (§8), covering a
+  sub-range of the keyspace. A transaction is confined to one txn group, hence to one keyspace.
+- **Default:** a txn keyspace = one txn group = one timeline → transactions range freely over the whole keyspace with
+  full Snapshot Isolation (the common case). **Opt-in:** a single very hot keyspace may shard into several txn groups
+  (e.g. by user-id range) to scale commit-timestamp throughput, at the cost of not transacting across those sub-groups.
 
-Opt-in trade: stay in `default` for one global-ish timestamp domain (simple, like TiKV today); declare txn groups to
-shard the TSO and scale commit throughput, at the cost of not transacting across a group boundary. Tenants pick the
-scheme matching their access pattern (per-tenant, per-shard-key, per-service).
+Two nested confinements, the outer one absolute:
+- **cross-keyspace transaction → always rejected** (the hard boundary — never relaxed by any timestamp tier);
+- **cross-txn-group transaction *within* a keyspace → rejected** (only relevant if the keyspace opted into
+  subdivision; this is what lets each group own an independent timeline with no cross-group timestamp comparison).
 
 ---
 
@@ -155,8 +165,40 @@ the region leader (or serves from a cached routing table).
 Instead of a separate placement driver, metadata is data in a reserved **system keyspace** (`keyspace_id = 0`,
 mode `'s'`).
 
+### 5.0 The metadata catalog is a small embedded SQL engine
+> Concrete simple design: [`docs/METADATA-CATALOG.md`](METADATA-CATALOG.md).
+
+Metadata is inherently **relational** (tenants→keyspaces→txn-groups→timelines; regions↔peers↔nodes; files↔refcounts).
+kv9 models it as **relational tables managed by a small embedded SQL engine that runs on kv9's own transactional KV**
+— the system keyspace (its own txn group `system`, §3.6). This is deliberate dogfooding: kv9 manages its own metadata
+through its own MVCC+2PC, with a thin relational layer on top; no external etcd, no bespoke key encoding, no
+hand-rolled indexes.
+
+Why relational, not ad-hoc KV records: it makes a whole class of control-plane bugs **structurally impossible** —
+auto-maintained secondary indexes rolled back atomically within the transaction (no orphaned `name→id` index on a
+failed create); one table + FK/join instead of a duplicated field (no stale dual-source `keyspace→group` mapping);
+multi-table mutations that are atomic + idempotent transactions (principle 15); a **versioned schema + migrations**
+(forward-compat, principle 12); typed FK/unique/check constraints that make illegal states unrepresentable
+(principle 16); and a **queryable** surface for the scheduler (`SELECT … JOIN … WHERE load > x` instead of hand-rolled
+in-memory trees), for observability, and for admin/debug.
+
+**Scope — small on purpose:** a *fixed, versioned* schema (not user DDL); PK + a few secondary indexes; single-table
+scans + simple joins; parametrized/prepared queries (internally a typed query API; SQL *text* mainly for
+admin/tools/debug). No cost-based optimizer or general planner — the query set is known and tiny. Transactions reuse
+the `system` group's MVCC+2PC.
+
+**Illustrative schema:** `tenants`, `keyspaces`(idx name, tenant), `txn_groups`, `tso_timelines`, `nodes`
+(membership), `regions`(idx keyspace, range), `region_peers`(idx node → "regions on node"), `sst_files`
+(the GC refcount table, §6.5), `placement_rules`, `tasks`, `gac_allotments`, `schema_version`.
+
+**Bootstrap — self-describing catalog, no circularity:** the core catalog tables' schemas are **hardcoded** (à la
+Postgres `pg_catalog` / CockroachDB system descriptors), anchored in **L0** (the bounded bootstrap region, which is
+plain KV, not SQL). L0 locates the L1 metadata regions; the L1 regions hold the SQL tables (including the *user-region*
+routing table). The SQL engine operates at L1, anchored by the fixed L0 — the bottom turtle isn't SQL, so no infinite
+regress. Because the tables live in L1 regions, the catalog **shards and scales** like everything else (§5.1.1).
+
 ### 5.1 What lives in the system keyspace
-Stored as ordinary KV under the system prefix, replicated by ordinary Raft:
+The metadata tables (§5.0), each ultimately rows in the system keyspace, replicated by ordinary Raft:
 - **Membership:** node id → address, state, heartbeat, capacity units.
 - **Keyspace catalog:** keyspace_id → {name, tenant, api_type, txn_group, config, key range}.
 - **Region routing table:** region_id → {range, epoch, peers, leader hint} + a `key → region` range index.
@@ -500,13 +542,14 @@ kv9 runs a **pool of TSO providers** (diagram: `docs/ARCHITECTURE.md` §5). Mapp
 keyspace):
 
 ```
-   keyspace ──N:1──▶ txn group ──1:1──▶ TSO timeline ──N:1──▶ TSO provider (pool member)
+   tenant ─1:N▶ keyspace ─1:N▶ txn group ─1:1▶ TSO timeline ─N:1▶ TSO provider (pool member)
+                  (txn keyspace only; raw keyspace has no txn group / no timeline)
 ```
 
 - A **cluster has many TSO providers, not one.** Each provider **hosts one or more TSO timelines** and serves the
-  keyspaces / txn groups assigned to those timelines — a single provider serves *different* keyspaces/groups at once.
-- A **txn group owns exactly one timeline** (its own monotonic clock + persisted window). Keyspaces map N:1 onto txn
-  groups. The `default` group is one timeline and behaves like a single classic TSO.
+  txn groups assigned to those timelines — a single provider serves timelines from *different* keyspaces at once.
+- A **txn group owns exactly one timeline** (its own monotonic clock + persisted window). A **`txn` keyspace has ≥1
+  txn groups** (default 1 → one timeline, a single classic TSO for that keyspace); a **`raw` keyspace has none**.
 - **Assignment is data, and rebalanceable:** the metadata plane assigns each group's timeline to a provider and can
   move it — a hot group gets its own provider; many cold groups share one. Adding providers spreads oracle load, so
   commit-timestamp throughput scales horizontally.
@@ -534,10 +577,11 @@ without a central allocator** — from synchronized clocks + commit-wait — so 
    PTP/NTP): pick commit ts `s ≥ now().latest`, then **commit-wait** until `now().earliest > s` (~2ε) before
    releasing locks ⇒ **cross-group external consistency**. Cost: ~2ε commit latency.
 
-The key point: **"no cross-group transaction" is a Tier-1 restriction, not a kv9 axiom.** A tenant/group that needs
-global transactions opts into Tier 2/3 and accepts the clock requirement + commit-wait; everyone else stays on the
-scalable default. Spanner's within-group mechanisms — leader leases (§5.3) and 2PC participant-coordinator (§9.1) —
-kv9 already uses.
+The key point: **the keyspace boundary is absolute — no tier ever permits a cross-keyspace transaction.** What the
+tier affects is only the *cross-txn-group* restriction **within** a sharded `txn` keyspace: an unsharded keyspace is
+one Tier-1 timeline with full SI; a keyspace that shards its TSO into groups yet still needs transactions across those
+sub-groups can opt into Tier 2/3 (accepting the clock requirement + commit-wait). Spanner's within-keyspace mechanisms
+— leader leases (§5.3) and 2PC participant-coordinator (§9.1) — kv9 already uses.
 
 v0 skeleton defines a per-group `TimestampOracle`/`TimeSource` trait with an `EmbeddedTso` (Tier 1) stub and a
 `TxnGroupId` on the handle; the interval-returning shape leaves room for Tiers 2/3.
@@ -562,11 +606,12 @@ the start:
 - **Commit** takes `commit_ts`, commits the primary (atomic point) then secondaries lazily (`lock`→`write`).
 - **Cross-region** transactions **within one txn group**: 2PC where one region's primary lock is the atomic commit
   point (Spanner's participant-coordinator). ResolveLock cleans up on failure.
-- **Txn-group confinement is declare-at-begin, fail-fast.** `BEGIN [IN GROUP g]`; if omitted, the group is inferred
-  from the **first keyspace touched** and pinned. Any access to a key outside the pinned group returns
-  `CrossTxnGroup` **immediately** at the router (keyspace→group is metadata) — never a silent or late-surprise abort.
-  Crossing groups is possible only by opting the group into Tier-2/3 timestamps (§8.2). This confinement is what makes
-  per-group TSO timelines correct (§3.6).
+- **Confinement is keyspace-absolute + fail-fast.** A transaction runs in **one `txn` keyspace**; **any access to
+  another keyspace is rejected immediately** — the keyspace boundary is absolute and **never** relaxed by any
+  timestamp tier. Within that keyspace the txn is pinned to one **txn group** (the group whose sub-range covers its
+  keys; the keyspace's single group by default); touching a *different* txn group of the same keyspace returns
+  `CrossTxnGroup` at the router. This is what makes per-group TSO timelines correct (§3.6). (`raw` keyspaces have no
+  transactions at all.)
 - **Deadlock detection is keyspace-aware:** the wait-for graph is partitioned per tenant. (TiKV's detector is a
   single global graph; kv9 partitions it so tenants are isolated and the detector scales.)
 
@@ -636,8 +681,9 @@ kv9/
 ├── crates/
 │   ├── common/   ← ids (Node/Region/Keyspace/Tenant/TxnGroup), Keyspace/Tenant/ApiType, key codec,
 │   │               TimeStamp/HLC, errors, config          (multi-tenant types are here, §1.1/§3)
-│   ├── meta/     ← membership, keyspace catalog, region routing, placement/scheduler, multi-level
-│   │               metadata (L0/L1), election-first Bootstrap FSM, MetaLeader, TSO provider pool
+│   ├── meta/     ← MetaStore = small SQL/catalog engine over the system keyspace (docs/METADATA-CATALOG.md):
+│   │               schema/codec/tables/migrate; membership · catalog · routing · placement/scheduler ·
+│   │               TSO provider pool — all as tables; multi-level metadata (L0/L1); Bootstrap FSM; MetaLeader
 │   ├── engine/   ← Engine trait + MemEngine; MVCC layout (default/lock/write); WriteBatch;
 │   │               ObjectStore trait (S3/GCS/Azure/local) + disaggregated LsmEngine design (§6.5);
 │   │               Manifest (immutable-SST file refs, mutable via raft), local block cache
