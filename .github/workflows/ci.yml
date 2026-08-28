@@ -6,7 +6,10 @@ name: CI
 #
 # Deliberate split, and the reason matters more than the shape:
 #
-#   pr-gate      fast, deterministic. Runs on PRs and master. Blocking.
+#   pr-gate      fast, deterministic. Runs on PRs and master. INTENDED required check --
+#                a workflow cannot block a merge by itself; that takes a branch protection
+#                rule or ruleset, which is a separate change and does not exist yet
+#                (verified: branches/master/protection => 404, rulesets => []).
 #   fmt          informational -- the tree is not formatted yet (see that job).
 #   acceptance   multi-process E2E. master pushes only, real pass/fail. Not on PRs.
 #
@@ -28,12 +31,19 @@ on:
     branches: [master]
   pull_request:
 
+# Nothing here needs to write to the repository. Stated explicitly rather than inherited,
+# so that a later job that does need a write has to ask for it visibly.
+permissions:
+  contents: read
+
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  # Display name held stable and unique as `pr-gate`: a required-status-check rule matches
+  # on this string, so renaming it silently detaches any rule later configured against it.
   pr-gate:
-    name: build + test + clippy
+    name: pr-gate
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -110,10 +120,13 @@ jobs:
         include:
           - script: phase1-final-acceptance.sh
             base_port: 22100
+            success_marker: "PASS: quorum fencing,"
           - script: dynamic-membership-e2e.sh
             base_port: 23100
+            success_marker: "PASS: 3 voters -> admit/register learners"
           - script: raw-kv-e2e.sh
             base_port: 24100
+            success_marker: "PASS: raw KV replicated through failover"
     steps:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
@@ -139,8 +152,12 @@ jobs:
           set -o pipefail
           ./scripts/${{ matrix.script }} 2>&1 | tee /tmp/e2e-${{ matrix.script }}.out
 
-      - name: Assert the script reached its PASS line
-        run: grep -q '^PASS' /tmp/e2e-${{ matrix.script }}.out
+      # A unique marker per script, not a generic `^PASS`. A bare `^PASS` would accept any
+      # PASS line, so a script that prints an intermediate PASS and then dies before its own
+      # final line would still be read as green -- the assertion has to name the completion
+      # it is asserting. -F because the markers contain `-` and `>`.
+      - name: Assert ${{ matrix.script }} reached its own completion marker
+        run: grep -Fq -- "${{ matrix.success_marker }}" /tmp/e2e-${{ matrix.script }}.out
 
       # The scripts mktemp under /tmp/kv9-*; on failure the node status files and logs
       # in there are the only way to tell a product failure from a harness failure.
