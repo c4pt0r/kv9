@@ -27,7 +27,16 @@ pub struct NodeStatus {
     pub leader_id: Option<NodeId>,
     pub role: Role,
     pub term: u64,
+    /// Highest raft-committed log index. NEVER wait for
+    /// `applied_index == raft_committed`: every leader election appends a
+    /// no-op barrier that is committed but carries nothing to apply, so the
+    /// gap is PERMANENT after the first election — such a wait hangs forever.
+    /// Correct catch-up criteria: wait for a SPECIFIC write's (term, index)
+    /// to apply, or assert applied_index made absolute progress.
     pub raft_committed: u64,
+    /// Highest log index applied to the state machine (empty/no-op entries
+    /// are consumed by raft but never reach the state machine — see
+    /// `raft_committed`'s warning before comparing the two).
     pub applied_index: u64,
     /// A fatal apply-path failure (undecodable committed entry / engine apply
     /// error). Once set, the pump has stopped: continuing past a hole would
