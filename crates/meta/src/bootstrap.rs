@@ -312,6 +312,40 @@ impl Bootstrap {
         self.data_dir_initialized
     }
 
+    /// LOCAL CATALOG FIRST (task #24 P0): if this node's own durable catalog
+    /// already names a cluster, the cluster exists — no missing marker, no
+    /// peer answer, and no "uninitialized quorum" can override that. Returns
+    /// `Ok(true)` when it advanced `Discovering → Joining` with the local
+    /// identity (join-existing mode still verifies the expected id first).
+    ///
+    /// Why this must run BEFORE any quorum counting: if the initializer
+    /// crashes after the seed transaction applied but before markers /
+    /// discovery flags were written, a whole-cluster restart sees marker=false
+    /// everywhere and would attest an "uninitialized quorum"; the new leader
+    /// then re-mints and is refused by the identity singleton — a refusal,
+    /// not a recovery, and the cluster wedges (Tess's review of c0a3191).
+    pub fn observe_local_identity(&mut self, id: Option<ClusterId>) -> Result<bool> {
+        let BootstrapState::Discovering { .. } = self.state else {
+            return Ok(false);
+        };
+        let Some(cluster_id) = id else {
+            return Ok(false);
+        };
+        if let Mode::JoinExisting { expected } = self.mode {
+            if cluster_id != expected {
+                return Err(Error::MetaNotReady(format!(
+                    "local catalog names cluster {cluster_id}, expected {expected}; \
+                     refusing to proceed"
+                )));
+            }
+        }
+        // The catalog names a cluster this data-dir belongs to: rule (c)
+        // engages even if the marker write was lost.
+        self.data_dir_initialized = true;
+        self.state = BootstrapState::Joining { cluster_id };
+        Ok(true)
+    }
+
     /// Fenced entry into `BootstrapElection` (rule a): `answered` are the seed nodes
     /// that **positively** reported "uninitialized" (include this node; silence and
     /// timeouts must not appear here). Requires answers from a quorum of the declared
@@ -592,6 +626,51 @@ mod tests {
         b.on_event(BootstrapEvent::WonElection).unwrap();
         b.on_event(minted("f")).unwrap();
         assert_eq!(format!("{:?}", b.state()), "Serving");
+    }
+
+    /// The P0 recovery mechanism: a durable catalog identity beats a missing
+    /// marker. From Discovering, observing a local identity advances to
+    /// Joining with THAT id and engages rule (c) — the node can never again
+    /// attest an uninitialized quorum. Sensitivity: stubbing the transition
+    /// out (return Ok(false) unconditionally) turns the first assert red.
+    #[test]
+    fn local_catalog_identity_beats_missing_marker() {
+        let mut b = Bootstrap::with_seeds_fp(N1, vec![N1, N2, N3], 5);
+        // Nothing local yet: no-op, still free to quorum later.
+        assert!(!b.observe_local_identity(None).unwrap());
+        assert_eq!(b.state().name(), "Discovering");
+        // A durable local identity: straight to Joining, rule (c) engaged.
+        assert!(b.observe_local_identity(Some(cid("a"))).unwrap());
+        assert_eq!(b.state().name(), "Joining");
+        assert_eq!(b.cluster_id(), Some(cid("a")));
+        assert!(b.data_dir_initialized());
+        // Outside Discovering it is a no-op (idempotent per tick).
+        assert!(!b.observe_local_identity(Some(cid("a"))).unwrap());
+
+        // And a node with a local identity can never attest uninitialized:
+        // rule (c) blocks the quorum path on a FRESH fsm marked the same way.
+        let mut fenced = Bootstrap::with_seeds_fp(N1, vec![N1, N2, N3], 5);
+        fenced.observe_local_identity(Some(cid("a"))).unwrap();
+        assert!(fenced.discovered_uninitialized(&[N1, N2, N3]).is_err());
+    }
+
+    /// Join-existing mode: the local identity must still match the expected
+    /// one — a wrong-environment data-dir is a typed error, not a join.
+    #[test]
+    fn observe_local_identity_checks_join_expectation() {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-observe-{}-{:?}",
+            std::process::id(),
+            std::thread::current().id()
+        ));
+        let _ = std::fs::remove_dir_all(&dir);
+        let mut b =
+            Bootstrap::join_existing_at(NodeId(4), vec![N1, N2, N3], cid("a"), 1, &dir).unwrap();
+        assert!(b.observe_local_identity(Some(cid("b"))).is_err());
+        assert_eq!(b.state().name(), "Discovering");
+        assert!(b.observe_local_identity(Some(cid("a"))).unwrap());
+        assert_eq!(b.state().name(), "Joining");
+        let _ = std::fs::remove_dir_all(&dir);
     }
 
     /// Join-existing mode: fail closed everywhere except the one legitimate

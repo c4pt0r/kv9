@@ -280,6 +280,15 @@ impl<E: Engine> Node<E> {
         Ok(())
     }
 
+    /// This node's own durable view of the cluster identity, if the catalog
+    /// (replicated + applied here) names one. The Discovering tick consults
+    /// THIS before any quorum counting (task #24 P0: a committed identity
+    /// with a lost marker must recover, not wedge).
+    pub fn local_cluster_identity(&self) -> Result<Option<kv9_common::ClusterId>> {
+        let txn = self.meta_raft.store.begin()?;
+        kv9_meta::admission::cluster_id(&txn)
+    }
+
     /// Write the initial metadata as the winner (DESIGN §5.2): default tenant, system
     /// keyspace, and its fixed system transaction group and TSO timeline. User
     /// transaction groups are created with their owning keyspaces, not at node start.
@@ -1080,6 +1089,60 @@ mod tests {
                 .name(),
             "Joining"
         );
+    }
+
+    /// Tess's P0 on c0a3191, at the mechanism layer: the initializer crashed
+    /// AFTER the seed transaction (with the cluster identity) durably applied
+    /// but BEFORE any marker / discovery flag was written. A restarted node
+    /// (fresh FSM, marker=false) must recover the identity from its own
+    /// catalog and join — never attest an uninitialized quorum, never mint a
+    /// second identity. The wedge the old path hits is also pinned: building
+    /// a second init command against this catalog is refused, so re-bootstrap
+    /// is a dead end by construction, which is exactly why recovery must not
+    /// go that way. (The full-process whole-cluster-restart variant belongs
+    /// to the dynamic-membership E2E — this covers the decision mechanism.)
+    #[test]
+    fn committed_identity_with_lost_marker_recovers_not_wedges() {
+        use std::str::FromStr;
+        let (cluster, nodes) = raft_nodes();
+        let cid = kv9_common::ClusterId::from_str(&"c".repeat(32)).unwrap();
+
+        cluster.peer(N1).unwrap().campaign().unwrap();
+        cluster
+            .run_until(500, "identity crash-window leader", |cluster| {
+                cluster.leader().is_some()
+            })
+            .unwrap();
+        let leader = cluster.leader().unwrap();
+        let seed = node(&nodes, leader)
+            .build_initial_metadata_command(cid)
+            .unwrap();
+        commit_exact(&cluster, &nodes, leader, &[N1, N2, N3], seed);
+        // CRASH HERE in the modeled scenario: no marker written, no
+        // discovery flag set — but the catalog is durably applied.
+
+        for replica in &nodes {
+            // Restart: a FRESH FSM with no marker knowledge at all.
+            let mut restarted = Bootstrap::with_seeds(replica.id, vec![N1, N2, N3]);
+            let local = replica.local_cluster_identity().unwrap();
+            assert_eq!(local, Some(cid), "catalog lost the committed identity");
+            // The local-catalog-first branch: straight to Joining, original id.
+            assert!(restarted.observe_local_identity(local).unwrap());
+            assert_eq!(restarted.state().name(), "Joining");
+            assert_eq!(restarted.cluster_id(), Some(cid));
+            // Rule (c) engaged: this node can never again attest uninitialized.
+            assert!(restarted
+                .discovered_uninitialized(&[N1, N2, N3])
+                .is_err());
+        }
+
+        // The dead end the old path wedges on: a second init against this
+        // catalog is refused (a REFUSAL, not a recovery — which is why the
+        // recovery must happen above, before any quorum counting).
+        let second = kv9_common::ClusterId::from_str(&"d".repeat(32)).unwrap();
+        assert!(node(&nodes, leader)
+            .build_initial_metadata_command(second)
+            .is_err());
     }
 
     #[test]
