@@ -8,3 +8,4 @@ description = "kv9 storage engine: Engine trait + MemEngine, MVCC column-family 
 [dependencies]
 kv9-common.workspace = true
 thiserror.workspace = true
+imbl.workspace = true

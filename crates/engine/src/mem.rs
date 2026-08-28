@@ -1,16 +1,21 @@
-//! In-memory `BTreeMap`-backed engine for the skeleton and tests (DESIGN §6.2).
+//! In-memory persistent-map engine for the skeleton and tests (DESIGN §6.2).
 
-use std::collections::BTreeMap;
-use std::sync::{Arc, RwLock};
+use std::sync::RwLock;
 
+use imbl::OrdMap;
 use kv9_common::{Result, Value};
 
 use crate::cf::ColumnFamily;
 use crate::write_batch::{Mutation, WriteBatch};
 use crate::{Engine, ReadView, ScanEntry};
 
-/// A single column family's storage: an ordered `BTreeMap`.
-type CfMap = BTreeMap<Vec<u8>, Vec<u8>>;
+/// A single column family's storage: a **persistent** ordered map.
+///
+/// Persistent (structurally shared) rather than a plain `BTreeMap` so that cloning is
+/// O(1) and a clone is unaffected by later mutations. That is what makes
+/// [`Engine::snapshot`] free and keeps every open [`ReadView`] pinned to its own version
+/// without copying anything.
+type CfMap = OrdMap<Vec<u8>, Vec<u8>>;
 
 /// All column families as one value.
 ///
@@ -18,6 +23,9 @@ type CfMap = BTreeMap<Vec<u8>, Vec<u8>>;
 /// [`Engine::write`] atomic *across* column families: with a lock per CF there is no way
 /// to apply a multi-CF batch without exposing an intermediate state, and a Percolator
 /// commit (`lock` → `write` plus `default`) is exactly such a batch.
+///
+/// Cloning a `State` is O(1) — it clones three persistent maps, each of which shares its
+/// structure with the original.
 #[derive(Debug, Default, Clone)]
 struct State {
     default: CfMap,
@@ -62,17 +70,18 @@ impl State {
     }
 }
 
-/// In-memory engine. One `BTreeMap` per column family behind a single `RwLock`
-/// (DESIGN §6.2). Suitable for the v0 skeleton and unit tests; **not durable**.
+/// In-memory engine. One persistent ordered map per column family behind a single
+/// `RwLock` (DESIGN §6.2). Suitable for the v0 skeleton and unit tests; **not durable**.
 ///
-/// The state is held in an [`Arc`] so [`Engine::snapshot`] is O(1) — it clones the
-/// pointer, not the data. Writes use copy-on-write ([`Arc::make_mut`]): they copy only
-/// while a snapshot is still alive, and are in-place once the last one is dropped. The
-/// read-heavy paths that motivated this (routing lookups, catalog queries — each opening
-/// a view per transaction) therefore stop paying O(size) per view.
+/// Because the maps are persistent, [`Engine::snapshot`] is O(1) and costs *nothing* on
+/// the write side: a write mutates the live state in place while every open view keeps
+/// the version it was taken at, via structural sharing. The read-heavy paths that
+/// motivated this — routing lookups and catalog queries, each opening a view per
+/// transaction — therefore never pay for the snapshot, and writes never pay for having
+/// been snapshotted.
 #[derive(Debug, Default)]
 pub struct MemEngine {
-    state: RwLock<Arc<State>>,
+    state: RwLock<State>,
 }
 
 impl MemEngine {
@@ -80,9 +89,9 @@ impl MemEngine {
         MemEngine::default()
     }
 
-    /// The current state, as a cheap handle.
-    fn read(&self) -> Arc<State> {
-        Arc::clone(&self.state.read().expect("mem engine lock poisoned"))
+    /// A snapshot of the current state. O(1): the maps share their structure.
+    fn read(&self) -> State {
+        self.state.read().expect("mem engine lock poisoned").clone()
     }
 }
 
@@ -93,11 +102,9 @@ impl Engine for MemEngine {
 
     fn write(&self, batch: WriteBatch) -> Result<()> {
         // One lock acquisition for the whole batch: readers observe either none of these
-        // mutations or all of them, never a prefix. `make_mut` gives copy-on-write — it
-        // copies once if any snapshot still references this state, and mutates in place
-        // otherwise, so live snapshots keep the version they were taken at.
-        let mut guard = self.state.write().expect("mem engine lock poisoned");
-        let state = Arc::make_mut(&mut *guard);
+        // mutations or all of them, never a prefix. Open snapshots are unaffected — the
+        // maps are persistent, so they still hold the version they were cloned at.
+        let mut state = self.state.write().expect("mem engine lock poisoned");
         for m in batch.mutations() {
             match m {
                 Mutation::Put { cf, key, value } => {
@@ -122,8 +129,8 @@ impl Engine for MemEngine {
     }
 
     fn delete_range(&self, cf: ColumnFamily, start: &[u8], end: &[u8]) -> Result<()> {
-        let mut guard = self.state.write().expect("mem engine lock poisoned");
-        let map = Arc::make_mut(&mut *guard).cf_mut(cf);
+        let mut state = self.state.write().expect("mem engine lock poisoned");
+        let map = state.cf_mut(cf);
         let doomed: Vec<Vec<u8>> = map
             .range(start.to_vec()..end.to_vec())
             .map(|(k, _)| k.clone())
@@ -148,8 +155,8 @@ impl Engine for MemEngine {
     }
 
     fn snapshot(&self) -> Result<Box<dyn ReadView + '_>> {
-        // O(1): clone the Arc, not the maps. Writes copy-on-write around us, so this view
-        // keeps the version it was taken at. A real engine hands back an equally cheap
+        // O(1): the persistent maps share structure, so this neither copies now nor
+        // forces a copy on the next write. A real engine hands back an equally cheap
         // handle (immutable SSTs + a pinned memtable) behind this same signature.
         Ok(Box::new(MemSnapshot {
             state: self.read(),
@@ -160,7 +167,7 @@ impl Engine for MemEngine {
 /// A point-in-time view of a [`MemEngine`], produced by [`Engine::snapshot`].
 #[derive(Debug)]
 struct MemSnapshot {
-    state: Arc<State>,
+    state: State,
 }
 
 impl ReadView for MemSnapshot {
@@ -412,11 +419,9 @@ mod tests {
         assert_eq!(answer, Some((b"r10".to_vec(), b"a".to_vec())));
     }
 
-    /// Snapshots are O(1) handles, and stay stable while the engine is rewritten many
-    /// times over. If `snapshot()` ever went back to deep-copying, this still passes —
-    /// it guards the semantics; the cost is covered by the Arc sharing below.
+    /// A snapshot stays pinned to its own version no matter how far the engine moves on.
     #[test]
-    fn snapshot_is_cheap_and_stable_across_many_writes() {
+    fn snapshot_is_stable_across_many_writes() {
         let engine = engine_with(&[(b"k", b"v0")]);
         let view = engine.snapshot().unwrap();
 
@@ -441,35 +446,57 @@ mod tests {
         );
     }
 
-    /// Copy-on-write: with no snapshot alive the engine mutates its state in place
-    /// (no reallocation), and taking a snapshot shares that same allocation.
+    /// Many snapshots may be alive at once, each pinned to a *different* version, and
+    /// writes keep flowing regardless.
+    ///
+    /// This is the property a persistent map buys over copy-on-write: under COW every one
+    /// of these live views would force the next write to copy the whole state, so the
+    /// cost would grow with how many readers happen to be open. Here it does not.
     #[test]
-    fn writes_are_in_place_when_no_snapshot_is_alive() {
-        let engine = engine_with(&[(b"k", b"v")]);
+    fn many_live_snapshots_each_pin_their_own_version() {
+        let engine = MemEngine::new();
+        let mut views = Vec::new();
 
-        let addr = |e: &MemEngine| Arc::as_ptr(&e.read()) as usize;
-        let before = addr(&engine);
+        for i in 0..200u32 {
+            let mut b = WriteBatch::new();
+            b.put(
+                ColumnFamily::Default,
+                b"k".to_vec(),
+                format!("v{i}").into_bytes(),
+            );
+            // Add a distinct key each round too, so the maps genuinely grow.
+            b.put(
+                ColumnFamily::Default,
+                format!("extra{i}").into_bytes(),
+                b"x".to_vec(),
+            );
+            engine.write(b).unwrap();
+            views.push(engine.snapshot().unwrap());
+        }
 
-        let mut b = WriteBatch::new();
-        b.put(ColumnFamily::Default, b"k2".to_vec(), b"v".to_vec());
-        engine.write(b).unwrap();
-        assert_eq!(
-            addr(&engine),
-            before,
-            "with no live snapshot, a write should not copy the state"
-        );
-
-        // Hold a snapshot: the next write must copy, leaving the view's version intact.
-        let view = engine.snapshot().unwrap();
-        let mut b = WriteBatch::new();
-        b.put(ColumnFamily::Default, b"k3".to_vec(), b"v".to_vec());
-        engine.write(b).unwrap();
-        assert_ne!(
-            addr(&engine),
-            before,
-            "with a live snapshot, a write must copy-on-write"
-        );
-        assert_eq!(view.get(ColumnFamily::Default, b"k3").unwrap(), None);
+        // Every view still reports the value written in its own round, and sees exactly
+        // the keys that existed then.
+        for (i, view) in views.iter().enumerate() {
+            assert_eq!(
+                view.get(ColumnFamily::Default, b"k").unwrap(),
+                Some(format!("v{i}").into_bytes()),
+                "view {i} drifted off its version"
+            );
+            assert_eq!(
+                view.get(ColumnFamily::Default, format!("extra{i}").as_bytes())
+                    .unwrap(),
+                Some(b"x".to_vec())
+            );
+            // A key added after this view was taken must not be visible to it.
+            if i + 1 < views.len() {
+                assert_eq!(
+                    view.get(ColumnFamily::Default, format!("extra{}", i + 1).as_bytes())
+                        .unwrap(),
+                    None,
+                    "view {i} saw a key written after it was taken"
+                );
+            }
+        }
     }
 
     #[test]
