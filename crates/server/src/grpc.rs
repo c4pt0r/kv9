@@ -371,6 +371,12 @@ impl RawClient {
                         .and_then(|value| value.parse::<u64>().ok());
                     Ok(RawClientOutcome::NotLeader { leader })
                 }
+                // A partial write is a *typed* outcome, not prose. Emitting the metadata
+                // without parsing it back would leave the contract half-implemented: the
+                // server publishes stable fields and the client still shows a sentence.
+                Err(status) if partial_write_marked(&status) => {
+                    Err(partial_delete_range_from_status(&status))
+                }
                 Err(status) => Err(Error::Raft(format!("{label} RPC: {status}"))),
             }
         })
@@ -474,6 +480,49 @@ impl RawClient {
                 .await
                 .map(Response::into_inner)
         })
+    }
+}
+
+/// Is this status a partial-write report?
+///
+/// Both the code *and* the marker: plain `ABORTED` is used for write conflicts, so the
+/// code alone would misread an ordinary abort as a half-finished range delete.
+fn partial_write_marked(status: &Status) -> bool {
+    status.code() == tonic::Code::Aborted && status.metadata().get(PARTIAL_WRITE_KEY).is_some()
+}
+
+/// Decode a partial-write report into the typed error.
+///
+/// A missing or malformed field is a *protocol* error, never a defaulted zero: inventing
+/// "0 chunks committed" for a call that may have deleted a great deal is the most
+/// dangerous possible guess.
+fn partial_delete_range_from_status(status: &Status) -> Error {
+    let field = |key: &str| -> std::result::Result<u64, Error> {
+        status
+            .metadata()
+            .get(key)
+            .and_then(|value| value.to_str().ok())
+            .and_then(|value| value.parse::<u64>().ok())
+            .ok_or_else(|| {
+                Error::Raft(format!(
+                    "partial-write response missing or malformed metadata: {key}"
+                ))
+            })
+    };
+    match (
+        field(COMMITTED_CHUNKS_KEY),
+        field(LAST_APPLIED_TERM_KEY),
+        field(LAST_APPLIED_INDEX_KEY),
+    ) {
+        (Ok(committed_chunks), Ok(last_applied_term), Ok(last_applied_index)) => {
+            Error::PartialDeleteRange {
+                committed_chunks,
+                last_applied_term,
+                last_applied_index,
+                cause: status.message().to_owned(),
+            }
+        }
+        (Err(e), _, _) | (_, Err(e), _) | (_, _, Err(e)) => e,
     }
 }
 
@@ -610,9 +659,17 @@ fn error_status(error: Error) -> Status {
                 (LAST_APPLIED_TERM_KEY, last_applied_term),
                 (LAST_APPLIED_INDEX_KEY, last_applied_index),
             ] {
-                if let Ok(parsed) = value.to_string().parse() {
-                    meta.insert(key, parsed);
-                }
+                // `expect`, not `if let Ok`: a decimal u64 is always valid ASCII, so this
+                // cannot fail — and if it somehow did, silently omitting a field the
+                // client is contractually required to read would turn a stable protocol
+                // into a guess. Fail loud rather than ship a half-populated contract.
+                meta.insert(
+                    key,
+                    value
+                        .to_string()
+                        .parse()
+                        .expect("a decimal u64 is valid ASCII metadata"),
+                );
             }
             status
         }
@@ -1416,6 +1473,76 @@ mod tests {
             .await
             .unwrap_err();
         assert_eq!(status.code(), Code::Unimplemented);
+    }
+
+    /// The four fields are the contract; the prose is not. Pins both the code and every
+    /// metadata key a client is required to read.
+    #[test]
+    fn partial_delete_range_maps_to_aborted_with_the_full_receipt() {
+        let status = error_status(Error::PartialDeleteRange {
+            committed_chunks: 3,
+            last_applied_term: 4,
+            last_applied_index: 91,
+            cause: "engine error: disk full".into(),
+        });
+        assert_eq!(status.code(), Code::Aborted);
+        let get = |key: &str| status.metadata().get(key).map(|v| v.to_str().unwrap().to_owned());
+        assert_eq!(get(PARTIAL_WRITE_KEY), Some("true".to_owned()));
+        assert_eq!(get(COMMITTED_CHUNKS_KEY), Some("3".to_owned()));
+        assert_eq!(get(LAST_APPLIED_TERM_KEY), Some("4".to_owned()));
+        assert_eq!(get(LAST_APPLIED_INDEX_KEY), Some("91".to_owned()));
+    }
+
+    /// A plain abort (write conflict) must not be mistaken for a half-finished range
+    /// delete: the code alone is ambiguous, which is why the marker exists.
+    #[test]
+    fn an_ordinary_abort_is_not_read_as_a_partial_write() {
+        let conflict = error_status(Error::WriteConflict("busy".into()));
+        assert_eq!(conflict.code(), Code::Aborted, "control: same code");
+        assert!(
+            !partial_write_marked(&conflict),
+            "an ordinary abort must not be decoded as a partial write"
+        );
+
+        let partial = error_status(Error::PartialDeleteRange {
+            committed_chunks: 1,
+            last_applied_term: 1,
+            last_applied_index: 2,
+            cause: String::new(),
+        });
+        assert!(partial_write_marked(&partial), "control: this one is partial");
+    }
+
+    /// Round-trips the receipt, and refuses to invent numbers when a field is missing --
+    /// defaulting to zero would report "nothing committed" for a call that deleted plenty.
+    #[test]
+    fn a_partial_receipt_round_trips_and_a_missing_field_is_a_protocol_error() {
+        let status = error_status(Error::PartialDeleteRange {
+            committed_chunks: 5,
+            last_applied_term: 2,
+            last_applied_index: 77,
+            cause: "boom".into(),
+        });
+        match partial_delete_range_from_status(&status) {
+            Error::PartialDeleteRange {
+                committed_chunks,
+                last_applied_term,
+                last_applied_index,
+                ..
+            } => {
+                assert_eq!((committed_chunks, last_applied_term, last_applied_index), (5, 2, 77));
+            }
+            other => panic!("expected a partial receipt, got {other}"),
+        }
+
+        let mut truncated = Status::aborted("partial");
+        truncated
+            .metadata_mut()
+            .insert(PARTIAL_WRITE_KEY, "true".parse().unwrap());
+        assert!(
+            matches!(partial_delete_range_from_status(&truncated), Error::Raft(_)),
+            "a missing count must be a protocol error, never a defaulted zero"
+        );
     }
 
     /// A client's redirect decision must key on the status code and a stable metadata
