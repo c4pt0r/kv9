@@ -284,6 +284,186 @@ pub fn promote_node_blocking(
     })
 }
 
+/// Outcome of a raw client call, with not-leader kept as a *structured* case.
+///
+/// The CLI must be able to tell "this key does not exist" from "you asked the wrong
+/// node" — collapsing both into a generic error would make the acceptance script unable
+/// to distinguish a real miss from a misdirected request.
+#[derive(Debug)]
+pub enum RawClientOutcome<T> {
+    Ok(T),
+    /// The node refused because it does not lead. `leader` is `None` mid-election.
+    NotLeader {
+        leader: Option<u64>,
+    },
+}
+
+/// One scanned row as the client surfaces it: `(key, value)`, both raw bytes.
+pub type RawRow = (Vec<u8>, Vec<u8>);
+
+/// Blocking raw-KV client used by the CLI and the external acceptance gate.
+///
+/// Every call goes through the public gRPC surface — the acceptance script must exercise
+/// the same path a real client would, not an in-process shortcut.
+pub struct RawClient {
+    runtime: tokio::runtime::Runtime,
+    address: String,
+    token: String,
+    keyspace: u32,
+}
+
+impl RawClient {
+    pub fn connect(address: &str, token: &str, keyspace: u32) -> Result<Self, Error> {
+        let runtime = tokio::runtime::Runtime::new()
+            .map_err(|error| Error::Config(format!("create client runtime: {error}")))?;
+        Ok(Self {
+            runtime,
+            address: address.to_owned(),
+            token: token.to_owned(),
+            keyspace,
+        })
+    }
+
+    fn context(&self) -> Option<proto::RequestContext> {
+        Some(proto::RequestContext {
+            keyspace_id: self.keyspace,
+            region_epoch: Some(proto::RegionEpoch {
+                conf_ver: 1,
+                version: 1,
+            }),
+        })
+    }
+
+    fn call<T, F, Fut>(&self, label: &str, build: F) -> Result<RawClientOutcome<T>, Error>
+    where
+        F: FnOnce(proto::kv9_client::Kv9Client<tonic::transport::Channel>, MetadataMap) -> Fut,
+        Fut: std::future::Future<Output = Result<T, Status>>,
+    {
+        let url = format!("http://{}", self.address);
+        let authorization = format!("Bearer {}", self.token);
+        let label = label.to_owned();
+        self.runtime.block_on(async move {
+            let client = proto::kv9_client::Kv9Client::connect(url.clone())
+                .await
+                .map_err(|error| Error::Raft(format!("connect public gRPC {url}: {error}")))?;
+            let mut metadata = MetadataMap::new();
+            metadata.insert(
+                "authorization",
+                authorization
+                    .parse()
+                    .map_err(|_| Error::Config("invalid client token".into()))?,
+            );
+            match build(client, metadata).await {
+                Ok(value) => Ok(RawClientOutcome::Ok(value)),
+                Err(status) if status.code() == tonic::Code::FailedPrecondition => {
+                    // Read the hint from metadata, never by parsing the message: the
+                    // prose is for humans and may be reworded.
+                    let leader = status
+                        .metadata()
+                        .get(LEADER_HINT_KEY)
+                        .and_then(|value| value.to_str().ok())
+                        .and_then(|value| value.parse::<u64>().ok());
+                    Ok(RawClientOutcome::NotLeader { leader })
+                }
+                Err(status) => Err(Error::Raft(format!("{label} RPC: {status}"))),
+            }
+        })
+    }
+
+    pub fn put(&self, key: Vec<u8>, value: Vec<u8>) -> Result<RawClientOutcome<()>, Error> {
+        let context = self.context();
+        self.call("RawPut", move |mut client, metadata| async move {
+            let mut request = Request::from_parts(
+                metadata,
+                Default::default(),
+                proto::RawPutRequest {
+                    context,
+                    key,
+                    value,
+                },
+            );
+            *request.extensions_mut() = Default::default();
+            client.raw_put(request).await.map(|_| ())
+        })
+    }
+
+    pub fn get(&self, key: Vec<u8>) -> Result<RawClientOutcome<Option<Vec<u8>>>, Error> {
+        let context = self.context();
+        self.call("RawGet", move |mut client, metadata| async move {
+            let request = Request::from_parts(
+                metadata,
+                Default::default(),
+                proto::RawGetRequest { context, key },
+            );
+            client.raw_get(request).await.map(|response| {
+                let value = response.into_inner().value;
+                value.and_then(|v| if v.found { Some(v.value) } else { None })
+            })
+        })
+    }
+
+    pub fn delete(&self, key: Vec<u8>) -> Result<RawClientOutcome<()>, Error> {
+        let context = self.context();
+        self.call("RawDelete", move |mut client, metadata| async move {
+            let request = Request::from_parts(
+                metadata,
+                Default::default(),
+                proto::RawDeleteRequest { context, key },
+            );
+            client.raw_delete(request).await.map(|_| ())
+        })
+    }
+
+    pub fn scan(
+        &self,
+        start: Vec<u8>,
+        end: Vec<u8>,
+        limit: u32,
+    ) -> Result<RawClientOutcome<Vec<RawRow>>, Error> {
+        let context = self.context();
+        self.call("RawScan", move |mut client, metadata| async move {
+            let request = Request::from_parts(
+                metadata,
+                Default::default(),
+                proto::RawScanRequest {
+                    context,
+                    start,
+                    end,
+                    limit,
+                },
+            );
+            client.raw_scan(request).await.map(|response| {
+                response
+                    .into_inner()
+                    .pairs
+                    .into_iter()
+                    .map(|pair| (pair.key, pair.value))
+                    .collect()
+            })
+        })
+    }
+
+    pub fn delete_range(
+        &self,
+        start: Vec<u8>,
+        end: Vec<u8>,
+    ) -> Result<RawClientOutcome<()>, Error> {
+        let context = self.context();
+        self.call("RawDeleteRange", move |mut client, metadata| async move {
+            let request = Request::from_parts(
+                metadata,
+                Default::default(),
+                proto::RawDeleteRangeRequest {
+                    context,
+                    start,
+                    end,
+                },
+            );
+            client.raw_delete_range(request).await.map(|_| ())
+        })
+    }
+}
+
 fn auth_context<T>(request: &Request<T>) -> Result<AuthContext, Status> {
     let auth = request
         .extensions()
