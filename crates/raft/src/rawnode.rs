@@ -410,6 +410,12 @@ mod tests {
     }
 
     /// Pump + apply every alive peer's drained entries into its own state machine.
+    ///
+    /// TEST-ONLY SHAPE — do not copy into production code: the `let _ =` below
+    /// is acceptable solely because these deterministic tests run on MemEngine,
+    /// where apply cannot fail. The production apply loop is
+    /// `NodeDriver::step()`, which treats any decode/apply failure as FATAL
+    /// (poison, stop, never advance past the hole).
     fn drive(cluster: &InProcessCluster, sms: &mut [MemStateMachine]) {
         cluster.round();
         for (p, sm) in cluster.peers().iter().zip(sms.iter_mut()) {
