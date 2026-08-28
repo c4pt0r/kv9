@@ -237,9 +237,9 @@ fn encode_hex(bytes: &[u8]) -> String {
 }
 
 /// Report a not-leader refusal in a form a script can branch on.
-fn print_not_leader(leader: Option<u64>) -> ExitCode {
+fn print_not_leader(leader: Option<kv9_common::NodeId>) -> ExitCode {
     match leader {
-        Some(id) => eprintln!("not_leader=true leader_node_id={id}"),
+        Some(id) => eprintln!("not_leader=true leader_node_id={}", id.0),
         // Absent hint means "re-discover", not "retry me" — the script must be able to
         // tell those apart, so it is spelled out rather than omitted.
         None => eprintln!("not_leader=true leader_node_id=unknown"),
