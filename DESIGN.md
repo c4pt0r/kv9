@@ -254,8 +254,16 @@ metadata server**, and the winner performs metadata initialization and a simple 
   find the cluster initialized, learn `META_REGION_0`'s members from any peer, and register. Data-driven thereafter.
 - **Fencing — bootstrap must be unforkable:** (a) *unreachable ≠ uninitialized* — a node enters BootstrapElection
   only on a positive "uninitialized" answer from a **quorum of its declared seed set**, never on silence or
-  timeouts; (b) the election counts votes only within the declared seed set and requires a **majority of that
-  set**, so two disjoint seed lists cannot both initialize; (c) initialization is once-per-lifetime — a node whose
+  timeouts; (b) the election counts answers only from within the declared seed set, requires a **majority of that
+  set**, **and counts only answers carrying a matching cluster fingerprint**. Seed-set membership alone is *not*
+  sufficient: **overlapping** seed lists (`{1,2,3}` and `{1,2,9}`) let the shared members' answers satisfy both
+  majorities at once, so two clusters are each born legally. Overlap is the likelier mistake — a hand-edited
+  config, a copy-paste with one id changed. The fingerprint makes "we are talking about the same cluster"
+  *verifiable* rather than inferred from a seed list. It covers the **sorted, complete `(node_id, address)`
+  declaration** (8-byte FNV-1a-64), not just the id set: hashing ids alone would give `{1@a,2@b,3@c}` and
+  `{1@a,2@b,3@x}` the same fingerprint, which is exactly the "a different process answers at address 3" case.
+  A fingerprint mismatch is **not a malformed frame** — it is a well-formed answer from another cluster, so the
+  frame layer decodes it and the runtime discards it; (c) initialization is once-per-lifetime — a node whose
   data-dir carries an initialized marker (or non-empty raft state) refuses to re-initialize and rejoins via
   Joining; a wiped node is a *new* node. (raft-rs `initialize()` requires a pristine node, enforcing (c) at the
   library layer; (a)/(b) live in the Discovering/BootstrapElection FSM.)
