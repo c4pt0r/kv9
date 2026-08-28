@@ -226,6 +226,64 @@ pub fn create_keyspace_blocking(
     })
 }
 
+pub fn admit_node_blocking(
+    address: &str,
+    token: &str,
+    node: NodeId,
+    node_addr: String,
+    ttl_seconds: u64,
+) -> Result<proto::MembershipChangeResponse, Error> {
+    let runtime = tokio::runtime::Runtime::new()
+        .map_err(|error| Error::Config(format!("create client runtime: {error}")))?;
+    runtime.block_on(async move {
+        let mut client = proto::kv9_client::Kv9Client::connect(format!("http://{address}"))
+            .await
+            .map_err(|error| Error::Raft(format!("connect public gRPC {address}: {error}")))?;
+        let mut request = Request::new(proto::AdmitNodeRequest {
+            node_id: node.0,
+            addr: node_addr,
+            ttl_seconds,
+        });
+        request.metadata_mut().insert(
+            "authorization",
+            format!("Bearer {token}")
+                .parse()
+                .map_err(|_| Error::Config("client token is not valid metadata".into()))?,
+        );
+        client
+            .admit_node(request)
+            .await
+            .map(Response::into_inner)
+            .map_err(|status| Error::Raft(format!("AdmitNode RPC: {status}")))
+    })
+}
+
+pub fn promote_node_blocking(
+    address: &str,
+    token: &str,
+    node: NodeId,
+) -> Result<proto::MembershipChangeResponse, Error> {
+    let runtime = tokio::runtime::Runtime::new()
+        .map_err(|error| Error::Config(format!("create client runtime: {error}")))?;
+    runtime.block_on(async move {
+        let mut client = proto::kv9_client::Kv9Client::connect(format!("http://{address}"))
+            .await
+            .map_err(|error| Error::Raft(format!("connect public gRPC {address}: {error}")))?;
+        let mut request = Request::new(proto::PromoteNodeRequest { node_id: node.0 });
+        request.metadata_mut().insert(
+            "authorization",
+            format!("Bearer {token}")
+                .parse()
+                .map_err(|_| Error::Config("client token is not valid metadata".into()))?,
+        );
+        client
+            .promote_node(request)
+            .await
+            .map(Response::into_inner)
+            .map_err(|status| Error::Raft(format!("PromoteNode RPC: {status}")))
+    })
+}
+
 fn auth_context<T>(request: &Request<T>) -> Result<AuthContext, Status> {
     let auth = request
         .extensions()
@@ -735,6 +793,51 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             node_count: info.node_count as u64,
             keyspace_count: info.keyspace_count as u64,
             region_count: info.region_count as u64,
+        }))
+    }
+
+    async fn admit_node(
+        &self,
+        request: Request<proto::AdmitNodeRequest>,
+    ) -> Result<Response<proto::MembershipChangeResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let request = request.into_inner();
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(move |backend| {
+                backend.admit_node(
+                    &caller,
+                    NodeId(request.node_id),
+                    &request.addr,
+                    request.ttl_seconds,
+                )
+            })
+            .await?;
+        Ok(Response::new(proto::MembershipChangeResponse {
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+            voters: result.voters,
+            learners: result.learners,
+        }))
+    }
+
+    async fn promote_node(
+        &self,
+        request: Request<proto::PromoteNodeRequest>,
+    ) -> Result<Response<proto::MembershipChangeResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let request = request.into_inner();
+        let caller = auth.principal.to_string();
+        let result = self
+            .backend
+            .call(move |backend| backend.promote_node(&caller, NodeId(request.node_id)))
+            .await?;
+        Ok(Response::new(proto::MembershipChangeResponse {
+            applied_term: result.applied.term,
+            applied_index: result.applied.index,
+            voters: result.voters,
+            learners: result.learners,
         }))
     }
 }

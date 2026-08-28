@@ -15,8 +15,8 @@ pub use api::{
     RequestContext, RouterApi, TxnApi,
 };
 pub use grpc::{
-    create_keyspace_blocking, AuthContext, AuthKind, Authenticator, Kv9Grpc, PublicApiBackend,
-    TokenAuthenticator,
+    admit_node_blocking, create_keyspace_blocking, promote_node_blocking, AuthContext, AuthKind,
+    Authenticator, Kv9Grpc, PublicApiBackend, TokenAuthenticator,
 };
 pub use node::{MetaPlane, MetaRaft, Node, Store};
 pub use routing::{route_request, Routed};

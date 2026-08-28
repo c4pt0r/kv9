@@ -12,8 +12,10 @@ use std::collections::HashSet;
 use std::net::SocketAddr;
 use std::process::ExitCode;
 
-use kv9_common::{ApiType, Config, NodeId, SeedPeer};
-use kv9_server::{create_keyspace_blocking, NodeRuntime, RuntimeAuth};
+use kv9_common::{ApiType, ClusterId, Config, NodeId, SeedPeer};
+use kv9_server::{
+    admit_node_blocking, create_keyspace_blocking, promote_node_blocking, NodeRuntime, RuntimeAuth,
+};
 
 /// Parsed CLI arguments (DESIGN §11).
 #[derive(Debug, Default)]
@@ -22,6 +24,7 @@ struct Cli {
     addr: Option<String>,
     data_dir: Option<String>,
     join: Vec<SeedPeer>,
+    cluster_id: Option<ClusterId>,
 }
 
 fn print_usage() {
@@ -29,14 +32,17 @@ fn print_usage() {
         "kv9 — single-binary distributed KV\n\
          \n\
          USAGE:\n\
-           KV9_CLUSTER_TOKEN=<token> KV9_CLIENT_TOKENS=<principal=token,...> kv9 --node-id <id> [--addr <ip:port>] [--data-dir <path>] [--join <id@ip:port>[,<id@ip:port>...]]\n\
+           KV9_CLUSTER_TOKEN=<token> KV9_CLIENT_TOKENS=<principal=token,...> kv9 --node-id <id> [--addr <ip:port>] [--data-dir <path>] [--join <id@ip:port>[,<id@ip:port>...]] [--cluster-id <32-hex>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client create-keyspace --addr <ip:port> --name <name> --api-type <txn|raw> [--tenant-id <id>]\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>]\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client promote-node --addr <leader-ip:port> --node-id <id>\n\
          \n\
          FLAGS (DESIGN §11):\n\
            --node-id     non-zero stable identity of this node (required)\n\
            --addr        serving address to bind (default 127.0.0.1:20160)\n\
            --data-dir    local data directory (default ./kv9-data)\n\
            --join        fixed seed voters as comma-separated node-id@ip:port pairs\n\
+           --cluster-id  required only when this node is not one of the seed voters\n\
            -h, --help    print this help"
     );
 }
@@ -65,6 +71,14 @@ fn parse_cli(args: impl Iterator<Item = String>) -> std::result::Result<Cli, Str
                     .filter(|s| !s.trim().is_empty())
                     .map(parse_seed_peer)
                     .collect::<std::result::Result<Vec<_>, _>>()?;
+            }
+            "--cluster-id" => {
+                let value = args.next().ok_or("--cluster-id needs a value")?;
+                cli.cluster_id = Some(
+                    value
+                        .parse::<ClusterId>()
+                        .map_err(|error| error.to_string())?,
+                );
             }
             "-h" | "--help" => return Err("help".to_string()),
             other => return Err(format!("unknown argument: {other}")),
@@ -121,13 +135,18 @@ fn validate_declared_seed_set(cli: &Cli) -> std::result::Result<(), String> {
         .parse::<SocketAddr>()
         .map_err(|_| "--addr must be ip:port".to_string())?;
     match cli.join.iter().find(|seed| seed.node_id == node_id) {
-        Some(seed) if seed.addr == own_addr => Ok(()),
+        Some(seed) if seed.addr == own_addr && cli.cluster_id.is_none() => Ok(()),
+        Some(_) if cli.cluster_id.is_some() => Err(
+            "--cluster-id is only valid when this node is absent from --join (join-existing mode)"
+                .to_string(),
+        ),
         Some(seed) => Err(format!(
             "--join declares this node {} at {}, but --addr is {}",
             node_id.0, seed.addr, own_addr
         )),
+        None if cli.cluster_id.is_some() => Ok(()),
         None => Err(format!(
-            "--join fixed voter set must include this node id {}",
+            "node {} is absent from --join; join-existing mode requires --cluster-id",
             node_id.0
         )),
     }
@@ -167,12 +186,14 @@ fn main() -> ExitCode {
     };
 
     let node_id = cli.node_id.expect("parse_cli enforces node id");
+    let expected_cluster_id = cli.cluster_id;
     let auth = RuntimeAuth {
         cluster_token: std::env::var("KV9_CLUSTER_TOKEN").unwrap_or_default(),
         client_tokens: parse_client_tokens(&std::env::var("KV9_CLIENT_TOKENS").unwrap_or_default()),
     };
     let config = config_from_cli(cli);
-    let runtime = match NodeRuntime::start(node_id, config, auth) {
+    let runtime = match NodeRuntime::start_with_cluster(node_id, config, auth, expected_cluster_id)
+    {
         Ok(runtime) => runtime,
         Err(e) => {
             eprintln!("failed to start node: {e}");
@@ -193,10 +214,18 @@ fn main() -> ExitCode {
 }
 
 fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
-    if args.next().as_deref() != Some("create-keyspace") {
-        eprintln!("error: client command must be create-keyspace");
-        return ExitCode::FAILURE;
+    match args.next().as_deref() {
+        Some("create-keyspace") => run_create_keyspace(args),
+        Some("admit-node") => run_admit_node(args),
+        Some("promote-node") => run_promote_node(args),
+        _ => {
+            eprintln!("error: client command must be create-keyspace, admit-node, or promote-node");
+            ExitCode::FAILURE
+        }
     }
+}
+
+fn run_create_keyspace(mut args: impl Iterator<Item = String>) -> ExitCode {
     let mut addr = None;
     let mut name = None;
     let mut api_type = None;
@@ -243,11 +272,9 @@ fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
         eprintln!("error: --addr, --name, and --api-type are required");
         return ExitCode::FAILURE;
     };
-    let token = std::env::var("KV9_CLIENT_TOKEN").unwrap_or_default();
-    if token.is_empty() {
-        eprintln!("error: KV9_CLIENT_TOKEN must be non-empty");
+    let Some(token) = client_token() else {
         return ExitCode::FAILURE;
-    }
+    };
     match create_keyspace_blocking(&addr, &token, name, tenant_id, api_type) {
         Ok(response) => {
             println!("keyspace_id={}", response.keyspace_id);
@@ -260,6 +287,144 @@ fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
             ExitCode::FAILURE
         }
     }
+}
+
+fn run_admit_node(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut addr = None;
+    let mut node_id = None;
+    let mut node_addr = None;
+    let mut ttl_seconds = 600u64;
+    while let Some(flag) = args.next() {
+        let Some(value) = args.next() else {
+            eprintln!("error: {flag} needs a value");
+            return ExitCode::FAILURE;
+        };
+        match flag.as_str() {
+            "--addr" => addr = Some(value),
+            "--node-id" => node_id = parse_client_node_id(&value),
+            "--node-addr" => match value.parse::<SocketAddr>() {
+                Ok(value) => node_addr = Some(value),
+                Err(_) => {
+                    eprintln!("error: --node-addr must be ip:port");
+                    return ExitCode::FAILURE;
+                }
+            },
+            "--ttl-seconds" => match value.parse::<u64>() {
+                Ok(value) if value > 0 => ttl_seconds = value,
+                _ => {
+                    eprintln!("error: --ttl-seconds must be a non-zero integer");
+                    return ExitCode::FAILURE;
+                }
+            },
+            _ => {
+                eprintln!("error: unknown client flag {flag}");
+                return ExitCode::FAILURE;
+            }
+        }
+        if flag == "--node-id" && node_id.is_none() {
+            return ExitCode::FAILURE;
+        }
+    }
+    let Some((addr, node_id, node_addr)) = addr
+        .zip(node_id)
+        .zip(node_addr)
+        .map(|((addr, node_id), node_addr)| (addr, node_id, node_addr))
+    else {
+        eprintln!("error: --addr, --node-id, and --node-addr are required");
+        return ExitCode::FAILURE;
+    };
+    let Some(token) = client_token() else {
+        return ExitCode::FAILURE;
+    };
+    match admit_node_blocking(&addr, &token, node_id, node_addr.to_string(), ttl_seconds) {
+        Ok(response) => print_membership_response(response),
+        Err(error) => {
+            eprintln!("client request failed: {error}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn run_promote_node(mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut addr = None;
+    let mut node_id = None;
+    while let Some(flag) = args.next() {
+        let Some(value) = args.next() else {
+            eprintln!("error: {flag} needs a value");
+            return ExitCode::FAILURE;
+        };
+        match flag.as_str() {
+            "--addr" => addr = Some(value),
+            "--node-id" => node_id = parse_client_node_id(&value),
+            _ => {
+                eprintln!("error: unknown client flag {flag}");
+                return ExitCode::FAILURE;
+            }
+        }
+        if flag == "--node-id" && node_id.is_none() {
+            return ExitCode::FAILURE;
+        }
+    }
+    let Some((addr, node_id)) = addr.zip(node_id) else {
+        eprintln!("error: --addr and --node-id are required");
+        return ExitCode::FAILURE;
+    };
+    let Some(token) = client_token() else {
+        return ExitCode::FAILURE;
+    };
+    match promote_node_blocking(&addr, &token, node_id) {
+        Ok(response) => print_membership_response(response),
+        Err(error) => {
+            eprintln!("client request failed: {error}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn parse_client_node_id(value: &str) -> Option<NodeId> {
+    match value.parse::<u64>() {
+        Ok(value) if value > 0 => Some(NodeId(value)),
+        _ => {
+            eprintln!("error: --node-id must be a non-zero integer");
+            None
+        }
+    }
+}
+
+fn client_token() -> Option<String> {
+    let token = std::env::var("KV9_CLIENT_TOKEN").unwrap_or_default();
+    if token.is_empty() {
+        eprintln!("error: KV9_CLIENT_TOKEN must be non-empty");
+        None
+    } else {
+        Some(token)
+    }
+}
+
+fn print_membership_response(
+    response: kv9_server::grpc::proto::MembershipChangeResponse,
+) -> ExitCode {
+    println!("applied_term={}", response.applied_term);
+    println!("applied_index={}", response.applied_index);
+    println!(
+        "meta_voters={}",
+        response
+            .voters
+            .iter()
+            .map(u64::to_string)
+            .collect::<Vec<_>>()
+            .join(",")
+    );
+    println!(
+        "meta_learners={}",
+        response
+            .learners
+            .iter()
+            .map(u64::to_string)
+            .collect::<Vec<_>>()
+            .join(",")
+    );
+    ExitCode::SUCCESS
 }
 
 fn parse_client_tokens(value: &str) -> Vec<(String, String)> {
@@ -370,7 +535,36 @@ mod tests {
         ]));
         assert_eq!(
             missing_self.unwrap_err(),
-            "--join fixed voter set must include this node id 1"
+            "node 1 is absent from --join; join-existing mode requires --cluster-id"
+        );
+
+        let joining = parse_cli(args(&[
+            "--node-id",
+            "4",
+            "--addr",
+            "127.0.0.1:20163",
+            "--join",
+            "1@127.0.0.1:20160,2@127.0.0.1:20161,3@127.0.0.1:20162",
+            "--cluster-id",
+            "00112233445566778899aabbccddeeff",
+        ]))
+        .unwrap();
+        assert_eq!(
+            joining.cluster_id.unwrap().to_string(),
+            "00112233445566778899aabbccddeeff"
+        );
+
+        let initial_with_cluster = parse_cli(args(&[
+            "--node-id",
+            "1",
+            "--join",
+            "1@127.0.0.1:20160,2@127.0.0.1:20161",
+            "--cluster-id",
+            "00112233445566778899aabbccddeeff",
+        ]));
+        assert_eq!(
+            initial_with_cluster.unwrap_err(),
+            "--cluster-id is only valid when this node is absent from --join (join-existing mode)"
         );
 
         let mismatched_self = parse_cli(args(&[
