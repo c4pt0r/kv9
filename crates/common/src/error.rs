@@ -1,6 +1,6 @@
 //! Crate-wide error type (DESIGN §11). `thiserror`-based, shared across all kv9 crates.
 
-use crate::ids::{KeyspaceId, RegionId, TxnGroupId};
+use crate::ids::{KeyspaceId, NodeId, RegionId, TxnGroupId};
 
 /// The unified kv9 result alias.
 pub type Result<T> = std::result::Result<T, Error>;
@@ -98,11 +98,15 @@ pub enum Error {
     /// reaction is to retry against `leader`, and deciding that by matching on message
     /// text is the kind of check that silently stops working when the wording changes.
     /// The hint is `None` when this node does not yet know who leads (e.g. mid-election).
+    /// The hint is `Option<NodeId>`, matching `RaftPeer::leader_hint()` and
+    /// `NodeStatus::leader_id`, so that promoting an internal hint into this error is a
+    /// move rather than a translation. A second id representation would leave clients
+    /// handling two shapes of "you reached the wrong node".
     #[error("not leader{}", match .leader {
-        Some(id) => format!("; try node {id}"),
+        Some(id) => format!("; try node {}", id.0),
         None => String::new(),
     })]
-    NotLeader { leader: Option<u64> },
+    NotLeader { leader: Option<NodeId> },
 
     /// Storage engine error (DESIGN §6.2).
     #[error("engine error: {0}")]

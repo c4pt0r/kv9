@@ -28,7 +28,7 @@
 //! caller-supplied key and use it unprefixed.
 
 use kv9_common::codec::{decode_key, encode_key, keyspace_range, KeyMode};
-use kv9_common::{Error, KeyspaceId, Result, UserKey, Value};
+use kv9_common::{Error, KeyspaceId, NodeId, Result, UserKey, Value};
 use kv9_engine::{ColumnFamily, ReadView, WriteBatch};
 
 /// Raw values live in the default column family; `lock`/`write` belong to Percolator.
@@ -75,7 +75,11 @@ impl<'a> LeaderRead<'a> {
     /// Wrap `view` for reading, given the caller's leadership check.
     ///
     /// `leader_hint` is carried into the error so a client can be redirected.
-    pub fn new(view: &'a dyn ReadView, is_leader: bool, leader_hint: Option<u64>) -> Result<Self> {
+    pub fn new(
+        view: &'a dyn ReadView,
+        is_leader: bool,
+        leader_hint: Option<NodeId>,
+    ) -> Result<Self> {
         if !is_leader {
             return Err(Error::NotLeader { leader: leader_hint });
         }
@@ -299,7 +303,7 @@ mod tests {
 
     /// Reads in tests still have to go through the leader gate, exactly like production.
     fn leader<'a>(view: &'a dyn ReadView) -> LeaderRead<'a> {
-        LeaderRead::new(view, true, Some(1)).unwrap()
+        LeaderRead::new(view, true, Some(NodeId(1))).unwrap()
     }
 
     #[test]
@@ -427,8 +431,8 @@ mod tests {
         put(&engine, KS_A, b"k", b"v");
         let view = engine.snapshot().unwrap();
 
-        match LeaderRead::new(view.as_ref(), false, Some(3)) {
-            Err(Error::NotLeader { leader }) => assert_eq!(leader, Some(3), "hint must survive"),
+        match LeaderRead::new(view.as_ref(), false, Some(NodeId(3))) {
+            Err(Error::NotLeader { leader }) => assert_eq!(leader, Some(NodeId(3)), "hint must survive"),
             other => panic!("a follower must be refused, got {other:?}", other = other.is_ok()),
         }
         // Control: the same view is readable once leadership is asserted, so the refusal

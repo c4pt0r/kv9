@@ -673,10 +673,10 @@ impl RuntimeBackend {
     ///
     /// Not linearizable: `check_quorum` bounds how long a deposed leader keeps believing
     /// it leads, but within that window this returns stale data. See `LeaderRead`.
-    fn leader_read(&self) -> Result<(Box<dyn ReadView + '_>, Option<u64>, bool)> {
+    fn leader_read(&self) -> Result<(Box<dyn ReadView + '_>, Option<NodeId>, bool)> {
         let status = self.driver.status();
         let is_leader = status.role == Role::Leader;
-        let hint = status.leader_id.map(|id| id.0);
+        let hint = status.leader_id;
         let view = self.node.meta_raft.store.engine().snapshot()?;
         Ok((view, hint, is_leader))
     }
@@ -1862,7 +1862,7 @@ mod tests {
             |_cursor| {
                 planned += 1;
                 if planned == 2 {
-                    return Err(Error::NotLeader { leader: Some(3) });
+                    return Err(Error::NotLeader { leader: Some(NodeId(3)) });
                 }
                 let key = vec![b'k', planned as u8];
                 let mut batch = kv9_engine::WriteBatch::new();

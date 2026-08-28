@@ -294,7 +294,7 @@ pub enum RawClientOutcome<T> {
     Ok(T),
     /// The node refused because it does not lead. `leader` is `None` mid-election.
     NotLeader {
-        leader: Option<u64>,
+        leader: Option<kv9_common::NodeId>,
     },
 }
 
@@ -368,7 +368,8 @@ impl RawClient {
                         .metadata()
                         .get(LEADER_HINT_KEY)
                         .and_then(|value| value.to_str().ok())
-                        .and_then(|value| value.parse::<u64>().ok());
+                        .and_then(|value| value.parse::<u64>().ok())
+                        .map(kv9_common::NodeId);
                     Ok(RawClientOutcome::NotLeader { leader })
                 }
                 // A partial write is a *typed* outcome, not prose. Emitting the metadata
@@ -644,7 +645,7 @@ fn error_status(error: Error) -> Status {
             // Machine-readable redirect. The human message is prose and may be reworded;
             // a client that parsed it would break silently when someone edits the text.
             if let Some(node_id) = leader {
-                if let Ok(value) = node_id.to_string().parse() {
+                if let Ok(value) = node_id.0.to_string().parse() {
                     status.metadata_mut().insert(LEADER_HINT_KEY, value);
                 }
             }
@@ -1578,7 +1579,7 @@ mod tests {
     #[test]
     fn not_leader_maps_to_failed_precondition_and_carries_the_hint_only_when_known() {
         // With a known leader: redirectable.
-        let status = error_status(Error::NotLeader { leader: Some(7) });
+        let status = error_status(Error::NotLeader { leader: Some(NodeId(7)) });
         assert_eq!(status.code(), Code::FailedPrecondition);
         assert_eq!(
             status
@@ -1600,7 +1601,7 @@ mod tests {
         // Control: not-leader is distinguishable from the unavailable family, so a client
         // does not transparently retry the same healthy follower.
         assert_ne!(
-            error_status(Error::NotLeader { leader: Some(7) }).code(),
+            error_status(Error::NotLeader { leader: Some(NodeId(7)) }).code(),
             error_status(Error::Raft("stepped down".into())).code()
         );
     }
