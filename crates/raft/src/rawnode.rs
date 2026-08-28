@@ -79,6 +79,13 @@ struct PeerInner<S: PersistentRaftStorage> {
     outbox: Vec<Message>,
     /// Harness kill switch: a dead peer neither ticks nor receives messages.
     alive: bool,
+    /// Count of inbound messages `RawNode::step` rejected. Dropping one is
+    /// protocol-sanctioned (indistinguishable from packet loss; the sender
+    /// retransmits) — but a PERSISTENTLY growing count means a real problem
+    /// (stale peer, version skew, corrupt messages) that would otherwise be
+    /// invisible. Observability only; never fatal — a stale message from a
+    /// removed peer must not be able to kill a healthy node.
+    step_errors: u64,
 }
 
 impl RaftPeer<MemStorage> {
@@ -117,6 +124,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 ready: Vec::new(),
                 outbox: Vec::new(),
                 alive: true,
+                step_errors: 0,
             }),
         })
     }
@@ -174,11 +182,21 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         }
     }
 
+    /// Inbound raft message. A rejected message is DROPPED, not fatal: raft is
+    /// built for lossy transport and the sender retransmits — the opposite
+    /// contract from committed-entry apply, where nobody re-delivers and
+    /// skipping means divergence (droppable iff someone resends it).
     fn step(&self, msg: Message) {
         let mut g = self.lock();
-        if g.alive {
-            let _ = g.raw.step(msg);
+        if g.alive && g.raw.step(msg).is_err() {
+            g.step_errors += 1;
         }
+    }
+
+    /// How many inbound messages this peer's `step` has rejected (diagnostic;
+    /// see the field doc — growth signals misconfiguration, not data loss).
+    pub fn step_errors(&self) -> u64 {
+        self.lock().step_errors
     }
 
     /// Drain this peer's `Ready`: **persist entries + hardstate first**, then queue
