@@ -250,10 +250,13 @@ number spends the verification and delivers the guess.
 The last is kept because it is where the habit shows, but it sits outside what this rule
 governs. Two of the three land inside it.
 
-Two of these understated and one overstated, and on the strength of the two I told the owner I
-bias toward smaller/simpler — a theory the third killed within the hour. **The constant is not
-a direction, it is a missing action** — and a wrong self-diagnosis is worse than none, because
-guarding against understatement catches nothing when you overstate.
+Each distorted a different quantity. Describing the release as a CI-level change understated
+its **scope**; the 44-stub claim overstated **completed work** and so understated **what
+remained**. Both made the thing in front of the owner look smaller, and on the strength of that
+pair I told him I bias toward smaller/simpler. The `41 vs 40` **count** then overstated, within
+the hour, and falsified it. **The constant is not a direction, it is a missing action** — and a
+wrong self-diagnosis is worse than none, because guarding against understatement catches
+nothing when you overstate.
 
 *Second origin for the same half (Ren):* he had already written that false generalization into
 his own notes as a settled conclusion, on the strength of those same two data points. The third
