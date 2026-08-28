@@ -108,6 +108,17 @@ pub enum Error {
     })]
     NotLeader { leader: Option<NodeId> },
 
+    /// An object store was asked to write a second, different object under a key it already
+    /// holds (DESIGN §6.5).
+    ///
+    /// Distinct from [`Error::Engine`] because it is not a storage malfunction: the store is
+    /// healthy and is refusing on purpose. Objects are immutable and write-once, so this means
+    /// one file-id was assigned to two distinct objects; overwriting would corrupt bytes that a
+    /// committed manifest already references. Re-writing *identical* content is not this error —
+    /// retransmission is expected and succeeds. `key` is a file-id, never user data.
+    #[error("object {key} already exists with different content")]
+    ObjectContentMismatch { key: String },
+
     /// Storage engine error (DESIGN §6.2).
     #[error("engine error: {0}")]
     Engine(String),

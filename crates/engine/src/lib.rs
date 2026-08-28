@@ -7,6 +7,7 @@
 
 pub mod cf;
 pub mod mem;
+pub mod object_store;
 pub mod persist;
 #[cfg(any(test, feature = "testing"))]
 pub mod testing;
@@ -15,6 +16,7 @@ pub mod write_batch;
 
 pub use cf::ColumnFamily;
 pub use mem::MemEngine;
+pub use object_store::{MemoryObjectStore, ObjectKey, ObjectStore};
 pub use persist::WalEngine;
 #[cfg(any(test, feature = "testing"))]
 pub use testing::FaultyEngine;

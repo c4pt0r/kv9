@@ -642,6 +642,13 @@ fn error_status(error: Error) -> Status {
         | Error::SplitCrossesKeyspace
         | Error::CrossTxnGroup { .. } => Status::failed_precondition(message),
         Error::WriteConflict(_) | Error::KeyIsLocked => Status::aborted(message),
+        // `internal`, not `invalid_argument`: no client can reach this. Object writes are
+        // issued by the flush/drain worker, never by a request, so this variant escaping to
+        // the wire means an internal invariant broke -- one file-id was assigned to two
+        // distinct objects. Reporting it as a client error would send someone hunting through
+        // their own request for a fault that is ours. (Mapping proposed by Ren with the
+        // object-store work; wire semantics are Tess's call to confirm or override.)
+        Error::ObjectContentMismatch { .. } => Status::internal(message),
         Error::TsoUnavailable(_) | Error::MetaNotReady(_) | Error::Raft(_) => {
             Status::unavailable(message)
         }
