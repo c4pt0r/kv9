@@ -1,7 +1,10 @@
 //! Node configuration (DESIGN §11, §5.2, §6.4).
 //!
-//! Populated from CLI flags (`--join`, `--data-dir`, `--addr`, `--txn-groups`) by the
-//! `kv9` binary and passed into node assembly.
+//! Populated from CLI flags (`--join`, `--data-dir`, `--addr`) by the `kv9` binary and
+//! passed into node assembly. Note: txn groups are **not** node configuration — a txn
+//! group is a TSO shard *inside a keyspace* (DESIGN §3.6), declared per keyspace at
+//! `CREATE KEYSPACE ... [, txn_group = <g>]` (§3.2) and stored in the `txn_groups`
+//! catalog table keyed by `keyspace_id`.
 
 use serde::{Deserialize, Serialize};
 
@@ -15,9 +18,6 @@ pub struct Config {
     /// Seed / join set: peers to contact on start to discover the cluster
     /// (DESIGN §5.2 `--join`).
     pub join: Vec<String>,
-    /// Number of txn groups to declare at bootstrap (DESIGN §3.6 `--txn-groups`).
-    /// `1` means only the `default` group (classic single-TSO behavior).
-    pub txn_groups: u64,
     /// Number of WAL streams in this node's WAL pool (DESIGN §6.4). More streams =
     /// more write parallelism, less fsync amortization per stream.
     pub wal_streams: usize,
@@ -31,7 +31,6 @@ impl Default for Config {
             addr: "127.0.0.1:20160".to_string(),
             data_dir: "./kv9-data".to_string(),
             join: Vec::new(),
-            txn_groups: 1,
             wal_streams: 1,
             replication_factor: 3,
         }
@@ -41,11 +40,6 @@ impl Default for Config {
 impl Config {
     /// Basic validation of a config (DESIGN §11).
     pub fn validate(&self) -> crate::error::Result<()> {
-        if self.txn_groups == 0 {
-            return Err(crate::error::Error::Config(
-                "txn_groups must be >= 1".into(),
-            ));
-        }
         if self.wal_streams == 0 {
             return Err(crate::error::Error::Config(
                 "wal_streams must be >= 1".into(),
