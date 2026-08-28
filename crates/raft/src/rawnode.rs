@@ -357,7 +357,7 @@ mod tests {
 
     fn run<F: Fn(&InProcessCluster, &[MemStateMachine]) -> bool>(
         cluster: &InProcessCluster,
-        sms: &mut Vec<MemStateMachine>,
+        sms: &mut [MemStateMachine],
         what: &str,
         cond: F,
     ) {
@@ -377,7 +377,9 @@ mod tests {
         let cluster = InProcessCluster::new(R, &[N1]).unwrap();
         let mut sms = vec![MemStateMachine::new()];
         cluster.peers()[0].campaign().unwrap();
-        run(&cluster, &mut sms, "self-elect", |c, _| c.leader().is_some());
+        run(&cluster, &mut sms, "self-elect", |c, _| {
+            c.leader().is_some()
+        });
 
         let at = cluster.peers()[0].propose_traced(put(b"k", b"v")).unwrap();
         run(&cluster, &mut sms, "applied", |_, sms| {
@@ -439,7 +441,9 @@ mod tests {
             .map(|(i, _)| i)
             .collect();
         run(&cluster, &mut sms, "survivors applied", |_, sms| {
-            survivors.iter().all(|&i| sms[i].applied_index() >= at2.index)
+            survivors
+                .iter()
+                .all(|&i| sms[i].applied_index() >= at2.index)
         });
         for &i in &survivors {
             assert_eq!(
@@ -485,13 +489,18 @@ mod tests {
             .propose_traced(put(b"live", b"yes"))
             .unwrap();
         assert!(at2.term > orphan.term, "new leader must have a higher term");
-        run(&cluster, &mut sms, "survivors applied live write", |c, sms| {
-            c.peers()
-                .iter()
-                .zip(sms.iter())
-                .filter(|(p, _)| p.node_id() != old_leader)
-                .all(|(_, sm)| sm.applied_index() >= at2.index)
-        });
+        run(
+            &cluster,
+            &mut sms,
+            "survivors applied live write",
+            |c, sms| {
+                c.peers()
+                    .iter()
+                    .zip(sms.iter())
+                    .filter(|(p, _)| p.node_id() != old_leader)
+                    .all(|(_, sm)| sm.applied_index() >= at2.index)
+            },
+        );
 
         // Rejoin the old leader; its orphan entry is truncated away.
         cluster.set_alive(old_leader, true);

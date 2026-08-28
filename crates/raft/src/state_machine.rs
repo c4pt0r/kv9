@@ -7,8 +7,8 @@
 //! top of* this KV.
 //!
 //! Phase-1 path: `propose(cmd) → committed → apply → read` over the existing
-//! [`crate::RaftGroup`] trait / [`crate::SingleNodeRaft`] stub. `// TODO(phase1): back by
-//! openraft` marks where real consensus replaces the single-node stub.
+//! [`crate::RaftGroup`] trait. Phase 1 provides both the immediate single-node group and
+//! the deterministic raft-rs [`crate::RaftPeer`] adapter behind that same pull model.
 
 use std::sync::Arc;
 
@@ -112,8 +112,7 @@ impl<E: Engine> MemStateMachine<E> {
 impl<E: Engine> StateMachine for MemStateMachine<E> {
     fn apply(&mut self, entry: &CommittedEntry) -> Result<ApplyResult> {
         // Phase-1: the committed entry carries opaque bytes; decode to a Command, then
-        // apply its write batch. Command::decode is a Phase-1 stub, so the exercised
-        // path in tests uses apply_command directly. // TODO(phase1): back by openraft.
+        // apply its write batch.
         let cmd = Command::decode(&entry.data)?;
         self.apply_command(entry.index, &cmd)
     }
@@ -131,7 +130,7 @@ impl<E: Engine> StateMachine for MemStateMachine<E> {
 /// immediately, so this is the whole path; real consensus commits asynchronously.
 pub fn drive_apply<R, S>(raft: &R, sm: &mut S) -> Result<Vec<ApplyResult>>
 where
-    R: crate::RaftGroup,
+    R: crate::RaftGroup + ?Sized,
     S: StateMachine,
 {
     let ready = raft.take_ready()?;
