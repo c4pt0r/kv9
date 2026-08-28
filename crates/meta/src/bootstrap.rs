@@ -29,7 +29,38 @@
 //!   a wiped node is a *new* node. (raft-rs `initialize()` requires a pristine node,
 //!   enforcing this at the library layer too.)
 
+use std::path::Path;
+
 use kv9_common::{Error, NodeId, Result};
+
+/// Marker file recording that this data-dir belongs to an initialized cluster
+/// (fencing rule c). Written when initialization commits / the catalog is first
+/// observed; read at startup. A wiped dir = a new node.
+pub const INIT_MARKER_FILE: &str = "kv9-initialized";
+
+/// Does `data_dir` carry the initialized marker?
+pub fn init_marker_exists(data_dir: &Path) -> bool {
+    data_dir.join(INIT_MARKER_FILE).is_file()
+}
+
+/// Durably write the initialized marker (write temp + fsync + rename, so a
+/// crash mid-write never leaves a half-marker that reads as initialized).
+pub fn write_init_marker(data_dir: &Path) -> Result<()> {
+    std::fs::create_dir_all(data_dir)
+        .map_err(|e| Error::MetaNotReady(format!("create {}: {e}", data_dir.display())))?;
+    let tmp = data_dir.join(format!("{INIT_MARKER_FILE}.tmp"));
+    let path = data_dir.join(INIT_MARKER_FILE);
+    {
+        use std::io::Write;
+        let mut f = std::fs::File::create(&tmp)
+            .map_err(|e| Error::MetaNotReady(format!("marker create: {e}")))?;
+        f.write_all(b"initialized\n")
+            .and_then(|_| f.sync_all())
+            .map_err(|e| Error::MetaNotReady(format!("marker write: {e}")))?;
+    }
+    std::fs::rename(&tmp, &path)
+        .map_err(|e| Error::MetaNotReady(format!("marker rename: {e}")))
+}
 
 /// The node lifecycle states during bootstrap (DESIGN §5.2).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -88,6 +119,17 @@ impl Bootstrap {
     /// node alone is its quorum (DESIGN §5.2's trivial case).
     pub fn new(node: NodeId) -> Self {
         Bootstrap::with_seeds(node, Vec::new())
+    }
+
+    /// [`Self::with_seeds`], additionally reading the durable initialized marker
+    /// from `data_dir` (fencing rule c across real process restarts): a marked
+    /// dir starts with re-initialization permanently forbidden.
+    pub fn with_seeds_at(node: NodeId, seeds: Vec<NodeId>, data_dir: &Path) -> Self {
+        let mut b = Bootstrap::with_seeds(node, seeds);
+        if init_marker_exists(data_dir) {
+            b.mark_data_dir_initialized();
+        }
+        b
     }
 
     /// Start with the declared seed set from `--join`. This node is always counted
@@ -295,6 +337,47 @@ mod tests {
         b.on_event(BootstrapEvent::MetadataInitialized).unwrap();
         assert!(b.is_serving());
         assert!(b.data_dir_initialized());
+    }
+
+    /// The marker survives a real process restart (file, not memory): a
+    /// re-created FSM over the same data-dir refuses re-initialization and
+    /// takes the Joining path. Control: a wiped dir is a new node again.
+    #[test]
+    fn init_marker_persists_across_restart() {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-marker-{}-{:?}",
+            std::process::id(),
+            std::thread::current().id()
+        ));
+        let _ = std::fs::remove_dir_all(&dir);
+
+        // First incarnation: fresh dir, bootstrap allowed, init commits → marker.
+        let mut b = Bootstrap::with_seeds_at(N1, vec![N1, N2, N3], &dir);
+        assert!(!b.data_dir_initialized());
+        b.discovered_uninitialized(&[N1, N2]).unwrap();
+        b.on_event(BootstrapEvent::WonElection).unwrap();
+        b.on_event(BootstrapEvent::MetadataInitialized).unwrap();
+        write_init_marker(&dir).unwrap();
+
+        // "Restart": a new FSM over the same dir must refuse re-init…
+        let mut restarted = Bootstrap::with_seeds_at(N1, vec![N1, N2, N3], &dir);
+        assert!(restarted.data_dir_initialized());
+        assert!(restarted.discovered_uninitialized(&[N1, N2, N3]).is_err());
+        // …but joins normally.
+        assert_eq!(
+            restarted.on_event(BootstrapEvent::FoundInitialized).unwrap(),
+            BootstrapState::Joining
+        );
+
+        // Control (sensitivity): a wiped dir is a NEW node — bootstrap opens again.
+        let _ = std::fs::remove_dir_all(&dir);
+        let mut wiped = Bootstrap::with_seeds_at(N1, vec![N1, N2, N3], &dir);
+        assert!(!wiped.data_dir_initialized());
+        assert_eq!(
+            wiped.discovered_uninitialized(&[N1, N2]).unwrap(),
+            BootstrapState::BootstrapElection
+        );
+        let _ = std::fs::remove_dir_all(&dir);
     }
 
     /// Loser path: wait for the catalog, register, serve — marker set on observing
