@@ -474,6 +474,22 @@ impl RegistrationBackend for RuntimeBackend {
 /// as a whole does not.
 const RAW_DELETE_RANGE_CHUNK: usize = 1024;
 
+/// Does a half-open range ending at `end` stay inside a region ending at `region_end`?
+///
+/// Both "empty" values mean "to the end of the enclosing space", but of *different* spaces:
+/// an empty `region_end` is the last region of the keyspace, while an empty `end` asks for
+/// the whole keyspace. So an empty `end` is only satisfiable by a region that itself runs
+/// to the end — otherwise the request reaches past this region and the client must split
+/// it. Kept as a pure function because that asymmetry is the whole rule and is easy to get
+/// backwards.
+fn range_end_within_region(end: &[u8], region_end: &[u8]) -> bool {
+    if region_end.is_empty() {
+        // Trailing region: nothing can be beyond it, including an unbounded end.
+        return true;
+    }
+    !end.is_empty() && end <= region_end
+}
+
 /// Which keys a request touches, so the region gate can check the right thing.
 ///
 /// Modelled as a type rather than a set of flags because the three cases genuinely differ:
@@ -521,17 +537,11 @@ impl<'a> KeySpan<'a> {
                 Ok(())
             }
             KeySpan::Range { end, .. } => {
-                if region.end_key.is_empty() {
-                    // The trailing region runs to the end of the keyspace, so any end is
-                    // inside it — including the empty "to the end" end.
-                    return Ok(());
+                if range_end_within_region(end, &region.end_key) {
+                    Ok(())
+                } else {
+                    Err(Error::RangeCrossesRegion)
                 }
-                // An empty end means "to the end of the keyspace", which is beyond a
-                // region that does not itself run to the end.
-                if end.is_empty() || *end > region.end_key.as_slice() {
-                    return Err(Error::RangeCrossesRegion);
-                }
-                Ok(())
             }
         }
     }
@@ -1605,6 +1615,33 @@ mod tests {
     use kv9_raft::transport::{InProcHub, RaftTransport};
     use kv9_raft::Command;
     use tonic::Code;
+
+    /// The asymmetry between the two "empty means to the end" values is the whole rule,
+    /// and it is easy to get backwards -- an empty `end` asks for the whole *keyspace*,
+    /// while an empty `region_end` only says this region is the keyspace's last.
+    #[test]
+    fn an_unbounded_range_end_is_only_legal_in_the_trailing_region() {
+        // Trailing region (empty end_key): everything is inside it, including unbounded.
+        assert!(range_end_within_region(b"", b""), "unbounded in trailing region");
+        assert!(range_end_within_region(b"m", b""), "bounded in trailing region");
+
+        // A bounded region cannot satisfy "to the end of the keyspace".
+        assert!(
+            !range_end_within_region(b"", b"m"),
+            "an unbounded end reaches past a region that is not the last"
+        );
+
+        // Ordinary containment, and the half-open boundary itself.
+        assert!(range_end_within_region(b"a", b"m"), "end before region end");
+        assert!(
+            range_end_within_region(b"m", b"m"),
+            "end == region end is inside: the range is half-open, so it stops short of m"
+        );
+        assert!(
+            !range_end_within_region(b"z", b"m"),
+            "end past region end crosses into the next region"
+        );
+    }
 
     /// Plans `total` one-key chunks, then stops. Each chunk deletes a distinct key so
     /// the *effect* of each chunk is separately observable.
