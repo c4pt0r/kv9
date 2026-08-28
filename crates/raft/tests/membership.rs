@@ -1,7 +1,8 @@
 //! Task #24: dynamic membership through the REAL apply pipeline.
 //!
 //! The flow under test is the one the runtime will drive: a cluster of 3
-//! declared voters is live; a 4th node starts with an EMPTY configuration
+//! declared voters is live; a 4th node starts seeded with the log-start
+//! (bootstrap) voter set, itself in NEITHER set
 //! (`RaftPeer::new_joining` — it is nobody until admitted); the leader
 //! proposes `AddLearnerNode`; the conf entry travels the log, each driver's
 //! apply loop routes it through `apply_conf_change` (NOT `Command::decode` —
@@ -26,8 +27,10 @@ use std::time::Duration;
 use kv9_common::{NodeId, RegionId};
 use kv9_raft::driver::NodeDriver;
 use kv9_raft::transport::{InProcHub, RaftTransport};
-use kv9_raft::{cf_code, Command, MemStateMachine, RaftGroup, RaftPeer, Role};
+use kv9_raft::{cf_code, Command, EntryKind, MemStateMachine, RaftGroup, RaftPeer, Role};
 use kv9_engine::ColumnFamily;
+use protobuf::Message as PbMessage;
+use raft::eraftpb::{ConfChangeSingle, ConfChangeType, ConfChangeV2};
 
 struct Node {
     driver: Arc<NodeDriver>,
@@ -131,10 +134,7 @@ fn learner_joins_catches_up_promotes_and_survives_failover() {
     // membership apply_conf_change actually produced.
     let at = nodes[leader].driver.add_learner(joiner_id).unwrap();
     drive_until(&mut nodes, "learner conf applied on leader", |ns| {
-        ns[leader]
-            .driver
-            .wait_applied(at, Duration::from_millis(1))
-            .unwrap_or(false)
+        ns[leader].driver.status().conf_index == at.index.0
     });
     let receipt = nodes[leader]
         .driver
@@ -176,10 +176,7 @@ fn learner_joins_catches_up_promotes_and_survives_failover() {
     // ---- Promote: learner -> voter, one change at a time. ----
     let at = nodes[leader].driver.promote_voter(joiner_id).unwrap();
     drive_until(&mut nodes, "promotion applied on leader", |ns| {
-        ns[leader]
-            .driver
-            .wait_applied(at, Duration::from_millis(1))
-            .unwrap_or(false)
+        ns[leader].driver.status().conf_index == at.index.0
     });
     let receipt = nodes[leader]
         .driver
@@ -245,4 +242,259 @@ fn unadmitted_joiner_reports_unconfigured_not_follower() {
     // It knows the cluster's bootstrap voters, but is in neither set itself.
     assert_eq!(s.voters, vec![1, 2, 3]);
     assert!(s.learners.is_empty());
+}
+
+
+fn cc_bytes(node: u64, kind: ConfChangeType) -> Vec<u8> {
+    let mut step = ConfChangeSingle::default();
+    step.set_change_type(kind);
+    step.node_id = node;
+    let mut cc = ConfChangeV2::default();
+    cc.set_changes(vec![step].into());
+    cc.write_to_bytes().unwrap()
+}
+
+/// The restart replay guard, deterministically (Tess's P0): single-step conf
+/// ops are RELATIVE — replaying an already-applied `AddLearner(4)` onto a
+/// config where 4 was later promoted DEMOTES it. A conf entry at or below the
+/// recovered boundary must be skipped, not re-applied.
+///
+/// Sensitivity: without the `index <= conf_applied` guard, the final assert
+/// fails with node 4 demoted to learner (verified by running against the
+/// guard-free code).
+#[test]
+fn stale_conf_entry_replay_is_skipped_not_reapplied() {
+    let voters: Vec<NodeId> = (1..=3).map(NodeId).collect();
+    let peer = RaftPeer::new(NodeId(1), RegionId(3), &voters).unwrap();
+
+    let (v, l) = peer
+        .apply_conf_change_bytes(
+            EntryKind::ConfChangeV2,
+            &cc_bytes(4, ConfChangeType::AddLearnerNode),
+            5,
+        )
+        .unwrap();
+    assert_eq!((v, l), (vec![1, 2, 3], vec![4]));
+
+    let (v, l) = peer
+        .apply_conf_change_bytes(
+            EntryKind::ConfChangeV2,
+            &cc_bytes(4, ConfChangeType::AddNode),
+            6,
+        )
+        .unwrap();
+    assert_eq!((v, l), (vec![1, 2, 3, 4], vec![]));
+
+    // Replay of the OLD AddLearner at index 5 (as a restart would hand it
+    // back with Config.applied = 0): membership must be UNCHANGED.
+    let (v, l) = peer
+        .apply_conf_change_bytes(
+            EntryKind::ConfChangeV2,
+            &cc_bytes(4, ConfChangeType::AddLearnerNode),
+            5,
+        )
+        .unwrap();
+    assert_eq!(
+        (v, l),
+        (vec![1, 2, 3, 4], vec![]),
+        "stale conf replay demoted a promoted voter"
+    );
+}
+
+/// Cindy's hold-release condition 2: after a conf change in a LATER term than
+/// the last command, status must keep reporting the COMMAND's own
+/// `(applied_index, applied_term)` pair — never the old command index glued to
+/// the conf entry's newer term (a position that never existed). Sensitivity:
+/// with conf entries pushed into the command ring (the pre-fix behavior) the
+/// `applied_term` assert below reads the conf term and fails.
+#[test]
+fn status_pair_stays_command_sourced_across_conf_changes() {
+    let region = RegionId(2);
+    let voters: Vec<NodeId> = (1..=3).map(NodeId).collect();
+    let hub = InProcHub::new();
+    let mut nodes: Vec<Node> = voters
+        .iter()
+        .map(|&id| {
+            let peer = Arc::new(RaftPeer::new(id, region, &voters).unwrap());
+            let endpoint = hub.endpoint(id);
+            Node {
+                driver: NodeDriver::new(
+                    peer,
+                    Arc::new(endpoint) as Arc<dyn RaftTransport>,
+                    MemStateMachine::new(),
+                ),
+                alive: true,
+            }
+        })
+        .collect();
+
+    nodes[0].driver.peer().campaign().unwrap();
+    drive_until(&mut nodes, "leader", |ns| leader_of(ns).is_some());
+    let first = leader_of(&nodes).unwrap();
+
+    // Last command, in the FIRST leader's term.
+    let cmd_at = nodes[first].driver.propose(&put(b"pair", b"anchor")).unwrap();
+    drive_until(&mut nodes, "command applied everywhere", |ns| {
+        ns.iter().all(|n| {
+            n.driver
+                .wait_applied(cmd_at, Duration::from_millis(1))
+                .unwrap_or(false)
+        })
+    });
+
+    // Force a term change: kill the leader, elect another.
+    nodes[first].alive = false;
+    drive_until(&mut nodes, "new leader", |ns| {
+        leader_of(ns).is_some_and(|l| l != first)
+    });
+    let second = leader_of(&nodes).unwrap();
+    let new_term = nodes[second].driver.status().term;
+    assert!(new_term > cmd_at.term, "term must have advanced");
+
+    // Conf change in the NEW term, with NO new command.
+    let conf_at = nodes[second].driver.add_learner(NodeId(9)).unwrap();
+    assert_eq!(conf_at.term, new_term);
+    let receipt = nodes[second]
+        .driver
+        .wait_conf_applied(conf_at, Duration::from_secs(5));
+    // Drive until the conf is applied on the new leader.
+    for _ in 0..2000 {
+        drive(&mut nodes);
+        if nodes[second].driver.status().conf_index == conf_at.index.0 {
+            break;
+        }
+    }
+    drop(receipt); // first call may have raced the pump; re-check below
+    let receipt = nodes[second]
+        .driver
+        .wait_conf_applied(conf_at, Duration::from_secs(5))
+        .unwrap();
+    assert_eq!(receipt.learners, vec![9]);
+
+    let s = nodes[second].driver.status();
+    assert_eq!(s.conf_index, conf_at.index.0, "conf_index is its own field");
+    assert_eq!(
+        (s.applied_index, s.applied_term),
+        (cmd_at.index.0, cmd_at.term),
+        "status pair must be the last COMMAND's own (index, term) — a conf \
+         entry in a newer term must not contaminate it"
+    );
+}
+
+
+/// Tess's P0, recovery half: after learner->promote, a REOPENED node comes
+/// back with the FINAL membership and the conf boundary, and replay does not
+/// re-apply conf entries. The mechanical distinguisher: re-application would
+/// append fresh `REC_CONF_STATE_AT` records, so the raft log FILE MUST NOT
+/// GROW during replay (a converged end-state alone could hide a
+/// demote-then-repromote round trip — Tess's correction).
+#[test]
+fn reopen_recovers_conf_state_without_reapplying() {
+    use kv9_raft::rawnode::PersistentRaftStorage;
+    use kv9_raft::storage::DiskRaftStorage;
+
+    let region = RegionId(7);
+    let voters: Vec<NodeId> = (1..=3).map(NodeId).collect();
+    let base = std::env::temp_dir().join(format!(
+        "kv9-membership-reopen-{}-{:?}",
+        std::process::id(),
+        std::thread::current().id()
+    ));
+    let _ = std::fs::remove_dir_all(&base);
+    let dir = |n: u64| {
+        let d = base.join(format!("n{n}"));
+        std::fs::create_dir_all(&d).unwrap();
+        d
+    };
+
+    let voter_ids: Vec<u64> = voters.iter().map(|n| n.0).collect();
+    let hub = InProcHub::new();
+    let mk = |id: NodeId| {
+        let (storage, _) = DiskRaftStorage::open(&dir(id.0), &voter_ids).unwrap();
+        let peer = Arc::new(RaftPeer::with_storage(id, region, storage).unwrap());
+        let endpoint = hub.endpoint(id);
+        NodeDriver::new(
+            peer,
+            Arc::new(endpoint) as Arc<dyn RaftTransport>,
+            MemStateMachine::new(),
+        )
+    };
+    let mut drivers: Vec<_> = voters.iter().map(|&id| mk(id)).collect();
+    type DiskDriver = Arc<NodeDriver<DiskRaftStorage>>;
+    let drive_all = |ds: &[DiskDriver]| {
+        for d in ds {
+            d.tick_and_step().expect("disk driver poisoned");
+        }
+    };
+    let wait_for = |ds: &mut Vec<DiskDriver>,
+                    what: &str,
+                    cond: &dyn Fn(&[DiskDriver]) -> bool| {
+        for _ in 0..2000 {
+            drive_all(ds);
+            if cond(ds) {
+                return;
+            }
+        }
+        panic!("condition never reached: {what}");
+    };
+
+    drivers[0].peer().campaign().unwrap();
+    wait_for(&mut drivers, "disk leader", &|ds| {
+        ds.iter().any(|d| d.status().role == Role::Leader)
+    });
+    let leader = drivers
+        .iter()
+        .position(|d| d.status().role == Role::Leader)
+        .unwrap();
+
+    // Join node 4 (disk-backed, seeded with the log-start voters), promote it.
+    drivers.push(mk(NodeId(4)));
+    let at = drivers[leader].add_learner(NodeId(4)).unwrap();
+    wait_for(&mut drivers, "disk learner applied", &|ds| {
+        ds[leader].status().conf_index == at.index.0
+    });
+    let at = drivers[leader].promote_voter(NodeId(4)).unwrap();
+    let _ = at;
+    wait_for(&mut drivers, "disk promote applied", &|ds| {
+        ds.iter().all(|d| d.status().voters == vec![1, 2, 3, 4])
+    });
+
+    // Restart node 2: reopen its raft log alone and replay.
+    let victim = 1usize; // index of node 2
+    assert_eq!(drivers[victim].status().node_id, NodeId(2));
+    drop(drivers.remove(victim));
+
+    let log_path = dir(2).join("raft.log");
+    let len_before = std::fs::metadata(&log_path).unwrap().len();
+
+    let (storage, was_pristine) = DiskRaftStorage::open(&dir(2), &voter_ids).unwrap();
+    assert!(!was_pristine);
+    assert!(
+        storage.recovered_conf_index() > 0,
+        "conf boundary must be recovered from the paired record"
+    );
+    let recovered = storage.recovered_conf_index();
+    let peer = Arc::new(RaftPeer::with_storage(NodeId(2), region, storage).unwrap());
+    let driver = NodeDriver::new(
+        peer,
+        Arc::new(hub.endpoint(NodeId(2))) as Arc<dyn RaftTransport>,
+        MemStateMachine::new(),
+    );
+    // Drive alone: with raft applied starting at 0, the committed prefix is
+    // re-handed to the driver; commands re-apply into the fresh (volatile)
+    // state machine, conf entries must be SKIPPED by the boundary guard.
+    for _ in 0..200 {
+        driver.tick_and_step().expect("reopen replay poisoned");
+    }
+    let s = driver.status();
+    assert_eq!(s.fatal, None);
+    assert_eq!(s.voters, vec![1, 2, 3, 4], "reopen lost the final membership");
+    assert_eq!(s.conf_index, recovered);
+    let len_after = std::fs::metadata(&log_path).unwrap().len();
+    assert_eq!(
+        len_before, len_after,
+        "replay re-applied conf entries (fresh ConfStateAt records were written)"
+    );
+
+    let _ = std::fs::remove_dir_all(&base);
 }

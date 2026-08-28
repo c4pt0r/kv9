@@ -46,6 +46,12 @@ use crate::rawnode::PersistentRaftStorage;
 const REC_CONF_STATE: u8 = 1;
 const REC_HARD_STATE: u8 = 2;
 const REC_ENTRY: u8 = 3;
+/// A post-conf-change membership PAIRED with the log index it took effect at
+/// (8-byte BE index + ConfState protobuf). One crash-safe record: the index is
+/// the replay guard, the ConfState is the membership — splitting them would
+/// let a crash land between the two (task #24). Kind 1 remains the index-0
+/// initial configuration written at open.
+const REC_CONF_STATE_AT: u8 = 4;
 
 /// Max record body; anything larger is corrupt (same spirit as the frame cap).
 const MAX_RECORD_LEN: u32 = 64 * 1024 * 1024;
@@ -65,6 +71,9 @@ pub struct DiskRaftStorage {
     mem: MemStorage,
     file: Mutex<File>,
     path: PathBuf,
+    /// Highest conf-change index recorded via `REC_CONF_STATE_AT` (0 = only
+    /// the initial configuration exists). The replay guard boundary.
+    conf_index: Mutex<u64>,
 }
 
 impl DiskRaftStorage {
@@ -95,6 +104,7 @@ impl DiskRaftStorage {
         let mem = MemStorage::new();
         let mut valid_len: u64 = 0;
         let mut saw_any = false;
+        let mut conf_idx: u64 = 0;
         let mut cursor: usize = 0;
         loop {
             let Some((kind, payload, next)) = next_record(&bytes, cursor) else {
@@ -108,6 +118,19 @@ impl DiskRaftStorage {
                         Error::Raft(format!("checksum-valid ConfState undecodable: {e}"))
                     })?;
                     mem.wl().set_conf_state(cs);
+                }
+                REC_CONF_STATE_AT => {
+                    if payload.len() < 8 {
+                        return Err(Error::Raft(
+                            "checksum-valid ConfStateAt record shorter than its index".into(),
+                        ));
+                    }
+                    let idx = u64::from_be_bytes(payload[..8].try_into().expect("8 bytes"));
+                    let cs = ConfState::parse_from_bytes(&payload[8..]).map_err(|e| {
+                        Error::Raft(format!("checksum-valid ConfStateAt undecodable: {e}"))
+                    })?;
+                    mem.wl().set_conf_state(cs);
+                    conf_idx = idx; // last write wins, in file order
                 }
                 REC_HARD_STATE => {
                     let hs = HardState::parse_from_bytes(payload).map_err(|e| {
@@ -146,6 +169,7 @@ impl DiskRaftStorage {
             mem,
             file: Mutex::new(file),
             path,
+            conf_index: Mutex::new(conf_idx),
         };
         let was_pristine = !saw_any;
         if was_pristine {
@@ -251,13 +275,21 @@ impl PersistentRaftStorage for DiskRaftStorage {
     /// A post-conf-change membership record (task #24). Replay is last-write-
     /// wins for `REC_CONF_STATE`, so the newest committed membership survives
     /// restart; omitting this write would resurrect the pre-change voter set.
-    fn set_conf_state(&self, cs: &ConfState) -> Result<()> {
-        let bytes = cs
+    fn set_conf_state(&self, cs: &ConfState, at_index: u64) -> Result<()> {
+        let pb = cs
             .write_to_bytes()
             .map_err(|e| Error::Raft(format!("confstate encode: {e}")))?;
-        self.write_record(REC_CONF_STATE, &bytes)?;
+        let mut bytes = Vec::with_capacity(8 + pb.len());
+        bytes.extend_from_slice(&at_index.to_be_bytes());
+        bytes.extend_from_slice(&pb);
+        self.write_record(REC_CONF_STATE_AT, &bytes)?;
         self.mem.wl().set_conf_state(cs.clone());
+        *self.conf_index.lock().expect("conf index poisoned") = at_index;
         Ok(())
+    }
+
+    fn recovered_conf_index(&self) -> u64 {
+        *self.conf_index.lock().expect("conf index poisoned")
     }
 }
 
