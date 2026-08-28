@@ -14,7 +14,7 @@ use kv9_engine::Engine;
 
 use crate::codec::{memcmp_uint, ColumnValue, RowValue};
 use crate::schema::{self, ColumnId, IndexId};
-use crate::store::MetaStore;
+use crate::store::{MetaStore, MetaTxn};
 
 // ---------------------------------------------------------------------------
 // Typed row structs (METADATA-CATALOG §2).
@@ -190,6 +190,16 @@ impl<'a, E: Engine> Tables<'a, E> {
     /// Point get: a keyspace by id (METADATA-CATALOG §4).
     pub fn keyspace(&self, id: KeyspaceId) -> Result<Option<Keyspace>> {
         let txn = self.store.begin()?;
+        Self::keyspace_in(&txn, id)
+    }
+
+    /// [`Self::keyspace`] against a CALLER-OWNED transaction — the txn-scoped
+    /// twin of [`Self::region_for_key_in`]. A context gate that must judge
+    /// keyspace + region + epoch together uses ONE `MetaTxn` for all three;
+    /// letting `keyspace()` open its own view would let a commit land between
+    /// the two reads and stitch a "validated" conclusion out of two moments
+    /// (Ren's #25 region-gate seam; Tess's same-view ruling).
+    pub fn keyspace_in(txn: &MetaTxn<'_, E>, id: KeyspaceId) -> Result<Option<Keyspace>> {
         let row = txn.get(&schema::KEYSPACES_DESC, &[memcmp_uint(id.0 as u64)])?;
         Ok(row.map(|r| decode_keyspace(id, &r.value)))
     }
