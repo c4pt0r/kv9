@@ -9,3 +9,4 @@ description = "kv9 self-hosted metadata plane: membership, keyspace catalog, rou
 kv9-common.workspace = true
 kv9-region.workspace = true
 kv9-raft.workspace = true
+kv9-engine.workspace = true

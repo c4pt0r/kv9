@@ -7,3 +7,4 @@ description = "kv9 consensus abstraction: RaftGroup trait + a single-node stub i
 
 [dependencies]
 kv9-common.workspace = true
+kv9-engine.workspace = true

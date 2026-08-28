@@ -3,6 +3,19 @@
 //! Consensus abstraction (DESIGN §6.1). Each region runs an independent Raft group
 //! (multi-raft); metadata-plane groups (L0 bootstrap, L1 meta-regions) use the same
 //! machinery (DESIGN §5). v0 ships a single-node stub; real consensus arrives in M2.
+//!
+//! Phase-1 spine (ROADMAP Phase 1): the [`state_machine`] module adds a [`StateMachine`]
+//! trait and a [`MemStateMachine`] backed by [`kv9_engine::MemEngine`] (the mocked
+//! storage), plus a `propose → commit → apply → read` path over the [`RaftGroup`] trait.
+//! The replicated payloads are [`Command`]s (metadata mutations). `openraft` is *not* a
+//! dependency yet — these are pure-Rust stubs; `// TODO(phase1): back by openraft` marks
+//! where real consensus plugs in.
+
+pub mod command;
+pub mod state_machine;
+
+pub use command::{cf_code, cf_from_code, Command, KvOp};
+pub use state_machine::{drive_apply, ApplyResult, MemStateMachine, StateMachine};
 
 use kv9_common::{NodeId, RegionId, Result};
 
