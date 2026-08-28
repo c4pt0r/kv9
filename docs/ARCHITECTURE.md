@@ -113,28 +113,26 @@ Companion to `DESIGN.md`. Each diagram cites the DESIGN section it visualizes.
 
 ---
 
-## 5. Sharded TSO — a pool of providers serving many keyspaces / txn groups (§3.6, §8.1)
+## 5. Sharded TSO — keyspace ⊇ txn groups; a pool of providers hosts the timelines (§3.6, §8.1)
 
 ```
-   keyspaces              txn groups              timelines               TSO provider pool (meta plane)
-  ┌────────┐             ┌──────────┐            ┌────────────┐          ┌───────────────────────────┐
-  │  ks A  ├──┐          │ default  ├──────────▶ │ TL:default │───────▶  │ Provider P1  (on node A)  │
-  │  ks B  ├──┼───────▶  └──────────┘            └────────────┘     ┌──▶ │  hosts TL:default , TL:G2 │
-  │  ks C  ├──┘          ┌──────────┐            ┌────────────┐     │    └───────────────────────────┘
-  │  ks D  ├──────────▶  │ group G2 ├──────────▶ │ TL:G2      │─────┘
-  └────────┘             └──────────┘            └────────────┘          ┌───────────────────────────┐
-  ┌────────┐             ┌──────────┐            ┌────────────┐          │ Provider P2  (on node C)  │
-  │  ks E  ├──────────▶  │ group G3 ├──────────▶ │ TL:G3      │───────▶  │  hosts TL:G3              │
-  └────────┘             └──────────┘            └────────────┘          └───────────────────────────┘
+  keyspaces                        txn groups (txn ks only)     timelines           TSO provider pool
+ ┌───────────────────┐            ┌──────────┐                ┌──────────┐        ┌─────────────────────┐
+ │ ks A  (txn)        │───────────▶│ A/g0     │──────────────▶│ TL:A.g0  │──────▶ │ Provider P1 (node A)│
+ │   1 group (default)│            └──────────┘                └──────────┘   ┌──▶ │  hosts TL:A.g0, B.g1│
+ ├───────────────────┤            ┌──────────┐                ┌──────────┐   │    └─────────────────────┘
+ │ ks B  (txn, HOT)   │  sharded ┬▶│ B/g0     │──────────────▶│ TL:B.g0  │───┘
+ │   3 groups by      │          ├▶│ B/g1     │──────────────▶│ TL:B.g1  │──────▶ ┌─────────────────────┐
+ │   user-id range    │          └▶│ B/g2     │──────────────▶│ TL:B.g2  │──────▶ │ Provider P2 (node C)│
+ ├───────────────────┤            └──────────┘                └──────────┘        │  hosts TL:B.g2      │
+ │ ks C  (raw)        │   — no txn groups, no timeline (no transactions at all) — └─────────────────────┘
+ └───────────────────┘
 
-     keyspace ─N:1─▶ txn group ─1:1─▶ timeline ─N:1─▶ provider     (assignment is DATA, rebalanceable:
-                                                                    hot group → dedicated provider;
-                                                                    many cold groups → share one)
-     INVARIANT: a transaction never crosses a txn group
-                ⇒ timelines are independent, NO global order / NO cross-group timestamp comparison.
+  hierarchy: tenant ─1:N▶ keyspace ─1:N▶ txn group ─1:1▶ timeline ─N:1▶ provider   (assignment is data,
+             rebalanceable: a hot group → its own provider; many cold groups → share one)
+  ABSOLUTE boundary: a transaction NEVER crosses a keyspace (raw keyspaces have no transactions).
+  within a txn keyspace: default 1 group = full SI; opt-in sharding ⇒ independent timelines, no cross-group txn.
 ```
-
----
 
 ## 6. Sharded WAL — K independent streams, each shared by many regions (§6.4)
 
