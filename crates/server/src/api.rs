@@ -85,9 +85,14 @@ pub trait TxnApi {
 pub trait RawApi {
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>>;
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>>;
-    fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<()>;
-    fn raw_batch_put(&self, ctx: &RequestContext, kvs: &[(UserKey, Value)]) -> Result<()>;
-    fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<()>;
+    fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value)
+        -> Result<AppliedPosition>;
+    fn raw_batch_put(
+        &self,
+        ctx: &RequestContext,
+        kvs: &[(UserKey, Value)],
+    ) -> Result<AppliedPosition>;
+    fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<AppliedPosition>;
     fn raw_scan(
         &self,
         ctx: &RequestContext,
@@ -95,7 +100,25 @@ pub trait RawApi {
         end: &[u8],
         limit: usize,
     ) -> Result<Vec<(UserKey, Value)>>;
-    fn raw_delete_range(&self, ctx: &RequestContext, start: &[u8], end: &[u8]) -> Result<()>;
+    fn raw_delete_range(
+        &self,
+        ctx: &RequestContext,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<DeleteRangeReceipt>;
+}
+
+/// How far a chunked range delete got.
+///
+/// Returned on success; on partial failure the same numbers travel in
+/// [`Error::PartialDeleteRange`](kv9_common::Error::PartialDeleteRange). Either way the
+/// caller can tell "nothing happened" from "some of it happened", which a bare error or a
+/// bare `()` cannot express.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct DeleteRangeReceipt {
+    pub committed_chunks: u64,
+    /// Position of the last chunk that applied; `None` when no chunk was needed.
+    pub last_applied: Option<AppliedPosition>,
 }
 
 /// A resolved region location handed back by routing (DESIGN §11 `GetRegion`).

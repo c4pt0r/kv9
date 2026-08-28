@@ -68,6 +68,30 @@ pub enum Error {
     #[error("raft error: {0}")]
     Raft(String),
 
+    /// A range or batch spans more than one region, so a single `RequestContext` (which
+    /// authorises exactly one region at one epoch) cannot cover it.
+    ///
+    /// Deliberately distinct from [`Error::StaleEpoch`] and `SplitCrossesKeyspace`: the
+    /// caller's epoch may be perfectly current, and nothing is crossing a keyspace. The
+    /// correct client reaction is to split the request by region, not to refresh an epoch.
+    #[error("range or batch crosses a region boundary")]
+    RangeCrossesRegion,
+
+    /// A chunked range delete committed some chunks and then failed.
+    ///
+    /// This must not surface as a plain error: a plain error reads as "nothing happened",
+    /// and here something did. The fields say exactly how far it got.
+    /// `cause` is for humans and diagnostics only. The machine-readable contract is the
+    /// three numbers, carried as response metadata; a client that parsed this string would
+    /// break the moment someone rewords it.
+    #[error("range delete stopped after {committed_chunks} committed chunk(s): {cause}")]
+    PartialDeleteRange {
+        committed_chunks: u64,
+        last_applied_term: u64,
+        last_applied_index: u64,
+        cause: String,
+    },
+
     /// This node does not currently lead the region, so it may not serve the request.
     ///
     /// Deliberately a distinct variant rather than a `Raft(String)`: a client's correct

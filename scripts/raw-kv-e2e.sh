@@ -145,21 +145,16 @@ key_hex="$(hex alpha)"
 value_hex="$(hex first-value)"
 
 # ---------------------------------------------------------------- write + read back
-client "$leader" raw-put --keyspace "$keyspace" --key-hex "$key_hex" --value-hex "$value_hex" >/dev/null
+put_output="$(client "$leader" raw-put --keyspace "$keyspace" --key-hex "$key_hex" --value-hex "$value_hex")"
 got="$(client "$leader" raw-get --keyspace "$keyspace" --key-hex "$key_hex")"
 test "$got" = "value_hex=${value_hex}" || { echo "FAIL: read-back got '$got'" >&2; exit 1; }
 
-# The write blocks until its own (term,index) applies, and nothing else is writing, so
-# the leader's applied position now *is* that write's position.
-#
-# NOTE: this is derived rather than returned. RawPut's response is `Empty`, so unlike
-# CreateKeyspace the client cannot report the exact pair it committed. Deriving it from
-# a quiescent status is weaker — it assumes no concurrent writer — and returning the
-# position in the response would remove the assumption. Flagged as a follow-up; it needs
-# a proto change, which is outside this task's lease.
-wait_until "the leader's status to publish the write" 10 applied_reached "$leader" 1
-write_term="$(status_value "$leader" applied_term)"
-write_index="$(status_value "$leader" applied_index)"
+# The position comes from the write's own response. Inferring it from a quiescent status
+# was not merely weaker, it was not evidence: `applied_reached leader 1` returns instantly
+# because CreateKeyspace already pushed the index past 1, and any concurrent command moves
+# the same number — so the script could assert against somebody else's write.
+write_term="$(awk -F= '$1 == "applied_term" { print $2 }' <<<"$put_output")"
+write_index="$(awk -F= '$1 == "applied_index" { print $2 }' <<<"$put_output")"
 test "$write_index" -gt 0 || { echo "FAIL: applied_index still 0 after write" >&2; exit 1; }
 echo "Write applied at (term=${write_term}, index=${write_index})."
 
@@ -215,13 +210,11 @@ echo "Pre-failover value survived on the new leader."
 # path still works after failover.
 second_key_hex="$(hex beta)"
 second_value_hex="$(hex second-value)"
-client "$new_leader" raw-put --keyspace "$keyspace" --key-hex "$second_key_hex" --value-hex "$second_value_hex" >/dev/null
+second_put_output="$(client "$new_leader" raw-put --keyspace "$keyspace" --key-hex "$second_key_hex" --value-hex "$second_value_hex")"
 got="$(client "$new_leader" raw-get --keyspace "$keyspace" --key-hex "$second_key_hex")"
 test "$got" = "value_hex=${second_value_hex}" || { echo "FAIL: post-failover write not readable, got '$got'" >&2; exit 1; }
-wait_until "the new leader's status to publish the post-failover write" 10 \
-  applied_reached "$new_leader" $((write_index + 1))
-post_failover_term="$(status_value "$new_leader" applied_term)"
-post_failover_index="$(status_value "$new_leader" applied_index)"
+post_failover_term="$(awk -F= '$1 == "applied_term" { print $2 }' <<<"$second_put_output")"
+post_failover_index="$(awk -F= '$1 == "applied_index" { print $2 }' <<<"$second_put_output")"
 test "$post_failover_index" -gt "$write_index" || { echo "FAIL: post-failover applied_index $post_failover_index did not advance past $write_index" >&2; exit 1; }
 echo "Proposal path still live after failover: (term=${post_failover_term}, index=${post_failover_index})."
 

@@ -38,8 +38,8 @@ use tonic::metadata::MetadataMap;
 use tonic::Status;
 
 use crate::api::{
-    AdminApi, AppliedPosition, ClusterInfo, CreateKeyspaceResult, MembershipChangeResult, RawApi,
-    RegionLocation, RequestContext, TxnApi,
+    AdminApi, AppliedPosition, ClusterInfo, CreateKeyspaceResult, DeleteRangeReceipt,
+    MembershipChangeResult, RawApi, RegionLocation, RequestContext, TxnApi,
 };
 use crate::grpc::{
     AuthContext, AuthInterceptor, AuthKind, Authenticator, Kv9Grpc, TokenAuthenticator,
@@ -517,9 +517,13 @@ impl RuntimeBackend {
     }
 
     /// Replicate one planned batch and wait for its exact position to apply.
-    fn commit_batch(&self, batch: kv9_engine::WriteBatch) -> Result<()> {
+    ///
+    /// Returns that position so the caller can hand it back to the client. Deriving it
+    /// afterwards from the status file cannot prove identity: a concurrent command moves
+    /// the same number, so the client would be shown someone else's write.
+    fn commit_batch(&self, batch: kv9_engine::WriteBatch) -> Result<AppliedPosition> {
         if batch.mutations().is_empty() {
-            return Ok(());
+            return Ok(AppliedPosition { term: 0, index: 0 });
         }
         // `write_from_batch`, not `from_batch`: the latter yields a `CatalogTxn`, and
         // sharing the catalog's wire tag would replay user data through the catalog path
@@ -527,7 +531,10 @@ impl RuntimeBackend {
         let command = Command::write_from_batch(&batch);
         let proposed = self.driver.propose(&command)?;
         match self.driver.wait_applied(proposed, RAW_APPLY_DEADLINE)? {
-            true => Ok(()),
+            true => Ok(AppliedPosition {
+                term: proposed.term,
+                index: proposed.index.0,
+            }),
             // The slot was taken by a different entry: a new leader overwrote this
             // position. Success is judged on (term, index), never on elapsed time.
             false => Err(Error::Raft(format!(
@@ -556,20 +563,29 @@ impl RawApi for RuntimeBackend {
         RawExecutor.batch_get(&read, ctx.keyspace, keys)
     }
 
-    fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<()> {
+    fn raw_put(
+        &self,
+        ctx: &RequestContext,
+        key: UserKey,
+        value: Value,
+    ) -> Result<AppliedPosition> {
         self.validated_context(ctx)?;
         let plan = RawExecutor.plan_put(ctx.keyspace, &key, value, RawWriteOptions::default())?;
         self.commit_batch(plan)
     }
 
-    fn raw_batch_put(&self, ctx: &RequestContext, pairs: &[(UserKey, Value)]) -> Result<()> {
+    fn raw_batch_put(
+        &self,
+        ctx: &RequestContext,
+        pairs: &[(UserKey, Value)],
+    ) -> Result<AppliedPosition> {
         self.validated_context(ctx)?;
         // One batch ⇒ one entry ⇒ all of these land together or none do.
         let plan = RawExecutor.plan_batch_put(ctx.keyspace, pairs, RawWriteOptions::default())?;
         self.commit_batch(plan)
     }
 
-    fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<()> {
+    fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<AppliedPosition> {
         self.validated_context(ctx)?;
         let plan = RawExecutor.plan_delete(ctx.keyspace, key)?;
         self.commit_batch(plan)
@@ -588,13 +604,19 @@ impl RawApi for RuntimeBackend {
         RawExecutor.scan(&read, ctx.keyspace, start, end, limit)
     }
 
-    fn raw_delete_range(&self, ctx: &RequestContext, start: &[u8], end: &[u8]) -> Result<()> {
+    fn raw_delete_range(
+        &self,
+        ctx: &RequestContext,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<DeleteRangeReceipt> {
         self.validated_context(ctx)?;
         // One chunk in memory at a time: read a bounded chunk, commit it, resume strictly
         // after the last key it covered. Planning the whole range up front bounded the
         // raft *entry* while leaving the planner unbounded.
         let mut cursor: Option<UserKey> = None;
-        let mut committed_chunks = 0usize;
+        let mut committed_chunks = 0u64;
+        let mut last_applied: Option<AppliedPosition> = None;
         loop {
             // Planning reads the range, so it needs the same leader gate as a scan.
             let planned = {
@@ -610,17 +632,32 @@ impl RawApi for RuntimeBackend {
                 )?
             };
             let Some((batch, last_key)) = planned else {
-                return Ok(());
+                return Ok(DeleteRangeReceipt {
+                    committed_chunks,
+                    last_applied,
+                });
             };
 
-            // A mid-range failure must not read as "nothing happened": report how far it
-            // got, so a half-finished delete is observable rather than invisible.
-            self.commit_batch(batch).map_err(|error| {
-                Error::Raft(format!(
-                    "raw delete_range stopped after {committed_chunks} committed chunk(s): {error}"
-                ))
-            })?;
+            // A mid-range failure must not read as "nothing happened": something did.
+            // Only report `PartialDeleteRange` once a chunk has actually committed —
+            // failing before the first one really is "nothing happened", and dressing
+            // that up as partial would be its own lie.
+            let position = match self.commit_batch(batch) {
+                Ok(position) => position,
+                Err(error) if committed_chunks > 0 => {
+                    let last = last_applied.unwrap_or(AppliedPosition { term: 0, index: 0 });
+                    return Err(Error::PartialDeleteRange {
+                        committed_chunks,
+                        last_applied_term: last.term,
+                        last_applied_index: last.index,
+                        // Kept for diagnosis, deliberately not part of the protocol.
+                        cause: error.to_string(),
+                    });
+                }
+                Err(error) => return Err(error),
+            };
             committed_chunks += 1;
+            last_applied = Some(position);
             cursor = Some(last_key);
         }
     }
