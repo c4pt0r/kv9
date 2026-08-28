@@ -23,6 +23,7 @@ use kv9_engine::{Engine, ReadView, WalEngine};
 use kv9_meta::bootstrap::{init_marker_exists, write_init_marker};
 use kv9_meta::codec::memcmp_uint;
 use kv9_meta::schema::{ColumnId, NODES_DESC, SCHEMA_VERSION_DESC};
+use kv9_meta::tables::Tables;
 use kv9_meta::{Bootstrap, BootstrapEvent, BootstrapState};
 use kv9_meta::{ColumnValue, RowValue};
 use kv9_raft::driver::NodeDriver;
@@ -473,6 +474,69 @@ impl RegistrationBackend for RuntimeBackend {
 /// as a whole does not.
 const RAW_DELETE_RANGE_CHUNK: usize = 1024;
 
+/// Which keys a request touches, so the region gate can check the right thing.
+///
+/// Modelled as a type rather than a set of flags because the three cases genuinely differ:
+/// a point authorises one key, a batch must prove *every* key lands in one region, and a
+/// range must prove its whole half-open span does. Collapsing them would mean checking the
+/// first key and hoping.
+enum KeySpan<'a> {
+    Point(&'a [u8]),
+    Batch(Vec<&'a [u8]>),
+    /// Half-open `[start, end)`; an empty `end` means "to the end of the keyspace".
+    Range { start: &'a [u8], end: &'a [u8] },
+}
+
+impl<'a> KeySpan<'a> {
+    /// The key used to resolve the region. An empty range start means the keyspace's
+    /// first key, which `region_for_key` already treats as the leading region.
+    fn anchor(&self) -> &[u8] {
+        match self {
+            KeySpan::Point(key) => key,
+            KeySpan::Batch(keys) => keys.first().copied().unwrap_or(&[]),
+            KeySpan::Range { start, .. } => start,
+        }
+    }
+
+    /// Prove the whole span lies inside `region`.
+    fn assert_within<E: kv9_engine::Engine>(
+        &self,
+        region: &kv9_meta::tables::Region,
+        txn: &kv9_meta::store::MetaTxn<'_, E>,
+        tables: &Tables<'_, E>,
+        keyspace: KeyspaceId,
+    ) -> Result<()> {
+        match self {
+            // Already resolved by this key.
+            KeySpan::Point(_) => Ok(()),
+            KeySpan::Batch(keys) => {
+                for key in keys {
+                    let owner = tables
+                        .region_for_key_in(txn, keyspace, key)?
+                        .ok_or(Error::RegionNotFound)?;
+                    if owner.id != region.id {
+                        return Err(Error::RangeCrossesRegion);
+                    }
+                }
+                Ok(())
+            }
+            KeySpan::Range { end, .. } => {
+                if region.end_key.is_empty() {
+                    // The trailing region runs to the end of the keyspace, so any end is
+                    // inside it — including the empty "to the end" end.
+                    return Ok(());
+                }
+                // An empty end means "to the end of the keyspace", which is beyond a
+                // region that does not itself run to the end.
+                if end.is_empty() || *end > region.end_key.as_slice() {
+                    return Err(Error::RangeCrossesRegion);
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
 /// The chunk loop of a range delete, separated from the machinery that plans and commits.
 ///
 /// Kept standalone so a failure can be injected at chunk N in a test. The interesting
@@ -535,27 +599,47 @@ where
 /// propose it, and wait for *that exact* `(term, index)` to apply. Writing the local
 /// engine directly would be faster and would silently fork the cluster.
 impl RuntimeBackend {
-    /// Validate the request context before any key is encoded.
+    /// Validate the request context before any key is encoded, from **one** view.
     ///
-    /// The context arrived from the wire and was only *deserialized*; nothing had checked
-    /// that the keyspace exists or that it is a raw keyspace. Encoding
-    /// `ctx.keyspace` straight into a physical key means a client can name a keyspace that
-    /// was never created, or write raw bytes into a `txn` keyspace where Percolator
-    /// expects its own lock/write structure — neither of which would error anywhere.
+    /// The context arrives from the wire already deserialized and otherwise unexamined.
+    /// Without this, a client could name a keyspace that was never created, or write raw
+    /// bytes into a `txn` keyspace where Percolator expects its own lock/write structure,
+    /// or act on a region whose epoch has since moved — none of which would error.
     ///
-    /// Every raw entry point goes through here: point, batch and range alike. A gate that
-    /// only some callers use is not a gate.
-    fn validated_context(&self, ctx: &RequestContext) -> Result<()> {
-        let keyspaces = self.node.list_keyspaces("raw")?;
-        let keyspace = keyspaces
-            .iter()
-            .find(|candidate| candidate.id == ctx.keyspace)
+    /// **Every lookup here shares a single `MetaTxn`.** Reading the keyspace from one
+    /// snapshot and the region from another would let a split commit in between, and the
+    /// verdict would then describe a state that never existed at any instant. That is the
+    /// same reason `ReadView` exists in `crates/engine`, and it applies with more force
+    /// here because the conclusion is an authorisation.
+    ///
+    /// One context authorises exactly **one region**: a range or batch spanning regions is
+    /// the client's to split, because a single epoch cannot speak for two regions.
+    fn validated_context(&self, ctx: &RequestContext, span: KeySpan<'_>) -> Result<()> {
+        let txn = self.node.meta_raft.store.begin()?;
+
+        let keyspace = Tables::<WalEngine>::keyspace_in(&txn, ctx.keyspace)?
             .ok_or(Error::KeyspaceNotFound(ctx.keyspace))?;
         if keyspace.api_type != ApiType::Raw {
             return Err(Error::ApiTypeMismatch {
                 keyspace: ctx.keyspace,
             });
         }
+
+        let tables = Tables::new(&self.node.meta_raft.store);
+        let anchor = span.anchor();
+        let region = tables
+            .region_for_key_in(&txn, ctx.keyspace, anchor)?
+            .ok_or(Error::RegionNotFound)?;
+
+        // Epoch first: a stale epoch is a different failure from a cross-region request,
+        // and a client's reaction differs (refresh routing vs. split the request).
+        if region.epoch_conf != ctx.region_epoch.conf_ver
+            || region.epoch_ver != ctx.region_epoch.version
+        {
+            return Err(Error::StaleEpoch { region: region.id });
+        }
+
+        span.assert_within(&region, &txn, &tables, ctx.keyspace)?;
         Ok(())
     }
 
@@ -605,14 +689,14 @@ const RAW_APPLY_DEADLINE: Duration = Duration::from_secs(10);
 
 impl RawApi for RuntimeBackend {
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>> {
-        self.validated_context(ctx)?;
+        self.validated_context(ctx, KeySpan::Point(key))?;
         let (view, hint, is_leader) = self.leader_read()?;
         let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
         RawExecutor.get(&read, ctx.keyspace, key)
     }
 
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>> {
-        self.validated_context(ctx)?;
+        self.validated_context(ctx, KeySpan::Batch(keys.iter().map(|k| k.as_slice()).collect()))?;
         let (view, hint, is_leader) = self.leader_read()?;
         let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
         RawExecutor.batch_get(&read, ctx.keyspace, keys)
@@ -624,7 +708,7 @@ impl RawApi for RuntimeBackend {
         key: UserKey,
         value: Value,
     ) -> Result<AppliedPosition> {
-        self.validated_context(ctx)?;
+        self.validated_context(ctx, KeySpan::Point(&key))?;
         let plan = RawExecutor.plan_put(ctx.keyspace, &key, value, RawWriteOptions::default())?;
         self.commit_batch(plan)
     }
@@ -634,14 +718,17 @@ impl RawApi for RuntimeBackend {
         ctx: &RequestContext,
         pairs: &[(UserKey, Value)],
     ) -> Result<AppliedPosition> {
-        self.validated_context(ctx)?;
+        self.validated_context(
+            ctx,
+            KeySpan::Batch(pairs.iter().map(|(k, _)| k.as_slice()).collect()),
+        )?;
         // One batch ⇒ one entry ⇒ all of these land together or none do.
         let plan = RawExecutor.plan_batch_put(ctx.keyspace, pairs, RawWriteOptions::default())?;
         self.commit_batch(plan)
     }
 
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<AppliedPosition> {
-        self.validated_context(ctx)?;
+        self.validated_context(ctx, KeySpan::Point(key))?;
         let plan = RawExecutor.plan_delete(ctx.keyspace, key)?;
         self.commit_batch(plan)
     }
@@ -653,7 +740,7 @@ impl RawApi for RuntimeBackend {
         end: &[u8],
         limit: usize,
     ) -> Result<Vec<(UserKey, Value)>> {
-        self.validated_context(ctx)?;
+        self.validated_context(ctx, KeySpan::Range { start, end })?;
         let (view, hint, is_leader) = self.leader_read()?;
         let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
         RawExecutor.scan(&read, ctx.keyspace, start, end, limit)
@@ -665,7 +752,7 @@ impl RawApi for RuntimeBackend {
         start: &[u8],
         end: &[u8],
     ) -> Result<DeleteRangeReceipt> {
-        self.validated_context(ctx)?;
+        self.validated_context(ctx, KeySpan::Range { start, end })?;
         // One chunk in memory at a time: read a bounded chunk, commit it, resume strictly
         // after the last key it covered. Planning the whole range up front bounded the
         // raft *entry* while leaving the planner unbounded.
