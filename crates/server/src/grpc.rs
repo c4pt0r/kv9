@@ -1144,6 +1144,39 @@ mod tests {
         assert_eq!(status.code(), Code::Unimplemented);
     }
 
+    /// A client's redirect decision must key on the status code and a stable metadata
+    /// key, never on the human-readable message — prose gets reworded, and a client that
+    /// parsed it would start silently failing to redirect.
+    #[test]
+    fn not_leader_maps_to_failed_precondition_and_carries_the_hint_only_when_known() {
+        // With a known leader: redirectable.
+        let status = error_status(Error::NotLeader { leader: Some(7) });
+        assert_eq!(status.code(), Code::FailedPrecondition);
+        assert_eq!(
+            status
+                .metadata()
+                .get(LEADER_HINT_KEY)
+                .map(|v| v.to_str().unwrap().to_owned()),
+            Some("7".to_owned())
+        );
+
+        // Mid-election there is no leader to name: the key must be absent, not empty or
+        // "0", so a client can tell "retry node 7" from "go re-discover".
+        let unknown = error_status(Error::NotLeader { leader: None });
+        assert_eq!(unknown.code(), Code::FailedPrecondition);
+        assert!(
+            unknown.metadata().get(LEADER_HINT_KEY).is_none(),
+            "an unknown leader must omit the hint entirely"
+        );
+
+        // Control: not-leader is distinguishable from the unavailable family, so a client
+        // does not transparently retry the same healthy follower.
+        assert_ne!(
+            error_status(Error::NotLeader { leader: Some(7) }).code(),
+            error_status(Error::Raft("stepped down".into())).code()
+        );
+    }
+
     #[test]
     fn errors_map_to_stable_grpc_codes() {
         assert_eq!(error_status(Error::RegionNotFound).code(), Code::NotFound);
