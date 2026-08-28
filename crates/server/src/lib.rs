@@ -7,9 +7,9 @@
 pub mod api;
 pub mod node;
 pub mod routing;
+pub mod runtime;
 
-pub use api::{
-    AdminApi, ClusterInfo, RawApi, RegionLocation, RequestContext, RouterApi, TxnApi,
-};
+pub use api::{AdminApi, ClusterInfo, RawApi, RegionLocation, RequestContext, RouterApi, TxnApi};
 pub use node::{MetaPlane, MetaRaft, Node, Store};
 pub use routing::{route_request, Routed};
+pub use runtime::NodeRuntime;

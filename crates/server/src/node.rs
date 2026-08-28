@@ -284,7 +284,14 @@ impl<E: Engine> Node<E> {
 
     /// Build the idempotent seed-row command. The elected bootstrap leader proposes
     /// this through raft; the 3-node harness pumps the resulting Ready entries.
-    fn build_initial_metadata_command(&self) -> Result<Command> {
+    pub fn build_initial_metadata_command(&self) -> Result<Command> {
+        self.build_initial_metadata_command_for(&[self.id])
+    }
+
+    /// Build the seed catalog command for the complete fixed Phase-1 voter set.
+    /// Membership is declared before discovery; it must never be reconstructed
+    /// from only the peers that happened to answer.
+    pub fn build_initial_metadata_command_for(&self, voters: &[NodeId]) -> Result<Command> {
         let mut txn = self.meta_raft.store.begin()?;
 
         txn.insert(
@@ -318,7 +325,9 @@ impl<E: Engine> Node<E> {
             default_group.to_row_value(),
         )?;
 
-        txn.insert(&NODES_DESC, &[memcmp_uint(self.id.0)], node_row(self.id))?;
+        for voter in voters {
+            txn.insert(&NODES_DESC, &[memcmp_uint(voter.0)], node_row(*voter))?;
+        }
         txn.insert(
             &TSO_TIMELINES_DESC,
             &[memcmp_uint(0)],
@@ -329,11 +338,13 @@ impl<E: Engine> Node<E> {
             &[memcmp_uint(META_REGION_0.0)],
             meta_region_row(self.id),
         )?;
-        txn.insert(
-            &REGION_PEERS_DESC,
-            &[memcmp_uint(META_REGION_0.0), memcmp_uint(self.id.0)],
-            region_peer_row(self.id),
-        )?;
+        for voter in voters {
+            txn.insert(
+                &REGION_PEERS_DESC,
+                &[memcmp_uint(META_REGION_0.0), memcmp_uint(voter.0)],
+                region_peer_row(*voter),
+            )?;
+        }
         txn.insert(
             &SCHEMA_VERSION_DESC,
             &[memcmp_uint(0)],
