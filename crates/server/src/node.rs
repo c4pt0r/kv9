@@ -258,14 +258,23 @@ impl<E: Engine> Node<E> {
         use kv9_meta::BootstrapEvent::*;
         let mut meta = self.meta.lock().expect("meta poisoned");
         if self.config.join.is_empty() {
-            // Uninitialized single node: elect self, initialize.
+            // Uninitialized single node: elect self, mint the cluster
+            // identity, initialize.
+            let cluster_id = kv9_common::ClusterId::mint()?;
             meta.bootstrap.on_event(FoundUninitialized)?;
             meta.bootstrap.on_event(WonElection)?;
-            self.initialize_metadata()?;
-            meta.bootstrap.on_event(MetadataInitialized)?;
+            self.initialize_metadata(cluster_id)?;
+            meta.bootstrap.on_event(MetadataInitialized { cluster_id })?;
         } else {
-            // A real join path contacts the seed set; skeleton treats it as initialized.
-            meta.bootstrap.on_event(FoundInitialized)?;
+            // A real join path contacts the seed set and learns the identity
+            // from the catalog; the skeleton path reads it locally.
+            let cluster_id = {
+                let txn = self.meta_raft.store.begin()?;
+                kv9_meta::admission::cluster_id(&txn)?.ok_or_else(|| {
+                    Error::MetaNotReady("cluster identity not yet in catalog".into())
+                })?
+            };
+            meta.bootstrap.on_event(FoundInitialized { cluster_id })?;
             meta.bootstrap.on_event(Registered)?;
         }
         Ok(())
@@ -274,27 +283,41 @@ impl<E: Engine> Node<E> {
     /// Write the initial metadata as the winner (DESIGN §5.2): default tenant, system
     /// keyspace, and its fixed system transaction group and TSO timeline. User
     /// transaction groups are created with their owning keyspaces, not at node start.
-    fn initialize_metadata(&self) -> Result<()> {
+    fn initialize_metadata(&self, cluster_id: kv9_common::ClusterId) -> Result<()> {
         let _txn_guard = self
             .meta_raft
             .catalog_txn
             .lock()
             .expect("catalog transaction lock poisoned");
-        let cmd = self.build_initial_metadata_command()?;
+        let cmd = self.build_initial_metadata_command(cluster_id)?;
         self.meta_raft.propose_apply(cmd)
     }
 
     /// Build the idempotent seed-row command. The elected bootstrap leader proposes
     /// this through raft; the 3-node harness pumps the resulting Ready entries.
-    pub fn build_initial_metadata_command(&self) -> Result<Command> {
-        self.build_initial_metadata_command_for(&[self.id])
+    pub fn build_initial_metadata_command(
+        &self,
+        cluster_id: kv9_common::ClusterId,
+    ) -> Result<Command> {
+        self.build_initial_metadata_command_for(&[self.id], cluster_id)
     }
 
     /// Build the seed catalog command for the complete fixed Phase-1 voter set.
     /// Membership is declared before discovery; it must never be reconstructed
-    /// from only the peers that happened to answer.
-    pub fn build_initial_metadata_command_for(&self, voters: &[NodeId]) -> Result<Command> {
+    /// from only the peers that happened to answer. The freshly minted cluster
+    /// identity rides in the SAME committed transaction as the rest of the
+    /// seed rows (gate 2 is crash-safe like everything else).
+    pub fn build_initial_metadata_command_for(
+        &self,
+        voters: &[NodeId],
+        cluster_id: kv9_common::ClusterId,
+    ) -> Result<Command> {
+        let now_unix = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_secs())
+            .unwrap_or(0);
         let mut txn = self.meta_raft.store.begin()?;
+        kv9_meta::admission::initialize_cluster(&mut txn, cluster_id, now_unix)?;
 
         txn.insert(
             &TENANTS_DESC,
@@ -755,7 +778,7 @@ mod tests {
     use crate::api::AdminApi;
     use kv9_common::RegionId;
     use kv9_engine::WalEngine;
-    use kv9_meta::{BootstrapEvent, BootstrapState};
+    use kv9_meta::BootstrapEvent;
     use kv9_raft::{CommittedEntry, InProcessCluster, ProposedAt, StateMachine};
 
     const N1: NodeId = NodeId(1);
@@ -1027,19 +1050,21 @@ mod tests {
 
     #[test]
     fn server_bootstrap_requires_seed_quorum_and_refuses_reinitialization() {
+        use std::str::FromStr;
+        let cid = kv9_common::ClusterId::from_str(&"a".repeat(32)).unwrap();
         let mut bootstrap = Bootstrap::with_seeds(N1, vec![N1, N2, N3]);
         assert!(bootstrap.discovered_uninitialized(&[N1]).is_err());
         assert!(bootstrap
             .discovered_uninitialized(&[N1, N1, NodeId(99)])
             .is_err());
-        assert_eq!(bootstrap.state(), BootstrapState::Discovering);
+        assert_eq!(bootstrap.state().name(), "Discovering");
         assert_eq!(
-            bootstrap.discovered_uninitialized(&[N1, N2]).unwrap(),
-            BootstrapState::BootstrapElection
+            bootstrap.discovered_uninitialized(&[N1, N2]).unwrap().name(),
+            "BootstrapElection"
         );
         bootstrap.on_event(BootstrapEvent::WonElection).unwrap();
         bootstrap
-            .on_event(BootstrapEvent::MetadataInitialized)
+            .on_event(BootstrapEvent::MetadataInitialized { cluster_id: cid })
             .unwrap();
         assert!(bootstrap.data_dir_initialized());
 
@@ -1047,12 +1072,13 @@ mod tests {
         let mut restarted = Bootstrap::with_seeds(N1, vec![N1, N2, N3]);
         restarted.mark_data_dir_initialized();
         assert!(restarted.discovered_uninitialized(&[N1, N2, N3]).is_err());
-        assert_eq!(restarted.state(), BootstrapState::Discovering);
+        assert_eq!(restarted.state().name(), "Discovering");
         assert_eq!(
             restarted
-                .on_event(BootstrapEvent::FoundInitialized)
-                .unwrap(),
-            BootstrapState::Joining
+                .on_event(BootstrapEvent::FoundInitialized { cluster_id: cid })
+                .unwrap()
+                .name(),
+            "Joining"
         );
     }
 
@@ -1072,8 +1098,9 @@ mod tests {
             assert_eq!(
                 meta.bootstrap
                     .discovered_uninitialized(&[replica.id, corroborator])
-                    .unwrap(),
-                BootstrapState::BootstrapElection
+                    .unwrap()
+                    .name(),
+                "BootstrapElection"
             );
         }
         cluster.peer(N1).unwrap().campaign().unwrap();
@@ -1101,20 +1128,27 @@ mod tests {
 
         // Election-first bootstrap: only the elected leader constructs the seed batch;
         // all three replicas must apply that exact encoded command before any read.
+        let e2e_cid = {
+            use std::str::FromStr;
+            kv9_common::ClusterId::from_str(&"e".repeat(32)).unwrap()
+        };
         let seed = node(&nodes, leader1)
-            .build_initial_metadata_command()
+            .build_initial_metadata_command(e2e_cid)
             .unwrap();
         commit_exact(&cluster, &nodes, leader1, &[N1, N2, N3], seed);
 
         for replica in &nodes {
             let mut meta = replica.meta.lock().unwrap();
             meta.bootstrap
-                .on_event(BootstrapEvent::MetadataInitialized)
+                .on_event(BootstrapEvent::MetadataInitialized { cluster_id: e2e_cid })
                 .unwrap();
-            if replica.id != leader1 {
+            if replica.id == leader1 {
+                assert!(meta.bootstrap.is_serving());
+            } else {
+                // Losers pass through Joining (catalog observed) then register.
                 meta.bootstrap.on_event(BootstrapEvent::Registered).unwrap();
+                assert!(meta.bootstrap.is_serving());
             }
-            assert!(meta.bootstrap.is_serving());
             assert!(meta.bootstrap.data_dir_initialized());
         }
 

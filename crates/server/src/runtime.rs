@@ -310,7 +310,7 @@ pub struct NodeRuntime {
     status_path: PathBuf,
     voter_fp: u64,
     campaign_started: bool,
-    initial_proposal: Option<ProposedAt>,
+    initial_proposal: Option<(ProposedAt, kv9_common::ClusterId)>,
     next_discovery: Instant,
 }
 
@@ -510,11 +510,13 @@ impl NodeRuntime {
             .bootstrap
             .state();
         match state {
-            BootstrapState::Discovering => self.advance_discovery(),
-            BootstrapState::BootstrapElection => self.advance_election(),
-            BootstrapState::Initializing => self.advance_initialization(),
-            BootstrapState::WaitForBootstrap | BootstrapState::Joining => self.advance_joining(),
-            BootstrapState::Serving => Ok(()),
+            BootstrapState::Discovering { .. } => self.advance_discovery(),
+            BootstrapState::BootstrapElection { .. } => self.advance_election(),
+            BootstrapState::Initializing { .. } => self.advance_initialization(),
+            BootstrapState::WaitForBootstrap { .. } | BootstrapState::Joining { .. } => {
+                self.advance_joining()
+            }
+            BootstrapState::Serving { .. } => Ok(()),
         }
     }
 
@@ -527,13 +529,11 @@ impl NodeRuntime {
             .bootstrap
             .data_dir_initialized();
         if locally_fenced {
-            self.node
-                .meta
-                .lock()
-                .expect("meta poisoned")
-                .bootstrap
-                .on_event(BootstrapEvent::FoundInitialized)?;
-            return Ok(());
+            // The marker proves membership in an initialized cluster; the
+            // IDENTITY comes from the replicated catalog. Wait until the raft
+            // replay has applied the init entries locally (a declared voter
+            // receives them without admission), then join with the real id.
+            return self.try_found_initialized();
         }
         if Instant::now() < self.next_discovery {
             return Ok(());
@@ -567,14 +567,38 @@ impl NodeRuntime {
                 }
             }
         }
-        let mut meta = self.node.meta.lock().expect("meta poisoned");
         if found_initialized {
-            meta.bootstrap.on_event(BootstrapEvent::FoundInitialized)?;
-            return Ok(());
+            // A peer says the cluster exists. The identity still comes from
+            // the local catalog once raft replay delivers it (this runtime
+            // path only runs for declared voters, which replicate without
+            // admission; a NON-voter joiner learns the id from the discovery
+            // answer itself — that extension lands with the registration
+            // seam, msg-flagged for @Tess).
+            return self.try_found_initialized();
         }
+        let mut meta = self.node.meta.lock().expect("meta poisoned");
         // Insufficient evidence is expected while peers start; silence never
         // changes the voter denominator and never becomes an answer.
         let _ = meta.bootstrap.discovered_uninitialized(&uninitialized);
+        Ok(())
+    }
+
+    /// Fire `FoundInitialized` once the LOCAL catalog can name the cluster —
+    /// the event now carries the identity, and "initialized somewhere" without
+    /// an identity is not enough to leave Discovering.
+    fn try_found_initialized(&mut self) -> Result<()> {
+        let cluster_id = {
+            let txn = self.node.meta_raft.store.begin()?;
+            kv9_meta::admission::cluster_id(&txn)?
+        };
+        if let Some(cluster_id) = cluster_id {
+            self.node
+                .meta
+                .lock()
+                .expect("meta poisoned")
+                .bootstrap
+                .on_event(BootstrapEvent::FoundInitialized { cluster_id })?;
+        }
         Ok(())
     }
 
@@ -608,11 +632,20 @@ impl NodeRuntime {
             ));
         }
         if self.initial_proposal.is_none() {
-            let cmd = self.node.build_initial_metadata_command_for(&self.voters)?;
-            self.initial_proposal = Some(self.driver.propose(&cmd)?);
+            // Mint the cluster identity ONCE, right before proposing: it rides
+            // in the same committed transaction as the seed rows, so identity
+            // is exactly as crash-safe as the rest of the bootstrap (a crashed
+            // initializer re-elects and re-mints — the old proposal either
+            // committed, in which case initialize_cluster refuses the second
+            // mint, or it never did and the new id is THE id).
+            let cluster_id = kv9_common::ClusterId::mint()?;
+            let cmd = self
+                .node
+                .build_initial_metadata_command_for(&self.voters, cluster_id)?;
+            self.initial_proposal = Some((self.driver.propose(&cmd)?, cluster_id));
             return Ok(());
         }
-        let proposal = self.initial_proposal.expect("set above");
+        let (proposal, cluster_id) = self.initial_proposal.expect("set above");
         match self.driver.wait_applied(proposal, Duration::from_millis(1)) {
             Ok(true) => {
                 write_init_marker(&self.data_dir)?;
@@ -622,7 +655,7 @@ impl NodeRuntime {
                     .lock()
                     .expect("meta poisoned")
                     .bootstrap
-                    .on_event(BootstrapEvent::MetadataInitialized)?;
+                    .on_event(BootstrapEvent::MetadataInitialized { cluster_id })?;
                 Ok(())
             }
             Ok(false) => Err(Error::Raft(format!(
@@ -635,19 +668,26 @@ impl NodeRuntime {
     }
 
     fn advance_joining(&mut self) -> Result<()> {
-        if !catalog_initialized(&self.node)? {
-            return Ok(());
-        }
+        // The catalog names the cluster once the winner's init applied here;
+        // until then there is nothing to join yet.
+        let cluster_id = {
+            let txn = self.node.meta_raft.store.begin()?;
+            match kv9_meta::admission::cluster_id(&txn)? {
+                Some(id) => id,
+                None => return Ok(()),
+            }
+        };
         write_init_marker(&self.data_dir)?;
         self.discovery.set_initialized();
         let mut meta = self.node.meta.lock().expect("meta poisoned");
         match meta.bootstrap.state() {
-            BootstrapState::WaitForBootstrap => {
+            BootstrapState::WaitForBootstrap { .. } => {
+                // Catalog exists locally: fingerprint retires, register.
                 meta.bootstrap
-                    .on_event(BootstrapEvent::MetadataInitialized)?;
+                    .on_event(BootstrapEvent::MetadataInitialized { cluster_id })?;
                 meta.bootstrap.on_event(BootstrapEvent::Registered)?;
             }
-            BootstrapState::Joining => {
+            BootstrapState::Joining { .. } => {
                 meta.bootstrap.on_event(BootstrapEvent::Registered)?;
             }
             _ => {}

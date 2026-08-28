@@ -31,7 +31,7 @@
 
 use std::path::Path;
 
-use kv9_common::{Error, NodeId, Result};
+use kv9_common::{ClusterId, Error, NodeId, Result};
 
 /// Marker file recording that this data-dir belongs to an initialized cluster
 /// (fencing rule c). Written when initialization commits / the catalog is first
@@ -63,41 +63,96 @@ pub fn write_init_marker(data_dir: &Path) -> Result<()> {
 }
 
 /// The node lifecycle states during bootstrap (DESIGN §5.2).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+///
+/// **Structural fingerprint retirement (task #24, gate contract):** the
+/// bootstrap voter-set fingerprint exists ONLY to keep two *uninitialized*
+/// seed sets from cross-endorsing — so it lives as data inside the
+/// pre-initialization states and NOWHERE else. Once a cluster identity
+/// exists, the states carry the [`ClusterId`] instead; code that wants the
+/// fingerprint after initialization has nothing to reach for
+/// ([`Bootstrap::bootstrap_fingerprint`] returns `None`), rather than a
+/// stale-but-readable field waiting to be misused as identity.
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum BootstrapState {
     /// Contact the join-set, ask "is the cluster initialized?" (DESIGN §5.2).
-    Discovering,
+    Discovering { fp: u64 },
     /// Cluster is already initialized: this node just joins and registers.
-    Joining,
+    /// Carries the verified cluster identity — the steady-state authority.
+    Joining { cluster_id: ClusterId },
     /// Uninitialized: run one Raft election over `META_REGION_0` (DESIGN §5.2).
-    BootstrapElection,
+    BootstrapElection { fp: u64 },
     /// This node won: it writes the initial metadata as the first committed entries
-    /// (system keyspace, default tenant, `META_REGION_0` record, TSO window).
-    Initializing,
-    /// This node lost: wait until the leader wrote the catalog, then register self.
-    WaitForBootstrap,
+    /// (system keyspace, default tenant, `META_REGION_0` record, TSO window),
+    /// including the minted [`ClusterId`].
+    Initializing { fp: u64 },
+    /// This node lost: wait until the leader wrote the catalog.
+    WaitForBootstrap { fp: u64 },
     /// Data-driven from here on (DESIGN §5.2).
-    Serving,
+    Serving { cluster_id: ClusterId },
+}
+
+impl BootstrapState {
+    /// The bare state name — the STABLE external form (status files print
+    /// this; scripts grep `bootstrap_state=Serving`). Variant payloads are
+    /// internal and must never leak into that surface.
+    pub fn name(&self) -> &'static str {
+        match self {
+            BootstrapState::Discovering { .. } => "Discovering",
+            BootstrapState::Joining { .. } => "Joining",
+            BootstrapState::BootstrapElection { .. } => "BootstrapElection",
+            BootstrapState::Initializing { .. } => "Initializing",
+            BootstrapState::WaitForBootstrap { .. } => "WaitForBootstrap",
+            BootstrapState::Serving { .. } => "Serving",
+        }
+    }
+}
+
+/// Prints the bare variant name only, so `{:?}` consumers (status files,
+/// error strings, scripts) keep the exact pre-#24 wire form.
+impl std::fmt::Debug for BootstrapState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.name())
+    }
 }
 
 /// The event that drives a transition (DESIGN §5.2).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BootstrapEvent {
-    /// Discovery found the cluster already initialized.
-    FoundInitialized,
+    /// Discovery found the cluster already initialized. Carries the cluster
+    /// identity learned from the answer (or the local marker/catalog) —
+    /// initialized answers without an identity are a protocol error upstream,
+    /// never a bare flag here.
+    FoundInitialized { cluster_id: ClusterId },
     /// Discovery found the cluster uninitialized. Fenced: accepted only when this
     /// node **alone** is a quorum of the declared seed set (single-node bootstrap);
     /// multi-node seed sets must present quorum evidence via
-    /// [`Bootstrap::discovered_uninitialized`].
+    /// [`Bootstrap::discovered_uninitialized`]. FORBIDDEN in join-existing mode.
     FoundUninitialized,
     /// This node won the bootstrap election.
     WonElection,
     /// This node lost the bootstrap election.
     LostElection,
-    /// The winner finished writing the initial metadata / catalog exists.
-    MetadataInitialized,
+    /// The winner finished writing the initial metadata / the catalog now
+    /// exists locally — carrying the identity it minted / recorded.
+    MetadataInitialized { cluster_id: ClusterId },
     /// This node has registered itself into membership.
     Registered,
+}
+
+/// Which of the two bootstrap modes this node runs (task #24).
+///
+/// The mode is decided by DATA SHAPE, not a flag: a node whose id is in the
+/// declared voter set is initial-bootstrap; a node whose id is absent is
+/// join-existing (and must additionally present the expected [`ClusterId`]).
+/// Forgetting to configure something therefore fails closed instead of
+/// silently picking the wrong path.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Mode {
+    /// Self is a declared voter: may attest bootstrap quorum, campaign, init.
+    InitialBootstrap,
+    /// Self joins an existing cluster: may NEVER attest an uninitialized
+    /// quorum or campaign; only a matching initialized answer admits it.
+    JoinExisting { expected: ClusterId },
 }
 
 /// Election-first bootstrap driver (DESIGN §5.2). Crash-safe & idempotent because the
@@ -107,8 +162,10 @@ pub enum BootstrapEvent {
 pub struct Bootstrap {
     node: NodeId,
     state: BootstrapState,
-    /// The declared seed set (join-set). Always contains this node.
+    /// The declared voter set. Initial-bootstrap mode: contains this node.
+    /// Join-existing mode: does NOT (that asymmetry IS the mode marker).
     seeds: Vec<NodeId>,
+    mode: Mode,
     /// Fencing rule (c): this data-dir has already been part of an initialized
     /// cluster — re-initialization is forbidden for the lifetime of the dir.
     data_dir_initialized: bool,
@@ -116,7 +173,8 @@ pub struct Bootstrap {
 
 impl Bootstrap {
     /// Start a seedless (single-node) bootstrap: the seed set is `{node}`, so this
-    /// node alone is its quorum (DESIGN §5.2's trivial case).
+    /// node alone is its quorum (DESIGN §5.2's trivial case). Fingerprint 0 —
+    /// a single declared node has no peer to cross-check against.
     pub fn new(node: NodeId) -> Self {
         Bootstrap::with_seeds(node, Vec::new())
     }
@@ -132,18 +190,66 @@ impl Bootstrap {
         b
     }
 
-    /// Start with the declared seed set from `--join`. This node is always counted
-    /// as a member of its own seed set.
-    pub fn with_seeds(node: NodeId, mut seeds: Vec<NodeId>) -> Self {
+    /// [`Self::with_seeds`] with an explicit voter-set fingerprint (computed
+    /// by the runtime over the declared `(node_id, address)` pairs — the FSM
+    /// itself never sees addresses). The fingerprint is carried by the
+    /// pre-initialization states and retires structurally at initialization.
+    pub fn with_seeds_fp(node: NodeId, mut seeds: Vec<NodeId>, fp: u64) -> Self {
         if !seeds.contains(&node) {
             seeds.push(node);
         }
         Bootstrap {
             node,
-            state: BootstrapState::Discovering,
+            state: BootstrapState::Discovering { fp },
             seeds,
+            mode: Mode::InitialBootstrap,
             data_dir_initialized: false,
         }
+    }
+
+    /// Start with the declared seed set from `--join`. This node is always counted
+    /// as a member of its own seed set. (Fingerprint 0: callers that have one
+    /// use [`Self::with_seeds_fp`].)
+    pub fn with_seeds(node: NodeId, seeds: Vec<NodeId>) -> Self {
+        Bootstrap::with_seeds_fp(node, seeds, 0)
+    }
+
+    /// **Join-existing mode** (task #24): this node is NOT in the declared
+    /// voter set and presents the cluster identity it expects to join. It can
+    /// never attest a bootstrap quorum, never campaign, and only a discovery
+    /// answer carrying the EXPECTED identity moves it forward — a node
+    /// pointed at the wrong environment stalls with typed errors instead of
+    /// silently registering into it.
+    pub fn join_existing_at(
+        node: NodeId,
+        bootstrap_voters: Vec<NodeId>,
+        expected: ClusterId,
+        fp: u64,
+        data_dir: &Path,
+    ) -> Result<Self> {
+        if bootstrap_voters.is_empty() {
+            return Err(Error::MetaNotReady(
+                "join-existing requires the cluster's declared voter set".into(),
+            ));
+        }
+        if bootstrap_voters.contains(&node) {
+            return Err(Error::MetaNotReady(format!(
+                "join-existing mode: node {} must NOT be in the declared voter \
+                 set (a declared voter restarts in initial-bootstrap mode)",
+                node.0
+            )));
+        }
+        let mut b = Bootstrap {
+            node,
+            state: BootstrapState::Discovering { fp },
+            seeds: bootstrap_voters,
+            mode: Mode::JoinExisting { expected },
+            data_dir_initialized: false,
+        };
+        if init_marker_exists(data_dir) {
+            b.mark_data_dir_initialized();
+        }
+        Ok(b)
     }
 
     pub fn node(&self) -> NodeId {
@@ -152,6 +258,37 @@ impl Bootstrap {
 
     pub fn state(&self) -> BootstrapState {
         self.state
+    }
+
+    /// The bootstrap voter-set fingerprint — available ONLY before
+    /// initialization (`None` from `Joining`/`Serving` onward). The post-init
+    /// identity is [`Self::cluster_id`]; this accessor's `None` is the
+    /// structural retirement, not a convention.
+    pub fn bootstrap_fingerprint(&self) -> Option<u64> {
+        match self.state {
+            BootstrapState::Discovering { fp }
+            | BootstrapState::BootstrapElection { fp }
+            | BootstrapState::Initializing { fp }
+            | BootstrapState::WaitForBootstrap { fp } => Some(fp),
+            BootstrapState::Joining { .. } | BootstrapState::Serving { .. } => None,
+        }
+    }
+
+    /// The cluster identity — available once this node has learned/minted it
+    /// (`Joining`/`Serving`).
+    pub fn cluster_id(&self) -> Option<ClusterId> {
+        match self.state {
+            BootstrapState::Joining { cluster_id } | BootstrapState::Serving { cluster_id } => {
+                Some(cluster_id)
+            }
+            _ => None,
+        }
+    }
+
+    /// Whether this node runs in join-existing mode (self outside the
+    /// declared voter set).
+    pub fn is_joining_mode(&self) -> bool {
+        matches!(self.mode, Mode::JoinExisting { .. })
     }
 
     pub fn seeds(&self) -> &[NodeId] {
@@ -181,12 +318,21 @@ impl Bootstrap {
     /// seed set; anything less keeps the node `Discovering` with a typed error —
     /// *unreachable is not uninitialized*.
     pub fn discovered_uninitialized(&mut self, answered: &[NodeId]) -> Result<BootstrapState> {
-        if self.state != BootstrapState::Discovering {
+        // Fail closed in join-existing mode: a joiner has no authority to
+        // attest a bootstrap quorum — accepting would let a misconfigured
+        // joiner co-found a second cluster (the exact fork the gates exist
+        // to prevent).
+        if let Mode::JoinExisting { .. } = self.mode {
+            return Err(Error::MetaNotReady(
+                "a joining node can never attest bootstrap quorum".into(),
+            ));
+        }
+        let BootstrapState::Discovering { fp } = self.state else {
             return Err(Error::MetaNotReady(format!(
                 "illegal bootstrap transition: {:?} on quorum discovery",
                 self.state
             )));
-        }
+        };
         if self.data_dir_initialized {
             return Err(Error::MetaNotReady(
                 "this data-dir already belongs to an initialized cluster; \
@@ -211,7 +357,7 @@ impl Bootstrap {
                 self.quorum()
             )));
         }
-        self.state = BootstrapState::BootstrapElection;
+        self.state = BootstrapState::BootstrapElection { fp };
         Ok(self.state)
     }
 
@@ -221,24 +367,39 @@ impl Bootstrap {
         use BootstrapEvent::*;
         use BootstrapState::*;
         let next = match (self.state, event) {
-            (Discovering, FoundInitialized) => Joining,
+            (Discovering { .. }, FoundInitialized { cluster_id }) => {
+                // Join-existing: the answer's identity must be the EXPECTED
+                // one — an initialized answer from the wrong environment is a
+                // typed error, not an admission (three-gate contract, gate 2).
+                if let Mode::JoinExisting { expected } = self.mode {
+                    if cluster_id != expected {
+                        return Err(Error::MetaNotReady(format!(
+                            "discovered cluster identity {cluster_id} does not match \
+                             the expected {expected}; refusing to join"
+                        )));
+                    }
+                }
+                Joining { cluster_id }
+            }
             // The bare event is only quorum-evidence-free in the single-node case;
             // multi-node seed sets must go through `discovered_uninitialized`.
-            (Discovering, FoundUninitialized) => {
+            (Discovering { .. }, FoundUninitialized) => {
                 return self.discovered_uninitialized(&[self.node]);
             }
-            (BootstrapElection, WonElection) => Initializing,
-            (BootstrapElection, LostElection) => WaitForBootstrap,
-            (Initializing, MetadataInitialized) => {
+            (BootstrapElection { fp }, WonElection) => Initializing { fp },
+            (BootstrapElection { fp }, LostElection) => WaitForBootstrap { fp },
+            (Initializing { .. }, MetadataInitialized { cluster_id }) => {
                 self.data_dir_initialized = true;
-                Serving
+                Serving { cluster_id }
             }
-            (WaitForBootstrap, MetadataInitialized) => {
+            // The catalog now exists locally (the winner's init applied here):
+            // the fingerprint retires and the register path begins — same as
+            // a discovered join.
+            (WaitForBootstrap { .. }, MetadataInitialized { cluster_id }) => {
                 self.data_dir_initialized = true;
-                WaitForBootstrap // catalog exists, now register
+                Joining { cluster_id }
             }
-            (WaitForBootstrap, Registered) => Serving,
-            (Joining, Registered) => Serving,
+            (Joining { cluster_id }, Registered) => Serving { cluster_id },
             (state, ev) => {
                 return Err(Error::MetaNotReady(format!(
                     "illegal bootstrap transition: {state:?} on {ev:?}"
@@ -250,18 +411,31 @@ impl Bootstrap {
     }
 
     pub fn is_serving(&self) -> bool {
-        self.state == BootstrapState::Serving
+        matches!(self.state, BootstrapState::Serving { .. })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::str::FromStr;
 
     const N1: NodeId = NodeId(1);
     const N2: NodeId = NodeId(2);
     const N3: NodeId = NodeId(3);
     const OUTSIDER: NodeId = NodeId(9);
+
+    fn cid(hex_byte: &str) -> ClusterId {
+        ClusterId::from_str(&hex_byte.repeat(32)).unwrap()
+    }
+
+    fn found(b: &str) -> BootstrapEvent {
+        BootstrapEvent::FoundInitialized { cluster_id: cid(b) }
+    }
+
+    fn minted(b: &str) -> BootstrapEvent {
+        BootstrapEvent::MetadataInitialized { cluster_id: cid(b) }
+    }
 
     /// The seedless single-node path (server's current bootstrap) still works with
     /// the bare event: a one-node seed set is its own quorum.
@@ -269,8 +443,8 @@ mod tests {
     fn single_node_bare_event_is_its_own_quorum() {
         let mut b = Bootstrap::new(N1);
         assert_eq!(
-            b.on_event(BootstrapEvent::FoundUninitialized).unwrap(),
-            BootstrapState::BootstrapElection
+            b.on_event(BootstrapEvent::FoundUninitialized).unwrap().name(),
+            "BootstrapElection"
         );
     }
 
@@ -281,11 +455,11 @@ mod tests {
         let mut b = Bootstrap::with_seeds(N1, vec![N1, N2, N3]);
         assert!(b.on_event(BootstrapEvent::FoundUninitialized).is_err());
         assert!(b.discovered_uninitialized(&[N1]).is_err());
-        assert_eq!(b.state(), BootstrapState::Discovering);
+        assert_eq!(b.state().name(), "Discovering");
         // A quorum of positive answers does.
         assert_eq!(
-            b.discovered_uninitialized(&[N1, N3]).unwrap(),
-            BootstrapState::BootstrapElection
+            b.discovered_uninitialized(&[N1, N3]).unwrap().name(),
+            "BootstrapElection"
         );
     }
 
@@ -303,12 +477,12 @@ mod tests {
             .discovered_uninitialized(&[N1, OUTSIDER, OUTSIDER])
             .is_err());
         assert!(b.discovered_uninitialized(&[N1, N1, N1]).is_err());
-        assert_eq!(b.state(), BootstrapState::Discovering);
+        assert_eq!(b.state().name(), "Discovering");
         // Sensitivity control: same node, same state — a real quorum DOES open
         // the election, even alongside an outsider and a duplicate in the answer.
         assert_eq!(
-            b.discovered_uninitialized(&[N1, N2, N2, OUTSIDER]).unwrap(),
-            BootstrapState::BootstrapElection
+            b.discovered_uninitialized(&[N1, N2, N2, OUTSIDER]).unwrap().name(),
+            "BootstrapElection"
         );
     }
 
@@ -319,12 +493,10 @@ mod tests {
         let mut b = Bootstrap::with_seeds(N1, vec![N1, N2, N3]);
         b.mark_data_dir_initialized();
         assert!(b.discovered_uninitialized(&[N1, N2, N3]).is_err());
-        assert_eq!(b.state(), BootstrapState::Discovering);
+        assert_eq!(b.state().name(), "Discovering");
         // The Joining path stays open.
-        assert_eq!(
-            b.on_event(BootstrapEvent::FoundInitialized).unwrap(),
-            BootstrapState::Joining
-        );
+        assert_eq!(b.on_event(found("a")).unwrap().name(), "Joining");
+        assert_eq!(b.cluster_id(), Some(cid("a")));
     }
 
     /// The winner's `MetadataInitialized` sets the marker, so a crashed-and-restarted
@@ -334,9 +506,10 @@ mod tests {
         let mut b = Bootstrap::new(N1);
         b.on_event(BootstrapEvent::FoundUninitialized).unwrap();
         b.on_event(BootstrapEvent::WonElection).unwrap();
-        b.on_event(BootstrapEvent::MetadataInitialized).unwrap();
+        b.on_event(minted("b")).unwrap();
         assert!(b.is_serving());
         assert!(b.data_dir_initialized());
+        assert_eq!(b.cluster_id(), Some(cid("b")));
     }
 
     /// The marker survives a real process restart (file, not memory): a
@@ -356,7 +529,7 @@ mod tests {
         assert!(!b.data_dir_initialized());
         b.discovered_uninitialized(&[N1, N2]).unwrap();
         b.on_event(BootstrapEvent::WonElection).unwrap();
-        b.on_event(BootstrapEvent::MetadataInitialized).unwrap();
+        b.on_event(minted("c")).unwrap();
         write_init_marker(&dir).unwrap();
 
         // "Restart": a new FSM over the same dir must refuse re-init…
@@ -364,18 +537,15 @@ mod tests {
         assert!(restarted.data_dir_initialized());
         assert!(restarted.discovered_uninitialized(&[N1, N2, N3]).is_err());
         // …but joins normally.
-        assert_eq!(
-            restarted.on_event(BootstrapEvent::FoundInitialized).unwrap(),
-            BootstrapState::Joining
-        );
+        assert_eq!(restarted.on_event(found("c")).unwrap().name(), "Joining");
 
         // Control (sensitivity): a wiped dir is a NEW node — bootstrap opens again.
         let _ = std::fs::remove_dir_all(&dir);
         let mut wiped = Bootstrap::with_seeds_at(N1, vec![N1, N2, N3], &dir);
         assert!(!wiped.data_dir_initialized());
         assert_eq!(
-            wiped.discovered_uninitialized(&[N1, N2]).unwrap(),
-            BootstrapState::BootstrapElection
+            wiped.discovered_uninitialized(&[N1, N2]).unwrap().name(),
+            "BootstrapElection"
         );
         let _ = std::fs::remove_dir_all(&dir);
     }
@@ -387,11 +557,77 @@ mod tests {
         let mut b = Bootstrap::with_seeds(N2, vec![N1, N2, N3]);
         b.discovered_uninitialized(&[N1, N2, N3]).unwrap();
         b.on_event(BootstrapEvent::LostElection).unwrap();
-        b.on_event(BootstrapEvent::MetadataInitialized).unwrap();
+        // Catalog appears locally: fingerprint retires, register path begins.
+        assert_eq!(b.on_event(minted("d")).unwrap().name(), "Joining");
         assert!(b.data_dir_initialized());
-        assert_eq!(
-            b.on_event(BootstrapEvent::Registered).unwrap(),
-            BootstrapState::Serving
-        );
+        assert_eq!(b.on_event(BootstrapEvent::Registered).unwrap().name(), "Serving");
+        assert_eq!(b.cluster_id(), Some(cid("d")));
+    }
+
+    /// Structural fingerprint retirement: the fp is readable in every
+    /// pre-initialization state and GONE (not stale — absent) afterward.
+    #[test]
+    fn fingerprint_retires_at_initialization() {
+        let mut b = Bootstrap::with_seeds_fp(N1, vec![N1, N2, N3], 0xFEED);
+        assert_eq!(b.bootstrap_fingerprint(), Some(0xFEED));
+        assert_eq!(b.cluster_id(), None);
+        b.discovered_uninitialized(&[N1, N2]).unwrap();
+        assert_eq!(b.bootstrap_fingerprint(), Some(0xFEED));
+        b.on_event(BootstrapEvent::WonElection).unwrap();
+        assert_eq!(b.bootstrap_fingerprint(), Some(0xFEED));
+        b.on_event(minted("e")).unwrap();
+        // Post-init: fp is unreachable, identity is the ClusterId.
+        assert_eq!(b.bootstrap_fingerprint(), None);
+        assert_eq!(b.cluster_id(), Some(cid("e")));
+    }
+
+    /// Debug prints the BARE variant name — the stable wire form status files
+    /// publish. A derived Debug would leak payloads into scripts' grep space.
+    #[test]
+    fn debug_form_is_the_bare_name() {
+        let b = Bootstrap::with_seeds_fp(N1, vec![N1, N2, N3], 7);
+        assert_eq!(format!("{:?}", b.state()), "Discovering");
+        let mut b = Bootstrap::new(N1);
+        b.on_event(BootstrapEvent::FoundUninitialized).unwrap();
+        b.on_event(BootstrapEvent::WonElection).unwrap();
+        b.on_event(minted("f")).unwrap();
+        assert_eq!(format!("{:?}", b.state()), "Serving");
+    }
+
+    /// Join-existing mode: fail closed everywhere except the one legitimate
+    /// path (matching initialized answer → Joining → Registered → Serving).
+    #[test]
+    fn join_existing_mode_fails_closed() {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-join-mode-{}-{:?}",
+            std::process::id(),
+            std::thread::current().id()
+        ));
+        let _ = std::fs::remove_dir_all(&dir);
+
+        // Constructor validation: self in the voter set / empty set refused.
+        assert!(Bootstrap::join_existing_at(N1, vec![N1, N2, N3], cid("a"), 1, &dir).is_err());
+        assert!(Bootstrap::join_existing_at(NodeId(4), Vec::new(), cid("a"), 1, &dir).is_err());
+
+        let mut b =
+            Bootstrap::join_existing_at(NodeId(4), vec![N1, N2, N3], cid("a"), 9, &dir).unwrap();
+        assert!(b.is_joining_mode());
+        assert_eq!(b.bootstrap_fingerprint(), Some(9));
+
+        // A joiner can NEVER attest bootstrap quorum — not even with a full
+        // quorum of positive answers, not even via the bare event.
+        assert!(b.discovered_uninitialized(&[N1, N2, N3]).is_err());
+        assert!(b.on_event(BootstrapEvent::FoundUninitialized).is_err());
+        assert_eq!(b.state().name(), "Discovering");
+
+        // The WRONG cluster's initialized answer is refused (typed), state holds.
+        assert!(b.on_event(found("b")).is_err());
+        assert_eq!(b.state().name(), "Discovering");
+
+        // Control: the EXPECTED cluster admits it down the join path.
+        assert_eq!(b.on_event(found("a")).unwrap().name(), "Joining");
+        assert_eq!(b.cluster_id(), Some(cid("a")));
+        assert_eq!(b.on_event(BootstrapEvent::Registered).unwrap().name(), "Serving");
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }
