@@ -36,6 +36,7 @@ name = "kv9-meta"
 version = "0.0.0"
 dependencies = [
  "kv9-common",
+ "kv9-engine",
  "kv9-raft",
  "kv9-region",
 ]
@@ -45,6 +46,7 @@ name = "kv9-raft"
 version = "0.0.0"
 dependencies = [
  "kv9-common",
+ "kv9-engine",
 ]
 
 [[package]]

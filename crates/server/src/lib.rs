@@ -11,5 +11,5 @@ pub mod routing;
 pub use api::{
     AdminApi, ClusterInfo, RawApi, RegionLocation, RequestContext, RouterApi, TxnApi,
 };
-pub use node::{MetaPlane, Node, Store};
+pub use node::{MetaPlane, MetaRaft, Node, Store};
 pub use routing::{route_request, Routed};
