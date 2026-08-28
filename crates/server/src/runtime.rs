@@ -473,6 +473,49 @@ impl RegistrationBackend for RuntimeBackend {
 /// as a whole does not.
 const RAW_DELETE_RANGE_CHUNK: usize = 1024;
 
+/// The chunk loop of a range delete, separated from the machinery that plans and commits.
+///
+/// Kept standalone so a failure can be injected at chunk N in a test. The interesting
+/// behaviour here is not the deleting — it is what is reported when the loop stops early,
+/// and that is exactly the part a live-cluster test cannot easily force.
+fn run_delete_range<P, C>(mut plan_next: P, mut commit: C) -> Result<DeleteRangeReceipt>
+where
+    P: FnMut(Option<&[u8]>) -> Result<Option<(kv9_engine::WriteBatch, UserKey)>>,
+    C: FnMut(kv9_engine::WriteBatch) -> Result<AppliedPosition>,
+{
+    let mut cursor: Option<UserKey> = None;
+    let mut committed_chunks = 0u64;
+    let mut last_applied: Option<AppliedPosition> = None;
+    loop {
+        let Some((batch, last_key)) = plan_next(cursor.as_deref())? else {
+            return Ok(DeleteRangeReceipt {
+                committed_chunks,
+                last_applied,
+            });
+        };
+        let position = match commit(batch) {
+            Ok(position) => position,
+            // Only "partial" once something has actually committed. Failing before the
+            // first chunk really is "nothing happened", and dressing that up as partial
+            // would be its own lie — in the opposite direction.
+            Err(error) if committed_chunks > 0 => {
+                let last = last_applied.unwrap_or(AppliedPosition { term: 0, index: 0 });
+                return Err(Error::PartialDeleteRange {
+                    committed_chunks,
+                    last_applied_term: last.term,
+                    last_applied_index: last.index,
+                    // Diagnosis only; deliberately not part of the protocol.
+                    cause: error.to_string(),
+                });
+            }
+            Err(error) => return Err(error),
+        };
+        committed_chunks += 1;
+        last_applied = Some(position);
+        cursor = Some(last_key);
+    }
+}
+
 /// The raw data plane. This is the layer that holds **both** the driver and the store, so
 /// it is the only place a raw write can legitimately become a committed raft entry.
 ///
@@ -614,52 +657,22 @@ impl RawApi for RuntimeBackend {
         // One chunk in memory at a time: read a bounded chunk, commit it, resume strictly
         // after the last key it covered. Planning the whole range up front bounded the
         // raft *entry* while leaving the planner unbounded.
-        let mut cursor: Option<UserKey> = None;
-        let mut committed_chunks = 0u64;
-        let mut last_applied: Option<AppliedPosition> = None;
-        loop {
-            // Planning reads the range, so it needs the same leader gate as a scan.
-            let planned = {
+        run_delete_range(
+            |cursor| {
+                // Planning reads the range, so it needs the same leader gate as a scan.
                 let (view, hint, is_leader) = self.leader_read()?;
                 let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
                 RawExecutor.plan_delete_range_chunk(
                     &read,
                     ctx.keyspace,
-                    cursor.as_deref(),
+                    cursor,
                     start,
                     end,
                     RAW_DELETE_RANGE_CHUNK,
-                )?
-            };
-            let Some((batch, last_key)) = planned else {
-                return Ok(DeleteRangeReceipt {
-                    committed_chunks,
-                    last_applied,
-                });
-            };
-
-            // A mid-range failure must not read as "nothing happened": something did.
-            // Only report `PartialDeleteRange` once a chunk has actually committed —
-            // failing before the first one really is "nothing happened", and dressing
-            // that up as partial would be its own lie.
-            let position = match self.commit_batch(batch) {
-                Ok(position) => position,
-                Err(error) if committed_chunks > 0 => {
-                    let last = last_applied.unwrap_or(AppliedPosition { term: 0, index: 0 });
-                    return Err(Error::PartialDeleteRange {
-                        committed_chunks,
-                        last_applied_term: last.term,
-                        last_applied_index: last.index,
-                        // Kept for diagnosis, deliberately not part of the protocol.
-                        cause: error.to_string(),
-                    });
-                }
-                Err(error) => return Err(error),
-            };
-            committed_chunks += 1;
-            last_applied = Some(position);
-            cursor = Some(last_key);
-        }
+                )
+            },
+            |batch| self.commit_batch(batch),
+        )
     }
 }
 
@@ -1493,6 +1506,98 @@ mod tests {
     use kv9_raft::transport::{InProcHub, RaftTransport};
     use kv9_raft::Command;
     use tonic::Code;
+
+    /// Plans `total` one-key chunks, then stops.
+    fn planner(total: usize) -> impl FnMut(Option<&[u8]>) -> Result<Option<(kv9_engine::WriteBatch, UserKey)>>
+    {
+        let mut issued = 0usize;
+        move |_cursor| {
+            if issued >= total {
+                return Ok(None);
+            }
+            issued += 1;
+            let mut batch = kv9_engine::WriteBatch::new();
+            batch.delete(ColumnFamily::Default, vec![b'k', issued as u8]);
+            Ok(Some((batch, vec![b'k', issued as u8])))
+        }
+    }
+
+    /// Failing at chunk N must report exactly what committed — the position of chunk N-1,
+    /// not zeros and not the position it was attempting.
+    #[test]
+    fn a_failure_at_the_second_chunk_reports_the_first_chunk_as_committed() {
+        let mut attempts = 0u64;
+        let result = run_delete_range(planner(4), |_batch| {
+            attempts += 1;
+            if attempts == 2 {
+                return Err(Error::Engine("injected disk failure".into()));
+            }
+            Ok(AppliedPosition {
+                term: 7,
+                index: 100 + attempts,
+            })
+        });
+
+        match result {
+            Err(Error::PartialDeleteRange {
+                committed_chunks,
+                last_applied_term,
+                last_applied_index,
+                cause,
+            }) => {
+                assert_eq!(committed_chunks, 1, "exactly one chunk committed");
+                assert_eq!(last_applied_term, 7);
+                assert_eq!(
+                    last_applied_index, 101,
+                    "the position of the chunk that DID commit, not the one that failed"
+                );
+                assert!(cause.contains("injected"), "the cause survives for humans");
+            }
+            other => panic!("expected a partial receipt, got {:?}", other.is_ok()),
+        }
+    }
+
+    /// Failing before anything commits is not partial — claiming otherwise would be a lie
+    /// in the opposite direction, telling a caller data is gone when none is.
+    #[test]
+    fn a_failure_on_the_very_first_chunk_is_not_reported_as_partial() {
+        let result = run_delete_range(planner(4), |_batch| {
+            Err(Error::Engine("injected disk failure".into()))
+        });
+        assert!(
+            matches!(result, Err(Error::Engine(_))),
+            "the original error must survive untouched"
+        );
+    }
+
+    /// A range needing no chunks is a successful no-op, not an error.
+    #[test]
+    fn an_empty_range_succeeds_with_a_zero_receipt() {
+        let receipt = run_delete_range(planner(0), |_batch| {
+            panic!("nothing should be committed")
+        })
+        .unwrap();
+        assert_eq!(receipt.committed_chunks, 0);
+        assert_eq!(receipt.last_applied, None);
+    }
+
+    #[test]
+    fn every_chunk_committing_reports_the_last_position() {
+        let mut attempts = 0u64;
+        let receipt = run_delete_range(planner(3), |_batch| {
+            attempts += 1;
+            Ok(AppliedPosition {
+                term: 2,
+                index: 50 + attempts,
+            })
+        })
+        .unwrap();
+        assert_eq!(receipt.committed_chunks, 3);
+        assert_eq!(
+            receipt.last_applied,
+            Some(AppliedPosition { term: 2, index: 53 })
+        );
+    }
 
     #[test]
     fn cluster_auth_requires_token_and_declared_voter_identity() {

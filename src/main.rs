@@ -326,6 +326,21 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
                     ExitCode::SUCCESS
                 }
                 Ok(RawClientOutcome::NotLeader { leader }) => print_not_leader(leader),
+                // A partial write must surface as stable fields, not prose: the caller
+                // has to know how much of the range is already gone.
+                Err(kv9_common::Error::PartialDeleteRange {
+                    committed_chunks,
+                    last_applied_term,
+                    last_applied_index,
+                    cause,
+                }) => {
+                    eprintln!("partial_write=true");
+                    eprintln!("committed_chunks={committed_chunks}");
+                    eprintln!("last_applied_term={last_applied_term}");
+                    eprintln!("last_applied_index={last_applied_index}");
+                    eprintln!("cause={cause}");
+                    ExitCode::FAILURE
+                }
                 Err(e) => {
                     eprintln!("client request failed: {e}");
                     ExitCode::FAILURE
