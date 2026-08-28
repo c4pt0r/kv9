@@ -290,6 +290,9 @@ mod tests {
         fn snapshot(&self) -> kv9_common::Result<Box<dyn ReadView + '_>> {
             Err(Error::Engine("injected".into()))
         }
+        fn durability(&self) -> kv9_engine::Durability {
+            kv9_engine::Durability::Volatile
+        }
     }
     // Silence unused-variant lint on Mutation import in some cfgs.
     const _: Option<Mutation> = None;
