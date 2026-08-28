@@ -21,7 +21,7 @@ object-storage engine (the thesis) as a clean swap. Build vertical slices so the
 ## Phases
 
 ### Phase 1 — Metadata plane: raft + election + SQL catalog (storage MOCKED). ← start here
-Bring up `openraft` for the **system-keyspace raft group** (`META_REGION_0`), whose state machine applies committed
+Bring up `raft-rs` for the **system-keyspace raft group** (`META_REGION_0`), whose state machine applies committed
 entries into a **mock `MemEngine` KV**. On top of that KV, build the **metadata SQL catalog** (`meta` crate,
 `docs/METADATA-CATALOG.md`): row/index codec, hardcoded schema, typed accessors, transactions. Add the
 **election-first bootstrap** FSM (join-set → elect → winner initializes the catalog), **membership**, and
@@ -30,8 +30,12 @@ entries into a **mock `MemEngine` KV**. On top of that KV, build the **metadata 
   handles membership + keyspace creation, and survives leader failover** — storage mocked.
 - *Retires:* the hardest, most structural risk — consensus integration, election, bootstrap, self-hosted catalog,
   failover — the spine everything hangs on.
-- *First concrete task:* `openraft` single-node with a `MemEngine` state machine + a `propose(put)→apply→get`
-  round-trip test; then the catalog schema/codec on top; then multi-node election + bootstrap.
+- *First concrete task:* `raft-rs` single-node — `RawNode` behind the synchronous `RaftGroup`, a `Ready` loop that
+  persists entries + hardstate **before** sending messages, and a `MemEngine` state machine — with a
+  `propose(put)→apply→get` round-trip test; then the catalog schema/codec on top; then multi-node election +
+  bootstrap. Correlate a proposal by `(term, index)` matched against the applied entry, never by log position
+  alone: a position can be overwritten by a new leader's entry, so "applied ≥ N" would report success on another
+  command.
 
 ### Phase 2 — Disaggregated storage engine (the thesis), swapped in behind `Engine`
 `engine`: memtable → **local WAL** → flush to **immutable SST** on an `ObjectStore` (local-dir impl first) →
