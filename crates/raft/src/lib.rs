@@ -12,9 +12,11 @@
 //! where real consensus plugs in.
 
 pub mod command;
+pub mod rawnode;
 pub mod state_machine;
 
 pub use command::{cf_code, cf_from_code, Command, KvOp};
+pub use rawnode::{InProcessCluster, ProposedAt, RaftPeer};
 pub use state_machine::{drive_apply, ApplyResult, MemStateMachine, StateMachine};
 
 use kv9_common::{NodeId, RegionId, Result};
@@ -36,6 +38,11 @@ pub struct LogIndex(pub u64);
 #[derive(Debug, Clone)]
 pub struct CommittedEntry {
     pub index: LogIndex,
+    /// The term the entry was proposed in. Proposal correlation is by
+    /// `(term, index)` — after a leader change the same index can carry a
+    /// different leader's entry, so position alone never confirms a proposal
+    /// (see [`rawnode::ProposedAt`]).
+    pub term: u64,
     /// Opaque command bytes (a serialized region command / write batch).
     pub data: Vec<u8>,
 }
@@ -118,7 +125,11 @@ impl RaftGroup for SingleNodeRaft {
         let mut log = self.log.lock().expect("raft log poisoned");
         let idx = LogIndex(log.next_index);
         log.next_index += 1;
-        log.ready.push(CommittedEntry { index: idx, data });
+        log.ready.push(CommittedEntry {
+            index: idx,
+            term: 1,
+            data,
+        });
         Ok(idx)
     }
 
