@@ -469,9 +469,15 @@ version = "0.0.0"
 dependencies = [
  "kv9-common",
  "kv9-engine",
+ "prost",
  "protobuf",
  "raft",
  "slog",
+ "tokio",
+ "tokio-stream",
+ "tonic",
+ "tonic-prost",
+ "tonic-prost-build",
 ]
 
 [[package]]
