@@ -8,7 +8,8 @@
 use std::sync::{Arc, Mutex};
 
 use kv9_common::{
-    ApiType, Config, Error, KeyspaceId, NodeId, Result, TenantId, TxnGroupId, META_REGION_0,
+    ApiType, Config, Error, KeyspaceId, NodeId, RegionId, Result, TenantId, TxnGroupId,
+    META_REGION_0,
 };
 use kv9_engine::{Engine, MemEngine};
 use kv9_meta::codec::{memcmp_uint, ColumnValue, RowValue};
@@ -183,13 +184,15 @@ impl<E: Engine> Node<E> {
     }
 
     /// Create a keyspace end-to-end through the catalog engine (METADATA-CATALOG §4;
-    /// ROADMAP Phase 1). Builds a [`kv9_meta::MetaTxn`] that inserts the `keyspaces` row
-    /// (+ a default `txn_groups` row when `api_type = txn`), packages the buffered write
-    /// batch as a `Command::CatalogTxn`, and commits it via the meta-region raft group so
-    /// the mutation is replicated before it is applied.
+    /// ROADMAP Phase 1). Builds a [`kv9_meta::MetaTxn`] that inserts the `keyspaces` row,
+    /// the keyspace's initial full-range region, and a default `txn_groups` row when
+    /// `api_type = txn`. It packages the buffered write batch as a
+    /// `Command::CatalogTxn` and commits it via the meta-region raft group so the mutation
+    /// is replicated before it is applied.
     ///
-    /// Allocation of the concrete [`KeyspaceId`]/[`TxnGroupId`] uses system sequence
-    /// rows in the same transaction, so the bumps and rows are one replicated batch.
+    /// Allocation of the concrete [`KeyspaceId`]/[`RegionId`]/[`TxnGroupId`] uses system
+    /// sequence rows in the same transaction, so the bumps and rows are one replicated
+    /// batch.
     pub fn create_keyspace(
         &self,
         name: &str,
@@ -232,6 +235,27 @@ impl<E: Engine> Node<E> {
             config: Vec::new(),
         };
         txn.insert(&KEYSPACES_DESC, &ks.pk(), ks.to_row_value())?;
+
+        // A keyspace is born routable. There is no valid steady state in which its
+        // data has no owning region: v0 starts with one region covering the keyspace's
+        // complete logical range and later split/pre-shard work replaces that shape.
+        // The region row and the keyspace row are in this same CatalogTxn, so observers
+        // can see either neither or both, never a half-created keyspace.
+        let region_id = RegionId(txn.allocate_id(SequenceKind::Region)?);
+        txn.insert(
+            &REGIONS_DESC,
+            &[memcmp_uint(region_id.0)],
+            region_row(
+                region_id,
+                ks_id,
+                &ks.start_key,
+                &ks.end_key,
+                // v0 does not maintain a durable data-region leader hint. Zero is the
+                // explicit "unknown" sentinel; raft status, not this catalog column,
+                // is the leadership authority until M2 heartbeat/lease maintenance.
+                NodeId(0),
+            ),
+        )?;
 
         // A `txn` keyspace gets its default txn group (the single-group default that
         // shards the TSO); a `raw` keyspace has none (METADATA-CATALOG §2).
@@ -418,11 +442,31 @@ fn timeline_row(provider: NodeId) -> RowValue {
 }
 
 fn meta_region_row(leader: NodeId) -> RowValue {
+    region_row(
+        META_REGION_0,
+        KeyspaceId::SYSTEM,
+        &[],
+        &[],
+        leader,
+    )
+}
+
+/// Encode a region row. New user keyspaces start with `epoch=(1,1)` and one region
+/// covering their declared range. `leader=0` explicitly means "unknown"; v0 does not
+/// consume this column for decisions or keep it fresh across failover. META_REGION_0
+/// uses the same row encoding but has a real bootstrap leader value.
+fn region_row(
+    id: RegionId,
+    keyspace: KeyspaceId,
+    start_key: &[u8],
+    end_key: &[u8],
+    leader: NodeId,
+) -> RowValue {
     let mut row = RowValue::new();
-    row.set(ColumnId(1), ColumnValue::Uint(META_REGION_0.0));
-    row.set(ColumnId(2), ColumnValue::Uint(KeyspaceId::SYSTEM.0 as u64));
-    row.set(ColumnId(3), ColumnValue::Bytes(Vec::new()));
-    row.set(ColumnId(4), ColumnValue::Bytes(Vec::new()));
+    row.set(ColumnId(1), ColumnValue::Uint(id.0));
+    row.set(ColumnId(2), ColumnValue::Uint(keyspace.0 as u64));
+    row.set(ColumnId(3), ColumnValue::Bytes(start_key.to_vec()));
+    row.set(ColumnId(4), ColumnValue::Bytes(end_key.to_vec()));
     row.set(ColumnId(5), ColumnValue::Uint(1));
     row.set(ColumnId(6), ColumnValue::Uint(1));
     row.set(ColumnId(7), ColumnValue::Uint(leader.0));
@@ -518,7 +562,7 @@ impl<E: Engine> crate::api::AdminApi for Node<E> {
                 conf_ver: region.epoch_conf,
                 version: region.epoch_ver,
             },
-            leader: Some(region.leader_node),
+            leader: (region.leader_node != NodeId(0)).then_some(region.leader_node),
         })
     }
 
@@ -863,11 +907,17 @@ mod tests {
         let info = AdminApi::cluster_info(&node, "test").unwrap();
         assert_eq!(info.node_count, 1);
         assert_eq!(info.keyspace_count, 2);
-        assert_eq!(info.region_count, 1);
+        assert_eq!(info.region_count, 2);
 
         let location = AdminApi::get_region(&node, "test", KeyspaceId::SYSTEM, b"key").unwrap();
         assert_eq!(location.region, META_REGION_0);
         assert_eq!(location.leader, Some(NodeId(1)));
+
+        let created = AdminApi::get_region(&node, "test", ks, b"any-user-key").unwrap();
+        assert_eq!(created.region, RegionId(100));
+        assert_eq!(created.epoch.conf_ver, 1);
+        assert_eq!(created.epoch.version, 1);
+        assert_eq!(created.leader, None, "v0 does not publish a stale leader hint");
     }
 
     #[test]
@@ -906,10 +956,20 @@ mod tests {
             Some(TxnGroupId(100))
         );
         assert_eq!(tables.txn_group_for_key(raw_id, b"key").unwrap(), None);
-        assert!(matches!(
-            AdminApi::get_region(&node, "test", raw_id, b"key"),
-            Err(Error::RegionNotFound)
-        ));
+        assert_eq!(
+            tables
+                .region_for_key(txn_id, b"left")
+                .unwrap()
+                .map(|region| region.id),
+            Some(RegionId(100))
+        );
+        assert_eq!(
+            tables
+                .region_for_key(raw_id, b"right")
+                .unwrap()
+                .map(|region| region.id),
+            Some(RegionId(101))
+        );
     }
 
     #[test]
@@ -942,34 +1002,42 @@ mod tests {
             .create_keyspace("routed", TenantId::DEFAULT, ApiType::Raw)
             .unwrap();
 
-        // Seed adjacent regions through the same encoded raft apply path used by the
-        // metadata server, then exercise the public Admin API at the exact boundary.
+        // Replace the automatically-created full-range region with adjacent regions
+        // through the same encoded raft apply path, then exercise the public Admin API
+        // at the exact boundary.
+        let initial_region = kv9_meta::tables::Tables::new(&node.meta_raft.store)
+            .region_for_key(keyspace, b"")
+            .unwrap()
+            .expect("CreateKeyspace must create the initial region")
+            .id;
         let mut seed = node.meta_raft.store.begin().unwrap();
+        seed.delete(&REGIONS_DESC, &[memcmp_uint(initial_region.0)])
+            .unwrap();
         seed.insert(
             &REGIONS_DESC,
-            &[memcmp_uint(100)],
-            test_region_row(RegionId(100), keyspace, b"a", b"b"),
+            &[memcmp_uint(200)],
+            test_region_row(RegionId(200), keyspace, b"a", b"b"),
         )
         .unwrap();
         seed.insert(
             &REGIONS_DESC,
-            &[memcmp_uint(101)],
-            test_region_row(RegionId(101), keyspace, b"b", b"c"),
+            &[memcmp_uint(201)],
+            test_region_row(RegionId(201), keyspace, b"b", b"c"),
         )
         .unwrap();
         node.meta_raft
             .propose_apply(Command::from_batch(&seed.into_batch()))
             .unwrap();
         let at_boundary = AdminApi::get_region(&node, "test", keyspace, b"b").unwrap();
-        assert_eq!(at_boundary.region, RegionId(101));
+        assert_eq!(at_boundary.region, RegionId(201));
 
         let tables = kv9_meta::tables::Tables::new(&node.meta_raft.store);
         let mut inserting = node.meta_raft.store.begin().unwrap();
         inserting
             .insert(
                 &REGIONS_DESC,
-                &[memcmp_uint(102)],
-                test_region_row(RegionId(102), keyspace, b"c", b"d"),
+                &[memcmp_uint(202)],
+                test_region_row(RegionId(202), keyspace, b"c", b"d"),
             )
             .unwrap();
         assert_eq!(
@@ -977,7 +1045,7 @@ mod tests {
                 .region_for_key_in(&inserting, keyspace, b"cc")
                 .unwrap()
                 .map(|region| region.id),
-            Some(RegionId(102))
+            Some(RegionId(202))
         );
         assert!(tables.region_for_key(keyspace, b"cc").unwrap().is_none());
 
@@ -985,7 +1053,7 @@ mod tests {
         // The previous region ends at "b", so "b" is a gap after the delete rather
         // than a false route to region 100.
         let mut deleting = node.meta_raft.store.begin().unwrap();
-        deleting.delete(&REGIONS_DESC, &[memcmp_uint(101)]).unwrap();
+        deleting.delete(&REGIONS_DESC, &[memcmp_uint(201)]).unwrap();
         assert!(tables
             .region_for_key_in(&deleting, keyspace, b"b")
             .unwrap()
@@ -995,7 +1063,7 @@ mod tests {
                 .region_for_key_in(&deleting, keyspace, b"az")
                 .unwrap()
                 .map(|region| region.id),
-            Some(RegionId(100))
+            Some(RegionId(200))
         );
     }
 
