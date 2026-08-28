@@ -1091,16 +1091,17 @@ mod tests {
         );
     }
 
-    /// Tess's P0 on c0a3191, at the mechanism layer: the initializer crashed
-    /// AFTER the seed transaction (with the cluster identity) durably applied
-    /// but BEFORE any marker / discovery flag was written. A restarted node
-    /// (fresh FSM, marker=false) must recover the identity from its own
-    /// catalog and join — never attest an uninitialized quorum, never mint a
-    /// second identity. The wedge the old path hits is also pinned: building
-    /// a second init command against this catalog is refused, so re-bootstrap
-    /// is a dead end by construction, which is exactly why recovery must not
-    /// go that way. (The full-process whole-cluster-restart variant belongs
-    /// to the dynamic-membership E2E — this covers the decision mechanism.)
+    /// The Discovering-tick identity mechanism (scope corrected after Tess's
+    /// re-review of e3f4d5d): a FRESH FSM with zero marker knowledge, over a
+    /// catalog that names a cluster, must move to Joining with the ORIGINAL
+    /// identity and never attest an uninitialized quorum. What this does NOT
+    /// exercise: WAL replay or runtime reconstruction — the nodes here share
+    /// in-memory state machines, so this is the DECISION mechanism, not a
+    /// durable-restart proof. The actual crash-window restart is repaired by
+    /// the runtime constructor's catalog preflight (runtime.rs:380-396), and
+    /// the full-process whole-cluster-restart case is the dynamic-membership
+    /// E2E's explicitly owned deliverable. The second-init dead end is pinned
+    /// as the reason re-bootstrap can never be a recovery route.
     #[test]
     fn committed_identity_with_lost_marker_recovers_not_wedges() {
         use std::str::FromStr;
@@ -1118,11 +1119,12 @@ mod tests {
             .build_initial_metadata_command(cid)
             .unwrap();
         commit_exact(&cluster, &nodes, leader, &[N1, N2, N3], seed);
-        // CRASH HERE in the modeled scenario: no marker written, no
-        // discovery flag set — but the catalog is durably applied.
+        // Modeled crash point: no marker written, no discovery flag set —
+        // the catalog has the identity. (In-memory model: the real durable
+        // variant is the constructor preflight + the E2E case.)
 
         for replica in &nodes {
-            // Restart: a FRESH FSM with no marker knowledge at all.
+            // A FRESH FSM with no marker knowledge at all.
             let mut restarted = Bootstrap::with_seeds(replica.id, vec![N1, N2, N3]);
             let local = replica.local_cluster_identity().unwrap();
             assert_eq!(local, Some(cid), "catalog lost the committed identity");
