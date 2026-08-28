@@ -26,6 +26,21 @@ name: CI
 # someone's PR. Add the PR trigger once a stretch of real runs shows it stable --
 # on evidence, not on the strength of this comment.
 
+# LANDING ORDER -- this commit must not reach master on its own.
+#
+# The acceptance matrix runs three scripts. At the time of writing, master (a75443a)
+# contains only phase1-final-acceptance.sh; dynamic-membership-e2e.sh and raw-kv-e2e.sh
+# arrive with the M1 combined tree (a86c12e), which this workflow is built on. Cherry-pick
+# this file to master alone and two matrix legs die with exit 127 -- a correct red that has
+# nothing to do with code quality, and one that reads as "CI itself is broken". That kind
+# of red is more corrosive than a failing test, because it teaches people the gate is
+# unreliable rather than that the code is.
+#
+# So: land with the combined tree, or after it. Never before, and never as an isolated
+# cherry-pick. Merging this branch normally carries its parent chain and satisfies that on
+# its own -- the hazard is someone lifting just this commit, which is an ordinary thing to
+# want to do.
+
 on:
   push:
     branches: [master]
