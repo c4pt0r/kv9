@@ -171,6 +171,21 @@ pub trait Engine: Send + Sync {
 
     /// A cheap checksum over a physical key range, used by the replica scrubber
     /// (DESIGN §6.3, continuous verification).
+    ///
+    /// **Keys beginning with `0x00` are reserved for internal state and must be excluded
+    /// from any cross-replica comparison.** Every *physical* key starts with a mode byte
+    /// (`'t'`/`'r'`/`'s'` — see `kv9_common::codec`), so `0x00` cannot collide with data;
+    /// that space holds per-node bookkeeping such as the applied-index watermark, which is
+    /// written in the same batch as the data it describes.
+    ///
+    /// The consequence for a scrubber: two replicas holding *identical data* legitimately
+    /// sit at different applied indices, so a checksum over a range that swept in the
+    /// reserved prefix would differ between healthy peers. DESIGN §6.3 has divergence
+    /// trigger re-fetch/re-snapshot, so that false positive would move real data for no
+    /// reason. Compare data ranges, not `[0x00.., ..]`.
+    ///
+    /// Nothing calls this yet — the scrubber is unimplemented — which is precisely why the
+    /// constraint is recorded here rather than discovered later.
     fn checksum(&self, cf: ColumnFamily, start: &[u8], end: &[u8]) -> Result<u64>;
 
     /// Whether this engine's accepted writes survive a restart.
