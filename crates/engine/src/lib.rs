@@ -8,6 +8,7 @@
 pub mod cf;
 pub mod mem;
 pub mod persist;
+#[cfg(any(test, feature = "testing"))]
 pub mod testing;
 pub mod wal;
 pub mod write_batch;
@@ -15,6 +16,7 @@ pub mod write_batch;
 pub use cf::ColumnFamily;
 pub use mem::MemEngine;
 pub use persist::WalEngine;
+#[cfg(any(test, feature = "testing"))]
 pub use testing::FaultyEngine;
 pub use wal::{Replay, Wal};
 pub use write_batch::{Mutation, WriteBatch};
