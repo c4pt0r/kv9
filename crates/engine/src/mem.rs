@@ -1,24 +1,87 @@
-//! In-memory `BTreeMap`-backed engine for the skeleton and tests (DESIGN §6.2).
+//! In-memory persistent-map engine for the skeleton and tests (DESIGN §6.2).
 
-use std::collections::BTreeMap;
 use std::sync::RwLock;
 
 use kv9_common::{Result, Value};
+use rpds::RedBlackTreeMapSync;
 
 use crate::cf::ColumnFamily;
 use crate::write_batch::{Mutation, WriteBatch};
-use crate::{Engine, ScanEntry};
+use crate::{Engine, ReadView, ScanEntry};
 
-/// A single column family's storage: an ordered `BTreeMap`.
-type CfMap = BTreeMap<Vec<u8>, Vec<u8>>;
+/// A single column family's storage: a **persistent** ordered map.
+///
+/// Persistent (structurally shared) rather than a plain `BTreeMap` so that cloning is
+/// O(1) and a clone is unaffected by later mutations. That is what makes
+/// [`Engine::snapshot`] free and keeps every open [`ReadView`] pinned to its own version
+/// without copying anything.
+type CfMap = RedBlackTreeMapSync<Vec<u8>, Vec<u8>>;
 
-/// In-memory engine. One `BTreeMap` per column family, guarded by an `RwLock`
-/// (DESIGN §6.2). Suitable for the v0 skeleton and unit tests; not durable.
+/// All column families as one value.
+///
+/// The three CFs share a single lock rather than holding one each. That is what makes
+/// [`Engine::write`] atomic *across* column families: with a lock per CF there is no way
+/// to apply a multi-CF batch without exposing an intermediate state, and a Percolator
+/// commit (`lock` → `write` plus `default`) is exactly such a batch.
+///
+/// Cloning a `State` is O(1) — it clones three persistent maps, each of which shares its
+/// structure with the original.
+#[derive(Debug, Default, Clone)]
+struct State {
+    default: CfMap,
+    lock: CfMap,
+    write: CfMap,
+}
+
+impl State {
+    fn cf(&self, cf: ColumnFamily) -> &CfMap {
+        match cf {
+            ColumnFamily::Default => &self.default,
+            ColumnFamily::Lock => &self.lock,
+            ColumnFamily::Write => &self.write,
+        }
+    }
+
+    fn cf_mut(&mut self, cf: ColumnFamily) -> &mut CfMap {
+        match cf {
+            ColumnFamily::Default => &mut self.default,
+            ColumnFamily::Lock => &mut self.lock,
+            ColumnFamily::Write => &mut self.write,
+        }
+    }
+
+    fn get(&self, cf: ColumnFamily, key: &[u8]) -> Option<Value> {
+        self.cf(cf).get(key).cloned()
+    }
+
+    fn scan(&self, cf: ColumnFamily, start: &[u8], end: &[u8], limit: usize) -> Vec<ScanEntry> {
+        self.cf(cf)
+            .range(start.to_vec()..end.to_vec())
+            .take(limit)
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect()
+    }
+
+    fn seek_le(&self, cf: ColumnFamily, target: &[u8]) -> Option<ScanEntry> {
+        self.cf(cf)
+            .range(..=target.to_vec())
+            .next_back()
+            .map(|(k, v)| (k.clone(), v.clone()))
+    }
+}
+
+/// In-memory engine. One persistent ordered map per column family behind a single
+/// `RwLock` (DESIGN §6.2). Suitable for the v0 skeleton and unit tests; **not durable**.
+///
+/// Because the maps are persistent, [`Engine::snapshot`] is O(1) and costs *nothing* on
+/// the write side: a write mutates the live state in place while every open view keeps
+/// the version it was taken at, via structural sharing. The read-heavy paths that
+/// motivated this — routing lookups and catalog queries, each opening a view per
+/// transaction — therefore never pay for the snapshot, and writes never pay for having
+/// been snapshotted.
 #[derive(Debug, Default)]
 pub struct MemEngine {
-    default: RwLock<CfMap>,
-    lock: RwLock<CfMap>,
-    write: RwLock<CfMap>,
+    state: RwLock<State>,
 }
 
 impl MemEngine {
@@ -26,31 +89,29 @@ impl MemEngine {
         MemEngine::default()
     }
 
-    fn cf(&self, cf: ColumnFamily) -> &RwLock<CfMap> {
-        match cf {
-            ColumnFamily::Default => &self.default,
-            ColumnFamily::Lock => &self.lock,
-            ColumnFamily::Write => &self.write,
-        }
+    /// A snapshot of the current state. O(1): the maps share their structure.
+    fn read(&self) -> State {
+        self.state.read().expect("mem engine lock poisoned").clone()
     }
 }
 
 impl Engine for MemEngine {
     fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Value>> {
-        let map = self.cf(cf).read().expect("mem engine lock poisoned");
-        Ok(map.get(key).cloned())
+        Ok(self.read().get(cf, key))
     }
 
     fn write(&self, batch: WriteBatch) -> Result<()> {
+        // One lock acquisition for the whole batch: readers observe either none of these
+        // mutations or all of them, never a prefix. Open snapshots are unaffected — the
+        // maps are persistent, so they still hold the version they were cloned at.
+        let mut state = self.state.write().expect("mem engine lock poisoned");
         for m in batch.mutations() {
             match m {
                 Mutation::Put { cf, key, value } => {
-                    let mut map = self.cf(*cf).write().expect("mem engine lock poisoned");
-                    map.insert(key.clone(), value.clone());
+                    state.cf_mut(*cf).insert_mut(key.clone(), value.clone());
                 }
                 Mutation::Delete { cf, key } => {
-                    let mut map = self.cf(*cf).write().expect("mem engine lock poisoned");
-                    map.remove(key);
+                    state.cf_mut(*cf).remove_mut(key);
                 }
             }
         }
@@ -64,37 +125,395 @@ impl Engine for MemEngine {
         end: &[u8],
         limit: usize,
     ) -> Result<Vec<ScanEntry>> {
-        let map = self.cf(cf).read().expect("mem engine lock poisoned");
-        let out = map
-            .range(start.to_vec()..end.to_vec())
-            .take(limit)
-            .map(|(k, v)| (k.clone(), v.clone()))
-            .collect();
-        Ok(out)
+        Ok(self.read().scan(cf, start, end, limit))
     }
 
     fn delete_range(&self, cf: ColumnFamily, start: &[u8], end: &[u8]) -> Result<()> {
-        let mut map = self.cf(cf).write().expect("mem engine lock poisoned");
+        let mut state = self.state.write().expect("mem engine lock poisoned");
+        let map = state.cf_mut(cf);
         let doomed: Vec<Vec<u8>> = map
             .range(start.to_vec()..end.to_vec())
             .map(|(k, _)| k.clone())
             .collect();
         for k in doomed {
-            map.remove(&k);
+            map.remove_mut(&k);
         }
         Ok(())
     }
 
     fn checksum(&self, cf: ColumnFamily, start: &[u8], end: &[u8]) -> Result<u64> {
         // Simple FNV-1a style rolling hash over the range for the scrubber stub.
-        let map = self.cf(cf).read().expect("mem engine lock poisoned");
+        let state = self.read();
         let mut h: u64 = 0xcbf29ce484222325;
-        for (k, v) in map.range(start.to_vec()..end.to_vec()) {
+        for (k, v) in state.cf(cf).range(start.to_vec()..end.to_vec()) {
             for b in k.iter().chain(v.iter()) {
                 h ^= u64::from(*b);
                 h = h.wrapping_mul(0x100000001b3);
             }
         }
         Ok(h)
+    }
+
+    fn snapshot(&self) -> Result<Box<dyn ReadView + '_>> {
+        // O(1): the persistent maps share structure, so this neither copies now nor
+        // forces a copy on the next write. A real engine hands back an equally cheap
+        // handle (immutable SSTs + a pinned memtable) behind this same signature.
+        Ok(Box::new(MemSnapshot { state: self.read() }))
+    }
+}
+
+/// A point-in-time view of a [`MemEngine`], produced by [`Engine::snapshot`].
+#[derive(Debug)]
+struct MemSnapshot {
+    state: State,
+}
+
+impl ReadView for MemSnapshot {
+    fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Value>> {
+        Ok(self.state.get(cf, key))
+    }
+
+    fn scan(
+        &self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: &[u8],
+        limit: usize,
+    ) -> Result<Vec<ScanEntry>> {
+        Ok(self.state.scan(cf, start, end, limit))
+    }
+
+    fn seek_le(&self, cf: ColumnFamily, target: &[u8]) -> Result<Option<ScanEntry>> {
+        Ok(self.state.seek_le(cf, target))
+    }
+
+    fn iter<'a>(
+        &'a self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<Box<dyn Iterator<Item = Result<ScanEntry>> + 'a>> {
+        Ok(Box::new(
+            self.state
+                .cf(cf)
+                .range(start.to_vec()..end.to_vec())
+                .map(|(k, v)| Ok((k.clone(), v.clone()))),
+        ))
+    }
+
+    fn iter_rev<'a>(
+        &'a self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<Box<dyn Iterator<Item = Result<ScanEntry>> + 'a>> {
+        Ok(Box::new(
+            self.state
+                .cf(cf)
+                .range(start.to_vec()..end.to_vec())
+                .rev()
+                .map(|(k, v)| Ok((k.clone(), v.clone()))),
+        ))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn engine_with(entries: &[(&[u8], &[u8])]) -> MemEngine {
+        let engine = MemEngine::new();
+        let mut batch = WriteBatch::new();
+        for (k, v) in entries {
+            batch.put(ColumnFamily::Default, k.to_vec(), v.to_vec());
+        }
+        engine.write(batch).unwrap();
+        engine
+    }
+
+    #[test]
+    fn seek_le_finds_greatest_key_not_exceeding_target() {
+        let engine = engine_with(&[(b"a", b"1"), (b"c", b"3"), (b"e", b"5")]);
+        let view = engine.snapshot().unwrap();
+
+        // Exact hit.
+        assert_eq!(
+            view.seek_le(ColumnFamily::Default, b"c").unwrap(),
+            Some((b"c".to_vec(), b"3".to_vec()))
+        );
+        // Between keys: takes the predecessor, not the successor.
+        assert_eq!(
+            view.seek_le(ColumnFamily::Default, b"d").unwrap(),
+            Some((b"c".to_vec(), b"3".to_vec()))
+        );
+        // Past the end: the last key.
+        assert_eq!(
+            view.seek_le(ColumnFamily::Default, b"z").unwrap(),
+            Some((b"e".to_vec(), b"5".to_vec()))
+        );
+        // Before the first key: nothing.
+        assert_eq!(view.seek_le(ColumnFamily::Default, b"A").unwrap(), None);
+    }
+
+    #[test]
+    fn seek_le_is_per_column_family() {
+        let engine = MemEngine::new();
+        let mut batch = WriteBatch::new();
+        batch.put(ColumnFamily::Default, b"a".to_vec(), b"d".to_vec());
+        batch.put(ColumnFamily::Lock, b"b".to_vec(), b"l".to_vec());
+        engine.write(batch).unwrap();
+        let view = engine.snapshot().unwrap();
+
+        assert_eq!(
+            view.seek_le(ColumnFamily::Lock, b"z").unwrap(),
+            Some((b"b".to_vec(), b"l".to_vec()))
+        );
+        // The `default` entry must not leak into the `lock` CF's answer.
+        assert_eq!(
+            view.seek_le(ColumnFamily::Default, b"z").unwrap(),
+            Some((b"a".to_vec(), b"d".to_vec()))
+        );
+        assert_eq!(view.seek_le(ColumnFamily::Write, b"z").unwrap(), None);
+    }
+
+    #[test]
+    fn snapshot_is_isolated_from_later_writes() {
+        let engine = engine_with(&[(b"k", b"v1")]);
+        let view = engine.snapshot().unwrap();
+
+        let mut batch = WriteBatch::new();
+        batch.put(ColumnFamily::Default, b"k".to_vec(), b"v2".to_vec());
+        batch.put(ColumnFamily::Default, b"new".to_vec(), b"x".to_vec());
+        engine.write(batch).unwrap();
+
+        // The view still sees the state as of when it was taken.
+        assert_eq!(
+            view.get(ColumnFamily::Default, b"k").unwrap(),
+            Some(b"v1".to_vec())
+        );
+        assert_eq!(view.get(ColumnFamily::Default, b"new").unwrap(), None);
+        // ...while the engine itself has moved on.
+        assert_eq!(
+            engine.get(ColumnFamily::Default, b"k").unwrap(),
+            Some(b"v2".to_vec())
+        );
+    }
+
+    fn collect(it: Box<dyn Iterator<Item = Result<ScanEntry>> + '_>) -> Vec<ScanEntry> {
+        it.map(|e| e.unwrap()).collect()
+    }
+
+    #[test]
+    fn iter_is_ascending_and_half_open() {
+        let engine = engine_with(&[(b"a", b"1"), (b"b", b"2"), (b"c", b"3")]);
+        let view = engine.snapshot().unwrap();
+
+        let got = collect(view.iter(ColumnFamily::Default, b"a", b"c").unwrap());
+        assert_eq!(
+            got,
+            vec![
+                (b"a".to_vec(), b"1".to_vec()),
+                (b"b".to_vec(), b"2".to_vec())
+            ]
+        );
+    }
+
+    #[test]
+    fn iter_rev_is_descending_and_half_open() {
+        let engine = engine_with(&[(b"a", b"1"), (b"b", b"2"), (b"c", b"3")]);
+        let view = engine.snapshot().unwrap();
+
+        let got = collect(view.iter_rev(ColumnFamily::Default, b"a", b"c").unwrap());
+        assert_eq!(
+            got,
+            vec![
+                (b"b".to_vec(), b"2".to_vec()),
+                (b"a".to_vec(), b"1".to_vec())
+            ]
+        );
+    }
+
+    /// The point of streaming: a caller may stop early, without the view having
+    /// materialized the whole range first (DESIGN §13 principle 13).
+    #[test]
+    fn iter_can_stop_early_without_materializing_the_range() {
+        let engine = MemEngine::new();
+        let mut batch = WriteBatch::new();
+        for i in 0..10_000u32 {
+            batch.put(
+                ColumnFamily::Default,
+                format!("k{i:06}").into_bytes(),
+                b"v".to_vec(),
+            );
+        }
+        engine.write(batch).unwrap();
+        let view = engine.snapshot().unwrap();
+
+        let first_three: Vec<_> = view
+            .iter(ColumnFamily::Default, b"k", b"l")
+            .unwrap()
+            .take(3)
+            .map(|e| e.unwrap().0)
+            .collect();
+        assert_eq!(
+            first_three,
+            vec![
+                b"k000000".to_vec(),
+                b"k000001".to_vec(),
+                b"k000002".to_vec()
+            ]
+        );
+    }
+
+    /// `end` is **exclusive in both directions**. Spelled out because getting it wrong in
+    /// reverse is a routing bug, not a cosmetic one: "greatest key ≤ K" needs
+    /// `end = successor(K)`, and passing `K` itself silently drops the exact-match case —
+    /// a key landing precisely on a region's start key would route to the *previous*
+    /// region.
+    #[test]
+    fn iter_rev_end_bound_is_exclusive() {
+        let engine = engine_with(&[(b"r10", b"a"), (b"r20", b"b")]);
+        let view = engine.snapshot().unwrap();
+
+        // Exclusive: asking up to "r20" does NOT include "r20".
+        let got = collect(view.iter_rev(ColumnFamily::Default, b"", b"r20").unwrap());
+        assert_eq!(got, vec![(b"r10".to_vec(), b"a".to_vec())]);
+
+        // To include an exact hit on the target, extend past it.
+        let mut inclusive_end = b"r20".to_vec();
+        inclusive_end.push(0);
+        let got = collect(
+            view.iter_rev(ColumnFamily::Default, b"", &inclusive_end)
+                .unwrap(),
+        );
+        assert_eq!(got.first().unwrap().0, b"r20".to_vec());
+    }
+
+    /// The case `seek_le` alone cannot serve, and the reason `iter_rev` exists.
+    ///
+    /// A caller buffering its own writes asks for "greatest key ≤ target". The view's best
+    /// candidate is one the caller has itself deleted, so it must be able to keep walking
+    /// down to the next live one. `seek_le` yields a single entry with no way to continue.
+    #[test]
+    fn iter_rev_walks_past_a_callers_deleted_candidate() {
+        let engine = engine_with(&[(b"r10", b"a"), (b"r20", b"b"), (b"r30", b"c")]);
+        let view = engine.snapshot().unwrap();
+
+        // The caller has buffered a delete of "r20" — it must not be routed to.
+        let caller_deleted: &[&[u8]] = &[b"r20"];
+
+        // seek_le alone hands back exactly the deleted row, and stops there.
+        assert_eq!(
+            view.seek_le(ColumnFamily::Default, b"r25").unwrap(),
+            Some((b"r20".to_vec(), b"b".to_vec()))
+        );
+
+        // iter_rev lets the caller skip it and reach the real answer.
+        let answer = view
+            .iter_rev(ColumnFamily::Default, b"", b"r25")
+            .unwrap()
+            .map(|e| e.unwrap())
+            .find(|(k, _)| !caller_deleted.contains(&k.as_slice()));
+        assert_eq!(answer, Some((b"r10".to_vec(), b"a".to_vec())));
+    }
+
+    /// A snapshot stays pinned to its own version no matter how far the engine moves on.
+    #[test]
+    fn snapshot_is_stable_across_many_writes() {
+        let engine = engine_with(&[(b"k", b"v0")]);
+        let view = engine.snapshot().unwrap();
+
+        for i in 1..1_000u32 {
+            let mut b = WriteBatch::new();
+            b.put(
+                ColumnFamily::Default,
+                b"k".to_vec(),
+                format!("v{i}").into_bytes(),
+            );
+            engine.write(b).unwrap();
+        }
+
+        assert_eq!(
+            view.get(ColumnFamily::Default, b"k").unwrap(),
+            Some(b"v0".to_vec()),
+            "the view must still show the version it was taken at"
+        );
+        assert_eq!(
+            engine.get(ColumnFamily::Default, b"k").unwrap(),
+            Some(b"v999".to_vec())
+        );
+    }
+
+    /// Many snapshots may be alive at once, each pinned to a *different* version, and
+    /// writes keep flowing regardless.
+    ///
+    /// This is the property a persistent map buys over copy-on-write: under COW every one
+    /// of these live views would force the next write to copy the whole state, so the
+    /// cost would grow with how many readers happen to be open. Here it does not.
+    #[test]
+    fn many_live_snapshots_each_pin_their_own_version() {
+        let engine = MemEngine::new();
+        let mut views = Vec::new();
+
+        for i in 0..200u32 {
+            let mut b = WriteBatch::new();
+            b.put(
+                ColumnFamily::Default,
+                b"k".to_vec(),
+                format!("v{i}").into_bytes(),
+            );
+            // Add a distinct key each round too, so the maps genuinely grow.
+            b.put(
+                ColumnFamily::Default,
+                format!("extra{i}").into_bytes(),
+                b"x".to_vec(),
+            );
+            engine.write(b).unwrap();
+            views.push(engine.snapshot().unwrap());
+        }
+
+        // Every view still reports the value written in its own round, and sees exactly
+        // the keys that existed then.
+        for (i, view) in views.iter().enumerate() {
+            assert_eq!(
+                view.get(ColumnFamily::Default, b"k").unwrap(),
+                Some(format!("v{i}").into_bytes()),
+                "view {i} drifted off its version"
+            );
+            assert_eq!(
+                view.get(ColumnFamily::Default, format!("extra{i}").as_bytes())
+                    .unwrap(),
+                Some(b"x".to_vec())
+            );
+            // A key added after this view was taken must not be visible to it.
+            if i + 1 < views.len() {
+                assert_eq!(
+                    view.get(ColumnFamily::Default, format!("extra{}", i + 1).as_bytes())
+                        .unwrap(),
+                    None,
+                    "view {i} saw a key written after it was taken"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn scan_is_bounded_and_half_open() {
+        let engine = engine_with(&[(b"a", b"1"), (b"b", b"2"), (b"c", b"3")]);
+        let view = engine.snapshot().unwrap();
+
+        // `end` is exclusive.
+        let got = view.scan(ColumnFamily::Default, b"a", b"c", 10).unwrap();
+        assert_eq!(
+            got,
+            vec![
+                (b"a".to_vec(), b"1".to_vec()),
+                (b"b".to_vec(), b"2".to_vec())
+            ]
+        );
+
+        // `limit` truncates.
+        let got = view.scan(ColumnFamily::Default, b"a", b"z", 1).unwrap();
+        assert_eq!(got, vec![(b"a".to_vec(), b"1".to_vec())]);
     }
 }

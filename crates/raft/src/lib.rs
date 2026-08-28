@@ -7,14 +7,15 @@
 //! Phase-1 spine (ROADMAP Phase 1): the [`state_machine`] module adds a [`StateMachine`]
 //! trait and a [`MemStateMachine`] backed by [`kv9_engine::MemEngine`] (the mocked
 //! storage), plus a `propose → commit → apply → read` path over the [`RaftGroup`] trait.
-//! The replicated payloads are [`Command`]s (metadata mutations). `openraft` is *not* a
-//! dependency yet — these are pure-Rust stubs; `// TODO(phase1): back by openraft` marks
-//! where real consensus plugs in.
+//! The replicated payloads are [`Command`]s (metadata mutations). The production
+//! Phase-1 adapter is tikv/raft-rs (`RawNode`/`Ready`) behind the same pull interface.
 
 pub mod command;
+pub mod rawnode;
 pub mod state_machine;
 
 pub use command::{cf_code, cf_from_code, Command, KvOp};
+pub use rawnode::{InProcessCluster, ProposedAt, RaftPeer};
 pub use state_machine::{drive_apply, ApplyResult, MemStateMachine, StateMachine};
 
 use kv9_common::{NodeId, RegionId, Result};
@@ -36,6 +37,11 @@ pub struct LogIndex(pub u64);
 #[derive(Debug, Clone)]
 pub struct CommittedEntry {
     pub index: LogIndex,
+    /// The term the entry was proposed in. Proposal correlation is by
+    /// `(term, index)` — after a leader change the same index can carry a
+    /// different leader's entry, so position alone never confirms a proposal
+    /// (see [`rawnode::ProposedAt`]).
+    pub term: u64,
     /// Opaque command bytes (a serialized region command / write batch).
     pub data: Vec<u8>,
 }
@@ -118,7 +124,11 @@ impl RaftGroup for SingleNodeRaft {
         let mut log = self.log.lock().expect("raft log poisoned");
         let idx = LogIndex(log.next_index);
         log.next_index += 1;
-        log.ready.push(CommittedEntry { index: idx, data });
+        log.ready.push(CommittedEntry {
+            index: idx,
+            term: 1,
+            data,
+        });
         Ok(idx)
     }
 
