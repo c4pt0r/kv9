@@ -95,7 +95,7 @@ unquota'd in-memory path. Early in Phase 4, invest in a **deterministic simulati
 TigerBeetle style) for raft/failure paths — it pays for itself.
 
 What makes a test *count as evidence* is not decided here: **[docs/TESTING.md](TESTING.md)** is the single
-authority on verification and acceptance criteria. This section says which kinds of testing the project
+authority on verification and acceptance *evidence standards*. This section says which kinds of testing the project
 commits to; that file says when a red, a green, or a gate may be believed. Do not restate its criteria here.
 
 ## Maps to DESIGN milestones
