@@ -10,3 +10,4 @@ kv9-common.workspace = true
 kv9-engine.workspace = true
 raft.workspace = true
 slog.workspace = true
+protobuf.workspace = true

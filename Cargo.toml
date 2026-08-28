@@ -25,6 +25,9 @@ thiserror = "1"
 serde = { version = "1", features = ["derive"] }
 raft = { version = "=0.7.0", default-features = false, features = ["protobuf-codec"] }
 slog = "2"
+# rust-protobuf runtime - already in tree via raft-proto (protobuf-codec); named
+# directly so the transport can serialize raft Messages. No new code pulled.
+protobuf = "2"
 # Persistent (structurally-shared) ordered map: O(1) snapshots for MemEngine.
 # MIT-licensed, to keep the dependency set copyleft-free.
 rpds = "1"
