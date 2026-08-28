@@ -32,6 +32,14 @@ pub enum Command {
     /// by a `meta::MetaTxn` (e.g. `CreateKeyspace` inserts `keyspaces` + `txn_groups` +
     /// their index rows). Applied as one atomic engine write (METADATA-CATALOG §5).
     CatalogTxn { ops: Vec<KvOp> },
+    /// A replicated **user-data write batch** (raw `put`/`delete`/`batch`; DESIGN §9.2).
+    ///
+    /// Same KV effect as [`Command::CatalogTxn`] at the state-machine layer (one atomic
+    /// engine write), but deliberately a distinct command: user writes carry no catalog
+    /// semantics and must NOT serialize behind the caller-side catalog-txn lock. A
+    /// `delete_range` arrives as explicitly expanded deletes, chunked by the proposer —
+    /// each chunk is atomic; the range as a whole is not (the proposer documents that).
+    Write { ops: Vec<KvOp> },
     /// A membership / configuration change (add/remove peer). Phase-1 records the
     /// intent only — NOT wired to raft-rs `propose_conf_change`/`apply_conf_change`.
     /// Dynamic membership (learner → voter) ships together with raft snapshots in a
@@ -70,7 +78,7 @@ impl Command {
             Command::Put { cf, key, value } => {
                 wb.put(cf_from_code(*cf), key.clone(), value.clone());
             }
-            Command::CatalogTxn { ops } => {
+            Command::CatalogTxn { ops } | Command::Write { ops } => {
                 for op in ops {
                     match op {
                         KvOp::Put { cf, key, value } => {
@@ -98,6 +106,7 @@ impl Command {
     ///                     cf:u8 | key_len:u32 | key [| value_len:u32 | value]
     /// ConfChange (tag 3): add:u8 | node:u64
     /// Noop       (tag 4): (empty)
+    /// Write      (tag 5): op_count:u32 | ops…   (same op layout as CatalogTxn)
     /// ```
     ///
     /// The version byte gates format evolution: decoders reject unknown versions and
@@ -114,8 +123,11 @@ impl Command {
                 put_bytes(&mut out, key);
                 put_bytes(&mut out, value);
             }
-            Command::CatalogTxn { ops } => {
-                out.push(TAG_CATALOG_TXN);
+            Command::CatalogTxn { ops } | Command::Write { ops } => {
+                out.push(match self {
+                    Command::Write { .. } => TAG_WRITE,
+                    _ => TAG_CATALOG_TXN,
+                });
                 out.extend_from_slice(&(ops.len() as u32).to_be_bytes());
                 for op in ops {
                     match op {
@@ -161,32 +173,12 @@ impl Command {
                 key: r.bytes()?,
                 value: r.bytes()?,
             },
-            TAG_CATALOG_TXN => {
-                let count = r.u32()? as usize;
-                // Cap preallocation by what the buffer could actually hold (defensive
-                // against a corrupt count; each op is ≥ 7 bytes).
-                let mut ops = Vec::with_capacity(count.min(r.buf.len() / 7 + 1));
-                for _ in 0..count {
-                    let op = match r.u8()? {
-                        OP_PUT => KvOp::Put {
-                            cf: r.u8()?,
-                            key: r.bytes()?,
-                            value: r.bytes()?,
-                        },
-                        OP_DELETE => KvOp::Delete {
-                            cf: r.u8()?,
-                            key: r.bytes()?,
-                        },
-                        other => {
-                            return Err(kv9_common::Error::Raft(format!(
-                                "unknown CatalogTxn op tag {other}"
-                            )))
-                        }
-                    };
-                    ops.push(op);
-                }
-                Command::CatalogTxn { ops }
-            }
+            TAG_CATALOG_TXN => Command::CatalogTxn {
+                ops: read_ops(&mut r, "CatalogTxn")?,
+            },
+            TAG_WRITE => Command::Write {
+                ops: read_ops(&mut r, "Write")?,
+            },
             TAG_CONF_CHANGE => Command::ConfChange {
                 add: r.u8()? != 0,
                 node: r.u64()?,
@@ -216,8 +208,37 @@ const TAG_PUT: u8 = 1;
 const TAG_CATALOG_TXN: u8 = 2;
 const TAG_CONF_CHANGE: u8 = 3;
 const TAG_NOOP: u8 = 4;
+const TAG_WRITE: u8 = 5;
 const OP_PUT: u8 = 1;
 const OP_DELETE: u8 = 2;
+
+/// Decode a length-prefixed op list (shared by `CatalogTxn` and `Write`).
+fn read_ops(r: &mut Reader<'_>, ctx: &str) -> kv9_common::Result<Vec<KvOp>> {
+    let count = r.u32()? as usize;
+    // Cap preallocation by what the buffer could actually hold (defensive
+    // against a corrupt count; each op is ≥ 7 bytes).
+    let mut ops = Vec::with_capacity(count.min(r.buf.len() / 7 + 1));
+    for _ in 0..count {
+        let op = match r.u8()? {
+            OP_PUT => KvOp::Put {
+                cf: r.u8()?,
+                key: r.bytes()?,
+                value: r.bytes()?,
+            },
+            OP_DELETE => KvOp::Delete {
+                cf: r.u8()?,
+                key: r.bytes()?,
+            },
+            other => {
+                return Err(kv9_common::Error::Raft(format!(
+                    "unknown {ctx} op tag {other}"
+                )))
+            }
+        };
+        ops.push(op);
+    }
+    Ok(ops)
+}
 
 fn put_bytes(out: &mut Vec<u8>, b: &[u8]) {
     out.extend_from_slice(&(b.len() as u32).to_be_bytes());
@@ -318,6 +339,20 @@ mod tests {
                 },
             ],
         });
+        roundtrip(&Command::Write { ops: Vec::new() });
+        roundtrip(&Command::Write {
+            ops: vec![
+                KvOp::Put {
+                    cf: 0,
+                    key: b"user-key".to_vec(),
+                    value: b"user-value".to_vec(),
+                },
+                KvOp::Delete {
+                    cf: 0,
+                    key: b"user-gone".to_vec(),
+                },
+            ],
+        });
         roundtrip(&Command::ConfChange {
             add: true,
             node: u64::MAX,
@@ -342,6 +377,32 @@ mod tests {
         // CatalogTxn claiming one op with an unknown op tag.
         let bytes = vec![ENTRY_VERSION, TAG_CATALOG_TXN, 0, 0, 0, 1, 0xEE];
         assert!(Command::decode(&bytes).is_err());
+        // Same negative through the Write tag (shared op codec, both entrances).
+        let bytes = vec![ENTRY_VERSION, TAG_WRITE, 0, 0, 0, 1, 0xEE];
+        assert!(Command::decode(&bytes).is_err());
+    }
+
+    /// `Write` and `CatalogTxn` must stay distinct on the wire even with identical
+    /// ops — collapsing them would let user data re-enter through the catalog path
+    /// (and its lock) on replay.
+    #[test]
+    fn write_and_catalog_txn_are_distinct_on_the_wire() {
+        let ops = vec![KvOp::Put {
+            cf: 0,
+            key: b"k".to_vec(),
+            value: b"v".to_vec(),
+        }];
+        let w = Command::Write { ops: ops.clone() }.encode();
+        let c = Command::CatalogTxn { ops }.encode();
+        assert_ne!(w, c);
+        assert!(matches!(
+            Command::decode(&w).unwrap(),
+            Command::Write { .. }
+        ));
+        assert!(matches!(
+            Command::decode(&c).unwrap(),
+            Command::CatalogTxn { .. }
+        ));
     }
 
     #[test]
