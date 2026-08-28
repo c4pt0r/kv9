@@ -237,6 +237,24 @@ test "$(status_value "$new_leader" applied_term)" -eq "$write_term" || {
   echo "FAIL: new leader applied_term $(status_value "$new_leader" applied_term) != $write_term" >&2; exit 1; }
 
 # THE replication evidence: this node could only answer if the entry reached it.
+#
+# This is the load-bearing assertion of the whole script, and it is the one that is
+# cheapest to delete by accident, because the lines around it look like they already
+# cover the same ground. They do not:
+#
+#   the (term,index) checks above    guard "did the node report an honest position"
+#   this line                        guards "did the data actually reach another node"
+#
+# A write path that skipped Raft and wrote its own local engine passes every earlier
+# check in this script -- write, read-back, scan, follower refusal -- and fails only
+# here. That is not hypothetical: it was verified by mutation. Replace the
+# propose -> wait_applied in NodeRuntime::commit_batch with a direct local engine
+# write and this exact line reddens with `post-failover read got 'found=false'`,
+# while everything before it stays green. Restoring the propose restores the pass.
+#
+# So: delete this and the script still looks thorough, still exits 0 on a build that
+# has silently stopped replicating. If you are changing it, change it into something
+# that still requires the value to be served by a node that was never the writer.
 got="$(client "$new_leader" raw-get --keyspace "$keyspace" --key-hex "$key_hex")"
 test "$got" = "value_hex=${value_hex}" || { echo "FAIL: post-failover read got '$got'" >&2; exit 1; }
 echo "Pre-failover value survived on the new leader."
