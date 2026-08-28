@@ -48,8 +48,38 @@ pub const FRAME_VERSION: u8 = 1;
 pub const MAX_FRAME_LEN: u32 = 16 * 1024 * 1024;
 /// Discovery payloads are FIXED length; anything else is invalid by definition
 /// and must be rejected before any allocation happens.
-const DISCOVERY_REQ_LEN: u32 = 9; // ver(1) + from_node(8)
-const DISCOVERY_RESP_LEN: u32 = 10; // ver(1) + node(8) + initialized(1)
+const DISCOVERY_REQ_LEN: u32 = 17; // ver(1) + from_node(8) + voter_fp(8)
+const DISCOVERY_RESP_LEN: u32 = 18; // ver(1) + node(8) + initialized(1) + voter_fp(8)
+
+/// Canonical fingerprint of a declared voter set: FNV-1a-64 over the entries
+/// sorted by node id, each encoded as `id u64 BE ++ addr-string ++ 0x00`.
+///
+/// Purpose (bootstrap fencing): a discovery answer must be bound to WHICH
+/// declaration it endorses. Two nodes with divergent `--join` sets (e.g.
+/// `{1,2,3}` vs `{1,2,9}`) would otherwise count each other's "uninitialized"
+/// as a positive vote and assemble groups with different ConfStates. The
+/// runtime counts only answers whose fingerprint equals its own. This detects
+/// misconfiguration — it is not a cryptographic commitment.
+pub fn voter_set_fingerprint(declared: &[(u64, SocketAddr)]) -> u64 {
+    let mut entries: Vec<(u64, String)> =
+        declared.iter().map(|(id, a)| (*id, a.to_string())).collect();
+    entries.sort();
+    let mut hash: u64 = 0xcbf29ce484222325;
+    let mut eat = |b: u8| {
+        hash ^= u64::from(b);
+        hash = hash.wrapping_mul(0x100000001b3);
+    };
+    for (id, addr) in entries {
+        for b in id.to_be_bytes() {
+            eat(b);
+        }
+        for b in addr.as_bytes() {
+            eat(*b);
+        }
+        eat(0x00);
+    }
+    hash
+}
 
 const KIND_RAFT: u8 = 1;
 const KIND_DISCOVERY_REQ: u8 = 2;
@@ -61,24 +91,37 @@ pub enum Frame {
     /// A raft protocol message (protobuf bytes, decoded by the caller).
     Raft(Vec<u8>),
     /// "Is your cluster initialized?" (bootstrap discovery, fencing rule a).
-    DiscoveryReq { from: NodeId },
+    /// Carries the asker's declared voter-set fingerprint.
+    DiscoveryReq { from: NodeId, voter_fp: u64 },
     /// The positive, attributable answer discovery quorums are built from.
-    DiscoveryResp { node: NodeId, initialized: bool },
+    /// `voter_fp` binds the answer to the RESPONDER's declaration: the caller
+    /// counts it only if the fingerprints are identical.
+    DiscoveryResp {
+        node: NodeId,
+        initialized: bool,
+        voter_fp: u64,
+    },
 }
 
 /// Encode a frame (header + payload).
 pub fn encode_frame(frame: &Frame) -> Vec<u8> {
     let (kind, payload): (u8, Vec<u8>) = match frame {
         Frame::Raft(bytes) => (KIND_RAFT, bytes.clone()),
-        Frame::DiscoveryReq { from } => {
+        Frame::DiscoveryReq { from, voter_fp } => {
             let mut p = vec![1u8];
             p.extend_from_slice(&from.0.to_be_bytes());
+            p.extend_from_slice(&voter_fp.to_be_bytes());
             (KIND_DISCOVERY_REQ, p)
         }
-        Frame::DiscoveryResp { node, initialized } => {
+        Frame::DiscoveryResp {
+            node,
+            initialized,
+            voter_fp,
+        } => {
             let mut p = vec![1u8];
             p.extend_from_slice(&node.0.to_be_bytes());
             p.push(u8::from(*initialized));
+            p.extend_from_slice(&voter_fp.to_be_bytes());
             (KIND_DISCOVERY_RESP, p)
         }
     };
@@ -132,17 +175,20 @@ fn decode_payload(kind: u8, payload: Vec<u8>) -> Result<Frame> {
     match kind {
         KIND_RAFT => Ok(Frame::Raft(payload)),
         KIND_DISCOVERY_REQ => {
-            if payload.len() != 9 || payload[0] != 1 {
+            if payload.len() != DISCOVERY_REQ_LEN as usize || payload[0] != 1 {
                 return Err(Error::Raft("malformed discovery request".into()));
             }
             let mut b = [0u8; 8];
             b.copy_from_slice(&payload[1..9]);
+            let mut f = [0u8; 8];
+            f.copy_from_slice(&payload[9..17]);
             Ok(Frame::DiscoveryReq {
                 from: NodeId(u64::from_be_bytes(b)),
+                voter_fp: u64::from_be_bytes(f),
             })
         }
         KIND_DISCOVERY_RESP => {
-            if payload.len() != 10 || payload[0] != 1 {
+            if payload.len() != DISCOVERY_RESP_LEN as usize || payload[0] != 1 {
                 return Err(Error::Raft("malformed discovery response".into()));
             }
             let mut b = [0u8; 8];
@@ -160,7 +206,13 @@ fn decode_payload(kind: u8, payload: Vec<u8>) -> Result<Frame> {
                     )))
                 }
             };
-            Ok(Frame::DiscoveryResp { node, initialized })
+            let mut f = [0u8; 8];
+            f.copy_from_slice(&payload[10..18]);
+            Ok(Frame::DiscoveryResp {
+                node,
+                initialized,
+                voter_fp: u64::from_be_bytes(f),
+            })
         }
         other => Err(Error::Raft(format!("unknown frame kind {other}"))),
     }
@@ -169,7 +221,8 @@ fn decode_payload(kind: u8, payload: Vec<u8>) -> Result<Frame> {
 /// Answers this node's discovery state (bootstrap fencing rule a): the id it
 /// answers as, and whether its cluster/data-dir is initialized.
 pub trait DiscoveryState: Send + Sync {
-    fn answer(&self) -> (NodeId, bool);
+    /// `(this node's id, initialized?, this node's declared voter-set fingerprint)`.
+    fn answer(&self) -> (NodeId, bool, u64);
 }
 
 /// Message transport between the peers of one raft group.
@@ -318,23 +371,31 @@ impl TcpTransport {
     }
 
     /// One-shot discovery call to `addr` (fencing rule a): returns the peer's
-    /// positive answer, or a typed error on connect failure/timeout/bad frame.
-    /// Silence is an `Err`, never an answer.
+    /// positive answer `(node, initialized, its voter-set fingerprint)`, or a
+    /// typed error on connect failure/timeout/bad frame. Silence is an `Err`,
+    /// never an answer. The caller counts the answer ONLY if the returned
+    /// fingerprint equals its own declared one — an answer endorsing a
+    /// different declaration is a misconfiguration, not a vote.
     pub fn discover(
         from: NodeId,
+        voter_fp: u64,
         addr: SocketAddr,
         timeout: Duration,
-    ) -> Result<(NodeId, bool)> {
+    ) -> Result<(NodeId, bool, u64)> {
         let mut stream = TcpStream::connect_timeout(&addr, timeout)
             .map_err(|e| Error::Raft(format!("discovery connect {addr}: {e}")))?;
         stream
             .set_read_timeout(Some(timeout))
             .map_err(|e| Error::Raft(format!("set timeout: {e}")))?;
         stream
-            .write_all(&encode_frame(&Frame::DiscoveryReq { from }))
+            .write_all(&encode_frame(&Frame::DiscoveryReq { from, voter_fp }))
             .map_err(|e| Error::Raft(format!("discovery send: {e}")))?;
         match read_frame(&mut stream)? {
-            Frame::DiscoveryResp { node, initialized } => Ok((node, initialized)),
+            Frame::DiscoveryResp {
+                node,
+                initialized,
+                voter_fp,
+            } => Ok((node, initialized, voter_fp)),
             other => Err(Error::Raft(format!(
                 "unexpected discovery reply frame: {other:?}"
             ))),
@@ -358,9 +419,13 @@ fn serve_conn(
                 }
             }
             Ok(Frame::DiscoveryReq { .. }) => {
-                let (node, initialized) = discovery.answer();
+                let (node, initialized, voter_fp) = discovery.answer();
                 if stream
-                    .write_all(&encode_frame(&Frame::DiscoveryResp { node, initialized }))
+                    .write_all(&encode_frame(&Frame::DiscoveryResp {
+                        node,
+                        initialized,
+                        voter_fp,
+                    }))
                     .is_err()
                 {
                     return;
@@ -421,14 +486,19 @@ mod tests {
         for f in [
             Frame::Raft(vec![1, 2, 3]),
             Frame::Raft(Vec::new()),
-            Frame::DiscoveryReq { from: NodeId(7) },
+            Frame::DiscoveryReq {
+                from: NodeId(7),
+                voter_fp: 0xDEAD_BEEF,
+            },
             Frame::DiscoveryResp {
                 node: NodeId(9),
                 initialized: true,
+                voter_fp: u64::MAX,
             },
             Frame::DiscoveryResp {
                 node: NodeId(0),
                 initialized: false,
+                voter_fp: 0,
             },
         ] {
             let bytes = encode_frame(&f);
@@ -441,7 +511,10 @@ mod tests {
     /// version, unknown kind, oversized length, truncation, lying length.
     #[test]
     fn frame_decode_rejects_bad_input() {
-        let good = encode_frame(&Frame::DiscoveryReq { from: NodeId(1) });
+        let good = encode_frame(&Frame::DiscoveryReq {
+            from: NodeId(1),
+            voter_fp: 1,
+        });
         // Bad magic.
         let mut b = good.clone();
         b[0] = 0xFF;
@@ -480,22 +553,40 @@ mod tests {
         let mut bytes = encode_frame(&Frame::DiscoveryResp {
             node: NodeId(3),
             initialized: true,
+            voter_fp: 5,
         });
-        let last = bytes.len() - 1;
-        bytes[last] = 0x37;
+        // The initialized byte sits before the trailing 8-byte fingerprint.
+        let pos = bytes.len() - 9;
+        bytes[pos] = 0x37;
         assert!(read_frame(&mut Cursor::new(bytes.clone())).is_err());
-        bytes[last] = 1;
+        bytes[pos] = 1;
         assert!(matches!(
             read_frame(&mut Cursor::new(bytes)).unwrap(),
             Frame::DiscoveryResp { initialized: true, .. }
         ));
     }
 
-    struct StaticDiscovery(NodeId, bool);
+    struct StaticDiscovery(NodeId, bool, u64);
     impl DiscoveryState for StaticDiscovery {
-        fn answer(&self) -> (NodeId, bool) {
-            (self.0, self.1)
+        fn answer(&self) -> (NodeId, bool, u64) {
+            (self.0, self.1, self.2)
         }
+    }
+
+    /// The fingerprint is order-independent over the declaration and sensitive
+    /// to any change in it (a different member OR a different address).
+    #[test]
+    fn voter_fingerprint_binds_the_declaration() {
+        let a1: SocketAddr = "127.0.0.1:1001".parse().unwrap();
+        let a2: SocketAddr = "127.0.0.1:1002".parse().unwrap();
+        let a3: SocketAddr = "127.0.0.1:1003".parse().unwrap();
+        let fp = voter_set_fingerprint(&[(1, a1), (2, a2), (3, a3)]);
+        // Order-independent: same declaration, any order.
+        assert_eq!(fp, voter_set_fingerprint(&[(3, a3), (1, a1), (2, a2)]));
+        // Different member set → different fingerprint (Tess's {1,2,9} case).
+        assert_ne!(fp, voter_set_fingerprint(&[(1, a1), (2, a2), (9, a3)]));
+        // Same ids, different address → different fingerprint.
+        assert_ne!(fp, voter_set_fingerprint(&[(1, a1), (2, a2), (3, a1)]));
     }
 
     fn free_addr() -> SocketAddr {
@@ -527,7 +618,7 @@ mod tests {
                 id,
                 addrs[i],
                 peers_map(id.0),
-                Arc::new(StaticDiscovery(id, false)),
+                Arc::new(StaticDiscovery(id, false, 42)),
             )
             .unwrap();
             let peer = Arc::new(RaftPeer::new(id, region, &ids).unwrap());
@@ -542,11 +633,15 @@ mod tests {
 
         // Discovery over the wire: each seed answers positively; an unbound
         // address is silence — an Err, never an answer.
-        let (node, initialized) =
-            TcpTransport::discover(NodeId(9), addrs[0], Duration::from_millis(500)).unwrap();
+        let (node, initialized, fp) =
+            TcpTransport::discover(NodeId(9), 42, addrs[0], Duration::from_millis(500)).unwrap();
         assert_eq!(node, NodeId(1));
         assert!(!initialized);
-        assert!(TcpTransport::discover(NodeId(9), free_addr(), Duration::from_millis(200)).is_err());
+        assert_eq!(fp, 42, "the answer must echo the responder's declaration");
+        assert!(
+            TcpTransport::discover(NodeId(9), 42, free_addr(), Duration::from_millis(200))
+                .is_err()
+        );
 
         // Run every driver on its production cadence (background pump threads);
         // the test only observes status — the same shape the server uses.
