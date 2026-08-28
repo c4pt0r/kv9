@@ -8,7 +8,7 @@
 use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{atomic::{AtomicBool, Ordering}, Mutex};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
@@ -50,6 +50,10 @@ struct RuntimeDiscovery {
     node: NodeId,
     initialized: AtomicBool,
     voter_fp: u64,
+    /// The cluster identity, set exactly once at/after initialization; the
+    /// discovery contract couples it to `initialized` (an initialized answer
+    /// MUST name its cluster — the service refuses otherwise).
+    cluster_id: Mutex<Option<kv9_common::ClusterId>>,
 }
 
 impl RuntimeDiscovery {
@@ -58,21 +62,32 @@ impl RuntimeDiscovery {
             node,
             initialized: AtomicBool::new(initialized),
             voter_fp,
+            cluster_id: Mutex::new(None),
         }
     }
 
-    fn set_initialized(&self) {
+    fn set_cluster_id(&self, id: kv9_common::ClusterId) {
+        *self.cluster_id.lock().expect("cluster id poisoned") = Some(id);
         self.initialized.store(true, Ordering::Release);
     }
 }
 
 impl GrpcDiscoveryState for RuntimeDiscovery {
     fn answer(&self) -> (NodeId, bool, u64) {
+        let initialized = self.initialized.load(Ordering::Acquire);
         (
             self.node,
-            self.initialized.load(Ordering::Acquire),
-            self.voter_fp,
+            initialized,
+            // Fingerprint authority ENDS at initialization (its whole job is
+            // fencing uninitialized cross-endorsement): a post-init answer
+            // publishes 0, so nothing downstream can keep consuming it as
+            // identity. Post-init identity is `cluster_id`.
+            if initialized { 0 } else { self.voter_fp },
         )
+    }
+
+    fn cluster_id(&self) -> Option<kv9_common::ClusterId> {
+        *self.cluster_id.lock().expect("cluster id poisoned")
     }
 }
 
@@ -308,7 +323,11 @@ pub struct NodeRuntime {
     seeds: Vec<SeedPeer>,
     data_dir: PathBuf,
     status_path: PathBuf,
-    voter_fp: u64,
+    // NOTE: no voter_fp field. The fingerprint lives ONLY in the FSM's
+    // pre-initialization states (full-path structural retirement, task #24):
+    // after initialization there is no runtime field left to misread as
+    // identity. The discovery ANSWER side keeps its copy solely to serve
+    // pre-init peers, and zeroes it once initialized.
     campaign_started: bool,
     initial_proposal: Option<(ProposedAt, kv9_common::ClusterId)>,
     next_discovery: Instant,
@@ -377,15 +396,29 @@ impl NodeRuntime {
             engine.clone(),
         )?);
 
-        let catalog_initialized = catalog_initialized(&node)?;
+        // Initialized-authority is the CLUSTER IDENTITY, not the schema row
+        // (task #24 gate 2; Tess's finding on the old preflight): a catalog
+        // that has schema but cannot name its cluster is corrupt or from a
+        // pre-identity build — fail closed rather than publish initialized.
+        let local_identity = node.local_cluster_identity()?;
+        if local_identity.is_none() && catalog_initialized(&node)? {
+            return Err(Error::MetaNotReady(
+                "catalog has schema but no cluster identity; refusing to treat \
+                 this data-dir as initialized (corrupt or pre-identity catalog)"
+                    .into(),
+            ));
+        }
         let marker_initialized = init_marker_exists(&data_dir);
-        let mut bootstrap = Bootstrap::with_seeds_at(id, voters.clone(), &data_dir);
+        let mut bootstrap = Bootstrap::with_seeds_fp(id, voters.clone(), voter_fp);
+        if init_marker_exists(&data_dir) {
+            bootstrap.mark_data_dir_initialized();
+        }
         // A non-pristine Raft member must never form a second cluster, even if
         // it crashed before the marker rename. It rejoins and waits for catalog.
         if !was_pristine {
             bootstrap.mark_data_dir_initialized();
         }
-        if catalog_initialized && !marker_initialized {
+        if local_identity.is_some() && !marker_initialized {
             write_init_marker(&data_dir)?;
             bootstrap.mark_data_dir_initialized();
         }
@@ -393,9 +426,12 @@ impl NodeRuntime {
 
         let discovery = Arc::new(RuntimeDiscovery::new(
             id,
-            marker_initialized || catalog_initialized,
+            marker_initialized || local_identity.is_some(),
             voter_fp,
         ));
+        if let Some(idty) = local_identity {
+            discovery.set_cluster_id(idty);
+        }
         let grpc_runtime = tokio::runtime::Runtime::new()
             .map_err(|error| Error::Config(format!("create gRPC runtime: {error}")))?;
         let transport = GrpcTransport::new(
@@ -458,7 +494,6 @@ impl NodeRuntime {
             seeds,
             data_dir,
             status_path,
-            voter_fp,
             campaign_started: false,
             initial_proposal: None,
             next_discovery: Instant::now(),
@@ -555,6 +590,17 @@ impl NodeRuntime {
         }
         self.next_discovery = Instant::now() + DISCOVERY_INTERVAL;
 
+        // The fingerprint lives in the FSM's pre-initialization states and
+        // NOWHERE else in this struct — this loop only runs in Discovering,
+        // so it is always present here; after initialization there is no
+        // field left to misread (full-path retirement, Tess's item 3).
+        let bootstrap_fp = {
+            let meta = self.node.meta.lock().expect("meta poisoned");
+            match meta.bootstrap.bootstrap_fingerprint() {
+                Some(fp) => fp,
+                None => return Ok(()), // no longer Discovering: nothing to do
+            }
+        };
         let mut uninitialized = vec![self.node.id];
         let mut found_initialized = false;
         for seed in &self.seeds {
@@ -568,17 +614,16 @@ impl NodeRuntime {
                 DISCOVERY_TIMEOUT,
                 Some(self.cluster_token.clone()),
             ) {
-                // Both the address→identity mapping and the complete declared
-                // voter set must match. A valid answer about another cluster is
-                // still not a vote in this cluster.
-                if !discovery_answer_matches(*seed, self.voter_fp, answer) {
+                // Both the address→identity mapping and (pre-init) the
+                // complete declared voter set must match. A valid answer
+                // about another cluster is still not a vote in this cluster.
+                if !discovery_answer_matches(*seed, bootstrap_fp, &answer) {
                     continue;
                 }
-                let (answer_id, initialized, _) = answer;
-                if initialized {
+                if answer.initialized {
                     found_initialized = true;
                 } else {
-                    uninitialized.push(answer_id);
+                    uninitialized.push(answer.node);
                 }
             }
         }
@@ -657,7 +702,7 @@ impl NodeRuntime {
         match self.driver.wait_applied(proposal, Duration::from_millis(1)) {
             Ok(true) => {
                 write_init_marker(&self.data_dir)?;
-                self.discovery.set_initialized();
+                self.discovery.set_cluster_id(cluster_id);
                 self.node
                     .meta
                     .lock()
@@ -686,8 +731,16 @@ impl NodeRuntime {
             }
         };
         write_init_marker(&self.data_dir)?;
-        self.discovery.set_initialized();
+        self.discovery.set_cluster_id(cluster_id);
         let mut meta = self.node.meta.lock().expect("meta poisoned");
+        // FAIL CLOSED for join-existing (Tess's item 2 on c0a3191): a
+        // non-voter joiner is NEVER locally registered — `Registered` fires
+        // only from the registration client path, after the leader's
+        // admission consume + membership upsert applied at an exact receipt.
+        // Until then it stays in Joining, visibly, forever if need be.
+        if meta.bootstrap.is_joining_mode() {
+            return Ok(());
+        }
         match meta.bootstrap.state() {
             BootstrapState::WaitForBootstrap { .. } => {
                 // Catalog exists locally: fingerprint retires, register.
@@ -761,9 +814,22 @@ fn format_u64_ids(nodes: &[u64]) -> String {
 fn discovery_answer_matches(
     declared: SeedPeer,
     expected_voter_fp: u64,
-    answer: (NodeId, bool, u64),
+    answer: &kv9_raft::grpc::DiscoverAnswer,
 ) -> bool {
-    answer.0 == declared.node_id && answer.2 == expected_voter_fp
+    if answer.node != declared.node_id {
+        return false;
+    }
+    if answer.initialized {
+        // Post-init authority is the ClusterId (decode guarantees it is
+        // present on an initialized answer); the fingerprint has retired and
+        // responders publish 0 — comparing it here would re-animate it.
+        // Wrong-cluster protection: initial-bootstrap voters only adopt an
+        // identity from their OWN catalog; join-existing verifies the id
+        // against its expectation inside the FSM.
+        true
+    } else {
+        answer.voter_fingerprint == expected_voter_fp
+    }
 }
 
 impl Drop for NodeRuntime {
@@ -833,21 +899,28 @@ mod tests {
             addr: "127.0.0.1:20163".parse().unwrap(),
         };
         let ours = 0x1111;
-        assert!(discovery_answer_matches(
-            declared,
-            ours,
-            (NodeId(3), false, ours)
-        ));
+        let ans = |node: u64, initialized: bool, fp: u64| kv9_raft::grpc::DiscoverAnswer {
+            node: NodeId(node),
+            initialized,
+            voter_fingerprint: fp,
+            cluster_id: if initialized {
+                Some(kv9_common::ClusterId::from_bytes([9; 16]))
+            } else {
+                None
+            },
+        };
+        assert!(discovery_answer_matches(declared, ours, &ans(3, false, ours)));
+        assert!(!discovery_answer_matches(declared, ours, &ans(9, false, ours)));
         assert!(!discovery_answer_matches(
             declared,
             ours,
-            (NodeId(9), false, ours)
+            &ans(3, false, 0x9999)
         ));
-        assert!(!discovery_answer_matches(
-            declared,
-            ours,
-            (NodeId(3), false, 0x9999)
-        ));
+        // Post-init: identity travels as the ClusterId; the retired
+        // fingerprint (responders publish 0) must NOT gate the answer…
+        assert!(discovery_answer_matches(declared, ours, &ans(3, true, 0)));
+        // …but the declared node identity still must match.
+        assert!(!discovery_answer_matches(declared, ours, &ans(9, true, 0)));
     }
 
     #[test]

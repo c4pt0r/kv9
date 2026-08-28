@@ -27,7 +27,7 @@ use raft::prelude::Message;
 use tokio::sync::mpsc;
 use tonic::{Request, Response, Status, Streaming};
 
-use kv9_common::{Error, NodeId, Result};
+use kv9_common::{ClusterId, Error, NodeId, Result};
 
 use crate::transport::RaftTransport;
 
@@ -102,6 +102,40 @@ const RECONNECT_MAX: Duration = Duration::from_secs(2);
 /// `DiscoveryState`): `(node id, initialized?, declared voter-set fingerprint)`.
 pub trait GrpcDiscoveryState: Send + Sync + 'static {
     fn answer(&self) -> (NodeId, bool, u64);
+
+    /// The cluster identity, once initialized (task #24, gate 2). The
+    /// CONTRACT couples this to `answer().1`: whenever `initialized` is
+    /// true this MUST return `Some` — the service refuses to publish an
+    /// initialized answer that cannot name its cluster (a protocol error on
+    /// our own side beats an unverifiable claim on the wire).
+    fn cluster_id(&self) -> Option<ClusterId> {
+        None
+    }
+}
+
+/// One committed registration (task #24, gate 3): the receipt the server-side
+/// backend returns after the admission consume + membership upsert applied at
+/// an exact position.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RegistrationReceipt {
+    pub applied_term: u64,
+    pub applied_index: u64,
+    pub voters: Vec<u64>,
+    pub learners: Vec<u64>,
+}
+
+/// The seam the server injects (trait here, implementation there — the
+/// division that keeps this crate free of catalog/runtime knowledge): consume
+/// the caller's admission and commit its membership registration, returning
+/// the exact applied receipt. Implementations run on the LEADER's committed
+/// path only; a follower returns a NotLeader-style typed error upstream.
+pub trait RegistrationBackend: Send + Sync + 'static {
+    fn register(
+        &self,
+        node: NodeId,
+        addr: &str,
+        cluster_id: ClusterId,
+    ) -> Result<RegistrationReceipt>;
 }
 
 /// The inbound half: implements the generated service. Holds ONLY a channel
@@ -111,6 +145,10 @@ pub struct RaftGrpcService {
     me: NodeId,
     inbox: mpsc::UnboundedSender<Message>,
     discovery: Arc<dyn GrpcDiscoveryState>,
+    /// The registration seam (None = this node serves no registration, e.g.
+    /// tests or a build wired before the server injects it — callers get
+    /// UNIMPLEMENTED, loudly, never a silent fake success).
+    registration: Option<Arc<dyn RegistrationBackend>>,
     /// Envelopes rejected for a wrong destination (diagnostic mirror of the
     /// TCP transport's step-error counter: growth = misconfiguration).
     misrouted: AtomicU64,
@@ -126,8 +164,16 @@ impl RaftGrpcService {
             me,
             inbox,
             discovery,
+            registration: None,
             misrouted: AtomicU64::new(0),
         }
+    }
+
+    /// Inject the server-side registration backend (builder style, called at
+    /// service assembly in the server crate).
+    pub fn with_registration(mut self, backend: Arc<dyn RegistrationBackend>) -> Self {
+        self.registration = Some(backend);
+        self
     }
 
     pub fn misrouted(&self) -> u64 {
@@ -199,10 +245,62 @@ impl Kv9Raft for RaftGrpcService {
             ));
         }
         let (node, initialized, fp) = self.discovery.answer();
+        let cluster_id = match (initialized, self.discovery.cluster_id()) {
+            (true, Some(id)) => id.as_bytes().to_vec(),
+            (true, None) => {
+                // Refuse to publish an initialized answer that cannot name
+                // its cluster: post-init authority IS the identity (gate 2),
+                // and a nameless "initialized" would push joiners back onto
+                // the retired fingerprint.
+                return Err(Status::internal(
+                    "initialized but no cluster identity available",
+                ));
+            }
+            (false, _) => Vec::new(),
+        };
         Ok(Response::new(pb::DiscoverResponse {
             node_id: node.0,
             initialized,
             voter_fingerprint: fp,
+            cluster_id,
+        }))
+    }
+
+    async fn register(
+        &self,
+        request: Request<pb::RegisterRequest>,
+    ) -> std::result::Result<Response<pb::RegisterReceipt>, Status> {
+        let authenticated = *request
+            .extensions()
+            .get::<NodeId>()
+            .ok_or_else(|| Status::unauthenticated("authenticated node identity missing"))?;
+        let req = request.get_ref();
+        // Bodies never self-report identity: the interceptor's NodeId is the
+        // caller, and a mismatch is rejected before any catalog access.
+        if req.node_id != authenticated.0 {
+            return Err(Status::permission_denied(
+                "registration sender does not match authenticated node",
+            ));
+        }
+        let bytes: [u8; 16] = req.cluster_id.as_slice().try_into().map_err(|_| {
+            Status::invalid_argument("cluster_id must be exactly 16 bytes")
+        })?;
+        let cluster_id = ClusterId::from_bytes(bytes);
+        let Some(backend) = &self.registration else {
+            // Loud stub discipline: absence of the seam is UNIMPLEMENTED,
+            // never a fabricated success.
+            return Err(Status::unimplemented(
+                "node registration is not served by this build",
+            ));
+        };
+        let receipt = backend
+            .register(authenticated, &req.addr, cluster_id)
+            .map_err(|e| Status::failed_precondition(e.to_string()))?;
+        Ok(Response::new(pb::RegisterReceipt {
+            applied_term: receipt.applied_term,
+            applied_index: receipt.applied_index,
+            voters: receipt.voters,
+            learners: receipt.learners,
         }))
     }
 }
@@ -216,7 +314,7 @@ pub fn grpc_discover(
     addr: SocketAddr,
     timeout: Duration,
     token: Option<String>,
-) -> Result<(NodeId, bool, u64)> {
+) -> Result<DiscoverAnswer> {
     let url = format!("http://{addr}");
     handle.block_on(async move {
         let fut = async {
@@ -233,16 +331,54 @@ pub fn grpc_discover(
                 .await
                 .map_err(|e| Error::Raft(format!("discovery rpc {addr}: {e}")))?
                 .into_inner();
-            Ok::<_, Error>((
-                NodeId(resp.node_id),
-                resp.initialized,
-                resp.voter_fingerprint,
-            ))
+            // Contract: an initialized answer MUST name its cluster; an
+            // uninitialized one must not. Anything else is a protocol error
+            // — treated like a malformed frame, never a lenient default
+            // (a nameless "initialized" would push joiners back onto the
+            // retired fingerprint).
+            let cluster_id = match (resp.initialized, resp.cluster_id.len()) {
+                (true, 16) => {
+                    let bytes: [u8; 16] =
+                        resp.cluster_id.as_slice().try_into().expect("len checked");
+                    Some(ClusterId::from_bytes(bytes))
+                }
+                (true, n) => {
+                    return Err(Error::Raft(format!(
+                        "initialized discovery answer from {addr} carries a \
+                         {n}-byte cluster id (need 16)"
+                    )))
+                }
+                (false, 0) => None,
+                (false, _) => {
+                    return Err(Error::Raft(format!(
+                        "uninitialized discovery answer from {addr} carries a \
+                         cluster id"
+                    )))
+                }
+            };
+            Ok::<_, Error>(DiscoverAnswer {
+                node: NodeId(resp.node_id),
+                initialized: resp.initialized,
+                voter_fingerprint: resp.voter_fingerprint,
+                cluster_id,
+            })
         };
         tokio::time::timeout(timeout, fut)
             .await
             .map_err(|_| Error::Raft(format!("discovery timeout {addr}")))?
     })
+}
+
+/// One discovery answer, decoded and contract-checked ((initialized ⇔ named)
+/// is enforced at decode; callers never see a nameless initialized answer).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct DiscoverAnswer {
+    pub node: NodeId,
+    pub initialized: bool,
+    /// Bootstrap-era authority only (uninitialized cross-endorsement fence).
+    pub voter_fingerprint: u64,
+    /// Post-initialization authority (present ⇔ initialized).
+    pub cluster_id: Option<ClusterId>,
 }
 
 /// The outbound half + inbox drain: a [`RaftTransport`] carried by gRPC.
@@ -437,6 +573,53 @@ mod tests {
         }
     }
 
+    /// Initialized discovery with an identity (the coupled contract's
+    /// positive half).
+    struct NamedDiscovery(NodeId, ClusterId);
+    impl GrpcDiscoveryState for NamedDiscovery {
+        fn answer(&self) -> (NodeId, bool, u64) {
+            (self.0, true, 0)
+        }
+        fn cluster_id(&self) -> Option<ClusterId> {
+            Some(self.1)
+        }
+    }
+
+    /// The broken responder: claims initialized, names nothing. The service
+    /// must refuse to publish this answer.
+    struct NamelessInitialized(NodeId);
+    impl GrpcDiscoveryState for NamelessInitialized {
+        fn answer(&self) -> (NodeId, bool, u64) {
+            (self.0, true, 0)
+        }
+    }
+
+    /// Stub registration backend recording the call it served.
+    struct StubRegistration(std::sync::Mutex<Vec<(NodeId, String, ClusterId)>>);
+    impl RegistrationBackend for StubRegistration {
+        fn register(
+            &self,
+            node: NodeId,
+            addr: &str,
+            cluster_id: ClusterId,
+        ) -> Result<RegistrationReceipt> {
+            self.0
+                .lock()
+                .unwrap()
+                .push((node, addr.to_string(), cluster_id));
+            Ok(RegistrationReceipt {
+                applied_term: 3,
+                applied_index: 17,
+                voters: vec![1, 2, 3],
+                learners: vec![node.0],
+            })
+        }
+    }
+
+    fn test_cid() -> ClusterId {
+        ClusterId::from_bytes([0xAB; 16])
+    }
+
     fn free_addr() -> SocketAddr {
         std::net::TcpListener::bind("127.0.0.1:0")
             .unwrap()
@@ -580,7 +763,7 @@ mod tests {
         serve(&handle, NodeId(7), addr, tx, 0xFEED);
         std::thread::sleep(Duration::from_millis(100));
 
-        let (node, initialized, fp) = grpc_discover(
+        let a = grpc_discover(
             &handle,
             NodeId(1),
             addr,
@@ -588,9 +771,13 @@ mod tests {
             Some("test-cluster-token".into()),
         )
         .unwrap();
-        assert_eq!(node, NodeId(7));
-        assert!(!initialized);
-        assert_eq!(fp, 0xFEED, "answer must carry the responder's declaration");
+        assert_eq!(a.node, NodeId(7));
+        assert!(!a.initialized);
+        assert_eq!(
+            a.voter_fingerprint, 0xFEED,
+            "answer must carry the responder's declaration"
+        );
+        assert_eq!(a.cluster_id, None, "uninitialized answers name nothing");
 
         assert!(grpc_discover(
             &handle,
@@ -640,7 +827,7 @@ mod tests {
         )
         .is_err());
         // Right token: answered (control — the gate opens for the key).
-        let (node, _, _) = grpc_discover(
+        let a = grpc_discover(
             &handle,
             NodeId(1),
             addr,
@@ -648,7 +835,7 @@ mod tests {
             Some("sesame".into()),
         )
         .unwrap();
-        assert_eq!(node, NodeId(5));
+        assert_eq!(a.node, NodeId(5));
     }
 
     /// A misrouted envelope (wrong to_node) kills the stream with a loud error
@@ -684,6 +871,13 @@ mod tests {
                     ) -> std::result::Result<Response<pb::DiscoverResponse>, Status>
                     {
                         self.0.discover(r).await
+                    }
+                    async fn register(
+                        &self,
+                        r: Request<pb::RegisterRequest>,
+                    ) -> std::result::Result<Response<pb::RegisterReceipt>, Status>
+                    {
+                        self.0.register(r).await
                     }
                 }
                 tonic::transport::Server::builder()
@@ -745,5 +939,168 @@ mod tests {
         assert_eq!(svc.misrouted(), 1);
         // Control (sensitivity): nothing reached the core inbox.
         assert!(rx.try_recv().is_err());
+    }
+
+
+    /// The register seam end-to-end over a real wire: authenticated identity
+    /// must match the body, absence of a backend is UNIMPLEMENTED (loud stub
+    /// discipline — never a fabricated success), and the happy path returns
+    /// the backend's exact receipt with the call recorded.
+    #[test]
+    fn register_enforces_identity_and_backend_presence() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+
+        // Server WITHOUT a backend: UNIMPLEMENTED.
+        let bare = free_addr();
+        {
+            let (tx, _rx) = mpsc::unbounded_channel();
+            let svc = RaftGrpcService::new(
+                NodeId(1),
+                tx,
+                Arc::new(NamedDiscovery(NodeId(1), test_cid())),
+            );
+            handle.spawn(async move {
+                tonic::transport::Server::builder()
+                    .add_service(Kv9RaftServer::with_interceptor(
+                        svc,
+                        cluster_token_interceptor("test-cluster-token".into()),
+                    ))
+                    .serve(bare)
+                    .await
+                    .ok();
+            });
+        }
+        // Server WITH a stub backend.
+        let addr = free_addr();
+        let backend = Arc::new(StubRegistration(std::sync::Mutex::new(Vec::new())));
+        {
+            let (tx, _rx) = mpsc::unbounded_channel();
+            let svc = RaftGrpcService::new(
+                NodeId(1),
+                tx,
+                Arc::new(NamedDiscovery(NodeId(1), test_cid())),
+            )
+            .with_registration(backend.clone() as Arc<dyn RegistrationBackend>);
+            handle.spawn(async move {
+                tonic::transport::Server::builder()
+                    .add_service(Kv9RaftServer::with_interceptor(
+                        svc,
+                        cluster_token_interceptor("test-cluster-token".into()),
+                    ))
+                    .serve(addr)
+                    .await
+                    .ok();
+            });
+        }
+        std::thread::sleep(Duration::from_millis(100));
+
+        let register = |target: SocketAddr, as_node: u64, body_node: u64| {
+            handle.block_on(async move {
+                let mut client = Kv9RaftClient::connect(format!("http://{target}"))
+                    .await
+                    .unwrap();
+                let mut req = Request::new(pb::RegisterRequest {
+                    node_id: body_node,
+                    addr: "127.0.0.1:9009".into(),
+                    cluster_id: test_cid().as_bytes().to_vec(),
+                });
+                attach_auth(&mut req, &Some("test-cluster-token".into()), NodeId(as_node));
+                client.register(req).await
+            })
+        };
+
+        // No backend: loudly unimplemented.
+        assert_eq!(
+            register(bare, 4, 4).unwrap_err().code(),
+            tonic::Code::Unimplemented
+        );
+        // Body identity != authenticated identity: refused before any backend
+        // call (the stub records nothing).
+        assert_eq!(
+            register(addr, 4, 9).unwrap_err().code(),
+            tonic::Code::PermissionDenied
+        );
+        assert!(backend.0.lock().unwrap().is_empty());
+        // Happy path: the backend's exact receipt comes back, call recorded.
+        let receipt = register(addr, 4, 4).unwrap().into_inner();
+        assert_eq!((receipt.applied_term, receipt.applied_index), (3, 17));
+        assert_eq!(receipt.voters, vec![1, 2, 3]);
+        assert_eq!(receipt.learners, vec![4]);
+        assert_eq!(
+            backend.0.lock().unwrap().as_slice(),
+            &[(NodeId(4), "127.0.0.1:9009".to_string(), test_cid())]
+        );
+    }
+
+    /// The coupled discovery contract, both halves: an initialized answer
+    /// carries the identity (and a joiner can read it), and a responder that
+    /// claims initialized but names nothing is refused BY THE SERVICE — the
+    /// broken answer never reaches the wire.
+    #[test]
+    fn initialized_discovery_must_name_its_cluster() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+
+        let named = free_addr();
+        {
+            let (tx, _rx) = mpsc::unbounded_channel();
+            let svc = RaftGrpcService::new(
+                NodeId(2),
+                tx,
+                Arc::new(NamedDiscovery(NodeId(2), test_cid())),
+            );
+            handle.spawn(async move {
+                tonic::transport::Server::builder()
+                    .add_service(Kv9RaftServer::with_interceptor(
+                        svc,
+                        cluster_token_interceptor("test-cluster-token".into()),
+                    ))
+                    .serve(named)
+                    .await
+                    .ok();
+            });
+        }
+        let nameless = free_addr();
+        {
+            let (tx, _rx) = mpsc::unbounded_channel();
+            let svc =
+                RaftGrpcService::new(NodeId(3), tx, Arc::new(NamelessInitialized(NodeId(3))));
+            handle.spawn(async move {
+                tonic::transport::Server::builder()
+                    .add_service(Kv9RaftServer::with_interceptor(
+                        svc,
+                        cluster_token_interceptor("test-cluster-token".into()),
+                    ))
+                    .serve(nameless)
+                    .await
+                    .ok();
+            });
+        }
+        std::thread::sleep(Duration::from_millis(100));
+
+        let a = grpc_discover(
+            &handle,
+            NodeId(1),
+            named,
+            Duration::from_secs(2),
+            Some("test-cluster-token".into()),
+        )
+        .unwrap();
+        assert!(a.initialized);
+        assert_eq!(a.cluster_id, Some(test_cid()));
+        // Post-init the fingerprint has retired: nothing meaningful travels.
+        assert_eq!(a.voter_fingerprint, 0);
+
+        // The nameless-initialized responder is a server-side error — the
+        // client sees a failed RPC, never a lenient nameless answer.
+        assert!(grpc_discover(
+            &handle,
+            NodeId(1),
+            nameless,
+            Duration::from_secs(2),
+            Some("test-cluster-token".into()),
+        )
+        .is_err());
     }
 }
