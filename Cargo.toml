@@ -18,9 +18,16 @@ repository = "https://github.com/kv9/kv9"
 description = "kv9 — a single-binary, multi-tenant distributed key-value engine (design skeleton)."
 
 # Minimal, pure-Rust dependencies only. No protoc/cmake/native build deps.
+# raft-rs MUST stay on `protobuf-codec` (protoc-free); `prost-codec` requires
+# protoc and is forbidden (docs/ROADMAP.md §Dependency decisions).
 [workspace.dependencies]
 thiserror = "1"
 serde = { version = "1", features = ["derive"] }
+raft = { version = "=0.7.0", default-features = false, features = ["protobuf-codec"] }
+slog = "2"
+# Persistent (structurally-shared) ordered map: O(1) snapshots for MemEngine.
+# MIT-licensed, to keep the dependency set copyleft-free.
+rpds = "1"
 
 # Internal crates
 kv9-common = { path = "crates/common" }
