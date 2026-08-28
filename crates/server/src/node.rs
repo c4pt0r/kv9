@@ -66,7 +66,7 @@ impl Default for Store {
 /// [`MemStateMachine`] sharing the store's engine, with a [`MetaStore`] reading that same
 /// KV. `// TODO(phase1): back by tikv/raft-rs`.
 pub struct MetaRaft {
-    pub raft: SingleNodeRaft,
+    pub raft: Arc<dyn RaftGroup>,
     pub sm: Mutex<MemStateMachine<MemEngine>>,
     pub store: MetaStore<MemEngine>,
     /// Serializes catalog transaction construction through committed apply. Raft orders
@@ -78,8 +78,14 @@ pub struct MetaRaft {
 impl MetaRaft {
     /// Wire the meta-region raft group + state machine + catalog store over `engine`.
     pub fn new(node: NodeId, engine: Arc<MemEngine>) -> Self {
+        Self::with_raft(Arc::new(SingleNodeRaft::new(node, META_REGION_0)), engine)
+    }
+
+    /// Wire the state machine/catalog around an externally driven raft peer. The
+    /// deterministic 3-node acceptance cluster injects raft-rs peers through this seam.
+    pub fn with_raft(raft: Arc<dyn RaftGroup>, engine: Arc<MemEngine>) -> Self {
         MetaRaft {
-            raft: SingleNodeRaft::new(node, META_REGION_0),
+            raft,
             sm: Mutex::new(MemStateMachine::with_engine(engine.clone())),
             store: MetaStore::new(engine),
             catalog_txn: Mutex::new(()),
@@ -95,7 +101,7 @@ impl MetaRaft {
     pub fn propose_apply(&self, cmd: Command) -> Result<()> {
         self.raft.propose(cmd.encode())?;
         let mut sm = self.sm.lock().expect("meta sm poisoned");
-        let applied = drive_apply(&self.raft, &mut *sm)?;
+        let applied = drive_apply(self.raft.as_ref(), &mut *sm)?;
         if applied.is_empty() {
             return Err(Error::Raft(
                 "proposal produced no committed entry to apply".into(),
@@ -124,9 +130,15 @@ impl Node {
     /// Assemble a node from config (DESIGN §4, §11). Does not yet run bootstrap; call
     /// [`Node::bootstrap`] to drive the election-first state machine.
     pub fn new(id: NodeId, config: Config) -> Result<Self> {
+        Self::with_raft(id, config, Arc::new(SingleNodeRaft::new(id, META_REGION_0)))
+    }
+
+    /// Assemble a node around a supplied meta-region peer (used by the in-process
+    /// raft-rs cluster and later by the real node bootstrap wiring).
+    pub fn with_raft(id: NodeId, config: Config, raft: Arc<dyn RaftGroup>) -> Result<Self> {
         config.validate()?;
         let store = Store::new();
-        let meta_raft = MetaRaft::new(id, store.engine.clone());
+        let meta_raft = MetaRaft::with_raft(raft, store.engine.clone());
         Ok(Node {
             id,
             config,
@@ -158,6 +170,20 @@ impl Node {
             .catalog_txn
             .lock()
             .expect("catalog transaction lock poisoned");
+        let (ks_id, cmd) = self.build_create_keyspace_command(name, tenant, api_type)?;
+        self.meta_raft.propose_apply(cmd)?;
+        Ok(ks_id)
+    }
+
+    /// Build (but do not propose) the atomic catalog command for keyspace creation.
+    /// The caller must hold `catalog_txn` until the command commits; the deterministic
+    /// cluster harness uses this split to pump raft-rs explicitly.
+    fn build_create_keyspace_command(
+        &self,
+        name: &str,
+        tenant: TenantId,
+        api_type: ApiType,
+    ) -> Result<(KeyspaceId, Command)> {
         let mut txn = self.meta_raft.store.begin()?;
         let raw_ks_id = txn.allocate_id(SequenceKind::Keyspace)?;
         let encoded_ks_id = u32::try_from(raw_ks_id).map_err(|_| {
@@ -195,9 +221,7 @@ impl Node {
 
         // Package the atomic multi-table batch as a replicated catalog transaction and
         // commit it through raft (METADATA-CATALOG §5).
-        let cmd = Command::from_batch(&txn.into_batch());
-        self.meta_raft.propose_apply(cmd)?;
-        Ok(ks_id)
+        Ok((ks_id, Command::from_batch(&txn.into_batch())))
     }
 
     /// Drive the election-first bootstrap to `Serving` (DESIGN §5.2). Skeleton: for a
@@ -228,6 +252,13 @@ impl Node {
             .catalog_txn
             .lock()
             .expect("catalog transaction lock poisoned");
+        let cmd = self.build_initial_metadata_command()?;
+        self.meta_raft.propose_apply(cmd)
+    }
+
+    /// Build the idempotent seed-row command. The elected bootstrap leader proposes
+    /// this through raft; the 3-node harness pumps the resulting Ready entries.
+    fn build_initial_metadata_command(&self) -> Result<Command> {
         let mut txn = self.meta_raft.store.begin()?;
 
         txn.insert(
@@ -283,9 +314,7 @@ impl Node {
             schema_version_row(),
         )?;
 
-        self.meta_raft
-            .propose_apply(Command::from_batch(&txn.into_batch()))?;
-        Ok(())
+        Ok(Command::from_batch(&txn.into_batch()))
     }
 }
 
@@ -464,6 +493,85 @@ fn text_column(row: &RowValue, column: ColumnId) -> Result<String> {
 mod tests {
     use super::*;
     use crate::api::AdminApi;
+    use kv9_raft::{CommittedEntry, InProcessCluster, ProposedAt, StateMachine};
+
+    const N1: NodeId = NodeId(1);
+    const N2: NodeId = NodeId(2);
+    const N3: NodeId = NodeId(3);
+
+    fn raft_nodes() -> (InProcessCluster, Vec<Node>) {
+        let cluster = InProcessCluster::new(META_REGION_0, &[N1, N2, N3]).unwrap();
+        let nodes = cluster
+            .peers()
+            .iter()
+            .map(|peer| {
+                let raft: Arc<dyn RaftGroup> = Arc::clone(peer) as Arc<dyn RaftGroup>;
+                Node::with_raft(peer.node_id(), Config::default(), raft).unwrap()
+            })
+            .collect();
+        (cluster, nodes)
+    }
+
+    fn node(nodes: &[Node], id: NodeId) -> &Node {
+        nodes.iter().find(|node| node.id == id).unwrap()
+    }
+
+    /// Pump one raft round and apply every committed command to the corresponding
+    /// node's real metadata state machine, returning the exact entries observed.
+    fn pump_apply(cluster: &InProcessCluster, nodes: &[Node]) -> Vec<(NodeId, CommittedEntry)> {
+        cluster.round();
+        let mut observed = Vec::new();
+        for peer in cluster.peers() {
+            let entries = peer.take_ready().unwrap();
+            let mut sm = node(nodes, peer.node_id())
+                .meta_raft
+                .sm
+                .lock()
+                .expect("meta sm poisoned");
+            for entry in entries {
+                sm.apply(&entry).unwrap();
+                observed.push((peer.node_id(), entry));
+            }
+        }
+        observed
+    }
+
+    /// Propose and deterministically wait until every target applies the exact
+    /// `(term,index,payload)`. Reaching/passing the index with another entry never
+    /// satisfies this helper (acceptance contract item 13).
+    fn commit_exact(
+        cluster: &InProcessCluster,
+        nodes: &[Node],
+        leader: NodeId,
+        targets: &[NodeId],
+        command: Command,
+    ) -> ProposedAt {
+        use std::collections::BTreeSet;
+
+        let payload = command.encode();
+        let at = cluster
+            .peer(leader)
+            .unwrap()
+            .propose_traced(payload.clone())
+            .unwrap();
+        let mut matched = BTreeSet::new();
+        for _ in 0..500 {
+            for (node_id, entry) in pump_apply(cluster, nodes) {
+                if entry.index == at.index {
+                    assert_eq!(
+                        entry.term, at.term,
+                        "proposal position was overwritten by another term"
+                    );
+                    assert_eq!(entry.data, payload, "proposal payload mismatch");
+                    matched.insert(node_id);
+                }
+            }
+            if targets.iter().all(|target| matched.contains(target)) {
+                return at;
+            }
+        }
+        panic!("exact proposal was not applied on all targets");
+    }
 
     /// Phase-1 milestone (ROADMAP): a node bootstraps election-first, then a
     /// `CreateKeyspace` flows through the catalog engine + meta-region raft.
@@ -567,6 +675,96 @@ mod tests {
             .collect();
         ids.sort_unstable();
         assert_eq!(ids, (100..108).collect::<Vec<_>>());
+    }
+
+    #[test]
+    fn three_node_admin_e2e_failover_and_orphan_rejection() {
+        let (cluster, nodes) = raft_nodes();
+        cluster.peer(N1).unwrap().campaign().unwrap();
+        cluster
+            .run_until(500, "initial metadata leader", |cluster| {
+                cluster.leader().is_some()
+            })
+            .unwrap();
+        let leader1 = cluster.leader().unwrap();
+
+        // Election-first bootstrap: only the elected leader constructs the seed batch;
+        // all three replicas must apply that exact encoded command before any read.
+        let seed = node(&nodes, leader1)
+            .build_initial_metadata_command()
+            .unwrap();
+        commit_exact(&cluster, &nodes, leader1, &[N1, N2, N3], seed);
+
+        let follower = [N1, N2, N3].into_iter().find(|id| *id != leader1).unwrap();
+        let system = AdminApi::list_keyspaces(node(&nodes, follower), "test").unwrap();
+        assert_eq!(system.len(), 1);
+        assert_eq!(system[0].id, KeyspaceId::SYSTEM);
+
+        let (txn_id, create_txn) = node(&nodes, leader1)
+            .build_create_keyspace_command("app", TenantId::DEFAULT, ApiType::Txn)
+            .unwrap();
+        commit_exact(&cluster, &nodes, leader1, &[N1, N2, N3], create_txn);
+        let follower_rows = AdminApi::list_keyspaces(node(&nodes, follower), "test").unwrap();
+        assert!(follower_rows.iter().any(|row| row.id == txn_id));
+
+        // Live leader failover: the surviving quorum elects and commits a raw keyspace.
+        cluster.set_alive(leader1, false);
+        cluster
+            .run_until(500, "replacement metadata leader", |cluster| {
+                cluster.leader().is_some_and(|leader| leader != leader1)
+            })
+            .unwrap();
+        let leader2 = cluster.leader().unwrap();
+        let survivors: Vec<_> = [N1, N2, N3]
+            .into_iter()
+            .filter(|id| *id != leader1)
+            .collect();
+        let (raw_id, create_raw) = node(&nodes, leader2)
+            .build_create_keyspace_command("raw", TenantId::DEFAULT, ApiType::Raw)
+            .unwrap();
+        commit_exact(&cluster, &nodes, leader2, &survivors, create_raw);
+        let survivor_follower = *survivors.iter().find(|id| **id != leader2).unwrap();
+        let rows = AdminApi::list_keyspaces(node(&nodes, survivor_follower), "test").unwrap();
+        assert!(rows
+            .iter()
+            .any(|row| row.id == raw_id && row.api_type == ApiType::Raw));
+
+        // Strong item-13 scenario at the server/catalog layer. The isolated old leader
+        // locally assigns a position to `orphan`, but cannot commit it. The live leader
+        // consumes the same next catalog id for `durable`; after rejoin, position
+        // progress must not make `orphan` appear successful.
+        let (_, orphan) = node(&nodes, leader1)
+            .build_create_keyspace_command("orphan", TenantId::DEFAULT, ApiType::Raw)
+            .unwrap();
+        let orphan_payload = orphan.encode();
+        let orphan_at = cluster
+            .peer(leader1)
+            .unwrap()
+            .propose_traced(orphan_payload.clone())
+            .unwrap();
+
+        let (_, durable) = node(&nodes, leader2)
+            .build_create_keyspace_command("durable", TenantId::DEFAULT, ApiType::Raw)
+            .unwrap();
+        let durable_at = commit_exact(&cluster, &nodes, leader2, &survivors, durable);
+        assert!(durable_at.term > orphan_at.term);
+
+        cluster.set_alive(leader1, true);
+        // A final exact write proves the rejoined peer caught up through the replacement
+        // history, without treating the orphan's old position as success.
+        let (_, after_rejoin) = node(&nodes, leader2)
+            .build_create_keyspace_command("after-rejoin", TenantId::DEFAULT, ApiType::Raw)
+            .unwrap();
+        commit_exact(&cluster, &nodes, leader2, &[N1, N2, N3], after_rejoin);
+        for replica in &nodes {
+            let rows = AdminApi::list_keyspaces(replica, "test").unwrap();
+            assert!(!rows.iter().any(|row| row.name == "orphan"));
+            assert!(rows.iter().any(|row| row.name == "durable"));
+        }
+        assert!(cluster
+            .peers()
+            .iter()
+            .all(|peer| peer.raft_committed() >= orphan_at.index));
     }
 
     #[test]

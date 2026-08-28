@@ -7,9 +7,8 @@
 //! Phase-1 spine (ROADMAP Phase 1): the [`state_machine`] module adds a [`StateMachine`]
 //! trait and a [`MemStateMachine`] backed by [`kv9_engine::MemEngine`] (the mocked
 //! storage), plus a `propose → commit → apply → read` path over the [`RaftGroup`] trait.
-//! The replicated payloads are [`Command`]s (metadata mutations). `openraft` is *not* a
-//! dependency yet — these are pure-Rust stubs; `// TODO(phase1): back by openraft` marks
-//! where real consensus plugs in.
+//! The replicated payloads are [`Command`]s (metadata mutations). The production
+//! Phase-1 adapter is tikv/raft-rs (`RawNode`/`Ready`) behind the same pull interface.
 
 pub mod command;
 pub mod rawnode;
