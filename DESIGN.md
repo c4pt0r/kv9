@@ -242,7 +242,9 @@ metadata server**, and the winner performs metadata initialization and a simple 
 `docs/ARCHITECTURE.md` §4.)
 
 - `META_REGION_0` has a **fixed, well-known region id** and covers the system key range. Its initial member set is
-  the join-set, so no routing lookup is needed to form it.
+  the join-set, so no routing lookup is needed to form it. Every process declares that complete voter set before
+  any RPC as `node-id@ip:port` pairs; discovery may verify the mapping but must never infer membership from only
+  the peers that happened to answer (a silent seed remains in the quorum denominator).
 - **BootstrapElection = Raft leader election over the (empty) `META_REGION_0` log** — the same Raft that replicates
   data. The winner is the metadata server.
 - The winner **initializes metadata** as the first Raft-committed entries: create the system keyspace, the default
