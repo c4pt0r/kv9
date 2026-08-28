@@ -51,7 +51,7 @@ fn region_row(id: u64, ks: u32, start: &[u8], end: &[u8]) -> RowValue {
 
 /// Seed a tenant so keyspace FKs resolve.
 fn seed_tenant(s: &MetaStore<MemEngine>) {
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     txn.insert(&schema::TENANTS_DESC, &[memcmp_uint(1)], tenant_row(1, "default"))
         .unwrap();
     txn.commit().unwrap();
@@ -61,14 +61,14 @@ fn seed_tenant(s: &MetaStore<MemEngine>) {
 fn insert_get_scan_roundtrip_with_pk_reconstruction() {
     let s = store();
     seed_tenant(&s);
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     let (pk, row) = keyspace_row(7, "ks-a", 1, ApiType::Txn);
     txn.insert(&schema::KEYSPACES_DESC, &pk, row).unwrap();
     // Read-your-writes: visible before commit.
     assert!(txn.get(&schema::KEYSPACES_DESC, &pk).unwrap().is_some());
     txn.commit().unwrap();
 
-    let txn = s.begin();
+    let txn = s.begin().unwrap();
     let rows = txn.scan(&schema::KEYSPACES_DESC, usize::MAX).unwrap();
     assert_eq!(rows.len(), 1);
     // scan reconstructs the pk from the physical key.
@@ -79,7 +79,7 @@ fn insert_get_scan_roundtrip_with_pk_reconstruction() {
 fn duplicate_pk_rejected() {
     let s = store();
     seed_tenant(&s);
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     let (pk, row) = keyspace_row(7, "ks-a", 1, ApiType::Raw);
     txn.insert(&schema::KEYSPACES_DESC, &pk, row.clone()).unwrap();
     assert!(txn.insert(&schema::KEYSPACES_DESC, &pk, row).is_err());
@@ -89,13 +89,13 @@ fn duplicate_pk_rejected() {
 fn unique_name_index_rejects_duplicates_across_txns() {
     let s = store();
     seed_tenant(&s);
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     let (pk, row) = keyspace_row(7, "same-name", 1, ApiType::Raw);
     txn.insert(&schema::KEYSPACES_DESC, &pk, row).unwrap();
     txn.commit().unwrap();
 
     // Same name, different id, later txn: the by_name UNIQUE index must reject it.
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     let (pk2, row2) = keyspace_row(8, "same-name", 1, ApiType::Raw);
     assert!(txn.insert(&schema::KEYSPACES_DESC, &pk2, row2).is_err());
 }
@@ -104,12 +104,12 @@ fn unique_name_index_rejects_duplicates_across_txns() {
 fn fk_enforced_against_merged_view() {
     let s = store();
     // No tenant exists: keyspace insert must fail the FK check.
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     let (pk, row) = keyspace_row(7, "ks-a", 99, ApiType::Raw);
     assert!(txn.insert(&schema::KEYSPACES_DESC, &pk, row.clone()).is_err());
 
     // Parent inserted earlier in the SAME txn satisfies the FK (bootstrap pattern).
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     txn.insert(&schema::TENANTS_DESC, &[memcmp_uint(99)], tenant_row(99, "t99"))
         .unwrap();
     txn.insert(&schema::KEYSPACES_DESC, &pk, row).unwrap();
@@ -120,7 +120,7 @@ fn fk_enforced_against_merged_view() {
 fn update_remaintains_indexes() {
     let s = store();
     seed_tenant(&s);
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     txn.insert(&schema::TENANTS_DESC, &[memcmp_uint(2)], tenant_row(2, "other"))
         .unwrap();
     let (pk, row) = keyspace_row(7, "ks-a", 1, ApiType::Raw);
@@ -128,7 +128,7 @@ fn update_remaintains_indexes() {
     txn.commit().unwrap();
 
     // Move the keyspace to tenant 2; the by_tenant index must follow.
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     txn.update(
         &schema::KEYSPACES_DESC,
         &pk,
@@ -145,7 +145,7 @@ fn update_remaintains_indexes() {
     );
 
     // Updating a missing row is an error.
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     assert!(txn
         .update(
             &schema::KEYSPACES_DESC,
@@ -159,23 +159,23 @@ fn update_remaintains_indexes() {
 fn delete_removes_row_and_indexes_and_is_idempotent() {
     let s = store();
     seed_tenant(&s);
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     let (pk, row) = keyspace_row(7, "ks-a", 1, ApiType::Raw);
     txn.insert(&schema::KEYSPACES_DESC, &pk, row).unwrap();
     txn.commit().unwrap();
 
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     txn.delete(&schema::KEYSPACES_DESC, &pk).unwrap();
     // Idempotent: deleting again inside the same txn is a no-op.
     txn.delete(&schema::KEYSPACES_DESC, &pk).unwrap();
     txn.commit().unwrap();
 
-    let txn = s.begin();
+    let txn = s.begin().unwrap();
     assert!(txn.get(&schema::KEYSPACES_DESC, &pk).unwrap().is_none());
     // Index side gone too: by_tenant scan finds nothing, and the name is reusable.
     let t = Tables::new(&s);
     assert_eq!(t.keyspaces_of_tenant(TenantId(1)).unwrap(), vec![]);
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     let (pk2, row2) = keyspace_row(8, "ks-a", 1, ApiType::Raw);
     txn.insert(&schema::KEYSPACES_DESC, &pk2, row2).unwrap();
 }
@@ -183,7 +183,7 @@ fn delete_removes_row_and_indexes_and_is_idempotent() {
 #[test]
 fn allocate_id_sequences_are_independent_and_durable() {
     let s = store();
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     assert_eq!(txn.allocate_id(SequenceKind::Keyspace).unwrap(), FIRST_DYNAMIC_ID);
     assert_eq!(
         txn.allocate_id(SequenceKind::Keyspace).unwrap(),
@@ -194,7 +194,7 @@ fn allocate_id_sequences_are_independent_and_durable() {
     txn.commit().unwrap();
 
     // The bump survives the commit; a later txn continues, not restarts.
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     assert_eq!(
         txn.allocate_id(SequenceKind::Keyspace).unwrap(),
         FIRST_DYNAMIC_ID + 2
@@ -205,12 +205,12 @@ fn allocate_id_sequences_are_independent_and_durable() {
 fn uncommitted_txn_discards_its_overlay() {
     let s = store();
     {
-        let mut txn = s.begin();
+        let mut txn = s.begin().unwrap();
         txn.insert(&schema::TENANTS_DESC, &[memcmp_uint(1)], tenant_row(1, "gone"))
             .unwrap();
         // Dropped without commit.
     }
-    let txn = s.begin();
+    let txn = s.begin().unwrap();
     assert!(txn
         .get(&schema::TENANTS_DESC, &[memcmp_uint(1)])
         .unwrap()
@@ -224,7 +224,7 @@ fn uncommitted_txn_discards_its_overlay() {
 /// Seed: tenant 1; keyspace 7 (txn) with regions [a,b), [b,c); keyspace 8 (raw, empty);
 /// keyspace 9 (txn) with the default whole-range group.
 fn seed_routing(s: &MetaStore<MemEngine>) {
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     txn.insert(&schema::TENANTS_DESC, &[memcmp_uint(1)], tenant_row(1, "default"))
         .unwrap();
     for (id, name, api) in [
@@ -368,12 +368,12 @@ fn index_scan_prefix_does_not_match_name_superstrings() {
     // terminator guarantees it; this pins it at the store level.
     let s = store();
     seed_tenant(&s);
-    let mut txn = s.begin();
+    let mut txn = s.begin().unwrap();
     let (pk, row) = keyspace_row(7, "foobar", 1, ApiType::Raw);
     txn.insert(&schema::KEYSPACES_DESC, &pk, row).unwrap();
     txn.commit().unwrap();
 
-    let txn = s.begin();
+    let txn = s.begin().unwrap();
     let hits = txn
         .index_scan(
             &schema::KEYSPACES_DESC,

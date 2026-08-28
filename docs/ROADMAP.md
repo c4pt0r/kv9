@@ -10,8 +10,17 @@ metadata) with the storage engine **mocked** behind the `Engine` trait, then bri
 object-storage engine (the thesis) as a clean swap. Build vertical slices so there is always a running `kv9`.
 
 ## Dependency decisions (make up front — they shape everything)
-- **Consensus:** `openraft` (pure-Rust, async — leader election, log replication, membership, snapshots). *Not*
-  `raft-rs` (pulls protobuf/`protoc`). Needed from Phase 1.
+- **Consensus:** `raft-rs` (tikv/raft-rs 0.7.x, feature **`protobuf-codec`** — builds with **no protoc / no native
+  toolchain**; the `prost-codec` feature *does* require protoc and **must not be used**). Chosen for: synchronous
+  pull-model (`RawNode`/`Ready`) matching the region apply loop, built-in `pre_vote` + `check_quorum` (§5.3
+  gray-failure discipline), and tick-driven cores compatible with idle-region quiescing (§6.1) and deterministic
+  simulation. raft-rs provides the consensus core only — transport, log storage, state machine, and the drive loop
+  are ours. *Not* `openraft`: async runtime (tokio) + push-model apply would force an async boundary and a
+  state-machine trait redraw across the workspace; no check-quorum primitive. Needed from Phase 1.
+  *(Decision record: build probes + 3-node spike, 2026-08-27; approved by EdHuang.)*
+  CI note: `protobuf-codec` needs no protoc — but a **broken or partial `protoc` earlier on `PATH` fails the
+  build** (protobuf-build probes it, then panics) in a way that looks unrelated to protobuf. CI images should
+  either omit protoc entirely or ensure the one present is functional.
 - **Storage engine (Phase 2):** a **minimal native LSM** (memtable + immutable SST writer/reader + manifest), *not*
   RocksDB — RocksDB assumes local-first storage and fights the immutable-SST-on-object-storage / manifest-in-raft
   model. Until then, the raft state machine is the skeleton's `MemEngine` (mock).
