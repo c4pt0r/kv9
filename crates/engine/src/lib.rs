@@ -8,12 +8,14 @@
 pub mod cf;
 pub mod mem;
 pub mod persist;
+pub mod testing;
 pub mod wal;
 pub mod write_batch;
 
 pub use cf::ColumnFamily;
 pub use mem::MemEngine;
 pub use persist::WalEngine;
+pub use testing::FaultyEngine;
 pub use wal::{Replay, Wal};
 pub use write_batch::{Mutation, WriteBatch};
 
