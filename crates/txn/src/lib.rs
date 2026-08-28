@@ -10,4 +10,4 @@ pub use percolator::{
     check_txn_group_confinement, resolve_confined_group, PercolatorExecutor, TxnContext,
     TxnMutation,
 };
-pub use raw::{RawExecutor, RawWriteOptions};
+pub use raw::{LeaderRead, RawExecutor, RawWriteOptions};

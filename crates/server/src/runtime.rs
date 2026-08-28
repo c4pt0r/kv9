@@ -19,7 +19,7 @@ use kv9_common::{
     ApiType, ClusterId, Config, Error, KeyspaceId, NodeId, RegionId, Result, SeedPeer, TenantId,
     TimeStamp, TxnGroupId, UserKey, Value, META_REGION_0,
 };
-use kv9_engine::WalEngine;
+use kv9_engine::{Engine, ReadView, WalEngine};
 use kv9_meta::bootstrap::{init_marker_exists, write_init_marker};
 use kv9_meta::codec::memcmp_uint;
 use kv9_meta::schema::{ColumnId, NODES_DESC, SCHEMA_VERSION_DESC};
@@ -33,7 +33,7 @@ use kv9_raft::grpc::{
 };
 use kv9_raft::storage::DiskRaftStorage;
 use kv9_raft::transport::voter_set_fingerprint;
-use kv9_raft::{MemStateMachine, ProposedAt, RaftGroup, RaftPeer, Role};
+use kv9_raft::{cf_code, Command, KvOp, MemStateMachine, ProposedAt, RaftGroup, RaftPeer, Role};
 use tonic::metadata::MetadataMap;
 use tonic::Status;
 
@@ -44,6 +44,8 @@ use crate::api::{
 use crate::grpc::{
     AuthContext, AuthInterceptor, AuthKind, Authenticator, Kv9Grpc, TokenAuthenticator,
 };
+use kv9_txn::{LeaderRead, RawExecutor, RawWriteOptions};
+
 use crate::Node;
 
 const TICK: Duration = Duration::from_millis(20);
@@ -463,22 +465,103 @@ impl RegistrationBackend for RuntimeBackend {
     }
 }
 
+/// How many keys one `delete_range` chunk may carry.
+///
+/// A range delete expands to explicit per-key deletes, so an unbounded range would build
+/// an unbounded raft entry (DESIGN §13 principle 13 — no unquota'd in-memory path). The
+/// cost is that a large range is several entries: each chunk applies atomically, the range
+/// as a whole does not.
+const RAW_DELETE_RANGE_CHUNK: usize = 1024;
+
+/// The raw data plane. This is the layer that holds **both** the driver and the store, so
+/// it is the only place a raw write can legitimately become a committed raft entry.
+///
+/// Every write here follows the same shape as `create_keyspace`: build the command,
+/// propose it, and wait for *that exact* `(term, index)` to apply. Writing the local
+/// engine directly would be faster and would silently fork the cluster.
+impl RuntimeBackend {
+    /// A read view over applied state, refused unless this node currently leads.
+    ///
+    /// Not linearizable: `check_quorum` bounds how long a deposed leader keeps believing
+    /// it leads, but within that window this returns stale data. See `LeaderRead`.
+    fn leader_read(&self) -> Result<(Box<dyn ReadView + '_>, Option<u64>, bool)> {
+        let status = self.driver.status();
+        let is_leader = status.role == Role::Leader;
+        let hint = status.leader_id.map(|id| id.0);
+        let view = self.node.meta_raft.store.engine().snapshot()?;
+        Ok((view, hint, is_leader))
+    }
+
+    /// Replicate one planned batch and wait for its exact position to apply.
+    fn commit_batch(&self, batch: kv9_engine::WriteBatch) -> Result<()> {
+        if batch.mutations().is_empty() {
+            return Ok(());
+        }
+        // Deliberately NOT `Command::from_batch`, which builds a `CatalogTxn`. User data
+        // must ride its own wire tag: sharing the catalog's command would replay raw
+        // writes through the catalog path and its serializing lock. If a third caller
+        // ever needs this, it should move into `command.rs` next to `from_batch`.
+        let ops = batch
+            .mutations()
+            .iter()
+            .map(|mutation| match mutation {
+                kv9_engine::Mutation::Put { cf, key, value } => KvOp::Put {
+                    cf: cf_code(*cf),
+                    key: key.clone(),
+                    value: value.clone(),
+                },
+                kv9_engine::Mutation::Delete { cf, key } => KvOp::Delete {
+                    cf: cf_code(*cf),
+                    key: key.clone(),
+                },
+            })
+            .collect();
+        let command = Command::Write { ops };
+        let proposed = self.driver.propose(&command)?;
+        match self.driver.wait_applied(proposed, RAW_APPLY_DEADLINE)? {
+            true => Ok(()),
+            // The slot was taken by a different entry: a new leader overwrote this
+            // position. Success is judged on (term, index), never on elapsed time.
+            false => Err(Error::Raft(format!(
+                "raw write at term {} index {} was overwritten before it applied",
+                proposed.term, proposed.index.0
+            ))),
+        }
+    }
+}
+
+/// How long to wait for a raw write's own `(term, index)` to reach the state machine.
+const RAW_APPLY_DEADLINE: Duration = Duration::from_secs(10);
+
 impl RawApi for RuntimeBackend {
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>> {
-        self.node.raw_get(ctx, key)
+        let (view, hint, is_leader) = self.leader_read()?;
+        let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
+        RawExecutor.get(&read, ctx.keyspace, key)
     }
+
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>> {
-        self.node.raw_batch_get(ctx, keys)
+        let (view, hint, is_leader) = self.leader_read()?;
+        let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
+        RawExecutor.batch_get(&read, ctx.keyspace, keys)
     }
+
     fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<()> {
-        self.node.raw_put(ctx, key, value)
+        let plan = RawExecutor.plan_put(ctx.keyspace, &key, value, RawWriteOptions::default())?;
+        self.commit_batch(plan)
     }
+
     fn raw_batch_put(&self, ctx: &RequestContext, pairs: &[(UserKey, Value)]) -> Result<()> {
-        self.node.raw_batch_put(ctx, pairs)
+        // One batch ⇒ one entry ⇒ all of these land together or none do.
+        let plan = RawExecutor.plan_batch_put(ctx.keyspace, pairs, RawWriteOptions::default())?;
+        self.commit_batch(plan)
     }
+
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<()> {
-        self.node.raw_delete(ctx, key)
+        let plan = RawExecutor.plan_delete(ctx.keyspace, key)?;
+        self.commit_batch(plan)
     }
+
     fn raw_scan(
         &self,
         ctx: &RequestContext,
@@ -486,10 +569,28 @@ impl RawApi for RuntimeBackend {
         end: &[u8],
         limit: usize,
     ) -> Result<Vec<(UserKey, Value)>> {
-        self.node.raw_scan(ctx, start, end, limit)
+        let (view, hint, is_leader) = self.leader_read()?;
+        let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
+        RawExecutor.scan(&read, ctx.keyspace, start, end, limit)
     }
+
     fn raw_delete_range(&self, ctx: &RequestContext, start: &[u8], end: &[u8]) -> Result<()> {
-        self.node.raw_delete_range(ctx, start, end)
+        // Planning reads the range first, so it needs the same leader gate as a scan.
+        let plans = {
+            let (view, hint, is_leader) = self.leader_read()?;
+            let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
+            RawExecutor.plan_delete_range(
+                &read,
+                ctx.keyspace,
+                start,
+                end,
+                RAW_DELETE_RANGE_CHUNK,
+            )?
+        };
+        for plan in plans {
+            self.commit_batch(plan)?;
+        }
+        Ok(())
     }
 }
 
