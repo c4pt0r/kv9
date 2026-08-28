@@ -349,4 +349,24 @@ mod tests {
             Err(Error::NotImplemented(_))
         ));
     }
+
+    #[test]
+    fn meta_raft_applies_the_encoded_committed_command() {
+        let engine = Arc::new(MemEngine::new());
+        let meta = MetaRaft::new(NodeId(1), engine);
+
+        meta.propose_apply(Command::Put {
+            cf: 0,
+            key: b"committed-key".to_vec(),
+            value: b"committed-value".to_vec(),
+        })
+        .unwrap();
+
+        let sm = meta.sm.lock().expect("meta sm poisoned");
+        assert_eq!(
+            sm.get(kv9_engine::ColumnFamily::Default, b"committed-key")
+                .unwrap(),
+            Some(b"committed-value".to_vec())
+        );
+    }
 }
