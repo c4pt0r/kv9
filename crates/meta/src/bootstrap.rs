@@ -312,18 +312,21 @@ impl Bootstrap {
         self.data_dir_initialized
     }
 
-    /// LOCAL CATALOG FIRST (task #24 P0): if this node's own durable catalog
-    /// already names a cluster, the cluster exists — no missing marker, no
-    /// peer answer, and no "uninitialized quorum" can override that. Returns
-    /// `Ok(true)` when it advanced `Discovering → Joining` with the local
-    /// identity (join-existing mode still verifies the expected id first).
+    /// LOCAL CATALOG FIRST: if this node's own durable catalog already names
+    /// a cluster, the cluster exists — no missing marker, no peer answer, and
+    /// no "uninitialized quorum" may override that. Returns `Ok(true)` when
+    /// it advanced `Discovering → Joining` with the local identity
+    /// (join-existing mode still verifies the expected id first).
     ///
-    /// Why this must run BEFORE any quorum counting: if the initializer
-    /// crashes after the seed transaction applied but before markers /
-    /// discovery flags were written, a whole-cluster restart sees marker=false
-    /// everywhere and would attest an "uninitialized quorum"; the new leader
-    /// then re-mints and is refused by the identity singleton — a refusal,
-    /// not a recovery, and the cluster wedges (Tess's review of c0a3191).
+    /// Scope, stated precisely (corrected after Tess's re-review): the
+    /// crash-window restart (seed txn applied, marker unwritten) is ALREADY
+    /// repaired by the runtime constructor's catalog preflight at open — this
+    /// method is the second, identity-carrying line for the Discovering tick
+    /// itself: it moves on the CLUSTER ID (not a schema row), covers any path
+    /// that reaches Discovering without that preflight conclusion, and is the
+    /// hook where join-existing verifies the expected identity. Rule (c)
+    /// engages here too, so a node whose catalog names a cluster can never
+    /// attest an uninitialized quorum regardless of marker state.
     pub fn observe_local_identity(&mut self, id: Option<ClusterId>) -> Result<bool> {
         let BootstrapState::Discovering { .. } = self.state else {
             return Ok(false);

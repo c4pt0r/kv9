@@ -528,12 +528,15 @@ impl NodeRuntime {
             .expect("meta poisoned")
             .bootstrap
             .data_dir_initialized();
-        // LOCAL CATALOG FIRST (Tess's P0 on c0a3191): if this node's own
-        // durable catalog names a cluster, the cluster exists — a lost marker
-        // or silent peers must never lead to an "uninitialized quorum" here
-        // (the re-mint would be refused by the identity singleton: a refusal,
-        // not a recovery — the cluster would wedge). The marker itself is
-        // repaired on the very next tick by advance_joining.
+        // LOCAL CATALOG FIRST: if this node's own durable catalog names a
+        // cluster, the cluster exists — a lost marker or silent peers must
+        // never lead to an "uninitialized quorum" here. Scope (corrected
+        // after Tess's re-review): the constructor preflight above (the
+        // catalog_initialized check at start) already repairs the marker for
+        // the crash-window restart; this branch is the identity-carrying
+        // second line for the tick itself, and the hook where join-existing
+        // verifies the expected id. The seam commit switches the preflight's
+        // authority from the schema row to the ClusterId as well.
         {
             let local = self.node.local_cluster_identity()?;
             let mut meta = self.node.meta.lock().expect("meta poisoned");
