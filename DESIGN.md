@@ -704,7 +704,7 @@ kv9/
 │   ├── region/   ← Region, RegionRouter, epoch, split/merge (throughput-aware), WalStream/WalPool (§6.4)
 │   ├── txn/      ← Percolator 2PC (txn keyspaces) + txn-group confinement; raw executor
 │   └── server/   ← Node assembly, API traits (Txn/Raw/Admin/Router), request routing
-└── src/ (bin `kv9`) ← main.rs: single binary; node CLI (--join, --data-dir, --addr)
+└── src/ (bin `kv9`) ← main.rs: single binary; node CLI (--node-id, --join, --data-dir, --addr)
 ```
 
 `cargo check --workspace` passing is the milestone's definition of done. Method bodies may be `unimplemented!()`
