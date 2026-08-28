@@ -7,7 +7,7 @@ use rpds::RedBlackTreeMapSync;
 
 use crate::cf::ColumnFamily;
 use crate::write_batch::{Mutation, WriteBatch};
-use crate::{Engine, ReadView, ScanEntry};
+use crate::{Durability, Engine, ReadView, ScanEntry};
 
 /// A single column family's storage: a **persistent** ordered map.
 ///
@@ -152,6 +152,12 @@ impl Engine for MemEngine {
             }
         }
         Ok(h)
+    }
+
+    fn durability(&self) -> Durability {
+        // Nothing here is written anywhere; saying so is what stops a caller from
+        // truncating a raft log against data that evaporates on restart.
+        Durability::Volatile
     }
 
     fn snapshot(&self) -> Result<Box<dyn ReadView + '_>> {
