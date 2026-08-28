@@ -16,6 +16,14 @@ service Kv9Raft {
   // never an answer. The answer binds to the responder's declared voter set
   // via the fingerprint; callers count only exact matches.
   rpc Discover(DiscoverRequest) returns (DiscoverResponse);
+
+  // Node registration (task #24, three-gate contract, gate 3): a previously
+  // ADMITTED node asks the leader to consume its admission and record it in
+  // the membership catalog — one committed transaction, confirmed by the
+  // exact applied (term, index). The caller's identity comes from the auth
+  // interceptor, never from the body; a valid cluster token alone is not
+  // admission. NotLeader answers carry a redirect hint like the public API.
+  rpc Register(RegisterRequest) returns (RegisterReceipt);
 }
 
 // Envelope mimicking kvproto's RaftMessage: routing/epoch metadata OUTSIDE
@@ -56,6 +64,35 @@ message DiscoverResponse {
   bool initialized = 2;
   // The RESPONDER's declared-set fingerprint. Callers count this answer only
   // if it equals their own — an answer endorsing a different declaration is
-  // an outsider (overlapping seed sets must not cross-endorse).
+  // an outsider (overlapping seed sets must not cross-endorse). The
+  // fingerprint's authority ENDS at initialization: it exists to keep two
+  // uninitialized declarations from cross-endorsing, nothing more.
   fixed64 voter_fingerprint = 3;
+  // The cluster identity (16 raw ClusterId bytes) — the POST-initialization
+  // authority. REQUIRED whenever initialized=true (an initialized answer
+  // that cannot name its cluster is a protocol error, not a lenient case);
+  // empty while uninitialized. Joiners verify this against their expected
+  // id — a same-token wrong-environment answer must not admit anyone.
+  bytes cluster_id = 4;
+}
+
+message RegisterRequest {
+  // Must equal the AUTHENTICATED node id from the interceptor; a mismatch is
+  // rejected before any catalog access (bodies never self-report identity).
+  uint64 node_id = 1;
+  // The exact admitted endpoint (canonical socket address): consume-time
+  // comparison against the admission record's binding.
+  string addr = 2;
+  // The cluster the caller believes it is joining (16 raw ClusterId bytes);
+  // three-way-checked against the local singleton and the admission row.
+  bytes cluster_id = 3;
+}
+
+message RegisterReceipt {
+  // The registration transaction's exact applied position on the leader.
+  uint64 applied_term = 1;
+  uint64 applied_index = 2;
+  // Membership as of that position (sorted node ids).
+  repeated uint64 voters = 3;
+  repeated uint64 learners = 4;
 }
