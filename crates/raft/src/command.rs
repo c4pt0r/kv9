@@ -4,10 +4,9 @@
 //! command; once committed it is handed to the region/meta apply loop as a
 //! [`crate::CommittedEntry`] and applied into the state machine ([`crate::StateMachine`]).
 //!
-//! Phase-1 keeps the command shape small and pure-Rust. The serialization here is a
-//! deliberately trivial, self-describing framing (no `serde`/protobuf dependency yet) so
-//! the workspace stays native-build-free; `// TODO(phase1): back by openraft` marks
-//! where a real codec + consensus plug in.
+//! Phase-1 keeps the command shape small and pure-Rust: a versioned,
+//! self-describing framing (no serde; raft-rs's protobuf is used only for the
+//! raft protocol layer, not for command payloads).
 
 use kv9_engine::{ColumnFamily, Mutation, WriteBatch};
 
@@ -33,8 +32,10 @@ pub enum Command {
     /// by a `meta::MetaTxn` (e.g. `CreateKeyspace` inserts `keyspaces` + `txn_groups` +
     /// their index rows). Applied as one atomic engine write (METADATA-CATALOG §5).
     CatalogTxn { ops: Vec<KvOp> },
-    /// A membership / configuration change (add/remove peer). Phase-1 records the intent;
-    /// real conf-change replication arrives with openraft.
+    /// A membership / configuration change (add/remove peer). Phase-1 records the
+    /// intent only — NOT wired to raft-rs `propose_conf_change`/`apply_conf_change`.
+    /// Dynamic membership (learner → voter) ships together with raft snapshots in a
+    /// later phase; Phase 1-final runs a fixed declared seed set.
     ConfChange { add: bool, node: u64 },
     /// A no-op (leader-establish barrier / heartbeat filler).
     Noop,
@@ -101,9 +102,8 @@ impl Command {
     ///
     /// The version byte gates format evolution: decoders reject unknown versions and
     /// unknown tags with a typed error, never panic (ROADMAP cross-cutting; DESIGN
-    /// principle "forward-compatible formats, never panic on the unknown").
-    /// `// TODO(phase1): back by openraft` — once the consensus layer owns the on-wire
-    /// entry format this codec becomes the app-payload layer inside it.
+    /// principle "forward-compatible formats, never panic on the unknown"). This codec
+    /// is the app-payload layer inside raft-rs entries (`Entry.data`).
     pub fn encode(&self) -> Vec<u8> {
         let mut out = Vec::new();
         out.push(ENTRY_VERSION);
