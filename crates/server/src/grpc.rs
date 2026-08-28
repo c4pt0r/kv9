@@ -488,7 +488,15 @@ impl RawClient {
 /// Both the code *and* the marker: plain `ABORTED` is used for write conflicts, so the
 /// code alone would misread an ordinary abort as a half-finished range delete.
 fn partial_write_marked(status: &Status) -> bool {
-    status.code() == tonic::Code::Aborted && status.metadata().get(PARTIAL_WRITE_KEY).is_some()
+    // The marker's *value* must be `true`, not merely present: a header that says
+    // `false` asserts the opposite, and treating it as partial would invent a receipt
+    // for a call that reported none.
+    status.code() == tonic::Code::Aborted
+        && status
+            .metadata()
+            .get(PARTIAL_WRITE_KEY)
+            .and_then(|value| value.to_str().ok())
+            == Some("true")
 }
 
 /// Decode a partial-write report into the typed error.
@@ -1543,6 +1551,25 @@ mod tests {
             matches!(partial_delete_range_from_status(&truncated), Error::Raft(_)),
             "a missing count must be a protocol error, never a defaulted zero"
         );
+    }
+
+    /// The marker's value carries meaning: `false` asserts the opposite of `true`, so
+    /// accepting mere presence would invent a receipt for a call that reported none.
+    #[test]
+    fn the_partial_marker_must_say_true_not_merely_exist() {
+        for (value, expected) in [("true", true), ("false", false), ("yes", false), ("", false)] {
+            let mut status = Status::aborted("x");
+            if !value.is_empty() {
+                status
+                    .metadata_mut()
+                    .insert(PARTIAL_WRITE_KEY, value.parse().unwrap());
+            }
+            assert_eq!(
+                partial_write_marked(&status),
+                expected,
+                "marker value {value:?} should decide partial={expected}"
+            );
+        }
     }
 
     /// A client's redirect decision must key on the status code and a stable metadata

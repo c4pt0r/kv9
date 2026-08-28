@@ -486,30 +486,42 @@ where
     let mut cursor: Option<UserKey> = None;
     let mut committed_chunks = 0u64;
     let mut last_applied: Option<AppliedPosition> = None;
+    // Both sides can fail after work has landed, and both must preserve the receipt.
+    // Planning the *next* chunk re-acquires the leader read, so a leadership change right
+    // after chunk 1 commits surfaces here as a NotLeader from `plan_next` — the most
+    // realistic partial window there is, and the one that would otherwise discard the
+    // receipt and tell the caller nothing happened.
+    macro_rules! preserving_receipt {
+        ($result:expr) => {
+            match $result {
+                Ok(value) => value,
+                Err(error) if committed_chunks > 0 => {
+                    let last = last_applied
+                        .expect("committed_chunks > 0 implies a recorded position");
+                    return Err(Error::PartialDeleteRange {
+                        committed_chunks,
+                        last_applied_term: last.term,
+                        last_applied_index: last.index,
+                        // Diagnosis only; deliberately not part of the protocol.
+                        cause: error.to_string(),
+                    });
+                }
+                Err(error) => return Err(error),
+            }
+        };
+    }
+
     loop {
-        let Some((batch, last_key)) = plan_next(cursor.as_deref())? else {
+        let Some((batch, last_key)) = preserving_receipt!(plan_next(cursor.as_deref())) else {
             return Ok(DeleteRangeReceipt {
                 committed_chunks,
                 last_applied,
             });
         };
-        let position = match commit(batch) {
-            Ok(position) => position,
-            // Only "partial" once something has actually committed. Failing before the
-            // first chunk really is "nothing happened", and dressing that up as partial
-            // would be its own lie — in the opposite direction.
-            Err(error) if committed_chunks > 0 => {
-                let last = last_applied.unwrap_or(AppliedPosition { term: 0, index: 0 });
-                return Err(Error::PartialDeleteRange {
-                    committed_chunks,
-                    last_applied_term: last.term,
-                    last_applied_index: last.index,
-                    // Diagnosis only; deliberately not part of the protocol.
-                    cause: error.to_string(),
-                });
-            }
-            Err(error) => return Err(error),
-        };
+        // Only "partial" once something has actually committed. Failing before the first
+        // chunk really is "nothing happened", and dressing that up as partial would be
+        // its own lie — in the opposite direction.
+        let position = preserving_receipt!(commit(batch));
         committed_chunks += 1;
         last_applied = Some(position);
         cursor = Some(last_key);
@@ -1502,36 +1514,60 @@ mod tests {
     use super::*;
     use kv9_common::RegionId;
     use kv9_engine::testing::FaultyEngine;
-    use kv9_engine::{ColumnFamily, Engine};
+    use kv9_engine::{ColumnFamily, Engine, MemEngine};
     use kv9_raft::transport::{InProcHub, RaftTransport};
     use kv9_raft::Command;
     use tonic::Code;
 
-    /// Plans `total` one-key chunks, then stops.
-    fn planner(total: usize) -> impl FnMut(Option<&[u8]>) -> Result<Option<(kv9_engine::WriteBatch, UserKey)>>
-    {
+    /// Plans `total` one-key chunks, then stops. Each chunk deletes a distinct key so
+    /// the *effect* of each chunk is separately observable.
+    fn planner(
+        total: usize,
+    ) -> impl FnMut(Option<&[u8]>) -> Result<Option<(kv9_engine::WriteBatch, UserKey)>> {
         let mut issued = 0usize;
         move |_cursor| {
             if issued >= total {
                 return Ok(None);
             }
             issued += 1;
+            let key = vec![b'k', issued as u8];
             let mut batch = kv9_engine::WriteBatch::new();
-            batch.delete(ColumnFamily::Default, vec![b'k', issued as u8]);
-            Ok(Some((batch, vec![b'k', issued as u8])))
+            batch.delete(ColumnFamily::Default, key.clone());
+            Ok(Some((batch, key)))
         }
     }
 
-    /// Failing at chunk N must report exactly what committed — the position of chunk N-1,
-    /// not zeros and not the position it was attempting.
+    /// An engine pre-loaded with the keys the planner will delete, so a test can ask
+    /// which chunks actually took effect rather than trusting a counter.
+    fn seeded_engine(keys: usize) -> MemEngine {
+        let engine = MemEngine::new();
+        let mut batch = kv9_engine::WriteBatch::new();
+        for i in 1..=keys {
+            batch.put(ColumnFamily::Default, vec![b'k', i as u8], b"v".to_vec());
+        }
+        engine.write(batch).unwrap();
+        engine
+    }
+
+    fn present(engine: &MemEngine, i: u8) -> bool {
+        engine
+            .get(ColumnFamily::Default, &[b'k', i])
+            .unwrap()
+            .is_some()
+    }
+
+    /// Failing at chunk 2 must leave chunk 1's deletion *in the engine* and chunks 2+
+    /// untouched — the receipt has to describe reality, not just count calls.
     #[test]
-    fn a_failure_at_the_second_chunk_reports_the_first_chunk_as_committed() {
+    fn a_failure_at_the_second_chunk_commits_exactly_the_first_chunk() {
+        let engine = seeded_engine(4);
         let mut attempts = 0u64;
-        let result = run_delete_range(planner(4), |_batch| {
+        let result = run_delete_range(planner(4), |batch| {
             attempts += 1;
             if attempts == 2 {
                 return Err(Error::Engine("injected disk failure".into()));
             }
+            engine.write(batch)?;
             Ok(AppliedPosition {
                 term: 7,
                 index: 100 + attempts,
@@ -1545,47 +1581,95 @@ mod tests {
                 last_applied_index,
                 cause,
             }) => {
-                assert_eq!(committed_chunks, 1, "exactly one chunk committed");
+                assert_eq!(committed_chunks, 1);
                 assert_eq!(last_applied_term, 7);
                 assert_eq!(
                     last_applied_index, 101,
-                    "the position of the chunk that DID commit, not the one that failed"
+                    "the position of the chunk that DID commit"
                 );
-                assert!(cause.contains("injected"), "the cause survives for humans");
+                assert!(cause.contains("injected"));
             }
-            other => panic!("expected a partial receipt, got {:?}", other.is_ok()),
+            other => panic!("expected a partial receipt, got ok={}", other.is_ok()),
         }
+        assert!(!present(&engine, 1), "chunk 1's delete must have landed");
+        assert!(present(&engine, 2), "chunk 2 failed, its key must remain");
+        assert!(present(&engine, 3), "later chunks must not have run");
     }
 
-    /// Failing before anything commits is not partial — claiming otherwise would be a lie
-    /// in the opposite direction, telling a caller data is gone when none is.
+    /// The most realistic partial window: chunk 1 commits, then leadership moves, so
+    /// *planning* the next chunk fails. The receipt must survive that too — it is not a
+    /// commit-side-only concern.
     #[test]
-    fn a_failure_on_the_very_first_chunk_is_not_reported_as_partial() {
+    fn a_failure_while_planning_the_next_chunk_still_reports_what_committed() {
+        let engine = seeded_engine(4);
+        let mut planned = 0usize;
+        let mut committed = 0u64;
+        let result = run_delete_range(
+            |_cursor| {
+                planned += 1;
+                if planned == 2 {
+                    return Err(Error::NotLeader { leader: Some(3) });
+                }
+                let key = vec![b'k', planned as u8];
+                let mut batch = kv9_engine::WriteBatch::new();
+                batch.delete(ColumnFamily::Default, key.clone());
+                Ok(Some((batch, key)))
+            },
+            |batch| {
+                committed += 1;
+                engine.write(batch)?;
+                Ok(AppliedPosition {
+                    term: 9,
+                    index: 200 + committed,
+                })
+            },
+        );
+
+        match result {
+            Err(Error::PartialDeleteRange {
+                committed_chunks,
+                last_applied_term,
+                last_applied_index,
+                ..
+            }) => {
+                assert_eq!(committed_chunks, 1);
+                assert_eq!((last_applied_term, last_applied_index), (9, 201));
+            }
+            other => panic!("a plan-side failure must preserve the receipt, ok={}", other.is_ok()),
+        }
+        assert!(!present(&engine, 1), "the committed chunk really applied");
+        assert!(present(&engine, 2), "nothing after it did");
+    }
+
+    /// Failing before anything commits is not partial, and must leave state untouched --
+    /// claiming otherwise tells a caller data is gone when none is.
+    #[test]
+    fn a_failure_on_the_very_first_chunk_is_not_partial_and_changes_nothing() {
+        let engine = seeded_engine(4);
         let result = run_delete_range(planner(4), |_batch| {
             Err(Error::Engine("injected disk failure".into()))
         });
-        assert!(
-            matches!(result, Err(Error::Engine(_))),
-            "the original error must survive untouched"
-        );
+        assert!(matches!(result, Err(Error::Engine(_))));
+        for i in 1..=4u8 {
+            assert!(present(&engine, i), "no key may have been deleted");
+        }
     }
 
-    /// A range needing no chunks is a successful no-op, not an error.
     #[test]
     fn an_empty_range_succeeds_with_a_zero_receipt() {
-        let receipt = run_delete_range(planner(0), |_batch| {
-            panic!("nothing should be committed")
-        })
-        .unwrap();
+        let receipt =
+            run_delete_range(planner(0), |_batch| panic!("nothing should be committed")).unwrap();
         assert_eq!(receipt.committed_chunks, 0);
         assert_eq!(receipt.last_applied, None);
     }
 
     #[test]
-    fn every_chunk_committing_reports_the_last_position() {
+    fn every_chunk_committing_reports_the_last_position_and_empties_the_range() {
+        let engine = seeded_engine(3);
         let mut attempts = 0u64;
-        let receipt = run_delete_range(planner(3), |_batch| {
+        let receipt = run_delete_range(planner(3), |batch| {
             attempts += 1;
+            engine.write(batch)?;
             Ok(AppliedPosition {
                 term: 2,
                 index: 50 + attempts,
@@ -1597,6 +1681,9 @@ mod tests {
             receipt.last_applied,
             Some(AppliedPosition { term: 2, index: 53 })
         );
+        for i in 1..=3u8 {
+            assert!(!present(&engine, i), "every chunk applied");
+        }
     }
 
     #[test]
