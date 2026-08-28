@@ -670,12 +670,14 @@ impl NodeRuntime {
             Role::Candidate => "candidate",
             Role::Learner => "learner",
         };
+        let meta_voters = format_node_ids(&self.voters);
         let body = format!(
-            "pid={}\nnode_id={}\nleader_id={}\nrole={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\nfatal={}\n",
+            "pid={}\nnode_id={}\nleader_id={}\nrole={}\nmeta_voters={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\nfatal={}\n",
             std::process::id(),
             raft.node_id.0,
             raft.leader_id.map_or(0, |id| id.0),
             role,
+            meta_voters,
             raft.term,
             raft.raft_committed,
             raft.applied_index,
@@ -688,6 +690,15 @@ impl NodeRuntime {
             .and_then(|_| fs::rename(&tmp, &self.status_path))
             .map_err(|e| Error::Config(format!("write {}: {e}", self.status_path.display())))
     }
+}
+
+fn format_node_ids(nodes: &[NodeId]) -> String {
+    let mut ids: Vec<u64> = nodes.iter().map(|node| node.0).collect();
+    ids.sort_unstable();
+    ids.into_iter()
+        .map(|id| id.to_string())
+        .collect::<Vec<_>>()
+        .join(",")
 }
 
 fn discovery_answer_matches(
@@ -780,6 +791,11 @@ mod tests {
             ours,
             (NodeId(3), false, 0x9999)
         ));
+    }
+
+    #[test]
+    fn status_meta_voters_are_canonical_regardless_of_cli_order() {
+        assert_eq!(format_node_ids(&[NodeId(5), NodeId(1), NodeId(3)]), "1,3,5");
     }
 
     #[test]
