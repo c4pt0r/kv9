@@ -646,9 +646,16 @@ fn error_status(error: Error) -> Status {
         // issued by the flush/drain worker, never by a request, so this variant escaping to
         // the wire means an internal invariant broke -- one file-id was assigned to two
         // distinct objects. Reporting it as a client error would send someone hunting through
-        // their own request for a fault that is ours. (Mapping proposed by Ren with the
-        // object-store work; wire semantics are Tess's call to confirm or override.)
-        Error::ObjectContentMismatch { .. } => Status::internal(message),
+        // their own request for a fault that is ours.
+        //
+        // A fixed string, deliberately NOT `message`. The Display form names the object key,
+        // which is an internal physical identifier; the client can do nothing with it and it
+        // describes our storage layout. The rich form stays on the Error for logs and
+        // diagnostics -- the redaction is at the wire boundary, not at the source, so we do
+        // not lose the detail where it is actually useful.
+        Error::ObjectContentMismatch { .. } => {
+            Status::internal("object store invariant violation")
+        }
         Error::TsoUnavailable(_) | Error::MetaNotReady(_) | Error::Raft(_) => {
             Status::unavailable(message)
         }
@@ -1663,6 +1670,20 @@ mod tests {
             Code::FailedPrecondition
         );
         assert_eq!(error_status(Error::KeyIsLocked).code(), Code::Aborted);
+
+        // Internal, and the wire text must not carry the object key: it is a physical
+        // identifier describing our storage layout, useless to a client. The redaction lives
+        // at this boundary, so a later switch back to the generic `message` -- which does
+        // name the key -- has to fail here.
+        let mismatch = error_status(Error::ObjectContentMismatch {
+            key: "sst/secret-layout-000001".into(),
+        });
+        assert_eq!(mismatch.code(), Code::Internal);
+        assert!(
+            !mismatch.message().contains("sst/secret-layout-000001"),
+            "object key leaked to the wire: {}",
+            mismatch.message()
+        );
         assert_eq!(
             error_status(Error::MetaNotReady("bootstrapping".into())).code(),
             Code::Unavailable
