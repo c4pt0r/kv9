@@ -10,7 +10,7 @@ use std::sync::{Arc, Mutex};
 use kv9_common::{
     ApiType, Config, Error, KeyspaceId, NodeId, Result, TenantId, TxnGroupId, META_REGION_0,
 };
-use kv9_engine::MemEngine;
+use kv9_engine::{Engine, MemEngine};
 use kv9_meta::codec::{memcmp_uint, ColumnValue, RowValue};
 use kv9_meta::schema::{
     ColumnId, KEYSPACES_DESC, NODES_DESC, REGIONS_DESC, REGION_PEERS_DESC, SCHEMA_VERSION,
@@ -37,25 +37,30 @@ impl MetaPlane {
     }
 }
 
-/// The data-plane store on this node (DESIGN §3.5, §6). The skeleton uses a single
-/// shared [`MemEngine`]; a real store owns per-region engines + raft state.
+/// The data-plane store on this node (DESIGN §3.5, §6). The engine is generic so the
+/// deterministic harness can keep [`MemEngine`] while the real-process runtime uses
+/// the Phase-1 persistent engine. A later real store owns per-region engines.
 ///
 /// The **same** engine backs the raft state machine ([`MemStateMachine`]) *and* the
 /// metadata catalog engine ([`MetaStore`]) so a committed `Command::CatalogTxn` applied
 /// by raft is immediately visible to catalog reads (ROADMAP Phase 1).
-pub struct Store {
-    pub engine: Arc<MemEngine>,
+pub struct Store<E: Engine = MemEngine> {
+    pub engine: Arc<E>,
 }
 
-impl Store {
+impl Store<MemEngine> {
     pub fn new() -> Self {
-        Store {
-            engine: Arc::new(MemEngine::new()),
-        }
+        Self::with_engine(Arc::new(MemEngine::new()))
     }
 }
 
-impl Default for Store {
+impl<E: Engine> Store<E> {
+    pub fn with_engine(engine: Arc<E>) -> Self {
+        Store { engine }
+    }
+}
+
+impl Default for Store<MemEngine> {
     fn default() -> Self {
         Self::new()
     }
@@ -65,25 +70,28 @@ impl Default for Store {
 /// a [`RaftGroup`] (single-node stub) whose committed [`Command`]s are applied into a
 /// [`MemStateMachine`] sharing the store's engine, with a [`MetaStore`] reading that same
 /// KV. `// TODO(phase1): back by tikv/raft-rs`.
-pub struct MetaRaft {
+pub struct MetaRaft<E: Engine = MemEngine> {
     pub raft: Arc<dyn RaftGroup>,
-    pub sm: Mutex<MemStateMachine<MemEngine>>,
-    pub store: MetaStore<MemEngine>,
+    pub sm: Mutex<MemStateMachine<E>>,
+    pub store: MetaStore<E>,
     /// Serializes catalog transaction construction through committed apply. Raft orders
     /// commands, but it cannot repair two overlays that both read the same sequence value
     /// before either proposal is submitted.
     catalog_txn: Mutex<()>,
 }
 
-impl MetaRaft {
+impl MetaRaft<MemEngine> {
     /// Wire the meta-region raft group + state machine + catalog store over `engine`.
     pub fn new(node: NodeId, engine: Arc<MemEngine>) -> Self {
         Self::with_raft(Arc::new(SingleNodeRaft::new(node, META_REGION_0)), engine)
     }
+}
 
-    /// Wire the state machine/catalog around an externally driven raft peer. The
-    /// deterministic 3-node acceptance cluster injects raft-rs peers through this seam.
-    pub fn with_raft(raft: Arc<dyn RaftGroup>, engine: Arc<MemEngine>) -> Self {
+impl<E: Engine> MetaRaft<E> {
+    /// Wire the state machine/catalog around an externally driven raft peer and a shared
+    /// engine. The deterministic harness supplies [`MemEngine`]; the process runtime
+    /// supplies the durable Phase-1 engine.
+    pub fn with_raft(raft: Arc<dyn RaftGroup>, engine: Arc<E>) -> Self {
         MetaRaft {
             raft,
             sm: Mutex::new(MemStateMachine::with_engine(engine.clone())),
@@ -112,21 +120,21 @@ impl MetaRaft {
 }
 
 /// One assembled `kv9` node (DESIGN §3.5, §4).
-pub struct Node {
+pub struct Node<E: Engine = MemEngine> {
     pub id: NodeId,
     pub config: Config,
-    pub store: Store,
+    pub store: Store<E>,
     /// Metadata plane guarded for interior mutability during bootstrap/serving.
     pub meta: Mutex<MetaPlane>,
     /// The system-keyspace raft group + catalog engine (ROADMAP Phase 1).
-    pub meta_raft: MetaRaft,
+    pub meta_raft: MetaRaft<E>,
     /// Client-side routing cache (DESIGN §5.4).
     pub router: Mutex<RegionRouter>,
     pub txn: PercolatorExecutor,
     pub raw: RawExecutor,
 }
 
-impl Node {
+impl Node<MemEngine> {
     /// Assemble a node from config (DESIGN §4, §11). Does not yet run bootstrap; call
     /// [`Node::bootstrap`] to drive the election-first state machine.
     pub fn new(id: NodeId, config: Config) -> Result<Self> {
@@ -138,6 +146,23 @@ impl Node {
     pub fn with_raft(id: NodeId, config: Config, raft: Arc<dyn RaftGroup>) -> Result<Self> {
         config.validate()?;
         let store = Store::new();
+        Self::with_raft_and_engine(id, config, raft, store.engine)
+    }
+}
+
+impl<E: Engine> Node<E> {
+    /// Assemble a node around a supplied meta-region peer and engine. The same engine is
+    /// shared by committed state-machine apply and MetaStore reads, so a restart cannot
+    /// accidentally open a durable store while continuing to apply into a fresh
+    /// in-memory store.
+    pub fn with_raft_and_engine(
+        id: NodeId,
+        config: Config,
+        raft: Arc<dyn RaftGroup>,
+        engine: Arc<E>,
+    ) -> Result<Self> {
+        config.validate()?;
+        let store = Store::with_engine(engine);
         let meta_raft = MetaRaft::with_raft(raft, store.engine.clone());
         Ok(Node {
             id,
@@ -377,7 +402,7 @@ fn schema_version_row() -> RowValue {
 /// The admin / meta API over a node (DESIGN §11; METADATA-CATALOG §4). Authenticated
 /// from day one; Phase-1 wires bootstrap, create/list/get, and cluster-info reads through
 /// the catalog engine + raft. Region splitting remains a typed later-phase stub.
-impl crate::api::AdminApi for Node {
+impl<E: Engine> crate::api::AdminApi for Node<E> {
     fn create_keyspace(
         &self,
         _caller: &str,
@@ -495,6 +520,7 @@ mod tests {
     use super::*;
     use crate::api::AdminApi;
     use kv9_common::RegionId;
+    use kv9_engine::WalEngine;
     use kv9_meta::{BootstrapEvent, BootstrapState};
     use kv9_raft::{CommittedEntry, InProcessCluster, ProposedAt, StateMachine};
 
@@ -943,5 +969,53 @@ mod tests {
                 .unwrap(),
             Some(b"committed-value".to_vec())
         );
+    }
+
+    #[test]
+    fn persistent_node_reopens_the_catalog_engine_used_by_apply() {
+        let dir =
+            std::env::temp_dir().join(format!("kv9-server-persistent-node-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let wal = dir.join("catalog.wal");
+
+        {
+            let (engine, _) = WalEngine::open(&wal).unwrap();
+            let node = Node::with_raft_and_engine(
+                N1,
+                Config::default(),
+                Arc::new(SingleNodeRaft::new(N1, META_REGION_0)),
+                Arc::new(engine),
+            )
+            .unwrap();
+            node.bootstrap().unwrap();
+            assert_eq!(AdminApi::list_keyspaces(&node, "test").unwrap().len(), 1);
+        }
+
+        let (engine, replay) = WalEngine::open(&wal).unwrap();
+        assert!(!replay.batches.is_empty());
+        let reopened = Node::with_raft_and_engine(
+            N1,
+            Config::default(),
+            Arc::new(SingleNodeRaft::new(N1, META_REGION_0)),
+            Arc::new(engine),
+        )
+        .unwrap();
+        let rows = AdminApi::list_keyspaces(&reopened, "test").unwrap();
+        assert_eq!(rows.len(), 1);
+        assert_eq!(rows[0].id, KeyspaceId::SYSTEM);
+
+        // Sensitivity control: a different WAL must not inherit the catalog.
+        let (fresh_engine, _) = WalEngine::open(dir.join("fresh.wal")).unwrap();
+        let fresh = Node::with_raft_and_engine(
+            N1,
+            Config::default(),
+            Arc::new(SingleNodeRaft::new(N1, META_REGION_0)),
+            Arc::new(fresh_engine),
+        )
+        .unwrap();
+        assert!(AdminApi::list_keyspaces(&fresh, "test").unwrap().is_empty());
+
+        std::fs::remove_dir_all(&dir).unwrap();
     }
 }
