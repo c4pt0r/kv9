@@ -358,9 +358,7 @@ impl RawClient {
                 // The marker, not the code: stale epoch and API-type mismatch also map to
                 // FAILED_PRECONDITION, so treating the code as "not leader" would silently
                 // convert a real rejection into a pointless redirect.
-                Err(status)
-                    if status.code() == tonic::Code::FailedPrecondition
-                        && status.metadata().get(NOT_LEADER_KEY).is_some() =>
+                Err(status) if not_leader_marked(&status) =>
                 {
                     // Read the hint from metadata, never by parsing the message: the
                     // prose is for humans and may be reworded.
@@ -482,6 +480,24 @@ impl RawClient {
                 .map(Response::into_inner)
         })
     }
+}
+
+/// Is this status a not-leader redirect?
+///
+/// Code **and** marker value. The code alone is ambiguous — stale epoch and API-type
+/// mismatch are also `FAILED_PRECONDITION` — and mere presence is not enough either: a
+/// header reading `false` asserts the opposite of what we would conclude from it.
+///
+/// This mirrors [`partial_write_marked`] deliberately. The value-not-presence bug was
+/// found in that one and fixed only there; the identical check here survived, because a
+/// fix applied to the instance you were shown is not a fix applied to the class.
+fn not_leader_marked(status: &Status) -> bool {
+    status.code() == tonic::Code::FailedPrecondition
+        && status
+            .metadata()
+            .get(NOT_LEADER_KEY)
+            .and_then(|value| value.to_str().ok())
+            == Some("true")
 }
 
 /// Is this status a partial-write report?
@@ -1552,6 +1568,29 @@ mod tests {
             matches!(partial_delete_range_from_status(&truncated), Error::Raft(_)),
             "a missing count must be a protocol error, never a defaulted zero"
         );
+    }
+
+    /// Same rule as the partial marker, and pinned separately because the two checks live
+    /// in different code paths — fixing one taught nothing to the other.
+    #[test]
+    fn the_not_leader_marker_must_say_true_not_merely_exist() {
+        for (value, expected) in [("true", true), ("false", false), ("yes", false), ("", false)] {
+            let mut status = Status::failed_precondition("x");
+            if !value.is_empty() {
+                status
+                    .metadata_mut()
+                    .insert(NOT_LEADER_KEY, value.parse().unwrap());
+            }
+            assert_eq!(not_leader_marked(&status), expected, "marker {value:?}");
+        }
+        // Control: a real NotLeader still decodes, and an unrelated failed-precondition
+        // (stale epoch) does not become a redirect.
+        assert!(not_leader_marked(&error_status(Error::NotLeader {
+            leader: Some(NodeId(7))
+        })));
+        assert!(!not_leader_marked(&error_status(Error::StaleEpoch {
+            region: RegionId(1)
+        })));
     }
 
     /// The marker's value carries meaning: `false` asserts the opposite of `true`, so
