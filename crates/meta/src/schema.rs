@@ -247,11 +247,22 @@ mod cols {
 
     pub const NODE_ADMISSIONS: &[ColumnDesc] = &[
         col!(1, "node_id", Uint, pk),
-        col!(2, "addr", Text),
-        col!(3, "role", Uint),        // AdmittedRole: 1 learner, 2 voter(post-promote)
-        col!(4, "state", Uint),       // AdmissionState: 1 pending, 2 consumed, 3 revoked
-        col!(5, "nonce_hash", Bytes), // FNV-1a-64 of the one-time join ticket nonce
-        col!(6, "expires_unix", Uint),
+        // Row-level binding to THIS cluster (16 raw ClusterId bytes): the
+        // gate-3 contract binds every admission to (cluster_id, node_id,
+        // address) — inferring the cluster from the singleton table would
+        // leave rows meaningful outside their cluster (Tess's review).
+        col!(2, "cluster_id", Bytes),
+        col!(3, "addr", Text),
+        col!(4, "role", Uint),  // AdmittedRole: 1 learner
+        col!(5, "state", Uint), // AdmissionState: 1 pending, 2 consumed, 3 revoked
+        // SHA-256 of the one-time join-ticket nonce — NOT a checksum hash
+        // (FNV would cap a credential at 64 bits). The ticket seam is NOT
+        // implemented in this block: the column is declared for the schema's
+        // final shape, no code writes or compares it yet, and the minimal
+        // admission mode is mandatory --cluster-id. When implemented the
+        // compare must be constant-time and never logged.
+        col!(6, "nonce_sha256", Bytes),
+        col!(7, "expires_unix", Uint),
     ];
 
     pub const ID_SEQUENCES: &[ColumnDesc] = &[
