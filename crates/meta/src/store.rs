@@ -39,6 +39,11 @@ pub struct Row {
 /// A change-set for [`MetaTxn::update`]: the columns to overwrite (METADATA-CATALOG §4).
 pub type Changes = Vec<(crate::schema::ColumnId, ColumnValue)>;
 
+/// A merged `(physical key, value)` pair yielded by a range read.
+pub type KvPair = (Vec<u8>, Vec<u8>);
+/// A streaming merged range: engine view + txn overlay, either direction.
+type MergedRange<'t> = Box<dyn Iterator<Item = Result<KvPair>> + 't>;
+
 /// Stable id-sequence kinds served by [`MetaTxn::allocate_id`] (rows of the
 /// `id_sequences` table). Codes are persisted — never reuse or renumber.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -125,27 +130,83 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
         self.overlay.insert(key, None);
     }
 
-    /// Range read over `[start, end)` merging the engine's view with the txn overlay
-    /// (overlay wins; deletes filtered out), first `limit` entries in key order.
+    /// Streaming merge of the snapshot view with the txn overlay over `[start, end)`
+    /// (overlay wins; tombstones skipped), ascending or descending. Nothing beyond
+    /// what the caller consumes is materialized (principle 13 — no unmetered
+    /// whole-range Vec; the former `usize::MAX` scan sites all route through here).
+    fn merged_range<'t>(
+        &'t self,
+        start: &[u8],
+        end: &[u8],
+        rev: bool,
+    ) -> Result<MergedRange<'t>> {
+        let view_iter = if rev {
+            self.view.iter_rev(ColumnFamily::Default, start, end)?
+        } else {
+            self.view.iter(ColumnFamily::Default, start, end)?
+        };
+        // The overlay is txn-local and small; snapshot the in-range slice so the
+        // two cursors advance independently.
+        let mut ov: Vec<(Vec<u8>, Option<Vec<u8>>)> = self
+            .overlay
+            .range(start.to_vec()..end.to_vec())
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect();
+        if rev {
+            ov.reverse();
+        }
+        let mut view = view_iter.peekable();
+        let mut ov = ov.into_iter().peekable();
+        Ok(Box::new(std::iter::from_fn(move || loop {
+            // Errors from the view iterator propagate immediately.
+            if matches!(view.peek(), Some(Err(_))) {
+                return view.next().map(|r| r.map(|_| unreachable!()));
+            }
+            let ord = match (view.peek(), ov.peek()) {
+                (None, None) => return None,
+                (Some(_), None) => std::cmp::Ordering::Less,
+                (None, Some(_)) => std::cmp::Ordering::Greater,
+                (Some(Ok((vk, _))), Some((ok, _))) => {
+                    let fwd = vk.cmp(ok);
+                    if rev {
+                        fwd.reverse()
+                    } else {
+                        fwd
+                    }
+                }
+                (Some(Err(_)), _) => unreachable!("handled above"),
+            };
+            match ord {
+                // View entry comes first and is not shadowed.
+                std::cmp::Ordering::Less => {
+                    return view.next();
+                }
+                // Same key: the overlay wins — a put replaces, a tombstone hides.
+                std::cmp::Ordering::Equal => {
+                    let _ = view.next();
+                    match ov.next() {
+                        Some((k, Some(v))) => return Some(Ok((k, v))),
+                        _ => continue,
+                    }
+                }
+                // Overlay-only key (insert of a key absent from the view), or a
+                // tombstone for a key the view doesn't have.
+                std::cmp::Ordering::Greater => match ov.next() {
+                    Some((k, Some(v))) => return Some(Ok((k, v))),
+                    _ => continue,
+                },
+            }
+        })))
+    }
+
+    /// First `limit` merged entries of `[start, end)` in ascending key order.
     fn merged_scan(
         &self,
         start: &[u8],
         end: &[u8],
         limit: usize,
     ) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
-        let engine_entries = self
-            .view
-            .scan(ColumnFamily::Default, start, end, usize::MAX)?;
-        let mut merged: BTreeMap<Vec<u8>, Vec<u8>> = engine_entries
-            .into_iter()
-            .filter(|(k, _)| !self.overlay.contains_key(k))
-            .collect();
-        for (k, v) in self.overlay.range(start.to_vec()..end.to_vec()) {
-            if let Some(v) = v {
-                merged.insert(k.clone(), v.clone());
-            }
-        }
-        Ok(merged.into_iter().take(limit).collect())
+        self.merged_range(start, end, false)?.take(limit).collect()
     }
 
     // -- typed op API (METADATA-CATALOG §4) ------------------------------------
@@ -305,9 +366,8 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
     }
 
     /// Range read of raw index entries under a prefix: `(index-cols+pk key suffix,
-    /// stored value)` pairs in key order. For joins that need the *indexed columns*
-    /// themselves — e.g. `region_for_key`'s "last `start_key ≤ K`" search — not just
-    /// the pks.
+    /// stored value)` pairs in key order, at most `limit` (streamed, not
+    /// materialized beyond the result).
     pub fn index_entries(
         &self,
         table: &TableDesc,
@@ -321,6 +381,33 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
             .into_iter()
             .map(|(k, v)| Ok((index_key_suffix(&k)?.to_vec(), v)))
             .collect()
+    }
+
+    /// The **greatest live** index entry whose columns are ≤ `(prefix, bound_col)`,
+    /// within the prefix — one reverse-merged step, O(result) memory, overlay-aware
+    /// (a tombstoned best candidate falls back to the previous live one; an
+    /// overlay-inserted candidate wins if greatest). Drives `region_for_key`'s
+    /// "last `start_key ≤ K`" lookup (contract item 8 / later-gate 17 closure).
+    pub fn index_rev_first_le(
+        &self,
+        table: &TableDesc,
+        index: IndexId,
+        prefix: &[PkComponent],
+        bound_col: &PkComponent,
+    ) -> Result<Option<(Vec<u8>, Vec<u8>)>> {
+        let (start, _) = index_prefix_range(table.id, index, prefix)?;
+        let mut bound_cols: Vec<PkComponent> = prefix.to_vec();
+        bound_cols.push(bound_col.clone());
+        let bound_key = codec::encode_index_key(table.id, index, &bound_cols, &[])?;
+        // Everything with bound-col ≤ target, including its pk-suffixed extensions.
+        let end = codec::prefix_upper_bound(bound_key);
+        match self.merged_range(&start, &end, true)?.next() {
+            None => Ok(None),
+            Some(entry) => {
+                let (k, v) = entry?;
+                Ok(Some((index_key_suffix(&k)?.to_vec(), v)))
+            }
+        }
     }
 
     /// Allocate the next id from the named system sequence (the "system id sequence"

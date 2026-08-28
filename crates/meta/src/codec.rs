@@ -103,6 +103,12 @@ pub fn index_value(pk: &[PkComponent]) -> Vec<u8> {
     pk.concat()
 }
 
+/// The exclusive upper bound of all keys extending `key`: `key`'s prefix-successor.
+pub fn prefix_upper_bound(mut key: Vec<u8>) -> Vec<u8> {
+    prefix_successor(&mut key);
+    key
+}
+
 /// Bump a byte prefix to its exclusive successor (`\xff...` rolls over by truncation).
 fn prefix_successor(buf: &mut Vec<u8>) {
     while let Some(last) = buf.last().copied() {

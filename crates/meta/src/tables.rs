@@ -234,49 +234,49 @@ impl<'a, E: Engine> Tables<'a, E> {
         Ok(out)
     }
 
-    /// Join — *which region owns key K in keyspace KS* → last `by_range` entry with
-    /// `start_key ≤ K`, then the `end_key` check (METADATA-CATALOG §4).
+    /// Join — *which region owns key K in keyspace KS*: greatest `by_range` entry
+    /// with `start_key ≤ K`, then the `end_key` check (METADATA-CATALOG §4).
     ///
-    /// The `by_range` index key is `(keyspace_id, start_key)` prefix-encoded and the
-    /// search is bounded below by the keyspace prefix, so it structurally cannot
-    /// resolve into another keyspace. The `end_key` check still guards the gap case
-    /// (K past the keyspace's last region): that returns `None`, never a neighbor —
-    /// principle 4's tenant-isolation line.
-    ///
-    /// Phase-1 note: forward-scans the keyspace's index entries and keeps the last
-    /// `≤ K` — O(regions-in-keyspace). Switches to the engine ReadView's `seek_le`
-    /// (one consistent view for both steps) once that lands on this path.
+    /// One reverse-merged index step ([`MetaTxn::index_rev_first_le`]) — O(1) result
+    /// memory, no range materialization — then the row fetch and the `end_key` check,
+    /// all inside one transaction view. The `by_range` key is `(keyspace_id,
+    /// start_key)` prefix-encoded and the search is bounded below by the keyspace
+    /// prefix, so it structurally cannot resolve into another keyspace; the `end_key`
+    /// check still guards the gap case (K past the keyspace's last region): that
+    /// returns `None`, never a neighbor — principle 4's tenant-isolation line.
     pub fn region_for_key(&self, keyspace: KeyspaceId, key: &[u8]) -> Result<Option<Region>> {
         let txn = self.store.begin()?;
-        let entries = txn.index_entries(
-            &schema::REGIONS_DESC,
-            IndexId(1), // by_range
-            &[memcmp_uint(keyspace.0 as u64)],
-            usize::MAX,
-        )?;
-        // Entry key suffix = memcmp(keyspace_id) ++ memcmp(start_key) ++ memcmp(region_id).
-        // Encoded order == logical order, so compare encoded start_key directly.
+        self.region_for_key_in(&txn, keyspace, key)
+    }
+
+    /// [`Self::region_for_key`] against a caller-supplied transaction, so routing
+    /// sees that txn's own uncommitted regions (read-your-writes) and respects its
+    /// deletes (a tombstoned best candidate falls back to the previous live one).
+    pub fn region_for_key_in(
+        &self,
+        txn: &crate::store::MetaTxn<'_, E>,
+        keyspace: KeyspaceId,
+        key: &[u8],
+    ) -> Result<Option<Region>> {
         let ks_comp = memcmp_uint(keyspace.0 as u64);
         let target = crate::codec::memcmp_bytes(key);
-        let mut candidate: Option<(Vec<u8>, u64)> = None; // (encoded start_key, region_id)
-        for (suffix, _) in entries {
-            let rest = &suffix[ks_comp.len()..];
-            let comps = crate::codec::split_components(
-                &[crate::schema::ColumnType::Bytes, crate::schema::ColumnType::Uint],
-                rest,
-                true,
-            )?;
-            let start_enc = &comps[0];
-            if start_enc.as_slice() <= target.as_slice() {
-                let region_id = crate::codec::decode_uint_component(&comps[1])?;
-                candidate = Some((start_enc.clone(), region_id));
-            } else {
-                break; // entries are in ascending start_key order
-            }
-        }
-        let Some((_, region_id)) = candidate else {
+        let Some((suffix, _)) = txn.index_rev_first_le(
+            &schema::REGIONS_DESC,
+            IndexId(1), // by_range
+            std::slice::from_ref(&ks_comp),
+            &target,
+        )?
+        else {
             return Ok(None);
         };
+        // Entry suffix = memcmp(keyspace_id) ++ memcmp(start_key) ++ memcmp(region_id).
+        let rest = &suffix[ks_comp.len()..];
+        let comps = crate::codec::split_components(
+            &[crate::schema::ColumnType::Bytes, crate::schema::ColumnType::Uint],
+            rest,
+            true,
+        )?;
+        let region_id = crate::codec::decode_uint_component(&comps[1])?;
         let Some(row) = txn.get(&schema::REGIONS_DESC, &[memcmp_uint(region_id)])? else {
             return Ok(None);
         };

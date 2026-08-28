@@ -393,3 +393,59 @@ fn index_scan_prefix_does_not_match_name_superstrings() {
         .unwrap();
     assert_eq!(hits, vec![vec![memcmp_uint(7)]]);
 }
+
+#[test]
+fn region_routing_sees_overlay_inserts() {
+    // Contract later-gate-17 closure test 1: a region created in THIS txn (not yet
+    // committed) must be routable within the txn — read-your-writes on routing.
+    let s = store();
+    seed_routing(&s);
+    let mut txn = s.begin().unwrap();
+    txn.insert(
+        &schema::REGIONS_DESC,
+        &[memcmp_uint(102)],
+        region_row(102, 7, b"c", b"d"),
+    )
+    .unwrap();
+    let t = Tables::new(&s);
+    // Inside the txn: the fresh region wins for keys in [c, d).
+    assert_eq!(
+        t.region_for_key_in(&txn, KeyspaceId(7), b"cc")
+            .unwrap()
+            .map(|r| r.id),
+        Some(RegionId(102))
+    );
+    // Outside the txn (fresh view): still unroutable.
+    assert!(t.region_for_key(KeyspaceId(7), b"cc").unwrap().is_none());
+}
+
+#[test]
+fn region_routing_skips_overlay_tombstoned_candidate() {
+    // Contract later-gate-17 closure test 2: when the view's best candidate is
+    // deleted in this txn's overlay, the reverse walk must fall back to the
+    // previous live region — a one-shot seek_le would wrongly return the tombstone
+    // or nothing.
+    let s = store();
+    seed_routing(&s); // regions 100=[a,b), 101=[b,c) in keyspace 7
+    let mut txn = s.begin().unwrap();
+    txn.delete(&schema::REGIONS_DESC, &[memcmp_uint(101)]).unwrap();
+    let t = Tables::new(&s);
+    // Key "bz" belonged to deleted region 101; the walk falls back to region 100,
+    // whose end_key "b" then correctly rejects it: unroutable, not misrouted.
+    assert!(t.region_for_key_in(&txn, KeyspaceId(7), b"bz").unwrap().is_none());
+    // Key "az" still routes to the live region 100.
+    assert_eq!(
+        t.region_for_key_in(&txn, KeyspaceId(7), b"az")
+            .unwrap()
+            .map(|r| r.id),
+        Some(RegionId(100))
+    );
+    // And the exact-boundary hit on a LIVE start_key still works after a delete
+    // above it (end-bound successor semantics, engine test's meta-layer twin).
+    assert_eq!(
+        t.region_for_key_in(&txn, KeyspaceId(7), b"a")
+            .unwrap()
+            .map(|r| r.id),
+        Some(RegionId(100))
+    );
+}
