@@ -59,7 +59,11 @@ const DISCOVERY_RESP_LEN: u32 = 18; // ver(1) + node(8) + initialized(1) + voter
 /// `{1,2,3}` vs `{1,2,9}`) would otherwise count each other's "uninitialized"
 /// as a positive vote and assemble groups with different ConfStates. The
 /// runtime counts only answers whose fingerprint equals its own. This detects
-/// misconfiguration — it is not a cryptographic commitment.
+/// misconfiguration (a copy-paste-edited seed list, a wrong id) — it is NOT a
+/// cryptographic commitment and must not be "upgraded" to one: the threat is
+/// configuration accidents, not adversaries, and 64-bit FNV is exactly enough
+/// for that. An adversarial peer defeats any hash here equally, because it can
+/// simply echo whatever fingerprint it is asked for.
 pub fn voter_set_fingerprint(declared: &[(u64, SocketAddr)]) -> u64 {
     let mut entries: Vec<(u64, String)> =
         declared.iter().map(|(id, a)| (*id, a.to_string())).collect();
