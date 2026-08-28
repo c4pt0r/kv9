@@ -70,7 +70,7 @@ all_serving() {
 }
 
 survivors_elected() {
-  local old_leader="$1" node leaders=0 leader_id=0 seen
+  local old_leader="$1" old_commit="$2" node leaders=0 leader_id=0 seen
   for node in 1 2 3; do
     test "$node" -eq "$old_leader" && continue
     test "$(status_value "$node" bootstrap_state 2>/dev/null || true)" = "Serving" || return 1
@@ -80,7 +80,10 @@ survivors_elected() {
     test "$seen" -ne "$old_leader" || return 1
     if (( leader_id == 0 )); then leader_id="$seen"; fi
     test "$seen" -eq "$leader_id" || return 1
-    if test "$(status_value "$node" role)" = leader; then leaders=$((leaders + 1)); fi
+    if test "$(status_value "$node" role)" = leader; then
+      test "$(status_value "$node" raft_committed)" -gt "$old_commit" || return 1
+      leaders=$((leaders + 1))
+    fi
   done
   test "$leaders" -eq 1
 }
@@ -164,16 +167,13 @@ kill -9 "$old_pid"
 wait "$old_pid" 2>/dev/null || true
 unset 'pids[$old_leader]'
 
-wait_until "survivor failover" 15 survivors_elected "$old_leader"
+wait_until "survivor failover and new-term commit" 15 survivors_elected "$old_leader" "$old_commit"
 new_leader=0
 for node in 1 2 3; do
   test "$node" -eq "$old_leader" && continue
   if test "$(status_value "$node" role)" = leader; then new_leader="$node"; fi
 done
 test "$new_leader" -ne 0
-new_commit="$(status_value "$new_leader" raft_committed)"
-test "$new_commit" -gt "$old_commit"
-
 start_node "$old_leader"
 wait_until "killed member restart and raft/catalog catch-up" 15 all_caught_up
 
