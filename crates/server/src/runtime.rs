@@ -8,23 +8,28 @@
 use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::{atomic::{AtomicBool, Ordering}, Mutex};
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Mutex,
+};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use kv9_common::{
-    ApiType, Config, Error, KeyspaceId, NodeId, RegionId, Result, SeedPeer, TenantId, TimeStamp,
-    TxnGroupId, UserKey, Value, META_REGION_0,
+    ApiType, ClusterId, Config, Error, KeyspaceId, NodeId, RegionId, Result, SeedPeer, TenantId,
+    TimeStamp, TxnGroupId, UserKey, Value, META_REGION_0,
 };
 use kv9_engine::WalEngine;
 use kv9_meta::bootstrap::{init_marker_exists, write_init_marker};
 use kv9_meta::codec::memcmp_uint;
-use kv9_meta::schema::SCHEMA_VERSION_DESC;
+use kv9_meta::schema::{ColumnId, NODES_DESC, SCHEMA_VERSION_DESC};
 use kv9_meta::{Bootstrap, BootstrapEvent, BootstrapState};
+use kv9_meta::{ColumnValue, RowValue};
 use kv9_raft::driver::NodeDriver;
 use kv9_raft::grpc::{
-    grpc_discover, pb::kv9_raft_server::Kv9RaftServer, GrpcDiscoveryState, GrpcTransport,
-    RaftGrpcService, CLUSTER_TOKEN_KEY, NODE_ID_KEY,
+    grpc_discover, grpc_register, pb::kv9_raft_server::Kv9RaftServer, GrpcDiscoveryState,
+    GrpcTransport, RaftGrpcService, RegisterOutcome, RegistrationBackend, RegistrationError,
+    RegistrationReceipt, CLUSTER_TOKEN_KEY, NODE_ID_KEY,
 };
 use kv9_raft::storage::DiskRaftStorage;
 use kv9_raft::transport::voter_set_fingerprint;
@@ -33,8 +38,8 @@ use tonic::metadata::MetadataMap;
 use tonic::Status;
 
 use crate::api::{
-    AdminApi, AppliedPosition, ClusterInfo, CreateKeyspaceResult, RawApi, RegionLocation,
-    RequestContext, TxnApi,
+    AdminApi, AppliedPosition, ClusterInfo, CreateKeyspaceResult, MembershipChangeResult, RawApi,
+    RegionLocation, RequestContext, TxnApi,
 };
 use crate::grpc::{
     AuthContext, AuthInterceptor, AuthKind, Authenticator, Kv9Grpc, TokenAuthenticator,
@@ -116,6 +121,7 @@ impl RuntimeAuth {
 struct ClusterAuthenticator {
     expected_token: Arc<str>,
     voters: Arc<HashSet<NodeId>>,
+    node: Arc<Node<WalEngine>>,
 }
 
 impl Authenticator for ClusterAuthenticator {
@@ -136,9 +142,29 @@ impl Authenticator for ClusterAuthenticator {
             .parse::<u64>()
             .map(NodeId)
             .map_err(|_| Status::unauthenticated("invalid node identity"))?;
-        if !self.voters.contains(&node_id) {
+        let catalog_allows = if self.voters.contains(&node_id) {
+            true
+        } else {
+            let txn = self
+                .node
+                .meta_raft
+                .store
+                .begin()
+                .map_err(|_| Status::unavailable("membership catalog unavailable"))?;
+            let admitted = kv9_meta::admission::admission(&txn, node_id)
+                .map_err(|_| Status::unavailable("membership catalog unavailable"))?
+                .is_some_and(|admission| {
+                    admission.state != kv9_meta::admission::AdmissionState::Revoked
+                });
+            let registered = txn
+                .get(&NODES_DESC, &[memcmp_uint(node_id.0)])
+                .map_err(|_| Status::unavailable("membership catalog unavailable"))?
+                .is_some();
+            admitted || registered
+        };
+        if !catalog_allows {
             return Err(Status::permission_denied(
-                "declared node is not in the fixed voter set",
+                "declared node is neither a voter nor admitted/registered",
             ));
         }
         Ok(AuthContext {
@@ -155,6 +181,26 @@ impl Authenticator for ClusterAuthenticator {
 struct RuntimeBackend {
     node: Arc<Node<WalEngine>>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
+    transport: Arc<GrpcTransport>,
+}
+
+impl RuntimeBackend {
+    fn commit_catalog(&self, command: &kv9_raft::Command) -> Result<AppliedPosition> {
+        let proposed = self.driver.propose(command)?;
+        match self
+            .driver
+            .wait_applied(proposed, Duration::from_secs(10))?
+        {
+            true => Ok(AppliedPosition {
+                term: proposed.term,
+                index: proposed.index.0,
+            }),
+            false => Err(Error::Raft(format!(
+                "catalog proposal at term {} index {} was overwritten",
+                proposed.term, proposed.index.0
+            ))),
+        }
+    }
 }
 
 impl AdminApi for RuntimeBackend {
@@ -203,6 +249,217 @@ impl AdminApi for RuntimeBackend {
 
     fn cluster_info(&self, caller: &str) -> Result<ClusterInfo> {
         self.node.cluster_info(caller)
+    }
+
+    fn admit_node(
+        &self,
+        _caller: &str,
+        node: NodeId,
+        addr: &str,
+        ttl_seconds: u64,
+    ) -> Result<MembershipChangeResult> {
+        if self.driver.status().role != Role::Leader {
+            return Err(Error::Raft("admit-node must be sent to the leader".into()));
+        }
+        if ttl_seconds == 0 {
+            return Err(Error::Config(
+                "admission ttl must be greater than zero".into(),
+            ));
+        }
+        let expires = unix_now()
+            .checked_add(ttl_seconds)
+            .ok_or_else(|| Error::Config("admission expiry overflows u64".into()))?;
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let mut txn = self.node.meta_raft.store.begin()?;
+        kv9_meta::admission::admit_node(
+            &mut txn,
+            node,
+            addr,
+            kv9_meta::admission::AdmittedRole::Learner,
+            expires,
+        )?;
+        let applied = self.commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()))?;
+        let status = self.driver.status();
+        Ok(MembershipChangeResult {
+            applied,
+            voters: status.voters,
+            learners: status.learners,
+        })
+    }
+
+    fn promote_node(&self, _caller: &str, node: NodeId) -> Result<MembershipChangeResult> {
+        if self.driver.status().role != Role::Leader {
+            return Err(Error::Raft(
+                "promote-node must be sent to the leader".into(),
+            ));
+        }
+        let proposed = self.driver.promote_voter(node)?;
+        let receipt = self
+            .driver
+            .wait_conf_applied(proposed, Duration::from_secs(10))?;
+        Ok(MembershipChangeResult {
+            applied: AppliedPosition {
+                term: receipt.applied.term,
+                index: receipt.applied.index.0,
+            },
+            voters: receipt.voters,
+            learners: receipt.learners,
+        })
+    }
+}
+
+fn unix_now() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
+}
+
+fn membership_node_row(node: NodeId, addr: &str, state: u64, heartbeat: u64) -> RowValue {
+    let mut row = RowValue::new();
+    row.set(ColumnId(1), ColumnValue::Uint(node.0));
+    row.set(ColumnId(2), ColumnValue::Text(addr.to_string()));
+    row.set(ColumnId(3), ColumnValue::Uint(state));
+    row.set(ColumnId(4), ColumnValue::Uint(heartbeat));
+    row.set(ColumnId(5), ColumnValue::Bytes(Vec::new()));
+    row
+}
+
+impl RegistrationBackend for RuntimeBackend {
+    fn register(
+        &self,
+        node: NodeId,
+        addr: &str,
+        cluster_id: ClusterId,
+    ) -> std::result::Result<RegistrationReceipt, RegistrationError> {
+        let leader = self.driver.status();
+        if leader.role != Role::Leader {
+            return Err(RegistrationError::NotLeader {
+                leader: leader.leader_id,
+            });
+        }
+        let now = unix_now();
+        let canonical_addr: std::net::SocketAddr = addr.parse().map_err(|_| {
+            RegistrationError::Failed(Error::Config(
+                "registration address must be a canonical socket address".into(),
+            ))
+        })?;
+        let canonical = canonical_addr.to_string();
+
+        // The leader must know the new endpoint before proposing AddLearner;
+        // otherwise raft-rs emits catch-up traffic to an unknown peer and the
+        // registration receipt can never become locally observable there.
+        self.transport.register_peer(node, canonical_addr);
+
+        // Serialize the catalog half across retries/revocation. Consuming an
+        // admission and inserting a Joining node are one command; if the
+        // later ConfChange loses leadership, a retry recognizes this durable
+        // intermediate state and completes instead of wedging on "consumed".
+        let _catalog_guard = self.node.meta_raft.lock_catalog_txn();
+        let existing = {
+            let txn = self
+                .node
+                .meta_raft
+                .store
+                .begin()
+                .map_err(RegistrationError::Failed)?;
+            kv9_meta::admission::admission(&txn, node).map_err(RegistrationError::Failed)?
+        };
+        match existing {
+            Some(admission) if admission.state == kv9_meta::admission::AdmissionState::Consumed => {
+                if admission.cluster_id != cluster_id || admission.addr != canonical {
+                    return Err(RegistrationError::Failed(Error::Config(
+                        "consumed admission does not match this registration".into(),
+                    )));
+                }
+            }
+            Some(admission) if admission.state == kv9_meta::admission::AdmissionState::Pending => {
+                let mut txn = self
+                    .node
+                    .meta_raft
+                    .store
+                    .begin()
+                    .map_err(RegistrationError::Failed)?;
+                kv9_meta::admission::consume_admission(&mut txn, node, cluster_id, &canonical, now)
+                    .map_err(RegistrationError::Failed)?;
+                if txn
+                    .get(&NODES_DESC, &[memcmp_uint(node.0)])
+                    .map_err(RegistrationError::Failed)?
+                    .is_some()
+                {
+                    txn.update(
+                        &NODES_DESC,
+                        &[memcmp_uint(node.0)],
+                        vec![
+                            (ColumnId(2), ColumnValue::Text(canonical.clone())),
+                            (ColumnId(3), ColumnValue::Uint(1)),
+                            (ColumnId(4), ColumnValue::Uint(now)),
+                        ],
+                    )
+                    .map_err(RegistrationError::Failed)?;
+                } else {
+                    txn.insert(
+                        &NODES_DESC,
+                        &[memcmp_uint(node.0)],
+                        membership_node_row(node, &canonical, 1, now),
+                    )
+                    .map_err(RegistrationError::Failed)?;
+                }
+                self.commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()))
+                    .map_err(RegistrationError::Failed)?;
+            }
+            Some(_) => {
+                return Err(RegistrationError::Failed(Error::Config(
+                    "admission is revoked".into(),
+                )))
+            }
+            None => {
+                return Err(RegistrationError::Failed(Error::Config(format!(
+                    "no admission record for node {}",
+                    node.0
+                ))))
+            }
+        }
+
+        let status = self.driver.status();
+        if !status.voters.contains(&node.0) && !status.learners.contains(&node.0) {
+            let proposed = self
+                .driver
+                .add_learner(node)
+                .map_err(RegistrationError::Failed)?;
+            self.driver
+                .wait_conf_applied(proposed, Duration::from_secs(10))
+                .map_err(RegistrationError::Failed)?;
+        }
+
+        // Mark the catalog row active only after the live ConfState contains
+        // the node. This final command is the receipt: observing it on the
+        // joiner proves every preceding admission and membership step.
+        let mut txn = self
+            .node
+            .meta_raft
+            .store
+            .begin()
+            .map_err(RegistrationError::Failed)?;
+        txn.update(
+            &NODES_DESC,
+            &[memcmp_uint(node.0)],
+            vec![
+                (ColumnId(3), ColumnValue::Uint(2)),
+                (ColumnId(4), ColumnValue::Uint(now)),
+            ],
+        )
+        .map_err(RegistrationError::Failed)?;
+        let applied = self
+            .commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()))
+            .map_err(RegistrationError::Failed)?;
+        let status = self.driver.status();
+        Ok(RegistrationReceipt {
+            applied_term: applied.term,
+            applied_index: applied.index,
+            voters: status.voters,
+            learners: status.learners,
+        })
     }
 }
 
@@ -317,6 +574,7 @@ impl TxnApi for RuntimeBackend {
 pub struct NodeRuntime {
     node: Arc<Node<WalEngine>>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
+    transport: Arc<GrpcTransport>,
     discovery: Arc<RuntimeDiscovery>,
     driver_thread: Option<std::thread::JoinHandle<()>>,
     grpc_runtime: tokio::runtime::Runtime,
@@ -327,6 +585,7 @@ pub struct NodeRuntime {
     seeds: Vec<SeedPeer>,
     data_dir: PathBuf,
     status_path: PathBuf,
+    addr: std::net::SocketAddr,
     // NOTE: no voter_fp field. The fingerprint lives ONLY in the FSM's
     // pre-initialization states (full-path structural retirement, task #24):
     // after initialization there is no runtime field left to misread as
@@ -334,6 +593,7 @@ pub struct NodeRuntime {
     // pre-init peers, and zeroes it once initialized.
     campaign_started: bool,
     initial_proposal: Option<(ProposedAt, kv9_common::ClusterId)>,
+    registration_receipt: Option<RegistrationReceipt>,
     next_discovery: Instant,
 }
 
@@ -341,6 +601,17 @@ impl NodeRuntime {
     /// Assemble and start the shared gRPC listener + Raft pump. Bootstrap advances in
     /// [`Self::run`], after every process is already able to answer discovery.
     pub fn start(id: NodeId, config: Config, auth: RuntimeAuth) -> Result<Self> {
+        Self::start_with_cluster(id, config, auth, None)
+    }
+
+    /// Start either an initial declared voter (`expected_cluster_id=None`) or a
+    /// join-existing node (`Some(id)`, with self absent from `config.join`).
+    pub fn start_with_cluster(
+        id: NodeId,
+        config: Config,
+        auth: RuntimeAuth,
+        expected_cluster_id: Option<ClusterId>,
+    ) -> Result<Self> {
         config.validate()?;
         auth.validate()?;
         let addr = config.addr.parse().map_err(|_| {
@@ -354,21 +625,31 @@ impl NodeRuntime {
         } else {
             config.join.clone()
         };
-        let own = seeds
-            .iter()
-            .find(|seed| seed.node_id == id)
-            .ok_or_else(|| {
-                Error::Config(format!(
-                    "fixed seed voter set does not include node {}",
-                    id.0
+        let own = seeds.iter().find(|seed| seed.node_id == id);
+        let joining = match (own, expected_cluster_id) {
+            (Some(seed), None) => {
+                if seed.addr != addr {
+                    return Err(Error::Config(format!(
+                        "seed voter set declares node {} at {}, but addr is {}",
+                        id.0, seed.addr, addr
+                    )));
+                }
+                false
+            }
+            (None, Some(_)) => true,
+            (None, None) => {
+                return Err(Error::Config(format!(
+                "node {} is absent from the seed voter set; join-existing mode requires cluster id",
+                id.0
+            )))
+            }
+            (Some(_), Some(_)) => {
+                return Err(Error::Config(
+                    "cluster id is only valid when this node is absent from the seed voter set"
+                        .into(),
                 ))
-            })?;
-        if own.addr != addr {
-            return Err(Error::Config(format!(
-                "seed voter set declares node {} at {}, but addr is {}",
-                id.0, own.addr, addr
-            )));
-        }
+            }
+        };
 
         let data_dir = PathBuf::from(&config.data_dir);
         fs::create_dir_all(&data_dir)
@@ -413,7 +694,17 @@ impl NodeRuntime {
             ));
         }
         let marker_initialized = init_marker_exists(&data_dir);
-        let mut bootstrap = Bootstrap::with_seeds_fp(id, voters.clone(), voter_fp);
+        let mut bootstrap = if joining {
+            Bootstrap::join_existing_at(
+                id,
+                voters.clone(),
+                expected_cluster_id.expect("joining checked above"),
+                voter_fp,
+                &data_dir,
+            )?
+        } else {
+            Bootstrap::with_seeds_fp(id, voters.clone(), voter_fp)
+        };
         if init_marker_exists(&data_dir) {
             bootstrap.mark_data_dir_initialized();
         }
@@ -459,14 +750,18 @@ impl NodeRuntime {
         let backend = Arc::new(RuntimeBackend {
             node: node.clone(),
             driver: driver.clone(),
+            transport: transport.clone(),
         });
         let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
-        let public_service = Kv9Grpc::new(backend).authenticated_service(client_authenticator);
+        let public_service =
+            Kv9Grpc::new(backend.clone()).authenticated_service(client_authenticator);
         let cluster_authenticator = Arc::new(ClusterAuthenticator {
             expected_token: Arc::from(auth.cluster_token.clone()),
             voters: Arc::new(voters.iter().copied().collect()),
+            node: node.clone(),
         });
-        let raft_service = RaftGrpcService::new(id, transport.inbox_sender(), discovery.clone());
+        let raft_service = RaftGrpcService::new(id, transport.inbox_sender(), discovery.clone())
+            .with_registration(backend as Arc<dyn RegistrationBackend>);
         let raft_service = tonic::service::interceptor::InterceptedService::new(
             Kv9RaftServer::new(raft_service),
             AuthInterceptor::new(cluster_authenticator),
@@ -488,6 +783,7 @@ impl NodeRuntime {
         Ok(Self {
             node,
             driver,
+            transport,
             discovery,
             driver_thread,
             grpc_runtime,
@@ -498,8 +794,10 @@ impl NodeRuntime {
             seeds,
             data_dir,
             status_path,
+            addr,
             campaign_started: false,
             initial_proposal: None,
+            registration_receipt: None,
             next_discovery: Instant::now(),
         })
     }
@@ -518,10 +816,48 @@ impl NodeRuntime {
                 self.write_status()?;
                 return Err(Error::Raft(fatal));
             }
+            self.sync_registered_peers()?;
             self.advance_bootstrap()?;
             self.write_status()?;
             std::thread::sleep(TICK);
         }
+    }
+
+    /// Every replica learns dynamic transport endpoints from the replicated
+    /// nodes catalog. The registration leader installs the address eagerly;
+    /// followers converge here before/after applying the ordered ConfChange,
+    /// and raft heartbeat retry completes learner catch-up without a second
+    /// out-of-band address authority.
+    fn sync_registered_peers(&self) -> Result<()> {
+        const MAX_PHASE1_NODES: usize = 1024;
+        let txn = self.node.meta_raft.store.begin()?;
+        let rows = txn.scan(&NODES_DESC, MAX_PHASE1_NODES + 1)?;
+        if rows.len() > MAX_PHASE1_NODES {
+            return Err(Error::Config(format!(
+                "nodes catalog reached Phase-1 limit {MAX_PHASE1_NODES}"
+            )));
+        }
+        for row in rows {
+            let node = match row.value.get(ColumnId(1)) {
+                Some(ColumnValue::Uint(id)) if *id != 0 => NodeId(*id),
+                _ => continue,
+            };
+            if node == self.node.id {
+                continue;
+            }
+            let addr = match row.value.get(ColumnId(2)) {
+                Some(ColumnValue::Text(addr)) if !addr.is_empty() => addr,
+                _ => continue,
+            };
+            let addr = addr.parse().map_err(|_| {
+                Error::Config(format!(
+                    "nodes catalog contains non-canonical address for node {}",
+                    node.0
+                ))
+            })?;
+            self.transport.register_peer(node, addr);
+        }
+        Ok(())
     }
 
     fn check_grpc_server(&mut self) -> Result<()> {
@@ -606,7 +942,7 @@ impl NodeRuntime {
             }
         };
         let mut uninitialized = vec![self.node.id];
-        let mut found_initialized = false;
+        let mut found_initialized: Option<ClusterId> = None;
         for seed in &self.seeds {
             if seed.node_id == self.node.id {
                 continue;
@@ -625,37 +961,39 @@ impl NodeRuntime {
                     continue;
                 }
                 if answer.initialized {
-                    found_initialized = true;
+                    let id = answer
+                        .cluster_id
+                        .expect("grpc_discover enforces initialized iff cluster_id");
+                    if let Some(seen) = found_initialized {
+                        if seen != id {
+                            return Err(Error::MetaNotReady(
+                                "declared seeds report different cluster identities".into(),
+                            ));
+                        }
+                    }
+                    found_initialized = Some(id);
                 } else {
                     uninitialized.push(answer.node);
                 }
             }
         }
-        if found_initialized {
-            // A peer says the cluster exists. The identity still comes from
-            // the local catalog once raft replay delivers it (this runtime
-            // path only runs for declared voters, which replicate without
-            // admission; a NON-voter joiner learns the id from the discovery
-            // answer itself — that extension lands with the registration
-            // seam, msg-flagged for @Tess).
-            return self.try_found_initialized();
+        if let Some(cluster_id) = found_initialized {
+            // Carry the answer's identity into the FSM. Initial voters still
+            // wait for their local replicated catalog before Serving; a
+            // non-member has no local catalog yet, so discarding this value
+            // would leave join-existing permanently stuck in Discovering.
+            self.node
+                .meta
+                .lock()
+                .expect("meta poisoned")
+                .bootstrap
+                .on_event(BootstrapEvent::FoundInitialized { cluster_id })?;
+            return Ok(());
         }
         let mut meta = self.node.meta.lock().expect("meta poisoned");
         // Insufficient evidence is expected while peers start; silence never
         // changes the voter denominator and never becomes an answer.
         let _ = meta.bootstrap.discovered_uninitialized(&uninitialized);
-        Ok(())
-    }
-
-    /// Fire the join transition once the LOCAL catalog can name the cluster —
-    /// "initialized somewhere" without an identity is not enough to leave
-    /// Discovering (declared voters replicate the init entries without
-    /// admission; the non-voter path learns the id from the discovery answer
-    /// itself when the registration seam lands).
-    fn try_found_initialized(&mut self) -> Result<()> {
-        let local = self.node.local_cluster_identity()?;
-        let mut meta = self.node.meta.lock().expect("meta poisoned");
-        meta.bootstrap.observe_local_identity(local)?;
         Ok(())
     }
 
@@ -725,6 +1063,16 @@ impl NodeRuntime {
     }
 
     fn advance_joining(&mut self) -> Result<()> {
+        let joining_mode = self
+            .node
+            .meta
+            .lock()
+            .expect("meta poisoned")
+            .bootstrap
+            .is_joining_mode();
+        if joining_mode {
+            return self.advance_registration();
+        }
         // The catalog names the cluster once the winner's init applied here;
         // until then there is nothing to join yet.
         let cluster_id = {
@@ -737,14 +1085,6 @@ impl NodeRuntime {
         write_init_marker(&self.data_dir)?;
         self.discovery.set_cluster_id(cluster_id);
         let mut meta = self.node.meta.lock().expect("meta poisoned");
-        // FAIL CLOSED for join-existing (Tess's item 2 on c0a3191): a
-        // non-voter joiner is NEVER locally registered — `Registered` fires
-        // only from the registration client path, after the leader's
-        // admission consume + membership upsert applied at an exact receipt.
-        // Until then it stays in Joining, visibly, forever if need be.
-        if meta.bootstrap.is_joining_mode() {
-            return Ok(());
-        }
         match meta.bootstrap.state() {
             BootstrapState::WaitForBootstrap { .. } => {
                 // Catalog exists locally: fingerprint retires, register.
@@ -758,6 +1098,104 @@ impl NodeRuntime {
             _ => {}
         }
         Ok(())
+    }
+
+    /// Join-existing client state: obtain the leader's exact registration
+    /// receipt, then wait until that same entry and ClusterId are applied on
+    /// this replica before exposing Serving.
+    fn advance_registration(&mut self) -> Result<()> {
+        let cluster_id = self
+            .node
+            .meta
+            .lock()
+            .expect("meta poisoned")
+            .bootstrap
+            .cluster_id()
+            .ok_or_else(|| Error::MetaNotReady("joining without a cluster identity".into()))?;
+
+        // A node that previously completed registration has both the init
+        // marker (written only after the exact receipt was observed) and the
+        // committed Active row + durable ConfState. On restart, those three
+        // durable facts are the receipt; do not require a live registration
+        // leader merely to re-enter Serving.
+        if init_marker_exists(&self.data_dir)
+            && self.node.local_cluster_identity()? == Some(cluster_id)
+            && self.local_membership_is_active()?
+        {
+            self.discovery.set_cluster_id(cluster_id);
+            self.node
+                .meta
+                .lock()
+                .expect("meta poisoned")
+                .bootstrap
+                .on_event(BootstrapEvent::Registered)?;
+            return Ok(());
+        }
+
+        if self.registration_receipt.is_none() {
+            for seed in &self.seeds {
+                match grpc_register(
+                    self.grpc_runtime.handle(),
+                    self.node.id,
+                    seed.addr,
+                    &self.addr.to_string(),
+                    cluster_id,
+                    DISCOVERY_TIMEOUT,
+                    Some(self.cluster_token.clone()),
+                ) {
+                    Ok(RegisterOutcome::Registered(receipt)) => {
+                        self.registration_receipt = Some(receipt);
+                        break;
+                    }
+                    Ok(RegisterOutcome::NotLeader { .. }) | Err(_) => continue,
+                }
+            }
+            return Ok(());
+        }
+
+        let receipt = self.registration_receipt.as_ref().expect("checked above");
+        let exact = ProposedAt {
+            term: receipt.applied_term,
+            index: kv9_raft::LogIndex(receipt.applied_index),
+        };
+        match self.driver.wait_applied(exact, Duration::from_millis(1)) {
+            Ok(true) => {}
+            Ok(false) => {
+                return Err(Error::Raft(format!(
+                    "registration receipt at term {} index {} was overwritten",
+                    exact.term, exact.index.0
+                )))
+            }
+            Err(_) => return Ok(()),
+        }
+        let local = self.node.local_cluster_identity()?;
+        if local != Some(cluster_id) {
+            return Ok(());
+        }
+        write_init_marker(&self.data_dir)?;
+        self.discovery.set_cluster_id(cluster_id);
+        self.node
+            .meta
+            .lock()
+            .expect("meta poisoned")
+            .bootstrap
+            .on_event(BootstrapEvent::Registered)?;
+        Ok(())
+    }
+
+    fn local_membership_is_active(&self) -> Result<bool> {
+        let status = self.driver.status();
+        if !status.voters.contains(&self.node.id.0) && !status.learners.contains(&self.node.id.0) {
+            return Ok(false);
+        }
+        let txn = self.node.meta_raft.store.begin()?;
+        let Some(row) = txn.get(&NODES_DESC, &[memcmp_uint(self.node.id.0)])? else {
+            return Ok(false);
+        };
+        Ok(matches!(
+            row.value.get(ColumnId(3)),
+            Some(ColumnValue::Uint(2))
+        ))
     }
 
     fn write_status(&self) -> Result<()> {
@@ -783,14 +1221,30 @@ impl NodeRuntime {
         // becomes stale after the first learner/promotion change.
         let meta_voters = format_u64_ids(&raft.voters);
         let meta_learners = format_u64_ids(&raft.learners);
+        let cluster_id = match bootstrap {
+            BootstrapState::Joining { cluster_id } | BootstrapState::Serving { cluster_id } => {
+                Some(cluster_id)
+            }
+            _ => self.node.local_cluster_identity()?,
+        };
+        let pending_admissions = {
+            let txn = self.node.meta_raft.store.begin()?;
+            let nodes = kv9_meta::admission::pending_admissions(&txn)?
+                .into_iter()
+                .map(|admission| admission.node_id.0)
+                .collect::<Vec<_>>();
+            format_u64_ids(&nodes)
+        };
         let body = format!(
-            "pid={}\nnode_id={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\nfatal={}\n",
+            "pid={}\nnode_id={}\ncluster_id={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\nfatal={}\n",
             std::process::id(),
             raft.node_id.0,
+            cluster_id.map_or_else(String::new, |id| id.to_string()),
             raft.leader_id.map_or(0, |id| id.0),
             role,
             meta_voters,
             meta_learners,
+            pending_admissions,
             raft.conf_index,
             raft.term,
             raft.raft_committed,
@@ -872,9 +1326,21 @@ mod tests {
 
     #[test]
     fn cluster_auth_requires_token_and_declared_voter_identity() {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-cluster-auth-{}-{:?}",
+            std::process::id(),
+            std::thread::current().id()
+        ));
+        let _ = fs::remove_dir_all(&dir);
+        let (wal, _) = WalEngine::open(dir.join("catalog.wal")).unwrap();
+        let peer = Arc::new(RaftPeer::new(NodeId(1), META_REGION_0, &[NodeId(1)]).unwrap());
+        let node = Arc::new(
+            Node::with_raft_and_engine(NodeId(1), Config::default(), peer, Arc::new(wal)).unwrap(),
+        );
         let authenticator = ClusterAuthenticator {
             expected_token: Arc::from("secret"),
             voters: Arc::new([NodeId(1), NodeId(2)].into_iter().collect()),
+            node,
         };
         let mut metadata = MetadataMap::new();
         assert_eq!(
@@ -894,6 +1360,7 @@ mod tests {
         assert_eq!(auth.node_id, Some(NodeId(2)));
         assert_eq!(auth.auth_kind, AuthKind::Node);
         assert_eq!(auth.principal.as_ref(), "node:2");
+        let _ = fs::remove_dir_all(dir);
     }
 
     #[test]
@@ -913,8 +1380,16 @@ mod tests {
                 None
             },
         };
-        assert!(discovery_answer_matches(declared, ours, &ans(3, false, ours)));
-        assert!(!discovery_answer_matches(declared, ours, &ans(9, false, ours)));
+        assert!(discovery_answer_matches(
+            declared,
+            ours,
+            &ans(3, false, ours)
+        ));
+        assert!(!discovery_answer_matches(
+            declared,
+            ours,
+            &ans(9, false, ours)
+        ));
         assert!(!discovery_answer_matches(
             declared,
             ours,

@@ -32,9 +32,26 @@ service Kv9 {
   rpc GetRegion(GetRegionRequest) returns (GetRegionResponse);
   rpc SplitRegion(SplitRegionRequest) returns (Empty);
   rpc ClusterInfo(ClusterInfoRequest) returns (ClusterInfoResponse);
+  rpc AdmitNode(AdmitNodeRequest) returns (MembershipChangeResponse);
+  rpc PromoteNode(PromoteNodeRequest) returns (MembershipChangeResponse);
 }
 
 message Empty {}
+
+message AdmitNodeRequest {
+  uint64 node_id = 1;
+  string addr = 2;
+  uint64 ttl_seconds = 3;
+}
+
+message PromoteNodeRequest { uint64 node_id = 1; }
+
+message MembershipChangeResponse {
+  uint64 applied_term = 1;
+  uint64 applied_index = 2;
+  repeated uint64 voters = 3;
+  repeated uint64 learners = 4;
+}
 
 message RegionEpoch {
   uint64 conf_ver = 1;

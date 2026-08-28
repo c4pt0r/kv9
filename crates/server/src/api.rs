@@ -122,6 +122,13 @@ pub struct AppliedPosition {
     pub index: u64,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MembershipChangeResult {
+    pub applied: AppliedPosition,
+    pub voters: Vec<u64>,
+    pub learners: Vec<u64>,
+}
+
 /// The admin / meta API (DESIGN §11 Admin surface). Authenticated from day one.
 pub trait AdminApi {
     fn create_keyspace(
@@ -141,6 +148,22 @@ pub trait AdminApi {
         split_key: UserKey,
     ) -> Result<()>;
     fn cluster_info(&self, caller: &str) -> Result<ClusterInfo>;
+    fn admit_node(
+        &self,
+        _caller: &str,
+        _node: kv9_common::NodeId,
+        _addr: &str,
+        _ttl_seconds: u64,
+    ) -> Result<MembershipChangeResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::admit_node"))
+    }
+    fn promote_node(
+        &self,
+        _caller: &str,
+        _node: kv9_common::NodeId,
+    ) -> Result<MembershipChangeResult> {
+        Err(kv9_common::Error::NotImplemented("AdminApi::promote_node"))
+    }
 }
 
 /// A snapshot of cluster state (DESIGN §11 `ClusterInfo`).
