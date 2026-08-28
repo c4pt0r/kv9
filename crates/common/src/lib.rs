@@ -16,7 +16,8 @@ pub mod time;
 pub use config::{Config, SeedPeer};
 pub use error::{Error, Result};
 pub use ids::{
-    KeyspaceId, NodeId, RegionId, TenantId, TimelineId, TsoProviderId, TxnGroupId, META_REGION_0,
+    ClusterId, KeyspaceId, NodeId, RegionId, TenantId, TimelineId, TsoProviderId, TxnGroupId,
+    META_REGION_0,
 };
 pub use keyspace::{ApiType, Keyspace, Tenant};
 pub use time::{Hlc, TimeSource, TimeStamp};
