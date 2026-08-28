@@ -113,7 +113,7 @@ Companion to `DESIGN.md`. Each diagram cites the DESIGN section it visualizes.
 
 ---
 
-## 5. Sharded TSO — a pool of providers serving many keyspaces / txn groups (§3.6, §7.1)
+## 5. Sharded TSO — a pool of providers serving many keyspaces / txn groups (§3.6, §8.1)
 
 ```
    keyspaces              txn groups              timelines               TSO provider pool (meta plane)
@@ -178,27 +178,75 @@ Companion to `DESIGN.md`. Each diagram cites the DESIGN section it visualizes.
      │  memtable full → flush
      ▼
    L0 SSTable ── upload ─▶  OBJECT STORAGE        ← first & only time bytes leave the node (async, off hot path)
-     │  flush committed → data_sequence↑ → WAL / raft-log truncation advances
+     │  flush committed → persisted-index↑ → WAL / raft-log truncation advances
      ▼
    compaction (storage→storage reorg; row + columnar + fts; may OFFLOAD to worker)
 ```
 
 ---
 
-## 8. Read + coprocessor offload (§3-read, §... offload)
+## 8. Read path — snapshot read, follower-capable (§8.3, §9)
 
 ```
-   read / coprocessor
+   read (snapshot at ts)
      │  RegionRouter: keyspace → region (epoch-checked), api_type match
      ▼
-   Region leader ─▶ SnapAccess snapshot  =  memtable + block cache + local SSD file cache
-     │                                        │ miss
-     │                                        ▼
-     │                                   OBJECT STORAGE (SST blocks)
+   any replica with safe_time ≥ ts    (leader OR a caught-up follower — read-replicas are cheap)
+     │  snapshot = memtable + local block cache
+     │                    │ miss
+     │                    ▼
+     │              OBJECT STORAGE (immutable SST blocks)   ── see §9
      ▼
-   coprocessor DAG ── load-aware decision ──┬── LOCAL execute (CPU idle)
-                                            └── OFFLOAD to worker (CPU busy / large):
-                                                 ship META-ONLY snapshot (file refs + memtable bytes)
-                                                 → worker rebuilds SnapAccess, reads SST from storage, runs DAG
-                                                 (cache version stays owned by origin)
+   lock-free consistent read at ts     (read-only txns take no locks)
+```
+
+---
+
+## 9. Storage-compute disaggregation over object storage (§6.5)
+
+```
+  COMPUTE — region replicas are  (log + cache),  NOT full data copies
+  ┌──────────────────────── region R : raft group across nodes ────────────────────────┐
+  │   leader                        follower                     follower               │
+  │   memtable                      memtable                     memtable               │  raft replicates
+  │   local block cache             cache                        cache                  │  the RECENT LOG
+  │   manifest (file-ids) ─────  mutable, raft-committed  ───────────────────────────── │  TAIL only
+  └───────┬─────────────────────────────────────────────────────────────────────────────┘
+          │  flush   : build SSTable → UPLOAD (immutable, write-once)
+          │  compact : object-store → object-store  (offloadable to stateless workers)
+          ▼
+  ┌───────────────────────── OBJECT STORAGE  (S3 / GCS / Azure) ──────────────────────────┐
+  │  durable bulk (its own 9's)  ·  per-keyspace/tenant prefixes  ·  per-tenant CMEK        │
+  │  immutable SSTs (file-id → hash-prefixed key)  ·  logical-delete + lifecycle GC         │
+  └─────────────────────────────────────────────────────────────────────────────────────────┘
+
+  durability :  recent tail = raft-majority WAL (local)   +   flushed bulk = object storage
+  move region:  ship MANIFEST (file refs) → attach → lazily pull blocks   ⇒   rebalance in seconds
+  invariants :  SSTs immutable (object storage sees only creates/deletes) ; manifest mutable ONLY via raft
+  backpressure: upload latency gates WAL truncation ; object-store blip → writes continue on local WAL
+```
+
+---
+
+## 10. Token-based flow control — capacity + fairness + backpressure in one currency (§7)
+
+```
+  a write/batch must acquire tokens from BOTH before it proceeds  (else: bounded wait → retryable throttle)
+
+  ┌── tenant admission bucket (per-tenant/keyspace) ──┐      ┌── pipeline-health buckets (per node/region) ──┐
+  │  sized by provisioned rate (WCU/RCU) = GAC        │      │  memtable-memory   WAL/in-flight-upload        │
+  │  "how MUCH a tenant may do"  · burst = depth      │      │  compaction-debt   object-store req/$          │
+  └───────────────────────────────────────────────────┘      │  cache-fill (per-tenant)                        │
+                    ▲  refill from GAC authority               └────────────────────────────────────────────────┘
+                    │  (local sub-allotment; degraded                         ▲   credits RETURNED by
+                    │   fail-open if authority unreachable)                    │   downstream progress:
+              ┌─────┴──────┐                                                   │   flush done → memtable+WAL tokens
+              │ MetaLeader │  = GAC authority (§7.4)                           │   upload done → in-flight tokens
+              └────────────┘                                                   │   compaction↓ → compaction-debt tokens
+                                                                              (absence of credits = BACKPRESSURE,
+   scarce shared bucket ─▶ weighted fair queue (per-tenant, virtual-time)      no separate signal)
+                          decides WHOSE tokens are honored ⇒ the tenant CAUSING
+                          the pressure is throttled, not a neighbor
+
+   client signals:  QuotaExceeded ("slow down — your limit")   vs   Overloaded ("retry elsewhere — node saturated")
 ```
