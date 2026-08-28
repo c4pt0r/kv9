@@ -5,10 +5,26 @@ repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 bin="$repo_dir/target/debug/kv9"
 artifact_dir="${KV9_ACCEPTANCE_DIR:-$(mktemp -d /tmp/kv9-phase1-final.XXXXXX)}"
 root_artifact_dir="$artifact_dir"
-base_port="${KV9_BASE_PORT:-$((33000 + ($$ % 1000)))}"
+# Keep the default listener range below Linux's usual ephemeral range. A
+# listener precheck alone is racy: an outbound connection can claim an
+# ephemeral source port between the check and bind, producing a misleading
+# `Address already in use` acceptance failure.
+base_port="${KV9_BASE_PORT:-$((22000 + ($$ % 1000)))}"
 cluster_token="phase1-cluster-token"
 client_token="phase1-client-token"
 declare -A pids=()
+
+if [[ ! "$base_port" =~ ^[0-9]+$ ]] || (( base_port < 1024 || base_port + 3 > 65535 )); then
+  echo "FAIL: KV9_BASE_PORT must leave three valid non-privileged ports" >&2
+  exit 2
+fi
+if [[ -r /proc/sys/net/ipv4/ip_local_port_range ]]; then
+  read -r ephemeral_low ephemeral_high </proc/sys/net/ipv4/ip_local_port_range
+  if (( base_port + 3 >= ephemeral_low && base_port + 1 <= ephemeral_high )); then
+    echo "FAIL: ports $((base_port + 1))-$((base_port + 3)) overlap the host ephemeral range ${ephemeral_low}-${ephemeral_high}" >&2
+    exit 2
+  fi
+fi
 
 status_value() {
   local node="$1" key="$2"
