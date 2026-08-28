@@ -20,7 +20,7 @@ use kv9_meta::schema::SCHEMA_VERSION_DESC;
 use kv9_meta::{Bootstrap, BootstrapEvent, BootstrapState};
 use kv9_raft::driver::NodeDriver;
 use kv9_raft::storage::DiskRaftStorage;
-use kv9_raft::transport::{DiscoveryState, TcpTransport};
+use kv9_raft::transport::{voter_set_fingerprint, DiscoveryState, TcpTransport};
 use kv9_raft::{MemStateMachine, ProposedAt, RaftGroup, RaftPeer, Role};
 
 use crate::Node;
@@ -33,13 +33,15 @@ const DISCOVERY_TIMEOUT: Duration = Duration::from_millis(50);
 struct RuntimeDiscovery {
     node: NodeId,
     initialized: AtomicBool,
+    voter_fp: u64,
 }
 
 impl RuntimeDiscovery {
-    fn new(node: NodeId, initialized: bool) -> Self {
+    fn new(node: NodeId, initialized: bool, voter_fp: u64) -> Self {
         Self {
             node,
             initialized: AtomicBool::new(initialized),
+            voter_fp,
         }
     }
 
@@ -49,8 +51,12 @@ impl RuntimeDiscovery {
 }
 
 impl DiscoveryState for RuntimeDiscovery {
-    fn answer(&self) -> (NodeId, bool) {
-        (self.node, self.initialized.load(Ordering::Acquire))
+    fn answer(&self) -> (NodeId, bool, u64) {
+        (
+            self.node,
+            self.initialized.load(Ordering::Acquire),
+            self.voter_fp,
+        )
     }
 }
 
@@ -65,6 +71,7 @@ pub struct NodeRuntime {
     seeds: Vec<SeedPeer>,
     data_dir: PathBuf,
     status_path: PathBuf,
+    voter_fp: u64,
     campaign_started: bool,
     initial_proposal: Option<ProposedAt>,
     next_discovery: Instant,
@@ -106,6 +113,12 @@ impl NodeRuntime {
         fs::create_dir_all(&data_dir)
             .map_err(|e| Error::Config(format!("create {}: {e}", data_dir.display())))?;
         let voters: Vec<NodeId> = seeds.iter().map(|seed| seed.node_id).collect();
+        let voter_fp = voter_set_fingerprint(
+            &seeds
+                .iter()
+                .map(|seed| (seed.node_id.0, seed.addr))
+                .collect::<Vec<_>>(),
+        );
         let voter_ids: Vec<u64> = voters.iter().map(|node| node.0).collect();
         let (storage, was_pristine) = DiskRaftStorage::open(&data_dir.join("raft"), &voter_ids)?;
         let peer = Arc::new(RaftPeer::with_storage(id, META_REGION_0, storage)?);
@@ -143,6 +156,7 @@ impl NodeRuntime {
         let discovery = Arc::new(RuntimeDiscovery::new(
             id,
             marker_initialized || catalog_initialized,
+            voter_fp,
         ));
         let peers = seeds
             .iter()
@@ -168,6 +182,7 @@ impl NodeRuntime {
             seeds,
             data_dir,
             status_path,
+            voter_fp,
             campaign_started: false,
             initial_proposal: None,
             next_discovery: Instant::now(),
@@ -238,14 +253,16 @@ impl NodeRuntime {
             if seed.node_id == self.node.id {
                 continue;
             }
-            if let Ok((answer_id, initialized)) =
-                TcpTransport::discover(self.node.id, seed.addr, DISCOVERY_TIMEOUT)
+            if let Ok(answer) =
+                TcpTransport::discover(self.node.id, self.voter_fp, seed.addr, DISCOVERY_TIMEOUT)
             {
-                // The address is authoritative for one declared identity. A
-                // different answer is configuration error/outsider, never a vote.
-                if answer_id != seed.node_id {
+                // Both the address→identity mapping and the complete declared
+                // voter set must match. A valid answer about another cluster is
+                // still not a vote in this cluster.
+                if !discovery_answer_matches(*seed, self.voter_fp, answer) {
                     continue;
                 }
+                let (answer_id, initialized, _) = answer;
                 if initialized {
                     found_initialized = true;
                 } else {
@@ -375,6 +392,14 @@ impl NodeRuntime {
     }
 }
 
+fn discovery_answer_matches(
+    declared: SeedPeer,
+    expected_voter_fp: u64,
+    answer: (NodeId, bool, u64),
+) -> bool {
+    answer.0 == declared.node_id && answer.2 == expected_voter_fp
+}
+
 impl Drop for NodeRuntime {
     fn drop(&mut self) {
         self.driver.stop();
@@ -402,6 +427,30 @@ mod tests {
     use kv9_engine::{ColumnFamily, Engine};
     use kv9_raft::transport::{InProcHub, RaftTransport};
     use kv9_raft::Command;
+
+    #[test]
+    fn discovery_vote_requires_both_declared_identity_and_voter_set() {
+        let declared = SeedPeer {
+            node_id: NodeId(3),
+            addr: "127.0.0.1:20163".parse().unwrap(),
+        };
+        let ours = 0x1111;
+        assert!(discovery_answer_matches(
+            declared,
+            ours,
+            (NodeId(3), false, ours)
+        ));
+        assert!(!discovery_answer_matches(
+            declared,
+            ours,
+            (NodeId(9), false, ours)
+        ));
+        assert!(!discovery_answer_matches(
+            declared,
+            ours,
+            (NodeId(3), false, 0x9999)
+        ));
+    }
 
     #[test]
     fn wal_apply_failure_poisons_the_driver_without_false_success() {
