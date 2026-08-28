@@ -506,6 +506,218 @@ impl<E: Engine> crate::api::AdminApi for Node<E> {
     }
 }
 
+/// Data-plane adapters are intentionally thin: routing/epoch validation belongs
+/// above the executors, while the executors own raw and Percolator semantics. The
+/// Phase-1 executors still return typed `NotImplemented` errors; exposing them over
+/// gRPC must preserve that error rather than panic or manufacture success.
+impl<E: Engine> crate::api::RawApi for Node<E> {
+    fn raw_get(&self, _ctx: &crate::api::RequestContext, key: &[u8]) -> Result<Option<Vec<u8>>> {
+        self.raw.get(key)
+    }
+
+    fn raw_batch_get(
+        &self,
+        _ctx: &crate::api::RequestContext,
+        keys: &[Vec<u8>],
+    ) -> Result<Vec<Option<Vec<u8>>>> {
+        keys.iter().map(|key| self.raw.get(key)).collect()
+    }
+
+    fn raw_put(
+        &self,
+        _ctx: &crate::api::RequestContext,
+        key: Vec<u8>,
+        value: Vec<u8>,
+    ) -> Result<()> {
+        self.raw.put(key, value, kv9_txn::RawWriteOptions::default())
+    }
+
+    fn raw_batch_put(
+        &self,
+        _ctx: &crate::api::RequestContext,
+        kvs: &[(Vec<u8>, Vec<u8>)],
+    ) -> Result<()> {
+        for (key, value) in kvs {
+            self.raw.put(
+                key.clone(),
+                value.clone(),
+                kv9_txn::RawWriteOptions::default(),
+            )?;
+        }
+        Ok(())
+    }
+
+    fn raw_delete(&self, _ctx: &crate::api::RequestContext, key: &[u8]) -> Result<()> {
+        self.raw.delete(key)
+    }
+
+    fn raw_scan(
+        &self,
+        _ctx: &crate::api::RequestContext,
+        start: &[u8],
+        end: &[u8],
+        limit: usize,
+    ) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
+        self.raw.scan(start, end, limit)
+    }
+
+    fn raw_delete_range(
+        &self,
+        _ctx: &crate::api::RequestContext,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<()> {
+        self.raw.delete_range(start, end)
+    }
+}
+
+impl<E: Engine> crate::api::TxnApi for Node<E> {
+    fn kv_get(
+        &self,
+        ctx: &crate::api::RequestContext,
+        key: &[u8],
+        start_ts: kv9_common::TimeStamp,
+    ) -> Result<Option<Vec<u8>>> {
+        let txn_ctx = self.txn_context(ctx, key, start_ts)?;
+        self.txn.get(&txn_ctx, key)
+    }
+
+    fn kv_batch_get(
+        &self,
+        ctx: &crate::api::RequestContext,
+        keys: &[Vec<u8>],
+        start_ts: kv9_common::TimeStamp,
+    ) -> Result<Vec<Option<Vec<u8>>>> {
+        let primary = keys
+            .first()
+            .ok_or_else(|| Error::WriteConflict("empty transaction key set".into()))?;
+        let txn_ctx = self.txn_context(ctx, primary, start_ts)?;
+        keys.iter().map(|key| self.txn.get(&txn_ctx, key)).collect()
+    }
+
+    fn kv_scan(
+        &self,
+        _ctx: &crate::api::RequestContext,
+        _start: &[u8],
+        _end: &[u8],
+        _limit: usize,
+        _start_ts: kv9_common::TimeStamp,
+    ) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
+        Err(Error::NotImplemented("PercolatorExecutor::scan"))
+    }
+
+    fn kv_prewrite(
+        &self,
+        ctx: &crate::api::RequestContext,
+        mutations: &[(Vec<u8>, Option<Vec<u8>>)],
+        primary: &[u8],
+        start_ts: kv9_common::TimeStamp,
+    ) -> Result<()> {
+        let txn_ctx = self.txn_context(ctx, primary, start_ts)?;
+        let mutations = mutations
+            .iter()
+            .map(|(key, value)| match value {
+                Some(value) => kv9_txn::TxnMutation::Put {
+                    key: key.clone(),
+                    value: value.clone(),
+                },
+                None => kv9_txn::TxnMutation::Delete { key: key.clone() },
+            })
+            .collect::<Vec<_>>();
+        self.txn.prewrite(&txn_ctx, &mutations)
+    }
+
+    fn kv_commit(
+        &self,
+        ctx: &crate::api::RequestContext,
+        keys: &[Vec<u8>],
+        start_ts: kv9_common::TimeStamp,
+        commit_ts: kv9_common::TimeStamp,
+    ) -> Result<()> {
+        let primary = keys
+            .first()
+            .ok_or_else(|| Error::WriteConflict("empty transaction key set".into()))?;
+        let txn_ctx = self.txn_context(ctx, primary, start_ts)?;
+        self.txn.commit(&txn_ctx, commit_ts, keys)
+    }
+
+    fn kv_pessimistic_lock(
+        &self,
+        _ctx: &crate::api::RequestContext,
+        _keys: &[Vec<u8>],
+        _start_ts: kv9_common::TimeStamp,
+    ) -> Result<()> {
+        Err(Error::NotImplemented("PercolatorExecutor::pessimistic_lock"))
+    }
+
+    fn kv_pessimistic_rollback(
+        &self,
+        _ctx: &crate::api::RequestContext,
+        _keys: &[Vec<u8>],
+        _start_ts: kv9_common::TimeStamp,
+    ) -> Result<()> {
+        Err(Error::NotImplemented(
+            "PercolatorExecutor::pessimistic_rollback",
+        ))
+    }
+
+    fn kv_resolve_lock(
+        &self,
+        _ctx: &crate::api::RequestContext,
+        start_ts: kv9_common::TimeStamp,
+        commit_ts: Option<kv9_common::TimeStamp>,
+    ) -> Result<()> {
+        self.txn.resolve_lock(start_ts, commit_ts)
+    }
+
+    fn kv_cleanup(
+        &self,
+        _ctx: &crate::api::RequestContext,
+        _key: &[u8],
+        _start_ts: kv9_common::TimeStamp,
+    ) -> Result<()> {
+        Err(Error::NotImplemented("PercolatorExecutor::cleanup"))
+    }
+
+    fn kv_check_txn_status(
+        &self,
+        _ctx: &crate::api::RequestContext,
+        _primary: &[u8],
+        _lock_ts: kv9_common::TimeStamp,
+    ) -> Result<()> {
+        Err(Error::NotImplemented("PercolatorExecutor::check_txn_status"))
+    }
+}
+
+impl<E: Engine> Node<E> {
+    fn txn_context(
+        &self,
+        ctx: &crate::api::RequestContext,
+        primary: &[u8],
+        start_ts: kv9_common::TimeStamp,
+    ) -> Result<kv9_txn::TxnContext> {
+        let tables = kv9_meta::tables::Tables::new(&self.meta_raft.store);
+        let keyspace = tables
+            .keyspace(ctx.keyspace)?
+            .ok_or(Error::KeyspaceNotFound(ctx.keyspace))?;
+        if keyspace.api_type != ApiType::Txn {
+            return Err(Error::ApiTypeMismatch {
+                keyspace: ctx.keyspace,
+            });
+        }
+        let txn_group = tables
+            .txn_group_for_key(ctx.keyspace, primary)?
+            .ok_or(Error::ApiTypeMismatch {
+                keyspace: ctx.keyspace,
+            })?;
+        Ok(kv9_txn::TxnContext {
+            start_ts,
+            txn_group,
+            primary: primary.to_vec(),
+        })
+    }
+}
+
 fn uint_column(row: &RowValue, column: ColumnId) -> Result<u64> {
     match row.get(column) {
         Some(ColumnValue::Uint(value)) => Ok(*value),
