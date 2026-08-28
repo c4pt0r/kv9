@@ -1,0 +1,121 @@
+name: CI
+
+# The repo ran with no CI at all through Phase 1. Every gate -- 198 tests, clippy, and
+# several multi-process E2E scripts -- was run by hand. This is the minimal automation
+# that makes those checks survive nobody remembering to run them.
+#
+# Deliberate split, and the reason matters more than the shape:
+#
+#   pr-gate      fast, deterministic, BLOCKING. Must be green on every PR.
+#   fmt          informational -- the tree is not formatted yet (see that job).
+#   acceptance   multi-process E2E, informational.
+#
+# The E2E scripts are deliberately kept out of the blocking gate. During Phase 1 two
+# separate diagnostic rounds went red because of bugs in the harness rather than the
+# product (a killed node's stale status file being read as live; a `local` declaration
+# referencing the variable it was declaring). A gate that reddens for reasons unrelated
+# to the change trains everyone to skim past red -- and this project's entire review
+# discipline rests on treating a red as something you must explain. One frequently-red
+# gate would cost more than it catches.
+#
+# Promote a job to blocking once it has shown itself stable across a stretch of runs.
+# That evidence does not exist yet, so nothing is promoted on the strength of a guess.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  pr-gate:
+    name: build + test + clippy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      # rust-toolchain.toml pins the channel and requests rustfmt + clippy, so the
+      # toolchain is not named here -- one source of truth, not two.
+      - name: Show toolchain
+        run: |
+          rustc --version
+          cargo --version
+          cargo clippy --version
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build
+        run: cargo build --workspace --all-targets
+
+      - name: Test
+        run: cargo test --workspace
+
+      # -D warnings: a warning nobody has to fix is a warning everybody stops reading.
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+  # Informational on purpose. `cargo fmt --check` does NOT pass on this tree: when this
+  # workflow landed there were 159 diff hunks across 27 files, spanning all four crate
+  # lanes. Making that blocking would paint CI red on day one for changes that did not
+  # cause it -- the exact failure mode described in the header.
+  #
+  # Make this blocking after the tree is formatted in one deliberate pass (a cross-lane
+  # change that needs its own announcement). Until then it reports drift without
+  # punishing whoever opens the next PR.
+  fmt:
+    name: rustfmt (informational)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Format check
+        run: cargo fmt --all --check
+
+  # One runner per script, so a port or leftover-process problem in one cannot be
+  # misread as a failure of another. KV9_BASE_PORT is set explicitly rather than left
+  # to the scripts' `$$ % 1000` default: a deterministic port makes a red reproducible,
+  # and reproducing a red is how you find out where it actually went red.
+  #
+  # All bases sit below 32768 to stay clear of the Linux ephemeral range
+  # (32768-60999), where an unrelated process can take a port between the bind check
+  # and the bind itself.
+  acceptance:
+    name: E2E ${{ matrix.script }} (informational)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - script: phase1-final-acceptance.sh
+            base_port: 22100
+          - script: dynamic-membership-e2e.sh
+            base_port: 23100
+          - script: raw-kv-e2e.sh
+            base_port: 24100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build binary
+        run: cargo build --workspace
+
+      - name: Run ${{ matrix.script }}
+        env:
+          KV9_BASE_PORT: ${{ matrix.base_port }}
+        run: ./scripts/${{ matrix.script }}
+
+      # The scripts mktemp under /tmp/kv9-*; on failure the node status files and logs
+      # in there are the only way to tell a product failure from a harness failure.
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ matrix.script }}
+          path: /tmp/kv9-*
+          if-no-files-found: ignore
