@@ -10,21 +10,40 @@ root_artifact_dir="$artifact_dir"
 # ephemeral source port between the check and bind, producing a misleading
 # `Address already in use` acceptance failure.
 base_port="${KV9_BASE_PORT:-$((22000 + ($$ % 1000)))}"
+meta_node_count="${KV9_META_NODES:-3}"
 cluster_token="phase1-cluster-token"
 client_token="phase1-client-token"
 declare -A pids=()
 
-if [[ ! "$base_port" =~ ^[0-9]+$ ]] || (( base_port < 1024 || base_port + 3 > 65535 )); then
-  echo "FAIL: KV9_BASE_PORT must leave three valid non-privileged ports" >&2
+if [[ ! "$meta_node_count" =~ ^[0-9]+$ ]] || (( meta_node_count < 3 || meta_node_count % 2 == 0 )); then
+  echo "FAIL: KV9_META_NODES must be an odd integer >= 3 (acceptance covers 3 and 5)" >&2
+  exit 2
+fi
+port_span=$((meta_node_count > 3 ? meta_node_count : 3))
+if [[ ! "$base_port" =~ ^[0-9]+$ ]] || (( base_port < 1024 || base_port + port_span > 65535 )); then
+  echo "FAIL: KV9_BASE_PORT must leave ${port_span} valid non-privileged ports" >&2
   exit 2
 fi
 if [[ -r /proc/sys/net/ipv4/ip_local_port_range ]]; then
   read -r ephemeral_low ephemeral_high </proc/sys/net/ipv4/ip_local_port_range
-  if (( base_port + 3 >= ephemeral_low && base_port + 1 <= ephemeral_high )); then
-    echo "FAIL: ports $((base_port + 1))-$((base_port + 3)) overlap the host ephemeral range ${ephemeral_low}-${ephemeral_high}" >&2
+  if (( base_port + port_span >= ephemeral_low && base_port + 1 <= ephemeral_high )); then
+    echo "FAIL: ports $((base_port + 1))-$((base_port + port_span)) overlap the host ephemeral range ${ephemeral_low}-${ephemeral_high}" >&2
     exit 2
   fi
 fi
+
+join_set() {
+  local count="$1" node declaration=""
+  for ((node = 1; node <= count; node++)); do
+    if [[ -n "$declaration" ]]; then declaration+=","; fi
+    declaration+="${node}@127.0.0.1:$((base_port + node))"
+  done
+  printf '%s' "$declaration"
+}
+
+cluster_join="$(join_set "$meta_node_count")"
+negative_join="$(join_set 3)"
+expected_voters="$(seq -s, 1 "$meta_node_count")"
 
 status_value() {
   local node="$1" key="$2"
@@ -35,13 +54,14 @@ status_value() {
 
 start_node() {
   local node="$1"
+  local declared_join="${2:-$cluster_join}"
   local port=$((base_port + node))
   mkdir -p "$artifact_dir/n${node}"
   KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" "$bin" \
     --node-id "$node" \
     --addr "127.0.0.1:${port}" \
     --data-dir "$artifact_dir/n${node}" \
-    --join "1@127.0.0.1:$((base_port + 1)),2@127.0.0.1:$((base_port + 2)),3@127.0.0.1:$((base_port + 3))" \
+    --join "$declared_join" \
     >"$artifact_dir/n${node}.log" 2>&1 &
   pids[$node]=$!
 }
@@ -74,25 +94,28 @@ wait_until() {
 
 all_serving() {
   local node leaders=0 leader_id=0 seen
-  for node in 1 2 3; do
+  for ((node = 1; node <= meta_node_count; node++)); do
     test "$(status_value "$node" bootstrap_state 2>/dev/null || true)" = "Serving" || return 1
     test -z "$(status_value "$node" fatal 2>/dev/null || true)" || return 1
+    test "$(status_value "$node" meta_voters)" = "$expected_voters" || return 1
     test "$(status_value "$node" applied_index)" -gt 0 || return 1
     seen="$(status_value "$node" leader_id)"
     test "$seen" -gt 0 || return 1
     if (( leader_id == 0 )); then leader_id="$seen"; fi
     test "$seen" -eq "$leader_id" || return 1
     if test "$(status_value "$node" role)" = leader; then leaders=$((leaders + 1)); fi
+    case "$(status_value "$node" role)" in leader|follower) ;; *) return 1 ;; esac
   done
   test "$leaders" -eq 1
 }
 
 survivors_elected() {
   local old_leader="$1" old_commit="$2" node leaders=0 leader_id=0 seen
-  for node in 1 2 3; do
+  for ((node = 1; node <= meta_node_count; node++)); do
     test "$node" -eq "$old_leader" && continue
     test "$(status_value "$node" bootstrap_state 2>/dev/null || true)" = "Serving" || return 1
     test -z "$(status_value "$node" fatal 2>/dev/null || true)" || return 1
+    test "$(status_value "$node" meta_voters)" = "$expected_voters" || return 1
     seen="$(status_value "$node" leader_id)"
     test "$seen" -gt 0 || return 1
     test "$seen" -ne "$old_leader" || return 1
@@ -112,7 +135,7 @@ all_caught_up() {
   leader="$(status_value 1 leader_id)"
   leader_commit="$(status_value "$leader" raft_committed)"
   leader_applied="$(status_value "$leader" applied_index)"
-  for node in 1 2 3; do
+  for ((node = 1; node <= meta_node_count; node++)); do
     test "$(status_value "$node" raft_committed)" -ge "$leader_commit" || return 1
     test "$(status_value "$node" applied_index)" -ge "$leader_applied" || return 1
   done
@@ -124,7 +147,7 @@ cargo build --quiet --manifest-path "$repo_dir/Cargo.toml"
 # Negative gate: one member of a declared three-voter set may listen, but it
 # must never turn silence into an 'uninitialized' quorum.
 artifact_dir="$root_artifact_dir/quorum-negative"
-start_node 1
+start_node 1 "$negative_join"
 wait_until "single node status surface" 5 test -f "$artifact_dir/n1/status"
 negative_deadline=$((SECONDS + 2))
 while (( SECONDS < negative_deadline )); do
@@ -143,7 +166,7 @@ unset 'pids[1]'
 # voter declaration is not a vote for this cluster. Node 1 declares {1,2,3};
 # the process at address 3 declares {1,2,9}. Neither may use the other's answer.
 artifact_dir="$root_artifact_dir/fingerprint-negative"
-start_node 1
+start_node 1 "$negative_join"
 mkdir -p "$artifact_dir/n9"
 KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" "$bin" \
   --node-id 9 \
@@ -173,10 +196,10 @@ unset 'pids[9]'
 # Use fresh data dirs after deliberate non-pristine negative runs.
 artifact_dir="$root_artifact_dir/cluster"
 mkdir -p "$artifact_dir"
-start_node 1
-start_node 2
-start_node 3
-wait_until "three members Serving behind one leader" 15 all_serving
+for ((node = 1; node <= meta_node_count; node++)); do
+  start_node "$node"
+done
+wait_until "${meta_node_count} meta voters Serving behind one leader" 20 all_serving
 
 old_leader="$(status_value 1 leader_id)"
 old_commit="$(status_value "$old_leader" raft_committed)"
@@ -187,7 +210,7 @@ unset 'pids[$old_leader]'
 
 wait_until "survivor failover and new-term commit" 15 survivors_elected "$old_leader" "$old_commit"
 new_leader=0
-for node in 1 2 3; do
+for ((node = 1; node <= meta_node_count; node++)); do
   test "$node" -eq "$old_leader" && continue
   if test "$(status_value "$node" role)" = leader; then new_leader="$node"; fi
 done
@@ -207,7 +230,7 @@ test "$proposal_index" -gt 0
 
 post_failover_applied() {
   local node
-  for node in 1 2 3; do
+  for ((node = 1; node <= meta_node_count; node++)); do
     test "$node" -eq "$old_leader" && continue
     test "$(status_value "$node" applied_index)" -eq "$proposal_index" || return 1
     test "$(status_value "$node" applied_term)" -eq "$proposal_term" || return 1
@@ -220,13 +243,13 @@ wait_until "killed member restart and raft/catalog catch-up" 15 all_caught_up
 test "$(status_value "$old_leader" applied_index)" -eq "$proposal_index"
 test "$(status_value "$old_leader" applied_term)" -eq "$proposal_term"
 
-for node in 1 2 3; do
+for ((node = 1; node <= meta_node_count; node++)); do
   test -s "$artifact_dir/n${node}/raft/raft.log"
   test -s "$artifact_dir/n${node}/catalog.wal"
   test -s "$artifact_dir/n${node}/kv9-initialized"
 done
-echo "PASS: quorum fencing, 3-process bootstrap, leader kill/failover, and durable restart/catch-up"
+echo "PASS: quorum fencing, ${meta_node_count}-voter meta bootstrap, leader kill/failover, and durable restart/catch-up"
 echo "Artifacts: $root_artifact_dir"
-for node in 1 2 3; do
-  echo "node $node: role=$(status_value "$node" role) leader=$(status_value "$node" leader_id) term=$(status_value "$node" term) committed=$(status_value "$node" raft_committed) applied=$(status_value "$node" applied_index) state=$(status_value "$node" bootstrap_state)"
+for ((node = 1; node <= meta_node_count; node++)); do
+  echo "node $node: role=$(status_value "$node" role) voters=$(status_value "$node" meta_voters) leader=$(status_value "$node" leader_id) term=$(status_value "$node" term) committed=$(status_value "$node" raft_committed) applied=$(status_value "$node" applied_index) state=$(status_value "$node" bootstrap_state)"
 done
