@@ -250,6 +250,10 @@ mod tests {
     /// Fencing rule (b) at the attestation layer: answers from nodes outside the
     /// declared seed set carry no authority, and duplicates don't double-count —
     /// two disjoint seed lists cannot cross-attest each other into existence.
+    ///
+    /// Self-contained sensitivity: the final positive assertion proves the same
+    /// gate opens for a genuine quorum from the same state, so the rejections
+    /// above cannot be a gate that never opens (a tautological "never happens").
     #[test]
     fn outsiders_and_duplicates_do_not_count() {
         let mut b = Bootstrap::with_seeds(N1, vec![N1, N2, N3]);
@@ -258,6 +262,12 @@ mod tests {
             .is_err());
         assert!(b.discovered_uninitialized(&[N1, N1, N1]).is_err());
         assert_eq!(b.state(), BootstrapState::Discovering);
+        // Sensitivity control: same node, same state — a real quorum DOES open
+        // the election, even alongside an outsider and a duplicate in the answer.
+        assert_eq!(
+            b.discovered_uninitialized(&[N1, N2, N2, OUTSIDER]).unwrap(),
+            BootstrapState::BootstrapElection
+        );
     }
 
     /// Fencing rule (c): a data-dir that was ever part of an initialized cluster
