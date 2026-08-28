@@ -11,7 +11,7 @@ use std::net::SocketAddr;
 use std::process::ExitCode;
 
 use kv9_common::{Config, NodeId, SeedPeer};
-use kv9_server::Node;
+use kv9_server::NodeRuntime;
 
 /// Parsed CLI arguments (DESIGN §11).
 #[derive(Debug, Default)]
@@ -158,26 +158,24 @@ fn main() -> ExitCode {
 
     let node_id = cli.node_id.expect("parse_cli enforces node id");
     let config = config_from_cli(cli);
-    let node = match Node::new(node_id, config) {
-        Ok(n) => n,
+    let runtime = match NodeRuntime::start(node_id, config) {
+        Ok(runtime) => runtime,
         Err(e) => {
-            eprintln!("failed to assemble node: {e}");
+            eprintln!("failed to start node: {e}");
             return ExitCode::FAILURE;
         }
     };
 
     println!(
-        "kv9 node {:?} assembled (addr={}, data_dir={}, join={:?})",
-        node.id, node.config.addr, node.config.data_dir, node.config.join
+        "kv9 node {} running; machine-readable status: {}",
+        node_id.0,
+        runtime.status_path().display()
     );
-
-    if let Err(e) = node.bootstrap() {
-        eprintln!("bootstrap failed: {e}");
+    if let Err(e) = runtime.run() {
+        eprintln!("node runtime failed: {e}");
         return ExitCode::FAILURE;
     }
-    println!("kv9 node bootstrapped; metadata initialized (M0 skeleton — serving not yet wired).");
-
-    ExitCode::SUCCESS
+    unreachable!("node runtime returns only on failure")
 }
 
 #[cfg(test)]
