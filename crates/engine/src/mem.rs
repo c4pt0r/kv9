@@ -2,8 +2,8 @@
 
 use std::sync::RwLock;
 
-use imbl::OrdMap;
 use kv9_common::{Result, Value};
+use rpds::RedBlackTreeMapSync;
 
 use crate::cf::ColumnFamily;
 use crate::write_batch::{Mutation, WriteBatch};
@@ -15,7 +15,7 @@ use crate::{Engine, ReadView, ScanEntry};
 /// O(1) and a clone is unaffected by later mutations. That is what makes
 /// [`Engine::snapshot`] free and keeps every open [`ReadView`] pinned to its own version
 /// without copying anything.
-type CfMap = OrdMap<Vec<u8>, Vec<u8>>;
+type CfMap = RedBlackTreeMapSync<Vec<u8>, Vec<u8>>;
 
 /// All column families as one value.
 ///
@@ -108,10 +108,10 @@ impl Engine for MemEngine {
         for m in batch.mutations() {
             match m {
                 Mutation::Put { cf, key, value } => {
-                    state.cf_mut(*cf).insert(key.clone(), value.clone());
+                    state.cf_mut(*cf).insert_mut(key.clone(), value.clone());
                 }
                 Mutation::Delete { cf, key } => {
-                    state.cf_mut(*cf).remove(key);
+                    state.cf_mut(*cf).remove_mut(key);
                 }
             }
         }
@@ -136,7 +136,7 @@ impl Engine for MemEngine {
             .map(|(k, _)| k.clone())
             .collect();
         for k in doomed {
-            map.remove(&k);
+            map.remove_mut(&k);
         }
         Ok(())
     }
@@ -158,9 +158,7 @@ impl Engine for MemEngine {
         // O(1): the persistent maps share structure, so this neither copies now nor
         // forces a copy on the next write. A real engine hands back an equally cheap
         // handle (immutable SSTs + a pinned memtable) behind this same signature.
-        Ok(Box::new(MemSnapshot {
-            state: self.read(),
-        }))
+        Ok(Box::new(MemSnapshot { state: self.read() }))
     }
 }
 
