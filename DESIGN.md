@@ -19,17 +19,18 @@ skeleton implements. It is the source of truth for module boundaries. Diagrams: 
    cluster is N identical processes. No separate placement driver, no external etcd, no lock service.
 3. **Keyspaces.** The unit of namespacing and configuration, declared with a **tenant** and an **API type**
    (`txn` or `raw`).
-4. **Horizontal throughput scaling** via **range-sharded regions** with **split/merge**, where **split is driven
+4. **Storage-compute disaggregation over object storage.** Object storage (S3/GCS/Azure) is the **durable backbone**
+   for bulk data; local NVMe is cache + WAL working set, not the only copy. This is what makes compute elastic and
+   rebalancing near-free (regions move by shipping *file references*, not bytes). Core, not optional — see §6.5.
+5. **Horizontal throughput scaling** via **range-sharded regions** with **split/merge**, where **split is driven
    by consumed throughput, not just size** (DynamoDB 2022).
-5. **Familiar API.** The common TiKV surface: transactional and raw.
-6. **Correctness first.** Snapshot Isolation for `txn` keyspaces via Percolator-style 2PC over a monotonically
+6. **Familiar API.** The common TiKV surface: transactional and raw.
+7. **Correctness first.** Snapshot Isolation for `txn` keyspaces via Percolator-style 2PC over a monotonically
    ordered timestamp; a log-backed WAL; continuous replica verification.
 
 ### Non-goals (for now)
 - SQL, coprocessor push-down, secondary indexes (kv9 is the storage engine; a SQL layer is out of scope).
 - Cross-tenant / cross-group external consistency on commodity clocks at Spanner's TrueTime level (§8).
-- Storage-compute disaggregation over object storage (v0 uses local LSM; a shared-storage backend is a documented
-  future direction — §12).
 
 ### 1.1 Multi-tenancy is the organizing principle
 A tenant owns keyspaces; a keyspace has an API type and belongs to a txn group. **Isolation is enforced on every
@@ -40,10 +41,13 @@ axis**, and each axis has a concrete mechanism:
 | **Namespace** (no tenant sees another's keys) | keyspace-id key prefix; every region lives inside one keyspace's range | §3.4, §4 |
 | **Blast radius** (a tenant's failure/mistake stays local) | region boundaries **must align to keyspace boundaries**; per-keyspace GC / encryption / backup | §3.3, §10 |
 | **Capacity** (no noisy neighbor) | **Global Admission Control**: per-tenant / per-keyspace token buckets handed out by the metadata plane | §10 |
-| **Performance / QoS** | per-keyspace fair scheduling of CPU on the serving threads; per-tenant request budgets | §7, §10 |
+| **Performance / QoS** | per-keyspace fair scheduling of CPU on the serving threads; per-tenant request budgets | §7 |
+| **Cache** (dominates latency under disaggregation) | per-tenant **cache-fill tokens** so a scan can't evict a neighbor's hot set | §6.5, §7.1 |
+| **Backpressure fairness** | shared pipeline tokens are allocated by a per-tenant weighted fair queue | §7 |
 | **Timestamp / commit throughput** | **sharded TSO**: per-txn-group timelines served by a pool of providers | §3.6, §8 |
 | **Correctness under contention** | **keyspace-aware deadlock detection** (per-tenant wait-for graphs) | §9 |
-| **Accounting** | keyspace = the billing/metering unit | §10 |
+| **Physical data isolation** | per-keyspace/tenant object-storage prefixes (opt. per-tenant buckets) + per-tenant object encryption (CMEK) | §6.5 |
+| **Accounting** | keyspace = the billing/metering unit (incl. object-storage usage) | §6.5, §10 |
 
 The design consequence: *tenant / keyspace / txn-group identifiers are first-class types threaded through the whole
 stack* (see the `common` crate, §11), and the default path (`default` tenant/group) degrades gracefully to a
@@ -156,6 +160,12 @@ Stored as ordinary KV under the system prefix, replicated by ordinary Raft:
 - **Region routing table:** region_id → {range, epoch, peers, leader hint} + a `key → region` range index.
 - **Placement/scheduler state:** rebalance queue, split/merge tasks, operator log.
 - **Timestamp-oracle state:** per-txn-group persisted timestamp windows (§8).
+- **SST reference counts:** per-file refcount for object-storage GC (§6.5), mutated transactionally with manifests.
+
+The **system keyspace is its own txn group (`system`)** with its own timeline; metadata operations that span multiple
+meta-regions (e.g., a split updates the parent region *and* the routing L1 region) use **2PC within `system`** for
+atomicity. **Meta regions (L0/L1) run a higher replication factor (R=5)** and flush L0 aggressively, so the root of
+all metadata survives 2 seed failures even before its first object-storage flush.
 
 ### 5.1.1 Metadata is *layered* and scales like data (the key design point)
 A single in-memory metadata table does not scale — a well-known limit of a centralized placement driver (e.g.,
@@ -192,13 +202,20 @@ metadata server**, and the winner performs metadata initialization and a simple 
 - Non-winners wait for the catalog, then **register into membership**. Nodes that join *later* skip election: they
   find the cluster initialized, learn `META_REGION_0`'s members from any peer, and register. Data-driven thereafter.
 
-### 5.3 MetaLeader election
-The **MetaLeader** = the Raft leader of `META_REGION_0` (extended to a coordinator that owns the scheduler singleton
-via a lease). Election is plain Raft — **no external lock service**. Availability discipline (from DynamoDB):
+### 5.3 MetaLeader election & distributed scheduling
+The **MetaLeader** = the Raft leader of `META_REGION_0`. Election is plain Raft — **no external lock service**.
+Availability discipline (from DynamoDB):
 - **Leader lease:** a new MetaLeader acts only after the previous lease is known-expired (conservative clock bound),
   preventing split-brain during failover.
 - **Gray-failure handling:** a follower that suspects the leader **asks a quorum before forcing an election**, so a
   one-way network glitch does not cause needless failover.
+
+**Scheduling is not a singleton** (or kv9 would re-inherit the centralized-scheduler ceiling it set out to fix).
+Three tiers: (1) **distributed detection** — each node spots its own split/hotspot/merge candidates from local stats
+and *proposes* operations, O(local regions); (2) **sharded placement** — scheduling authority for a keyspace range is
+held by the **leader of the L1 meta-region owning that range**, so scheduling scales with L1 shards, not one node;
+(3) the **MetaLeader arbitrates only cross-shard/global policy** (cluster-wide invariants, capacity), doing O(1) work
+per decision, never scanning all regions.
 
 ### 5.4 Metadata scaling & the cold-start trap (MemDS discipline)
 The metadata keyspace can itself split into more L1 regions as the cluster grows, so metadata scales like data.
@@ -217,20 +234,34 @@ Each region runs an independent Raft group (multi-raft), driven by a per-node ba
 carries an **epoch** `(conf_ver, version)`; every request is epoch-checked, so stale-routed requests are rejected and
 retried after a routing refresh (TiKV semantics).
 
-### 6.2 Storage engine abstraction
-`Engine` is a trait; each region owns a logical LSM keyed within its range. v0 ships `MemEngine` (in-memory BTree);
-a real `LsmEngine` (RocksDB via thin FFI, or a native Rust LSM) with `default/lock/write` CFs for txn keyspaces is
-planned. As in TiKV, the **raft log is the WAL** for the memtable: a committed raft entry is applied into the memtable;
-a memtable flush produces an SSTable and advances a persisted data watermark that bounds raft-log truncation. kv9
-keeps this coupling explicit and **adds backpressure** so a slow flush/storage layer throttles ingestion *before* the
-log backs up.
+**Idle-region quiescing (essential at multi-tenant scale).** A multi-tenant cluster has **huge numbers of mostly-idle
+regions** (many keyspaces × pre-shard × split), and per-region raft heartbeat/election ticks are a real background
+cost that would otherwise cap how many regions a node can hold. So an idle region **quiesces**: it stops ticking (no
+heartbeats/elections) and holds no timers; a write, read, or membership event **wakes** it. A quiesced leader keeps
+its lease implicitly (peers don't campaign because they too are quiesced with a valid last-heard time). This lets a
+node hold millions of cold regions cheaply — merge (§10) reclaims raft groups where possible, quiescing handles the
+rest. (Learned from the cost of *not* having this in comparable engines.)
 
-### 6.3 Durability & verification (DynamoDB)
-- Raft replication across R nodes is the primary durability mechanism.
-- A background **scrubber** periodically compares replicas' committed state (range checksums) to catch silent
-  divergence ("continuous verification"); divergence triggers re-snapshot from the leader.
-- Peer-bootstrap snapshots ship a **file/metadata manifest** (not bytes) once an `LsmEngine` with shared file
-  references exists (future); `MemEngine` ships the range.
+### 6.2 Storage engine abstraction (disaggregated LSM over object storage)
+`Engine` is a trait; each region owns a logical LSM keyed within its range. Two backends: `MemEngine` (in-memory
+BTree; skeleton/tests) and the real **disaggregated `LsmEngine`** — memtable + local block cache on NVMe, **SSTs on
+object storage** (§6.5), with `default/lock/write` CFs for txn keyspaces. As in TiKV, the **raft log is the WAL** for
+the memtable: a committed raft entry is applied into the memtable; a memtable flush builds an SSTable, **uploads it to
+object storage**, and advances a persisted data watermark that bounds raft-log truncation. kv9 keeps this coupling
+explicit and **adds backpressure** so a slow flush/upload throttles ingestion *before* the log backs up.
+
+*Design rule:* the `Engine` / `ObjectStore` traits are shaped **around the disaggregated model** — manifests,
+object-file references, meta-only snapshots, and safe-time reads are first-class in the trait surface. A classic
+local-`KvEngine`-shaped abstraction would not fit the disaggregated reality and would rot into dead
+`unimplemented!()` methods (a failure mode seen in engines that bolted disaggregation onto a local-engine trait).
+
+### 6.3 Durability & verification (two-tier)
+- **Two-tier durability:** the **recent tail** is durable via raft-majority WAL; the **flushed bulk** is durable on
+  object storage (its own replication/9's). kv9 does not N×-replicate cold data across compute (§6.5).
+- **Peer-bootstrap / rebalance snapshots ship a manifest (file references), not bytes** — the receiver attaches by
+  reading the manifest and lazily pulling blocks from object storage. (`MemEngine` ships the range for tests.)
+- A background **scrubber** does continuous verification: manifest ↔ object existence, per-object checksums, and
+  tail consistency across replicas; divergence triggers re-fetch/re-snapshot.
 
 ### 6.4 Raft log vs. WAL stream — a two-layer log
 The single most important write-path clarification: the **raft log** and the **WAL stream** are *two layers of the
@@ -259,6 +290,9 @@ one-WAL-per-region = an fsync storm); *shard* into **K** independent streams (de
 parallel fsync lifts the single-writer ceiling; the per-region log is materialized from already-durable WAL bytes, so
 no double-fsync on the hot path. The knob is **K**: `K=1` = max amortization / min parallelism; `K=#regions` = fsync
 storm. Sweet spot: **K ≈ number of independent IO devices**, regions hashed across them (K ≪ #regions but K > 1).
+*Caveat:* the fsync-*parallelism* win is device-bound — on a single (often network-attached) disk, K>1 buys
+lock-contention relief + pipelined/`io_uring`-batched fsync, not raw throughput; for real parallelism map streams to
+**separate volumes**. Benefit = min(K, #independent volumes).
 
 **Safety (durability + correctness):**
 - The **durability boundary is WAL fsync + raft majority** — nothing commits before that; lazy materialization is
@@ -279,13 +313,154 @@ Metadata regions use the same machinery, so metadata writes scale too. For **bla
 assignment may be **aligned to tenant/keyspace tiers** (a tenant's regions on their own stream[s]), trading some
 fsync amortization for containment — the WAL pool is itself a multi-tenancy control surface.
 
+### 6.5 Storage-compute disaggregation over object storage
+**Object storage (S3/GCS/Azure) is the durable backbone for bulk data; local NVMe is cache + WAL working set, not
+the only copy.** This is a core pillar (goal #4), and it reshapes durability, replication, and elasticity.
+
+**Two invariants everything follows from:**
+1. **Immutability boundary.** SSTs are **immutable, write-once objects** on object storage. The only mutable state —
+   each region's **manifest** (file-id list + LSM structure) — lives in the **raft-replicated region state, not on
+   object storage**. Object storage therefore sees only immutable *creates* and *deletes*; all ordering/mutation is
+   in raft. This sidesteps object-store consistency weaknesses (SSTs are never updated in place; the mutable pointer
+   is the raft-committed manifest).
+2. **Split replication.** **Raft replicates the recent log tail** (unflushed writes — low-latency durability +
+   failover); **object storage holds the flushed bulk** with its own durability. kv9 does **not** N×-replicate cold
+   data across compute nodes. A "replica" is *log + cache*, not a full data copy. (Diagram: `docs/ARCHITECTURE.md`
+   §9.)
+
+**Flush ownership — the leader flushes; followers adopt (this is what keeps the bulk single-copy).** Every replica
+applies committed entries into its own memtable (that's how followers stay warm and can become leader), but **only
+the leader builds and uploads SSTs.** The flush is a **raft-committed manifest change** (the new file-ids + the range
+of log indices it subsumes). When a follower applies that entry, it **drops the corresponding memtable range and
+adopts the leader's file references** — it does **not** flush its own copy. So object storage holds **one** set of
+objects per region, and a "follower" is materially *log tail + cache + manifest*, not a full data copy. A follower
+promoted to leader already has the manifest and resumes flushing from the tail. (This is what makes §6.5's
+"no N× cold-data copies" true; without it, R replicas would each upload.)
+
+**Write path handoff:** leader memtable flush → build SSTable → **upload to object storage** → **propose the manifest
+change through raft** → on commit, all replicas adopt the file-ids and **the WAL/raft-log tail it subsumes may
+truncate**. Upload latency thus gates truncation → the backpressure point (§6.2/§6.4). A committed write is durable
+*immediately* via raft-majority WAL (does not wait for object storage); it becomes object-storage-durable at flush.
+
+**Read path:** memtable + local block cache; miss → fetch SST blocks from object storage (tens of ms). Working set
+should fit cache. **Any compute node holding a region's manifest can serve its reads** from object storage + cache —
+so read-replicas / safe-time follower reads (§8.3) are cheap to spin up, and a cold region's compute can scale toward
+zero (data is safe on object storage).
+
+**Elasticity — the payoff (feeds §10):** because SSTs are shared-addressable and immutable, **region movement is
+meta-only** — attach = fetch manifest + lazily pull blocks; **split/merge can be meta-only** — children reference
+subsets of the parent's immutable files until compaction rewrites. Adding compute → regions attach in seconds, no
+bulk migration. Placement optimizes **compute/cache/load, not data volume**.
+
+**Object storage engineering (a real latency/rate/cost/availability domain):**
+- **Prefix/hash key layout:** map file-id → object key spread across many prefixes so request load doesn't hit a
+  single object-store partition's rate limit.
+- **Multipart upload** for large SSTs; **read-block granularity** with a local block cache.
+- **GC = epoch-anchored mark-and-sweep with a metadata-plane ref table.** Every SST has a **refcount in the system
+  keyspace**, mutated transactionally with each manifest change (a split that shares a straddling file → +ref;
+  compaction dropping inputs → −ref). A file is deletable only when **refcount = 0, no live epoch references it, and a
+  grace period ≥ max snapshot/read staleness has elapsed**. Flush/compaction **never delete inline** — they propose
+  manifest swaps; a **GC worker** does logical-delete → lifecycle-expiry, with a slow **orphan scan** (objects lacking
+  any metadata ref) as a backstop. Idempotent and lag-tolerant.
+- **Own the integrity checks:** per-object checksums; do not assume the store validates. Immutable objects make this
+  simple (verify once on read/ingest).
+- **Compaction = raft-committed manifest swap.** The leader (or an offloaded **stateless worker**) reads inputs /
+  writes outputs on object storage, then the leader **proposes `{remove: inputs, add: outputs}` through raft,
+  version-checked against the current manifest** (reject if inputs changed under it — optimistic concurrency). Workers
+  hold no authority; the raft commit is the only truth. Default to **tiered compaction** (less write-amp ⇒ less
+  object-store $, read-amp absorbed by cache).
+- **Flush sizing (avoid tiny objects):** flush on `(size ∨ time ∨ memory-pressure ∨ WAL-retention-cap)`, target a
+  minimum object size; cold low-write regions accept **longer WAL retention** (they aren't memory-pressured) rather
+  than emit tiny objects. This is the WAL-retention ↔ object-efficiency tension, made explicit.
+- **Availability (a shared fate to own):** a brief object-store blip does not stop **writes** (local WAL + raft
+  majority) but **cold reads degrade**. Mitigations: size the cache to the **hot-set SLO** so an outage hits only cold
+  data; an opt-in **per-tenant cross-region/cross-bucket replication tier** (write 2 buckets, read-failover) for
+  higher read availability; **read-through-stale** where the API permits. Read availability is a per-tenant *choice*,
+  not a global fate.
+- **Cost is a scheduling input:** compaction I/O = object-store GET/PUT = money; the placement/compaction policy
+  weighs request cost, not just write-amplification.
+- Pluggable backends behind an `ObjectStore` trait (S3/GCS/Azure/local-for-tests).
+
+**Multi-tenancy over object storage (strengthens §1.1):** object keys are **per-keyspace/tenant-prefixed** (optionally
+per-tenant buckets) for blast-radius isolation and billing; **per-tenant encryption** (CMEK — tenant-scoped keys wrap
+their objects); **object-storage usage is a billing/capacity dimension** per tenant.
+
+**Metadata over object storage:** system-keyspace (metadata) regions use the same disaggregated engine, so the
+routing table / catalog are durable on object storage and scale as L1 splits. Bootstrap ordering: **object-store
+config (endpoint/bucket/credentials) comes from node flags** before any metadata exists; the L0 root is durable via
+raft-majority local WAL on the seed nodes until its first flush.
+
+**Decided — the raft log and WAL live on local disk.** A committed write is durable via **local fsync (NVMe) + raft
+majority**, low-latency and with **no object-storage dependency on the write path**. Local disk holds exactly two
+things: the **sharded WAL / raft-log pool** (§6.4) and the **block cache** for object-storage SSTs; the durable
+*bulk* is on object storage. A node loss loses only its cache and its local log tail — which the raft majority on
+peer nodes still holds and object storage still holds the flushed bulk. Compute nodes are therefore *nearly*
+stateless: the only local durable state is the recent, bounded, raft-replicated log tail.
+
+**The durability point is raft-group acceptance.** The moment a log entry is accepted by a majority (persisted to
+their local WALs), the record is *safe* — that is the **sole** durability boundary; the object-storage flush is
+asynchronous and off the write-path critical path. **Corollary: per-node local-disk durability is not required for
+safety** — safety comes from majority replication, not from any single disk. So a node may lose its entire local
+disk and rejoin: it refetches the recent log tail from its peers and the bulk from object storage, with **no data
+loss**. (Commodity NVMe is sufficient; no per-node RAID/battery-backed durability is needed for correctness.)
+
+*Evolution (not v1, see §14):* externalize the log to a shared/replicated log service (log-is-the-database) to make
+compute fully stateless — a bigger build, deferred.
+
 ---
 
-## 7. Serving & per-tenant QoS
-The serving threads (read/coprocessor pools) are **tenant-fair**: work is scheduled so one keyspace cannot starve
-another's CPU, and per-tenant/keyspace CPU-and-request budgets bound a tenant's footprint. This complements the
-capacity admission control in §10 (which bounds *how much* a tenant may do) with fairness (which bounds *when* they get
-scheduled). Backpressure (§6.2) and overload protection shed load predictably rather than collapsing.
+## 7. Flow control, backpressure & QoS — one token system
+
+kv9 unifies three concerns usually built separately — **capacity** (how much a tenant may do), **fairness** (whose
+work runs when), and **backpressure** (is the pipeline healthy) — into a **single token-based flow-control system**.
+Every unit of work acquires tokens before proceeding; token availability is the *one* signal that governs admission,
+fairness, and backpressure together. (Diagram: `docs/ARCHITECTURE.md` §10.)
+
+### 7.1 The token model — two kinds of buckets
+A request/batch must acquire tokens from **both** before proceeding; if either is short it waits (bounded) then is
+rejected with a retryable throttle:
+
+1. **Tenant admission buckets (capacity + fairness).** Per-tenant / per-keyspace buckets sized by the tenant's
+   provisioned rate (WCU/RCU) — the GAC allotment (§7.4). Bounds *how much* a tenant may do; burst = bucket depth.
+2. **Pipeline-health buckets (backpressure).** Node/region-local buckets, one per **finite shared resource in the
+   read/write pipeline**; a write reserves from the relevant ones:
+   - **memtable-memory** (bytes) — reserved on write, **released on flush**.
+   - **WAL / in-flight-upload** — bound un-truncated WAL + concurrent uploads; **replenished when a flush lands and
+     the WAL truncates**.
+   - **compaction-debt** — depleted as L0 / pending-manifest backlog grows; **replenished as compaction catches up**.
+   - **object-store request/$** — bound request rate and cost to the store.
+   - **cache-fill (per-tenant)** — bound how fast a tenant pulls cold blocks into the shared block cache, so one
+     tenant's scan can't evict another's hot set (this is the cache-isolation axis of §1.1).
+
+Because both kinds are the **same currency**, backpressure is **naturally per-tenant fair**: when a shared pipeline
+bucket runs low, the fair queue (§7.3) decides *whose* tokens are honored — the tenant *causing* the pressure is
+throttled, not an innocent neighbor.
+
+### 7.2 Credit feedback loop = backpressure
+Pipeline-health tokens are **credits granted by downstream progress** (credit-based flow control, à la TCP/RDMA):
+each stage returns tokens as it drains — flush completes → memtable + WAL tokens returned; upload completes →
+in-flight tokens returned; compaction reduces L0 → compaction-debt tokens returned. **Token level *is* pipeline
+health.** When object storage or compaction lags, credits stop flowing, buckets empty, and ingress *automatically*
+slows — before the WAL backs up or memory blows. There is no separate "backpressure signal"; it's the absence of
+credits. (This is the mechanism §6.2/§6.5 refer to.)
+
+### 7.3 Fair scheduling under scarcity
+When tokens are plentiful everyone proceeds. When a shared bucket is scarce, a **weighted fair queue** (per
+tenant/keyspace, virtual-time) hands out the scarce tokens proportionally to configured weights — throttling is
+proportional and starvation-free. This is the "*when*"; the tenant admission bucket is the "*how much*". Applies to
+serving CPU (read/exec pools) as well as the write pipeline.
+
+### 7.4 Global Admission Control (cross-node)
+A tenant's cap is **cluster-wide**, not per-node. The metadata plane is the GAC authority: it hands each node a
+**local sub-allotment** of a tenant's tokens; a node asks for more when low and returns unused tokens (DynamoDB GAC).
+If the authority is briefly unreachable, nodes fall to a **degraded mode** (bounded fail-open at the last-known rate)
+rather than hard-stopping — availability over precision for a short window.
+
+### 7.5 Client contract — throttle, don't collapse
+Short overloads **queue with a deadline**; sustained overload **rejects** with a retryable throttle + backoff hint
+(never build unbounded queues — anti-collapse). Two distinct signals so clients react correctly and avoid thundering
+herds: **`QuotaExceeded`** ("you hit *your* limit — slow down") vs **`Overloaded`** ("this node/region is saturated —
+back off / retry elsewhere").
 
 ---
 
@@ -361,8 +536,12 @@ the start:
 - **Prewrite** locks the primary then secondaries (intents in the `lock` CF, data in `default`).
 - **Commit** takes `commit_ts`, commits the primary (atomic point) then secondaries lazily (`lock`→`write`).
 - **Cross-region** transactions **within one txn group**: 2PC where one region's primary lock is the atomic commit
-  point (Spanner's participant-coordinator). ResolveLock cleans up on failure. A txn whose keys resolve to two
-  different txn groups is **rejected at begin** (§3.6) — the confinement that makes per-group TSO timelines correct.
+  point (Spanner's participant-coordinator). ResolveLock cleans up on failure.
+- **Txn-group confinement is declare-at-begin, fail-fast.** `BEGIN [IN GROUP g]`; if omitted, the group is inferred
+  from the **first keyspace touched** and pinned. Any access to a key outside the pinned group returns
+  `CrossTxnGroup` **immediately** at the router (keyspace→group is metadata) — never a silent or late-surprise abort.
+  Crossing groups is possible only by opting the group into Tier-2/3 timestamps (§8.2). This confinement is what makes
+  per-group TSO timelines correct (§3.6).
 - **Deadlock detection is keyspace-aware:** the wait-for graph is partitioned per tenant. (TiKV's detector is a
   single global graph; kv9 partitions it so tenants are isolated and the detector scales.)
 
@@ -387,10 +566,16 @@ Global throughput scaling (goal #4) and capacity isolation (goal #1) meet here.
   small; the **split key is chosen from the observed access distribution** so both halves shed load. A region hot on
   a single key is flagged (splitting can't help) and handled by capacity/adaptive routing.
 - **Merge** low-traffic adjacent regions within a keyspace to reclaim raft overhead.
+- **Rebalance is meta-only and near-free** (§6.5): moving a region ships its **manifest** (file references), and the
+  target attaches by lazily pulling blocks from object storage — seconds, not a bulk copy. Split/merge can likewise
+  be meta-only (children reference the parent's immutable files until compaction rewrites).
+- **But cheap-to-move ≠ move-always.** Every move invalidates cached routing → epoch-reject → refresh load on L1. So
+  the placement loop is **damped**: hysteresis (imbalance must persist beyond a window), per-region **cooldown**, a
+  **cap on moves/interval**, and **batched routing updates**. Cheapness of the move must not become churn.
 - **Placement / rebalance** is a MetaLeader responsibility and is **consumption-aware from day one** (WCU/RCU/CPU/
-  region-count), *not* local-disk-capacity-first. (A centralized driver that scores by disk capacity and treats every
-  peer move as an equal fixed cost — as TiKV/PD does — misjudges placement in a scale-out world; kv9 scores by real
-  consumption from the start.)
+  region-count/cache-locality/**object-store request cost**), *not* local-disk-capacity-first — which is now not even
+  meaningful, since bulk data is on object storage, not local disk. Placement optimizes compute/cache/load, and
+  weighs the $ of object-store requests (compaction), not data volume.
 - **Global Admission Control (per-tenant / per-keyspace):** capacity is enforced with token buckets handed out by the
   metadata plane (DynamoDB GAC). This is the capacity axis of §1.1 — multi-tenant throughput stays predictable and no
   tenant starves another. Combined with per-tenant fair scheduling (§7), it gives both *how much* and *when*.
@@ -428,7 +613,9 @@ kv9/
 │   │               TimeStamp/HLC, errors, config          (multi-tenant types are here, §1.1/§3)
 │   ├── meta/     ← membership, keyspace catalog, region routing, placement/scheduler, multi-level
 │   │               metadata (L0/L1), election-first Bootstrap FSM, MetaLeader, TSO provider pool
-│   ├── engine/   ← Engine trait + MemEngine; MVCC layout (default/lock/write); WriteBatch
+│   ├── engine/   ← Engine trait + MemEngine; MVCC layout (default/lock/write); WriteBatch;
+│   │               ObjectStore trait (S3/GCS/Azure/local) + disaggregated LsmEngine design (§6.5);
+│   │               Manifest (immutable-SST file refs, mutable via raft), local block cache
 │   ├── raft/     ← RaftGroup trait + single-node stub
 │   ├── region/   ← Region, RegionRouter, epoch, split/merge (throughput-aware), WalStream/WalPool (§6.4)
 │   ├── txn/      ← Percolator 2PC (txn keyspaces) + txn-group confinement; raw executor
@@ -457,15 +644,33 @@ The choices above, as standalone principles:
 8. **Warm, steadily-refreshed metadata caches** that never serve before a freshness watermark (no bimodal cold start).
 9. **Auth on the control/management plane from day one.**
 10. **Keyspace-aware deadlock detection** (per-tenant isolation and scale).
+11. **Quiesce idle regions** — heartbeat/election cost must not scale with region count (multi-tenant has millions of
+    cold regions). (§6.1)
+12. **Forward-compatible formats, never panic on the unknown.** Raft-log entries, manifests, and on-object formats
+    carry versions and tolerate unknown fields/types; new entry types are gated by cluster version. Rolling upgrade
+    is a first-class constraint, not an afterthought.
+13. **No unquota'd in-memory path.** Every large read/load/scan/value/compaction-input either streams or counts
+    against memory tokens (§7) — there is no "no-size-hint" bypass that can OOM a node.
+14. **Watermark discipline.** Name the watermarks crisply (committed-index, applied-index, flushed/persisted-index
+    that gates truncation, safe-time for reads); one writer per watermark; never compare composite state by *summing*
+    components (use tuples/lexicographic order).
+15. **Metadata mutations are atomic & idempotent** — a single raft (or `system`-group 2PC) commit, never a
+    multi-step-by-convention sequence with partial-rollback leaks; one authoritative source per mapping.
+16. **Invariants are enforced, not hoped for** — protect on-disk/raft state with types (illegal states
+    unrepresentable) or hard asserts that hold in release; never "log-and-continue" past a corrupted invariant.
+17. **Per-tenant observability + tests are first-class** — per-tenant metrics from day one (needed for billing/QoS
+    anyway); no subsystem ships without tests; accounting accumulates fractional usage (never truncates).
 
 ---
 
 ## 14. Future directions (documented, not in v0)
-- **Shared-storage (disaggregated) backend:** an `Engine`/DFS backend persisting SSTables to object storage so regions
-  rebalance by shipping file *references* (meta-only snapshots). Caveats to design for: object-store backpressure,
-  cold-cache tails, per-provider integrity checks.
+- **Externalized log service** (log-is-the-database): move the WAL/log off the raft group into a shared replicated
+  log so compute becomes fully stateless and page/data servers rebuild from the log on object storage (§6.5 open
+  decision). v1 keeps the raft-group-local WAL.
 - **Coprocessor / pushdown**, **CDC / change feeds**, **PITR / native backup** — layers above the region.
-- **HLC / TrueTime** timestamp sources behind `TimeSource`.
+- **Elastic background compute** — offload compaction / index build to stateless workers reading/writing object
+  storage directly, keeping the serving path light.
+- **HLC / TrueTime** timestamp sources behind `TimeSource` (§8.2).
 
 ---
 
