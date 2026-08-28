@@ -1,0 +1,61 @@
+// kv9 internal node-to-node service (task #19): raft transport + discovery.
+// Shape follows TiKV/CSE's tikvpb raft surface (client-streaming, batched),
+// carried by tonic/prost. The synchronous core is reached ONLY through
+// channels — nothing in this service implies an async core.
+syntax = "proto3";
+package kv9.raft;
+
+service Kv9Raft {
+  // Long-lived client-streaming raft transport: a peer opens one stream and
+  // pushes batches for the life of the connection. The response closes the
+  // stream (normal end or error); per-message acks are the raft protocol's
+  // own job, not the transport's.
+  rpc BatchRaft(stream BatchRaftMessage) returns (Done);
+
+  // Bootstrap discovery (fencing rule a). Unary: silence = transport error =
+  // never an answer. The answer binds to the responder's declared voter set
+  // via the fingerprint; callers count only exact matches.
+  rpc Discover(DiscoverRequest) returns (DiscoverResponse);
+}
+
+// Envelope mimicking kvproto's RaftMessage: routing/epoch metadata OUTSIDE
+// the opaque raft payload, so multi-region routing (Phase 4) needs no format
+// change. Phase 1-final: region_id is always META_REGION_0's id.
+message RaftEnvelope {
+  uint64 region_id = 1;
+  uint64 from_node = 2;
+  uint64 to_node = 3;
+  // raft-rs Message, serialized by its own protobuf-codec (write_to_bytes).
+  // Opaque here: the transport routes it, never interprets it.
+  bytes raft_message = 4;
+  // Region epoch (conf_ver, version) — zero in Phase 1-final; checked once
+  // multi-region routing exists.
+  uint64 epoch_conf_ver = 5;
+  uint64 epoch_version = 6;
+}
+
+message BatchRaftMessage {
+  repeated RaftEnvelope msgs = 1;
+  // Sender's clock (nanos since epoch) when the batch was flushed; receiver
+  // observes propagation delay. Diagnostic only — never used for correctness.
+  uint64 flushed_unix_nanos = 2;
+}
+
+message Done {}
+
+message DiscoverRequest {
+  uint64 from_node = 1;
+  // Fingerprint of the ASKER's declared voter set (FNV-1a-64 over the sorted
+  // (node_id, address) declaration). Misconfiguration detection, not auth —
+  // see transport docs; real peer auth is the token interceptor / principle 9.
+  fixed64 voter_fingerprint = 2;
+}
+
+message DiscoverResponse {
+  uint64 node_id = 1;
+  bool initialized = 2;
+  // The RESPONDER's declared-set fingerprint. Callers count this answer only
+  // if it equals their own — an answer endorsing a different declaration is
+  // an outsider (overlapping seed sets must not cross-endorse).
+  fixed64 voter_fingerprint = 3;
+}
