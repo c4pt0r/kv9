@@ -70,6 +70,19 @@ impl Command {
         Command::CatalogTxn { ops }
     }
 
+    /// Build a [`Command::Write`] from an engine [`WriteBatch`] — the USER-DATA
+    /// twin of [`Command::from_batch`]. The two constructors exist so the
+    /// choice of wire tag is made HERE, next to the semantic difference,
+    /// rather than at call sites: `from_batch` = catalog transaction
+    /// (serialized behind the caller's catalog-txn lock), `write_from_batch`
+    /// = raw user data (no catalog semantics, no catalog lock).
+    pub fn write_from_batch(batch: &WriteBatch) -> Command {
+        match Command::from_batch(batch) {
+            Command::CatalogTxn { ops } => Command::Write { ops },
+            _ => unreachable!("from_batch always yields CatalogTxn"),
+        }
+    }
+
     /// Lower this command's KV effect into a [`WriteBatch`] for the state machine to
     /// apply (Phase-1). `ConfChange`/`Noop` produce an empty batch.
     pub fn to_write_batch(&self) -> WriteBatch {
