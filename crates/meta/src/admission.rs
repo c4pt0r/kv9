@@ -132,6 +132,16 @@ pub fn admit_node<E: Engine>(
     role: AdmittedRole,
     expires_unix: u64,
 ) -> Result<()> {
+    // NodeId 0 is the wire encoding's "no node" (leader_id=0 = none): a
+    // committed admission for it would be an unaddressable identity that
+    // every "is there a leader/node" check misreads. CLI validation cannot
+    // substitute for the catalog invariant — future RPC callers hit this
+    // same gate (Tess's review).
+    if node_id.0 == 0 {
+        return Err(Error::Config(
+            "node id 0 is reserved (means 'no node') and cannot be admitted".into(),
+        ));
+    }
     // Canonical socket address only: the admission binds an exact endpoint,
     // and a free-form string would make the consume-time comparison
     // format-sensitive ("127.0.0.1:9" vs "127.000.000.001:9").

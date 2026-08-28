@@ -112,38 +112,61 @@ fn consume_rejects_wrong_cluster_address_and_expiry() {
     assert!(consume_admission(&mut txn, NodeId(99), cid("d"), "127.0.0.1:9", 50).is_err());
 }
 
-/// Tess's replay scenario, constructed for real: an admission ROW carried into
-/// a catalog whose OWN identity differs must be unconsumable even when the
-/// caller still presents the row's original cluster id — the local singleton
-/// is the ground truth, not the caller's claim.
+/// Tess's replay scenario, constructed FOR REAL this time: an admission row
+/// whose binding is cluster A physically present inside cluster B's catalog
+/// (inserted directly through the public schema/RowValue API — the state a
+/// copied/restored row produces). The caller presents B (which MATCHES the
+/// local singleton), from the correct address — so the ONLY thing standing
+/// between this row and consumption is the row-level binding comparison.
+/// Deleting `adm.cluster_id != expected_cluster` turns this test red
+/// (mechanical sensitivity, verified by running exactly that mutation).
 #[test]
 fn admission_row_replayed_into_another_cluster_admits_nobody() {
-    // Cluster A admits node 6 (row binds cid("a")).
-    let store_a = store();
-    let mut txn = store_a.begin().unwrap();
-    initialize_cluster(&mut txn, cid("a"), 1).unwrap();
-    admit_node(&mut txn, NodeId(6), "127.0.0.1:9006", AdmittedRole::Learner, 100).unwrap();
-    txn.commit().unwrap();
+    use kv9_meta::codec::{memcmp_uint, ColumnValue, RowValue};
+    use kv9_meta::schema::{ColumnId, NODE_ADMISSIONS_DESC};
 
-    // "Replay" the row into cluster B's catalog: B has its own identity, and
-    // (simulating a copied/restored row) an admission row that still binds A.
-    // We reconstruct that state through the public API by admitting in B and
-    // then checking the three-way rule directly: a caller presenting A's id
-    // against B's catalog must fail BEFORE any row comparison.
     let store_b = store();
     let mut txn = store_b.begin().unwrap();
     initialize_cluster(&mut txn, cid("b"), 1).unwrap();
-    admit_node(&mut txn, NodeId(6), "127.0.0.1:9006", AdmittedRole::Learner, 100).unwrap();
+    // The replayed row: binds cluster A, in B's catalog.
+    let mut row = RowValue::new();
+    row.set(ColumnId(2), ColumnValue::Bytes(cid("a").as_bytes().to_vec()));
+    row.set(ColumnId(3), ColumnValue::Text("127.0.0.1:9006".into()));
+    row.set(ColumnId(4), ColumnValue::Uint(1)); // Learner
+    row.set(ColumnId(5), ColumnValue::Uint(1)); // Pending
+    row.set(ColumnId(7), ColumnValue::Uint(100));
+    txn.insert(&NODE_ADMISSIONS_DESC, &[memcmp_uint(6)], row).unwrap();
     txn.commit().unwrap();
 
     let mut txn = store_b.begin().unwrap();
-    // Caller presents A's id (the replayed row's binding): local B != A → refuse.
+    // local = B, expected = B, row = A: only the row comparison can refuse.
     assert!(
-        consume_admission(&mut txn, NodeId(6), cid("a"), "127.0.0.1:9006", 50).is_err(),
-        "a caller presenting another cluster's id consumed against this catalog"
+        consume_admission(&mut txn, NodeId(6), cid("b"), "127.0.0.1:9006", 50).is_err(),
+        "a row bound to another cluster was consumed against this catalog"
     );
-    // Control: presenting B's own id works.
-    assert!(consume_admission(&mut txn, NodeId(6), cid("b"), "127.0.0.1:9006", 50).is_ok());
+    // Positive control: an identically shaped row bound to B consumes fine —
+    // proving the refusal above is the binding, not something else about the
+    // hand-built row.
+    let mut row = RowValue::new();
+    row.set(ColumnId(2), ColumnValue::Bytes(cid("b").as_bytes().to_vec()));
+    row.set(ColumnId(3), ColumnValue::Text("127.0.0.1:9007".into()));
+    row.set(ColumnId(4), ColumnValue::Uint(1));
+    row.set(ColumnId(5), ColumnValue::Uint(1));
+    row.set(ColumnId(7), ColumnValue::Uint(100));
+    txn.insert(&NODE_ADMISSIONS_DESC, &[memcmp_uint(16)], row).unwrap();
+    assert!(consume_admission(&mut txn, NodeId(16), cid("b"), "127.0.0.1:9007", 50).is_ok());
+}
+
+/// NodeId 0 means "no node" on the wire (leader_id=0 = none): the catalog
+/// refuses to admit it regardless of what any CLI validated upstream.
+#[test]
+fn admit_rejects_node_id_zero() {
+    let store = store();
+    let mut txn = store.begin().unwrap();
+    initialize_cluster(&mut txn, cid("0"), 1).unwrap();
+    assert!(admit_node(&mut txn, NodeId(0), "127.0.0.1:9000", AdmittedRole::Learner, 10).is_err());
+    // Control: id 1 with the same everything is admitted.
+    assert!(admit_node(&mut txn, NodeId(1), "127.0.0.1:9000", AdmittedRole::Learner, 10).is_ok());
 }
 
 /// The operator retry path: revoke → re-admit replaces the record; pending and
