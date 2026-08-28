@@ -19,7 +19,7 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-use kv9_engine::{ColumnFamily, Engine, WriteBatch};
+use kv9_engine::{ColumnFamily, Engine, ReadView, WriteBatch};
 
 use kv9_common::{Error, Result};
 
@@ -77,11 +77,18 @@ impl<E: Engine> MetaStore<E> {
     }
 
     /// Begin a metadata transaction (METADATA-CATALOG §4, §5).
-    pub fn begin(&self) -> MetaTxn<'_, E> {
-        MetaTxn {
+    ///
+    /// Captures one engine [`ReadView`] for the whole transaction: every read —
+    /// point get, scan, index scan — comes from the same snapshot (overlaid with the
+    /// txn's own writes), so multi-step lookups like `index_scan → get(pk)` and
+    /// `region_for_key`'s candidate + `end_key` check can never chase state that
+    /// changed between steps (acceptance items 8/14).
+    pub fn begin(&self) -> Result<MetaTxn<'_, E>> {
+        Ok(MetaTxn {
+            view: self.engine.snapshot()?,
             store: self,
             overlay: BTreeMap::new(),
-        }
+        })
     }
 }
 
@@ -93,8 +100,10 @@ impl<E: Engine> MetaStore<E> {
 /// nothing was written, so there is nothing to roll back.
 pub struct MetaTxn<'a, E: Engine> {
     store: &'a MetaStore<E>,
+    /// The transaction's single consistent snapshot; all reads go through it.
+    view: Box<dyn ReadView + 'a>,
     /// Read-your-writes buffer: physical key → `Some(value)` (put) / `None` (delete).
-    /// Consulted before the engine on every read; lowered into the commit batch.
+    /// Consulted before the snapshot on every read; lowered into the commit batch.
     overlay: BTreeMap<Vec<u8>, Option<Vec<u8>>>,
 }
 
@@ -105,7 +114,7 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
         if let Some(buffered) = self.overlay.get(key) {
             return Ok(buffered.clone());
         }
-        self.store.engine.get(ColumnFamily::Default, key)
+        self.view.get(ColumnFamily::Default, key)
     }
 
     fn write_kv(&mut self, key: Vec<u8>, value: Vec<u8>) {
@@ -125,8 +134,7 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
         limit: usize,
     ) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
         let engine_entries = self
-            .store
-            .engine
+            .view
             .scan(ColumnFamily::Default, start, end, usize::MAX)?;
         let mut merged: BTreeMap<Vec<u8>, Vec<u8>> = engine_entries
             .into_iter()

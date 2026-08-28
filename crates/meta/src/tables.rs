@@ -189,7 +189,7 @@ impl<'a, E: Engine> Tables<'a, E> {
 
     /// Point get: a keyspace by id (METADATA-CATALOG §4).
     pub fn keyspace(&self, id: KeyspaceId) -> Result<Option<Keyspace>> {
-        let txn = self.store.begin();
+        let txn = self.store.begin()?;
         let row = txn.get(&schema::KEYSPACES_DESC, &[memcmp_uint(id.0 as u64)])?;
         Ok(row.map(|r| decode_keyspace(id, &r.value)))
     }
@@ -197,7 +197,7 @@ impl<'a, E: Engine> Tables<'a, E> {
     /// Join — *keyspaces of tenant T* → `index_scan(keyspaces, by_tenant, T)`
     /// (METADATA-CATALOG §4).
     pub fn keyspaces_of_tenant(&self, tenant: TenantId) -> Result<Vec<KeyspaceId>> {
-        let txn = self.store.begin();
+        let txn = self.store.begin()?;
         let pks = txn.index_scan(
             &schema::KEYSPACES_DESC,
             IndexId(1), // by_tenant
@@ -213,7 +213,7 @@ impl<'a, E: Engine> Tables<'a, E> {
     /// Join — *regions on node N* → `index_scan(region_peers, by_node, N)` →
     /// `get(regions, region_id)` (METADATA-CATALOG §4).
     pub fn regions_on_node(&self, node: NodeId) -> Result<Vec<Region>> {
-        let txn = self.store.begin();
+        let txn = self.store.begin()?;
         let peer_pks = txn.index_scan(
             &schema::REGION_PEERS_DESC,
             IndexId(1), // by_node
@@ -247,7 +247,7 @@ impl<'a, E: Engine> Tables<'a, E> {
     /// `≤ K` — O(regions-in-keyspace). Switches to the engine ReadView's `seek_le`
     /// (one consistent view for both steps) once that lands on this path.
     pub fn region_for_key(&self, keyspace: KeyspaceId, key: &[u8]) -> Result<Option<Region>> {
-        let txn = self.store.begin();
+        let txn = self.store.begin()?;
         let entries = txn.index_entries(
             &schema::REGIONS_DESC,
             IndexId(1), // by_range
@@ -295,7 +295,7 @@ impl<'a, E: Engine> Tables<'a, E> {
     /// A `raw` keyspace has no groups (returns `None`); the default single group has
     /// empty `sub_start`/`sub_end` = the whole keyspace.
     pub fn txn_group_for_key(&self, keyspace: KeyspaceId, key: &[u8]) -> Result<Option<TxnGroupId>> {
-        let txn = self.store.begin();
+        let txn = self.store.begin()?;
         let group_pks = txn.index_scan(
             &schema::TXN_GROUPS_DESC,
             IndexId(1), // by_keyspace

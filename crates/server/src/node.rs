@@ -158,7 +158,7 @@ impl Node {
             .catalog_txn
             .lock()
             .expect("catalog transaction lock poisoned");
-        let mut txn = self.meta_raft.store.begin();
+        let mut txn = self.meta_raft.store.begin()?;
         let raw_ks_id = txn.allocate_id(SequenceKind::Keyspace)?;
         let encoded_ks_id = u32::try_from(raw_ks_id).map_err(|_| {
             Error::MetaNotReady("keyspace id sequence exhausted its u32 representation".into())
@@ -228,7 +228,7 @@ impl Node {
             .catalog_txn
             .lock()
             .expect("catalog transaction lock poisoned");
-        let mut txn = self.meta_raft.store.begin();
+        let mut txn = self.meta_raft.store.begin()?;
 
         txn.insert(
             &TENANTS_DESC,
@@ -364,7 +364,7 @@ impl crate::api::AdminApi for Node {
     fn list_keyspaces(&self, _caller: &str) -> Result<Vec<kv9_common::Keyspace>> {
         use std::collections::BTreeMap;
 
-        let txn = self.meta_raft.store.begin();
+        let txn = self.meta_raft.store.begin()?;
         let mut groups = BTreeMap::new();
         for row in txn.scan(&TXN_GROUPS_DESC, usize::MAX)? {
             groups.insert(
@@ -431,7 +431,7 @@ impl crate::api::AdminApi for Node {
     }
 
     fn cluster_info(&self, _caller: &str) -> Result<crate::api::ClusterInfo> {
-        let txn = self.meta_raft.store.begin();
+        let txn = self.meta_raft.store.begin()?;
         Ok(crate::api::ClusterInfo {
             node_count: txn.scan(&NODES_DESC, usize::MAX)?.len(),
             keyspace_count: txn.scan(&KEYSPACES_DESC, usize::MAX)?.len(),
