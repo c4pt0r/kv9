@@ -25,6 +25,9 @@ thiserror = "1"
 serde = { version = "1", features = ["derive"] }
 raft = { version = "=0.7.0", default-features = false, features = ["protobuf-codec"] }
 slog = "2"
+# Persistent (structurally-shared) ordered map: O(1) snapshots for MemEngine.
+# `imbl` is the maintained fork of `im` (which last released in 2022).
+imbl = "7"
 
 # Internal crates
 kv9-common = { path = "crates/common" }
