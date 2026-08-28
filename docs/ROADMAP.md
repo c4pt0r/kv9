@@ -1,13 +1,13 @@
 # kv9 — Development Roadmap
 
 How to build kv9 from the current design (`DESIGN.md`). Ordering principle: **build the distributed backbone first,
-mock the storage engine; then swap in the real disaggregated engine.**
+keep storage simple (WAL + replay); then swap in the real disaggregated engine.**
 
 Rationale: the *structural* spine of kv9 is the **self-hosted metadata plane** (raft + election-first bootstrap + the
 SQL catalog) — everything else plugs into it, and **raft is needed regardless** (metadata *and* user regions use it).
 So we front-load the highest **distributed-systems** risk (consensus, election, bootstrap, failover, self-hosted
-metadata) with the storage engine **mocked** behind the `Engine` trait, then bring in the disaggregated
-object-storage engine (the thesis) as a clean swap. Build vertical slices so there is always a running `kv9`.
+metadata) behind the `Engine` trait — Phase 1 uses only a **simple WAL-and-replay engine sufficient for restart
+testing** — then bring in the disaggregated object-storage engine (the thesis) as a clean swap. Build vertical slices so there is always a running `kv9`.
 
 ## Dependency decisions (make up front — they shape everything)
 - **Consensus:** `raft-rs` (tikv/raft-rs 0.7.x, feature **`protobuf-codec`** — builds with **no protoc / no native
@@ -23,7 +23,8 @@ object-storage engine (the thesis) as a clean swap. Build vertical slices so the
   either omit protoc entirely or ensure the one present is functional.
 - **Storage engine (Phase 2):** a **minimal native LSM** (memtable + immutable SST writer/reader + manifest), *not*
   RocksDB — RocksDB assumes local-first storage and fights the immutable-SST-on-object-storage / manifest-in-raft
-  model. Until then, the raft state machine is the skeleton's `MemEngine` (mock).
+  model. Until then the raft state machine runs on the Phase 1 simple WAL engine (`MemEngine` remains for
+  tests and the in-process harness).
 - **Object storage (Phase 3+):** the `object_store` crate (pure-Rust S3/GCS/Azure/local) behind `ObjectStore`.
 - **Async I/O:** `tokio`. **Wire (later):** `tonic` gRPC.
 
@@ -31,7 +32,7 @@ object-storage engine (the thesis) as a clean swap. Build vertical slices so the
 
 ### Phase 1 — Metadata plane: raft + election + SQL catalog, on real multi-process nodes. ← start here
 Bring up `raft-rs` for the **system-keyspace raft group** (`META_REGION_0`), whose state machine applies committed
-entries into a **mock `MemEngine` KV**. On top of that KV, build the **metadata SQL catalog** (`meta` crate,
+entries into the **Phase 1 simple WAL engine** (`MemEngine` stays for tests). On top of that KV, build the **metadata SQL catalog** (`meta` crate,
 `docs/METADATA-CATALOG.md`): row/index codec, hardcoded schema, typed accessors, transactions. Add the
 **election-first bootstrap** FSM (join-set → elect → winner initializes the catalog), **membership**, and
 `CreateKeyspace` / regions catalog.
@@ -92,6 +93,6 @@ unquota'd in-memory path. Early in Phase 4, invest in a **deterministic simulati
 TigerBeetle style) for raft/failure paths — it pays for itself.
 
 ## Maps to DESIGN milestones
-Phase 1 ≈ M2/M4 backbone (raft + bootstrap + MetaLeader, storage mocked) · Phase 2 ≈ M1/M2 storage ·
+Phase 1 ≈ M2/M4 backbone (raft + bootstrap + MetaLeader, simple WAL storage) · Phase 2 ≈ M1/M2 storage ·
 Phase 3 ≈ M1 txn + M2 persistence · Phase 4 ≈ M3 multi-region/split/rebalance · Phase 5 ≈ M4/M5 (sharded TSO, GAC,
 scheduler, scrubber, wire).
