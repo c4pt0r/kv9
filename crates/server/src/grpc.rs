@@ -631,6 +631,15 @@ fn scan_response(pairs: Vec<(Vec<u8>, Vec<u8>)>) -> proto::ScanResponse {
 
 fn error_status(error: Error) -> Status {
     let message = error.to_string();
+    // This match has no `_ =>` arm, and the omission is load-bearing: it is what forces every
+    // new Error variant to be given a deliberate protocol mapping instead of drifting into
+    // whatever generic code happened to be nearby. The compiler refuses the change until
+    // someone decides.
+    //
+    // Its strength and its fragility are the same fact. Adding a catch-all -- say
+    // `_ => Status::internal(message)` -- compiles instantly, leaves every test green, and
+    // silently deletes the guarantee: from then on new errors reach clients under a code
+    // nobody chose. It would look like tidying up. It is not.
     match error {
         Error::KeyspaceIdOutOfRange(_)
         | Error::MalformedKey(_)
@@ -642,11 +651,19 @@ fn error_status(error: Error) -> Status {
         | Error::SplitCrossesKeyspace
         | Error::CrossTxnGroup { .. } => Status::failed_precondition(message),
         Error::WriteConflict(_) | Error::KeyIsLocked => Status::aborted(message),
-        // `internal`, not `invalid_argument`: no client can reach this. Object writes are
-        // issued by the flush/drain worker, never by a request, so this variant escaping to
-        // the wire means an internal invariant broke -- one file-id was assigned to two
-        // distinct objects. Reporting it as a client error would send someone hunting through
-        // their own request for a fault that is ours.
+        // `internal`, not `invalid_argument`. The basis, stated so it can be falsified: this
+        // error must only ever be raised by an internal object-store/drain path, never by
+        // anything a request parameter can steer. Under that condition it means one file-id
+        // was assigned to two distinct objects -- our invariant, not the caller's mistake --
+        // and blaming the caller would send someone hunting through their own request for a
+        // fault that is ours.
+        //
+        // Note what is and is not established today. It is currently unreachable because
+        // *nothing* constructs it outside the engine: the drain worker does not exist yet.
+        // "Only the drain worker will raise it" is a well-founded expectation about the wiring
+        // to come, not a verified property of the code as it stands. RE-CHECK THIS WHEN THE
+        // DRAIN IS WIRED: if any request path can then trigger an object write, `internal`
+        // starts misattributing our fault to the caller and this arm must be revisited.
         //
         // A fixed string, deliberately NOT `message`. The Display form names the object key,
         // which is an internal physical identifier; the client can do nothing with it and it
