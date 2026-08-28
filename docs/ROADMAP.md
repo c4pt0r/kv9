@@ -29,14 +29,25 @@ object-storage engine (the thesis) as a clean swap. Build vertical slices so the
 
 ## Phases
 
-### Phase 1 — Metadata plane: raft + election + SQL catalog (storage MOCKED). ← start here
+### Phase 1 — Metadata plane: raft + election + SQL catalog, on real multi-process nodes. ← start here
 Bring up `raft-rs` for the **system-keyspace raft group** (`META_REGION_0`), whose state machine applies committed
 entries into a **mock `MemEngine` KV**. On top of that KV, build the **metadata SQL catalog** (`meta` crate,
 `docs/METADATA-CATALOG.md`): row/index codec, hardcoded schema, typed accessors, transactions. Add the
 **election-first bootstrap** FSM (join-set → elect → winner initializes the catalog), **membership**, and
-`CreateKeyspace` / regions catalog. Multi-node.
-- *Demo:* a **multi-node cluster bootstraps itself (election-first), self-hosts its metadata as SQL tables on raft,
-  handles membership + keyspace creation, and survives leader failover** — storage mocked.
+`CreateKeyspace` / regions catalog.
+**Multi-node means real OS processes, not in-process peers.** Phase 1 acceptance is three `kv9` processes that
+discover each other over the network, elect, bootstrap, survive `kill -9` of the leader, and let the killed node
+restart and rejoin. (An earlier reading treated an in-process 3-peer harness as satisfying "multi-node"; it does
+not, and in-process testing structurally cannot surface restart/identity bugs — the initialized-marker gap was
+found exactly this way.)
+**Storage in Phase 1 is a *simple* persistence engine for testing** — append-only WAL + replay on start,
+tolerating a torn tail record — **not** the disaggregated engine. SST / compaction / manifest / object storage
+remain Phase 2. Restart safety needs three things persisted, in two crates: raft **HardState (term + vote) + log**
+(a raft *safety* requirement — a node that forgets its vote can vote twice in a term and elect two leaders), the
+state-machine data, and the bootstrap initialized marker.
+- *Demo:* **three real `kv9` processes** bootstrap themselves (election-first), self-host metadata as SQL tables on
+  raft, handle membership + keyspace creation, **survive `kill -9` of the leader, and let the killed process
+  restart and rejoin** — reproducible by a single command.
 - *Retires:* the hardest, most structural risk — consensus integration, election, bootstrap, self-hosted catalog,
   failover — the spine everything hangs on.
 - *First concrete task:* `raft-rs` single-node — `RawNode` behind the synchronous `RaftGroup`, a `Ready` loop that
