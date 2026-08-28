@@ -376,7 +376,11 @@ impl RawClient {
         })
     }
 
-    pub fn put(&self, key: Vec<u8>, value: Vec<u8>) -> Result<RawClientOutcome<()>, Error> {
+    pub fn put(
+        &self,
+        key: Vec<u8>,
+        value: Vec<u8>,
+    ) -> Result<RawClientOutcome<proto::RawWriteResponse>, Error> {
         let context = self.context();
         self.call("RawPut", move |mut client, metadata| async move {
             let mut request = Request::from_parts(
@@ -389,7 +393,7 @@ impl RawClient {
                 },
             );
             *request.extensions_mut() = Default::default();
-            client.raw_put(request).await.map(|_| ())
+            client.raw_put(request).await.map(Response::into_inner)
         })
     }
 
@@ -408,7 +412,7 @@ impl RawClient {
         })
     }
 
-    pub fn delete(&self, key: Vec<u8>) -> Result<RawClientOutcome<()>, Error> {
+    pub fn delete(&self, key: Vec<u8>) -> Result<RawClientOutcome<proto::RawWriteResponse>, Error> {
         let context = self.context();
         self.call("RawDelete", move |mut client, metadata| async move {
             let request = Request::from_parts(
@@ -416,7 +420,7 @@ impl RawClient {
                 Default::default(),
                 proto::RawDeleteRequest { context, key },
             );
-            client.raw_delete(request).await.map(|_| ())
+            client.raw_delete(request).await.map(Response::into_inner)
         })
     }
 
@@ -453,7 +457,7 @@ impl RawClient {
         &self,
         start: Vec<u8>,
         end: Vec<u8>,
-    ) -> Result<RawClientOutcome<()>, Error> {
+    ) -> Result<RawClientOutcome<proto::RawDeleteRangeResponse>, Error> {
         let context = self.context();
         self.call("RawDeleteRange", move |mut client, metadata| async move {
             let request = Request::from_parts(
@@ -465,8 +469,27 @@ impl RawClient {
                     end,
                 },
             );
-            client.raw_delete_range(request).await.map(|_| ())
+            client
+                .raw_delete_range(request)
+                .await
+                .map(Response::into_inner)
         })
+    }
+}
+
+fn applied_response(applied: crate::api::AppliedPosition) -> proto::RawWriteResponse {
+    proto::RawWriteResponse {
+        applied_term: applied.term,
+        applied_index: applied.index,
+    }
+}
+
+fn receipt_response(receipt: crate::api::DeleteRangeReceipt) -> proto::RawDeleteRangeResponse {
+    let last = receipt.last_applied.unwrap_or(crate::api::AppliedPosition { term: 0, index: 0 });
+    proto::RawDeleteRangeResponse {
+        committed_chunks: receipt.committed_chunks,
+        last_applied_term: last.term,
+        last_applied_index: last.index,
     }
 }
 
@@ -570,6 +593,29 @@ fn error_status(error: Error) -> Status {
             }
             status
         }
+        Error::RangeCrossesRegion => Status::failed_precondition(message),
+        // ABORTED, not a generic failure: some chunks committed. The stable metadata is
+        // the protocol; the message text is prose and must not be parsed.
+        Error::PartialDeleteRange {
+            committed_chunks,
+            last_applied_term,
+            last_applied_index,
+            ..
+        } => {
+            let mut status = Status::aborted(message);
+            let meta = status.metadata_mut();
+            meta.insert(PARTIAL_WRITE_KEY, "true".parse().expect("static ascii"));
+            for (key, value) in [
+                (COMMITTED_CHUNKS_KEY, committed_chunks),
+                (LAST_APPLIED_TERM_KEY, last_applied_term),
+                (LAST_APPLIED_INDEX_KEY, last_applied_index),
+            ] {
+                if let Ok(parsed) = value.to_string().parse() {
+                    meta.insert(key, parsed);
+                }
+            }
+            status
+        }
         Error::Engine(_) => Status::internal(message),
         Error::NotImplemented(_) => Status::unimplemented(message),
     }
@@ -587,6 +633,15 @@ pub const LEADER_HINT_KEY: &str = "kv9-leader-node-id";
 /// client cannot separate a misdirected request from a genuinely failed precondition,
 /// since both share `FAILED_PRECONDITION`.
 pub const NOT_LEADER_KEY: &str = "kv9-not-leader";
+
+/// Marks a failure that nonetheless committed part of its work.
+pub const PARTIAL_WRITE_KEY: &str = "kv9-partial-write";
+/// How many range-delete chunks committed before the failure.
+pub const COMMITTED_CHUNKS_KEY: &str = "kv9-committed-chunks";
+/// The term of the last chunk that applied.
+pub const LAST_APPLIED_TERM_KEY: &str = "kv9-last-applied-term";
+/// The index of the last chunk that applied.
+pub const LAST_APPLIED_INDEX_KEY: &str = "kv9-last-applied-index";
 
 fn api_type(value: i32) -> Result<ApiType, Status> {
     match proto::ApiType::try_from(value) {
@@ -635,20 +690,21 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
     async fn raw_put(
         &self,
         request: Request<proto::RawPutRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
+    ) -> Result<Response<proto::RawWriteResponse>, Status> {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
-        self.backend
+        let applied = self
+            .backend
             .call(move |backend| backend.raw_put(&context, request.key, request.value))
             .await?;
-        Ok(Response::new(proto::Empty {}))
+        Ok(Response::new(applied_response(applied)))
     }
 
     async fn raw_batch_put(
         &self,
         request: Request<proto::RawBatchPutRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
+    ) -> Result<Response<proto::RawWriteResponse>, Status> {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
@@ -657,23 +713,25 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             .into_iter()
             .map(|pair| (pair.key, pair.value))
             .collect();
-        self.backend
+        let applied = self
+            .backend
             .call(move |backend| backend.raw_batch_put(&context, &pairs))
             .await?;
-        Ok(Response::new(proto::Empty {}))
+        Ok(Response::new(applied_response(applied)))
     }
 
     async fn raw_delete(
         &self,
         request: Request<proto::RawDeleteRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
+    ) -> Result<Response<proto::RawWriteResponse>, Status> {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         self.backend
             .call(move |backend| backend.raw_delete(&context, &request.key))
-            .await?;
-        Ok(Response::new(proto::Empty {}))
+            .await
+            .map(applied_response)
+            .map(Response::new)
     }
 
     async fn raw_scan(
@@ -694,14 +752,15 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
     async fn raw_delete_range(
         &self,
         request: Request<proto::RawDeleteRangeRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
+    ) -> Result<Response<proto::RawDeleteRangeResponse>, Status> {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         self.backend
             .call(move |backend| backend.raw_delete_range(&context, &request.start, &request.end))
-            .await?;
-        Ok(Response::new(proto::Empty {}))
+            .await
+            .map(receipt_response)
+            .map(Response::new)
     }
 
     async fn kv_get(
@@ -1089,13 +1148,22 @@ mod tests {
         fn raw_batch_get(&self, _: &RequestContext, _: &[UserKey]) -> Result<Vec<Option<Value>>> {
             Err(Error::NotImplemented("raw_batch_get"))
         }
-        fn raw_put(&self, _: &RequestContext, _: UserKey, _: Value) -> Result<()> {
+        fn raw_put(
+            &self,
+            _: &RequestContext,
+            _: UserKey,
+            _: Value,
+        ) -> Result<crate::api::AppliedPosition> {
             Err(Error::NotImplemented("raw_put"))
         }
-        fn raw_batch_put(&self, _: &RequestContext, _: &[(UserKey, Value)]) -> Result<()> {
+        fn raw_batch_put(
+            &self,
+            _: &RequestContext,
+            _: &[(UserKey, Value)],
+        ) -> Result<crate::api::AppliedPosition> {
             Err(Error::NotImplemented("raw_batch_put"))
         }
-        fn raw_delete(&self, _: &RequestContext, _: &[u8]) -> Result<()> {
+        fn raw_delete(&self, _: &RequestContext, _: &[u8]) -> Result<crate::api::AppliedPosition> {
             Err(Error::NotImplemented("raw_delete"))
         }
         fn raw_scan(
@@ -1107,7 +1175,12 @@ mod tests {
         ) -> Result<Vec<(UserKey, Value)>> {
             Err(Error::NotImplemented("raw_scan"))
         }
-        fn raw_delete_range(&self, _: &RequestContext, _: &[u8], _: &[u8]) -> Result<()> {
+        fn raw_delete_range(
+            &self,
+            _: &RequestContext,
+            _: &[u8],
+            _: &[u8],
+        ) -> Result<crate::api::DeleteRangeReceipt> {
             Err(Error::NotImplemented("raw_delete_range"))
         }
     }

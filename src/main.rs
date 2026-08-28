@@ -340,7 +340,13 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
                 eprintln!("error: raw-put requires --key-hex and --value-hex");
                 return ExitCode::FAILURE;
             };
-            finish!(client.put(key, value), |()| println!("ok=true"))
+            finish!(client.put(key, value), |r: kv9_server::proto::RawWriteResponse| {
+                // The position the write actually reached, straight from the response.
+                // Reading it from a status file afterwards cannot prove identity: a
+                // concurrent command moves that same number.
+                println!("applied_term={}", r.applied_term);
+                println!("applied_index={}", r.applied_index);
+            })
         }
         "raw-get" => {
             let Some(key) = key else {
@@ -359,7 +365,10 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
                 eprintln!("error: raw-delete requires --key-hex");
                 return ExitCode::FAILURE;
             };
-            finish!(client.delete(key), |()| println!("ok=true"))
+            finish!(client.delete(key), |r: kv9_server::proto::RawWriteResponse| {
+                println!("applied_term={}", r.applied_term);
+                println!("applied_index={}", r.applied_index);
+            })
         }
         "raw-scan" => {
             finish!(client.scan(start, end, limit), |rows: Vec<(
@@ -377,7 +386,14 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
             })
         }
         "raw-delete-range" => {
-            finish!(client.delete_range(start, end), |()| println!("ok=true"))
+            finish!(
+                client.delete_range(start, end),
+                |r: kv9_server::proto::RawDeleteRangeResponse| {
+                    println!("committed_chunks={}", r.committed_chunks);
+                    println!("last_applied_term={}", r.last_applied_term);
+                    println!("last_applied_index={}", r.last_applied_index);
+                }
+            )
         }
         _ => unreachable!("dispatch checked the command"),
     }
