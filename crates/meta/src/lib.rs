@@ -23,6 +23,7 @@ pub mod store;
 pub mod tables;
 
 // Election-first FSM, MetaLeader, and the typed façades wired to MetaStore over time.
+pub mod admission;
 pub mod bootstrap;
 pub mod catalog;
 pub mod layered;
