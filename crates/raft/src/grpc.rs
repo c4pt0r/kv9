@@ -130,15 +130,15 @@ pub struct RegistrationReceipt {
 /// not, and must never be mistaken for one (clients check code AND marker,
 /// never parse strings — the same double-condition rule as the raw path).
 ///
-/// CONVERGENCE OBLIGATION (Cindy/Tess, 2026-08-28): this is a branch-local
-/// typed result, kept independent only so the seam did not wait on another
-/// lane. The common target ALREADY EXISTS on the raw line (`d1731dc`:
-/// `kv9_common::Error::NotLeader { leader: Option<u64> }` with the identical
-/// `kv9-not-leader=true` / optional `kv9-leader-node-id` wire convention —
+/// CONVERGENCE OBLIGATION (Cindy/Tess/Ren, 2026-08-28): this is a branch-
+/// local typed result, kept independent only so the seam did not wait on
+/// another lane. The common target ALREADY EXISTS on the raw line (`36d9b6e`:
+/// `kv9_common::Error::NotLeader { leader: Option<NodeId> }` — IDENTICAL
+/// payload shape, arrived at independently — with the same
+/// `kv9-not-leader=true` / optional `kv9-leader-node-id` wire convention;
 /// this type reuses those key strings and semantics VERBATIM). At the
-/// raw+membership combination this enum must collapse into that Error
-/// variant; Tess owns the combination and the single client path. Payload is
-/// `Option<NodeId>` so the collapse is a promotion, not a translation.
+/// raw+membership combination this enum collapses into that Error variant as
+/// a pure move; Tess owns the combination and the single client path.
 #[derive(Debug)]
 pub enum RegistrationError {
     /// This node is not the leader; retry against `leader` if known. Maps to
