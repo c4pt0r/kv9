@@ -46,6 +46,10 @@ use pb::kv9_raft_server::Kv9Raft;
 /// deferred until cross-machine deployment) and is a different layer from the
 /// voter fingerprint (config-accident detection). Three layers, three jobs.
 pub const CLUSTER_TOKEN_KEY: &str = "kv9-cluster-token";
+/// Authenticated node identity declared in transport metadata. The server
+/// interceptor validates and turns this into its trusted `AuthContext`; service
+/// handlers never infer an identity from the protobuf body.
+pub const NODE_ID_KEY: &str = "kv9-node-id";
 
 /// Server-side interceptor enforcing the shared cluster token. The server
 /// crate wraps registered services with this (or with the richer
@@ -54,18 +58,34 @@ pub const CLUSTER_TOKEN_KEY: &str = "kv9-cluster-token";
 pub fn cluster_token_interceptor(
     expected: String,
 ) -> impl FnMut(Request<()>) -> std::result::Result<Request<()>, Status> + Clone {
-    move |req: Request<()>| match req.metadata().get(CLUSTER_TOKEN_KEY) {
-        Some(v) if v.to_str().map(|s| s == expected).unwrap_or(false) => Ok(req),
-        Some(_) => Err(Status::unauthenticated("cluster token mismatch")),
-        None => Err(Status::unauthenticated("cluster token required")),
+    move |mut req: Request<()>| {
+        match req.metadata().get(CLUSTER_TOKEN_KEY) {
+            Some(v) if v.to_str().map(|s| s == expected).unwrap_or(false) => {}
+            Some(_) => return Err(Status::unauthenticated("cluster token mismatch")),
+            None => return Err(Status::unauthenticated("cluster token required")),
+        }
+        let node = req
+            .metadata()
+            .get(NODE_ID_KEY)
+            .ok_or_else(|| Status::unauthenticated("declared node identity required"))?
+            .to_str()
+            .map_err(|_| Status::unauthenticated("invalid node identity metadata"))?
+            .parse::<u64>()
+            .map(NodeId)
+            .map_err(|_| Status::unauthenticated("invalid node identity"))?;
+        req.extensions_mut().insert(node);
+        Ok(req)
     }
 }
 
-fn attach_token<T>(req: &mut Request<T>, token: &Option<String>) {
+fn attach_auth<T>(req: &mut Request<T>, token: &Option<String>, node: NodeId) {
     if let Some(t) = token {
         if let Ok(v) = t.parse() {
             req.metadata_mut().insert(CLUSTER_TOKEN_KEY, v);
         }
+    }
+    if let Ok(value) = node.0.to_string().parse() {
+        req.metadata_mut().insert(NODE_ID_KEY, value);
     }
 }
 
@@ -121,6 +141,10 @@ impl Kv9Raft for RaftGrpcService {
         &self,
         request: Request<Streaming<pb::BatchRaftMessage>>,
     ) -> std::result::Result<Response<pb::Done>, Status> {
+        let authenticated = *request
+            .extensions()
+            .get::<NodeId>()
+            .ok_or_else(|| Status::unauthenticated("authenticated node identity missing"))?;
         let mut stream = request.into_inner();
         loop {
             let batch = match stream.message().await {
@@ -129,6 +153,11 @@ impl Kv9Raft for RaftGrpcService {
                 Err(status) => return Err(status),
             };
             for env in batch.msgs {
+                if env.from_node != authenticated.0 {
+                    return Err(Status::permission_denied(
+                        "envelope sender does not match authenticated node",
+                    ));
+                }
                 // CSE's StoreNotMatch, at our node granularity: a wrong
                 // destination is a config error — kill the stream loudly
                 // rather than silently applying someone else's traffic.
@@ -142,6 +171,11 @@ impl Kv9Raft for RaftGrpcService {
                 // A malformed raft payload poisons only this stream.
                 let msg = Message::parse_from_bytes(&env.raft_message)
                     .map_err(|e| Status::invalid_argument(format!("bad raft message: {e}")))?;
+                if msg.from != authenticated.0 {
+                    return Err(Status::permission_denied(
+                        "raft sender does not match authenticated node",
+                    ));
+                }
                 // Unbounded send into the sync core never blocks the runtime;
                 // a closed core (shutdown) just ends the stream.
                 if self.inbox.send(msg).is_err() {
@@ -153,8 +187,17 @@ impl Kv9Raft for RaftGrpcService {
 
     async fn discover(
         &self,
-        _request: Request<pb::DiscoverRequest>,
+        request: Request<pb::DiscoverRequest>,
     ) -> std::result::Result<Response<pb::DiscoverResponse>, Status> {
+        let authenticated = *request
+            .extensions()
+            .get::<NodeId>()
+            .ok_or_else(|| Status::unauthenticated("authenticated node identity missing"))?;
+        if request.get_ref().from_node != authenticated.0 {
+            return Err(Status::permission_denied(
+                "discovery sender does not match authenticated node",
+            ));
+        }
         let (node, initialized, fp) = self.discovery.answer();
         Ok(Response::new(pb::DiscoverResponse {
             node_id: node.0,
@@ -169,6 +212,7 @@ impl Kv9Raft for RaftGrpcService {
 /// Silence/connect failure/timeout are `Err` — never an answer.
 pub fn grpc_discover(
     handle: &tokio::runtime::Handle,
+    from: NodeId,
     addr: SocketAddr,
     timeout: Duration,
     token: Option<String>,
@@ -180,16 +224,20 @@ pub fn grpc_discover(
                 .await
                 .map_err(|e| Error::Raft(format!("discovery connect {addr}: {e}")))?;
             let mut req = Request::new(pb::DiscoverRequest {
-                from_node: 0,
+                from_node: from.0,
                 voter_fingerprint: 0,
             });
-            attach_token(&mut req, &token);
+            attach_auth(&mut req, &token, from);
             let resp = client
                 .discover(req)
                 .await
                 .map_err(|e| Error::Raft(format!("discovery rpc {addr}: {e}")))?
                 .into_inner();
-            Ok::<_, Error>((NodeId(resp.node_id), resp.initialized, resp.voter_fingerprint))
+            Ok::<_, Error>((
+                NodeId(resp.node_id),
+                resp.initialized,
+                resp.voter_fingerprint,
+            ))
         };
         tokio::time::timeout(timeout, fut)
             .await
@@ -241,7 +289,10 @@ impl GrpcTransport {
 
     /// Declare/replace a peer's address (from the declared `id@addr` set).
     pub fn register_peer(&self, id: NodeId, addr: SocketAddr) {
-        self.addrs.lock().expect("addrs poisoned").insert(id.0, addr);
+        self.addrs
+            .lock()
+            .expect("addrs poisoned")
+            .insert(id.0, addr);
     }
 
     fn peer_sender(&self, to: NodeId) -> Option<mpsc::Sender<pb::RaftEnvelope>> {
@@ -258,7 +309,8 @@ impl GrpcTransport {
                 .entry(to.0)
                 .or_insert_with(|| {
                     let (tx, rx) = mpsc::channel(PEER_QUEUE);
-                    self.handle.spawn(peer_worker(addr, self.token.clone(), rx));
+                    self.handle
+                        .spawn(peer_worker(self.me, addr, self.token.clone(), rx));
                     tx
                 })
                 .clone(),
@@ -299,6 +351,7 @@ impl RaftTransport for GrpcTransport {
 /// Per-peer outbound worker: batch by count/bytes with a short flush window,
 /// one long-lived client-stream per connection, reconnect with backoff.
 async fn peer_worker(
+    me: NodeId,
     addr: SocketAddr,
     token: Option<String>,
     mut rx: mpsc::Receiver<pb::RaftEnvelope>,
@@ -326,7 +379,7 @@ async fn peer_worker(
         let (batch_tx, batch_rx) = mpsc::channel::<pb::BatchRaftMessage>(16);
         let stream = tokio_stream::wrappers::ReceiverStream::new(batch_rx);
         let mut stream_req = Request::new(stream);
-        attach_token(&mut stream_req, &token);
+        attach_auth(&mut stream_req, &token, me);
         let rpc = client.batch_raft(stream_req);
         tokio::pin!(rpc);
 
@@ -403,7 +456,10 @@ mod tests {
         let svc = RaftGrpcService::new(me, inbox, Arc::new(StaticDiscovery(me, false, fp)));
         handle.spawn(async move {
             tonic::transport::Server::builder()
-                .add_service(Kv9RaftServer::new(svc))
+                .add_service(Kv9RaftServer::with_interceptor(
+                    svc,
+                    cluster_token_interceptor("test-cluster-token".into()),
+                ))
                 .serve(addr)
                 .await
                 .ok();
@@ -424,7 +480,8 @@ mod tests {
 
         let mut drivers = Vec::new();
         for (i, &id) in ids.iter().enumerate() {
-            let transport = GrpcTransport::new(id, None, handle.clone());
+            let transport =
+                GrpcTransport::new(id, Some("test-cluster-token".into()), handle.clone());
             for (j, &peer) in ids.iter().enumerate() {
                 if peer != id {
                     transport.register_peer(peer, addrs[j]);
@@ -476,12 +533,17 @@ mod tests {
         drivers[leader_idx].stop();
         let deadline = std::time::Instant::now() + Duration::from_secs(20);
         let new_leader = loop {
-            if let Some(i) = drivers.iter().enumerate().position(|(i, d)| {
-                i != leader_idx && d.status().role == Role::Leader
-            }) {
+            if let Some(i) = drivers
+                .iter()
+                .enumerate()
+                .position(|(i, d)| i != leader_idx && d.status().role == Role::Leader)
+            {
                 break i;
             }
-            assert!(std::time::Instant::now() < deadline, "no re-election over gRPC");
+            assert!(
+                std::time::Instant::now() < deadline,
+                "no re-election over gRPC"
+            );
             std::thread::sleep(Duration::from_millis(5));
         };
         let cmd2 = Command::Put {
@@ -518,13 +580,26 @@ mod tests {
         serve(&handle, NodeId(7), addr, tx, 0xFEED);
         std::thread::sleep(Duration::from_millis(100));
 
-        let (node, initialized, fp) =
-            grpc_discover(&handle, addr, Duration::from_secs(2), None).unwrap();
+        let (node, initialized, fp) = grpc_discover(
+            &handle,
+            NodeId(1),
+            addr,
+            Duration::from_secs(2),
+            Some("test-cluster-token".into()),
+        )
+        .unwrap();
         assert_eq!(node, NodeId(7));
         assert!(!initialized);
         assert_eq!(fp, 0xFEED, "answer must carry the responder's declaration");
 
-        assert!(grpc_discover(&handle, free_addr(), Duration::from_millis(300), None).is_err());
+        assert!(grpc_discover(
+            &handle,
+            NodeId(1),
+            free_addr(),
+            Duration::from_millis(300),
+            Some("test-cluster-token".into())
+        )
+        .is_err());
     }
 
     /// Token auth (EdHuang: ships with the rewrite): wrong or missing token is
@@ -536,7 +611,11 @@ mod tests {
         let handle = rt.handle().clone();
         let addr = free_addr();
         let (tx, _rx) = mpsc::unbounded_channel();
-        let svc = RaftGrpcService::new(NodeId(5), tx, Arc::new(StaticDiscovery(NodeId(5), false, 1)));
+        let svc = RaftGrpcService::new(
+            NodeId(5),
+            tx,
+            Arc::new(StaticDiscovery(NodeId(5), false, 1)),
+        );
         handle.spawn(async move {
             tonic::transport::Server::builder()
                 .add_service(pb::kv9_raft_server::Kv9RaftServer::with_interceptor(
@@ -550,14 +629,25 @@ mod tests {
         std::thread::sleep(Duration::from_millis(100));
 
         // Missing token: refused.
-        assert!(grpc_discover(&handle, addr, Duration::from_secs(2), None).is_err());
+        assert!(grpc_discover(&handle, NodeId(1), addr, Duration::from_secs(2), None).is_err());
         // Wrong token: refused.
-        assert!(
-            grpc_discover(&handle, addr, Duration::from_secs(2), Some("wrong".into())).is_err()
-        );
+        assert!(grpc_discover(
+            &handle,
+            NodeId(1),
+            addr,
+            Duration::from_secs(2),
+            Some("wrong".into())
+        )
+        .is_err());
         // Right token: answered (control — the gate opens for the key).
-        let (node, _, _) =
-            grpc_discover(&handle, addr, Duration::from_secs(2), Some("sesame".into())).unwrap();
+        let (node, _, _) = grpc_discover(
+            &handle,
+            NodeId(1),
+            addr,
+            Duration::from_secs(2),
+            Some("sesame".into()),
+        )
+        .unwrap();
         assert_eq!(node, NodeId(5));
     }
 
@@ -591,18 +681,44 @@ mod tests {
                     async fn discover(
                         &self,
                         r: Request<pb::DiscoverRequest>,
-                    ) -> std::result::Result<Response<pb::DiscoverResponse>, Status> {
+                    ) -> std::result::Result<Response<pb::DiscoverResponse>, Status>
+                    {
                         self.0.discover(r).await
                     }
                 }
                 tonic::transport::Server::builder()
-                    .add_service(Kv9RaftServer::new(Fwd(svc)))
+                    .add_service(Kv9RaftServer::with_interceptor(
+                        Fwd(svc),
+                        cluster_token_interceptor("test-cluster-token".into()),
+                    ))
                     .serve(addr)
                     .await
                     .ok();
             });
         }
         std::thread::sleep(Duration::from_millis(100));
+
+        let sender_status = handle.block_on(async {
+            let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
+                .await
+                .unwrap();
+            let batch = pb::BatchRaftMessage {
+                msgs: vec![pb::RaftEnvelope {
+                    region_id: 0,
+                    from_node: 8, // body tries to impersonate another voter
+                    to_node: 1,
+                    raft_message: Message::default().write_to_bytes().unwrap(),
+                    epoch_conf_ver: 0,
+                    epoch_version: 0,
+                }],
+                flushed_unix_nanos: 0,
+            };
+            let mut request = Request::new(tokio_stream::iter(vec![batch]));
+            attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(9));
+            client.batch_raft(request).await.unwrap_err()
+        });
+        assert_eq!(sender_status.code(), tonic::Code::PermissionDenied);
+        assert_eq!(svc.misrouted(), 0, "sender spoofing is not a routing error");
 
         let status = handle.block_on(async {
             let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
@@ -621,7 +737,9 @@ mod tests {
                 flushed_unix_nanos: 0,
             };
             let stream = tokio_stream::iter(vec![batch]);
-            client.batch_raft(Request::new(stream)).await
+            let mut request = Request::new(stream);
+            attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(9));
+            client.batch_raft(request).await
         });
         assert!(status.is_err(), "misroute must error the stream");
         assert_eq!(svc.misrouted(), 1);

@@ -5,24 +5,40 @@
 //! durable catalog apply, election-first bootstrap, and a machine-readable status
 //! file for external acceptance. The status file is evidence; log timing is not.
 
-use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use kv9_common::{Config, Error, NodeId, Result, SeedPeer, META_REGION_0};
+use kv9_common::{
+    ApiType, Config, Error, KeyspaceId, NodeId, RegionId, Result, SeedPeer, TenantId, TimeStamp,
+    TxnGroupId, UserKey, Value, META_REGION_0,
+};
 use kv9_engine::WalEngine;
 use kv9_meta::bootstrap::{init_marker_exists, write_init_marker};
 use kv9_meta::codec::memcmp_uint;
 use kv9_meta::schema::SCHEMA_VERSION_DESC;
 use kv9_meta::{Bootstrap, BootstrapEvent, BootstrapState};
 use kv9_raft::driver::NodeDriver;
+use kv9_raft::grpc::{
+    grpc_discover, pb::kv9_raft_server::Kv9RaftServer, GrpcDiscoveryState, GrpcTransport,
+    RaftGrpcService, CLUSTER_TOKEN_KEY, NODE_ID_KEY,
+};
 use kv9_raft::storage::DiskRaftStorage;
-use kv9_raft::transport::{voter_set_fingerprint, DiscoveryState, TcpTransport};
+use kv9_raft::transport::voter_set_fingerprint;
 use kv9_raft::{MemStateMachine, ProposedAt, RaftGroup, RaftPeer, Role};
+use tonic::metadata::MetadataMap;
+use tonic::Status;
 
+use crate::api::{
+    AdminApi, AppliedPosition, ClusterInfo, CreateKeyspaceResult, RawApi, RegionLocation,
+    RequestContext, TxnApi,
+};
+use crate::grpc::{
+    AuthContext, AuthInterceptor, AuthKind, Authenticator, Kv9Grpc, TokenAuthenticator,
+};
 use crate::Node;
 
 const TICK: Duration = Duration::from_millis(20);
@@ -50,7 +66,7 @@ impl RuntimeDiscovery {
     }
 }
 
-impl DiscoveryState for RuntimeDiscovery {
+impl GrpcDiscoveryState for RuntimeDiscovery {
     fn answer(&self) -> (NodeId, bool, u64) {
         (
             self.node,
@@ -60,13 +76,234 @@ impl DiscoveryState for RuntimeDiscovery {
     }
 }
 
+/// Authentication material supplied at process startup. Values are deliberately
+/// kept out of `Config` and status/debug surfaces so credentials are not serialized
+/// or printed accidentally.
+pub struct RuntimeAuth {
+    pub cluster_token: String,
+    pub client_tokens: Vec<(String, String)>,
+}
+
+impl RuntimeAuth {
+    pub fn validate(&self) -> Result<()> {
+        if self.cluster_token.is_empty() {
+            return Err(Error::Config("cluster token must be non-empty".into()));
+        }
+        TokenAuthenticator::new(self.client_tokens.clone()).map(|_| ())
+    }
+}
+
+#[derive(Clone)]
+struct ClusterAuthenticator {
+    expected_token: Arc<str>,
+    voters: Arc<HashSet<NodeId>>,
+}
+
+impl Authenticator for ClusterAuthenticator {
+    fn authenticate(&self, metadata: &MetadataMap) -> std::result::Result<AuthContext, Status> {
+        let token = metadata
+            .get(CLUSTER_TOKEN_KEY)
+            .ok_or_else(|| Status::unauthenticated("cluster token required"))?
+            .to_str()
+            .map_err(|_| Status::unauthenticated("invalid cluster token metadata"))?;
+        if token != self.expected_token.as_ref() {
+            return Err(Status::unauthenticated("cluster token mismatch"));
+        }
+        let node_id = metadata
+            .get(NODE_ID_KEY)
+            .ok_or_else(|| Status::unauthenticated("declared node identity required"))?
+            .to_str()
+            .map_err(|_| Status::unauthenticated("invalid node identity metadata"))?
+            .parse::<u64>()
+            .map(NodeId)
+            .map_err(|_| Status::unauthenticated("invalid node identity"))?;
+        if !self.voters.contains(&node_id) {
+            return Err(Status::permission_denied(
+                "declared node is not in the fixed voter set",
+            ));
+        }
+        Ok(AuthContext {
+            principal: Arc::from(format!("node:{}", node_id.0)),
+            node_id: Some(node_id),
+            auth_kind: AuthKind::Node,
+        })
+    }
+}
+
+/// Runtime-specific API backend. It delegates reads to the assembled node, but
+/// proposals go through `NodeDriver` so the response can return and verify the
+/// exact `(term,index)` that the production apply loop committed.
+struct RuntimeBackend {
+    node: Arc<Node<WalEngine>>,
+    driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
+}
+
+impl AdminApi for RuntimeBackend {
+    fn create_keyspace(
+        &self,
+        _caller: &str,
+        name: &str,
+        tenant: TenantId,
+        api_type: ApiType,
+        _txn_group: TxnGroupId,
+    ) -> Result<CreateKeyspaceResult> {
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let (keyspace, command) = self
+            .node
+            .build_create_keyspace_command(name, tenant, api_type)?;
+        let proposed = self.driver.propose(&command)?;
+        match self
+            .driver
+            .wait_applied(proposed, Duration::from_secs(10))?
+        {
+            true => Ok(CreateKeyspaceResult {
+                keyspace,
+                proposed: Some(AppliedPosition {
+                    term: proposed.term,
+                    index: proposed.index.0,
+                }),
+            }),
+            false => Err(Error::Raft(format!(
+                "keyspace proposal at term {} index {} was overwritten",
+                proposed.term, proposed.index.0
+            ))),
+        }
+    }
+
+    fn list_keyspaces(&self, caller: &str) -> Result<Vec<kv9_common::Keyspace>> {
+        self.node.list_keyspaces(caller)
+    }
+
+    fn get_region(&self, caller: &str, keyspace: KeyspaceId, key: &[u8]) -> Result<RegionLocation> {
+        self.node.get_region(caller, keyspace, key)
+    }
+
+    fn split_region(&self, caller: &str, region: RegionId, split_key: UserKey) -> Result<()> {
+        self.node.split_region(caller, region, split_key)
+    }
+
+    fn cluster_info(&self, caller: &str) -> Result<ClusterInfo> {
+        self.node.cluster_info(caller)
+    }
+}
+
+impl RawApi for RuntimeBackend {
+    fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>> {
+        self.node.raw_get(ctx, key)
+    }
+    fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>> {
+        self.node.raw_batch_get(ctx, keys)
+    }
+    fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<()> {
+        self.node.raw_put(ctx, key, value)
+    }
+    fn raw_batch_put(&self, ctx: &RequestContext, pairs: &[(UserKey, Value)]) -> Result<()> {
+        self.node.raw_batch_put(ctx, pairs)
+    }
+    fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<()> {
+        self.node.raw_delete(ctx, key)
+    }
+    fn raw_scan(
+        &self,
+        ctx: &RequestContext,
+        start: &[u8],
+        end: &[u8],
+        limit: usize,
+    ) -> Result<Vec<(UserKey, Value)>> {
+        self.node.raw_scan(ctx, start, end, limit)
+    }
+    fn raw_delete_range(&self, ctx: &RequestContext, start: &[u8], end: &[u8]) -> Result<()> {
+        self.node.raw_delete_range(ctx, start, end)
+    }
+}
+
+impl TxnApi for RuntimeBackend {
+    fn kv_get(&self, ctx: &RequestContext, key: &[u8], ts: TimeStamp) -> Result<Option<Value>> {
+        self.node.kv_get(ctx, key, ts)
+    }
+    fn kv_batch_get(
+        &self,
+        ctx: &RequestContext,
+        keys: &[UserKey],
+        ts: TimeStamp,
+    ) -> Result<Vec<Option<Value>>> {
+        self.node.kv_batch_get(ctx, keys, ts)
+    }
+    fn kv_scan(
+        &self,
+        ctx: &RequestContext,
+        start: &[u8],
+        end: &[u8],
+        limit: usize,
+        ts: TimeStamp,
+    ) -> Result<Vec<(UserKey, Value)>> {
+        self.node.kv_scan(ctx, start, end, limit, ts)
+    }
+    fn kv_prewrite(
+        &self,
+        ctx: &RequestContext,
+        mutations: &[(UserKey, Option<Value>)],
+        primary: &[u8],
+        ts: TimeStamp,
+    ) -> Result<()> {
+        self.node.kv_prewrite(ctx, mutations, primary, ts)
+    }
+    fn kv_commit(
+        &self,
+        ctx: &RequestContext,
+        keys: &[UserKey],
+        start_ts: TimeStamp,
+        commit_ts: TimeStamp,
+    ) -> Result<()> {
+        self.node.kv_commit(ctx, keys, start_ts, commit_ts)
+    }
+    fn kv_pessimistic_lock(
+        &self,
+        ctx: &RequestContext,
+        keys: &[UserKey],
+        ts: TimeStamp,
+    ) -> Result<()> {
+        self.node.kv_pessimistic_lock(ctx, keys, ts)
+    }
+    fn kv_pessimistic_rollback(
+        &self,
+        ctx: &RequestContext,
+        keys: &[UserKey],
+        ts: TimeStamp,
+    ) -> Result<()> {
+        self.node.kv_pessimistic_rollback(ctx, keys, ts)
+    }
+    fn kv_resolve_lock(
+        &self,
+        ctx: &RequestContext,
+        start_ts: TimeStamp,
+        commit_ts: Option<TimeStamp>,
+    ) -> Result<()> {
+        self.node.kv_resolve_lock(ctx, start_ts, commit_ts)
+    }
+    fn kv_cleanup(&self, ctx: &RequestContext, key: &[u8], ts: TimeStamp) -> Result<()> {
+        self.node.kv_cleanup(ctx, key, ts)
+    }
+    fn kv_check_txn_status(
+        &self,
+        ctx: &RequestContext,
+        primary: &[u8],
+        lock_ts: TimeStamp,
+    ) -> Result<()> {
+        self.node.kv_check_txn_status(ctx, primary, lock_ts)
+    }
+}
+
 /// A running real-process metadata member.
 pub struct NodeRuntime {
     node: Arc<Node<WalEngine>>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
-    transport: Arc<TcpTransport>,
     discovery: Arc<RuntimeDiscovery>,
     driver_thread: Option<std::thread::JoinHandle<()>>,
+    grpc_runtime: tokio::runtime::Runtime,
+    grpc_shutdown: Option<tokio::sync::oneshot::Sender<()>>,
+    grpc_server: Option<tokio::task::JoinHandle<std::result::Result<(), tonic::transport::Error>>>,
+    cluster_token: String,
     voters: Vec<NodeId>,
     seeds: Vec<SeedPeer>,
     data_dir: PathBuf,
@@ -78,10 +315,11 @@ pub struct NodeRuntime {
 }
 
 impl NodeRuntime {
-    /// Assemble and start the TCP listener + Raft pump. Bootstrap advances in
+    /// Assemble and start the shared gRPC listener + Raft pump. Bootstrap advances in
     /// [`Self::run`], after every process is already able to answer discovery.
-    pub fn start(id: NodeId, config: Config) -> Result<Self> {
+    pub fn start(id: NodeId, config: Config, auth: RuntimeAuth) -> Result<Self> {
         config.validate()?;
+        auth.validate()?;
         let addr = config.addr.parse().map_err(|_| {
             Error::Config(format!(
                 "addr must be a numeric socket address: {}",
@@ -158,12 +396,18 @@ impl NodeRuntime {
             marker_initialized || catalog_initialized,
             voter_fp,
         ));
-        let peers = seeds
-            .iter()
-            .filter(|seed| seed.node_id != id)
-            .map(|seed| (seed.node_id.0, seed.addr))
-            .collect::<HashMap<_, _>>();
-        let transport = TcpTransport::bind(id, addr, peers, discovery.clone())?;
+        let grpc_runtime = tokio::runtime::Runtime::new()
+            .map_err(|error| Error::Config(format!("create gRPC runtime: {error}")))?;
+        let transport = GrpcTransport::new(
+            id,
+            Some(auth.cluster_token.clone()),
+            grpc_runtime.handle().clone(),
+        );
+        for seed in &seeds {
+            if seed.node_id != id {
+                transport.register_peer(seed.node_id, seed.addr);
+            }
+        }
         let driver = NodeDriver::new(
             peer,
             transport.clone(),
@@ -172,12 +416,44 @@ impl NodeRuntime {
         let driver_thread = Some(driver.spawn(TICK));
         let status_path = data_dir.join("status");
 
+        let backend = Arc::new(RuntimeBackend {
+            node: node.clone(),
+            driver: driver.clone(),
+        });
+        let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
+        let public_service = Kv9Grpc::new(backend).authenticated_service(client_authenticator);
+        let cluster_authenticator = Arc::new(ClusterAuthenticator {
+            expected_token: Arc::from(auth.cluster_token.clone()),
+            voters: Arc::new(voters.iter().copied().collect()),
+        });
+        let raft_service = RaftGrpcService::new(id, transport.inbox_sender(), discovery.clone());
+        let raft_service = tonic::service::interceptor::InterceptedService::new(
+            Kv9RaftServer::new(raft_service),
+            AuthInterceptor::new(cluster_authenticator),
+        );
+        let listener = grpc_runtime
+            .block_on(tokio::net::TcpListener::bind(addr))
+            .map_err(|error| Error::Config(format!("bind gRPC listener {addr}: {error}")))?;
+        let incoming = tokio_stream::wrappers::TcpListenerStream::new(listener);
+        let (grpc_shutdown_tx, grpc_shutdown_rx) = tokio::sync::oneshot::channel();
+        let grpc_server = grpc_runtime.spawn(
+            tonic::transport::Server::builder()
+                .add_service(public_service)
+                .add_service(raft_service)
+                .serve_with_incoming_shutdown(incoming, async {
+                    let _ = grpc_shutdown_rx.await;
+                }),
+        );
+
         Ok(Self {
             node,
             driver,
-            transport,
             discovery,
             driver_thread,
+            grpc_runtime,
+            grpc_shutdown: Some(grpc_shutdown_tx),
+            grpc_server: Some(grpc_server),
+            cluster_token: auth.cluster_token,
             voters,
             seeds,
             data_dir,
@@ -198,6 +474,7 @@ impl NodeRuntime {
     /// because both durable logs fsync before visibility/messages.
     pub fn run(mut self) -> Result<()> {
         loop {
+            self.check_grpc_server()?;
             if let Some(fatal) = self.driver.status().fatal {
                 self.write_status()?;
                 return Err(Error::Raft(fatal));
@@ -205,6 +482,22 @@ impl NodeRuntime {
             self.advance_bootstrap()?;
             self.write_status()?;
             std::thread::sleep(TICK);
+        }
+    }
+
+    fn check_grpc_server(&mut self) -> Result<()> {
+        let finished = self
+            .grpc_server
+            .as_ref()
+            .is_some_and(tokio::task::JoinHandle::is_finished);
+        if !finished {
+            return Ok(());
+        }
+        let server = self.grpc_server.take().expect("checked above");
+        match self.grpc_runtime.block_on(server) {
+            Ok(Ok(())) => Err(Error::Raft("gRPC server stopped unexpectedly".into())),
+            Ok(Err(error)) => Err(Error::Raft(format!("gRPC server failed: {error}"))),
+            Err(error) => Err(Error::Raft(format!("gRPC server task failed: {error}"))),
         }
     }
 
@@ -253,9 +546,13 @@ impl NodeRuntime {
             if seed.node_id == self.node.id {
                 continue;
             }
-            if let Ok(answer) =
-                TcpTransport::discover(self.node.id, self.voter_fp, seed.addr, DISCOVERY_TIMEOUT)
-            {
+            if let Ok(answer) = grpc_discover(
+                self.grpc_runtime.handle(),
+                self.node.id,
+                seed.addr,
+                DISCOVERY_TIMEOUT,
+                Some(self.cluster_token.clone()),
+            ) {
                 // Both the address→identity mapping and the complete declared
                 // voter set must match. A valid answer about another cluster is
                 // still not a vote in this cluster.
@@ -374,7 +671,7 @@ impl NodeRuntime {
             Role::Learner => "learner",
         };
         let body = format!(
-            "pid={}\nnode_id={}\nleader_id={}\nrole={}\nterm={}\nraft_committed={}\napplied_index={}\nbootstrap_state={:?}\nfatal={}\n",
+            "pid={}\nnode_id={}\nleader_id={}\nrole={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\nfatal={}\n",
             std::process::id(),
             raft.node_id.0,
             raft.leader_id.map_or(0, |id| id.0),
@@ -382,6 +679,7 @@ impl NodeRuntime {
             raft.term,
             raft.raft_committed,
             raft.applied_index,
+            raft.applied_term,
             bootstrap,
             raft.fatal.as_deref().unwrap_or(""),
         );
@@ -403,9 +701,14 @@ fn discovery_answer_matches(
 impl Drop for NodeRuntime {
     fn drop(&mut self) {
         self.driver.stop();
-        self.transport.shutdown();
         if let Some(handle) = self.driver_thread.take() {
             let _ = handle.join();
+        }
+        if let Some(shutdown) = self.grpc_shutdown.take() {
+            let _ = shutdown.send(());
+        }
+        if let Some(server) = self.grpc_server.take() {
+            let _ = self.grpc_runtime.block_on(server);
         }
     }
 }
@@ -427,6 +730,33 @@ mod tests {
     use kv9_engine::{ColumnFamily, Engine};
     use kv9_raft::transport::{InProcHub, RaftTransport};
     use kv9_raft::Command;
+    use tonic::Code;
+
+    #[test]
+    fn cluster_auth_requires_token_and_declared_voter_identity() {
+        let authenticator = ClusterAuthenticator {
+            expected_token: Arc::from("secret"),
+            voters: Arc::new([NodeId(1), NodeId(2)].into_iter().collect()),
+        };
+        let mut metadata = MetadataMap::new();
+        assert_eq!(
+            authenticator.authenticate(&metadata).unwrap_err().code(),
+            Code::Unauthenticated
+        );
+
+        metadata.insert(CLUSTER_TOKEN_KEY, "secret".parse().unwrap());
+        metadata.insert(NODE_ID_KEY, "9".parse().unwrap());
+        assert_eq!(
+            authenticator.authenticate(&metadata).unwrap_err().code(),
+            Code::PermissionDenied
+        );
+
+        metadata.insert(NODE_ID_KEY, "2".parse().unwrap());
+        let auth = authenticator.authenticate(&metadata).unwrap();
+        assert_eq!(auth.node_id, Some(NodeId(2)));
+        assert_eq!(auth.auth_kind, AuthKind::Node);
+        assert_eq!(auth.principal.as_ref(), "node:2");
+    }
 
     #[test]
     fn discovery_vote_requires_both_declared_identity_and_voter_set() {

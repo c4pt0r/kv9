@@ -88,6 +88,12 @@ impl MetaRaft<MemEngine> {
 }
 
 impl<E: Engine> MetaRaft<E> {
+    pub(crate) fn lock_catalog_txn(&self) -> std::sync::MutexGuard<'_, ()> {
+        self.catalog_txn
+            .lock()
+            .expect("catalog transaction lock poisoned")
+    }
+
     /// Wire the state machine/catalog around an externally driven raft peer and a shared
     /// engine. The deterministic harness supplies [`MemEngine`]; the process runtime
     /// supplies the durable Phase-1 engine.
@@ -190,11 +196,7 @@ impl<E: Engine> Node<E> {
         tenant: TenantId,
         api_type: ApiType,
     ) -> Result<KeyspaceId> {
-        let _txn_guard = self
-            .meta_raft
-            .catalog_txn
-            .lock()
-            .expect("catalog transaction lock poisoned");
+        let _txn_guard = self.meta_raft.lock_catalog_txn();
         let (ks_id, cmd) = self.build_create_keyspace_command(name, tenant, api_type)?;
         self.meta_raft.propose_apply(cmd)?;
         Ok(ks_id)
@@ -203,7 +205,7 @@ impl<E: Engine> Node<E> {
     /// Build (but do not propose) the atomic catalog command for keyspace creation.
     /// The caller must hold `catalog_txn` until the command commits; the deterministic
     /// cluster harness uses this split to pump raft-rs explicitly.
-    fn build_create_keyspace_command(
+    pub(crate) fn build_create_keyspace_command(
         &self,
         name: &str,
         tenant: TenantId,
@@ -421,10 +423,13 @@ impl<E: Engine> crate::api::AdminApi for Node<E> {
         tenant: TenantId,
         api_type: ApiType,
         _txn_group: TxnGroupId,
-    ) -> Result<KeyspaceId> {
+    ) -> Result<crate::api::CreateKeyspaceResult> {
         // The txn group is not a caller-supplied field: a `txn` keyspace's default group
         // is created for it (METADATA-CATALOG §2 corrected hierarchy).
-        Node::create_keyspace(self, name, tenant, api_type)
+        Ok(crate::api::CreateKeyspaceResult {
+            keyspace: Node::create_keyspace(self, name, tenant, api_type)?,
+            proposed: None,
+        })
     }
 
     fn list_keyspaces(&self, _caller: &str) -> Result<Vec<kv9_common::Keyspace>> {
@@ -529,7 +534,8 @@ impl<E: Engine> crate::api::RawApi for Node<E> {
         key: Vec<u8>,
         value: Vec<u8>,
     ) -> Result<()> {
-        self.raw.put(key, value, kv9_txn::RawWriteOptions::default())
+        self.raw
+            .put(key, value, kv9_txn::RawWriteOptions::default())
     }
 
     fn raw_batch_put(
@@ -647,7 +653,9 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         _keys: &[Vec<u8>],
         _start_ts: kv9_common::TimeStamp,
     ) -> Result<()> {
-        Err(Error::NotImplemented("PercolatorExecutor::pessimistic_lock"))
+        Err(Error::NotImplemented(
+            "PercolatorExecutor::pessimistic_lock",
+        ))
     }
 
     fn kv_pessimistic_rollback(
@@ -685,7 +693,9 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         _primary: &[u8],
         _lock_ts: kv9_common::TimeStamp,
     ) -> Result<()> {
-        Err(Error::NotImplemented("PercolatorExecutor::check_txn_status"))
+        Err(Error::NotImplemented(
+            "PercolatorExecutor::check_txn_status",
+        ))
     }
 }
 
@@ -705,11 +715,12 @@ impl<E: Engine> Node<E> {
                 keyspace: ctx.keyspace,
             });
         }
-        let txn_group = tables
-            .txn_group_for_key(ctx.keyspace, primary)?
-            .ok_or(Error::ApiTypeMismatch {
-                keyspace: ctx.keyspace,
-            })?;
+        let txn_group =
+            tables
+                .txn_group_for_key(ctx.keyspace, primary)?
+                .ok_or(Error::ApiTypeMismatch {
+                    keyspace: ctx.keyspace,
+                })?;
         Ok(kv9_txn::TxnContext {
             start_ts,
             txn_group,

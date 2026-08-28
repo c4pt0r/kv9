@@ -205,6 +205,10 @@ message CreateKeyspaceRequest {
 
 message CreateKeyspaceResponse {
   uint32 keyspace_id = 1;
+  // Present when the production Raft-backed runtime served the mutation.
+  // Clients use the pair, never index alone, to correlate failover safely.
+  optional uint64 proposed_term = 2;
+  optional uint64 proposed_index = 3;
 }
 
 message ListKeyspacesRequest {}

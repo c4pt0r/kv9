@@ -10,8 +10,8 @@ use std::collections::HashSet;
 use std::net::SocketAddr;
 use std::process::ExitCode;
 
-use kv9_common::{Config, NodeId, SeedPeer};
-use kv9_server::NodeRuntime;
+use kv9_common::{ApiType, Config, NodeId, SeedPeer};
+use kv9_server::{create_keyspace_blocking, NodeRuntime, RuntimeAuth};
 
 /// Parsed CLI arguments (DESIGN §11).
 #[derive(Debug, Default)]
@@ -27,7 +27,8 @@ fn print_usage() {
         "kv9 — single-binary distributed KV\n\
          \n\
          USAGE:\n\
-           kv9 --node-id <id> [--addr <ip:port>] [--data-dir <path>] [--join <id@ip:port>[,<id@ip:port>...]]\n\
+           KV9_CLUSTER_TOKEN=<token> KV9_CLIENT_TOKENS=<principal=token,...> kv9 --node-id <id> [--addr <ip:port>] [--data-dir <path>] [--join <id@ip:port>[,<id@ip:port>...]]\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client create-keyspace --addr <ip:port> --name <name> --api-type <txn|raw> [--tenant-id <id>]\n\
          \n\
          FLAGS (DESIGN §11):\n\
            --node-id     non-zero stable identity of this node (required)\n\
@@ -143,7 +144,14 @@ fn config_from_cli(cli: Cli) -> Config {
 }
 
 fn main() -> ExitCode {
-    let cli = match parse_cli(std::env::args().skip(1)) {
+    let arguments: Vec<String> = std::env::args().skip(1).collect();
+    if arguments
+        .first()
+        .is_some_and(|argument| argument == "client")
+    {
+        return run_client(arguments.into_iter().skip(1));
+    }
+    let cli = match parse_cli(arguments.into_iter()) {
         Ok(cli) => cli,
         Err(e) => {
             if e == "help" {
@@ -157,8 +165,12 @@ fn main() -> ExitCode {
     };
 
     let node_id = cli.node_id.expect("parse_cli enforces node id");
+    let auth = RuntimeAuth {
+        cluster_token: std::env::var("KV9_CLUSTER_TOKEN").unwrap_or_default(),
+        client_tokens: parse_client_tokens(&std::env::var("KV9_CLIENT_TOKENS").unwrap_or_default()),
+    };
     let config = config_from_cli(cli);
-    let runtime = match NodeRuntime::start(node_id, config) {
+    let runtime = match NodeRuntime::start(node_id, config, auth) {
         Ok(runtime) => runtime,
         Err(e) => {
             eprintln!("failed to start node: {e}");
@@ -176,6 +188,87 @@ fn main() -> ExitCode {
         return ExitCode::FAILURE;
     }
     unreachable!("node runtime returns only on failure")
+}
+
+fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
+    if args.next().as_deref() != Some("create-keyspace") {
+        eprintln!("error: client command must be create-keyspace");
+        return ExitCode::FAILURE;
+    }
+    let mut addr = None;
+    let mut name = None;
+    let mut api_type = None;
+    let mut tenant_id = 0u64;
+    while let Some(flag) = args.next() {
+        let value = match args.next() {
+            Some(value) => value,
+            None => {
+                eprintln!("error: {flag} needs a value");
+                return ExitCode::FAILURE;
+            }
+        };
+        match flag.as_str() {
+            "--addr" => addr = Some(value),
+            "--name" => name = Some(value),
+            "--api-type" => {
+                api_type = match value.as_str() {
+                    "txn" => Some(ApiType::Txn),
+                    "raw" => Some(ApiType::Raw),
+                    _ => {
+                        eprintln!("error: --api-type must be txn or raw");
+                        return ExitCode::FAILURE;
+                    }
+                };
+            }
+            "--tenant-id" => match value.parse() {
+                Ok(value) => tenant_id = value,
+                Err(_) => {
+                    eprintln!("error: --tenant-id must be an integer");
+                    return ExitCode::FAILURE;
+                }
+            },
+            _ => {
+                eprintln!("error: unknown client flag {flag}");
+                return ExitCode::FAILURE;
+            }
+        }
+    }
+    let Some((addr, name, api_type)) = addr
+        .zip(name)
+        .zip(api_type)
+        .map(|((addr, name), api_type)| (addr, name, api_type))
+    else {
+        eprintln!("error: --addr, --name, and --api-type are required");
+        return ExitCode::FAILURE;
+    };
+    let token = std::env::var("KV9_CLIENT_TOKEN").unwrap_or_default();
+    if token.is_empty() {
+        eprintln!("error: KV9_CLIENT_TOKEN must be non-empty");
+        return ExitCode::FAILURE;
+    }
+    match create_keyspace_blocking(&addr, &token, name, tenant_id, api_type) {
+        Ok(response) => {
+            println!("keyspace_id={}", response.keyspace_id);
+            println!("proposed_term={}", response.proposed_term.unwrap_or(0));
+            println!("proposed_index={}", response.proposed_index.unwrap_or(0));
+            ExitCode::SUCCESS
+        }
+        Err(error) => {
+            eprintln!("client request failed: {error}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn parse_client_tokens(value: &str) -> Vec<(String, String)> {
+    value
+        .split(',')
+        .filter_map(|credential| {
+            let (principal, token) = credential.split_once('=')?;
+            (!principal.is_empty() && !token.is_empty())
+                .then(|| (token.to_string(), principal.to_string()))
+        })
+        .collect()
 }
 
 #[cfg(test)]
