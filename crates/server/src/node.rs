@@ -245,7 +245,8 @@ impl Node {
     }
 
     /// Write the initial metadata as the winner (DESIGN §5.2): default tenant, system
-    /// keyspace, and the declared txn groups' default TSO windows.
+    /// keyspace, and its fixed system transaction group and TSO timeline. User
+    /// transaction groups are created with their owning keyspaces, not at node start.
     fn initialize_metadata(&self) -> Result<()> {
         let _txn_guard = self
             .meta_raft
