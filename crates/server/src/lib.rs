@@ -17,7 +17,7 @@ pub use api::{
 pub use grpc::{
     admit_node_blocking, create_keyspace_blocking, promote_node_blocking, AuthContext, AuthKind,
     Authenticator, Kv9Grpc, PublicApiBackend, RawClient, RawClientOutcome, TokenAuthenticator,
-    LEADER_HINT_KEY,
+    LEADER_HINT_KEY, NOT_LEADER_KEY,
 };
 pub use node::{MetaPlane, MetaRaft, Node, Store};
 pub use routing::{route_request, Routed};

@@ -134,41 +134,61 @@ impl RawExecutor {
         Ok(batch)
     }
 
-    /// Plan a range delete as explicit per-key deletes, chunked.
+    /// Plan **one bounded chunk** of a range delete, resuming from `from`.
     ///
-    /// Replicating the *range* would be smaller, but replaying a range against a
-    /// different state can delete keys the original call never saw. Explicit deletes make
-    /// the committed entry mean exactly what happened.
+    /// Returns the batch plus the last physical key it covered, so the caller can commit
+    /// that chunk and resume strictly after it. Returns `None` when the range is
+    /// exhausted.
     ///
-    /// **Atomicity is per chunk, not per range.** A range larger than `chunk` becomes
-    /// several raft entries, so a crash can leave it half-deleted. That is a deliberate
-    /// trade against unbounded entry size (DESIGN §13 principle 13 — no unquota'd
-    /// in-memory path); a caller needing all-or-nothing must not use this.
-    pub fn plan_delete_range(
+    /// An earlier version read the whole range with `usize::MAX` and then sliced it into
+    /// chunks. That bounded the raft *entry* while leaving the planner itself unbounded —
+    /// a range of a hundred million keys was materialised in memory first. The comment
+    /// even cited DESIGN §13 principle 13 ("no unquota'd in-memory path") while the code
+    /// broke it, which is worse than a silent bug: the citation tells the next reader the
+    /// question has already been settled. Nothing here may read more than `chunk` rows.
+    ///
+    /// **Atomicity is per chunk, not per range**, and that is now observable rather than
+    /// merely documented: the caller learns how many chunks committed and where it
+    /// stopped, so a half-finished delete cannot masquerade as one that never began.
+    pub fn plan_delete_range_chunk(
         &self,
         read: &LeaderRead<'_>,
         keyspace: KeyspaceId,
+        from: Option<&[u8]>,
         start: &[u8],
         end: &[u8],
         chunk: usize,
-    ) -> Result<Vec<WriteBatch>> {
+    ) -> Result<Option<(WriteBatch, UserKey)>> {
         if chunk == 0 {
             return Err(Error::Config(
                 "raw delete_range chunk size must be non-zero".into(),
             ));
         }
-        let (lo, hi) = Self::bounds(keyspace, start, end)?;
-        let doomed = read.view.scan(RAW_CF, &lo, &hi, usize::MAX)?;
-
-        let mut batches = Vec::new();
-        for window in doomed.chunks(chunk) {
-            let mut batch = WriteBatch::new();
-            for (physical_key, _) in window {
-                batch.delete(RAW_CF, physical_key.clone());
+        let (range_lo, hi) = Self::bounds(keyspace, start, end)?;
+        // Resume strictly after the last key already deleted.
+        let lo = match from {
+            Some(previous) => {
+                let mut next = previous.to_vec();
+                next.push(0);
+                next.max(range_lo)
             }
-            batches.push(batch);
+            None => range_lo,
+        };
+        if lo >= hi {
+            return Ok(None);
         }
-        Ok(batches)
+
+        let doomed = read.view.scan(RAW_CF, &lo, &hi, chunk)?;
+        let Some((last_key, _)) = doomed.last() else {
+            return Ok(None);
+        };
+        let last_key = last_key.clone();
+
+        let mut batch = WriteBatch::new();
+        for (physical_key, _) in doomed {
+            batch.delete(RAW_CF, physical_key);
+        }
+        Ok(Some((batch, last_key)))
     }
 
     /// Point read from this keyspace.
@@ -419,39 +439,73 @@ mod tests {
         );
     }
 
+    /// Drives the chunk loop the way the runtime does, and checks the *bound* as well as
+    /// the result: no single call may read more than `chunk` rows, which is the property
+    /// the previous `usize::MAX` version silently lacked.
     #[test]
-    fn delete_range_chunks_and_each_chunk_deletes_physical_keys() {
+    fn delete_range_streams_in_bounded_chunks_and_resumes_after_each() {
+        let engine = MemEngine::new();
+        for i in 0..5u8 {
+            put(&engine, KS_A, &[b'k', i], b"v");
+        }
+        put(&engine, KS_B, b"survivor", b"v");
+
+        let mut cursor: Option<Vec<u8>> = None;
+        let mut chunks = 0;
+        loop {
+            let view = engine.snapshot().unwrap();
+            let read = leader(view.as_ref());
+            let Some((batch, last)) = RawExecutor
+                .plan_delete_range_chunk(&read, KS_A, cursor.as_deref(), b"", b"", 2)
+                .unwrap()
+            else {
+                break;
+            };
+            assert!(
+                batch.mutations().len() <= 2,
+                "a chunk must never plan more rows than its bound"
+            );
+            apply(&engine, vec![batch]);
+            cursor = Some(last);
+            chunks += 1;
+            assert!(chunks <= 5, "loop must terminate");
+        }
+        assert_eq!(chunks, 3, "5 keys at chunk 2 ⇒ 3 chunks (2+2+1)");
+
+        let view = engine.snapshot().unwrap();
+        let read = leader(view.as_ref());
+        assert!(RawExecutor
+            .scan(&read, KS_A, b"", b"", usize::MAX)
+            .unwrap()
+            .is_empty());
+        assert_eq!(
+            RawExecutor.get(&read, KS_B, b"survivor").unwrap(),
+            Some(b"v".to_vec()),
+            "delete_range must not reach across the keyspace boundary"
+        );
+    }
+
+    /// Stopping after the first chunk must leave exactly that chunk deleted — the caller
+    /// can then report where it stopped instead of implying nothing happened.
+    #[test]
+    fn a_partial_delete_range_leaves_exactly_the_committed_chunks_gone() {
         let engine = MemEngine::new();
         for i in 0..5u8 {
             put(&engine, KS_A, &[b'k', i], b"v");
         }
         let view = engine.snapshot().unwrap();
         let read = leader(view.as_ref());
-
-        let batches = RawExecutor
-            .plan_delete_range(&read, KS_A, b"", b"", 2)
-            .unwrap();
-        assert_eq!(batches.len(), 3, "5 keys at chunk 2 ⇒ 3 batches (2+2+1)");
-
-        let Mutation::Delete { key, .. } = &batches[0].mutations()[0] else {
-            panic!("expected a delete");
-        };
-        assert_eq!(decode_key(key).unwrap().keyspace, KS_A);
-
-        // Applying every chunk clears the keyspace; a neighbour keyspace is untouched.
-        put(&engine, KS_B, b"survivor", b"v");
-        apply(&engine, batches);
-        let after = engine.snapshot().unwrap();
-        let read_after = leader(after.as_ref());
-        assert!(RawExecutor
-            .scan(&read_after, KS_A, b"", b"", usize::MAX)
+        let (batch, _last) = RawExecutor
+            .plan_delete_range_chunk(&read, KS_A, None, b"", b"", 2)
             .unwrap()
-            .is_empty());
-        assert_eq!(
-            RawExecutor.get(&read_after, KS_B, b"survivor").unwrap(),
-            Some(b"v".to_vec()),
-            "delete_range must not reach across the keyspace boundary"
-        );
+            .expect("first chunk exists");
+        apply(&engine, vec![batch]);
+
+        let view = engine.snapshot().unwrap();
+        let remaining = RawExecutor
+            .scan(&leader(view.as_ref()), KS_A, b"", b"", usize::MAX)
+            .unwrap();
+        assert_eq!(remaining.len(), 3, "only the committed chunk is gone");
     }
 
     #[test]
@@ -459,7 +513,7 @@ mod tests {
         let engine = MemEngine::new();
         let view = engine.snapshot().unwrap();
         assert!(RawExecutor
-            .plan_delete_range(&leader(view.as_ref()), KS_A, b"", b"", 0)
+            .plan_delete_range_chunk(&leader(view.as_ref()), KS_A, None, b"", b"", 0)
             .is_err());
     }
 
