@@ -247,6 +247,18 @@ impl PersistentRaftStorage for DiskRaftStorage {
         self.mem.wl().set_hardstate(hs.clone());
         Ok(())
     }
+
+    /// A post-conf-change membership record (task #24). Replay is last-write-
+    /// wins for `REC_CONF_STATE`, so the newest committed membership survives
+    /// restart; omitting this write would resurrect the pre-change voter set.
+    fn set_conf_state(&self, cs: &ConfState) -> Result<()> {
+        let bytes = cs
+            .write_to_bytes()
+            .map_err(|e| Error::Raft(format!("confstate encode: {e}")))?;
+        self.write_record(REC_CONF_STATE, &bytes)?;
+        self.mem.wl().set_conf_state(cs.clone());
+        Ok(())
+    }
 }
 
 #[cfg(test)]

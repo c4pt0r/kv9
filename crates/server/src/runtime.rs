@@ -669,6 +669,9 @@ impl NodeRuntime {
             Role::Follower => "follower",
             Role::Candidate => "candidate",
             Role::Learner => "learner",
+            // In neither voter nor learner set: a config-identity fault that
+            // must never render as a healthy follower (task #24).
+            Role::Unconfigured => "unconfigured",
         };
         let meta_voters = format_node_ids(&self.voters);
         let body = format!(

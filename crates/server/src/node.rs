@@ -795,6 +795,11 @@ mod tests {
                 .lock()
                 .expect("meta sm poisoned");
             for entry in entries {
+                // Barriers/conf entries never reach the state machine (the
+                // production driver routes them); this harness feeds commands.
+                if entry.kind != kv9_raft::EntryKind::Command {
+                    continue;
+                }
                 sm.apply(&entry).unwrap();
                 observed.push((peer.node_id(), entry));
             }

@@ -15,9 +15,11 @@ use raft::storage::MemStorage;
 
 use kv9_common::{Error, NodeId, Result};
 
+use raft::eraftpb::{ConfChangeSingle, ConfChangeType, ConfChangeV2};
+
 use crate::rawnode::{PersistentRaftStorage, ProposedAt, RaftPeer};
 use crate::transport::RaftTransport;
-use crate::{Command, MemStateMachine, RaftGroup, Role, StateMachine};
+use crate::{Command, EntryKind, MemStateMachine, RaftGroup, Role, StateMachine};
 
 /// Queryable node state (the server's `status` surface, agreed seam with the
 /// acceptance harness: success is judged on these fields, not on log text).
@@ -49,6 +51,13 @@ pub struct NodeStatus {
     /// Inbound messages rejected by raft `step` (dropped, sender retransmits).
     /// Diagnostic: persistent growth signals stale peers / version skew.
     pub step_errors: u64,
+    /// Current raft voter set (sorted node ids), from the live ConfState.
+    /// Post-initialization membership authority is THIS (the raft-committed
+    /// configuration), never the boot-time declared seed list (task #24).
+    pub voters: Vec<u64>,
+    /// Current raft learner set (sorted node ids). A learner replicates the
+    /// log but never votes or campaigns.
+    pub learners: Vec<u64>,
 }
 
 /// How many recently applied `(index, term)` pairs are retained for proposal
@@ -121,29 +130,111 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         if entries.is_empty() {
             return Ok(());
         }
-        // Both guards span the whole batch so readers see watermark and ring
-        // move together; `applied` first per the declared lock order.
-        let mut applied = self.applied.lock().expect("applied poisoned");
-        let mut sm = self.sm.lock().expect("sm poisoned");
+        // Items are processed strictly in log order. Locks are taken per item
+        // (always `applied` then `sm`, per the declared order) and NEVER held
+        // across a peer call: conf changes go through `peer.inner`, and peer
+        // must not nest with driver locks in either direction.
+        let mut last_seen: u64 = 0;
         for entry in entries {
-            let outcome =
-                Command::decode(&entry.data).and_then(|cmd| sm.apply_command(entry.index, &cmd));
-            if let Err(e) = outcome {
-                let msg = format!(
-                    "fatal at committed entry (term {}, index {}): {e}",
-                    entry.term, entry.index.0
-                );
-                *self.fatal.lock().expect("fatal poisoned") = Some(msg.clone());
-                self.stop.store(true, Ordering::Relaxed);
-                return Err(Error::Raft(msg));
-            }
-            applied.push((entry.index.0, entry.term));
-            let len = applied.len();
-            if len > APPLIED_RING {
-                applied.drain(..len - APPLIED_RING);
+            last_seen = entry.index.0;
+            match entry.kind {
+                // A no-op barrier advances raft's applied progress only; it
+                // never reaches the state machine or the durable watermark.
+                EntryKind::Noop => {}
+                EntryKind::Command => {
+                    let cmd = match Command::decode(&entry.data) {
+                        Ok(c) => c,
+                        Err(e) => return Err(self.poison(entry.term, entry.index.0, &e)),
+                    };
+                    if matches!(cmd, Command::ConfChange { .. }) {
+                        // Loud-fail (task #24): the legacy app-level tag was an
+                        // unwired placeholder that applied as an empty batch —
+                        // "committed but configuration unchanged" IS divergence.
+                        // Real membership changes travel as raft EntryConfChange.
+                        let e = Error::Raft(
+                            "legacy Command::ConfChange is unwired; membership \
+                             changes must use raft conf-change entries"
+                                .into(),
+                        );
+                        return Err(self.poison(entry.term, entry.index.0, &e));
+                    }
+                    let mut applied = self.applied.lock().expect("applied poisoned");
+                    let mut sm = self.sm.lock().expect("sm poisoned");
+                    if let Err(e) = sm.apply_command(entry.index, &cmd) {
+                        drop(sm);
+                        drop(applied);
+                        return Err(self.poison(entry.term, entry.index.0, &e));
+                    }
+                    push_ring(&mut applied, entry.index.0, entry.term);
+                }
+                EntryKind::ConfChangeV1 | EntryKind::ConfChangeV2 => {
+                    // Peer call first (no driver locks held), then the ring.
+                    match self.peer.apply_conf_change_bytes(entry.kind, &entry.data) {
+                        Ok(_membership) => {
+                            let mut applied =
+                                self.applied.lock().expect("applied poisoned");
+                            push_ring(&mut applied, entry.index.0, entry.term);
+                        }
+                        Err(e) => return Err(self.poison(entry.term, entry.index.0, &e)),
+                    }
+                }
             }
         }
+        // Report REAL apply progress to raft — only now, after every entry up
+        // to `last_seen` has actually been applied. raft-rs gates the next
+        // one-at-a-time conf change on this. No driver locks are held here.
+        self.peer.applied_to(last_seen);
         Ok(())
+    }
+
+    /// Record a fatal apply-path failure and stop the pump (the poison path:
+    /// skipping a committed entry would silently diverge this replica).
+    fn poison(&self, term: u64, index: u64, cause: &Error) -> Error {
+        let msg = format!("fatal at committed entry (term {term}, index {index}): {cause}");
+        *self.fatal.lock().expect("fatal poisoned") = Some(msg.clone());
+        self.stop.store(true, Ordering::Relaxed);
+        Error::Raft(msg)
+    }
+
+    /// Propose adding `node` as a raft **learner** (replicates, never votes or
+    /// campaigns). Returns the conf entry's exact `(term, index)`; confirm with
+    /// [`Self::wait_conf_applied`]. Admission policy (cluster id, address,
+    /// ticket) lives ABOVE this call — this is the raft mechanism only.
+    pub fn add_learner(&self, node: NodeId) -> Result<ProposedAt> {
+        self.peer
+            .propose_conf_change_traced(single_change(node, ConfChangeType::AddLearnerNode))
+    }
+
+    /// Propose promoting `node` (a caught-up learner) to **voter**. One change
+    /// at a time; raft refuses a new conf change until the previous one is
+    /// applied — which is why apply progress must be reported truthfully.
+    pub fn promote_voter(&self, node: NodeId) -> Result<ProposedAt> {
+        self.peer
+            .propose_conf_change_traced(single_change(node, ConfChangeType::AddNode))
+    }
+
+    /// Wait until the conf change proposed at `at` is applied HERE, verified by
+    /// exact `(term, index)`; returns the post-change membership actually
+    /// produced by `apply_conf_change` (never the proposal-time expectation).
+    pub fn wait_conf_applied(
+        &self,
+        at: ProposedAt,
+        deadline: Duration,
+    ) -> Result<ConfChangeReceipt> {
+        if self.wait_applied(at, deadline)? {
+            let (voters, learners) = self.peer.membership();
+            Ok(ConfChangeReceipt {
+                applied: at,
+                conf_index: at.index.0,
+                voters,
+                learners,
+            })
+        } else {
+            Err(Error::Raft(format!(
+                "conf change at term {} index {} was overwritten by another leader",
+                at.term, at.index.0
+            )))
+        }
     }
 
     /// Tick + step (the driver loop body).
@@ -195,17 +286,44 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
 
     /// The queryable status surface.
     pub fn status(&self) -> NodeStatus {
+        // All peer reads happen FIRST, before any driver lock is taken: peer
+        // never nests with driver locks in either direction (the applied→peer
+        // edge was the #23 audit's fourth-lock hazard — eliminated here rather
+        // than declared). The five peer reads were always five independent
+        // lock acquisitions, so no cross-field atomicity is lost by moving them.
+        let node_id = self.peer.node_id();
+        let leader_id = self.peer.leader_hint();
+        let raw_role = self.peer.role();
+        let term = self.peer.term();
+        let raft_committed = self.peer.raft_committed().0;
+        let step_errors = self.peer.step_errors();
+        let (voters, learners) = self.peer.membership();
+        let promotable = self.peer.promotable();
+        // Membership-first role derivation (三分, Ren's rule): a learner is a
+        // follower whose id is in the learner set; a node in NEITHER set is a
+        // config-identity fault and must never masquerade as a healthy
+        // follower (removed node, wrong config, stale ConfState).
+        let me = node_id.0;
+        let role = if learners.contains(&me) {
+            Role::Learner
+        } else if !promotable && !voters.contains(&me) {
+            Role::Unconfigured
+        } else {
+            raw_role
+        };
         let applied = self.applied.lock().expect("applied poisoned");
         NodeStatus {
-            node_id: self.peer.node_id(),
-            leader_id: self.peer.leader_hint(),
-            role: self.peer.role(),
-            term: self.peer.term(),
-            raft_committed: self.peer.raft_committed().0,
+            node_id,
+            leader_id,
+            role,
+            term,
+            raft_committed,
             applied_index: self.sm.lock().expect("sm poisoned").applied_index().0,
             applied_term: applied.last().map_or(0, |(_, term)| *term),
             fatal: self.fatal.lock().expect("fatal poisoned").clone(),
-            step_errors: self.peer.step_errors(),
+            step_errors,
+            voters,
+            learners,
         }
     }
 
@@ -230,6 +348,35 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             }
         })
     }
+}
+
+/// Post-conf-change receipt: the exact applied `(term, index)` and the
+/// membership `apply_conf_change` actually produced (never the proposal-time
+/// expectation).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ConfChangeReceipt {
+    pub applied: ProposedAt,
+    /// Log index at which this configuration took effect.
+    pub conf_index: u64,
+    pub voters: Vec<u64>,
+    pub learners: Vec<u64>,
+}
+
+fn push_ring(applied: &mut Vec<(u64, u64)>, index: u64, term: u64) {
+    applied.push((index, term));
+    let len = applied.len();
+    if len > APPLIED_RING {
+        applied.drain(..len - APPLIED_RING);
+    }
+}
+
+fn single_change(node: NodeId, kind: ConfChangeType) -> ConfChangeV2 {
+    let mut step = ConfChangeSingle::default();
+    step.set_change_type(kind);
+    step.node_id = node.0;
+    let mut cc = ConfChangeV2::default();
+    cc.set_changes(vec![step].into());
+    cc
 }
 
 #[cfg(test)]

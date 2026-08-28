@@ -180,7 +180,16 @@ where
     let ready = raft.take_ready()?;
     let mut out = Vec::with_capacity(ready.len());
     for entry in &ready {
-        out.push(sm.apply(entry)?);
+        match entry.kind {
+            // Barriers and conf changes never reach the state machine; the
+            // production driver routes them (conf → apply_conf_change) and
+            // reports applied progress separately. This helper only feeds
+            // command payloads.
+            crate::EntryKind::Noop
+            | crate::EntryKind::ConfChangeV1
+            | crate::EntryKind::ConfChangeV2 => {}
+            crate::EntryKind::Command => out.push(sm.apply(entry)?),
+        }
     }
     Ok(out)
 }
