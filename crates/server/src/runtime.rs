@@ -528,12 +528,24 @@ impl NodeRuntime {
             .expect("meta poisoned")
             .bootstrap
             .data_dir_initialized();
+        // LOCAL CATALOG FIRST (Tess's P0 on c0a3191): if this node's own
+        // durable catalog names a cluster, the cluster exists — a lost marker
+        // or silent peers must never lead to an "uninitialized quorum" here
+        // (the re-mint would be refused by the identity singleton: a refusal,
+        // not a recovery — the cluster would wedge). The marker itself is
+        // repaired on the very next tick by advance_joining.
+        {
+            let local = self.node.local_cluster_identity()?;
+            let mut meta = self.node.meta.lock().expect("meta poisoned");
+            if meta.bootstrap.observe_local_identity(local)? {
+                return Ok(());
+            }
+        }
         if locally_fenced {
-            // The marker proves membership in an initialized cluster; the
-            // IDENTITY comes from the replicated catalog. Wait until the raft
-            // replay has applied the init entries locally (a declared voter
-            // receives them without admission), then join with the real id.
-            return self.try_found_initialized();
+            // Marker present but the catalog cannot name the cluster yet
+            // (e.g. an old empty-format marker with a not-yet-replayed
+            // catalog): rule (c) already blocks re-init; just wait.
+            return Ok(());
         }
         if Instant::now() < self.next_discovery {
             return Ok(());
@@ -583,22 +595,15 @@ impl NodeRuntime {
         Ok(())
     }
 
-    /// Fire `FoundInitialized` once the LOCAL catalog can name the cluster —
-    /// the event now carries the identity, and "initialized somewhere" without
-    /// an identity is not enough to leave Discovering.
+    /// Fire the join transition once the LOCAL catalog can name the cluster —
+    /// "initialized somewhere" without an identity is not enough to leave
+    /// Discovering (declared voters replicate the init entries without
+    /// admission; the non-voter path learns the id from the discovery answer
+    /// itself when the registration seam lands).
     fn try_found_initialized(&mut self) -> Result<()> {
-        let cluster_id = {
-            let txn = self.node.meta_raft.store.begin()?;
-            kv9_meta::admission::cluster_id(&txn)?
-        };
-        if let Some(cluster_id) = cluster_id {
-            self.node
-                .meta
-                .lock()
-                .expect("meta poisoned")
-                .bootstrap
-                .on_event(BootstrapEvent::FoundInitialized { cluster_id })?;
-        }
+        let local = self.node.local_cluster_identity()?;
+        let mut meta = self.node.meta.lock().expect("meta poisoned");
+        meta.bootstrap.observe_local_identity(local)?;
         Ok(())
     }
 
