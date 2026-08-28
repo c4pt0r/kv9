@@ -60,7 +60,46 @@ pub trait ReadView: Send + Sync {
     /// candidate's `end_key`; that check is what upholds the DESIGN §13 principle 4
     /// invariant that cross-tenant misrouting is impossible. Correctness also assumes the
     /// caller's key encoding is order-preserving (memcomparable).
+    ///
+    /// **Not sufficient on its own for a caller that buffers writes.** A single hit cannot
+    /// be stepped past, so if the caller's overlay has *deleted* the entry this returns,
+    /// there is no way to ask for the next one down. Such callers must use
+    /// [`ReadView::iter_rev`] and walk backwards, skipping their own tombstones.
     fn seek_le(&self, cf: ColumnFamily, target: &[u8]) -> Result<Option<ScanEntry>>;
+
+    /// Streaming ascending iterator over `[start, end)`.
+    ///
+    /// Unlike [`ReadView::scan`], nothing is materialized up front: the caller pulls
+    /// entries and stops when it has enough. This is what lets a caller that merges an
+    /// overlay honour a `limit` without first loading the whole range — DESIGN §13
+    /// principle 13 (*"no unquota'd in-memory path… no 'no-size-hint' bypass that can OOM
+    /// a node"*) rules out the load-everything-then-truncate shape.
+    ///
+    /// Items are `Result` because a real disaggregated engine fetches blocks from object
+    /// storage mid-iteration and can fail there (DESIGN §6.5); an in-memory engine simply
+    /// never yields `Err`.
+    fn iter<'a>(
+        &'a self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<Box<dyn Iterator<Item = Result<ScanEntry>> + 'a>>;
+
+    /// Streaming **descending** iterator over `[start, end)`, yielding the greatest key
+    /// first.
+    ///
+    /// This is the primitive behind "which region contains key K" for any caller that
+    /// buffers writes: seek to the top of the range and walk down, skipping entries the
+    /// caller's own overlay has deleted, until a live candidate appears. [`seek_le`] alone
+    /// cannot do this — it yields one entry with no way to continue past it.
+    ///
+    /// [`seek_le`]: ReadView::seek_le
+    fn iter_rev<'a>(
+        &'a self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<Box<dyn Iterator<Item = Result<ScanEntry>> + 'a>>;
 }
 
 /// The storage engine trait (DESIGN §6.2).
