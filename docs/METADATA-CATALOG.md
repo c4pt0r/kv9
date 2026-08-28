@@ -31,8 +31,10 @@ nodes          (id u64 PK, addr text, state, last_heartbeat u64, capacity blob) 
 regions        (id u64 PK, keyspace_id → keyspaces, start_key bytes, end_key bytes,
                 epoch_conf u64, epoch_ver u64, leader_node u64)                   INDEX by_range(keyspace_id,start_key)
 region_peers   (region_id → regions, node_id → nodes, role, PK(region_id,node_id)) INDEX by_node(node_id)
-sst_files      (file_id u64 PK, region_id → regions, level u8, refcount u32,
-                smallest bytes, biggest bytes, bytes u64)                         INDEX by_region(region_id)
+sst_files      (file_id u64 PK, keyspace_id → keyspaces, bytes u64, refcount u32,
+                state, created u64)          -- GC/billing view ONLY; LSM structure
+                                             -- (level/bounds/region set) lives in each
+                                             -- region's raft-replicated manifest
 placement_rules(id u32 PK, keyspace_id → keyspaces, replicas u8, constraints blob)
 tasks          (id u64 PK, kind, target, state, created u64)                     -- rebalance/split/merge/GC ops
 gac_allotments (tenant_id → tenants PK, tokens u64, refreshed u64)

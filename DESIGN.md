@@ -204,7 +204,12 @@ The metadata tables (§5.0), each ultimately rows in the system keyspace, replic
 - **Region routing table:** region_id → {range, epoch, peers, leader hint} + a `key → region` range index.
 - **Placement/scheduler state:** rebalance queue, split/merge tasks, operator log.
 - **Timestamp-oracle state:** per-txn-group persisted timestamp windows (§8).
-- **SST reference counts:** per-file refcount for object-storage GC (§6.5), mutated transactionally with manifests.
+- **SST reference counts:** per-file refcount for object-storage GC (§6.5). The **manifest is authoritative**; the
+  refcount is a **conservative upper bound** maintained by ordering, not by cross-group atomicity (none exists
+  between a region's raft state and the system keyspace): **+ref commits *before* the manifest change that
+  references the file; −ref only *after* the manifest change that drops it.** Hence `refcount = 0` is at any moment
+  a sufficient condition for safe deletion. Crashes only leak over-counts (never endanger data); a
+  manifest-verifying leak scan revises counts **downward only**.
 
 The **system keyspace is its own txn group (`system`)** with its own timeline; metadata operations that span multiple
 meta-regions (e.g., a split updates the parent region *and* the routing L1 region) use **2PC within `system`** for
@@ -245,6 +250,13 @@ metadata server**, and the winner performs metadata initialization and a simple 
   ordinary committed entries, init is crash-safe and idempotent (a crashed initializer re-elects and continues).
 - Non-winners wait for the catalog, then **register into membership**. Nodes that join *later* skip election: they
   find the cluster initialized, learn `META_REGION_0`'s members from any peer, and register. Data-driven thereafter.
+- **Fencing — bootstrap must be unforkable:** (a) *unreachable ≠ uninitialized* — a node enters BootstrapElection
+  only on a positive "uninitialized" answer from a **quorum of its declared seed set**, never on silence or
+  timeouts; (b) the election counts votes only within the declared seed set and requires a **majority of that
+  set**, so two disjoint seed lists cannot both initialize; (c) initialization is once-per-lifetime — a node whose
+  data-dir carries an initialized marker (or non-empty raft state) refuses to re-initialize and rejoins via
+  Joining; a wiped node is a *new* node. (raft-rs `initialize()` requires a pristine node, enforcing (c) at the
+  library layer; (a)/(b) live in the Discovering/BootstrapElection FSM.)
 
 ### 5.3 MetaLeader election & distributed scheduling
 The **MetaLeader** = the Raft leader of `META_REGION_0`. Election is plain Raft — **no external lock service**.
@@ -424,8 +436,9 @@ fast scale-out.
   single object-store partition's rate limit.
 - **Multipart upload** for large SSTs; **read-block granularity** with a local block cache.
 - **GC = epoch-anchored mark-and-sweep with a metadata-plane ref table.** Every SST has a **refcount in the system
-  keyspace**, mutated transactionally with each manifest change (a split that shares a straddling file → +ref;
-  compaction dropping inputs → −ref). A file is deletable only when **refcount = 0, no live epoch references it, and a
+  keyspace**, maintained under the **conservative two-phase ordering** (+ref-before-use / −ref-after-drop, §5.1):
+  a split that shares a straddling file commits its +ref **before** the child manifests reference it; compaction
+  commits −ref only **after** the manifest swap dropping the inputs. A file is deletable only when **refcount = 0, no live epoch references it, and a
   grace period ≥ max snapshot/read staleness has elapsed**. Flush/compaction **never delete inline** — they propose
   manifest swaps; a **GC worker** does logical-delete → lifecycle-expiry, with a slow **orphan scan** (objects lacking
   any metadata ref) as a backstop. Idempotent and lag-tolerant.
