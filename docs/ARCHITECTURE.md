@@ -215,7 +215,7 @@ Companion to `DESIGN.md`. Each diagram cites the DESIGN section it visualizes.
           │  flush   : build SSTable → UPLOAD (immutable, write-once)
           │  compact : object-store → object-store  (offloadable to stateless workers)
           ▼
-  ┌───────────────────────── OBJECT STORAGE  (S3 / GCS / Azure) ──────────────────────────┐
+  ┌───────────────────────── OBJECT STORAGE = THE SOURCE OF TRUTH  (S3 / GCS / Azure) ──────────────────────────┐
   │  durable bulk (its own 9's)  ·  per-keyspace/tenant prefixes  ·  per-tenant CMEK        │
   │  immutable SSTs (file-id → hash-prefixed key)  ·  logical-delete + lifecycle GC         │
   └─────────────────────────────────────────────────────────────────────────────────────────┘

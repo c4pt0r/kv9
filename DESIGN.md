@@ -19,9 +19,11 @@ skeleton implements. It is the source of truth for module boundaries. Diagrams: 
    cluster is N identical processes. No separate placement driver, no external etcd, no lock service.
 3. **Keyspaces.** The unit of namespacing and configuration, declared with a **tenant** and an **API type**
    (`txn` or `raw`).
-4. **Storage-compute disaggregation over object storage.** Object storage (S3/GCS/Azure) is the **durable backbone**
-   for bulk data; local NVMe is cache + WAL working set, not the only copy. This is what makes compute elastic and
-   rebalancing near-free (regions move by shipping *file references*, not bytes). Core, not optional — see §6.5.
+4. **Object storage is THE source of truth (storage-compute disaggregation).** All durable state lives in object
+   storage (S3/GCS/Azure); **compute holds no authoritative data** — local NVMe is only cache + a *transient,
+   raft-replicated WAL* staging the not-yet-flushed tail. Stateless compute is what makes nodes elastic (add/kill in
+   seconds, scale idle tenants to zero, instant failover) and rebalancing near-free (regions move by shipping *file
+   references*, not bytes). Core, not optional — see §6.5.
 5. **Horizontal throughput scaling** via **range-sharded regions** with **split/merge**, where **split is driven
    by consumed throughput, not just size** (DynamoDB 2022).
 6. **Familiar API.** The common TiKV surface: transactional and raw.
@@ -256,8 +258,9 @@ local-`KvEngine`-shaped abstraction would not fit the disaggregated reality and 
 `unimplemented!()` methods (a failure mode seen in engines that bolted disaggregation onto a local-engine trait).
 
 ### 6.3 Durability & verification (two-tier)
-- **Two-tier durability:** the **recent tail** is durable via raft-majority WAL; the **flushed bulk** is durable on
-  object storage (its own replication/9's). kv9 does not N×-replicate cold data across compute (§6.5).
+- **Durability = raft-acked ingress → object-storage source of truth.** A write is durable when raft-majority
+  accepted (local WAL); it then drains into object storage, the **single source of truth** (§6.5). The local tail is
+  *transient staging*, not a second authoritative copy; cold data is never N×-replicated across compute.
 - **Peer-bootstrap / rebalance snapshots ship a manifest (file references), not bytes** — the receiver attaches by
   reading the manifest and lazily pulling blocks from object storage. (`MemEngine` ships the range for tests.)
 - A background **scrubber** does continuous verification: manifest ↔ object existence, per-object checksums, and
@@ -313,9 +316,20 @@ Metadata regions use the same machinery, so metadata writes scale too. For **bla
 assignment may be **aligned to tenant/keyspace tiers** (a tenant's regions on their own stream[s]), trading some
 fsync amortization for containment — the WAL pool is itself a multi-tenancy control surface.
 
-### 6.5 Storage-compute disaggregation over object storage
-**Object storage (S3/GCS/Azure) is the durable backbone for bulk data; local NVMe is cache + WAL working set, not
-the only copy.** This is a core pillar (goal #4), and it reshapes durability, replication, and elasticity.
+### 6.5 Storage-compute disaggregation — object storage is the source of truth
+**Object storage (S3/GCS/Azure) is the single source of truth for all durable state. Compute holds no authoritative
+data** — only a cache and a *transient, raft-replicated write-ahead log* that continuously drains into the source of
+truth. This is a core pillar (goal #4) and the reason kv9 is cloud-native: stateless compute → seconds-scale
+elasticity, scale-to-zero, instant failover; independent storage/compute scaling; object storage's durability and
+~10× lower cost inherited for free; and backup/PITR/branch/clone become reference operations on the one truth.
+
+**The WAL is ingress, not a competing truth.** Object storage is ~tens-of-ms latency, so writes are not put into the
+source of truth synchronously. Instead a write is **acked at raft-majority acceptance** (fast, local WAL) and is
+**continuously flushed into object storage**; the local tail is the "acked-but-not-yet-landed, can't-be-lost" staging
+buffer, always draining toward the one source of truth. There is no data-loss window (raft majority protects the
+in-flight tail until it lands), and there is no second authoritative copy (the tail is transient). *(This is the
+Aurora/Neon "log in front of durable storage" shape; §14 can push the log itself into a shared service, but even in
+v1 object storage is already the sole source of truth for everything that has landed.)*
 
 **Two invariants everything follows from:**
 1. **Immutability boundary.** SSTs are **immutable, write-once objects** on object storage. The only mutable state —
@@ -347,10 +361,21 @@ should fit cache. **Any compute node holding a region's manifest can serve its r
 so read-replicas / safe-time follower reads (§8.3) are cheap to spin up, and a cold region's compute can scale toward
 zero (data is safe on object storage).
 
-**Elasticity — the payoff (feeds §10):** because SSTs are shared-addressable and immutable, **region movement is
-meta-only** — attach = fetch manifest + lazily pull blocks; **split/merge can be meta-only** — children reference
-subsets of the parent's immutable files until compaction rewrites. Adding compute → regions attach in seconds, no
-bulk migration. Placement optimizes **compute/cache/load, not data volume**.
+**Elasticity — scale-out is a metadata rearrange, not a data move (the payoff, feeds §10).** Because SSTs are
+shared-addressable and immutable and object storage is the single source of truth, moving a region onto a new node
+ships only **metadata**: a raft conf-change + routing update, the region's **manifest** (a tiny list of file-ids),
+and the small **recent log tail**. The new replica **references the same object-storage files** as the others and
+**lazily pulls blocks on demand** into its cache — there is **no node→node bulk copy**. Cost per moved region is
+`O(metadata + manifest + log-tail)`, not `O(region data)` — seconds, bandwidth-light (contrast shared-nothing, which
+streams GB per region via raft snapshot). Split/merge are likewise meta-only (children reference the parent's
+immutable files until compaction rewrites). Two decoupled axes: **compute** scales out by meta-only region attach;
+**storage capacity** is a non-event (object storage is elastic — no storage nodes to add).
+
+*The one honest caveat:* a meta-only-attached region is **available immediately** but its cache is **cold** — first
+reads miss to object storage (~tens of ms) until the working set warms. So placement is instant; peak performance
+ramps. Mitigate by adding the peer as a **learner first** (catch up manifest+tail off the quorum path, warm cache,
+then promote to voter) and by prefetching hot blocks. This cold-cache tail — not data transfer — is the real cost of
+fast scale-out.
 
 **Object storage engineering (a real latency/rate/cost/availability domain):**
 - **Prefix/hash key layout:** map file-id → object key spread across many prefixes so request load doesn't hit a
@@ -630,6 +655,9 @@ kv9/
 
 ## 13. Design principles distilled
 The choices above, as standalone principles:
+0. **Object storage is the single source of truth; compute is stateless.** All durable state lives in object storage;
+   compute holds only cache + a transient, raft-replicated WAL ingress. This is the property that makes kv9
+   cloud-native — seconds-scale elasticity, scale-to-zero, instant failover, independent storage/compute scaling.
 1. **No separate control plane.** Metadata is self-hosted, layered, and sharded — it scales like data and never
    becomes a single-node bottleneck.
 2. **Tenant-first everywhere.** Namespace, capacity, QoS, timestamp order, blast radius, and billing are all
