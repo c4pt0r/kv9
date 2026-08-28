@@ -474,6 +474,53 @@ impl RegistrationBackend for RuntimeBackend {
 /// as a whole does not.
 const RAW_DELETE_RANGE_CHUNK: usize = 1024;
 
+/// The context gate: keyspace, region and epoch, all decided from **one** `MetaTxn`.
+///
+/// The context arrives from the wire already deserialized and otherwise unexamined. Without
+/// this, a client could name a keyspace that was never created, or write raw bytes into a
+/// `txn` keyspace where Percolator expects its own lock/write structure, or act on a region
+/// whose epoch has since moved — none of which would error.
+///
+/// **Every lookup shares one transaction.** Reading the keyspace from one snapshot and the
+/// region from another lets a split commit in between, and the verdict then describes a
+/// state that never existed at any instant. That is why `ReadView` exists in
+/// `crates/engine`, and it binds harder here because the conclusion is an authorisation.
+///
+/// One context authorises exactly **one region**: a range or batch spanning regions is the
+/// client's to split, because a single epoch cannot speak for two regions.
+///
+/// A free function so the production endpoints and the tests call the *same* code — a gate
+/// verified through a parallel re-implementation is not verified.
+fn check_context<E: kv9_engine::Engine>(
+    store: &kv9_meta::store::MetaStore<E>,
+    keyspace_id: KeyspaceId,
+    epoch: &kv9_region::RegionEpoch,
+    span: KeySpan<'_>,
+) -> Result<()> {
+    let txn = store.begin()?;
+
+    let keyspace =
+        Tables::<E>::keyspace_in(&txn, keyspace_id)?.ok_or(Error::KeyspaceNotFound(keyspace_id))?;
+    if keyspace.api_type != ApiType::Raw {
+        return Err(Error::ApiTypeMismatch {
+            keyspace: keyspace_id,
+        });
+    }
+
+    let tables = Tables::new(store);
+    let region = tables
+        .region_for_key_in(&txn, keyspace_id, span.anchor())?
+        .ok_or(Error::RegionNotFound)?;
+
+    // Epoch before span: a stale epoch and a cross-region request are different failures
+    // and the client reacts differently (refresh routing vs. split the request).
+    if region.epoch_conf != epoch.conf_ver || region.epoch_ver != epoch.version {
+        return Err(Error::StaleEpoch { region: region.id });
+    }
+
+    span.assert_within(&region, &txn, &tables, keyspace_id)
+}
+
 /// Does a half-open range ending at `end` stay inside a region ending at `region_end`?
 ///
 /// Both "empty" values mean "to the end of the enclosing space", but of *different* spaces:
@@ -609,48 +656,17 @@ where
 /// propose it, and wait for *that exact* `(term, index)` to apply. Writing the local
 /// engine directly would be faster and would silently fork the cluster.
 impl RuntimeBackend {
-    /// Validate the request context before any key is encoded, from **one** view.
+    /// Validate the request context before any key is encoded.
     ///
-    /// The context arrives from the wire already deserialized and otherwise unexamined.
-    /// Without this, a client could name a keyspace that was never created, or write raw
-    /// bytes into a `txn` keyspace where Percolator expects its own lock/write structure,
-    /// or act on a region whose epoch has since moved — none of which would error.
-    ///
-    /// **Every lookup here shares a single `MetaTxn`.** Reading the keyspace from one
-    /// snapshot and the region from another would let a split commit in between, and the
-    /// verdict would then describe a state that never existed at any instant. That is the
-    /// same reason `ReadView` exists in `crates/engine`, and it applies with more force
-    /// here because the conclusion is an authorisation.
-    ///
-    /// One context authorises exactly **one region**: a range or batch spanning regions is
-    /// the client's to split, because a single epoch cannot speak for two regions.
+    /// Thin wiring; the decision lives in [`check_context`] so tests exercise the same
+    /// function production does rather than a re-implementation of it.
     fn validated_context(&self, ctx: &RequestContext, span: KeySpan<'_>) -> Result<()> {
-        let txn = self.node.meta_raft.store.begin()?;
-
-        let keyspace = Tables::<WalEngine>::keyspace_in(&txn, ctx.keyspace)?
-            .ok_or(Error::KeyspaceNotFound(ctx.keyspace))?;
-        if keyspace.api_type != ApiType::Raw {
-            return Err(Error::ApiTypeMismatch {
-                keyspace: ctx.keyspace,
-            });
-        }
-
-        let tables = Tables::new(&self.node.meta_raft.store);
-        let anchor = span.anchor();
-        let region = tables
-            .region_for_key_in(&txn, ctx.keyspace, anchor)?
-            .ok_or(Error::RegionNotFound)?;
-
-        // Epoch first: a stale epoch is a different failure from a cross-region request,
-        // and a client's reaction differs (refresh routing vs. split the request).
-        if region.epoch_conf != ctx.region_epoch.conf_ver
-            || region.epoch_ver != ctx.region_epoch.version
-        {
-            return Err(Error::StaleEpoch { region: region.id });
-        }
-
-        span.assert_within(&region, &txn, &tables, ctx.keyspace)?;
-        Ok(())
+        check_context(
+            &self.node.meta_raft.store,
+            ctx.keyspace,
+            &ctx.region_epoch,
+            span,
+        )
     }
 
     /// A read view over applied state, refused unless this node currently leads.
@@ -1615,6 +1631,120 @@ mod tests {
     use kv9_raft::transport::{InProcHub, RaftTransport};
     use kv9_raft::Command;
     use tonic::Code;
+
+    /// Builds a node with a raw keyspace whose single region has been replaced by two
+    /// adjacent ones, so cross-region cases are constructible. Regions go in through the
+    /// same encoded apply path production uses.
+    fn two_region_keyspace() -> (crate::Node<kv9_engine::MemEngine>, KeyspaceId) {
+        use kv9_common::{RegionId, TenantId};
+        use kv9_meta::schema::REGIONS_DESC;
+        use kv9_meta::codec::{memcmp_uint, ColumnValue, RowValue};
+        use kv9_meta::schema::ColumnId;
+
+        let node = crate::Node::new(NodeId(1), kv9_common::Config::default()).unwrap();
+        node.bootstrap().unwrap();
+        let keyspace = node
+            .create_keyspace("gated", TenantId::DEFAULT, ApiType::Raw)
+            .unwrap();
+
+        let initial = Tables::new(&node.meta_raft.store)
+            .region_for_key(keyspace, b"")
+            .unwrap()
+            .expect("CreateKeyspace creates the initial region")
+            .id;
+        let row = |id: u64, start: &[u8], end: &[u8]| {
+            let mut r = RowValue::new();
+            r.set(ColumnId(1), ColumnValue::Uint(id));
+            r.set(ColumnId(2), ColumnValue::Uint(keyspace.0 as u64));
+            r.set(ColumnId(3), ColumnValue::Bytes(start.to_vec()));
+            r.set(ColumnId(4), ColumnValue::Bytes(end.to_vec()));
+            r.set(ColumnId(5), ColumnValue::Uint(1));
+            r.set(ColumnId(6), ColumnValue::Uint(1));
+            r.set(ColumnId(7), ColumnValue::Uint(0));
+            r
+        };
+        let mut seed = node.meta_raft.store.begin().unwrap();
+        seed.delete(&REGIONS_DESC, &[memcmp_uint(initial.0)]).unwrap();
+        // [a, m) and [m, ) -- the second is the keyspace's trailing region.
+        seed.insert(&REGIONS_DESC, &[memcmp_uint(300)], row(300, b"a", b"m")).unwrap();
+        seed.insert(&REGIONS_DESC, &[memcmp_uint(301)], row(301, b"m", b"")).unwrap();
+        node.meta_raft
+            .propose_apply(Command::from_batch(&seed.into_batch()))
+            .unwrap();
+        let _ = RegionId(0);
+        (node, keyspace)
+    }
+
+    fn epoch(conf: u64, ver: u64) -> kv9_region::RegionEpoch {
+        kv9_region::RegionEpoch {
+            conf_ver: conf,
+            version: ver,
+        }
+    }
+
+    /// A point at the right epoch passes; the same point at a stale epoch is refused, and
+    /// the error names the region so a client knows what to refresh.
+    #[test]
+    fn a_stale_epoch_is_refused_and_names_the_region() {
+        let (node, keyspace) = two_region_keyspace();
+        let store = &node.meta_raft.store;
+
+        check_context(store, keyspace, &epoch(1, 1), KeySpan::Point(b"b"))
+            .expect("control: the current epoch is accepted");
+
+        for (conf, ver) in [(2, 1), (1, 2)] {
+            match check_context(store, keyspace, &epoch(conf, ver), KeySpan::Point(b"b")) {
+                Err(Error::StaleEpoch { region }) => assert_eq!(
+                    region.0, 300,
+                    "the error must name the region whose epoch moved"
+                ),
+                other => panic!("epoch ({conf},{ver}) should be stale, got ok={}", other.is_ok()),
+            }
+        }
+    }
+
+    /// A batch must prove *every* key lands in one region. Checking the first and hoping
+    /// would let the second key be written under an epoch that never authorised it.
+    #[test]
+    fn a_batch_spanning_two_regions_is_refused() {
+        let (node, keyspace) = two_region_keyspace();
+        let store = &node.meta_raft.store;
+
+        check_context(store, keyspace, &epoch(1, 1), KeySpan::Batch(vec![b"b", b"c"]))
+            .expect("control: keys in one region are accepted");
+
+        // b is in [a,m); z is in [m,) -- same epoch, different regions.
+        assert!(
+            matches!(
+                check_context(store, keyspace, &epoch(1, 1), KeySpan::Batch(vec![b"b", b"z"])),
+                Err(Error::RangeCrossesRegion)
+            ),
+            "a batch crossing regions must be refused, not silently split"
+        );
+    }
+
+    /// Range boundaries through the real gate, including the half-open edge and the
+    /// asymmetry of the two "unbounded" meanings.
+    #[test]
+    fn range_boundaries_are_enforced_by_the_gate() {
+        let (node, keyspace) = two_region_keyspace();
+        let store = &node.meta_raft.store;
+        let range = |start: &'static [u8], end: &'static [u8]| {
+            check_context(store, keyspace, &epoch(1, 1), KeySpan::Range { start, end })
+        };
+
+        range(b"a", b"c").expect("inside [a,m)");
+        range(b"a", b"m").expect("end == region end is inside: the range stops short of m");
+        assert!(
+            matches!(range(b"a", b"z"), Err(Error::RangeCrossesRegion)),
+            "an end past the region boundary crosses into the next region"
+        );
+        assert!(
+            matches!(range(b"a", b""), Err(Error::RangeCrossesRegion)),
+            "an unbounded end asks for the whole keyspace, which [a,m) cannot satisfy"
+        );
+        range(b"m", b"").expect("unbounded end IS satisfiable by the trailing region");
+    }
 
     /// The asymmetry between the two "empty means to the end" values is the whole rule,
     /// and it is easy to get backwards -- an empty `end` asks for the whole *keyspace*,
