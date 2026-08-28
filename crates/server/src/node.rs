@@ -14,7 +14,7 @@ use kv9_engine::MemEngine;
 use kv9_meta::schema::{KEYSPACES_DESC, TXN_GROUPS_DESC};
 use kv9_meta::tables::{Keyspace as KeyspaceRow, TxnGroup};
 use kv9_meta::{Bootstrap, Catalog, Membership, MetaStore, RoutingTable, Scheduler, TsoPool};
-use kv9_raft::{Command, MemStateMachine, RaftGroup, SingleNodeRaft};
+use kv9_raft::{drive_apply, Command, MemStateMachine, RaftGroup, SingleNodeRaft};
 use kv9_region::RegionRouter;
 use kv9_txn::{PercolatorExecutor, RawExecutor};
 
@@ -86,19 +86,21 @@ impl MetaRaft {
         }
     }
 
-    /// Propose a command, then drain-and-apply the committed entries into the state
-    /// machine (ROADMAP Phase 1: `propose → commit → apply`).
+    /// Propose a command, then drain-and-apply the actual committed entries into the
+    /// state machine (ROADMAP Phase 1: `encode → propose → commit → decode → apply`).
     ///
-    /// Phase-1 shortcut: the single-node raft commits immediately and `Command::encode`
-    /// is a stub, so we apply the already-typed command directly at its committed index
-    /// rather than round-tripping opaque bytes. `// TODO(phase1): back by openraft`.
+    /// The command applied here must be reconstructed from the committed log payload.
+    /// Applying the caller's typed value directly would create state that a follower or
+    /// restart could never replay from Raft.
     pub fn propose_apply(&self, cmd: Command) -> Result<()> {
-        // Reserve a committed index on the log (single-node commits immediately).
-        let index = self.raft.propose(Vec::new())?;
-        // Drop the placeholder ready entry the stub queued; apply the typed command.
-        let _ = self.raft.take_ready()?;
+        self.raft.propose(cmd.encode())?;
         let mut sm = self.sm.lock().expect("meta sm poisoned");
-        sm.apply_command(index, &cmd)?;
+        let applied = drive_apply(&self.raft, &mut *sm)?;
+        if applied.is_empty() {
+            return Err(Error::Raft(
+                "proposal produced no committed entry to apply".into(),
+            ));
+        }
         Ok(())
     }
 }
@@ -264,7 +266,9 @@ impl crate::api::AdminApi for Node {
 
     fn list_keyspaces(&self, _caller: &str) -> Result<Vec<kv9_common::Keyspace>> {
         // TODO(phase1): scan(keyspaces) via MetaStore and map rows to kv9_common::Keyspace.
-        unimplemented!("AdminApi::list_keyspaces — catalog scan (METADATA-CATALOG §4)")
+        Err(Error::NotImplemented(
+            "AdminApi::list_keyspaces — catalog scan (METADATA-CATALOG §4)",
+        ))
     }
 
     fn get_region(
@@ -274,7 +278,9 @@ impl crate::api::AdminApi for Node {
         _key: &[u8],
     ) -> Result<crate::api::RegionLocation> {
         // TODO(phase1): Tables::region_for_key join over MetaStore.
-        unimplemented!("AdminApi::get_region — region_for_key join (METADATA-CATALOG §4)")
+        Err(Error::NotImplemented(
+            "AdminApi::get_region — region_for_key join (METADATA-CATALOG §4)",
+        ))
     }
 
     fn split_region(
@@ -283,7 +289,9 @@ impl crate::api::AdminApi for Node {
         _region: kv9_common::RegionId,
         _split_key: Vec<u8>,
     ) -> Result<()> {
-        unimplemented!("AdminApi::split_region (DESIGN §10, ROADMAP Phase 4)")
+        Err(Error::NotImplemented(
+            "AdminApi::split_region (DESIGN §10, ROADMAP Phase 4)",
+        ))
     }
 
     fn cluster_info(&self, _caller: &str) -> Result<crate::api::ClusterInfo> {
@@ -299,6 +307,7 @@ impl crate::api::AdminApi for Node {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::api::AdminApi;
 
     /// Phase-1 milestone (ROADMAP): a node bootstraps election-first, then a
     /// `CreateKeyspace` flows through the catalog engine + meta-region raft.
@@ -321,5 +330,23 @@ mod tests {
         let tables = kv9_meta::tables::Tables::new(store);
         let got = tables.keyspace(ks).unwrap();
         assert!(got.is_some(), "created keyspace should be queryable");
+    }
+
+    #[test]
+    fn incomplete_admin_endpoints_return_typed_errors() {
+        let node = Node::new(NodeId(1), Config::default()).unwrap();
+
+        assert!(matches!(
+            AdminApi::list_keyspaces(&node, "test"),
+            Err(Error::NotImplemented(_))
+        ));
+        assert!(matches!(
+            AdminApi::get_region(&node, "test", KeyspaceId::SYSTEM, b"key"),
+            Err(Error::NotImplemented(_))
+        ));
+        assert!(matches!(
+            AdminApi::split_region(&node, "test", META_REGION_0, b"split".to_vec()),
+            Err(Error::NotImplemented(_))
+        ));
     }
 }
