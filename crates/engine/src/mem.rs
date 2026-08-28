@@ -81,6 +81,13 @@ impl State {
 /// been snapshotted.
 #[derive(Debug, Default)]
 pub struct MemEngine {
+    /// LOCK ORDER: this is the only lock in `crates/engine`, apart from
+    /// [`WalEngine`](crate::WalEngine)'s log mutex, and the single legal nesting is
+    /// `wal → state` (`persist.rs`: `write` holds the log across `index.write`). There is
+    /// no reverse path, and there must never be one.
+    ///
+    /// What keeps that true is [`MemEngine::read`] returning an *owned* snapshot rather
+    /// than a guard — see the note there before changing either.
     state: RwLock<State>,
 }
 
@@ -90,9 +97,33 @@ impl MemEngine {
     }
 
     /// A snapshot of the current state. O(1): the maps share their structure.
+    ///
+    /// **Must return an owned `State`, never a `RwLockReadGuard`.** Returning a guard
+    /// would hold this lock across the caller's nested calls, which is precisely the
+    /// shape that deadlocked the raft driver (`status()` held one lock while acquiring
+    /// another; see `driver.rs`'s lock-order note). Because the maps are persistent and
+    /// structurally shared, the clone is O(1) — the guard would buy nothing and cost the
+    /// immunity.
+    ///
+    /// This is a safety property wearing the costume of an avoidable clone, so it is
+    /// pinned mechanically below rather than left to a reviewer's memory.
     fn read(&self) -> State {
         self.state.read().expect("mem engine lock poisoned").clone()
     }
+}
+
+/// Compile-time guard for the invariant documented on [`MemEngine::read`].
+///
+/// A `RwLockReadGuard<'_, State>` borrows `&self` and so cannot satisfy `T: 'static`;
+/// an owned `State` can. If someone "optimises" `read` into returning a guard, this stops
+/// compiling — and the error lands next to the comment explaining why. Zero runtime cost,
+/// and it does not depend on anyone remembering to run a particular test.
+///
+/// Credit: suggested by Cindy while reviewing the driver lock-order fix.
+#[allow(dead_code)]
+fn _assert_read_returns_owned_snapshot(engine: &MemEngine) {
+    fn requires_owned<T: 'static>(_: T) {}
+    requires_owned(engine.read());
 }
 
 impl Engine for MemEngine {
