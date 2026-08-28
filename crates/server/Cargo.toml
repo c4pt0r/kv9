@@ -20,3 +20,8 @@ tonic-prost.workspace = true
 
 [build-dependencies]
 tonic-prost-build.workspace = true
+
+[dev-dependencies]
+# `testing` here and nowhere else: with resolver = "2" a dev-dependency feature is not
+# unified into the normal build, so FaultyEngine stays out of the shipped binary.
+kv9-engine = { workspace = true, features = ["testing"] }

@@ -9,3 +9,8 @@ description = "kv9 storage engine: Engine trait + MemEngine, MVCC column-family 
 kv9-common.workspace = true
 thiserror.workspace = true
 rpds.workspace = true
+
+[features]
+# Gates `mod testing` (FaultyEngine) out of production builds. Consumers that need
+# fault injection enable this from [dev-dependencies] only, never from [dependencies].
+testing = []
