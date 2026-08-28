@@ -14,7 +14,8 @@ use std::process::ExitCode;
 
 use kv9_common::{ApiType, ClusterId, Config, NodeId, SeedPeer};
 use kv9_server::{
-    admit_node_blocking, create_keyspace_blocking, promote_node_blocking, NodeRuntime, RuntimeAuth,
+    admit_node_blocking, create_keyspace_blocking, promote_node_blocking, NodeRuntime, RawClient,
+    RawClientOutcome, RuntimeAuth,
 };
 
 /// Parsed CLI arguments (DESIGN §11).
@@ -213,13 +214,189 @@ fn main() -> ExitCode {
     unreachable!("node runtime returns only on failure")
 }
 
+/// Decode a lowercase/uppercase hex string into bytes.
+///
+/// On failure the input is **not** echoed: a mistyped `--key-hex` is one thing, but the
+/// same flag shape is used for material that must not reach logs, and an error path is
+/// exactly where a stray value gets printed and persisted.
+fn decode_hex(flag: &str, value: &str) -> Result<Vec<u8>, String> {
+    if !value.len().is_multiple_of(2) {
+        return Err(format!("{flag} must have an even number of hex digits"));
+    }
+    if !value.bytes().all(|b| b.is_ascii_hexdigit()) {
+        return Err(format!("{flag} must be hexadecimal"));
+    }
+    (0..value.len())
+        .step_by(2)
+        .map(|i| u8::from_str_radix(&value[i..i + 2], 16).map_err(|_| format!("{flag} is not hex")))
+        .collect()
+}
+
+fn encode_hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+
+/// Report a not-leader refusal in a form a script can branch on.
+fn print_not_leader(leader: Option<u64>) -> ExitCode {
+    match leader {
+        Some(id) => eprintln!("not_leader=true leader_node_id={id}"),
+        // Absent hint means "re-discover", not "retry me" — the script must be able to
+        // tell those apart, so it is spelled out rather than omitted.
+        None => eprintln!("not_leader=true leader_node_id=unknown"),
+    }
+    ExitCode::FAILURE
+}
+
+fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> ExitCode {
+    let mut addr = None;
+    let mut keyspace = None;
+    let mut key = None;
+    let mut value = None;
+    let mut start = Vec::new();
+    let mut end = Vec::new();
+    let mut limit = 1024u32;
+
+    while let Some(flag) = args.next() {
+        let Some(raw) = args.next() else {
+            eprintln!("error: {flag} needs a value");
+            return ExitCode::FAILURE;
+        };
+        let decoded = |v: &str| decode_hex(&flag, v);
+        match flag.as_str() {
+            "--addr" => addr = Some(raw),
+            "--keyspace" => match raw.parse::<u32>() {
+                Ok(v) => keyspace = Some(v),
+                Err(_) => {
+                    eprintln!("error: --keyspace must be an integer");
+                    return ExitCode::FAILURE;
+                }
+            },
+            "--limit" => match raw.parse::<u32>() {
+                Ok(v) => limit = v,
+                Err(_) => {
+                    eprintln!("error: --limit must be an integer");
+                    return ExitCode::FAILURE;
+                }
+            },
+            "--key-hex" | "--value-hex" | "--start-hex" | "--end-hex" => {
+                let bytes = match decoded(&raw) {
+                    Ok(bytes) => bytes,
+                    Err(e) => {
+                        eprintln!("error: {e}");
+                        return ExitCode::FAILURE;
+                    }
+                };
+                match flag.as_str() {
+                    "--key-hex" => key = Some(bytes),
+                    "--value-hex" => value = Some(bytes),
+                    "--start-hex" => start = bytes,
+                    _ => end = bytes,
+                }
+            }
+            _ => {
+                eprintln!("error: unknown client flag {flag}");
+                return ExitCode::FAILURE;
+            }
+        }
+    }
+
+    let (Some(addr), Some(keyspace)) = (addr, keyspace) else {
+        eprintln!("error: --addr and --keyspace are required");
+        return ExitCode::FAILURE;
+    };
+    let token = std::env::var("KV9_CLIENT_TOKEN").unwrap_or_default();
+    if token.is_empty() {
+        eprintln!("error: KV9_CLIENT_TOKEN must be non-empty");
+        return ExitCode::FAILURE;
+    }
+    let client = match RawClient::connect(&addr, &token, keyspace) {
+        Ok(client) => client,
+        Err(e) => {
+            eprintln!("client request failed: {e}");
+            return ExitCode::FAILURE;
+        }
+    };
+
+    macro_rules! finish {
+        ($call:expr, $on_ok:expr) => {
+            match $call {
+                Ok(RawClientOutcome::Ok(value)) => {
+                    #[allow(clippy::redundant_closure_call)]
+                    ($on_ok)(value);
+                    ExitCode::SUCCESS
+                }
+                Ok(RawClientOutcome::NotLeader { leader }) => print_not_leader(leader),
+                Err(e) => {
+                    eprintln!("client request failed: {e}");
+                    ExitCode::FAILURE
+                }
+            }
+        };
+    }
+
+    match command {
+        "raw-put" => {
+            let (Some(key), Some(value)) = (key, value) else {
+                eprintln!("error: raw-put requires --key-hex and --value-hex");
+                return ExitCode::FAILURE;
+            };
+            finish!(client.put(key, value), |()| println!("ok=true"))
+        }
+        "raw-get" => {
+            let Some(key) = key else {
+                eprintln!("error: raw-get requires --key-hex");
+                return ExitCode::FAILURE;
+            };
+            finish!(client.get(key), |found: Option<Vec<u8>>| match found {
+                // A miss is a successful answer, not a failure: the script must be able
+                // to distinguish it from a misdirected request.
+                None => println!("found=false"),
+                Some(bytes) => println!("value_hex={}", encode_hex(&bytes)),
+            })
+        }
+        "raw-delete" => {
+            let Some(key) = key else {
+                eprintln!("error: raw-delete requires --key-hex");
+                return ExitCode::FAILURE;
+            };
+            finish!(client.delete(key), |()| println!("ok=true"))
+        }
+        "raw-scan" => {
+            finish!(client.scan(start, end, limit), |rows: Vec<(
+                Vec<u8>,
+                Vec<u8>
+            )>| {
+                for (key, value) in &rows {
+                    println!(
+                        "key_hex={} value_hex={}",
+                        encode_hex(key),
+                        encode_hex(value)
+                    );
+                }
+                println!("count={}", rows.len());
+            })
+        }
+        "raw-delete-range" => {
+            finish!(client.delete_range(start, end), |()| println!("ok=true"))
+        }
+        _ => unreachable!("dispatch checked the command"),
+    }
+}
+
 fn run_client(mut args: impl Iterator<Item = String>) -> ExitCode {
-    match args.next().as_deref() {
-        Some("create-keyspace") => run_create_keyspace(args),
-        Some("admit-node") => run_admit_node(args),
-        Some("promote-node") => run_promote_node(args),
+    let command = args.next().unwrap_or_default();
+    match command.as_str() {
+        "raw-put" | "raw-get" | "raw-delete" | "raw-scan" | "raw-delete-range" => {
+            run_raw_client(&command, args)
+        }
+        "create-keyspace" => run_create_keyspace(args),
+        "admit-node" => run_admit_node(args),
+        "promote-node" => run_promote_node(args),
         _ => {
-            eprintln!("error: client command must be create-keyspace, admit-node, or promote-node");
+            eprintln!(
+                "error: client command must be one of create-keyspace, raw-put, raw-get, \
+                 raw-delete, raw-scan, raw-delete-range, admit-node, promote-node"
+            );
             ExitCode::FAILURE
         }
     }
