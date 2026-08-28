@@ -41,6 +41,11 @@ pub trait Authenticator: Send + Sync + 'static {
 }
 
 /// Bearer-token authenticator for the first deployment phase.
+///
+/// Threat boundary: plaintext tokens reject unauthorized processes but do not
+/// resist sniffing or a man-in-the-middle. TLS is therefore a hard gate before
+/// cross-host deployment. This is also separate from the voter fingerprint,
+/// which detects configuration accidents rather than authenticating a caller.
 #[derive(Clone)]
 pub struct TokenAuthenticator {
     principals: Arc<HashMap<String, Arc<str>>>,
@@ -119,6 +124,9 @@ impl AuthInterceptor {
 impl Interceptor for AuthInterceptor {
     fn call(&mut self, mut request: Request<()>) -> Result<Request<()>, Status> {
         let auth = self.authenticator.authenticate(request.metadata())?;
+        if let Some(node_id) = auth.node_id {
+            request.extensions_mut().insert(node_id);
+        }
         request.extensions_mut().insert(auth);
         Ok(request)
     }
@@ -179,6 +187,43 @@ impl Kv9Grpc {
             AuthInterceptor::new(authenticator),
         )
     }
+}
+
+/// Small blocking client used by the single `kv9` binary's administrative CLI
+/// and the external-process acceptance gate.
+pub fn create_keyspace_blocking(
+    address: &str,
+    token: &str,
+    name: String,
+    tenant_id: u64,
+    api_type: ApiType,
+) -> Result<proto::CreateKeyspaceResponse, Error> {
+    let runtime = tokio::runtime::Runtime::new()
+        .map_err(|error| Error::Config(format!("create client runtime: {error}")))?;
+    runtime.block_on(async move {
+        let mut client = proto::kv9_client::Kv9Client::connect(format!("http://{address}"))
+            .await
+            .map_err(|error| Error::Raft(format!("connect public gRPC {address}: {error}")))?;
+        let mut request = Request::new(proto::CreateKeyspaceRequest {
+            name,
+            tenant_id,
+            api_type: match api_type {
+                ApiType::Txn => proto::ApiType::Txn as i32,
+                ApiType::Raw => proto::ApiType::Raw as i32,
+            },
+        });
+        let authorization = format!("Bearer {token}")
+            .parse()
+            .map_err(|_| Error::Config("client token is not valid metadata".into()))?;
+        request
+            .metadata_mut()
+            .insert("authorization", authorization);
+        client
+            .create_keyspace(request)
+            .await
+            .map(Response::into_inner)
+            .map_err(|status| Error::Raft(format!("CreateKeyspace RPC: {status}")))
+    })
 }
 
 fn auth_context<T>(request: &Request<T>) -> Result<AuthContext, Status> {
@@ -599,7 +644,9 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             })
             .await?;
         Ok(Response::new(proto::CreateKeyspaceResponse {
-            keyspace_id: id.0,
+            keyspace_id: id.keyspace.0,
+            proposed_term: id.proposed.map(|position| position.term),
+            proposed_index: id.proposed.map(|position| position.index),
         }))
     }
 
@@ -821,7 +868,7 @@ mod tests {
             _: TenantId,
             _: ApiType,
             _: TxnGroupId,
-        ) -> Result<KeyspaceId> {
+        ) -> Result<crate::api::CreateKeyspaceResult> {
             Err(Error::NotImplemented("create_keyspace"))
         }
         fn list_keyspaces(&self, _: &str) -> Result<Vec<Keyspace>> {

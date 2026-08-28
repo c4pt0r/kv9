@@ -38,6 +38,9 @@ pub struct NodeStatus {
     /// are consumed by raft but never reach the state machine — see
     /// `raft_committed`'s warning before comparing the two).
     pub applied_index: u64,
+    /// Term paired with `applied_index`; together they identify the last real
+    /// state-machine command across leader failover.
+    pub applied_term: u64,
     /// A fatal apply-path failure (undecodable committed entry / engine apply
     /// error). Once set, the pump has stopped: continuing past a hole would
     /// silently diverge this replica from the group. The server surfaces this
@@ -115,8 +118,8 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         let mut sm = self.sm.lock().expect("sm poisoned");
         let mut applied = self.applied.lock().expect("applied poisoned");
         for entry in entries {
-            let outcome = Command::decode(&entry.data)
-                .and_then(|cmd| sm.apply_command(entry.index, &cmd));
+            let outcome =
+                Command::decode(&entry.data).and_then(|cmd| sm.apply_command(entry.index, &cmd));
             if let Err(e) = outcome {
                 let msg = format!(
                     "fatal at committed entry (term {}, index {}): {e}",
@@ -184,6 +187,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
 
     /// The queryable status surface.
     pub fn status(&self) -> NodeStatus {
+        let applied = self.applied.lock().expect("applied poisoned");
         NodeStatus {
             node_id: self.peer.node_id(),
             leader_id: self.peer.leader_hint(),
@@ -191,6 +195,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             term: self.peer.term(),
             raft_committed: self.peer.raft_committed().0,
             applied_index: self.sm.lock().expect("sm poisoned").applied_index().0,
+            applied_term: applied.last().map_or(0, |(_, term)| *term),
             fatal: self.fatal.lock().expect("fatal poisoned").clone(),
             step_errors: self.peer.step_errors(),
         }
@@ -255,7 +260,10 @@ mod tests {
     fn undecodable_committed_entry_poisons_the_driver() {
         let driver = single_node_driver();
         // Propose raw garbage bytes directly (below the Command layer).
-        let at = driver.peer().propose_traced(vec![0xFF, 0xEE, 0xDD]).unwrap();
+        let at = driver
+            .peer()
+            .propose_traced(vec![0xFF, 0xEE, 0xDD])
+            .unwrap();
         let mut poisoned = false;
         for _ in 0..50 {
             if driver.tick_and_step().is_err() {

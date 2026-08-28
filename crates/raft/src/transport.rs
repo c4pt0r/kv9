@@ -1,10 +1,9 @@
-//! Raft message transport (Phase 1-final: real multi-process meta election).
+//! Legacy framed-TCP transport retained as a codec/compatibility harness.
 //!
 //! Design boundaries:
-//! - **No tonic/gRPC**: prost-build requires protoc — the same constraint that
-//!   rejected raft-rs's `prost-codec` (docs/ROADMAP.md §Dependency decisions).
-//!   raft's `Message` already carries pure-Rust protobuf serialization under
-//!   `protobuf-codec`, so the wire needs nothing but framed TCP.
+//! Production node processes use the gRPC streaming transport in [`crate::grpc`].
+//! This module still exercises framing corruption and the transport abstraction
+//! independently; it is not the server runtime's listener.
 //! - Delivery is **best-effort**: raft tolerates loss, duplication, and
 //!   reordering. A send failure drops the message (and the connection); raft's
 //!   own retransmission recovers.

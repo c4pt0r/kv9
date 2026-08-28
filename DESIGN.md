@@ -677,8 +677,9 @@ Global throughput scaling (goal #4) and capacity isolation (goal #1) meet here.
 
 ## 11. API surface (v0)
 
-Transport is gRPC, but the skeleton defines the surface as Rust traits so it compiles without a protoc toolchain; a
-thin wire adapter is added next.
+Transport is gRPC. The Rust traits remain the synchronous core contract; tonic adapters isolate those calls on
+blocking workers, and a single server listener registers the public and node-internal services. Authentication
+interceptors establish trusted request identities outside protobuf bodies.
 
 - **Txn:** `KvGet, KvBatchGet, KvScan, KvPrewrite, KvCommit, KvPessimisticLock, KvPessimisticRollback,
   KvResolveLock, KvCleanup, KvCheckTxnStatus`.

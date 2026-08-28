@@ -6,6 +6,8 @@ bin="$repo_dir/target/debug/kv9"
 artifact_dir="${KV9_ACCEPTANCE_DIR:-$(mktemp -d /tmp/kv9-phase1-final.XXXXXX)}"
 root_artifact_dir="$artifact_dir"
 base_port="${KV9_BASE_PORT:-$((33000 + ($$ % 1000)))}"
+cluster_token="phase1-cluster-token"
+client_token="phase1-client-token"
 declare -A pids=()
 
 status_value() {
@@ -19,7 +21,7 @@ start_node() {
   local node="$1"
   local port=$((base_port + node))
   mkdir -p "$artifact_dir/n${node}"
-  "$bin" \
+  KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" "$bin" \
     --node-id "$node" \
     --addr "127.0.0.1:${port}" \
     --data-dir "$artifact_dir/n${node}" \
@@ -127,11 +129,11 @@ unset 'pids[1]'
 artifact_dir="$root_artifact_dir/fingerprint-negative"
 start_node 1
 mkdir -p "$artifact_dir/n9"
-"$bin" \
+KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" "$bin" \
   --node-id 9 \
   --addr "127.0.0.1:$((base_port + 3))" \
   --data-dir "$artifact_dir/n9" \
-  --join "1@127.0.0.1:$((base_port + 1)),2@127.0.0.1:$((base_port + 2)),9@127.0.0.1:$((base_port + 3))" \
+    --join "1@127.0.0.1:$((base_port + 1)),2@127.0.0.1:$((base_port + 2)),9@127.0.0.1:$((base_port + 3))" \
   >"$artifact_dir/n9.log" 2>&1 &
 pids[9]=$!
 wait_until "overlapping-declaration status surfaces" 5 test -f "$artifact_dir/n9/status"
@@ -174,8 +176,33 @@ for node in 1 2 3; do
   if test "$(status_value "$node" role)" = leader; then new_leader="$node"; fi
 done
 test "$new_leader" -ne 0
+
+# A no-op election barrier proves consensus liveness but never reaches the state
+# machine. Submit a real public gRPC mutation after failover and correlate its
+# exact (term,index) on every surviving apply loop.
+create_output="$(KV9_CLIENT_TOKEN="$client_token" "$bin" client create-keyspace \
+  --addr "127.0.0.1:$((base_port + new_leader))" \
+  --name "post-failover" \
+  --api-type raw)"
+proposal_term="$(awk -F= '$1 == "proposed_term" { print $2 }' <<<"$create_output")"
+proposal_index="$(awk -F= '$1 == "proposed_index" { print $2 }' <<<"$create_output")"
+test "$proposal_term" -gt 0
+test "$proposal_index" -gt 0
+
+post_failover_applied() {
+  local node
+  for node in 1 2 3; do
+    test "$node" -eq "$old_leader" && continue
+    test "$(status_value "$node" applied_index)" -eq "$proposal_index" || return 1
+    test "$(status_value "$node" applied_term)" -eq "$proposal_term" || return 1
+  done
+}
+wait_until "post-failover gRPC mutation applied at exact term/index" 15 post_failover_applied
+
 start_node "$old_leader"
 wait_until "killed member restart and raft/catalog catch-up" 15 all_caught_up
+test "$(status_value "$old_leader" applied_index)" -eq "$proposal_index"
+test "$(status_value "$old_leader" applied_term)" -eq "$proposal_term"
 
 for node in 1 2 3; do
   test -s "$artifact_dir/n${node}/raft/raft.log"
