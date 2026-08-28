@@ -6,20 +6,22 @@ name: CI
 #
 # Deliberate split, and the reason matters more than the shape:
 #
-#   pr-gate      fast, deterministic, BLOCKING. Must be green on every PR.
+#   pr-gate      fast, deterministic. Runs on PRs and master. Blocking.
 #   fmt          informational -- the tree is not formatted yet (see that job).
-#   acceptance   multi-process E2E, informational.
+#   acceptance   multi-process E2E. master pushes only, real pass/fail. Not on PRs.
 #
-# The E2E scripts are deliberately kept out of the blocking gate. During Phase 1 two
-# separate diagnostic rounds went red because of bugs in the harness rather than the
-# product (a killed node's stale status file being read as live; a `local` declaration
-# referencing the variable it was declaring). A gate that reddens for reasons unrelated
-# to the change trains everyone to skim past red -- and this project's entire review
-# discipline rests on treating a red as something you must explain. One frequently-red
-# gate would cost more than it catches.
+# The E2E scripts do not gate pull requests. During Phase 1 two separate diagnostic
+# rounds went red because of bugs in the harness rather than the product (a killed
+# node's stale status file read as live; a `local` declaration referencing the variable
+# it was declaring). A gate that reddens for reasons unrelated to the change trains
+# everyone to skim past red -- and this project's entire review discipline rests on
+# treating a red as something you must explain.
 #
-# Promote a job to blocking once it has shown itself stable across a stretch of runs.
-# That evidence does not exist yet, so nothing is promoted on the strength of a guess.
+# But they are not marked informational either: a red nobody is shown is barely
+# different from no check at all. Running them on master with a real failure status
+# keeps the signal visible without handing an unproven harness the power to block
+# someone's PR. Add the PR trigger once a stretch of real runs shows it stable --
+# on evidence, not on the strength of this comment.
 
 on:
   push:
@@ -75,6 +77,20 @@ jobs:
       - name: Format check
         run: cargo fmt --all --check
 
+  # Runs on master pushes only, and NOT on pull requests -- deliberately, and this is a
+  # different choice from the one this job started with.
+  #
+  # It was `continue-on-error: true` on every PR. Cindy asked the question that broke that:
+  # who actually sees a red informational job? If the answer is "someone has to click into
+  # the Actions tab", the job is close to not existing, and the whole reason for putting
+  # E2E in CI was to stop depending on someone remembering. That would only move the
+  # dependency from "remembering to run it" to "remembering to look at it".
+  #
+  # So: no continue-on-error, and no PR trigger. A failure here is a real red on master --
+  # visible on the commit and in the branch's status -- while no one's PR is blocked by a
+  # harness that has not yet earned that authority. If it proves stable, add the PR trigger
+  # then, on evidence rather than on hope.
+  #
   # One runner per script, so a port or leftover-process problem in one cannot be
   # misread as a failure of another. KV9_BASE_PORT is set explicitly rather than left
   # to the scripts' `$$ % 1000` default: a deterministic port makes a red reproducible,
@@ -84,10 +100,10 @@ jobs:
   # (32768-60999), where an unrelated process can take a port between the bind check
   # and the bind itself.
   acceptance:
-    name: E2E ${{ matrix.script }} (informational)
+    name: E2E ${{ matrix.script }}
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -105,10 +121,26 @@ jobs:
       - name: Build binary
         run: cargo build --workspace
 
+      # Two steps, not one. Checking only the exit code would trust a property CI cannot
+      # see: these scripts happen to `set -euo pipefail` and print PASS on the last line,
+      # but that is discipline inside the script, and a later `|| true` or an added pipe
+      # would silently void it. Exit codes have already deceived us twice on this project
+      # -- a harness that died under `| tail` still exited 0, and an early version of this
+      # E2E exited 0 after running a single round.
+      #
+      # `tee` rather than `>` so the log still streams to the run output. Note `tee` would
+      # otherwise donate its own exit status to the step; `set -o pipefail` keeps the
+      # script's. The assertion is a separate step so "the script failed" and "the script
+      # succeeded without reaching PASS" cannot be confused for each other.
       - name: Run ${{ matrix.script }}
         env:
           KV9_BASE_PORT: ${{ matrix.base_port }}
-        run: ./scripts/${{ matrix.script }}
+        run: |
+          set -o pipefail
+          ./scripts/${{ matrix.script }} 2>&1 | tee /tmp/e2e-${{ matrix.script }}.out
+
+      - name: Assert the script reached its PASS line
+        run: grep -q '^PASS' /tmp/e2e-${{ matrix.script }}.out
 
       # The scripts mktemp under /tmp/kv9-*; on failure the node status files and logs
       # in there are the only way to tell a product failure from a harness failure.
