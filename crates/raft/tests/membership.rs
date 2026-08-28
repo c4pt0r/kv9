@@ -307,6 +307,11 @@ fn stale_conf_entry_replay_is_skipped_not_reapplied() {
 /// the conf entry's newer term (a position that never existed). Sensitivity:
 /// with conf entries pushed into the command ring (the pre-fix behavior) the
 /// `applied_term` assert below reads the conf term and fails.
+///
+/// SOLE DEFENSE: until a dynamic-membership external E2E exists, no external
+/// gate performs conf changes, so nothing outside this test can observe this
+/// defect class — anyone touching the ring code answers to THIS test alone
+/// (hold-release audit, 2026-08-28).
 #[test]
 fn status_pair_stays_command_sourced_across_conf_changes() {
     let region = RegionId(2);

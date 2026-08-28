@@ -121,9 +121,10 @@ pub fn cluster_id<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Option<ClusterId>> 
 
 /// Leader-committed admission: approve `node_id@addr` to join THIS cluster as
 /// `role`. Refuses if the cluster identity is missing (admission is a gate-3
-/// artifact — it cannot precede gate 2) or if ANY admission row already exists
-/// for the node (re-admission requires an explicit revoke first: silently
-/// replacing a consumed record would let one approval be used twice).
+/// artifact — it cannot precede gate 2) or if a PENDING or CONSUMED record
+/// exists for the node; only a REVOKED record may be replaced
+/// ([`revoke_admission`] is the operator's retry/decommission path — silently
+/// replacing a live record would let one approval be used twice).
 pub fn admit_node<E: Engine>(
     txn: &mut MetaTxn<'_, E>,
     node_id: NodeId,
@@ -131,23 +132,43 @@ pub fn admit_node<E: Engine>(
     role: AdmittedRole,
     expires_unix: u64,
 ) -> Result<()> {
+    // Canonical socket address only: the admission binds an exact endpoint,
+    // and a free-form string would make the consume-time comparison
+    // format-sensitive ("127.0.0.1:9" vs "127.000.000.001:9").
+    let canonical: std::net::SocketAddr = addr.parse().map_err(|_| {
+        Error::Config(format!(
+            "admission address must be a canonical socket address, got {addr:?}"
+        ))
+    })?;
+    let addr = canonical.to_string();
     let Some(cid) = cluster_id(txn)? else {
         return Err(Error::Config(
             "cannot admit a node before the cluster identity is initialized".into(),
         ));
     };
-    if txn
-        .get(&NODE_ADMISSIONS_DESC, &[memcmp_uint(node_id.0)])?
-        .is_some()
-    {
-        return Err(Error::Config(format!(
-            "an admission record for node {} already exists (revoke it first)",
-            node_id.0
-        )));
+    if let Some(existing) = admission(txn, node_id)? {
+        // Only a REVOKED record may be replaced: silently replacing a pending
+        // or consumed one would let a single approval be used twice. Revoked
+        // is the operator's retry path ([`revoke_admission`]).
+        if existing.state != AdmissionState::Revoked {
+            return Err(Error::Config(format!(
+                "an admission record for node {} already exists in state {:?} \
+                 (revoke it first)",
+                node_id.0, existing.state
+            )));
+        }
+        let changes = vec![
+            (NA_CLUSTER_ID, ColumnValue::Bytes(cid.as_bytes().to_vec())),
+            (NA_ADDR, ColumnValue::Text(addr.clone())),
+            (NA_ROLE, ColumnValue::Uint(role as u64)),
+            (NA_STATE, ColumnValue::Uint(AdmissionState::Pending as u64)),
+            (NA_EXPIRES, ColumnValue::Uint(expires_unix)),
+        ];
+        return txn.update(&NODE_ADMISSIONS_DESC, &[memcmp_uint(node_id.0)], changes);
     }
     let mut row = RowValue::new();
     row.set(NA_CLUSTER_ID, ColumnValue::Bytes(cid.as_bytes().to_vec()));
-    row.set(NA_ADDR, ColumnValue::Text(addr.to_string()));
+    row.set(NA_ADDR, ColumnValue::Text(addr));
     row.set(NA_ROLE, ColumnValue::Uint(role as u64));
     row.set(NA_STATE, ColumnValue::Uint(AdmissionState::Pending as u64));
     row.set(NA_EXPIRES, ColumnValue::Uint(expires_unix));
@@ -163,13 +184,41 @@ pub fn consume_admission<E: Engine>(
     txn: &mut MetaTxn<'_, E>,
     node_id: NodeId,
     expected_cluster: ClusterId,
+    expected_addr: &str,
     now_unix: u64,
 ) -> Result<Admission> {
+    // Three-way identity equality: LOCAL singleton == caller expectation ==
+    // the row's own binding. Comparing only caller-vs-row would let an
+    // admission row replayed into a DIFFERENT cluster's catalog be consumed
+    // by anyone still presenting the original cluster id (Tess's review);
+    // the local singleton is the ground truth this catalog actually belongs to.
+    let local = cluster_id(txn)?.ok_or_else(|| {
+        Error::Config("cannot consume an admission before cluster identity exists".into())
+    })?;
+    if local != expected_cluster {
+        return Err(Error::Config(format!(
+            "expected cluster does not match this catalog's identity (node {})",
+            node_id.0
+        )));
+    }
     let adm = admission(txn, node_id)?
         .ok_or_else(|| Error::Config(format!("no admission record for node {}", node_id.0)))?;
     if adm.cluster_id != expected_cluster {
         return Err(Error::Config(format!(
             "admission for node {} binds a different cluster",
+            node_id.0
+        )));
+    }
+    // The admission binds (cluster, node, ADDRESS): consuming from an address
+    // other than the admitted one is refused — knowing a public cluster id
+    // and squatting an admitted node id must not be enough. (The registration
+    // handler's authenticated NodeId is a separate, orthogonal gate.)
+    let expected_addr: std::net::SocketAddr = expected_addr.parse().map_err(|_| {
+        Error::Config("consume address must be a canonical socket address".into())
+    })?;
+    if adm.addr != expected_addr.to_string() {
+        return Err(Error::Config(format!(
+            "admission for node {} binds a different address",
             node_id.0
         )));
     }
@@ -194,6 +243,25 @@ pub fn consume_admission<E: Engine>(
         state: AdmissionState::Consumed,
         ..adm
     })
+}
+
+/// Revoke an admission (leader-committed): the operator's recovery path for an
+/// expired, mistaken, or failed admission. Terminal for the record's current
+/// life — but a revoked record MAY be replaced by a fresh [`admit_node`],
+/// which is exactly what makes retry possible without ever reusing an
+/// approval. Consumed records can also be revoked (e.g. decommission), which
+/// permits later re-admission of the same node id.
+pub fn revoke_admission<E: Engine>(txn: &mut MetaTxn<'_, E>, node_id: NodeId) -> Result<()> {
+    let adm = admission(txn, node_id)?
+        .ok_or_else(|| Error::Config(format!("no admission record for node {}", node_id.0)))?;
+    if adm.state == AdmissionState::Revoked {
+        return Err(Error::Config(format!(
+            "admission for node {} is already revoked",
+            node_id.0
+        )));
+    }
+    let changes = vec![(NA_STATE, ColumnValue::Uint(AdmissionState::Revoked as u64))];
+    txn.update(&NODE_ADMISSIONS_DESC, &[memcmp_uint(node_id.0)], changes)
 }
 
 /// Read one admission record.
