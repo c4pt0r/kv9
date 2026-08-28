@@ -149,13 +149,9 @@ mod tests {
     use kv9_common::{NodeId, RegionId};
 
     /// Phase-1 milestone (ROADMAP): the first concrete task — a single-node raft with a
-    /// `MemEngine` state machine and a `propose(put) → apply → get` round-trip.
-    ///
-    /// Ignored until `Command::encode`/`decode` (the opaque-entry codec) is implemented;
-    /// the typed `apply_command` path this drives is already exercised by
-    /// [`propose_put_apply_get_roundtrip_typed`].
+    /// `MemEngine` state machine and a `propose(put) → apply → get` round-trip, through
+    /// the real encode → propose → take_ready → decode → apply path.
     #[test]
-    #[ignore = "phase1: pending Command entry codec (encode/decode)"]
     fn propose_put_apply_get_roundtrip() {
         let raft = SingleNodeRaft::new(NodeId(1), RegionId(1));
         let mut sm = MemStateMachine::new();
