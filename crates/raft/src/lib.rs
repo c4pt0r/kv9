@@ -12,6 +12,7 @@
 
 pub mod command;
 pub mod driver;
+pub mod grpc;
 pub mod rawnode;
 pub mod storage;
 pub mod transport;
