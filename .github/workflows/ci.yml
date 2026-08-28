@@ -74,6 +74,18 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
+      # protoc is NOT preinstalled on ubuntu-latest, and crates/raft/build.rs plus
+      # crates/server/build.rs invoke prost/tonic codegen, which shells out to it. The
+      # first real run of this workflow failed here on every job -- pr-gate and all three
+      # E2E legs -- with "Could not find `protoc`". It passed locally only because this
+      # developer machine happens to have /usr/bin/protoc, which is exactly the class of
+      # assumption a local run cannot test.
+      #
+      # apt rather than a setup-protoc action: one less third-party action in the trust
+      # path, and the Debian package is sufficient for prost-build.
+      - name: Install protoc
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+
       - name: Build
         run: cargo build --workspace --all-targets
 
@@ -145,6 +157,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
+
+      # protoc is NOT preinstalled on ubuntu-latest, and crates/raft/build.rs plus
+      # crates/server/build.rs invoke prost/tonic codegen, which shells out to it. The
+      # first real run of this workflow failed here on every job -- pr-gate and all three
+      # E2E legs -- with "Could not find `protoc`". It passed locally only because this
+      # developer machine happens to have /usr/bin/protoc, which is exactly the class of
+      # assumption a local run cannot test.
+      #
+      # apt rather than a setup-protoc action: one less third-party action in the trust
+      # path, and the Debian package is sufficient for prost-build.
+      - name: Install protoc
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
 
       - name: Build binary
         run: cargo build --workspace
