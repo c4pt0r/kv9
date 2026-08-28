@@ -102,6 +102,14 @@ all_serving() {
     seen="$(status_value "$node" leader_id)"
     test "$seen" -gt 0 || return 1
     if (( leader_id == 0 )); then leader_id="$seen"; fi
+    # This agreement check is also the anti-ghost lock, and that second job is not in
+    # its name. A killed node leaves its status file on disk holding the values it had
+    # when it died -- Serving, applied_index>0, role=leader, leader_id=itself. Nothing
+    # here calls kill -0, so that ghost is read exactly like a live node. What excludes
+    # it is this line: the ghost necessarily names the *old* leader, and survivors_elected
+    # already required the new leader to differ, so the ghost disagrees and we retry.
+    # Relax this to "each node reports some leader" and the restart assertion below
+    # silently becomes satisfiable by a stale file from the previous incarnation.
     test "$seen" -eq "$leader_id" || return 1
     if test "$(status_value "$node" role)" = leader; then leaders=$((leaders + 1)); fi
     case "$(status_value "$node" role)" in leader|follower) ;; *) return 1 ;; esac
