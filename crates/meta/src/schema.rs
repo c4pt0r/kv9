@@ -61,14 +61,25 @@ pub struct IndexDesc {
     pub unique: bool,
 }
 
+/// A foreign-key declaration: `column` must reference an existing pk in `references`
+/// (METADATA-CATALOG §2 — "Constraints (`UNIQUE`, FK) make illegal states
+/// unrepresentable"). Enforced on insert/update against the txn's merged view.
+#[derive(Debug, Clone, Copy)]
+pub struct FkDesc {
+    pub column: ColumnId,
+    pub references: TableId,
+}
+
 /// A table descriptor (METADATA-CATALOG §2). Columns include the primary-key columns
-/// (`pk = true`); `indexes` are the auto-maintained secondary indexes (§4).
+/// (`pk = true`); `indexes` are the auto-maintained secondary indexes (§4); `fks` are
+/// the declared foreign keys.
 #[derive(Debug, Clone, Copy)]
 pub struct TableDesc {
     pub id: TableId,
     pub name: &'static str,
     pub columns: &'static [ColumnDesc],
     pub indexes: &'static [IndexDesc],
+    pub fks: &'static [FkDesc],
 }
 
 impl TableDesc {
@@ -104,6 +115,7 @@ pub const PLACEMENT_RULES: TableId = TableId(9);
 pub const TASKS: TableId = TableId(10);
 pub const GAC_ALLOTMENTS: TableId = TableId(11);
 pub const SCHEMA_VERSION_TABLE: TableId = TableId(12);
+pub const ID_SEQUENCES: TableId = TableId(13);
 
 // ---------------------------------------------------------------------------
 // Column descriptors, grouped per table. Column ids are table-local tags.
@@ -178,14 +190,18 @@ mod cols {
         col!(3, "role", Uint),
     ];
 
+    // GC/billing view ONLY (agreed design ruling): which files a region holds is
+    // answered by that region's raft-replicated manifest, the single authority for
+    // LSM structure. `keyspace_id` is stable even when a split shares a file across
+    // regions (regions never span keyspaces) and drives per-tenant billing.
+    // Column ids 2/3/5/6 (region_id/level/smallest/biggest) are RETIRED — never reuse.
     pub const SST_FILES: &[ColumnDesc] = &[
         col!(1, "file_id", Uint, pk),
-        col!(2, "region_id", Uint),
-        col!(3, "level", Uint),
         col!(4, "refcount", Uint),
-        col!(5, "smallest", Bytes),
-        col!(6, "biggest", Bytes),
         col!(7, "bytes", Uint),
+        col!(8, "keyspace_id", Uint),
+        col!(9, "state", Uint),
+        col!(10, "created", Uint),
     ];
 
     pub const PLACEMENT_RULES: &[ColumnDesc] = &[
@@ -214,6 +230,12 @@ mod cols {
         col!(1, "singleton", Uint, pk),
         col!(2, "v", Uint),
     ];
+
+    /// System id sequences (one row per [`crate::store::SequenceKind`]).
+    pub const ID_SEQUENCES: &[ColumnDesc] = &[
+        col!(1, "kind", Uint, pk),
+        col!(2, "next", Uint),
+    ];
 }
 
 // ---------------------------------------------------------------------------
@@ -223,13 +245,30 @@ mod cols {
 mod idx {
     use super::{ColumnId, IndexDesc, IndexId};
 
-    /// keyspaces.by_tenant(tenant_id) — column id 3.
-    pub const KEYSPACES_BY_TENANT: &[IndexDesc] = &[IndexDesc {
+    /// tenants.by_name(name) UNIQUE — column id 2 (METADATA-CATALOG §2 `name text UNIQUE`).
+    pub const TENANTS_IDX: &[IndexDesc] = &[IndexDesc {
         id: IndexId(1),
-        name: "by_tenant",
-        columns: &[ColumnId(3)],
-        unique: false,
+        name: "by_name",
+        columns: &[ColumnId(2)],
+        unique: true,
     }];
+
+    /// keyspaces.by_tenant(tenant_id) — column id 3 — and by_name(name) UNIQUE —
+    /// column id 2 (METADATA-CATALOG §2 `name text UNIQUE`).
+    pub const KEYSPACES_IDX: &[IndexDesc] = &[
+        IndexDesc {
+            id: IndexId(1),
+            name: "by_tenant",
+            columns: &[ColumnId(3)],
+            unique: false,
+        },
+        IndexDesc {
+            id: IndexId(2),
+            name: "by_name",
+            columns: &[ColumnId(2)],
+            unique: true,
+        },
+    ];
 
     /// txn_groups.by_keyspace(keyspace_id) — column id 2.
     pub const TXN_GROUPS_BY_KEYSPACE: &[IndexDesc] = &[IndexDesc {
@@ -255,15 +294,33 @@ mod idx {
         unique: false,
     }];
 
-    /// sst_files.by_region(region_id) — column id 2.
-    pub const SST_FILES_BY_REGION: &[IndexDesc] = &[IndexDesc {
-        id: IndexId(1),
-        name: "by_region",
-        columns: &[ColumnId(2)],
-        unique: false,
-    }];
-
     pub const NONE: &[IndexDesc] = &[];
+}
+
+// ---------------------------------------------------------------------------
+// Foreign keys (METADATA-CATALOG §2 arrows). Insert/update-side enforced.
+// ---------------------------------------------------------------------------
+
+mod fk {
+    use super::{ColumnId, FkDesc, TableId};
+
+    pub const NONE: &[FkDesc] = &[];
+    pub const KEYSPACES: &[FkDesc] = &[FkDesc { column: ColumnId(3), references: super::TENANTS }];
+    pub const TXN_GROUPS: &[FkDesc] = &[FkDesc { column: ColumnId(2), references: super::KEYSPACES }];
+    pub const TSO_TIMELINES: &[FkDesc] = &[
+        FkDesc { column: ColumnId(2), references: super::TXN_GROUPS },
+        FkDesc { column: ColumnId(3), references: super::NODES },
+    ];
+    pub const REGIONS: &[FkDesc] = &[FkDesc { column: ColumnId(2), references: super::KEYSPACES }];
+    pub const REGION_PEERS: &[FkDesc] = &[
+        FkDesc { column: ColumnId(1), references: super::REGIONS },
+        FkDesc { column: ColumnId(2), references: super::NODES },
+    ];
+    pub const SST_FILES: &[FkDesc] = &[FkDesc { column: ColumnId(8), references: super::KEYSPACES }];
+    pub const PLACEMENT_RULES: &[FkDesc] = &[FkDesc { column: ColumnId(2), references: super::KEYSPACES }];
+    pub const GAC_ALLOTMENTS: &[FkDesc] = &[FkDesc { column: ColumnId(1), references: super::TENANTS }];
+    // Suppress an unused warning if a table stops declaring FKs.
+    const _: TableId = super::TENANTS;
 }
 
 // ---------------------------------------------------------------------------
@@ -274,14 +331,16 @@ pub const TENANTS_DESC: TableDesc = TableDesc {
     id: TENANTS,
     name: "tenants",
     columns: cols::TENANTS,
-    indexes: idx::NONE,
+    indexes: idx::TENANTS_IDX,
+    fks: fk::NONE,
 };
 
 pub const KEYSPACES_DESC: TableDesc = TableDesc {
     id: KEYSPACES,
     name: "keyspaces",
     columns: cols::KEYSPACES,
-    indexes: idx::KEYSPACES_BY_TENANT,
+    indexes: idx::KEYSPACES_IDX,
+    fks: fk::KEYSPACES,
 };
 
 pub const TXN_GROUPS_DESC: TableDesc = TableDesc {
@@ -289,6 +348,7 @@ pub const TXN_GROUPS_DESC: TableDesc = TableDesc {
     name: "txn_groups",
     columns: cols::TXN_GROUPS,
     indexes: idx::TXN_GROUPS_BY_KEYSPACE,
+    fks: fk::TXN_GROUPS,
 };
 
 pub const TSO_TIMELINES_DESC: TableDesc = TableDesc {
@@ -296,6 +356,7 @@ pub const TSO_TIMELINES_DESC: TableDesc = TableDesc {
     name: "tso_timelines",
     columns: cols::TSO_TIMELINES,
     indexes: idx::NONE,
+    fks: fk::TSO_TIMELINES,
 };
 
 pub const NODES_DESC: TableDesc = TableDesc {
@@ -303,6 +364,7 @@ pub const NODES_DESC: TableDesc = TableDesc {
     name: "nodes",
     columns: cols::NODES,
     indexes: idx::NONE,
+    fks: fk::NONE,
 };
 
 pub const REGIONS_DESC: TableDesc = TableDesc {
@@ -310,6 +372,7 @@ pub const REGIONS_DESC: TableDesc = TableDesc {
     name: "regions",
     columns: cols::REGIONS,
     indexes: idx::REGIONS_BY_RANGE,
+    fks: fk::REGIONS,
 };
 
 pub const REGION_PEERS_DESC: TableDesc = TableDesc {
@@ -317,13 +380,15 @@ pub const REGION_PEERS_DESC: TableDesc = TableDesc {
     name: "region_peers",
     columns: cols::REGION_PEERS,
     indexes: idx::REGION_PEERS_BY_NODE,
+    fks: fk::REGION_PEERS,
 };
 
 pub const SST_FILES_DESC: TableDesc = TableDesc {
     id: SST_FILES,
     name: "sst_files",
     columns: cols::SST_FILES,
-    indexes: idx::SST_FILES_BY_REGION,
+    indexes: idx::NONE,
+    fks: fk::SST_FILES,
 };
 
 pub const PLACEMENT_RULES_DESC: TableDesc = TableDesc {
@@ -331,6 +396,7 @@ pub const PLACEMENT_RULES_DESC: TableDesc = TableDesc {
     name: "placement_rules",
     columns: cols::PLACEMENT_RULES,
     indexes: idx::NONE,
+    fks: fk::PLACEMENT_RULES,
 };
 
 pub const TASKS_DESC: TableDesc = TableDesc {
@@ -338,6 +404,7 @@ pub const TASKS_DESC: TableDesc = TableDesc {
     name: "tasks",
     columns: cols::TASKS,
     indexes: idx::NONE,
+    fks: fk::NONE,
 };
 
 pub const GAC_ALLOTMENTS_DESC: TableDesc = TableDesc {
@@ -345,6 +412,7 @@ pub const GAC_ALLOTMENTS_DESC: TableDesc = TableDesc {
     name: "gac_allotments",
     columns: cols::GAC_ALLOTMENTS,
     indexes: idx::NONE,
+    fks: fk::GAC_ALLOTMENTS,
 };
 
 pub const SCHEMA_VERSION_DESC: TableDesc = TableDesc {
@@ -352,6 +420,15 @@ pub const SCHEMA_VERSION_DESC: TableDesc = TableDesc {
     name: "schema_version",
     columns: cols::SCHEMA_VERSION,
     indexes: idx::NONE,
+    fks: fk::NONE,
+};
+
+pub const ID_SEQUENCES_DESC: TableDesc = TableDesc {
+    id: ID_SEQUENCES,
+    name: "id_sequences",
+    columns: cols::ID_SEQUENCES,
+    indexes: idx::NONE,
+    fks: fk::NONE,
 };
 
 /// Every catalog table descriptor, in stable id order (METADATA-CATALOG §2). Used to
@@ -369,6 +446,7 @@ pub const ALL_TABLES: &[TableDesc] = &[
     TASKS_DESC,
     GAC_ALLOTMENTS_DESC,
     SCHEMA_VERSION_DESC,
+    ID_SEQUENCES_DESC,
 ];
 
 /// Look up a table descriptor by its stable id (METADATA-CATALOG §2).

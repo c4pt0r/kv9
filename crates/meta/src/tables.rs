@@ -93,16 +93,23 @@ pub struct RegionPeer {
     pub role: u32,
 }
 
-/// An `sst_files` row (METADATA-CATALOG §2). Carries the refcount the GC keys off.
+/// An `sst_files` row — the catalog's **GC/billing view only** (agreed design ruling).
+///
+/// Which files a region holds is answered by that region's raft-replicated manifest,
+/// the single authority for LSM structure; this row exists for object-storage GC
+/// (`refcount` as a conservative upper bound: +ref commits *before* the manifest
+/// change referencing a file, −ref only *after* the change dropping it) and for
+/// per-tenant billing (`keyspace_id` is unique and stable even when a split shares a
+/// file across regions, because regions never span keyspaces; `bytes` is written once
+/// at creation).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SstFile {
     pub file_id: u64,
-    pub region_id: RegionId,
-    pub level: u8,
-    pub refcount: u32,
-    pub smallest: Vec<u8>,
-    pub biggest: Vec<u8>,
+    pub keyspace_id: KeyspaceId,
     pub bytes: u64,
+    pub refcount: u32,
+    pub state: u32,
+    pub created: u64,
 }
 
 // ---------------------------------------------------------------------------
@@ -205,25 +212,124 @@ impl<'a, E: Engine> Tables<'a, E> {
 
     /// Join — *regions on node N* → `index_scan(region_peers, by_node, N)` →
     /// `get(regions, region_id)` (METADATA-CATALOG §4).
-    pub fn regions_on_node(&self, _node: NodeId) -> Result<Vec<Region>> {
-        // TODO(phase1): index_scan(region_peers, by_node, N) → region_ids → get regions.
-        unimplemented!("regions_on_node join (METADATA-CATALOG §4)")
+    pub fn regions_on_node(&self, node: NodeId) -> Result<Vec<Region>> {
+        let txn = self.store.begin();
+        let peer_pks = txn.index_scan(
+            &schema::REGION_PEERS_DESC,
+            IndexId(1), // by_node
+            &[memcmp_uint(node.0)],
+            usize::MAX,
+        )?;
+        let mut out = Vec::with_capacity(peer_pks.len());
+        for pk in peer_pks {
+            // region_peers pk = (region_id, node_id); the region id is the first comp.
+            let Some(region_comp) = pk.first() else {
+                continue;
+            };
+            let region_id = crate::codec::decode_uint_component(region_comp)?;
+            if let Some(row) = txn.get(&schema::REGIONS_DESC, &[memcmp_uint(region_id)])? {
+                out.push(decode_region(RegionId(region_id), &row.value));
+            }
+        }
+        Ok(out)
     }
 
-    /// Join — *which region owns key K in keyspace KS* → `index_scan(regions, by_range,
-    /// (KS, ≤K))` last ≤ K, check end_key (METADATA-CATALOG §4).
-    pub fn region_for_key(&self, _keyspace: KeyspaceId, _key: &[u8]) -> Result<Option<Region>> {
-        // TODO(phase1): reverse-bounded index_scan on by_range, then end_key check.
-        unimplemented!("region_for_key join (METADATA-CATALOG §4)")
+    /// Join — *which region owns key K in keyspace KS* → last `by_range` entry with
+    /// `start_key ≤ K`, then the `end_key` check (METADATA-CATALOG §4).
+    ///
+    /// The `by_range` index key is `(keyspace_id, start_key)` prefix-encoded and the
+    /// search is bounded below by the keyspace prefix, so it structurally cannot
+    /// resolve into another keyspace. The `end_key` check still guards the gap case
+    /// (K past the keyspace's last region): that returns `None`, never a neighbor —
+    /// principle 4's tenant-isolation line.
+    ///
+    /// Phase-1 note: forward-scans the keyspace's index entries and keeps the last
+    /// `≤ K` — O(regions-in-keyspace). Switches to the engine ReadView's `seek_le`
+    /// (one consistent view for both steps) once that lands on this path.
+    pub fn region_for_key(&self, keyspace: KeyspaceId, key: &[u8]) -> Result<Option<Region>> {
+        let txn = self.store.begin();
+        let entries = txn.index_entries(
+            &schema::REGIONS_DESC,
+            IndexId(1), // by_range
+            &[memcmp_uint(keyspace.0 as u64)],
+            usize::MAX,
+        )?;
+        // Entry key suffix = memcmp(keyspace_id) ++ memcmp(start_key) ++ memcmp(region_id).
+        // Encoded order == logical order, so compare encoded start_key directly.
+        let ks_comp = memcmp_uint(keyspace.0 as u64);
+        let target = crate::codec::memcmp_bytes(key);
+        let mut candidate: Option<(Vec<u8>, u64)> = None; // (encoded start_key, region_id)
+        for (suffix, _) in entries {
+            let rest = &suffix[ks_comp.len()..];
+            let comps = crate::codec::split_components(
+                &[crate::schema::ColumnType::Bytes, crate::schema::ColumnType::Uint],
+                rest,
+                true,
+            )?;
+            let start_enc = &comps[0];
+            if start_enc.as_slice() <= target.as_slice() {
+                let region_id = crate::codec::decode_uint_component(&comps[1])?;
+                candidate = Some((start_enc.clone(), region_id));
+            } else {
+                break; // entries are in ascending start_key order
+            }
+        }
+        let Some((_, region_id)) = candidate else {
+            return Ok(None);
+        };
+        let Some(row) = txn.get(&schema::REGIONS_DESC, &[memcmp_uint(region_id)])? else {
+            return Ok(None);
+        };
+        let region = decode_region(RegionId(region_id), &row.value);
+        // end_key check: empty end_key = unbounded (to the keyspace's end).
+        if region.end_key.is_empty() || key < region.end_key.as_slice() {
+            Ok(Some(region))
+        } else {
+            Ok(None)
+        }
     }
 
     /// Join — *txn group for key K in keyspace KS* → `index_scan(txn_groups,
     /// by_keyspace, KS)`, pick the sub-range ∋ K (METADATA-CATALOG §4).
     ///
-    /// Default: the keyspace's single group; a `raw` keyspace has none (returns `None`).
-    pub fn txn_group_for_key(&self, _keyspace: KeyspaceId, _key: &[u8]) -> Result<Option<TxnGroupId>> {
-        // TODO(phase1): index_scan(txn_groups, by_keyspace, KS) → pick sub-range ∋ K.
-        unimplemented!("txn_group_for_key join (METADATA-CATALOG §4)")
+    /// A `raw` keyspace has no groups (returns `None`); the default single group has
+    /// empty `sub_start`/`sub_end` = the whole keyspace.
+    pub fn txn_group_for_key(&self, keyspace: KeyspaceId, key: &[u8]) -> Result<Option<TxnGroupId>> {
+        let txn = self.store.begin();
+        let group_pks = txn.index_scan(
+            &schema::TXN_GROUPS_DESC,
+            IndexId(1), // by_keyspace
+            &[memcmp_uint(keyspace.0 as u64)],
+            usize::MAX,
+        )?;
+        for pk in group_pks {
+            let Some(id_comp) = pk.first() else { continue };
+            let group_id = crate::codec::decode_uint_component(id_comp)?;
+            let Some(row) = txn.get(&schema::TXN_GROUPS_DESC, &[memcmp_uint(group_id)])? else {
+                continue;
+            };
+            let sub_start = bytes_or(&row.value, ColumnId(4));
+            let sub_end = bytes_or(&row.value, ColumnId(5));
+            let ge_start = sub_start.is_empty() || key >= sub_start.as_slice();
+            let lt_end = sub_end.is_empty() || key < sub_end.as_slice();
+            if ge_start && lt_end {
+                return Ok(Some(TxnGroupId(group_id)));
+            }
+        }
+        Ok(None)
+    }
+}
+
+/// Decode a `regions` [`RowValue`] into the typed [`Region`] (METADATA-CATALOG §3).
+fn decode_region(id: RegionId, v: &RowValue) -> Region {
+    Region {
+        id,
+        keyspace_id: KeyspaceId(uint_or(v, ColumnId(2)) as u32),
+        start_key: bytes_or(v, ColumnId(3)),
+        end_key: bytes_or(v, ColumnId(4)),
+        epoch_conf: uint_or(v, ColumnId(5)),
+        epoch_ver: uint_or(v, ColumnId(6)),
+        leader_node: NodeId(uint_or(v, ColumnId(7))),
     }
 }
 
