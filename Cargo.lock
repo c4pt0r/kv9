@@ -136,6 +136,7 @@ version = "0.0.0"
 dependencies = [
  "kv9-common",
  "kv9-engine",
+ "protobuf",
  "raft",
  "slog",
 ]

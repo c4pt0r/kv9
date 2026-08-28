@@ -16,7 +16,7 @@
 
 use std::sync::{Arc, Mutex, MutexGuard};
 
-use raft::prelude::{ConfState, Message};
+use raft::prelude::{ConfState, Entry, HardState, Message};
 use raft::storage::MemStorage;
 use raft::{Config, RawNode, StateRole};
 use slog::{o, Discard, Logger};
@@ -24,6 +24,32 @@ use slog::{o, Discard, Logger};
 use kv9_common::{Error, NodeId, RegionId, Result};
 
 use crate::{CommittedEntry, LogIndex, RaftGroup, Role};
+
+/// A raft-rs [`raft::Storage`] that can also **persist** what the Ready loop
+/// hands it: log entries and the HardState (term + vote + commit).
+///
+/// The raft safety contract lives here: **a vote must be durable before the
+/// reply leaves the node** — the Ready loop calls `append`/`set_hardstate`
+/// *before* messages are handed to the transport. `MemStorage` implements this
+/// trait volatilely (in-process clusters, tests); `DiskRaftStorage` implements
+/// it durably (real processes). A restarted node on volatile storage forgets
+/// its vote and can vote twice in one term — two leaders — which is why the
+/// cross-process path must use the durable impl.
+pub trait PersistentRaftStorage: raft::Storage + Send + Sync + 'static {
+    fn append(&self, entries: &[Entry]) -> Result<()>;
+    fn set_hardstate(&self, hs: &HardState) -> Result<()>;
+}
+
+impl PersistentRaftStorage for MemStorage {
+    fn append(&self, entries: &[Entry]) -> Result<()> {
+        self.wl().append(entries).map_err(raft_err)
+    }
+
+    fn set_hardstate(&self, hs: &HardState) -> Result<()> {
+        self.wl().set_hardstate(hs.clone());
+        Ok(())
+    }
+}
 
 /// The locally assigned position of an accepted proposal: a claim that entry
 /// `(term, index)` is *this* proposal — committed only once a committed entry with
@@ -39,14 +65,14 @@ pub struct ProposedAt {
 
 /// One member of a raft-rs group on one node, driven by an external pump
 /// ([`InProcessCluster::round`] in Phase-1 tests/harness).
-pub struct RaftPeer {
+pub struct RaftPeer<S: PersistentRaftStorage = MemStorage> {
     node: NodeId,
     region: RegionId,
-    inner: Mutex<PeerInner>,
+    inner: Mutex<PeerInner<S>>,
 }
 
-struct PeerInner {
-    raw: RawNode<MemStorage>,
+struct PeerInner<S: PersistentRaftStorage> {
+    raw: RawNode<S>,
     /// Committed, non-empty entries not yet drained by [`RaftGroup::take_ready`].
     ready: Vec<CommittedEntry>,
     /// Outgoing raft messages awaiting delivery by the cluster pump.
@@ -55,11 +81,21 @@ struct PeerInner {
     alive: bool,
 }
 
-impl RaftPeer {
-    /// Build a peer for `region` on `node`, with the (fixed, Phase-1) voter set.
+impl RaftPeer<MemStorage> {
+    /// Build a peer for `region` on `node`, with the (fixed, Phase-1) voter set,
+    /// on volatile in-memory storage (tests / in-process clusters).
     pub fn new(node: NodeId, region: RegionId, voters: &[NodeId]) -> Result<RaftPeer> {
         let ids: Vec<u64> = voters.iter().map(|n| n.0).collect();
         let storage = MemStorage::new_with_conf_state(ConfState::from((ids, vec![])));
+        RaftPeer::with_storage(node, region, storage)
+    }
+}
+
+impl<S: PersistentRaftStorage> RaftPeer<S> {
+    /// Build a peer over an explicit storage — durable
+    /// ([`crate::storage::DiskRaftStorage`]) for real processes; the storage's
+    /// initial state carries the voter set and any surviving HardState/log.
+    pub fn with_storage(node: NodeId, region: RegionId, storage: S) -> Result<RaftPeer<S>> {
         let cfg = Config {
             id: node.0,
             election_tick: 10,
@@ -89,7 +125,7 @@ impl RaftPeer {
         self.node
     }
 
-    fn lock(&self) -> MutexGuard<'_, PeerInner> {
+    fn lock(&self) -> MutexGuard<'_, PeerInner<S>> {
         self.inner.lock().expect("raft peer poisoned")
     }
 
@@ -118,6 +154,11 @@ impl RaftPeer {
         let g = self.lock();
         let id = g.raw.raft.leader_id;
         (id != raft::INVALID_ID).then_some(NodeId(id))
+    }
+
+    /// The current raft term at this peer.
+    pub fn term(&self) -> u64 {
+        self.lock().raw.raft.term
     }
 
     /// The highest applied-position handed out via `take_ready` so far comes from
@@ -149,16 +190,20 @@ impl RaftPeer {
         }
         let mut ready = g.raw.ready();
         let mut msgs = ready.take_messages();
-        // 1. Persist raft-log entries and hardstate (the safety point).
+        // 1. Persist raft-log entries and hardstate (the safety point: durable
+        //    BEFORE any message leaves this node — a vote must never outrun its
+        //    own persistence).
         if !ready.entries().is_empty() {
             g.raw
                 .store()
-                .wl()
                 .append(ready.entries())
-                .expect("MemStorage append");
+                .expect("raft storage append");
         }
         if let Some(hs) = ready.hs() {
-            g.raw.store().wl().set_hardstate(hs.clone());
+            g.raw
+                .store()
+                .set_hardstate(hs)
+                .expect("raft storage hardstate");
         }
         // 2. Only now hand messages to the transport.
         msgs.extend(ready.take_persisted_messages());
@@ -188,9 +233,26 @@ impl RaftPeer {
         g.ready.extend(committed);
         g.outbox.extend(msgs);
     }
+
+    /// Feed one raft message from the transport into this peer.
+    pub fn step_message(&self, msg: Message) {
+        self.step(msg);
+    }
+
+    /// Advance one tick (called by the driver on its real-time cadence).
+    pub fn tick_once(&self) {
+        self.tick();
+    }
+
+    /// Process pending Ready state and take the outgoing messages for the
+    /// transport. Persistence happens inside, before messages are returned.
+    pub fn pump(&self) -> Vec<Message> {
+        self.process_ready();
+        std::mem::take(&mut self.lock().outbox)
+    }
 }
 
-impl RaftGroup for RaftPeer {
+impl<S: PersistentRaftStorage> RaftGroup for RaftPeer<S> {
     fn region_id(&self) -> RegionId {
         self.region
     }
@@ -225,7 +287,7 @@ impl RaftGroup for RaftPeer {
 /// timers, no sleeps — the shape the Phase-1 acceptance harness drives.
 pub struct InProcessCluster {
     region: RegionId,
-    peers: Vec<Arc<RaftPeer>>,
+    peers: Vec<Arc<RaftPeer<MemStorage>>>,
 }
 
 impl InProcessCluster {
@@ -241,11 +303,11 @@ impl InProcessCluster {
         self.region
     }
 
-    pub fn peers(&self) -> &[Arc<RaftPeer>] {
+    pub fn peers(&self) -> &[Arc<RaftPeer<MemStorage>>] {
         &self.peers
     }
 
-    pub fn peer(&self, node: NodeId) -> Option<&Arc<RaftPeer>> {
+    pub fn peer(&self, node: NodeId) -> Option<&Arc<RaftPeer<MemStorage>>> {
         self.peers.iter().find(|p| p.node == node)
     }
 
