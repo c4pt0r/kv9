@@ -68,6 +68,18 @@ pub enum Error {
     #[error("raft error: {0}")]
     Raft(String),
 
+    /// This node does not currently lead the region, so it may not serve the request.
+    ///
+    /// Deliberately a distinct variant rather than a `Raft(String)`: a client's correct
+    /// reaction is to retry against `leader`, and deciding that by matching on message
+    /// text is the kind of check that silently stops working when the wording changes.
+    /// The hint is `None` when this node does not yet know who leads (e.g. mid-election).
+    #[error("not leader{}", match .leader {
+        Some(id) => format!("; try node {id}"),
+        None => String::new(),
+    })]
+    NotLeader { leader: Option<u64> },
+
     /// Storage engine error (DESIGN §6.2).
     #[error("engine error: {0}")]
     Engine(String),
