@@ -82,7 +82,7 @@ pub struct MetaRaft<E: Engine = MemEngine> {
 
 impl MetaRaft<MemEngine> {
     /// Wire the meta-region raft group + state machine + catalog store over `engine`.
-    pub fn new(node: NodeId, engine: Arc<MemEngine>) -> Self {
+    pub fn new(node: NodeId, engine: Arc<MemEngine>) -> Result<Self> {
         Self::with_raft(Arc::new(SingleNodeRaft::new(node, META_REGION_0)), engine)
     }
 }
@@ -91,16 +91,13 @@ impl<E: Engine> MetaRaft<E> {
     /// Wire the state machine/catalog around an externally driven raft peer and a shared
     /// engine. The deterministic harness supplies [`MemEngine`]; the process runtime
     /// supplies the durable Phase-1 engine.
-    pub fn with_raft(raft: Arc<dyn RaftGroup>, engine: Arc<E>) -> Self {
-        MetaRaft {
+    pub fn with_raft(raft: Arc<dyn RaftGroup>, engine: Arc<E>) -> Result<Self> {
+        Ok(MetaRaft {
             raft,
-            sm: Mutex::new(
-                MemStateMachine::with_engine(engine.clone())
-                    .expect("in-process MemEngine watermark is absent or apply-written (8 bytes)"),
-            ),
+            sm: Mutex::new(MemStateMachine::with_engine(engine.clone())?),
             store: MetaStore::new(engine),
             catalog_txn: Mutex::new(()),
-        }
+        })
     }
 
     /// Propose a command, then drain-and-apply the actual committed entries into the
@@ -166,7 +163,7 @@ impl<E: Engine> Node<E> {
     ) -> Result<Self> {
         config.validate()?;
         let store = Store::with_engine(engine);
-        let meta_raft = MetaRaft::with_raft(raft, store.engine.clone());
+        let meta_raft = MetaRaft::with_raft(raft, store.engine.clone())?;
         Ok(Node {
             id,
             config,
@@ -968,7 +965,7 @@ mod tests {
     #[test]
     fn meta_raft_applies_the_encoded_committed_command() {
         let engine = Arc::new(MemEngine::new());
-        let meta = MetaRaft::new(NodeId(1), engine);
+        let meta = MetaRaft::new(NodeId(1), engine).unwrap();
 
         meta.propose_apply(Command::Put {
             cf: 0,
