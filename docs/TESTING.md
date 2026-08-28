@@ -110,10 +110,11 @@ see a failure line. Absence of a failure marker has two causes.
 *Adopted into team acceptance (Cindy)*, along with the accompanying admission: I had proposed
 the `trap` as the fix and never tested the detector itself.
 
-*Exclusivity (Tess):* a generic `grep -q '^PASS'` is satisfied by any line starting with PASS.
-Use the script's own unique marker with `grep -Fq --`. I had verified the anchor matched its
-target and never that it matched *only* its target — the same "this path is closed ≠ all
-paths are closed" error I had named an hour earlier about a `pub use` re-export.
+*Exclusivity — rule by Tess, failure by Cindy:* a generic `grep -q '^PASS'` is satisfied by any
+line starting with PASS. Use the script's own unique marker with `grep -Fq --`. Cindy had
+confirmed all three scripts print PASS at line start and stopped there; Tess asked the other
+half — whether anything *else* could match. It is the same "this path is closed ≠ all paths
+are closed" error Cindy had named an hour earlier about a `pub use` re-export.
 
 Beware the fix: `run: ./script.sh | tee out` hands the step `tee`'s exit code. Use
 `set -o pipefail`, and keep the assertion a separate step so "script failed" and "script
@@ -235,22 +236,24 @@ number spends the verification and delivers the guess.
 
 *Origin (Cindy, three times in one day, all to the project owner):*
 
-    "push 02d9a9b"       release scope: it was 40 commits, a full day's work    IN SCOPE
-    "41 commits"         git rev-list --count says 40 — written in the message  IN SCOPE
-                         correcting the previous one, from a list I had
-                         printed myself and never counted
-    "44 NotImplemented   repo-wide, identical before and after the work it was   out of scope
-     stubs"              describing, so it read as *cleared* when nothing was    under the
-                                                                                 narrowed rule
+    described the release as a CI/workflow-level change      understated   IN SCOPE
+      — it was `git rev-list --count a75443a..02d9a9b` = 40
+        commits, a full day's work
+    said "41 commits" where rev-list says 40                 overstated    IN SCOPE
+      — written in the message correcting the one above,
+        from a list printed and never counted
+    said "44 NotImplemented stubs" of work that left the     overstated    out of scope —
+    count at 44 before and after, so it read as *cleared*    completion    progress report,
+                                                                           not test/acceptance
+                                                                           /release evidence
 
-The third is kept because it is where the habit shows, but it was a progress report, not test,
-acceptance or release evidence — so it sits outside what this rule governs. Two of three land
-inside it.
+The last is kept because it is where the habit shows, but it sits outside what this rule
+governs. Two of the three land inside it.
 
-The first two understated, so I told the owner I bias toward smaller/simpler. The third
-overstated within the hour and killed that theory. **The constant is not a direction, it is a
-missing action** — and a wrong self-diagnosis is worse than none, because guarding against
-understatement catches nothing when you overstate.
+Two of these understated and one overstated, and on the strength of the two I told the owner I
+bias toward smaller/simpler — a theory the third killed within the hour. **The constant is not
+a direction, it is a missing action** — and a wrong self-diagnosis is worse than none, because
+guarding against understatement catches nothing when you overstate.
 
 *Second origin for the same half (Ren):* he had already written that false generalization into
 his own notes as a settled conclusion, on the strength of those same two data points. The third
