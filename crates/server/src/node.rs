@@ -493,6 +493,8 @@ fn text_column(row: &RowValue, column: ColumnId) -> Result<String> {
 mod tests {
     use super::*;
     use crate::api::AdminApi;
+    use kv9_common::RegionId;
+    use kv9_meta::{BootstrapEvent, BootstrapState};
     use kv9_raft::{CommittedEntry, InProcessCluster, ProposedAt, StateMachine};
 
     const N1: NodeId = NodeId(1);
@@ -506,7 +508,10 @@ mod tests {
             .iter()
             .map(|peer| {
                 let raft: Arc<dyn RaftGroup> = Arc::clone(peer) as Arc<dyn RaftGroup>;
-                Node::with_raft(peer.node_id(), Config::default(), raft).unwrap()
+                let node = Node::with_raft(peer.node_id(), Config::default(), raft).unwrap();
+                node.meta.lock().unwrap().bootstrap =
+                    Bootstrap::with_seeds(peer.node_id(), vec![N1, N2, N3]);
+                node
             })
             .collect();
         (cluster, nodes)
@@ -571,6 +576,18 @@ mod tests {
             }
         }
         panic!("exact proposal was not applied on all targets");
+    }
+
+    fn test_region_row(id: RegionId, keyspace: KeyspaceId, start: &[u8], end: &[u8]) -> RowValue {
+        let mut row = RowValue::new();
+        row.set(ColumnId(1), ColumnValue::Uint(id.0));
+        row.set(ColumnId(2), ColumnValue::Uint(keyspace.0 as u64));
+        row.set(ColumnId(3), ColumnValue::Bytes(start.to_vec()));
+        row.set(ColumnId(4), ColumnValue::Bytes(end.to_vec()));
+        row.set(ColumnId(5), ColumnValue::Uint(1));
+        row.set(ColumnId(6), ColumnValue::Uint(1));
+        row.set(ColumnId(7), ColumnValue::Uint(N1.0));
+        row
     }
 
     /// Phase-1 milestone (ROADMAP): a node bootstraps election-first, then a
@@ -678,8 +695,121 @@ mod tests {
     }
 
     #[test]
+    fn server_routing_preserves_overlay_and_exact_boundary_semantics() {
+        let node = Node::new(N1, Config::default()).unwrap();
+        node.bootstrap().unwrap();
+        let keyspace = node
+            .create_keyspace("routed", TenantId::DEFAULT, ApiType::Raw)
+            .unwrap();
+
+        // Seed adjacent regions through the same encoded raft apply path used by the
+        // metadata server, then exercise the public Admin API at the exact boundary.
+        let mut seed = node.meta_raft.store.begin().unwrap();
+        seed.insert(
+            &REGIONS_DESC,
+            &[memcmp_uint(100)],
+            test_region_row(RegionId(100), keyspace, b"a", b"b"),
+        )
+        .unwrap();
+        seed.insert(
+            &REGIONS_DESC,
+            &[memcmp_uint(101)],
+            test_region_row(RegionId(101), keyspace, b"b", b"c"),
+        )
+        .unwrap();
+        node.meta_raft
+            .propose_apply(Command::from_batch(&seed.into_batch()))
+            .unwrap();
+        let at_boundary = AdminApi::get_region(&node, "test", keyspace, b"b").unwrap();
+        assert_eq!(at_boundary.region, RegionId(101));
+
+        let tables = kv9_meta::tables::Tables::new(&node.meta_raft.store);
+        let mut inserting = node.meta_raft.store.begin().unwrap();
+        inserting
+            .insert(
+                &REGIONS_DESC,
+                &[memcmp_uint(102)],
+                test_region_row(RegionId(102), keyspace, b"c", b"d"),
+            )
+            .unwrap();
+        assert_eq!(
+            tables
+                .region_for_key_in(&inserting, keyspace, b"cc")
+                .unwrap()
+                .map(|region| region.id),
+            Some(RegionId(102))
+        );
+        assert!(tables.region_for_key(keyspace, b"cc").unwrap().is_none());
+
+        // Deleting the view's best candidate must walk backward past the tombstone.
+        // The previous region ends at "b", so "b" is a gap after the delete rather
+        // than a false route to region 100.
+        let mut deleting = node.meta_raft.store.begin().unwrap();
+        deleting.delete(&REGIONS_DESC, &[memcmp_uint(101)]).unwrap();
+        assert!(tables
+            .region_for_key_in(&deleting, keyspace, b"b")
+            .unwrap()
+            .is_none());
+        assert_eq!(
+            tables
+                .region_for_key_in(&deleting, keyspace, b"az")
+                .unwrap()
+                .map(|region| region.id),
+            Some(RegionId(100))
+        );
+    }
+
+    #[test]
+    fn server_bootstrap_requires_seed_quorum_and_refuses_reinitialization() {
+        let mut bootstrap = Bootstrap::with_seeds(N1, vec![N1, N2, N3]);
+        assert!(bootstrap.discovered_uninitialized(&[N1]).is_err());
+        assert!(bootstrap
+            .discovered_uninitialized(&[N1, N1, NodeId(99)])
+            .is_err());
+        assert_eq!(bootstrap.state(), BootstrapState::Discovering);
+        assert_eq!(
+            bootstrap.discovered_uninitialized(&[N1, N2]).unwrap(),
+            BootstrapState::BootstrapElection
+        );
+        bootstrap.on_event(BootstrapEvent::WonElection).unwrap();
+        bootstrap
+            .on_event(BootstrapEvent::MetadataInitialized)
+            .unwrap();
+        assert!(bootstrap.data_dir_initialized());
+
+        // Model a restart that retained the initialized data-dir marker.
+        let mut restarted = Bootstrap::with_seeds(N1, vec![N1, N2, N3]);
+        restarted.mark_data_dir_initialized();
+        assert!(restarted.discovered_uninitialized(&[N1, N2, N3]).is_err());
+        assert_eq!(restarted.state(), BootstrapState::Discovering);
+        assert_eq!(
+            restarted
+                .on_event(BootstrapEvent::FoundInitialized)
+                .unwrap(),
+            BootstrapState::Joining
+        );
+    }
+
+    #[test]
     fn three_node_admin_e2e_failover_and_orphan_rejection() {
         let (cluster, nodes) = raft_nodes();
+
+        // Discovery is fenced before any seed campaigns: silence is not evidence of
+        // an empty cluster, while two positive answers form the declared 3-seed quorum.
+        for replica in &nodes {
+            let mut meta = replica.meta.lock().unwrap();
+            assert!(meta
+                .bootstrap
+                .discovered_uninitialized(&[replica.id])
+                .is_err());
+            let corroborator = if replica.id == N1 { N2 } else { N1 };
+            assert_eq!(
+                meta.bootstrap
+                    .discovered_uninitialized(&[replica.id, corroborator])
+                    .unwrap(),
+                BootstrapState::BootstrapElection
+            );
+        }
         cluster.peer(N1).unwrap().campaign().unwrap();
         cluster
             .run_until(500, "initial metadata leader", |cluster| {
@@ -688,12 +818,39 @@ mod tests {
             .unwrap();
         let leader1 = cluster.leader().unwrap();
 
+        for replica in &nodes {
+            let event = if replica.id == leader1 {
+                BootstrapEvent::WonElection
+            } else {
+                BootstrapEvent::LostElection
+            };
+            replica
+                .meta
+                .lock()
+                .unwrap()
+                .bootstrap
+                .on_event(event)
+                .unwrap();
+        }
+
         // Election-first bootstrap: only the elected leader constructs the seed batch;
         // all three replicas must apply that exact encoded command before any read.
         let seed = node(&nodes, leader1)
             .build_initial_metadata_command()
             .unwrap();
         commit_exact(&cluster, &nodes, leader1, &[N1, N2, N3], seed);
+
+        for replica in &nodes {
+            let mut meta = replica.meta.lock().unwrap();
+            meta.bootstrap
+                .on_event(BootstrapEvent::MetadataInitialized)
+                .unwrap();
+            if replica.id != leader1 {
+                meta.bootstrap.on_event(BootstrapEvent::Registered).unwrap();
+            }
+            assert!(meta.bootstrap.is_serving());
+            assert!(meta.bootstrap.data_dir_initialized());
+        }
 
         let follower = [N1, N2, N3].into_iter().find(|id| *id != leader1).unwrap();
         let system = AdminApi::list_keyspaces(node(&nodes, follower), "test").unwrap();
