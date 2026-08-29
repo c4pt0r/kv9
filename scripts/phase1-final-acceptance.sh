@@ -139,7 +139,7 @@ wait_until() {
     if (( SECONDS >= deadline )); then
       echo "FAIL: timed out waiting for $label" >&2
       echo "DIAG: status at timeout" >&2
-      find "$artifact_dir" -name status -type f -print -exec sed -n '1,16p' {} \; >&2 || true
+      find "$artifact_dir" -name status -type f -print -exec cat {} \; >&2 || true
       diagnose_timeout_progress
       if "$@"; then
         echo "DIAG: timed-out condition converged during the observation window" >&2
@@ -147,7 +147,7 @@ wait_until() {
         echo "DIAG: timed-out condition still had not converged after the observation window" >&2
       fi
       echo "DIAG: status after observation" >&2
-      find "$artifact_dir" -name status -type f -print -exec sed -n '1,16p' {} \; >&2 || true
+      find "$artifact_dir" -name status -type f -print -exec cat {} \; >&2 || true
       return 1
     fi
     sleep 0.05
