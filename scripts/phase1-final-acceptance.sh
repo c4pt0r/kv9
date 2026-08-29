@@ -228,6 +228,13 @@ while (( SECONDS < negative_deadline )); do
   kill -0 "${pids[1]}"
   sleep 0.05
 done
+for seed in 2 3; do
+  observation="$(status_value 1 "discovery_seed_$seed")"
+  if ! [[ "$observation" =~ attempts=[1-9][0-9]* && "$observation" =~ errors=[1-9][0-9]* ]]; then
+    echo "FAIL: silent seed $seed was not visible in node 1 discovery status" >&2
+    exit 1
+  fi
+done
 kill "${pids[1]}"
 wait "${pids[1]}" 2>/dev/null || true
 unset 'pids[1]'
@@ -237,18 +244,27 @@ unset 'pids[1]'
 # the process at address 3 declares {1,2,9}. Neither may use the other's answer.
 artifact_dir="$root_artifact_dir/fingerprint-negative"
 start_node 1 "$negative_join"
+mkdir -p "$artifact_dir/n2"
+KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" "$bin" \
+  --node-id 2 \
+  --addr "127.0.0.1:$((base_port + 2))" \
+  --data-dir "$artifact_dir/n2" \
+    --join "1@127.0.0.1:$((base_port + 1)),2@127.0.0.1:$((base_port + 2)),9@127.0.0.1:$((base_port + 3))" \
+  >"$artifact_dir/n2.log" 2>&1 &
+pids[2]=$!
 mkdir -p "$artifact_dir/n9"
 KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" "$bin" \
   --node-id 9 \
   --addr "127.0.0.1:$((base_port + 3))" \
   --data-dir "$artifact_dir/n9" \
-    --join "1@127.0.0.1:$((base_port + 1)),2@127.0.0.1:$((base_port + 2)),9@127.0.0.1:$((base_port + 3))" \
+    --join "1@127.0.0.1:$((base_port + 1)),3@127.0.0.1:$((base_port + 4)),9@127.0.0.1:$((base_port + 3))" \
   >"$artifact_dir/n9.log" 2>&1 &
 pids[9]=$!
-wait_until "overlapping-declaration status surfaces" 5 test -f "$artifact_dir/n9/status"
+wait_until "node 2 overlapping-declaration status surface" 5 test -f "$artifact_dir/n2/status"
+wait_until "node 9 overlapping-declaration status surface" 5 test -f "$artifact_dir/n9/status"
 fingerprint_deadline=$((SECONDS + 2))
 while (( SECONDS < fingerprint_deadline )); do
-  for node in 1 9; do
+  for node in 1 2 9; do
     if test "$(status_value "$node" bootstrap_state 2>/dev/null || true)" = "Serving"; then
       echo "FAIL: mismatched voter-set fingerprint counted as bootstrap evidence" >&2
       exit 1
@@ -257,10 +273,22 @@ while (( SECONDS < fingerprint_deadline )); do
   done
   sleep 0.05
 done
-kill "${pids[1]}" "${pids[9]}"
+node_id_rejection="$(status_value 1 discovery_seed_3)"
+fingerprint_rejection="$(status_value 1 discovery_seed_2)"
+if ! [[ "$node_id_rejection" =~ rejected_node_id=[1-9][0-9]* ]]; then
+  echo "FAIL: declared-address node-id rejection was not visible in node 1 status" >&2
+  exit 1
+fi
+if ! [[ "$fingerprint_rejection" =~ rejected_voter_fingerprint=[1-9][0-9]* ]]; then
+  echo "FAIL: voter-fingerprint rejection was not visible in node 1 status" >&2
+  exit 1
+fi
+kill "${pids[1]}" "${pids[2]}" "${pids[9]}"
 wait "${pids[1]}" 2>/dev/null || true
+wait "${pids[2]}" 2>/dev/null || true
 wait "${pids[9]}" 2>/dev/null || true
 unset 'pids[1]'
+unset 'pids[2]'
 unset 'pids[9]'
 
 # Use fresh data dirs after deliberate non-pristine negative runs.
