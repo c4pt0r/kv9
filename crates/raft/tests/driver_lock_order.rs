@@ -25,10 +25,10 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use kv9_common::{NodeId, RegionId};
+use kv9_engine::ColumnFamily;
 use kv9_raft::driver::NodeDriver;
 use kv9_raft::transport::{InProcHub, RaftTransport};
 use kv9_raft::{cf_code, Command, MemStateMachine, RaftGroup, RaftPeer, Role};
-use kv9_engine::ColumnFamily;
 
 const PROPOSALS: u64 = 2_000;
 /// Generous: the healthy run takes a few seconds; only a deadlock reaches it.
@@ -57,9 +57,8 @@ fn concurrent_status_and_apply_never_deadlock() {
 
 fn run_scenario() -> Result<(), String> {
     let hub = InProcHub::new();
-    let peer = Arc::new(
-        RaftPeer::new(NodeId(1), RegionId(1), &[NodeId(1)]).map_err(|e| e.to_string())?,
-    );
+    let peer =
+        Arc::new(RaftPeer::new(NodeId(1), RegionId(1), &[NodeId(1)]).map_err(|e| e.to_string())?);
     let endpoint = hub.endpoint(NodeId(1));
     let driver = NodeDriver::new(
         peer,

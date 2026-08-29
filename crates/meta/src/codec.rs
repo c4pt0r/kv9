@@ -273,7 +273,10 @@ pub enum ColumnValue {
     /// Preserved verbatim — type tag and payload — so a read-modify-write by an old
     /// binary re-encodes it unchanged instead of silently rewriting the type
     /// (DESIGN principle 12: forward-compatible formats).
-    Unknown { type_tag: u8, payload: Vec<u8> },
+    Unknown {
+        type_tag: u8,
+        payload: Vec<u8>,
+    },
 }
 
 impl ColumnValue {
@@ -497,10 +500,7 @@ mod tests {
     fn row_value_roundtrip_preserves_unknown_type_tag() {
         let mut row = RowValue::new();
         row.set(crate::schema::ColumnId(1), ColumnValue::Uint(42));
-        row.set(
-            crate::schema::ColumnId(9),
-            ColumnValue::Text("café".into()),
-        );
+        row.set(crate::schema::ColumnId(9), ColumnValue::Text("café".into()));
         row.set(
             crate::schema::ColumnId(3),
             ColumnValue::Bytes(vec![0x00, 0xff]),
@@ -545,7 +545,13 @@ mod tests {
         let key_foo = encode_index_key(t, i, &[memcmp_text("foo")], &[]).unwrap();
         let key_foobar = encode_index_key(t, i, &[memcmp_text("foobar")], &[]).unwrap();
         let (start, end) = index_prefix_range(t, i, &[memcmp_text("foo")]).unwrap();
-        assert!(start <= key_foo && key_foo < end, "exact match inside range");
-        assert!(!(start <= key_foobar && key_foobar < end), "superstring outside");
+        assert!(
+            start <= key_foo && key_foo < end,
+            "exact match inside range"
+        );
+        assert!(
+            !(start <= key_foobar && key_foobar < end),
+            "superstring outside"
+        );
     }
 }

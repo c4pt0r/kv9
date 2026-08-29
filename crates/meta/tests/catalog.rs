@@ -3,12 +3,12 @@
 
 use std::sync::Arc;
 
+use kv9_common::{ApiType, KeyspaceId, NodeId, RegionId, TenantId};
 use kv9_engine::MemEngine;
 use kv9_meta::codec::{memcmp_text, memcmp_uint, ColumnValue, RowValue};
 use kv9_meta::schema::{self, ColumnId, IndexId};
 use kv9_meta::store::{MetaStore, SequenceKind, FIRST_DYNAMIC_ID};
 use kv9_meta::tables::{Keyspace, Region, RegionPeer, Tables, Tenant, TxnGroup};
-use kv9_common::{ApiType, KeyspaceId, NodeId, RegionId, TenantId};
 
 fn store() -> MetaStore<MemEngine> {
     MetaStore::new(Arc::new(MemEngine::new()))
@@ -52,8 +52,12 @@ fn region_row(id: u64, ks: u32, start: &[u8], end: &[u8]) -> RowValue {
 /// Seed a tenant so keyspace FKs resolve.
 fn seed_tenant(s: &MetaStore<MemEngine>) {
     let mut txn = s.begin().unwrap();
-    txn.insert(&schema::TENANTS_DESC, &[memcmp_uint(1)], tenant_row(1, "default"))
-        .unwrap();
+    txn.insert(
+        &schema::TENANTS_DESC,
+        &[memcmp_uint(1)],
+        tenant_row(1, "default"),
+    )
+    .unwrap();
     txn.commit().unwrap();
 }
 
@@ -81,7 +85,8 @@ fn duplicate_pk_rejected() {
     seed_tenant(&s);
     let mut txn = s.begin().unwrap();
     let (pk, row) = keyspace_row(7, "ks-a", 1, ApiType::Raw);
-    txn.insert(&schema::KEYSPACES_DESC, &pk, row.clone()).unwrap();
+    txn.insert(&schema::KEYSPACES_DESC, &pk, row.clone())
+        .unwrap();
     assert!(txn.insert(&schema::KEYSPACES_DESC, &pk, row).is_err());
 }
 
@@ -106,12 +111,18 @@ fn fk_enforced_against_merged_view() {
     // No tenant exists: keyspace insert must fail the FK check.
     let mut txn = s.begin().unwrap();
     let (pk, row) = keyspace_row(7, "ks-a", 99, ApiType::Raw);
-    assert!(txn.insert(&schema::KEYSPACES_DESC, &pk, row.clone()).is_err());
+    assert!(txn
+        .insert(&schema::KEYSPACES_DESC, &pk, row.clone())
+        .is_err());
 
     // Parent inserted earlier in the SAME txn satisfies the FK (bootstrap pattern).
     let mut txn = s.begin().unwrap();
-    txn.insert(&schema::TENANTS_DESC, &[memcmp_uint(99)], tenant_row(99, "t99"))
-        .unwrap();
+    txn.insert(
+        &schema::TENANTS_DESC,
+        &[memcmp_uint(99)],
+        tenant_row(99, "t99"),
+    )
+    .unwrap();
     txn.insert(&schema::KEYSPACES_DESC, &pk, row).unwrap();
     txn.commit().unwrap();
 }
@@ -121,8 +132,12 @@ fn update_remaintains_indexes() {
     let s = store();
     seed_tenant(&s);
     let mut txn = s.begin().unwrap();
-    txn.insert(&schema::TENANTS_DESC, &[memcmp_uint(2)], tenant_row(2, "other"))
-        .unwrap();
+    txn.insert(
+        &schema::TENANTS_DESC,
+        &[memcmp_uint(2)],
+        tenant_row(2, "other"),
+    )
+    .unwrap();
     let (pk, row) = keyspace_row(7, "ks-a", 1, ApiType::Raw);
     txn.insert(&schema::KEYSPACES_DESC, &pk, row).unwrap();
     txn.commit().unwrap();
@@ -184,13 +199,19 @@ fn delete_removes_row_and_indexes_and_is_idempotent() {
 fn allocate_id_sequences_are_independent_and_durable() {
     let s = store();
     let mut txn = s.begin().unwrap();
-    assert_eq!(txn.allocate_id(SequenceKind::Keyspace).unwrap(), FIRST_DYNAMIC_ID);
+    assert_eq!(
+        txn.allocate_id(SequenceKind::Keyspace).unwrap(),
+        FIRST_DYNAMIC_ID
+    );
     assert_eq!(
         txn.allocate_id(SequenceKind::Keyspace).unwrap(),
         FIRST_DYNAMIC_ID + 1
     );
     // A different kind has its own sequence.
-    assert_eq!(txn.allocate_id(SequenceKind::TxnGroup).unwrap(), FIRST_DYNAMIC_ID);
+    assert_eq!(
+        txn.allocate_id(SequenceKind::TxnGroup).unwrap(),
+        FIRST_DYNAMIC_ID
+    );
     txn.commit().unwrap();
 
     // The bump survives the commit; a later txn continues, not restarts.
@@ -206,8 +227,12 @@ fn uncommitted_txn_discards_its_overlay() {
     let s = store();
     {
         let mut txn = s.begin().unwrap();
-        txn.insert(&schema::TENANTS_DESC, &[memcmp_uint(1)], tenant_row(1, "gone"))
-            .unwrap();
+        txn.insert(
+            &schema::TENANTS_DESC,
+            &[memcmp_uint(1)],
+            tenant_row(1, "gone"),
+        )
+        .unwrap();
         // Dropped without commit.
     }
     let txn = s.begin().unwrap();
@@ -225,8 +250,12 @@ fn uncommitted_txn_discards_its_overlay() {
 /// keyspace 9 (txn) with the default whole-range group.
 fn seed_routing(s: &MetaStore<MemEngine>) {
     let mut txn = s.begin().unwrap();
-    txn.insert(&schema::TENANTS_DESC, &[memcmp_uint(1)], tenant_row(1, "default"))
-        .unwrap();
+    txn.insert(
+        &schema::TENANTS_DESC,
+        &[memcmp_uint(1)],
+        tenant_row(1, "default"),
+    )
+    .unwrap();
     for (id, name, api) in [
         (7u32, "ks-txn", ApiType::Txn),
         (8, "ks-raw", ApiType::Raw),
@@ -253,7 +282,8 @@ fn seed_routing(s: &MetaStore<MemEngine>) {
     node.set(ColumnId(3), ColumnValue::Uint(0));
     node.set(ColumnId(4), ColumnValue::Uint(0));
     node.set(ColumnId(5), ColumnValue::Bytes(Vec::new()));
-    txn.insert(&schema::NODES_DESC, &[memcmp_uint(5)], node).unwrap();
+    txn.insert(&schema::NODES_DESC, &[memcmp_uint(5)], node)
+        .unwrap();
     for rid in [100u64, 101] {
         let mut peer = RowValue::new();
         peer.set(ColumnId(1), ColumnValue::Uint(rid));
@@ -291,7 +321,9 @@ fn region_for_key_hits_and_boundaries() {
         Some(RegionId(100))
     );
     assert_eq!(
-        t.region_for_key(KeyspaceId(7), b"az").unwrap().map(|r| r.id),
+        t.region_for_key(KeyspaceId(7), b"az")
+            .unwrap()
+            .map(|r| r.id),
         Some(RegionId(100))
     );
     assert_eq!(
@@ -428,11 +460,15 @@ fn region_routing_skips_overlay_tombstoned_candidate() {
     let s = store();
     seed_routing(&s); // regions 100=[a,b), 101=[b,c) in keyspace 7
     let mut txn = s.begin().unwrap();
-    txn.delete(&schema::REGIONS_DESC, &[memcmp_uint(101)]).unwrap();
+    txn.delete(&schema::REGIONS_DESC, &[memcmp_uint(101)])
+        .unwrap();
     let t = Tables::new(&s);
     // Key "bz" belonged to deleted region 101; the walk falls back to region 100,
     // whose end_key "b" then correctly rejects it: unroutable, not misrouted.
-    assert!(t.region_for_key_in(&txn, KeyspaceId(7), b"bz").unwrap().is_none());
+    assert!(t
+        .region_for_key_in(&txn, KeyspaceId(7), b"bz")
+        .unwrap()
+        .is_none());
     // Key "az" still routes to the live region 100.
     assert_eq!(
         t.region_for_key_in(&txn, KeyspaceId(7), b"az")

@@ -134,12 +134,7 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
     /// (overlay wins; tombstones skipped), ascending or descending. Nothing beyond
     /// what the caller consumes is materialized (principle 13 — no unmetered
     /// whole-range Vec; the former `usize::MAX` scan sites all route through here).
-    fn merged_range<'t>(
-        &'t self,
-        start: &[u8],
-        end: &[u8],
-        rev: bool,
-    ) -> Result<MergedRange<'t>> {
+    fn merged_range<'t>(&'t self, start: &[u8], end: &[u8], rev: bool) -> Result<MergedRange<'t>> {
         let view_iter = if rev {
             self.view.iter_rev(ColumnFamily::Default, start, end)?
         } else {
@@ -256,7 +251,12 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
     }
 
     /// Update a row by primary key, re-maintaining affected indexes (METADATA-CATALOG §4).
-    pub fn update(&mut self, table: &TableDesc, pk: &[PkComponent], changes: Changes) -> Result<()> {
+    pub fn update(
+        &mut self,
+        table: &TableDesc,
+        pk: &[PkComponent],
+        changes: Changes,
+    ) -> Result<()> {
         let key = encode_row_key(table.id, pk)?;
         let old_bytes = self.read_kv(&key)?.ok_or_else(|| {
             Error::WriteConflict(format!("update of missing row in `{}`", table.name))

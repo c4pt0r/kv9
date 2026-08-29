@@ -67,8 +67,10 @@ const DISCOVERY_RESP_LEN: u32 = 18; // ver(1) + node(8) + initialized(1) + voter
 /// (DESIGN principle 9, "Auth on the control/management plane from day one") —
 /// not a wider hash.
 pub fn voter_set_fingerprint(declared: &[(u64, SocketAddr)]) -> u64 {
-    let mut entries: Vec<(u64, String)> =
-        declared.iter().map(|(id, a)| (*id, a.to_string())).collect();
+    let mut entries: Vec<(u64, String)> = declared
+        .iter()
+        .map(|(id, a)| (*id, a.to_string()))
+        .collect();
     entries.sort();
     let mut hash: u64 = 0xcbf29ce484222325;
     let mut eat = |b: u8| {
@@ -259,7 +261,11 @@ impl InProcHub {
     }
 
     pub fn endpoint(self: &Arc<Self>, me: NodeId) -> InProcEndpoint {
-        self.inboxes.lock().expect("hub poisoned").entry(me.0).or_default();
+        self.inboxes
+            .lock()
+            .expect("hub poisoned")
+            .entry(me.0)
+            .or_default();
         InProcEndpoint {
             hub: Arc::clone(self),
             me,
@@ -283,7 +289,10 @@ impl RaftTransport for InProcEndpoint {
 
     fn drain(&self) -> Vec<Message> {
         let mut inboxes = self.hub.inboxes.lock().expect("hub poisoned");
-        inboxes.get_mut(&self.me.0).map(std::mem::take).unwrap_or_default()
+        inboxes
+            .get_mut(&self.me.0)
+            .map(std::mem::take)
+            .unwrap_or_default()
     }
 }
 
@@ -317,8 +326,8 @@ impl TcpTransport {
         peers: HashMap<u64, SocketAddr>,
         discovery: Arc<dyn DiscoveryState>,
     ) -> Result<Arc<TcpTransport>> {
-        let listener = TcpListener::bind(addr)
-            .map_err(|e| Error::Raft(format!("bind {addr}: {e}")))?;
+        let listener =
+            TcpListener::bind(addr).map_err(|e| Error::Raft(format!("bind {addr}: {e}")))?;
         let local_addr = listener
             .local_addr()
             .map_err(|e| Error::Raft(format!("local_addr: {e}")))?;
@@ -360,7 +369,10 @@ impl TcpTransport {
     /// Add/replace a peer's address (typically after a discovery response
     /// resolved a seed address into a node id).
     pub fn register_peer(&self, id: NodeId, addr: SocketAddr) {
-        self.peers.write().expect("peers poisoned").insert(id.0, addr);
+        self.peers
+            .write()
+            .expect("peers poisoned")
+            .insert(id.0, addr);
     }
 
     /// The node this transport answers as.
@@ -438,7 +450,7 @@ fn serve_conn(
                 }
             }
             Ok(Frame::DiscoveryResp { .. }) => return, // unsolicited: protocol error
-            Err(_) => return, // framing error or EOF: connection is done
+            Err(_) => return,                          // framing error or EOF: connection is done
         }
     }
 }
@@ -568,7 +580,10 @@ mod tests {
         bytes[pos] = 1;
         assert!(matches!(
             read_frame(&mut Cursor::new(bytes)).unwrap(),
-            Frame::DiscoveryResp { initialized: true, .. }
+            Frame::DiscoveryResp {
+                initialized: true,
+                ..
+            }
         ));
     }
 
@@ -611,10 +626,7 @@ mod tests {
         let ids = [NodeId(1), NodeId(2), NodeId(3)];
         let addrs: Vec<SocketAddr> = ids.iter().map(|_| free_addr()).collect();
         let peers_map = |_me: u64| -> HashMap<u64, SocketAddr> {
-            ids.iter()
-                .zip(&addrs)
-                .map(|(n, a)| (n.0, *a))
-                .collect()
+            ids.iter().zip(&addrs).map(|(n, a)| (n.0, *a)).collect()
         };
 
         let mut drivers = Vec::new();
@@ -645,8 +657,7 @@ mod tests {
         assert!(!initialized);
         assert_eq!(fp, 42, "the answer must echo the responder's declaration");
         assert!(
-            TcpTransport::discover(NodeId(9), 42, free_addr(), Duration::from_millis(200))
-                .is_err()
+            TcpTransport::discover(NodeId(9), 42, free_addr(), Duration::from_millis(200)).is_err()
         );
 
         // Run every driver on its production cadence (background pump threads);
@@ -663,7 +674,10 @@ mod tests {
             if let Some(i) = drivers.iter().position(|d| d.status().role == Role::Leader) {
                 break i;
             }
-            assert!(std::time::Instant::now() < deadline, "no leader within deadline");
+            assert!(
+                std::time::Instant::now() < deadline,
+                "no leader within deadline"
+            );
             std::thread::sleep(Duration::from_millis(5));
         };
 

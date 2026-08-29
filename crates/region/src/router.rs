@@ -46,7 +46,9 @@ impl RegionRouter {
     /// when no cached region covers the key (caller should refresh and retry).
     pub fn route(&self, key: &[u8]) -> Result<&Region> {
         if !self.ready {
-            return Err(Error::MetaNotReady("router cache below freshness watermark".into()));
+            return Err(Error::MetaNotReady(
+                "router cache below freshness watermark".into(),
+            ));
         }
         // Largest start_key <= key.
         self.by_start

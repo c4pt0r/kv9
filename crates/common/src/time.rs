@@ -9,7 +9,9 @@ use serde::{Deserialize, Serialize};
 
 /// A monotonically increasing transaction timestamp within a single txn group's
 /// timeline (DESIGN §8). `0` is reserved as the "zero / uninitialized" timestamp.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize,
+)]
 pub struct TimeStamp(pub u64);
 
 impl TimeStamp {
@@ -34,7 +36,9 @@ impl TimeStamp {
 ///
 /// Kept as a first-class type so an HLC-backed oracle can be swapped in for a very
 /// hot group without changing the `TimestampOracle` trait surface (DESIGN §8.2).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize,
+)]
 pub struct Hlc {
     /// Physical component (wall-clock derived), monotonic.
     pub physical: u64,

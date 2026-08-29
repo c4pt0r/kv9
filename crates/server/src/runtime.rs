@@ -547,7 +547,10 @@ enum KeySpan<'a> {
     Point(&'a [u8]),
     Batch(Vec<&'a [u8]>),
     /// Half-open `[start, end)`; an empty `end` means "to the end of the keyspace".
-    Range { start: &'a [u8], end: &'a [u8] },
+    Range {
+        start: &'a [u8],
+        end: &'a [u8],
+    },
 }
 
 impl<'a> KeySpan<'a> {
@@ -617,8 +620,8 @@ where
             match $result {
                 Ok(value) => value,
                 Err(error) if committed_chunks > 0 => {
-                    let last = last_applied
-                        .expect("committed_chunks > 0 implies a recorded position");
+                    let last =
+                        last_applied.expect("committed_chunks > 0 implies a recorded position");
                     return Err(Error::PartialDeleteRange {
                         committed_chunks,
                         last_applied_term: last.term,
@@ -722,18 +725,16 @@ impl RawApi for RuntimeBackend {
     }
 
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>> {
-        self.validated_context(ctx, KeySpan::Batch(keys.iter().map(|k| k.as_slice()).collect()))?;
+        self.validated_context(
+            ctx,
+            KeySpan::Batch(keys.iter().map(|k| k.as_slice()).collect()),
+        )?;
         let (view, hint, is_leader) = self.leader_read()?;
         let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
         RawExecutor.batch_get(&read, ctx.keyspace, keys)
     }
 
-    fn raw_put(
-        &self,
-        ctx: &RequestContext,
-        key: UserKey,
-        value: Value,
-    ) -> Result<AppliedPosition> {
+    fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<AppliedPosition> {
         self.validated_context(ctx, KeySpan::Point(&key))?;
         let plan = RawExecutor.plan_put(ctx.keyspace, &key, value, RawWriteOptions::default())?;
         self.commit_batch(plan)
@@ -1637,9 +1638,9 @@ mod tests {
     /// same encoded apply path production uses.
     fn two_region_keyspace() -> (crate::Node<kv9_engine::MemEngine>, KeyspaceId) {
         use kv9_common::{RegionId, TenantId};
-        use kv9_meta::schema::REGIONS_DESC;
         use kv9_meta::codec::{memcmp_uint, ColumnValue, RowValue};
         use kv9_meta::schema::ColumnId;
+        use kv9_meta::schema::REGIONS_DESC;
 
         let node = crate::Node::new(NodeId(1), kv9_common::Config::default()).unwrap();
         node.bootstrap().unwrap();
@@ -1664,10 +1665,13 @@ mod tests {
             r
         };
         let mut seed = node.meta_raft.store.begin().unwrap();
-        seed.delete(&REGIONS_DESC, &[memcmp_uint(initial.0)]).unwrap();
+        seed.delete(&REGIONS_DESC, &[memcmp_uint(initial.0)])
+            .unwrap();
         // [a, m) and [m, ) -- the second is the keyspace's trailing region.
-        seed.insert(&REGIONS_DESC, &[memcmp_uint(300)], row(300, b"a", b"m")).unwrap();
-        seed.insert(&REGIONS_DESC, &[memcmp_uint(301)], row(301, b"m", b"")).unwrap();
+        seed.insert(&REGIONS_DESC, &[memcmp_uint(300)], row(300, b"a", b"m"))
+            .unwrap();
+        seed.insert(&REGIONS_DESC, &[memcmp_uint(301)], row(301, b"m", b""))
+            .unwrap();
         node.meta_raft
             .propose_apply(Command::from_batch(&seed.into_batch()))
             .unwrap();
@@ -1698,7 +1702,10 @@ mod tests {
                     region.0, 300,
                     "the error must name the region whose epoch moved"
                 ),
-                other => panic!("epoch ({conf},{ver}) should be stale, got ok={}", other.is_ok()),
+                other => panic!(
+                    "epoch ({conf},{ver}) should be stale, got ok={}",
+                    other.is_ok()
+                ),
             }
         }
     }
@@ -1710,13 +1717,23 @@ mod tests {
         let (node, keyspace) = two_region_keyspace();
         let store = &node.meta_raft.store;
 
-        check_context(store, keyspace, &epoch(1, 1), KeySpan::Batch(vec![b"b", b"c"]))
-            .expect("control: keys in one region are accepted");
+        check_context(
+            store,
+            keyspace,
+            &epoch(1, 1),
+            KeySpan::Batch(vec![b"b", b"c"]),
+        )
+        .expect("control: keys in one region are accepted");
 
         // b is in [a,m); z is in [m,) -- same epoch, different regions.
         assert!(
             matches!(
-                check_context(store, keyspace, &epoch(1, 1), KeySpan::Batch(vec![b"b", b"z"])),
+                check_context(
+                    store,
+                    keyspace,
+                    &epoch(1, 1),
+                    KeySpan::Batch(vec![b"b", b"z"])
+                ),
                 Err(Error::RangeCrossesRegion)
             ),
             "a batch crossing regions must be refused, not silently split"
@@ -1752,8 +1769,14 @@ mod tests {
     #[test]
     fn an_unbounded_range_end_is_only_legal_in_the_trailing_region() {
         // Trailing region (empty end_key): everything is inside it, including unbounded.
-        assert!(range_end_within_region(b"", b""), "unbounded in trailing region");
-        assert!(range_end_within_region(b"m", b""), "bounded in trailing region");
+        assert!(
+            range_end_within_region(b"", b""),
+            "unbounded in trailing region"
+        );
+        assert!(
+            range_end_within_region(b"m", b""),
+            "bounded in trailing region"
+        );
 
         // A bounded region cannot satisfy "to the end of the keyspace".
         assert!(
@@ -1862,7 +1885,9 @@ mod tests {
             |_cursor| {
                 planned += 1;
                 if planned == 2 {
-                    return Err(Error::NotLeader { leader: Some(NodeId(3)) });
+                    return Err(Error::NotLeader {
+                        leader: Some(NodeId(3)),
+                    });
                 }
                 let key = vec![b'k', planned as u8];
                 let mut batch = kv9_engine::WriteBatch::new();
@@ -1889,7 +1914,10 @@ mod tests {
                 assert_eq!(committed_chunks, 1);
                 assert_eq!((last_applied_term, last_applied_index), (9, 201));
             }
-            other => panic!("a plan-side failure must preserve the receipt, ok={}", other.is_ok()),
+            other => panic!(
+                "a plan-side failure must preserve the receipt, ok={}",
+                other.is_ok()
+            ),
         }
         assert!(!present(&engine, 1), "the committed chunk really applied");
         assert!(present(&engine, 2), "nothing after it did");

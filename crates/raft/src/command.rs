@@ -14,8 +14,15 @@ use kv9_engine::{ColumnFamily, Mutation, WriteBatch};
 /// serialization-friendly, owned form).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum KvOp {
-    Put { cf: u8, key: Vec<u8>, value: Vec<u8> },
-    Delete { cf: u8, key: Vec<u8> },
+    Put {
+        cf: u8,
+        key: Vec<u8>,
+        value: Vec<u8>,
+    },
+    Delete {
+        cf: u8,
+        key: Vec<u8>,
+    },
 }
 
 /// The set of commands the metadata-plane raft group replicates (ROADMAP Phase 1).
@@ -276,9 +283,7 @@ impl<'a> Reader<'a> {
 
     fn take(&mut self, n: usize) -> kv9_common::Result<&'a [u8]> {
         if self.buf.len() < n {
-            return Err(kv9_common::Error::Raft(
-                "truncated command entry".into(),
-            ));
+            return Err(kv9_common::Error::Raft("truncated command entry".into()));
         }
         let (head, rest) = self.buf.split_at(n);
         self.buf = rest;

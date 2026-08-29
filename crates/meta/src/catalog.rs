@@ -43,7 +43,9 @@ impl Catalog {
         validate_keyspace_id(id)?;
         let name = name.into();
         if self.by_name.contains_key(&name) {
-            return Err(Error::Config(format!("keyspace name '{name}' already exists")));
+            return Err(Error::Config(format!(
+                "keyspace name '{name}' already exists"
+            )));
         }
         if !self.tenants.contains_key(&tenant) {
             return Err(Error::Config(format!("tenant {tenant:?} does not exist")));

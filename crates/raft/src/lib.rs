@@ -14,9 +14,9 @@ pub mod command;
 pub mod driver;
 pub mod grpc;
 pub mod rawnode;
+pub mod state_machine;
 pub mod storage;
 pub mod transport;
-pub mod state_machine;
 
 pub use command::{cf_code, cf_from_code, Command, KvOp};
 pub use rawnode::{InProcessCluster, ProposedAt, RaftPeer};

@@ -317,9 +317,11 @@ impl Kv9Raft for RaftGrpcService {
                 "registration sender does not match authenticated node",
             ));
         }
-        let bytes: [u8; 16] = req.cluster_id.as_slice().try_into().map_err(|_| {
-            Status::invalid_argument("cluster_id must be exactly 16 bytes")
-        })?;
+        let bytes: [u8; 16] = req
+            .cluster_id
+            .as_slice()
+            .try_into()
+            .map_err(|_| Status::invalid_argument("cluster_id must be exactly 16 bytes"))?;
         let cluster_id = ClusterId::from_bytes(bytes);
         let Some(backend) = &self.registration else {
             // Loud stub discipline: absence of the seam is UNIMPLEMENTED,
@@ -1096,7 +1098,6 @@ mod tests {
         assert!(rx.try_recv().is_err());
     }
 
-
     /// The register seam end-to-end over a real wire: authenticated identity
     /// must match the body, absence of a backend is UNIMPLEMENTED (loud stub
     /// discipline — never a fabricated success), and the happy path returns
@@ -1160,7 +1161,11 @@ mod tests {
                     addr: "127.0.0.1:9009".into(),
                     cluster_id: test_cid().as_bytes().to_vec(),
                 });
-                attach_auth(&mut req, &Some("test-cluster-token".into()), NodeId(as_node));
+                attach_auth(
+                    &mut req,
+                    &Some("test-cluster-token".into()),
+                    NodeId(as_node),
+                );
                 client.register(req).await
             })
         };
@@ -1219,8 +1224,7 @@ mod tests {
         let nameless = free_addr();
         {
             let (tx, _rx) = mpsc::unbounded_channel();
-            let svc =
-                RaftGrpcService::new(NodeId(3), tx, Arc::new(NamelessInitialized(NodeId(3))));
+            let svc = RaftGrpcService::new(NodeId(3), tx, Arc::new(NamelessInitialized(NodeId(3))));
             handle.spawn(async move {
                 tonic::transport::Server::builder()
                     .add_service(Kv9RaftServer::with_interceptor(
@@ -1258,7 +1262,6 @@ mod tests {
         )
         .is_err());
     }
-
 
     /// The machine-readable not-leader contract, both directions (Tess's
     /// seam blocker on dd69bcd): a follower's refusal decodes to a TYPED

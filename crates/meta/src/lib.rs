@@ -38,7 +38,7 @@ pub use catalog::Catalog;
 pub use layered::{HierarchyResolver, MetaLevel, RootRecord};
 pub use leader::{should_force_failover, Lease, MetaLeader};
 pub use membership::{Membership, NodeInfo, NodeState};
-pub use placement::{store_score, Scheduler, ScheduleTask, StoreScoreInput, TokenBucket};
+pub use placement::{store_score, ScheduleTask, Scheduler, StoreScoreInput, TokenBucket};
 pub use routing::RoutingTable;
 pub use tso::{EmbeddedTso, TimelineWindow, TimestampOracle, TsoPool, TsoProvider};
 

@@ -48,7 +48,10 @@ fn err(bytes: &[u8]) -> String {
 fn every_kind_round_trips() {
     let frames = [
         Frame::Raft(vec![0xDE, 0xAD, 0xBE, 0xEF]),
-        Frame::DiscoveryReq { from: NodeId(7), voter_fp: 7 },
+        Frame::DiscoveryReq {
+            from: NodeId(7),
+            voter_fp: 7,
+        },
         Frame::DiscoveryResp {
             node: NodeId(9),
             initialized: true,
@@ -146,7 +149,10 @@ fn oversized_discovery_is_refused_before_reading_payload() {
 
 #[test]
 fn truncated_header_is_rejected() {
-    let full = encode_frame(&Frame::DiscoveryReq { from: NodeId(3), voter_fp: 7 });
+    let full = encode_frame(&Frame::DiscoveryReq {
+        from: NodeId(3),
+        voter_fp: 7,
+    });
     for cut in 0..8 {
         let message = err(&full[..cut]);
         assert!(
@@ -253,7 +259,10 @@ fn arbitrary_garbage_never_panics() {
 /// or mistaken for part of this one.
 #[test]
 fn a_frame_does_not_consume_the_next_one() {
-    let mut stream = encode_frame(&Frame::DiscoveryReq { from: NodeId(1), voter_fp: 7 });
+    let mut stream = encode_frame(&Frame::DiscoveryReq {
+        from: NodeId(1),
+        voter_fp: 7,
+    });
     stream.extend_from_slice(&encode_frame(&Frame::DiscoveryResp {
         node: NodeId(2),
         initialized: false,
@@ -263,7 +272,10 @@ fn a_frame_does_not_consume_the_next_one() {
     let mut cursor = Cursor::new(stream);
     assert_eq!(
         read_frame(&mut cursor).unwrap(),
-        Frame::DiscoveryReq { from: NodeId(1), voter_fp: 7 }
+        Frame::DiscoveryReq {
+            from: NodeId(1),
+            voter_fp: 7
+        }
     );
     assert_eq!(
         read_frame(&mut cursor).unwrap(),

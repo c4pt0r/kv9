@@ -96,7 +96,9 @@ impl TimestampOracle for EmbeddedTso {
 
     fn now(&self) -> Result<TimeStamp> {
         if !self.lease_confirmed {
-            return Err(Error::TsoUnavailable("provider lease not yet confirmed".into()));
+            return Err(Error::TsoUnavailable(
+                "provider lease not yet confirmed".into(),
+            ));
         }
         let mut w = self.window.lock().expect("tso window poisoned");
         let next = w.served.next();

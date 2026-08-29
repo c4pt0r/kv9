@@ -358,8 +358,7 @@ impl RawClient {
                 // The marker, not the code: stale epoch and API-type mismatch also map to
                 // FAILED_PRECONDITION, so treating the code as "not leader" would silently
                 // convert a real rejection into a pointless redirect.
-                Err(status) if not_leader_marked(&status) =>
-                {
+                Err(status) if not_leader_marked(&status) => {
                     // Read the hint from metadata, never by parsing the message: the
                     // prose is for humans and may be reworded.
                     let leader = status
@@ -559,7 +558,9 @@ fn applied_response(applied: crate::api::AppliedPosition) -> proto::RawWriteResp
 }
 
 fn receipt_response(receipt: crate::api::DeleteRangeReceipt) -> proto::RawDeleteRangeResponse {
-    let last = receipt.last_applied.unwrap_or(crate::api::AppliedPosition { term: 0, index: 0 });
+    let last = receipt
+        .last_applied
+        .unwrap_or(crate::api::AppliedPosition { term: 0, index: 0 });
     proto::RawDeleteRangeResponse {
         committed_chunks: receipt.committed_chunks,
         last_applied_term: last.term,
@@ -670,9 +671,7 @@ fn error_status(error: Error) -> Status {
         // describes our storage layout. The rich form stays on the Error for logs and
         // diagnostics -- the redaction is at the wire boundary, not at the source, so we do
         // not lose the detail where it is actually useful.
-        Error::ObjectContentMismatch { .. } => {
-            Status::internal("object store invariant violation")
-        }
+        Error::ObjectContentMismatch { .. } => Status::internal("object store invariant violation"),
         Error::TsoUnavailable(_) | Error::MetaNotReady(_) | Error::Raft(_) => {
             Status::unavailable(message)
         }
@@ -1542,7 +1541,12 @@ mod tests {
             cause: "engine error: disk full".into(),
         });
         assert_eq!(status.code(), Code::Aborted);
-        let get = |key: &str| status.metadata().get(key).map(|v| v.to_str().unwrap().to_owned());
+        let get = |key: &str| {
+            status
+                .metadata()
+                .get(key)
+                .map(|v| v.to_str().unwrap().to_owned())
+        };
         assert_eq!(get(PARTIAL_WRITE_KEY), Some("true".to_owned()));
         assert_eq!(get(COMMITTED_CHUNKS_KEY), Some("3".to_owned()));
         assert_eq!(get(LAST_APPLIED_TERM_KEY), Some("4".to_owned()));
@@ -1566,7 +1570,10 @@ mod tests {
             last_applied_index: 2,
             cause: String::new(),
         });
-        assert!(partial_write_marked(&partial), "control: this one is partial");
+        assert!(
+            partial_write_marked(&partial),
+            "control: this one is partial"
+        );
     }
 
     /// Round-trips the receipt, and refuses to invent numbers when a field is missing --
@@ -1586,7 +1593,10 @@ mod tests {
                 last_applied_index,
                 ..
             } => {
-                assert_eq!((committed_chunks, last_applied_term, last_applied_index), (5, 2, 77));
+                assert_eq!(
+                    (committed_chunks, last_applied_term, last_applied_index),
+                    (5, 2, 77)
+                );
             }
             other => panic!("expected a partial receipt, got {other}"),
         }
@@ -1605,7 +1615,12 @@ mod tests {
     /// in different code paths — fixing one taught nothing to the other.
     #[test]
     fn the_not_leader_marker_must_say_true_not_merely_exist() {
-        for (value, expected) in [("true", true), ("false", false), ("yes", false), ("", false)] {
+        for (value, expected) in [
+            ("true", true),
+            ("false", false),
+            ("yes", false),
+            ("", false),
+        ] {
             let mut status = Status::failed_precondition("x");
             if !value.is_empty() {
                 status
@@ -1628,7 +1643,12 @@ mod tests {
     /// accepting mere presence would invent a receipt for a call that reported none.
     #[test]
     fn the_partial_marker_must_say_true_not_merely_exist() {
-        for (value, expected) in [("true", true), ("false", false), ("yes", false), ("", false)] {
+        for (value, expected) in [
+            ("true", true),
+            ("false", false),
+            ("yes", false),
+            ("", false),
+        ] {
             let mut status = Status::aborted("x");
             if !value.is_empty() {
                 status
@@ -1649,7 +1669,9 @@ mod tests {
     #[test]
     fn not_leader_maps_to_failed_precondition_and_carries_the_hint_only_when_known() {
         // With a known leader: redirectable.
-        let status = error_status(Error::NotLeader { leader: Some(NodeId(7)) });
+        let status = error_status(Error::NotLeader {
+            leader: Some(NodeId(7)),
+        });
         assert_eq!(status.code(), Code::FailedPrecondition);
         assert_eq!(
             status
@@ -1671,7 +1693,10 @@ mod tests {
         // Control: not-leader is distinguishable from the unavailable family, so a client
         // does not transparently retry the same healthy follower.
         assert_ne!(
-            error_status(Error::NotLeader { leader: Some(NodeId(7)) }).code(),
+            error_status(Error::NotLeader {
+                leader: Some(NodeId(7))
+            })
+            .code(),
             error_status(Error::Raft("stepped down".into())).code()
         );
     }

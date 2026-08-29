@@ -163,7 +163,13 @@ mod cluster_id_tests {
         // Uppercase input is accepted; output stays lowercase.
         assert_eq!(ClusterId::from_str(&text.to_uppercase()).unwrap(), id);
         // Anything that is not exactly 32 hex chars is a typed error.
-        for bad in ["", "0011", &text[..31], &format!("{text}0"), "zz112233445566778899aabbccddeeff"] {
+        for bad in [
+            "",
+            "0011",
+            &text[..31],
+            &format!("{text}0"),
+            "zz112233445566778899aabbccddeeff",
+        ] {
             assert!(ClusterId::from_str(bad).is_err(), "accepted {bad:?}");
         }
     }

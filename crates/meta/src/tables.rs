@@ -7,9 +7,7 @@
 //! points *up* to `keyspaces` (a keyspace CONTAINS its txn groups; a `raw` keyspace has
 //! none) — there is no duplicated "which group" field to drift.
 
-use kv9_common::{
-    ApiType, KeyspaceId, NodeId, RegionId, Result, TenantId, TimelineId, TxnGroupId,
-};
+use kv9_common::{ApiType, KeyspaceId, NodeId, RegionId, Result, TenantId, TimelineId, TxnGroupId};
 use kv9_engine::Engine;
 
 use crate::codec::{memcmp_uint, ColumnValue, RowValue};
@@ -282,7 +280,10 @@ impl<'a, E: Engine> Tables<'a, E> {
         // Entry suffix = memcmp(keyspace_id) ++ memcmp(start_key) ++ memcmp(region_id).
         let rest = &suffix[ks_comp.len()..];
         let comps = crate::codec::split_components(
-            &[crate::schema::ColumnType::Bytes, crate::schema::ColumnType::Uint],
+            &[
+                crate::schema::ColumnType::Bytes,
+                crate::schema::ColumnType::Uint,
+            ],
             rest,
             true,
         )?;
@@ -304,7 +305,11 @@ impl<'a, E: Engine> Tables<'a, E> {
     ///
     /// A `raw` keyspace has no groups (returns `None`); the default single group has
     /// empty `sub_start`/`sub_end` = the whole keyspace.
-    pub fn txn_group_for_key(&self, keyspace: KeyspaceId, key: &[u8]) -> Result<Option<TxnGroupId>> {
+    pub fn txn_group_for_key(
+        &self,
+        keyspace: KeyspaceId,
+        key: &[u8],
+    ) -> Result<Option<TxnGroupId>> {
         let txn = self.store.begin()?;
         let group_pks = txn.index_scan(
             &schema::TXN_GROUPS_DESC,

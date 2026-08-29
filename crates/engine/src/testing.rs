@@ -129,7 +129,10 @@ mod tests {
         let e = FaultyEngine::new(MemEngine::new());
 
         put(&e, b"a", b"1").expect("writes succeed before arming");
-        assert_eq!(e.get(ColumnFamily::Default, b"a").unwrap(), Some(b"1".to_vec()));
+        assert_eq!(
+            e.get(ColumnFamily::Default, b"a").unwrap(),
+            Some(b"1".to_vec())
+        );
 
         e.start_failing_writes();
         assert!(put(&e, b"b", b"2").is_err(), "an armed write must fail");
@@ -139,11 +142,17 @@ mod tests {
             "a failed write must not be partially applied"
         );
         // ...and the earlier write is untouched.
-        assert_eq!(e.get(ColumnFamily::Default, b"a").unwrap(), Some(b"1".to_vec()));
+        assert_eq!(
+            e.get(ColumnFamily::Default, b"a").unwrap(),
+            Some(b"1".to_vec())
+        );
 
         e.stop_failing_writes();
         put(&e, b"c", b"3").expect("writes succeed again after disarming");
-        assert_eq!(e.get(ColumnFamily::Default, b"c").unwrap(), Some(b"3".to_vec()));
+        assert_eq!(
+            e.get(ColumnFamily::Default, b"c").unwrap(),
+            Some(b"3".to_vec())
+        );
     }
 
     /// The counter is what separates "the caller handled the error" from "the caller never
@@ -164,8 +173,14 @@ mod tests {
         put(&e, b"k", b"v").unwrap();
         e.start_failing_writes();
         // Reads keep working while writes fail, so a test can inspect the aftermath.
-        assert_eq!(e.get(ColumnFamily::Default, b"k").unwrap(), Some(b"v".to_vec()));
-        assert_eq!(e.scan(ColumnFamily::Default, b"", b"z", 10).unwrap().len(), 1);
+        assert_eq!(
+            e.get(ColumnFamily::Default, b"k").unwrap(),
+            Some(b"v".to_vec())
+        );
+        assert_eq!(
+            e.scan(ColumnFamily::Default, b"", b"z", 10).unwrap().len(),
+            1
+        );
         assert_eq!(e.durability(), Durability::Volatile);
     }
 }

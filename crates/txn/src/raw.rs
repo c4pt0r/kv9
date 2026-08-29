@@ -81,7 +81,9 @@ impl<'a> LeaderRead<'a> {
         leader_hint: Option<NodeId>,
     ) -> Result<Self> {
         if !is_leader {
-            return Err(Error::NotLeader { leader: leader_hint });
+            return Err(Error::NotLeader {
+                leader: leader_hint,
+            });
         }
         Ok(LeaderRead { view })
     }
@@ -316,7 +318,11 @@ mod tests {
             panic!("expected a put");
         };
         // The whole point: what gets replicated is prefixed, not b"k".
-        assert_ne!(key.as_slice(), b"k", "the bare user key must never be stored");
+        assert_ne!(
+            key.as_slice(),
+            b"k",
+            "the bare user key must never be stored"
+        );
         assert_eq!(key, &encode_key(KeyMode::Raw, KS_A, b"k").unwrap());
         let decoded = decode_key(key).unwrap();
         assert_eq!(decoded.mode, KeyMode::Raw);
@@ -383,7 +389,11 @@ mod tests {
         let rows = RawExecutor
             .scan(&leader(view.as_ref()), KS_A, b"", b"", usize::MAX)
             .unwrap();
-        assert_eq!(rows[0].0, b"key".to_vec(), "the prefix must be stripped back off");
+        assert_eq!(
+            rows[0].0,
+            b"key".to_vec(),
+            "the prefix must be stripped back off"
+        );
     }
 
     #[test]
@@ -393,10 +403,19 @@ mod tests {
         let view = engine.snapshot().unwrap();
         let read = leader(view.as_ref());
 
-        assert!(RawExecutor.scan(&read, KS_A, b"z", b"a", 10).unwrap().is_empty());
-        assert!(RawExecutor.scan(&read, KS_A, b"m", b"m", 10).unwrap().is_empty());
+        assert!(RawExecutor
+            .scan(&read, KS_A, b"z", b"a", 10)
+            .unwrap()
+            .is_empty());
+        assert!(RawExecutor
+            .scan(&read, KS_A, b"m", b"m", 10)
+            .unwrap()
+            .is_empty());
         // Control: the row is findable with a range that does contain it.
-        assert_eq!(RawExecutor.scan(&read, KS_A, b"a", b"z", 10).unwrap().len(), 1);
+        assert_eq!(
+            RawExecutor.scan(&read, KS_A, b"a", b"z", 10).unwrap().len(),
+            1
+        );
     }
 
     /// Silently ignoring a TTL would let a caller believe data expires when it never will.
@@ -432,8 +451,13 @@ mod tests {
         let view = engine.snapshot().unwrap();
 
         match LeaderRead::new(view.as_ref(), false, Some(NodeId(3))) {
-            Err(Error::NotLeader { leader }) => assert_eq!(leader, Some(NodeId(3)), "hint must survive"),
-            other => panic!("a follower must be refused, got {other:?}", other = other.is_ok()),
+            Err(Error::NotLeader { leader }) => {
+                assert_eq!(leader, Some(NodeId(3)), "hint must survive")
+            }
+            other => panic!(
+                "a follower must be refused, got {other:?}",
+                other = other.is_ok()
+            ),
         }
         // Control: the same view is readable once leadership is asserted, so the refusal
         // above is about leadership and not about the view being empty or broken.

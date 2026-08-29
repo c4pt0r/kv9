@@ -113,9 +113,8 @@ pub fn decode_key(raw: &[u8]) -> Result<DecodedKey<'_>> {
         )));
     }
     let mode = KeyMode::from_byte(raw[0])?;
-    let keyspace = KeyspaceId(
-        (u32::from(raw[1]) << 16) | (u32::from(raw[2]) << 8) | u32::from(raw[3]),
-    );
+    let keyspace =
+        KeyspaceId((u32::from(raw[1]) << 16) | (u32::from(raw[2]) << 8) | u32::from(raw[3]));
     Ok(DecodedKey {
         mode,
         keyspace,

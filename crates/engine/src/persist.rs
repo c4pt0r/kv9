@@ -164,7 +164,11 @@ mod tests {
         }
         let (e, replay) = WalEngine::open(&path).unwrap();
         assert_eq!(replay.discarded_tail_bytes, 0);
-        assert_eq!(e.get(ColumnFamily::Default, b"a").unwrap(), None, "the delete survived too");
+        assert_eq!(
+            e.get(ColumnFamily::Default, b"a").unwrap(),
+            None,
+            "the delete survived too"
+        );
         assert_eq!(
             e.get(ColumnFamily::Default, b"b").unwrap(),
             Some(b"2".to_vec())
@@ -194,7 +198,10 @@ mod tests {
             e.write(b).unwrap();
         }
         let (e, _) = WalEngine::open(&path).unwrap();
-        assert_eq!(e.get(ColumnFamily::Lock, b"k").unwrap(), Some(b"l".to_vec()));
+        assert_eq!(
+            e.get(ColumnFamily::Lock, b"k").unwrap(),
+            Some(b"l".to_vec())
+        );
         assert_eq!(
             e.get(ColumnFamily::Write, b"k").unwrap(),
             Some(b"w".to_vec())
@@ -230,11 +237,17 @@ mod tests {
         // Simulate dying part-way through writing a third record.
         {
             use std::io::Write;
-            let mut f = std::fs::OpenOptions::new().append(true).open(&path).unwrap();
+            let mut f = std::fs::OpenOptions::new()
+                .append(true)
+                .open(&path)
+                .unwrap();
             f.write_all(b"KV9W\x01\x20\x00\x00").unwrap();
         }
         let (e, replay) = WalEngine::open(&path).unwrap();
-        assert!(replay.discarded_tail_bytes > 0, "the tear should be reported");
+        assert!(
+            replay.discarded_tail_bytes > 0,
+            "the tear should be reported"
+        );
         assert_eq!(
             e.get(ColumnFamily::Default, b"a").unwrap(),
             Some(b"1".to_vec())
@@ -256,7 +269,10 @@ mod tests {
         }
         {
             use std::io::Write;
-            let mut f = std::fs::OpenOptions::new().append(true).open(&path).unwrap();
+            let mut f = std::fs::OpenOptions::new()
+                .append(true)
+                .open(&path)
+                .unwrap();
             f.write_all(b"KV9W\x01\x99").unwrap();
         }
         {
@@ -334,13 +350,21 @@ mod tests {
             // Exactly the shape the state machine writes: data and watermark, one batch.
             let mut b = WriteBatch::new();
             b.put(ColumnFamily::Default, b"tkey".to_vec(), b"row".to_vec());
-            b.put(ColumnFamily::Default, watermark.clone(), 7u64.to_be_bytes().to_vec());
+            b.put(
+                ColumnFamily::Default,
+                watermark.clone(),
+                7u64.to_be_bytes().to_vec(),
+            );
             e.write(b).unwrap();
 
             // A second round, to catch a replay that only ever restores the first record.
             let mut b = WriteBatch::new();
             b.put(ColumnFamily::Default, b"tkey".to_vec(), b"row2".to_vec());
-            b.put(ColumnFamily::Default, watermark.clone(), 9u64.to_be_bytes().to_vec());
+            b.put(
+                ColumnFamily::Default,
+                watermark.clone(),
+                9u64.to_be_bytes().to_vec(),
+            );
             e.write(b).unwrap();
         }
 
@@ -369,12 +393,20 @@ mod tests {
             let (e, _) = WalEngine::open(&path).unwrap();
             let mut b = WriteBatch::new();
             b.put(ColumnFamily::Default, b"tkey".to_vec(), b"row".to_vec());
-            b.put(ColumnFamily::Default, watermark.clone(), 1u64.to_be_bytes().to_vec());
+            b.put(
+                ColumnFamily::Default,
+                watermark.clone(),
+                1u64.to_be_bytes().to_vec(),
+            );
             e.write(b).unwrap();
 
             let mut b = WriteBatch::new();
             b.put(ColumnFamily::Default, b"tkey".to_vec(), b"row2".to_vec());
-            b.put(ColumnFamily::Default, watermark.clone(), 2u64.to_be_bytes().to_vec());
+            b.put(
+                ColumnFamily::Default,
+                watermark.clone(),
+                2u64.to_be_bytes().to_vec(),
+            );
             e.write(b).unwrap();
         }
         // Cut inside the second record so it cannot be recovered.

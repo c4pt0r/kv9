@@ -78,7 +78,12 @@ impl PercolatorExecutor {
     }
 
     /// Commit: commit the primary (atomic point) then secondaries lazily (DESIGN §9.1).
-    pub fn commit(&self, _ctx: &TxnContext, _commit_ts: TimeStamp, _keys: &[UserKey]) -> Result<()> {
+    pub fn commit(
+        &self,
+        _ctx: &TxnContext,
+        _commit_ts: TimeStamp,
+        _keys: &[UserKey],
+    ) -> Result<()> {
         Err(Error::NotImplemented("PercolatorExecutor::commit"))
     }
 
