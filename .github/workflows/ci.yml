@@ -10,7 +10,7 @@ name: CI
 #                a workflow cannot block a merge by itself; that takes a branch protection
 #                rule or ruleset, which is a separate change and does not exist yet
 #                (verified: branches/master/protection => 404, rulesets => []).
-#   fmt          informational -- the tree is not formatted yet (see that job).
+#   fmt          BLOCKING. The tree is formatted; drift is now a failure, not a report.
 #   acceptance   multi-process E2E. master pushes only, real pass/fail. Not on PRs.
 #
 # The E2E scripts do not gate pull requests. During Phase 1 two separate diagnostic
@@ -113,25 +113,17 @@ jobs:
   # Make this blocking after the tree is formatted in one deliberate pass (a cross-lane
   # change that needs its own announcement). Until then it reports drift without
   # punishing whoever opens the next PR.
-  # Informational, but NOT silent -- and that distinction was established by experiment,
-  # not argument. With `continue-on-error` at JOB level, a run whose only failure was fmt
-  # reported `run_conclusion = success` (run 33237266703, verified via `gh run view --json`
-  # with all five job conclusions checked and none cancelled or skipped). So master displayed
-  # a green tick while rustfmt was red: the check existed and nobody could see it, which is
-  # barely different from not running it.
+  # A real gate now. The tree was formatted in the preceding commit, so a drift failure
+  # names the change that introduced it rather than punishing whoever opened the next PR
+  # -- which was the whole reason this stayed informational until now.
   #
-  # The failure is therefore moved to STEP level and the job surfaces it deliberately: a
-  # `::warning` annotation, plus a run summary naming the drift and the exact toolchain that
-  # produced it. `stable` is a moving channel -- this machine resolved rustc 1.94 while the
-  # runner resolved 1.98, which is how three clippy lints reached CI that no local run could
-  # reproduce -- so the resolved versions are recorded on every run rather than assumed.
-  #
-  # `cargo fmt --check` does not pass on this tree yet, which is why this is not a gate. Making
-  # it one requires formatting the whole tree in a single cross-lane pass, tracked separately;
-  # that pass must land after the in-flight branches, or every one of them pays a rebase across
-  # a repo-wide reformat.
+  # Kept from the informational version: the resolved toolchain is still recorded on every
+  # run. `rust-toolchain.toml` names the channel `stable`, not a version, so this runner and
+  # a contributor's machine can format differently -- and now that the job blocks, a
+  # disagreement about WHICH rustfmt is the one that matters has to be answerable. The
+  # hosted runner is canonical; the version it used is printed below and in the failure.
   fmt:
-    name: rustfmt (drift is reported, not enforced)
+    name: rustfmt
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -140,7 +132,7 @@ jobs:
       - name: Record the resolved toolchain
         run: |
           {
-            echo "### rustfmt drift report"
+            echo "### rustfmt"
             echo
             echo '```'
             rustc --version
@@ -148,56 +140,22 @@ jobs:
             cargo clippy --version
             cargo fmt --version
             echo '```'
-            echo
-            echo "\`rust-toolchain.toml\` pins \`channel = \"stable\"\`, which is a *moving* target:"
-            echo "the version above is whatever the runner resolved today, and it will not match a"
-            echo "contributor whose local stable is older. Reproduce a CI-only lint with:"
-            echo
-            echo '```'
-            echo "rustup toolchain install $(rustc --version | cut -d' ' -f2)"
-            echo "cargo +$(rustc --version | cut -d' ' -f2) clippy --workspace --all-targets -- -D warnings"
-            echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # continue-on-error at STEP level: the step may fail without failing the job, but unlike
-      # the job-level form the outcome is readable in the next step, so the drift can be
-      # announced instead of vanishing into a green run.
       - name: Format check
         id: fmt
-        continue-on-error: true
         run: cargo fmt --all --check
 
-      - name: Report drift
-        if: steps.fmt.outcome == 'failure'
+      # Runs only when the gate failed. `cargo fmt --all` locally is the entire fix, but the
+      # annotation says which toolchain judged it, because `stable` moves and a contributor
+      # whose local rustfmt is older can format to a different result and be confused by a
+      # red they cannot reproduce.
+      - name: Explain the failure
+        if: failure() && steps.fmt.outcome == 'failure'
         run: |
           hunks=$(cargo fmt --all --check 2>/dev/null | grep -c '^Diff in' || true)
           files=$(cargo fmt --all --check 2>/dev/null | grep '^Diff in' | sed 's/:[0-9]*:$//' | sort -u | wc -l)
-          # Two annotations, not one, and the toolchain goes in an annotation rather than only the
-          # summary. Exclusion probe (Tess, independently repeated by Cindy on a third surface): the
-          # summary's distinctive text is absent from the anonymous run page, the anonymous job page,
-          # and unauthenticated check-run REST (`output.summary` null), while the annotation's dynamic
-          # counts DO appear. That shows those three probed surfaces do not expose the summary -- not
-          # that it is unreachable anonymously in general, and not that a permission is required;
-          # async loading or another entry point fit the same evidence. So put whatever a reader must
-          # act on into an annotation, which is proven readable, instead of reasoning about a channel
-          # whose retrieval mechanism is unknown.
-          echo "::warning title=rustfmt drift::${hunks} hunk(s) across ${files} file(s) are unformatted. Not blocking yet. Resolved toolchain: $(rustc --version) / $(cargo --version) / $(cargo clippy --version)."
-          echo "::warning title=reproduce this locally::rust-toolchain.toml pins channel=stable, a MOVING target -- your local stable may differ from the runner's. Run: rustup toolchain install $(rustc --version | cut -d' ' -f2) && cargo +$(rustc --version | cut -d' ' -f2) clippy --workspace --all-targets -- -D warnings"
-          {
-            echo
-            echo "**${hunks} hunk(s) across ${files} file(s)** differ from \`cargo fmt\`."
-            echo
-            echo "_Note: this summary was not retrievable from three probed surfaces -- the anonymous run page, the"
-            echo "job page, or the unauthenticated check-run REST endpoint (\`output.summary\` was null)."
-            echo "How it *is* retrieved has not been established -- permissions, async loading and a"
-            echo "different entry point are all consistent with that evidence. Annotations were"
-            echo "independently confirmed anonymously readable, so the toolchain and the reproduce"
-            echo "command are emitted there and do not depend on this._"
-            echo
-            echo "Not a gate yet: the tree has never been formatted, so blocking here would fail"
-            echo "changes that did not cause the drift. Fixing that is a single cross-lane pass,"
-            echo "tracked separately -- after which this becomes a real gate."
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error title=rustfmt::${hunks} hunk(s) across ${files} file(s) are unformatted. Fix with: cargo fmt --all. Judged by $(cargo fmt --version) on $(rustc --version); rust-toolchain.toml pins the channel 'stable', not a version, so an older local rustfmt may disagree -- the runner is canonical."
 
   # Runs on master pushes only, and NOT on pull requests -- deliberately, and this is a
   # different choice from the one this job started with.
