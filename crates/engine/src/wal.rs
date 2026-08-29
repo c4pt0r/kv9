@@ -278,12 +278,11 @@ impl Wal {
                 break;
             }
 
-            match decode_batch(payload) {
-                Ok(b) => batches.push(b),
-                // A record that verifies but will not decode is a real inconsistency, not
-                // a crash artifact — surface it.
-                Err(e) => return Err(e),
-            }
+            // `?`, deliberately NOT the `break` used for a CRC mismatch above: a record whose
+            // checksum verifies but whose payload will not decode is a real inconsistency, not
+            // a torn tail. Breaking here would silently truncate the log at a point the data
+            // says is intact, so this must propagate.
+            batches.push(decode_batch(payload)?);
             good_end += (HEADER_LEN + len as usize + CRC_LEN) as u64;
         }
 
