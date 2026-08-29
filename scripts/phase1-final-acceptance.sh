@@ -269,7 +269,9 @@ mkdir -p "$artifact_dir"
 for ((node = 1; node <= meta_node_count; node++)); do
   start_node "$node"
 done
+serving_started=$SECONDS
 wait_until "${meta_node_count} meta voters Serving behind one leader" "$serving_timeout" all_serving
+serving_elapsed=$((SECONDS - serving_started))
 
 old_leader="$(status_value 1 leader_id)"
 old_commit="$(status_value "$old_leader" raft_committed)"
@@ -318,7 +320,7 @@ for ((node = 1; node <= meta_node_count; node++)); do
   test -s "$artifact_dir/n${node}/catalog.wal"
   test -s "$artifact_dir/n${node}/kv9-initialized"
 done
-echo "PASS: quorum fencing, ${meta_node_count}-voter meta bootstrap, leader kill/failover, and durable restart/catch-up"
+echo "PASS: quorum fencing, ${meta_node_count}-voter meta bootstrap, leader kill/failover, and durable restart/catch-up (Serving in ${serving_elapsed}s of ${serving_timeout}s budget)"
 echo "Artifacts: $root_artifact_dir"
 for ((node = 1; node <= meta_node_count; node++)); do
   echo "node $node: role=$(status_value "$node" role) voters=$(status_value "$node" meta_voters) leader=$(status_value "$node" leader_id) term=$(status_value "$node" term) committed=$(status_value "$node" raft_committed) applied=$(status_value "$node" applied_index) state=$(status_value "$node" bootstrap_state)"
