@@ -52,7 +52,8 @@ use crate::Node;
 const TICK: Duration = Duration::from_millis(20);
 const DISCOVERY_INTERVAL: Duration = Duration::from_millis(200);
 const DISCOVERY_TIMEOUT: Duration = Duration::from_millis(50);
-const DISCOVERY_LAST_DETAIL_MAX_CHARS: usize = 160;
+const DISCOVERY_LAST_OUTCOME_MAX_CHARS: usize = 160;
+const DISCOVERY_ERROR_PREFIX: &str = "error:";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum DiscoveryRejection {
@@ -87,7 +88,7 @@ impl DiscoveryLastOutcome {
             Self::AcceptedInitialized => "accepted_initialized".into(),
             Self::AcceptedUninitialized => "accepted_uninitialized".into(),
             Self::Rejected(reason) => reason.label().into(),
-            Self::Error(detail) => format!("error:{detail}"),
+            Self::Error(detail) => format!("{DISCOVERY_ERROR_PREFIX}{detail}"),
         }
     }
 }
@@ -155,7 +156,7 @@ fn bounded_discovery_detail(detail: &str) -> String {
     detail
         .chars()
         .map(|ch| if ch.is_control() { ' ' } else { ch })
-        .take(DISCOVERY_LAST_DETAIL_MAX_CHARS)
+        .take(DISCOVERY_LAST_OUTCOME_MAX_CHARS - DISCOVERY_ERROR_PREFIX.len())
         .collect()
 }
 
@@ -2223,14 +2224,14 @@ mod tests {
         observation.record_error(&Error::Raft(format!(
             "discovery rpc {}: first line\n{}",
             seed.addr,
-            "x".repeat(DISCOVERY_LAST_DETAIL_MAX_CHARS * 2)
+            "x".repeat(DISCOVERY_LAST_OUTCOME_MAX_CHARS * 2)
         )));
         assert_eq!(observation.attempts, u64::MAX);
         assert_eq!(observation.errors, u64::MAX);
         let DiscoveryLastOutcome::Error(detail) = &observation.last else {
             panic!("the most recent error must stay queryable");
         };
-        assert!(detail.chars().count() <= DISCOVERY_LAST_DETAIL_MAX_CHARS);
+        assert!(observation.last.label().chars().count() <= DISCOVERY_LAST_OUTCOME_MAX_CHARS);
         assert!(!detail.chars().any(char::is_control));
 
         let status = format_discovery_observations(&BTreeMap::from([(2, observation)]));

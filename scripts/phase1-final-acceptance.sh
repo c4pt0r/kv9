@@ -230,7 +230,7 @@ while (( SECONDS < negative_deadline )); do
 done
 for seed in 2 3; do
   observation="$(status_value 1 "discovery_seed_$seed")"
-  if ! [[ "$observation" =~ attempts=[1-9][0-9]* && "$observation" =~ errors=[1-9][0-9]* ]]; then
+  if ! [[ "$observation" =~ ,attempts=[1-9][0-9]* && "$observation" =~ ,errors=[1-9][0-9]* ]]; then
     echo "FAIL: silent seed $seed was not visible in node 1 discovery status" >&2
     exit 1
   fi
@@ -275,11 +275,11 @@ while (( SECONDS < fingerprint_deadline )); do
 done
 node_id_rejection="$(status_value 1 discovery_seed_3)"
 fingerprint_rejection="$(status_value 1 discovery_seed_2)"
-if ! [[ "$node_id_rejection" =~ rejected_node_id=[1-9][0-9]* ]]; then
+if ! [[ "$node_id_rejection" =~ ,rejected_node_id=[1-9][0-9]* ]]; then
   echo "FAIL: declared-address node-id rejection was not visible in node 1 status" >&2
   exit 1
 fi
-if ! [[ "$fingerprint_rejection" =~ rejected_voter_fingerprint=[1-9][0-9]* ]]; then
+if ! [[ "$fingerprint_rejection" =~ ,rejected_voter_fingerprint=[1-9][0-9]* ]]; then
   echo "FAIL: voter-fingerprint rejection was not visible in node 1 status" >&2
   exit 1
 fi
