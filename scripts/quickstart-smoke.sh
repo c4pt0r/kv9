@@ -138,9 +138,19 @@ quickstart_client() {
     fi
     if [[ "$output" =~ not_leader=true[[:space:]]+leader_node_id=([1-3]) ]]; then
       hinted="${BASH_REMATCH[1]}"
-      leader="$hinted"
-      continue
+      # Only follow a hint that points somewhere ELSE. A hint naming the node we just
+      # asked cannot be made true by asking it again: retrying spins the full five
+      # attempts and turns an immediate, accurate failure into a five-fold timeout
+      # reported against the wrong thing. Fall through and surface the original
+      # NotLeader instead. (Same guard raw-kv-e2e.sh has; the two wrappers must behave
+      # identically or the difference becomes a trap for whoever reads one and edits
+      # the other.)
+      if [[ "$hinted" != "$leader" ]]; then
+        leader="$hinted"
+        continue
+      fi
     fi
+    client_reply="$output"
     printf '%s\n' "$output" >&2
     return "$rc"
   done
