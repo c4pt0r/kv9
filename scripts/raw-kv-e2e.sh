@@ -77,6 +77,14 @@ wait_until() {
   exit 1
 }
 
+# Publishes the agreed leader in `agreed_leader` as a side effect. That value is the
+# whole point of this check and it is already computed here; re-deriving it afterwards
+# by scanning for a self-reported `role=leader` discards the cross-node agreement one
+# line after establishing it, and can pick a deposed-but-not-yet-stepped-down node --
+# which still says `role=leader` about itself while every follower already names
+# someone else. Source and freshness are separate defects needing separate fixes: this
+# is the source half; `leader_client` below is the freshness half.
+agreed_leader=""
 all_serving() {
   local node leaders=0 leader_id=0 seen
   for node in 1 2 3; do
@@ -88,7 +96,8 @@ all_serving() {
     test "$seen" -eq "$leader_id" || return 1
     test "$(status_value "$node" role)" = leader && leaders=$((leaders + 1))
   done
-  test "$leaders" -eq 1
+  test "$leaders" -eq 1 || return 1
+  agreed_leader="$leader_id"
 }
 
 # `exclude` matters: a killed node's status file is frozen at its last write, so it
@@ -113,6 +122,34 @@ client() {
     --addr "127.0.0.1:$((base_port + node))"
 }
 
+# A cached leader is only a point-in-time observation. During startup the cluster may
+# legitimately elect a newer leader between two client calls. Follow a typed NotLeader
+# hint and retry only that known-not-applied outcome; deadlines and all other failures
+# remain loud because their write outcome may be unknown.
+leader_reply=""
+leader_client() {
+  local output rc hinted attempt
+  for attempt in 1 2 3 4 5; do
+    if output="$(client "$leader" "$@" 2>&1)"; then
+      leader_reply="$output"
+      return 0
+    else
+      rc=$?
+    fi
+    if [[ "$output" =~ not_leader=true[[:space:]]+leader_node_id=([1-3]) ]]; then
+      hinted="${BASH_REMATCH[1]}"
+      if [[ "$hinted" != "$leader" ]]; then
+        leader="$hinted"
+        continue
+      fi
+    fi
+    printf '%s\n' "$output" >&2
+    return "$rc"
+  done
+  echo "FAIL: leader changed during five consecutive client attempts" >&2
+  return 1
+}
+
 # The status file is a snapshot republished every tick, not a live query. Reading it
 # immediately after a write can catch the previous tick and report a position that has
 # already advanced in the process. Poll for the value to appear rather than sampling
@@ -131,12 +168,17 @@ echo "Starting three nodes on ports $((base_port + 1))-$((base_port + 3))..."
 for node in 1 2 3; do start_node "$node"; done
 wait_until "three members Serving behind one leader" 20 all_serving
 
-leader="$(leader_node)"
+# Take the value `all_serving` just proved all three nodes agree on, not a fresh scan
+# for whoever calls themselves leader. This is what the previous run got wrong: it
+# resolved n3 from a single self-report and then addressed every later request there,
+# while all three status files ended up naming n2.
+leader="$agreed_leader"
+test -n "$leader" || { echo "FAIL: all_serving passed without publishing an agreed leader" >&2; exit 1; }
 echo "Leader is n${leader}."
 
 # ---------------------------------------------------------------- keyspace
-create_output="$(KV9_CLIENT_TOKEN="$client_token" timeout 30 "$bin" client create-keyspace \
-  --addr "127.0.0.1:$((base_port + leader))" --name raw-e2e --api-type raw)"
+leader_client create-keyspace --name raw-e2e --api-type raw
+create_output="$leader_reply"
 keyspace="$(awk -F= '$1 == "keyspace_id" { print $2 }' <<<"$create_output")"
 test -n "$keyspace" || { echo "FAIL: no keyspace_id in create output" >&2; exit 1; }
 echo "Created raw keyspace ${keyspace}."
@@ -158,8 +200,8 @@ test "$unknown_rc" -ne 0 || { echo "FAIL: unknown keyspace was served: $unknown_
 
 # A txn keyspace must refuse raw writes: Percolator expects its own lock/write structure
 # there, and raw bytes would corrupt that silently.
-txn_out="$(KV9_CLIENT_TOKEN="$client_token" timeout 30 "$bin" client create-keyspace \
-  --addr "127.0.0.1:$((base_port + leader))" --name raw-e2e-txn --api-type txn)"
+leader_client create-keyspace --name raw-e2e-txn --api-type txn
+txn_out="$leader_reply"
 txn_keyspace="$(awk -F= '$1 == "keyspace_id" { print $2 }' <<<"$txn_out")"
 test -n "$txn_keyspace" || { echo "FAIL: could not create the txn keyspace" >&2; exit 1; }
 set +e
@@ -173,15 +215,18 @@ test "$mismatch_rc" -ne 0 || {
 # Control: a valid context on the same path answers normally (the key is not written
 # yet, so `found=false` IS the successful answer). Without this the two refusals above
 # would be consistent with "everything fails".
-control="$(client "$leader" raw-get --keyspace "$keyspace" --key-hex "$key_hex")"
+leader_client raw-get --keyspace "$keyspace" --key-hex "$key_hex"
+control="$leader_reply"
 test "$control" = "found=false" || {
   echo "FAIL: control read broke, the refusals prove nothing: $control" >&2; exit 1; }
 echo "Context gate refuses unknown and txn keyspaces; raw keyspace still served."
 
 
 # ---------------------------------------------------------------- write + read back
-put_output="$(client "$leader" raw-put --keyspace "$keyspace" --key-hex "$key_hex" --value-hex "$value_hex")"
-got="$(client "$leader" raw-get --keyspace "$keyspace" --key-hex "$key_hex")"
+leader_client raw-put --keyspace "$keyspace" --key-hex "$key_hex" --value-hex "$value_hex"
+put_output="$leader_reply"
+leader_client raw-get --keyspace "$keyspace" --key-hex "$key_hex"
+got="$leader_reply"
 test "$got" = "value_hex=${value_hex}" || { echo "FAIL: read-back got '$got'" >&2; exit 1; }
 
 # The position comes from the write's own response. Inferring it from a quiescent status
@@ -193,22 +238,49 @@ write_index="$(awk -F= '$1 == "applied_index" { print $2 }' <<<"$put_output")"
 test "$write_index" -gt 0 || { echo "FAIL: applied_index still 0 after write" >&2; exit 1; }
 echo "Write applied at (term=${write_term}, index=${write_index})."
 
-scan_output="$(client "$leader" raw-scan --keyspace "$keyspace")"
+leader_client raw-scan --keyspace "$keyspace"
+scan_output="$leader_reply"
 grep -q "key_hex=${key_hex} value_hex=${value_hex}" <<<"$scan_output" || { echo "FAIL: scan missing the row: $scan_output" >&2; exit 1; }
 grep -q "^count=1$" <<<"$scan_output" || { echo "FAIL: scan count wrong: $scan_output" >&2; exit 1; }
 
-# A follower must refuse, and say so in a form a script can branch on.
-for node in 1 2 3; do
-  test "$node" -eq "$leader" && continue
-  set +e
-  follower_output="$(client "$node" raw-get --keyspace "$keyspace" --key-hex "$key_hex" 2>&1)"
-  follower_rc=$?
-  set -e
-  test "$follower_rc" -ne 0 || { echo "FAIL: follower n${node} served a read" >&2; exit 1; }
-  grep -q "not_leader=true" <<<"$follower_output" || {
-    echo "FAIL: follower n${node} refused for the wrong reason: $follower_output" >&2; exit 1; }
-done
+# A follower must refuse, and say so in a form a script can branch on. Role is sampled
+# both before and after the RPC: if an election overlaps the request, a successful read
+# from the new leader must not be misclassified as a follower serving data.
+declare -A follower_refused=()
+stable_followers_refuse() {
+  local node before after output rc count=0
+  for node in 1 2 3; do
+    before="$(status_value "$node" role 2>/dev/null || true)"
+    [[ "$before" == follower ]] || continue
+    if output="$(client "$node" raw-get --keyspace "$keyspace" --key-hex "$key_hex" 2>&1)"; then
+      rc=0
+    else
+      rc=$?
+    fi
+    after="$(status_value "$node" role 2>/dev/null || true)"
+    [[ "$after" == follower ]] || continue
+    if (( rc == 0 )); then
+      echo "FAIL: node n${node} served a read while it remained follower" >&2
+      exit 1
+    fi
+    if ! grep -Eq 'not_leader=true[[:space:]]+leader_node_id=[1-3]' <<<"$output"; then
+      echo "FAIL: follower n${node} refused for the wrong reason: $output" >&2
+      exit 1
+    fi
+    follower_refused[$node]=1
+  done
+  for node in "${!follower_refused[@]}"; do count=$((count + 1)); done
+  (( count >= 2 ))
+}
+wait_until "two stable followers to refuse reads with redirect hints" 20 stable_followers_refuse
 echo "Followers correctly refuse reads with a redirect hint."
+
+# The refusal checks deliberately contact followers and may overlap another election.
+# Re-establish an authoritative successful leader read immediately before choosing the
+# process whose death is meant to exercise failover.
+leader_client raw-get --keyspace "$keyspace" --key-hex "$key_hex"
+test "$leader_reply" = "value_hex=${value_hex}" || {
+  echo "FAIL: pre-kill leader read got '$leader_reply'" >&2; exit 1; }
 
 # ---------------------------------------------------------------- failover
 echo "Killing leader n${leader}..."
