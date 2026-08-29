@@ -290,12 +290,37 @@ jobs:
       - name: Assert ${{ matrix.script }} reached its own completion marker
         run: grep -Fq -- "${{ matrix.success_marker }}" /tmp/e2e-${{ matrix.script }}.out
 
-      # The scripts mktemp under /tmp/kv9-*; on failure the node status files and logs
-      # in there are the only way to tell a product failure from a harness failure.
-      - name: Upload artifacts on failure
+      # Collect INTO the workspace first. The previous version pointed upload-artifact at the
+      # absolute glob /tmp/kv9-* and set `if-no-files-found: ignore`; the one real failure we
+      # have (run 33237982263 attempt 1, the phase1 formation timeout) uploaded ZERO artifacts
+      # while the step reported success. The scene from the single failure we most needed to
+      # explain was lost, and the loss was silent -- `ignore` turns "matched nothing" into a
+      # green step, which is the same absence-read-as-success this repo keeps removing.
+      #
+      # `|| true` on the copy so a genuinely empty /tmp does not mask the script's own failure,
+      # but the upload below is NOT allowed to be silent about finding nothing.
+      - name: Collect the scene
+        if: failure()
+        run: |
+          mkdir -p ci-scene
+          cp -r /tmp/kv9-* ci-scene/ 2>/dev/null || true
+          # A status file is the whole point: record what was captured, so "we uploaded
+          # nothing" can never again look identical to "we uploaded the evidence".
+          {
+            echo "collected at: $(date -u +%FT%TZ)"
+            echo "matching dirs:"; ls -d /tmp/kv9-* 2>/dev/null || echo "  (none)"
+            echo "status files:"; find ci-scene -name status -printf '  %p (%s bytes, mtime %TY-%Tm-%Td %TH:%TM:%TS)\n' 2>/dev/null || true
+          } > ci-scene/COLLECTION-REPORT.txt
+          echo "--- collection report ---"; cat ci-scene/COLLECTION-REPORT.txt
+
+      # if-no-files-found: error, deliberately. If the scene is missing, the failure report is
+      # incomplete and we want to know at once rather than discover it days later while trying
+      # to diagnose something.
+      - name: Upload the scene
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts-${{ matrix.script }}
-          path: /tmp/kv9-*
-          if-no-files-found: ignore
+          name: scene-${{ matrix.script }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ci-scene/
+          if-no-files-found: error
+          retention-days: 30
