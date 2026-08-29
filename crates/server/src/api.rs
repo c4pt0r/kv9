@@ -137,13 +137,12 @@ pub struct CreateKeyspaceResult {
     pub proposed: Option<AppliedPosition>,
 }
 
-/// A Raft position is identified by term and index; index alone is unsafe after
-/// leader failover because the new leader may overwrite an uncommitted slot.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct AppliedPosition {
-    pub term: u64,
-    pub index: u64,
-}
+// Defined in `kv9-common`, re-exported here so the existing public path keeps working.
+// It moved because it is a cross-layer apply receipt -- the drain worker needs it to decide
+// WAL truncation eligibility -- not a server data-transfer type. Fields and semantics are
+// unchanged by the move. See the type's own docs for why it must not be conflated with
+// `kv9_raft::ProposedAt`, which has the same shape and a different meaning.
+pub use kv9_common::AppliedPosition;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MembershipChangeResult {

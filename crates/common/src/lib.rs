@@ -15,6 +15,7 @@ pub mod time;
 
 pub use config::{Config, SeedPeer};
 pub use error::{Error, Result};
+pub use ids::AppliedPosition;
 pub use ids::{
     ClusterId, KeyspaceId, NodeId, RegionId, TenantId, TimelineId, TsoProviderId, TxnGroupId,
     META_REGION_0,

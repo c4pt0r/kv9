@@ -178,3 +178,26 @@ mod cluster_id_tests {
         assert_ne!(a.as_bytes(), &[0u8; 16]);
     }
 }
+
+/// The exact `(term, index)` at which an entry was **applied** — an apply receipt.
+///
+/// Lives in `kv9-common` rather than any one crate because it is a cross-layer proof, not a
+/// server DTO: the drain worker uses it to decide whether a WAL range may be truncated, GC
+/// uses it to know a delete-intent is committed, and membership waits on an exact pair.
+///
+/// # Not interchangeable with `kv9_raft::ProposedAt`
+///
+/// The two carry identical fields and mean different things, so they must not be merged on
+/// the strength of their shape. `ProposedAt` says *where an entry was placed*; this says
+/// *where an entry was applied*. Between the two a leader can change and overwrite the
+/// uncommitted slot, so a proposal at `(t, i)` may never apply, or a different entry may
+/// apply at `(t, i)` instead. Code that treats a proposal receipt as an apply receipt is
+/// claiming a write landed when it may have been discarded — which is precisely why
+/// `commit_batch` compares the two rather than assuming they agree.
+///
+/// Index alone is never sufficient: after a failover the new leader may reuse an index.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct AppliedPosition {
+    pub term: u64,
+    pub index: u64,
+}
