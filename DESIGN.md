@@ -422,8 +422,11 @@ truncate**. Upload latency thus gates truncation → the backpressure point (§6
 
 **Manifest-change identity — derived from content, and the region epoch is part of that content.** A manifest change
 is identified by a hash of its *canonicalized content* — `(region_id, region_epoch, adds, removes, new_watermark)` —
-never by an allocated id. Content-derived identity is what makes a retry after a crash safe without any durable
-intermediate state: the proposer recomputes the same identity instead of having to remember one it was issued.
+never by an allocated id. Content-derived identity is what **enables reconciliation** after a crash without any
+durable intermediate state: the proposer recomputes the same identity instead of having to remember one it was
+issued. **It does not by itself authorize a retry** — an unconfirmed outcome must still be reconciled against
+authoritative applied state first (see below); stable identity is what makes that reconciliation possible, not a
+licence to re-propose.
 **`region_epoch` is a mandatory member of the hashed content, and it is load-bearing twice over.** It is the *fence*
 (a change carrying the wrong epoch must be rejected) **and** the *nonce* (it is what makes a legitimate repeat hash
 differently from a retry). The repeat is real: a split may drop a file from a region while its refcount stays above
@@ -465,12 +468,20 @@ three outcomes and must not blur them:
 - **Known-failed** — carries only definite errors that are neither leadership changes nor indeterminate outcomes.
 
 **Folding a not-leader or a timeout into a generic "failed" is prohibited**, because it destroys the caller's ability
-to tell *unknown* from *known-failed* — and treating unknown as known-failed is the error that costs data. **The
-query must answer whether that stable identity has entered authoritative applied manifest state**; answering from the
-proposal's `(term, index)` alone, or from a local cached view, does not satisfy it. Because identity is
-content-derived, the reconciliation is **state-based**: the caller asks the authoritative manifest whether its adds
-are present and its watermark advanced, rather than asking whether some identity was registered — file-id uniqueness
-makes "F is present" equivalent to "my add applied". No identity ledger is required anywhere in this design.
+to tell *unknown* from *known-failed* — and treating unknown as known-failed is the error that costs data.
+
+**The reconciliation query is answered against authoritative applied manifest state, and it asks whether this
+change's intended effect is already satisfied or has been subsumed by a later state** — not merely what the
+proposal's `(term, index)` was, and not a local cached view, neither of which satisfies it. Because identity is
+content-derived, no identity ledger is needed to *pose* the question: the caller compares its own intended effect
+against authoritative state.
+
+**Crucially, absence is not a negative answer.** File-id uniqueness gives one direction only — "F is present" implies
+"my add applied" — and not its converse: once a later compaction or merge has removed F, the current state cannot
+distinguish "never applied" from "applied and since superseded". **When authoritative state cannot discriminate, the
+outcome remains *unknown*; concluding known-not-applied from absence is prohibited.** A design that instead wants the
+strictly historical question — did this identity ever enter applied state — must accept that it requires a history or
+receipt ledger; that capability is not claimed here.
 
 **Read path:** memtable + local block cache; miss → fetch SST blocks from object storage (tens of ms). Working set
 should fit cache. **Any compute node holding a region's manifest can serve its reads** from object storage + cache —
