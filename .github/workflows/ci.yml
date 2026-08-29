@@ -323,6 +323,19 @@ jobs:
             done
           } > ci-scene/COLLECTION-REPORT.txt
           echo "--- collection report ---"; cat ci-scene/COLLECTION-REPORT.txt
+          # Give the guard teeth. `if-no-files-found: error` on the upload cannot fire, because
+          # COLLECTION-REPORT.txt above always makes ci-scene/ non-empty -- so the upload always
+          # finds a file and always succeeds. Cindy caught that: the report improved the
+          # DIAGNOSIS (it distinguishes "collected nothing" from "uploaded nothing") but it
+          # silently disarmed the GATE, turning a hard check back into a weak signal you have to
+          # read. The same shape as the fmt job's swallowed red.
+          #
+          # This step already runs only under `if: failure()`, so exiting 1 here cannot turn a
+          # passing run red; it makes an already-failing job say why its evidence is missing.
+          if ! ls -d /tmp/kv9-* >/dev/null 2>&1; then
+            echo "::error title=scene collection matched nothing::A test failed but no /tmp/kv9-* directory existed to collect. The failure evidence is gone; fix the collection before trusting any diagnosis of this run."
+            exit 1
+          fi
 
       # if-no-files-found: error, deliberately. If the scene is missing, the failure report is
       # incomplete and we want to know at once rather than discover it days later while trying
