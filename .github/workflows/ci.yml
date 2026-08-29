@@ -163,20 +163,26 @@ jobs:
         run: |
           hunks=$(cargo fmt --all --check 2>/dev/null | grep -c '^Diff in' || true)
           files=$(cargo fmt --all --check 2>/dev/null | grep '^Diff in' | sed 's/:[0-9]*:$//' | sort -u | wc -l)
-          # Two annotations, not one, and the toolchain goes in an annotation rather than only
-          # the summary. Verified by Tess with an exclusion probe: an anonymous viewer sees
-          # annotations but NOT the run summary -- the summary's text is absent from anonymous
-          # run HTML and `output.summary` is null over unauthenticated REST. So anything a
-          # reader must be able to act on has to be in an annotation; the summary is a
-          # convenience for people with Actions-read, not the record.
+          # Two annotations, not one, and the toolchain goes in an annotation rather than only the
+          # summary. Exclusion probe (Tess, independently repeated by Cindy on a third surface): the
+          # summary's distinctive text is absent from the anonymous run page, the anonymous job page,
+          # and unauthenticated check-run REST (`output.summary` null), while the annotation's dynamic
+          # counts DO appear. That shows the summary is not reachable anonymously -- it does NOT show
+          # it requires a particular permission; async loading or another entry point fit the same
+          # evidence equally. So put whatever a reader must act on into an annotation, which is proven
+          # readable, instead of reasoning about a channel whose retrieval mechanism is unknown.
           echo "::warning title=rustfmt drift::${hunks} hunk(s) across ${files} file(s) are unformatted. Not blocking yet. Resolved toolchain: $(rustc --version), $(cargo clippy --version)."
           echo "::warning title=reproduce this locally::rust-toolchain.toml pins channel=stable, a MOVING target -- your local stable may differ from the runner's. Run: rustup toolchain install $(rustc --version | cut -d' ' -f2) && cargo +$(rustc --version | cut -d' ' -f2) clippy --workspace --all-targets -- -D warnings"
           {
             echo
             echo "**${hunks} hunk(s) across ${files} file(s)** differ from \`cargo fmt\`."
             echo
-            echo "_Note: this summary requires Actions-read access. Anonymous viewers see only the"
-            echo "annotations above, which is why the toolchain and reproduce command are repeated there._"
+            echo "_Note: this summary was not retrievable from the anonymous run page, the anonymous"
+            echo "job page, or the unauthenticated check-run REST endpoint (\`output.summary\` was null)."
+            echo "How it *is* retrieved has not been established -- permissions, async loading and a"
+            echo "different entry point are all consistent with that evidence. Annotations were"
+            echo "independently confirmed anonymously readable, so the toolchain and the reproduce"
+            echo "command are emitted there and do not depend on this._"
             echo
             echo "Not a gate yet: the tree has never been formatted, so blocking here would fail"
             echo "changes that did not cause the drift. Fixing that is a single cross-lane pass,"
