@@ -135,7 +135,10 @@ impl std::str::FromStr for ClusterId {
             )));
         }
         let mut bytes = [0u8; 16];
-        for (i, chunk) in s.as_bytes().chunks_exact(2).enumerate() {
+        // `as_chunks::<2>()` rather than `chunks_exact(2)`: clippy 1.98 rejects the latter
+        // for a constant chunk size (`chunks_exact_to_as_chunks`). The length is already
+        // pinned at 32 above, so the remainder `.1` is provably empty and is dropped.
+        for (i, chunk) in s.as_bytes().as_chunks::<2>().0.iter().enumerate() {
             let hex = std::str::from_utf8(chunk).expect("ascii checked above");
             bytes[i] = u8::from_str_radix(hex, 16).expect("hexdigit checked above");
         }
