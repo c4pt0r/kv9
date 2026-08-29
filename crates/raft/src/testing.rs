@@ -54,11 +54,17 @@
 //! using the atomic path (a raw `> testing-partition` or a `touch` cannot
 //! reconnect a peer).
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 /// The on-disk file name, relative to a node's data dir.
 pub const PARTITION_FILE: &str = "testing-partition";
+
+/// Env var naming the directory a node reads its partition file from. A harness
+/// sets it per node process at launch (pointing at that node's data dir); a node
+/// launched without it never partitions, so a production/normal run is
+/// unaffected even in a `testing`-feature build.
+pub const PARTITION_DIR_ENV: &str = "KV9_TESTING_PARTITION_DIR";
 
 /// The one literal that lifts a partition to fully connected. Healing is an
 /// action that must be spelled, never a byte-level accident: a truncated write,
@@ -136,6 +142,58 @@ impl PartitionMask {
 impl Default for PartitionMask {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+/// A [`PartitionMask`] paired with the directory it refreshes from — the shape
+/// the transport actually holds. Constructed from [`PARTITION_DIR_ENV`]: when
+/// the env var is unset the directory is `None` and [`Self::refresh`] is a no-op,
+/// so the mask never engages and the node behaves normally. This is what keeps a
+/// `testing`-feature binary safe to run un-partitioned.
+#[derive(Debug)]
+pub struct PartitionState {
+    mask: PartitionMask,
+    dir: Option<PathBuf>,
+}
+
+impl PartitionState {
+    /// Read the partition directory from the environment. Called once when the
+    /// transport is built.
+    pub fn from_env() -> Self {
+        Self {
+            mask: PartitionMask::new(),
+            dir: std::env::var_os(PARTITION_DIR_ENV).map(PathBuf::from),
+        }
+    }
+
+    /// Reload the mask from disk if a directory is configured. Called at the
+    /// start of every `drain` (every driver tick).
+    pub fn refresh(&self) {
+        if let Some(dir) = &self.dir {
+            self.mask.refresh_from(dir);
+        }
+    }
+
+    /// Is the peer currently cut off? Checked on send and on drain.
+    pub fn is_masked(&self, node_id: u64) -> bool {
+        self.mask.is_masked(node_id)
+    }
+
+    /// Directly install a partition set, bypassing the file/env path — for
+    /// in-process transport tests that must not depend on process-global env.
+    /// Since `dir` is `None` in such a state, a later `refresh` is a no-op and
+    /// this mask stands.
+    #[cfg(test)]
+    pub(crate) fn force_mask(&self, ids: &[u64]) {
+        let bits = ids.iter().filter_map(|&n| bit_for(n)).fold(0u64, |a, b| a | b);
+        self.mask.bits.store(bits, Ordering::Relaxed);
+        self.mask.engaged.store(1, Ordering::Relaxed);
+    }
+}
+
+impl Default for PartitionState {
+    fn default() -> Self {
+        Self::from_env()
     }
 }
 
