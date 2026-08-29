@@ -310,6 +310,17 @@ jobs:
             echo "collected at: $(date -u +%FT%TZ)"
             echo "matching dirs:"; ls -d /tmp/kv9-* 2>/dev/null || echo "  (none)"
             echo "status files:"; find ci-scene -name status -printf '  %p (%s bytes, mtime %TY-%Tm-%Td %TH:%TM:%TS)\n' 2>/dev/null || true
+            # `fatal=` is printed for every status file even when empty, and the file is named
+            # even when the line is absent. Cindy's point: "fatal was empty" and "we never
+            # captured fatal" look identical afterwards, and they mean opposite things -- an
+            # empty fatal RULES OUT the poisoned-and-exited case, while a missing capture rules
+            # out nothing. A non-empty one carries the root cause outright
+            # (`fatal at committed entry (term T, index I): <cause>`).
+            echo "fatal lines (empty is itself evidence):"
+            for f in $(find ci-scene -name status 2>/dev/null); do
+              line=$(grep '^fatal=' "$f" 2>/dev/null || true)
+              if [ -z "$line" ]; then echo "  $f: NO fatal= LINE PRESENT"; else echo "  $f: $line"; fi
+            done
           } > ci-scene/COLLECTION-REPORT.txt
           echo "--- collection report ---"; cat ci-scene/COLLECTION-REPORT.txt
 
