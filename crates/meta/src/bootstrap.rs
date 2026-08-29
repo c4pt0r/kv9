@@ -58,8 +58,7 @@ pub fn write_init_marker(data_dir: &Path) -> Result<()> {
             .and_then(|_| f.sync_all())
             .map_err(|e| Error::MetaNotReady(format!("marker write: {e}")))?;
     }
-    std::fs::rename(&tmp, &path)
-        .map_err(|e| Error::MetaNotReady(format!("marker rename: {e}")))
+    std::fs::rename(&tmp, &path).map_err(|e| Error::MetaNotReady(format!("marker rename: {e}")))
 }
 
 /// The node lifecycle states during bootstrap (DESIGN §5.2).
@@ -480,7 +479,9 @@ mod tests {
     fn single_node_bare_event_is_its_own_quorum() {
         let mut b = Bootstrap::new(N1);
         assert_eq!(
-            b.on_event(BootstrapEvent::FoundUninitialized).unwrap().name(),
+            b.on_event(BootstrapEvent::FoundUninitialized)
+                .unwrap()
+                .name(),
             "BootstrapElection"
         );
     }
@@ -518,7 +519,9 @@ mod tests {
         // Sensitivity control: same node, same state — a real quorum DOES open
         // the election, even alongside an outsider and a duplicate in the answer.
         assert_eq!(
-            b.discovered_uninitialized(&[N1, N2, N2, OUTSIDER]).unwrap().name(),
+            b.discovered_uninitialized(&[N1, N2, N2, OUTSIDER])
+                .unwrap()
+                .name(),
             "BootstrapElection"
         );
     }
@@ -597,7 +600,10 @@ mod tests {
         // Catalog appears locally: fingerprint retires, register path begins.
         assert_eq!(b.on_event(minted("d")).unwrap().name(), "Joining");
         assert!(b.data_dir_initialized());
-        assert_eq!(b.on_event(BootstrapEvent::Registered).unwrap().name(), "Serving");
+        assert_eq!(
+            b.on_event(BootstrapEvent::Registered).unwrap().name(),
+            "Serving"
+        );
         assert_eq!(b.cluster_id(), Some(cid("d")));
     }
 
@@ -709,7 +715,10 @@ mod tests {
         // Control: the EXPECTED cluster admits it down the join path.
         assert_eq!(b.on_event(found("a")).unwrap().name(), "Joining");
         assert_eq!(b.cluster_id(), Some(cid("a")));
-        assert_eq!(b.on_event(BootstrapEvent::Registered).unwrap().name(), "Serving");
+        assert_eq!(
+            b.on_event(BootstrapEvent::Registered).unwrap().name(),
+            "Serving"
+        );
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

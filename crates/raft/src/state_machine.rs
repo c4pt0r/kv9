@@ -245,7 +245,9 @@ mod tests {
         );
         engine.write(batch).unwrap();
         assert_eq!(
-            MemStateMachine::with_engine(engine).unwrap().applied_index(),
+            MemStateMachine::with_engine(engine)
+                .unwrap()
+                .applied_index(),
             LogIndex(9)
         );
     }

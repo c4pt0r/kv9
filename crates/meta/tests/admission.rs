@@ -9,8 +9,8 @@ use std::sync::Arc;
 use kv9_common::{ClusterId, NodeId};
 use kv9_engine::MemEngine;
 use kv9_meta::admission::{
-    admission, admit_node, cluster_id, consume_admission, initialize_cluster,
-    pending_admissions, revoke_admission, AdmissionState, AdmittedRole,
+    admission, admit_node, cluster_id, consume_admission, initialize_cluster, pending_admissions,
+    revoke_admission, AdmissionState, AdmittedRole,
 };
 use kv9_meta::store::MetaStore;
 
@@ -46,7 +46,14 @@ fn admission_requires_identity_first() {
     let store = store();
     let mut txn = store.begin().unwrap();
     // Gate 3 cannot precede gate 2.
-    assert!(admit_node(&mut txn, NodeId(4), "127.0.0.1:9", AdmittedRole::Learner, 10).is_err());
+    assert!(admit_node(
+        &mut txn,
+        NodeId(4),
+        "127.0.0.1:9",
+        AdmittedRole::Learner,
+        10
+    )
+    .is_err());
 }
 
 #[test]
@@ -54,7 +61,14 @@ fn admission_lifecycle_pending_consume_once() {
     let store = store();
     let mut txn = store.begin().unwrap();
     initialize_cluster(&mut txn, cid("c"), 1).unwrap();
-    admit_node(&mut txn, NodeId(4), "127.0.0.1:9004", AdmittedRole::Learner, 100).unwrap();
+    admit_node(
+        &mut txn,
+        NodeId(4),
+        "127.0.0.1:9004",
+        AdmittedRole::Learner,
+        100,
+    )
+    .unwrap();
     txn.commit().unwrap();
 
     let txn = store.begin().unwrap();
@@ -68,7 +82,14 @@ fn admission_lifecycle_pending_consume_once() {
     // Duplicate admission refused (revoke first — one approval, one use).
     // A VALID address, so this errors for the duplicate reason, not parsing.
     let mut txn = store.begin().unwrap();
-    assert!(admit_node(&mut txn, NodeId(4), "127.0.0.1:1", AdmittedRole::Learner, 100).is_err());
+    assert!(admit_node(
+        &mut txn,
+        NodeId(4),
+        "127.0.0.1:1",
+        AdmittedRole::Learner,
+        100
+    )
+    .is_err());
     drop(txn);
 
     // Consume: exactly once, from the admitted address.
@@ -93,7 +114,14 @@ fn consume_rejects_wrong_cluster_address_and_expiry() {
     let store = store();
     let mut txn = store.begin().unwrap();
     initialize_cluster(&mut txn, cid("d"), 1).unwrap();
-    admit_node(&mut txn, NodeId(5), "127.0.0.1:9005", AdmittedRole::Learner, 100).unwrap();
+    admit_node(
+        &mut txn,
+        NodeId(5),
+        "127.0.0.1:9005",
+        AdmittedRole::Learner,
+        100,
+    )
+    .unwrap();
     txn.commit().unwrap();
 
     let mut txn = store.begin().unwrap();
@@ -130,12 +158,16 @@ fn admission_row_replayed_into_another_cluster_admits_nobody() {
     initialize_cluster(&mut txn, cid("b"), 1).unwrap();
     // The replayed row: binds cluster A, in B's catalog.
     let mut row = RowValue::new();
-    row.set(ColumnId(2), ColumnValue::Bytes(cid("a").as_bytes().to_vec()));
+    row.set(
+        ColumnId(2),
+        ColumnValue::Bytes(cid("a").as_bytes().to_vec()),
+    );
     row.set(ColumnId(3), ColumnValue::Text("127.0.0.1:9006".into()));
     row.set(ColumnId(4), ColumnValue::Uint(1)); // Learner
     row.set(ColumnId(5), ColumnValue::Uint(1)); // Pending
     row.set(ColumnId(7), ColumnValue::Uint(100));
-    txn.insert(&NODE_ADMISSIONS_DESC, &[memcmp_uint(6)], row).unwrap();
+    txn.insert(&NODE_ADMISSIONS_DESC, &[memcmp_uint(6)], row)
+        .unwrap();
     txn.commit().unwrap();
 
     let mut txn = store_b.begin().unwrap();
@@ -148,12 +180,16 @@ fn admission_row_replayed_into_another_cluster_admits_nobody() {
     // proving the refusal above is the binding, not something else about the
     // hand-built row.
     let mut row = RowValue::new();
-    row.set(ColumnId(2), ColumnValue::Bytes(cid("b").as_bytes().to_vec()));
+    row.set(
+        ColumnId(2),
+        ColumnValue::Bytes(cid("b").as_bytes().to_vec()),
+    );
     row.set(ColumnId(3), ColumnValue::Text("127.0.0.1:9007".into()));
     row.set(ColumnId(4), ColumnValue::Uint(1));
     row.set(ColumnId(5), ColumnValue::Uint(1));
     row.set(ColumnId(7), ColumnValue::Uint(100));
-    txn.insert(&NODE_ADMISSIONS_DESC, &[memcmp_uint(16)], row).unwrap();
+    txn.insert(&NODE_ADMISSIONS_DESC, &[memcmp_uint(16)], row)
+        .unwrap();
     assert!(consume_admission(&mut txn, NodeId(16), cid("b"), "127.0.0.1:9007", 50).is_ok());
 }
 
@@ -164,9 +200,23 @@ fn admit_rejects_node_id_zero() {
     let store = store();
     let mut txn = store.begin().unwrap();
     initialize_cluster(&mut txn, cid("0"), 1).unwrap();
-    assert!(admit_node(&mut txn, NodeId(0), "127.0.0.1:9000", AdmittedRole::Learner, 10).is_err());
+    assert!(admit_node(
+        &mut txn,
+        NodeId(0),
+        "127.0.0.1:9000",
+        AdmittedRole::Learner,
+        10
+    )
+    .is_err());
     // Control: id 1 with the same everything is admitted.
-    assert!(admit_node(&mut txn, NodeId(1), "127.0.0.1:9000", AdmittedRole::Learner, 10).is_ok());
+    assert!(admit_node(
+        &mut txn,
+        NodeId(1),
+        "127.0.0.1:9000",
+        AdmittedRole::Learner,
+        10
+    )
+    .is_ok());
 }
 
 /// The operator retry path: revoke → re-admit replaces the record; pending and
@@ -176,22 +226,57 @@ fn revoke_then_readmit_is_the_only_replacement_path() {
     let store = store();
     let mut txn = store.begin().unwrap();
     initialize_cluster(&mut txn, cid("f"), 1).unwrap();
-    admit_node(&mut txn, NodeId(7), "127.0.0.1:9007", AdmittedRole::Learner, 100).unwrap();
+    admit_node(
+        &mut txn,
+        NodeId(7),
+        "127.0.0.1:9007",
+        AdmittedRole::Learner,
+        100,
+    )
+    .unwrap();
     // Pending is not replaceable.
-    assert!(admit_node(&mut txn, NodeId(7), "127.0.0.1:9008", AdmittedRole::Learner, 200).is_err());
+    assert!(admit_node(
+        &mut txn,
+        NodeId(7),
+        "127.0.0.1:9008",
+        AdmittedRole::Learner,
+        200
+    )
+    .is_err());
     // Revoke, then re-admit with a new address/expiry — succeeds and is Pending.
     revoke_admission(&mut txn, NodeId(7)).unwrap();
     // Double revoke is a typed error.
     assert!(revoke_admission(&mut txn, NodeId(7)).is_err());
-    admit_node(&mut txn, NodeId(7), "127.0.0.1:9008", AdmittedRole::Learner, 200).unwrap();
+    admit_node(
+        &mut txn,
+        NodeId(7),
+        "127.0.0.1:9008",
+        AdmittedRole::Learner,
+        200,
+    )
+    .unwrap();
     let adm = admission(&txn, NodeId(7)).unwrap().unwrap();
     assert_eq!(adm.state, AdmissionState::Pending);
     assert_eq!(adm.addr, "127.0.0.1:9008");
     // Consumed is not replaceable either (revoke first — decommission path).
     assert!(consume_admission(&mut txn, NodeId(7), cid("f"), "127.0.0.1:9008", 50).is_ok());
-    assert!(admit_node(&mut txn, NodeId(7), "127.0.0.1:9009", AdmittedRole::Learner, 300).is_err());
+    assert!(admit_node(
+        &mut txn,
+        NodeId(7),
+        "127.0.0.1:9009",
+        AdmittedRole::Learner,
+        300
+    )
+    .is_err());
     revoke_admission(&mut txn, NodeId(7)).unwrap();
-    assert!(admit_node(&mut txn, NodeId(7), "127.0.0.1:9009", AdmittedRole::Learner, 300).is_ok());
+    assert!(admit_node(
+        &mut txn,
+        NodeId(7),
+        "127.0.0.1:9009",
+        AdmittedRole::Learner,
+        300
+    )
+    .is_ok());
 }
 
 /// Non-canonical address forms are refused at admit time — the binding is an
@@ -208,5 +293,12 @@ fn admit_rejects_non_socket_addresses() {
         );
     }
     // Control.
-    assert!(admit_node(&mut txn, NodeId(8), "127.0.0.1:9010", AdmittedRole::Learner, 10).is_ok());
+    assert!(admit_node(
+        &mut txn,
+        NodeId(8),
+        "127.0.0.1:9010",
+        AdmittedRole::Learner,
+        10
+    )
+    .is_ok());
 }

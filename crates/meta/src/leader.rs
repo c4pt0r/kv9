@@ -42,7 +42,12 @@ impl MetaLeader {
 
     /// Acquire / renew the lease. A new leader may only acquire after the previous
     /// lease is known-expired (DESIGN §5.3).
-    pub fn acquire_lease(&mut self, now_nanos: u64, duration_nanos: u64, prev: Option<Lease>) -> Result<Lease> {
+    pub fn acquire_lease(
+        &mut self,
+        now_nanos: u64,
+        duration_nanos: u64,
+        prev: Option<Lease>,
+    ) -> Result<Lease> {
         if let Some(prev) = prev {
             if prev.holder != self.node && !prev.is_expired(now_nanos) {
                 return Err(Error::MetaNotReady(
@@ -60,7 +65,9 @@ impl MetaLeader {
 
     /// Whether this leader currently holds a valid lease and may act (DESIGN §5.3).
     pub fn can_act(&self, now_nanos: u64) -> bool {
-        self.lease.map(|l| !l.is_expired(now_nanos)).unwrap_or(false)
+        self.lease
+            .map(|l| !l.is_expired(now_nanos))
+            .unwrap_or(false)
     }
 }
 

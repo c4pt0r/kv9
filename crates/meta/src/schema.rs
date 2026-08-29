@@ -133,10 +133,20 @@ mod cols {
 
     macro_rules! col {
         ($id:expr, $name:expr, $ty:expr, pk) => {
-            ColumnDesc { id: ColumnId($id), name: $name, ty: $ty, pk: true }
+            ColumnDesc {
+                id: ColumnId($id),
+                name: $name,
+                ty: $ty,
+                pk: true,
+            }
         };
         ($id:expr, $name:expr, $ty:expr) => {
-            ColumnDesc { id: ColumnId($id), name: $name, ty: $ty, pk: false }
+            ColumnDesc {
+                id: ColumnId($id),
+                name: $name,
+                ty: $ty,
+                pk: false,
+            }
         };
     }
 
@@ -240,8 +250,8 @@ mod cols {
 
     /// System id sequences (one row per [`crate::store::SequenceKind`]).
     pub const CLUSTER_META: &[ColumnDesc] = &[
-        col!(1, "id", Uint, pk),        // always 0: singleton
-        col!(2, "cluster_id", Bytes),   // 16 raw bytes (kv9_common::ClusterId)
+        col!(1, "id", Uint, pk),      // always 0: singleton
+        col!(2, "cluster_id", Bytes), // 16 raw bytes (kv9_common::ClusterId)
         col!(3, "created_unix", Uint),
     ];
 
@@ -265,10 +275,7 @@ mod cols {
         col!(7, "expires_unix", Uint),
     ];
 
-    pub const ID_SEQUENCES: &[ColumnDesc] = &[
-        col!(1, "kind", Uint, pk),
-        col!(2, "next", Uint),
-    ];
+    pub const ID_SEQUENCES: &[ColumnDesc] = &[col!(1, "kind", Uint, pk), col!(2, "next", Uint)];
 }
 
 // ---------------------------------------------------------------------------
@@ -338,20 +345,50 @@ mod fk {
     use super::{ColumnId, FkDesc, TableId};
 
     pub const NONE: &[FkDesc] = &[];
-    pub const KEYSPACES: &[FkDesc] = &[FkDesc { column: ColumnId(3), references: super::TENANTS }];
-    pub const TXN_GROUPS: &[FkDesc] = &[FkDesc { column: ColumnId(2), references: super::KEYSPACES }];
+    pub const KEYSPACES: &[FkDesc] = &[FkDesc {
+        column: ColumnId(3),
+        references: super::TENANTS,
+    }];
+    pub const TXN_GROUPS: &[FkDesc] = &[FkDesc {
+        column: ColumnId(2),
+        references: super::KEYSPACES,
+    }];
     pub const TSO_TIMELINES: &[FkDesc] = &[
-        FkDesc { column: ColumnId(2), references: super::TXN_GROUPS },
-        FkDesc { column: ColumnId(3), references: super::NODES },
+        FkDesc {
+            column: ColumnId(2),
+            references: super::TXN_GROUPS,
+        },
+        FkDesc {
+            column: ColumnId(3),
+            references: super::NODES,
+        },
     ];
-    pub const REGIONS: &[FkDesc] = &[FkDesc { column: ColumnId(2), references: super::KEYSPACES }];
+    pub const REGIONS: &[FkDesc] = &[FkDesc {
+        column: ColumnId(2),
+        references: super::KEYSPACES,
+    }];
     pub const REGION_PEERS: &[FkDesc] = &[
-        FkDesc { column: ColumnId(1), references: super::REGIONS },
-        FkDesc { column: ColumnId(2), references: super::NODES },
+        FkDesc {
+            column: ColumnId(1),
+            references: super::REGIONS,
+        },
+        FkDesc {
+            column: ColumnId(2),
+            references: super::NODES,
+        },
     ];
-    pub const SST_FILES: &[FkDesc] = &[FkDesc { column: ColumnId(8), references: super::KEYSPACES }];
-    pub const PLACEMENT_RULES: &[FkDesc] = &[FkDesc { column: ColumnId(2), references: super::KEYSPACES }];
-    pub const GAC_ALLOTMENTS: &[FkDesc] = &[FkDesc { column: ColumnId(1), references: super::TENANTS }];
+    pub const SST_FILES: &[FkDesc] = &[FkDesc {
+        column: ColumnId(8),
+        references: super::KEYSPACES,
+    }];
+    pub const PLACEMENT_RULES: &[FkDesc] = &[FkDesc {
+        column: ColumnId(2),
+        references: super::KEYSPACES,
+    }];
+    pub const GAC_ALLOTMENTS: &[FkDesc] = &[FkDesc {
+        column: ColumnId(1),
+        references: super::TENANTS,
+    }];
     // Suppress an unused warning if a table stops declaring FKs.
     const _: TableId = super::TENANTS;
 }

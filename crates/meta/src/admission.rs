@@ -91,7 +91,10 @@ pub fn initialize_cluster<E: Engine>(
     cluster_id: ClusterId,
     created_unix: u64,
 ) -> Result<()> {
-    if txn.get(&CLUSTER_META_DESC, &[memcmp_uint(CM_PK)])?.is_some() {
+    if txn
+        .get(&CLUSTER_META_DESC, &[memcmp_uint(CM_PK)])?
+        .is_some()
+    {
         return Err(Error::Config(
             "cluster identity already initialized; ClusterId is immutable".into(),
         ));
@@ -113,9 +116,10 @@ pub fn cluster_id<E: Engine>(txn: &MetaTxn<'_, E>) -> Result<Option<ClusterId>> 
     let Some(ColumnValue::Bytes(b)) = row.value.get(CM_CLUSTER_ID) else {
         return Err(Error::Config("cluster_meta row missing cluster_id".into()));
     };
-    let bytes: [u8; 16] = b.as_slice().try_into().map_err(|_| {
-        Error::Config(format!("cluster_id must be 16 bytes, got {}", b.len()))
-    })?;
+    let bytes: [u8; 16] = b
+        .as_slice()
+        .try_into()
+        .map_err(|_| Error::Config(format!("cluster_id must be 16 bytes, got {}", b.len())))?;
     Ok(Some(ClusterId::from_bytes(bytes)))
 }
 
@@ -223,9 +227,9 @@ pub fn consume_admission<E: Engine>(
     // other than the admitted one is refused — knowing a public cluster id
     // and squatting an admitted node id must not be enough. (The registration
     // handler's authenticated NodeId is a separate, orthogonal gate.)
-    let expected_addr: std::net::SocketAddr = expected_addr.parse().map_err(|_| {
-        Error::Config("consume address must be a canonical socket address".into())
-    })?;
+    let expected_addr: std::net::SocketAddr = expected_addr
+        .parse()
+        .map_err(|_| Error::Config("consume address must be a canonical socket address".into()))?;
     if adm.addr != expected_addr.to_string() {
         return Err(Error::Config(format!(
             "admission for node {} binds a different address",
@@ -244,10 +248,7 @@ pub fn consume_admission<E: Engine>(
             node_id.0, adm.expires_unix
         )));
     }
-    let changes = vec![(
-        NA_STATE,
-        ColumnValue::Uint(AdmissionState::Consumed as u64),
-    )];
+    let changes = vec![(NA_STATE, ColumnValue::Uint(AdmissionState::Consumed as u64))];
     txn.update(&NODE_ADMISSIONS_DESC, &[memcmp_uint(node_id.0)], changes)?;
     Ok(Admission {
         state: AdmissionState::Consumed,
@@ -275,10 +276,7 @@ pub fn revoke_admission<E: Engine>(txn: &mut MetaTxn<'_, E>, node_id: NodeId) ->
 }
 
 /// Read one admission record.
-pub fn admission<E: Engine>(
-    txn: &MetaTxn<'_, E>,
-    node_id: NodeId,
-) -> Result<Option<Admission>> {
+pub fn admission<E: Engine>(txn: &MetaTxn<'_, E>, node_id: NodeId) -> Result<Option<Admission>> {
     let Some(row) = txn.get(&NODE_ADMISSIONS_DESC, &[memcmp_uint(node_id.0)])? else {
         return Ok(None);
     };
@@ -323,7 +321,9 @@ fn decode_admission(node_id: NodeId, row: &RowValue) -> Result<Admission> {
     let role = match row.get(NA_ROLE) {
         Some(ColumnValue::Uint(1)) => AdmittedRole::Learner,
         Some(ColumnValue::Uint(other)) => {
-            return Err(Error::Config(format!("unknown admission role code {other}")))
+            return Err(Error::Config(format!(
+                "unknown admission role code {other}"
+            )))
         }
         _ => return Err(Error::Config("admission row missing role".into())),
     };

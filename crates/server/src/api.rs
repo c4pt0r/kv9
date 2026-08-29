@@ -85,8 +85,7 @@ pub trait TxnApi {
 pub trait RawApi {
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>>;
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>>;
-    fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value)
-        -> Result<AppliedPosition>;
+    fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<AppliedPosition>;
     fn raw_batch_put(
         &self,
         ctx: &RequestContext,

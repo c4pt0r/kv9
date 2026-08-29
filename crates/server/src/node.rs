@@ -288,7 +288,8 @@ impl<E: Engine> Node<E> {
             meta.bootstrap.on_event(FoundUninitialized)?;
             meta.bootstrap.on_event(WonElection)?;
             self.initialize_metadata(cluster_id)?;
-            meta.bootstrap.on_event(MetadataInitialized { cluster_id })?;
+            meta.bootstrap
+                .on_event(MetadataInitialized { cluster_id })?;
         } else {
             // A real join path contacts the seed set and learns the identity
             // from the catalog; the skeleton path reads it locally.
@@ -442,13 +443,7 @@ fn timeline_row(provider: NodeId) -> RowValue {
 }
 
 fn meta_region_row(leader: NodeId) -> RowValue {
-    region_row(
-        META_REGION_0,
-        KeyspaceId::SYSTEM,
-        &[],
-        &[],
-        leader,
-    )
+    region_row(META_REGION_0, KeyspaceId::SYSTEM, &[], &[], leader)
 }
 
 /// Encode a region row. New user keyspaces start with `epoch=(1,1)` and one region
@@ -917,7 +912,10 @@ mod tests {
         assert_eq!(created.region, RegionId(100));
         assert_eq!(created.epoch.conf_ver, 1);
         assert_eq!(created.epoch.version, 1);
-        assert_eq!(created.leader, None, "v0 does not publish a stale leader hint");
+        assert_eq!(
+            created.leader, None,
+            "v0 does not publish a stale leader hint"
+        );
     }
 
     #[test]
@@ -1078,7 +1076,10 @@ mod tests {
             .is_err());
         assert_eq!(bootstrap.state().name(), "Discovering");
         assert_eq!(
-            bootstrap.discovered_uninitialized(&[N1, N2]).unwrap().name(),
+            bootstrap
+                .discovered_uninitialized(&[N1, N2])
+                .unwrap()
+                .name(),
             "BootstrapElection"
         );
         bootstrap.on_event(BootstrapEvent::WonElection).unwrap();
@@ -1143,9 +1144,7 @@ mod tests {
             assert_eq!(restarted.state().name(), "Joining");
             assert_eq!(restarted.cluster_id(), Some(cid));
             // Rule (c) engaged: this node can never again attest uninitialized.
-            assert!(restarted
-                .discovered_uninitialized(&[N1, N2, N3])
-                .is_err());
+            assert!(restarted.discovered_uninitialized(&[N1, N2, N3]).is_err());
         }
 
         // The dead end the old path wedges on: a second init against this
@@ -1215,7 +1214,9 @@ mod tests {
         for replica in &nodes {
             let mut meta = replica.meta.lock().unwrap();
             meta.bootstrap
-                .on_event(BootstrapEvent::MetadataInitialized { cluster_id: e2e_cid })
+                .on_event(BootstrapEvent::MetadataInitialized {
+                    cluster_id: e2e_cid,
+                })
                 .unwrap();
             if replica.id == leader1 {
                 assert!(meta.bootstrap.is_serving());

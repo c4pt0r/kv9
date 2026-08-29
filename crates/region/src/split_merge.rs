@@ -83,7 +83,13 @@ pub fn validate_split_key(region: &Region, split_key: &[u8]) -> Result<()> {
 /// Whether two adjacent, low-traffic regions in the same keyspace may be merged
 /// (DESIGN §10). Merge reclaims raft overhead — the "cold region" idea, but merging
 /// rather than only quiescing.
-pub fn can_merge(left: &Region, right: &Region, left_load: &RegionLoad, right_load: &RegionLoad, cold_threshold_wcu: f64) -> bool {
+pub fn can_merge(
+    left: &Region,
+    right: &Region,
+    left_load: &RegionLoad,
+    right_load: &RegionLoad,
+    cold_threshold_wcu: f64,
+) -> bool {
     left.keyspace == right.keyspace
         && left.end_key == right.start_key
         && left_load.wcu_per_sec < cold_threshold_wcu

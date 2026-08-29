@@ -16,10 +16,10 @@
 
 use std::sync::{Arc, Mutex, MutexGuard};
 
-use raft::prelude::{ConfState, Entry, HardState, Message};
 use protobuf::Message as PbMessage;
 use raft::eraftpb::EntryType;
 use raft::prelude::{ConfChange, ConfChangeV2};
+use raft::prelude::{ConfState, Entry, HardState, Message};
 use raft::storage::MemStorage;
 use raft::{Config, RawNode, StateRole};
 use slog::{o, Discard, Logger};
@@ -453,7 +453,11 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         let leader = g.raw.raft.leader_id;
         PeerSnapshot {
             node_id: self.node,
-            leader_hint: if leader == 0 { None } else { Some(NodeId(leader)) },
+            leader_hint: if leader == 0 {
+                None
+            } else {
+                Some(NodeId(leader))
+            },
             raw_role: role_of(g.raw.raft.state),
             term: g.raw.raft.term,
             committed: g.raw.raft.raft_log.committed,

@@ -38,11 +38,21 @@ fn round_trip_through_dyn(engine: &dyn Engine) {
         view.get(ColumnFamily::Default, b"k").unwrap(),
         Some(b"v".to_vec())
     );
-    assert_eq!(view.scan(ColumnFamily::Default, b"", b"z", 10).unwrap().len(), 1);
-    assert!(view.seek_le(ColumnFamily::Default, b"k").unwrap().is_some());
-    assert_eq!(view.iter(ColumnFamily::Default, b"", b"z").unwrap().count(), 1);
     assert_eq!(
-        view.iter_rev(ColumnFamily::Default, b"", b"z").unwrap().count(),
+        view.scan(ColumnFamily::Default, b"", b"z", 10)
+            .unwrap()
+            .len(),
+        1
+    );
+    assert!(view.seek_le(ColumnFamily::Default, b"k").unwrap().is_some());
+    assert_eq!(
+        view.iter(ColumnFamily::Default, b"", b"z").unwrap().count(),
+        1
+    );
+    assert_eq!(
+        view.iter_rev(ColumnFamily::Default, b"", b"z")
+            .unwrap()
+            .count(),
         1
     );
 }

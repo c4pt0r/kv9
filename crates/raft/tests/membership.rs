@@ -25,10 +25,10 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use kv9_common::{NodeId, RegionId};
+use kv9_engine::ColumnFamily;
 use kv9_raft::driver::NodeDriver;
 use kv9_raft::transport::{InProcHub, RaftTransport};
 use kv9_raft::{cf_code, Command, EntryKind, MemStateMachine, RaftGroup, RaftPeer, Role};
-use kv9_engine::ColumnFamily;
 use protobuf::Message as PbMessage;
 use raft::eraftpb::{ConfChangeSingle, ConfChangeType, ConfChangeV2};
 
@@ -108,7 +108,10 @@ fn learner_joins_catches_up_promotes_and_survives_failover() {
 
     // A command proposed BEFORE node 4 exists — the joiner must catch it up
     // from the log later (AppendEntries from index 1; no truncation).
-    let early = nodes[leader].driver.propose(&put(b"early", b"pre-join")).unwrap();
+    let early = nodes[leader]
+        .driver
+        .propose(&put(b"early", b"pre-join"))
+        .unwrap();
     drive_until(&mut nodes, "early write applied", |ns| {
         ns[leader]
             .driver
@@ -187,7 +190,8 @@ fn learner_joins_catches_up_promotes_and_survives_failover() {
 
     // All four report the new membership; node 4 is now an ordinary follower.
     drive_until(&mut nodes, "all nodes see 4 voters", |ns| {
-        ns.iter().all(|n| n.driver.status().voters == vec![1, 2, 3, 4])
+        ns.iter()
+            .all(|n| n.driver.status().voters == vec![1, 2, 3, 4])
     });
     assert_eq!(nodes[3].driver.status().role, Role::Follower);
 
@@ -210,13 +214,11 @@ fn learner_joins_catches_up_promotes_and_survives_failover() {
         .propose(&put(b"after", b"post-failover"))
         .unwrap();
     drive_until(&mut nodes, "post-failover write on all survivors", |ns| {
-        ns.iter()
-            .filter(|n| n.alive)
-            .all(|n| {
-                n.driver
-                    .wait_applied(after, Duration::from_millis(1))
-                    .unwrap_or(false)
-            })
+        ns.iter().filter(|n| n.alive).all(|n| {
+            n.driver
+                .wait_applied(after, Duration::from_millis(1))
+                .unwrap_or(false)
+        })
     });
 }
 
@@ -243,7 +245,6 @@ fn unadmitted_joiner_reports_unconfigured_not_follower() {
     assert_eq!(s.voters, vec![1, 2, 3]);
     assert!(s.learners.is_empty());
 }
-
 
 fn cc_bytes(node: u64, kind: ConfChangeType) -> Vec<u8> {
     let mut step = ConfChangeSingle::default();
@@ -338,7 +339,10 @@ fn status_pair_stays_command_sourced_across_conf_changes() {
     let first = leader_of(&nodes).unwrap();
 
     // Last command, in the FIRST leader's term.
-    let cmd_at = nodes[first].driver.propose(&put(b"pair", b"anchor")).unwrap();
+    let cmd_at = nodes[first]
+        .driver
+        .propose(&put(b"pair", b"anchor"))
+        .unwrap();
     drive_until(&mut nodes, "command applied everywhere", |ns| {
         ns.iter().all(|n| {
             n.driver
@@ -386,7 +390,6 @@ fn status_pair_stays_command_sourced_across_conf_changes() {
     );
 }
 
-
 /// Tess's P0, recovery half: after learner->promote, a REOPENED node comes
 /// back with the FINAL membership and the conf boundary, and replay does not
 /// re-apply conf entries. The mechanical distinguisher: re-application would
@@ -431,9 +434,7 @@ fn reopen_recovers_conf_state_without_reapplying() {
             d.tick_and_step().expect("disk driver poisoned");
         }
     };
-    let wait_for = |ds: &mut Vec<DiskDriver>,
-                    what: &str,
-                    cond: &dyn Fn(&[DiskDriver]) -> bool| {
+    let wait_for = |ds: &mut Vec<DiskDriver>, what: &str, cond: &dyn Fn(&[DiskDriver]) -> bool| {
         for _ in 0..2000 {
             drive_all(ds);
             if cond(ds) {
@@ -493,7 +494,11 @@ fn reopen_recovers_conf_state_without_reapplying() {
     }
     let s = driver.status();
     assert_eq!(s.fatal, None);
-    assert_eq!(s.voters, vec![1, 2, 3, 4], "reopen lost the final membership");
+    assert_eq!(
+        s.voters,
+        vec![1, 2, 3, 4],
+        "reopen lost the final membership"
+    );
     assert_eq!(s.conf_index, recovered);
     let len_after = std::fs::metadata(&log_path).unwrap().len();
     assert_eq!(

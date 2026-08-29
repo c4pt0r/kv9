@@ -260,7 +260,10 @@ impl PersistentRaftStorage for DiskRaftStorage {
                 .map_err(|err| Error::Raft(format!("entry encode: {err}")))?;
             self.write_record(REC_ENTRY, &bytes)?;
         }
-        self.mem.wl().append(entries).map_err(|e| Error::Raft(e.to_string()))
+        self.mem
+            .wl()
+            .append(entries)
+            .map_err(|e| Error::Raft(e.to_string()))
     }
 
     fn set_hardstate(&self, hs: &HardState) -> Result<()> {
@@ -334,7 +337,10 @@ mod tests {
             s.append(&[entry(1, 7, b"a"), entry(2, 7, b"b")]).unwrap();
         }
         let (s, pristine) = DiskRaftStorage::open(&dir, &[1, 2, 3]).unwrap();
-        assert!(!pristine, "surviving state must be detected (fencing rule c)");
+        assert!(
+            !pristine,
+            "surviving state must be detected (fencing rule c)"
+        );
         let state = raft::Storage::initial_state(&s).unwrap();
         assert_eq!(state.hard_state.term, 7);
         assert_eq!(state.hard_state.vote, 2);
@@ -401,7 +407,8 @@ mod tests {
         let dir = tmp();
         {
             let (s, _) = DiskRaftStorage::open(&dir, &[1]).unwrap();
-            s.append(&[entry(1, 1, b"one"), entry(2, 1, b"two")]).unwrap();
+            s.append(&[entry(1, 1, b"one"), entry(2, 1, b"two")])
+                .unwrap();
         }
         let path = dir.join("raft.log");
         let mut bytes = std::fs::read(&path).unwrap();

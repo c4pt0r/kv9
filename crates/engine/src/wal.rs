@@ -379,8 +379,20 @@ mod tests {
         let (_w, replay) = Wal::open(&path).unwrap();
         let ms = replay.batches[0].mutations();
         assert_eq!(ms.len(), 3);
-        assert!(matches!(ms[1], Mutation::Put { cf: ColumnFamily::Lock, .. }));
-        assert!(matches!(ms[2], Mutation::Delete { cf: ColumnFamily::Write, .. }));
+        assert!(matches!(
+            ms[1],
+            Mutation::Put {
+                cf: ColumnFamily::Lock,
+                ..
+            }
+        ));
+        assert!(matches!(
+            ms[2],
+            Mutation::Delete {
+                cf: ColumnFamily::Write,
+                ..
+            }
+        ));
     }
 
     /// A crash mid-append leaves a partial record. Everything committed before it must

@@ -143,7 +143,11 @@ fn control_single_cf_separate_batches_do_show_mismatch() {
 
 #[test]
 fn read_view_never_observes_a_half_applied_cross_cf_batch() {
-    let torn = race(400, write_cross_cf_one_batch, snapshot_sees_cross_cf_mismatch);
+    let torn = race(
+        400,
+        write_cross_cf_one_batch,
+        snapshot_sees_cross_cf_mismatch,
+    );
     assert_eq!(
         torn, 0,
         "a ReadView observed a half-applied cross-CF WriteBatch {torn} times"
@@ -152,7 +156,11 @@ fn read_view_never_observes_a_half_applied_cross_cf_batch() {
 
 #[test]
 fn control_cross_cf_separate_batches_do_show_mismatch() {
-    let seen = race(200, write_cross_cf_two_batches, snapshot_sees_cross_cf_mismatch);
+    let seen = race(
+        200,
+        write_cross_cf_two_batches,
+        snapshot_sees_cross_cf_mismatch,
+    );
     assert!(
         seen > 0,
         "control saw no mismatch — the cross-CF probe is not sensitive, so the \
@@ -192,7 +200,9 @@ fn read_view_is_stable_under_concurrent_writes() {
             "a ReadView changed value under concurrent writes"
         );
         assert_eq!(
-            view.scan(ColumnFamily::Default, b"a", b"c", 10).unwrap().len(),
+            view.scan(ColumnFamily::Default, b"a", b"c", 10)
+                .unwrap()
+                .len(),
             2
         );
     }
