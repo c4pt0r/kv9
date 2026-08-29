@@ -6,7 +6,7 @@ name: CI
 #
 # Deliberate split, and the reason matters more than the shape:
 #
-#   pr-gate      fast, deterministic. Runs on PRs and master. INTENDED required check --
+#   pr-gate      fast. Runs on PRs and master. INTENDED required check --
 #                a workflow cannot block a merge by itself; that takes a branch protection
 #                rule or ruleset, which is a separate change and does not exist yet
 #                (verified: branches/master/protection => 404, rulesets => []).
@@ -64,8 +64,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # rust-toolchain.toml pins the channel and requests rustfmt + clippy, so the
-      # toolchain is not named here -- one source of truth, not two.
+      # rust-toolchain.toml names the CHANNEL (`stable`) and requests rustfmt + clippy. It does
+      # NOT pin a version, and calling this job deterministic would be false: `stable` moves, so
+      # this runner and a contributor's machine resolve different compilers. That is not
+      # theoretical -- 1.94 locally vs 1.98 here produced three clippy failures that no local run
+      # could reproduce.
+      #
+      # Standing decision (Tess, task #29): we accept the drift rather than pin a version, and
+      # the HOSTED RUNNER IS CANONICAL -- a lint that fails here fails, whatever your local
+      # toolchain says. The resolved versions are therefore printed on every run (below, and in
+      # the rustfmt annotations) so "works on my machine" is always checkable against them.
+      # Reproduce any CI-only failure with: rustup toolchain install <the version printed here>.
       - name: Show toolchain
         run: |
           rustc --version
@@ -230,6 +239,13 @@ jobs:
           - script: raw-kv-e2e.sh
             base_port: 24100
             success_marker: "PASS: raw KV replicated through failover"
+          # The documented quickstart, run as written. The prose version was wrong twice in one
+          # day (`--help` listed none of the five raw commands; the walkthrough used a bare `kv9`
+          # a clean clone does not have, and read the leader from n1 when n1 may be a follower).
+          # Documentation drifts silently; this fails instead.
+          - script: quickstart-smoke.sh
+            base_port: 25100
+            success_marker: "PASS: quickstart path works end to end"
     steps:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
