@@ -753,6 +753,15 @@ pub struct GrpcTransport {
     /// recovery (which, in-process, would revive the wedged socket itself and
     /// erase the old/new discrimination).
     connect_attempts: Arc<AtomicU64>,
+    /// Deterministic partition injection (task #28). Consulted symmetrically:
+    /// `send` drops outbound to a masked peer, `drain` drops inbound from one —
+    /// both check this single mask, so one process isolates a peer in both
+    /// directions. Refreshed from `KV9_TESTING_PARTITION_DIR/testing-partition`
+    /// at the start of every `drain` (= every driver tick), so a harness can
+    /// flip a partition on a running cluster. The whole facility is compiled out
+    /// of a production build; a node whose env var is unset never masks.
+    #[cfg(any(test, feature = "testing"))]
+    partition: crate::testing::PartitionState,
 }
 
 impl GrpcTransport {
@@ -775,6 +784,8 @@ impl GrpcTransport {
             inbox_tx,
             root_digest,
             connect_attempts: Arc::new(AtomicU64::new(0)),
+            #[cfg(any(test, feature = "testing"))]
+            partition: crate::testing::PartitionState::from_env(),
         })
     }
 
@@ -829,6 +840,13 @@ impl GrpcTransport {
 
 impl RaftTransport for GrpcTransport {
     fn send(&self, to: NodeId, msg: Message) {
+        // Partition injection (task #28): drop outbound to a masked peer, as if
+        // the wire were cut. Same effect as the "unknown peer: drop" below —
+        // raft retransmits, and a real partition drops packets identically.
+        #[cfg(any(test, feature = "testing"))]
+        if self.partition.is_masked(to.0) {
+            return;
+        }
         let Some(sender) = self.peer_sender(to) else {
             return; // unknown peer: drop (raft retransmits after registration)
         };
@@ -848,9 +866,21 @@ impl RaftTransport for GrpcTransport {
     }
 
     fn drain(&self) -> Vec<Message> {
+        // Refresh the partition mask once per tick before delivering inbound
+        // traffic to raft, so a partition written mid-run takes effect on the
+        // next drain. Dropping a masked message here — after it was received but
+        // before raft sees it — is behaviourally identical to a wire drop for
+        // consensus: the state machine never processes it. Both filter points
+        // (this and `send`) consult the same mask, giving symmetric isolation.
+        #[cfg(any(test, feature = "testing"))]
+        self.partition.refresh();
         let mut rx = self.inbox_rx.lock().expect("inbox poisoned");
         let mut out = Vec::new();
         while let Ok(msg) = rx.try_recv() {
+            #[cfg(any(test, feature = "testing"))]
+            if self.partition.is_masked(msg.from) {
+                continue;
+            }
             out.push(msg);
         }
         out
@@ -1452,6 +1482,34 @@ mod tests {
     /// server + client-streaming batches), election, replication verified by
     /// (term, index) on every node, live leader failover — the same
     /// correctness surface the TCP transport passed, on the new carrier.
+    #[test]
+    fn partition_mask_drops_inbound_from_masked_peer_only() {
+        // Wiring test for the drain-side filter (task #28). Uses force_mask to
+        // avoid the process-global env path; drain refreshes but dir is None so
+        // the forced mask stands. Inbound from a masked peer must vanish before
+        // raft sees it; inbound from an unmasked peer must pass through.
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            None,
+            rt.handle().clone(),
+            test_root().root_digest,
+        );
+        transport.partition.force_mask(&[2]);
+
+        let inbox = transport.inbox_sender();
+        let from = |n: u64| Message {
+            from: n,
+            ..Default::default()
+        };
+        inbox.send(from(2)).unwrap(); // masked → must be dropped
+        inbox.send(from(3)).unwrap(); // unmasked → must survive
+        inbox.send(from(2)).unwrap(); // masked → must be dropped
+
+        let delivered: Vec<u64> = transport.drain().iter().map(|m| m.from).collect();
+        assert_eq!(delivered, vec![3], "only the unmasked peer's message survives");
+    }
+
     #[test]
     fn three_nodes_over_grpc_elect_replicate_failover() {
         let rt = tokio::runtime::Runtime::new().unwrap();
