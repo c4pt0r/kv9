@@ -136,6 +136,7 @@ jobs:
             echo '```'
             rustc --version
             cargo --version
+            cargo clippy --version
             cargo fmt --version
             echo '```'
             echo
@@ -162,10 +163,20 @@ jobs:
         run: |
           hunks=$(cargo fmt --all --check 2>/dev/null | grep -c '^Diff in' || true)
           files=$(cargo fmt --all --check 2>/dev/null | grep '^Diff in' | sed 's/:[0-9]*:$//' | sort -u | wc -l)
-          echo "::warning title=rustfmt drift::${hunks} hunk(s) across ${files} file(s) are unformatted. Not blocking yet; see the run summary."
+          # Two annotations, not one, and the toolchain goes in an annotation rather than only
+          # the summary. Verified by Tess with an exclusion probe: an anonymous viewer sees
+          # annotations but NOT the run summary -- the summary's text is absent from anonymous
+          # run HTML and `output.summary` is null over unauthenticated REST. So anything a
+          # reader must be able to act on has to be in an annotation; the summary is a
+          # convenience for people with Actions-read, not the record.
+          echo "::warning title=rustfmt drift::${hunks} hunk(s) across ${files} file(s) are unformatted. Not blocking yet. Resolved toolchain: $(rustc --version), $(cargo clippy --version)."
+          echo "::warning title=reproduce this locally::rust-toolchain.toml pins channel=stable, a MOVING target -- your local stable may differ from the runner's. Run: rustup toolchain install $(rustc --version | cut -d' ' -f2) && cargo +$(rustc --version | cut -d' ' -f2) clippy --workspace --all-targets -- -D warnings"
           {
             echo
             echo "**${hunks} hunk(s) across ${files} file(s)** differ from \`cargo fmt\`."
+            echo
+            echo "_Note: this summary requires Actions-read access. Anonymous viewers see only the"
+            echo "annotations above, which is why the toolchain and reproduce command are repeated there._"
             echo
             echo "Not a gate yet: the tree has never been formatted, so blocking here would fail"
             echo "changes that did not cause the drift. Fixing that is a single cross-lane pass,"
