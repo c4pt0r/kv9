@@ -5,7 +5,7 @@
 //! durable catalog apply, election-first bootstrap, and a machine-readable status
 //! file for external acceptance. The status file is evidence; log timing is not.
 
-use std::collections::HashSet;
+use std::collections::{BTreeMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -52,6 +52,112 @@ use crate::Node;
 const TICK: Duration = Duration::from_millis(20);
 const DISCOVERY_INTERVAL: Duration = Duration::from_millis(200);
 const DISCOVERY_TIMEOUT: Duration = Duration::from_millis(50);
+const DISCOVERY_LAST_DETAIL_MAX_CHARS: usize = 160;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum DiscoveryRejection {
+    NodeId,
+    VoterFingerprint,
+}
+
+impl DiscoveryRejection {
+    fn label(self) -> &'static str {
+        match self {
+            Self::NodeId => "rejected_node_id",
+            Self::VoterFingerprint => "rejected_voter_fingerprint",
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum DiscoveryLastOutcome {
+    Local,
+    NotAttempted,
+    AcceptedInitialized,
+    AcceptedUninitialized,
+    Rejected(DiscoveryRejection),
+    Error(String),
+}
+
+impl DiscoveryLastOutcome {
+    fn label(&self) -> String {
+        match self {
+            Self::Local => "local".into(),
+            Self::NotAttempted => "not_attempted".into(),
+            Self::AcceptedInitialized => "accepted_initialized".into(),
+            Self::AcceptedUninitialized => "accepted_uninitialized".into(),
+            Self::Rejected(reason) => reason.label().into(),
+            Self::Error(detail) => format!("error:{detail}"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct DiscoveryObservation {
+    seed: SeedPeer,
+    attempts: u64,
+    accepted: u64,
+    errors: u64,
+    rejected_node_id: u64,
+    rejected_voter_fingerprint: u64,
+    last: DiscoveryLastOutcome,
+}
+
+impl DiscoveryObservation {
+    fn new(seed: SeedPeer, local: bool) -> Self {
+        Self {
+            seed,
+            attempts: 0,
+            accepted: 0,
+            errors: 0,
+            rejected_node_id: 0,
+            rejected_voter_fingerprint: 0,
+            last: if local {
+                DiscoveryLastOutcome::Local
+            } else {
+                DiscoveryLastOutcome::NotAttempted
+            },
+        }
+    }
+
+    fn record_attempt(&mut self) {
+        self.attempts = self.attempts.saturating_add(1);
+    }
+
+    fn record_accepted(&mut self, initialized: bool) {
+        self.accepted = self.accepted.saturating_add(1);
+        self.last = if initialized {
+            DiscoveryLastOutcome::AcceptedInitialized
+        } else {
+            DiscoveryLastOutcome::AcceptedUninitialized
+        };
+    }
+
+    fn record_error(&mut self, error: &Error) {
+        self.errors = self.errors.saturating_add(1);
+        self.last = DiscoveryLastOutcome::Error(bounded_discovery_detail(&error.to_string()));
+    }
+
+    fn record_rejected(&mut self, reason: DiscoveryRejection) {
+        match reason {
+            DiscoveryRejection::NodeId => {
+                self.rejected_node_id = self.rejected_node_id.saturating_add(1);
+            }
+            DiscoveryRejection::VoterFingerprint => {
+                self.rejected_voter_fingerprint = self.rejected_voter_fingerprint.saturating_add(1);
+            }
+        }
+        self.last = DiscoveryLastOutcome::Rejected(reason);
+    }
+}
+
+fn bounded_discovery_detail(detail: &str) -> String {
+    detail
+        .chars()
+        .map(|ch| if ch.is_control() { ' ' } else { ch })
+        .take(DISCOVERY_LAST_DETAIL_MAX_CHARS)
+        .collect()
+}
 
 #[derive(Debug)]
 struct RuntimeDiscovery {
@@ -892,6 +998,7 @@ pub struct NodeRuntime {
     cluster_token: String,
     voters: Vec<NodeId>,
     seeds: Vec<SeedPeer>,
+    discovery_observations: BTreeMap<u64, DiscoveryObservation>,
     data_dir: PathBuf,
     status_path: PathBuf,
     addr: std::net::SocketAddr,
@@ -1088,6 +1195,16 @@ impl NodeRuntime {
                     let _ = grpc_shutdown_rx.await;
                 }),
         );
+        let discovery_observations = seeds
+            .iter()
+            .copied()
+            .map(|seed| {
+                (
+                    seed.node_id.0,
+                    DiscoveryObservation::new(seed, seed.node_id == id),
+                )
+            })
+            .collect();
 
         Ok(Self {
             node,
@@ -1101,6 +1218,7 @@ impl NodeRuntime {
             cluster_token: auth.cluster_token,
             voters,
             seeds,
+            discovery_observations,
             data_dir,
             status_path,
             addr,
@@ -1256,34 +1374,54 @@ impl NodeRuntime {
             if seed.node_id == self.node.id {
                 continue;
             }
-            if let Ok(answer) = grpc_discover(
+            self.discovery_observations
+                .get_mut(&seed.node_id.0)
+                .expect("every declared seed has a bounded observation slot")
+                .record_attempt();
+            let answer = match grpc_discover(
                 self.grpc_runtime.handle(),
                 self.node.id,
                 seed.addr,
                 DISCOVERY_TIMEOUT,
                 Some(self.cluster_token.clone()),
             ) {
-                // Both the address→identity mapping and (pre-init) the
-                // complete declared voter set must match. A valid answer
-                // about another cluster is still not a vote in this cluster.
-                if !discovery_answer_matches(*seed, bootstrap_fp, &answer) {
+                Ok(answer) => answer,
+                Err(error) => {
+                    self.discovery_observations
+                        .get_mut(&seed.node_id.0)
+                        .expect("every declared seed has a bounded observation slot")
+                        .record_error(&error);
                     continue;
                 }
-                if answer.initialized {
-                    let id = answer
-                        .cluster_id
-                        .expect("grpc_discover enforces initialized iff cluster_id");
-                    if let Some(seen) = found_initialized {
-                        if seen != id {
-                            return Err(Error::MetaNotReady(
-                                "declared seeds report different cluster identities".into(),
-                            ));
-                        }
+            };
+            // Both the address→identity mapping and (pre-init) the complete
+            // declared voter set must match. A rejected answer is recorded,
+            // but it still cannot become bootstrap evidence.
+            if let Err(reason) = validate_discovery_answer(*seed, bootstrap_fp, &answer) {
+                self.discovery_observations
+                    .get_mut(&seed.node_id.0)
+                    .expect("every declared seed has a bounded observation slot")
+                    .record_rejected(reason);
+                continue;
+            }
+            self.discovery_observations
+                .get_mut(&seed.node_id.0)
+                .expect("every declared seed has a bounded observation slot")
+                .record_accepted(answer.initialized);
+            if answer.initialized {
+                let id = answer
+                    .cluster_id
+                    .expect("grpc_discover enforces initialized iff cluster_id");
+                if let Some(seen) = found_initialized {
+                    if seen != id {
+                        return Err(Error::MetaNotReady(
+                            "declared seeds report different cluster identities".into(),
+                        ));
                     }
-                    found_initialized = Some(id);
-                } else {
-                    uninitialized.push(answer.node);
                 }
+                found_initialized = Some(id);
+            } else {
+                uninitialized.push(answer.node);
             }
         }
         if let Some(cluster_id) = found_initialized {
@@ -1544,8 +1682,9 @@ impl NodeRuntime {
                 .collect::<Vec<_>>();
             format_u64_ids(&nodes)
         };
+        let discovery_status = format_discovery_observations(&self.discovery_observations);
         let body = format!(
-            "pid={}\nnode_id={}\ncluster_id={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\nfatal={}\n",
+            "pid={}\nnode_id={}\ncluster_id={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\n{}fatal={}\n",
             std::process::id(),
             raft.node_id.0,
             cluster_id.map_or_else(String::new, |id| id.to_string()),
@@ -1560,6 +1699,7 @@ impl NodeRuntime {
             raft.applied_index,
             raft.applied_term,
             bootstrap,
+            discovery_status,
             raft.fatal.as_deref().unwrap_or(""),
         );
         let tmp = self.data_dir.join("status.tmp");
@@ -1578,13 +1718,32 @@ fn format_u64_ids(nodes: &[u64]) -> String {
         .join(",")
 }
 
-fn discovery_answer_matches(
+fn format_discovery_observations(observations: &BTreeMap<u64, DiscoveryObservation>) -> String {
+    observations
+        .iter()
+        .map(|(node, observation)| {
+            format!(
+                "discovery_seed_{node}=addr={},attempts={},accepted={},errors={},rejected_node_id={},rejected_voter_fingerprint={},last={}\n",
+                observation.seed.addr,
+                observation.attempts,
+                observation.accepted,
+                observation.errors,
+                observation.rejected_node_id,
+                observation.rejected_voter_fingerprint,
+                observation.last.label(),
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("")
+}
+
+fn validate_discovery_answer(
     declared: SeedPeer,
     expected_voter_fp: u64,
     answer: &kv9_raft::grpc::DiscoverAnswer,
-) -> bool {
+) -> std::result::Result<(), DiscoveryRejection> {
     if answer.node != declared.node_id {
-        return false;
+        return Err(DiscoveryRejection::NodeId);
     }
     if answer.initialized {
         // Post-init authority is the ClusterId (decode guarantees it is
@@ -1593,9 +1752,11 @@ fn discovery_answer_matches(
         // Wrong-cluster protection: initial-bootstrap voters only adopt an
         // identity from their OWN catalog; join-existing verifies the id
         // against its expectation inside the FSM.
-        true
+        Ok(())
+    } else if answer.voter_fingerprint == expected_voter_fp {
+        Ok(())
     } else {
-        answer.voter_fingerprint == expected_voter_fp
+        Err(DiscoveryRejection::VoterFingerprint)
     }
 }
 
@@ -2024,26 +2185,95 @@ mod tests {
                 None
             },
         };
-        assert!(discovery_answer_matches(
-            declared,
-            ours,
-            &ans(3, false, ours)
-        ));
-        assert!(!discovery_answer_matches(
-            declared,
-            ours,
-            &ans(9, false, ours)
-        ));
-        assert!(!discovery_answer_matches(
-            declared,
-            ours,
-            &ans(3, false, 0x9999)
-        ));
+        assert_eq!(
+            validate_discovery_answer(declared, ours, &ans(3, false, ours)),
+            Ok(())
+        );
+        assert_eq!(
+            validate_discovery_answer(declared, ours, &ans(9, false, ours)),
+            Err(DiscoveryRejection::NodeId)
+        );
+        assert_eq!(
+            validate_discovery_answer(declared, ours, &ans(3, false, 0x9999)),
+            Err(DiscoveryRejection::VoterFingerprint)
+        );
         // Post-init: identity travels as the ClusterId; the retired
         // fingerprint (responders publish 0) must NOT gate the answer…
-        assert!(discovery_answer_matches(declared, ours, &ans(3, true, 0)));
+        assert_eq!(
+            validate_discovery_answer(declared, ours, &ans(3, true, 0)),
+            Ok(())
+        );
         // …but the declared node identity still must match.
-        assert!(!discovery_answer_matches(declared, ours, &ans(9, true, 0)));
+        assert_eq!(
+            validate_discovery_answer(declared, ours, &ans(9, true, 0)),
+            Err(DiscoveryRejection::NodeId)
+        );
+    }
+
+    #[test]
+    fn discovery_observations_are_bounded_single_line_and_saturating() {
+        let seed = SeedPeer {
+            node_id: NodeId(2),
+            addr: "127.0.0.1:20162".parse().unwrap(),
+        };
+        let mut observation = DiscoveryObservation::new(seed, false);
+        observation.attempts = u64::MAX;
+        observation.errors = u64::MAX;
+        observation.record_attempt();
+        observation.record_error(&Error::Raft(format!(
+            "discovery rpc {}: first line\n{}",
+            seed.addr,
+            "x".repeat(DISCOVERY_LAST_DETAIL_MAX_CHARS * 2)
+        )));
+        assert_eq!(observation.attempts, u64::MAX);
+        assert_eq!(observation.errors, u64::MAX);
+        let DiscoveryLastOutcome::Error(detail) = &observation.last else {
+            panic!("the most recent error must stay queryable");
+        };
+        assert!(detail.chars().count() <= DISCOVERY_LAST_DETAIL_MAX_CHARS);
+        assert!(!detail.chars().any(char::is_control));
+
+        let status = format_discovery_observations(&BTreeMap::from([(2, observation)]));
+        assert_eq!(status.lines().count(), 1);
+        assert!(status.contains("attempts=18446744073709551615"));
+        assert!(status.contains("errors=18446744073709551615"));
+        assert!(status.contains("last=error:raft error: discovery rpc"));
+    }
+
+    #[test]
+    fn discovery_observations_distinguish_acceptance_and_both_rejections() {
+        let seed = SeedPeer {
+            node_id: NodeId(3),
+            addr: "127.0.0.1:20163".parse().unwrap(),
+        };
+        let mut observation = DiscoveryObservation::new(seed, false);
+        observation.record_attempt();
+        observation.record_rejected(DiscoveryRejection::NodeId);
+        observation.record_attempt();
+        observation.record_rejected(DiscoveryRejection::VoterFingerprint);
+        observation.record_attempt();
+        observation.record_accepted(false);
+
+        assert_eq!(observation.attempts, 3);
+        assert_eq!(observation.accepted, 1);
+        assert_eq!(observation.errors, 0);
+        assert_eq!(observation.rejected_node_id, 1);
+        assert_eq!(observation.rejected_voter_fingerprint, 1);
+        assert_eq!(
+            observation.last,
+            DiscoveryLastOutcome::AcceptedUninitialized
+        );
+    }
+
+    #[test]
+    fn local_seed_is_explicitly_not_a_network_attempt() {
+        let seed = SeedPeer {
+            node_id: NodeId(1),
+            addr: "127.0.0.1:20161".parse().unwrap(),
+        };
+        let observation = DiscoveryObservation::new(seed, true);
+        assert_eq!(observation.attempts, 0);
+        assert_eq!(observation.last, DiscoveryLastOutcome::Local);
     }
 
     #[test]
