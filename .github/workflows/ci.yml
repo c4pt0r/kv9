@@ -304,6 +304,13 @@ jobs:
         run: |
           mkdir -p ci-scene
           cp -r /tmp/kv9-* ci-scene/ 2>/dev/null || true
+          # The script's own diagnostic narrative goes to STDERR, which the run step tees into
+          # /tmp/e2e-<script>.out -- a different prefix from the data directories. Collecting
+          # only /tmp/kv9-* would ship an artifact holding status files but not the DIAG lines
+          # that say whether the condition converged after the timeout, which is the whole
+          # question. Checked against tess/phase1-blocker (1e6fa53), whose evidence is emitted
+          # as `DIAG:` on stderr rather than written into artifact_dir.
+          cp /tmp/e2e-*.out ci-scene/ 2>/dev/null || true
           # A status file is the whole point: record what was captured, so "we uploaded
           # nothing" can never again look identical to "we uploaded the evidence".
           {
@@ -316,6 +323,8 @@ jobs:
             # empty fatal RULES OUT the poisoned-and-exited case, while a missing capture rules
             # out nothing. A non-empty one carries the root cause outright
             # (`fatal at committed entry (term T, index I): <cause>`).
+            echo "run transcripts (DIAG lines live here, not in the data dirs):"
+            ls -l ci-scene/*.out 2>/dev/null | sed 's/^/  /' || echo "  (none captured)"
             echo "fatal lines (empty is itself evidence):"
             for f in $(find ci-scene -name status 2>/dev/null); do
               line=$(grep '^fatal=' "$f" 2>/dev/null || true)
