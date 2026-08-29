@@ -11,12 +11,18 @@ root_artifact_dir="$artifact_dir"
 # `Address already in use` acceptance failure.
 base_port="${KV9_BASE_PORT:-$((22000 + ($$ % 1000)))}"
 meta_node_count="${KV9_META_NODES:-3}"
+serving_timeout="${KV9_SERVING_TIMEOUT:-20}"
+failure_observe_seconds="${KV9_FAILURE_OBSERVE_SECONDS:-5}"
 cluster_token="phase1-cluster-token"
 client_token="phase1-client-token"
 declare -A pids=()
 
 if [[ ! "$meta_node_count" =~ ^[0-9]+$ ]] || (( meta_node_count < 3 || meta_node_count % 2 == 0 )); then
   echo "FAIL: KV9_META_NODES must be an odd integer >= 3 (acceptance covers 3 and 5)" >&2
+  exit 2
+fi
+if [[ ! "$serving_timeout" =~ ^[0-9]+$ ]] || [[ ! "$failure_observe_seconds" =~ ^[0-9]+$ ]]; then
+  echo "FAIL: KV9_SERVING_TIMEOUT and KV9_FAILURE_OBSERVE_SECONDS must be non-negative integers" >&2
   exit 2
 fi
 port_span=$((meta_node_count > 3 ? meta_node_count : 3))
@@ -78,6 +84,53 @@ stop_all() {
 }
 trap stop_all EXIT
 
+dump_thread_waits() {
+  local node="$1" pid="$2" phase="$3" task state wchan key
+  declare -A waits=()
+
+  for task in "/proc/$pid"/task/*; do
+    test -r "$task/stat" || continue
+    state="$(awk '{ print $3 }' "$task/stat" 2>/dev/null || true)"
+    wchan="$(sed -n '1p' "$task/wchan" 2>/dev/null || true)"
+    key="${state:-?}/${wchan:-?}"
+    waits[$key]=$(( ${waits[$key]:-0} + 1 ))
+  done
+  if (( ${#waits[@]} == 0 )); then
+    echo "DIAG: node=$node phase=$phase thread_states=unavailable" >&2
+    return
+  fi
+  for key in "${!waits[@]}"; do
+    echo "DIAG: node=$node phase=$phase thread_state_wchan=$key count=${waits[$key]}" >&2
+  done
+}
+
+diagnose_timeout_progress() {
+  local node pid status mtime ticks alive
+  declare -A before_mtime=()
+  declare -A before_ticks=()
+
+  echo "DIAG: observing process/status progress for ${failure_observe_seconds}s after timeout" >&2
+  for node in "${!pids[@]}"; do
+    pid="${pids[$node]}"
+    status="$artifact_dir/n${node}/status"
+    before_mtime[$node]="$(stat -c %Y "$status" 2>/dev/null || true)"
+    before_ticks[$node]="$(awk '{ print $14 + $15 }' "/proc/$pid/stat" 2>/dev/null || true)"
+    dump_thread_waits "$node" "$pid" before
+  done
+
+  sleep "$failure_observe_seconds"
+
+  for node in "${!pids[@]}"; do
+    pid="${pids[$node]}"
+    status="$artifact_dir/n${node}/status"
+    mtime="$(stat -c %Y "$status" 2>/dev/null || true)"
+    ticks="$(awk '{ print $14 + $15 }' "/proc/$pid/stat" 2>/dev/null || true)"
+    if kill -0 "$pid" 2>/dev/null; then alive=yes; else alive=no; fi
+    echo "DIAG: node=$node pid=$pid alive=$alive status_mtime=${before_mtime[$node]:-missing}->${mtime:-missing} cpu_ticks=${before_ticks[$node]:-missing}->${ticks:-missing}" >&2
+    dump_thread_waits "$node" "$pid" after
+  done
+}
+
 wait_until() {
   local label="$1" timeout="$2"
   shift 2
@@ -85,7 +138,16 @@ wait_until() {
   until "$@"; do
     if (( SECONDS >= deadline )); then
       echo "FAIL: timed out waiting for $label" >&2
-      find "$artifact_dir" -name status -type f -print -exec sed -n '1,12p' {} \; >&2 || true
+      echo "DIAG: status at timeout" >&2
+      find "$artifact_dir" -name status -type f -print -exec sed -n '1,16p' {} \; >&2 || true
+      diagnose_timeout_progress
+      if "$@"; then
+        echo "DIAG: timed-out condition converged during the observation window" >&2
+      else
+        echo "DIAG: timed-out condition still had not converged after the observation window" >&2
+      fi
+      echo "DIAG: status after observation" >&2
+      find "$artifact_dir" -name status -type f -print -exec sed -n '1,16p' {} \; >&2 || true
       return 1
     fi
     sleep 0.05
@@ -207,7 +269,7 @@ mkdir -p "$artifact_dir"
 for ((node = 1; node <= meta_node_count; node++)); do
   start_node "$node"
 done
-wait_until "${meta_node_count} meta voters Serving behind one leader" 20 all_serving
+wait_until "${meta_node_count} meta voters Serving behind one leader" "$serving_timeout" all_serving
 
 old_leader="$(status_value 1 leader_id)"
 old_commit="$(status_value "$old_leader" raft_committed)"
