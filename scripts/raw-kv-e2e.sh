@@ -100,18 +100,15 @@ all_serving() {
   agreed_leader="$leader_id"
 }
 
-# `exclude` matters: a killed node's status file is frozen at its last write, so it
-# still claims `role=leader` forever. Reading it as current state is how a dead node
-# gets picked as the new leader -- the same "remembered state read as live state" that
-# cost this team a day. The caller must name any node it knows to be dead.
-leader_node() {
-  local exclude="${1:-0}" node
-  for node in 1 2 3; do
-    test "$node" -eq "$exclude" && continue
-    if test "$(status_value "$node" role 2>/dev/null || true)" = leader; then echo "$node"; return 0; fi
-  done
-  return 1
-}
+# `leader_node()` used to live here: it returned the first node whose own status said
+# `role=leader`, with an `exclude` argument so a caller could name a node it knew to be
+# dead. It is deleted rather than left unused, because a leader chosen from one node's
+# self-report is exactly what this script was red on -- a deposed node that has not yet
+# stepped down still claims leadership, and a killed node's status file is frozen
+# claiming it forever. Both callers now derive the leader from cross-node agreement on
+# `leader_id` (`all_serving` before the kill, `survivors_agree_on_new_leader` after it),
+# which needs no exclude list: a dead node cannot be agreed upon by the survivors.
+# Leaving the helper in place would leave the weak source one call site away.
 
 # `timeout` on every client call: a deadlocked server would otherwise hang the whole
 # gate forever, and "still running" is indistinguishable from "still running" on a CI
@@ -202,15 +199,25 @@ value_hex="$(hex first-value)"
 # gate refusing, and that would be a false green -- the assertion would pass while
 # proving nothing about the thing under test. Following the redirect first, then
 # checking the refusal text, keeps the failure attributable.
+# The keyspace id is a variable so the request and the expected message cannot drift
+# apart: pinning the id means an error *about a different keyspace* cannot satisfy this.
+unknown_keyspace=999
 set +e
-leader_client raw-get --keyspace 999 --key-hex "$key_hex"
+leader_client raw-get --keyspace "$unknown_keyspace" --key-hex "$key_hex"
 unknown_rc=$?
 set -e
 unknown_output="$leader_reply"
 test "$unknown_rc" -ne 0 || { echo "FAIL: unknown keyspace was served: $unknown_output" >&2; exit 1; }
-if grep -q "not_leader=true" <<<"$unknown_output"; then
-  echo "FAIL: unknown-keyspace refusal was a leadership redirect, not the context gate: $unknown_output" >&2; exit 1
-fi
+# Assert the POSITIVE text, not merely the absence of one wrong reason. `rc != 0` plus
+# "not a redirect" is still satisfied by a connection failure, a deadline, an auth
+# failure, or MetaNotReady -- every one of which would pass while proving nothing about
+# the context gate. Substring taken verbatim from 5/5 real runs, narrowed to the part
+# that identifies this gate and this keyspace.
+grep -q "keyspace KeyspaceId(${unknown_keyspace}) not found" <<<"$unknown_output" || {
+  echo "FAIL: unknown-keyspace refusal did not come from the context gate." >&2
+  echo "      wanted substring: keyspace KeyspaceId(${unknown_keyspace}) not found" >&2
+  echo "      full reply: $unknown_output" >&2
+  exit 1; }
 
 # A txn keyspace must refuse raw writes: Percolator expects its own lock/write structure
 # there, and raw bytes would corrupt that silently.
@@ -225,9 +232,12 @@ set -e
 mismatch_output="$leader_reply"
 test "$mismatch_rc" -ne 0 || {
   echo "FAIL: raw write accepted into a txn keyspace: $mismatch_output" >&2; exit 1; }
-if grep -q "not_leader=true" <<<"$mismatch_output"; then
-  echo "FAIL: txn-mismatch refusal was a leadership redirect, not the api-type gate: $mismatch_output" >&2; exit 1
-fi
+# Same rule as above, and pinned to the txn keyspace we actually created.
+grep -q "api type mismatch for keyspace KeyspaceId(${txn_keyspace})" <<<"$mismatch_output" || {
+  echo "FAIL: txn-mismatch refusal did not come from the api-type gate." >&2
+  echo "      wanted substring: api type mismatch for keyspace KeyspaceId(${txn_keyspace})" >&2
+  echo "      full reply: $mismatch_output" >&2
+  exit 1; }
 
 # Control: a valid context on the same path answers normally (the key is not written
 # yet, so `found=false` IS the successful answer). Without this the two refusals above
