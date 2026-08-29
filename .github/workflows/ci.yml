@@ -167,17 +167,18 @@ jobs:
           # summary. Exclusion probe (Tess, independently repeated by Cindy on a third surface): the
           # summary's distinctive text is absent from the anonymous run page, the anonymous job page,
           # and unauthenticated check-run REST (`output.summary` null), while the annotation's dynamic
-          # counts DO appear. That shows the summary is not reachable anonymously -- it does NOT show
-          # it requires a particular permission; async loading or another entry point fit the same
-          # evidence equally. So put whatever a reader must act on into an annotation, which is proven
-          # readable, instead of reasoning about a channel whose retrieval mechanism is unknown.
-          echo "::warning title=rustfmt drift::${hunks} hunk(s) across ${files} file(s) are unformatted. Not blocking yet. Resolved toolchain: $(rustc --version), $(cargo clippy --version)."
+          # counts DO appear. That shows those three probed surfaces do not expose the summary -- not
+          # that it is unreachable anonymously in general, and not that a permission is required;
+          # async loading or another entry point fit the same evidence. So put whatever a reader must
+          # act on into an annotation, which is proven readable, instead of reasoning about a channel
+          # whose retrieval mechanism is unknown.
+          echo "::warning title=rustfmt drift::${hunks} hunk(s) across ${files} file(s) are unformatted. Not blocking yet. Resolved toolchain: $(rustc --version) / $(cargo --version) / $(cargo clippy --version)."
           echo "::warning title=reproduce this locally::rust-toolchain.toml pins channel=stable, a MOVING target -- your local stable may differ from the runner's. Run: rustup toolchain install $(rustc --version | cut -d' ' -f2) && cargo +$(rustc --version | cut -d' ' -f2) clippy --workspace --all-targets -- -D warnings"
           {
             echo
             echo "**${hunks} hunk(s) across ${files} file(s)** differ from \`cargo fmt\`."
             echo
-            echo "_Note: this summary was not retrievable from the anonymous run page, the anonymous"
+            echo "_Note: this summary was not retrievable from three probed surfaces -- the anonymous run page, the"
             echo "job page, or the unauthenticated check-run REST endpoint (\`output.summary\` was null)."
             echo "How it *is* retrieved has not been established -- permissions, async loading and a"
             echo "different entry point are all consistent with that evidence. Annotations were"
