@@ -106,10 +106,10 @@ impl DiskRaftStorage {
         let mut saw_any = false;
         let mut conf_idx: u64 = 0;
         let mut cursor: usize = 0;
-        loop {
-            let Some((kind, payload, next)) = next_record(&bytes, cursor) else {
-                break; // torn tail (short/checksum-fail) or clean end: keep prefix
-            };
+        // The loop ends where records stop parsing — a torn tail
+        // (short/checksum-fail) or the clean end of file; either way the valid
+        // prefix is kept and the tail truncated below.
+        while let Some((kind, payload, next)) = next_record(&bytes, cursor) {
             // From here the record is checksum-valid: decode failures are real
             // inconsistencies, not crash artifacts — refuse to open.
             match kind {
