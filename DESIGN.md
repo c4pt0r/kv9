@@ -420,6 +420,58 @@ change through raft** → on commit, all replicas adopt the file-ids and **the W
 truncate**. Upload latency thus gates truncation → the backpressure point (§6.2/§6.4). A committed write is durable
 *immediately* via raft-majority WAL (does not wait for object storage); it becomes object-storage-durable at flush.
 
+**Manifest-change identity — derived from content, and the region epoch is part of that content.** A manifest change
+is identified by a hash of its *canonicalized content* — `(region_id, region_epoch, adds, removes, new_watermark)` —
+never by an allocated id. Content-derived identity is what makes a retry after a crash safe without any durable
+intermediate state: the proposer recomputes the same identity instead of having to remember one it was issued.
+**`region_epoch` is a mandatory member of the hashed content, and it is load-bearing twice over.** It is the *fence*
+(a change carrying the wrong epoch must be rejected) **and** the *nonce* (it is what makes a legitimate repeat hash
+differently from a retry). The repeat is real: a split may drop a file from a region while its refcount stays above
+zero because a sibling still references it, and a later merge may add that same file back — so "add F to R" can
+legitimately occur twice in a region's history. Under a bare content hash the second occurrence is judged a retry and
+dropped, losing a `+ref`, which under-counts, which is the dangerous direction. With the epoch inside the hash the
+argument closes: within one epoch a file-id enters a region at most once, and any legitimate re-add necessarily
+crosses an epoch bump and therefore hashes differently. **Removing the epoch field, or excluding it from the hashed
+content as redundant with the fence check, dismantles both protections at once — and no test goes red when it
+happens, because the loss is silent under-counting.**
+
+**Reference counting is asymmetric by necessity, and the two directions use different mechanisms.** The conservative
+ordering (`+ref` before, `−ref` after, §5.1) fixes *when* each side commits; this fixes *how*. **`+ref` remains a
+proposal-side action that commits early** — its purpose is to protect the window between "object uploaded" and
+"manifest change committed" from a GC that would delete a just-written object, so it must be in place before the
+manifest change. **`−ref` is instead derived from the state transition observed at apply** — "this file went present
+→ absent in this region's manifest during this apply" — rather than being proposed as an independent decrement. That
+yields replay immunity in **two independent layers**: (a) raft apply is at-most-once per log position, and (b) a
+duplicate change that reached apply anyway observes no transition — the file is already absent — and decrements
+nothing. **This is defence in depth, and it is load-bearing: `−ref` safety does not rest on propose-level change-id
+dedup.** Even if a duplicate manifest change slipped past content-hash dedup, layer (b) still holds. Moving `−ref`
+back to an independently proposed decrement guarded by change-id dedup would both **downgrade two layers to one** and
+**reintroduce an identity ledger**. Consequently `−ref` needs no dedup ledger of its own. **The asymmetry is
+principled, not historical: the two directions have different dangerous sides** — a replayed `+ref` over-counts and
+leaks an object (safe), a replayed `−ref` under-counts and deletes a live object (data loss) — **so making them
+symmetric "for tidiness" breaks whichever side is converted.** Transition-derivation applies to the removal direction
+only.
+
+**A manifest-change capability must expose reconciliation, not just proposal.** Any implementation must provide both
+a stable change identity *and* an authoritative query of applied manifest state. The propose result must distinguish
+three outcomes and must not blur them:
+
+- **Known-not-applied** — refused before proposing, or proven so by authoritative reconciliation. May carry a leader
+  hint. Observing a leadership change *after* a proposal went out does not qualify: it may still commit under the new
+  term, and that case is *unconfirmed*.
+- **Outcome unknown** — deadline, disconnect, or lost response. The command may yet commit. It **must not** be
+  treated as not-applied, **must not** drive a truncation decision, and **must not** be blindly re-proposed; the
+  stable change identity must first be used to query authoritative applied state.
+- **Known-failed** — carries only definite errors that are neither leadership changes nor indeterminate outcomes.
+
+**Folding a not-leader or a timeout into a generic "failed" is prohibited**, because it destroys the caller's ability
+to tell *unknown* from *known-failed* — and treating unknown as known-failed is the error that costs data. **The
+query must answer whether that stable identity has entered authoritative applied manifest state**; answering from the
+proposal's `(term, index)` alone, or from a local cached view, does not satisfy it. Because identity is
+content-derived, the reconciliation is **state-based**: the caller asks the authoritative manifest whether its adds
+are present and its watermark advanced, rather than asking whether some identity was registered — file-id uniqueness
+makes "F is present" equivalent to "my add applied". No identity ledger is required anywhere in this design.
+
 **Read path:** memtable + local block cache; miss → fetch SST blocks from object storage (tens of ms). Working set
 should fit cache. **Any compute node holding a region's manifest can serve its reads** from object storage + cache —
 so read-replicas / safe-time follower reads (§8.3) are cheap to spin up, and a cold region's compute can scale toward
