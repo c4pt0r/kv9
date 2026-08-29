@@ -295,6 +295,28 @@ struct RuntimeBackend {
 }
 
 impl RuntimeBackend {
+    /// Public requests may arrive as soon as the listener binds, before election-first
+    /// bootstrap has applied the default tenant/catalog rows. Expose that lifecycle state
+    /// directly instead of letting a planner misreport missing bootstrap data as a caller
+    /// integrity error. Internal discovery, registration, and seed apply do not use this
+    /// API backend gate and therefore remain able to advance the node to `Serving`.
+    fn ensure_serving(&self) -> Result<()> {
+        let state = self
+            .node
+            .meta
+            .lock()
+            .expect("meta poisoned")
+            .bootstrap
+            .state();
+        if matches!(state, BootstrapState::Serving { .. }) {
+            Ok(())
+        } else {
+            Err(Error::MetaNotReady(format!(
+                "metadata node is not serving (bootstrap_state={state:?})"
+            )))
+        }
+    }
+
     fn commit_catalog(&self, command: &kv9_raft::Command) -> Result<AppliedPosition> {
         let proposed = self.driver.propose(command)?;
         match self
@@ -322,6 +344,7 @@ impl AdminApi for RuntimeBackend {
         api_type: ApiType,
         _txn_group: TxnGroupId,
     ) -> Result<CreateKeyspaceResult> {
+        self.ensure_serving()?;
         let _guard = self.node.meta_raft.lock_catalog_txn();
         let (keyspace, command) = self
             .node
@@ -346,18 +369,22 @@ impl AdminApi for RuntimeBackend {
     }
 
     fn list_keyspaces(&self, caller: &str) -> Result<Vec<kv9_common::Keyspace>> {
+        self.ensure_serving()?;
         self.node.list_keyspaces(caller)
     }
 
     fn get_region(&self, caller: &str, keyspace: KeyspaceId, key: &[u8]) -> Result<RegionLocation> {
+        self.ensure_serving()?;
         self.node.get_region(caller, keyspace, key)
     }
 
     fn split_region(&self, caller: &str, region: RegionId, split_key: UserKey) -> Result<()> {
+        self.ensure_serving()?;
         self.node.split_region(caller, region, split_key)
     }
 
     fn cluster_info(&self, caller: &str) -> Result<ClusterInfo> {
+        self.ensure_serving()?;
         self.node.cluster_info(caller)
     }
 
@@ -368,6 +395,7 @@ impl AdminApi for RuntimeBackend {
         addr: &str,
         ttl_seconds: u64,
     ) -> Result<MembershipChangeResult> {
+        self.ensure_serving()?;
         if self.driver.status().role != Role::Leader {
             return Err(Error::Raft("admit-node must be sent to the leader".into()));
         }
@@ -398,6 +426,7 @@ impl AdminApi for RuntimeBackend {
     }
 
     fn promote_node(&self, _caller: &str, node: NodeId) -> Result<MembershipChangeResult> {
+        self.ensure_serving()?;
         if self.driver.status().role != Role::Leader {
             return Err(Error::Raft(
                 "promote-node must be sent to the leader".into(),
@@ -825,6 +854,7 @@ const RAW_APPLY_DEADLINE: Duration = Duration::from_secs(10);
 
 impl RawApi for RuntimeBackend {
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>> {
+        self.ensure_serving()?;
         self.validated_context(ctx, KeySpan::Point(key))?;
         let (view, hint, is_leader) = self.leader_read()?;
         let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
@@ -832,6 +862,7 @@ impl RawApi for RuntimeBackend {
     }
 
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>> {
+        self.ensure_serving()?;
         self.validated_context(
             ctx,
             KeySpan::Batch(keys.iter().map(|k| k.as_slice()).collect()),
@@ -842,6 +873,7 @@ impl RawApi for RuntimeBackend {
     }
 
     fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<AppliedPosition> {
+        self.ensure_serving()?;
         self.validated_context(ctx, KeySpan::Point(&key))?;
         let plan = RawExecutor.plan_put(ctx.keyspace, &key, value, RawWriteOptions::default())?;
         self.commit_batch(plan)
@@ -852,6 +884,7 @@ impl RawApi for RuntimeBackend {
         ctx: &RequestContext,
         pairs: &[(UserKey, Value)],
     ) -> Result<AppliedPosition> {
+        self.ensure_serving()?;
         self.validated_context(
             ctx,
             KeySpan::Batch(pairs.iter().map(|(k, _)| k.as_slice()).collect()),
@@ -862,6 +895,7 @@ impl RawApi for RuntimeBackend {
     }
 
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<AppliedPosition> {
+        self.ensure_serving()?;
         self.validated_context(ctx, KeySpan::Point(key))?;
         let plan = RawExecutor.plan_delete(ctx.keyspace, key)?;
         self.commit_batch(plan)
@@ -874,6 +908,7 @@ impl RawApi for RuntimeBackend {
         end: &[u8],
         limit: usize,
     ) -> Result<Vec<(UserKey, Value)>> {
+        self.ensure_serving()?;
         self.validated_context(ctx, KeySpan::Range { start, end })?;
         let (view, hint, is_leader) = self.leader_read()?;
         let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
@@ -886,6 +921,7 @@ impl RawApi for RuntimeBackend {
         start: &[u8],
         end: &[u8],
     ) -> Result<DeleteRangeReceipt> {
+        self.ensure_serving()?;
         self.validated_context(ctx, KeySpan::Range { start, end })?;
         // One chunk in memory at a time: read a bounded chunk, commit it, resume strictly
         // after the last key it covered. Planning the whole range up front bounded the
@@ -911,6 +947,7 @@ impl RawApi for RuntimeBackend {
 
 impl TxnApi for RuntimeBackend {
     fn kv_get(&self, ctx: &RequestContext, key: &[u8], ts: TimeStamp) -> Result<Option<Value>> {
+        self.ensure_serving()?;
         self.node.kv_get(ctx, key, ts)
     }
     fn kv_batch_get(
@@ -919,6 +956,7 @@ impl TxnApi for RuntimeBackend {
         keys: &[UserKey],
         ts: TimeStamp,
     ) -> Result<Vec<Option<Value>>> {
+        self.ensure_serving()?;
         self.node.kv_batch_get(ctx, keys, ts)
     }
     fn kv_scan(
@@ -929,6 +967,7 @@ impl TxnApi for RuntimeBackend {
         limit: usize,
         ts: TimeStamp,
     ) -> Result<Vec<(UserKey, Value)>> {
+        self.ensure_serving()?;
         self.node.kv_scan(ctx, start, end, limit, ts)
     }
     fn kv_prewrite(
@@ -938,6 +977,7 @@ impl TxnApi for RuntimeBackend {
         primary: &[u8],
         ts: TimeStamp,
     ) -> Result<()> {
+        self.ensure_serving()?;
         self.node.kv_prewrite(ctx, mutations, primary, ts)
     }
     fn kv_commit(
@@ -947,6 +987,7 @@ impl TxnApi for RuntimeBackend {
         start_ts: TimeStamp,
         commit_ts: TimeStamp,
     ) -> Result<()> {
+        self.ensure_serving()?;
         self.node.kv_commit(ctx, keys, start_ts, commit_ts)
     }
     fn kv_pessimistic_lock(
@@ -955,6 +996,7 @@ impl TxnApi for RuntimeBackend {
         keys: &[UserKey],
         ts: TimeStamp,
     ) -> Result<()> {
+        self.ensure_serving()?;
         self.node.kv_pessimistic_lock(ctx, keys, ts)
     }
     fn kv_pessimistic_rollback(
@@ -963,6 +1005,7 @@ impl TxnApi for RuntimeBackend {
         keys: &[UserKey],
         ts: TimeStamp,
     ) -> Result<()> {
+        self.ensure_serving()?;
         self.node.kv_pessimistic_rollback(ctx, keys, ts)
     }
     fn kv_resolve_lock(
@@ -971,9 +1014,11 @@ impl TxnApi for RuntimeBackend {
         start_ts: TimeStamp,
         commit_ts: Option<TimeStamp>,
     ) -> Result<()> {
+        self.ensure_serving()?;
         self.node.kv_resolve_lock(ctx, start_ts, commit_ts)
     }
     fn kv_cleanup(&self, ctx: &RequestContext, key: &[u8], ts: TimeStamp) -> Result<()> {
+        self.ensure_serving()?;
         self.node.kv_cleanup(ctx, key, ts)
     }
     fn kv_check_txn_status(
@@ -982,6 +1027,7 @@ impl TxnApi for RuntimeBackend {
         primary: &[u8],
         lock_ts: TimeStamp,
     ) -> Result<()> {
+        self.ensure_serving()?;
         self.node.kv_check_txn_status(ctx, primary, lock_ts)
     }
 }
@@ -1794,6 +1840,117 @@ mod tests {
     use kv9_raft::transport::{InProcHub, RaftTransport};
     use kv9_raft::Command;
     use tonic::Code;
+
+    fn pre_serving_runtime_backend() -> (RuntimeBackend, tokio::runtime::Runtime, PathBuf) {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-pre-serving-gate-{}-{}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let (storage, _) = DiskRaftStorage::open(&dir.join("raft"), &[1]).unwrap();
+        let peer = Arc::new(RaftPeer::with_storage(NodeId(1), META_REGION_0, storage).unwrap());
+        let (engine, _) = WalEngine::open(dir.join("catalog.wal")).unwrap();
+        let engine = Arc::new(engine);
+        let node = Arc::new(
+            Node::with_raft_and_engine(NodeId(1), Config::default(), peer.clone(), engine.clone())
+                .unwrap(),
+        );
+        let runtime = tokio::runtime::Runtime::new().unwrap();
+        let transport = GrpcTransport::new(NodeId(1), None, runtime.handle().clone());
+        let driver = NodeDriver::new(
+            peer,
+            transport.clone(),
+            MemStateMachine::with_engine(engine).unwrap(),
+        );
+        (
+            RuntimeBackend {
+                node,
+                driver,
+                transport,
+            },
+            runtime,
+            dir,
+        )
+    }
+
+    fn assert_meta_not_ready<T: std::fmt::Debug>(result: Result<T>) {
+        match result {
+            Err(Error::MetaNotReady(message)) => {
+                assert!(
+                    message.contains("Discovering"),
+                    "wrong readiness detail: {message}"
+                );
+            }
+            other => panic!("pre-Serving public request escaped the readiness gate: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn every_public_request_is_meta_not_ready_before_planning() {
+        let (backend, runtime, dir) = pre_serving_runtime_backend();
+        let ctx = RequestContext {
+            keyspace: KeyspaceId(100),
+            region_epoch: epoch(1, 1),
+            caller: Some("test-client".into()),
+        };
+
+        // Admin: CreateKeyspace used to reach catalog planning here and leak an FK
+        // violation for the bootstrap-owned default tenant. The other calls are listed
+        // explicitly so a newly added/rewired public method cannot quietly skip the gate.
+        assert_meta_not_ready(backend.create_keyspace(
+            "test-client",
+            "too-early",
+            TenantId::DEFAULT,
+            ApiType::Raw,
+            TxnGroupId(0),
+        ));
+        assert_meta_not_ready(backend.list_keyspaces("test-client"));
+        assert_meta_not_ready(backend.get_region("test-client", KeyspaceId(100), b"k"));
+        assert_meta_not_ready(backend.split_region("test-client", RegionId(1), b"m".to_vec()));
+        assert_meta_not_ready(backend.cluster_info("test-client"));
+        assert_meta_not_ready(backend.admit_node("test-client", NodeId(2), "127.0.0.1:20161", 60));
+        assert_meta_not_ready(backend.promote_node("test-client", NodeId(2)));
+
+        assert_meta_not_ready(backend.raw_get(&ctx, b"k"));
+        assert_meta_not_ready(backend.raw_batch_get(&ctx, &[b"k".to_vec()]));
+        assert_meta_not_ready(backend.raw_put(&ctx, b"k".to_vec(), b"v".to_vec()));
+        assert_meta_not_ready(backend.raw_batch_put(&ctx, &[(b"k".to_vec(), b"v".to_vec())]));
+        assert_meta_not_ready(backend.raw_delete(&ctx, b"k"));
+        assert_meta_not_ready(backend.raw_scan(&ctx, b"", b"", 10));
+        assert_meta_not_ready(backend.raw_delete_range(&ctx, b"", b""));
+
+        assert_meta_not_ready(backend.kv_get(&ctx, b"k", TimeStamp(1)));
+        assert_meta_not_ready(backend.kv_batch_get(&ctx, &[b"k".to_vec()], TimeStamp(1)));
+        assert_meta_not_ready(backend.kv_scan(&ctx, b"", b"", 10, TimeStamp(1)));
+        assert_meta_not_ready(backend.kv_prewrite(
+            &ctx,
+            &[(b"k".to_vec(), Some(b"v".to_vec()))],
+            b"k",
+            TimeStamp(1),
+        ));
+        assert_meta_not_ready(backend.kv_commit(
+            &ctx,
+            &[b"k".to_vec()],
+            TimeStamp(1),
+            TimeStamp(2),
+        ));
+        assert_meta_not_ready(backend.kv_pessimistic_lock(&ctx, &[b"k".to_vec()], TimeStamp(1)));
+        assert_meta_not_ready(backend.kv_pessimistic_rollback(
+            &ctx,
+            &[b"k".to_vec()],
+            TimeStamp(1),
+        ));
+        assert_meta_not_ready(backend.kv_resolve_lock(&ctx, TimeStamp(1), Some(TimeStamp(2))));
+        assert_meta_not_ready(backend.kv_cleanup(&ctx, b"k", TimeStamp(1)));
+        assert_meta_not_ready(backend.kv_check_txn_status(&ctx, b"k", TimeStamp(1)));
+
+        drop(backend);
+        drop(runtime);
+        fs::remove_dir_all(dir).unwrap();
+    }
 
     /// Builds a node with a raw keyspace whose single region has been replaced by two
     /// adjacent ones, so cross-region cases are constructible. Regions go in through the
