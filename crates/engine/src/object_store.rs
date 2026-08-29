@@ -230,10 +230,13 @@ mod tests {
     }
 
     #[test]
-    fn deleted_key_may_be_written_again_only_with_matching_content() {
-        // Delete drops the content, so the immutability check has nothing to compare
-        // against. This documents a real edge: file-ids are single-use by convention in the
-        // layer above (the manifest), and this store cannot enforce that on its own.
+    fn deleted_key_may_be_reused_with_different_content() {
+        // States what the store does, not what the layer above requires. Delete drops the
+        // bytes, so the immutability check has nothing left to compare against and a
+        // subsequent put of *different* content succeeds. That is the edge worth pinning:
+        // single-use file-ids are a convention of the manifest layer, and this store cannot
+        // enforce them alone -- a name implying it rejected mismatched content here would
+        // describe a guarantee that does not exist.
         let store = MemoryObjectStore::new();
         store.put(&key("sst/000001"), b"original").unwrap();
         store.delete(&key("sst/000001")).unwrap();
