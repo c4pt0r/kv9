@@ -143,6 +143,11 @@ leader_client() {
         continue
       fi
     fi
+    # Publish the reply on a FINAL failure too. The negative cases below need to read
+    # the real refusal text: if they only see a non-zero status they will accept a
+    # NotLeader raised by an unrelated election as proof that the context gate refused
+    # them -- a false green that asserts nothing about the gate under test.
+    leader_reply="$output"
     printf '%s\n' "$output" >&2
     return "$rc"
   done
@@ -192,11 +197,20 @@ value_hex="$(hex first-value)"
 
 # An unknown keyspace must be refused, not silently written into a keyspace that will
 # exist later.
+# Routed through `leader_client` so an election cannot answer for the gate: a bare
+# non-zero status is satisfied just as well by a NotLeader redirect as by the context
+# gate refusing, and that would be a false green -- the assertion would pass while
+# proving nothing about the thing under test. Following the redirect first, then
+# checking the refusal text, keeps the failure attributable.
 set +e
-unknown_output="$(client "$leader" raw-get --keyspace 999 --key-hex "$key_hex" 2>&1)"
+leader_client raw-get --keyspace 999 --key-hex "$key_hex"
 unknown_rc=$?
 set -e
+unknown_output="$leader_reply"
 test "$unknown_rc" -ne 0 || { echo "FAIL: unknown keyspace was served: $unknown_output" >&2; exit 1; }
+if grep -q "not_leader=true" <<<"$unknown_output"; then
+  echo "FAIL: unknown-keyspace refusal was a leadership redirect, not the context gate: $unknown_output" >&2; exit 1
+fi
 
 # A txn keyspace must refuse raw writes: Percolator expects its own lock/write structure
 # there, and raw bytes would corrupt that silently.
@@ -205,12 +219,15 @@ txn_out="$leader_reply"
 txn_keyspace="$(awk -F= '$1 == "keyspace_id" { print $2 }' <<<"$txn_out")"
 test -n "$txn_keyspace" || { echo "FAIL: could not create the txn keyspace" >&2; exit 1; }
 set +e
-mismatch_output="$(client "$leader" raw-put --keyspace "$txn_keyspace" \
-  --key-hex "$key_hex" --value-hex "$value_hex" 2>&1)"
+leader_client raw-put --keyspace "$txn_keyspace" --key-hex "$key_hex" --value-hex "$value_hex"
 mismatch_rc=$?
 set -e
+mismatch_output="$leader_reply"
 test "$mismatch_rc" -ne 0 || {
   echo "FAIL: raw write accepted into a txn keyspace: $mismatch_output" >&2; exit 1; }
+if grep -q "not_leader=true" <<<"$mismatch_output"; then
+  echo "FAIL: txn-mismatch refusal was a leadership redirect, not the api-type gate: $mismatch_output" >&2; exit 1
+fi
 
 # Control: a valid context on the same path answers normally (the key is not written
 # yet, so `found=false` IS the successful answer). Without this the two refusals above
@@ -287,16 +304,37 @@ echo "Killing leader n${leader}..."
 kill -9 "${pids[$leader]}"; wait "${pids[$leader]}" 2>/dev/null || true; unset "pids[$leader]"
 old_leader="$leader"
 
-survivors_have_new_leader() {
-  local node
+# Same source rule as before the kill: the survivors must AGREE on leader_id, and
+# exactly one of them may call itself leader. Picking the first survivor that claims
+# `role=leader` is the weak signal this script was red on -- and after an intentional
+# kill it is weaker still, because the dead node's status file is frozen mid-term and
+# the two survivors can briefly disagree while the election settles.
+agreed_new_leader=""
+survivors_agree_on_new_leader() {
+  local node leaders=0 leader_id=0 seen
   for node in 1 2 3; do
     test "$node" -eq "$old_leader" && continue
-    test "$(status_value "$node" role 2>/dev/null || true)" = leader && return 0
+    test -z "$(status_value "$node" fatal 2>/dev/null || true)" || return 1
+    seen="$(status_value "$node" leader_id 2>/dev/null || true)"
+    test -n "$seen" && test "$seen" -gt 0 2>/dev/null || return 1
+    # The survivors must not still be naming the node we just killed.
+    test "$seen" -ne "$old_leader" || return 1
+    (( leader_id == 0 )) && leader_id="$seen"
+    test "$seen" -eq "$leader_id" || return 1
+    test "$(status_value "$node" role 2>/dev/null || true)" = leader && leaders=$((leaders + 1))
   done
-  return 1
+  test "$leaders" -eq 1 || return 1
+  agreed_new_leader="$leader_id"
 }
-wait_until "a survivor to win the election" 20 survivors_have_new_leader
-new_leader="$(leader_node "$old_leader")"
+wait_until "both survivors to agree on one new leader" 20 survivors_agree_on_new_leader
+new_leader="$agreed_new_leader"
+test -n "$new_leader" || { echo "FAIL: survivor agreement passed without publishing a leader" >&2; exit 1; }
+# Everything after the failover addresses the leader through `leader_client`, which
+# keeps `$leader` current by following typed redirects. Hand the agreed value over
+# rather than continuing to address the frozen `$new_leader`: an election during the
+# post-failover writes would otherwise reproduce exactly the failure this card fixes,
+# one stage later.
+leader="$new_leader"
 echo "New leader is n${new_leader}."
 
 # Before any new write applies, the new leader's last applied command must be *exactly*
@@ -327,7 +365,8 @@ test "$(status_value "$new_leader" applied_term)" -eq "$write_term" || {
 # So: delete this and the script still looks thorough, still exits 0 on a build that
 # has silently stopped replicating. If you are changing it, change it into something
 # that still requires the value to be served by a node that was never the writer.
-got="$(client "$new_leader" raw-get --keyspace "$keyspace" --key-hex "$key_hex")"
+leader_client raw-get --keyspace "$keyspace" --key-hex "$key_hex"
+got="$leader_reply"
 test "$got" = "value_hex=${value_hex}" || { echo "FAIL: post-failover read got '$got'" >&2; exit 1; }
 echo "Pre-failover value survived on the new leader."
 
@@ -335,8 +374,10 @@ echo "Pre-failover value survived on the new leader."
 # path still works after failover.
 second_key_hex="$(hex beta)"
 second_value_hex="$(hex second-value)"
-second_put_output="$(client "$new_leader" raw-put --keyspace "$keyspace" --key-hex "$second_key_hex" --value-hex "$second_value_hex")"
-got="$(client "$new_leader" raw-get --keyspace "$keyspace" --key-hex "$second_key_hex")"
+leader_client raw-put --keyspace "$keyspace" --key-hex "$second_key_hex" --value-hex "$second_value_hex"
+second_put_output="$leader_reply"
+leader_client raw-get --keyspace "$keyspace" --key-hex "$second_key_hex"
+got="$leader_reply"
 test "$got" = "value_hex=${second_value_hex}" || { echo "FAIL: post-failover write not readable, got '$got'" >&2; exit 1; }
 post_failover_term="$(awk -F= '$1 == "applied_term" { print $2 }' <<<"$second_put_output")"
 post_failover_index="$(awk -F= '$1 == "applied_index" { print $2 }' <<<"$second_put_output")"
@@ -344,17 +385,19 @@ test "$post_failover_index" -gt "$write_index" || { echo "FAIL: post-failover ap
 echo "Proposal path still live after failover: (term=${post_failover_term}, index=${post_failover_index})."
 
 # ---------------------------------------------------------------- delete + delete-range
-client "$new_leader" raw-delete --keyspace "$keyspace" --key-hex "$key_hex" >/dev/null
-got="$(client "$new_leader" raw-get --keyspace "$keyspace" --key-hex "$key_hex")"
+leader_client raw-delete --keyspace "$keyspace" --key-hex "$key_hex"
+leader_client raw-get --keyspace "$keyspace" --key-hex "$key_hex"
+got="$leader_reply"
 test "$got" = "found=false" || { echo "FAIL: delete left '$got'" >&2; exit 1; }
 
 for suffix in a b c; do
-  client "$new_leader" raw-put --keyspace "$keyspace" \
-    --key-hex "$(hex "range-${suffix}")" --value-hex "$(hex v)" >/dev/null
+  leader_client raw-put --keyspace "$keyspace" \
+    --key-hex "$(hex "range-${suffix}")" --value-hex "$(hex v)"
 done
-client "$new_leader" raw-delete-range --keyspace "$keyspace" \
-  --start-hex "$(hex range-)" --end-hex "$(hex range.)" >/dev/null
-scan_output="$(client "$new_leader" raw-scan --keyspace "$keyspace")"
+leader_client raw-delete-range --keyspace "$keyspace" \
+  --start-hex "$(hex range-)" --end-hex "$(hex range.)"
+leader_client raw-scan --keyspace "$keyspace"
+scan_output="$leader_reply"
 grep -q "^count=1$" <<<"$scan_output" || {
   echo "FAIL: delete-range left the wrong rows: $scan_output" >&2; exit 1; }
 grep -q "key_hex=${second_key_hex}" <<<"$scan_output" || { echo "FAIL: surviving row missing: $scan_output" >&2; exit 1; }
@@ -363,16 +406,19 @@ grep -q "key_hex=${second_key_hex}" <<<"$scan_output" || { echo "FAIL: surviving
 # the delete-range was still applying, then demanded the restarted node match exactly
 # 10 -- and failed it for correctly reaching 11. No writes are issued after this point,
 # so two identical samples mean the sequence is done.
+# Sample the leader `leader_client` actually ended up talking to, not the node that won
+# the election several operations ago. If a redirect moved us, `$new_leader` is a stale
+# name and its applied_index answers a question about the wrong process.
 quiesced() {
   local first second
-  first="$(status_value "$new_leader" applied_index 2>/dev/null || true)"
+  first="$(status_value "$leader" applied_index 2>/dev/null || true)"
   sleep 0.2
-  second="$(status_value "$new_leader" applied_index 2>/dev/null || true)"
+  second="$(status_value "$leader" applied_index 2>/dev/null || true)"
   test -n "$first" && test "$first" = "$second" && test "$first" -gt "$post_failover_index"
 }
 wait_until "the new leader to finish applying the deletes" 15 quiesced
-final_term="$(status_value "$new_leader" applied_term)"
-final_index="$(status_value "$new_leader" applied_index)"
+final_term="$(status_value "$leader" applied_term)"
+final_index="$(status_value "$leader" applied_index)"
 echo "Delete and delete-range replicated; final position (term=${final_term}, index=${final_index})."
 
 # ---------------------------------------------------------------- restart = durability
