@@ -37,7 +37,18 @@ fn print_usage() {
            KV9_CLIENT_TOKEN=<token> kv9 client create-keyspace --addr <ip:port> --name <name> --api-type <txn|raw> [--tenant-id <id>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client admit-node --addr <leader-ip:port> --node-id <id> --node-addr <ip:port> [--ttl-seconds <seconds>]\n\
            KV9_CLIENT_TOKEN=<token> kv9 client promote-node --addr <leader-ip:port> --node-id <id>\n\
+           KV9_CLIENT_TOKEN=<token> kv9 client raw-put --addr <leader-ip:port> --keyspace <id> --key-hex <hex> --value-hex <hex>\n\\
+           KV9_CLIENT_TOKEN=<token> kv9 client raw-get --addr <leader-ip:port> --keyspace <id> --key-hex <hex>\n\\
+           KV9_CLIENT_TOKEN=<token> kv9 client raw-delete --addr <leader-ip:port> --keyspace <id> --key-hex <hex>\n\\
+           KV9_CLIENT_TOKEN=<token> kv9 client raw-scan --addr <leader-ip:port> --keyspace <id> --start-hex <hex> --end-hex <hex> [--limit <n>]\n\\
+           KV9_CLIENT_TOKEN=<token> kv9 client raw-delete-range --addr <leader-ip:port> --keyspace <id> --start-hex <hex> --end-hex <hex>\n\\
          \n\
+         RAW COMMANDS:\n\\
+           Keys and values are hex (printf 'hello' | xxd -p): a binary key cannot be passed\n\\
+           safely as a shell string. Empty --start-hex/--end-hex means unbounded on that side.\n\\
+           Address them to the CURRENT LEADER: a follower answers NotLeader with a redirect\n\\
+           hint, and the client does not follow it for you.\n\\
+         \n\\
          FLAGS (DESIGN §11):\n\
            --node-id     non-zero stable identity of this node (required)\n\
            --addr        serving address to bind (default 127.0.0.1:20160)\n\
