@@ -341,8 +341,18 @@ jobs:
           #
           # This step already runs only under `if: failure()`, so exiting 1 here cannot turn a
           # passing run red; it makes an already-failing job say why its evidence is missing.
-          if ! ls -d /tmp/kv9-* >/dev/null 2>&1; then
-            echo "::error title=scene collection matched nothing::A test failed but no /tmp/kv9-* directory existed to collect. The failure evidence is gone; fix the collection before trusting any diagnosis of this run."
+          # Two separate conditions, because they fail differently and mean different things.
+          # Cindy's edge: `mktemp -d` creates the data directory before any node starts, so if
+          # the nodes never came up the directory EXISTS and is EMPTY. A guard that only checks
+          # for the directory passes, and we are back to a report nobody is forced to read.
+          # The decision table needs status files, not directories, so that is what is checked.
+          missing=""
+          ls -d /tmp/kv9-* >/dev/null 2>&1 || missing="no /tmp/kv9-* directory at all"
+          if [ -z "$missing" ] && ! find ci-scene -name status -type f | grep -q .; then
+            missing="directories present but they contain no status file (nodes may never have started)"
+          fi
+          if [ -n "$missing" ]; then
+            echo "::error title=scene collection has no readable evidence::A test failed and $missing. The DIAG transcript may still be in the log, but the per-node status files this run's diagnosis depends on are absent. Fix collection before trusting any attribution of this failure."
             exit 1
           fi
 
