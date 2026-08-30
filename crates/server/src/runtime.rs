@@ -1164,19 +1164,12 @@ impl NodeRuntime {
                 "runtime seed set does not match the canonical root descriptor".into(),
             ));
         }
-        let own = seeds.iter().find(|seed| seed.node_id == id);
-        let joining = match own {
-            Some(seed) => {
-                if seed.addr != addr {
-                    return Err(Error::Config(format!(
-                        "seed voter set declares node {} at {}, but addr is {}",
-                        id.0, seed.addr, addr
-                    )));
-                }
-                false
-            }
-            None => true,
-        };
+        // The root address is the canonical advertised endpoint; `addr` is
+        // only the local listener bind. They are intentionally allowed to
+        // differ (for example a stable Kubernetes Service ClusterIP advertising
+        // a Pod that binds 0.0.0.0). Peer identity never comes from the bind
+        // address.
+        let joining = seeds.iter().all(|seed| seed.node_id != id);
         let join_ticket_sha256 = join_ticket.map(|ticket| RootDigest::sha256(ticket.as_bytes()));
 
         let data_dir = PathBuf::from(&config.data_dir);
