@@ -7,7 +7,9 @@ artifact_dir="${KV9_MEMBERSHIP_DIR:-$(mktemp -d /tmp/kv9-membership.XXXXXX)}"
 base_port="${KV9_BASE_PORT:-$((23000 + ($$ % 1000)))}"
 cluster_token="membership-cluster-token"
 client_token="membership-client-token"
+bootstrap_token="membership-bootstrap-token"
 initial_join="1@127.0.0.1:$((base_port + 1)),2@127.0.0.1:$((base_port + 2)),3@127.0.0.1:$((base_port + 3))"
+root_path="$artifact_dir/root.bin"
 declare -A pids=()
 
 if [[ ! "$base_port" =~ ^[0-9]+$ ]] || ((base_port < 1024 || base_port + 5 > 65535)); then
@@ -32,16 +34,25 @@ status_value() {
 }
 
 start_node() {
-  local node="$1" cluster_id="${2:-}" args=()
+  local node="$1" ticket="${2:-}" args=()
   mkdir -p "$artifact_dir/n${node}"
+  if [[ ! -e "$artifact_dir/n${node}/kv9-store-identity" ]]; then
+    if (( node <= 3 )); then
+      KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" init --root "$root_path" --node-id "$node" \
+        --data-dir "$artifact_dir/n${node}" >"$artifact_dir/n${node}.init.log"
+    else
+      KV9_JOIN_TICKET="$ticket" "$bin" join --root "$root_path" --node-id "$node" \
+        --addr "127.0.0.1:$((base_port + node))" --data-dir "$artifact_dir/n${node}" \
+        >"$artifact_dir/n${node}.join.log"
+    fi
+  fi
   args=(
+    start
     --node-id "$node"
     --addr "127.0.0.1:$((base_port + node))"
     --data-dir "$artifact_dir/n${node}"
-    --join "$initial_join"
   )
-  if [[ -n "$cluster_id" ]]; then args+=(--cluster-id "$cluster_id"); fi
-  KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" \
+  KV9_JOIN_TICKET="$ticket" KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" \
     "$bin" "${args[@]}" >"$artifact_dir/n${node}.log" 2>&1 &
   pids[$node]=$!
 }
@@ -73,7 +84,10 @@ wait_until() {
   until "$@"; do
     if ((SECONDS >= deadline)); then
       echo "FAIL: timed out waiting for $label" >&2
-      find "$artifact_dir" -name status -type f -print -exec sed -n '1,18p' {} \; >&2 || true
+      # Status is bounded and grows when a new identity field becomes
+      # load-bearing. Print it whole: a numeric line cap previously hid
+      # bootstrap_state/fatal exactly when a bootstrap failure needed them.
+      find "$artifact_dir" -name status -type f -print -exec cat {} \; >&2 || true
       return 1
     fi
     sleep 0.05
@@ -112,7 +126,7 @@ client() {
 }
 
 admit_and_join() {
-  local node="$1" cluster_id="$2" leader output
+  local node="$1" leader output ticket
   leader="$(leader_id)"
   output="$(client admit-node \
     --addr "127.0.0.1:$((base_port + leader))" \
@@ -120,7 +134,9 @@ admit_and_join() {
     --node-addr "127.0.0.1:$((base_port + node))" \
     --ttl-seconds 120)"
   test "$(awk -F= '$1 == "applied_index" {print $2}' <<<"$output")" -gt 0
-  start_node "$node" "$cluster_id"
+  ticket="$(awk -F= '$1 == "join_ticket" {print $2}' <<<"$output")"
+  [[ "$ticket" =~ ^[0-9a-f]{64}$ ]]
+  start_node "$node" "$ticket"
 }
 
 promote() {
@@ -136,6 +152,9 @@ promote() {
 echo "Building kv9..."
 cargo build --quiet --manifest-path "$repo_dir/Cargo.toml"
 
+KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root_path" \
+  --voters "$initial_join" >"$artifact_dir/root-create.log"
+
 for node in 1 2 3; do start_node "$node"; done
 wait_until "initial three voters Serving" 20 membership_converged 3 "1,2,3" ""
 cluster_id="$(status_value 1 cluster_id)"
@@ -144,7 +163,8 @@ cluster_id="$(status_value 1 cluster_id)"
 # Gate 3 sensitivity: knowing the cluster token and public ClusterId is not an
 # admission. Before the leader commits node 4's row, discovery/registration
 # must leave it visibly outside Serving.
-start_node 4 "$cluster_id"
+fake_ticket="$(printf '0%.0s' $(seq 1 64))"
+start_node 4 "$fake_ticket"
 wait_until "unadmitted joiner status" 5 test -f "$artifact_dir/n4/status"
 unadmitted_deadline=$((SECONDS + 2))
 while ((SECONDS < unadmitted_deadline)); do
@@ -155,8 +175,8 @@ done
 stop_node 4
 mv "$artifact_dir/n4" "$artifact_dir/n4-unadmitted"
 
-# Gate 2 sensitivity: after admission, the same node/address presenting a
-# different 128-bit cluster identity must fail closed before registration.
+# Gate 3 sensitivity: after admission, the same node/address presenting a
+# different one-time ticket must remain outside Serving and leave admission pending.
 leader="$(leader_id)"
 admit_output="$(client admit-node \
   --addr "127.0.0.1:$((base_port + leader))" \
@@ -164,32 +184,25 @@ admit_output="$(client admit-node \
   --node-addr "127.0.0.1:$((base_port + 4))" \
   --ttl-seconds 120)"
 test "$(awk -F= '$1 == "applied_index" {print $2}' <<<"$admit_output")" -gt 0
-wrong_cluster="00000000000000000000000000000000"
-if test "$wrong_cluster" = "$cluster_id"; then
-  wrong_cluster="11111111111111111111111111111111"
-fi
-start_node 4 "$wrong_cluster"
+ticket4="$(awk -F= '$1 == "join_ticket" {print $2}' <<<"$admit_output")"
+[[ "$ticket4" =~ ^[0-9a-f]{64}$ ]]
+start_node 4 "$fake_ticket"
 wrong_deadline=$((SECONDS + 8))
-while kill -0 "${pids[4]}" 2>/dev/null && ((SECONDS < wrong_deadline)); do
+while ((SECONDS < wrong_deadline)); do
   test "$(status_value 4 bootstrap_state 2>/dev/null || true)" != Serving
+  kill -0 "${pids[4]}"
   sleep 0.05
 done
-if kill -0 "${pids[4]}" 2>/dev/null; then
-  echo "FAIL: wrong-cluster joiner did not fail closed" >&2
-  exit 1
-fi
-wait "${pids[4]}" 2>/dev/null || true
-unset 'pids[4]'
-grep -q "does not match" "$artifact_dir/n4.log"
-mv "$artifact_dir/n4" "$artifact_dir/n4-wrong-cluster"
+stop_node 4
+mv "$artifact_dir/n4" "$artifact_dir/n4-wrong-ticket"
 
-# Admission for node 4 is already committed above; now use the correct id.
-start_node 4 "$cluster_id"
+# Admission for node 4 is already committed above; now use the issued ticket.
+start_node 4 "$ticket4"
 wait_until "node 4 registered and caught up as learner" 20 membership_converged 4 "1,2,3" "4"
 promote 4
 wait_until "node 4 promoted to voter" 20 membership_converged 4 "1,2,3,4" ""
 
-admit_and_join 5 "$cluster_id"
+admit_and_join 5
 wait_until "node 5 registered and caught up as learner" 20 membership_converged 5 "1,2,3,4" "5"
 promote 5
 wait_until "five voters converged" 20 membership_converged 5 "1,2,3,4,5" ""

@@ -15,6 +15,7 @@ serving_timeout="${KV9_SERVING_TIMEOUT:-20}"
 failure_observe_seconds="${KV9_FAILURE_OBSERVE_SECONDS:-5}"
 cluster_token="phase1-cluster-token"
 client_token="phase1-client-token"
+bootstrap_token="phase1-bootstrap-token"
 declare -A pids=()
 
 if [[ ! "$meta_node_count" =~ ^[0-9]+$ ]] || (( meta_node_count < 3 || meta_node_count % 2 == 0 )); then
@@ -48,7 +49,6 @@ join_set() {
 }
 
 cluster_join="$(join_set "$meta_node_count")"
-negative_join="$(join_set 3)"
 expected_voters="$(seq -s, 1 "$meta_node_count")"
 
 status_value() {
@@ -63,11 +63,21 @@ start_node() {
   local declared_join="${2:-$cluster_join}"
   local port=$((base_port + node))
   mkdir -p "$artifact_dir/n${node}"
+  if [[ ! -e "$artifact_dir/root.bin" ]]; then
+    KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create \
+      --output "$artifact_dir/root.bin" --voters "$declared_join" \
+      >"$artifact_dir/root-create.log"
+  fi
+  if [[ ! -e "$artifact_dir/n${node}/kv9-store-identity" ]]; then
+    KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" init --root "$artifact_dir/root.bin" \
+      --node-id "$node" --data-dir "$artifact_dir/n${node}" \
+      >>"$artifact_dir/n${node}.log" 2>&1
+  fi
   KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" "$bin" \
+    start \
     --node-id "$node" \
     --addr "127.0.0.1:${port}" \
     --data-dir "$artifact_dir/n${node}" \
-    --join "$declared_join" \
     >"$artifact_dir/n${node}.log" 2>&1 &
   pids[$node]=$!
 }
@@ -217,7 +227,7 @@ cargo build --quiet --manifest-path "$repo_dir/Cargo.toml"
 # Negative gate: one member of a declared three-voter set may listen, but it
 # must never turn silence into an 'uninitialized' quorum.
 artifact_dir="$root_artifact_dir/quorum-negative"
-start_node 1 "$negative_join"
+start_node 1 "$(join_set 3)"
 wait_until "single node status surface" 5 test -f "$artifact_dir/n1/status"
 negative_deadline=$((SECONDS + 2))
 while (( SECONDS < negative_deadline )); do
@@ -239,59 +249,8 @@ kill "${pids[1]}"
 wait "${pids[1]}" 2>/dev/null || true
 unset 'pids[1]'
 
-# Negative gate: a syntactically valid answer from an overlapping but different
-# voter declaration is not a vote for this cluster. Node 1 declares {1,2,3};
-# the process at address 3 declares {1,2,9}. Neither may use the other's answer.
-artifact_dir="$root_artifact_dir/fingerprint-negative"
-start_node 1 "$negative_join"
-mkdir -p "$artifact_dir/n2"
-KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" "$bin" \
-  --node-id 2 \
-  --addr "127.0.0.1:$((base_port + 2))" \
-  --data-dir "$artifact_dir/n2" \
-    --join "1@127.0.0.1:$((base_port + 1)),2@127.0.0.1:$((base_port + 2)),9@127.0.0.1:$((base_port + 3))" \
-  >"$artifact_dir/n2.log" 2>&1 &
-pids[2]=$!
-mkdir -p "$artifact_dir/n9"
-KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" "$bin" \
-  --node-id 9 \
-  --addr "127.0.0.1:$((base_port + 3))" \
-  --data-dir "$artifact_dir/n9" \
-    --join "1@127.0.0.1:$((base_port + 1)),3@127.0.0.1:$((base_port + 4)),9@127.0.0.1:$((base_port + 3))" \
-  >"$artifact_dir/n9.log" 2>&1 &
-pids[9]=$!
-wait_until "node 2 overlapping-declaration status surface" 5 test -f "$artifact_dir/n2/status"
-wait_until "node 9 overlapping-declaration status surface" 5 test -f "$artifact_dir/n9/status"
-fingerprint_deadline=$((SECONDS + 2))
-while (( SECONDS < fingerprint_deadline )); do
-  for node in 1 2 9; do
-    if test "$(status_value "$node" bootstrap_state 2>/dev/null || true)" = "Serving"; then
-      echo "FAIL: mismatched voter-set fingerprint counted as bootstrap evidence" >&2
-      exit 1
-    fi
-    kill -0 "${pids[$node]}"
-  done
-  sleep 0.05
-done
-node_id_rejection="$(status_value 1 discovery_seed_3)"
-fingerprint_rejection="$(status_value 1 discovery_seed_2)"
-if ! [[ "$node_id_rejection" =~ ,rejected_node_id=[1-9][0-9]* ]]; then
-  echo "FAIL: declared-address node-id rejection was not visible in node 1 status" >&2
-  exit 1
-fi
-if ! [[ "$fingerprint_rejection" =~ ,rejected_voter_fingerprint=[1-9][0-9]* ]]; then
-  echo "FAIL: voter-fingerprint rejection was not visible in node 1 status" >&2
-  exit 1
-fi
-kill "${pids[1]}" "${pids[2]}" "${pids[9]}"
-wait "${pids[1]}" 2>/dev/null || true
-wait "${pids[2]}" 2>/dev/null || true
-wait "${pids[9]}" 2>/dev/null || true
-unset 'pids[1]'
-unset 'pids[2]'
-unset 'pids[9]'
-
-# Use fresh data dirs after deliberate non-pristine negative runs.
+# Root-generation/digest mismatch fencing has its own explicit negative in
+# root-trust-e2e.sh; this consensus gate now consumes only a provisioned root.
 artifact_dir="$root_artifact_dir/cluster"
 mkdir -p "$artifact_dir"
 for ((node = 1; node <= meta_node_count; node++)); do

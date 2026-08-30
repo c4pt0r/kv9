@@ -204,6 +204,9 @@ jobs:
           - script: quickstart-smoke.sh
             base_port: 25100
             success_marker: "PASS: quickstart path works end to end"
+          - script: root-trust-e2e.sh
+            base_port: 26100
+            success_marker: "PASS: explicit root, durable incarnation, fenced discovery, credentialed learner, and promotion"
     steps:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2

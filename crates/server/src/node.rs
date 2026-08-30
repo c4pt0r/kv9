@@ -346,11 +346,33 @@ impl<E: Engine> Node<E> {
         voters: &[NodeId],
         cluster_id: kv9_common::ClusterId,
     ) -> Result<Command> {
+        self.build_initial_metadata_command_inner(voters, cluster_id, None)
+    }
+
+    /// Production bootstrap certifies the exact pre-provisioned root in the
+    /// same first transaction as all seed catalog rows.
+    pub fn build_initial_metadata_command_for_root(
+        &self,
+        voters: &[NodeId],
+        root: &kv9_common::RootDescriptor,
+    ) -> Result<Command> {
+        self.build_initial_metadata_command_inner(voters, root.cluster_id, Some(root))
+    }
+
+    fn build_initial_metadata_command_inner(
+        &self,
+        voters: &[NodeId],
+        cluster_id: kv9_common::ClusterId,
+        root: Option<&kv9_common::RootDescriptor>,
+    ) -> Result<Command> {
         let now_unix = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map(|d| d.as_secs())
             .unwrap_or(0);
         let mut txn = self.meta_raft.store.begin()?;
+        if let Some(root) = root {
+            kv9_meta::root::initialize_root(&mut txn, root)?;
+        }
         kv9_meta::admission::initialize_cluster(&mut txn, cluster_id, now_unix)?;
 
         txn.insert(

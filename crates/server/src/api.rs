@@ -148,6 +148,9 @@ pub struct MembershipChangeResult {
     pub applied: AppliedPosition,
     pub voters: Vec<u64>,
     pub learners: Vec<u64>,
+    /// One-time credential returned only by admission creation. Promotion and
+    /// every later query return `None`; the committed catalog stores only its hash.
+    pub join_ticket: Option<String>,
 }
 
 /// The admin / meta API (DESIGN §11 Admin surface). Authenticated from day one.

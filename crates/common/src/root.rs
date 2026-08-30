@@ -278,6 +278,32 @@ impl StoreIdentity {
         })
     }
 
+    /// Bind a newly admitted store to an existing root. The store is deliberately
+    /// absent from `root.voters`: dynamic membership is certified by the catalog,
+    /// while this record prevents the local data directory from changing cluster,
+    /// node id, incarnation, or root across restarts.
+    pub fn for_joiner(
+        root: &RootDescriptor,
+        node_id: NodeId,
+        store_incarnation: StoreIncarnation,
+    ) -> Result<Self> {
+        if node_id.0 == 0 {
+            return Err(Error::Config("store node id must be non-zero".into()));
+        }
+        if root.voter(node_id).is_some() {
+            return Err(Error::Config(format!(
+                "node {} is an initial voter; use its provisioned incarnation",
+                node_id.0
+            )));
+        }
+        Ok(Self {
+            cluster_id: root.cluster_id,
+            node_id,
+            store_incarnation,
+            root_digest: root.digest(),
+        })
+    }
+
     pub fn canonical_bytes(&self) -> Vec<u8> {
         let mut out = Vec::with_capacity(80);
         out.extend_from_slice(STORE_MAGIC);
@@ -306,11 +332,21 @@ impl StoreIdentity {
     }
 
     pub fn verify(&self, root: &RootDescriptor, node_id: NodeId) -> Result<()> {
-        let expected = Self::for_voter(root, node_id)?;
-        if *self != expected {
+        if self.node_id != node_id
+            || self.node_id.0 == 0
+            || self.cluster_id != root.cluster_id
+            || self.root_digest != root.digest()
+        {
             return Err(Error::Config(
                 "store identity does not match the provisioned root descriptor".into(),
             ));
+        }
+        if let Some(voter) = root.voter(node_id) {
+            if self.store_incarnation != voter.store_incarnation {
+                return Err(Error::Config(
+                    "initial voter's store incarnation does not match the root descriptor".into(),
+                ));
+            }
         }
         Ok(())
     }
@@ -347,6 +383,48 @@ pub fn persist_root_bundle(
     atomic_write(data_dir, ROOT_DESCRIPTOR_FILE, &root.canonical_bytes())?;
     atomic_write(data_dir, STORE_IDENTITY_FILE, &identity.canonical_bytes())?;
     Ok(())
+}
+
+/// Publish a newly created root exactly once. The bytes are fully synced
+/// before an atomic no-replace hard link makes the chosen path visible, so a
+/// crash cannot leave a partially written file that later looks authoritative.
+pub fn write_new_root_descriptor(path: &Path, root: &RootDescriptor) -> Result<()> {
+    root.validate()?;
+    let parent = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    fs::create_dir_all(parent)
+        .map_err(|error| Error::Config(format!("create {}: {error}", parent.display())))?;
+    let name = path
+        .file_name()
+        .ok_or_else(|| Error::Config("root descriptor output needs a file name".into()))?;
+    let temp = parent.join(format!(
+        ".{}.{}.tmp",
+        name.to_string_lossy(),
+        std::process::id()
+    ));
+    let result = (|| {
+        let mut file = fs::OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .open(&temp)
+            .map_err(|error| Error::Config(format!("create {}: {error}", temp.display())))?;
+        file.write_all(&root.canonical_bytes())
+            .and_then(|_| file.sync_all())
+            .map_err(|error| Error::Config(format!("write {}: {error}", temp.display())))?;
+        fs::hard_link(&temp, path).map_err(|error| {
+            Error::Config(format!(
+                "publish {} without replacing an existing root: {error}",
+                path.display()
+            ))
+        })?;
+        File::open(parent)
+            .and_then(|directory| directory.sync_all())
+            .map_err(|error| Error::Config(format!("sync {}: {error}", parent.display())))
+    })();
+    let _ = fs::remove_file(&temp);
+    result
 }
 
 pub fn load_root_bundle(data_dir: &Path) -> Result<(RootDescriptor, StoreIdentity)> {
@@ -459,7 +537,10 @@ mod tests {
     fn canonical_root_round_trips_and_is_sorted() {
         let root = root();
         assert_eq!(root.voters[0].node_id, NodeId(1));
-        assert_eq!(RootDescriptor::decode(&root.canonical_bytes()).unwrap(), root);
+        assert_eq!(
+            RootDescriptor::decode(&root.canonical_bytes()).unwrap(),
+            root
+        );
         assert_eq!(root.digest(), RootDigest::sha256(&root.canonical_bytes()));
     }
 
@@ -500,6 +581,27 @@ mod tests {
         assert!(load_root_bundle(&dir).is_err());
         let identity = StoreIdentity::for_voter(&root(), NodeId(1)).unwrap();
         assert!(persist_root_bundle(&dir, &root(), &identity).is_err());
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn new_root_publication_is_atomic_and_never_replaces() {
+        let dir = std::env::temp_dir().join(format!("kv9-root-create-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        let path = dir.join("root.bin");
+        let original = root();
+        write_new_root_descriptor(&path, &original).unwrap();
+        assert_eq!(
+            RootDescriptor::decode(&fs::read(&path).unwrap()).unwrap(),
+            original
+        );
+        let mut replacement = root();
+        replacement.bootstrap_generation = BootstrapGeneration::from_bytes([8; 16]);
+        assert!(write_new_root_descriptor(&path, &replacement).is_err());
+        assert_eq!(
+            RootDescriptor::decode(&fs::read(&path).unwrap()).unwrap(),
+            root()
+        );
         fs::remove_dir_all(dir).unwrap();
     }
 }

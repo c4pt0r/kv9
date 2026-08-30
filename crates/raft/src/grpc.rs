@@ -27,7 +27,9 @@ use raft::prelude::Message;
 use tokio::sync::mpsc;
 use tonic::{Request, Response, Status, Streaming};
 
-use kv9_common::{ClusterId, Error, NodeId, Result};
+use kv9_common::{
+    BootstrapGeneration, ClusterId, Error, NodeId, Result, RootDigest, StoreIncarnation,
+};
 
 use crate::transport::RaftTransport;
 
@@ -103,6 +105,15 @@ const RECONNECT_MAX: Duration = Duration::from_secs(2);
 pub trait GrpcDiscoveryState: Send + Sync + 'static {
     fn answer(&self) -> (NodeId, bool, u64);
 
+    /// Pre-provisioned root identity. Unlike the old voter fingerprint this
+    /// remains authoritative before and after catalog initialization.
+    fn root_identity(&self) -> RootWireIdentity {
+        RootWireIdentity {
+            bootstrap_generation: BootstrapGeneration::from_bytes([0; 16]),
+            root_digest: RootDigest::from_bytes([0; 32]),
+        }
+    }
+
     /// The cluster identity, once initialized (task #24, gate 2). The
     /// CONTRACT couples this to `answer().1`: whenever `initialized` is
     /// true this MUST return `Some` — the service refuses to publish an
@@ -111,6 +122,12 @@ pub trait GrpcDiscoveryState: Send + Sync + 'static {
     fn cluster_id(&self) -> Option<ClusterId> {
         None
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct RootWireIdentity {
+    pub bootstrap_generation: BootstrapGeneration,
+    pub root_digest: RootDigest,
 }
 
 /// One committed registration (task #24, gate 3): the receipt the server-side
@@ -170,6 +187,8 @@ pub trait RegistrationBackend: Send + Sync + 'static {
         node: NodeId,
         addr: &str,
         cluster_id: ClusterId,
+        join_ticket_sha256: &[u8],
+        store_incarnation: StoreIncarnation,
     ) -> std::result::Result<RegistrationReceipt, RegistrationError>;
 }
 
@@ -233,6 +252,10 @@ impl Kv9Raft for RaftGrpcService {
                 Ok(None) => return Ok(Response::new(pb::Done {})), // clean end
                 Err(status) => return Err(status),
             };
+            if batch.root_digest.as_slice() != self.discovery.root_identity().root_digest.as_bytes()
+            {
+                return Err(Status::failed_precondition("raft root identity mismatch"));
+            }
             for env in batch.msgs {
                 if env.from_node != authenticated.0 {
                     return Err(Status::permission_denied(
@@ -279,6 +302,14 @@ impl Kv9Raft for RaftGrpcService {
                 "discovery sender does not match authenticated node",
             ));
         }
+        let root = self.discovery.root_identity();
+        if request.get_ref().bootstrap_generation.as_slice() != root.bootstrap_generation.as_bytes()
+            || request.get_ref().root_digest.as_slice() != root.root_digest.as_bytes()
+        {
+            return Err(Status::failed_precondition(
+                "discovery root identity mismatch",
+            ));
+        }
         let (node, initialized, fp) = self.discovery.answer();
         let cluster_id = match (initialized, self.discovery.cluster_id()) {
             (true, Some(id)) => id.as_bytes().to_vec(),
@@ -298,6 +329,8 @@ impl Kv9Raft for RaftGrpcService {
             initialized,
             voter_fingerprint: fp,
             cluster_id,
+            bootstrap_generation: root.bootstrap_generation.as_bytes().to_vec(),
+            root_digest: root.root_digest.as_bytes().to_vec(),
         }))
     }
 
@@ -330,7 +363,22 @@ impl Kv9Raft for RaftGrpcService {
                 "node registration is not served by this build",
             ));
         };
-        let receipt = match backend.register(authenticated, &req.addr, cluster_id) {
+        if req.join_ticket_sha256.len() != 32 || req.store_incarnation.len() != 16 {
+            return Err(Status::failed_precondition("invalid join ticket"));
+        }
+        let incarnation = StoreIncarnation::from_bytes(
+            req.store_incarnation
+                .as_slice()
+                .try_into()
+                .expect("length checked"),
+        );
+        let receipt = match backend.register(
+            authenticated,
+            &req.addr,
+            cluster_id,
+            &req.join_ticket_sha256,
+            incarnation,
+        ) {
             Ok(r) => r,
             Err(RegistrationError::NotLeader { leader }) => {
                 let mut status = Status::failed_precondition("not the leader");
@@ -373,6 +421,7 @@ pub fn grpc_discover(
     addr: SocketAddr,
     timeout: Duration,
     token: Option<String>,
+    root: RootWireIdentity,
 ) -> Result<DiscoverAnswer> {
     let url = format!("http://{addr}");
     handle.block_on(async move {
@@ -383,6 +432,8 @@ pub fn grpc_discover(
             let mut req = Request::new(pb::DiscoverRequest {
                 from_node: from.0,
                 voter_fingerprint: 0,
+                bootstrap_generation: root.bootstrap_generation.as_bytes().to_vec(),
+                root_digest: root.root_digest.as_bytes().to_vec(),
             });
             attach_auth(&mut req, &token, from);
             let resp = client
@@ -415,11 +466,36 @@ pub fn grpc_discover(
                     )))
                 }
             };
+            let response_generation = BootstrapGeneration::from_bytes(
+                resp.bootstrap_generation
+                    .as_slice()
+                    .try_into()
+                    .map_err(|_| {
+                        Error::Raft(format!(
+                            "discovery answer from {addr} carries an invalid bootstrap generation"
+                        ))
+                    })?,
+            );
+            let response_digest =
+                RootDigest::from_bytes(resp.root_digest.as_slice().try_into().map_err(|_| {
+                    Error::Raft(format!(
+                        "discovery answer from {addr} carries an invalid root digest"
+                    ))
+                })?);
+            if response_generation != root.bootstrap_generation
+                || response_digest != root.root_digest
+            {
+                return Err(Error::Raft(format!(
+                    "discovery answer from {addr} does not match the provisioned root identity"
+                )));
+            }
             Ok::<_, Error>(DiscoverAnswer {
                 node: NodeId(resp.node_id),
                 initialized: resp.initialized,
                 voter_fingerprint: resp.voter_fingerprint,
                 cluster_id,
+                bootstrap_generation: response_generation,
+                root_digest: response_digest,
             })
         };
         tokio::time::timeout(timeout, fut)
@@ -437,6 +513,13 @@ pub enum RegisterOutcome {
     NotLeader { leader: Option<NodeId> },
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct JoinIdentity {
+    pub cluster_id: ClusterId,
+    pub ticket_sha256: RootDigest,
+    pub store_incarnation: StoreIncarnation,
+}
+
 /// One-shot registration call (blocking wrapper, like [`grpc_discover`]).
 /// Decodes the not-leader redirect strictly: marker must be ASCII `true`;
 /// a present-but-garbled leader id is a protocol error, never a silent
@@ -447,7 +530,7 @@ pub fn grpc_register(
     me: NodeId,
     addr: SocketAddr,
     listen_addr: &str,
-    cluster_id: ClusterId,
+    identity: JoinIdentity,
     timeout: Duration,
     token: Option<String>,
 ) -> Result<RegisterOutcome> {
@@ -461,7 +544,9 @@ pub fn grpc_register(
             let mut req = Request::new(pb::RegisterRequest {
                 node_id: me.0,
                 addr: listen_addr,
-                cluster_id: cluster_id.as_bytes().to_vec(),
+                cluster_id: identity.cluster_id.as_bytes().to_vec(),
+                join_ticket_sha256: identity.ticket_sha256.as_bytes().to_vec(),
+                store_incarnation: identity.store_incarnation.as_bytes().to_vec(),
             });
             attach_auth(&mut req, &token, me);
             match client.register(req).await {
@@ -521,6 +606,8 @@ pub struct DiscoverAnswer {
     pub voter_fingerprint: u64,
     /// Post-initialization authority (present ⇔ initialized).
     pub cluster_id: Option<ClusterId>,
+    pub bootstrap_generation: BootstrapGeneration,
+    pub root_digest: RootDigest,
 }
 
 /// The outbound half + inbox drain: a [`RaftTransport`] carried by gRPC.
@@ -537,6 +624,7 @@ pub struct GrpcTransport {
     addrs: Mutex<HashMap<u64, SocketAddr>>,
     inbox_rx: Mutex<mpsc::UnboundedReceiver<Message>>,
     inbox_tx: mpsc::UnboundedSender<Message>,
+    root_digest: RootDigest,
 }
 
 impl GrpcTransport {
@@ -546,6 +634,7 @@ impl GrpcTransport {
         me: NodeId,
         token: Option<String>,
         handle: tokio::runtime::Handle,
+        root_digest: RootDigest,
     ) -> Arc<GrpcTransport> {
         let (inbox_tx, inbox_rx) = mpsc::unbounded_channel();
         Arc::new(GrpcTransport {
@@ -556,6 +645,7 @@ impl GrpcTransport {
             addrs: Mutex::new(HashMap::new()),
             inbox_rx: Mutex::new(inbox_rx),
             inbox_tx,
+            root_digest,
         })
     }
 
@@ -587,8 +677,13 @@ impl GrpcTransport {
                 .entry(to.0)
                 .or_insert_with(|| {
                     let (tx, rx) = mpsc::channel(PEER_QUEUE);
-                    self.handle
-                        .spawn(peer_worker(self.me, addr, self.token.clone(), rx));
+                    self.handle.spawn(peer_worker(
+                        self.me,
+                        addr,
+                        self.token.clone(),
+                        self.root_digest,
+                        rx,
+                    ));
                     tx
                 })
                 .clone(),
@@ -632,6 +727,7 @@ async fn peer_worker(
     me: NodeId,
     addr: SocketAddr,
     token: Option<String>,
+    root_digest: RootDigest,
     mut rx: mpsc::Receiver<pb::RaftEnvelope>,
 ) {
     let url = format!("http://{addr}");
@@ -674,6 +770,7 @@ async fn peer_worker(
             let mut batch = pb::BatchRaftMessage {
                 msgs: vec![first],
                 flushed_unix_nanos: 0,
+                root_digest: root_digest.as_bytes().to_vec(),
             };
             let mut bytes: usize = batch.msgs[0].raft_message.len();
             let window = tokio::time::sleep(FLUSH_WINDOW);
@@ -707,6 +804,13 @@ mod tests {
     use crate::{Command, MemStateMachine, RaftGroup, Role};
     use kv9_common::RegionId;
     use pb::kv9_raft_server::Kv9RaftServer;
+
+    fn test_root() -> RootWireIdentity {
+        RootWireIdentity {
+            bootstrap_generation: BootstrapGeneration::from_bytes([0; 16]),
+            root_digest: RootDigest::from_bytes([0; 32]),
+        }
+    }
 
     struct StaticDiscovery(NodeId, bool, u64);
     impl GrpcDiscoveryState for StaticDiscovery {
@@ -756,6 +860,8 @@ mod tests {
             node: NodeId,
             addr: &str,
             cluster_id: ClusterId,
+            _join_ticket_sha256: &[u8],
+            _store_incarnation: StoreIncarnation,
         ) -> std::result::Result<RegistrationReceipt, RegistrationError> {
             self.calls
                 .lock()
@@ -820,8 +926,12 @@ mod tests {
 
         let mut drivers = Vec::new();
         for (i, &id) in ids.iter().enumerate() {
-            let transport =
-                GrpcTransport::new(id, Some("test-cluster-token".into()), handle.clone());
+            let transport = GrpcTransport::new(
+                id,
+                Some("test-cluster-token".into()),
+                handle.clone(),
+                test_root().root_digest,
+            );
             for (j, &peer) in ids.iter().enumerate() {
                 if peer != id {
                     transport.register_peer(peer, addrs[j]);
@@ -926,6 +1036,7 @@ mod tests {
             addr,
             Duration::from_secs(2),
             Some("test-cluster-token".into()),
+            test_root(),
         )
         .unwrap();
         assert_eq!(a.node, NodeId(7));
@@ -941,7 +1052,8 @@ mod tests {
             NodeId(1),
             free_addr(),
             Duration::from_millis(300),
-            Some("test-cluster-token".into())
+            Some("test-cluster-token".into()),
+            test_root(),
         )
         .is_err());
     }
@@ -973,14 +1085,23 @@ mod tests {
         std::thread::sleep(Duration::from_millis(100));
 
         // Missing token: refused.
-        assert!(grpc_discover(&handle, NodeId(1), addr, Duration::from_secs(2), None).is_err());
+        assert!(grpc_discover(
+            &handle,
+            NodeId(1),
+            addr,
+            Duration::from_secs(2),
+            None,
+            test_root(),
+        )
+        .is_err());
         // Wrong token: refused.
         assert!(grpc_discover(
             &handle,
             NodeId(1),
             addr,
             Duration::from_secs(2),
-            Some("wrong".into())
+            Some("wrong".into()),
+            test_root(),
         )
         .is_err());
         // Right token: answered (control — the gate opens for the key).
@@ -990,6 +1111,7 @@ mod tests {
             addr,
             Duration::from_secs(2),
             Some("sesame".into()),
+            test_root(),
         )
         .unwrap();
         assert_eq!(a.node, NodeId(5));
@@ -1063,6 +1185,7 @@ mod tests {
                     epoch_version: 0,
                 }],
                 flushed_unix_nanos: 0,
+                root_digest: test_root().root_digest.as_bytes().to_vec(),
             };
             let mut request = Request::new(tokio_stream::iter(vec![batch]));
             attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(9));
@@ -1086,6 +1209,7 @@ mod tests {
             let batch = pb::BatchRaftMessage {
                 msgs: vec![env],
                 flushed_unix_nanos: 0,
+                root_digest: test_root().root_digest.as_bytes().to_vec(),
             };
             let stream = tokio_stream::iter(vec![batch]);
             let mut request = Request::new(stream);
@@ -1160,6 +1284,8 @@ mod tests {
                     node_id: body_node,
                     addr: "127.0.0.1:9009".into(),
                     cluster_id: test_cid().as_bytes().to_vec(),
+                    join_ticket_sha256: vec![9; 32],
+                    store_incarnation: vec![4; 16],
                 });
                 attach_auth(
                     &mut req,
@@ -1244,6 +1370,7 @@ mod tests {
             named,
             Duration::from_secs(2),
             Some("test-cluster-token".into()),
+            test_root(),
         )
         .unwrap();
         assert!(a.initialized);
@@ -1259,6 +1386,7 @@ mod tests {
             nameless,
             Duration::from_secs(2),
             Some("test-cluster-token".into()),
+            test_root(),
         )
         .is_err());
     }
@@ -1314,7 +1442,11 @@ mod tests {
                 NodeId(4),
                 addr,
                 "127.0.0.1:9009",
-                test_cid(),
+                JoinIdentity {
+                    cluster_id: test_cid(),
+                    ticket_sha256: RootDigest::from_bytes([9; 32]),
+                    store_incarnation: StoreIncarnation::from_bytes([4; 16]),
+                },
                 Duration::from_secs(2),
                 Some("test-cluster-token".into()),
             )

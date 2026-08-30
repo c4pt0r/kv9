@@ -23,8 +23,9 @@ pub use ids::{
 };
 pub use keyspace::{ApiType, Keyspace, Tenant};
 pub use root::{
-    load_root_bundle, persist_root_bundle, BootstrapGeneration, RootDescriptor, RootDigest,
-    RootVoter, StoreIdentity, StoreIncarnation, ROOT_DESCRIPTOR_FILE, STORE_IDENTITY_FILE,
+    load_root_bundle, persist_root_bundle, write_new_root_descriptor, BootstrapGeneration,
+    RootDescriptor, RootDigest, RootVoter, StoreIdentity, StoreIncarnation, ROOT_DESCRIPTOR_FILE,
+    STORE_IDENTITY_FILE,
 };
 pub use time::{Hlc, TimeSource, TimeStamp};
 

@@ -47,6 +47,10 @@ message BatchRaftMessage {
   // Sender's clock (nanos since epoch) when the batch was flushed; receiver
   // observes propagation delay. Diagnostic only — never used for correctness.
   uint64 flushed_unix_nanos = 2;
+  // SHA-256 of the canonical RootDescriptor. Every stream is fenced before
+  // any raft payload reaches the core; a shared token is authentication, not
+  // proof that two processes belong to the same cluster incarnation.
+  bytes root_digest = 3;
 }
 
 message Done {}
@@ -57,6 +61,10 @@ message DiscoverRequest {
   // (node_id, address) declaration). Misconfiguration detection, not auth —
   // see transport docs; real peer auth is the token interceptor / principle 9.
   fixed64 voter_fingerprint = 2;
+  // Pre-provisioned creation authority. These fields are present before the
+  // first raft entry, so two uninitialized roots can never cross-endorse.
+  bytes bootstrap_generation = 3;
+  bytes root_digest = 4;
 }
 
 message DiscoverResponse {
@@ -74,6 +82,10 @@ message DiscoverResponse {
   // empty while uninitialized. Joiners verify this against their expected
   // id — a same-token wrong-environment answer must not admit anyone.
   bytes cluster_id = 4;
+  // Root identity remains authoritative after initialization; it is not a
+  // bootstrap-only checksum that gets retired when the catalog appears.
+  bytes bootstrap_generation = 5;
+  bytes root_digest = 6;
 }
 
 message RegisterRequest {
@@ -86,6 +98,13 @@ message RegisterRequest {
   // The cluster the caller believes it is joining (16 raw ClusterId bytes);
   // three-way-checked against the local singleton and the admission row.
   bytes cluster_id = 3;
+  // SHA-256 of the one-time join ticket issued by AdmitNode. The plaintext
+  // never enters the catalog or a request/log; this digest is itself treated
+  // as a bearer secret and consumed exactly once.
+  bytes join_ticket_sha256 = 4;
+  // Durable incarnation minted before registration. The first valid ticket
+  // binds it; a wiped store cannot later reuse the same node id.
+  bytes store_incarnation = 5;
 }
 
 message RegisterReceipt {
