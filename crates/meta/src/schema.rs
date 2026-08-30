@@ -123,6 +123,10 @@ pub const CLUSTER_META: TableId = TableId(14);
 /// binds `cluster + node_id + address + role` BEFORE the node may join.
 /// A valid cluster token alone is never admission.
 pub const NODE_ADMISSIONS: TableId = TableId(15);
+/// L0 root certificate. This singleton is owned only by META_REGION_0 and is
+/// not part of tenant/keyspace range routing; it certifies the exact
+/// pre-provisioned RootDescriptor as the first catalog transaction.
+pub const ROOT_META: TableId = TableId(16);
 
 // ---------------------------------------------------------------------------
 // Column descriptors, grouped per table. Column ids are table-local tags.
@@ -265,14 +269,19 @@ mod cols {
         col!(3, "addr", Text),
         col!(4, "role", Uint),  // AdmittedRole: 1 learner
         col!(5, "state", Uint), // AdmissionState: 1 pending, 2 consumed, 3 revoked
-        // SHA-256 of the one-time join-ticket nonce — NOT a checksum hash
-        // (FNV would cap a credential at 64 bits). The ticket seam is NOT
-        // implemented in this block: the column is declared for the schema's
-        // final shape, no code writes or compares it yet, and the minimal
-        // admission mode is mandatory --cluster-id. When implemented the
-        // compare must be constant-time and never logged.
+        // SHA-256 of the one-time join ticket — NOT a checksum hash (FNV
+        // would cap a credential at 64 bits). Registration compares it in
+        // constant time, consumes the admission once, and never logs the
+        // plaintext credential.
         col!(6, "nonce_sha256", Bytes),
         col!(7, "expires_unix", Uint),
+    ];
+
+    pub const ROOT_META: &[ColumnDesc] = &[
+        col!(1, "id", Uint, pk),
+        col!(2, "descriptor", Bytes),
+        col!(3, "digest", Bytes),
+        col!(4, "bootstrap_generation", Bytes),
     ];
 
     pub const ID_SEQUENCES: &[ColumnDesc] = &[col!(1, "kind", Uint, pk), col!(2, "next", Uint)];
@@ -517,6 +526,14 @@ pub const NODE_ADMISSIONS_DESC: TableDesc = TableDesc {
     fks: fk::NONE,
 };
 
+pub const ROOT_META_DESC: TableDesc = TableDesc {
+    id: ROOT_META,
+    name: "root_meta",
+    columns: cols::ROOT_META,
+    indexes: idx::NONE,
+    fks: fk::NONE,
+};
+
 /// Every catalog table descriptor, in stable id order (METADATA-CATALOG §2). Used to
 /// bootstrap the catalog and to drive generic codec/migration passes.
 pub const ALL_TABLES: &[TableDesc] = &[
@@ -535,6 +552,7 @@ pub const ALL_TABLES: &[TableDesc] = &[
     ID_SEQUENCES_DESC,
     CLUSTER_META_DESC,
     NODE_ADMISSIONS_DESC,
+    ROOT_META_DESC,
 ];
 
 /// Look up a table descriptor by its stable id (METADATA-CATALOG §2).

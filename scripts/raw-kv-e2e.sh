@@ -21,6 +21,9 @@ artifact_dir="${KV9_RAW_E2E_DIR:-$(mktemp -d /tmp/kv9-raw-e2e.XXXXXX)}"
 base_port="${KV9_BASE_PORT:-$((23000 + ($$ % 1000)))}"
 cluster_token="raw-e2e-cluster-token"
 client_token="raw-e2e-client-token"
+bootstrap_token="raw-e2e-bootstrap-token"
+root_path="$artifact_dir/root.bin"
+root_voters="1@127.0.0.1:$((base_port + 1)),2@127.0.0.1:$((base_port + 2)),3@127.0.0.1:$((base_port + 3))"
 declare -A pids=()
 
 # Same guardrail as the phase-1 gate: a listener precheck is racy, an outbound
@@ -29,6 +32,9 @@ if [[ ! "$base_port" =~ ^[0-9]+$ ]] || (( base_port < 1024 || base_port + 3 > 65
   echo "FAIL: KV9_BASE_PORT must leave three valid non-privileged ports" >&2
   exit 2
 fi
+
+KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root_path" \
+  --voters "$root_voters" >"$artifact_dir/root-create.log"
 if [[ -r /proc/sys/net/ipv4/ip_local_port_range ]]; then
   read -r ephemeral_low ephemeral_high </proc/sys/net/ipv4/ip_local_port_range
   if (( base_port + 3 >= ephemeral_low && base_port + 1 <= ephemeral_high )); then
@@ -47,11 +53,15 @@ status_value() {
 start_node() {
   local node="$1"
   mkdir -p "$artifact_dir/n${node}"
+  if [[ ! -e "$artifact_dir/n${node}/kv9-store-identity" ]]; then
+    KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" init --root "$root_path" --node-id "$node" \
+      --data-dir "$artifact_dir/n${node}" >>"$artifact_dir/n${node}.log" 2>&1
+  fi
   KV9_CLUSTER_TOKEN="$cluster_token" KV9_CLIENT_TOKENS="acceptance=$client_token" "$bin" \
+    start \
     --node-id "$node" \
     --addr "127.0.0.1:$((base_port + node))" \
     --data-dir "$artifact_dir/n${node}" \
-    --join "1@127.0.0.1:$((base_port + 1)),2@127.0.0.1:$((base_port + 2)),3@127.0.0.1:$((base_port + 3))" \
     >>"$artifact_dir/n${node}.log" 2>&1 &
   pids[$node]=$!
 }

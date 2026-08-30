@@ -9,13 +9,66 @@ use std::sync::Arc;
 use kv9_common::{ClusterId, NodeId};
 use kv9_engine::MemEngine;
 use kv9_meta::admission::{
-    admission, admit_node, cluster_id, consume_admission, initialize_cluster, pending_admissions,
-    revoke_admission, AdmissionState, AdmittedRole,
+    admission, admit_node, admit_node_with_ticket_hash, cluster_id, consume_admission,
+    consume_admission_with_ticket, initialize_cluster, pending_admissions, revoke_admission,
+    AdmissionState, AdmittedRole,
 };
 use kv9_meta::store::MetaStore;
 
 fn store() -> MetaStore<MemEngine> {
     MetaStore::new(Arc::new(MemEngine::new()))
+}
+
+#[test]
+fn admission_ticket_is_committed_hashed_and_consumed_once() {
+    let store = store();
+    let mut txn = store.begin().unwrap();
+    initialize_cluster(&mut txn, cid("9"), 1).unwrap();
+    admit_node_with_ticket_hash(
+        &mut txn,
+        NodeId(44),
+        "127.0.0.1:9044",
+        AdmittedRole::Learner,
+        &[7; 32],
+        100,
+    )
+    .unwrap();
+    txn.commit().unwrap();
+
+    let mut wrong = store.begin().unwrap();
+    assert!(consume_admission_with_ticket(
+        &mut wrong,
+        NodeId(44),
+        cid("9"),
+        "127.0.0.1:9044",
+        &[8; 32],
+        50,
+    )
+    .is_err());
+    assert_eq!(
+        admission(&wrong, NodeId(44)).unwrap().unwrap().state,
+        AdmissionState::Pending
+    );
+    drop(wrong);
+
+    let mut correct = store.begin().unwrap();
+    consume_admission_with_ticket(
+        &mut correct,
+        NodeId(44),
+        cid("9"),
+        "127.0.0.1:9044",
+        &[7; 32],
+        50,
+    )
+    .unwrap();
+    correct.commit().unwrap();
+    assert_eq!(
+        admission(&store.begin().unwrap(), NodeId(44))
+            .unwrap()
+            .unwrap()
+            .state,
+        AdmissionState::Consumed
+    );
 }
 
 fn cid(hex_byte: &str) -> ClusterId {
@@ -165,6 +218,7 @@ fn admission_row_replayed_into_another_cluster_admits_nobody() {
     row.set(ColumnId(3), ColumnValue::Text("127.0.0.1:9006".into()));
     row.set(ColumnId(4), ColumnValue::Uint(1)); // Learner
     row.set(ColumnId(5), ColumnValue::Uint(1)); // Pending
+    row.set(ColumnId(6), ColumnValue::Bytes(vec![0; 32]));
     row.set(ColumnId(7), ColumnValue::Uint(100));
     txn.insert(&NODE_ADMISSIONS_DESC, &[memcmp_uint(6)], row)
         .unwrap();
@@ -187,6 +241,7 @@ fn admission_row_replayed_into_another_cluster_admits_nobody() {
     row.set(ColumnId(3), ColumnValue::Text("127.0.0.1:9007".into()));
     row.set(ColumnId(4), ColumnValue::Uint(1));
     row.set(ColumnId(5), ColumnValue::Uint(1));
+    row.set(ColumnId(6), ColumnValue::Bytes(vec![0; 32]));
     row.set(ColumnId(7), ColumnValue::Uint(100));
     txn.insert(&NODE_ADMISSIONS_DESC, &[memcmp_uint(16)], row)
         .unwrap();

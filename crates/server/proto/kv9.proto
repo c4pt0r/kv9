@@ -51,6 +51,9 @@ message MembershipChangeResponse {
   uint64 applied_index = 2;
   repeated uint64 voters = 3;
   repeated uint64 learners = 4;
+  // Present only on AdmitNode. This one-time secret is returned once; the
+  // catalog commits only its SHA-256 digest and PromoteNode leaves it empty.
+  string join_ticket = 5;
 }
 
 // The position a raw write actually reached in the replicated log.

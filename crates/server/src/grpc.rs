@@ -1211,6 +1211,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             applied_index: result.applied.index,
             voters: result.voters,
             learners: result.learners,
+            join_ticket: result.join_ticket.unwrap_or_default(),
         }))
     }
 
@@ -1230,6 +1231,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             applied_index: result.applied.index,
             voters: result.voters,
             learners: result.learners,
+            join_ticket: String::new(),
         }))
     }
 }

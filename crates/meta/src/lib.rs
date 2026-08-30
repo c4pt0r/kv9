@@ -30,6 +30,7 @@ pub mod layered;
 pub mod leader;
 pub mod membership;
 pub mod placement;
+pub mod root;
 pub mod routing;
 pub mod tso;
 

@@ -16,8 +16,9 @@ use std::sync::{
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use kv9_common::{
-    ApiType, ClusterId, Config, Error, KeyspaceId, NodeId, RegionId, Result, SeedPeer, TenantId,
-    TimeStamp, TxnGroupId, UserKey, Value, META_REGION_0,
+    persist_root_bundle, ApiType, ClusterId, Config, Error, KeyspaceId, NodeId, RegionId, Result,
+    RootDescriptor, RootDigest, SeedPeer, StoreIdentity, StoreIncarnation, TenantId, TimeStamp,
+    TxnGroupId, UserKey, Value, META_REGION_0,
 };
 use kv9_engine::{Engine, ReadView, WalEngine};
 use kv9_meta::bootstrap::{init_marker_exists, write_init_marker};
@@ -29,8 +30,8 @@ use kv9_meta::{ColumnValue, RowValue};
 use kv9_raft::driver::NodeDriver;
 use kv9_raft::grpc::{
     grpc_discover, grpc_register, pb::kv9_raft_server::Kv9RaftServer, GrpcDiscoveryState,
-    GrpcTransport, RaftGrpcService, RegisterOutcome, RegistrationBackend, RegistrationError,
-    RegistrationReceipt, CLUSTER_TOKEN_KEY, NODE_ID_KEY,
+    GrpcTransport, JoinIdentity, RaftGrpcService, RegisterOutcome, RegistrationBackend,
+    RegistrationError, RegistrationReceipt, RootWireIdentity, CLUSTER_TOKEN_KEY, NODE_ID_KEY,
 };
 use kv9_raft::storage::DiskRaftStorage;
 use kv9_raft::transport::voter_set_fingerprint;
@@ -163,6 +164,7 @@ fn bounded_discovery_detail(detail: &str) -> String {
 #[derive(Debug)]
 struct RuntimeDiscovery {
     node: NodeId,
+    root: RootWireIdentity,
     initialized: AtomicBool,
     /// The bootstrap fingerprint — present ONLY until initialization:
     /// `set_cluster_id` takes it, so the post-init zero in answers comes
@@ -177,9 +179,10 @@ struct RuntimeDiscovery {
 }
 
 impl RuntimeDiscovery {
-    fn new(node: NodeId, initialized: bool, voter_fp: u64) -> Self {
+    fn new(node: NodeId, initialized: bool, voter_fp: u64, root: RootWireIdentity) -> Self {
         Self {
             node,
+            root,
             initialized: AtomicBool::new(initialized),
             voter_fp: Mutex::new(if initialized { None } else { Some(voter_fp) }),
             cluster_id: Mutex::new(None),
@@ -203,6 +206,10 @@ impl GrpcDiscoveryState for RuntimeDiscovery {
             // `set_cluster_id`), not because a branch remembered to zero it.
             self.voter_fp.lock().expect("fp poisoned").unwrap_or(0),
         )
+    }
+
+    fn root_identity(&self) -> RootWireIdentity {
+        self.root
     }
 
     fn cluster_id(&self) -> Option<kv9_common::ClusterId> {
@@ -407,13 +414,16 @@ impl AdminApi for RuntimeBackend {
         let expires = unix_now()
             .checked_add(ttl_seconds)
             .ok_or_else(|| Error::Config("admission expiry overflows u64".into()))?;
+        let ticket = format!("{}{}", StoreIncarnation::mint()?, StoreIncarnation::mint()?);
+        let ticket_sha256 = kv9_common::RootDigest::sha256(ticket.as_bytes());
         let _guard = self.node.meta_raft.lock_catalog_txn();
         let mut txn = self.node.meta_raft.store.begin()?;
-        kv9_meta::admission::admit_node(
+        kv9_meta::admission::admit_node_with_ticket_hash(
             &mut txn,
             node,
             addr,
             kv9_meta::admission::AdmittedRole::Learner,
+            ticket_sha256.as_bytes(),
             expires,
         )?;
         let applied = self.commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()))?;
@@ -422,6 +432,7 @@ impl AdminApi for RuntimeBackend {
             applied,
             voters: status.voters,
             learners: status.learners,
+            join_ticket: Some(ticket),
         })
     }
 
@@ -443,6 +454,7 @@ impl AdminApi for RuntimeBackend {
             },
             voters: receipt.voters,
             learners: receipt.learners,
+            join_ticket: None,
         })
     }
 }
@@ -454,13 +466,22 @@ fn unix_now() -> u64 {
         .as_secs()
 }
 
-fn membership_node_row(node: NodeId, addr: &str, state: u64, heartbeat: u64) -> RowValue {
+fn membership_node_row(
+    node: NodeId,
+    addr: &str,
+    state: u64,
+    heartbeat: u64,
+    store_incarnation: StoreIncarnation,
+) -> RowValue {
     let mut row = RowValue::new();
     row.set(ColumnId(1), ColumnValue::Uint(node.0));
     row.set(ColumnId(2), ColumnValue::Text(addr.to_string()));
     row.set(ColumnId(3), ColumnValue::Uint(state));
     row.set(ColumnId(4), ColumnValue::Uint(heartbeat));
-    row.set(ColumnId(5), ColumnValue::Bytes(Vec::new()));
+    row.set(
+        ColumnId(5),
+        ColumnValue::Bytes(store_incarnation.as_bytes().to_vec()),
+    );
     row
 }
 
@@ -470,6 +491,8 @@ impl RegistrationBackend for RuntimeBackend {
         node: NodeId,
         addr: &str,
         cluster_id: ClusterId,
+        join_ticket_sha256: &[u8],
+        store_incarnation: StoreIncarnation,
     ) -> std::result::Result<RegistrationReceipt, RegistrationError> {
         let leader = self.driver.status();
         if leader.role != Role::Leader {
@@ -511,6 +534,24 @@ impl RegistrationBackend for RuntimeBackend {
                         "consumed admission does not match this registration".into(),
                     )));
                 }
+                let txn = self
+                    .node
+                    .meta_raft
+                    .store
+                    .begin()
+                    .map_err(RegistrationError::Failed)?;
+                let bound = txn
+                    .get(&NODES_DESC, &[memcmp_uint(node.0)])
+                    .map_err(RegistrationError::Failed)?
+                    .and_then(|row| match row.value.get(ColumnId(5)) {
+                        Some(ColumnValue::Bytes(bytes)) => Some(bytes.clone()),
+                        _ => None,
+                    });
+                if bound.as_deref() != Some(store_incarnation.as_bytes()) {
+                    return Err(RegistrationError::Failed(Error::Config(
+                        "registered node store incarnation does not match".into(),
+                    )));
+                }
             }
             Some(admission) if admission.state == kv9_meta::admission::AdmissionState::Pending => {
                 let mut txn = self
@@ -519,8 +560,15 @@ impl RegistrationBackend for RuntimeBackend {
                     .store
                     .begin()
                     .map_err(RegistrationError::Failed)?;
-                kv9_meta::admission::consume_admission(&mut txn, node, cluster_id, &canonical, now)
-                    .map_err(RegistrationError::Failed)?;
+                kv9_meta::admission::consume_admission_with_ticket(
+                    &mut txn,
+                    node,
+                    cluster_id,
+                    &canonical,
+                    join_ticket_sha256,
+                    now,
+                )
+                .map_err(RegistrationError::Failed)?;
                 if txn
                     .get(&NODES_DESC, &[memcmp_uint(node.0)])
                     .map_err(RegistrationError::Failed)?
@@ -533,6 +581,10 @@ impl RegistrationBackend for RuntimeBackend {
                             (ColumnId(2), ColumnValue::Text(canonical.clone())),
                             (ColumnId(3), ColumnValue::Uint(1)),
                             (ColumnId(4), ColumnValue::Uint(now)),
+                            (
+                                ColumnId(5),
+                                ColumnValue::Bytes(store_incarnation.as_bytes().to_vec()),
+                            ),
                         ],
                     )
                     .map_err(RegistrationError::Failed)?;
@@ -540,7 +592,7 @@ impl RegistrationBackend for RuntimeBackend {
                     txn.insert(
                         &NODES_DESC,
                         &[memcmp_uint(node.0)],
-                        membership_node_row(node, &canonical, 1, now),
+                        membership_node_row(node, &canonical, 1, now, store_incarnation),
                     )
                     .map_err(RegistrationError::Failed)?;
                 }
@@ -1049,6 +1101,9 @@ pub struct NodeRuntime {
     data_dir: PathBuf,
     status_path: PathBuf,
     addr: std::net::SocketAddr,
+    root: RootDescriptor,
+    store_identity: StoreIdentity,
+    join_ticket_sha256: Option<RootDigest>,
     // NOTE: no voter_fp field. The fingerprint lives ONLY in the FSM's
     // pre-initialization states (full-path structural retirement, task #24):
     // after initialization there is no runtime field left to misread as
@@ -1061,20 +1116,33 @@ pub struct NodeRuntime {
 }
 
 impl NodeRuntime {
-    /// Assemble and start the shared gRPC listener + Raft pump. Bootstrap advances in
-    /// [`Self::run`], after every process is already able to answer discovery.
-    pub fn start(id: NodeId, config: Config, auth: RuntimeAuth) -> Result<Self> {
-        Self::start_with_cluster(id, config, auth, None)
-    }
-
-    /// Start either an initial declared voter (`expected_cluster_id=None`) or a
-    /// join-existing node (`Some(id)`, with self absent from `config.join`).
-    pub fn start_with_cluster(
+    /// Start a node whose creation authority and store identity were explicitly
+    /// provisioned. This function persists/verifies that bundle before opening
+    /// Raft or the catalog: ordinary process startup can never infer permission
+    /// to create a cluster from an empty directory or a reachable quorum.
+    pub fn start_with_root(
         id: NodeId,
         config: Config,
         auth: RuntimeAuth,
-        expected_cluster_id: Option<ClusterId>,
+        root: RootDescriptor,
+        store_identity: StoreIdentity,
     ) -> Result<Self> {
+        Self::start_with_root_and_ticket(id, config, auth, root, store_identity, None)
+    }
+
+    /// Start with a one-time join credential. Initial voters never need one;
+    /// a new store must present it to the leader before its admission can be
+    /// consumed and AddLearner proposed.
+    pub fn start_with_root_and_ticket(
+        id: NodeId,
+        config: Config,
+        auth: RuntimeAuth,
+        root: RootDescriptor,
+        store_identity: StoreIdentity,
+        join_ticket: Option<&str>,
+    ) -> Result<Self> {
+        root.validate()?;
+        store_identity.verify(&root, id)?;
         config.validate()?;
         auth.validate()?;
         let addr = config.addr.parse().map_err(|_| {
@@ -1083,14 +1151,22 @@ impl NodeRuntime {
                 config.addr
             ))
         })?;
-        let seeds = if config.join.is_empty() {
-            vec![SeedPeer { node_id: id, addr }]
-        } else {
-            config.join.clone()
-        };
+        let seeds: Vec<SeedPeer> = root
+            .voters
+            .iter()
+            .map(|voter| SeedPeer {
+                node_id: voter.node_id,
+                addr: voter.addr,
+            })
+            .collect();
+        if !config.join.is_empty() && config.join != seeds {
+            return Err(Error::Config(
+                "runtime seed set does not match the canonical root descriptor".into(),
+            ));
+        }
         let own = seeds.iter().find(|seed| seed.node_id == id);
-        let joining = match (own, expected_cluster_id) {
-            (Some(seed), None) => {
+        let joining = match own {
+            Some(seed) => {
                 if seed.addr != addr {
                     return Err(Error::Config(format!(
                         "seed voter set declares node {} at {}, but addr is {}",
@@ -1099,24 +1175,12 @@ impl NodeRuntime {
                 }
                 false
             }
-            (None, Some(_)) => true,
-            (None, None) => {
-                return Err(Error::Config(format!(
-                "node {} is absent from the seed voter set; join-existing mode requires cluster id",
-                id.0
-            )))
-            }
-            (Some(_), Some(_)) => {
-                return Err(Error::Config(
-                    "cluster id is only valid when this node is absent from the seed voter set"
-                        .into(),
-                ))
-            }
+            None => true,
         };
+        let join_ticket_sha256 = join_ticket.map(|ticket| RootDigest::sha256(ticket.as_bytes()));
 
         let data_dir = PathBuf::from(&config.data_dir);
-        fs::create_dir_all(&data_dir)
-            .map_err(|e| Error::Config(format!("create {}: {e}", data_dir.display())))?;
+        persist_root_bundle(&data_dir, &root, &store_identity)?;
         let voters: Vec<NodeId> = seeds.iter().map(|seed| seed.node_id).collect();
         let voter_fp = voter_set_fingerprint(
             &seeds
@@ -1149,6 +1213,28 @@ impl NodeRuntime {
         // that has schema but cannot name its cluster is corrupt or from a
         // pre-identity build — fail closed rather than publish initialized.
         let local_identity = node.local_cluster_identity()?;
+        if local_identity.is_some_and(|cluster_id| cluster_id != root.cluster_id) {
+            return Err(Error::MetaNotReady(
+                "catalog cluster identity does not match the durable root descriptor".into(),
+            ));
+        }
+        if local_identity.is_some() {
+            let txn = node.meta_raft.store.begin()?;
+            match kv9_meta::root::certified_root(&txn)? {
+                Some(certified) if certified == root => {}
+                Some(_) => {
+                    return Err(Error::MetaNotReady(
+                        "catalog root certificate does not match the durable root descriptor"
+                            .into(),
+                    ))
+                }
+                None => {
+                    return Err(Error::MetaNotReady(
+                        "catalog identity exists without a committed root certificate".into(),
+                    ))
+                }
+            }
+        }
         if local_identity.is_none() && catalog_initialized(&node)? {
             return Err(Error::MetaNotReady(
                 "catalog has schema but no cluster identity; refusing to treat \
@@ -1158,13 +1244,7 @@ impl NodeRuntime {
         }
         let marker_initialized = init_marker_exists(&data_dir);
         let mut bootstrap = if joining {
-            Bootstrap::join_existing_at(
-                id,
-                voters.clone(),
-                expected_cluster_id.expect("joining checked above"),
-                voter_fp,
-                &data_dir,
-            )?
+            Bootstrap::join_existing_at(id, voters.clone(), root.cluster_id, voter_fp, &data_dir)?
         } else {
             Bootstrap::with_seeds_fp(id, voters.clone(), voter_fp)
         };
@@ -1173,7 +1253,11 @@ impl NodeRuntime {
         }
         // A non-pristine Raft member must never form a second cluster, even if
         // it crashed before the marker rename. It rejoins and waits for catalog.
-        if !was_pristine {
+        // This fence prevents an initial voter with durable Raft history from
+        // ever re-entering creation. A joiner has no creation authority in
+        // the first place; retaining a failed pre-registration Raft open must
+        // not suppress its next discovery attempt with a corrected ticket.
+        if !was_pristine && !joining {
             bootstrap.mark_data_dir_initialized();
         }
         if local_identity.is_some() && !marker_initialized {
@@ -1186,6 +1270,10 @@ impl NodeRuntime {
             id,
             marker_initialized || local_identity.is_some(),
             voter_fp,
+            RootWireIdentity {
+                bootstrap_generation: root.bootstrap_generation,
+                root_digest: root.digest(),
+            },
         ));
         if let Some(idty) = local_identity {
             discovery.set_cluster_id(idty);
@@ -1196,6 +1284,7 @@ impl NodeRuntime {
             id,
             Some(auth.cluster_token.clone()),
             grpc_runtime.handle().clone(),
+            root.digest(),
         );
         for seed in &seeds {
             if seed.node_id != id {
@@ -1269,6 +1358,9 @@ impl NodeRuntime {
             data_dir,
             status_path,
             addr,
+            root,
+            store_identity,
+            join_ticket_sha256,
             campaign_started: false,
             initial_proposal: None,
             registration_receipt: None,
@@ -1431,6 +1523,7 @@ impl NodeRuntime {
                 seed.addr,
                 DISCOVERY_TIMEOUT,
                 Some(self.cluster_token.clone()),
+                self.discovery.root_identity(),
             ) {
                 Ok(answer) => answer,
                 Err(error) => {
@@ -1521,22 +1614,20 @@ impl NodeRuntime {
             ));
         }
         if self.initial_proposal.is_none() {
-            // Mint the cluster identity ONCE, right before proposing: it rides
-            // in the same committed transaction as the seed rows, so identity
-            // is exactly as crash-safe as the rest of the bootstrap (a crashed
-            // initializer re-elects and re-mints — the old proposal either
-            // committed, in which case initialize_cluster refuses the second
-            // mint, or it never did and the new id is THE id).
-            let cluster_id = kv9_common::ClusterId::mint()?;
+            // Creation authority existed before Raft opened. Election chooses
+            // which provisioned voter may submit the root; it never mints a
+            // new identity and therefore cannot fork creation after a retry.
+            let cluster_id = self.root.cluster_id;
             let cmd = self
                 .node
-                .build_initial_metadata_command_for(&self.voters, cluster_id)?;
+                .build_initial_metadata_command_for_root(&self.voters, &self.root)?;
             self.initial_proposal = Some((self.driver.propose(&cmd)?, cluster_id));
             return Ok(());
         }
         let (proposal, cluster_id) = self.initial_proposal.expect("set above");
         match self.driver.wait_applied(proposal, Duration::from_millis(1)) {
             Ok(true) => {
+                self.verify_certified_root()?;
                 write_init_marker(&self.data_dir)?;
                 self.discovery.set_cluster_id(cluster_id);
                 self.node
@@ -1576,6 +1667,7 @@ impl NodeRuntime {
                 None => return Ok(()),
             }
         };
+        self.verify_certified_root()?;
         write_init_marker(&self.data_dir)?;
         self.discovery.set_cluster_id(cluster_id);
         let mut meta = self.node.meta.lock().expect("meta poisoned");
@@ -1627,13 +1719,23 @@ impl NodeRuntime {
         }
 
         if self.registration_receipt.is_none() {
+            let ticket = self.join_ticket_sha256.ok_or_else(|| {
+                Error::Config(
+                    "joining an existing cluster requires KV9_JOIN_TICKET until registration completes"
+                        .into(),
+                )
+            })?;
             for seed in &self.seeds {
                 match grpc_register(
                     self.grpc_runtime.handle(),
                     self.node.id,
                     seed.addr,
                     &self.addr.to_string(),
-                    cluster_id,
+                    JoinIdentity {
+                        cluster_id,
+                        ticket_sha256: ticket,
+                        store_incarnation: self.store_identity.store_incarnation,
+                    },
                     DISCOVERY_TIMEOUT,
                     Some(self.cluster_token.clone()),
                 ) {
@@ -1692,6 +1794,19 @@ impl NodeRuntime {
         ))
     }
 
+    fn verify_certified_root(&self) -> Result<()> {
+        let txn = self.node.meta_raft.store.begin()?;
+        match kv9_meta::root::certified_root(&txn)? {
+            Some(root) if root == self.root => Ok(()),
+            Some(_) => Err(Error::MetaNotReady(
+                "committed root certificate does not match the durable root descriptor".into(),
+            )),
+            None => Err(Error::MetaNotReady(
+                "cluster identity exists without a committed root certificate".into(),
+            )),
+        }
+    }
+
     fn write_status(&self) -> Result<()> {
         let raft = self.driver.status();
         let bootstrap = self
@@ -1731,10 +1846,13 @@ impl NodeRuntime {
         };
         let discovery_status = format_discovery_observations(&self.discovery_observations);
         let body = format!(
-            "pid={}\nnode_id={}\ncluster_id={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\n{}fatal={}\n",
+            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\n{}fatal={}\n",
             std::process::id(),
             raft.node_id.0,
             cluster_id.map_or_else(String::new, |id| id.to_string()),
+            self.root.bootstrap_generation,
+            self.root.digest(),
+            self.store_identity.store_incarnation,
             raft.leader_id.map_or(0, |id| id.0),
             role,
             meta_voters,
@@ -1859,7 +1977,12 @@ mod tests {
                 .unwrap(),
         );
         let runtime = tokio::runtime::Runtime::new().unwrap();
-        let transport = GrpcTransport::new(NodeId(1), None, runtime.handle().clone());
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            None,
+            runtime.handle().clone(),
+            kv9_common::RootDigest::from_bytes([0; 32]),
+        );
         let driver = NodeDriver::new(
             peer,
             transport.clone(),
@@ -2342,6 +2465,8 @@ mod tests {
             } else {
                 None
             },
+            bootstrap_generation: kv9_common::BootstrapGeneration::from_bytes([0; 16]),
+            root_digest: kv9_common::RootDigest::from_bytes([0; 32]),
         };
         assert_eq!(
             validate_discovery_answer(declared, ours, &ans(3, false, ours)),

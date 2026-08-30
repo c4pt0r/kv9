@@ -70,6 +70,8 @@ pub struct Admission {
     pub role: AdmittedRole,
     pub state: AdmissionState,
     pub expires_unix: u64,
+    /// SHA-256 of the one-time join ticket. The plaintext is never committed.
+    pub ticket_sha256: Vec<u8>,
 }
 
 const CM_PK: u64 = 0; // cluster_meta singleton row id
@@ -80,7 +82,26 @@ const NA_CLUSTER_ID: ColumnId = ColumnId(2);
 const NA_ADDR: ColumnId = ColumnId(3);
 const NA_ROLE: ColumnId = ColumnId(4);
 const NA_STATE: ColumnId = ColumnId(5);
+const NA_TICKET_SHA256: ColumnId = ColumnId(6);
 const NA_EXPIRES: ColumnId = ColumnId(7);
+
+/// Production admission path: bind a one-time credential hash to the
+/// cluster/node/address tuple in the same committed row.
+pub fn admit_node_with_ticket_hash<E: Engine>(
+    txn: &mut MetaTxn<'_, E>,
+    node_id: NodeId,
+    addr: &str,
+    role: AdmittedRole,
+    ticket_sha256: &[u8],
+    expires_unix: u64,
+) -> Result<()> {
+    if ticket_sha256.len() != 32 {
+        return Err(Error::Config(
+            "join ticket digest must be exactly 32 bytes".into(),
+        ));
+    }
+    admit_node_inner(txn, node_id, addr, role, ticket_sha256, expires_unix)
+}
 
 /// Record the freshly minted cluster identity (bootstrap winner, exactly
 /// once). Fails if an identity already exists — a ClusterId is immutable, and
@@ -136,6 +157,20 @@ pub fn admit_node<E: Engine>(
     role: AdmittedRole,
     expires_unix: u64,
 ) -> Result<()> {
+    // Retained for catalog-level callers that do not exercise authentication.
+    // Production uses `admit_node_with_ticket_hash` and registration refuses
+    // a row whose digest does not match the presented ticket.
+    admit_node_inner(txn, node_id, addr, role, &[0; 32], expires_unix)
+}
+
+fn admit_node_inner<E: Engine>(
+    txn: &mut MetaTxn<'_, E>,
+    node_id: NodeId,
+    addr: &str,
+    role: AdmittedRole,
+    ticket_sha256: &[u8],
+    expires_unix: u64,
+) -> Result<()> {
     // NodeId 0 is the wire encoding's "no node" (leader_id=0 = none): a
     // committed admission for it would be an unaddressable identity that
     // every "is there a leader/node" check misreads. CLI validation cannot
@@ -176,6 +211,7 @@ pub fn admit_node<E: Engine>(
             (NA_ADDR, ColumnValue::Text(addr.clone())),
             (NA_ROLE, ColumnValue::Uint(role as u64)),
             (NA_STATE, ColumnValue::Uint(AdmissionState::Pending as u64)),
+            (NA_TICKET_SHA256, ColumnValue::Bytes(ticket_sha256.to_vec())),
             (NA_EXPIRES, ColumnValue::Uint(expires_unix)),
         ];
         return txn.update(&NODE_ADMISSIONS_DESC, &[memcmp_uint(node_id.0)], changes);
@@ -185,6 +221,7 @@ pub fn admit_node<E: Engine>(
     row.set(NA_ADDR, ColumnValue::Text(addr));
     row.set(NA_ROLE, ColumnValue::Uint(role as u64));
     row.set(NA_STATE, ColumnValue::Uint(AdmissionState::Pending as u64));
+    row.set(NA_TICKET_SHA256, ColumnValue::Bytes(ticket_sha256.to_vec()));
     row.set(NA_EXPIRES, ColumnValue::Uint(expires_unix));
     txn.insert(&NODE_ADMISSIONS_DESC, &[memcmp_uint(node_id.0)], row)
 }
@@ -199,6 +236,48 @@ pub fn consume_admission<E: Engine>(
     node_id: NodeId,
     expected_cluster: ClusterId,
     expected_addr: &str,
+    now_unix: u64,
+) -> Result<Admission> {
+    consume_admission_inner(
+        txn,
+        node_id,
+        expected_cluster,
+        expected_addr,
+        None,
+        now_unix,
+    )
+}
+
+/// Consume an admission only when the presented one-time ticket matches the
+/// leader-committed SHA-256 digest. Comparison is constant-time with respect
+/// to the digest contents and the plaintext is never stored or logged.
+pub fn consume_admission_with_ticket<E: Engine>(
+    txn: &mut MetaTxn<'_, E>,
+    node_id: NodeId,
+    expected_cluster: ClusterId,
+    expected_addr: &str,
+    ticket_sha256: &[u8],
+    now_unix: u64,
+) -> Result<Admission> {
+    if ticket_sha256.len() != 32 {
+        return Err(Error::Config("invalid join ticket".into()));
+    }
+    consume_admission_inner(
+        txn,
+        node_id,
+        expected_cluster,
+        expected_addr,
+        Some(ticket_sha256),
+        now_unix,
+    )
+}
+
+fn consume_admission_inner<E: Engine>(
+    txn: &mut MetaTxn<'_, E>,
+    node_id: NodeId,
+    expected_cluster: ClusterId,
+    expected_addr: &str,
+    ticket_sha256: Option<&[u8]>,
     now_unix: u64,
 ) -> Result<Admission> {
     // Three-way identity equality: LOCAL singleton == caller expectation ==
@@ -242,6 +321,11 @@ pub fn consume_admission<E: Engine>(
             node_id.0, adm.state
         )));
     }
+    if let Some(presented) = ticket_sha256 {
+        if !constant_time_eq(&adm.ticket_sha256, presented) {
+            return Err(Error::Config("invalid join ticket".into()));
+        }
+    }
     if now_unix > adm.expires_unix {
         return Err(Error::Config(format!(
             "admission for node {} expired at {}",
@@ -254,6 +338,16 @@ pub fn consume_admission<E: Engine>(
         state: AdmissionState::Consumed,
         ..adm
     })
+}
+
+fn constant_time_eq(left: &[u8], right: &[u8]) -> bool {
+    if left.len() != right.len() {
+        return false;
+    }
+    left.iter()
+        .zip(right)
+        .fold(0u8, |difference, (a, b)| difference | (a ^ b))
+        == 0
 }
 
 /// Revoke an admission (leader-committed): the operator's recovery path for an
@@ -342,5 +436,13 @@ fn decode_admission(node_id: NodeId, row: &RowValue) -> Result<Admission> {
         role,
         state,
         expires_unix,
+        ticket_sha256: match row.get(NA_TICKET_SHA256) {
+            Some(ColumnValue::Bytes(bytes)) if bytes.len() == 32 => bytes.clone(),
+            _ => {
+                return Err(Error::Config(
+                    "node admission missing 32-byte join ticket digest".into(),
+                ))
+            }
+        },
     })
 }

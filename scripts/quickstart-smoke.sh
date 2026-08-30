@@ -55,9 +55,13 @@ status_value() {
 export KV9_CLUSTER_TOKEN=quickstart-cluster KV9_CLIENT_TOKENS=admin=quickstart-client
 join=""
 for i in 1 2 3; do join="${join}${join:+,}$i@127.0.0.1:$((base+i))"; done
+export KV9_BOOTSTRAP_TOKEN=quickstart-bootstrap
+"$bin" root-create --output "$dir/root.bin" --voters "$join" >"$dir/root-create.log"
 for i in 1 2 3; do
   mkdir -p "$dir/n$i"
-  "$bin" --node-id "$i" --addr "127.0.0.1:$((base+i))" --data-dir "$dir/n$i" --join "$join" \
+  "$bin" init --root "$dir/root.bin" --node-id "$i" --data-dir "$dir/n$i" \
+    >"$dir/n$i.init.log" 2>&1
+  "$bin" start --node-id "$i" --addr "127.0.0.1:$((base+i))" --data-dir "$dir/n$i" \
     >"$dir/n$i.log" 2>&1 &
   pids="$pids $!"
 done
