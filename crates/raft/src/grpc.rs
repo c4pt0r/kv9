@@ -27,9 +27,7 @@ use raft::prelude::Message;
 use tokio::sync::mpsc;
 use tonic::{Request, Response, Status, Streaming};
 
-use kv9_common::{
-    BootstrapGeneration, ClusterId, Error, NodeId, Result, RootDigest, StoreIncarnation,
-};
+use kv9_common::{BootstrapGeneration, ClusterId, Error, NodeId, RootDigest, StoreIncarnation};
 
 use crate::transport::RaftTransport;
 
@@ -205,6 +203,10 @@ pub enum RegistrationError {
     /// This node is not the leader; retry against `leader` if known. Maps to
     /// FAILED_PRECONDITION + `kv9-not-leader: true` (+ optional leader id).
     NotLeader { leader: Option<NodeId> },
+    /// The one-time join credential is invalid. This is separate from a
+    /// generic refusal so the wire can preserve the reason without exposing
+    /// or parsing credential-bearing diagnostic text.
+    InvalidTicket,
     /// Any other refusal (admission missing/expired/wrong cluster, …). Same
     /// gRPC code, NO marker — machine-distinguishable from NotLeader.
     Failed(Error),
@@ -218,6 +220,11 @@ pub const NOT_LEADER_KEY: &str = "kv9-not-leader";
 /// when the leader is unknown — never "0" (clients must distinguish
 /// "retry node 7" from "rediscover").
 pub const LEADER_NODE_ID_KEY: &str = "kv9-leader-node-id";
+/// Machine-readable reason for a non-redirect control-plane refusal. Human
+/// Status text is diagnostic only and may be truncated by bounded surfaces.
+pub const REJECTION_REASON_KEY: &str = "kv9-rejection-reason";
+pub const ROOT_IDENTITY_MISMATCH_REASON: &str = "root-identity-mismatch";
+pub const INVALID_JOIN_TICKET_REASON: &str = "invalid-join-ticket";
 
 /// The seam the server injects (trait here, implementation there — the
 /// division that keeps this crate free of catalog/runtime knowledge): consume
@@ -350,9 +357,12 @@ impl Kv9Raft for RaftGrpcService {
         if request.get_ref().bootstrap_generation.as_slice() != root.bootstrap_generation.as_bytes()
             || request.get_ref().root_digest.as_slice() != root.root_digest.as_bytes()
         {
-            return Err(Status::failed_precondition(
-                "discovery root identity mismatch",
-            ));
+            let mut status = Status::failed_precondition("discovery root identity mismatch");
+            status.metadata_mut().insert(
+                REJECTION_REASON_KEY,
+                ROOT_IDENTITY_MISMATCH_REASON.parse().expect("ascii"),
+            );
+            return Err(status);
         }
         let (node, initialized, fp) = self.discovery.answer();
         let cluster_id = match (initialized, self.discovery.cluster_id()) {
@@ -408,7 +418,12 @@ impl Kv9Raft for RaftGrpcService {
             ));
         };
         if req.join_ticket_sha256.len() != 32 || req.store_incarnation.len() != 16 {
-            return Err(Status::failed_precondition("invalid join ticket"));
+            let mut status = Status::failed_precondition("invalid join ticket");
+            status.metadata_mut().insert(
+                REJECTION_REASON_KEY,
+                INVALID_JOIN_TICKET_REASON.parse().expect("ascii"),
+            );
+            return Err(status);
         }
         let incarnation = StoreIncarnation::from_bytes(
             req.store_incarnation
@@ -441,6 +456,14 @@ impl Kv9Raft for RaftGrpcService {
                 }
                 return Err(status);
             }
+            Err(RegistrationError::InvalidTicket) => {
+                let mut status = Status::failed_precondition("invalid join ticket");
+                status.metadata_mut().insert(
+                    REJECTION_REASON_KEY,
+                    INVALID_JOIN_TICKET_REASON.parse().expect("ascii"),
+                );
+                return Err(status);
+            }
             // Ordinary refusal: same code, NO marker — never mistakable for
             // a redirect.
             Err(RegistrationError::Failed(e)) => {
@@ -456,9 +479,30 @@ impl Kv9Raft for RaftGrpcService {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DiscoveryError {
+    RootIdentityMismatch,
+    Connect(String),
+    Timeout,
+    Failed(String),
+}
+
+impl std::fmt::Display for DiscoveryError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::RootIdentityMismatch => f.write_str("discovery root identity mismatch"),
+            Self::Connect(detail) => write!(f, "discovery connect failed: {detail}"),
+            Self::Timeout => f.write_str("discovery timeout"),
+            Self::Failed(detail) => write!(f, "discovery failed: {detail}"),
+        }
+    }
+}
+
+impl std::error::Error for DiscoveryError {}
+
 /// One-shot discovery over gRPC (fencing rule a). Blocking wrapper for the
 /// synchronous bootstrap path; `handle` names the runtime the call runs on.
-/// Silence/connect failure/timeout are `Err` — never an answer.
+/// Silence/connect failure/timeout are typed errors — never an answer.
 pub fn grpc_discover(
     handle: &tokio::runtime::Handle,
     from: NodeId,
@@ -466,13 +510,13 @@ pub fn grpc_discover(
     timeout: Duration,
     token: Option<String>,
     root: RootWireIdentity,
-) -> Result<DiscoverAnswer> {
+) -> std::result::Result<DiscoverAnswer, DiscoveryError> {
     let url = format!("http://{addr}");
     handle.block_on(async move {
         let fut = async {
             let mut client = Kv9RaftClient::connect(url)
                 .await
-                .map_err(|e| Error::Raft(format!("discovery connect {addr}: {e}")))?;
+                .map_err(|e| DiscoveryError::Connect(e.to_string()))?;
             let mut req = Request::new(pb::DiscoverRequest {
                 from_node: from.0,
                 voter_fingerprint: 0,
@@ -480,11 +524,20 @@ pub fn grpc_discover(
                 root_digest: root.root_digest.as_bytes().to_vec(),
             });
             attach_auth(&mut req, &token, from);
-            let resp = client
-                .discover(req)
-                .await
-                .map_err(|e| Error::Raft(format!("discovery rpc {addr}: {e}")))?
-                .into_inner();
+            let resp = match client.discover(req).await {
+                Ok(response) => response.into_inner(),
+                Err(status)
+                    if status.code() == tonic::Code::FailedPrecondition
+                        && status
+                            .metadata()
+                            .get(REJECTION_REASON_KEY)
+                            .and_then(|value| value.to_str().ok())
+                            == Some(ROOT_IDENTITY_MISMATCH_REASON) =>
+                {
+                    return Err(DiscoveryError::RootIdentityMismatch)
+                }
+                Err(status) => return Err(DiscoveryError::Failed(status.to_string())),
+            };
             // Contract: an initialized answer MUST name its cluster; an
             // uninitialized one must not. Anything else is a protocol error
             // — treated like a malformed frame, never a lenient default
@@ -497,14 +550,14 @@ pub fn grpc_discover(
                     Some(ClusterId::from_bytes(bytes))
                 }
                 (true, n) => {
-                    return Err(Error::Raft(format!(
+                    return Err(DiscoveryError::Failed(format!(
                         "initialized discovery answer from {addr} carries a \
                          {n}-byte cluster id (need 16)"
                     )))
                 }
                 (false, 0) => None,
                 (false, _) => {
-                    return Err(Error::Raft(format!(
+                    return Err(DiscoveryError::Failed(format!(
                         "uninitialized discovery answer from {addr} carries a \
                          cluster id"
                     )))
@@ -515,25 +568,23 @@ pub fn grpc_discover(
                     .as_slice()
                     .try_into()
                     .map_err(|_| {
-                        Error::Raft(format!(
+                        DiscoveryError::Failed(format!(
                             "discovery answer from {addr} carries an invalid bootstrap generation"
                         ))
                     })?,
             );
             let response_digest =
                 RootDigest::from_bytes(resp.root_digest.as_slice().try_into().map_err(|_| {
-                    Error::Raft(format!(
+                    DiscoveryError::Failed(format!(
                         "discovery answer from {addr} carries an invalid root digest"
                     ))
                 })?);
             if response_generation != root.bootstrap_generation
                 || response_digest != root.root_digest
             {
-                return Err(Error::Raft(format!(
-                    "discovery answer from {addr} does not match the provisioned root identity"
-                )));
+                return Err(DiscoveryError::RootIdentityMismatch);
             }
-            Ok::<_, Error>(DiscoverAnswer {
+            Ok::<_, DiscoveryError>(DiscoverAnswer {
                 node: NodeId(resp.node_id),
                 initialized: resp.initialized,
                 voter_fingerprint: resp.voter_fingerprint,
@@ -544,9 +595,30 @@ pub fn grpc_discover(
         };
         tokio::time::timeout(timeout, fut)
             .await
-            .map_err(|_| Error::Raft(format!("discovery timeout {addr}")))?
+            .map_err(|_| DiscoveryError::Timeout)?
     })
 }
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RegisterError {
+    InvalidTicket,
+    Connect(String),
+    Timeout,
+    Failed(String),
+}
+
+impl std::fmt::Display for RegisterError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::InvalidTicket => f.write_str("registration rejected: invalid join ticket"),
+            Self::Connect(detail) => write!(f, "registration connect failed: {detail}"),
+            Self::Timeout => f.write_str("registration timeout"),
+            Self::Failed(detail) => write!(f, "registration failed: {detail}"),
+        }
+    }
+}
+
+impl std::error::Error for RegisterError {}
 
 /// A registration attempt's machine-readable outcome. `NotLeader` is decoded
 /// from code + marker (BOTH required — other FAILED_PRECONDITION refusals
@@ -577,14 +649,14 @@ pub fn grpc_register(
     identity: JoinIdentity,
     timeout: Duration,
     token: Option<String>,
-) -> Result<RegisterOutcome> {
+) -> std::result::Result<RegisterOutcome, RegisterError> {
     let url = format!("http://{addr}");
     let listen_addr = listen_addr.to_string();
     handle.block_on(async move {
         let fut = async {
             let mut client = Kv9RaftClient::connect(url)
                 .await
-                .map_err(|e| Error::Raft(format!("register connect {addr}: {e}")))?;
+                .map_err(|e| RegisterError::Connect(e.to_string()))?;
             let mut req = Request::new(pb::RegisterRequest {
                 node_id: me.0,
                 addr: listen_addr,
@@ -618,9 +690,8 @@ pub fn grpc_register(
                                     .ok()
                                     .and_then(|s| s.parse::<u64>().ok())
                                     .ok_or_else(|| {
-                                        Error::Raft(
-                                            "not-leader answer carries an unreadable \
-                                             leader id"
+                                        RegisterError::Failed(
+                                            "not-leader answer carries an unreadable leader id"
                                                 .into(),
                                         )
                                     })?;
@@ -628,15 +699,23 @@ pub fn grpc_register(
                             }
                         };
                         Ok(RegisterOutcome::NotLeader { leader })
+                    } else if status.code() == tonic::Code::FailedPrecondition
+                        && status
+                            .metadata()
+                            .get(REJECTION_REASON_KEY)
+                            .and_then(|value| value.to_str().ok())
+                            == Some(INVALID_JOIN_TICKET_REASON)
+                    {
+                        Err(RegisterError::InvalidTicket)
                     } else {
-                        Err(Error::Raft(format!("register rpc {addr}: {status}")))
+                        Err(RegisterError::Failed(status.to_string()))
                     }
                 }
             }
         };
         tokio::time::timeout(timeout, fut)
             .await
-            .map_err(|_| Error::Raft(format!("register timeout {addr}")))?
+            .map_err(|_| RegisterError::Timeout)?
     })
 }
 
@@ -1121,7 +1200,7 @@ mod tests {
         for _ in 0..200 {
             match std::net::TcpStream::connect_timeout(&addr, Duration::from_millis(200)) {
                 Ok(sock) => flood.push(sock), // hold open: keeps the backlog full
-                Err(_) => break, // connect no longer completed; arming proof decides
+                Err(_) => break,              // connect no longer completed; arming proof decides
             }
         }
 
@@ -1414,6 +1493,23 @@ mod tests {
             "answer must carry the responder's declaration"
         );
         assert_eq!(a.cluster_id, None, "uninitialized answers name nothing");
+
+        let wrong_root = RootWireIdentity {
+            bootstrap_generation: test_root().bootstrap_generation,
+            root_digest: RootDigest::from_bytes([0xA5; 32]),
+        };
+        assert_eq!(
+            grpc_discover(
+                &handle,
+                NodeId(1),
+                addr,
+                Duration::from_secs(2),
+                Some("test-cluster-token".into()),
+                wrong_root,
+            )
+            .unwrap_err(),
+            DiscoveryError::RootIdentityMismatch
+        );
 
         assert!(grpc_discover(
             &handle,
@@ -1772,8 +1868,9 @@ mod tests {
         let addr = free_addr();
         let backend = Arc::new(StubRegistration::ok_only());
         // Script (popped in reverse order): hinted redirect, hintless
-        // redirect, ordinary failure.
+        // redirect, ordinary failure, invalid ticket.
         *backend.script.lock().unwrap() = vec![
+            Err(RegistrationError::InvalidTicket),
             Err(RegistrationError::Failed(Error::Config(
                 "admission expired".into(),
             ))),
@@ -1836,6 +1933,7 @@ mod tests {
             err.contains("admission expired"),
             "ordinary refusal lost its cause: {err}"
         );
+        assert_eq!(call().unwrap_err(), RegisterError::InvalidTicket);
         // Control: after the script drains, the same wire registers fine.
         assert!(matches!(call().unwrap(), RegisterOutcome::Registered(_)));
     }
