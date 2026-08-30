@@ -29,9 +29,10 @@ use kv9_meta::{Bootstrap, BootstrapEvent, BootstrapState};
 use kv9_meta::{ColumnValue, RowValue};
 use kv9_raft::driver::{DriverAppliedPosition, NodeDriver};
 use kv9_raft::grpc::{
-    grpc_discover, grpc_register, pb::kv9_raft_server::Kv9RaftServer, GrpcDiscoveryState,
-    GrpcTransport, JoinIdentity, RaftGrpcService, RegisterOutcome, RegistrationBackend,
-    RegistrationError, RegistrationReceipt, RootWireIdentity, CLUSTER_TOKEN_KEY, NODE_ID_KEY,
+    grpc_discover, grpc_register, pb::kv9_raft_server::Kv9RaftServer, DiscoveryError,
+    GrpcDiscoveryState, GrpcTransport, JoinIdentity, RaftGrpcService, RegisterError,
+    RegisterOutcome, RegistrationBackend, RegistrationError, RegistrationReceipt, RootWireIdentity,
+    CLUSTER_TOKEN_KEY, NODE_ID_KEY,
 };
 use kv9_raft::storage::DiskRaftStorage;
 use kv9_raft::transport::voter_set_fingerprint;
@@ -78,6 +79,9 @@ enum DiscoveryLastOutcome {
     AcceptedInitialized,
     AcceptedUninitialized,
     Rejected(DiscoveryRejection),
+    RejectedRootIdentity,
+    ConnectFailed,
+    Timeout,
     Error(String),
 }
 
@@ -89,6 +93,9 @@ impl DiscoveryLastOutcome {
             Self::AcceptedInitialized => "accepted_initialized".into(),
             Self::AcceptedUninitialized => "accepted_uninitialized".into(),
             Self::Rejected(reason) => reason.label().into(),
+            Self::RejectedRootIdentity => "rejected_root_identity".into(),
+            Self::ConnectFailed => "connect_failed".into(),
+            Self::Timeout => "timeout".into(),
             Self::Error(detail) => format!("{DISCOVERY_ERROR_PREFIX}{detail}"),
         }
     }
@@ -100,6 +107,7 @@ struct DiscoveryObservation {
     attempts: u64,
     accepted: u64,
     errors: u64,
+    rejected_root_identity: u64,
     rejected_node_id: u64,
     rejected_voter_fingerprint: u64,
     last: DiscoveryLastOutcome,
@@ -112,6 +120,7 @@ impl DiscoveryObservation {
             attempts: 0,
             accepted: 0,
             errors: 0,
+            rejected_root_identity: 0,
             rejected_node_id: 0,
             rejected_voter_fingerprint: 0,
             last: if local {
@@ -135,9 +144,25 @@ impl DiscoveryObservation {
         };
     }
 
-    fn record_error(&mut self, error: &Error) {
-        self.errors = self.errors.saturating_add(1);
-        self.last = DiscoveryLastOutcome::Error(bounded_discovery_detail(&error.to_string()));
+    fn record_error(&mut self, error: &DiscoveryError) {
+        match error {
+            DiscoveryError::RootIdentityMismatch => {
+                self.rejected_root_identity = self.rejected_root_identity.saturating_add(1);
+                self.last = DiscoveryLastOutcome::RejectedRootIdentity;
+            }
+            DiscoveryError::Connect(_) => {
+                self.errors = self.errors.saturating_add(1);
+                self.last = DiscoveryLastOutcome::ConnectFailed;
+            }
+            DiscoveryError::Timeout => {
+                self.errors = self.errors.saturating_add(1);
+                self.last = DiscoveryLastOutcome::Timeout;
+            }
+            DiscoveryError::Failed(detail) => {
+                self.errors = self.errors.saturating_add(1);
+                self.last = DiscoveryLastOutcome::Error(bounded_discovery_detail(detail));
+            }
+        }
     }
 
     fn record_rejected(&mut self, reason: DiscoveryRejection) {
@@ -150,6 +175,71 @@ impl DiscoveryObservation {
             }
         }
         self.last = DiscoveryLastOutcome::Rejected(reason);
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum RegistrationLastOutcome {
+    NotAttempted,
+    Registered,
+    NotLeader,
+    RejectedInvalidTicket,
+    ConnectFailed,
+    Timeout,
+    Failed,
+}
+
+impl RegistrationLastOutcome {
+    fn label(self) -> &'static str {
+        match self {
+            Self::NotAttempted => "not_attempted",
+            Self::Registered => "registered",
+            Self::NotLeader => "not_leader",
+            Self::RejectedInvalidTicket => "rejected_invalid_ticket",
+            Self::ConnectFailed => "connect_failed",
+            Self::Timeout => "timeout",
+            Self::Failed => "failed",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct RegistrationObservation {
+    attempts: u64,
+    errors: u64,
+    last: RegistrationLastOutcome,
+}
+
+impl RegistrationObservation {
+    fn new() -> Self {
+        Self {
+            attempts: 0,
+            errors: 0,
+            last: RegistrationLastOutcome::NotAttempted,
+        }
+    }
+
+    fn record_attempt(&mut self) {
+        self.attempts = self.attempts.saturating_add(1);
+    }
+
+    fn record_registered(&mut self) {
+        self.last = RegistrationLastOutcome::Registered;
+    }
+
+    fn record_not_leader(&mut self) {
+        self.errors = self.errors.saturating_add(1);
+        self.last = RegistrationLastOutcome::NotLeader;
+    }
+
+    fn record_error(&mut self, error: &RegisterError) {
+        self.errors = self.errors.saturating_add(1);
+        self.last = match error {
+            RegisterError::InvalidTicket => RegistrationLastOutcome::RejectedInvalidTicket,
+            RegisterError::Connect(_) => RegistrationLastOutcome::ConnectFailed,
+            RegisterError::Timeout => RegistrationLastOutcome::Timeout,
+            RegisterError::Failed(_) => RegistrationLastOutcome::Failed,
+        };
     }
 }
 
@@ -485,6 +575,15 @@ fn membership_node_row(
     row
 }
 
+fn registration_error(error: Error) -> RegistrationError {
+    match &error {
+        Error::Config(message) if message == "invalid join ticket" => {
+            RegistrationError::InvalidTicket
+        }
+        _ => RegistrationError::Failed(error),
+    }
+}
+
 impl RegistrationBackend for RuntimeBackend {
     fn register(
         &self,
@@ -568,7 +667,7 @@ impl RegistrationBackend for RuntimeBackend {
                     join_ticket_sha256,
                     now,
                 )
-                .map_err(RegistrationError::Failed)?;
+                .map_err(registration_error)?;
                 if txn
                     .get(&NODES_DESC, &[memcmp_uint(node.0)])
                     .map_err(RegistrationError::Failed)?
@@ -1098,6 +1197,8 @@ pub struct NodeRuntime {
     voters: Vec<NodeId>,
     seeds: Vec<SeedPeer>,
     discovery_observations: BTreeMap<u64, DiscoveryObservation>,
+    advertised_endpoint_observation: Option<DiscoveryObservation>,
+    registration_observation: RegistrationObservation,
     data_dir: PathBuf,
     status_path: PathBuf,
     addr: std::net::SocketAddr,
@@ -1113,6 +1214,7 @@ pub struct NodeRuntime {
     initial_proposal: Option<(ProposedAt, kv9_common::ClusterId)>,
     registration_receipt: Option<RegistrationReceipt>,
     next_discovery: Instant,
+    next_advertised_endpoint_probe: Instant,
 }
 
 impl NodeRuntime {
@@ -1334,6 +1436,11 @@ impl NodeRuntime {
                 )
             })
             .collect();
+        let advertised_endpoint_observation = seeds
+            .iter()
+            .copied()
+            .find(|seed| seed.node_id == id)
+            .map(|seed| DiscoveryObservation::new(seed, false));
 
         Ok(Self {
             node,
@@ -1348,6 +1455,8 @@ impl NodeRuntime {
             voters,
             seeds,
             discovery_observations,
+            advertised_endpoint_observation,
+            registration_observation: RegistrationObservation::new(),
             data_dir,
             status_path,
             addr,
@@ -1358,6 +1467,7 @@ impl NodeRuntime {
             initial_proposal: None,
             registration_receipt: None,
             next_discovery: Instant::now(),
+            next_advertised_endpoint_probe: Instant::now(),
         })
     }
 
@@ -1375,10 +1485,40 @@ impl NodeRuntime {
                 self.write_status()?;
                 return Err(Error::Raft(fatal));
             }
+            self.observe_advertised_endpoint();
             self.sync_registered_peers()?;
             self.advance_bootstrap()?;
             self.write_status()?;
             std::thread::sleep(TICK);
+        }
+    }
+
+    /// Probe the canonical advertised address independently of the listener
+    /// bind. They may legitimately differ (Service/Pod, NAT, wildcard bind),
+    /// so equality is not an identity rule; an authenticated discovery round
+    /// to the advertised endpoint is the actual configuration diagnostic.
+    fn observe_advertised_endpoint(&mut self) {
+        if Instant::now() < self.next_advertised_endpoint_probe {
+            return;
+        }
+        self.next_advertised_endpoint_probe = Instant::now() + DISCOVERY_INTERVAL;
+        let Some(observation) = self.advertised_endpoint_observation.as_mut() else {
+            return;
+        };
+        observation.record_attempt();
+        match grpc_discover(
+            self.grpc_runtime.handle(),
+            self.node.id,
+            observation.seed.addr,
+            DISCOVERY_TIMEOUT,
+            Some(self.cluster_token.clone()),
+            self.discovery.root_identity(),
+        ) {
+            Ok(answer) if answer.node == self.node.id => {
+                observation.record_accepted(answer.initialized)
+            }
+            Ok(_) => observation.record_rejected(DiscoveryRejection::NodeId),
+            Err(error) => observation.record_error(&error),
         }
     }
 
@@ -1719,6 +1859,7 @@ impl NodeRuntime {
                 )
             })?;
             for seed in &self.seeds {
+                self.registration_observation.record_attempt();
                 match grpc_register(
                     self.grpc_runtime.handle(),
                     self.node.id,
@@ -1733,10 +1874,19 @@ impl NodeRuntime {
                     Some(self.cluster_token.clone()),
                 ) {
                     Ok(RegisterOutcome::Registered(receipt)) => {
+                        self.registration_observation.record_registered();
                         self.registration_receipt = Some(receipt);
                         break;
                     }
-                    Ok(RegisterOutcome::NotLeader { .. }) | Err(_) => continue,
+                    Ok(RegisterOutcome::NotLeader { .. }) => {
+                        self.registration_observation.record_not_leader();
+                    }
+                    Err(error) => {
+                        self.registration_observation.record_error(&error);
+                        if error == RegisterError::InvalidTicket {
+                            break;
+                        }
+                    }
                 }
             }
             return Ok(());
@@ -1838,11 +1988,13 @@ impl NodeRuntime {
             format_u64_ids(&nodes)
         };
         let discovery_status = format_discovery_observations(&self.discovery_observations);
+        let advertised_endpoint_status =
+            format_advertised_endpoint(self.advertised_endpoint_observation.as_ref());
         // Rendered as complete labeled lines by the single tested helper —
         // see render_driver_applied for why no tuple crosses this boundary.
         let driver_applied_lines = render_driver_applied(raft.driver_applied);
         let body = format!(
-            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\n{}bootstrap_state={:?}\n{}fatal={}\n",
+            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\n{}bootstrap_state={:?}\nadvertised_endpoint={}\nregistration_attempts={}\nregistration_errors={}\nregistration_last={}\n{}fatal={}\n",
             std::process::id(),
             raft.node_id.0,
             cluster_id.map_or_else(String::new, |id| id.to_string()),
@@ -1861,6 +2013,10 @@ impl NodeRuntime {
             raft.applied_term,
             driver_applied_lines,
             bootstrap,
+            advertised_endpoint_status,
+            self.registration_observation.attempts,
+            self.registration_observation.errors,
+            self.registration_observation.last.label(),
             discovery_status,
             raft.fatal.as_deref().unwrap_or(""),
         );
@@ -1900,16 +2056,33 @@ fn format_u64_ids(nodes: &[u64]) -> String {
         .join(",")
 }
 
+fn format_advertised_endpoint(observation: Option<&DiscoveryObservation>) -> String {
+    match observation {
+        Some(observation) => format!(
+            "addr={},attempts={},reachable={},errors={},rejected_root_identity={},rejected_node_id={},last={}",
+            observation.seed.addr,
+            observation.attempts,
+            observation.accepted,
+            observation.errors,
+            observation.rejected_root_identity,
+            observation.rejected_node_id,
+            observation.last.label(),
+        ),
+        None => "not_declared".into(),
+    }
+}
+
 fn format_discovery_observations(observations: &BTreeMap<u64, DiscoveryObservation>) -> String {
     observations
         .iter()
         .map(|(node, observation)| {
             format!(
-                "discovery_seed_{node}=addr={},attempts={},accepted={},errors={},rejected_node_id={},rejected_voter_fingerprint={},last={}\n",
+                "discovery_seed_{node}=addr={},attempts={},accepted={},errors={},rejected_root_identity={},rejected_node_id={},rejected_voter_fingerprint={},last={}\n",
                 observation.seed.addr,
                 observation.attempts,
                 observation.accepted,
                 observation.errors,
+                observation.rejected_root_identity,
                 observation.rejected_node_id,
                 observation.rejected_voter_fingerprint,
                 observation.last.label(),
@@ -2537,7 +2710,7 @@ mod tests {
         observation.attempts = u64::MAX;
         observation.errors = u64::MAX;
         observation.record_attempt();
-        observation.record_error(&Error::Raft(format!(
+        observation.record_error(&DiscoveryError::Failed(format!(
             "discovery rpc {}: first line\n{}",
             seed.addr,
             "x".repeat(DISCOVERY_LAST_OUTCOME_MAX_CHARS * 2)
@@ -2550,11 +2723,16 @@ mod tests {
         assert!(observation.last.label().chars().count() <= DISCOVERY_LAST_OUTCOME_MAX_CHARS);
         assert!(!detail.chars().any(char::is_control));
 
-        let status = format_discovery_observations(&BTreeMap::from([(2, observation)]));
+        let status = format_discovery_observations(&BTreeMap::from([(2, observation.clone())]));
         assert_eq!(status.lines().count(), 1);
         assert!(status.contains("attempts=18446744073709551615"));
         assert!(status.contains("errors=18446744073709551615"));
-        assert!(status.contains("last=error:raft error: discovery rpc"));
+        assert!(status.contains("last=error:discovery rpc"));
+
+        observation.record_error(&DiscoveryError::RootIdentityMismatch);
+        let status = format_discovery_observations(&BTreeMap::from([(2, observation)]));
+        assert!(status.contains("rejected_root_identity=1"));
+        assert!(status.ends_with("last=rejected_root_identity\n"));
     }
 
     #[test]
@@ -2591,6 +2769,47 @@ mod tests {
         let observation = DiscoveryObservation::new(seed, true);
         assert_eq!(observation.attempts, 0);
         assert_eq!(observation.last, DiscoveryLastOutcome::Local);
+    }
+
+    #[test]
+    fn registration_observation_preserves_typed_reasons_without_diagnostic_text() {
+        let mut observation = RegistrationObservation::new();
+        observation.record_attempt();
+        observation.record_error(&RegisterError::InvalidTicket);
+        assert_eq!(observation.attempts, 1);
+        assert_eq!(observation.errors, 1);
+        assert_eq!(observation.last.label(), "rejected_invalid_ticket");
+
+        observation.record_attempt();
+        observation.record_error(&RegisterError::Failed("x".repeat(4096)));
+        assert_eq!(observation.last.label(), "failed");
+        assert!(!observation.last.label().contains('x'));
+
+        assert!(matches!(
+            registration_error(Error::Config("invalid join ticket".into())),
+            RegistrationError::InvalidTicket
+        ));
+        assert!(matches!(
+            registration_error(Error::Config("admission expired".into())),
+            RegistrationError::Failed(Error::Config(message)) if message == "admission expired"
+        ));
+    }
+
+    #[test]
+    fn advertised_endpoint_status_proves_a_network_attempt_or_declares_absence() {
+        assert_eq!(format_advertised_endpoint(None), "not_declared");
+        let seed = SeedPeer {
+            node_id: NodeId(1),
+            addr: "127.0.0.1:20161".parse().unwrap(),
+        };
+        let mut observation = DiscoveryObservation::new(seed, false);
+        observation.record_attempt();
+        observation.record_accepted(true);
+        let rendered = format_advertised_endpoint(Some(&observation));
+        assert!(rendered.contains("addr=127.0.0.1:20161"));
+        assert!(rendered.contains("attempts=1"));
+        assert!(rendered.contains("reachable=1"));
+        assert!(rendered.ends_with("last=accepted_initialized"));
     }
 
     #[test]
