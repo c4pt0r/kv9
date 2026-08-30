@@ -281,10 +281,19 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         // flows through `EntryKind::Noop` above.
         {
             let mut wm = self.driver_applied.lock().expect("driver_applied poisoned");
-            *wm = Some(DriverAppliedPosition {
+            let candidate = DriverAppliedPosition {
                 term: last_term,
                 index: last_seen,
-            });
+            };
+            // Monotonic guard — same shape as rawnode's `applied_reported`.
+            // Batch order already makes regression unreachable today; the
+            // guard pins the invariant consumers actually rely on ("the
+            // watermark never regresses") HERE rather than inheriting it
+            // from delivery order, so a future delivery change cannot
+            // silently hand a barrier waiter a going-backward position.
+            if wm.is_none_or(|cur| candidate.index > cur.index) {
+                *wm = Some(candidate);
+            }
         }
         Ok(())
     }
@@ -696,9 +705,16 @@ mod tests {
 
     /// Common-piece regression 2 — the LOAD-BEARING negative: a failed item
     /// must not advance the watermark. The bootstrap current-term barrier's
-    /// safety proof stands on this contiguity; turning the poison
-    /// `return Err` into a skip makes this test red (the bad entry's index
-    /// would be published as processed).
+    /// safety proof stands on this contiguity. TWO assertions, each lit by
+    /// its own verified mutant (review finding — the first mutant redded on
+    /// the wrong one and the credit had to be split):
+    ///   - "must poison" (arming proof): a poison-to-skip mutant reds HERE —
+    ///     it proves the mutation landed on the tested path, not that the
+    ///     watermark held;
+    ///   - "contiguity broken" (the property itself): a publish-despite-
+    ///     failure mutant — poison still fires, watermark published anyway —
+    ///     passes the arming assertion and reds HERE. This line, not the
+    ///     first, is what the barrier proof depends on.
     #[test]
     fn driver_applied_never_advances_past_a_failed_item() {
         let driver = single_node_driver();
