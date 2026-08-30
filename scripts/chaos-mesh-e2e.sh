@@ -253,6 +253,65 @@ spec:
 YAML
 }
 
+write_handshake_blackhole() {
+  k apply -f - >/dev/null <<YAML
+apiVersion: v1
+kind: Pod
+metadata:
+  name: handshake-blackhole
+  namespace: $namespace
+  labels:
+    app: kv9
+    kv9-node: "2"
+    kv9-fixture: handshake-blackhole
+spec:
+  terminationGracePeriodSeconds: 0
+  containers:
+    - name: blackhole
+      image: $image
+      imagePullPolicy: IfNotPresent
+      command: ["/usr/bin/perl", "-MIO::Socket::INET", "-e"]
+      args:
+        - |
+          \$| = 1;
+          my \$listener = IO::Socket::INET->new(
+            LocalAddr => "0.0.0.0", LocalPort => 20160, Proto => "tcp",
+            Listen => 32, Reuse => 1
+          ) or die "listen: \$!";
+          print "READY\\n";
+          my @held;
+          while (my \$connection = \$listener->accept()) {
+            push @held, \$connection;
+            print "ACCEPT " . \$connection->peerhost() . " " . scalar(@held) . "\\n";
+          }
+YAML
+}
+
+blackhole_has_both_voters() {
+  local pod1 pod3 ip1 ip3 logs
+  pod1="$(pod_for 1)" || return 1
+  pod3="$(pod_for 3)" || return 1
+  ip1="$(k get pod -n "$namespace" "$pod1" -o jsonpath='{.status.podIP}')"
+  ip3="$(k get pod -n "$namespace" "$pod3" -o jsonpath='{.status.podIP}')"
+  logs="$(k logs -n "$namespace" handshake-blackhole 2>/dev/null)"
+  grep -Fq -- "ACCEPT $ip1 " <<<"$logs" &&
+    grep -Fq -- "ACCEPT $ip3 " <<<"$logs"
+}
+
+blackhole_detached_from_service() {
+  local blackhole_ip="$1" endpoints
+  endpoints="$(k get endpoints -n "$namespace" kv9-n2 \
+    -o jsonpath='{.subsets[*].addresses[*].ip}' 2>/dev/null || true)"
+  ! grep -Fqw -- "$blackhole_ip" <<<"$endpoints"
+}
+
+real_node_two_endpoint_ready() {
+  local names
+  names="$(k get endpoints -n "$namespace" kv9-n2 \
+    -o jsonpath='{.subsets[*].addresses[*].targetRef.name}' 2>/dev/null || true)"
+  [ -n "$names" ] && ! grep -Fqw -- handshake-blackhole <<<"$names"
+}
+
 write_deployment() {
   local node="$1" root_config="${2:-kv9-root}" bootstrap="${3:-$bootstrap_token}"
   k apply -f - >/dev/null <<YAML
@@ -401,17 +460,39 @@ KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root" --vot
   >"$artifact/root-create.out"
 k create configmap kv9-root -n "$namespace" --from-file="root.bin=$root" >/dev/null
 
+# Deterministically occupy n2's stable Service with a TCP endpoint that accepts
+# connections but never completes HTTP/2. Once both existing voters have a
+# peer worker stuck in that handshake, remove the fixture from the Service
+# selector WITHOUT killing it, then add the real n2 endpoint. The old TCP
+# connections remain alive against the blackhole. A worker without a total
+# connect+handshake budget will never notice the replacement and strands the
+# legitimate voter at committed=0; a bounded worker reconnects and catches up.
+write_handshake_blackhole
+k wait -n "$namespace" --for=condition=Ready pod/handshake-blackhole --timeout=20s >/dev/null
+blackhole_ip="$(k get pod -n "$namespace" handshake-blackhole \
+  -o jsonpath='{.status.podIP}')"
+[[ "$blackhole_ip" =~ ^[0-9a-fA-F:.]+$ ]] || {
+  echo "FAIL: handshake blackhole has no Pod IP" >&2
+  exit 1
+}
+
 # Deliberately let a valid two-voter quorum initialize before the third
-# declared voter starts. A peer worker that wedges on the Service's temporary
-# lack of endpoints will otherwise pass every simultaneous-start test and
-# strand a legitimate late voter at committed=0 forever.
+# declared voter starts, while both voters establish doomed n2 streams.
 write_deployment 1
 write_deployment 3
 wait_majority_leader "two-voter quorum initializes before late voter" 35 2 >/dev/null
+wait_until "both voters enter the n2 handshake blackhole" 15 \
+  blackhole_has_both_voters
+k label pod -n "$namespace" handshake-blackhole kv9-node=blackhole --overwrite >/dev/null
+wait_until "blackhole leaves the n2 Service endpoints" 15 \
+  blackhole_detached_from_service "$blackhole_ip"
 write_deployment 2
+wait_until "real n2 endpoint replaces the handshake blackhole" 20 \
+  real_node_two_endpoint_ready
 
 echo "Stage: bootstrap and baseline mutation"
 leader="$(wait_agreed_leader "root-certified cluster Serving" 45)"
+k delete pod handshake-blackhole -n "$namespace" --wait=true >/dev/null
 create_out="$(client "$leader" create-keyspace --addr "$(service_ip "$leader"):20160" \
   --name chaos --api-type raw)"
 keyspace="$(awk -F= '$1=="keyspace_id" {print $2}' <<<"$create_out")"
