@@ -115,6 +115,17 @@ const CONNECT_BUDGET: Duration = Duration::from_secs(2);
 /// Err, and the worker takes the ordinary reconnect path.
 const KEEPALIVE_INTERVAL: Duration = Duration::from_secs(1);
 const KEEPALIVE_TIMEOUT: Duration = Duration::from_secs(2);
+/// Third entry to the same liveness invariant (Tess's review): a peer whose
+/// h2 layer is ALIVE (acks PINGs) but whose application stops READING the
+/// request stream. The rpc future stays pending, HTTP/2 flow control stops
+/// polling the batch stream, the 16-slot buffer fills, and a send/rpc select
+/// has no clock — the worker would park forever with both arms pending. A
+/// batch send that cannot complete within this budget means the established
+/// stream stopped making progress: drop it and reconnect (the batch is lost;
+/// raft retransmits — best-effort by contract). Deliberately distinct from
+/// CONNECT_BUDGET: that one bounds reaching a connection, this one bounds
+/// progress on an established stream.
+const STREAM_PROGRESS_BUDGET: Duration = Duration::from_secs(3);
 
 /// Answers discovery for this node (same contract as the TCP transport's
 /// `DiscoveryState`): `(node id, initialized?, declared voter-set fingerprint)`.
@@ -815,11 +826,14 @@ async fn peer_worker(
                     _ = &mut window => break,
                 }
             }
-            // The send is selected against the RPC future so the worker can
-            // never park on a full stream buffer while the connection is
-            // already dead — the other bare-await wedge of the same family as
-            // the unbudgeted connect (the RPC resolving here means the server
-            // closed the stream; reconnect).
+            // Three-way select: the send may complete (normal path), the RPC
+            // may resolve (server closed the stream — reconnect), or neither
+            // within STREAM_PROGRESS_BUDGET (established stream stopped
+            // making progress: an alive peer that stopped reading keeps both
+            // other arms pending forever, and keepalive cannot see it because
+            // its h2 layer still acks PINGs — reconnect). A bare send, or a
+            // send/rpc select without a clock, are the two- and one-arm
+            // versions of the same wedge as the unbudgeted connect.
             tokio::select! {
                 sent = batch_tx.send(batch) => {
                     if sent.is_err() {
@@ -827,6 +841,9 @@ async fn peer_worker(
                     }
                 }
                 _ = &mut rpc => break 'batching,
+                _ = tokio::time::sleep(STREAM_PROGRESS_BUDGET) => {
+                    break 'batching; // stream stalled: drop it, reconnect
+                }
             }
         }
         drop(batch_tx);
@@ -948,6 +965,101 @@ mod tests {
                 .await
                 .ok();
         });
+    }
+
+    /// Third entry to the task #40 liveness invariant (Tess's review): a peer
+    /// whose h2 layer is alive (handshake completes, PINGs acked) but whose
+    /// handler never READS the request stream. Flow control stops polling the
+    /// batch stream, the buffer fills, the rpc pends — a send/rpc select has
+    /// no clock and parks forever; keepalive cannot see it. With
+    /// STREAM_PROGRESS_BUDGET the worker drops the stalled stream, reconnects,
+    /// and reaches the recovered endpoint.
+    #[test]
+    fn peer_worker_escapes_a_frozen_reader_and_reaches_replacement() {
+        struct FrozenRaft;
+        #[tonic::async_trait]
+        impl Kv9Raft for FrozenRaft {
+            async fn batch_raft(
+                &self,
+                _request: Request<Streaming<pb::BatchRaftMessage>>,
+            ) -> std::result::Result<Response<pb::Done>, Status> {
+                // Accept the stream, then never read a single message.
+                std::future::pending::<()>().await;
+                unreachable!()
+            }
+            async fn discover(
+                &self,
+                _request: Request<pb::DiscoverRequest>,
+            ) -> std::result::Result<Response<pb::DiscoverResponse>, Status> {
+                Err(Status::unimplemented("frozen"))
+            }
+            async fn register(
+                &self,
+                _request: Request<pb::RegisterRequest>,
+            ) -> std::result::Result<Response<pb::RegisterReceipt>, Status> {
+                Err(Status::unimplemented("frozen"))
+            }
+        }
+
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+        let addr = free_addr();
+
+        // Frozen reader on addr: real gRPC server, handler never consumes.
+        let frozen = handle.spawn(async move {
+            tonic::transport::Server::builder()
+                .add_service(Kv9RaftServer::with_interceptor(
+                    FrozenRaft,
+                    cluster_token_interceptor("test-cluster-token".into()),
+                ))
+                .serve(addr)
+                .await
+                .ok();
+        });
+        std::thread::sleep(Duration::from_millis(200)); // let it bind
+
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            Some("test-cluster-token".into()),
+            handle.clone(),
+            test_root().root_digest,
+        );
+        transport.register_peer(NodeId(2), addr);
+        // Large payloads exhaust the HTTP/2 flow-control window fast, so the
+        // batch buffer really fills and the send arm really blocks.
+        let msg = || Message {
+            from: 1,
+            to: 2,
+            context: vec![0u8; 200 * 1024].into(),
+            ..Default::default()
+        };
+
+        // Fill for a while against the frozen reader (worker wedges on old
+        // code), then swap in a live server on the same address.
+        for _ in 0..30 {
+            transport.send(NodeId(2), msg());
+            std::thread::sleep(Duration::from_millis(50));
+        }
+        frozen.abort();
+        std::thread::sleep(Duration::from_millis(100));
+        let (n2_inbox_tx, mut n2_inbox_rx) = mpsc::unbounded_channel();
+        serve(&handle, NodeId(2), addr, n2_inbox_tx, 42);
+
+        let deadline = std::time::Instant::now() + Duration::from_secs(15);
+        let mut delivered = false;
+        while std::time::Instant::now() < deadline {
+            transport.send(NodeId(2), msg());
+            if n2_inbox_rx.try_recv().is_ok() {
+                delivered = true;
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(100));
+        }
+        assert!(
+            delivered,
+            "no envelope reached the replacement endpoint: the peer worker \
+             never escaped the frozen-reader stream (task #40, third entry)"
+        );
     }
 
     /// task #40 transport wedge, Chaos-reproduced then pinned here in-process:
