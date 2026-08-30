@@ -1485,6 +1485,112 @@ mod tests {
         assert_eq!(a.node, NodeId(5));
     }
 
+    /// Root-digest fencing at both crate checkpoints — the FIRST direct
+    /// evidence either fires (review finding: every prior test used one shared
+    /// test_root, and the K8s wrong-root scene died at the membership
+    /// interceptor before ever reaching these lines, so "root fencing works"
+    /// had only property-level support, never mechanism-level). Both negatives
+    /// use a legitimate node identity so nothing earlier rejects first, and
+    /// each carries its matching-root control — a gate that rejected
+    /// everything would fail the controls.
+    #[test]
+    fn a_mismatched_root_digest_is_rejected_on_both_checkpoints() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+        let addr = free_addr();
+        let (tx, _rx) = mpsc::unbounded_channel();
+        serve(&handle, NodeId(1), addr, tx, 42); // serves test_root() ([0;32])
+        std::thread::sleep(Duration::from_millis(100));
+
+        let wrong_root = RootWireIdentity {
+            bootstrap_generation: BootstrapGeneration::from_bytes([7; 16]),
+            root_digest: RootDigest::from_bytes([7; 32]),
+        };
+
+        // Checkpoint 1: the batch stream. Same shape as real traffic, only
+        // the root digest differs.
+        let batch_with = |digest: &RootDigest| pb::BatchRaftMessage {
+            msgs: vec![pb::RaftEnvelope {
+                region_id: 0,
+                from_node: 2,
+                to_node: 1,
+                raft_message: Message {
+                    from: 2,
+                    to: 1,
+                    ..Default::default()
+                }
+                .write_to_bytes()
+                .unwrap(),
+                epoch_conf_ver: 0,
+                epoch_version: 0,
+            }],
+            flushed_unix_nanos: 0,
+            root_digest: digest.as_bytes().to_vec(),
+        };
+        let status = handle.block_on(async {
+            let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
+                .await
+                .unwrap();
+            let mut request =
+                Request::new(tokio_stream::iter(vec![batch_with(&wrong_root.root_digest)]));
+            attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(2));
+            client.batch_raft(request).await.unwrap_err()
+        });
+        assert_eq!(status.code(), tonic::Code::FailedPrecondition);
+        assert!(
+            status.message().contains("raft root identity mismatch"),
+            "stream rejection must be the ROOT gate, got: {}",
+            status.message()
+        );
+        // Control: identical shape with the matching root is accepted.
+        handle.block_on(async {
+            let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
+                .await
+                .unwrap();
+            let mut request =
+                Request::new(tokio_stream::iter(vec![batch_with(&test_root().root_digest)]));
+            attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(2));
+            client
+                .batch_raft(request)
+                .await
+                .expect("matching root must pass the same gate");
+        });
+
+        // Checkpoint 2: discovery, client-side comparison of the answer.
+        // The discovery negative is guarded by TWO independent root layers
+        // with distinguishable messages — the mutant matrix proved the depth:
+        //   server-side check ("discovery root identity mismatch") deleted
+        //     alone -> the client-side compare still refuses (its wording);
+        //   client-side compare deleted alone -> server still refuses;
+        //   BOTH deleted -> the wrong-root answer is accepted and this
+        //     expect_err reds, printing the accepted answer.
+        let err = grpc_discover(
+            &handle,
+            NodeId(2),
+            addr,
+            Duration::from_secs(2),
+            Some("test-cluster-token".into()),
+            wrong_root,
+        )
+        .expect_err("a mismatched root answer must be refused");
+        let msg = err.to_string();
+        assert!(
+            msg.contains("discovery root identity mismatch")
+                || msg.contains("does not match the provisioned root identity"),
+            "rejection must come from one of the two ROOT layers, got: {msg}"
+        );
+        // Control: the matching root is answered.
+        grpc_discover(
+            &handle,
+            NodeId(2),
+            addr,
+            Duration::from_secs(2),
+            Some("test-cluster-token".into()),
+            test_root(),
+        )
+        .expect("matching root must be answered");
+    }
+
     /// A misrouted envelope (wrong to_node) kills the stream with a loud error
     /// — CSE's StoreNotMatch shape — and is counted, never silently applied.
     #[test]
