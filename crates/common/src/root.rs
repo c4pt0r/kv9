@@ -374,9 +374,23 @@ pub fn persist_root_bundle(
                 "data directory is already bound to a different root/store identity".into(),
             ));
         }
-        _ => {
+        // The root is published first. A crash between the two individually
+        // atomic writes leaves this exact state. Resume only when the durable
+        // root bytes equal the caller's root; identity.verify above then proves
+        // the missing second file is the identity authorized by that root.
+        (true, false) => {
+            let saved_root = RootDescriptor::decode(&read_file(&root_path)?)?;
+            if saved_root != *root {
+                return Err(Error::Config(
+                    "data directory contains a different root and no store identity".into(),
+                ));
+            }
+            atomic_write(data_dir, STORE_IDENTITY_FILE, &identity.canonical_bytes())?;
+            return Ok(());
+        }
+        (false, true) => {
             return Err(Error::Config(
-                "data directory contains an incomplete root identity bundle".into(),
+                "data directory contains a store identity without a root descriptor".into(),
             ))
         }
     }
@@ -399,11 +413,7 @@ pub fn write_new_root_descriptor(path: &Path, root: &RootDescriptor) -> Result<(
     let name = path
         .file_name()
         .ok_or_else(|| Error::Config("root descriptor output needs a file name".into()))?;
-    let temp = parent.join(format!(
-        ".{}.{}.tmp",
-        name.to_string_lossy(),
-        std::process::id()
-    ));
+    let temp = temporary_path(parent, &name.to_string_lossy())?;
     let result = (|| {
         let mut file = fs::OpenOptions::new()
             .create_new(true)
@@ -440,19 +450,32 @@ fn read_file(path: &Path) -> Result<Vec<u8>> {
 
 fn atomic_write(data_dir: &Path, name: &str, bytes: &[u8]) -> Result<()> {
     let target = data_dir.join(name);
-    let tmp = data_dir.join(format!(".{name}.tmp"));
-    {
-        let mut file = File::create(&tmp)
+    let tmp = temporary_path(data_dir, name)?;
+    let result = (|| {
+        let mut file = fs::OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .open(&tmp)
             .map_err(|error| Error::Config(format!("create {}: {error}", tmp.display())))?;
         file.write_all(bytes)
             .and_then(|()| file.sync_all())
             .map_err(|error| Error::Config(format!("write {}: {error}", tmp.display())))?;
-    }
-    fs::rename(&tmp, &target)
-        .map_err(|error| Error::Config(format!("rename {}: {error}", target.display())))?;
-    File::open(data_dir)
-        .and_then(|directory| directory.sync_all())
-        .map_err(|error| Error::Config(format!("sync {}: {error}", data_dir.display())))
+        fs::rename(&tmp, &target)
+            .map_err(|error| Error::Config(format!("rename {}: {error}", target.display())))?;
+        File::open(data_dir)
+            .and_then(|directory| directory.sync_all())
+            .map_err(|error| Error::Config(format!("sync {}: {error}", data_dir.display())))
+    })();
+    let _ = fs::remove_file(&tmp);
+    result
+}
+
+fn temporary_path(parent: &Path, name: &str) -> Result<std::path::PathBuf> {
+    let nonce = random_16("temporary file")?
+        .into_iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    Ok(parent.join(format!(".{name}.{}.{nonce}.tmp", std::process::id())))
 }
 
 fn encode_addr(out: &mut Vec<u8>, addr: SocketAddr) {
@@ -573,14 +596,36 @@ mod tests {
     }
 
     #[test]
-    fn incomplete_bundle_fails_closed() {
+    fn root_only_bundle_resumes_but_other_partial_states_fail_closed() {
         let dir = std::env::temp_dir().join(format!("kv9-root-partial-{}", std::process::id()));
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
-        fs::write(dir.join(ROOT_DESCRIPTOR_FILE), root().canonical_bytes()).unwrap();
+        let expected_root = root();
+        let identity = StoreIdentity::for_voter(&expected_root, NodeId(1)).unwrap();
+        fs::write(
+            dir.join(ROOT_DESCRIPTOR_FILE),
+            expected_root.canonical_bytes(),
+        )
+        .unwrap();
         assert!(load_root_bundle(&dir).is_err());
-        let identity = StoreIdentity::for_voter(&root(), NodeId(1)).unwrap();
-        assert!(persist_root_bundle(&dir, &root(), &identity).is_err());
+        persist_root_bundle(&dir, &expected_root, &identity).unwrap();
+        assert_eq!(
+            load_root_bundle(&dir).unwrap(),
+            (expected_root.clone(), identity)
+        );
+
+        fs::remove_dir_all(&dir).unwrap();
+        fs::create_dir_all(&dir).unwrap();
+        let identity = StoreIdentity::for_voter(&expected_root, NodeId(1)).unwrap();
+        fs::write(dir.join(STORE_IDENTITY_FILE), identity.canonical_bytes()).unwrap();
+        assert!(persist_root_bundle(&dir, &expected_root, &identity).is_err());
+
+        fs::remove_dir_all(&dir).unwrap();
+        fs::create_dir_all(&dir).unwrap();
+        let mut other_root = expected_root.clone();
+        other_root.bootstrap_generation = BootstrapGeneration::from_bytes([8; 16]);
+        fs::write(dir.join(ROOT_DESCRIPTOR_FILE), other_root.canonical_bytes()).unwrap();
+        assert!(persist_root_bundle(&dir, &expected_root, &identity).is_err());
         fs::remove_dir_all(dir).unwrap();
     }
 
