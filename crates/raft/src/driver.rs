@@ -780,8 +780,7 @@ mod tests {
         let make = || {
             let hub = InProcHub::new();
             let (storage, _) = DiskRaftStorage::open(&dir, &[1]).unwrap();
-            let peer =
-                Arc::new(RaftPeer::with_storage(NodeId(1), RegionId(1), storage).unwrap());
+            let peer = Arc::new(RaftPeer::with_storage(NodeId(1), RegionId(1), storage).unwrap());
             NodeDriver::new(
                 peer,
                 Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
@@ -839,7 +838,9 @@ mod tests {
         // Command genuinely REPLAYED rather than the position merely being
         // re-published past it.
         assert_eq!(
-            d2.get(kv9_engine::ColumnFamily::Default, b"persist").unwrap().as_deref(),
+            d2.get(kv9_engine::ColumnFamily::Default, b"persist")
+                .unwrap()
+                .as_deref(),
             Some(b"me".as_ref()),
             "replay must re-apply the first run's command, not just re-publish a position"
         );
