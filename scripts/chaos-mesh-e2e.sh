@@ -641,6 +641,12 @@ client "$new_leader" raw-put --addr "$(service_ip "$new_leader"):20160" --keyspa
   --key-hex 706172746974696f6e --value-hex 7633 >"$artifact/partition-put.out"
 k delete networkchaos isolate-leader -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "partition healing and catch-up" 35)"
+isolated_get="$(client "$leader" raw-get --addr "$(service_ip "$leader"):20160" \
+  --keyspace "$keyspace" --key-hex 69736f6c61746564)"
+[ "$isolated_get" = "found=false" ] || {
+  echo "FAIL: isolated old-leader mutation entered the cluster: $isolated_get" >&2
+  exit 1
+}
 
 # Delay one follower in both directions; quorum writes must remain available.
 echo "Stage: follower latency and recovery"
