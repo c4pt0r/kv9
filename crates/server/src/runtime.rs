@@ -21,6 +21,7 @@ use kv9_common::{
     TxnGroupId, UserKey, Value, META_REGION_0,
 };
 use kv9_engine::{Engine, ReadView, WalEngine};
+use kv9_meta::admission::INVALID_JOIN_TICKET_MESSAGE;
 use kv9_meta::bootstrap::{init_marker_exists, write_init_marker};
 use kv9_meta::codec::memcmp_uint;
 use kv9_meta::schema::{ColumnId, NODES_DESC, SCHEMA_VERSION_DESC};
@@ -577,7 +578,7 @@ fn membership_node_row(
 
 fn registration_error(error: Error) -> RegistrationError {
     match &error {
-        Error::Config(message) if message == "invalid join ticket" => {
+        Error::Config(message) if message == INVALID_JOIN_TICKET_MESSAGE => {
             RegistrationError::InvalidTicket
         }
         _ => RegistrationError::Failed(error),
@@ -2786,7 +2787,7 @@ mod tests {
         assert!(!observation.last.label().contains('x'));
 
         assert!(matches!(
-            registration_error(Error::Config("invalid join ticket".into())),
+            registration_error(Error::Config(INVALID_JOIN_TICKET_MESSAGE.into())),
             RegistrationError::InvalidTicket
         ));
         assert!(matches!(

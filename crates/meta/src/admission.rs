@@ -31,6 +31,11 @@ use crate::codec::{decode_uint_component, memcmp_uint, ColumnValue, RowValue};
 use crate::schema::{ColumnId, CLUSTER_META_DESC, NODE_ADMISSIONS_DESC};
 use crate::store::MetaTxn;
 
+/// Stable semantic reason consumed by the registration transport adapter.
+/// Keep the producer and classifier on this one definition; independently
+/// copied text would silently demote an invalid ticket to a generic refusal.
+pub const INVALID_JOIN_TICKET_MESSAGE: &str = "invalid join ticket";
+
 /// The role an admission grants. Only learner exists in Phase-1 dynamic
 /// membership: promotion to voter is a separate leader decision through raft
 /// ConfChange, not an admission state.
@@ -260,7 +265,7 @@ pub fn consume_admission_with_ticket<E: Engine>(
     now_unix: u64,
 ) -> Result<Admission> {
     if ticket_sha256.len() != 32 {
-        return Err(Error::Config("invalid join ticket".into()));
+        return Err(Error::Config(INVALID_JOIN_TICKET_MESSAGE.into()));
     }
     consume_admission_inner(
         txn,
@@ -323,7 +328,7 @@ fn consume_admission_inner<E: Engine>(
     }
     if let Some(presented) = ticket_sha256 {
         if !constant_time_eq(&adm.ticket_sha256, presented) {
-            return Err(Error::Config("invalid join ticket".into()));
+            return Err(Error::Config(INVALID_JOIN_TICKET_MESSAGE.into()));
         }
     }
     if now_unix > adm.expires_unix {
