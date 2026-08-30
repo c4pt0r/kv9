@@ -22,6 +22,7 @@ description = "kv9 — a single-binary, multi-tenant distributed key-value engin
 [workspace.dependencies]
 thiserror = "1"
 serde = { version = "1", features = ["derive"] }
+sha2 = "0.10"
 raft = { version = "=0.7.0", default-features = false, features = ["protobuf-codec"] }
 slog = "2"
 # rust-protobuf runtime - already in tree via raft-proto (protobuf-codec); named

@@ -8,3 +8,4 @@ description = "kv9 common types: ids, tenant/keyspace/api_type, key codec, times
 [dependencies]
 thiserror.workspace = true
 serde.workspace = true
+sha2.workspace = true
