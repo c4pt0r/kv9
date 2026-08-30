@@ -167,10 +167,15 @@ status_value() {
 }
 
 node_serving() {
-  local state fatal
+  local state fatal advertised
   state="$(status_value "$1" bootstrap_state 2>/dev/null)" || return 1
   fatal="$(status_value "$1" fatal 2>/dev/null)" || return 1
-  [ "$state" = Serving ] && [ -z "$fatal" ]
+  advertised="$(status_value "$1" advertised_endpoint 2>/dev/null)" || return 1
+  [ "$state" = Serving ] &&
+    [ -z "$fatal" ] &&
+    [[ "$advertised" =~ ,attempts=[1-9][0-9]* ]] &&
+    [[ "$advertised" =~ ,reachable=[1-9][0-9]* ]] &&
+    [[ "$advertised" == *"last=accepted_"* ]]
 }
 
 agreed_leader() {
@@ -334,9 +339,8 @@ wrong_root_was_rejected() {
   observation="$(status_value 9 discovery_seed_1 2>/dev/null)" || return 1
   [ "$state" != Serving ] &&
     [[ "$observation" =~ ,attempts=[1-9][0-9]* ]] &&
-    [[ "$observation" =~ ,errors=[1-9][0-9]* ]] &&
-    [[ "$observation" == *"last=error:"* ]] &&
-    [[ "$observation" == *"root identity mismatch"* ]]
+    [[ "$observation" =~ ,rejected_root_identity=[1-9][0-9]* ]] &&
+    [[ "$observation" == *"last=rejected_root_identity"* ]]
 }
 
 write_deployment() {
@@ -529,6 +533,13 @@ client "$leader" raw-put --addr "$(service_ip "$leader"):20160" --keyspace "$key
 
 # A second root that overlaps node 1 cannot become endorsed by the live root.
 echo "Stage: conflicting root cannot cross-endorse"
+# Let node 9 through the live root's membership authenticator first. Without
+# this control-plane admission the interceptor rejects the unknown NodeId
+# before the discovery handler can inspect the conflicting root, which proves
+# only membership fencing and never exercises the root-identity fence.
+client "$leader" admit-node --addr "$(service_ip "$leader"):20160" \
+  --node-id 9 --node-addr "$(service_ip 9):20160" --ttl-seconds 120 \
+  >"$artifact/wrong-root-admit.out"
 wrong_root="$artifact/wrong-root.bin"
 KV9_BOOTSTRAP_TOKEN=wrong-root "$bin" root-create --output "$wrong_root" \
   --voters "1@$(service_ip 1):20160,9@$(service_ip 9):20160" >"$artifact/wrong-root-create.out"

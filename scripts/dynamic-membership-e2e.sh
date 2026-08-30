@@ -193,6 +193,9 @@ while ((SECONDS < wrong_deadline)); do
   kill -0 "${pids[4]}"
   sleep 0.05
 done
+test "$(status_value 4 registration_attempts)" -gt 0
+test "$(status_value 4 registration_errors)" -gt 0
+test "$(status_value 4 registration_last)" = rejected_invalid_ticket
 stop_node 4
 mv "$artifact_dir/n4" "$artifact_dir/n4-wrong-ticket"
 
