@@ -28,18 +28,53 @@ k() {
 }
 
 collect_scene() {
-  k get all -n "$namespace" -o wide >"$artifact/kubernetes.txt" 2>&1 || true
-  k get podchaos,networkchaos -n "$namespace" -o yaml >"$artifact/chaos.yaml" 2>&1 || true
+  # A timeout path may collect here and cleanup collects once more. Keep both
+  # instants: overwriting the first scene with the cleanup scene destroys the
+  # evidence needed to tell "stopped" from "recovered just after timeout".
+  # mktemp also stays unique when this function runs inside a command
+  # substitution (and therefore a subshell).
+  local scene
+  scene="$(mktemp -d "$artifact/scene.XXXXXX")"
+  date --iso-8601=ns >"$scene/collected-at.txt" 2>&1 || true
+  k get all -n "$namespace" -o wide >"$scene/kubernetes.txt" 2>&1 || true
+  k get pods,services,endpoints,endpointslices,deployments,persistentvolumeclaims \
+    -n "$namespace" -o yaml >"$scene/topology.yaml" 2>&1 || true
+  k get events -n "$namespace" --sort-by=.metadata.creationTimestamp \
+    >"$scene/events.txt" 2>&1 || true
+  k get podchaos,networkchaos -n "$namespace" -o yaml >"$scene/chaos.yaml" 2>&1 || true
   local pod
   while read -r pod; do
     [ -n "$pod" ] || continue
-    k describe pod -n "$namespace" "$pod" >"$artifact/$pod.describe" 2>&1 || true
-    k logs -n "$namespace" "$pod" --all-containers >"$artifact/$pod.log" 2>&1 || true
+    k describe pod -n "$namespace" "$pod" >"$scene/$pod.describe" 2>&1 || true
+    k logs -n "$namespace" "$pod" --all-containers >"$scene/$pod.log" 2>&1 || true
     k logs -n "$namespace" "$pod" --all-containers --previous \
-      >"$artifact/$pod.previous.log" 2>&1 || true
+      >"$scene/$pod.previous.log" 2>&1 || true
     k exec -n "$namespace" "$pod" -- cat /data/status \
-      >"$artifact/$pod.status" 2>&1 || true
+      >"$scene/$pod.status" 2>&1 || true
+    # /proc/net/tcp preserves SYN_SENT vs ESTABLISHED even though the minimal
+    # image intentionally carries no ss/netstat package. This is the direct
+    # discriminator for a peer worker stuck in connect/handshake.
+    k exec -n "$namespace" "$pod" -- /bin/bash -c \
+      'cat /proc/net/tcp; cat /proc/net/tcp6' \
+      >"$scene/$pod.net-tcp" 2>&1 || true
   done < <(k get pods -n "$namespace" -o name 2>/dev/null | sed 's#pod/##')
+
+  # Record the actual new-connection topology rather than treating a Chaos
+  # resource's AllInjected condition as proof of which edges are open.
+  local from to
+  : >"$scene/tcp-matrix.txt"
+  for from in 1 2 3; do
+    for to in 1 2 3; do
+      (( from == to )) && continue
+      if tcp_probe "$from" "$to"; then
+        printf 'n%s -> n%s reachable\n' "$from" "$to" >>"$scene/tcp-matrix.txt"
+      else
+        printf 'n%s -> n%s blocked-or-unavailable\n' "$from" "$to" \
+          >>"$scene/tcp-matrix.txt"
+      fi
+    done
+  done
+  echo "FAIL: collected Chaos scene at $scene" >&2
 }
 
 cleanup() {
