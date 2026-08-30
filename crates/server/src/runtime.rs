@@ -27,7 +27,7 @@ use kv9_meta::schema::{ColumnId, NODES_DESC, SCHEMA_VERSION_DESC};
 use kv9_meta::tables::Tables;
 use kv9_meta::{Bootstrap, BootstrapEvent, BootstrapState};
 use kv9_meta::{ColumnValue, RowValue};
-use kv9_raft::driver::NodeDriver;
+use kv9_raft::driver::{DriverAppliedPosition, NodeDriver};
 use kv9_raft::grpc::{
     grpc_discover, grpc_register, pb::kv9_raft_server::Kv9RaftServer, GrpcDiscoveryState,
     GrpcTransport, JoinIdentity, RaftGrpcService, RegisterOutcome, RegistrationBackend,
@@ -1838,8 +1838,16 @@ impl NodeRuntime {
             format_u64_ids(&nodes)
         };
         let discovery_status = format_discovery_observations(&self.discovery_observations);
+        // Both driver_applied_* fields render from ONE Option snapshot: both
+        // `none` (nothing proven this run — fail-closed, never rendered as 0)
+        // or both decimal. A mixed rendering is impossible by construction;
+        // the frozen contract forbids it because a torn pair fabricates a
+        // position that never existed. The command-scoped applied_index /
+        // applied_term keep their exact pre-existing semantics.
+        let (driver_applied_index, driver_applied_term) =
+            render_driver_applied(raft.driver_applied);
         let body = format!(
-            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\nbootstrap_state={:?}\n{}fatal={}\n",
+            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\ndriver_applied_index={}\ndriver_applied_term={}\nbootstrap_state={:?}\n{}fatal={}\n",
             std::process::id(),
             raft.node_id.0,
             cluster_id.map_or_else(String::new, |id| id.to_string()),
@@ -1856,6 +1864,8 @@ impl NodeRuntime {
             raft.raft_committed,
             raft.applied_index,
             raft.applied_term,
+            driver_applied_index,
+            driver_applied_term,
             bootstrap,
             discovery_status,
             raft.fatal.as_deref().unwrap_or(""),
@@ -1864,6 +1874,17 @@ impl NodeRuntime {
         fs::write(&tmp, body)
             .and_then(|_| fs::rename(&tmp, &self.status_path))
             .map_err(|e| Error::Config(format!("write {}: {e}", self.status_path.display())))
+    }
+}
+
+/// Render the unified driver watermark for the status file: both fields from
+/// ONE snapshot — both `none` (nothing proven this run; NEVER rendered as 0)
+/// or both decimal. Mixed output is unrepresentable through this function,
+/// which is the point: callers must not re-derive either field separately.
+fn render_driver_applied(pos: Option<DriverAppliedPosition>) -> (String, String) {
+    match pos {
+        Some(pos) => (pos.index.to_string(), pos.term.to_string()),
+        None => ("none".to_string(), "none".to_string()),
     }
 }
 
@@ -2002,6 +2023,21 @@ mod tests {
             }
             other => panic!("pre-Serving public request escaped the readiness gate: {other:?}"),
         }
+    }
+
+    /// Frozen status contract: the two driver_applied_* fields come from one
+    /// snapshot — both `none` or both decimal, mixed output unrepresentable.
+    /// `none` is fail-closed ("nothing proven this run"), never rendered as 0.
+    #[test]
+    fn driver_applied_renders_as_a_pair_never_mixed() {
+        assert_eq!(
+            render_driver_applied(None),
+            ("none".to_string(), "none".to_string())
+        );
+        assert_eq!(
+            render_driver_applied(Some(DriverAppliedPosition { term: 3, index: 17 })),
+            ("17".to_string(), "3".to_string())
+        );
     }
 
     #[test]
