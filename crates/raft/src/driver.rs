@@ -289,22 +289,10 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         // unconditionally appends an empty entry at the new term
         // (raft-0.7.0/src/raft.rs:1236, panics if refused) and that entry
         // flows through `EntryKind::Noop` above.
-        {
-            let mut wm = self.driver_applied.lock().expect("driver_applied poisoned");
-            let candidate = DriverAppliedPosition {
-                term: last_term,
-                index: last_seen,
-            };
-            // Monotonic guard — same shape as rawnode's `applied_reported`.
-            // Batch order already makes regression unreachable today; the
-            // guard pins the invariant consumers actually rely on ("the
-            // watermark never regresses") HERE rather than inheriting it
-            // from delivery order, so a future delivery change cannot
-            // silently hand a barrier waiter a going-backward position.
-            if wm.is_none_or(|cur| candidate.index > cur.index) {
-                *wm = Some(candidate);
-            }
-        }
+        self.publish_driver_applied(DriverAppliedPosition {
+            term: last_term,
+            index: last_seen,
+        });
         Ok(())
     }
 
@@ -313,6 +301,21 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
     /// wait; they never treat it as position zero).
     pub fn driver_applied(&self) -> Option<DriverAppliedPosition> {
         *self.driver_applied.lock().expect("driver_applied poisoned")
+    }
+
+    /// The single publication point for the unified watermark. Monotonic
+    /// guard — same shape as rawnode's `applied_reported`: batch order makes
+    /// regression unreachable today, but the invariant consumers rely on ("a
+    /// barrier waiter never observes a going-backward position") is pinned
+    /// HERE rather than inherited from delivery order, so a future delivery
+    /// change cannot silently hand out a regressing watermark. The refusal is
+    /// verified by its own test — the phenomenon (a lower candidate must not
+    /// win), not a fabricated delivery reorder.
+    fn publish_driver_applied(&self, candidate: DriverAppliedPosition) {
+        let mut wm = self.driver_applied.lock().expect("driver_applied poisoned");
+        if wm.is_none_or(|cur| candidate.index > cur.index) {
+            *wm = Some(candidate);
+        }
     }
 
     /// Record a fatal apply-path failure and stop the pump (the poison path:
@@ -841,6 +844,33 @@ mod tests {
             "replay must re-apply the first run's command, not just re-publish a position"
         );
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// The monotonic guard's own teeth (review blocker: with the guard
+    /// deleted, everything else stays green — this test is the one that
+    /// reds). Phenomenon, not cause: a lower candidate handed to the
+    /// publication point must not win, regardless of how delivery might some
+    /// day produce one.
+    #[test]
+    fn watermark_publication_refuses_a_regressing_candidate() {
+        let driver = single_node_driver();
+        driver.publish_driver_applied(DriverAppliedPosition { term: 2, index: 5 });
+        let high = driver.driver_applied().unwrap();
+        assert_eq!((high.term, high.index), (2, 5));
+
+        driver.publish_driver_applied(DriverAppliedPosition { term: 3, index: 3 });
+        assert_eq!(
+            driver.driver_applied().unwrap(),
+            high,
+            "a regressing candidate must not overwrite the watermark"
+        );
+
+        // Control: a genuinely higher candidate still advances.
+        driver.publish_driver_applied(DriverAppliedPosition { term: 3, index: 6 });
+        assert_eq!(
+            driver.driver_applied().unwrap(),
+            DriverAppliedPosition { term: 3, index: 6 }
+        );
     }
 
     #[test]
