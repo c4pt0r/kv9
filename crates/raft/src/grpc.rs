@@ -114,9 +114,10 @@ const RECONNECT_MAX: Duration = Duration::from_secs(2);
 /// K8s backend-swap shape keeps them separate. The isolated regression that
 /// DOES exist asserts RETRY ATTEMPTS instead (needing no recovery at all):
 /// see `connect_budget_escapes_a_backlog_flooded_endpoint`, which first
-/// proves the wedge is armed by phenomenon (the hang is conditional — e.g.
-/// `tcp_abort_on_overflow=1` RSTs instead) and then requires the attempt
-/// counter to grow past the first, parked, attempt.
+/// proves the wedge is armed by PHENOMENON — the control connect must itself
+/// keep pending; if it returns quickly the environment is not armed, for
+/// whatever cause, and the test fails loudly instead of proceeding — and
+/// then requires the attempt counter to grow past the first, parked, attempt.
 const CONNECT_BUDGET: Duration = Duration::from_secs(2);
 /// HTTP/2 PING keepalive — the load-bearing half of the task #40 fix. The
 /// Chaos-reproduced wedge is an endpoint that accepts TCP and then never
@@ -1095,12 +1096,12 @@ mod tests {
     }
 
     /// task #40 mechanism 1 (CONNECT_BUDGET) — the backlog-flood wedge, made
-    /// deterministic by ARMING PROOF (review round: the hang is real but
-    /// conditional — e.g. `tcp_abort_on_overflow=1` turns dropped SYNs into
-    /// instant RSTs — so the test first proves the wedge is armed by the
-    /// PHENOMENON, not by reading sysctls; if a connect against the flooded
-    /// listener fails fast instead of hanging, the environment cannot host
-    /// this regression and the test says so explicitly). The assertion is on
+    /// deterministic by ARMING PROOF (review round: the hang is environment-
+    /// conditional, and cause lists are never complete — so the test proves
+    /// the wedge is armed by the PHENOMENON, never by reading configuration:
+    /// if a connect against the flooded listener fails fast instead of
+    /// hanging, the environment cannot host this regression, whatever the
+    /// reason, and the test says so explicitly). The assertion is on
     /// RETRY ATTEMPTS, not delivery: an in-process endpoint recovery would
     /// revive the wedged socket itself (RST or completed handshake), un-wedge
     /// the old code too, and erase the discrimination — so the property
@@ -1120,13 +1121,13 @@ mod tests {
         for _ in 0..200 {
             match std::net::TcpStream::connect_timeout(&addr, Duration::from_millis(200)) {
                 Ok(sock) => flood.push(sock), // hold open: keeps the backlog full
-                Err(_) => break,              // queue full: SYNs now dropped
+                Err(_) => break, // connect no longer completed; arming proof decides
             }
         }
 
-        // ARMING PROOF: the next connect must HANG (timeout), not fail fast.
-        // Any environment where it errors instead (RST via
-        // tcp_abort_on_overflow, exotic stacks) cannot arm this wedge.
+        // ARMING PROOF: the next connect must HANG (timeout), not fail
+        // fast. An environment where it returns quickly — whatever the
+        // cause — cannot arm this wedge.
         match std::net::TcpStream::connect_timeout(&addr, Duration::from_millis(700)) {
             Err(e) if e.kind() == std::io::ErrorKind::TimedOut => {}
             other => panic!(
@@ -1188,11 +1189,11 @@ mod tests {
     /// the same address; keep sending (raft retransmits) — an envelope must
     /// arrive.
     #[test]
-    fn peer_worker_escapes_handshake_blackhole_and_reaches_replacement() {
+    fn peer_worker_escapes_established_blackhole_and_reaches_replacement() {
         let rt = tokio::runtime::Runtime::new().unwrap();
         let handle = rt.handle().clone();
 
-        // Handshake blackhole on an ephemeral port.
+        // Established blackhole: accepts TCP, never speaks HTTP/2.
         let accepted = Arc::new(std::sync::atomic::AtomicUsize::new(0));
         let held: Arc<Mutex<Vec<tokio::net::TcpStream>>> = Arc::new(Mutex::new(Vec::new()));
         let (listener, addr) = rt.block_on(async {
@@ -1274,7 +1275,7 @@ mod tests {
         assert!(
             delivered,
             "no envelope reached the replacement endpoint: the peer worker \
-             never escaped the handshake blackhole (task #40 wedge)"
+             never escaped the established blackhole (task #40 wedge)"
         );
         drop(held); // release the blackhole sockets only after the verdict
     }
