@@ -62,6 +62,14 @@ pub struct NodeStatus {
     /// Current raft learner set (sorted node ids). A learner replicates the
     /// log but never votes or campaigns.
     pub learners: Vec<u64>,
+    /// The unified driver-applied watermark, one atomic snapshot (see
+    /// [`DriverAppliedPosition`]). A SINGLE Option so downstream rendering can
+    /// never mix "none" for one component with a number for the other — the
+    /// frozen status contract renders both `driver_applied_*` fields from
+    /// this one value: both `none`, or both decimal, never mixed. Distinct
+    /// from the command-scoped `applied_index`/`applied_term` pair above,
+    /// whose semantics are unchanged.
+    pub driver_applied: Option<DriverAppliedPosition>,
 }
 
 /// How many recently applied `(index, term)` pairs are retained for proposal
@@ -197,8 +205,10 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             last_seen = entry.index.0;
             last_term = entry.term;
             match entry.kind {
-                // A no-op barrier advances raft's applied progress only; it
-                // never reaches the state machine or the durable watermark.
+                // A no-op barrier never reaches the state machine or the
+                // command-only watermark — but it DOES advance the unified
+                // driver watermark at the batch tail below (that is the
+                // current-term barrier's liveness anchor).
                 EntryKind::Noop => {}
                 EntryKind::Command => {
                     let cmd = match Command::decode(&entry.data) {
@@ -465,6 +475,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             conf_index: p.conf_applied,
             voters: p.voters,
             learners: p.learners,
+            driver_applied: self.driver_applied(),
         }
     }
 
@@ -699,7 +710,18 @@ mod tests {
             }
         }
         assert!(conf_ok, "conf change never applied");
+        let receipt = driver
+            .wait_conf_applied(conf_at, Duration::from_millis(100))
+            .unwrap();
         let conf_wm = driver.driver_applied().unwrap();
+        // Exact same-entry pair: the watermark must BE the conf entry's
+        // position, not merely lie beyond the command's — a fabricated pair
+        // (right index, wrong term or vice versa) must not satisfy this.
+        assert_eq!(
+            (conf_wm.term, conf_wm.index),
+            (receipt.applied.term, receipt.conf_index),
+            "watermark must be the conf entry's own (term,index) pair"
+        );
         assert!(conf_wm.index > cmd_wm.index);
     }
 
@@ -809,6 +831,15 @@ mod tests {
             );
             std::thread::sleep(Duration::from_millis(10));
         }
+        // The watermark alone could be satisfied by the new election's no-op;
+        // the state machine carrying the first run's write proves the old
+        // Command genuinely REPLAYED rather than the position merely being
+        // re-published past it.
+        assert_eq!(
+            d2.get(kv9_engine::ColumnFamily::Default, b"persist").unwrap().as_deref(),
+            Some(b"me".as_ref()),
+            "replay must re-apply the first run's command, not just re-publish a position"
+        );
         let _ = std::fs::remove_dir_all(&dir);
     }
 
