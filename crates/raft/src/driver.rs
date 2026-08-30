@@ -82,6 +82,27 @@ struct ConfReceiptEntry {
     learners: Vec<u64>,
 }
 
+/// The unified driver-applied position: the highest CONTIGUOUS raft log
+/// position such that every entry at or below it — Noop, Command, and
+/// ConfChange alike — has been fully and successfully processed by this
+/// driver. It conservatively lags and never leads; the fatal path never
+/// advances it past a failed item.
+///
+/// This is a SEPARATE quantity from the command-scoped
+/// `MemStateMachine::applied_index` (which only Commands advance) and from
+/// the command receipt ring. Never mix components across the two: a term from
+/// one paired with an index from the other fabricates a position that never
+/// existed (the e2ecc5a bug). Both members here come from the SAME entry.
+///
+/// Consumers: the bootstrap current-term barrier (task #40), the #28
+/// ReadIndex wait, and the raw linearizable read path (task #27) — each with
+/// its own receipt semantics; they share only this watermark.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct DriverAppliedPosition {
+    pub term: u64,
+    pub index: u64,
+}
+
 pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngine> {
     peer: Arc<RaftPeer<S>>,
     transport: Arc<dyn RaftTransport>,
@@ -107,6 +128,11 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngi
     conf_receipts: Mutex<Vec<ConfReceiptEntry>>,
     /// First fatal apply-path error; poisons the driver (pump stops).
     fatal: Mutex<Option<String>>,
+    /// The unified driver-applied watermark (see [`DriverAppliedPosition`]).
+    /// Lock order: leaf — never held while acquiring any other lock. The pair
+    /// is read as one snapshot under this single lock; reading the two
+    /// components separately is forbidden (torn pair = e2ecc5a again).
+    driver_applied: Mutex<Option<DriverAppliedPosition>>,
     stop: AtomicBool,
 }
 
@@ -123,6 +149,13 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             applied: Mutex::new(Vec::new()),
             conf_receipts: Mutex::new(Vec::new()),
             fatal: Mutex::new(None),
+            // None = no position PROVEN yet this run — distinct from "position
+            // zero". Restart replays the log from 0 and re-proves; when
+            // snapshots land, this must be restored from the snapshot's
+            // unified position — never guessed from the command watermark,
+            // commit index, or conf index (missing that restore fail-closes:
+            // consumers keep waiting instead of trusting a fabricated 0).
+            driver_applied: Mutex::new(None),
             stop: AtomicBool::new(false),
         })
     }
@@ -159,8 +192,10 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         // across a peer call: conf changes go through `peer.inner`, and peer
         // must not nest with driver locks in either direction.
         let mut last_seen: u64 = 0;
+        let mut last_term: u64 = 0;
         for entry in entries {
             last_seen = entry.index.0;
+            last_term = entry.term;
             match entry.kind {
                 // A no-op barrier advances raft's applied progress only; it
                 // never reaches the state machine or the durable watermark.
@@ -225,7 +260,40 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         // to `last_seen` has actually been applied. raft-rs gates the next
         // one-at-a-time conf change on this. No driver locks are held here.
         self.peer.applied_to(last_seen);
+        // Publish the unified driver-applied watermark from the SAME batch
+        // tail. Both members come from the last entry of a batch in which
+        // EVERY item succeeded — the fatal paths above return before reaching
+        // this line, so the watermark never advances past a failed item.
+        //
+        // LOAD-BEARING — contiguity is what the bootstrap current-term
+        // barrier proof stands on: `pair.term == T` proves "term T's barrier
+        // is processed" ONLY because everything at or below `pair.index` is
+        // processed too (T's election no-op is T's first entry). Turning any
+        // `return Err(self.poison(..))` above into a skip/continue silently
+        // breaks that proof — a WaitForBootstrap leader could then mint over
+        // a committed-but-unprocessed init and poison the cluster. Weakening
+        // this is weakening bootstrap safety, not a cleanup.
+        //
+        // LIVENESS anchor: `pair.term` always reaches the current leader term
+        // without any application proposal, because raft-rs `become_leader`
+        // unconditionally appends an empty entry at the new term
+        // (raft-0.7.0/src/raft.rs:1236, panics if refused) and that entry
+        // flows through `EntryKind::Noop` above.
+        {
+            let mut wm = self.driver_applied.lock().expect("driver_applied poisoned");
+            *wm = Some(DriverAppliedPosition {
+                term: last_term,
+                index: last_seen,
+            });
+        }
         Ok(())
+    }
+
+    /// The unified driver-applied watermark, as one atomic snapshot. `None`
+    /// means no position has been proven this run (fail-closed: consumers
+    /// wait; they never treat it as position zero).
+    pub fn driver_applied(&self) -> Option<DriverAppliedPosition> {
+        *self.driver_applied.lock().expect("driver_applied poisoned")
     }
 
     /// Record a fatal apply-path failure and stop the pump (the poison path:
@@ -575,6 +643,159 @@ mod tests {
 
     /// Sensitivity control: on a HEALTHY driver the same shapes succeed — the
     /// poison path is reachable only through real failures, not always-on.
+    /// Common-piece regression 1 (watermark contract): all three entry kinds
+    /// advance the unified watermark, and the pair members always come from
+    /// the same entry. The FIRST assertion is also the liveness sensitivity
+    /// Tess pinned: with NO application proposal, a fresh leader's watermark
+    /// term must reach the leader term purely via the election no-op — if
+    /// someone suppresses Noop processing, this reds.
+    #[test]
+    fn driver_applied_advances_through_all_three_entry_kinds() {
+        let driver = single_node_driver();
+        // Election no-op only (nothing proposed yet): term must equal the
+        // leader term — the current-term barrier's liveness anchor.
+        let noop_wm = driver.driver_applied().expect("noop must set watermark");
+        assert_eq!(noop_wm.term, driver.status().term);
+
+        // Command advances it further, same term.
+        let at = driver
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"wm".to_vec(),
+                value: b"1".to_vec(),
+            })
+            .unwrap();
+        for _ in 0..50 {
+            driver.tick_and_step().unwrap();
+            if driver.status().applied_index >= at.index.0 {
+                break;
+            }
+        }
+        let cmd_wm = driver.driver_applied().unwrap();
+        assert!(cmd_wm.index >= at.index.0 && cmd_wm.index > noop_wm.index);
+        assert_eq!(cmd_wm.term, at.term);
+
+        // ConfChange advances it too (the command-scoped watermark would NOT
+        // move here — that asymmetry is why this quantity exists).
+        let conf_at = driver.add_learner(NodeId(9)).unwrap();
+        let mut conf_ok = false;
+        for _ in 0..100 {
+            driver.tick_and_step().unwrap();
+            if driver
+                .wait_conf_applied(conf_at, Duration::from_millis(1))
+                .is_ok()
+            {
+                conf_ok = true;
+                break;
+            }
+        }
+        assert!(conf_ok, "conf change never applied");
+        let conf_wm = driver.driver_applied().unwrap();
+        assert!(conf_wm.index > cmd_wm.index);
+    }
+
+    /// Common-piece regression 2 — the LOAD-BEARING negative: a failed item
+    /// must not advance the watermark. The bootstrap current-term barrier's
+    /// safety proof stands on this contiguity; turning the poison
+    /// `return Err` into a skip makes this test red (the bad entry's index
+    /// would be published as processed).
+    #[test]
+    fn driver_applied_never_advances_past_a_failed_item() {
+        let driver = single_node_driver();
+        let before = driver.driver_applied().expect("noop watermark");
+        let at = driver
+            .peer()
+            .propose_traced(vec![0xFF, 0xEE, 0xDD]) // undecodable → poison
+            .unwrap();
+        for _ in 0..50 {
+            let _ = driver.tick_and_step();
+            if driver.status().fatal.is_some() {
+                break;
+            }
+        }
+        assert!(driver.status().fatal.is_some(), "garbage entry must poison");
+        let after = driver.driver_applied().unwrap();
+        assert_eq!(
+            after, before,
+            "watermark advanced past a failed item: contiguity broken"
+        );
+        assert!(after.index < at.index.0);
+    }
+
+    /// Common-piece regression 3: restart replays the log from zero and the
+    /// watermark catches back up by REPROVING, never by guessing an initial
+    /// value from another quantity.
+    #[test]
+    fn driver_applied_catches_up_across_restart_by_replay() {
+        use crate::storage::DiskRaftStorage;
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-wm-restart-{}-{:?}",
+            std::process::id(),
+            std::thread::current().id()
+        ));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+
+        let make = || {
+            let hub = InProcHub::new();
+            let (storage, _) = DiskRaftStorage::open(&dir, &[1]).unwrap();
+            let peer =
+                Arc::new(RaftPeer::with_storage(NodeId(1), RegionId(1), storage).unwrap());
+            NodeDriver::new(
+                peer,
+                Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
+                MemStateMachine::new(),
+            )
+        };
+
+        // First incarnation: commit a real command, remember the watermark.
+        let d1 = make();
+        d1.peer().campaign().unwrap();
+        let mut at = None;
+        for _ in 0..100 {
+            d1.tick_and_step().unwrap();
+            if d1.status().role == Role::Leader && at.is_none() {
+                at = Some(
+                    d1.propose(&Command::Put {
+                        cf: 0,
+                        key: b"persist".to_vec(),
+                        value: b"me".to_vec(),
+                    })
+                    .unwrap(),
+                );
+            }
+            if let Some(a) = at {
+                if d1.status().applied_index >= a.index.0 {
+                    break;
+                }
+            }
+        }
+        let wm1 = d1.driver_applied().expect("first run watermark");
+        assert!(wm1.index >= at.unwrap().index.0);
+        drop(d1);
+
+        // Restart: fresh driver over the same storage. Watermark starts None
+        // (nothing proven THIS run), then replay re-proves it.
+        let d2 = make();
+        assert_eq!(d2.driver_applied(), None, "restart must not inherit");
+        d2.peer().campaign().unwrap();
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        loop {
+            d2.tick_and_step().unwrap();
+            if let Some(wm2) = d2.driver_applied() {
+                if wm2.index >= wm1.index {
+                    break;
+                }
+            }
+            assert!(
+                std::time::Instant::now() < deadline,
+                "replay never caught the watermark up to the first run"
+            );
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
     #[test]
     fn control_healthy_driver_applies_and_reports_success() {
         let driver = single_node_driver();
