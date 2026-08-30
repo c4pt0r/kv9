@@ -101,6 +101,22 @@ const RECONNECT_MIN: Duration = Duration::from_millis(100);
 const RECONNECT_MAX: Duration = Duration::from_secs(2);
 /// Hard budget over the whole `connect()` future (task #40). Covers the legs
 /// that can pend before a connection exists: DNS, TCP connect, TLS someday.
+///
+/// Evidence status (review finding, then refined twice):
+/// a genuine connect() HANG is constructible in-process — flood a
+/// never-accepting listener's kernel backlog (~128; below that the kernel
+/// completes handshakes itself) and the next connect() pends on dropped SYNs.
+/// A DELIVERY-shaped regression is still impossible here: it would need the
+/// hang and an alternate recovery path on one address, and any in-process
+/// recovery (dropping the flooded listener, or starting to accept) revives
+/// the wedged socket itself — RST errors it out or the pending SYN completes
+/// — so old code recovers with it and the discrimination vanishes; only the
+/// K8s backend-swap shape keeps them separate. The isolated regression that
+/// DOES exist asserts RETRY ATTEMPTS instead (needing no recovery at all):
+/// see `connect_budget_escapes_a_backlog_flooded_endpoint`, which first
+/// proves the wedge is armed by phenomenon (the hang is conditional — e.g.
+/// `tcp_abort_on_overflow=1` RSTs instead) and then requires the attempt
+/// counter to grow past the first, parked, attempt.
 const CONNECT_BUDGET: Duration = Duration::from_secs(2);
 /// HTTP/2 PING keepalive — the load-bearing half of the task #40 fix. The
 /// Chaos-reproduced wedge is an endpoint that accepts TCP and then never
@@ -652,6 +668,12 @@ pub struct GrpcTransport {
     inbox_rx: Mutex<mpsc::UnboundedReceiver<Message>>,
     inbox_tx: mpsc::UnboundedSender<Message>,
     root_digest: RootDigest,
+    /// Total (re)connect attempts across all peer workers. One relaxed
+    /// increment per attempt; the observable that lets a regression prove a
+    /// worker RETRIES out of a wedged connect without needing an endpoint
+    /// recovery (which, in-process, would revive the wedged socket itself and
+    /// erase the old/new discrimination).
+    connect_attempts: Arc<AtomicU64>,
 }
 
 impl GrpcTransport {
@@ -673,6 +695,7 @@ impl GrpcTransport {
             inbox_rx: Mutex::new(inbox_rx),
             inbox_tx,
             root_digest,
+            connect_attempts: Arc::new(AtomicU64::new(0)),
         })
     }
 
@@ -688,6 +711,12 @@ impl GrpcTransport {
             .lock()
             .expect("addrs poisoned")
             .insert(id.0, addr);
+    }
+
+    /// Total peer-connect attempts so far (monotonic). Diagnostic surface;
+    /// the task #40 backlog-flood regression asserts on its growth.
+    pub fn connect_attempts(&self) -> u64 {
+        self.connect_attempts.load(Ordering::Relaxed)
     }
 
     fn peer_sender(&self, to: NodeId) -> Option<mpsc::Sender<pb::RaftEnvelope>> {
@@ -710,6 +739,7 @@ impl GrpcTransport {
                         self.token.clone(),
                         self.root_digest,
                         rx,
+                        self.connect_attempts.clone(),
                     ));
                     tx
                 })
@@ -756,6 +786,7 @@ async fn peer_worker(
     token: Option<String>,
     root_digest: RootDigest,
     mut rx: mpsc::Receiver<pb::RaftEnvelope>,
+    connect_attempts: Arc<AtomicU64>,
 ) {
     let url = format!("http://{addr}");
     let mut backoff = RECONNECT_MIN;
@@ -771,6 +802,7 @@ async fn peer_worker(
         // not, and a budget expiry takes the same path as a connect error:
         // drain + backoff + retry). Liveness of the ESTABLISHED connection is
         // the keepalive's job — see KEEPALIVE_INTERVAL.
+        connect_attempts.fetch_add(1, Ordering::Relaxed);
         let connected = tokio::time::timeout(CONNECT_BUDGET, endpoint.connect()).await;
         let mut client = match connected {
             Ok(Ok(channel)) => {
@@ -1062,17 +1094,99 @@ mod tests {
         );
     }
 
-    /// task #40 transport wedge, Chaos-reproduced then pinned here in-process:
-    /// a peer endpoint that accepts TCP but never completes the HTTP/2
-    /// handshake wedged the old peer_worker forever inside an unbudgeted
-    /// `connect()`, and replacing the endpoint behind the same address could
-    /// not wake it. The test replays the exact harness sequence: prove the
-    /// first connection really reached the blackhole; stop accepting but KEEP
-    /// the established sockets open (the Chaos harness removes the Service
+    /// task #40 mechanism 1 (CONNECT_BUDGET) — the backlog-flood wedge, made
+    /// deterministic by ARMING PROOF (review round: the hang is real but
+    /// conditional — e.g. `tcp_abort_on_overflow=1` turns dropped SYNs into
+    /// instant RSTs — so the test first proves the wedge is armed by the
+    /// PHENOMENON, not by reading sysctls; if a connect against the flooded
+    /// listener fails fast instead of hanging, the environment cannot host
+    /// this regression and the test says so explicitly). The assertion is on
+    /// RETRY ATTEMPTS, not delivery: an in-process endpoint recovery would
+    /// revive the wedged socket itself (RST or completed handshake), un-wedge
+    /// the old code too, and erase the discrimination — so the property
+    /// pinned is "a worker in a hanging connect escapes and retries within
+    /// budget", which needs no recovery at all. Old code (no budget): one
+    /// attempt, forever. New code: attempts keep growing.
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn connect_budget_escapes_a_backlog_flooded_endpoint() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+
+        // A listener that never accepts, with its backlog flooded full.
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let addr = listener.local_addr().unwrap();
+        let mut flood = Vec::new();
+        for _ in 0..200 {
+            match std::net::TcpStream::connect_timeout(&addr, Duration::from_millis(200)) {
+                Ok(sock) => flood.push(sock), // hold open: keeps the backlog full
+                Err(_) => break,              // queue full: SYNs now dropped
+            }
+        }
+
+        // ARMING PROOF: the next connect must HANG (timeout), not fail fast.
+        // Any environment where it errors instead (RST via
+        // tcp_abort_on_overflow, exotic stacks) cannot arm this wedge.
+        match std::net::TcpStream::connect_timeout(&addr, Duration::from_millis(700)) {
+            Err(e) if e.kind() == std::io::ErrorKind::TimedOut => {}
+            other => panic!(
+                "wedge NOT armed on this platform: control connect returned \
+                 {other:?} instead of hanging; backlog-flood regression \
+                 cannot run here"
+            ),
+        }
+
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            Some("test-cluster-token".into()),
+            handle.clone(),
+            test_root().root_digest,
+        );
+        transport.register_peer(NodeId(2), addr);
+        transport.send(
+            NodeId(2),
+            Message {
+                from: 1,
+                to: 2,
+                ..Default::default()
+            },
+        );
+
+        // Old code: parked inside connect() forever -> attempts stays 1.
+        // New code: each attempt is cut at CONNECT_BUDGET and retried.
+        let deadline = std::time::Instant::now() + Duration::from_secs(3 * 2 + 2);
+        loop {
+            if transport.connect_attempts() >= 2 {
+                break; // escaped the hanging connect at least once
+            }
+            assert!(
+                std::time::Instant::now() < deadline,
+                "worker never escaped the hanging connect: attempts={} \
+                 (task #40 mechanism 1)",
+                transport.connect_attempts()
+            );
+            std::thread::sleep(Duration::from_millis(100));
+        }
+        drop(flood);
+    }
+
+    /// task #40 transport wedge, Chaos-reproduced then pinned here in-process.
+    /// MECHANISM (established experimentally — the first hypothesis was
+    /// refuted by this very test): against an endpoint that accepts TCP but
+    /// never speaks HTTP/2, `connect()` RESOLVES SUCCESSFULLY — the h2 client
+    /// handshake completes after flushing its own preface, without waiting
+    /// for the server. The old worker then fed batches into an
+    /// established-but-dead stream: no error, no progress, forever, and
+    /// replacing the endpoint behind the same address could not wake it. The
+    /// mechanism that reds/greens this test is the HTTP/2 KEEPALIVE
+    /// (isolation: removing only the keepalive, with both budgets still
+    /// present, reds this test while the frozen-reader test stays green).
+    /// The test replays the exact harness sequence: prove the first
+    /// connection really reached the blackhole; stop accepting but KEEP the
+    /// established sockets open (the Chaos harness removes the Service
     /// selector without killing the blackhole pod); bind the real server on
-    /// the same address; keep sending (raft retransmits). Old code: the real
-    /// server never sees an envelope (red). With CONNECT_BUDGET: the worker
-    /// escapes, reconnects, and an envelope arrives (green).
+    /// the same address; keep sending (raft retransmits) — an envelope must
+    /// arrive.
     #[test]
     fn peer_worker_escapes_handshake_blackhole_and_reaches_replacement() {
         let rt = tokio::runtime::Runtime::new().unwrap();
@@ -1153,7 +1267,7 @@ mod tests {
                     .unwrap_or("server NOT reachable")
             });
             eprintln!(
-                "DEBUG: accepted={} probe={probe}",
+                "FAIL scene: accepted={} probe={probe}",
                 accepted.load(Ordering::SeqCst)
             );
         }
