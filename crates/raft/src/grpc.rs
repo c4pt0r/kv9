@@ -226,6 +226,15 @@ pub const REJECTION_REASON_KEY: &str = "kv9-rejection-reason";
 pub const ROOT_IDENTITY_MISMATCH_REASON: &str = "root-identity-mismatch";
 pub const INVALID_JOIN_TICKET_REASON: &str = "invalid-join-ticket";
 
+fn invalid_join_ticket_status() -> Status {
+    let mut status = Status::failed_precondition("invalid join ticket");
+    status.metadata_mut().insert(
+        REJECTION_REASON_KEY,
+        INVALID_JOIN_TICKET_REASON.parse().expect("ascii"),
+    );
+    status
+}
+
 /// The seam the server injects (trait here, implementation there — the
 /// division that keeps this crate free of catalog/runtime knowledge): consume
 /// the caller's admission and commit its membership registration, returning
@@ -418,12 +427,7 @@ impl Kv9Raft for RaftGrpcService {
             ));
         };
         if req.join_ticket_sha256.len() != 32 || req.store_incarnation.len() != 16 {
-            let mut status = Status::failed_precondition("invalid join ticket");
-            status.metadata_mut().insert(
-                REJECTION_REASON_KEY,
-                INVALID_JOIN_TICKET_REASON.parse().expect("ascii"),
-            );
-            return Err(status);
+            return Err(invalid_join_ticket_status());
         }
         let incarnation = StoreIncarnation::from_bytes(
             req.store_incarnation
@@ -457,12 +461,7 @@ impl Kv9Raft for RaftGrpcService {
                 return Err(status);
             }
             Err(RegistrationError::InvalidTicket) => {
-                let mut status = Status::failed_precondition("invalid join ticket");
-                status.metadata_mut().insert(
-                    REJECTION_REASON_KEY,
-                    INVALID_JOIN_TICKET_REASON.parse().expect("ascii"),
-                );
-                return Err(status);
+                return Err(invalid_join_ticket_status());
             }
             // Ordinary refusal: same code, NO marker — never mistakable for
             // a redirect.
@@ -1508,7 +1507,8 @@ mod tests {
                 wrong_root,
             )
             .unwrap_err(),
-            DiscoveryError::RootIdentityMismatch
+            DiscoveryError::RootIdentityMismatch,
+            "a wrong root must surface as a typed RootIdentityMismatch, not a generic refusal"
         );
 
         assert!(grpc_discover(
@@ -1901,6 +1901,29 @@ mod tests {
         }
         std::thread::sleep(Duration::from_millis(100));
 
+        let malformed_status = handle.block_on(async {
+            let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
+                .await
+                .unwrap();
+            let mut request = Request::new(pb::RegisterRequest {
+                node_id: 4,
+                addr: "127.0.0.1:9009".into(),
+                cluster_id: test_cid().as_bytes().to_vec(),
+                join_ticket_sha256: vec![9; 31],
+                store_incarnation: vec![4; 16],
+            });
+            attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(4));
+            client.register(request).await.unwrap_err()
+        });
+        assert_eq!(
+            malformed_status
+                .metadata()
+                .get(REJECTION_REASON_KEY)
+                .and_then(|value| value.to_str().ok()),
+            Some(INVALID_JOIN_TICKET_REASON),
+            "a malformed ticket must carry the same machine-readable invalid-ticket reason"
+        );
+
         let call = || {
             grpc_register(
                 &handle,
@@ -1933,7 +1956,11 @@ mod tests {
             err.contains("admission expired"),
             "ordinary refusal lost its cause: {err}"
         );
-        assert_eq!(call().unwrap_err(), RegisterError::InvalidTicket);
+        assert_eq!(
+            call().unwrap_err(),
+            RegisterError::InvalidTicket,
+            "a backend ticket refusal must decode as typed InvalidTicket"
+        );
         // Control: after the script drains, the same wire registers fine.
         assert!(matches!(call().unwrap(), RegisterOutcome::Registered(_)));
     }
