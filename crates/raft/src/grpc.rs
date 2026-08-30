@@ -1249,6 +1249,97 @@ mod tests {
         drop(flood);
     }
 
+    /// Root-digest fencing at the BATCH-STREAM checkpoint — first direct
+    /// evidence it fires (review finding: every prior test used one shared
+    /// test_root, and the K8s wrong-root scene died at the membership
+    /// interceptor before ever reaching this line, so "root fencing works"
+    /// had only property-level support, never mechanism-level). The negative
+    /// uses a legitimate node identity so nothing earlier rejects first, and
+    /// carries its matching-root control — a gate that rejected everything
+    /// would fail the control. Discovery's wrong-root coverage: task #46
+    /// typed seam (see comment below).
+    #[test]
+    fn a_mismatched_root_digest_is_rejected_on_the_batch_stream() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+        let addr = free_addr();
+        let (tx, _rx) = mpsc::unbounded_channel();
+        serve(&handle, NodeId(1), addr, tx, 42); // serves test_root() ([0;32])
+        std::thread::sleep(Duration::from_millis(100));
+
+        let wrong_root = RootWireIdentity {
+            bootstrap_generation: BootstrapGeneration::from_bytes([7; 16]),
+            root_digest: RootDigest::from_bytes([7; 32]),
+        };
+
+        // Checkpoint 1: the batch stream. Same shape as real traffic, only
+        // the root digest differs.
+        let batch_with = |digest: &RootDigest| pb::BatchRaftMessage {
+            msgs: vec![pb::RaftEnvelope {
+                region_id: 0,
+                from_node: 2,
+                to_node: 1,
+                raft_message: Message {
+                    from: 2,
+                    to: 1,
+                    ..Default::default()
+                }
+                .write_to_bytes()
+                .unwrap(),
+                epoch_conf_ver: 0,
+                epoch_version: 0,
+            }],
+            flushed_unix_nanos: 0,
+            root_digest: digest.as_bytes().to_vec(),
+        };
+        let status = handle.block_on(async {
+            let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
+                .await
+                .unwrap();
+            let mut request =
+                Request::new(tokio_stream::iter(vec![batch_with(&wrong_root.root_digest)]));
+            attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(2));
+            client
+                .batch_raft(request)
+                .await
+                .expect_err(
+                    "a mismatched root batch must be rejected by the batch-stream root gate",
+                )
+        });
+        assert_eq!(status.code(), tonic::Code::FailedPrecondition);
+        assert!(
+            status.message().contains("raft root identity mismatch"),
+            "stream rejection must be the ROOT gate, got: {}",
+            status.message()
+        );
+        // Control: identical shape with the matching root is accepted.
+        handle.block_on(async {
+            let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
+                .await
+                .unwrap();
+            let mut request =
+                Request::new(tokio_stream::iter(vec![batch_with(&test_root().root_digest)]));
+            attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(2));
+            client
+                .batch_raft(request)
+                .await
+                .expect("matching root must pass the same gate");
+        });
+
+        // Checkpoint 2: discovery, client-side comparison of the answer.
+        // The discovery wrong-root negative lives in the task #46 typed seam
+        // (tess/root-of-trust-cli@104597a): a legitimately-authenticated
+        // discovery with a conflicting root, typed rejection + control, plus
+        // the Chaos E2E where an admitted node's conflicting root reaches the
+        // handler. This test deliberately covers ONLY the batch-stream
+        // checkpoint to keep one home per gate. (Recorded from the mutant
+        // matrix here before that seam landed: the discovery path had TWO
+        // independent root layers — server-side handler check and the
+        // client-side compare in grpc_discover — with distinguishable
+        // messages; either alone refused, both deleted accepted. If the typed
+        // seam reshapes those layers, that observation dates from pre-#46.)
+    }
+
     /// task #40 transport wedge, Chaos-reproduced then pinned here in-process.
     /// MECHANISM (established experimentally — the first hypothesis was
     /// refuted by this very test): against an endpoint that accepts TCP but
