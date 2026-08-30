@@ -394,9 +394,26 @@ pub fn persist_root_bundle(
             ))
         }
     }
-    atomic_write(data_dir, ROOT_DESCRIPTOR_FILE, &root.canonical_bytes())?;
-    atomic_write(data_dir, STORE_IDENTITY_FILE, &identity.canonical_bytes())?;
+    publish_new_root_then_identity(data_dir, root, identity, || Ok(()))?;
     Ok(())
+}
+
+/// Publish the root first, then the identity it authorizes. The callback is a
+/// deterministic interruption seam for the load-bearing crash boundary: after
+/// it fires, recovery must see `(root present, identity missing)`, the only
+/// partial state that `persist_root_bundle` may resume.
+fn publish_new_root_then_identity<F>(
+    data_dir: &Path,
+    root: &RootDescriptor,
+    identity: &StoreIdentity,
+    after_root: F,
+) -> Result<()>
+where
+    F: FnOnce() -> Result<()>,
+{
+    atomic_write(data_dir, ROOT_DESCRIPTOR_FILE, &root.canonical_bytes())?;
+    after_root()?;
+    atomic_write(data_dir, STORE_IDENTITY_FILE, &identity.canonical_bytes())
 }
 
 /// Publish a newly created root exactly once. The bytes are fully synced
@@ -626,6 +643,26 @@ mod tests {
         other_root.bootstrap_generation = BootstrapGeneration::from_bytes([8; 16]);
         fs::write(dir.join(ROOT_DESCRIPTOR_FILE), other_root.canonical_bytes()).unwrap();
         assert!(persist_root_bundle(&dir, &expected_root, &identity).is_err());
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn publication_interruption_leaves_the_resumable_root_first_prefix() {
+        let dir = std::env::temp_dir().join(format!("kv9-root-order-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        let expected_root = root();
+        let identity = StoreIdentity::for_voter(&expected_root, NodeId(1)).unwrap();
+
+        let interrupted = publish_new_root_then_identity(&dir, &expected_root, &identity, || {
+            Err(Error::Config("simulated interruption after root".into()))
+        });
+        assert!(interrupted.is_err());
+        assert!(dir.join(ROOT_DESCRIPTOR_FILE).is_file());
+        assert!(!dir.join(STORE_IDENTITY_FILE).exists());
+
+        persist_root_bundle(&dir, &expected_root, &identity).unwrap();
+        assert_eq!(load_root_bundle(&dir).unwrap(), (expected_root, identity));
         fs::remove_dir_all(dir).unwrap();
     }
 
