@@ -99,6 +99,22 @@ const FLUSH_WINDOW: Duration = Duration::from_millis(2);
 const PEER_QUEUE: usize = 4096;
 const RECONNECT_MIN: Duration = Duration::from_millis(100);
 const RECONNECT_MAX: Duration = Duration::from_secs(2);
+/// Hard budget over the whole `connect()` future (task #40). Covers the legs
+/// that can pend before a connection exists: DNS, TCP connect, TLS someday.
+const CONNECT_BUDGET: Duration = Duration::from_secs(2);
+/// HTTP/2 PING keepalive — the load-bearing half of the task #40 fix. The
+/// Chaos-reproduced wedge is an endpoint that accepts TCP and then never
+/// speaks HTTP/2. `connect()` alone does NOT detect this: the h2 client
+/// handshake resolves after flushing its own preface, without waiting for the
+/// server, so the old worker "connected" to the blackhole and then fed
+/// batches into a stream that could never deliver — no error, no progress,
+/// forever, and an endpoint swap behind the same address could not wake it.
+/// Unacknowledged PINGs are the only signal that discriminates
+/// established-but-dead (blackhole, partition, frozen pod) from alive: the
+/// connection errors out within INTERVAL+TIMEOUT, the in-flight rpc resolves
+/// Err, and the worker takes the ordinary reconnect path.
+const KEEPALIVE_INTERVAL: Duration = Duration::from_secs(1);
+const KEEPALIVE_TIMEOUT: Duration = Duration::from_secs(2);
 
 /// Answers discovery for this node (same contract as the TCP transport's
 /// `DiscoveryState`): `(node id, initialized?, declared voter-set fingerprint)`.
@@ -732,16 +748,28 @@ async fn peer_worker(
 ) {
     let url = format!("http://{addr}");
     let mut backoff = RECONNECT_MIN;
+    let endpoint = tonic::transport::Endpoint::from_shared(url)
+        .expect("peer url is always http://<socketaddr>")
+        .connect_timeout(CONNECT_BUDGET)
+        .http2_keep_alive_interval(KEEPALIVE_INTERVAL)
+        .keep_alive_timeout(KEEPALIVE_TIMEOUT)
+        .keep_alive_while_idle(true);
     loop {
-        // (Re)connect.
-        let mut client = match Kv9RaftClient::connect(url.clone()).await {
-            Ok(c) => {
+        // (Re)connect, under CONNECT_BUDGET (outer timeout as well as the
+        // endpoint's own: the outer one also bounds legs connect_timeout does
+        // not, and a budget expiry takes the same path as a connect error:
+        // drain + backoff + retry). Liveness of the ESTABLISHED connection is
+        // the keepalive's job — see KEEPALIVE_INTERVAL.
+        let connected = tokio::time::timeout(CONNECT_BUDGET, endpoint.connect()).await;
+        let mut client = match connected {
+            Ok(Ok(channel)) => {
                 backoff = RECONNECT_MIN;
-                c
+                Kv9RaftClient::new(channel)
             }
-            Err(_) => {
-                // Drain whatever queued during the outage (drop: best-effort),
-                // then back off before retrying.
+            // Ok(Err(_)) = connect refused/failed; Err(_) = budget expired.
+            // Either way: drain whatever queued during the outage (drop:
+            // best-effort), back off, retry.
+            Ok(Err(_)) | Err(_) => {
                 while rx.try_recv().is_ok() {}
                 tokio::time::sleep(backoff).await;
                 backoff = (backoff * 2).min(RECONNECT_MAX);
@@ -787,8 +815,18 @@ async fn peer_worker(
                     _ = &mut window => break,
                 }
             }
-            if batch_tx.send(batch).await.is_err() {
-                break 'batching; // stream side gone: reconnect
+            // The send is selected against the RPC future so the worker can
+            // never park on a full stream buffer while the connection is
+            // already dead — the other bare-await wedge of the same family as
+            // the unbudgeted connect (the RPC resolving here means the server
+            // closed the stream; reconnect).
+            tokio::select! {
+                sent = batch_tx.send(batch) => {
+                    if sent.is_err() {
+                        break 'batching; // stream side gone: reconnect
+                    }
+                }
+                _ = &mut rpc => break 'batching,
             }
         }
         drop(batch_tx);
@@ -910,6 +948,109 @@ mod tests {
                 .await
                 .ok();
         });
+    }
+
+    /// task #40 transport wedge, Chaos-reproduced then pinned here in-process:
+    /// a peer endpoint that accepts TCP but never completes the HTTP/2
+    /// handshake wedged the old peer_worker forever inside an unbudgeted
+    /// `connect()`, and replacing the endpoint behind the same address could
+    /// not wake it. The test replays the exact harness sequence: prove the
+    /// first connection really reached the blackhole; stop accepting but KEEP
+    /// the established sockets open (the Chaos harness removes the Service
+    /// selector without killing the blackhole pod); bind the real server on
+    /// the same address; keep sending (raft retransmits). Old code: the real
+    /// server never sees an envelope (red). With CONNECT_BUDGET: the worker
+    /// escapes, reconnects, and an envelope arrives (green).
+    #[test]
+    fn peer_worker_escapes_handshake_blackhole_and_reaches_replacement() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+
+        // Handshake blackhole on an ephemeral port.
+        let accepted = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let held: Arc<Mutex<Vec<tokio::net::TcpStream>>> = Arc::new(Mutex::new(Vec::new()));
+        let (listener, addr) = rt.block_on(async {
+            let l = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let a = l.local_addr().unwrap();
+            (l, a)
+        });
+        let blackhole = {
+            let accepted = accepted.clone();
+            let held = held.clone();
+            handle.spawn(async move {
+                loop {
+                    if let Ok((sock, _)) = listener.accept().await {
+                        accepted.fetch_add(1, Ordering::SeqCst);
+                        held.lock().unwrap().push(sock); // hold open, never speak
+                    }
+                }
+            })
+        };
+
+        // n1's transport, peer n2 registered at the blackhole address.
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            Some("test-cluster-token".into()),
+            handle.clone(),
+            test_root().root_digest,
+        );
+        transport.register_peer(NodeId(2), addr);
+        let msg = || Message {
+            from: 1,
+            to: 2,
+            ..Default::default()
+        };
+        transport.send(NodeId(2), msg());
+
+        // The worker's first connection must actually reach the blackhole —
+        // without this, a green below would not discriminate (the worker
+        // might never have been wedged at all).
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        while accepted.load(Ordering::SeqCst) == 0 {
+            assert!(
+                std::time::Instant::now() < deadline,
+                "worker never reached the blackhole; test harness broken"
+            );
+            std::thread::sleep(Duration::from_millis(50));
+        }
+
+        // Replace the endpoint: stop accepting (frees the port) but keep the
+        // established sockets open, then serve the REAL n2 on the same addr.
+        blackhole.abort();
+        std::thread::sleep(Duration::from_millis(100)); // let the abort land
+        let (n2_inbox_tx, mut n2_inbox_rx) = mpsc::unbounded_channel();
+        serve(&handle, NodeId(2), addr, n2_inbox_tx, 42);
+
+        // Raft would retransmit; emulate it. Old code: the worker is still
+        // parked in the blackhole connect and none of these ever arrive.
+        let deadline = std::time::Instant::now() + Duration::from_secs(15);
+        let mut delivered = false;
+        while std::time::Instant::now() < deadline {
+            transport.send(NodeId(2), msg());
+            if n2_inbox_rx.try_recv().is_ok() {
+                delivered = true;
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(100));
+        }
+        if !delivered {
+            let probe = rt.block_on(async {
+                tokio::net::TcpStream::connect(addr)
+                    .await
+                    .map(|_| "server reachable")
+                    .unwrap_or("server NOT reachable")
+            });
+            eprintln!(
+                "DEBUG: accepted={} probe={probe}",
+                accepted.load(Ordering::SeqCst)
+            );
+        }
+        assert!(
+            delivered,
+            "no envelope reached the replacement endpoint: the peer worker \
+             never escaped the handshake blackhole (task #40 wedge)"
+        );
+        drop(held); // release the blackhole sockets only after the verdict
     }
 
     /// The full #19 path: three nodes, raft over REAL gRPC streams (tonic
