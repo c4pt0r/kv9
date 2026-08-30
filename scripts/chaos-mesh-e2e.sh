@@ -170,6 +170,14 @@ client() {
     /usr/local/bin/kv9 client "$@"
 }
 
+tcp_probe() {
+  local from="$1" to="$2" pod addr
+  pod="$(pod_for "$from")" || return 1
+  addr="$(service_ip "$to")"
+  k exec -n "$namespace" "$pod" -- timeout 2 /bin/bash -c \
+    "exec 3<>/dev/tcp/$addr/20160" >/dev/null 2>&1
+}
+
 wait_injected() {
   local kind="$1" name="$2"
   k wait -n "$namespace" --for=condition=AllInjected "$kind/$name" --timeout=15s >/dev/null
@@ -191,6 +199,22 @@ spec:
     - name: grpc
       port: 20160
       targetPort: 20160
+YAML
+}
+
+write_pvc() {
+  local node="$1"
+  k apply -f - >/dev/null <<YAML
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kv9-data-n$node
+  namespace: $namespace
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 128Mi
 YAML
 }
 
@@ -250,9 +274,8 @@ spec:
               readOnly: true
       volumes:
         - name: data
-          hostPath:
-            path: /var/lib/$namespace/n$node
-            type: DirectoryOrCreate
+          persistentVolumeClaim:
+            claimName: kv9-data-n$node
         - name: root
           configMap:
             name: $root_config
@@ -334,12 +357,23 @@ k create secret generic kv9-auth -n "$namespace" \
   --from-literal=cluster-token="$cluster_token" \
   --from-literal=client-tokens="admin=$client_token" >/dev/null
 
-for node in 1 2 3 9; do write_service "$node"; done
+for node in 1 2 3 9; do
+  write_service "$node"
+  write_pvc "$node"
+done
 voters="1@$(service_ip 1):20160,2@$(service_ip 2):20160,3@$(service_ip 3):20160"
 KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root" --voters "$voters" \
   >"$artifact/root-create.out"
 k create configmap kv9-root -n "$namespace" --from-file="root.bin=$root" >/dev/null
-for node in 1 2 3; do write_deployment "$node"; done
+
+# Deliberately let a valid two-voter quorum initialize before the third
+# declared voter starts. A peer worker that wedges on the Service's temporary
+# lack of endpoints will otherwise pass every simultaneous-start test and
+# strand a legitimate late voter at committed=0 forever.
+write_deployment 1
+write_deployment 3
+wait_majority_leader "two-voter quorum initializes before late voter" 35 2 >/dev/null
+write_deployment 2
 
 echo "Stage: bootstrap and baseline mutation"
 leader="$(wait_agreed_leader "root-certified cluster Serving" 45)"
@@ -422,6 +456,16 @@ leader="$(wait_agreed_leader "failed leader recovers and catches up" 35)"
 echo "Stage: two-way leader partition and fencing"
 apply_partition "$leader"
 wait_injected networkchaos isolate-leader
+survivor_a=$(( leader == 1 ? 2 : 1 ))
+survivor_b=$(( 6 - leader - survivor_a ))
+tcp_probe "$survivor_a" "$survivor_b" && tcp_probe "$survivor_b" "$survivor_a" || {
+  echo "FAIL: Chaos topology cut the surviving majority edge" >&2
+  exit 1
+}
+if tcp_probe "$survivor_a" "$leader"; then
+  echo "FAIL: injected partition still permits a new TCP connection to the isolated leader" >&2
+  exit 1
+fi
 new_leader="$(wait_majority_leader "majority leader under NetworkChaos partition" 20 "$leader")"
 old_pod="$(pod_for "$leader")"
 if k exec -n "$namespace" "$old_pod" -- env KV9_CLIENT_TOKEN="$client_token" \
