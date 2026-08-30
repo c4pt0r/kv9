@@ -1485,16 +1485,17 @@ mod tests {
         assert_eq!(a.node, NodeId(5));
     }
 
-    /// Root-digest fencing at both crate checkpoints — the FIRST direct
-    /// evidence either fires (review finding: every prior test used one shared
+    /// Root-digest fencing at the BATCH-STREAM checkpoint — first direct
+    /// evidence it fires (review finding: every prior test used one shared
     /// test_root, and the K8s wrong-root scene died at the membership
-    /// interceptor before ever reaching these lines, so "root fencing works"
-    /// had only property-level support, never mechanism-level). Both negatives
-    /// use a legitimate node identity so nothing earlier rejects first, and
-    /// each carries its matching-root control — a gate that rejected
-    /// everything would fail the controls.
+    /// interceptor before ever reaching this line, so "root fencing works"
+    /// had only property-level support, never mechanism-level). The negative
+    /// uses a legitimate node identity so nothing earlier rejects first, and
+    /// carries its matching-root control — a gate that rejected everything
+    /// would fail the control. Discovery's wrong-root coverage: task #46
+    /// typed seam (see comment below).
     #[test]
-    fn a_mismatched_root_digest_is_rejected_on_both_checkpoints() {
+    fn a_mismatched_root_digest_is_rejected_on_the_batch_stream() {
         let rt = tokio::runtime::Runtime::new().unwrap();
         let handle = rt.handle().clone();
         let addr = free_addr();
@@ -1557,38 +1558,17 @@ mod tests {
         });
 
         // Checkpoint 2: discovery, client-side comparison of the answer.
-        // The discovery negative is guarded by TWO independent root layers
-        // with distinguishable messages — the mutant matrix proved the depth:
-        //   server-side check ("discovery root identity mismatch") deleted
-        //     alone -> the client-side compare still refuses (its wording);
-        //   client-side compare deleted alone -> server still refuses;
-        //   BOTH deleted -> the wrong-root answer is accepted and this
-        //     expect_err reds, printing the accepted answer.
-        let err = grpc_discover(
-            &handle,
-            NodeId(2),
-            addr,
-            Duration::from_secs(2),
-            Some("test-cluster-token".into()),
-            wrong_root,
-        )
-        .expect_err("a mismatched root answer must be refused");
-        let msg = err.to_string();
-        assert!(
-            msg.contains("discovery root identity mismatch")
-                || msg.contains("does not match the provisioned root identity"),
-            "rejection must come from one of the two ROOT layers, got: {msg}"
-        );
-        // Control: the matching root is answered.
-        grpc_discover(
-            &handle,
-            NodeId(2),
-            addr,
-            Duration::from_secs(2),
-            Some("test-cluster-token".into()),
-            test_root(),
-        )
-        .expect("matching root must be answered");
+        // The discovery wrong-root negative lives in the task #46 typed seam
+        // (tess/root-of-trust-cli@104597a): a legitimately-authenticated
+        // discovery with a conflicting root, typed rejection + control, plus
+        // the Chaos E2E where an admitted node's conflicting root reaches the
+        // handler. This test deliberately covers ONLY the batch-stream
+        // checkpoint to keep one home per gate. (Recorded from the mutant
+        // matrix here before that seam landed: the discovery path had TWO
+        // independent root layers — server-side handler check and the
+        // client-side compare in grpc_discover — with distinguishable
+        // messages; either alone refused, both deleted accepted. If the typed
+        // seam reshapes those layers, that observation dates from pre-#46.)
     }
 
     /// A misrouted envelope (wrong to_node) kills the stream with a loud error
