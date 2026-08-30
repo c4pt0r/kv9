@@ -1838,16 +1838,11 @@ impl NodeRuntime {
             format_u64_ids(&nodes)
         };
         let discovery_status = format_discovery_observations(&self.discovery_observations);
-        // Both driver_applied_* fields render from ONE Option snapshot: both
-        // `none` (nothing proven this run — fail-closed, never rendered as 0)
-        // or both decimal. A mixed rendering is impossible by construction;
-        // the frozen contract forbids it because a torn pair fabricates a
-        // position that never existed. The command-scoped applied_index /
-        // applied_term keep their exact pre-existing semantics.
-        let (driver_applied_index, driver_applied_term) =
-            render_driver_applied(raft.driver_applied);
+        // Rendered as complete labeled lines by the single tested helper —
+        // see render_driver_applied for why no tuple crosses this boundary.
+        let driver_applied_lines = render_driver_applied(raft.driver_applied);
         let body = format!(
-            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\ndriver_applied_index={}\ndriver_applied_term={}\nbootstrap_state={:?}\n{}fatal={}\n",
+            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\n{}bootstrap_state={:?}\n{}fatal={}\n",
             std::process::id(),
             raft.node_id.0,
             cluster_id.map_or_else(String::new, |id| id.to_string()),
@@ -1864,8 +1859,7 @@ impl NodeRuntime {
             raft.raft_committed,
             raft.applied_index,
             raft.applied_term,
-            driver_applied_index,
-            driver_applied_term,
+            driver_applied_lines,
             bootstrap,
             discovery_status,
             raft.fatal.as_deref().unwrap_or(""),
@@ -1877,14 +1871,23 @@ impl NodeRuntime {
     }
 }
 
-/// Render the unified driver watermark for the status file: both fields from
-/// ONE snapshot — both `none` (nothing proven this run; NEVER rendered as 0)
-/// or both decimal. Mixed output is unrepresentable through this function,
-/// which is the point: callers must not re-derive either field separately.
-fn render_driver_applied(pos: Option<DriverAppliedPosition>) -> (String, String) {
+/// Render the unified driver watermark as its two COMPLETE status lines. The
+/// key<->value binding lives only here (review finding: a (String, String)
+/// tuple passed the pairing through two more positional, same-type,
+/// swap-compilable points — and a swapped pair would make the barrier's
+/// `term == leader_term` comparison pass COINCIDENTALLY in small clusters, a
+/// randomly-arriving false green on the minting gate, the e2ecc5a family).
+/// Both lines come from one snapshot: both `none` (nothing proven this run;
+/// NEVER rendered as 0) or both decimal; mixed or label-swapped output is
+/// unrepresentable outside this function, and the unit test asserts the full
+/// labeled text, so an internal swap reds it.
+fn render_driver_applied(pos: Option<DriverAppliedPosition>) -> String {
     match pos {
-        Some(pos) => (pos.index.to_string(), pos.term.to_string()),
-        None => ("none".to_string(), "none".to_string()),
+        Some(pos) => format!(
+            "driver_applied_index={}\ndriver_applied_term={}\n",
+            pos.index, pos.term
+        ),
+        None => "driver_applied_index=none\ndriver_applied_term=none\n".to_string(),
     }
 }
 
@@ -2025,18 +2028,20 @@ mod tests {
         }
     }
 
-    /// Frozen status contract: the two driver_applied_* fields come from one
-    /// snapshot — both `none` or both decimal, mixed output unrepresentable.
+    /// Frozen status contract: the two driver_applied_* lines come from one
+    /// snapshot — both `none` or both decimal, and the key<->value binding is
+    /// asserted on the FULL labeled text (an index/term swap anywhere inside
+    /// the helper reds here; outside the helper no tuple exists to swap).
     /// `none` is fail-closed ("nothing proven this run"), never rendered as 0.
     #[test]
-    fn driver_applied_renders_as_a_pair_never_mixed() {
+    fn driver_applied_renders_as_labeled_pair_never_mixed() {
         assert_eq!(
             render_driver_applied(None),
-            ("none".to_string(), "none".to_string())
+            "driver_applied_index=none\ndriver_applied_term=none\n"
         );
         assert_eq!(
             render_driver_applied(Some(DriverAppliedPosition { term: 3, index: 17 })),
-            ("17".to_string(), "3".to_string())
+            "driver_applied_index=17\ndriver_applied_term=3\n"
         );
     }
 
