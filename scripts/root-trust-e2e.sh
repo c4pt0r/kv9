@@ -89,6 +89,17 @@ node4_voter_everywhere() {
   done
 }
 
+wrong_root_was_rejected() {
+  local state observation
+  kill -0 "$n9_pid" 2>/dev/null || return 1
+  state="$(status_value 9 bootstrap_state 2>/dev/null)" || return 1
+  observation="$(status_value 9 discovery_seed_1 2>/dev/null)" || return 1
+  [ "$state" != Serving ] &&
+    [[ "$observation" =~ ,attempts=[1-9][0-9]* ]] &&
+    [[ "$observation" =~ ,rejected_root_identity=[1-9][0-9]* ]] &&
+    [[ "$observation" == *"last=rejected_root_identity"* ]]
+}
+
 # Creation is an explicit command. Legacy empty-directory startup must fail
 # before it can open Raft or mint identity.
 if "$bin" --node-id 8 --addr "127.0.0.1:$((base+8))" --data-dir "$artifact/legacy" \
@@ -205,8 +216,12 @@ mv "$artifact/n4-original" "$artifact/n4"
 n4_pid=$!; pids="$pids $n4_pid"
 wait_until 'original store incarnation restarted' node_serving 4
 
-# A different root with an overlapping seed cannot cross-endorse the live
-# cluster. n9 has only one of two votes and must stay non-Serving.
+# Admit node 9 first so membership authentication opens; only then can this
+# fixture prove the discovery root-identity gate itself rejects a different
+# root with an overlapping seed.
+leader="$(status_value 1 leader_id)"
+"$bin" client admit-node --addr "127.0.0.1:$((base+leader))" --node-id 9 \
+  --node-addr "127.0.0.1:$((base+9))" --ttl-seconds 120 >"$artifact/admit-n9.out"
 wrong_root="$artifact/wrong-root.bin"
 KV9_BOOTSTRAP_TOKEN=other-root "$bin" root-create --output "$wrong_root" \
   --voters "1@127.0.0.1:$((base+1)),9@127.0.0.1:$((base+9))" >"$artifact/wrong-root-create.out"
@@ -214,13 +229,7 @@ KV9_BOOTSTRAP_TOKEN=other-root "$bin" init --root "$wrong_root" --node-id 9 \
   --data-dir "$artifact/n9" >"$artifact/n9.init"
 "$bin" start --node-id 9 --addr "127.0.0.1:$((base+9))" --data-dir "$artifact/n9" \
   >"$artifact/n9.log" 2>&1 &
-pids="$pids $!"
-sleep 2
-[ "$(status_value 9 bootstrap_state 2>/dev/null || true)" != Serving ] || {
-  echo "FAIL: wrong root cross-endorsed into Serving" >&2; exit 1;
-}
-grep -Eq 'root|bootstrap generation|discovery' "$artifact/n9.log" || {
-  echo "FAIL: wrong-root refusal was not observable" >&2; exit 1;
-}
+n9_pid=$!; pids="$pids $n9_pid"
+wait_until 'admitted node rejected by the root-identity gate' wrong_root_was_rejected
 
 echo "PASS: explicit root, durable incarnation, fenced discovery, credentialed learner, and promotion"
