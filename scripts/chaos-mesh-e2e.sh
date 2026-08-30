@@ -81,10 +81,14 @@ cleanup() {
   local rc=$?
   trap - EXIT
   if k get namespace "$namespace" >/dev/null 2>&1; then
-    (( rc == 0 )) || collect_scene
-    k delete podchaos,networkchaos --all -n "$namespace" --ignore-not-found \
-      --wait=true >/dev/null 2>&1 || true
-    k delete namespace "$namespace" --wait=true >/dev/null 2>&1 || true
+    if (( rc == 0 )); then
+      k delete podchaos,networkchaos --all -n "$namespace" --ignore-not-found \
+        --wait=true >/dev/null 2>&1 || true
+      k delete namespace "$namespace" --wait=true >/dev/null 2>&1 || true
+    else
+      collect_scene
+      echo "FAIL: preserving live namespace $namespace for inspection" >&2
+    fi
   fi
   if (( rc == 0 )); then
     rm -rf "$artifact"
@@ -163,8 +167,10 @@ status_value() {
 }
 
 node_serving() {
-  [ "$(status_value "$1" bootstrap_state 2>/dev/null || true)" = Serving ] &&
-    [ -z "$(status_value "$1" fatal 2>/dev/null || true)" ]
+  local state fatal
+  state="$(status_value "$1" bootstrap_state 2>/dev/null)" || return 1
+  fatal="$(status_value "$1" fatal 2>/dev/null)" || return 1
+  [ "$state" = Serving ] && [ -z "$fatal" ]
 }
 
 agreed_leader() {
@@ -211,6 +217,15 @@ tcp_probe() {
   addr="$(service_ip "$to")"
   k exec -n "$namespace" "$pod" -- timeout 2 /bin/bash -c \
     "exec 3<>/dev/tcp/$addr/20160" >/dev/null 2>&1
+}
+
+tcp_probe_millis() {
+  local from="$1" to="$2" pod addr
+  pod="$(pod_for "$from")" || return 1
+  addr="$(service_ip "$to")"
+  k exec -n "$namespace" "$pod" -- timeout 3 /bin/bash -c \
+    'start=$(date +%s%N); exec 3<>/dev/tcp/'"$addr"'/20160; end=$(date +%s%N); echo $(((end-start)/1000000))' \
+    2>/dev/null
 }
 
 wait_injected() {
@@ -310,6 +325,18 @@ real_node_two_endpoint_ready() {
   names="$(k get endpoints -n "$namespace" kv9-n2 \
     -o jsonpath='{.subsets[*].addresses[*].targetRef.name}' 2>/dev/null || true)"
   [ -n "$names" ] && ! grep -Fqw -- handshake-blackhole <<<"$names"
+}
+
+wrong_root_was_rejected() {
+  local state observation
+  pod_for 9 >/dev/null || return 1
+  state="$(status_value 9 bootstrap_state 2>/dev/null)" || return 1
+  observation="$(status_value 9 discovery_seed_1 2>/dev/null)" || return 1
+  [ "$state" != Serving ] &&
+    [[ "$observation" =~ ,attempts=[1-9][0-9]* ]] &&
+    [[ "$observation" =~ ,errors=[1-9][0-9]* ]] &&
+    [[ "$observation" == *"last=error:"* ]] &&
+    [[ "$observation" == *"root identity mismatch"* ]]
 }
 
 write_deployment() {
@@ -507,10 +534,8 @@ KV9_BOOTSTRAP_TOKEN=wrong-root "$bin" root-create --output "$wrong_root" \
   --voters "1@$(service_ip 1):20160,9@$(service_ip 9):20160" >"$artifact/wrong-root-create.out"
 k create configmap wrong-root -n "$namespace" --from-file="root.bin=$wrong_root" >/dev/null
 write_deployment 9 wrong-root wrong-root
-sleep 4
-[ "$(status_value 9 bootstrap_state 2>/dev/null || true)" != Serving ] || {
-  echo "FAIL: wrong root crossed the cluster trust boundary" >&2; exit 1;
-}
+wait_until "wrong-root node runs and records the exact root-identity rejection" 15 \
+  wrong_root_was_rejected
 wait_until "live root remains Serving during wrong-root contact" 15 agreed_leader >/dev/null
 k delete deployment kv9-n9 -n "$namespace" --wait=true >/dev/null
 k delete service kv9-n9 configmap wrong-root -n "$namespace" --ignore-not-found >/dev/null
@@ -584,10 +609,32 @@ if tcp_probe "$survivor_a" "$leader"; then
 fi
 new_leader="$(wait_majority_leader "majority leader under NetworkChaos partition" 20 "$leader")"
 old_pod="$(pod_for "$leader")"
-if k exec -n "$namespace" "$old_pod" -- env KV9_CLIENT_TOKEN="$client_token" \
+isolated_uid="$(pod_uid "$leader")"
+k exec -n "$namespace" "$old_pod" -- timeout 2 /bin/bash -c \
+  'exec 3<>/dev/tcp/127.0.0.1/20160' >/dev/null 2>&1 || {
+  echo "FAIL: isolated old leader was not alive and listening before the fencing probe" >&2
+  exit 1
+}
+set +e
+k exec -n "$namespace" "$old_pod" -- env KV9_CLIENT_TOKEN="$client_token" \
   timeout 5 /usr/local/bin/kv9 client raw-put --addr 127.0.0.1:20160 --keyspace "$keyspace" \
-  --key-hex 69736f6c61746564 --value-hex 626164 >"$artifact/isolated-write.out" 2>&1; then
+  --key-hex 69736f6c61746564 --value-hex 626164 >"$artifact/isolated-write.out" 2>&1
+isolated_write_rc=$?
+set -e
+if (( isolated_write_rc == 0 )); then
   echo "FAIL: isolated old leader acknowledged a mutation" >&2
+  exit 1
+fi
+[ "$(pod_uid "$leader")" = "$isolated_uid" ] && [ "$(pod_for "$leader")" = "$old_pod" ] &&
+  k exec -n "$namespace" "$old_pod" -- timeout 2 /bin/bash -c \
+    'exec 3<>/dev/tcp/127.0.0.1/20160' >/dev/null 2>&1 || {
+  echo "FAIL: old-leader write failed because the Pod/service died, not because Raft fenced it" >&2
+  exit 1
+}
+if (( isolated_write_rc != 124 )) &&
+  ! grep -Eiq 'not (the )?leader|deadline|unconfirmed|not reached|timed out' \
+    "$artifact/isolated-write.out"; then
+  echo "FAIL: old-leader write failed without a Raft fencing/deadline reason (rc=$isolated_write_rc)" >&2
   exit 1
 fi
 client "$new_leader" raw-put --addr "$(service_ip "$new_leader"):20160" --keyspace "$keyspace" \
@@ -598,8 +645,22 @@ leader="$(wait_agreed_leader "partition healing and catch-up" 35)"
 # Delay one follower in both directions; quorum writes must remain available.
 echo "Stage: follower latency and recovery"
 follower=$(( leader == 1 ? 2 : 1 ))
+baseline_delay_ms="$(tcp_probe_millis "$leader" "$follower")"
+[[ "$baseline_delay_ms" =~ ^[0-9]+$ ]] || {
+  echo "FAIL: baseline TCP latency probe returned '$baseline_delay_ms'" >&2
+  exit 1
+}
 apply_delay "$follower"
 wait_injected networkchaos delay-follower
+injected_delay_ms="$(tcp_probe_millis "$leader" "$follower")"
+[[ "$injected_delay_ms" =~ ^[0-9]+$ ]] || {
+  echo "FAIL: injected TCP latency probe returned '$injected_delay_ms'" >&2
+  exit 1
+}
+if (( injected_delay_ms < 100 || injected_delay_ms < baseline_delay_ms + 100 )); then
+  echo "FAIL: NetworkChaos delay was not observed (baseline=${baseline_delay_ms}ms injected=${injected_delay_ms}ms)" >&2
+  exit 1
+fi
 client "$leader" raw-put --addr "$(service_ip "$leader"):20160" --keyspace "$keyspace" \
   --key-hex 64656c6179 --value-hex 7634 >"$artifact/delay-put.out"
 k delete networkchaos delay-follower -n "$namespace" --ignore-not-found --wait=true >/dev/null
