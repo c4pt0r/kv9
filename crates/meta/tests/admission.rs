@@ -6,12 +6,12 @@
 use std::str::FromStr;
 use std::sync::Arc;
 
-use kv9_common::{ClusterId, NodeId};
+use kv9_common::{ClusterId, Error, NodeId};
 use kv9_engine::MemEngine;
 use kv9_meta::admission::{
     admission, admit_node, admit_node_with_ticket_hash, cluster_id, consume_admission,
     consume_admission_with_ticket, initialize_cluster, pending_admissions, revoke_admission,
-    AdmissionState, AdmittedRole,
+    AdmissionState, AdmittedRole, INVALID_JOIN_TICKET_MESSAGE,
 };
 use kv9_meta::store::MetaStore;
 
@@ -36,7 +36,23 @@ fn admission_ticket_is_committed_hashed_and_consumed_once() {
     txn.commit().unwrap();
 
     let mut wrong = store.begin().unwrap();
-    assert!(consume_admission_with_ticket(
+    let malformed = consume_admission_with_ticket(
+        &mut wrong,
+        NodeId(44),
+        cid("9"),
+        "127.0.0.1:9044",
+        &[8; 31],
+        50,
+    )
+    .unwrap_err();
+    assert!(
+        matches!(
+            malformed,
+            Error::Config(message) if message == INVALID_JOIN_TICKET_MESSAGE
+        ),
+        "a malformed ticket digest must use the shared invalid-ticket reason"
+    );
+    let mismatch = consume_admission_with_ticket(
         &mut wrong,
         NodeId(44),
         cid("9"),
@@ -44,7 +60,14 @@ fn admission_ticket_is_committed_hashed_and_consumed_once() {
         &[8; 32],
         50,
     )
-    .is_err());
+    .unwrap_err();
+    assert!(
+        matches!(
+            mismatch,
+            Error::Config(message) if message == INVALID_JOIN_TICKET_MESSAGE
+        ),
+        "a mismatched ticket digest must use the shared invalid-ticket reason"
+    );
     assert_eq!(
         admission(&wrong, NodeId(44)).unwrap().unwrap().state,
         AdmissionState::Pending
