@@ -1666,7 +1666,10 @@ mod tests {
         };
         let at1 = drivers[leader_idx].propose(&put(b"k1")).unwrap();
         for d in &drivers {
-            assert!(d.wait_applied(at1, Duration::from_secs(20)).unwrap());
+            assert!(matches!(
+                d.wait_applied(at1, Duration::from_secs(20)).unwrap(),
+                crate::driver::ApplyWaitOutcome::Applied(_)
+            ));
         }
 
         // --- Phase 1: "pod failure" = fully isolate one follower via its own
@@ -1682,37 +1685,43 @@ mod tests {
             .partition
             .force_mask(&follower_peers);
 
-        // Isolation control: a commit made during the cut must reach the two
-        // connected nodes and must NOT reach the isolated one. If this fails,
-        // the mask never engaged and everything after would be vacuous.
+        // Isolation control, asserted on DIRECT STATE (task #30 migration
+        // condition, Tess): the exact command's effect — k2 readable — not a
+        // proxy. A wait_applied shape can be satisfied by the wrong thing
+        // (the same index can carry two entries; the return contract itself
+        // just changed under task #30); k2's readability can only be produced
+        // by THIS command applying on THAT node. Watermarks stay out of the
+        // verdict entirely — supplementary diagnostics only.
         let at2 = drivers[leader_idx].propose(&put(b"k2")).unwrap();
-        for (i, d) in drivers.iter().enumerate() {
-            if i != follower_idx {
-                assert!(d.wait_applied(at2, Duration::from_secs(20)).unwrap());
-            }
-        }
-        // (wait_applied reports an un-reached deadline as Err — the typed
-        // ApplyWaitOutcome split is task #30; match the deadline shape here.)
-        let iso = drivers[follower_idx]
-            .wait_applied(at2, Duration::from_secs(2))
-            .expect_err(
-                "the isolated follower must not apply a commit made during the cut \
-                 (isolation control: without this, the heal proves nothing)",
+        let _ = at2; // position kept for the log record; the verdict is state
+        let k2_on = |i: usize| {
+            drivers[i]
+                .get(kv9_engine::ColumnFamily::Default, b"k2")
+                .unwrap()
+                .is_some()
+        };
+        for i in (0..3).filter(|&i| i != follower_idx) {
+            wait_for(
+                &mut || k2_on(i),
+                deadline(20),
+                "k2 must become readable on both CONNECTED nodes",
             );
+        }
         assert!(
-            iso.to_string().contains("deadline"),
-            "isolation must look like a deadline, not some other failure: {iso}"
+            !k2_on(follower_idx),
+            "isolated follower saw k2: the mask never engaged, and everything \
+             after this control would be vacuous"
         );
 
         // Heal. The follower must catch up over RECOVERED streams — this is
         // the late-voter reconnect hypothesis meeting its deterministic test.
+        // Same direct-state criterion: k2 readable on the healed node.
         transports[follower_idx].partition.force_mask(&[]);
-        assert!(
-            drivers[follower_idx]
-                .wait_applied(at2, Duration::from_secs(20))
-                .unwrap(),
-            "after heal the follower must catch up: streams must recover \
-             (the task #40 transport fix is the hypothesis under test here)"
+        wait_for(
+            &mut || k2_on(follower_idx),
+            deadline(20),
+            "after heal the follower must catch up (k2 readable): streams must \
+             recover — the task #40 transport fix is the hypothesis under test",
         );
         // Agreed leader: all three report the same live leader.
         wait_for(
@@ -1780,14 +1789,20 @@ mod tests {
             "isolated leader's check_quorum step-down",
         );
 
-        // The majority side stays writable end to end.
-        let at3 = drivers[new_leader].propose(&put(b"k3")).unwrap();
+        // The majority side stays writable end to end — same direct-state
+        // criterion: k3 readable on both survivors.
+        let _at3 = drivers[new_leader].propose(&put(b"k3")).unwrap();
+        let k3_on = |i: usize| {
+            drivers[i]
+                .get(kv9_engine::ColumnFamily::Default, b"k3")
+                .unwrap()
+                .is_some()
+        };
         for i in (0..3).filter(|&i| i != cur_leader) {
-            assert!(
-                drivers[i]
-                    .wait_applied(at3, Duration::from_secs(20))
-                    .unwrap(),
-                "the majority side must commit and apply after re-election"
+            wait_for(
+                &mut || k3_on(i),
+                deadline(20),
+                "the majority side must commit and apply after re-election (k3 readable)",
             );
         }
 
@@ -1795,11 +1810,10 @@ mod tests {
         // write — stream recovery again, now on the once-isolated LEADER's
         // connections (the exact surface of the original incident).
         transports[cur_leader].partition.force_mask(&[]);
-        assert!(
-            drivers[cur_leader]
-                .wait_applied(at3, Duration::from_secs(20))
-                .unwrap(),
-            "the healed ex-leader must converge onto the majority's history"
+        wait_for(
+            &mut || k3_on(cur_leader),
+            deadline(20),
+            "the healed ex-leader must converge onto the majority's history",
         );
 
         for d in &drivers {
