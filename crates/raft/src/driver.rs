@@ -1306,14 +1306,30 @@ mod tests {
             Role::Leader,
             "precondition: a new leader"
         );
-        // Its barrier takes doomed1's slot; this COMMAND takes doomed2's.
-        leader
+        // Its barrier takes doomed1's slot; this COMMAND takes doomed2's —
+        // and that placement is ASSERTED, not hoped for (Cindy's probe
+        // hardening): the watermark precondition below cannot distinguish
+        // "our index holds a command" from "our index holds a barrier and a
+        // LATER command moved the watermark", and only the former exercises
+        // the ring-hit arm this test exists to guard. Branch selection must
+        // be pinned, or a passing mutant check is a sample, not a guarantee.
+        let real = leader
             .propose(&Command::Put {
                 cf: 0,
                 key: b"real".to_vec(),
                 value: b"y".to_vec(),
             })
             .unwrap();
+        assert_eq!(
+            real.index, doomed2.index,
+            "precondition: the replacing entry at our position must be a \
+             COMMAND — that is what puts the index in the ring and selects \
+             the arm under test"
+        );
+        assert!(
+            real.term > doomed2.term,
+            "precondition: the replacing command is at a newer term than ours"
+        );
         for _ in 0..400 {
             d1.step().unwrap();
             d2.tick_and_step().unwrap();
