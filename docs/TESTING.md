@@ -512,3 +512,46 @@ the problem.
 ugrep-incompatible grep patterns was done with python, not grep. And the audit's own clean result
 needed a positive control — 0 findings is indistinguishable from "my regex matched no grep calls at
 all", so report how many were examined.
+
+## 20. When you measure an absence, the instrument must not share the property you are measuring
+
+*Origin (Cindy, three instances; boundaries by Ren and Tess):* an instrument that shares the failure
+mode under investigation cannot detect it, and it fails in the one way that looks like success:
+**it returns "nothing found", which is exactly what a working instrument returns when there is
+genuinely nothing there.**
+
+    proving a test suite has no coverage   the oracle must sit outside the test suite — the compiler
+                                           reporting `constant is never used`, not another test
+    auditing grep's alternation handling   audit with python; grep would walk into the very
+                                           alternation handling under audit
+    confirming a mechanism was removed     the compiler is an independent witness; `git diff --stat`
+                                           only restates my own edit
+
+*Boundary 1 — independence is scoped, not absolute (Ren):* the same instrument can be sound in one
+context and unsound in another. The `panic!` probe of rule 15 self-reports on the test thread's stack
+and not across threads (rule 16). Changing context without changing instrument is the cheapest way to
+break this rule.
+
+*Boundary 2 — the control is itself subject to rule 19, and this is where the regress stops (Ren):*
+every "nothing found" needs a positive control, but a control can answer a narrower question than
+"did this instrument discriminate here". Two failures show the two directions it must cover:
+
+    my grep     the invocation regex excluded `|` — the very character the check looked for — so the
+                alternation check never executed. Constant zero, dressed as a result.
+    Ren's grep  the option test was `" -E " in seg`, missing the merged cluster `-Eiq`, so it fired
+                on something already safe. A false positive.
+
+**Two directions are necessary but not sufficient.** The control must exercise **every form the corpus
+actually contains**; two directions is the special case of a single-form corpus. Ren found this while
+testing the rule: his form census reported `--all` and `--check` present, which would have voided his
+own clean result — until he read the line and saw they were `cargo` flags on a line that also
+contained `grep`. His census answered *which flags appear on lines containing grep*, not *which flags
+grep received*.
+
+**The regress terminates because forms are finite and enumerable, and the floor is direct inspection
+of the concrete instances** — not another counting step. Read the matching lines; do not merely count
+them.
+
+*Not a generalisation of rule 15 (Ren):* rule 15's third premise is about **reachability** — does the
+test execute this line — while this rule is about **discrimination**. Merging them collapses two
+different properties.
