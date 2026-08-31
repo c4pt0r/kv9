@@ -10,10 +10,11 @@
 //!
 //! [`PartitionMask`] names a set of node ids that the local node is isolated
 //! from. The transport consults it on both send and receive: a message to or
-//! from a masked node is dropped, exactly as if the wire were cut. Because both
-//! directions consult the same mask, a single process achieves *symmetric*
-//! isolation of a peer; an asymmetric partition (cut inbound only, or outbound
-//! only) is available from the same mechanism for the ReadIndex asymmetry cases.
+//! from a masked node is dropped, exactly as if the wire were cut. Both
+//! directions consult the SAME mask, so this mechanism cuts symmetrically
+//! only. If a ReadIndex scenario later needs an asymmetric partition (inbound
+//! only / outbound only), that is a new, direction-aware protocol with its own
+//! tests — not a configuration of this one.
 //!
 //! # Why the mask is loaded from a file, and why atomicity is load-bearing
 //!
@@ -185,7 +186,10 @@ impl PartitionState {
     /// this mask stands.
     #[cfg(test)]
     pub(crate) fn force_mask(&self, ids: &[u64]) {
-        let bits = ids.iter().filter_map(|&n| bit_for(n)).fold(0u64, |a, b| a | b);
+        let bits = ids
+            .iter()
+            .filter_map(|&n| bit_for(n))
+            .fold(0u64, |a, b| a | b);
         self.mask.bits.store(bits, Ordering::Relaxed);
         self.mask.engaged.store(1, Ordering::Relaxed);
     }
@@ -206,15 +210,23 @@ fn bit_for(node_id: u64) -> Option<u64> {
     }
 }
 
-/// Parse a partition file body. Three outcomes:
+/// Parse a partition file body. The grammar is strict — ids separated by
+/// exactly one comma or one whitespace character — and three outcomes exist:
 ///
 /// - the exact heal token → `Some(0)` (fully connected — the only fail-OPEN
 ///   result, and it must be spelled);
-/// - a non-empty list of valid in-range ids → `Some(bits)` (that partition set,
-///   including an explicitly smaller one — a harness naming fewer ids is a
-///   deliberate act, not a degenerate read);
-/// - anything else — empty, a torn/garbled line, an out-of-range or non-numeric
-///   token → `None`, which the caller turns into "keep the last mask".
+/// - a well-formed non-empty list of valid in-range ids → `Some(bits)` (that
+///   partition set, including an explicitly smaller one — a harness naming
+///   fewer ids is a deliberate act, not a degenerate read);
+/// - anything else — empty, a torn/garbled line, an out-of-range or
+///   non-numeric token, or a leading/trailing/doubled separator → `None`,
+///   which the caller turns into "keep the last mask".
+///
+/// Empty tokens are REJECTED, not skipped (review round): `"2,"` is what a
+/// torn write of `"2,3"` looks like, so skipping the empty tail would accept a
+/// truncation as a deliberately smaller partition — quietly reconnecting a
+/// peer the harness meant to keep cut. A separator with nothing after it is a
+/// torn line, and a torn line keeps the last mask.
 ///
 /// The asymmetry is the point: an empty body is NOT "no peer masked". Empty and
 /// missing are both "said nothing", and neither may reconnect a partitioned
@@ -230,8 +242,10 @@ fn parse_mask(contents: &str) -> Option<u64> {
     }
     let mut bits = 0u64;
     for token in trimmed.split(|c: char| c.is_whitespace() || c == ',') {
+        // An empty token means a leading, trailing, or doubled separator —
+        // the shape of a torn write. Reject the whole line.
         if token.is_empty() {
-            continue;
+            return None;
         }
         let id: u64 = token.parse().ok()?;
         bits |= bit_for(id)?;
@@ -247,6 +261,18 @@ fn parse_mask(contents: &str) -> Option<u64> {
 /// and wrong.
 pub fn write_partition_file(data_dir: &Path, masked: &[u64]) -> std::io::Result<()> {
     use std::io::Write;
+    // Validate BEFORE publishing (review round): an unmaskable id would be
+    // written successfully, then rejected by the next tick's parse, which
+    // keeps the previous mask — so the controller would believe the topology
+    // switched while it did not. `Ok` from this function must mean "the file
+    // now says what you asked"; an invalid request leaves the target file
+    // untouched.
+    if let Some(bad) = masked.iter().find(|&&n| bit_for(n).is_none()) {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            format!("node id {bad} is outside the maskable range 1..=64; partition file unchanged"),
+        ));
+    }
     // The empty set is a heal, and a heal must be spelled — never an empty body,
     // which reads back as "keep last" (fail-closed).
     let body = if masked.is_empty() {
@@ -276,7 +302,8 @@ mod tests {
     fn masks_only_the_named_peers() {
         let m = PartitionMask::new();
         assert!(!m.is_masked(2));
-        m.bits.store(bit_for(2).unwrap() | bit_for(5).unwrap(), Ordering::Relaxed);
+        m.bits
+            .store(bit_for(2).unwrap() | bit_for(5).unwrap(), Ordering::Relaxed);
         assert!(m.is_masked(2));
         assert!(m.is_masked(5));
         assert!(!m.is_masked(3));
@@ -287,7 +314,10 @@ mod tests {
 
     #[test]
     fn parse_rejects_any_bad_token_rather_than_partial() {
-        assert_eq!(parse_mask("2,5"), Some(bit_for(2).unwrap() | bit_for(5).unwrap()));
+        assert_eq!(
+            parse_mask("2,5"),
+            Some(bit_for(2).unwrap() | bit_for(5).unwrap())
+        );
         assert_eq!(parse_mask("  3 \n"), Some(bit_for(3).unwrap()));
         // Only the heal token lifts a partition; empty is "said nothing".
         assert_eq!(parse_mask(HEAL_TOKEN), Some(0));
@@ -299,8 +329,45 @@ mod tests {
         assert_eq!(parse_mask("2,5x"), None);
         assert_eq!(parse_mask("99"), None); // out of range
         assert_eq!(parse_mask("-1"), None);
+        // Empty tokens are torn-write shapes, not skippable noise (review
+        // round: skipping them accepted "2," — the truncation of "2,3" — as a
+        // deliberately smaller partition, quietly reconnecting node 3).
+        assert_eq!(parse_mask("2,"), None, "trailing separator = torn write");
+        assert_eq!(parse_mask(",2"), None, "leading separator = torn write");
+        assert_eq!(parse_mask("2,,3"), None, "doubled separator = torn write");
         // A near-miss of the heal token does not heal.
         assert_eq!(parse_mask("connect"), None);
+    }
+
+    /// `Ok` from the writer must mean "the file now says what you asked".
+    /// Publishing an unmaskable id and letting the next tick's parse reject it
+    /// would leave the controller believing the topology switched while the
+    /// node kept its previous mask (review round).
+    #[test]
+    fn writer_rejects_unmaskable_ids_without_touching_the_file() {
+        let dir = std::env::temp_dir().join(format!("kv9-pwtest-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let _ = std::fs::remove_file(dir.join(PARTITION_FILE));
+
+        write_partition_file(&dir, &[2]).unwrap();
+        let before = std::fs::read_to_string(dir.join(PARTITION_FILE)).unwrap();
+
+        let err = write_partition_file(&dir, &[65])
+            .expect_err("an unmaskable id must be rejected at write time");
+        assert_eq!(err.kind(), std::io::ErrorKind::InvalidInput);
+        assert!(
+            err.to_string().contains("65"),
+            "the rejection must name the offending id: {err}"
+        );
+        // Mixed lists are all-or-nothing: one bad id poisons the whole request.
+        write_partition_file(&dir, &[2, 0]).expect_err("id 0 is unmaskable");
+
+        let after = std::fs::read_to_string(dir.join(PARTITION_FILE)).unwrap();
+        assert_eq!(
+            before, after,
+            "a rejected write must leave the partition file unchanged"
+        );
+        std::fs::remove_dir_all(&dir).ok();
     }
 
     #[test]
