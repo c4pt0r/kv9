@@ -1,7 +1,9 @@
 # Testing contract
 
-Every rule here exists because it failed on this project on 2026-08-28, during Phase 1 and
-the M1 raw/membership work. The failure is recorded with the rule. **A rule with no visible
+Every rule here exists because it failed on this project. Rules 1-13 come from 2026-08-28,
+during Phase 1 and the M1 raw/membership work; rules 14-19 and the extension to rule 3 come
+from 2026-08-30/31, during the root-of-trust, bootstrap-barrier and Chaos work. The failure is
+recorded with the rule. **A rule with no visible
 origin gets overturned on principle by the next person who finds it inconvenient** — so if
 you are about to relax one of these, read what it cost first.
 
@@ -66,6 +68,41 @@ certified a control that proved nothing.
 
 Corollary: a red landing outside the code under test is **not discriminating**, and must be
 reported as such rather than as a pass.
+
+### Extension — identify the assertion by its message, never by its line number
+
+*Extension (Cindy):* rule 3 says **where** it went red is the finding. Line numbers are not a
+durable answer to "where". One assertion in `driver.rs` was cited as `:718`, then `:729`, then
+`:738` across three messages in a single afternoon; its message string never moved.
+
+The failure this actually caused: I reported a mutation as red at "the named assertion" at
+`grpc.rs:1540`. `:1540` was the `assert_eq!(status.code(), FailedPrecondition)` one line above it.
+My mutation changed the status code *and* the message, so the code assertion fired first and the
+named one was never evaluated — yet I cited it as proof that "two assertions each guard a class".
+**No mutation I had run had ever lit the named assertion.** Isolating it required a mutation that
+keeps the code and changes only the message.
+
+*Consequence for rule 14:* when a test carries several assertions, "it went red" does not tell you
+which one is guarding. Separating them requires a mutation that trips exactly one.
+
+*Generalisation (Ren):* this governs any reference expected to outlive the tree it was written
+against — assertions, cards, design docs, and **commit messages** especially, since a rebase can
+never fix those. He found his own commit citing five `file.rs:NNN` for a commit scheduled to rebase
+onto a head where that file is edited by three branches.
+
+*Boundary (Cindy):* the reason is not "symbols are stable" — symbols get renamed too. Line numbers
+move as a **side effect** of edits elsewhere, so nobody decided to move them and nobody had an
+opportunity to fix the references; symbols move only when someone deliberately renames, and that
+person can grep. The rule therefore fails wherever a symbol can be renamed without a human seeing
+the references. **A message string is the strongest form: it is both symbol and content, and
+changing it requires editing that exact line, so it can never move as a side effect.**
+
+*Boundary, second half (Cindy):* "carry the value so it can be recovered" only works when the value
+is distinctive. `status.role == Role::Leader` survives a rename; `check_quorum: true` and
+`election_tick: 10` do not — searching for `true` or `10` recovers nothing, so those remain
+name-only references wearing the appearance of content. For scalar configuration in an unfixable
+reference, name the **concept** ("raft's election timeout, counted in ticks") rather than the symbol
+or the value.
 
 ## 4. A green must state what it did not cover
 
@@ -270,3 +307,155 @@ uncorrected copy must not be left to pose later as independent corroboration.**
 Here the false conclusion had landed in **two** separate notes files and both of us removed it
 independently. Had only one of us corrected, the surviving copy would later have read as a
 second source — two records that were one unchecked idea.
+
+## 14. Mutation controls are asymmetric: red self-proves less than you think, green proves nothing
+
+*Origin (Cindy):* verifying that `CONNECT_BUDGET` had no regression, I removed it and both target
+tests stayed green — and reported "no coverage". That green is indistinguishable from a mutation
+that never applied. The conclusion happened to be right; the evidence did not support it until the
+compiler was brought in as an independent witness (`warning: constant CONNECT_BUDGET is never used`
+with the tests still passing).
+
+    expected RED    self-proves the mutation LANDED — it took effect.
+                    It does NOT prove WHERE: a compile error, or an unrelated broken assertion,
+                    is also red.
+    expected GREEN  proves nothing on its own. Needs an external oracle, and the oracle must be
+                    independent of the thing whose blind spot is being measured.
+
+*Boundary (Tess):* red does not automatically establish that the mutation landed on the path under
+test. When an expected-red mutation comes out **green**, that is not yet evidence about the guard —
+first exclude "the mutation did not apply" and "the mutation is not on the path this test walks".
+Both happened here within one hour: @Ren's regex silently failed to match, and mine hit the
+`apply_command` poison arm while the test walks the `Command::decode` arm — two visually identical
+`return Err(self.poison(..))` lines.
+
+*Corollary (Cindy):* mutate and verify in one `&&` chain. A mutation script that fails, followed by
+a verification run that proceeds anyway, prints a green that reads exactly like "the mutation applied
+and nothing caught it". Assert the restore too (`git diff --quiet`); re-running the suite and seeing
+green never checked that the tree went back.
+
+## 15. To prove an absence of coverage takes three premises, not one
+
+*Origin (Cindy, sharpened by Ren):* "delete it and see if anything reds" is only valid under all
+three:
+
+    1. mutate to the EXTREME, not the middle
+    2. confirm the mutation landed on disk
+    3. confirm the test EXECUTES the mutated line
+
+*Why 1 is not merely better evidence (Ren):* it decides whether the inference is valid at all.
+Weakening a bound (2s to 2000s) leaves "still green" with two readings — no coverage, or coverage
+whose threshold this weakening never crossed. Deleting leaves one. Expected-red experiments do not
+need this; "red therefore load-bearing" survives a weakening mutation.
+
+*Why 3 exists (Cindy):* a deletion-type mutation on `driver.rs`'s `apply_command` poison arm came
+out all-green, and by premises 1+2 alone that is a "valid" inference of no coverage. It was wrong.
+
+*Scope, narrower than it first reads:* a deletion makes "green therefore *the thing deleted* is not
+covered" valid. It does **not** make "green therefore *this mechanism* has no coverage" valid — you
+may have deleted a different entry point to the same mechanism.
+
+*Instrument for premise 3 (Ren):* replace the target with `panic!("PROBE: reached")`. Green means the
+tests never execute that line — stop and re-target. Red at that panic means the path is live; now run
+the real mutation. The runtime, not your own assertion, witnesses reachability.
+
+## 16. A cross-thread probe's green is bounded by a window nobody declared
+
+*Origin (Cindy and Ren, three rounds):* the probe of rule 15 does not survive a thread boundary
+unchanged.
+
+    synchronous, on the test thread's stack   panic!()           both directions self-report
+    cross-thread, "was it reached?"           process::abort()   both self-report — SIGABRT kills
+                                                                 the test binary, so any thread reports
+    counting, or several points at once       AtomicBool/channel signal never lost, and countable
+
+A `panic!` inside a spawned task does **not** fail the test: spawn a panicking task, drop the
+`JoinHandle`, and the run reports `1 passed`. So panic probes are useless exactly where transport
+bugs live.
+
+*Boundary, which all three share (Ren):* **green means "not executed within the window W the test
+voluntarily waits", and W is usually undeclared and often zero.** A task that aborts after 50 ms,
+not awaited, yields `1 passed, finished in 0.00s` — the runtime dropped, the task was cancelled, the
+abort never ran. If reaching the probe takes any time at all, green is guaranteed. W belongs to the
+test, not to the probe, and the coupling is inverted: when a test's assertions depend on the path,
+W is wide and the probe is reliable, but then you barely needed to ask; when they do not, W is
+approximately zero, which is when you most want to ask.
+
+*Consequence (Ren):* when W is approximately zero the answer is not a better probe, it is to widen W
+first — join, await, or wait for an effect the task must produce. **There is no honest binary
+"unreachable" across threads**, only "not observed within W". Same move as replacing "passed" with
+"Serving in 1s of a 20s budget": a binary conclusion that hides an undeclared parameter, replaced by
+a quantified one.
+
+## 17. A circular fixture is blind to the drift it exists to catch
+
+*Origin (case Cindy, category named by Ren):* `runtime.rs` classified an invalid join ticket by
+matching the error text against a literal, and the test fed that same literal in. It verified that
+the matcher works on the string the test supplies — not that the string it supplies is the one
+production emits. Reword the producer and classification silently degrades to a generic class while
+the unit test stays green.
+
+**A test that constructs the input it should have obtained from production code is blind to that
+code's drift.** This is the test-side dual of *assert the symptom, not the cause*: one says do not
+hardcode the cause, the other says do not manufacture the system's own output.
+
+*Fix, and the half it does not fix (Cindy):* a shared exported constant makes both sides use one
+name — but it only proves no second literal exists. It does **not** show production ever reaches that
+branch; that needs driving the real failure end to end. Keep the two claims separate in the commit
+message, or "reference enumeration passes" gets read as "the production path is verified".
+
+*Related, on binding duplicated literals (Ren):* bind only those whose drift degrades **silently**.
+Same ruler, three answers — a producer/consumer pair that drifts to a generic class with unit tests
+green must bind; an E2E script hardcoding product error text goes red immediately on drift, so
+duplication is acceptable; a string with no consumer at all has nothing to degrade.
+
+## 18. An uncharacterised failure cannot be closed by any number of greens
+
+*Origin (Cindy and Ren, on two live cases):* a Chaos run showed three nodes stuck as candidates for
+about 20 seconds. The suspected cause — that a new keepalive covers it incidentally — was explicitly
+labelled a hypothesis. Later the full matrix passed on the release head.
+
+Not "a later green is weaker evidence than an earlier red"; that invites reading it as a weight
+comparison. **The red happened under a condition set we still cannot state; the green happened under
+the condition set the matrix defines; the relation between those two sets is unknown.** The green is
+therefore not weak evidence about that red — it is not evidence. A shot that missed the bullseye
+cannot tell you where the bullseye is.
+
+    red characterised    → you can check whether the matrix covers those conditions → a green can close it
+    red uncharacterised  → the relation is undecidable by construction → no quantity of greens closes it
+
+**So "uncharacterised" is a logical state, not a backlog state.** *Run enough greens and treat it as
+gone* is not a discouraged third option; it does not exist.
+
+*Boundary (Tess):* uncharacterised does not mean never investigate. It means the investigation owes a
+reproduction or a characterisation, and until then the item travels with the release rather than
+being closed by it. Record it in the form that helps on recurrence — who owns it, and what the
+comparison baseline is — because "fixed" sends the next person hunting through new code that was
+never shown to be causally related, exactly when the scene is fresh and most valuable.
+
+## 19. A command can answer a narrower question than the one you asked
+
+*Origin (Cindy, three instances in one day; Ren, two):* a `grep -c` inside a `for` loop whose exit
+code swallowed the real result and printed `0` for both heads when one had the thing; a
+quote-delimited pattern that missed an embedded occurrence, so "four literals" were five; and
+`grep -c 'a|b'`, which on this machine returns a well-formed **0** because `grep` is ugrep and a bare
+alternation is literal there.
+
+This is not "the check did not run" — that category is already named, and it at least produces no
+output. **Here the check ran, succeeded, and returned a well-formed answer to a narrower question
+than the one intended.**
+
+*Criterion, executable at the moment of writing:* state what this command actually answers, then
+compare it to what you meant to ask.
+
+*Boundary (Tess and Ren):* the rule is not "use broader patterns". @Ren's first audit for this very
+category used `grep -n grep | grep '|'` — wide enough to catch shell `||`, six well-formed hits, none
+of them the thing. **Neither width nor narrowness is the test; "which question does this answer" is.**
+It was committed under ten minutes after the category was named, by the person auditing for it — the
+rule does not defend against ignorance, but against an error that happens while you are thinking
+about it.
+
+*Corollary (Cindy):* the auditing tool must not share the defect under audit. Scanning the repo for
+ugrep-incompatible grep patterns was done with python, not grep. And the audit's own clean result
+needed a positive control — 0 findings is indistinguishable from "my regex matched no grep calls at
+all", so report how many were examined.
