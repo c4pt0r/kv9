@@ -61,6 +61,23 @@ source of truth**.
 - **Region** — range shard = a Raft group; the unit of replication, placement, split/merge. Never spans a keyspace.
   Its durable data is immutable SSTs in object storage; its **manifest** (the mutable pointer) lives in raft.
 
+### Read semantics in v0 — not yet linearizable
+
+kv9's intended read semantics are **linearizable**. **v0 does not implement that yet**, and the gap is worth stating
+plainly rather than leaving to be discovered:
+
+- A read is currently served by whichever node's **local** raft role says "leader" — a local judgment, not a
+  quorum-confirmed one. A leader that has already been deposed keeps believing it leads until `check_quorum` makes
+  it step down, and inside that window it can return a **stale** value.
+- **That bound is counted in raft ticks, not wall-clock time** (currently 10 ticks at 20 ms ≈ 200 ms). A process that
+  is paused, descheduled, or otherwise not running does not tick, so it does not step down — on resume it can serve a
+  read *before* processing anything. **The real staleness window is the pause duration plus one election timeout**,
+  which under container pause/restart is seconds, not milliseconds. Size your retries against that, not against 200 ms.
+- So v0 raw reads are **fresh in normal operation but not linearizable**. Notably, *"the write returned success,
+  therefore the next read observes it"* does **not** hold across a leadership change.
+- This closes when reads go through a ReadIndex quorum round-trip **and** a partition test in which a deposed leader
+  must fail to serve a read exists to hold it there. See [`DESIGN.md`](DESIGN.md) §9.2.
+
 ## Influences
 
 Bigtable (OSDI 2006) · Spanner (OSDI 2012) · Amazon DynamoDB (USENIX ATC 2022) · TiKV (open source); the
