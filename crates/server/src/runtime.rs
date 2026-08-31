@@ -2278,10 +2278,7 @@ mod tests {
         loop {
             driver.tick_and_step().unwrap();
             let s = driver.status();
-            if driver
-                .driver_applied()
-                .is_some_and(|wm| wm.term == s.term)
-            {
+            if driver.driver_applied().is_some_and(|wm| wm.term == s.term) {
                 break;
             }
             assert!(

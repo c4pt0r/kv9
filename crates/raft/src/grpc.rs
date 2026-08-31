@@ -1296,15 +1296,13 @@ mod tests {
             let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
                 .await
                 .unwrap();
-            let mut request =
-                Request::new(tokio_stream::iter(vec![batch_with(&wrong_root.root_digest)]));
+            let mut request = Request::new(tokio_stream::iter(vec![batch_with(
+                &wrong_root.root_digest,
+            )]));
             attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(2));
-            client
-                .batch_raft(request)
-                .await
-                .expect_err(
-                    "a mismatched root batch must be rejected by the batch-stream root gate",
-                )
+            client.batch_raft(request).await.expect_err(
+                "a mismatched root batch must be rejected by the batch-stream root gate",
+            )
         });
         assert_eq!(status.code(), tonic::Code::FailedPrecondition);
         assert!(
@@ -1317,8 +1315,9 @@ mod tests {
             let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
                 .await
                 .unwrap();
-            let mut request =
-                Request::new(tokio_stream::iter(vec![batch_with(&test_root().root_digest)]));
+            let mut request = Request::new(tokio_stream::iter(vec![batch_with(
+                &test_root().root_digest,
+            )]));
             attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(2));
             client
                 .batch_raft(request)
