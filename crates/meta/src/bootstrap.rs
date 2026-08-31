@@ -424,6 +424,25 @@ impl Bootstrap {
             }
             (BootstrapElection { fp }, WonElection) => Initializing { fp },
             (BootstrapElection { fp }, LostElection) => WaitForBootstrap { fp },
+            // Bootstrap role FOLLOWS current raft leadership; it is not frozen
+            // at the first election (task #40). Without these two edges an
+            // election during the bootstrap window wedges the cluster: the
+            // deposed winner errors out of the runtime ("lost leadership
+            // before catalog commit" is fatal in run()), while the new leader
+            // sits in WaitForBootstrap waiting for a catalog only an
+            // Initializing node writes — and cannot reach Initializing.
+            //
+            // SAFETY under the root contract: a re-proposal submits the SAME
+            // root-provisioned content (no minting), but a duplicate that
+            // commits still poisons at apply — initialize_cluster refuses a
+            // second insert. The runtime therefore gates the
+            // WaitForBootstrap→Initializing promotion behind the current-term
+            // barrier (driver_applied().term == leader term ⇒ every committed
+            // entry, including any earlier init, is applied locally ⇒ an
+            // empty catalog PROVES nothing committed). The FSM provides the
+            // edge; the runtime provides the proof.
+            (WaitForBootstrap { fp }, WonElection) => Initializing { fp },
+            (Initializing { fp }, LostElection) => WaitForBootstrap { fp },
             (Initializing { .. }, MetadataInitialized { cluster_id }) => {
                 self.data_dir_initialized = true;
                 Serving { cluster_id }
@@ -605,6 +624,49 @@ mod tests {
             "Serving"
         );
         assert_eq!(b.cluster_id(), Some(cid("d")));
+    }
+
+    /// Bootstrap role follows current leadership (task #40). A node that LOST
+    /// the first election but later becomes the leader must be able to take
+    /// over initialization — otherwise it waits forever for a catalog only an
+    /// Initializing node writes, while the deposed winner errors out of the
+    /// runtime. Red on the old FSM: WonElection from WaitForBootstrap was an
+    /// illegal transition. (The runtime additionally gates this promotion
+    /// behind the current-term barrier — see the edge comment; the FSM edge
+    /// is necessary, not sufficient.)
+    #[test]
+    fn loser_that_becomes_leader_takes_over_initialization() {
+        let mut b = Bootstrap::with_seeds(N2, vec![N1, N2, N3]);
+        b.discovered_uninitialized(&[N1, N2, N3]).unwrap();
+        b.on_event(BootstrapEvent::LostElection).unwrap();
+        assert_eq!(b.state().name(), "WaitForBootstrap");
+        assert_eq!(
+            b.on_event(BootstrapEvent::WonElection).unwrap().name(),
+            "Initializing"
+        );
+        assert_eq!(b.on_event(minted("f")).unwrap().name(), "Serving");
+        assert_eq!(b.cluster_id(), Some(cid("f")));
+    }
+
+    /// The symmetric edge: a winner that loses leadership mid-init demotes to
+    /// WaitForBootstrap (the runtime clears its stale proposal) instead of
+    /// dying; if it regains leadership it can initialize again. Red on the
+    /// old FSM: LostElection from Initializing was an illegal transition.
+    #[test]
+    fn winner_that_loses_leadership_demotes_and_can_retake() {
+        let mut b = Bootstrap::with_seeds(N1, vec![N1, N2, N3]);
+        b.discovered_uninitialized(&[N1, N2, N3]).unwrap();
+        b.on_event(BootstrapEvent::WonElection).unwrap();
+        assert_eq!(b.state().name(), "Initializing");
+        assert_eq!(
+            b.on_event(BootstrapEvent::LostElection).unwrap().name(),
+            "WaitForBootstrap"
+        );
+        assert_eq!(
+            b.on_event(BootstrapEvent::WonElection).unwrap().name(),
+            "Initializing"
+        );
+        assert_eq!(b.on_event(minted("9")).unwrap().name(), "Serving");
     }
 
     /// Structural fingerprint retirement: the fp is readable in every
