@@ -219,6 +219,45 @@ reason: no drain worker exists, so it is unreachable because **nothing** calls i
 condition the mapping depends on, that it is currently vacuous, and the moment it must be
 re-checked.
 
+### Extension — relaying an enumeration inherits its range, not just its conclusion
+
+*Origin (case Rafa/Ren, category named by Ren, 2026-08-31):* @Rafa enumerated every entry point to
+`MetaRaft::propose_apply` and reported the production runtime call-free. @Ren accepted it and restated it
+in his own message. Re-running the search found a non-test caller neither had listed
+(`impl AdminApi for Node` → `Node::create_keyspace` → `propose_apply`), and the real blocker was narrower
+than either statement: `Node` cannot satisfy `PublicApiBackend` because it lacks a `RawApi` impl — an
+accidental negative capability one plausible trait impl away from being live, not an architectural
+boundary.
+
+**Quoting an enumeration means carrying its method, or re-running it. Never the conclusion alone.**
+Searching wrong yourself at least leaves a suspicious command behind; relaying washes someone else's
+range into a fact, and washes it clean, because the person relaying usually adds "I checked" (Ren).
+
+*Trigger — an act, not an intent:* if you would say **"the entry points are these three"**, "there is
+nowhere else", "there are N sites", or **"X cannot reach / cannot do Y"** — capability and
+negative-existence claims are the same thing wearing different clothes, each still the residue of one
+"I looked and did not see" — you owe the method or a re-run.
+
+*The criterion is the derivation, not the appearance.* First stated as "design rulings, type facts and
+readable code paths carry no range", and falsified within the hour by the person who proposed the rule:
+"tests cannot reach the `RuntimeBackend`" was a search of `NodeRuntime`'s **public** surface wearing the
+costume of a type fact, and an option was ruled out on it (`runtime.rs`'s own `mod tests` is a descendant
+module and sees those private fields).
+
+    Anything derived from "I looked over X and did not see Y" carries a range —
+    even when the conclusion reads as a static rule.
+
+*What this does NOT require:* not "re-verify every expert conclusion". Whoever owns the lane should
+answer, and that is correct — the hazard is precisely that a correct answer then travels wearing an
+expert seat's authority while carrying an ordinary search's edges.
+
+*Order of operations that makes the control real:* search first for the thing you already know is there,
+confirm the method can see that class of thing, and only then report what else it found. Reversed, it is
+another zero-firing detector (rule 12).
+
+*Related:* the rule 17 extension is the same move applied to a test — both put the debt on **whoever says
+the sentence**, not on the original author or enumerator.
+
 ## 11. No existence claim without a ref
 
 *Origin (Cindy):* I grepped the working tree (master @ `a75443a`) and reported "no `NotLeader`
@@ -454,6 +493,44 @@ the uniqueness argument done.
 Same ruler, three answers — a producer/consumer pair that drifts to a generic class with unit tests
 green must bind; an E2E script hardcoding product error text goes red immediately on drift, so
 duplication is acceptable; a string with no consumer at all has nothing to degrade.
+
+### Extension — a fixture can also fail to pin the branch, and then a passing mutation is only a sample
+
+*Origin (case Cindy, distinction named by Ren, 2026-08-31):* the task #30 ring-hit probe asserted
+`applied_index >= position` as its precondition — a **watermark**. Two different scenes satisfy it, and
+only one selects the arm under test:
+
+    another leader's COMMAND took our slot          → enters the ring → different-term hit arm  ← the target
+    the barrier took our slot, a command took next  → never enters the ring → watermark arm     ← also green
+
+The two blindnesses are not equally dangerous, and this one is worse:
+
+    manufactured input (rule 17 body)  always blind — the mutation simply never reds, so you
+                                       find out immediately
+    unpinned branch (this extension)   sometimes blind — the mutation DID red, so you hold a ticket
+                                       that says verified; it expires silently when timing shifts,
+                                       and nobody re-runs a mutation that is "already verified"
+
+**When a test's purpose is a specific branch, the branch selection itself must be asserted, not left to
+timing, ordering, or luck.**
+
+*Fix:* assert the identity of whatever selects the branch, never an aggregate or watermark that several
+scenes satisfy. Here: `assert_eq!(real.index, doomed2.index)` — "the replacing entry is a COMMAND at
+exactly our position" becomes asserted rather than hoped for.
+
+*Trigger — an act, not an intent (Ren):* if you would say in review **"this test covers arm X"**, you owe
+a selection assertion. Binding it to the sentence rather than the author's intention also puts the debt on
+the reviewer, which is where it was actually incurred: "the 1ms poll separates Failed from pending" was
+listed as *passed*, and a mutation then showed nothing bound it.
+
+*Where it deceives:* this is NOT "add a selection assertion to every branch" — most tests claim no arm at
+all, they guard an end-to-end result, and they owe nothing. And it does not devalue mutation testing; it
+dates the ticket:
+
+**A mutation ticket has an expiry: pinned branch → guarantee; unpinned branch → sample.**
+
+*Related:* the rule 10 extension is the same move applied to a claim — both put the debt on **whoever says
+the sentence**.
 
 ## 18. An uncharacterised failure cannot be closed by any number of greens
 
