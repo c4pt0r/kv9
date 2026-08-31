@@ -1507,7 +1507,78 @@ mod tests {
         inbox.send(from(2)).unwrap(); // masked → must be dropped
 
         let delivered: Vec<u64> = transport.drain().iter().map(|m| m.from).collect();
-        assert_eq!(delivered, vec![3], "only the unmasked peer's message survives");
+        assert_eq!(
+            delivered,
+            vec![3],
+            "only the unmasked peer's message survives"
+        );
+    }
+
+    /// Wiring test for the SEND-side filter — the outbound twin of the drain
+    /// test above (review round: with only the inbound test, deleting the
+    /// `send` mask gate left the whole suite green, so "both directions are
+    /// wired" had teeth on one side only). A real receiver is required: the
+    /// gate sits before the peer channel, so the observable is what arrives at
+    /// the peer's inbox, ordered by the connection — if the control message
+    /// (sent after) arrives and the masked message (sent first) never does,
+    /// the gate dropped it.
+    #[test]
+    fn partition_mask_drops_outbound_to_masked_peer_only() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+        let addr2 = free_addr();
+
+        let n1 = GrpcTransport::new(
+            NodeId(1),
+            Some("test-cluster-token".into()),
+            handle.clone(),
+            test_root().root_digest,
+        );
+        let n2 = GrpcTransport::new(
+            NodeId(2),
+            Some("test-cluster-token".into()),
+            handle.clone(),
+            test_root().root_digest,
+        );
+        serve(&handle, NodeId(2), addr2, n2.inbox_sender(), 42);
+        n1.register_peer(NodeId(2), addr2);
+        std::thread::sleep(Duration::from_millis(200)); // let the listener bind
+
+        let msg_with_term = |term: u64| Message {
+            from: 1,
+            to: 2,
+            term,
+            ..Default::default()
+        };
+
+        // Masked: sent FIRST, must never arrive.
+        n1.partition.force_mask(&[2]);
+        n1.send(NodeId(2), msg_with_term(666));
+
+        // Heal, then send the control: same peer, same connection, ordered
+        // after the masked message — its arrival proves delivery works and
+        // bounds the masked message's absence.
+        n1.partition.force_mask(&[]);
+        n1.send(NodeId(2), msg_with_term(7));
+
+        let deadline = std::time::Instant::now() + Duration::from_secs(10);
+        let mut seen_terms: Vec<u64> = Vec::new();
+        loop {
+            seen_terms.extend(n2.drain().iter().map(|m| m.term));
+            if seen_terms.contains(&7) {
+                break;
+            }
+            assert!(
+                std::time::Instant::now() < deadline,
+                "control message never arrived; delivery path is broken, so the \
+                 masked message's absence proves nothing"
+            );
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        assert!(
+            !seen_terms.contains(&666),
+            "outbound send to a masked peer must be dropped at the send gate"
+        );
     }
 
     #[test]
