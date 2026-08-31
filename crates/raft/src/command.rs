@@ -55,12 +55,15 @@ pub enum FencedInner {
 impl FencedInner {
     /// Lower the inner ops into a [`WriteBatch`] — the ACCEPTED-path twin of
     /// [`Command::to_write_batch`], reachable only after the apply loop has checked
-    /// the fence (the envelope itself deliberately lowers to nothing; see
-    /// [`Command::to_write_batch`]).
+    /// the fence (the envelope itself refuses to lower; see
+    /// [`Command::to_write_batch`]). Infallible: everything this enum can hold is
+    /// lowerable by construction.
     pub fn to_write_batch(&self) -> WriteBatch {
+        let mut wb = WriteBatch::new();
         match self {
-            FencedInner::Write { ops } => Command::Write { ops: ops.clone() }.to_write_batch(),
+            FencedInner::Write { ops } => lower_ops(&mut wb, ops),
         }
+        wb
     }
 }
 
@@ -157,32 +160,30 @@ impl Command {
     /// Lower this command's KV effect into a [`WriteBatch`] for the state machine to
     /// apply (Phase-1). `ConfChange`/`Noop` produce an empty batch.
     ///
-    /// `Fenced` also produces an EMPTY batch: the apply loop must destructure the
-    /// envelope, check the fence in ordered apply, and lower the inner ops itself.
-    /// Lowering the envelope through this method would mean the fence was never
-    /// checked, so this path yields no effect — an unchecked fence fails closed
-    /// (nothing written, loud in any test that expects the write) rather than open.
-    pub fn to_write_batch(&self) -> WriteBatch {
+    /// `Fenced` REFUSES to lower here (typed error): its effect is conditional on a
+    /// fence check that only the ordered-apply loop can perform, so a generic
+    /// lowering path expressing it as any batch — the inner ops (fence never
+    /// checked) or an empty one (write silently dropped under a success result) —
+    /// would be wrong in one direction or the other. The apply loop destructures
+    /// the envelope, adjudicates, and lowers [`FencedInner::to_write_batch`] itself
+    /// (review round: an unhandled envelope must be loud, not an empty batch).
+    pub fn to_write_batch(&self) -> kv9_common::Result<WriteBatch> {
         let mut wb = WriteBatch::new();
         match self {
             Command::Put { cf, key, value } => {
                 wb.put(cf_from_code(*cf), key.clone(), value.clone());
             }
-            Command::CatalogTxn { ops } | Command::Write { ops } => {
-                for op in ops {
-                    match op {
-                        KvOp::Put { cf, key, value } => {
-                            wb.put(cf_from_code(*cf), key.clone(), value.clone());
-                        }
-                        KvOp::Delete { cf, key } => {
-                            wb.delete(cf_from_code(*cf), key.clone());
-                        }
-                    }
-                }
+            Command::CatalogTxn { ops } | Command::Write { ops } => lower_ops(&mut wb, ops),
+            Command::ConfChange { .. } | Command::Noop => {}
+            Command::Fenced { .. } => {
+                return Err(kv9_common::Error::Raft(
+                    "a fenced command cannot be lowered without its fence check; \
+                     the ordered-apply loop must adjudicate and lower the inner ops"
+                        .into(),
+                ));
             }
-            Command::ConfChange { .. } | Command::Noop | Command::Fenced { .. } => {}
         }
-        wb
+        Ok(wb)
     }
 
     /// Encode to opaque bytes for [`crate::RaftGroup::propose`].
@@ -381,6 +382,21 @@ fn put_ops(out: &mut Vec<u8>, ops: &[KvOp]) {
                 out.push(OP_DELETE);
                 out.push(*cf);
                 put_bytes(out, key);
+            }
+        }
+    }
+}
+
+/// Lower an op list into a batch (shared by the generic path and the fenced
+/// accepted path).
+fn lower_ops(wb: &mut WriteBatch, ops: &[KvOp]) {
+    for op in ops {
+        match op {
+            KvOp::Put { cf, key, value } => {
+                wb.put(cf_from_code(*cf), key.clone(), value.clone());
+            }
+            KvOp::Delete { cf, key } => {
+                wb.delete(cf_from_code(*cf), key.clone());
             }
         }
     }
@@ -693,14 +709,27 @@ mod tests {
         assert!(Command::decode(&padded).is_err());
     }
 
-    /// Lowering the envelope directly must produce NOTHING: the apply loop checks
-    /// the fence and lowers the inner ops itself, so a path that forgets the fence
-    /// fails closed (no write) instead of open (unchecked write).
+    /// Lowering the envelope through the generic path must be a typed ERROR — not
+    /// the inner ops (fence never checked) and not an empty batch (write silently
+    /// dropped under a success result; review round). Only the ordered-apply loop,
+    /// after adjudication, may lower [`FencedInner`].
     #[test]
-    fn fenced_lowered_without_a_fence_check_writes_nothing() {
+    fn fenced_refuses_the_generic_lowering_path() {
+        let err = sample_fenced()
+            .to_write_batch()
+            .expect_err("an unadjudicated envelope must refuse to lower");
         assert!(
-            sample_fenced().to_write_batch().mutations().is_empty(),
-            "an unchecked fenced write must not leak its ops through to_write_batch"
+            err.to_string().contains("fence check"),
+            "the refusal must name the missing fence check: {err}"
+        );
+        // The accepted path stays available and carries the ops.
+        let Command::Fenced { inner, .. } = sample_fenced() else {
+            unreachable!()
+        };
+        assert_eq!(
+            inner.to_write_batch().mutations().len(),
+            2,
+            "the post-adjudication path must carry the inner ops"
         );
     }
 }

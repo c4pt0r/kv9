@@ -96,11 +96,12 @@ pub trait StateMachine: Send + Sync {
 pub struct MemStateMachine<E: Engine = MemEngine> {
     engine: Arc<E>,
     applied: LogIndex,
-    /// Adjudicates [`Command::Fenced`] entries. `None` — the default — REJECTS
-    /// every fenced entry: a node without region knowledge fails closed (no
-    /// data written, watermark still advances), the same failure direction as
-    /// `Command::to_write_batch` lowering the envelope to nothing. The server
-    /// injects the catalog-backed adjudicator at startup.
+    /// Adjudicates [`Command::Fenced`] entries. `None` — the default — makes a
+    /// fenced entry a typed APPLY ERROR (driver poisons): adjudicator presence
+    /// is node-local configuration, not log state, so a node without one must
+    /// refuse rather than pick a verdict that differently-configured replicas
+    /// would not share. The server injects the catalog-backed adjudicator at
+    /// startup, before any fenced proposal is possible.
     adjudicator: Option<Arc<dyn FenceAdjudicator>>,
 }
 
@@ -153,7 +154,8 @@ impl<E: Engine> MemStateMachine<E> {
     }
 
     /// Install the fence adjudicator (server startup; see [`FenceAdjudicator`]).
-    /// Until this is called every [`Command::Fenced`] entry is rejected.
+    /// Until this is called a committed [`Command::Fenced`] entry is a typed
+    /// apply error, not a verdict.
     pub fn set_fence_adjudicator(&mut self, adjudicator: Arc<dyn FenceAdjudicator>) {
         self.adjudicator = Some(adjudicator);
     }
@@ -184,21 +186,36 @@ impl<E: Engine> MemStateMachine<E> {
         //
         // A Fenced entry is adjudicated HERE, inside ordered apply, because the
         // verdict must be a pure function of log-established state (task #48
-        // layer 2). Rejection is a logical outcome, not an apply failure: the
-        // watermark rides the same atomic batch either way, so a rejected entry
-        // advances it exactly like an accepted one — treating rejection as an
-        // error would stall the watermark (and the driver poisons on apply
-        // errors by design).
+        // layer 2). That same rule forbids a local default: whether an
+        // adjudicator is INSTALLED is node-local configuration, not log state,
+        // so a node without one must refuse the entry as an apply error — the
+        // driver poisons, exactly like decoding an unknown entry version —
+        // rather than "reject", which would let differently-configured replicas
+        // apply the same committed entry to different states.
+        //
+        // A true stale-fence rejection IS a log-determined verdict, and it is a
+        // logical outcome, not an apply failure: the watermark rides the same
+        // atomic batch as an accepted entry, so a rejected entry advances it
+        // identically — treating rejection as an error would stall the
+        // watermark on every replica.
         let (mut batch, fence_rejected) = match cmd {
             Command::Fenced { fence, inner } => {
-                let fresh = self.adjudicator.as_ref().is_some_and(|a| a.is_fresh(fence));
-                if fresh {
+                let adjudicator = self.adjudicator.as_ref().ok_or_else(|| {
+                    kv9_common::Error::Raft(
+                        "committed fenced entry on a node with no fence adjudicator: \
+                         this node cannot compute the log-determined verdict and must \
+                         not guess (install the adjudicator before enabling fenced \
+                         proposals)"
+                            .into(),
+                    )
+                })?;
+                if adjudicator.is_fresh(fence) {
                     (inner.to_write_batch(), false)
                 } else {
                     (kv9_engine::WriteBatch::new(), true)
                 }
             }
-            _ => (cmd.to_write_batch(), false),
+            _ => (cmd.to_write_batch()?, false),
         };
         batch.put(
             ColumnFamily::Default,
@@ -519,21 +536,28 @@ mod tests {
         );
     }
 
-    /// No adjudicator installed = every fence rejected. A node without region
-    /// knowledge fails closed — the same direction as `Command::to_write_batch`
-    /// lowering the envelope to nothing; sensitivity control: the same command
-    /// under a fresh verdict does apply.
+    /// No adjudicator installed = typed apply ERROR, and the watermark must NOT
+    /// advance. Adjudicator presence is node-local configuration, not log
+    /// state: a local "reject" default would let differently-configured
+    /// replicas apply the same committed entry to different states, and an
+    /// empty-batch fallback would report success while silently dropping the
+    /// write (review round). The driver's poison-on-apply-error is the correct
+    /// consequence — same family as decoding an unknown entry version.
     #[test]
-    fn without_an_adjudicator_every_fence_is_rejected() {
+    fn without_an_adjudicator_a_fence_is_a_typed_apply_error() {
         let mut sm = MemStateMachine::new();
-        let result = sm
+        let err = sm
             .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
-            .unwrap();
+            .expect_err("a node without an adjudicator must refuse, not guess");
         assert!(
-            result.fence_rejected,
-            "an unadjudicated fence must fail closed"
+            err.to_string().contains("no fence adjudicator"),
+            "the refusal must name the missing adjudicator: {err}"
         );
         assert_eq!(sm.get(ColumnFamily::Default, b"k").unwrap(), None);
-        assert_eq!(sm.applied_index(), LogIndex(1));
+        assert_eq!(
+            sm.applied_index(),
+            LogIndex(0),
+            "a refused entry must not advance the watermark"
+        );
     }
 }
