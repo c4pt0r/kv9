@@ -2216,6 +2216,7 @@ mod tests {
     use kv9_engine::{ColumnFamily, Engine, MemEngine};
     use kv9_raft::transport::{InProcHub, RaftTransport};
     use kv9_raft::Command;
+    use raft::eraftpb::{Message, MessageType};
     use tonic::Code;
 
     /// task #40: the takeover gate consumes the current-term barrier — with
@@ -2236,9 +2237,42 @@ mod tests {
             "gate must refuse before leadership"
         );
 
-        // Freeze apply BEFORE campaigning: leadership and commits proceed,
-        // the watermark does not — the committed-but-unapplied window, held
-        // open deterministically.
+        // First establish a real applied watermark in term N. The dangerous
+        // takeover state is Some(old term), not merely no watermark: deleting
+        // the term comparison must not let an old-term proof authorize a
+        // current-term takeover.
+        driver.peer().campaign().unwrap();
+        for _ in 0..100 {
+            driver.tick_and_step().unwrap();
+            let status = driver.status();
+            if status.role == Role::Leader
+                && driver
+                    .driver_applied()
+                    .is_some_and(|wm| wm.term == status.term)
+            {
+                break;
+            }
+        }
+        let old = driver.status();
+        let old_watermark = driver
+            .driver_applied()
+            .expect("term N election no-op must establish a watermark");
+        assert_eq!(old.role, Role::Leader);
+        assert_eq!(old_watermark.term, old.term);
+
+        // A higher-term heartbeat deterministically deposes the single-node
+        // leader. Freeze apply, then campaign into a newer term: raft may
+        // elect and commit its new-term no-op, but the unified watermark must
+        // remain Some(term N), not None.
+        let mut higher_term = Message::default();
+        higher_term.set_msg_type(MessageType::MsgHeartbeat);
+        higher_term.set_from(2);
+        higher_term.set_to(1);
+        higher_term.set_term(old.term + 1);
+        driver.peer().step_message(higher_term);
+        driver.tick_and_step().unwrap();
+        assert_ne!(driver.status().role, Role::Leader);
+
         driver.pause_apply(true);
         driver.peer().campaign().unwrap();
         for _ in 0..100 {
@@ -2248,25 +2282,27 @@ mod tests {
             }
         }
         assert_eq!(driver.status().role, Role::Leader);
-        // Pump more ticks: the election no-op COMMITS but must not apply.
+        // Pump more ticks: the new election no-op COMMITS but must not apply.
         for _ in 0..20 {
             driver.tick_and_step().unwrap();
         }
         let status = driver.status();
+        let frozen_watermark = driver
+            .driver_applied()
+            .expect("freeze must retain the old-term watermark");
         assert!(
-            status.raft_committed > 0,
-            "the election no-op must have committed (window precondition)"
+            status.term > old.term,
+            "the replacement leader must be in a newer term"
         );
         assert!(
-            driver
-                .driver_applied()
-                .is_none_or(|wm| wm.term < status.term),
-            "apply freeze must hold the watermark below the leader term \
-             (window precondition)"
+            status.raft_committed > frozen_watermark.index,
+            "the new election no-op must commit beyond the frozen watermark"
         );
+        assert_eq!(frozen_watermark, old_watermark);
+        assert!(frozen_watermark.term < status.term);
         assert!(
             !bootstrap_takeover_proven(driver, &backend.node).unwrap(),
-            "gate must refuse while the current-term barrier is unmet: a \
+            "gate must refuse a present but old-term watermark: a \
              committed-but-unapplied init would be invisible and the \
              takeover would double-propose into an apply-time poison"
         );
