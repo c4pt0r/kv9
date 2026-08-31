@@ -753,6 +753,15 @@ pub struct GrpcTransport {
     /// recovery (which, in-process, would revive the wedged socket itself and
     /// erase the old/new discrimination).
     connect_attempts: Arc<AtomicU64>,
+    /// Deterministic partition injection (task #28). Consulted symmetrically:
+    /// `send` drops outbound to a masked peer, `drain` drops inbound from one —
+    /// both check this single mask, so one process isolates a peer in both
+    /// directions. Refreshed from `KV9_TESTING_PARTITION_DIR/testing-partition`
+    /// at the start of every `drain` (= every driver tick), so a harness can
+    /// flip a partition on a running cluster. The whole facility is compiled out
+    /// of a production build; a node whose env var is unset never masks.
+    #[cfg(any(test, feature = "testing"))]
+    partition: crate::testing::PartitionState,
 }
 
 impl GrpcTransport {
@@ -775,6 +784,8 @@ impl GrpcTransport {
             inbox_tx,
             root_digest,
             connect_attempts: Arc::new(AtomicU64::new(0)),
+            #[cfg(any(test, feature = "testing"))]
+            partition: crate::testing::PartitionState::from_env(),
         })
     }
 
@@ -829,6 +840,13 @@ impl GrpcTransport {
 
 impl RaftTransport for GrpcTransport {
     fn send(&self, to: NodeId, msg: Message) {
+        // Partition injection (task #28): drop outbound to a masked peer, as if
+        // the wire were cut. Same effect as the "unknown peer: drop" below —
+        // raft retransmits, and a real partition drops packets identically.
+        #[cfg(any(test, feature = "testing"))]
+        if self.partition.is_masked(to.0) {
+            return;
+        }
         let Some(sender) = self.peer_sender(to) else {
             return; // unknown peer: drop (raft retransmits after registration)
         };
@@ -848,9 +866,21 @@ impl RaftTransport for GrpcTransport {
     }
 
     fn drain(&self) -> Vec<Message> {
+        // Refresh the partition mask once per tick before delivering inbound
+        // traffic to raft, so a partition written mid-run takes effect on the
+        // next drain. Dropping a masked message here — after it was received but
+        // before raft sees it — is behaviourally identical to a wire drop for
+        // consensus: the state machine never processes it. Both filter points
+        // (this and `send`) consult the same mask, giving symmetric isolation.
+        #[cfg(any(test, feature = "testing"))]
+        self.partition.refresh();
         let mut rx = self.inbox_rx.lock().expect("inbox poisoned");
         let mut out = Vec::new();
         while let Ok(msg) = rx.try_recv() {
+            #[cfg(any(test, feature = "testing"))]
+            if self.partition.is_masked(msg.from) {
+                continue;
+            }
             out.push(msg);
         }
         out
@@ -1452,6 +1482,345 @@ mod tests {
     /// server + client-streaming batches), election, replication verified by
     /// (term, index) on every node, live leader failover — the same
     /// correctness surface the TCP transport passed, on the new carrier.
+    #[test]
+    fn partition_mask_drops_inbound_from_masked_peer_only() {
+        // Wiring test for the drain-side filter (task #28). Uses force_mask to
+        // avoid the process-global env path; drain refreshes but dir is None so
+        // the forced mask stands. Inbound from a masked peer must vanish before
+        // raft sees it; inbound from an unmasked peer must pass through.
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            None,
+            rt.handle().clone(),
+            test_root().root_digest,
+        );
+        transport.partition.force_mask(&[2]);
+
+        let inbox = transport.inbox_sender();
+        let from = |n: u64| Message {
+            from: n,
+            ..Default::default()
+        };
+        inbox.send(from(2)).unwrap(); // masked → must be dropped
+        inbox.send(from(3)).unwrap(); // unmasked → must survive
+        inbox.send(from(2)).unwrap(); // masked → must be dropped
+
+        let delivered: Vec<u64> = transport.drain().iter().map(|m| m.from).collect();
+        assert_eq!(
+            delivered,
+            vec![3],
+            "only the unmasked peer's message survives"
+        );
+    }
+
+    /// Wiring test for the SEND-side filter — the outbound twin of the drain
+    /// test above (review round: with only the inbound test, deleting the
+    /// `send` mask gate left the whole suite green, so "both directions are
+    /// wired" had teeth on one side only). A real receiver is required: the
+    /// gate sits before the peer channel, so the observable is what arrives at
+    /// the peer's inbox, ordered by the connection — if the control message
+    /// (sent after) arrives and the masked message (sent first) never does,
+    /// the gate dropped it.
+    #[test]
+    fn partition_mask_drops_outbound_to_masked_peer_only() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+        let addr2 = free_addr();
+
+        let n1 = GrpcTransport::new(
+            NodeId(1),
+            Some("test-cluster-token".into()),
+            handle.clone(),
+            test_root().root_digest,
+        );
+        let n2 = GrpcTransport::new(
+            NodeId(2),
+            Some("test-cluster-token".into()),
+            handle.clone(),
+            test_root().root_digest,
+        );
+        serve(&handle, NodeId(2), addr2, n2.inbox_sender(), 42);
+        n1.register_peer(NodeId(2), addr2);
+        std::thread::sleep(Duration::from_millis(200)); // let the listener bind
+
+        let msg_with_term = |term: u64| Message {
+            from: 1,
+            to: 2,
+            term,
+            ..Default::default()
+        };
+
+        // Masked: sent FIRST, must never arrive.
+        n1.partition.force_mask(&[2]);
+        n1.send(NodeId(2), msg_with_term(666));
+
+        // Heal, then send the control: same peer, same connection, ordered
+        // after the masked message — its arrival proves delivery works and
+        // bounds the masked message's absence.
+        n1.partition.force_mask(&[]);
+        n1.send(NodeId(2), msg_with_term(7));
+
+        let deadline = std::time::Instant::now() + Duration::from_secs(10);
+        let mut seen_terms: Vec<u64> = Vec::new();
+        loop {
+            seen_terms.extend(n2.drain().iter().map(|m| m.term));
+            if seen_terms.contains(&7) {
+                break;
+            }
+            assert!(
+                std::time::Instant::now() < deadline,
+                "control message never arrived; delivery path is broken, so the \
+                 masked message's absence proves nothing"
+            );
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        assert!(
+            !seen_terms.contains(&666),
+            "outbound send to a masked peer must be dropped at the send gate"
+        );
+    }
+
+    /// The deterministic 2+1 scenario (task #28 step 2) — the characterization
+    /// key for the open uncharacterized incident "3 nodes all candidate ~20s
+    /// after pod failure/heal + leader partition" (TESTING.md rule 18: only
+    /// characterization closes it). The late-voter reconnect fix that shipped
+    /// with task #40's transport triple is the HYPOTHESIS under test here, not
+    /// an assumed cover.
+    ///
+    /// Phase 1 models pod failure/recovery as full mask isolation of a
+    /// follower, with an in-scenario control proving the cut bites (the missed
+    /// commit must NOT apply while isolated) before the heal is credited —
+    /// without that control, "recovered after heal" is vacuous if the mask
+    /// never engaged. Phase 2 cuts the current leader 2+1 and asserts the
+    /// three properties Tess's acceptance names: term/vote progress on the
+    /// majority side, a final majority-side leader (the anti-signature of the
+    /// all-candidate incident), and the isolated leader's check_quorum
+    /// step-down. Masking only on the isolated node cuts BOTH directions (its
+    /// sends drop at its send gate, its inbound drops at its drain), so the
+    /// survivor↔survivor edge is untouched by construction — the target-target
+    /// ambiguity of the original Chaos CR cannot occur here.
+    #[test]
+    fn pod_failure_recovery_then_two_one_partition_elects_the_majority_side() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+        let region = RegionId(1);
+        let ids = [NodeId(1), NodeId(2), NodeId(3)];
+        let addrs: Vec<SocketAddr> = ids.iter().map(|_| free_addr()).collect();
+
+        let mut transports: Vec<Arc<GrpcTransport>> = Vec::new();
+        let mut drivers = Vec::new();
+        for (i, &id) in ids.iter().enumerate() {
+            let transport = GrpcTransport::new(
+                id,
+                Some("test-cluster-token".into()),
+                handle.clone(),
+                test_root().root_digest,
+            );
+            for (j, &peer) in ids.iter().enumerate() {
+                if peer != id {
+                    transport.register_peer(peer, addrs[j]);
+                }
+            }
+            serve(&handle, id, addrs[i], transport.inbox_sender(), 42);
+            transports.push(Arc::clone(&transport));
+            let peer = Arc::new(RaftPeer::new(id, region, &ids).unwrap());
+            drivers.push(NodeDriver::new(
+                peer,
+                transport as Arc<dyn RaftTransport>,
+                MemStateMachine::new(),
+            ));
+        }
+        std::thread::sleep(Duration::from_millis(100));
+        let _handles: Vec<_> = drivers
+            .iter()
+            .map(|d| d.spawn(Duration::from_millis(10)))
+            .collect();
+
+        let deadline = |secs: u64| std::time::Instant::now() + Duration::from_secs(secs);
+        let wait_for = |cond: &mut dyn FnMut() -> bool, until: std::time::Instant, what: &str| {
+            while !cond() {
+                assert!(std::time::Instant::now() < until, "timeout: {what}");
+                std::thread::sleep(Duration::from_millis(10));
+            }
+        };
+
+        // --- Form: elect, replicate one write everywhere.
+        drivers[0].peer().campaign().unwrap();
+        let mut leader_idx = 0;
+        wait_for(
+            &mut || match drivers.iter().position(|d| d.status().role == Role::Leader) {
+                Some(i) => {
+                    leader_idx = i;
+                    true
+                }
+                None => false,
+            },
+            deadline(20),
+            "initial election",
+        );
+        let put = |k: &[u8]| Command::Put {
+            cf: 0,
+            key: k.to_vec(),
+            value: b"v".to_vec(),
+        };
+        let at1 = drivers[leader_idx].propose(&put(b"k1")).unwrap();
+        for d in &drivers {
+            assert!(matches!(
+                d.wait_applied(at1, Duration::from_secs(20)).unwrap(),
+                crate::driver::ApplyWaitOutcome::Applied(_)
+            ));
+        }
+
+        // --- Phase 1: "pod failure" = fully isolate one follower via its own
+        // mask (both directions cut at that node), then heal.
+        let follower_idx = (0..3).find(|&i| i != leader_idx).unwrap();
+        let follower_peers: Vec<u64> = ids
+            .iter()
+            .enumerate()
+            .filter(|&(i, _)| i != follower_idx)
+            .map(|(_, id)| id.0)
+            .collect();
+        transports[follower_idx]
+            .partition
+            .force_mask(&follower_peers);
+
+        // Isolation control, asserted on DIRECT STATE (task #30 migration
+        // condition, Tess): the exact command's effect — k2 readable — not a
+        // proxy. A wait_applied shape can be satisfied by the wrong thing
+        // (the same index can carry two entries; the return contract itself
+        // just changed under task #30); k2's readability can only be produced
+        // by THIS command applying on THAT node. Watermarks stay out of the
+        // verdict entirely — supplementary diagnostics only.
+        let at2 = drivers[leader_idx].propose(&put(b"k2")).unwrap();
+        let _ = at2; // position kept for the log record; the verdict is state
+        let k2_on = |i: usize| {
+            drivers[i]
+                .get(kv9_engine::ColumnFamily::Default, b"k2")
+                .unwrap()
+                .is_some()
+        };
+        for i in (0..3).filter(|&i| i != follower_idx) {
+            wait_for(
+                &mut || k2_on(i),
+                deadline(20),
+                "k2 must become readable on both CONNECTED nodes",
+            );
+        }
+        assert!(
+            !k2_on(follower_idx),
+            "isolated follower saw k2: the mask never engaged, and everything \
+             after this control would be vacuous"
+        );
+
+        // Heal. The follower must catch up over RECOVERED streams — this is
+        // the late-voter reconnect hypothesis meeting its deterministic test.
+        // Same direct-state criterion: k2 readable on the healed node.
+        transports[follower_idx].partition.force_mask(&[]);
+        wait_for(
+            &mut || k2_on(follower_idx),
+            deadline(20),
+            "after heal the follower must catch up (k2 readable): streams must \
+             recover — the task #40 transport fix is the hypothesis under test",
+        );
+        // Agreed leader: all three report the same live leader.
+        wait_for(
+            &mut || {
+                let l0 = drivers[0].status().leader_id;
+                l0.is_some()
+                    && drivers.iter().all(|d| d.status().leader_id == l0)
+                    && drivers
+                        .iter()
+                        .any(|d| d.status().role == Role::Leader && Some(d.status().node_id) == l0)
+            },
+            deadline(20),
+            "post-heal agreed leader",
+        );
+
+        // --- Phase 2: cut the CURRENT leader 2+1.
+        let mut cur_leader = 0;
+        wait_for(
+            &mut || match drivers.iter().position(|d| d.status().role == Role::Leader) {
+                Some(i) => {
+                    cur_leader = i;
+                    true
+                }
+                None => false,
+            },
+            deadline(20),
+            "leader before the 2+1 cut",
+        );
+        let pre_cut_term = drivers[cur_leader].status().term;
+        let leader_peers: Vec<u64> = ids
+            .iter()
+            .enumerate()
+            .filter(|&(i, _)| i != cur_leader)
+            .map(|(_, id)| id.0)
+            .collect();
+        transports[cur_leader].partition.force_mask(&leader_peers);
+
+        // The majority side must make term/vote progress and elect ONE of the
+        // two survivors — the anti-signature of the all-candidate incident.
+        let mut new_leader = 0;
+        wait_for(
+            &mut || match (0..3).filter(|&i| i != cur_leader).find(|&i| {
+                let s = drivers[i].status();
+                s.role == Role::Leader && s.term > pre_cut_term
+            }) {
+                Some(i) => {
+                    new_leader = i;
+                    true
+                }
+                None => false,
+            },
+            deadline(20),
+            "majority-side election after the 2+1 cut (all-candidate signature?)",
+        );
+        assert!(
+            drivers[new_leader].status().term > pre_cut_term,
+            "the majority side must have advanced the term to elect"
+        );
+
+        // The isolated old leader must depose itself: check_quorum steps a
+        // leader down once it cannot reach a quorum.
+        wait_for(
+            &mut || drivers[cur_leader].status().role != Role::Leader,
+            deadline(20),
+            "isolated leader's check_quorum step-down",
+        );
+
+        // The majority side stays writable end to end — same direct-state
+        // criterion: k3 readable on both survivors.
+        let _at3 = drivers[new_leader].propose(&put(b"k3")).unwrap();
+        let k3_on = |i: usize| {
+            drivers[i]
+                .get(kv9_engine::ColumnFamily::Default, b"k3")
+                .unwrap()
+                .is_some()
+        };
+        for i in (0..3).filter(|&i| i != cur_leader) {
+            wait_for(
+                &mut || k3_on(i),
+                deadline(20),
+                "the majority side must commit and apply after re-election (k3 readable)",
+            );
+        }
+
+        // Heal the old leader: it must rejoin and observe the majority's
+        // write — stream recovery again, now on the once-isolated LEADER's
+        // connections (the exact surface of the original incident).
+        transports[cur_leader].partition.force_mask(&[]);
+        wait_for(
+            &mut || k3_on(cur_leader),
+            deadline(20),
+            "the healed ex-leader must converge onto the majority's history",
+        );
+
+        for d in &drivers {
+            d.stop();
+        }
+    }
+
     #[test]
     fn three_nodes_over_grpc_elect_replicate_failover() {
         let rt = tokio::runtime::Runtime::new().unwrap();

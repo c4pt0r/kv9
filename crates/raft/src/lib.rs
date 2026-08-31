@@ -16,6 +16,8 @@ pub mod grpc;
 pub mod rawnode;
 pub mod state_machine;
 pub mod storage;
+#[cfg(any(test, feature = "testing"))]
+pub mod testing;
 pub mod transport;
 
 pub use command::{cf_code, cf_from_code, Command, KvOp};

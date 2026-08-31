@@ -18,9 +18,13 @@ tonic.workspace = true
 tonic-prost.workspace = true
 
 [features]
-# Testing-only seams (apply freeze today; partition injection when task #28's
-# tooling lands). NEVER enable in a production build; dev-dependencies with
-# resolver = "2" keep it out of shipped binaries (kv9-engine precedent).
+# Testing-only seams: the apply freeze, and the deterministic partition-
+# injection surface in the transport (task #28). NEVER enable in a production
+# build — the partition mask can drop real raft traffic. The mask is inert
+# unless a data-dir/testing-partition file is written, but the surface itself
+# must not exist in a shipped binary: a reverse-import probe in a non-test
+# build must fail to compile; dev-dependencies with resolver = "2" keep the
+# feature out of shipped binaries (kv9-engine precedent).
 testing = []
 
 [build-dependencies]
