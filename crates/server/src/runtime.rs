@@ -2273,15 +2273,15 @@ mod tests {
             .unwrap();
         for _ in 0..200 {
             pump(1);
-            if d2
-                .driver_applied()
-                .is_some_and(|wm| wm.index >= at.index.0)
-            {
+            if d2.driver_applied().is_some_and(|wm| wm.index >= at.index.0) {
                 break;
             }
         }
         let wm1 = d2.driver_applied().expect("n2 applied at term 1");
-        assert_eq!(wm1.term, at.term, "window precondition: watermark at term 1");
+        assert_eq!(
+            wm1.term, at.term,
+            "window precondition: watermark at term 1"
+        );
 
         // Freeze n2's apply, then move leadership: check_quorum makes the
         // live leader sticky (it refuses votes while its lease holds), so
