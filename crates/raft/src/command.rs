@@ -25,6 +25,33 @@ pub enum KvOp {
     },
 }
 
+/// The region epoch a proposer expects, carried into ordered apply so every replica
+/// re-checks it against the epoch established by the same log (task #48 layer 2;
+/// DESIGN §6.1). Plain fields, not `kv9_region::RegionEpoch`: the dependency points
+/// the other way (kv9-region depends on this crate), so the wire carries the pair and
+/// the typed comparison — `RegionEpoch::is_fresh_as`, the SAME predicate the router's
+/// `check_epoch` uses, so propose-side and apply-side verdicts cannot drift — happens
+/// at the apply boundary.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct RegionFence {
+    pub region_id: u64,
+    pub conf_ver: u64,
+    pub version: u64,
+}
+
+/// The commands a [`RegionFence`] may wrap. A separate enum — not `Box<Command>` — so
+/// the two invalid envelopes are unrepresentable rather than checked: a fence cannot
+/// nest inside a fence, and commands with no region semantics (`Noop`, `ConfChange`,
+/// `CatalogTxn` — the catalog lives in the system keyspace, which regions never
+/// split) cannot be wrapped. Split/merge admin commands join this enum in M2; each
+/// addition is a deliberate whitelist entry, mirrored in `decode`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum FencedInner {
+    /// The fenced twin of [`Command::Write`]: a user-data batch that applies only if
+    /// the region epoch at its ordered-apply position still matches the fence.
+    Write { ops: Vec<KvOp> },
+}
+
 /// The set of commands the metadata-plane raft group replicates (ROADMAP Phase 1).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Command {
@@ -54,6 +81,17 @@ pub enum Command {
     ConfChange { add: bool, node: u64 },
     /// A no-op (leader-establish barrier / heartbeat filler).
     Noop,
+    /// A command wrapped with the proposer's expected region epoch (task #48 layer 2).
+    /// Every replica re-checks the fence against the region epoch at this entry's
+    /// ordered-apply position; on mismatch the entry is LOGICALLY rejected — it still
+    /// advances the applied watermark (through the same batch-tail publication as an
+    /// accepted entry), writes nothing, and the rejection is surfaced to the proposer
+    /// through the proposal receipt path. The check is deterministic because the
+    /// epoch itself is established by the same log every replica applies in order.
+    Fenced {
+        fence: RegionFence,
+        inner: FencedInner,
+    },
 }
 
 impl Command {
@@ -90,8 +128,28 @@ impl Command {
         }
     }
 
+    /// Build a [`Command::Fenced`] user-data write from an engine [`WriteBatch`] —
+    /// the fenced twin of [`Command::write_from_batch`], and the only proposer entry
+    /// point for epoch-checked user writes. The fence rides the wire into ordered
+    /// apply; see [`Command::Fenced`] for the apply-side contract.
+    pub fn fenced_write_from_batch(fence: RegionFence, batch: &WriteBatch) -> Command {
+        match Command::from_batch(batch) {
+            Command::CatalogTxn { ops } => Command::Fenced {
+                fence,
+                inner: FencedInner::Write { ops },
+            },
+            _ => unreachable!("from_batch always yields CatalogTxn"),
+        }
+    }
+
     /// Lower this command's KV effect into a [`WriteBatch`] for the state machine to
     /// apply (Phase-1). `ConfChange`/`Noop` produce an empty batch.
+    ///
+    /// `Fenced` also produces an EMPTY batch: the apply loop must destructure the
+    /// envelope, check the fence in ordered apply, and lower the inner ops itself.
+    /// Lowering the envelope through this method would mean the fence was never
+    /// checked, so this path yields no effect — an unchecked fence fails closed
+    /// (nothing written, loud in any test that expects the write) rather than open.
     pub fn to_write_batch(&self) -> WriteBatch {
         let mut wb = WriteBatch::new();
         match self {
@@ -110,7 +168,7 @@ impl Command {
                     }
                 }
             }
-            Command::ConfChange { .. } | Command::Noop => {}
+            Command::ConfChange { .. } | Command::Noop | Command::Fenced { .. } => {}
         }
         wb
     }
@@ -127,12 +185,22 @@ impl Command {
     /// ConfChange (tag 3): add:u8 | node:u64
     /// Noop       (tag 4): (empty)
     /// Write      (tag 5): op_count:u32 | ops…   (same op layout as CatalogTxn)
+    /// Fenced     (tag 6): region_id:u64 | conf_ver:u64 | version:u64 |
+    ///                     inner_tag:u8 | inner payload
     /// ```
     ///
     /// The version byte gates format evolution: decoders reject unknown versions and
     /// unknown tags with a typed error, never panic (ROADMAP cross-cutting; DESIGN
     /// principle "forward-compatible formats, never panic on the unknown"). This codec
     /// is the app-payload layer inside raft-rs entries (`Entry.data`).
+    ///
+    /// The `Fenced` inner command reuses the outer tag space but does NOT repeat the
+    /// version byte — one version governs the whole frame. Its decoder accepts only
+    /// the [`FencedInner`] whitelist (today `Write`); nesting and non-fenceable tags
+    /// are typed errors. Future fence-shape changes take a NEW envelope tag rather
+    /// than sub-versioning the fence — and note this codec is fail-closed (trailing
+    /// bytes reject), so ANY new tag or layout is a decode-before-propose two-phase
+    /// rollout: every replica must decode the shape before any proposer emits it.
     pub fn encode(&self) -> Vec<u8> {
         let mut out = Vec::new();
         out.push(ENTRY_VERSION);
@@ -148,22 +216,7 @@ impl Command {
                     Command::Write { .. } => TAG_WRITE,
                     _ => TAG_CATALOG_TXN,
                 });
-                out.extend_from_slice(&(ops.len() as u32).to_be_bytes());
-                for op in ops {
-                    match op {
-                        KvOp::Put { cf, key, value } => {
-                            out.push(OP_PUT);
-                            out.push(*cf);
-                            put_bytes(&mut out, key);
-                            put_bytes(&mut out, value);
-                        }
-                        KvOp::Delete { cf, key } => {
-                            out.push(OP_DELETE);
-                            out.push(*cf);
-                            put_bytes(&mut out, key);
-                        }
-                    }
-                }
+                put_ops(&mut out, ops);
             }
             Command::ConfChange { add, node } => {
                 out.push(TAG_CONF_CHANGE);
@@ -171,6 +224,18 @@ impl Command {
                 out.extend_from_slice(&node.to_be_bytes());
             }
             Command::Noop => out.push(TAG_NOOP),
+            Command::Fenced { fence, inner } => {
+                out.push(TAG_FENCED);
+                out.extend_from_slice(&fence.region_id.to_be_bytes());
+                out.extend_from_slice(&fence.conf_ver.to_be_bytes());
+                out.extend_from_slice(&fence.version.to_be_bytes());
+                match inner {
+                    FencedInner::Write { ops } => {
+                        out.push(TAG_WRITE);
+                        put_ops(&mut out, ops);
+                    }
+                }
+            }
         }
         out
     }
@@ -204,6 +269,33 @@ impl Command {
                 node: r.u64()?,
             },
             TAG_NOOP => Command::Noop,
+            TAG_FENCED => {
+                let fence = RegionFence {
+                    region_id: r.u64()?,
+                    conf_ver: r.u64()?,
+                    version: r.u64()?,
+                };
+                // Whitelist of fenceable inner tags, mirroring [`FencedInner`]. Every
+                // other tag — nested fence, known-but-unfenceable, unknown — is a
+                // typed error; a widened whitelist is a deliberate edit HERE plus a
+                // `FencedInner` variant, never a fall-through.
+                let inner = match r.u8()? {
+                    TAG_WRITE => FencedInner::Write {
+                        ops: read_ops(&mut r, "Fenced(Write)")?,
+                    },
+                    TAG_FENCED => {
+                        return Err(kv9_common::Error::Raft(
+                            "fenced command cannot nest a fence".into(),
+                        ))
+                    }
+                    other => {
+                        return Err(kv9_common::Error::Raft(format!(
+                            "command tag {other} is not fenceable"
+                        )))
+                    }
+                };
+                Command::Fenced { fence, inner }
+            }
             other => {
                 return Err(kv9_common::Error::Raft(format!(
                     "unknown command tag {other}"
@@ -229,6 +321,7 @@ const TAG_CATALOG_TXN: u8 = 2;
 const TAG_CONF_CHANGE: u8 = 3;
 const TAG_NOOP: u8 = 4;
 const TAG_WRITE: u8 = 5;
+const TAG_FENCED: u8 = 6;
 const OP_PUT: u8 = 1;
 const OP_DELETE: u8 = 2;
 
@@ -258,6 +351,27 @@ fn read_ops(r: &mut Reader<'_>, ctx: &str) -> kv9_common::Result<Vec<KvOp>> {
         ops.push(op);
     }
     Ok(ops)
+}
+
+/// Encode a length-prefixed op list (inverse of [`read_ops`]; shared by
+/// `CatalogTxn`, `Write`, and the `Fenced` envelope's inner `Write`).
+fn put_ops(out: &mut Vec<u8>, ops: &[KvOp]) {
+    out.extend_from_slice(&(ops.len() as u32).to_be_bytes());
+    for op in ops {
+        match op {
+            KvOp::Put { cf, key, value } => {
+                out.push(OP_PUT);
+                out.push(*cf);
+                put_bytes(out, key);
+                put_bytes(out, value);
+            }
+            KvOp::Delete { cf, key } => {
+                out.push(OP_DELETE);
+                out.push(*cf);
+                put_bytes(out, key);
+            }
+        }
+    }
 }
 
 fn put_bytes(out: &mut Vec<u8>, b: &[u8]) {
@@ -447,5 +561,134 @@ mod tests {
         // Claims 1000 ops but carries none — must error, not hang or over-allocate.
         let bytes = vec![ENTRY_VERSION, TAG_CATALOG_TXN, 0, 0, 3, 0xE8];
         assert!(Command::decode(&bytes).is_err());
+    }
+
+    fn sample_fence() -> RegionFence {
+        RegionFence {
+            region_id: 7,
+            conf_ver: 3,
+            version: 11,
+        }
+    }
+
+    fn sample_fenced() -> Command {
+        Command::Fenced {
+            fence: sample_fence(),
+            inner: FencedInner::Write {
+                ops: vec![
+                    KvOp::Put {
+                        cf: 0,
+                        key: b"user-key".to_vec(),
+                        value: b"user-value".to_vec(),
+                    },
+                    KvOp::Delete {
+                        cf: 0,
+                        key: b"user-gone".to_vec(),
+                    },
+                ],
+            },
+        }
+    }
+
+    #[test]
+    fn fenced_write_roundtrips_with_the_exact_fence() {
+        roundtrip(&sample_fenced());
+        roundtrip(&Command::Fenced {
+            fence: RegionFence {
+                region_id: u64::MAX,
+                conf_ver: 0,
+                version: u64::MAX,
+            },
+            inner: FencedInner::Write { ops: Vec::new() },
+        });
+        // The fence fields must survive individually — a swapped or dropped field
+        // decodes to a DIFFERENT fence, so equality on the whole command covers it,
+        // but assert the fields by name so a red points at the fence, not the ops.
+        let decoded = Command::decode(&sample_fenced().encode()).unwrap();
+        let Command::Fenced { fence, .. } = decoded else {
+            panic!("fenced write must decode back to the envelope");
+        };
+        assert_eq!(
+            (fence.region_id, fence.conf_ver, fence.version),
+            (7, 3, 11),
+            "the decoded fence must carry the proposer's exact expected epoch"
+        );
+    }
+
+    /// A fenced and an unfenced write with identical ops must stay distinct on the
+    /// wire — collapsing them would let an epoch-checked write replay as unchecked
+    /// (the same shape as the Write/CatalogTxn separation above).
+    #[test]
+    fn fenced_and_unfenced_write_are_distinct_on_the_wire() {
+        let ops = vec![KvOp::Put {
+            cf: 0,
+            key: b"k".to_vec(),
+            value: b"v".to_vec(),
+        }];
+        let fenced = Command::Fenced {
+            fence: sample_fence(),
+            inner: FencedInner::Write { ops: ops.clone() },
+        }
+        .encode();
+        let bare = Command::Write { ops }.encode();
+        assert_ne!(fenced, bare);
+        assert!(matches!(
+            Command::decode(&fenced).unwrap(),
+            Command::Fenced { .. }
+        ));
+    }
+
+    #[test]
+    fn decode_rejects_a_nested_fence() {
+        // Hand-built: a Fenced envelope whose inner tag is again TAG_FENCED. The
+        // type system cannot express this; the decoder must refuse it rather than
+        // recurse or fall through to "unknown tag".
+        let mut bytes = vec![ENTRY_VERSION, TAG_FENCED];
+        bytes.extend_from_slice(&[0u8; 24]); // fence fields
+        bytes.push(TAG_FENCED);
+        let err = Command::decode(&bytes).expect_err("nested fence must be refused");
+        assert!(
+            err.to_string().contains("cannot nest"),
+            "nesting must be refused as nesting, not as an unknown tag: {err}"
+        );
+    }
+
+    #[test]
+    fn decode_rejects_unfenceable_inner_tags() {
+        // Every known non-Write tag must be refused inside the envelope: the
+        // whitelist is the boundary, not "whatever happens to decode".
+        for inner_tag in [TAG_PUT, TAG_CATALOG_TXN, TAG_CONF_CHANGE, TAG_NOOP] {
+            let mut bytes = vec![ENTRY_VERSION, TAG_FENCED];
+            bytes.extend_from_slice(&[0u8; 24]);
+            bytes.push(inner_tag);
+            let err =
+                Command::decode(&bytes).expect_err("only whitelisted inner tags may ride a fence");
+            assert!(
+                err.to_string().contains("not fenceable"),
+                "tag {inner_tag} must be refused as unfenceable: {err}"
+            );
+        }
+    }
+
+    #[test]
+    fn fenced_decode_rejects_truncation_and_trailing_bytes() {
+        let full = sample_fenced().encode();
+        for cut in 0..full.len() {
+            assert!(Command::decode(&full[..cut]).is_err(), "prefix len {cut}");
+        }
+        let mut padded = full;
+        padded.push(0);
+        assert!(Command::decode(&padded).is_err());
+    }
+
+    /// Lowering the envelope directly must produce NOTHING: the apply loop checks
+    /// the fence and lowers the inner ops itself, so a path that forgets the fence
+    /// fails closed (no write) instead of open (unchecked write).
+    #[test]
+    fn fenced_lowered_without_a_fence_check_writes_nothing() {
+        assert!(
+            sample_fenced().to_write_batch().mutations().is_empty(),
+            "an unchecked fenced write must not leak its ops through to_write_batch"
+        );
     }
 }
