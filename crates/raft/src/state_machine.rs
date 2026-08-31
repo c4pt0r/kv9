@@ -69,10 +69,17 @@ impl ApplyResult {
 /// log: every replica applies the same entries in the same order, reads the same
 /// epoch, and reaches the same verdict.
 pub trait FenceAdjudicator: Send + Sync {
-    /// `true` if the proposer's expected epoch is still fresh — the fenced ops
-    /// may apply. `false` rejects the entry (logically; the watermark still
-    /// advances).
-    fn is_fresh(&self, fence: &crate::RegionFence) -> bool;
+    /// `Ok(true)` — the proposer's expected epoch is still fresh, the fenced ops
+    /// may apply. `Ok(false)` — authoritatively stale: the entry is logically
+    /// rejected (watermark still advances). `Err` — the authoritative epoch
+    /// could NOT be read (engine/decode/catalog failure): this is a third
+    /// state, not a verdict, and it propagates as an apply error (driver
+    /// poisons; data and watermark untouched). Crushing it into `false` would
+    /// dress a node-local read failure as a deterministic rejection and
+    /// consume the log position; into `true`, an unfenced write — either way
+    /// replicas whose reads fail diverge from replicas whose reads succeed
+    /// (review round).
+    fn is_fresh(&self, fence: &crate::RegionFence) -> Result<bool>;
 }
 
 /// A deterministic raft state machine (ROADMAP Phase 1).
@@ -209,7 +216,10 @@ impl<E: Engine> MemStateMachine<E> {
                             .into(),
                     )
                 })?;
-                if adjudicator.is_fresh(fence) {
+                // `?` on the verdict itself: an adjudicator whose authoritative
+                // read fails has no verdict to offer — that propagates as an
+                // apply error (poison), never as a fabricated Fresh/Stale.
+                if adjudicator.is_fresh(fence)? {
                     (inner.to_write_batch(), false)
                 } else {
                     (kv9_engine::WriteBatch::new(), true)
@@ -459,8 +469,18 @@ mod tests {
     /// A fixed-verdict adjudicator for exercising both fence outcomes.
     struct Verdict(bool);
     impl FenceAdjudicator for Verdict {
-        fn is_fresh(&self, _fence: &crate::RegionFence) -> bool {
-            self.0
+        fn is_fresh(&self, _fence: &crate::RegionFence) -> Result<bool> {
+            Ok(self.0)
+        }
+    }
+
+    /// An adjudicator whose authoritative read always fails — the third state.
+    struct ReadFails;
+    impl FenceAdjudicator for ReadFails {
+        fn is_fresh(&self, _fence: &crate::RegionFence) -> Result<bool> {
+            Err(kv9_common::Error::Engine(
+                "authoritative epoch read failed".into(),
+            ))
         }
     }
 
@@ -558,6 +578,47 @@ mod tests {
             sm.applied_index(),
             LogIndex(0),
             "a refused entry must not advance the watermark"
+        );
+    }
+
+    /// The adjudicator's authoritative read failing is a THIRD state, not a
+    /// verdict: the error must propagate with the adjudicator's own message
+    /// recognizable in it.
+    #[test]
+    fn an_adjudicator_read_failure_is_an_apply_error_not_a_verdict() {
+        let mut sm = MemStateMachine::new();
+        sm.set_fence_adjudicator(Arc::new(ReadFails));
+        let err = sm
+            .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
+            .expect_err("a failed authoritative read must propagate, not become a verdict");
+        assert!(
+            err.to_string().contains("authoritative epoch read failed"),
+            "the adjudicator's own error must survive recognizably: {err}"
+        );
+    }
+
+    /// Split from the error-identity test on purpose: this one ignores the
+    /// call's Ok/Err entirely and asserts only STATE, so the mutant that
+    /// crushes `Err` into `Ok(false)` — dressing a node-local read failure as
+    /// a deterministic rejection — cannot hide behind the `expect_err` firing
+    /// first. Under that mutant the fabricated rejection consumes the log
+    /// position, and THIS test's watermark assertion is the one that goes red
+    /// (with multiple assertions in one test, "it went red" doesn't say which
+    /// one guards; one mutant, one owning assertion).
+    #[test]
+    fn a_failed_adjudicator_read_consumes_nothing() {
+        let mut sm = MemStateMachine::new();
+        sm.set_fence_adjudicator(Arc::new(ReadFails));
+        let _ = sm.apply_command(LogIndex(1), &fenced_put(b"k", b"v"));
+        assert_eq!(
+            sm.get(ColumnFamily::Default, b"k").unwrap(),
+            None,
+            "a failed read must not write data"
+        );
+        assert_eq!(
+            sm.applied_index(),
+            LogIndex(0),
+            "a failed read must not consume the log position"
         );
     }
 }
