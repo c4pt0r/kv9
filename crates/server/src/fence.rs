@@ -358,3 +358,131 @@ mod read_failure_tests {
         let _ = CommonRegionId(0);
     }
 }
+
+/// What a stale fence does at apply, with the real adjudicator over a real catalog.
+///
+/// **Read the name carefully: this module does NOT prove the production path emits fenced
+/// commands.** It constructs the command itself, so reverting `commit_batch` to
+/// `Command::write_from_batch` — the original defect — leaves every test here green
+/// (verified by mutation). That is rule 17, a circular fixture: a test that builds the
+/// input it should have obtained from production code is blind to that code's drift.
+///
+/// The missing test needs a Serving `RuntimeBackend` so a real `raw_put` can be driven with
+/// an always-rejecting adjudicator installed: a fenced proposal is refused and the key is
+/// absent, an unfenced one lands. No such harness exists yet — the one in `runtime.rs` is
+/// deliberately pre-Serving — and building it is the remaining work on task #48 layer 3.
+#[cfg(test)]
+mod stale_fence_at_apply_tests {
+    use super::*;
+    use kv9_common::{ApiType, Config, NodeId, TenantId, META_REGION_0};
+    use kv9_engine::{ColumnFamily, MemEngine};
+    use kv9_meta::codec::{memcmp_uint, ColumnValue, RowValue};
+    use kv9_meta::schema::{ColumnId, REGIONS_DESC};
+    use kv9_raft::{Command, LogIndex, MemStateMachine, SingleNodeRaft, StateMachine};
+
+    /// The fence is a pure time-of-check-to-time-of-apply guard, and this test exists
+    /// because that is easy to get wrong in the reassuring direction.
+    ///
+    /// `check_context` demands the request epoch **equal** the catalog's; the adjudicator
+    /// demands only that it be **at least as fresh**. Equality implies at-least-as-fresh, so
+    /// against an unchanged catalog *everything that passes the gate passes the fence*. The
+    /// fence therefore adds nothing in the no-drift case and can only ever fire when the
+    /// catalog moves between the gate and the apply — a split committing in that window.
+    ///
+    /// The consequence for testing is the part worth stating: **no test that fails to create
+    /// drift can observe this defence working**, however many component tests pass. That is
+    /// exactly the state this file was in before — carrier, adjudicator, and three-state
+    /// apply all green, and not one user write ever fenced.
+    ///
+    /// What this test establishes: given a command of the shape `commit_batch` builds, a
+    /// catalog that has moved underneath it causes a refusal with no write. What it does
+    /// NOT establish: that `commit_batch` builds that shape. See the module comment.
+    #[test]
+    fn a_stale_fence_is_refused_at_apply_and_writes_nothing() {
+        let engine = Arc::new(MemEngine::new());
+        let raft = Arc::new(SingleNodeRaft::new(NodeId(1), META_REGION_0));
+        let node = Arc::new(
+            Node::with_raft_and_engine(NodeId(1), Config::default(), raft, engine.clone()).unwrap(),
+        );
+        node.bootstrap().unwrap();
+        let keyspace = node
+            .create_keyspace("fenced", TenantId::DEFAULT, ApiType::Raw)
+            .unwrap();
+        let region = Tables::new(&node.meta_raft.store)
+            .region_for_key(keyspace, b"")
+            .unwrap()
+            .expect("CreateKeyspace creates the initial region");
+
+        // The fence exactly as `RuntimeBackend::commit_batch` builds it: the region and
+        // epoch the gate resolved for this request.
+        let fence = RegionFence {
+            region_id: region.id.0,
+            conf_ver: region.epoch_conf,
+            version: region.epoch_ver,
+        };
+        let mut batch = kv9_engine::WriteBatch::new();
+        batch.put(ColumnFamily::Default, b"user-key".to_vec(), b"v".to_vec());
+        let command = Command::fenced_write_from_batch(fence, &batch);
+
+        let mut sm = MemStateMachine::with_engine(engine.clone()).unwrap();
+        sm.set_fence_adjudicator(Arc::new(CatalogFenceAdjudicator::new(node.clone())));
+
+        // Control first: with the catalog unmoved the very same command applies. Without
+        // this, a later refusal could just as easily mean the command was malformed.
+        let applied = sm.apply_command(LogIndex(50), &command).unwrap();
+        assert!(
+            !applied.fence_rejected,
+            "control: an unmoved catalog accepts"
+        );
+        assert_eq!(
+            engine.get(ColumnFamily::Default, b"user-key").unwrap(),
+            Some(b"v".to_vec()),
+            "control: the write landed"
+        );
+
+        // Now move the region's epoch, as a committed split would.
+        let mut seed = node.meta_raft.store.begin().unwrap();
+        let mut row = RowValue::new();
+        row.set(ColumnId(1), ColumnValue::Uint(region.id.0));
+        row.set(ColumnId(2), ColumnValue::Uint(keyspace.0 as u64));
+        row.set(ColumnId(3), ColumnValue::Bytes(region.start_key.clone()));
+        row.set(ColumnId(4), ColumnValue::Bytes(region.end_key.clone()));
+        row.set(ColumnId(5), ColumnValue::Uint(region.epoch_conf));
+        row.set(ColumnId(6), ColumnValue::Uint(region.epoch_ver + 1));
+        row.set(ColumnId(7), ColumnValue::Uint(0));
+        seed.update(
+            &REGIONS_DESC,
+            &[memcmp_uint(region.id.0)],
+            vec![(ColumnId(6), ColumnValue::Uint(region.epoch_ver + 1))],
+        )
+        .unwrap();
+        node.meta_raft
+            .propose_apply(Command::from_batch(&seed.into_batch()))
+            .unwrap();
+
+        // The same command, now stale. It must be refused, and refused *without* writing.
+        let mut batch2 = kv9_engine::WriteBatch::new();
+        batch2.put(
+            ColumnFamily::Default,
+            b"after-split".to_vec(),
+            b"v".to_vec(),
+        );
+        let stale = Command::fenced_write_from_batch(fence, &batch2);
+        let result = sm.apply_command(LogIndex(51), &stale).unwrap();
+
+        assert!(
+            result.fence_rejected,
+            "a write fenced against the pre-split epoch must be refused at apply"
+        );
+        assert_eq!(
+            engine.get(ColumnFamily::Default, b"after-split").unwrap(),
+            None,
+            "a refused write must leave nothing behind"
+        );
+        assert_eq!(
+            sm.applied_index(),
+            LogIndex(51),
+            "a logical rejection still consumes the log position — it is a verdict, not a failure"
+        );
+    }
+}

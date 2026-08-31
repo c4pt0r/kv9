@@ -830,7 +830,7 @@ fn check_context<E: kv9_engine::Engine>(
     keyspace_id: KeyspaceId,
     epoch: &kv9_region::RegionEpoch,
     span: KeySpan<'_>,
-) -> Result<()> {
+) -> Result<kv9_common::RegionId> {
     let txn = store.begin()?;
 
     let keyspace =
@@ -852,7 +852,12 @@ fn check_context<E: kv9_engine::Engine>(
         return Err(Error::StaleEpoch { region: region.id });
     }
 
-    span.assert_within(&region, &txn, &tables, keyspace_id)
+    span.assert_within(&region, &txn, &tables, keyspace_id)?;
+    // Hand back the region THIS check resolved, so the caller can fence its write with it.
+    // Re-deriving the region at propose time would reopen the window this gate exists to
+    // close: between the two lookups a split can commit, and the write would then be fenced
+    // against a region that was never authorised.
+    Ok(region.id)
 }
 
 /// Does a half-open range ending at `end` stay inside a region ending at `region_end`?
@@ -997,7 +1002,11 @@ impl RuntimeBackend {
     ///
     /// Thin wiring; the decision lives in [`check_context`] so tests exercise the same
     /// function production does rather than a re-implementation of it.
-    fn validated_context(&self, ctx: &RequestContext, span: KeySpan<'_>) -> Result<()> {
+    fn validated_context(
+        &self,
+        ctx: &RequestContext,
+        span: KeySpan<'_>,
+    ) -> Result<kv9_common::RegionId> {
         check_context(
             &self.node.meta_raft.store,
             ctx.keyspace,
@@ -1023,14 +1032,30 @@ impl RuntimeBackend {
     /// Returns that position so the caller can hand it back to the client. Deriving it
     /// afterwards from the status file cannot prove identity: a concurrent command moves
     /// the same number, so the client would be shown someone else's write.
-    fn commit_batch(&self, batch: kv9_engine::WriteBatch) -> Result<AppliedPosition> {
+    /// `region` MUST be the one `validated_context` resolved for this same request, not a
+    /// fresh lookup. That is the whole point of threading it down here: a second resolution
+    /// could observe a split that committed after the gate ran, and the write would then be
+    /// fenced against a region the gate never authorised — reopening the check-to-propose
+    /// window this fence exists to close.
+    fn commit_batch(
+        &self,
+        region: kv9_common::RegionId,
+        epoch: &kv9_region::RegionEpoch,
+        batch: kv9_engine::WriteBatch,
+    ) -> Result<AppliedPosition> {
         if batch.mutations().is_empty() {
             return Ok(AppliedPosition { term: 0, index: 0 });
         }
-        // `write_from_batch`, not `from_batch`: the latter yields a `CatalogTxn`, and
-        // sharing the catalog's wire tag would replay user data through the catalog path
-        // and inherit its serializing lock.
-        let command = Command::write_from_batch(&batch);
+        // A FENCED write, not a bare one. The fence carries the region and epoch the gate
+        // validated into ordered apply, where a split that landed between this check and
+        // this entry's application is finally visible; the adjudicator refuses the write
+        // there rather than letting it land on a region that has moved.
+        let fence = kv9_raft::RegionFence {
+            region_id: region.0,
+            conf_ver: epoch.conf_ver,
+            version: epoch.version,
+        };
+        let command = Command::fenced_write_from_batch(fence, &batch);
         let proposed = self.driver.propose(&command)?;
         match self.driver.wait_applied(proposed, RAW_APPLY_DEADLINE)? {
             true => Ok(AppliedPosition {
@@ -1072,9 +1097,9 @@ impl RawApi for RuntimeBackend {
 
     fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<AppliedPosition> {
         self.ensure_serving()?;
-        self.validated_context(ctx, KeySpan::Point(&key))?;
+        let region = self.validated_context(ctx, KeySpan::Point(&key))?;
         let plan = RawExecutor.plan_put(ctx.keyspace, &key, value, RawWriteOptions::default())?;
-        self.commit_batch(plan)
+        self.commit_batch(region, &ctx.region_epoch, plan)
     }
 
     fn raw_batch_put(
@@ -1083,20 +1108,20 @@ impl RawApi for RuntimeBackend {
         pairs: &[(UserKey, Value)],
     ) -> Result<AppliedPosition> {
         self.ensure_serving()?;
-        self.validated_context(
+        let region = self.validated_context(
             ctx,
             KeySpan::Batch(pairs.iter().map(|(k, _)| k.as_slice()).collect()),
         )?;
         // One batch ⇒ one entry ⇒ all of these land together or none do.
         let plan = RawExecutor.plan_batch_put(ctx.keyspace, pairs, RawWriteOptions::default())?;
-        self.commit_batch(plan)
+        self.commit_batch(region, &ctx.region_epoch, plan)
     }
 
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<AppliedPosition> {
         self.ensure_serving()?;
-        self.validated_context(ctx, KeySpan::Point(key))?;
+        let region = self.validated_context(ctx, KeySpan::Point(key))?;
         let plan = RawExecutor.plan_delete(ctx.keyspace, key)?;
-        self.commit_batch(plan)
+        self.commit_batch(region, &ctx.region_epoch, plan)
     }
 
     fn raw_scan(
@@ -1120,10 +1145,18 @@ impl RawApi for RuntimeBackend {
         end: &[u8],
     ) -> Result<DeleteRangeReceipt> {
         self.ensure_serving()?;
-        self.validated_context(ctx, KeySpan::Range { start, end })?;
+        let region = self.validated_context(ctx, KeySpan::Range { start, end })?;
         // One chunk in memory at a time: read a bounded chunk, commit it, resume strictly
         // after the last key it covered. Planning the whole range up front bounded the
         // raft *entry* while leaving the planner unbounded.
+        //
+        // INTEGRATION NOTE for the task #48 layer-1 branch: there, the context is
+        // revalidated per chunk. When these merge, each chunk's fence must come from THAT
+        // chunk's revalidation, not from one capture before the loop — otherwise chunk N is
+        // fenced with the region chunk 1 was authorised against, which is precisely the
+        // stale authorisation layer 1 exists to remove. A merge that keeps this single
+        // up-front binding compiles and passes both branches' tests while silently losing
+        // the property.
         run_delete_range(
             |cursor| {
                 // Planning reads the range, so it needs the same leader gate as a scan.
@@ -1138,7 +1171,7 @@ impl RawApi for RuntimeBackend {
                     RAW_DELETE_RANGE_CHUNK,
                 )
             },
-            |batch| self.commit_batch(batch),
+            |batch| self.commit_batch(region, &ctx.region_epoch, batch),
         )
     }
 }
