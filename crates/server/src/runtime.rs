@@ -595,10 +595,14 @@ fn membership_node_row(
 /// Deleting step 2 turns the deterministic frozen-apply regression red; the
 /// step-3 re-confirm guards a between-samples demotion race that a
 /// single-node test cannot construct — its coverage is the Chaos E2E layer.
-fn bootstrap_takeover_proven(
-    driver: &NodeDriver<DiskRaftStorage, WalEngine>,
+fn bootstrap_takeover_proven<S, E>(
+    driver: &NodeDriver<S, E>,
     node: &Node<WalEngine>,
-) -> Result<bool> {
+) -> Result<bool>
+where
+    S: kv9_raft::rawnode::PersistentRaftStorage,
+    E: kv9_engine::Engine + 'static,
+{
     let before = driver.status();
     if before.role != Role::Leader {
         return Ok(false);
@@ -2217,6 +2221,119 @@ mod tests {
     use kv9_raft::transport::{InProcHub, RaftTransport};
     use kv9_raft::Command;
     use tonic::Code;
+
+    /// task #40, the OTHER refusal arm (review round: the frozen-window test
+    /// lands in the None arm, so the term COMPARISON — the line the frozen
+    /// contract's "index alone is not enough" sentence exists for — was never
+    /// evaluated on a refusal path; deleting it alone stayed green). The
+    /// dangerous state is a watermark that EXISTS but carries an old term:
+    /// entries applied at term N, then a re-election with apply frozen, so
+    /// the new term-N+1 leader still holds Some(term N). The gate must
+    /// refuse on the term comparison; removing that comparison (keeping the
+    /// Some binding) turns exactly this test red.
+    #[test]
+    fn takeover_gate_refuses_a_stale_term_watermark() {
+        use kv9_raft::transport::InProcHub;
+        // Two drivers over an in-process hub: real elections, real terms.
+        let hub = InProcHub::new();
+        let ids = [NodeId(1), NodeId(2)];
+        let mk = |id: NodeId| {
+            let peer = Arc::new(RaftPeer::new(id, META_REGION_0, &ids).unwrap());
+            NodeDriver::new(
+                peer,
+                Arc::new(hub.endpoint(id)) as Arc<dyn kv9_raft::transport::RaftTransport>,
+                MemStateMachine::new(),
+            )
+        };
+        let d1 = mk(NodeId(1));
+        let d2 = mk(NodeId(2));
+        let pump = |n: usize| {
+            for _ in 0..n {
+                d1.tick_and_step().unwrap();
+                d2.tick_and_step().unwrap();
+            }
+        };
+
+        // Term 1: n1 leads; a committed command applies on BOTH nodes, so
+        // n2's watermark becomes Some(term 1, ..).
+        d1.peer().campaign().unwrap();
+        for _ in 0..200 {
+            pump(1);
+            if d1.status().role == Role::Leader {
+                break;
+            }
+        }
+        assert_eq!(d1.status().role, Role::Leader);
+        let at = d1
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"seed".to_vec(),
+                value: b"x".to_vec(),
+            })
+            .unwrap();
+        for _ in 0..200 {
+            pump(1);
+            if d2
+                .driver_applied()
+                .is_some_and(|wm| wm.index >= at.index.0)
+            {
+                break;
+            }
+        }
+        let wm1 = d2.driver_applied().expect("n2 applied at term 1");
+        assert_eq!(wm1.term, at.term, "window precondition: watermark at term 1");
+
+        // Freeze n2's apply, then move leadership: check_quorum makes the
+        // live leader sticky (it refuses votes while its lease holds), so
+        // first tick n1 ALONE past the election timeout with no quorum
+        // contact — check_quorum's own discipline steps it down — and only
+        // then let n2 campaign. n2's watermark stays Some(term 1) while its
+        // leader term moves on.
+        d2.pause_apply(true);
+        for _ in 0..40 {
+            d1.tick_and_step().unwrap(); // no n2 ticks: no heartbeat ACKs
+        }
+        assert_ne!(
+            d1.status().role,
+            Role::Leader,
+            "check_quorum must depose a leader with no quorum contact \
+             (test precondition)"
+        );
+        d2.peer().campaign().unwrap();
+        for _ in 0..300 {
+            // n1 answers messages but its election timer stays still (step,
+            // not tick): a deposed n1 whose timer also fired would become a
+            // competing pre-candidate and 2-node vote-splits livelock.
+            d1.step().unwrap();
+            d2.tick_and_step().unwrap();
+            let s = d2.status();
+            if s.role == Role::Leader && s.term > at.term {
+                break;
+            }
+        }
+        let s2 = d2.status();
+        assert_eq!(s2.role, Role::Leader, "n2 must win the term-2 election");
+        assert!(s2.term > at.term);
+        let wm = d2.driver_applied().expect("watermark still present");
+        assert!(
+            wm.term < s2.term,
+            "window precondition: watermark EXISTS but from an old term \
+             (Some({}, ..) vs leader term {})",
+            wm.term,
+            s2.term
+        );
+
+        // The gate must refuse on the TERM comparison — a stale-term
+        // watermark means committed-but-unapplied entries (this term's no-op
+        // at minimum) may hide an init.
+        let (backend, _rt, dir) = pre_serving_runtime_backend();
+        assert!(
+            !bootstrap_takeover_proven(&d2, &backend.node).unwrap(),
+            "gate must refuse a watermark from an older term: entries \
+             committed in the current term are provably not yet applied"
+        );
+        let _ = std::fs::remove_dir_all(&dir);
+    }
 
     /// task #40: the takeover gate consumes the current-term barrier — with
     /// the deterministic committed-but-unapplied window, not a race. The
