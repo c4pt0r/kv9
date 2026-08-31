@@ -466,9 +466,14 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
                 .is_some_and(|wm| wm.index >= at.index.0);
             {
                 let applied = self.applied.lock().expect("applied poisoned");
-                if let Some(&(_, term)) = applied.iter().find(|(i, _)| *i == at.index.0) {
+                if let Some(&(index, term)) = applied.iter().find(|(i, _)| *i == at.index.0) {
                     return if term == at.term {
-                        Ok(ApplyWaitOutcome::Applied(at))
+                        // The receipt is the RING's recorded pair — the values
+                        // the apply loop stored — not the proposal echoed back.
+                        Ok(ApplyWaitOutcome::Applied(kv9_common::AppliedPosition {
+                            term,
+                            index,
+                        }))
                     } else {
                         // The position applied here, but as ANOTHER leader's
                         // command.
@@ -576,8 +581,13 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
 /// of the proposal's position, judged on applied state, never on elapsed time.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ApplyWaitOutcome {
-    /// The exact `(term, index)` proposal applied on this node.
-    Applied(ProposedAt),
+    /// The exact position APPLIED on this node — built by the driver from the
+    /// ring's recorded `(term, index)` at hit time, never by a caller renaming
+    /// a `ProposedAt`. That renaming is the disease this card was opened to
+    /// kill: a proposal-time pair dressed as an applied receipt survives every
+    /// review that doesn't ask where the value came from (review round: the
+    /// first draft of THIS fix reintroduced it).
+    Applied(kv9_common::AppliedPosition),
     /// The position was consumed by a DIFFERENT entry — another leader's
     /// command, or an election barrier (the entry raft appends on winning).
     /// The proposal will never apply; the correct reaction is to re-propose

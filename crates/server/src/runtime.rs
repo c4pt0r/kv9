@@ -440,17 +440,39 @@ where
     S: kv9_raft::rawnode::PersistentRaftStorage,
     E: kv9_engine::Engine + 'static,
 {
+    // The control loop is the scriptable core below; this wrapper binds it to
+    // the real driver. Command reuse across re-proposals is BY CONSTRUCTION:
+    // the propose closure borrows the one `command`, so there is no second
+    // command for a retry to accidentally use.
+    propose_and_wait_loop(
+        || driver.propose(command),
+        |at, remaining| driver.wait_applied(at, remaining),
+        deadline,
+    )
+}
+
+/// The re-proposal control loop (task #30 scope addition), extracted over its
+/// two effects so every contract clause is testable without a cluster:
+///
+/// - `Replaced` re-proposes: it states the command provably NEVER applied —
+///   the same known-not-applied rule that makes the clients' NotLeader retry
+///   safe. The budget is the ORIGINAL deadline (each wait gets the remaining
+///   slice, never a fresh one).
+/// - `Unconfirmed` and `Failed` return immediately, never retried: an unknown
+///   outcome retried is how one write becomes two.
+/// - A propose error (e.g. typed NotLeader + hint after leadership moved)
+///   surfaces verbatim; the client's own retry policy owns that case.
+fn propose_and_wait_loop(
+    mut propose: impl FnMut() -> Result<ProposedAt>,
+    mut wait: impl FnMut(ProposedAt, Duration) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError>,
+    deadline: Duration,
+) -> Result<AppliedPosition> {
     let start = std::time::Instant::now();
     loop {
-        let proposed = driver.propose(command)?;
+        let proposed = propose()?;
         let remaining = deadline.saturating_sub(start.elapsed());
-        match driver.wait_applied(proposed, remaining) {
-            Ok(ApplyWaitOutcome::Applied(at)) => {
-                return Ok(AppliedPosition {
-                    term: at.term,
-                    index: at.index.0,
-                })
-            }
+        match wait(proposed, remaining) {
+            Ok(ApplyWaitOutcome::Applied(at)) => return Ok(at),
             Ok(ApplyWaitOutcome::Replaced) => {
                 if start.elapsed() >= deadline {
                     return Err(Error::Raft(format!(
@@ -2234,6 +2256,184 @@ fn catalog_initialized(node: &Node<WalEngine>) -> Result<bool> {
 mod tests {
     use super::*;
     use kv9_common::RegionId;
+    use std::cell::RefCell;
+
+    // ---- task #30: the re-proposal control loop, every contract clause lit
+    // through the scripted seam the production wrapper consumes. ----
+
+    fn at(term: u64, index: u64) -> ProposedAt {
+        ProposedAt {
+            term,
+            index: kv9_raft::LogIndex(index),
+        }
+    }
+
+    /// `Unconfirmed` returns immediately and is NEVER retried (an unknown
+    /// outcome retried is how one write becomes two). Tess's mutant — turning
+    /// the Unconfirmed arm into `continue` — must red here: the loop would
+    /// spin until the deadline and the single-call assertions break.
+    #[test]
+    fn unconfirmed_is_never_retried() {
+        let proposes = RefCell::new(0u32);
+        let waits = RefCell::new(0u32);
+        let err = propose_and_wait_loop(
+            || {
+                *proposes.borrow_mut() += 1;
+                // Fuse: a mutated loop that retries Unconfirmed has no exit
+                // path at all (the deadline check lives in the Replaced arm),
+                // so give it a scripted way out that the assertions below
+                // catch by NAME instead of hanging or overflowing a counter.
+                if *proposes.borrow() > 3 {
+                    return Err(Error::Raft(
+                        "FUSE: the loop kept re-proposing an unknown outcome".into(),
+                    ));
+                }
+                Ok(at(1, 5))
+            },
+            |_, _| {
+                *waits.borrow_mut() += 1;
+                Err(ApplyWaitError::Unconfirmed {
+                    index: 5,
+                    waited: Duration::from_millis(1),
+                })
+            },
+            Duration::from_millis(50),
+        )
+        .expect_err("unconfirmed must surface");
+        assert!(
+            err.to_string().contains("unconfirmed"),
+            "the typed Unconfirmed must survive recognizably: {err}"
+        );
+        assert_eq!(
+            *proposes.borrow(),
+            1,
+            "an unknown outcome must not be re-proposed"
+        );
+        assert_eq!(
+            *waits.borrow(),
+            1,
+            "an unknown outcome must not be re-waited"
+        );
+    }
+
+    /// `Failed` (poisoned driver) returns immediately, never retried.
+    #[test]
+    fn failed_is_never_retried() {
+        let proposes = RefCell::new(0u32);
+        let err = propose_and_wait_loop(
+            || {
+                *proposes.borrow_mut() += 1;
+                Ok(at(1, 5))
+            },
+            |_, _| Err(ApplyWaitError::Failed(Error::Raft("poisoned".into()))),
+            Duration::from_millis(50),
+        )
+        .expect_err("a failed driver must surface");
+        assert!(err.to_string().contains("poisoned"));
+        assert_eq!(
+            *proposes.borrow(),
+            1,
+            "a driver failure must not be re-proposed"
+        );
+    }
+
+    /// `Replaced` re-proposes — and the budget is the ORIGINAL deadline, not
+    /// per-attempt: every wait receives a shrinking remaining slice, and the
+    /// whole loop gives up once the original budget is spent (elapsed stays in
+    /// the deadline's order of magnitude, not attempts × deadline).
+    #[test]
+    fn replaced_reproposes_within_the_original_budget_only() {
+        let proposes = RefCell::new(0u32);
+        let remainders: RefCell<Vec<Duration>> = RefCell::new(Vec::new());
+        let deadline = Duration::from_millis(50);
+        let started = std::time::Instant::now();
+        let err = propose_and_wait_loop(
+            || {
+                *proposes.borrow_mut() += 1;
+                Ok(at(1, 5))
+            },
+            |_, remaining| {
+                remainders.borrow_mut().push(remaining);
+                // Consume a little real time so the budget actually drains.
+                std::thread::sleep(Duration::from_millis(5));
+                Ok(ApplyWaitOutcome::Replaced)
+            },
+            deadline,
+        )
+        .expect_err("an always-replaced position must exhaust the budget");
+        assert!(
+            err.to_string().contains("budget is exhausted"),
+            "exhaustion must be named: {err}"
+        );
+        assert!(*proposes.borrow() >= 2, "Replaced must actually re-propose");
+        assert!(
+            started.elapsed() < deadline * 4,
+            "the budget must be the original deadline, never reset per attempt"
+        );
+        let rem = remainders.borrow();
+        assert!(
+            rem.windows(2).all(|w| w[1] <= w[0]),
+            "each wait must receive a SHRINKING slice of the original budget: {rem:?}"
+        );
+    }
+
+    /// The receipt returned after a successful re-proposal is the one the
+    /// WAIT produced (the driver's ring-built AppliedPosition), not anything
+    /// reconstructed from the proposal. Command identity across the retry is
+    /// by construction in the production wrapper: the propose closure borrows
+    /// the single `&Command`, so a retry has no second command to use.
+    #[test]
+    fn replaced_then_applied_returns_the_waits_receipt() {
+        let proposes = RefCell::new(0u32);
+        let receipt = AppliedPosition { term: 7, index: 9 };
+        let got = propose_and_wait_loop(
+            || {
+                *proposes.borrow_mut() += 1;
+                Ok(at(1, 5))
+            },
+            |_, _| {
+                if *proposes.borrow() == 1 {
+                    Ok(ApplyWaitOutcome::Replaced)
+                } else {
+                    Ok(ApplyWaitOutcome::Applied(receipt))
+                }
+            },
+            Duration::from_secs(5),
+        )
+        .expect("second attempt applies");
+        assert_eq!(*proposes.borrow(), 2);
+        assert_eq!(
+            got, receipt,
+            "the receipt must be the wait's applied position, verbatim"
+        );
+    }
+
+    /// A propose error — the typed NotLeader (+ hint) after leadership moved —
+    /// surfaces verbatim, on the first attempt or on a re-proposal alike; the
+    /// client's own retry policy owns that case.
+    #[test]
+    fn a_propose_error_surfaces_verbatim() {
+        let proposes = RefCell::new(0u32);
+        let err = propose_and_wait_loop(
+            || {
+                *proposes.borrow_mut() += 1;
+                if *proposes.borrow() == 1 {
+                    Ok(at(1, 5))
+                } else {
+                    Err(Error::Raft("not_leader=true leader_node_id=3".into()))
+                }
+            },
+            |_, _| Ok(ApplyWaitOutcome::Replaced),
+            Duration::from_secs(5),
+        )
+        .expect_err("the moved-leadership propose error must surface");
+        assert!(
+            err.to_string().contains("not_leader=true leader_node_id=3"),
+            "the typed NotLeader + hint must pass through unchanged: {err}"
+        );
+        assert_eq!(*proposes.borrow(), 2);
+    }
+
     use kv9_engine::testing::FaultyEngine;
     use kv9_engine::{ColumnFamily, Engine, MemEngine};
     use kv9_raft::transport::{InProcHub, RaftTransport};
