@@ -936,13 +936,14 @@ impl<'a> KeySpan<'a> {
 /// behaviour here is not the deleting — it is what is reported when the loop stops early,
 /// and that is exactly the part a live-cluster test cannot easily force.
 fn run_delete_range<V, P, C>(
+    start: &[u8],
     end: &[u8],
     mut revalidate: V,
     mut plan_next: P,
     mut commit: C,
 ) -> Result<DeleteRangeReceipt>
 where
-    V: FnMut(Option<&[u8]>) -> Result<()>,
+    V: FnMut(&[u8]) -> Result<()>,
     P: FnMut(Option<&[u8]>) -> Result<Option<(kv9_engine::WriteBatch, UserKey)>>,
     C: FnMut(kv9_engine::WriteBatch) -> Result<AppliedPosition>,
 {
@@ -986,7 +987,14 @@ where
         // that is the worse direction, because the caller acts on it and redoes work that is
         // already done. Only for a bounded `end`; an empty `end` means "to the end of the
         // keyspace" and no cursor can reach it.
-        if !end.is_empty() && cursor.as_deref().is_some_and(|c| c >= end) {
+        // The loop owns `start` as well as `end` so the FIRST round is decided by the same
+        // expression as every later one. Deriving the remaining start inside the caller's
+        // closure left round 1 with nothing to compare: the cursor is `None`, the closure
+        // resolved it back to `start`, and an already-empty bounded range (`start >= end`)
+        // reached the validator before anyone asked whether there was work to do. A
+        // zero-work request could then be refused as stale.
+        let remaining_start = cursor.as_deref().unwrap_or(start);
+        if !end.is_empty() && remaining_start >= end {
             return Ok(DeleteRangeReceipt {
                 committed_chunks,
                 last_applied,
@@ -1012,7 +1020,7 @@ where
         // log but not yet applied locally still reads as the old epoch here, and
         // `Command::Write` carries no expected epoch, so apply cannot refuse it — task #48
         // layer 2, the fenced envelope. Do not read this as the fix.
-        preserving_receipt!(revalidate(cursor.as_deref()));
+        preserving_receipt!(revalidate(remaining_start));
         let Some((batch, last_key)) = preserving_receipt!(plan_next(cursor.as_deref())) else {
             return Ok(DeleteRangeReceipt {
                 committed_chunks,
@@ -1171,12 +1179,13 @@ impl RawApi for RuntimeBackend {
         // path that could drift from the one the loop applies — and the endpoint would then
         // be authorised by a rule the loop does not use.
         run_delete_range(
+            start,
             end,
-            |cursor| {
+            |remaining_start| {
                 self.validated_context(
                     ctx,
                     KeySpan::Range {
-                        start: cursor.unwrap_or(start),
+                        start: remaining_start,
                         end,
                     },
                 )
@@ -2835,7 +2844,8 @@ mod tests {
         let mut checks = 0u64;
         let result = run_delete_range(
             b"",
-            |_cursor| {
+            b"",
+            |_remaining_start| {
                 checks += 1;
                 // Passes for chunk 1, stale from chunk 2 on — the region moved under us.
                 if checks >= 2 {
@@ -2883,27 +2893,37 @@ mod tests {
     /// Exhaustion is decided before the validator is consulted, so a delete that finishes
     /// exactly on `end` cannot be reported as a failure.
     ///
-    /// The cursor advances past the last covered key, so it can land precisely on `end`.
-    /// Asking the validator about the empty `[end, end)` would resolve a region for `end`
-    /// itself — the next region when `end` is a boundary — and a completed delete would come
-    /// back as `StaleEpoch`. The validator here fails if it is ever consulted at that point.
+    /// A semantically real half-open range: `[a, a\0)` contains exactly `a`. The planner
+    /// deletes `a` and returns the next cursor `a\0`, which *is* `end`. Asking the validator
+    /// about the empty `[a\0, a\0)` would resolve a region for `end` itself — the next
+    /// region when `end` is a boundary — and a completed delete would come back as
+    /// `StaleEpoch`. The validator here fails if it is consulted at that point.
     #[test]
     fn a_cursor_landing_exactly_on_end_completes_instead_of_revalidating() {
-        let engine = seeded_engine(4);
-        let mut checks = 0u64;
+        let engine = MemEngine::new();
+        let mut seed = kv9_engine::WriteBatch::new();
+        seed.put(ColumnFamily::Default, b"a".to_vec(), b"v".to_vec());
+        engine.write(seed).unwrap();
+
+        let mut issued = false;
+        let mut seen = Vec::new();
         let receipt = run_delete_range(
-            // The planner's first cursor is `k\x01`; make that the exclusive end.
-            b"k\x01",
-            |cursor| {
-                checks += 1;
-                assert!(
-                    cursor.is_none(),
-                    "once the cursor reaches `end` the range is finished and the validator \
-                     must not be asked about the empty remainder, got cursor {cursor:?}"
-                );
+            b"a",
+            b"a\0",
+            |remaining_start| {
+                seen.push(remaining_start.to_vec());
                 Ok(())
             },
-            planner(4),
+            |_cursor| {
+                if issued {
+                    return Ok(None);
+                }
+                issued = true;
+                let mut batch = kv9_engine::WriteBatch::new();
+                batch.delete(ColumnFamily::Default, b"a".to_vec());
+                // The planner advances past the key it covered: `a` -> `a\0`.
+                Ok(Some((batch, b"a\0".to_vec())))
+            },
             |batch| {
                 engine.write(batch).unwrap();
                 Ok(AppliedPosition { term: 7, index: 11 })
@@ -2913,9 +2933,40 @@ mod tests {
 
         assert_eq!(receipt.committed_chunks, 1);
         assert_eq!(
-            checks, 1,
-            "validated once, for the only chunk actually planned"
+            seen,
+            vec![b"a".to_vec()],
+            "validated once for the real remainder `[a, a\\0)`; the empty remainder that \
+             follows must never reach the validator"
         );
+        assert!(
+            engine.get(ColumnFamily::Default, b"a").unwrap().is_none(),
+            "the one key in range must actually be gone"
+        );
+    }
+
+    /// A bounded range that is *already* empty must complete without consulting the
+    /// validator at all — round one has no cursor, and deriving the remaining start outside
+    /// the loop left that round with nothing to compare against.
+    ///
+    /// `start == end` is zero work. If `end` sits on a region boundary the validator would
+    /// resolve the NEXT region, whose epoch the caller never claimed, and a request that
+    /// asked for nothing would be refused as stale. False failure on a receipt is the
+    /// harmful direction: the caller retries work that never existed.
+    #[test]
+    fn an_initially_empty_bounded_range_completes_without_consulting_the_validator() {
+        let receipt = run_delete_range(
+            b"m",
+            b"m",
+            |remaining_start| {
+                panic!("the validator must not be asked about a range that is already empty, got {remaining_start:?}")
+            },
+            |_cursor| panic!("nothing may be planned for an empty range"),
+            |_batch| panic!("nothing may be committed for an empty range"),
+        )
+        .expect("an already-empty bounded range is complete, not stale");
+
+        assert_eq!(receipt.committed_chunks, 0);
+        assert_eq!(receipt.last_applied, None);
     }
 
     /// Failing at chunk 2 must leave chunk 1's deletion *in the engine* and chunks 2+
@@ -2925,6 +2976,7 @@ mod tests {
         let engine = seeded_engine(4);
         let mut attempts = 0u64;
         let result = run_delete_range(
+            b"",
             b"",
             |_| Ok(()),
             planner(4),
@@ -2972,6 +3024,7 @@ mod tests {
         let mut planned = 0usize;
         let mut committed = 0u64;
         let result = run_delete_range(
+            b"",
             b"",
             |_| Ok(()),
             |_cursor| {
@@ -3022,6 +3075,7 @@ mod tests {
         let engine = seeded_engine(4);
         let result = run_delete_range(
             b"",
+            b"",
             |_| Ok(()),
             planner(4),
             |_batch| Err(Error::Engine("injected disk failure".into())),
@@ -3035,6 +3089,7 @@ mod tests {
     #[test]
     fn an_empty_range_succeeds_with_a_zero_receipt() {
         let receipt = run_delete_range(
+            b"",
             b"",
             |_| Ok(()),
             planner(0),
@@ -3050,6 +3105,7 @@ mod tests {
         let engine = seeded_engine(3);
         let mut attempts = 0u64;
         let receipt = run_delete_range(
+            b"",
             b"",
             |_| Ok(()),
             planner(3),
