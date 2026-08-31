@@ -705,6 +705,29 @@ the start:
 `RawPut/RawGet/RawDelete/RawScan/RawBatchGet`, optional TTL, optional causal timestamps for ordering without full
 transactions. No locks, no 2PC. The keyspace's `api_type` selects the executor at routing; a keyspace cannot mix.
 
+**Read semantics — the target is linearizable; v0 does not yet deliver it.** Raw reads are *intended* to be
+linearizable, served through a ReadIndex quorum round-trip. That is not wired yet, and the interim boundary is stated
+here plainly so the intent is not mistaken for the guarantee:
+
+- **Today** a read is served by whichever node's *local* raft role says "leader". That is a local judgment, not a
+  quorum-confirmed one. `check_quorum` makes a deposed leader step down, but not instantly, and inside that window it
+  answers from stale state.
+- **The step-down bound is counted in raft ticks, not wall-clock time** — `election_tick: 10` at a 20 ms driver
+  cadence ≈ 200 ms *while the process is scheduled*. **A paused or descheduled process does not tick and therefore
+  does not step down**, and can serve a read on resume before processing anything. The wall-clock staleness window is
+  the pause duration plus one election timeout. Container pause/kill (which our own chaos matrix exercises) puts that
+  in seconds. **Stating the bound as "one election timeout" understates it in exactly the case that occurs in
+  production, which is the dangerous direction for a reader sizing retries or a read-after-write.**
+- **So v0 raw reads are fresh in normal operation, but not linearizable.** Do not build on them where a stale answer
+  during a leadership change would be a correctness problem. In particular, "the write returned success, therefore the
+  next read observes it" does not hold across a leader change.
+- **Closure is a mechanism plus its test, not a docs change**: reads go through the ReadIndex round-trip, and a
+  partition test in which a deposed leader *must fail* to serve a read is what turns this paragraph into a promise.
+  Until that test exists the promise stays unpublished — a guarantee is only worth what reproduces it.
+
+The same round-trip is a hard prerequisite for the txn path, where the equivalent window is not merely staleness: a
+2PC read that misses locks or commits landed on the new leader violates snapshot isolation (§9.1).
+
 ---
 
 ## 10. Sharding & multi-tenant capacity (throughput-first)
