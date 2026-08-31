@@ -2323,13 +2323,25 @@ mod tests {
         let err = propose_and_wait_loop(
             || {
                 *proposes.borrow_mut() += 1;
+                // Fuse: a mutated loop that retries Failed has no exit path
+                // (the deadline check lives in the Replaced arm) — give it a
+                // bounded way out the named assertions catch; the detector is
+                // the assertion, never an outer job timeout.
+                if *proposes.borrow() > 3 {
+                    return Err(Error::Raft(
+                        "FUSE: the loop kept re-proposing after a driver failure".into(),
+                    ));
+                }
                 Ok(at(1, 5))
             },
             |_, _| Err(ApplyWaitError::Failed(Error::Raft("poisoned".into()))),
             Duration::from_millis(50),
         )
         .expect_err("a failed driver must surface");
-        assert!(err.to_string().contains("poisoned"));
+        assert!(
+            err.to_string().contains("poisoned"),
+            "the driver's own failure must survive recognizably: {err}"
+        );
         assert_eq!(
             *proposes.borrow(),
             1,
@@ -2408,9 +2420,10 @@ mod tests {
         );
     }
 
-    /// A propose error — the typed NotLeader (+ hint) after leadership moved —
-    /// surfaces verbatim, on the first attempt or on a re-proposal alike; the
-    /// client's own retry policy owns that case.
+    /// A propose error — the REAL typed `Error::NotLeader` with its hint,
+    /// after leadership moved — surfaces with variant and hint structurally
+    /// intact (review round: the first draft forged a string and only proved
+    /// a string passes through); the client's own retry policy owns that case.
     #[test]
     fn a_propose_error_surfaces_verbatim() {
         let proposes = RefCell::new(0u32);
@@ -2420,7 +2433,9 @@ mod tests {
                 if *proposes.borrow() == 1 {
                     Ok(at(1, 5))
                 } else {
-                    Err(Error::Raft("not_leader=true leader_node_id=3".into()))
+                    Err(Error::NotLeader {
+                        leader: Some(NodeId(3)),
+                    })
                 }
             },
             |_, _| Ok(ApplyWaitOutcome::Replaced),
@@ -2428,8 +2443,14 @@ mod tests {
         )
         .expect_err("the moved-leadership propose error must surface");
         assert!(
-            err.to_string().contains("not_leader=true leader_node_id=3"),
-            "the typed NotLeader + hint must pass through unchanged: {err}"
+            matches!(
+                err,
+                Error::NotLeader {
+                    leader: Some(NodeId(3))
+                }
+            ),
+            "the typed NotLeader variant and its leader hint must pass through \
+             structurally unchanged: {err:?}"
         );
         assert_eq!(*proposes.borrow(), 2);
     }
