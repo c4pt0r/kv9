@@ -549,6 +549,7 @@ dependencies = [
  "kv9-region",
  "kv9-txn",
  "prost",
+ "raft",
  "tokio",
  "tokio-stream",
  "tonic",
