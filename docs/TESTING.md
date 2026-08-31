@@ -329,10 +329,21 @@ Both happened here within one hour: @Ren's regex silently failed to match, and m
 `apply_command` poison arm while the test walks the `Command::decode` arm — two visually identical
 `return Err(self.poison(..))` lines.
 
-*Corollary (Cindy):* mutate and verify in one `&&` chain. A mutation script that fails, followed by
-a verification run that proceeds anyway, prints a green that reads exactly like "the mutation applied
-and nothing caught it". Assert the restore too (`git diff --quiet`); re-running the suite and seeing
-green never checked that the tree went back.
+*Corollary (Cindy):* a mutation script that fails, followed by a verification run that proceeds
+anyway, prints a green that reads exactly like "the mutation applied and nothing caught it". So bind
+the mutation to its confirmation — but bind only that much:
+
+    apply mutation && confirm it landed     `&&` here: the confirmation is worthless if the
+                                            mutation did not apply
+    run the test, capture rc explicitly     an EXPECTED-RED verifier exits non-zero by design;
+                                            chaining past it is what a failure looks like
+    restore unconditionally, then assert    `git diff --quiet` — separately, never chained behind
+                                            a step that is supposed to fail
+
+*Boundary (Tess):* do not chain the restore. An expected-red run returns non-zero, so anything `&&`-ed
+after it never executes, and under `set -e` the script aborts outright — **the rule as first written
+would leave a dirty tree exactly on the runs it is meant to govern.** Check the test's rc against the
+*expected* value rather than against zero.
 
 ## 15. To prove an absence of coverage takes three premises, not one
 
@@ -346,7 +357,12 @@ three:
 *Why 1 is not merely better evidence (Ren):* it decides whether the inference is valid at all.
 Weakening a bound (2s to 2000s) leaves "still green" with two readings — no coverage, or coverage
 whose threshold this weakening never crossed. Deleting leaves one. Expected-red experiments do not
-need this; "red therefore load-bearing" survives a weakening mutation.
+need an extreme mutation to demonstrate sensitivity to the precise change they made.
+
+*Boundary (Tess):* and the conclusion may not outrun that change. A weakening mutation going red at
+the expected assertion proves the test discriminates **that one modification** — not that the whole
+mechanism is load-bearing, and not that a more extreme defect would also red. Expected-red results
+remain subject to the landing constraint of rule 14.
 
 *Why 3 exists (Cindy):* a deletion-type mutation on `driver.rs`'s `apply_command` poison arm came
 out all-green, and by premises 1+2 alone that is a "valid" inference of no coverage. It was wrong.
@@ -371,9 +387,13 @@ exists. Read the two together, never this one alone.
 unchanged.
 
     synchronous, on the test thread's stack   panic!()           both directions self-report
-    cross-thread, "was it reached?"           process::abort()   both self-report — SIGABRT kills
-                                                                 the test binary, so any thread reports
-    counting, or several points at once       AtomicBool/channel signal never lost, and countable
+    cross-thread, "was it reached?"           process::abort()   a POSITIVE hit self-proves — SIGABRT
+                                                                 kills the binary, so any thread reports
+    counting, or several points at once       AtomicBool/channel a written signal persists and counts
+
+**For both cross-thread rows the negative is not self-proving**: green still means only "not observed
+within W". Declare W and show it was covered before reading a green as "not executed" (Tess: do not
+promise two directions in the table and withdraw one in the prose).
 
 A `panic!` inside a spawned task does **not** fail the test: spawn a panicking task, drop the
 `JoinHandle`, and the run reports `1 passed`. So panic probes are useless exactly where transport
@@ -405,10 +425,17 @@ the unit test stays green.
 code's drift.** This is the test-side dual of *assert the symptom, not the cause*: one says do not
 hardcode the cause, the other says do not manufacture the system's own output.
 
-*Fix, and the half it does not fix (Cindy):* a shared exported constant makes both sides use one
-name — but it only proves no second literal exists. It does **not** show production ever reaches that
-branch; that needs driving the real failure end to end. Keep the two claims separate in the commit
-message, or "reference enumeration passes" gets read as "the production path is verified".
+*Fix, and the two halves it does not fix (Cindy; second half per Tess):* a shared exported constant
+removes drift **between the producer and consumer it binds**. It does not, by itself, establish either
+of the following:
+
+    that no other literal exists      that comes from an independent enumeration WITH a positive
+                                      control (how many sites were examined), never from the constant
+    that production reaches the branch  that needs driving the real failure end to end
+
+Keep all three claims separate in the commit message, or "the constant landed" gets read as "uniqueness
+proven" and "the production path is verified" — and the next person will extract a constant and declare
+the uniqueness argument done.
 
 *Related, on binding duplicated literals (Ren):* bind only those whose drift degrades **silently**.
 Same ruler, three answers — a producer/consumer pair that drifts to a generic class with unit tests
@@ -428,7 +455,8 @@ therefore not weak evidence about that red — it is not evidence. A shot that m
 cannot tell you where the bullseye is.
 
     red characterised    → you can check whether the matrix covers those conditions → a green can close it
-    red uncharacterised  → the relation is undecidable by construction → no quantity of greens closes it
+    red uncharacterised  → the relation cannot be decided from the evidence now available
+                           → no quantity of unrelated greens closes it
 
 **So "uncharacterised" is a logical state, not a backlog state.** *Run enough greens and treat it as
 gone* is not a discouraged third option; it does not exist.
