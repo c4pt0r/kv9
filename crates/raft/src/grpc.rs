@@ -1581,6 +1581,232 @@ mod tests {
         );
     }
 
+    /// The deterministic 2+1 scenario (task #28 step 2) — the characterization
+    /// key for the open uncharacterized incident "3 nodes all candidate ~20s
+    /// after pod failure/heal + leader partition" (TESTING.md rule 18: only
+    /// characterization closes it). The late-voter reconnect fix that shipped
+    /// with task #40's transport triple is the HYPOTHESIS under test here, not
+    /// an assumed cover.
+    ///
+    /// Phase 1 models pod failure/recovery as full mask isolation of a
+    /// follower, with an in-scenario control proving the cut bites (the missed
+    /// commit must NOT apply while isolated) before the heal is credited —
+    /// without that control, "recovered after heal" is vacuous if the mask
+    /// never engaged. Phase 2 cuts the current leader 2+1 and asserts the
+    /// three properties Tess's acceptance names: term/vote progress on the
+    /// majority side, a final majority-side leader (the anti-signature of the
+    /// all-candidate incident), and the isolated leader's check_quorum
+    /// step-down. Masking only on the isolated node cuts BOTH directions (its
+    /// sends drop at its send gate, its inbound drops at its drain), so the
+    /// survivor↔survivor edge is untouched by construction — the target-target
+    /// ambiguity of the original Chaos CR cannot occur here.
+    #[test]
+    fn pod_failure_recovery_then_two_one_partition_elects_the_majority_side() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+        let region = RegionId(1);
+        let ids = [NodeId(1), NodeId(2), NodeId(3)];
+        let addrs: Vec<SocketAddr> = ids.iter().map(|_| free_addr()).collect();
+
+        let mut transports: Vec<Arc<GrpcTransport>> = Vec::new();
+        let mut drivers = Vec::new();
+        for (i, &id) in ids.iter().enumerate() {
+            let transport = GrpcTransport::new(
+                id,
+                Some("test-cluster-token".into()),
+                handle.clone(),
+                test_root().root_digest,
+            );
+            for (j, &peer) in ids.iter().enumerate() {
+                if peer != id {
+                    transport.register_peer(peer, addrs[j]);
+                }
+            }
+            serve(&handle, id, addrs[i], transport.inbox_sender(), 42);
+            transports.push(Arc::clone(&transport));
+            let peer = Arc::new(RaftPeer::new(id, region, &ids).unwrap());
+            drivers.push(NodeDriver::new(
+                peer,
+                transport as Arc<dyn RaftTransport>,
+                MemStateMachine::new(),
+            ));
+        }
+        std::thread::sleep(Duration::from_millis(100));
+        let _handles: Vec<_> = drivers
+            .iter()
+            .map(|d| d.spawn(Duration::from_millis(10)))
+            .collect();
+
+        let deadline = |secs: u64| std::time::Instant::now() + Duration::from_secs(secs);
+        let wait_for = |cond: &mut dyn FnMut() -> bool, until: std::time::Instant, what: &str| {
+            while !cond() {
+                assert!(std::time::Instant::now() < until, "timeout: {what}");
+                std::thread::sleep(Duration::from_millis(10));
+            }
+        };
+
+        // --- Form: elect, replicate one write everywhere.
+        drivers[0].peer().campaign().unwrap();
+        let mut leader_idx = 0;
+        wait_for(
+            &mut || match drivers.iter().position(|d| d.status().role == Role::Leader) {
+                Some(i) => {
+                    leader_idx = i;
+                    true
+                }
+                None => false,
+            },
+            deadline(20),
+            "initial election",
+        );
+        let put = |k: &[u8]| Command::Put {
+            cf: 0,
+            key: k.to_vec(),
+            value: b"v".to_vec(),
+        };
+        let at1 = drivers[leader_idx].propose(&put(b"k1")).unwrap();
+        for d in &drivers {
+            assert!(d.wait_applied(at1, Duration::from_secs(20)).unwrap());
+        }
+
+        // --- Phase 1: "pod failure" = fully isolate one follower via its own
+        // mask (both directions cut at that node), then heal.
+        let follower_idx = (0..3).find(|&i| i != leader_idx).unwrap();
+        let follower_peers: Vec<u64> = ids
+            .iter()
+            .enumerate()
+            .filter(|&(i, _)| i != follower_idx)
+            .map(|(_, id)| id.0)
+            .collect();
+        transports[follower_idx]
+            .partition
+            .force_mask(&follower_peers);
+
+        // Isolation control: a commit made during the cut must reach the two
+        // connected nodes and must NOT reach the isolated one. If this fails,
+        // the mask never engaged and everything after would be vacuous.
+        let at2 = drivers[leader_idx].propose(&put(b"k2")).unwrap();
+        for (i, d) in drivers.iter().enumerate() {
+            if i != follower_idx {
+                assert!(d.wait_applied(at2, Duration::from_secs(20)).unwrap());
+            }
+        }
+        // (wait_applied reports an un-reached deadline as Err — the typed
+        // ApplyWaitOutcome split is task #30; match the deadline shape here.)
+        let iso = drivers[follower_idx]
+            .wait_applied(at2, Duration::from_secs(2))
+            .expect_err(
+                "the isolated follower must not apply a commit made during the cut \
+                 (isolation control: without this, the heal proves nothing)",
+            );
+        assert!(
+            iso.to_string().contains("deadline"),
+            "isolation must look like a deadline, not some other failure: {iso}"
+        );
+
+        // Heal. The follower must catch up over RECOVERED streams — this is
+        // the late-voter reconnect hypothesis meeting its deterministic test.
+        transports[follower_idx].partition.force_mask(&[]);
+        assert!(
+            drivers[follower_idx]
+                .wait_applied(at2, Duration::from_secs(20))
+                .unwrap(),
+            "after heal the follower must catch up: streams must recover \
+             (the task #40 transport fix is the hypothesis under test here)"
+        );
+        // Agreed leader: all three report the same live leader.
+        wait_for(
+            &mut || {
+                let l0 = drivers[0].status().leader_id;
+                l0.is_some()
+                    && drivers.iter().all(|d| d.status().leader_id == l0)
+                    && drivers
+                        .iter()
+                        .any(|d| d.status().role == Role::Leader && Some(d.status().node_id) == l0)
+            },
+            deadline(20),
+            "post-heal agreed leader",
+        );
+
+        // --- Phase 2: cut the CURRENT leader 2+1.
+        let mut cur_leader = 0;
+        wait_for(
+            &mut || match drivers.iter().position(|d| d.status().role == Role::Leader) {
+                Some(i) => {
+                    cur_leader = i;
+                    true
+                }
+                None => false,
+            },
+            deadline(20),
+            "leader before the 2+1 cut",
+        );
+        let pre_cut_term = drivers[cur_leader].status().term;
+        let leader_peers: Vec<u64> = ids
+            .iter()
+            .enumerate()
+            .filter(|&(i, _)| i != cur_leader)
+            .map(|(_, id)| id.0)
+            .collect();
+        transports[cur_leader].partition.force_mask(&leader_peers);
+
+        // The majority side must make term/vote progress and elect ONE of the
+        // two survivors — the anti-signature of the all-candidate incident.
+        let mut new_leader = 0;
+        wait_for(
+            &mut || match (0..3).filter(|&i| i != cur_leader).find(|&i| {
+                let s = drivers[i].status();
+                s.role == Role::Leader && s.term > pre_cut_term
+            }) {
+                Some(i) => {
+                    new_leader = i;
+                    true
+                }
+                None => false,
+            },
+            deadline(20),
+            "majority-side election after the 2+1 cut (all-candidate signature?)",
+        );
+        assert!(
+            drivers[new_leader].status().term > pre_cut_term,
+            "the majority side must have advanced the term to elect"
+        );
+
+        // The isolated old leader must depose itself: check_quorum steps a
+        // leader down once it cannot reach a quorum.
+        wait_for(
+            &mut || drivers[cur_leader].status().role != Role::Leader,
+            deadline(20),
+            "isolated leader's check_quorum step-down",
+        );
+
+        // The majority side stays writable end to end.
+        let at3 = drivers[new_leader].propose(&put(b"k3")).unwrap();
+        for i in (0..3).filter(|&i| i != cur_leader) {
+            assert!(
+                drivers[i]
+                    .wait_applied(at3, Duration::from_secs(20))
+                    .unwrap(),
+                "the majority side must commit and apply after re-election"
+            );
+        }
+
+        // Heal the old leader: it must rejoin and observe the majority's
+        // write — stream recovery again, now on the once-isolated LEADER's
+        // connections (the exact surface of the original incident).
+        transports[cur_leader].partition.force_mask(&[]);
+        assert!(
+            drivers[cur_leader]
+                .wait_applied(at3, Duration::from_secs(20))
+                .unwrap(),
+            "the healed ex-leader must converge onto the majority's history"
+        );
+
+        for d in &drivers {
+            d.stop();
+        }
+    }
+
     #[test]
     fn three_nodes_over_grpc_elect_replicate_failover() {
         let rt = tokio::runtime::Runtime::new().unwrap();
