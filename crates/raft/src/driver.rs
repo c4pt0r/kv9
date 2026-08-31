@@ -201,10 +201,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             self.transport.send(to, msg);
         }
         #[cfg(any(test, feature = "testing"))]
-        if self
-            .apply_paused
-            .load(std::sync::atomic::Ordering::Relaxed)
-        {
+        if self.apply_paused.load(std::sync::atomic::Ordering::Relaxed) {
             // Apply frozen: leave committed entries queued (they drain in
             // order on unpause). Raft above keeps running — elections and
             // commits proceed, driver_applied does not.
