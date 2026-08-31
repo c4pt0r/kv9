@@ -234,7 +234,9 @@ Searching wrong yourself at least leaves a suspicious command behind; relaying w
 range into a fact, and washes it clean, because the person relaying usually adds "I checked" (Ren).
 
 *Trigger — an act, not an intent:* if you would say **"the entry points are these three"**, "there is
-nowhere else", or "there are N sites", you owe the method or a re-run.
+nowhere else", "there are N sites", or **"X cannot reach / cannot do Y"** — capability and
+negative-existence claims are the same thing wearing different clothes, each still the residue of one
+"I looked and did not see" — you owe the method or a re-run.
 
 *The criterion is the derivation, not the appearance.* First stated as "design rulings, type facts and
 readable code paths carry no range", and falsified within the hour by the person who proposed the rule:
