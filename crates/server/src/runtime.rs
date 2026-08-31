@@ -935,8 +935,14 @@ impl<'a> KeySpan<'a> {
 /// Kept standalone so a failure can be injected at chunk N in a test. The interesting
 /// behaviour here is not the deleting — it is what is reported when the loop stops early,
 /// and that is exactly the part a live-cluster test cannot easily force.
-fn run_delete_range<P, C>(mut plan_next: P, mut commit: C) -> Result<DeleteRangeReceipt>
+fn run_delete_range<V, P, C>(
+    end: &[u8],
+    mut revalidate: V,
+    mut plan_next: P,
+    mut commit: C,
+) -> Result<DeleteRangeReceipt>
 where
+    V: FnMut(Option<&[u8]>) -> Result<()>,
     P: FnMut(Option<&[u8]>) -> Result<Option<(kv9_engine::WriteBatch, UserKey)>>,
     C: FnMut(kv9_engine::WriteBatch) -> Result<AppliedPosition>,
 {
@@ -969,6 +975,44 @@ where
     }
 
     loop {
+        // Exhaustion is decided here, BEFORE the validator (@Tess).
+        //
+        // The cursor can land exactly on `end`: deleting `[a, a\0)` covers `a` and advances
+        // to `a\0`, which *is* `end`. The remaining range is empty and the delete is
+        // complete. Asking the validator about `[end, end)` invites it to resolve a region
+        // for `end` itself, and when `end` sits on a region boundary that is the NEXT
+        // region — whose epoch the caller never claimed. A finished delete would then report
+        // `StaleEpoch`: a false failure on a request that fully succeeded. For a receipt
+        // that is the worse direction, because the caller acts on it and redoes work that is
+        // already done. Only for a bounded `end`; an empty `end` means "to the end of the
+        // keyspace" and no cursor can reach it.
+        if !end.is_empty() && cursor.as_deref().is_some_and(|c| c >= end) {
+            return Ok(DeleteRangeReceipt {
+                committed_chunks,
+                last_applied,
+            });
+        }
+        // Revalidate the authorisation for the REMAINING range, every round including the
+        // first, and structurally before planning.
+        //
+        // A range delete longer than one chunk becomes N independent raft entries over an
+        // unbounded wall-clock window. The leader gate was already re-taken per chunk; the
+        // context gate — keyspace, api_type, region, epoch, span-within-region — was checked
+        // once before the loop, so chunks 2..N wrote under an authorisation validated
+        // against a state that may no longer hold. `check_context` exists precisely to
+        // refuse acting on a region whose epoch has moved, and it was being consulted only
+        // about the first chunk.
+        //
+        // It is a required closure rather than a call the endpoint remembers to make: with
+        // one seam and no second entry-point check, an endpoint that omits the validator
+        // does not compile. Failure preserves the receipt, so a caller learns a stale
+        // authorisation stopped it mid-range rather than being told nothing happened.
+        //
+        // This NARROWS the window; it does not close it. A split already committed to the
+        // log but not yet applied locally still reads as the old epoch here, and
+        // `Command::Write` carries no expected epoch, so apply cannot refuse it — task #48
+        // layer 2, the fenced envelope. Do not read this as the fix.
+        preserving_receipt!(revalidate(cursor.as_deref()));
         let Some((batch, last_key)) = preserving_receipt!(plan_next(cursor.as_deref())) else {
             return Ok(DeleteRangeReceipt {
                 committed_chunks,
@@ -1119,11 +1163,24 @@ impl RawApi for RuntimeBackend {
         end: &[u8],
     ) -> Result<DeleteRangeReceipt> {
         self.ensure_serving()?;
-        self.validated_context(ctx, KeySpan::Range { start, end })?;
         // One chunk in memory at a time: read a bounded chunk, commit it, resume strictly
         // after the last key it covered. Planning the whole range up front bounded the
         // raft *entry* while leaving the planner unbounded.
+        // There is deliberately NO context check before this call. The loop revalidates on
+        // every round including the first, so a second entry-point check would be a parallel
+        // path that could drift from the one the loop applies — and the endpoint would then
+        // be authorised by a rule the loop does not use.
         run_delete_range(
+            end,
+            |cursor| {
+                self.validated_context(
+                    ctx,
+                    KeySpan::Range {
+                        start: cursor.unwrap_or(start),
+                        end,
+                    },
+                )
+            },
             |cursor| {
                 // Planning reads the range, so it needs the same leader gate as a scan.
                 let (view, hint, is_leader) = self.leader_read()?;
@@ -2760,23 +2817,129 @@ mod tests {
             .is_some()
     }
 
+    /// The authorisation is re-checked on **every** chunk, and a verdict that turns stale
+    /// mid-range stops the delete with a receipt rather than finishing under it.
+    ///
+    /// This is the assertion the layer-1 change actually owes. The planner/cursor tests in
+    /// `kv9-txn` cover the enabling change; none of them touch this loop, and deleting the
+    /// `revalidate` call left the entire workspace green — the mutation below is what makes
+    /// "re-checked per chunk" a claim with evidence behind it rather than a comment.
+    ///
+    /// Mutation: remove `preserving_receipt!(revalidate(..))` from the loop. Chunk 2 then
+    /// commits, `present(2)` becomes false, and this test reds on "exactly one chunk". The
+    /// stale verdict is delivered on the SECOND call, after chunk 1 has really committed, so
+    /// the partial-receipt path is exercised too, not just the refusal.
+    #[test]
+    fn a_stale_authorisation_stops_the_range_and_reports_a_partial_receipt() {
+        let engine = seeded_engine(4);
+        let mut checks = 0u64;
+        let result = run_delete_range(
+            b"",
+            |_cursor| {
+                checks += 1;
+                // Passes for chunk 1, stale from chunk 2 on — the region moved under us.
+                if checks >= 2 {
+                    return Err(Error::StaleEpoch {
+                        region: kv9_common::RegionId(300),
+                    });
+                }
+                Ok(())
+            },
+            planner(4),
+            |batch| {
+                engine.write(batch).unwrap();
+                Ok(AppliedPosition { term: 7, index: 11 })
+            },
+        );
+
+        match result {
+            Err(Error::PartialDeleteRange {
+                committed_chunks,
+                cause,
+                ..
+            }) => {
+                assert_eq!(committed_chunks, 1, "exactly one chunk may have committed");
+                assert!(
+                    cause.contains("epoch"),
+                    "the receipt must name the stale authorisation as the cause, got: {cause}"
+                );
+            }
+            other => panic!("expected a partial receipt naming the stale epoch, got {other:?}"),
+        }
+        assert!(
+            !present(&engine, 1),
+            "chunk 1 committed before the verdict turned"
+        );
+        assert!(
+            present(&engine, 2),
+            "chunk 2 must NOT have been planned or committed once the authorisation went stale"
+        );
+        assert_eq!(
+            checks, 2,
+            "the validator is consulted once per round, not once per call"
+        );
+    }
+
+    /// Exhaustion is decided before the validator is consulted, so a delete that finishes
+    /// exactly on `end` cannot be reported as a failure.
+    ///
+    /// The cursor advances past the last covered key, so it can land precisely on `end`.
+    /// Asking the validator about the empty `[end, end)` would resolve a region for `end`
+    /// itself — the next region when `end` is a boundary — and a completed delete would come
+    /// back as `StaleEpoch`. The validator here fails if it is ever consulted at that point.
+    #[test]
+    fn a_cursor_landing_exactly_on_end_completes_instead_of_revalidating() {
+        let engine = seeded_engine(4);
+        let mut checks = 0u64;
+        let receipt = run_delete_range(
+            // The planner's first cursor is `k\x01`; make that the exclusive end.
+            b"k\x01",
+            |cursor| {
+                checks += 1;
+                assert!(
+                    cursor.is_none(),
+                    "once the cursor reaches `end` the range is finished and the validator \
+                     must not be asked about the empty remainder, got cursor {cursor:?}"
+                );
+                Ok(())
+            },
+            planner(4),
+            |batch| {
+                engine.write(batch).unwrap();
+                Ok(AppliedPosition { term: 7, index: 11 })
+            },
+        )
+        .expect("a delete that ends exactly on `end` is complete, not stale");
+
+        assert_eq!(receipt.committed_chunks, 1);
+        assert_eq!(
+            checks, 1,
+            "validated once, for the only chunk actually planned"
+        );
+    }
+
     /// Failing at chunk 2 must leave chunk 1's deletion *in the engine* and chunks 2+
     /// untouched — the receipt has to describe reality, not just count calls.
     #[test]
     fn a_failure_at_the_second_chunk_commits_exactly_the_first_chunk() {
         let engine = seeded_engine(4);
         let mut attempts = 0u64;
-        let result = run_delete_range(planner(4), |batch| {
-            attempts += 1;
-            if attempts == 2 {
-                return Err(Error::Engine("injected disk failure".into()));
-            }
-            engine.write(batch)?;
-            Ok(AppliedPosition {
-                term: 7,
-                index: 100 + attempts,
-            })
-        });
+        let result = run_delete_range(
+            b"",
+            |_| Ok(()),
+            planner(4),
+            |batch| {
+                attempts += 1;
+                if attempts == 2 {
+                    return Err(Error::Engine("injected disk failure".into()));
+                }
+                engine.write(batch)?;
+                Ok(AppliedPosition {
+                    term: 7,
+                    index: 100 + attempts,
+                })
+            },
+        );
 
         match result {
             Err(Error::PartialDeleteRange {
@@ -2809,6 +2972,8 @@ mod tests {
         let mut planned = 0usize;
         let mut committed = 0u64;
         let result = run_delete_range(
+            b"",
+            |_| Ok(()),
             |_cursor| {
                 planned += 1;
                 if planned == 2 {
@@ -2855,9 +3020,12 @@ mod tests {
     #[test]
     fn a_failure_on_the_very_first_chunk_is_not_partial_and_changes_nothing() {
         let engine = seeded_engine(4);
-        let result = run_delete_range(planner(4), |_batch| {
-            Err(Error::Engine("injected disk failure".into()))
-        });
+        let result = run_delete_range(
+            b"",
+            |_| Ok(()),
+            planner(4),
+            |_batch| Err(Error::Engine("injected disk failure".into())),
+        );
         assert!(matches!(result, Err(Error::Engine(_))));
         for i in 1..=4u8 {
             assert!(present(&engine, i), "no key may have been deleted");
@@ -2866,8 +3034,13 @@ mod tests {
 
     #[test]
     fn an_empty_range_succeeds_with_a_zero_receipt() {
-        let receipt =
-            run_delete_range(planner(0), |_batch| panic!("nothing should be committed")).unwrap();
+        let receipt = run_delete_range(
+            b"",
+            |_| Ok(()),
+            planner(0),
+            |_batch| panic!("nothing should be committed"),
+        )
+        .unwrap();
         assert_eq!(receipt.committed_chunks, 0);
         assert_eq!(receipt.last_applied, None);
     }
@@ -2876,14 +3049,19 @@ mod tests {
     fn every_chunk_committing_reports_the_last_position_and_empties_the_range() {
         let engine = seeded_engine(3);
         let mut attempts = 0u64;
-        let receipt = run_delete_range(planner(3), |batch| {
-            attempts += 1;
-            engine.write(batch)?;
-            Ok(AppliedPosition {
-                term: 2,
-                index: 50 + attempts,
-            })
-        })
+        let receipt = run_delete_range(
+            b"",
+            |_| Ok(()),
+            planner(3),
+            |batch| {
+                attempts += 1;
+                engine.write(batch)?;
+                Ok(AppliedPosition {
+                    term: 2,
+                    index: 50 + attempts,
+                })
+            },
+        )
         .unwrap();
         assert_eq!(receipt.committed_chunks, 3);
         assert_eq!(
