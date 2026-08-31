@@ -433,35 +433,79 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
 
     /// Wait until this node has applied `at` — verified by **term + index**,
     /// never position alone. Pure condition-poll: the pump must be running
-    /// (via [`Self::spawn`] or a caller-driven loop). Returns:
-    /// - `Ok(true)`  — the exact proposal applied here;
-    /// - `Ok(false)` — the position was passed by a DIFFERENT entry (overwritten
-    ///   after a leader change): the proposal must be reported failed;
-    /// - `Err(_)`    — deadline reached. Success is judged on applied state,
-    ///   never on elapsed time.
-    pub fn wait_applied(&self, at: ProposedAt, deadline: Duration) -> Result<bool> {
+    /// (via [`Self::spawn`] or a caller-driven loop).
+    ///
+    /// The typed receipt (task #30, forced by the 2026-08-31 master red): a
+    /// proposal whose position is consumed by an election BARRIER hit neither
+    /// of the old detection arms — a barrier never enters the command ring and
+    /// never advances the state-machine watermark — so with no later command
+    /// traffic the only possible answer was a full deadline burn reported as
+    /// unavailability. The unified driver watermark is the discriminator that
+    /// closes the gap: it advances through every committed entry, barriers
+    /// included, so "driver watermark passed the position, ring never saw it"
+    /// IS the replacement verdict, delivered in milliseconds.
+    pub fn wait_applied(
+        &self,
+        at: ProposedAt,
+        deadline: Duration,
+    ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError> {
         let start = Instant::now();
         loop {
             if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
-                return Err(Error::Raft(format!("driver is poisoned: {f}")));
+                return Err(ApplyWaitError::Failed(Error::Raft(format!(
+                    "driver is poisoned: {f}"
+                ))));
             }
+            // Snapshot the unified watermark BEFORE the ring lock (never
+            // nested inside it — the pump publishes under these locks in its
+            // own order). A stale-low read only delays a Replaced verdict by
+            // one poll iteration; monotonicity makes a stale read safe, never
+            // wrong.
+            let wm_passed = self
+                .driver_applied()
+                .is_some_and(|wm| wm.index >= at.index.0);
             {
                 let applied = self.applied.lock().expect("applied poisoned");
                 if let Some(&(_, term)) = applied.iter().find(|(i, _)| *i == at.index.0) {
-                    return Ok(term == at.term);
+                    return if term == at.term {
+                        Ok(ApplyWaitOutcome::Applied(at))
+                    } else {
+                        // The position applied here, but as ANOTHER leader's
+                        // command.
+                        Ok(ApplyWaitOutcome::Replaced)
+                    };
                 }
-                // Position passed without this index ever being recorded: the
-                // slot was consumed by an entry that never reached the command
-                // path (e.g. a no-op barrier) — not ours.
-                if self.sm.lock().expect("sm poisoned").applied_index() >= at.index {
-                    return Ok(false);
+                // Ring-eviction honesty (review round, Cindy): the ring is
+                // bounded, so an index below its oldest retained entry — with
+                // the ring at capacity — may have applied and been evicted:
+                // indistinguishable from never-applied. When we cannot
+                // distinguish, say so. A fabricated Replaced invites the
+                // caller to retry a possibly-SUCCEEDED non-idempotent write;
+                // Unconfirmed keeps the unknown unknown.
+                if applied.len() == APPLIED_RING
+                    && applied.first().is_some_and(|&(i, _)| at.index.0 < i)
+                {
+                    return Err(ApplyWaitError::Unconfirmed {
+                        index: at.index.0,
+                        waited: start.elapsed(),
+                    });
+                }
+                // The position was passed without this index entering the
+                // command ring. Two watermarks can prove that:
+                //  - the state-machine watermark (some LATER command applied);
+                //  - the unified driver watermark (ANY later entry applied —
+                //    the only arm that fires when the replacing entry is the
+                //    new leader's barrier and no further command traffic
+                //    arrives; exactly the CI scene: driver=3, sm=2, wait=3).
+                if self.sm.lock().expect("sm poisoned").applied_index() >= at.index || wm_passed {
+                    return Ok(ApplyWaitOutcome::Replaced);
                 }
             }
             if start.elapsed() > deadline {
-                return Err(Error::Raft(format!(
-                    "wait_applied deadline: index {} not reached",
-                    at.index.0
-                )));
+                return Err(ApplyWaitError::Unconfirmed {
+                    index: at.index.0,
+                    waited: deadline,
+                });
             }
             std::thread::sleep(Duration::from_millis(1));
         }
@@ -525,6 +569,56 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
                 std::thread::sleep(tick_every);
             }
         })
+    }
+}
+
+/// The typed outcome of [`NodeDriver::wait_applied`] (task #30): what became
+/// of the proposal's position, judged on applied state, never on elapsed time.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ApplyWaitOutcome {
+    /// The exact `(term, index)` proposal applied on this node.
+    Applied(ProposedAt),
+    /// The position was consumed by a DIFFERENT entry — another leader's
+    /// command, or an election barrier (the entry raft appends on winning).
+    /// The proposal will never apply; the correct reaction is to re-propose
+    /// on the current leader, not to keep waiting.
+    Replaced,
+}
+
+/// The typed error of [`NodeDriver::wait_applied`] (task #30). `Unconfirmed`
+/// is a first-class state, never string-detected: the deadline passed with the
+/// position still ahead of every watermark — not applied, not provably
+/// replaced. The caller must treat it as UNKNOWN (the entry may still commit
+/// later), which is different in kind from `Replaced` (provably never).
+#[derive(Debug)]
+pub enum ApplyWaitError {
+    Unconfirmed {
+        index: u64,
+        waited: Duration,
+    },
+    /// The driver itself failed (poisoned apply, machinery error).
+    Failed(Error),
+}
+
+impl std::fmt::Display for ApplyWaitError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ApplyWaitError::Unconfirmed { index, waited } => write!(
+                f,
+                "proposal at index {index} unconfirmed after {waited:?}: \
+                 not applied, not provably replaced"
+            ),
+            ApplyWaitError::Failed(e) => write!(f, "apply wait failed: {e}"),
+        }
+    }
+}
+
+impl From<ApplyWaitError> for Error {
+    fn from(e: ApplyWaitError) -> Error {
+        match e {
+            ApplyWaitError::Failed(inner) => inner,
+            unconfirmed => Error::Raft(unconfirmed.to_string()),
+        }
     }
 }
 
@@ -913,7 +1007,210 @@ mod tests {
                 break;
             }
         }
-        assert!(driver.wait_applied(at, Duration::from_millis(100)).unwrap());
+        assert!(matches!(
+            driver.wait_applied(at, Duration::from_millis(100)).unwrap(),
+            ApplyWaitOutcome::Applied(_)
+        ));
         assert!(driver.status().fatal.is_none());
+    }
+
+    /// The 2026-08-31 master red, reproduced deterministically (task #30): a
+    /// proposal accepted by the old leader, never replicated, its position
+    /// consumed by the new leader's election barrier. The barrier enters
+    /// neither the command ring nor the state-machine watermark, so before
+    /// this fix the wait could only burn its whole deadline and answer with
+    /// unavailability; the unified driver watermark is the discriminator.
+    ///
+    /// Mutant contract: deleting the driver-watermark arm turns this test's
+    /// verdict into a deadline burn — it must red at the named Replaced
+    /// assertion (and the elapsed-time assertion pins that the verdict comes
+    /// from state, not from waiting).
+    #[test]
+    fn a_proposal_replaced_by_an_election_barrier_reports_replaced_not_deadline() {
+        let hub = InProcHub::new();
+        let ids = [NodeId(1), NodeId(2), NodeId(3)];
+        let mk = |id: NodeId| {
+            NodeDriver::new(
+                Arc::new(RaftPeer::new(id, RegionId(1), &ids).unwrap()),
+                Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
+                MemStateMachine::new(),
+            )
+        };
+        let d1 = mk(NodeId(1));
+        let d2 = mk(NodeId(2));
+        let d3 = mk(NodeId(3));
+        let pump_all = |n: usize| {
+            for _ in 0..n {
+                d1.tick_and_step().unwrap();
+                d2.tick_and_step().unwrap();
+                d3.tick_and_step().unwrap();
+            }
+        };
+
+        // n1 leads; a seed command applies everywhere (healthy baseline).
+        d1.peer().campaign().unwrap();
+        for _ in 0..200 {
+            pump_all(1);
+            if d1.status().role == Role::Leader {
+                break;
+            }
+        }
+        assert_eq!(d1.status().role, Role::Leader);
+        let seed = d1
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"seed".to_vec(),
+                value: b"x".to_vec(),
+            })
+            .unwrap();
+        for _ in 0..200 {
+            pump_all(1);
+            if [&d2, &d3].iter().all(|d| {
+                d.driver_applied()
+                    .is_some_and(|wm| wm.index >= seed.index.0)
+            }) {
+                break;
+            }
+        }
+
+        // The doomed proposal: accepted by n1, never replicated — everything
+        // n1 emits from here until its deposition is eaten by the "network"
+        // (the hub inboxes are discarded before n2/n3 next step; a real
+        // partition drops packets identically).
+        let doomed = d1
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"doomed".to_vec(),
+                value: b"never".to_vec(),
+            })
+            .unwrap();
+        // Depose n1: tick it alone past the election timeout with no quorum
+        // contact — check_quorum's own discipline steps it down.
+        for _ in 0..40 {
+            d1.tick_and_step().unwrap();
+        }
+        assert_ne!(
+            d1.status().role,
+            Role::Leader,
+            "check_quorum must depose a leader with no quorum contact (precondition)"
+        );
+        hub.endpoint(NodeId(2)).drain();
+        hub.endpoint(NodeId(3)).drain();
+
+        // n2/n3 tick together until one wins the new term (randomized
+        // election timeouts break the tie; WHICH one wins is irrelevant —
+        // only that a new-term leader emerges among the nodes that never saw
+        // the proposal). n1 answers but never ticks: a deposed peer whose
+        // timer also fires becomes a competing pre-candidate. n1 refuses its
+        // vote anyway (longer log) — n2+n3 are the majority, the CI scene.
+        for _ in 0..2000 {
+            d1.step().unwrap();
+            d2.tick_and_step().unwrap();
+            d3.tick_and_step().unwrap();
+            if [&d2, &d3].iter().any(|d| {
+                let s = d.status();
+                s.role == Role::Leader && s.term > doomed.term
+            }) {
+                break;
+            }
+        }
+        assert!(
+            [&d2, &d3].iter().any(|d| {
+                let s = d.status();
+                s.role == Role::Leader && s.term > doomed.term
+            }),
+            "precondition: a new-term leader among the nodes that never saw the proposal"
+        );
+        // Let the new leader's barrier replicate to n1, overwriting the
+        // doomed entry at its own position.
+        for _ in 0..300 {
+            d1.step().unwrap();
+            d2.tick_and_step().unwrap();
+            d3.tick_and_step().unwrap();
+            if d1
+                .driver_applied()
+                .is_some_and(|wm| wm.index >= doomed.index.0 && wm.term > doomed.term)
+            {
+                break;
+            }
+        }
+
+        // The CI-scene preconditions, by name: unified watermark past the
+        // position at a NEWER term; command watermark still below it (no
+        // later command traffic — the arm this test exists for).
+        let wm = d1.driver_applied().expect("barrier applied on n1");
+        assert!(
+            wm.index >= doomed.index.0 && wm.term > doomed.term,
+            "precondition: the barrier must have consumed the position"
+        );
+        assert!(
+            d1.status().applied_index < doomed.index.0,
+            "precondition: the command watermark must still be below the position"
+        );
+
+        let asked = Instant::now();
+        let outcome = d1
+            .wait_applied(doomed, Duration::from_secs(5))
+            .expect("a consumed position is a verdict, not an error");
+        assert_eq!(
+            outcome,
+            ApplyWaitOutcome::Replaced,
+            "a barrier-consumed position must report Replaced: the proposal              provably never applied (master-red scene: driver watermark passed              it, command ring never saw it)"
+        );
+        assert!(
+            asked.elapsed() < Duration::from_millis(500),
+            "the verdict must come from applied state, not from burning the deadline"
+        );
+    }
+
+    /// Ring-eviction honesty (task #30 review round): an index below the
+    /// ring's oldest retained entry, with the ring at capacity, may have
+    /// applied and been evicted — indistinguishable from never-applied. The
+    /// answer must be Unconfirmed, never a fabricated Replaced (which would
+    /// invite retrying a possibly-succeeded non-idempotent write).
+    #[test]
+    fn an_index_below_the_ring_floor_is_unconfirmed_not_replaced() {
+        let driver = single_node_driver();
+        let first = driver
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"k0".to_vec(),
+                value: b"v".to_vec(),
+            })
+            .unwrap();
+        // Push the ring to capacity so the first command is evicted.
+        let mut last = first;
+        for i in 0..APPLIED_RING {
+            last = driver
+                .propose(&Command::Put {
+                    cf: 0,
+                    key: format!("k{i}").into_bytes(),
+                    value: b"v".to_vec(),
+                })
+                .unwrap();
+            for _ in 0..50 {
+                driver.tick_and_step().unwrap();
+                if driver.status().applied_index >= last.index.0 {
+                    break;
+                }
+            }
+        }
+        assert!(driver.status().applied_index >= last.index.0);
+
+        // The first command DID apply — but the ring no longer remembers it.
+        let err = driver
+            .wait_applied(first, Duration::from_secs(5))
+            .expect_err("below the ring floor the outcome is unknowable");
+        assert!(
+            matches!(err, ApplyWaitError::Unconfirmed { .. }),
+            "an evicted position must be Unconfirmed, never Replaced: {err}"
+        );
+        // Control: the LAST command is still in the ring and reports Applied.
+        assert!(matches!(
+            driver
+                .wait_applied(last, Duration::from_millis(100))
+                .unwrap(),
+            ApplyWaitOutcome::Applied(_)
+        ));
     }
 }

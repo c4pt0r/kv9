@@ -28,7 +28,7 @@ use kv9_meta::schema::{ColumnId, NODES_DESC, SCHEMA_VERSION_DESC};
 use kv9_meta::tables::Tables;
 use kv9_meta::{Bootstrap, BootstrapEvent, BootstrapState};
 use kv9_meta::{ColumnValue, RowValue};
-use kv9_raft::driver::{DriverAppliedPosition, NodeDriver};
+use kv9_raft::driver::{ApplyWaitError, ApplyWaitOutcome, DriverAppliedPosition, NodeDriver};
 use kv9_raft::grpc::{
     grpc_discover, grpc_register, pb::kv9_raft_server::Kv9RaftServer, DiscoveryError,
     GrpcDiscoveryState, GrpcTransport, JoinIdentity, RaftGrpcService, RegisterError,
@@ -416,19 +416,53 @@ impl RuntimeBackend {
     }
 
     fn commit_catalog(&self, command: &kv9_raft::Command) -> Result<AppliedPosition> {
-        let proposed = self.driver.propose(command)?;
-        match self
-            .driver
-            .wait_applied(proposed, Duration::from_secs(10))?
-        {
-            true => Ok(AppliedPosition {
-                term: proposed.term,
-                index: proposed.index.0,
-            }),
-            false => Err(Error::Raft(format!(
-                "catalog proposal at term {} index {} was overwritten",
-                proposed.term, proposed.index.0
-            ))),
+        propose_and_wait(&self.driver, command, Duration::from_secs(10))
+    }
+}
+
+/// Propose `command` and wait for ITS exact `(term, index)` to apply, re-proposing
+/// on a typed `Replaced` within the deadline budget (task #30).
+///
+/// Re-proposal is safe for exactly the same reason the clients' NotLeader retry is
+/// safe: `Replaced` states the command provably NEVER applied (its position was
+/// consumed by another leader's entry — in the 2026-08-31 master red, by an
+/// election barrier), so retrying cannot double-apply. Every other failure stays
+/// loud and unretried: `Unconfirmed` means the outcome is UNKNOWN, and retrying an
+/// unknown outcome is how one write becomes two. If leadership moved to another
+/// node, the re-propose surfaces the existing typed NotLeader (with hint) and the
+/// client's own retry policy takes over.
+fn propose_and_wait<S, E>(
+    driver: &NodeDriver<S, E>,
+    command: &kv9_raft::Command,
+    deadline: Duration,
+) -> Result<AppliedPosition>
+where
+    S: kv9_raft::rawnode::PersistentRaftStorage,
+    E: kv9_engine::Engine + 'static,
+{
+    let start = std::time::Instant::now();
+    loop {
+        let proposed = driver.propose(command)?;
+        let remaining = deadline.saturating_sub(start.elapsed());
+        match driver.wait_applied(proposed, remaining) {
+            Ok(ApplyWaitOutcome::Applied(at)) => {
+                return Ok(AppliedPosition {
+                    term: at.term,
+                    index: at.index.0,
+                })
+            }
+            Ok(ApplyWaitOutcome::Replaced) => {
+                if start.elapsed() >= deadline {
+                    return Err(Error::Raft(format!(
+                        "proposal at term {} index {} was replaced and the retry \
+                         budget is exhausted",
+                        proposed.term, proposed.index.0
+                    )));
+                }
+                continue;
+            }
+            Err(e @ ApplyWaitError::Unconfirmed { .. }) => return Err(e.into()),
+            Err(ApplyWaitError::Failed(e)) => return Err(e),
         }
     }
 }
@@ -447,23 +481,11 @@ impl AdminApi for RuntimeBackend {
         let (keyspace, command) = self
             .node
             .build_create_keyspace_command(name, tenant, api_type)?;
-        let proposed = self.driver.propose(&command)?;
-        match self
-            .driver
-            .wait_applied(proposed, Duration::from_secs(10))?
-        {
-            true => Ok(CreateKeyspaceResult {
-                keyspace,
-                proposed: Some(AppliedPosition {
-                    term: proposed.term,
-                    index: proposed.index.0,
-                }),
-            }),
-            false => Err(Error::Raft(format!(
-                "keyspace proposal at term {} index {} was overwritten",
-                proposed.term, proposed.index.0
-            ))),
-        }
+        let applied = propose_and_wait(&self.driver, &command, Duration::from_secs(10))?;
+        Ok(CreateKeyspaceResult {
+            keyspace,
+            proposed: Some(applied),
+        })
     }
 
     fn list_keyspaces(&self, caller: &str) -> Result<Vec<kv9_common::Keyspace>> {
@@ -1030,19 +1052,10 @@ impl RuntimeBackend {
         // sharing the catalog's wire tag would replay user data through the catalog path
         // and inherit its serializing lock.
         let command = Command::write_from_batch(&batch);
-        let proposed = self.driver.propose(&command)?;
-        match self.driver.wait_applied(proposed, RAW_APPLY_DEADLINE)? {
-            true => Ok(AppliedPosition {
-                term: proposed.term,
-                index: proposed.index.0,
-            }),
-            // The slot was taken by a different entry: a new leader overwrote this
-            // position. Success is judged on (term, index), never on elapsed time.
-            false => Err(Error::Raft(format!(
-                "raw write at term {} index {} was overwritten before it applied",
-                proposed.term, proposed.index.0
-            ))),
-        }
+        // Success is judged on (term, index), never on elapsed time; a typed
+        // Replaced re-proposes within the deadline (provably-never-applied is
+        // the one safely retryable outcome — see `propose_and_wait`).
+        propose_and_wait(&self.driver, &command, RAW_APPLY_DEADLINE)
     }
 }
 
@@ -1817,7 +1830,7 @@ impl NodeRuntime {
         }
         let (proposal, cluster_id) = self.initial_proposal.expect("set above");
         match self.driver.wait_applied(proposal, Duration::from_millis(1)) {
-            Ok(true) => {
+            Ok(ApplyWaitOutcome::Applied(_)) => {
                 self.verify_certified_root()?;
                 write_init_marker(&self.data_dir)?;
                 self.discovery.set_cluster_id(cluster_id);
@@ -1829,12 +1842,16 @@ impl NodeRuntime {
                     .on_event(BootstrapEvent::MetadataInitialized { cluster_id })?;
                 Ok(())
             }
-            Ok(false) => Err(Error::Raft(format!(
+            Ok(ApplyWaitOutcome::Replaced) => Err(Error::Raft(format!(
                 "bootstrap proposal at term {} index {} was overwritten",
                 proposal.term, proposal.index.0
             ))),
-            // A one-millisecond condition poll timing out means "pending".
-            Err(_) => Ok(()),
+            // A one-millisecond condition poll coming back unconfirmed means
+            // "pending" — but a FAILED driver is not pending: silently spinning
+            // on a poisoned node was only tolerable when the two were the same
+            // stringly error (task #30 made them distinct states).
+            Err(ApplyWaitError::Unconfirmed { .. }) => Ok(()),
+            Err(ApplyWaitError::Failed(e)) => Err(e),
         }
     }
 
@@ -1971,14 +1988,15 @@ impl NodeRuntime {
             index: kv9_raft::LogIndex(receipt.applied_index),
         };
         match self.driver.wait_applied(exact, Duration::from_millis(1)) {
-            Ok(true) => {}
-            Ok(false) => {
+            Ok(ApplyWaitOutcome::Applied(_)) => {}
+            Ok(ApplyWaitOutcome::Replaced) => {
                 return Err(Error::Raft(format!(
                     "registration receipt at term {} index {} was overwritten",
                     exact.term, exact.index.0
                 )))
             }
-            Err(_) => return Ok(()),
+            Err(ApplyWaitError::Unconfirmed { .. }) => return Ok(()),
+            Err(ApplyWaitError::Failed(e)) => return Err(e),
         }
         let local = self.node.local_cluster_identity()?;
         if local != Some(cluster_id) {
@@ -3134,16 +3152,19 @@ mod tests {
             .unwrap();
         for _ in 0..50 {
             driver.tick_and_step().unwrap();
-            if driver
-                .wait_applied(healthy, Duration::from_millis(1))
-                .unwrap_or(false)
-            {
+            if matches!(
+                driver.wait_applied(healthy, Duration::from_millis(1)),
+                Ok(ApplyWaitOutcome::Applied(_))
+            ) {
                 break;
             }
         }
-        assert!(driver
-            .wait_applied(healthy, Duration::from_millis(5))
-            .unwrap());
+        assert!(matches!(
+            driver
+                .wait_applied(healthy, Duration::from_millis(5))
+                .unwrap(),
+            ApplyWaitOutcome::Applied(_)
+        ));
         let healthy_watermark = driver.status().applied_index;
         let attempts_before = engine.write_attempts();
 

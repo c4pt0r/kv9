@@ -690,7 +690,10 @@ mod tests {
         let at = drivers[leader_idx].propose(&cmd).unwrap();
         for d in &drivers {
             assert!(
-                d.wait_applied(at, Duration::from_secs(15)).unwrap(),
+                matches!(
+                    d.wait_applied(at, Duration::from_secs(15)).unwrap(),
+                    crate::driver::ApplyWaitOutcome::Applied(_)
+                ),
                 "proposal must apply verbatim on every node"
             );
             assert_eq!(
