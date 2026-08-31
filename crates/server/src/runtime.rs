@@ -576,6 +576,47 @@ fn membership_node_row(
     row
 }
 
+/// The current-term barrier gate for bootstrap takeover (task #40): may a
+/// WaitForBootstrap node that finds itself raft leader promote to
+/// Initializing? Ordering is load-bearing and lives ONLY here:
+///
+///   1. sample (role, term) — must be Leader;
+///   2. the unified driver watermark must have reached THIS term
+///      (contiguity ⇒ every committed entry at or below it — including any
+///      earlier init — is applied locally; the election no-op guarantees the
+///      term is reachable with no application proposal);
+///   3. re-sample — still the same-term leader (a demotion between 1 and 2
+///      must not ride the old sample);
+///   4. only NOW read the catalog: empty PROVES no init has committed
+///      anywhere — read it before the barrier and a committed-but-unapplied
+///      init is invisible, the takeover re-proposes, the duplicate commits,
+///      and initialize_cluster poisons the cluster at apply.
+///
+/// Deleting step 2 turns the deterministic frozen-apply regression red; the
+/// step-3 re-confirm guards a between-samples demotion race that a
+/// single-node test cannot construct — its coverage is the Chaos E2E layer.
+fn bootstrap_takeover_proven(
+    driver: &NodeDriver<DiskRaftStorage, WalEngine>,
+    node: &Node<WalEngine>,
+) -> Result<bool> {
+    let before = driver.status();
+    if before.role != Role::Leader {
+        return Ok(false);
+    }
+    let Some(wm) = driver.driver_applied() else {
+        return Ok(false);
+    };
+    if wm.term != before.term {
+        return Ok(false);
+    }
+    let confirm = driver.status();
+    if confirm.role != Role::Leader || confirm.term != before.term {
+        return Ok(false);
+    }
+    let txn = node.meta_raft.store.begin()?;
+    Ok(kv9_meta::admission::cluster_id(&txn)?.is_none())
+}
+
 fn registration_error(error: Error) -> RegistrationError {
     match &error {
         Error::Config(message) if message == INVALID_JOIN_TICKET_MESSAGE => {
@@ -1743,9 +1784,21 @@ impl NodeRuntime {
 
     fn advance_initialization(&mut self) -> Result<()> {
         if self.driver.status().role != Role::Leader {
-            return Err(Error::MetaNotReady(
-                "bootstrap initializer lost leadership before catalog commit".into(),
-            ));
+            // Lost leadership before the init committed. NOT fatal (task
+            // #40): erroring here kills the runtime and strands the new
+            // leader in WaitForBootstrap forever. Demote so the bootstrap
+            // role tracks leadership, and drop the stale-term proposal — it
+            // can never commit, and a later re-promotion must propose fresh
+            // (behind the takeover barrier) rather than wait on a dead
+            // position.
+            self.initial_proposal = None;
+            self.node
+                .meta
+                .lock()
+                .expect("meta poisoned")
+                .bootstrap
+                .on_event(BootstrapEvent::LostElection)?;
+            return Ok(());
         }
         if self.initial_proposal.is_none() {
             // Creation authority existed before Raft opened. Election chooses
@@ -1798,7 +1851,22 @@ impl NodeRuntime {
             let txn = self.node.meta_raft.store.begin()?;
             match kv9_meta::admission::cluster_id(&txn)? {
                 Some(id) => id,
-                None => return Ok(()),
+                None => {
+                    // Catalog still empty. If THIS node is now the raft
+                    // leader, take over initialization — but only through
+                    // the current-term barrier gate (see
+                    // bootstrap_takeover_proven for why the order matters).
+                    if bootstrap_takeover_proven(&self.driver, &self.node)? {
+                        let mut meta = self.node.meta.lock().expect("meta poisoned");
+                        if matches!(
+                            meta.bootstrap.state(),
+                            BootstrapState::WaitForBootstrap { .. }
+                        ) {
+                            meta.bootstrap.on_event(BootstrapEvent::WonElection)?;
+                        }
+                    }
+                    return Ok(());
+                }
             }
         };
         self.verify_certified_root()?;
@@ -2149,6 +2217,101 @@ mod tests {
     use kv9_raft::transport::{InProcHub, RaftTransport};
     use kv9_raft::Command;
     use tonic::Code;
+
+    /// task #40: the takeover gate consumes the current-term barrier — with
+    /// the deterministic committed-but-unapplied window, not a race. The
+    /// apply freeze holds the driver watermark back while raft elects and
+    /// commits; the gate must refuse until the watermark reaches the leader
+    /// term, then prove the catalog empty, then (control) refuse once a
+    /// cluster identity exists. Removing the watermark conjunct from
+    /// bootstrap_takeover_proven turns the frozen-window assertion red.
+    #[test]
+    fn takeover_gate_waits_for_the_current_term_barrier() {
+        let (backend, _rt, dir) = pre_serving_runtime_backend();
+        let driver = &backend.driver;
+
+        // Not leader yet: gate refuses on role.
+        assert!(
+            !bootstrap_takeover_proven(driver, &backend.node).unwrap(),
+            "gate must refuse before leadership"
+        );
+
+        // Freeze apply BEFORE campaigning: leadership and commits proceed,
+        // the watermark does not — the committed-but-unapplied window, held
+        // open deterministically.
+        driver.pause_apply(true);
+        driver.peer().campaign().unwrap();
+        for _ in 0..100 {
+            driver.tick_and_step().unwrap();
+            if driver.status().role == Role::Leader {
+                break;
+            }
+        }
+        assert_eq!(driver.status().role, Role::Leader);
+        // Pump more ticks: the election no-op COMMITS but must not apply.
+        for _ in 0..20 {
+            driver.tick_and_step().unwrap();
+        }
+        let status = driver.status();
+        assert!(
+            status.raft_committed > 0,
+            "the election no-op must have committed (window precondition)"
+        );
+        assert!(
+            driver
+                .driver_applied()
+                .is_none_or(|wm| wm.term < status.term),
+            "apply freeze must hold the watermark below the leader term \
+             (window precondition)"
+        );
+        assert!(
+            !bootstrap_takeover_proven(driver, &backend.node).unwrap(),
+            "gate must refuse while the current-term barrier is unmet: a \
+             committed-but-unapplied init would be invisible and the \
+             takeover would double-propose into an apply-time poison"
+        );
+
+        // Unfreeze: the watermark catches up to the leader term and the gate
+        // opens on the provably-empty catalog.
+        driver.pause_apply(false);
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        loop {
+            driver.tick_and_step().unwrap();
+            let s = driver.status();
+            if driver
+                .driver_applied()
+                .is_some_and(|wm| wm.term == s.term)
+            {
+                break;
+            }
+            assert!(
+                std::time::Instant::now() < deadline,
+                "watermark never reached the leader term after unpause"
+            );
+        }
+        assert!(
+            bootstrap_takeover_proven(driver, &backend.node).unwrap(),
+            "gate must open once the barrier is met and the catalog is empty"
+        );
+
+        // Control: a present cluster identity closes the gate — takeover
+        // must never re-initialize an initialized cluster.
+        {
+            let mut txn = backend.node.meta_raft.store.begin().unwrap();
+            kv9_meta::admission::initialize_cluster(
+                &mut txn,
+                kv9_common::ClusterId::from_bytes([9; 16]),
+                1,
+            )
+            .unwrap();
+            txn.commit().unwrap();
+        }
+        assert!(
+            !bootstrap_takeover_proven(driver, &backend.node).unwrap(),
+            "gate must refuse once a cluster identity exists"
+        );
+        let _ = std::fs::remove_dir_all(&dir);
+    }
 
     fn pre_serving_runtime_backend() -> (RuntimeBackend, tokio::runtime::Runtime, PathBuf) {
         let dir = std::env::temp_dir().join(format!(

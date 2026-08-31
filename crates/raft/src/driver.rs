@@ -136,6 +136,13 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngi
     conf_receipts: Mutex<Vec<ConfReceiptEntry>>,
     /// First fatal apply-path error; poisons the driver (pump stops).
     fatal: Mutex<Option<String>>,
+    /// Testing-only: freeze the APPLY half of the pump (committed entries
+    /// stay queued in the peer) while raft itself keeps electing/committing.
+    /// This is the deterministic construction of the committed-but-unapplied
+    /// window that the bootstrap current-term barrier exists for (and that
+    /// #28's ReadIndex tests will reuse). Never compiled into production.
+    #[cfg(any(test, feature = "testing"))]
+    apply_paused: std::sync::atomic::AtomicBool,
     /// The unified driver-applied watermark (see [`DriverAppliedPosition`]).
     /// Lock order: leaf — never held while acquiring any other lock. The pair
     /// is read as one snapshot under this single lock; reading the two
@@ -157,6 +164,8 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             applied: Mutex::new(Vec::new()),
             conf_receipts: Mutex::new(Vec::new()),
             fatal: Mutex::new(None),
+            #[cfg(any(test, feature = "testing"))]
+            apply_paused: std::sync::atomic::AtomicBool::new(false),
             // None = no position PROVEN yet this run — distinct from "position
             // zero". Restart replays the log from 0 and re-proves; when
             // snapshots land, this must be restored from the snapshot's
@@ -190,6 +199,16 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         for msg in self.peer.pump() {
             let to = NodeId(msg.to);
             self.transport.send(to, msg);
+        }
+        #[cfg(any(test, feature = "testing"))]
+        if self
+            .apply_paused
+            .load(std::sync::atomic::Ordering::Relaxed)
+        {
+            // Apply frozen: leave committed entries queued (they drain in
+            // order on unpause). Raft above keeps running — elections and
+            // commits proceed, driver_applied does not.
+            return Ok(());
         }
         let entries = self.peer.take_ready().unwrap_or_default();
         if entries.is_empty() {
@@ -301,6 +320,13 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
     /// wait; they never treat it as position zero).
     pub fn driver_applied(&self) -> Option<DriverAppliedPosition> {
         *self.driver_applied.lock().expect("driver_applied poisoned")
+    }
+
+    /// Testing-only control for [`Self`]'s apply freeze — see `apply_paused`.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn pause_apply(&self, paused: bool) {
+        self.apply_paused
+            .store(paused, std::sync::atomic::Ordering::Relaxed);
     }
 
     /// The single publication point for the unified watermark. Monotonic
