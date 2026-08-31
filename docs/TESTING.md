@@ -359,6 +359,12 @@ may have deleted a different entry point to the same mechanism.
 tests never execute that line — stop and re-target. Red at that panic means the path is live; now run
 the real mutation. The runtime, not your own assertion, witnesses reachability.
 
+*Scope of that instrument, and it is not optional (Ren, on his own paragraph):* the sentence above is
+unconditional and is **only true on the test thread's stack**. Cross-thread it is false in the
+dangerous direction — see rule 16. Someone applying this rule to transport code will collect a green,
+conclude "unreachable", and stop; transport is where this class of bug lives, and is why rule 16
+exists. Read the two together, never this one alone.
+
 ## 16. A cross-thread probe's green is bounded by a window nobody declared
 
 *Origin (Cindy and Ren, three rounds):* the probe of rule 15 does not survive a thread boundary
@@ -454,6 +460,12 @@ of them the thing. **Neither width nor narrowness is the test; "which question d
 It was committed under ten minutes after the category was named, by the person auditing for it — the
 rule does not defend against ignorance, but against an error that happens while you are thinking
 about it.
+
+*Why this is not folded into rule 12 (Ren):* the two are told apart by their remedy. Rule 12 —
+the tool is broken — sends you to verify or replace the tool. Rule 19 — the tool is fine and answered
+a different question — sends you to restate the question. Merging them makes a reader apply rule 12's
+remedy to rule 19's fault: re-checking whether `grep` is installed correctly, when `grep` was never
+the problem.
 
 *Corollary (Cindy):* the auditing tool must not share the defect under audit. Scanning the repo for
 ugrep-incompatible grep patterns was done with python, not grep. And the audit's own clean result
