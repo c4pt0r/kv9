@@ -511,7 +511,15 @@ the problem.
 *Corollary (Cindy):* the auditing tool must not share the defect under audit. Scanning the repo for
 ugrep-incompatible grep patterns was done with python, not grep. And the audit's own clean result
 needed a positive control — 0 findings is indistinguishable from "my regex matched no grep calls at
-all", so report how many were examined.
+all".
+
+*Correction to that corollary (Ren spotted the conflict; Tess made the ruling):* this rule first said
+the control was to **report how many sites were examined**. That is the enumeration's *denominator*,
+not a control — a search that can never match anything still reports a count, and mine did exactly
+that: the invocation regex excluded `|`, so the alternation check never executed and "0 found" meant
+"cannot find". **The control is that the search must hit a target known in advance to be present**,
+and by rule 20 two directions are still not enough: it must cover the forms the declared corpus
+actually contains. Rule 20 is the general statement; this corollary is its first instance.
 
 ## 20. When you measure an absence, the instrument must not share the property you are measuring
 
