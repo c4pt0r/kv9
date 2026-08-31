@@ -333,17 +333,24 @@ Both happened here within one hour: @Ren's regex silently failed to match, and m
 anyway, prints a green that reads exactly like "the mutation applied and nothing caught it". So bind
 the mutation to its confirmation — but bind only that much:
 
-    apply mutation && confirm it landed     `&&` here: the confirmation is worthless if the
-                                            mutation did not apply
-    run the test, capture rc explicitly     an EXPECTED-RED verifier exits non-zero by design;
-                                            chaining past it is what a failure looks like
-    restore unconditionally, then assert    `git diff --quiet` — separately, never chained behind
-                                            a step that is supposed to fail
+    register the restore FIRST              a `trap`, or any cleanup that runs independently of
+                                            every preceding exit code — before touching the tree
+    apply mutation, confirm it landed       both may fail; neither failure may reach the restore
+    run the test, capture rc explicitly     an EXPECTED-RED verifier exits non-zero by design
+    restore (already guaranteed), then      `git diff --quiet`
+    judge the collected rcs together        the test's rc against its EXPECTED value, not against 0
 
-*Boundary (Tess):* do not chain the restore. An expected-red run returns non-zero, so anything `&&`-ed
-after it never executes, and under `set -e` the script aborts outright — **the rule as first written
-would leave a dirty tree exactly on the runs it is meant to govern.** Check the test's rc against the
-*expected* value rather than against zero.
+*Boundary (Tess), in two parts because the first fix did not cover the second:* (a) do not chain the
+restore behind the test — an expected-red run returns non-zero, so anything `&&`-ed after it never
+runs, and under `set -e` the script aborts outright. (b) **`apply && confirm` has the same defect one
+step earlier**: if the mutation lands and the confirmation then fails, that list is non-zero and the
+shell exits before any restore that is merely "later in the script". Her minimal probe:
+
+    zsh -c 'set -e; true && false; print RESTORED'   # rc=1, and RESTORED never prints
+
+So the cleanup must be independent of *all* preceding exit codes, not merely placed after them.
+**It is not only the test's expected non-zero that must not skip cleanup — an unexpected non-zero
+from apply or confirm must not either.**
 
 ## 15. To prove an absence of coverage takes three premises, not one
 
@@ -429,8 +436,14 @@ hardcode the cause, the other says do not manufacture the system's own output.
 removes drift **between the producer and consumer it binds**. It does not, by itself, establish either
 of the following:
 
-    that no other literal exists      that comes from an independent enumeration WITH a positive
-                                      control (how many sites were examined), never from the constant
+    that no other literal exists      three separate things, none of which the constant supplies:
+                                      (i) the enumeration's SCOPE — what was searched, and how many
+                                          sites that came to; this is the denominator, not a control
+                                      (ii) a POSITIVE CONTROL — the search must hit a target known
+                                          in advance to be present (the constant's own definition
+                                          serves); a search that can never match anything still
+                                          reports a scope
+                                      (iii) the result — no second literal outside the bound pair
     that production reaches the branch  that needs driving the real failure end to end
 
 Keep all three claims separate in the commit message, or "the constant landed" gets read as "uniqueness
