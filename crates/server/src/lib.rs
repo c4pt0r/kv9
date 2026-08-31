@@ -5,6 +5,7 @@
 //! assembles the store, metadata plane, router, and executors into one process.
 
 pub mod api;
+pub mod fence;
 pub mod grpc;
 pub mod node;
 pub mod routing;
