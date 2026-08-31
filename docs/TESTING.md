@@ -1,8 +1,8 @@
 # Testing contract
 
 Every rule here exists because it failed on this project. Rules 1-13 come from 2026-08-28,
-during Phase 1 and the M1 raw/membership work; rules 14-20 and the extension to rule 3 come
-from 2026-08-30/31, during the root-of-trust, bootstrap-barrier and Chaos work. The failure is
+during Phase 1 and the M1 raw/membership work; rule 14 onward, and the extension to rule 3,
+come from 2026-08-30/31, during the root-of-trust, bootstrap-barrier and Chaos work. The failure is
 recorded with the rule. **A rule with no visible
 origin gets overturned on principle by the next person who finds it inconvenient** — so if
 you are about to relax one of these, read what it cost first.
@@ -515,7 +515,7 @@ all", so report how many were examined.
 
 ## 20. When you measure an absence, the instrument must not share the property you are measuring
 
-*Origin (Cindy, three instances; boundaries by Ren and Tess):* an instrument that shares the failure
+*Origin (Cindy, three instances; both boundaries by Ren):* an instrument that shares the failure
 mode under investigation cannot detect it, and it fails in the one way that looks like success:
 **it returns "nothing found", which is exactly what a working instrument returns when there is
 genuinely nothing there.**
@@ -548,9 +548,18 @@ own clean result — until he read the line and saw they were `cargo` flags on a
 contained `grep`. His census answered *which flags appear on lines containing grep*, not *which flags
 grep received*.
 
-**The regress terminates because forms are finite and enumerable, and the floor is direct inspection
-of the concrete instances** — not another counting step. Read the matching lines; do not merely count
-them.
+**The regress terminates, but only against a declared scope (Tess).** "Forms are finite and enumerable"
+holds for a corpus you have named, at an exact head — not in general. And "read the matching lines" is
+not yet a floor, because the same narrow matcher may be choosing which lines you read:
+
+    1. declare the corpus and the exact head it is taken at
+    2. enumerate every actual invocation in that scope by means that do NOT depend on the property
+       under measurement
+    3. inspect each one directly, deciding which arguments belong to what
+
+The floor is **every concrete instance in the enumerated scope**, not whatever a matcher returned.
+**If you cannot show the enumeration is complete, narrow the claim to the forms you actually
+observed** — you may not say "every form".
 
 *Not a generalisation of rule 15 (Ren):* rule 15's third premise is about **reachability** — does the
 test execute this line — while this rule is about **discrimination**. Merging them collapses two
