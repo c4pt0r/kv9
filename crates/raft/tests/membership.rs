@@ -116,6 +116,7 @@ fn learner_joins_catches_up_promotes_and_survives_failover() {
         ns[leader]
             .driver
             .wait_applied(early, Duration::from_millis(1))
+            .map(|o| matches!(o, kv9_raft::driver::ApplyWaitOutcome::Applied(_)))
             .unwrap_or(false)
     });
 
@@ -155,6 +156,7 @@ fn learner_joins_catches_up_promotes_and_survives_failover() {
             && ns[3]
                 .driver
                 .wait_applied(early, Duration::from_millis(1))
+                .map(|o| matches!(o, kv9_raft::driver::ApplyWaitOutcome::Applied(_)))
                 .unwrap_or(false)
     });
 
@@ -217,6 +219,7 @@ fn learner_joins_catches_up_promotes_and_survives_failover() {
         ns.iter().filter(|n| n.alive).all(|n| {
             n.driver
                 .wait_applied(after, Duration::from_millis(1))
+                .map(|o| matches!(o, kv9_raft::driver::ApplyWaitOutcome::Applied(_)))
                 .unwrap_or(false)
         })
     });
@@ -347,6 +350,7 @@ fn status_pair_stays_command_sourced_across_conf_changes() {
         ns.iter().all(|n| {
             n.driver
                 .wait_applied(cmd_at, Duration::from_millis(1))
+                .map(|o| matches!(o, kv9_raft::driver::ApplyWaitOutcome::Applied(_)))
                 .unwrap_or(false)
         })
     });

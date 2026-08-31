@@ -100,10 +100,14 @@ fn run_scenario() -> Result<(), String> {
         let at = driver.propose(&cmd).map_err(|e| e.to_string())?;
         loop {
             driver.step().map_err(|e| e.to_string())?;
+            use kv9_raft::driver::{ApplyWaitError, ApplyWaitOutcome};
             match driver.wait_applied(at, Duration::from_millis(0)) {
-                Ok(true) => break,
-                Ok(false) => return Err(format!("proposal {i} overwritten unexpectedly")),
-                Err(_) => {} // pending: keep pumping
+                Ok(ApplyWaitOutcome::Applied(_)) => break,
+                Ok(ApplyWaitOutcome::Replaced) => {
+                    return Err(format!("proposal {i} overwritten unexpectedly"))
+                }
+                Err(ApplyWaitError::Unconfirmed { .. }) => {} // pending: keep pumping
+                Err(ApplyWaitError::Failed(e)) => return Err(e.to_string()),
             }
         }
     }

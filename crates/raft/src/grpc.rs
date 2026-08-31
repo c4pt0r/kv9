@@ -1506,7 +1506,10 @@ mod tests {
         let at = drivers[leader_idx].propose(&cmd).unwrap();
         for d in &drivers {
             assert!(
-                d.wait_applied(at, Duration::from_secs(20)).unwrap(),
+                matches!(
+                    d.wait_applied(at, Duration::from_secs(20)).unwrap(),
+                    crate::driver::ApplyWaitOutcome::Applied(_)
+                ),
                 "exact (term,index) must apply on every node over gRPC"
             );
             assert_eq!(
@@ -1543,7 +1546,10 @@ mod tests {
             if i == leader_idx {
                 continue;
             }
-            assert!(d.wait_applied(at2, Duration::from_secs(20)).unwrap());
+            assert!(matches!(
+                d.wait_applied(at2, Duration::from_secs(20)).unwrap(),
+                crate::driver::ApplyWaitOutcome::Applied(_)
+            ));
         }
 
         for d in &drivers {
