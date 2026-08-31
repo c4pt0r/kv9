@@ -17,5 +17,11 @@ tokio-stream.workspace = true
 tonic.workspace = true
 tonic-prost.workspace = true
 
+[features]
+# Testing-only seams (apply freeze today; partition injection when task #28's
+# tooling lands). NEVER enable in a production build; dev-dependencies with
+# resolver = "2" keep it out of shipped binaries (kv9-engine precedent).
+testing = []
+
 [build-dependencies]
 tonic-prost-build.workspace = true
