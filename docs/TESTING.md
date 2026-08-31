@@ -1,7 +1,7 @@
 # Testing contract
 
 Every rule here exists because it failed on this project. Rules 1-13 come from 2026-08-28,
-during Phase 1 and the M1 raw/membership work; rules 14-19 and the extension to rule 3 come
+during Phase 1 and the M1 raw/membership work; rules 14-20 and the extension to rule 3 come
 from 2026-08-30/31, during the root-of-trust, bootstrap-barrier and Chaos work. The failure is
 recorded with the rule. **A rule with no visible
 origin gets overturned on principle by the next person who finds it inconvenient** — so if
