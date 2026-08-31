@@ -175,3 +175,186 @@ mod tests {
             .unwrap());
     }
 }
+
+#[cfg(test)]
+mod read_failure_tests {
+    use super::*;
+    use kv9_common::{
+        ApiType, Config, NodeId, RegionId as CommonRegionId, TenantId, META_REGION_0,
+    };
+    use kv9_engine::testing::FaultyEngine;
+    use kv9_engine::MemEngine;
+    use kv9_raft::SingleNodeRaft;
+
+    /// A node whose engine can be made to fail reads *after* the catalog is seeded, so the
+    /// fixture stays realistic and only the adjudicator's own read fails.
+    /// The node, its engine (for arming failures), and the seeded region's id + epoch.
+    struct Armable {
+        node: Arc<Node<FaultyEngine<MemEngine>>>,
+        engine: Arc<FaultyEngine<MemEngine>>,
+        region: u64,
+        conf: u64,
+        ver: u64,
+    }
+
+    fn node_with_armable_reads() -> Armable {
+        let engine = Arc::new(FaultyEngine::new(MemEngine::new()));
+        let raft = Arc::new(SingleNodeRaft::new(NodeId(1), META_REGION_0));
+        let node = Arc::new(
+            Node::with_raft_and_engine(NodeId(1), Config::default(), raft, engine.clone()).unwrap(),
+        );
+        node.bootstrap().unwrap();
+        let keyspace = node
+            .create_keyspace("fenced", TenantId::DEFAULT, ApiType::Raw)
+            .unwrap();
+        let region = Tables::new(&node.meta_raft.store)
+            .region_for_key(keyspace, b"")
+            .unwrap()
+            .expect("CreateKeyspace creates the initial region");
+        Armable {
+            node,
+            engine,
+            region: region.id.0,
+            conf: region.epoch_conf,
+            ver: region.epoch_ver,
+        }
+    }
+
+    /// A catalog read that FAILS must propagate as `Err`, never be substituted with a
+    /// verdict.
+    ///
+    /// This is the state the whole `Result<bool>` signature exists for, and it is the one my
+    /// first four tests did not touch: they all ran over `MemEngine`, where the read cannot
+    /// fail, so the `?` on the catalog read was decoration. @Tess demonstrated it by turning
+    /// that `?` into `.ok().flatten()` — all 47 server tests stayed green while a real read
+    /// failure silently became "stale", consuming the log position.
+    ///
+    /// Substituting either default is a correctness bug rather than a degraded read:
+    /// `false` dresses a node-local disk problem as a deterministic rejection and advances
+    /// the watermark; `true` applies an unfenced write. Either way a replica whose read
+    /// failed diverges from one whose read succeeded, on the same committed entry.
+    #[test]
+    fn a_failed_catalog_read_is_an_error_not_a_verdict() {
+        let Armable {
+            node,
+            engine,
+            region,
+            conf,
+            ver,
+        } = node_with_armable_reads();
+        let adj = CatalogFenceAdjudicator::new(node);
+
+        // Control: the same call answers cleanly while reads are healthy, so a later Err
+        // cannot be blamed on the fence being malformed.
+        assert!(
+            adj.is_fresh(&RegionFence {
+                region_id: region,
+                conf_ver: conf,
+                version: ver
+            })
+            .unwrap(),
+            "control: with reads healthy this fence is fresh"
+        );
+
+        engine.start_failing_reads();
+        let verdict = adj.is_fresh(&RegionFence {
+            region_id: region,
+            conf_ver: conf,
+            version: ver,
+        });
+
+        match verdict {
+            Err(kv9_common::Error::Engine(message)) => assert!(
+                message.contains("injected read failure"),
+                "the underlying read failure must stay identifiable, got: {message}"
+            ),
+            other => panic!(
+                "a catalog read failure must propagate as Err, never become a verdict, got {other:?}"
+            ),
+        }
+    }
+
+    /// The OTHER read failure point: the snapshot cannot be opened at all.
+    ///
+    /// There are two `?`s on this path — `store.begin()` and `region_by_id_in` — and they
+    /// are separate failure points that a single test cannot cover. My first attempt at the
+    /// read-failure test armed a switch that failed both, so it never reached the second
+    /// one: @Tess's mutation of `region_by_id_in(..)?` into `.ok().flatten()` stayed green
+    /// while the test passed for the wrong reason. Splitting the switch made her mutation
+    /// red and left THIS path bare, which is what this test is for.
+    ///
+    /// Failing to open a view is as local a fact as failing to read through one, and
+    /// substituting a verdict for it has the same consequence: replicas that could open a
+    /// snapshot decide differently from replicas that could not.
+    #[test]
+    fn a_failure_to_open_the_snapshot_is_also_an_error_not_a_verdict() {
+        let Armable {
+            node,
+            engine,
+            region,
+            conf,
+            ver,
+        } = node_with_armable_reads();
+        let adj = CatalogFenceAdjudicator::new(node);
+        let fence = RegionFence {
+            region_id: region,
+            conf_ver: conf,
+            version: ver,
+        };
+        assert!(
+            adj.is_fresh(&fence).unwrap(),
+            "control: healthy before arming"
+        );
+
+        engine.start_failing_snapshots();
+        let verdict = adj.is_fresh(&fence);
+        match verdict {
+            Err(kv9_common::Error::Engine(message)) => assert!(
+                message.contains("injected snapshot failure"),
+                "the snapshot failure must stay identifiable, got: {message}"
+            ),
+            other => panic!("failing to open a view must propagate as Err, got {other:?}"),
+        }
+    }
+
+    /// The same failure, stated as a property of the outcome rather than of the call.
+    ///
+    /// Deliberately does NOT inspect `Ok`/`Err` (@Rafa's shape, after his own negative test
+    /// reddened on `expect_err` before its watermark assertion was ever evaluated). Crushing
+    /// the read failure into a verdict would leave this assertion as the only witness, so it
+    /// asserts only the thing that must not happen: a failed read must not decide anything.
+    #[test]
+    fn a_failed_read_yields_no_verdict_at_all() {
+        let Armable {
+            node,
+            engine,
+            region,
+            conf,
+            ver,
+        } = node_with_armable_reads();
+        let adj = CatalogFenceAdjudicator::new(node);
+        engine.start_failing_reads();
+
+        let outcome = adj.is_fresh(&RegionFence {
+            region_id: region,
+            conf_ver: conf,
+            version: ver,
+        });
+        assert!(
+            outcome.is_err(),
+            "a read failure must not produce a verdict of either polarity; got {outcome:?}"
+        );
+
+        // And it is genuinely the read that failed, not the fence: healing reads restores a
+        // clean answer without touching the fence or the catalog.
+        engine.stop_failing_reads();
+        assert!(adj
+            .is_fresh(&RegionFence {
+                region_id: region,
+                conf_ver: conf,
+                version: ver
+            })
+            .unwrap());
+        let _ = CommonRegionId(0);
+    }
+}
