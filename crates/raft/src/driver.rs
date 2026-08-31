@@ -1223,4 +1223,169 @@ mod tests {
             ApplyWaitOutcome::Applied(_)
         ));
     }
+    /// The SECOND replacement shape (task #30 review round; construction by
+    /// Cindy's verification probe): the position is consumed not by a barrier
+    /// but by another leader's COMMAND — a ring HIT at a different term. The
+    /// `term == at.term` comparison is the only line separating this from
+    /// Applied, and reporting Applied here tells the caller its write
+    /// succeeded while the slot holds someone else's write. Two doomed
+    /// proposals make both shapes at once: the new leader's barrier eats the
+    /// first slot (watermark arm), its own command eats the second (this arm).
+    ///
+    /// Mutant contract: `term == at.term` → `true` must red at the named
+    /// assertion below.
+    #[test]
+    fn a_position_taken_by_another_leaders_command_is_replaced_not_applied() {
+        let hub = InProcHub::new();
+        let ids = [NodeId(1), NodeId(2), NodeId(3)];
+        let mk = |id: NodeId| {
+            NodeDriver::new(
+                Arc::new(RaftPeer::new(id, RegionId(1), &ids).unwrap()),
+                Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
+                MemStateMachine::new(),
+            )
+        };
+        let d1 = mk(NodeId(1));
+        let d2 = mk(NodeId(2));
+        let d3 = mk(NodeId(3));
+        let pump_all = |n: usize| {
+            for _ in 0..n {
+                d1.tick_and_step().unwrap();
+                d2.tick_and_step().unwrap();
+                d3.tick_and_step().unwrap();
+            }
+        };
+        d1.peer().campaign().unwrap();
+        for _ in 0..200 {
+            pump_all(1);
+            if d1.status().role == Role::Leader {
+                break;
+            }
+        }
+        assert_eq!(d1.status().role, Role::Leader);
+
+        // Two doomed proposals, never replicated: the network eats everything
+        // n1 emits while it ticks itself into check_quorum deposition.
+        let _doomed1 = d1
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"d1".to_vec(),
+                value: b"x".to_vec(),
+            })
+            .unwrap();
+        let doomed2 = d1
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"d2".to_vec(),
+                value: b"x".to_vec(),
+            })
+            .unwrap();
+        for _ in 0..40 {
+            d1.tick_and_step().unwrap();
+            hub.endpoint(NodeId(2)).drain();
+            hub.endpoint(NodeId(3)).drain();
+        }
+        assert_ne!(d1.status().role, Role::Leader, "precondition: n1 deposed");
+
+        // A new leader emerges among the nodes that never saw the proposals.
+        for _ in 0..2000 {
+            d1.step().unwrap();
+            d2.tick_and_step().unwrap();
+            d3.tick_and_step().unwrap();
+            if [&d2, &d3].iter().any(|d| d.status().role == Role::Leader) {
+                break;
+            }
+        }
+        let leader = if d2.status().role == Role::Leader {
+            &d2
+        } else {
+            &d3
+        };
+        assert_eq!(
+            leader.status().role,
+            Role::Leader,
+            "precondition: a new leader"
+        );
+        // Its barrier takes doomed1's slot; this COMMAND takes doomed2's.
+        leader
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"real".to_vec(),
+                value: b"y".to_vec(),
+            })
+            .unwrap();
+        for _ in 0..400 {
+            d1.step().unwrap();
+            d2.tick_and_step().unwrap();
+            d3.tick_and_step().unwrap();
+            if d1.status().applied_index >= doomed2.index.0 {
+                break;
+            }
+        }
+        assert!(
+            d1.status().applied_index >= doomed2.index.0,
+            "precondition: n1's COMMAND watermark reaches the position — this is \
+             a ring HIT, not a watermark-only verdict"
+        );
+
+        let outcome = d1
+            .wait_applied(doomed2, Duration::from_millis(200))
+            .expect("a ring-recorded position is a verdict");
+        assert_eq!(
+            outcome,
+            ApplyWaitOutcome::Replaced,
+            "a position consumed by ANOTHER leader's command must be Replaced: \
+             reporting Applied would claim this caller's write succeeded while \
+             the slot holds someone else's"
+        );
+    }
+
+    /// A poisoned driver answers Failed, never Unconfirmed (task #30 review
+    /// round: this distinction existed in code but no test bound it — crushing
+    /// Failed into Unconfirmed left 89 tests green). Unconfirmed invites the
+    /// caller to keep polling or stay pending; Failed says this node will
+    /// never answer. Conflating them turns a dead node into a silent spinner.
+    #[test]
+    fn a_poisoned_driver_answers_failed_not_unconfirmed() {
+        let hub = InProcHub::new();
+        let peer = Arc::new(RaftPeer::new(NodeId(1), RegionId(1), &[NodeId(1)]).unwrap());
+        let endpoint = hub.endpoint(NodeId(1));
+        let driver = NodeDriver::new(
+            peer,
+            Arc::new(endpoint) as Arc<dyn RaftTransport>,
+            MemStateMachine::with_engine(Arc::new(FailingEngine)).unwrap(),
+        );
+        driver.peer().campaign().unwrap();
+        for _ in 0..50 {
+            if driver.tick_and_step().is_err() || driver.status().role == Role::Leader {
+                break;
+            }
+        }
+        let at = driver
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"k".to_vec(),
+                value: b"v".to_vec(),
+            })
+            .unwrap();
+        for _ in 0..50 {
+            if driver.tick_and_step().is_err() {
+                break;
+            }
+        }
+        assert!(driver.status().fatal.is_some(), "precondition: poisoned");
+
+        let err = driver
+            .wait_applied(at, Duration::from_millis(1))
+            .expect_err("a poisoned driver cannot produce a verdict");
+        assert!(
+            matches!(err, ApplyWaitError::Failed(_)),
+            "poison must answer Failed, never Unconfirmed — a caller told \
+             Unconfirmed keeps waiting on a node that will never answer: {err}"
+        );
+        assert!(
+            err.to_string().contains("poisoned"),
+            "the poison cause must survive recognizably: {err}"
+        );
+    }
 }
