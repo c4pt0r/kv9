@@ -18,9 +18,11 @@ pub mod state_machine;
 pub mod storage;
 pub mod transport;
 
-pub use command::{cf_code, cf_from_code, Command, KvOp};
+pub use command::{cf_code, cf_from_code, Command, FencedInner, KvOp, RegionFence};
 pub use rawnode::{InProcessCluster, ProposedAt, RaftPeer};
-pub use state_machine::{drive_apply, ApplyResult, MemStateMachine, StateMachine};
+pub use state_machine::{
+    drive_apply, ApplyResult, FenceAdjudicator, MemStateMachine, StateMachine,
+};
 
 use kv9_common::{NodeId, RegionId, Result};
 

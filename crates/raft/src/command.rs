@@ -52,6 +52,18 @@ pub enum FencedInner {
     Write { ops: Vec<KvOp> },
 }
 
+impl FencedInner {
+    /// Lower the inner ops into a [`WriteBatch`] — the ACCEPTED-path twin of
+    /// [`Command::to_write_batch`], reachable only after the apply loop has checked
+    /// the fence (the envelope itself deliberately lowers to nothing; see
+    /// [`Command::to_write_batch`]).
+    pub fn to_write_batch(&self) -> WriteBatch {
+        match self {
+            FencedInner::Write { ops } => Command::Write { ops: ops.clone() }.to_write_batch(),
+        }
+    }
+}
+
 /// The set of commands the metadata-plane raft group replicates (ROADMAP Phase 1).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Command {
