@@ -375,6 +375,12 @@ impl RawClient {
                 Err(status) if partial_write_marked(&status) => {
                     Err(partial_delete_range_from_status(&status))
                 }
+                // The typed unconfirmed family, decoded from the marker the
+                // server sent — exact values only, fail-closed: an unknown
+                // value is a protocol error, never a guessed phase.
+                Err(status) if status.metadata().get(READ_UNCONFIRMED_KEY).is_some() => {
+                    Err(read_unconfirmed_from_status(&status))
+                }
                 Err(status) => Err(Error::Raft(format!("{label} RPC: {status}"))),
             }
         })
@@ -550,6 +556,43 @@ fn partial_delete_range_from_status(status: &Status) -> Error {
     }
 }
 
+/// Decode the server-sent `kv9-read-unconfirmed` marker back into the SAME
+/// typed error the server rendered from — exact values only. `quorum` and
+/// `apply` are the whole protocol; anything else means the two ends disagree
+/// about the contract, and guessing a default phase would hand the caller a
+/// confidently wrong reaction (the two phases demand different ones). The
+/// caller only enters here when the marker is PRESENT; absence is not this
+/// family (a transport failure carries no server metadata at all).
+fn read_unconfirmed_from_status(status: &Status) -> Error {
+    // Code + marker TOGETHER are the protocol (the same exclusivity rule as
+    // NotLeader and PartialWrite): the server only ever renders this family
+    // as UNAVAILABLE, so a marker riding any other code is a contract
+    // violation between the two ends — fail closed, never a typed outcome.
+    if status.code() != tonic::Code::Unavailable {
+        return Error::Raft(format!(
+            "protocol error: kv9-read-unconfirmed marker on non-UNAVAILABLE \
+             status ({:?}); refusing to treat it as an established outcome",
+            status.code()
+        ));
+    }
+    match status
+        .metadata()
+        .get(READ_UNCONFIRMED_KEY)
+        .and_then(|value| value.to_str().ok())
+    {
+        Some("quorum") => Error::ReadUnconfirmed {
+            phase: kv9_common::ReadBarrierPhase::QuorumConfirmation,
+        },
+        Some("apply") => Error::ReadUnconfirmed {
+            phase: kv9_common::ReadBarrierPhase::ApplyCatchUp,
+        },
+        other => Error::Raft(format!(
+            "protocol error: kv9-read-unconfirmed carries unrecognized value {other:?} \
+             (expected exactly 'quorum' or 'apply'); refusing to guess a phase"
+        )),
+    }
+}
+
 fn applied_response(applied: crate::api::AppliedPosition) -> proto::RawWriteResponse {
     proto::RawWriteResponse {
         applied_term: applied.term,
@@ -675,6 +718,24 @@ fn error_status(error: Error) -> Status {
         Error::TsoUnavailable(_) | Error::MetaNotReady(_) | Error::Raft(_) => {
             Status::unavailable(message)
         }
+        // UNAVAILABLE + a server-sent marker naming which barrier half never
+        // arrived. The marker (not the code) is the protocol: transport
+        // failures carry no server metadata, so nothing can impersonate the
+        // typed unconfirmed family (see READ_UNCONFIRMED_KEY). The match is
+        // exhaustive over the phase enum — a new phase forces a wire word.
+        Error::ReadUnconfirmed { phase } => {
+            let mut status = Status::unavailable(message);
+            status.metadata_mut().insert(
+                READ_UNCONFIRMED_KEY,
+                match phase {
+                    kv9_common::ReadBarrierPhase::QuorumConfirmation => "quorum",
+                    kv9_common::ReadBarrierPhase::ApplyCatchUp => "apply",
+                }
+                .parse()
+                .expect("static ascii"),
+            );
+            status
+        }
         // Deliberately *not* `unavailable`: this follower is perfectly healthy, the
         // request simply arrived at the wrong node. `unavailable` invites a client to
         // transparently retry the same address, and reports a working node as broken.
@@ -745,6 +806,16 @@ pub const LEADER_HINT_KEY: &str = "kv9-leader-node-id";
 /// client cannot separate a misdirected request from a genuinely failed precondition,
 /// since both share `FAILED_PRECONDITION`.
 pub const NOT_LEADER_KEY: &str = "kv9-not-leader";
+
+/// Marks an establishing read that could not confirm its quorum barrier — value is
+/// ASCII `quorum` (no live quorum acknowledged the read; the isolated-leader shape)
+/// or `apply` (quorum confirmed, local apply lagged; bounded same-node retry can
+/// succeed). Presence of this SERVER-SENT marker is what makes the unconfirmed
+/// family machine-distinguishable from a transport failure: a severed connection
+/// yields a client-side error that carries no server metadata at all, so it can
+/// never impersonate this. Shares `UNAVAILABLE` with other conditions — the code
+/// alone is deliberately not the protocol (same rule as `NOT_LEADER_KEY`).
+pub const READ_UNCONFIRMED_KEY: &str = "kv9-read-unconfirmed";
 
 /// Marks a failure that nonetheless committed part of its work.
 pub const PARTIAL_WRITE_KEY: &str = "kv9-partial-write";
@@ -1700,6 +1771,69 @@ mod tests {
             })
             .code(),
             error_status(Error::Raft("stepped down".into())).code()
+        );
+    }
+
+    /// The unconfirmed family survives the wire IN BOTH DIRECTIONS: server
+    /// renders phase → marker word, client decodes marker word → the SAME
+    /// typed error. Both phases pinned individually (a single-defect mutant
+    /// that renders the apply branch as "quorum" reds on the ApplyCatchUp
+    /// row). Fail-closed: an unrecognized marker value is a protocol error,
+    /// never a guessed phase; a plain UNAVAILABLE without the marker never
+    /// decodes into this family (transport failures carry no server
+    /// metadata, so nothing can impersonate it).
+    #[test]
+    fn read_unconfirmed_roundtrips_typed_in_both_phases() {
+        use kv9_common::ReadBarrierPhase;
+        for phase in [
+            ReadBarrierPhase::QuorumConfirmation,
+            ReadBarrierPhase::ApplyCatchUp,
+        ] {
+            let status = error_status(Error::ReadUnconfirmed { phase });
+            assert_eq!(status.code(), Code::Unavailable);
+            let decoded = read_unconfirmed_from_status(&status);
+            assert!(
+                matches!(decoded, Error::ReadUnconfirmed { phase: p } if p == phase),
+                "phase {phase:?} must roundtrip to the SAME typed error \
+                 (an inverted or collapsed mapping reds here): {decoded:?}"
+            );
+        }
+
+        // Fail-closed: a marker value outside the two-word protocol is a
+        // protocol error — the client must refuse to guess a phase.
+        let mut garbled = Status::unavailable("read barrier unconfirmed");
+        garbled
+            .metadata_mut()
+            .insert(READ_UNCONFIRMED_KEY, "later".parse().unwrap());
+        let decoded = read_unconfirmed_from_status(&garbled);
+        assert!(
+            matches!(&decoded, Error::Raft(m) if m.contains("unrecognized")),
+            "an unknown marker value must decode as a protocol error, never \
+             a guessed phase: {decoded:?}"
+        );
+
+        // Code + marker exclusivity (Tess's blocker on fead4ed): a VALID
+        // marker riding the WRONG code must not enter the typed family —
+        // the server never renders this family under any code but
+        // UNAVAILABLE, so the combination means the ends disagree.
+        let mut wrong_code = Status::failed_precondition("not this family");
+        wrong_code
+            .metadata_mut()
+            .insert(READ_UNCONFIRMED_KEY, "quorum".parse().unwrap());
+        let decoded = read_unconfirmed_from_status(&wrong_code);
+        assert!(
+            matches!(&decoded, Error::Raft(m) if m.contains("non-UNAVAILABLE")),
+            "wrong code + valid marker must fail closed as a protocol error, \
+             never decode as ReadUnconfirmed: {decoded:?}"
+        );
+
+        // A plain UNAVAILABLE carries no marker: it is NOT this family. The
+        // decode arm is only entered on marker presence — pinned here so the
+        // predicate cannot silently widen to code-only matching.
+        let plain = Status::unavailable("some other unavailability");
+        assert!(
+            plain.metadata().get(READ_UNCONFIRMED_KEY).is_none(),
+            "control: the plain status must not carry the marker"
         );
     }
 
