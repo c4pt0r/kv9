@@ -717,17 +717,24 @@ quorum confirmed this node as leader.
   duration plus one election timeout: seconds under the container pause/kill our own chaos matrix exercises. Read
   correctness no longer rests on that bound at all. A resumed node still believing itself leader must obtain quorum
   confirmation before any snapshot exists for it to read from.
-- **Failure is typed, and the two families are exclusive.** No barrier, no read: `read_unconfirmed` means no live
-  quorum confirmed this node; `not_leader` carries the routing hint. Both are server-sent machine fields, i.e. the
-  server reached a verdict. Note the direction of that statement — a transport failure does not carry these two
+- **Failure is typed, and the two families are exclusive.** No barrier, no read. `read_unconfirmed` means the
+  barrier did not fully establish within the deadline, and its `phase` field says which half did not complete:
+  `quorum` (no live quorum confirmed this node) or `apply` (a quorum *did* confirm a safe index, but local apply did
+  not reach it in time). Reading both as "no quorum" is wrong — the second is a catch-up failure on a node whose
+  leadership was confirmed. `not_leader` carries the leader's id where this node knows it, and `unknown` where it
+  does not. Both families are server-sent machine fields, i.e. the server reached a verdict. Note the direction of that statement — a transport failure does not carry these two
   markers and therefore cannot impersonate them; it does **not** follow that everything lacking them is a transport
   failure, since an ordinary server-side application error need not carry them either.
 - **Acceptance is split by layer, because the two layers can pin different things.**
   - *In-process, deterministic*: phase-split assertions with the tick controlled — pre-demotion the read fails
     unconfirmed, post-demotion it fails `not_leader`. Bypass and stale-read sensitivity live here too: the
     committed-but-unapplied cell and the full-bypass mutant are both red-verified, deterministically.
-  - *Process level*: typed exclusivity only. A real leader partition, every public raw read failing as one of the
-    named outcomes for the entire isolation, and a success after a refusal is a failure. It deliberately does **not**
+  - *Process level*: typed exclusivity only. A real leader partition, with the public `raw-get` endpoint driven
+    repeatedly across the whole isolation and required to fail every time as one of the named outcomes; a success
+    after a refusal is a failure. **That is the measured quantity — one representative endpoint, driven repeatedly,
+    not four endpoints each exercised.** The promise covers every raw read because they share the one establishing
+    seam; what holds the other three is that shared seam plus the in-process cells and the single-snapshot-source
+    inventory, not this scenario. It deliberately does **not**
     attempt the stale-read window: catching it there would race `check_quorum` demotion, making the catcher
     probabilistic. It also does not assert which phase — the node demotes on its own schedule, so a phase assertion
     would red intermittently while the code is correct. **A document that mandates a technique can mandate a flaky

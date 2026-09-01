@@ -68,11 +68,13 @@ answers from taken. *"The write returned success, therefore the next read observ
 leadership change.
 
 - **A node that cannot establish that round-trip does not answer.** It fails instead, and the failure is one of two
-  named, machine-readable outcomes: `read_unconfirmed` (no live quorum confirmed this node as leader) or `not_leader`
-  (with a routing hint). Retry or re-route on either.
-- **An ordinary transport error or timeout is not one of those.** It means the server never gave a verdict, and does
-  not carry either marker, so it cannot be mistaken for one. Client code that needs to tell "the cluster refused" from
-  "I could not reach it" must match the named fields rather than the message text.
+  named, machine-readable outcomes: `read_unconfirmed` (the barrier did not fully establish within the deadline) or
+  `not_leader` (carrying the leader's id when this node knows it). Retry or re-route on either.
+- **An ordinary transport error or timeout is not one of those.** What you can conclude from one is that *you did not
+  receive* a typed verdict — not that the server failed to reach one; a timed-out or lost response may sit on either
+  side of a decision that was actually made. Neither marker is present, so it cannot be mistaken for a refusal.
+  Client code that needs to tell "the cluster refused" from "I did not get an answer" must match the named fields
+  rather than the message text.
 - **Which of the two named outcomes you get is not guaranteed** at any given moment — both are correct refusals, and
   which one appears depends on where the cluster is in reacting. Do not build logic that requires a particular one.
 - **This is held by a partition test, not by this paragraph.** A leader is cut from its peers and every public raw
