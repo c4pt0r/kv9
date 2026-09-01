@@ -1773,13 +1773,39 @@ impl RawApi for RuntimeBackend {
         end: &[u8],
     ) -> Result<DeleteRangeReceipt> {
         self.ensure_serving()?;
-        // One chunk in memory at a time: read a bounded chunk, commit it, resume strictly
-        // after the last key it covered. Planning the whole range up front bounded the
-        // raft *entry* while leaving the planner unbounded.
-        // There is deliberately NO context check before this call. The loop revalidates on
-        // every round including the first, so a second entry-point check would be a parallel
-        // path that could drift from the one the loop applies — and the endpoint would then
-        // be authorised by a rule the loop does not use.
+        // ONE barrier for the whole request, exchanged for ONE stable snapshot that every
+        // chunk plans from (@Tess's ruling; neither my "skip the barrier in the planner" nor
+        // @Rafa's "re-anchor per chunk on the previous receipt").
+        //
+        // What this buys is a statable promise: **every key already acknowledged when the
+        // request arrived is deleted.** Keys written after the barrier may survive, and the
+        // receipt still reports the non-atomic multi-chunk progress.
+        //
+        // The two rejected shapes both cost that sentence:
+        //
+        // - Re-establishing per chunk gives each round a *newer* view, so the delete set is a
+        //   moving target: a concurrent insert lands inside the set if it falls after the
+        //   cursor and escapes if before. Coverage then depends on scheduling and there is no
+        //   promise left to state — plus it is one serial quorum round-trip per chunk
+        //   (~977 for a million keys at RAW_DELETE_RANGE_CHUNK).
+        // - Skipping the barrier entirely does NOT merely risk over-planning. A key committed
+        //   before the request but not yet applied locally is absent from an unestablished
+        //   snapshot, so it never enters a batch, is never proposed, and the layer-3 fence
+        //   never sees it. **The fence adjudicates writes that are made; an omission is
+        //   invisible to it.** That was my error, and it is why the entry barrier is required
+        //   rather than merely nice.
+        //
+        // There is deliberately NO context check here. The loop revalidates on every round
+        // including the first, so a second entry-point check would be a parallel path that
+        // could drift from the one the loop applies — and the endpoint would then be
+        // authorised by a rule the loop does not use.
+        let barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        let hint = self.driver.status().leader_id;
+        // The single established-view construction point in this scope. `established_view`
+        // consumes the barrier, and `ReadBarrier` is neither Clone nor Copy, so a second view
+        // cannot be built here at all — the loop below borrows this one or reads nothing.
+        let view = self.established_view(barrier)?;
+        let read = LeaderRead::new(view.as_ref(), true, hint)?;
         run_delete_range(
             start,
             end,
@@ -1793,9 +1819,9 @@ impl RawApi for RuntimeBackend {
                 )
             },
             |cursor| {
-                // Planning reads the range, so it needs the same leader gate as a scan.
-                let (view, hint, is_leader) = self.leader_read()?;
-                let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
+                // Borrows the established view; the closure has no way to reach the
+                // establishing seam, because the credential that unlocks it was consumed
+                // above and cannot be reproduced.
                 RawExecutor.plan_delete_range_chunk(
                     &read,
                     ctx.keyspace,
@@ -6116,6 +6142,7 @@ mod fence_firing_tests {
             backend.raw_batch_put(&ctx, chunk).expect("seed");
         }
         let seeding_fences = seen.lock().expect("recorder poisoned").len();
+        let barriers_before = runtime.driver.read_barriers_minted();
 
         let receipt = backend
             .raw_delete_range(&ctx, b"", b"")
@@ -6125,6 +6152,24 @@ mod fence_firing_tests {
             receipt.committed_chunks >= 2,
             "{KEYS} keys at a chunk size of {RAW_DELETE_RANGE_CHUNK} must take more than one \
              chunk, got {}",
+            receipt.committed_chunks
+        );
+
+        // ONE barrier for the whole request, however many chunks it took.
+        //
+        // This is the cell that discriminates @Tess's ruling from the shape it replaced. The
+        // fence assertions below cannot: a per-chunk-barrier version records exactly the same
+        // fences and deletes exactly the same keys. Only the count separates them, and it is
+        // meaningful *because* `committed_chunks >= 2` above already established that the loop
+        // really ran more than once — otherwise "1 barrier for 1 chunk" would prove nothing.
+        //
+        // Mutation (must red): move the barrier back inside the planner closure. This becomes
+        // `receipt.committed_chunks` barriers instead of 1.
+        let barriers_used = runtime.driver.read_barriers_minted() - barriers_before;
+        assert_eq!(
+            barriers_used, 1,
+            "a delete-range request must establish exactly one quorum barrier, not one per \
+             chunk; the request committed {} chunks and minted {barriers_used} barriers",
             receipt.committed_chunks
         );
 
