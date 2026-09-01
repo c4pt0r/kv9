@@ -142,9 +142,30 @@ impl RawExecutor {
 
     /// Plan **one bounded chunk** of a range delete, resuming from `from`.
     ///
-    /// Returns the batch plus the last physical key it covered, so the caller can commit
-    /// that chunk and resume strictly after it. Returns `None` when the range is
-    /// exhausted.
+    /// Returns the batch plus the **next user cursor** — the user key at which a resumed
+    /// call should start, inclusive. Returns `None` when the range is exhausted.
+    ///
+    /// Two properties, and the second is why the cursor is shaped this way:
+    ///
+    /// **It is a user key, not a physical one.** It used to be the physical key while the
+    /// return type still said `UserKey` — harmless only because the single caller fed it
+    /// straight back here, where physical happened to be what this function wanted.
+    /// `UserKey` is a bare `Vec<u8>` alias, so nothing would have flagged a caller that
+    /// believed the name. The first caller needing user semantics is the per-chunk context
+    /// revalidation, which re-derives the region for the remaining range: handing it an
+    /// already-encoded key would encode it a *second* time, resolve a region for the
+    /// resulting garbage, and **pass**. A revalidation that checks the wrong object is
+    /// worse than none, because it reports the guarantee as delivered.
+    ///
+    /// **The exclusive advance is baked in here, not left to the caller** (@Tess's ruling).
+    /// Returning the last covered key and expecting each caller to remember `+ 0x00` gives
+    /// two cursors with different meanings — one for resuming the scan, one for revalidating
+    /// the remaining range — and they drift apart the moment someone uses the wrong one.
+    /// One value, one meaning: *resume here*.
+    ///
+    /// Resumption stays byte-identical to the old physical form because `encode_key` is a
+    /// plain prefix concatenation (`mode || keyspace_id || user_key`, no escaping or
+    /// terminator), so `encode(user_key || 0x00) == encode(user_key) || 0x00`.
     ///
     /// An earlier version read the whole range with `usize::MAX` and then sliced it into
     /// chunks. That bounded the raft *entry* while leaving the planner itself unbounded —
@@ -171,13 +192,11 @@ impl RawExecutor {
             ));
         }
         let (range_lo, hi) = Self::bounds(keyspace, start, end)?;
-        // Resume strictly after the last key already deleted.
+        // `from` already means "resume here", so it is encoded exactly the way `bounds`
+        // encodes `start` and used inclusively. No `+ 0x00` here: the exclusive advance was
+        // applied when the cursor was produced, and applying it twice would skip a key.
         let lo = match from {
-            Some(previous) => {
-                let mut next = previous.to_vec();
-                next.push(0);
-                next.max(range_lo)
-            }
+            Some(resume_at) => encode_key(KeyMode::Raw, keyspace, resume_at)?.max(range_lo),
             None => range_lo,
         };
         if lo >= hi {
@@ -188,13 +207,17 @@ impl RawExecutor {
         let Some((last_key, _)) = doomed.last() else {
             return Ok(None);
         };
-        let last_key = last_key.clone();
+        // Decode to user space, then advance past the key just covered. Both steps belong
+        // here (see the doc comment): the caller must not be able to re-encode an already
+        // encoded key, nor to forget the advance.
+        let mut next_cursor = decode_key(last_key)?.user_key.to_vec();
+        next_cursor.push(0);
 
         let mut batch = WriteBatch::new();
         for (physical_key, _) in doomed {
             batch.delete(RAW_CF, physical_key);
         }
-        Ok(Some((batch, last_key)))
+        Ok(Some((batch, next_cursor)))
     }
 
     /// Point read from this keyspace.
@@ -511,6 +534,91 @@ mod tests {
             Some(b"v".to_vec()),
             "delete_range must not reach across the keyspace boundary"
         );
+    }
+
+    /// The cursor is a *singly-encoded user* key, and the whole point is that it survives
+    /// being handed to something that speaks user space.
+    ///
+    /// The old cursor was the physical key returned as a `UserKey`. Since `UserKey` is a
+    /// bare `Vec<u8>` alias nothing would catch that, and the existing resume tests cannot
+    /// either: they feed the cursor straight back to the planner, which wanted physical
+    /// anyway. So they pass under both meanings, which is precisely why they are not
+    /// evidence for this property.
+    ///
+    /// This pins it from the user side: the cursor must decode-free equal a user key, and
+    /// encoding it must reproduce the physical key rather than double-prefixing it.
+    #[test]
+    fn the_resume_cursor_is_a_user_key_not_a_physical_one() {
+        let engine = MemEngine::new();
+        put(&engine, KS_A, b"alpha", b"v");
+        put(&engine, KS_A, b"bravo", b"v");
+
+        let view = engine.snapshot().unwrap();
+        let read = leader(view.as_ref());
+        let (_batch, cursor) = RawExecutor
+            .plan_delete_range_chunk(&read, KS_A, None, b"", b"", 1)
+            .unwrap()
+            .expect("first chunk exists");
+
+        // "resume just past alpha", in user space.
+        assert_eq!(
+            cursor,
+            b"alpha\0".to_vec(),
+            "cursor must be the user key plus the exclusive advance, with no physical prefix"
+        );
+        // The physical form is derived by encoding once. If the cursor were already
+        // physical, this would prefix it a second time and address a key that cannot exist.
+        assert_eq!(
+            encode_key(KeyMode::Raw, KS_A, &cursor).unwrap(),
+            {
+                let mut p = encode_key(KeyMode::Raw, KS_A, b"alpha").unwrap();
+                p.push(0);
+                p
+            },
+            "encode(cursor) must equal physical(alpha)+0x00 — the resume point is unchanged"
+        );
+    }
+
+    /// The `+ 0x00` advance must land *on* the next key, never past it.
+    ///
+    /// `a` and `a\0` are adjacent in byte order with nothing between them, so the cursor
+    /// produced after covering `a` is exactly `a\0` — a key that still needs deleting.
+    /// Advancing twice (or treating the cursor as exclusive on resume as well) skips it,
+    /// and a range delete silently leaves a key behind. That survivor is invisible to every
+    /// other test here, because every other test uses keys that are not prefixes of one
+    /// another.
+    #[test]
+    fn an_adjacent_prefix_key_is_not_skipped_by_the_cursor_advance() {
+        let engine = MemEngine::new();
+        put(&engine, KS_A, b"a", b"v");
+        put(&engine, KS_A, b"a\0", b"v");
+
+        let mut cursor: Option<Vec<u8>> = None;
+        let mut chunks = 0;
+        loop {
+            let view = engine.snapshot().unwrap();
+            let read = leader(view.as_ref());
+            let Some((batch, next)) = RawExecutor
+                .plan_delete_range_chunk(&read, KS_A, cursor.as_deref(), b"", b"", 1)
+                .unwrap()
+            else {
+                break;
+            };
+            apply(&engine, vec![batch]);
+            cursor = Some(next);
+            chunks += 1;
+            assert!(chunks <= 4, "loop must terminate");
+        }
+
+        let view = engine.snapshot().unwrap();
+        let read = leader(view.as_ref());
+        assert_eq!(
+            RawExecutor.scan(&read, KS_A, b"", b"", usize::MAX).unwrap(),
+            Vec::new(),
+            "both `a` and `a\\0` must be deleted: the advance past `a` lands on `a\\0`, \
+             which is itself in range, not past the end of it"
+        );
+        assert_eq!(chunks, 2, "one key per chunk, two keys ⇒ two chunks");
     }
 
     /// Stopping after the first chunk must leave exactly that chunk deleted — the caller
