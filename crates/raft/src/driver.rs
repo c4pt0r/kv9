@@ -629,6 +629,8 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         }
         // 2. Mint the context and request the read index. The incarnation
         //    prefix makes receipts from a previous process life unmatchable.
+        // The mint counter doubles as the observable "how many barriers did
+        // this node request" diagnostic (see `read_barriers_minted`).
         let seq = self.read_seq.fetch_add(1, Ordering::Relaxed);
         let mut rctx = Vec::with_capacity(24);
         rctx.extend_from_slice(&self.read_incarnation);
@@ -685,6 +687,14 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             }
             std::thread::sleep(Duration::from_millis(1));
         }
+    }
+
+    /// How many read barriers this node has REQUESTED (minted a read
+    /// context for) since boot — successful or not. Diagnostic counter; the
+    /// delete-range evidence cell pins "one request establishes exactly one
+    /// quorum barrier" on it (a per-chunk regression multiplies it).
+    pub fn read_barriers_minted(&self) -> u64 {
+        self.read_seq.load(std::sync::atomic::Ordering::Relaxed)
     }
 
     /// The queryable status surface.
@@ -818,11 +828,51 @@ impl From<ApplyWaitError> for Error {
 /// the read was issued is applied on THIS node at or below `index`. An engine
 /// snapshot taken AFTER receiving this value observes all of them — take the
 /// snapshot after, never before (the seam contract).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+///
+/// Deliberately neither `Clone` nor `Copy` (interface ruling on the
+/// establishing-read seam): this value is a CREDENTIAL — one barrier is
+/// exchanged, by value, for exactly one established view. A loop that mints
+/// one barrier and reuses it per iteration is thereby unrepresentable
+/// (E0507), and a snapshot taken before the barrier has no credential to
+/// present. `NOT_CLONE_OR_COPY` below is the compile-time guard: adding
+/// either derive back turns it into a build error, not a silently weaker
+/// contract.
+#[derive(Debug, PartialEq, Eq)]
 pub struct ReadBarrier {
     /// The quorum-confirmed read index; the unified driver watermark has
-    /// passed it at the moment this value is returned.
-    pub index: u64,
+    /// passed it at the moment this value is returned. PRIVATE: the only
+    /// constructor is `NodeDriver::read_barrier` — a value another crate
+    /// could forge with a struct literal would not be a credential at all
+    /// (external construction is E0451; observation goes through
+    /// [`Self::index`]).
+    index: u64,
+}
+
+impl ReadBarrier {
+    /// The confirmed index — read-only observation; there is deliberately
+    /// no way to build a `ReadBarrier` from one.
+    pub fn index(&self) -> u64 {
+        self.index
+    }
+
+    /// Compile-time probe: const-evaluated even though never read. The
+    /// inherent associated const shadows the trait fallback exactly when
+    /// `ReadBarrier: Clone` holds (and `Copy: Clone` covers both), turning
+    /// the panic into an E0080 build error. Verified in both directions
+    /// when introduced: without the derives this compiles clean; adding
+    /// `Clone` reds precisely here.
+    #[allow(dead_code)]
+    const NOT_CLONE_OR_COPY: () = {
+        struct Probe<T>(core::marker::PhantomData<T>);
+        trait Fallback {
+            const CHECK: () = ();
+        }
+        impl<T> Fallback for Probe<T> {}
+        impl<T: Clone> Probe<T> {
+            const CHECK: () = panic!("ReadBarrier must be neither Clone nor Copy");
+        }
+        Probe::<ReadBarrier>::CHECK
+    };
 }
 
 /// Typed failure of [`NodeDriver::read_barrier`] (task #28). Independent from
@@ -885,7 +935,19 @@ impl From<ReadIndexError> for Error {
         match e {
             ReadIndexError::Failed(inner) => inner,
             ReadIndexError::NotLeader { hint } => Error::NotLeader { leader: hint },
-            unconfirmed => Error::Raft(unconfirmed.to_string()),
+            // The typed mapping is the point (partition acceptance): each
+            // barrier phase keeps its identity all the way to the public
+            // error, so "quorum unreachable" stays distinguishable from
+            // both local lag AND any transport failure without string
+            // parsing.
+            ReadIndexError::Unconfirmed { phase, .. } => Error::ReadUnconfirmed {
+                phase: match phase {
+                    BarrierPhase::QuorumConfirmation => {
+                        kv9_common::ReadBarrierPhase::QuorumConfirmation
+                    }
+                    BarrierPhase::ApplyCatchUp => kv9_common::ReadBarrierPhase::ApplyCatchUp,
+                },
+            },
         }
     }
 }
