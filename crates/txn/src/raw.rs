@@ -62,11 +62,19 @@ impl RawWriteOptions {
 /// A read view obtainable only after confirming this node currently leads.
 ///
 /// The constructor takes the leadership answer as an argument, so a caller cannot reach a
-/// read without having asked the question. This does **not** make raw reads linearizable:
-/// `check_quorum` bounds how long a deposed leader keeps believing it leads (roughly one
-/// election timeout), but inside that window it still answers from stale state. Only a
-/// ReadIndex round-trip closes that window, and it is not wired yet — so what we document
-/// to users must say "fresh in normal operation", never "strongly consistent".
+/// read without having asked the question.
+///
+/// **This type alone does not make a read linearizable, and never did** — it only refuses a
+/// reader that failed the check. What makes the raw reads linearizable is the caller: the
+/// server establishes a ReadIndex barrier and consumes its credential for exactly one
+/// snapshot, then hands that snapshot here. Constructing this over a snapshot taken *before*
+/// a barrier, or without one, yields a read that is merely leader-gated.
+///
+/// *This comment used to end "so what we document to users must say 'fresh in normal
+/// operation', never 'strongly consistent'". That was true while the barrier was unwired and
+/// became false the moment it landed, without anything forcing it to be revisited — the
+/// public claim in README/DESIGN was tightened by an explicit card trigger, and this
+/// developer-facing sentence was only found by grepping for the old promise's phrasing.*
 pub struct LeaderRead<'a> {
     view: &'a dyn ReadView,
 }

@@ -61,22 +61,27 @@ source of truth**.
 - **Region** — range shard = a Raft group; the unit of replication, placement, split/merge. Never spans a keyspace.
   Its durable data is immutable SSTs in object storage; its **manifest** (the mutable pointer) lives in raft.
 
-### Read semantics in v0 — not yet linearizable
+### Read semantics — linearizable
 
-kv9's intended read semantics are **linearizable**. **v0 does not implement that yet**, and the gap is worth stating
-plainly rather than leaving to be discovered:
+Raw reads are **linearizable**. Every read first establishes a ReadIndex quorum round-trip; only then is the state it
+answers from taken. *"The write returned success, therefore the next read observes it"* holds, including across a
+leadership change.
 
-- A read is currently served by whichever node's **local** raft role says "leader" — a local judgment, not a
-  quorum-confirmed one. A leader that has already been deposed keeps believing it leads until `check_quorum` makes
-  it step down, and inside that window it can return a **stale** value.
-- **That bound is counted in raft ticks, not wall-clock time** (currently 10 ticks at 20 ms ≈ 200 ms). A process that
-  is paused, descheduled, or otherwise not running does not tick, so it does not step down — on resume it can serve a
-  read *before* processing anything. **The real staleness window is the pause duration plus one election timeout**,
-  which under container pause/restart is seconds, not milliseconds. Size your retries against that, not against 200 ms.
-- So v0 raw reads are **fresh in normal operation but not linearizable**. Notably, *"the write returned success,
-  therefore the next read observes it"* does **not** hold across a leadership change.
-- This closes when reads go through a ReadIndex quorum round-trip **and** a partition test in which a deposed leader
-  must fail to serve a read exists to hold it there. See [`DESIGN.md`](DESIGN.md) §9.2.
+- **A node that cannot establish that round-trip does not answer.** It fails instead, and the failure is one of two
+  named, machine-readable outcomes: `read_unconfirmed` (the barrier did not fully establish within the deadline) or
+  `not_leader` (carrying the leader's id when this node knows it). Retry or re-route on either.
+- **An ordinary transport error or timeout is not one of those.** What you can conclude from one is that *you did not
+  receive* a typed verdict — not that the server failed to reach one; a timed-out or lost response may sit on either
+  side of a decision that was actually made. Neither marker is present, so it cannot be mistaken for a refusal.
+  Client code that needs to tell "the cluster refused" from "I did not get an answer" must match the named fields
+  rather than the message text.
+- **Which of the two named outcomes you get is not guaranteed** at any given moment — both are correct refusals, and
+  which one appears depends on where the cluster is in reacting. Do not build logic that requires a particular one.
+- **This is held by a partition test, not by this paragraph.** A leader is cut from its peers, and the public
+  `raw-get` endpoint is driven repeatedly across the whole isolation, required to fail every time as one of the named
+  outcomes. The guarantee extends to the other raw reads because they all go through the same establishing step — not
+  because that one scenario exercises each of them. See [`DESIGN.md`](DESIGN.md) §9.2 for the mechanism and the
+  acceptance split.
 
 ## Influences
 

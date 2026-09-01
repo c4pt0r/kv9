@@ -61,6 +61,13 @@ description = "kv9 single binary."
 name = "kv9"
 path = "src/main.rs"
 
+[features]
+# Compiles the deterministic partition-injection surface (kv9-raft's testing
+# feature) into the kv9 binary for the partition E2E ONLY. Never enable in a
+# production build: the mask can drop real raft traffic. A binary built with
+# this but launched without KV9_TESTING_PARTITION_DIR never partitions.
+partition-testing = ["kv9-raft/testing"]
+
 [dependencies]
 kv9-common.workspace = true
 kv9-meta.workspace = true
