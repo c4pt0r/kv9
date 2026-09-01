@@ -205,11 +205,17 @@ impl RegistrationLastOutcome {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct RegistrationObservation {
     attempts: u64,
     errors: u64,
     last: RegistrationLastOutcome,
+    /// The last NotLeader hint observed: leader id plus either the canonical
+    /// endpoint it carried or the reason none was usable. Kept so a wedged
+    /// registration scene shows WHERE the client was pointed, not just a
+    /// count of not_leader answers (the 972-loop lesson: the scene had no
+    /// record of what the hints said).
+    last_hint: Option<String>,
 }
 
 impl RegistrationObservation {
@@ -218,6 +224,7 @@ impl RegistrationObservation {
             attempts: 0,
             errors: 0,
             last: RegistrationLastOutcome::NotAttempted,
+            last_hint: None,
         }
     }
 
@@ -229,9 +236,10 @@ impl RegistrationObservation {
         self.last = RegistrationLastOutcome::Registered;
     }
 
-    fn record_not_leader(&mut self) {
+    fn record_not_leader(&mut self, hint: &str) {
         self.errors = self.errors.saturating_add(1);
         self.last = RegistrationLastOutcome::NotLeader;
+        self.last_hint = Some(hint.to_string());
     }
 
     fn record_error(&mut self, error: &RegisterError) {
@@ -243,6 +251,73 @@ impl RegistrationObservation {
             RegisterError::Failed(_) => RegistrationLastOutcome::Failed,
         };
     }
+}
+
+/// One registration pass (task: the 972-not_leader master red): a candidate
+/// walk that starts at the declared seeds and FOLLOWS NotLeader hints that
+/// carry a canonical endpoint, deduped by `(leader id, addr)` with a small
+/// hop cap beyond the seeds.
+///
+/// The cap guards CYCLES and STALE CHAINS alike: a hinted endpoint is a
+/// bounded routing candidate, not proof of the current leader — the answering
+/// node resolves it from its own applied directory, which can lag (old
+/// leader, superseded address). That is why the correct cap is SMALL, not
+/// "big enough for any cycle". A cycle, a dead chain, or an addr-less hint
+/// ends the pass with the hint recorded observably; the pass never resets
+/// its budget and never degenerates into the unbounded seeds-only loop.
+fn registration_walk(
+    seeds: &[(NodeId, std::net::SocketAddr)],
+    obs: &mut RegistrationObservation,
+    mut dial: impl FnMut(std::net::SocketAddr) -> std::result::Result<RegisterOutcome, RegisterError>,
+) -> Option<RegistrationReceipt> {
+    const HINT_HOP_CAP: usize = 4;
+    let mut queue: Vec<(Option<NodeId>, std::net::SocketAddr)> =
+        seeds.iter().map(|&(id, addr)| (Some(id), addr)).collect();
+    let mut visited: std::collections::HashSet<(Option<NodeId>, String)> = queue
+        .iter()
+        .map(|(id, addr)| (*id, addr.to_string()))
+        .collect();
+    let mut hint_hops = 0usize;
+    let mut i = 0usize;
+    while i < queue.len() {
+        let (_cand_id, cand_addr) = queue[i];
+        i += 1;
+        obs.record_attempt();
+        match dial(cand_addr) {
+            Ok(RegisterOutcome::Registered(receipt)) => {
+                obs.record_registered();
+                return Some(receipt);
+            }
+            Ok(RegisterOutcome::NotLeader {
+                leader,
+                leader_addr,
+            }) => {
+                let hint = match (&leader, &leader_addr) {
+                    (Some(id), Some(addr)) => format!("leader={} addr={addr}", id.0),
+                    (Some(id), None) => format!("leader={} addr=unresolved", id.0),
+                    (None, _) => "leader=unknown".to_string(),
+                };
+                obs.record_not_leader(&hint);
+                if let (leader_id, Some(addr_str)) = (leader, leader_addr) {
+                    if hint_hops < HINT_HOP_CAP {
+                        if let Ok(addr) = addr_str.parse::<std::net::SocketAddr>() {
+                            if visited.insert((leader_id, addr.to_string())) {
+                                hint_hops += 1;
+                                queue.push((leader_id, addr));
+                            }
+                        }
+                    }
+                }
+            }
+            Err(error) => {
+                obs.record_error(&error);
+                if error == RegisterError::InvalidTicket {
+                    return None;
+                }
+            }
+        }
+    }
+    None
 }
 
 fn bounded_discovery_detail(detail: &str) -> String {
@@ -391,9 +466,48 @@ struct RuntimeBackend {
     node: Arc<Node<WalEngine>>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
     transport: Arc<GrpcTransport>,
+    /// The DECLARED initial voters with their durable root-descriptor
+    /// addresses — one of the two authoritative sources a NotLeader answer
+    /// may resolve a leader endpoint from (the other is the local applied
+    /// catalog nodes row). Never bind addresses, request origins, or
+    /// client-supplied values.
+    initial_voters: Vec<(NodeId, std::net::SocketAddr)>,
 }
 
 impl RuntimeBackend {
+    /// Resolve a node's canonical registration endpoint from the LOCAL
+    /// APPLIED authoritative directory: the catalog nodes row (dynamic
+    /// members register their canonical advertised address there), falling
+    /// back to the durable root-descriptor voter list for initial voters
+    /// (whose catalog rows carry no address). Returns None when neither
+    /// source resolves — the NotLeader hint then degrades to id-only,
+    /// fail-closed. The result is a BOUNDED ROUTING CANDIDATE, not proof of
+    /// the current leader's endpoint: this node's applied view can lag, so
+    /// the value may name an old leader or a superseded address; the
+    /// registration client's (id, addr) dedup + hop cap absorb exactly that.
+    fn resolve_registration_endpoint(&self, id: NodeId) -> Option<String> {
+        let from_catalog = self
+            .node
+            .meta_raft
+            .store
+            .begin()
+            .ok()
+            .and_then(|txn| txn.get(&NODES_DESC, &[memcmp_uint(id.0)]).ok().flatten())
+            .and_then(|row| match row.value.get(ColumnId(2)) {
+                Some(ColumnValue::Text(addr)) if !addr.is_empty() => Some(addr.clone()),
+                _ => None,
+            })
+            // Canonical socket addresses only; a garbled row degrades the
+            // hint to the next source or to id-only, never to a bad value.
+            .filter(|addr| addr.parse::<std::net::SocketAddr>().is_ok());
+        from_catalog.or_else(|| {
+            self.initial_voters
+                .iter()
+                .find(|(vid, _)| *vid == id)
+                .map(|(_, addr)| addr.to_string())
+        })
+    }
+
     /// Public requests may arrive as soon as the listener binds, before election-first
     /// bootstrap has applied the default tenant/catalog rows. Expose that lifecycle state
     /// directly instead of letting a planner misreport missing bootstrap data as a caller
@@ -694,8 +808,12 @@ impl RegistrationBackend for RuntimeBackend {
     ) -> std::result::Result<RegistrationReceipt, RegistrationError> {
         let leader = self.driver.status();
         if leader.role != Role::Leader {
+            let leader_addr = leader
+                .leader_id
+                .and_then(|id| self.resolve_registration_endpoint(id));
             return Err(RegistrationError::NotLeader {
                 leader: leader.leader_id,
+                leader_addr,
             });
         }
         let now = unix_now();
@@ -1558,6 +1676,7 @@ impl NodeRuntime {
             node: node.clone(),
             driver: driver.clone(),
             transport: transport.clone(),
+            initial_voters: seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
         });
         let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
         let public_service =
@@ -2056,36 +2175,34 @@ impl NodeRuntime {
                         .into(),
                 )
             })?;
-            for seed in &self.seeds {
-                self.registration_observation.record_attempt();
-                match grpc_register(
-                    self.grpc_runtime.handle(),
-                    self.node.id,
-                    seed.addr,
-                    &self.addr.to_string(),
-                    JoinIdentity {
-                        cluster_id,
-                        ticket_sha256: ticket,
-                        store_incarnation: self.store_identity.store_incarnation,
-                    },
-                    DISCOVERY_TIMEOUT,
-                    Some(self.cluster_token.clone()),
-                ) {
-                    Ok(RegisterOutcome::Registered(receipt)) => {
-                        self.registration_observation.record_registered();
-                        self.registration_receipt = Some(receipt);
-                        break;
-                    }
-                    Ok(RegisterOutcome::NotLeader { .. }) => {
-                        self.registration_observation.record_not_leader();
-                    }
-                    Err(error) => {
-                        self.registration_observation.record_error(&error);
-                        if error == RegisterError::InvalidTicket {
-                            break;
-                        }
-                    }
-                }
+            let seeds: Vec<(NodeId, std::net::SocketAddr)> = self
+                .seeds
+                .iter()
+                .map(|seed| (seed.node_id, seed.addr))
+                .collect();
+            let handle = self.grpc_runtime.handle().clone();
+            let node_id = self.node.id;
+            let my_addr = self.addr.to_string();
+            let identity = JoinIdentity {
+                cluster_id,
+                ticket_sha256: ticket,
+                store_incarnation: self.store_identity.store_incarnation,
+            };
+            let token = self.cluster_token.clone();
+            if let Some(receipt) =
+                registration_walk(&seeds, &mut self.registration_observation, |addr| {
+                    grpc_register(
+                        &handle,
+                        node_id,
+                        addr,
+                        &my_addr,
+                        identity,
+                        DISCOVERY_TIMEOUT,
+                        Some(token.clone()),
+                    )
+                })
+            {
+                self.registration_receipt = Some(receipt);
             }
             return Ok(());
         }
@@ -2202,7 +2319,7 @@ impl NodeRuntime {
         // see render_driver_applied for why no tuple crosses this boundary.
         let driver_applied_lines = render_driver_applied(raft.driver_applied);
         let body = format!(
-            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\n{}bootstrap_state={:?}\nadvertised_endpoint={}\nregistration_attempts={}\nregistration_errors={}\nregistration_last={}\n{}fatal={}\n",
+            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\n{}bootstrap_state={:?}\nadvertised_endpoint={}\nregistration_attempts={}\nregistration_errors={}\nregistration_last={}\nregistration_last_hint={}\n{}fatal={}\n",
             std::process::id(),
             raft.node_id.0,
             cluster_id.map_or_else(String::new, |id| id.to_string()),
@@ -2225,6 +2342,10 @@ impl NodeRuntime {
             self.registration_observation.attempts,
             self.registration_observation.errors,
             self.registration_observation.last.label(),
+            self.registration_observation
+                .last_hint
+                .as_deref()
+                .unwrap_or("none"),
             discovery_status,
             raft.fatal.as_deref().unwrap_or(""),
         );
@@ -2512,6 +2633,149 @@ mod tests {
         assert_eq!(
             got, receipt,
             "the receipt must be the wait's applied position, verbatim"
+        );
+    }
+
+    // ---- the registration walk (the 972-not_leader master red) ----
+
+    fn walk_receipt() -> RegistrationReceipt {
+        RegistrationReceipt {
+            applied_term: 2,
+            applied_index: 9,
+            voters: vec![1, 2, 3, 4],
+            learners: vec![5],
+        }
+    }
+
+    fn walk_addr(port: u16) -> std::net::SocketAddr {
+        format!("127.0.0.1:{port}").parse().unwrap()
+    }
+
+    /// The exact master-red scene, deterministic: every seed answers
+    /// NotLeader with a hint pointing at a NON-SEED leader; the walk must
+    /// follow the hint and register there in the same pass. Precondition
+    /// pinned by name: the hinted leader is not in the seed list — without
+    /// that, the walk can succeed through a seed and the hint arm is never
+    /// selected.
+    ///
+    /// Mutant contract: deleting the hint-follow (queue.push) reverts to the
+    /// seeds-only loop — reds at "must register by following the hint".
+    #[test]
+    fn the_walk_follows_a_not_leader_hint_to_a_non_seed_leader() {
+        let seeds = vec![
+            (NodeId(1), walk_addr(24101)),
+            (NodeId(2), walk_addr(24102)),
+            (NodeId(3), walk_addr(24103)),
+        ];
+        let leader_addr = walk_addr(24104);
+        assert!(
+            !seeds.iter().any(|(_, a)| *a == leader_addr),
+            "precondition: the hinted leader must NOT be a seed — otherwise \
+             the seeds-only loop also succeeds and the hint arm is unselected"
+        );
+        let mut obs = RegistrationObservation::new();
+        let mut dialed: Vec<std::net::SocketAddr> = Vec::new();
+        let got = registration_walk(&seeds, &mut obs, |addr| {
+            dialed.push(addr);
+            if addr == leader_addr {
+                Ok(RegisterOutcome::Registered(walk_receipt()))
+            } else {
+                Ok(RegisterOutcome::NotLeader {
+                    leader: Some(NodeId(4)),
+                    leader_addr: Some(leader_addr.to_string()),
+                })
+            }
+        });
+        assert!(
+            got.is_some(),
+            "must register by following the hint to the non-seed leader \
+             (the seeds-only loop dies here with endless not_leader)"
+        );
+        assert_eq!(
+            dialed.last(),
+            Some(&leader_addr),
+            "the successful dial must be the hinted endpoint"
+        );
+        assert_eq!(obs.last, RegistrationLastOutcome::Registered);
+    }
+
+    /// Cycles and stale chains terminate on the hop cap within ONE pass —
+    /// the budget never resets. Every hint here is a fresh (id, addr) pair,
+    /// the worst case for dedup; the walk must dial exactly seeds + cap and
+    /// stop, not spin.
+    #[test]
+    fn hint_chains_terminate_on_the_hop_cap_without_budget_reset() {
+        let seeds = vec![(NodeId(1), walk_addr(24201))];
+        let mut obs = RegistrationObservation::new();
+        let mut dial_count = 0u64;
+        let got = registration_walk(&seeds, &mut obs, |_| {
+            dial_count += 1;
+            // Always a NEW (id, addr) hint: an endless stale chain.
+            Ok(RegisterOutcome::NotLeader {
+                leader: Some(NodeId(100 + dial_count)),
+                leader_addr: Some(format!("127.0.0.1:{}", 25000 + dial_count)),
+            })
+        });
+        assert!(got.is_none());
+        assert_eq!(
+            dial_count,
+            1 + 4,
+            "a fresh-hint chain must dial exactly seeds + hop cap, then stop \
+             — the cap guards stale chains exactly as it guards cycles"
+        );
+        assert_eq!(obs.attempts, 1 + 4, "the pass budget must not reset");
+    }
+
+    /// A stale hint costs one hop, then the fresh hint from the real target
+    /// wins (Tess's scripted control): stale A → typed NotLeader with B →
+    /// B registers, all within the same pass.
+    #[test]
+    fn a_stale_hint_is_one_hop_then_the_fresh_hint_wins() {
+        let seeds = vec![(NodeId(1), walk_addr(24301))];
+        let stale = walk_addr(24399); // old leader: answers NotLeader with the real one
+        let real = walk_addr(24304);
+        let mut obs = RegistrationObservation::new();
+        let mut dialed = Vec::new();
+        let got = registration_walk(&seeds, &mut obs, |addr| {
+            dialed.push(addr);
+            if addr == real {
+                Ok(RegisterOutcome::Registered(walk_receipt()))
+            } else if addr == stale {
+                Ok(RegisterOutcome::NotLeader {
+                    leader: Some(NodeId(4)),
+                    leader_addr: Some(real.to_string()),
+                })
+            } else {
+                // Seed's lagging view points at the STALE leader.
+                Ok(RegisterOutcome::NotLeader {
+                    leader: Some(NodeId(9)),
+                    leader_addr: Some(stale.to_string()),
+                })
+            }
+        });
+        assert!(got.is_some(), "the fresh hint must win after one stale hop");
+        assert_eq!(dialed, vec![seeds[0].1, stale, real]);
+    }
+
+    /// An addr-less hint is recorded observably (id + why it could not be
+    /// followed) and never silently swallowed — the 972-loop scene had no
+    /// record of what the hints said.
+    #[test]
+    fn an_addressless_hint_is_recorded_not_swallowed() {
+        let seeds = vec![(NodeId(1), walk_addr(24401))];
+        let mut obs = RegistrationObservation::new();
+        let got = registration_walk(&seeds, &mut obs, |_| {
+            Ok(RegisterOutcome::NotLeader {
+                leader: Some(NodeId(4)),
+                leader_addr: None,
+            })
+        });
+        assert!(got.is_none());
+        assert_eq!(
+            obs.last_hint.as_deref(),
+            Some("leader=4 addr=unresolved"),
+            "the status must show WHERE the client was pointed and why it \
+             could not follow"
         );
     }
 
@@ -2840,6 +3104,7 @@ mod tests {
                 node,
                 driver,
                 transport,
+                initial_voters: Vec::new(),
             },
             runtime,
             dir,

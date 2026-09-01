@@ -201,8 +201,18 @@ pub struct RegistrationReceipt {
 #[derive(Debug)]
 pub enum RegistrationError {
     /// This node is not the leader; retry against `leader` if known. Maps to
-    /// FAILED_PRECONDITION + `kv9-not-leader: true` (+ optional leader id).
-    NotLeader { leader: Option<NodeId> },
+    /// FAILED_PRECONDITION + `kv9-not-leader: true` (+ optional leader id and
+    /// optional canonical registration endpoint). `leader_addr` is a BOUNDED
+    /// ROUTING CANDIDATE, not proof of the current leader's endpoint: the
+    /// answering follower resolves it from its local applied directory, which
+    /// can lag (old leader, a node's superseded address, or unreachable).
+    /// Safety comes from the target answering with its own typed outcome
+    /// under the same overall budget, (id, addr) dedup, and the hop cap —
+    /// which guards stale chains exactly as it guards cycles.
+    NotLeader {
+        leader: Option<NodeId>,
+        leader_addr: Option<String>,
+    },
     /// The one-time join credential is invalid. This is separate from a
     /// generic refusal so the wire can preserve the reason without exposing
     /// or parsing credential-bearing diagnostic text.
@@ -220,6 +230,13 @@ pub const NOT_LEADER_KEY: &str = "kv9-not-leader";
 /// when the leader is unknown — never "0" (clients must distinguish
 /// "retry node 7" from "rediscover").
 pub const LEADER_NODE_ID_KEY: &str = "kv9-leader-node-id";
+
+/// Optional canonical registration endpoint of the hinted leader, resolved by
+/// the answering node from its LOCAL APPLIED authoritative membership
+/// directory (catalog nodes row / durable root descriptor) — never from bind
+/// addresses, request origin, or anything the client said. Absent when the
+/// answerer cannot resolve it (fail-closed: the hint degrades to id-only).
+pub const LEADER_ADDR_KEY: &str = "kv9-leader-addr";
 /// Machine-readable reason for a non-redirect control-plane refusal. Human
 /// Status text is diagnostic only and may be truncated by bounded surfaces.
 pub const REJECTION_REASON_KEY: &str = "kv9-rejection-reason";
@@ -443,7 +460,10 @@ impl Kv9Raft for RaftGrpcService {
             incarnation,
         ) {
             Ok(r) => r,
-            Err(RegistrationError::NotLeader { leader }) => {
+            Err(RegistrationError::NotLeader {
+                leader,
+                leader_addr,
+            }) => {
                 let mut status = Status::failed_precondition("not the leader");
                 status
                     .metadata_mut()
@@ -457,6 +477,14 @@ impl Kv9Raft for RaftGrpcService {
                             .parse()
                             .expect("a decimal u64 is valid ASCII metadata"),
                     );
+                }
+                if let Some(addr) = leader_addr {
+                    // A canonical socket address is ASCII; anything that is
+                    // not simply is not sent (the hint degrades to id-only,
+                    // never to a garbled value).
+                    if let Ok(v) = addr.parse() {
+                        status.metadata_mut().insert(LEADER_ADDR_KEY, v);
+                    }
                 }
                 return Err(status);
             }
@@ -625,7 +653,12 @@ impl std::error::Error for RegisterError {}
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RegisterOutcome {
     Registered(RegistrationReceipt),
-    NotLeader { leader: Option<NodeId> },
+    NotLeader {
+        leader: Option<NodeId>,
+        /// Bounded routing candidate (see [`RegistrationError::NotLeader`]);
+        /// possibly stale — never proof of the current leader's endpoint.
+        leader_addr: Option<String>,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -697,7 +730,15 @@ pub fn grpc_register(
                                 Some(NodeId(id))
                             }
                         };
-                        Ok(RegisterOutcome::NotLeader { leader })
+                        let leader_addr = status
+                            .metadata()
+                            .get(LEADER_ADDR_KEY)
+                            .and_then(|v| v.to_str().ok())
+                            .map(|s| s.to_string());
+                        Ok(RegisterOutcome::NotLeader {
+                            leader,
+                            leader_addr,
+                        })
                     } else if status.code() == tonic::Code::FailedPrecondition
                         && status
                             .metadata()
@@ -2339,9 +2380,13 @@ mod tests {
             Err(RegistrationError::Failed(Error::Config(
                 "admission expired".into(),
             ))),
-            Err(RegistrationError::NotLeader { leader: None }),
+            Err(RegistrationError::NotLeader {
+                leader: None,
+                leader_addr: None,
+            }),
             Err(RegistrationError::NotLeader {
                 leader: Some(NodeId(7)),
+                leader_addr: Some("127.0.0.1:29997".to_string()),
             }),
         ];
         {
@@ -2405,15 +2450,23 @@ mod tests {
             )
         };
 
-        // Hinted redirect: typed, with the leader id.
+        // Hinted redirect: typed, with the leader id AND its canonical
+        // endpoint (a bounded routing candidate, decoded verbatim).
         assert_eq!(
             call().unwrap(),
             RegisterOutcome::NotLeader {
-                leader: Some(NodeId(7))
+                leader: Some(NodeId(7)),
+                leader_addr: Some("127.0.0.1:29997".to_string()),
             }
         );
-        // Hintless redirect: typed, leader None (absent key, never "0").
-        assert_eq!(call().unwrap(), RegisterOutcome::NotLeader { leader: None });
+        // Hintless redirect: typed, leader None (absent keys, never "0"/"").
+        assert_eq!(
+            call().unwrap(),
+            RegisterOutcome::NotLeader {
+                leader: None,
+                leader_addr: None,
+            }
+        );
         // Ordinary precondition refusal — same code, NO marker: a plain
         // error, not a redirect (code-only decoding would fail here).
         let err = call().unwrap_err().to_string();
