@@ -537,6 +537,19 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         self.process_ready();
         std::mem::take(&mut self.lock().outbox)
     }
+
+    /// Testing-only election seam: ask THIS peer (it must currently be the
+    /// leader) to hand leadership to `transferee` (raft-rs MsgTransferLeader
+    /// → MsgTimeoutNow; the transferee campaigns immediately, exempt from
+    /// the pre_vote/check_quorum leader-stickiness that would reject an
+    /// ordinary campaign against a live leader). This is the deterministic
+    /// way to construct "a specific node is leader" in tests; it is NOT a
+    /// product API — deliberately absent from `RawApi` and every server
+    /// surface, so no production path can call it.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn transfer_leader_for_tests(&self, transferee: NodeId) {
+        self.lock().raw.transfer_leader(transferee.0);
+    }
 }
 
 impl<S: PersistentRaftStorage> RaftGroup for RaftPeer<S> {
