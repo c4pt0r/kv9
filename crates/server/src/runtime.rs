@@ -657,13 +657,19 @@ impl<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::Engine + 'stati
                 .get(&NODES_DESC, &[memcmp_uint(node_id.0)])
                 .map_err(|_| Status::unavailable("membership catalog unavailable"))?
                 .is_some();
-            if admitted || registered {
-                true
-            } else if revoked {
-                // An explicit applied verdict: never eligible for the
-                // catch-up window — the window exists for ABSENCE, not for
-                // overriding decisions this replica has already applied.
+            if revoked {
+                // The explicit applied verdict comes FIRST, before every
+                // positive membership arm: revoking the admission of an
+                // already-registered node is the decommission shape, and
+                // its still-present membership row must not outvote the
+                // revocation (with `registered` checked first, this arm is
+                // dead code for exactly the nodes it exists for). Also
+                // never eligible for the catch-up window — the window
+                // exists for ABSENCE, not for overriding decisions this
+                // replica has already applied.
                 false
+            } else if admitted || registered {
+                true
             } else {
                 // Absent from the catalog entirely: the receipt-scoped
                 // catch-up window (see CatchupCapability) may still admit
@@ -4407,8 +4413,13 @@ mod tests {
         );
     }
 
-    /// An explicit applied revocation beats the window: the fallback exists
-    /// for catalog ABSENCE, never for overriding an applied verdict.
+    /// An explicit applied revocation beats BOTH the window and every
+    /// positive membership arm. The scenario is the real decommission
+    /// shape (Tess's blocker on 19adf3b): the node REGISTERED successfully
+    /// — its NODES_DESC membership row is present — and its admission was
+    /// revoked afterwards. With `registered => allow` evaluated before
+    /// `revoked => reject`, the revoked arm is dead code for exactly the
+    /// nodes it exists for; this test reds on that ordering.
     #[test]
     fn an_explicit_revocation_beats_the_catchup_window() {
         let harness = catchup_auth_harness();
@@ -4428,6 +4439,22 @@ mod tests {
                 u64::MAX,
             )
             .unwrap();
+            // The node completed registration: a REAL membership row via
+            // the production row builder (state 2 = active), exactly what
+            // register() leaves behind.
+            txn.insert(
+                &NODES_DESC,
+                &[memcmp_uint(4)],
+                membership_node_row(
+                    NodeId(4),
+                    "127.0.0.1:29999",
+                    2,
+                    7,
+                    StoreIncarnation::from_bytes([4; 16]),
+                ),
+            )
+            .unwrap();
+            // ... and was decommissioned afterwards.
             kv9_meta::admission::revoke_admission(&mut txn, NodeId(4)).unwrap();
             txn.commit().unwrap();
         }
@@ -4438,8 +4465,9 @@ mod tests {
                 .unwrap_err()
                 .code(),
             Code::PermissionDenied,
-            "a revoked sender must be refused even though it is in the \
-             receipt member set and the window is still open"
+            "a revoked node must be refused even though its membership row \
+             is still present AND it is in the receipt member set — the \
+             explicit verdict outranks both"
         );
     }
 
@@ -5003,6 +5031,10 @@ mod tests {
              the window is open"
         );
         rts[4].driver.pause_apply(false);
+        // Timeout margin (Cindy's measurement on 19adf3b): the whole test
+        // completes in 1.67/1.67/1.82s over three runs against these 60s
+        // phase deadlines — a ~36x margin. A red here is NOT "the machine
+        // was slow" unless it was 36x slow; treat it as a real regression.
         wait_for(
             &mut rts,
             60,
