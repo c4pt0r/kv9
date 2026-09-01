@@ -860,52 +860,184 @@ impl RegistrationBackend for RuntimeBackend {
 /// as a whole does not.
 const RAW_DELETE_RANGE_CHUNK: usize = 1024;
 
-/// The context gate: keyspace, region and epoch, all decided from **one** `MetaTxn`.
+/// The context gate and the capability it mints, isolated so that **only** this module can
+/// construct one.
 ///
-/// The context arrives from the wire already deserialized and otherwise unexamined. Without
-/// this, a client could name a keyspace that was never created, or write raw bytes into a
-/// `txn` keyspace where Percolator expects its own lock/write structure, or act on a region
-/// whose epoch has since moved — none of which would error.
-///
-/// **Every lookup shares one transaction.** Reading the keyspace from one snapshot and the
-/// region from another lets a split commit in between, and the verdict then describes a
-/// state that never existed at any instant. That is why `ReadView` exists in
-/// `crates/engine`, and it binds harder here because the conclusion is an authorisation.
-///
-/// One context authorises exactly **one region**: a range or batch spanning regions is the
-/// client's to split, because a single epoch cannot speak for two regions.
-///
-/// A free function so the production endpoints and the tests call the *same* code — a gate
-/// verified through a parallel re-implementation is not verified.
-fn check_context<E: kv9_engine::Engine>(
-    store: &kv9_meta::store::MetaStore<E>,
-    keyspace_id: KeyspaceId,
-    epoch: &kv9_region::RegionEpoch,
-    span: KeySpan<'_>,
-) -> Result<()> {
-    let txn = store.begin()?;
+/// `ValidatedFence`'s fields were module-private before, which in Rust means visible to every
+/// endpoint in `runtime.rs` — and the loop tests were indeed building one directly (@Tess).
+/// A capability an endpoint can forge is documentation, not enforcement. Here the parent sees
+/// exactly two things: the check that returns one, and the by-value conversion that spends it.
+mod gate {
+    use super::{Error, KeySpan, Result, Tables};
+    use kv9_common::{ApiType, KeyspaceId};
 
-    let keyspace =
-        Tables::<E>::keyspace_in(&txn, keyspace_id)?.ok_or(Error::KeyspaceNotFound(keyspace_id))?;
-    if keyspace.api_type != ApiType::Raw {
-        return Err(Error::ApiTypeMismatch {
-            keyspace: keyspace_id,
-        });
+    /// The context gate: keyspace, region and epoch, all decided from **one** `MetaTxn`.
+    ///
+    /// The context arrives from the wire already deserialized and otherwise unexamined. Without
+    /// this, a client could name a keyspace that was never created, or write raw bytes into a
+    /// `txn` keyspace where Percolator expects its own lock/write structure, or act on a region
+    /// whose epoch has since moved — none of which would error.
+    ///
+    /// **Every lookup shares one transaction.** Reading the keyspace from one snapshot and the
+    /// region from another lets a split commit in between, and the verdict then describes a
+    /// state that never existed at any instant. That is why `ReadView` exists in
+    /// `crates/engine`, and it binds harder here because the conclusion is an authorisation.
+    ///
+    /// One context authorises exactly **one region**: a range or batch spanning regions is the
+    /// client's to split, because a single epoch cannot speak for two regions.
+    ///
+    /// A free function so the production endpoints and the tests call the *same* code — a gate
+    /// verified through a parallel re-implementation is not verified.
+    pub(super) fn check_context<E: kv9_engine::Engine>(
+        store: &kv9_meta::store::MetaStore<E>,
+        keyspace_id: KeyspaceId,
+        epoch: &kv9_region::RegionEpoch,
+        span: KeySpan<'_>,
+    ) -> Result<ValidatedFence> {
+        let txn = store.begin()?;
+
+        let keyspace = Tables::<E>::keyspace_in(&txn, keyspace_id)?
+            .ok_or(Error::KeyspaceNotFound(keyspace_id))?;
+        if keyspace.api_type != ApiType::Raw {
+            return Err(Error::ApiTypeMismatch {
+                keyspace: keyspace_id,
+            });
+        }
+
+        let tables = Tables::new(store);
+        let region = tables
+            .region_for_key_in(&txn, keyspace_id, span.anchor())?
+            .ok_or(Error::RegionNotFound)?;
+
+        // Epoch before span: a stale epoch and a cross-region request are different failures
+        // and the client reacts differently (refresh routing vs. split the request).
+        if region.epoch_conf != epoch.conf_ver || region.epoch_ver != epoch.version {
+            return Err(Error::StaleEpoch { region: region.id });
+        }
+
+        span.assert_within(&region, &txn, &tables, keyspace_id)?;
+
+        // The values THIS check resolved, minted as the authorisation for the write that follows.
+        // Re-deriving the region at propose time would reopen the very window the fence exists
+        // to close: between the two lookups a split can commit, and the write would then be
+        // fenced against a region that was never authorised — a fence that always agrees with
+        // itself and therefore never fires.
+        Ok(ValidatedFence {
+            region: region.id,
+            epoch: kv9_region::RegionEpoch {
+                conf_ver: region.epoch_conf,
+                version: region.epoch_ver,
+            },
+        })
     }
 
-    let tables = Tables::new(store);
-    let region = tables
-        .region_for_key_in(&txn, keyspace_id, span.anchor())?
-        .ok_or(Error::RegionNotFound)?;
-
-    // Epoch before span: a stale epoch and a cross-region request are different failures
-    // and the client reacts differently (refresh routing vs. split the request).
-    if region.epoch_conf != epoch.conf_ver || region.epoch_ver != epoch.version {
-        return Err(Error::StaleEpoch { region: region.id });
+    /// Proof that the context gate authorised **one** write against **one** region.
+    ///
+    /// Minted only by [`check_context`], on the success path, from the region that check
+    /// resolved. Consumed by value at [`RuntimeBackend::commit_batch`], the single place a raw
+    /// write becomes a raft entry.
+    ///
+    /// **Deliberately neither `Clone` nor `Copy`, and that is the entire point of the type.**
+    /// The earlier shape threaded a bare `RegionId` down to the commit, which is a `Copy`
+    /// scalar: a range delete could validate once before its loop and hand the same region to
+    /// every chunk, so chunk N was fenced with chunk 1's authorisation — the stale authorisation
+    /// the per-chunk revalidation exists to remove.
+    ///
+    /// **That property has no test and cannot have a useful one**, so it is enforced by the type
+    /// and by [`NOT_CLONE_OR_COPY`]. Measured, not assumed, in both directions:
+    ///
+    /// - Writing the bad merge (mint once before the loop, move it into the commit closure)
+    ///   fails with `E0507: cannot move out of 'outer', a captured variable in an FnMut closure —
+    ///   move occurs because 'outer' has type 'ValidatedFence', which does not implement the
+    ///   'Copy' trait`.
+    /// - Adding `#[derive(Clone, Copy)]` — the old `RegionId` shape — makes that same merge
+    ///   compile **and** pass every test in the workspace, including the multi-chunk endpoint
+    ///   regression. Against an unmoved catalog each chunk's revalidation resolves identical
+    ///   values, so reusing chunk 1's authorisation is observationally identical to minting a
+    ///   fresh one. No behavioural test can separate them without manufacturing a catalog change
+    ///   mid-loop, which needs a background thread and buys a timing-fragile test.
+    ///
+    /// Construction is confined to this module and to [`check_context`]'s success path, so no
+    /// endpoint can mint its own authorisation without passing the gate (@Tess).
+    ///
+    /// It carries the epoch it resolved rather than the one the client sent. The gate demands
+    /// they be equal, so today they always are; taking it from the catalog means a future
+    /// relaxation of that equality cannot silently turn the fence into the client's own claim.
+    pub(super) struct ValidatedFence {
+        region: kv9_common::RegionId,
+        epoch: kv9_region::RegionEpoch,
     }
 
-    span.assert_within(&region, &txn, &tables, keyspace_id)
+    impl ValidatedFence {
+        /// The wire form the state machine adjudicates against.
+        ///
+        /// Consumes `self`: one authorisation yields one fence, and the caller has nothing left
+        /// to hand to a second batch.
+        pub(super) fn into_region_fence(self) -> kv9_raft::RegionFence {
+            kv9_raft::RegionFence {
+                region_id: self.region.0,
+                conf_ver: self.epoch.conf_ver,
+                version: self.epoch.version,
+            }
+        }
+    }
+
+    /// Reds at compile time if [`ValidatedFence`] ever gains `Clone` or `Copy`.
+    ///
+    /// The non-`Copy`-ness is the *only* thing standing between us and the stale-authorisation
+    /// merge, and a derive is one line for a future contributor to add "for convenience". A
+    /// comment saying "do not derive Copy" does not survive that; this does.
+    ///
+    /// How it works: an inherent associated const takes precedence over a trait's when both
+    /// apply. The inherent `impl` is bounded on `Clone`, so it exists only if `ValidatedFence`
+    /// is `Clone` — and then the const-evaluated `panic!` is what resolves, failing the build.
+    /// If it is not `Clone`, the inherent impl does not apply and the trait's no-op is used.
+    /// `Copy` requires `Clone`, so bounding on `Clone` alone catches both.
+    ///
+    /// Verified in both directions rather than assumed: without the derive this compiles clean;
+    /// with `#[derive(Clone)]` it is
+    /// `error[E0080]: evaluation panicked: ValidatedFence must be neither Clone nor Copy`.
+    /// `dead_code` because nothing reads it — but Rust const-evaluates every named constant
+    /// regardless, which is the property this relies on and which was checked here rather than
+    /// assumed: with `#[derive(Clone)]` added, this crate fails to build even though the constant
+    /// is still unused.
+    #[allow(dead_code)]
+    const NOT_CLONE_OR_COPY: () = {
+        struct Probe<T>(core::marker::PhantomData<T>);
+        trait Fallback {
+            const CHECK: () = ();
+        }
+        impl<T> Fallback for Probe<T> {}
+        #[allow(dead_code)]
+        impl<T: Clone> Probe<T> {
+            const CHECK: () = panic!("ValidatedFence must be neither Clone nor Copy");
+        }
+        <Probe<ValidatedFence>>::CHECK
+    };
+
+    impl ValidatedFence {
+        /// A capability for the `run_delete_range` loop tests, which are about control flow —
+        /// how many chunks run, what a mid-range failure reports — and need *a* capability
+        /// without needing a catalog.
+        ///
+        /// `#[cfg(test)]`, so it does not exist in a production build and no endpoint can reach
+        /// it there. The content assertions deliberately do not use it: they drive a real node,
+        /// because a fixture-built fence says nothing about what production builds
+        /// (docs/TESTING.md rule 17).
+        #[cfg(test)]
+        pub(super) fn for_loop_tests() -> Self {
+            Self {
+                region: kv9_common::RegionId(1),
+                epoch: kv9_region::RegionEpoch {
+                    conf_ver: 1,
+                    version: 1,
+                },
+            }
+        }
+    }
 }
+
+use gate::{check_context, ValidatedFence};
 
 /// Does a half-open range ending at `end` stay inside a region ending at `region_end`?
 ///
@@ -996,9 +1128,13 @@ fn run_delete_range<V, P, C>(
     mut commit: C,
 ) -> Result<DeleteRangeReceipt>
 where
-    V: FnMut(&[u8]) -> Result<()>,
+    // `revalidate` MINTS the authorisation and `commit` CONSUMES it, both once per chunk.
+    // Threading the capability through the signature rather than trusting the endpoint to
+    // pair them is what makes "fence chunk N with chunk 1's authorisation" unwriteable
+    // rather than merely discouraged — see [`ValidatedFence`].
+    V: FnMut(&[u8]) -> Result<ValidatedFence>,
     P: FnMut(Option<&[u8]>) -> Result<Option<(kv9_engine::WriteBatch, UserKey)>>,
-    C: FnMut(kv9_engine::WriteBatch) -> Result<AppliedPosition>,
+    C: FnMut(ValidatedFence, kv9_engine::WriteBatch) -> Result<AppliedPosition>,
 {
     let mut cursor: Option<UserKey> = None;
     let mut committed_chunks = 0u64;
@@ -1072,8 +1208,13 @@ where
         // This NARROWS the window; it does not close it. A split already committed to the
         // log but not yet applied locally still reads as the old epoch here, and
         // `Command::Write` carries no expected epoch, so apply cannot refuse it — task #48
-        // layer 2, the fenced envelope. Do not read this as the fix.
-        preserving_receipt!(revalidate(remaining_start));
+        // layer 2, the fenced envelope.
+        //
+        // Layer 2 has since landed, and THIS chunk's authorisation is what fences it: the
+        // capability returned here is consumed by this round's `commit` and cannot outlive
+        // it. A split that commits mid-range is refused at apply for the chunks that follow
+        // it, not merely narrowed against.
+        let fence = preserving_receipt!(revalidate(remaining_start));
         let Some((batch, last_key)) = preserving_receipt!(plan_next(cursor.as_deref())) else {
             return Ok(DeleteRangeReceipt {
                 committed_chunks,
@@ -1083,7 +1224,7 @@ where
         // Only "partial" once something has actually committed. Failing before the first
         // chunk really is "nothing happened", and dressing that up as partial would be
         // its own lie — in the opposite direction.
-        let position = preserving_receipt!(commit(batch));
+        let position = preserving_receipt!(commit(fence, batch));
         committed_chunks += 1;
         last_applied = Some(position);
         cursor = Some(last_key);
@@ -1101,7 +1242,7 @@ impl RuntimeBackend {
     ///
     /// Thin wiring; the decision lives in [`check_context`] so tests exercise the same
     /// function production does rather than a re-implementation of it.
-    fn validated_context(&self, ctx: &RequestContext, span: KeySpan<'_>) -> Result<()> {
+    fn validated_context(&self, ctx: &RequestContext, span: KeySpan<'_>) -> Result<ValidatedFence> {
         check_context(
             &self.node.meta_raft.store,
             ctx.keyspace,
@@ -1127,14 +1268,26 @@ impl RuntimeBackend {
     /// Returns that position so the caller can hand it back to the client. Deriving it
     /// afterwards from the status file cannot prove identity: a concurrent command moves
     /// the same number, so the client would be shown someone else's write.
-    fn commit_batch(&self, batch: kv9_engine::WriteBatch) -> Result<AppliedPosition> {
+    /// `fence` is taken **by value** and is not `Clone`: one authorisation, one write. The
+    /// caller cannot hold it back and reuse it for a second batch, which is the whole reason
+    /// it is a capability rather than a pair of scalars — see [`ValidatedFence`].
+    fn commit_batch(
+        &self,
+        fence: ValidatedFence,
+        batch: kv9_engine::WriteBatch,
+    ) -> Result<AppliedPosition> {
         if batch.mutations().is_empty() {
             return Ok(AppliedPosition { term: 0, index: 0 });
         }
-        // `write_from_batch`, not `from_batch`: the latter yields a `CatalogTxn`, and
-        // sharing the catalog's wire tag would replay user data through the catalog path
-        // and inherit its serializing lock.
-        let command = Command::write_from_batch(&batch);
+        // A FENCED write, not a bare one. `fenced_write_from_batch`, not `from_batch`: the
+        // latter yields a `CatalogTxn`, and sharing the catalog's wire tag would replay user
+        // data through the catalog path and inherit its serializing lock.
+        //
+        // The fence carries the gate's own verdict into ordered apply, which is the first
+        // point at which a split that committed after the gate ran is visible. The
+        // adjudicator refuses the write there rather than letting it land on a region that
+        // has moved underneath it.
+        let command = Command::fenced_write_from_batch(fence.into_region_fence(), &batch);
         // Success is judged on (term, index), never on elapsed time; a typed
         // Replaced re-proposes within the deadline (provably-never-applied is
         // the one safely retryable outcome — see `propose_and_wait`).
@@ -1167,9 +1320,9 @@ impl RawApi for RuntimeBackend {
 
     fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<AppliedPosition> {
         self.ensure_serving()?;
-        self.validated_context(ctx, KeySpan::Point(&key))?;
+        let fence = self.validated_context(ctx, KeySpan::Point(&key))?;
         let plan = RawExecutor.plan_put(ctx.keyspace, &key, value, RawWriteOptions::default())?;
-        self.commit_batch(plan)
+        self.commit_batch(fence, plan)
     }
 
     fn raw_batch_put(
@@ -1178,20 +1331,20 @@ impl RawApi for RuntimeBackend {
         pairs: &[(UserKey, Value)],
     ) -> Result<AppliedPosition> {
         self.ensure_serving()?;
-        self.validated_context(
+        let fence = self.validated_context(
             ctx,
             KeySpan::Batch(pairs.iter().map(|(k, _)| k.as_slice()).collect()),
         )?;
         // One batch ⇒ one entry ⇒ all of these land together or none do.
         let plan = RawExecutor.plan_batch_put(ctx.keyspace, pairs, RawWriteOptions::default())?;
-        self.commit_batch(plan)
+        self.commit_batch(fence, plan)
     }
 
     fn raw_delete(&self, ctx: &RequestContext, key: &[u8]) -> Result<AppliedPosition> {
         self.ensure_serving()?;
-        self.validated_context(ctx, KeySpan::Point(key))?;
+        let fence = self.validated_context(ctx, KeySpan::Point(key))?;
         let plan = RawExecutor.plan_delete(ctx.keyspace, key)?;
-        self.commit_batch(plan)
+        self.commit_batch(fence, plan)
     }
 
     fn raw_scan(
@@ -1247,7 +1400,9 @@ impl RawApi for RuntimeBackend {
                     RAW_DELETE_RANGE_CHUNK,
                 )
             },
-            |batch| self.commit_batch(batch),
+            // This chunk's own authorisation, minted by the revalidation two closures up and
+            // moved in here. There is no way to write the version that reuses chunk 1's.
+            |fence, batch| self.commit_batch(fence, batch),
         )
     }
 }
@@ -1339,6 +1494,41 @@ impl TxnApi for RuntimeBackend {
     }
 }
 
+/// The two things a test may substitute at startup — and the reason each one has to be a
+/// startup parameter rather than something a test does afterwards.
+///
+/// `Default` is exactly production, so the public entry points are visibly unaffected: they
+/// pass `StartOverrides::default()` and there is no other way in.
+#[derive(Default)]
+struct StartOverrides {
+    /// `None` installs [`CatalogFenceAdjudicator`], which is what every live node runs.
+    ///
+    /// It must be chosen here because the driver pump starts on the very next lines and
+    /// nothing downstream — not even code holding the finished `RuntimeBackend` — can
+    /// substitute it afterwards. Swapping an adjudicator on a *running* node is not merely
+    /// unsupported but unsound: whether one is installed is node-local configuration, so a
+    /// committed fenced entry arriving mid-swap would be judged by different rules on
+    /// different replicas. A test that needs to observe what the production write path hands
+    /// the fence therefore has to be here, before the pump, or nowhere.
+    #[allow(clippy::type_complexity)]
+    adjudicator:
+        Option<Box<dyn FnOnce(Arc<Node<WalEngine>>) -> Arc<dyn kv9_raft::FenceAdjudicator>>>,
+
+    /// An **already-bound** listener whose ownership moves into the runtime.
+    ///
+    /// `None` binds `config.addr` as usual. A test passes `Some`, having bound
+    /// `127.0.0.1:0` and asked the kernel which port it got — the same idiom as the five
+    /// existing sites (`raft/transport.rs`, `raft/grpc.rs` ×3, `server/grpc.rs`).
+    ///
+    /// The ownership transfer is the point, not the port number. Reading `local_addr()`,
+    /// dropping the listener, and letting startup rebind that port reintroduces exactly the
+    /// race the kernel allocation removed: between the drop and the rebind any other process
+    /// may take it, so the suite fails intermittently under load and passes when run alone —
+    /// the worst possible failure signature. Holding the listener the whole way across means
+    /// the port is never unbound and never reserved-then-reclaimed.
+    listener: Option<std::net::TcpListener>,
+}
+
 /// A running real-process metadata member.
 pub struct NodeRuntime {
     node: Arc<Node<WalEngine>>,
@@ -1399,11 +1589,40 @@ impl NodeRuntime {
         store_identity: StoreIdentity,
         join_ticket: Option<&str>,
     ) -> Result<Self> {
+        Self::start_core(
+            id,
+            config,
+            auth,
+            root,
+            store_identity,
+            join_ticket,
+            StartOverrides::default(),
+        )
+    }
+
+    /// The whole of startup, with the two things a test must be able to substitute passed
+    /// in rather than hard-wired. See [`StartOverrides`] for why these two and no others.
+    ///
+    /// Deliberately private, and deliberately not behind a Cargo feature: substitution is
+    /// not a product capability. Both public entry points pass `StartOverrides::default()`,
+    /// which is exactly production, and nothing outside this module can reach here.
+    #[allow(clippy::too_many_arguments)]
+    fn start_core(
+        id: NodeId,
+        config: Config,
+        auth: RuntimeAuth,
+        root: RootDescriptor,
+        store_identity: StoreIdentity,
+        join_ticket: Option<&str>,
+        overrides: StartOverrides,
+    ) -> Result<Self> {
         root.validate()?;
         store_identity.verify(&root, id)?;
         config.validate()?;
         auth.validate()?;
-        let addr = config.addr.parse().map_err(|_| {
+        // The address the config REQUESTS. What we end up listening on is read back off the
+        // socket further down and shadows this — see the `local_addr()` call after the bind.
+        let requested_addr: std::net::SocketAddr = config.addr.parse().map_err(|_| {
             Error::Config(format!(
                 "addr must be a numeric socket address: {}",
                 config.addr
@@ -1549,7 +1768,10 @@ impl NodeRuntime {
         // differently-configured replicas would not share. Installing it here means the
         // window in which that error is reachable does not exist on a live node.
         let mut state_machine = MemStateMachine::with_engine(engine)?;
-        state_machine.set_fence_adjudicator(Arc::new(CatalogFenceAdjudicator::new(node.clone())));
+        state_machine.set_fence_adjudicator(match overrides.adjudicator {
+            Some(factory) => factory(node.clone()),
+            None => Arc::new(CatalogFenceAdjudicator::new(node.clone())),
+        });
         let driver = NodeDriver::new(peer, transport.clone(), state_machine);
         let driver_thread = Some(driver.spawn(TICK));
         let status_path = data_dir.join("status");
@@ -1573,9 +1795,41 @@ impl NodeRuntime {
             Kv9RaftServer::new(raft_service),
             AuthInterceptor::new(cluster_authenticator),
         );
-        let listener = grpc_runtime
-            .block_on(tokio::net::TcpListener::bind(addr))
-            .map_err(|error| Error::Config(format!("bind gRPC listener {addr}: {error}")))?;
+        // An injected listener is adopted, never rebound: it arrives already bound and its
+        // ownership moves in here, so the port is never released. `from_std` needs a reactor
+        // to register with, hence the runtime guard, and needs the socket non-blocking —
+        // std's default is blocking, and a blocking socket handed to tonic stalls the
+        // accept loop rather than failing, which is the kind of bug that looks like a
+        // hanging test. See [`StartOverrides::listener`].
+        let listener = match overrides.listener {
+            Some(bound) => {
+                bound.set_nonblocking(true).map_err(|error| {
+                    Error::Config(format!("injected listener to non-blocking: {error}"))
+                })?;
+                let _guard = grpc_runtime.enter();
+                tokio::net::TcpListener::from_std(bound)
+                    .map_err(|error| Error::Config(format!("adopt injected listener: {error}")))?
+            }
+            None => grpc_runtime
+                .block_on(tokio::net::TcpListener::bind(requested_addr))
+                .map_err(|error| {
+                    Error::Config(format!("bind gRPC listener {requested_addr}: {error}"))
+                })?,
+        };
+        // Where we are ACTUALLY listening, which is not necessarily `config.addr` (@Tess).
+        //
+        // An adopted listener was bound by someone else, so its address is the kernel's answer
+        // rather than the config's request — with `127.0.0.1:0` the config cannot even name it.
+        // Keeping the config value here made the runtime report, and the status file publish,
+        // an address nothing was listening on. Reading it back off the socket is the only
+        // source that cannot disagree with reality.
+        //
+        // Deliberately NOT the advertised endpoint: a Pod binding `0.0.0.0` or a node behind
+        // NAT legitimately advertises something else, and `observe_advertised_endpoint` probes
+        // that independently. Bind address and advertised address stay separate.
+        let addr = listener
+            .local_addr()
+            .map_err(|error| Error::Config(format!("read bound listener address: {error}")))?;
         let incoming = tokio_stream::wrappers::TcpListenerStream::new(listener);
         let (grpc_shutdown_tx, grpc_shutdown_rx) = tokio::sync::oneshot::channel();
         let grpc_server = grpc_runtime.spawn(
@@ -3120,6 +3374,17 @@ mod tests {
         }
     }
 
+    /// A stand-in authorisation for the loop tests, which are about *control flow* — how
+    /// many chunks run, what a mid-range failure reports — and not about fence content.
+    ///
+    /// Deliberately not derived from a catalog: these tests must stay runnable without one.
+    /// The content assertion lives in `fence_firing_tests`, against a real node, precisely
+    /// because a fixture-built fence can say nothing about what production builds
+    /// (docs/TESTING.md rule 17).
+    fn granted() -> ValidatedFence {
+        ValidatedFence::for_loop_tests()
+    }
+
     /// An engine pre-loaded with the keys the planner will delete, so a test can ask
     /// which chunks actually took effect rather than trusting a counter.
     fn seeded_engine(keys: usize) -> MemEngine {
@@ -3166,10 +3431,10 @@ mod tests {
                         region: kv9_common::RegionId(300),
                     });
                 }
-                Ok(())
+                Ok(granted())
             },
             planner(4),
-            |batch| {
+            |_fence, batch| {
                 engine.write(batch).unwrap();
                 Ok(AppliedPosition { term: 7, index: 11 })
             },
@@ -3225,7 +3490,7 @@ mod tests {
             b"a\0",
             |remaining_start| {
                 seen.push(remaining_start.to_vec());
-                Ok(())
+                Ok(granted())
             },
             |_cursor| {
                 if issued {
@@ -3237,7 +3502,7 @@ mod tests {
                 // The planner advances past the key it covered: `a` -> `a\0`.
                 Ok(Some((batch, b"a\0".to_vec())))
             },
-            |batch| {
+            |_fence, batch| {
                 engine.write(batch).unwrap();
                 Ok(AppliedPosition { term: 7, index: 11 })
             },
@@ -3274,7 +3539,7 @@ mod tests {
                 panic!("the validator must not be asked about a range that is already empty, got {remaining_start:?}")
             },
             |_cursor| panic!("nothing may be planned for an empty range"),
-            |_batch| panic!("nothing may be committed for an empty range"),
+            |_fence, _batch| panic!("nothing may be committed for an empty range"),
         )
         .expect("an already-empty bounded range is complete, not stale");
 
@@ -3291,9 +3556,9 @@ mod tests {
         let result = run_delete_range(
             b"",
             b"",
-            |_| Ok(()),
+            |_| Ok(granted()),
             planner(4),
-            |batch| {
+            |_fence, batch| {
                 attempts += 1;
                 if attempts == 2 {
                     return Err(Error::Engine("injected disk failure".into()));
@@ -3339,7 +3604,7 @@ mod tests {
         let result = run_delete_range(
             b"",
             b"",
-            |_| Ok(()),
+            |_| Ok(granted()),
             |_cursor| {
                 planned += 1;
                 if planned == 2 {
@@ -3352,7 +3617,7 @@ mod tests {
                 batch.delete(ColumnFamily::Default, key.clone());
                 Ok(Some((batch, key)))
             },
-            |batch| {
+            |_fence, batch| {
                 committed += 1;
                 engine.write(batch)?;
                 Ok(AppliedPosition {
@@ -3389,9 +3654,9 @@ mod tests {
         let result = run_delete_range(
             b"",
             b"",
-            |_| Ok(()),
+            |_| Ok(granted()),
             planner(4),
-            |_batch| Err(Error::Engine("injected disk failure".into())),
+            |_fence, _batch| Err(Error::Engine("injected disk failure".into())),
         );
         assert!(matches!(result, Err(Error::Engine(_))));
         for i in 1..=4u8 {
@@ -3404,9 +3669,9 @@ mod tests {
         let receipt = run_delete_range(
             b"",
             b"",
-            |_| Ok(()),
+            |_| Ok(granted()),
             planner(0),
-            |_batch| panic!("nothing should be committed"),
+            |_fence, _batch| panic!("nothing should be committed"),
         )
         .unwrap();
         assert_eq!(receipt.committed_chunks, 0);
@@ -3420,9 +3685,9 @@ mod tests {
         let receipt = run_delete_range(
             b"",
             b"",
-            |_| Ok(()),
+            |_| Ok(granted()),
             planner(3),
-            |batch| {
+            |_fence, batch| {
                 attempts += 1;
                 engine.write(batch)?;
                 Ok(AppliedPosition {
@@ -3734,6 +3999,425 @@ mod tests {
         assert!(driver.status().fatal.is_some());
         drop(driver);
         drop(engine);
+        let _ = fs::remove_dir_all(&dir);
+    }
+}
+
+/// Does the production write path actually hand the fence the values the gate resolved —
+/// and does it do so **per chunk**?
+///
+/// These live here, apart from the adjudicator's own tests in `fence.rs`, and the split is
+/// semantic rather than an accident of visibility (@Tess): `fence.rs` guards the
+/// adjudicator's verdicts — fresh, stale, read-failure — while this guards whether
+/// `validated_context → commit_batch → driver` emits a `Command::Fenced` carrying the
+/// *right content*. The seam under test, the start overrides and the private fields all live
+/// in this module.
+///
+/// Every test here drives a **real** `NodeRuntime` to Serving and calls a **real** endpoint.
+/// Building a `Command::Fenced` in the fixture and asserting on it is what the first attempt
+/// did, and reverting `commit_batch` to `Command::write_from_batch` — the original defect —
+/// left it green (docs/TESTING.md rule 17).
+#[cfg(test)]
+mod fence_firing_tests {
+    use super::*;
+    use kv9_common::{
+        ApiType, BootstrapGeneration, ClusterId, RootVoter, StoreIncarnation, TenantId,
+    };
+    use kv9_raft::{FenceAdjudicator, RegionFence};
+    use std::sync::Mutex as StdMutex;
+
+    /// Records every fence it is asked about, then returns a fixed verdict.
+    ///
+    /// The recording is what makes fence *content* observable, and content is the whole of
+    /// this layer: an always-refusing adjudicator plus a "nothing was written" assertion is
+    /// insensitive to the fields, because a `Command::Fenced` carrying entirely wrong values
+    /// is refused just the same (@Tess).
+    ///
+    /// The verdict is a parameter because the two properties need opposite ones. Refusal
+    /// makes absence-of-data an observable signal; freshness lets a multi-chunk delete
+    /// actually run to completion so its chunks can be counted.
+    struct RecordingAdjudicator {
+        seen: Arc<StdMutex<Vec<RegionFence>>>,
+        verdict: bool,
+    }
+
+    impl FenceAdjudicator for RecordingAdjudicator {
+        fn is_fresh(&self, fence: &RegionFence) -> Result<bool> {
+            self.seen.lock().expect("recorder poisoned").push(*fence);
+            Ok(self.verdict)
+        }
+    }
+
+    /// A real `NodeRuntime` driven to Serving through the production bootstrap path.
+    ///
+    /// The listener is bound HERE, on `127.0.0.1:0`, and **held** until its ownership moves
+    /// into `start_core`. Two rules of this repo meet at that line:
+    ///
+    /// 1. The port comes from the kernel, never from arithmetic. A hand-computed port both
+    ///    collides under parallel runs and can leave the legal range: `24000 + (pid % 3000) * 8`
+    ///    exceeds 32768 for roughly half of all pids, which violated our own `<32768` rule
+    ///    intermittently and passed every single time it was run by hand.
+    /// 2. The listener is never dropped to "reserve" the port. `bind → local_addr → drop →
+    ///    rebind` looks equivalent and is not: another process can take the port inside that
+    ///    window, so the failure appears only under load. That is why this is an ownership
+    ///    transfer and not a port lookup — see [`StartOverrides::listener`].
+    ///
+    /// It must NOT use `Node::bootstrap`/`create_keyspace`/`propose_apply` to reach Serving:
+    /// those reach raft through `MetaRaft::drive_apply`, a second destructive `take_ready`
+    /// consumer alongside the driver pump. With the pump running that races, and the harness
+    /// would be intermittently red for reasons that look like fence bugs (@Rafa's analysis;
+    /// @Tess's diagnostic: needing those entry points means you are on the old single-node
+    /// path).
+    fn serving_runtime(
+        seen: Arc<StdMutex<Vec<RegionFence>>>,
+        verdict: bool,
+    ) -> (NodeRuntime, PathBuf) {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-fence-firing-{}-{}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+
+        // Bound now, held across everything below, moved into `start_core` at the end.
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("kernel assigns a port");
+        let addr = listener
+            .local_addr()
+            .expect("a bound listener has an address");
+
+        let root = RootDescriptor::new(
+            ClusterId::from_bytes([7; 16]),
+            BootstrapGeneration::mint().unwrap(),
+            vec![RootVoter {
+                node_id: NodeId(1),
+                addr,
+                store_incarnation: StoreIncarnation::mint().unwrap(),
+            }],
+            b"fence-firing-credential",
+        )
+        .unwrap();
+        let identity = StoreIdentity::for_voter(&root, NodeId(1)).unwrap();
+
+        let config = Config {
+            addr: addr.to_string(),
+            data_dir: dir.to_string_lossy().into_owned(),
+            ..Default::default()
+        };
+        let auth = RuntimeAuth {
+            cluster_token: "fence-firing-cluster".into(),
+            client_tokens: vec![("admin".into(), "fence-firing-client".into())],
+        };
+
+        let runtime = NodeRuntime::start_core(
+            NodeId(1),
+            config,
+            auth,
+            root,
+            identity,
+            None,
+            StartOverrides {
+                adjudicator: Some(Box::new(move |_node| {
+                    Arc::new(RecordingAdjudicator { seen, verdict })
+                })),
+                listener: Some(listener),
+            },
+        )
+        .expect("single-voter runtime starts");
+        (runtime, dir)
+    }
+
+    /// **The runtime must record where it is ACTUALLY listening, not what the config asked
+    /// for.**
+    ///
+    /// @Tess's blocker on the first layer-3 head: `start_core` adopted the injected listener
+    /// and then stored `config.addr` anyway, so a runtime told to listen on one address while
+    /// handed a socket bound to another would report — and publish into its status file — an
+    /// address nothing was listening on. Every other test in this module derives its config
+    /// from the listener, so the two agreed by construction and none of them could see it.
+    ///
+    /// Both addresses are real kernel-assigned ports and both listeners are **held** for the
+    /// duration, so "the config's address" names something that genuinely exists and is
+    /// genuinely not ours. Asserting against an invented port would let this pass for the
+    /// wrong reason if the code fell back to a default.
+    ///
+    /// Mutation (must red, and did): drop the `local_addr()` read after the adoption and keep
+    /// `requested_addr`. Only this test reds — 61 passed, 1 failed.
+    #[test]
+    fn an_adopted_listener_decides_the_recorded_address_not_the_config() {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-adopted-addr-{}-{}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+
+        // The one we hand over.
+        let adopted = std::net::TcpListener::bind("127.0.0.1:0").expect("kernel assigns a port");
+        let adopted_addr = adopted.local_addr().expect("bound");
+        // A different real port, held so nothing else can occupy it and so the two can never
+        // coincide.
+        let decoy = std::net::TcpListener::bind("127.0.0.1:0").expect("kernel assigns a port");
+        let decoy_addr = decoy.local_addr().expect("bound");
+        assert_ne!(
+            adopted_addr, decoy_addr,
+            "two independent :0 binds must differ, or this test proves nothing"
+        );
+
+        let root = RootDescriptor::new(
+            ClusterId::from_bytes([9; 16]),
+            BootstrapGeneration::mint().unwrap(),
+            vec![RootVoter {
+                node_id: NodeId(1),
+                addr: decoy_addr,
+                store_incarnation: StoreIncarnation::mint().unwrap(),
+            }],
+            b"adopted-addr-credential",
+        )
+        .unwrap();
+        let identity = StoreIdentity::for_voter(&root, NodeId(1)).unwrap();
+
+        let runtime = NodeRuntime::start_core(
+            NodeId(1),
+            Config {
+                // Deliberately the DECOY: the config asks for one address while the runtime is
+                // handed a socket bound to another.
+                addr: decoy_addr.to_string(),
+                data_dir: dir.to_string_lossy().into_owned(),
+                ..Default::default()
+            },
+            RuntimeAuth {
+                cluster_token: "adopted-addr-cluster".into(),
+                client_tokens: vec![("admin".into(), "adopted-addr-client".into())],
+            },
+            root,
+            identity,
+            None,
+            StartOverrides {
+                adjudicator: None,
+                listener: Some(adopted),
+            },
+        )
+        .expect("runtime starts on the adopted listener");
+
+        assert_eq!(
+            runtime.addr, adopted_addr,
+            "the runtime must record the adopted listener's address ({adopted_addr}), \
+             not the config's ({decoy_addr})"
+        );
+
+        drop(runtime);
+        drop(decoy);
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    /// Drive the runtime to Serving using the same method `run()` calls.
+    fn drive_to_serving(runtime: &mut NodeRuntime) {
+        for _ in 0..600 {
+            runtime.advance_bootstrap().expect("bootstrap advances");
+            if matches!(
+                runtime
+                    .node
+                    .meta
+                    .lock()
+                    .expect("meta poisoned")
+                    .bootstrap
+                    .state(),
+                BootstrapState::Serving { .. }
+            ) {
+                return;
+            }
+            std::thread::sleep(TICK);
+        }
+        panic!("single-voter runtime did not reach Serving within 12s");
+    }
+
+    fn backend_of(runtime: &NodeRuntime) -> RuntimeBackend {
+        RuntimeBackend {
+            node: runtime.node.clone(),
+            driver: runtime.driver.clone(),
+            transport: runtime.transport.clone(),
+        }
+    }
+
+    /// The keyspace, plus the context a client would send for it — epoch read from the
+    /// catalog rather than invented, so the assertions compare production against production.
+    fn keyspace_and_ctx(
+        runtime: &NodeRuntime,
+        backend: &RuntimeBackend,
+        anchor: &[u8],
+    ) -> (KeyspaceId, RequestContext, kv9_meta::tables::Region) {
+        let keyspace = backend
+            .create_keyspace(
+                "t",
+                "fenced",
+                TenantId::DEFAULT,
+                ApiType::Raw,
+                TxnGroupId(0),
+            )
+            .expect("create_keyspace on a Serving node")
+            .keyspace;
+        let region = Tables::new(&runtime.node.meta_raft.store)
+            .region_for_key(keyspace, anchor)
+            .expect("catalog readable")
+            .expect("CreateKeyspace creates the initial region");
+        let ctx = RequestContext {
+            keyspace,
+            region_epoch: kv9_region::RegionEpoch {
+                conf_ver: region.epoch_conf,
+                version: region.epoch_ver,
+            },
+            caller: Some("fence-firing".into()),
+        };
+        (keyspace, ctx, region)
+    }
+
+    /// A real `raw_put` hands the fence exactly the region and epoch the gate resolved, the
+    /// refusal writes nothing, **and the caller is told**.
+    ///
+    /// Three assertions and they are not redundant. The second is the one an always-false
+    /// adjudicator cannot make on its own: a `Fenced` command carrying wrong fields is
+    /// refused identically, so "no data landed" says nothing about content. The third is the
+    /// silent-lost-write property — before the receipt seam existed, `commit_batch` returned
+    /// `Ok` for a write that was refused and stored nothing.
+    ///
+    /// Mutation (must red): `commit_batch` back to `Command::write_from_batch`. The
+    /// adjudicator is then never consulted and assertion 1 fails on `0 != 1`.
+    #[test]
+    fn a_real_raw_put_fences_with_the_region_and_epoch_the_gate_resolved() {
+        let seen: Arc<StdMutex<Vec<RegionFence>>> = Arc::new(StdMutex::new(Vec::new()));
+        let (mut runtime, dir) = serving_runtime(seen.clone(), false);
+        drive_to_serving(&mut runtime);
+        let backend = backend_of(&runtime);
+        let (keyspace, ctx, region) = keyspace_and_ctx(&runtime, &backend, b"k");
+
+        let outcome = backend.raw_put(&ctx, b"k".to_vec(), b"v".to_vec());
+
+        // 1. the adjudicator was consulted exactly once for this user write
+        let recorded = seen.lock().expect("recorder poisoned").clone();
+        assert_eq!(
+            recorded.len(),
+            1,
+            "a fenced user write must reach the adjudicator exactly once; got {recorded:?}"
+        );
+
+        // 2. it received EXACTLY what the gate resolved — region id and both epoch halves
+        assert_eq!(
+            recorded[0],
+            RegionFence {
+                region_id: region.id.0,
+                conf_ver: region.epoch_conf,
+                version: region.epoch_ver,
+            },
+            "the fence must carry the region the gate validated and its full epoch, \
+             not a value re-derived at commit time"
+        );
+
+        // 3. the caller is told, and nothing was written
+        assert!(
+            matches!(outcome, Err(Error::StaleEpoch { region: r }) if r == region.id),
+            "a refused fence must surface as StaleEpoch naming the region, got {outcome:?}"
+        );
+        let (view, hint, is_leader) = backend.leader_read().expect("read view");
+        let read = LeaderRead::new(view.as_ref(), is_leader, hint).expect("leader");
+        assert_eq!(
+            RawExecutor.get(&read, keyspace, b"k").expect("get"),
+            None,
+            "a write refused at apply must leave nothing behind"
+        );
+
+        drop(runtime);
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    /// **Exactly what this proves, and no more (@Tess): under a static catalog, a delete range
+    /// longer than one chunk emits one correctly-populated fence per committed chunk and
+    /// completes the delete.**
+    ///
+    /// It has to exceed `RAW_DELETE_RANGE_CHUNK` because at or below it the loop runs once and
+    /// a single fence says nothing about chunking at all.
+    ///
+    /// **It does NOT prove each fence came from that chunk's own freshly minted
+    /// authorisation.** Under a static catalog every chunk's revalidation resolves the same
+    /// region and epoch, so a version that reused chunk 1's capability records exactly these
+    /// fences and passes exactly these assertions — measured, not supposed: with
+    /// `ValidatedFence` made `Copy` that merge compiles and this test is green. The type and
+    /// the `NOT_CLONE_OR_COPY` guard beside it are what forbid it.
+    ///
+    /// So what reds here is a regression to a single up-front commit, an unfenced chunk, or a
+    /// fence carrying the wrong values — not a re-introduction of the stale-authorisation
+    /// shape.
+    #[test]
+    fn a_multi_chunk_delete_range_emits_one_fence_per_chunk_with_the_gate_resolved_values() {
+        const KEYS: usize = RAW_DELETE_RANGE_CHUNK + 200;
+
+        let seen: Arc<StdMutex<Vec<RegionFence>>> = Arc::new(StdMutex::new(Vec::new()));
+        // Fresh, not stale: the delete must actually run to completion so its chunks exist
+        // to be counted.
+        let (mut runtime, dir) = serving_runtime(seen.clone(), true);
+        drive_to_serving(&mut runtime);
+        let backend = backend_of(&runtime);
+        let (keyspace, ctx, region) = keyspace_and_ctx(&runtime, &backend, b"");
+
+        // Seed through the real endpoint, so the keys are physically encoded the same way
+        // the delete planner will encode them.
+        let pairs: Vec<(UserKey, Value)> = (0..KEYS)
+            .map(|i| (format!("k{i:06}").into_bytes(), b"v".to_vec()))
+            .collect();
+        for chunk in pairs.chunks(256) {
+            backend.raw_batch_put(&ctx, chunk).expect("seed");
+        }
+        let seeding_fences = seen.lock().expect("recorder poisoned").len();
+
+        let receipt = backend
+            .raw_delete_range(&ctx, b"", b"")
+            .expect("the range delete completes");
+
+        assert!(
+            receipt.committed_chunks >= 2,
+            "{KEYS} keys at a chunk size of {RAW_DELETE_RANGE_CHUNK} must take more than one \
+             chunk, got {}",
+            receipt.committed_chunks
+        );
+
+        // One fence per committed chunk, each carrying this request's authorisation.
+        let delete_fences: Vec<RegionFence> =
+            seen.lock().expect("recorder poisoned")[seeding_fences..].to_vec();
+        assert_eq!(
+            delete_fences.len() as u64,
+            receipt.committed_chunks,
+            "every committed chunk must have been fenced exactly once; \
+             {} fences for {} chunks",
+            delete_fences.len(),
+            receipt.committed_chunks
+        );
+        let expected = RegionFence {
+            region_id: region.id.0,
+            conf_ver: region.epoch_conf,
+            version: region.epoch_ver,
+        };
+        assert!(
+            delete_fences.iter().all(|f| *f == expected),
+            "each chunk must be fenced with the authorisation its OWN revalidation minted; \
+             got {delete_fences:?}, expected every entry to be {expected:?}"
+        );
+
+        // And the range is genuinely empty afterwards — the fences did not come at the cost
+        // of the delete.
+        let (view, hint, is_leader) = backend.leader_read().expect("read view");
+        let read = LeaderRead::new(view.as_ref(), is_leader, hint).expect("leader");
+        let left = RawExecutor
+            .scan(&read, keyspace, b"", b"", 16)
+            .expect("scan");
+        assert!(
+            left.is_empty(),
+            "the whole range must be gone, {left:?} remains"
+        );
+
+        drop(runtime);
         let _ = fs::remove_dir_all(&dir);
     }
 }
