@@ -108,6 +108,20 @@ pub enum Error {
     })]
     NotLeader { leader: Option<NodeId> },
 
+    /// An establishing (linearizable) read could not confirm its quorum barrier before its
+    /// deadline: the outcome is UNKNOWN and the read was NOT served — never stale data.
+    ///
+    /// `quorum_confirmed` says which half never arrived, and the two halves demand different
+    /// reactions: `false` means no live quorum acknowledged the read index (the isolated
+    /// self-believed-leader shape — re-route or wait for the topology to settle); `true`
+    /// means the quorum confirmed an index but this replica's apply did not catch up to it
+    /// in time (local lag — a bounded retry against the same node can succeed). Typed as a
+    /// variant, not a `Raft(String)`, because the partition acceptance must distinguish
+    /// this family from transport failures WITHOUT parsing strings — a connection error can
+    /// never impersonate it.
+    #[error("read barrier unconfirmed (quorum_confirmed: {quorum_confirmed}); outcome unknown, read not served")]
+    ReadUnconfirmed { quorum_confirmed: bool },
+
     /// An object store was asked to write a second, different object under a key it already
     /// holds (DESIGN §6.5).
     ///

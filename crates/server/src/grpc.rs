@@ -675,6 +675,20 @@ fn error_status(error: Error) -> Status {
         Error::TsoUnavailable(_) | Error::MetaNotReady(_) | Error::Raft(_) => {
             Status::unavailable(message)
         }
+        // UNAVAILABLE + a server-sent marker naming which barrier half never
+        // arrived. The marker (not the code) is the protocol: transport
+        // failures carry no server metadata, so nothing can impersonate the
+        // typed unconfirmed family (see READ_UNCONFIRMED_KEY).
+        Error::ReadUnconfirmed { quorum_confirmed } => {
+            let mut status = Status::unavailable(message);
+            status.metadata_mut().insert(
+                READ_UNCONFIRMED_KEY,
+                if quorum_confirmed { "apply" } else { "quorum" }
+                    .parse()
+                    .expect("static ascii"),
+            );
+            status
+        }
         // Deliberately *not* `unavailable`: this follower is perfectly healthy, the
         // request simply arrived at the wrong node. `unavailable` invites a client to
         // transparently retry the same address, and reports a working node as broken.
@@ -745,6 +759,16 @@ pub const LEADER_HINT_KEY: &str = "kv9-leader-node-id";
 /// client cannot separate a misdirected request from a genuinely failed precondition,
 /// since both share `FAILED_PRECONDITION`.
 pub const NOT_LEADER_KEY: &str = "kv9-not-leader";
+
+/// Marks an establishing read that could not confirm its quorum barrier — value is
+/// ASCII `quorum` (no live quorum acknowledged the read; the isolated-leader shape)
+/// or `apply` (quorum confirmed, local apply lagged; bounded same-node retry can
+/// succeed). Presence of this SERVER-SENT marker is what makes the unconfirmed
+/// family machine-distinguishable from a transport failure: a severed connection
+/// yields a client-side error that carries no server metadata at all, so it can
+/// never impersonate this. Shares `UNAVAILABLE` with other conditions — the code
+/// alone is deliberately not the protocol (same rule as `NOT_LEADER_KEY`).
+pub const READ_UNCONFIRMED_KEY: &str = "kv9-read-unconfirmed";
 
 /// Marks a failure that nonetheless committed part of its work.
 pub const PARTIAL_WRITE_KEY: &str = "kv9-partial-write";
