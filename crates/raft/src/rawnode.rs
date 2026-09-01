@@ -21,7 +21,7 @@ use raft::eraftpb::EntryType;
 use raft::prelude::{ConfChange, ConfChangeV2};
 use raft::prelude::{ConfState, Entry, HardState, Message};
 use raft::storage::MemStorage;
-use raft::{Config, RawNode, StateRole};
+use raft::{Config, RawNode, ReadOnlyOption, ReadState, StateRole};
 use slog::{o, Discard, Logger};
 
 use kv9_common::{Error, NodeId, RegionId, Result};
@@ -124,6 +124,10 @@ struct PeerInner<S: PersistentRaftStorage> {
     ready: Vec<CommittedEntry>,
     /// Outgoing raft messages awaiting delivery by the cluster pump.
     outbox: Vec<Message>,
+    /// Quorum-confirmed [`ReadState`]s not yet drained by
+    /// [`RaftPeer::take_read_states`] (task #28). Captured in `process_ready`
+    /// — the single Ready consumer — and correlated by exact `request_ctx`.
+    read_states: Vec<ReadState>,
     /// Harness kill switch: a dead peer neither ticks nor receives messages.
     alive: bool,
     /// Highest apply progress reported to raft via [`RaftPeer::applied_to`]
@@ -208,6 +212,13 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             // gray-failure discipline (leader steps down without an active quorum).
             pre_vote: true,
             check_quorum: true,
+            // PINNED, not defaulted (task #28 seam constraint): Safe makes a
+            // ReadState index valid only after the leader confirms leadership
+            // with a quorum round-trip. LeaseBased would trade that proof for
+            // clock trust — the exact trade the linearizable-read promise
+            // forbids. A raft-rs default change must not be able to change
+            // our read semantics silently.
+            read_only_option: ReadOnlyOption::Safe,
             ..Default::default()
         };
         cfg.validate().map_err(raft_err)?;
@@ -221,6 +232,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 raw,
                 ready: Vec::new(),
                 outbox: Vec::new(),
+                read_states: Vec::new(),
                 alive: true,
                 applied_reported: 0,
                 conf_applied,
@@ -235,6 +247,32 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
 
     fn lock(&self) -> MutexGuard<'_, PeerInner<S>> {
         self.inner.lock().expect("raft peer poisoned")
+    }
+
+    /// Request a quorum-confirmed read index (task #28). Leader-only by
+    /// design: the establishing read type owns leadership discovery, and a
+    /// follower answering reads is exactly what the linearizable promise
+    /// forbids until it has proven leadership. `rctx` must be unique per
+    /// request (the driver mints it from its boot incarnation + a counter);
+    /// the confirmation returns through [`Self::take_read_states`] correlated
+    /// by that exact context.
+    pub fn read_index(&self, rctx: Vec<u8>) -> Result<()> {
+        let mut g = self.lock();
+        if g.raw.raft.state != StateRole::Leader {
+            return Err(Error::NotLeader {
+                leader: match g.raw.raft.leader_id {
+                    0 => None,
+                    id => Some(NodeId(id)),
+                },
+            });
+        }
+        g.raw.read_index(rctx);
+        Ok(())
+    }
+
+    /// Drain quorum-confirmed read states captured by the Ready loop.
+    pub fn take_read_states(&self) -> Vec<ReadState> {
+        std::mem::take(&mut self.lock().read_states)
     }
 
     /// Propose on the leader, returning the locally assigned [`ProposedAt`].
@@ -307,6 +345,10 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             return;
         }
         let mut ready = g.raw.ready();
+        // Quorum-confirmed read states (task #28): drained HERE because this
+        // is the single Ready consumer — a second consumer would steal them
+        // exactly like it would steal committed entries.
+        let read_states = ready.take_read_states();
         let mut msgs = ready.take_messages();
         // 1. Persist raft-log entries and hardstate (the safety point: durable
         //    BEFORE any message leaves this node — a vote must never outrun its
@@ -347,6 +389,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         }
         g.ready.extend(committed);
         g.outbox.extend(msgs);
+        g.read_states.extend(read_states);
     }
 
     /// Report real apply progress to raft (task #24). Call ONLY after the
