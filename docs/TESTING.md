@@ -347,6 +347,44 @@ Here the false conclusion had landed in **two** separate notes files and both of
 independently. Had only one of us corrected, the surviving copy would later have read as a
 second source — two records that were one unchecked idea.
 
+### Extension — separate the machine's output from your reading of it, and name which number equals which
+
+*Origin (case Cindy, 2026-09-01):* a seam doc carried an inventory invariant with its command, so a
+reviewer could re-run it. I re-ran it, printed **four** hit lines, classified them as *one production call,
+one test control, two doc comments*, and wrote **"consistent with the doc."** The doc asserted that the
+command **"hits exactly 1 line."** Those are two different quantities. I compared neither, and the
+disconfirming data was in my own printed output.
+
+**Rule 13 says the number must come from a command. This says: after the command, name the quantity you
+are comparing.**
+
+    the machine's output   the command, the head, and the raw hit lines — pasted, not summarised
+    my classification      each line assigned a class, with per-class counts — this is a READING
+    the comparison         "production 1 = the doc's production 1", "test 1 = its test 1"
+                           never the bare word "consistent"
+
+Keeping the two apart is what prevents substituting one for the other: the lines are observation, the
+classes are interpretation, and only the interpretation can silently drift to whichever quantity makes the
+sentence true.
+
+*Trigger — an act, not an intent:* when you are about to write that a result **agrees** with a document, a
+contract, or an earlier conclusion. Reporting a number for information owes nothing here; the debt begins
+at the claim of agreement.
+
+*Where it deceives:* this is **not** "paste every command's full output." Held to every grep, it drowns the
+few reconciliations that must be checked line by line, and then nobody reads any of them.
+
+*Second instance, and the repair (Tess):* the same invariant was itself mis-stated — the doc claimed one
+line where the command returns four. The correction is the form this extension asks for: **production
+exactly 1 + test-control exactly 1 + every remaining hit doc/comment text, and the invariant is the two
+classified counts, never the raw line total.**
+
+*Not the same failure, and worth keeping distinct:* a search whose key also appears in the searched corpus
+(a sentinel written into the notes it greps; a doc comment that records the very command it is counted by)
+is **instrument-in-corpus**, not quantity-substitution — the quantity was right and the corpus was wrong.
+@Ren proposed that case as a third instance and then withdrew it on inspection; keeping it out is what
+holds this extension's boundary sharp.
+
 ## 14. Mutation controls are asymmetric: red self-proves less than you think, green proves nothing
 
 *Origin (Cindy):* verifying that `CONNECT_BUDGET` had no regression, I removed it and both target
