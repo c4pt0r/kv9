@@ -1260,8 +1260,27 @@ mod gate {
         span: KeySpan<'_>,
     ) -> Result<ValidatedFence> {
         let txn = store.begin()?;
+        check_context_in(store, &txn, keyspace_id, epoch, span)
+    }
 
-        let keyspace = Tables::<E>::keyspace_in(&txn, keyspace_id)?
+    /// The same gate over a CALLER-OWNED transaction — one body, two entry
+    /// shapes. The establishing-read seam calls this with a txn built on the
+    /// post-barrier view so context and data are judged on ONE state; with
+    /// the gate on its own snapshot, a split that applies between the two
+    /// snapshots lets an old epoch authorize a read of state that epoch
+    /// never covered (reads have no apply step, so the write-side fence
+    /// cannot catch it). Read callers drop the minted fence: the mint is
+    /// the write-authorisation half and stays in one body deliberately —
+    /// a second, fence-less gate body would be a parallel path free to
+    /// drift from the one writes are fenced by.
+    pub(super) fn check_context_in<E: kv9_engine::Engine>(
+        store: &kv9_meta::store::MetaStore<E>,
+        txn: &kv9_meta::store::MetaTxn<'_, E>,
+        keyspace_id: KeyspaceId,
+        epoch: &kv9_region::RegionEpoch,
+        span: KeySpan<'_>,
+    ) -> Result<ValidatedFence> {
+        let keyspace = Tables::<E>::keyspace_in(txn, keyspace_id)?
             .ok_or(Error::KeyspaceNotFound(keyspace_id))?;
         if keyspace.api_type != ApiType::Raw {
             return Err(Error::ApiTypeMismatch {
@@ -1271,7 +1290,7 @@ mod gate {
 
         let tables = Tables::new(store);
         let region = tables
-            .region_for_key_in(&txn, keyspace_id, span.anchor())?
+            .region_for_key_in(txn, keyspace_id, span.anchor())?
             .ok_or(Error::RegionNotFound)?;
 
         // Epoch before span: a stale epoch and a cross-region request are different failures
@@ -1280,7 +1299,7 @@ mod gate {
             return Err(Error::StaleEpoch { region: region.id });
         }
 
-        span.assert_within(&region, &txn, &tables, keyspace_id)?;
+        span.assert_within(&region, txn, &tables, keyspace_id)?;
 
         // The values THIS check resolved, minted as the authorisation for the write that follows.
         // Re-deriving the region at propose time would reopen the very window the fence exists
@@ -1402,7 +1421,7 @@ mod gate {
     }
 }
 
-use gate::{check_context, ValidatedFence};
+use gate::{check_context, check_context_in, ValidatedFence};
 
 /// Does a half-open range ending at `end` stay inside a region ending at `region_end`?
 ///
@@ -1641,14 +1660,41 @@ impl RuntimeBackend {
         Ok((view, hint, true))
     }
 
+    /// The point-read entry: ONE barrier, ONE view, and the context/region
+    /// gate judged on that SAME view before it is handed to the executor.
+    /// The alternative — gate on its own snapshot — reopens the epoch hole
+    /// the barrier closes: a split committed-but-unapplied passes the old
+    /// epoch, the barrier applies it, and the read then serves post-split
+    /// state under pre-split authorization.
+    fn established_read(
+        &self,
+        ctx: &RequestContext,
+        span: KeySpan<'_>,
+    ) -> Result<Box<dyn ReadView + '_>> {
+        let barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        let view = self.established_view(barrier)?;
+        let store = &self.node.meta_raft.store;
+        let txn = store.begin_at(view);
+        // Reads drop the minted fence: it is the WRITE-authorisation half of
+        // the gate verdict, and reads have no apply step to present it to.
+        let _fence = check_context_in(store, &txn, ctx.keyspace, &ctx.region_epoch, span)?;
+        // The SAME view continues into the data read — surrendered, not
+        // re-taken; a second snapshot here is exactly the defect above.
+        Ok(txn.into_view())
+    }
+
     /// Exchange a read barrier for exactly ONE engine snapshot — the only
     /// read-path snapshot constructor, and the only place in the server
     /// crate that takes an engine snapshot at all.
     ///
-    /// Inventory invariant (re-runnable; treat any other count as a signal
-    /// that must be explained, not absorbed):
+    /// Inventory invariant (re-runnable; classify every hit — an
+    /// unclassifiable one is a signal that must be explained, not absorbed):
     ///   git grep -n -F '.snapshot()' <head> -- crates/server/src
-    /// hits exactly 1 line — this function. `Engine::snapshot()` is a
+    /// Expected classification: PRODUCTION calls exactly 1 (this function);
+    /// TEST calls exactly 1 (the deliberately stale bypass control in the
+    /// committed-but-unapplied cell); every remaining hit is doc/comment
+    /// text, including the command line above. The invariant is the two
+    /// classified COUNTS, never the raw line total. `Engine::snapshot()` is a
     /// public API and the type system cannot forbid a future second call
     /// site; what IS mechanically held is (a) `ReadBarrier` is neither
     /// Clone nor Copy (compile-time probe in kv9-raft), so one barrier
@@ -1706,20 +1752,18 @@ const READ_BARRIER_DEADLINE: Duration = Duration::from_secs(2);
 impl RawApi for RuntimeBackend {
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>> {
         self.ensure_serving()?;
-        self.validated_context(ctx, KeySpan::Point(key))?;
-        let (view, hint, is_leader) = self.leader_read()?;
-        let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
+        let view = self.established_read(ctx, KeySpan::Point(key))?;
+        let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
         RawExecutor.get(&read, ctx.keyspace, key)
     }
 
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>> {
         self.ensure_serving()?;
-        self.validated_context(
+        let view = self.established_read(
             ctx,
             KeySpan::Batch(keys.iter().map(|k| k.as_slice()).collect()),
         )?;
-        let (view, hint, is_leader) = self.leader_read()?;
-        let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
+        let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
         RawExecutor.batch_get(&read, ctx.keyspace, keys)
     }
 
@@ -1760,9 +1804,8 @@ impl RawApi for RuntimeBackend {
         limit: usize,
     ) -> Result<Vec<(UserKey, Value)>> {
         self.ensure_serving()?;
-        self.validated_context(ctx, KeySpan::Range { start, end })?;
-        let (view, hint, is_leader) = self.leader_read()?;
-        let read = LeaderRead::new(view.as_ref(), is_leader, hint)?;
+        let view = self.established_read(ctx, KeySpan::Range { start, end })?;
+        let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
         RawExecutor.scan(&read, ctx.keyspace, start, end, limit)
     }
 
@@ -5699,7 +5742,7 @@ mod tests {
             matches!(
                 err,
                 Error::ReadUnconfirmed {
-                    quorum_confirmed: false
+                    phase: kv9_common::ReadBarrierPhase::QuorumConfirmation
                 }
             ),
             "pre-deposition the failure must be the TYPED quorum-unconfirmed \

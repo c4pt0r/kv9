@@ -840,11 +840,21 @@ impl From<ApplyWaitError> for Error {
 #[derive(Debug, PartialEq, Eq)]
 pub struct ReadBarrier {
     /// The quorum-confirmed read index; the unified driver watermark has
-    /// passed it at the moment this value is returned.
-    pub index: u64,
+    /// passed it at the moment this value is returned. PRIVATE: the only
+    /// constructor is `NodeDriver::read_barrier` — a value another crate
+    /// could forge with a struct literal would not be a credential at all
+    /// (external construction is E0451; observation goes through
+    /// [`Self::index`]).
+    index: u64,
 }
 
 impl ReadBarrier {
+    /// The confirmed index — read-only observation; there is deliberately
+    /// no way to build a `ReadBarrier` from one.
+    pub fn index(&self) -> u64 {
+        self.index
+    }
+
     /// Compile-time probe: const-evaluated even though never read. The
     /// inherent associated const shadows the trait fallback exactly when
     /// `ReadBarrier: Clone` holds (and `Copy: Clone` covers both), turning
@@ -931,7 +941,12 @@ impl From<ReadIndexError> for Error {
             // both local lag AND any transport failure without string
             // parsing.
             ReadIndexError::Unconfirmed { phase, .. } => Error::ReadUnconfirmed {
-                quorum_confirmed: matches!(phase, BarrierPhase::ApplyCatchUp),
+                phase: match phase {
+                    BarrierPhase::QuorumConfirmation => {
+                        kv9_common::ReadBarrierPhase::QuorumConfirmation
+                    }
+                    BarrierPhase::ApplyCatchUp => kv9_common::ReadBarrierPhase::ApplyCatchUp,
+                },
             },
         }
     }
