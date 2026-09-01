@@ -95,6 +95,20 @@ impl<E: Engine> MetaStore<E> {
             overlay: BTreeMap::new(),
         })
     }
+
+    /// Begin a transaction over a CALLER-SUPPLIED read view instead of a
+    /// fresh snapshot (the establishing-read seam): the context/region gate
+    /// and the data read must judge the SAME established state — with two
+    /// snapshots, a split that applies between them lets an old epoch
+    /// authorize a read of state that epoch never covered. Takes no new
+    /// snapshot, so it cannot fail.
+    pub fn begin_at<'v>(&'v self, view: Box<dyn ReadView + 'v>) -> MetaTxn<'v, E> {
+        MetaTxn {
+            view,
+            store: self,
+            overlay: BTreeMap::new(),
+        }
+    }
 }
 
 /// A metadata transaction exposing the typed op API (METADATA-CATALOG §4).
@@ -113,6 +127,17 @@ pub struct MetaTxn<'a, E: Engine> {
 }
 
 impl<'a, E: Engine> MetaTxn<'a, E> {
+    /// Surrender the transaction's read view — read-only transactions only:
+    /// a txn with buffered writes must commit or drop, never hand its view
+    /// onward as if it were clean committed state.
+    pub fn into_view(self) -> Box<dyn ReadView + 'a> {
+        assert!(
+            self.overlay.is_empty(),
+            "into_view on a transaction with buffered writes"
+        );
+        self.view
+    }
+
     // -- raw overlay-aware KV --------------------------------------------------
 
     fn read_kv(&self, key: &[u8]) -> Result<Option<Vec<u8>>> {

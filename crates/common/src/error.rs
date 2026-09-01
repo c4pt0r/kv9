@@ -111,16 +111,13 @@ pub enum Error {
     /// An establishing (linearizable) read could not confirm its quorum barrier before its
     /// deadline: the outcome is UNKNOWN and the read was NOT served — never stale data.
     ///
-    /// `quorum_confirmed` says which half never arrived, and the two halves demand different
-    /// reactions: `false` means no live quorum acknowledged the read index (the isolated
-    /// self-believed-leader shape — re-route or wait for the topology to settle); `true`
-    /// means the quorum confirmed an index but this replica's apply did not catch up to it
-    /// in time (local lag — a bounded retry against the same node can succeed). Typed as a
+    /// The phase is a two-variant enum, not a bool: the two halves demand different
+    /// reactions and an inverted bool reads as fluently as a correct one. Typed as a
     /// variant, not a `Raft(String)`, because the partition acceptance must distinguish
-    /// this family from transport failures WITHOUT parsing strings — a connection error can
-    /// never impersonate it.
-    #[error("read barrier unconfirmed (quorum_confirmed: {quorum_confirmed}); outcome unknown, read not served")]
-    ReadUnconfirmed { quorum_confirmed: bool },
+    /// this family from transport failures WITHOUT parsing strings — a connection error
+    /// can never impersonate it.
+    #[error("read barrier unconfirmed ({phase:?}); outcome unknown, read not served")]
+    ReadUnconfirmed { phase: ReadBarrierPhase },
 
     /// An object store was asked to write a second, different object under a key it already
     /// holds (DESIGN §6.5).
@@ -144,4 +141,17 @@ pub enum Error {
     /// A code path that is defined in the design but not yet implemented in the skeleton.
     #[error("not implemented: {0}")]
     NotImplemented(&'static str),
+}
+
+/// Which half of an establishing read's barrier never arrived (the public
+/// mirror of the driver's `BarrierPhase`, carried by
+/// [`Error::ReadUnconfirmed`]).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ReadBarrierPhase {
+    /// No live quorum acknowledged the read index — the isolated
+    /// self-believed-leader shape; re-route or wait for topology to settle.
+    QuorumConfirmation,
+    /// The quorum confirmed an index but this replica's apply did not catch
+    /// up to it in time — local lag; a bounded same-node retry can succeed.
+    ApplyCatchUp,
 }
