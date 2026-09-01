@@ -243,6 +243,12 @@ while (( typed_seen < 5 )); do
   fi
   if is_typed_refusal "$output"; then
     typed_seen=$((typed_seen + 1))
+    # Scene evidence only — which family fired is TIMING (pre/post
+    # deposition) and is deliberately NOT asserted here; phase precision
+    # belongs to the in-proc layer. The log answers "what did we actually
+    # observe" without turning it into a flaky requirement.
+    printf '%s
+' "$output" >>"$artifact_dir/typed-refusals.log"
     continue
   fi
   echo "FAIL: isolated leader failed with a NON-typed outcome — transport errors and" >&2
@@ -277,4 +283,6 @@ leader_client raw-put --key-hex "$k_hex" --value-hex "$v2_hex"
 leader_client raw-get --key-hex "$k_hex"
 [[ "$leader_reply" == *"$v2_hex"* ]] || { echo "FAIL: post-heal write/read did not roundtrip v2" >&2; exit 1; }
 
+echo "observed refusal families (informational, not asserted):"
+sort "$artifact_dir/typed-refusals.log" | uniq -c | sed 's/^/  /'
 echo "PASS: isolated leader refuses reads typed (read_unconfirmed/not_leader), transport errors excluded, majority serves, heal restores"
