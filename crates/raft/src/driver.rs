@@ -80,6 +80,20 @@ const APPLIED_RING: usize = 1024;
 /// a waiter that lags 64 changes behind has bigger problems).
 const CONF_RECEIPTS: usize = 64;
 
+/// One command-ring record: the exact applied position and what applying it
+/// MEANT — the verdict is apply-time fact, never re-derived from the command.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct RingEntry {
+    index: u64,
+    term: u64,
+    /// `Some(region)` = the entry was a fenced write REJECTED for this region
+    /// (logical outcome; watermark advanced). `None` = applied normally.
+    fence_rejected: Option<NodeIdFreeRegionId>,
+}
+
+/// Local alias so the ring stays dependency-light in signatures.
+type NodeIdFreeRegionId = kv9_common::RegionId;
+
 /// A conf change applied HERE: its exact position and the membership
 /// `apply_conf_change` actually produced at that moment.
 #[derive(Debug, Clone)]
@@ -125,10 +139,13 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngi
     /// silently (found live under load; the acceptance-flake root cause).
     /// `fatal` is a leaf: never held while acquiring either of the others.
     sm: Mutex<MemStateMachine<E>>,
-    /// Recently applied (index, term) pairs, for (term, index) verification.
-    /// ONLY successfully applied entries enter this ring — a failed decode or
-    /// apply must never be reported as success by `wait_applied`.
-    applied: Mutex<Vec<(u64, u64)>>,
+    /// Recently applied entries — exact `(index, term)` PLUS the apply
+    /// verdict — for proposal verification. ONLY successfully applied entries
+    /// enter this ring; a fence-rejected entry applies successfully (watermark
+    /// advanced, nothing written) and enters WITH its rejection verdict, so
+    /// the receipt reaches the proposer instead of dying at this boundary
+    /// (the silent-lost-write blocker Ren's layer-3 test caught).
+    applied: Mutex<Vec<RingEntry>>,
     /// Conf-change receipts by exact (index, term) — the correlation store for
     /// [`Self::wait_conf_applied`]. Conf entries NEVER enter the command ring:
     /// `applied_index`/`applied_term` must remain a same-entry pair.
@@ -245,12 +262,20 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
                     }
                     let mut applied = self.applied.lock().expect("applied poisoned");
                     let mut sm = self.sm.lock().expect("sm poisoned");
-                    if let Err(e) = sm.apply_command(entry.index, &cmd) {
-                        drop(sm);
-                        drop(applied);
-                        return Err(self.poison(entry.term, entry.index.0, &e));
-                    }
-                    push_ring(&mut applied, entry.index.0, entry.term);
+                    let result = match sm.apply_command(entry.index, &cmd) {
+                        Ok(r) => r,
+                        Err(e) => {
+                            drop(sm);
+                            drop(applied);
+                            return Err(self.poison(entry.term, entry.index.0, &e));
+                        }
+                    };
+                    push_ring(
+                        &mut applied,
+                        entry.index.0,
+                        entry.term,
+                        result.fence_rejected,
+                    );
                 }
                 EntryKind::ConfChangeV1 | EntryKind::ConfChangeV2 => {
                     // Peer call first (no driver locks held). The result goes
@@ -466,14 +491,25 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
                 .is_some_and(|wm| wm.index >= at.index.0);
             {
                 let applied = self.applied.lock().expect("applied poisoned");
-                if let Some(&(index, term)) = applied.iter().find(|(i, _)| *i == at.index.0) {
-                    return if term == at.term {
-                        // The receipt is the RING's recorded pair — the values
-                        // the apply loop stored — not the proposal echoed back.
-                        Ok(ApplyWaitOutcome::Applied(kv9_common::AppliedPosition {
-                            term,
-                            index,
-                        }))
+                if let Some(entry) = applied.iter().find(|e| e.index == at.index.0) {
+                    return if entry.term == at.term {
+                        // The receipt is the RING's recorded values — position
+                        // AND verdict as the apply loop stored them, never the
+                        // proposal echoed back. A fence-rejected entry applied
+                        // successfully (watermark advanced, nothing written)
+                        // and its verdict must reach the proposer — dropping
+                        // it here reported a rejected write as a success (the
+                        // silent-lost-write blocker).
+                        let at_pos = kv9_common::AppliedPosition {
+                            term: entry.term,
+                            index: entry.index,
+                        };
+                        match entry.fence_rejected {
+                            None => Ok(ApplyWaitOutcome::Applied(at_pos)),
+                            Some(region) => {
+                                Ok(ApplyWaitOutcome::FenceRejected { at: at_pos, region })
+                            }
+                        }
                     } else {
                         // The position applied here, but as ANOTHER leader's
                         // command.
@@ -488,7 +524,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
                 // caller to retry a possibly-SUCCEEDED non-idempotent write;
                 // Unconfirmed keeps the unknown unknown.
                 if applied.len() == APPLIED_RING
-                    && applied.first().is_some_and(|&(i, _)| at.index.0 < i)
+                    && applied.first().is_some_and(|e| at.index.0 < e.index)
                 {
                     return Err(ApplyWaitError::Unconfirmed {
                         index: at.index.0,
@@ -544,7 +580,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             term: p.term,
             raft_committed: p.committed,
             applied_index: self.sm.lock().expect("sm poisoned").applied_index().0,
-            applied_term: applied.last().map_or(0, |(_, term)| *term),
+            applied_term: applied.last().map_or(0, |e| e.term),
             fatal: self.fatal.lock().expect("fatal poisoned").clone(),
             step_errors: p.step_errors,
             conf_index: p.conf_applied,
@@ -593,6 +629,17 @@ pub enum ApplyWaitOutcome {
     /// The proposal will never apply; the correct reaction is to re-propose
     /// on the current leader, not to keep waiting.
     Replaced,
+    /// The exact proposal applied — as a fenced write whose fence FAILED
+    /// adjudication: the watermark advanced, nothing was written, and the
+    /// verdict names the rejected region. Mutually exclusive with `Applied`
+    /// by contract: folding it into `Applied` is precisely the silent lost
+    /// write this variant exists to prevent, and the caller maps it to the
+    /// typed `StaleEpoch {{ region }}` — NEVER a retry (the epoch will not
+    /// come back; the client must re-route/re-validate).
+    FenceRejected {
+        at: kv9_common::AppliedPosition,
+        region: kv9_common::RegionId,
+    },
 }
 
 /// The typed error of [`NodeDriver::wait_applied`] (task #30). `Unconfirmed`
@@ -644,8 +691,17 @@ pub struct ConfChangeReceipt {
     pub learners: Vec<u64>,
 }
 
-fn push_ring(applied: &mut Vec<(u64, u64)>, index: u64, term: u64) {
-    applied.push((index, term));
+fn push_ring(
+    applied: &mut Vec<RingEntry>,
+    index: u64,
+    term: u64,
+    fence_rejected: Option<kv9_common::RegionId>,
+) {
+    applied.push(RingEntry {
+        index,
+        term,
+        fence_rejected,
+    });
     let len = applied.len();
     if len > APPLIED_RING {
         applied.drain(..len - APPLIED_RING);
@@ -1402,6 +1458,88 @@ mod tests {
         assert!(
             err.to_string().contains("poisoned"),
             "the poison cause must survive recognizably: {err}"
+        );
+    }
+
+    /// The fence-rejection receipt reaches the proposer (the silent-lost-write
+    /// blocker from Ren's layer-3 firing test): a fenced write rejected in
+    /// ordered apply must come back as the EXCLUSIVE FenceRejected verdict —
+    /// exact position AND rejected region from the ring's apply-time record —
+    /// while the watermark advances and nothing lands in the engine.
+    ///
+    /// Mutant contract: pushing the ring without the verdict (None) collapses
+    /// this into Applied — reds at the named exclusivity assertion.
+    #[test]
+    fn a_fence_rejected_write_reports_its_verdict_not_success() {
+        struct AlwaysStale;
+        impl crate::state_machine::FenceAdjudicator for AlwaysStale {
+            fn is_fresh(&self, _f: &crate::RegionFence) -> kv9_common::Result<bool> {
+                Ok(false)
+            }
+        }
+        let hub = InProcHub::new();
+        let peer = Arc::new(RaftPeer::new(NodeId(1), RegionId(1), &[NodeId(1)]).unwrap());
+        let endpoint = hub.endpoint(NodeId(1));
+        let mut sm = MemStateMachine::new();
+        sm.set_fence_adjudicator(Arc::new(AlwaysStale));
+        let driver = NodeDriver::new(peer, Arc::new(endpoint) as Arc<dyn RaftTransport>, sm);
+        driver.peer().campaign().unwrap();
+        for _ in 0..50 {
+            driver.tick_and_step().unwrap();
+            if driver.status().role == Role::Leader {
+                break;
+            }
+        }
+        let fenced = Command::Fenced {
+            fence: crate::RegionFence {
+                region_id: 42,
+                conf_ver: 1,
+                version: 1,
+            },
+            inner: crate::FencedInner::Write {
+                ops: vec![crate::KvOp::Put {
+                    cf: 0,
+                    key: b"fr".to_vec(),
+                    value: b"v".to_vec(),
+                }],
+            },
+        };
+        let at = driver.propose(&fenced).unwrap();
+        for _ in 0..100 {
+            driver.tick_and_step().unwrap();
+            if driver
+                .driver_applied()
+                .is_some_and(|wm| wm.index >= at.index.0)
+            {
+                break;
+            }
+        }
+        let outcome = driver
+            .wait_applied(at, Duration::from_millis(200))
+            .expect("a rejected fence is a verdict, not an error");
+        assert_eq!(
+            outcome,
+            ApplyWaitOutcome::FenceRejected {
+                at: kv9_common::AppliedPosition {
+                    term: at.term,
+                    index: at.index.0,
+                },
+                region: kv9_common::RegionId(42),
+            },
+            "a rejected fenced write must surface the EXCLUSIVE verdict with the \
+             exact position and rejected region — reporting Applied here is the \
+             silent lost write"
+        );
+        assert!(
+            driver
+                .driver_applied()
+                .is_some_and(|wm| wm.index >= at.index.0),
+            "the rejected entry still advances the unified watermark"
+        );
+        assert_eq!(
+            driver.get(ColumnFamily::Default, b"fr").unwrap(),
+            None,
+            "a rejected fence writes nothing"
         );
     }
 }

@@ -32,12 +32,13 @@ pub struct ApplyResult {
     /// Bytes returned to the proposer, if the command produces a read-back value
     /// (e.g. a conf-change ack). `None` for plain writes.
     pub response: Option<Vec<u8>>,
-    /// `true` when this entry was a [`Command::Fenced`] whose fence FAILED
-    /// adjudication: the entry was logically rejected — no data written — but it
-    /// still advanced the applied watermark like any applied entry. The proposal
-    /// receipt path (task #28) surfaces this to the proposer; it is a typed field
-    /// here so the verdict never has to be smuggled through `response` bytes.
-    pub fence_rejected: bool,
+    /// `Some(region)` when this entry was a [`Command::Fenced`] whose fence
+    /// FAILED adjudication: the entry was logically rejected — no data written
+    /// — but it still advanced the applied watermark like any applied entry.
+    /// Carries the REJECTED REGION so the receipt path can surface a typed
+    /// `StaleEpoch { region }` to the proposer without re-deriving anything
+    /// from the original command (apply-time facts only; review contract).
+    pub fence_rejected: Option<kv9_common::RegionId>,
 }
 
 impl ApplyResult {
@@ -45,16 +46,17 @@ impl ApplyResult {
         ApplyResult {
             applied_index: index,
             response: None,
-            fence_rejected: false,
+            fence_rejected: None,
         }
     }
 
-    /// The entry's fence failed adjudication: watermark advanced, nothing written.
-    pub fn fence_rejected(index: LogIndex) -> Self {
+    /// The entry's fence failed adjudication: watermark advanced, nothing
+    /// written, and the rejected region rides the receipt.
+    pub fn fence_rejected(index: LogIndex, region: kv9_common::RegionId) -> Self {
         ApplyResult {
             applied_index: index,
             response: None,
-            fence_rejected: true,
+            fence_rejected: Some(region),
         }
     }
 }
@@ -205,7 +207,7 @@ impl<E: Engine> MemStateMachine<E> {
         // atomic batch as an accepted entry, so a rejected entry advances it
         // identically — treating rejection as an error would stall the
         // watermark on every replica.
-        let (mut batch, fence_rejected) = match cmd {
+        let (mut batch, fence_rejected): (_, Option<kv9_common::RegionId>) = match cmd {
             Command::Fenced { fence, inner } => {
                 let adjudicator = self.adjudicator.as_ref().ok_or_else(|| {
                     kv9_common::Error::Raft(
@@ -220,12 +222,15 @@ impl<E: Engine> MemStateMachine<E> {
                 // read fails has no verdict to offer — that propagates as an
                 // apply error (poison), never as a fabricated Fresh/Stale.
                 if adjudicator.is_fresh(fence)? {
-                    (inner.to_write_batch(), false)
+                    (inner.to_write_batch(), None)
                 } else {
-                    (kv9_engine::WriteBatch::new(), true)
+                    (
+                        kv9_engine::WriteBatch::new(),
+                        Some(kv9_common::RegionId(fence.region_id)),
+                    )
                 }
             }
-            _ => (cmd.to_write_batch()?, false),
+            _ => (cmd.to_write_batch()?, None),
         };
         batch.put(
             ColumnFamily::Default,
@@ -234,8 +239,8 @@ impl<E: Engine> MemStateMachine<E> {
         );
         self.engine.write(batch)?;
         self.applied = index;
-        if fence_rejected {
-            Ok(ApplyResult::fence_rejected(index))
+        if let Some(region) = fence_rejected {
+            Ok(ApplyResult::fence_rejected(index, region))
         } else {
             Ok(ApplyResult::write_ok(index))
         }
@@ -515,9 +520,10 @@ mod tests {
         let result = sm
             .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
             .expect("a rejected fence is a logical outcome, never an apply error");
-        assert!(
+        assert_eq!(
             result.fence_rejected,
-            "the verdict must be typed, not implied"
+            Some(kv9_common::RegionId(1)),
+            "the verdict must be typed AND name the rejected region"
         );
         assert_eq!(
             sm.get(ColumnFamily::Default, b"k").unwrap(),
@@ -548,7 +554,7 @@ mod tests {
         let result = sm
             .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
             .unwrap();
-        assert!(!result.fence_rejected);
+        assert_eq!(result.fence_rejected, None);
         assert_eq!(
             sm.get(ColumnFamily::Default, b"k").unwrap(),
             Some(b"v".to_vec()),
