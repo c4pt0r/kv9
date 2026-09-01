@@ -106,6 +106,9 @@ fn run_scenario() -> Result<(), String> {
                 Ok(ApplyWaitOutcome::Replaced) => {
                     return Err(format!("proposal {i} overwritten unexpectedly"))
                 }
+                Ok(ApplyWaitOutcome::FenceRejected { .. }) => {
+                    return Err(format!("proposal {i} is not fenced; verdict impossible"))
+                }
                 Err(ApplyWaitError::Unconfirmed { .. }) => {} // pending: keep pumping
                 Err(ApplyWaitError::Failed(e)) => return Err(e.to_string()),
             }
