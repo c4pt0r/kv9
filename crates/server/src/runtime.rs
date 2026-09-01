@@ -4401,7 +4401,10 @@ mod fence_firing_tests {
         };
         assert!(
             delete_fences.iter().all(|f| *f == expected),
-            "each chunk must be fenced with the authorisation its OWN revalidation minted; \
+            // Deliberately NOT "its own revalidation minted": comparing recorded fields
+            // against a static catalog's expected values cannot establish provenance, and
+            // claiming it here would contradict this test's own "does NOT prove" doc (@Tess).
+            "each chunk must carry the gate-resolved region and full epoch; \
              got {delete_fences:?}, expected every entry to be {expected:?}"
         );
 
