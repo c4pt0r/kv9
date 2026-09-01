@@ -207,6 +207,16 @@ jobs:
           - script: root-trust-e2e.sh
             base_port: 26100
             success_marker: "PASS: explicit root, durable incarnation, fenced discovery, credentialed learner, and promotion"
+          # Typed-exclusivity partition gate (task #28 layer b / #27 item 4): an
+          # isolated leader must refuse raw reads with the NAMED typed families
+          # (read_unconfirmed / not_leader) — transport errors explicitly do not
+          # count, and the matcher carries its own dead-port negative control.
+          # The script rebuilds the binary itself with --features
+          # partition-testing (the mask surface is compiled out of every other
+          # leg's production build).
+          - script: partition-read-e2e.sh
+            base_port: 27100
+            success_marker: "PASS: isolated leader refuses reads typed"
     steps:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
