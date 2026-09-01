@@ -50,6 +50,7 @@ use crate::grpc::{
 };
 use kv9_txn::{LeaderRead, RawExecutor, RawWriteOptions};
 
+use crate::fence::CatalogFenceAdjudicator;
 use crate::Node;
 
 const TICK: Duration = Duration::from_millis(20);
@@ -1467,11 +1468,15 @@ impl NodeRuntime {
                 transport.register_peer(seed.node_id, seed.addr);
             }
         }
-        let driver = NodeDriver::new(
-            peer,
-            transport.clone(),
-            MemStateMachine::with_engine(engine)?,
-        );
+        // The fence adjudicator is installed BEFORE the driver starts pumping, which is the
+        // only ordering that works: a committed `Command::Fenced` reaching a state machine
+        // without one is a typed apply error by design, because whether an adjudicator is
+        // installed is node-local configuration and must never become a verdict that
+        // differently-configured replicas would not share. Installing it here means the
+        // window in which that error is reachable does not exist on a live node.
+        let mut state_machine = MemStateMachine::with_engine(engine)?;
+        state_machine.set_fence_adjudicator(Arc::new(CatalogFenceAdjudicator::new(node.clone())));
+        let driver = NodeDriver::new(peer, transport.clone(), state_machine);
         let driver_thread = Some(driver.spawn(TICK));
         let status_path = data_dir.join("status");
 
