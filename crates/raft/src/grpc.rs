@@ -201,8 +201,18 @@ pub struct RegistrationReceipt {
 #[derive(Debug)]
 pub enum RegistrationError {
     /// This node is not the leader; retry against `leader` if known. Maps to
-    /// FAILED_PRECONDITION + `kv9-not-leader: true` (+ optional leader id).
-    NotLeader { leader: Option<NodeId> },
+    /// FAILED_PRECONDITION + `kv9-not-leader: true` (+ optional leader id and
+    /// optional canonical registration endpoint). `leader_addr` is a BOUNDED
+    /// ROUTING CANDIDATE, not proof of the current leader's endpoint: the
+    /// answering follower resolves it from its local applied directory, which
+    /// can lag (old leader, a node's superseded address, or unreachable).
+    /// Safety comes from the target answering with its own typed outcome
+    /// under the same overall budget, (id, addr) dedup, and the hop cap —
+    /// which guards stale chains exactly as it guards cycles.
+    NotLeader {
+        leader: Option<NodeId>,
+        leader_addr: Option<String>,
+    },
     /// The one-time join credential is invalid. This is separate from a
     /// generic refusal so the wire can preserve the reason without exposing
     /// or parsing credential-bearing diagnostic text.
@@ -220,6 +230,13 @@ pub const NOT_LEADER_KEY: &str = "kv9-not-leader";
 /// when the leader is unknown — never "0" (clients must distinguish
 /// "retry node 7" from "rediscover").
 pub const LEADER_NODE_ID_KEY: &str = "kv9-leader-node-id";
+
+/// Optional canonical registration endpoint of the hinted leader, resolved by
+/// the answering node from its LOCAL APPLIED authoritative membership
+/// directory (catalog nodes row / durable root descriptor) — never from bind
+/// addresses, request origin, or anything the client said. Absent when the
+/// answerer cannot resolve it (fail-closed: the hint degrades to id-only).
+pub const LEADER_ADDR_KEY: &str = "kv9-leader-addr";
 /// Machine-readable reason for a non-redirect control-plane refusal. Human
 /// Status text is diagnostic only and may be truncated by bounded surfaces.
 pub const REJECTION_REASON_KEY: &str = "kv9-rejection-reason";
@@ -443,7 +460,10 @@ impl Kv9Raft for RaftGrpcService {
             incarnation,
         ) {
             Ok(r) => r,
-            Err(RegistrationError::NotLeader { leader }) => {
+            Err(RegistrationError::NotLeader {
+                leader,
+                leader_addr,
+            }) => {
                 let mut status = Status::failed_precondition("not the leader");
                 status
                     .metadata_mut()
@@ -457,6 +477,14 @@ impl Kv9Raft for RaftGrpcService {
                             .parse()
                             .expect("a decimal u64 is valid ASCII metadata"),
                     );
+                }
+                if let Some(addr) = leader_addr {
+                    // A canonical socket address is ASCII; anything that is
+                    // not simply is not sent (the hint degrades to id-only,
+                    // never to a garbled value).
+                    if let Ok(v) = addr.parse() {
+                        status.metadata_mut().insert(LEADER_ADDR_KEY, v);
+                    }
                 }
                 return Err(status);
             }
@@ -619,13 +647,36 @@ impl std::fmt::Display for RegisterError {
 
 impl std::error::Error for RegisterError {}
 
+/// A followable redirect hint: the stable leader identity plus, optionally,
+/// the canonical endpoint the ANSWERER resolved from its own applied
+/// directory. The contract is "stable NodeId + optional endpoint", and this
+/// type makes the inverse — an endpoint with no identity — UNREPRESENTABLE:
+/// an address alone cannot be `(id, addr)`-deduped or audited against the
+/// directory, so the decode boundary drops it fail-closed instead of letting
+/// a client chase an anonymous address.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct LeaderHint {
+    pub id: NodeId,
+    /// Bounded routing candidate (see [`RegistrationError::NotLeader`]);
+    /// possibly stale — never proof of the current leader's endpoint. Parsed
+    /// to a canonical socket address AT DECODE so no consumer re-parses
+    /// strings; a garbled value degrades the hint to id-only, never to a
+    /// followable garbled endpoint.
+    pub addr: Option<SocketAddr>,
+}
+
 /// A registration attempt's machine-readable outcome. `NotLeader` is decoded
 /// from code + marker (BOTH required — other FAILED_PRECONDITION refusals
 /// share the code and must surface as plain errors, never as redirects).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RegisterOutcome {
     Registered(RegistrationReceipt),
-    NotLeader { leader: Option<NodeId> },
+    NotLeader {
+        /// `None` means "rediscover" — the answerer named no leader. An addr
+        /// metadata entry arriving WITHOUT a leader id is malformed and is
+        /// dropped here (fail-closed), not surfaced for following.
+        leader: Option<LeaderHint>,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -697,6 +748,17 @@ pub fn grpc_register(
                                 Some(NodeId(id))
                             }
                         };
+                        // The endpoint is read ONLY under a present leader id:
+                        // addr-without-id is malformed and dies here, so the
+                        // walk above can never follow an anonymous address.
+                        let leader = leader.map(|id| LeaderHint {
+                            id,
+                            addr: status
+                                .metadata()
+                                .get(LEADER_ADDR_KEY)
+                                .and_then(|v| v.to_str().ok())
+                                .and_then(|s| s.parse::<SocketAddr>().ok()),
+                        });
                         Ok(RegisterOutcome::NotLeader { leader })
                     } else if status.code() == tonic::Code::FailedPrecondition
                         && status
@@ -2339,9 +2401,19 @@ mod tests {
             Err(RegistrationError::Failed(Error::Config(
                 "admission expired".into(),
             ))),
-            Err(RegistrationError::NotLeader { leader: None }),
+            // Malformed on the wire: an endpoint with NO leader id. The
+            // decode boundary must drop the address, not surface it.
+            Err(RegistrationError::NotLeader {
+                leader: None,
+                leader_addr: Some("127.0.0.1:29996".to_string()),
+            }),
+            Err(RegistrationError::NotLeader {
+                leader: None,
+                leader_addr: None,
+            }),
             Err(RegistrationError::NotLeader {
                 leader: Some(NodeId(7)),
+                leader_addr: Some("127.0.0.1:29997".to_string()),
             }),
         ];
         {
@@ -2405,15 +2477,29 @@ mod tests {
             )
         };
 
-        // Hinted redirect: typed, with the leader id.
+        // Hinted redirect: typed, with the leader id AND its canonical
+        // endpoint (a bounded routing candidate, parsed at decode).
         assert_eq!(
             call().unwrap(),
             RegisterOutcome::NotLeader {
-                leader: Some(NodeId(7))
+                leader: Some(LeaderHint {
+                    id: NodeId(7),
+                    addr: Some("127.0.0.1:29997".parse().unwrap()),
+                }),
             }
         );
-        // Hintless redirect: typed, leader None (absent key, never "0").
+        // Hintless redirect: typed, leader None (absent keys, never "0"/"").
         assert_eq!(call().unwrap(), RegisterOutcome::NotLeader { leader: None });
+        // Wire negative (fail-closed boundary): the server sent an endpoint
+        // with NO leader id — the decoded outcome must carry no hint at all.
+        // If the decode read the addr key independently of the id, this
+        // would surface an anonymous followable address.
+        assert_eq!(
+            call().unwrap(),
+            RegisterOutcome::NotLeader { leader: None },
+            "an addr metadata entry without a leader id is malformed and \
+             must be dropped at decode, never surfaced for following"
+        );
         // Ordinary precondition refusal — same code, NO marker: a plain
         // error, not a redirect (code-only decoding would fail here).
         let err = call().unwrap_err().to_string();

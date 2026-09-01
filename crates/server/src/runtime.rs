@@ -31,7 +31,7 @@ use kv9_meta::{ColumnValue, RowValue};
 use kv9_raft::driver::{ApplyWaitError, ApplyWaitOutcome, DriverAppliedPosition, NodeDriver};
 use kv9_raft::grpc::{
     grpc_discover, grpc_register, pb::kv9_raft_server::Kv9RaftServer, DiscoveryError,
-    GrpcDiscoveryState, GrpcTransport, JoinIdentity, RaftGrpcService, RegisterError,
+    GrpcDiscoveryState, GrpcTransport, JoinIdentity, LeaderHint, RaftGrpcService, RegisterError,
     RegisterOutcome, RegistrationBackend, RegistrationError, RegistrationReceipt, RootWireIdentity,
     CLUSTER_TOKEN_KEY, NODE_ID_KEY,
 };
@@ -205,11 +205,21 @@ impl RegistrationLastOutcome {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct RegistrationObservation {
     attempts: u64,
     errors: u64,
     last: RegistrationLastOutcome,
+    /// The last NotLeader hint observed: leader id plus either the canonical
+    /// endpoint it carried or the reason none was usable. Kept so a wedged
+    /// registration scene shows WHERE the client was pointed, not just a
+    /// count of not_leader answers (the 972-loop lesson: the scene had no
+    /// record of what the hints said). Diagnostic text ONLY — machine state
+    /// lives in `last_walk`, never in this string.
+    last_hint: Option<String>,
+    /// The last walk pass's typed terminal verdict; the status line renders
+    /// this enum directly (no string parsing anywhere downstream).
+    last_walk: Option<WalkTerminal>,
 }
 
 impl RegistrationObservation {
@@ -218,6 +228,8 @@ impl RegistrationObservation {
             attempts: 0,
             errors: 0,
             last: RegistrationLastOutcome::NotAttempted,
+            last_hint: None,
+            last_walk: None,
         }
     }
 
@@ -229,9 +241,10 @@ impl RegistrationObservation {
         self.last = RegistrationLastOutcome::Registered;
     }
 
-    fn record_not_leader(&mut self) {
+    fn record_not_leader(&mut self, hint: &str) {
         self.errors = self.errors.saturating_add(1);
         self.last = RegistrationLastOutcome::NotLeader;
+        self.last_hint = Some(hint.to_string());
     }
 
     fn record_error(&mut self, error: &RegisterError) {
@@ -243,6 +256,199 @@ impl RegistrationObservation {
             RegisterError::Failed(_) => RegistrationLastOutcome::Failed,
         };
     }
+}
+
+/// The typed terminal verdict of ONE registration walk pass — every way a
+/// pass can end, mutually exclusive. When more than one stop-cause was
+/// observed in the same pass, the final verdict is chosen by a fixed
+/// precedence (most-informative first, pinned by
+/// `walk_terminal_precedence_is_fixed`):
+///
+///   `DeadlineExhausted` — decided the moment the budget hits zero, before
+///       any further dial; nothing else can be concluded about candidates
+///       that were never tried.
+///   `HopCapExhausted` — live hints kept arriving but the hop budget was
+///       consumed: the walk was TRUNCATED, which subsumes any cycle or
+///       unresolved hint also seen.
+///   `HintCycle` — the hint frontier closed on already-visited `(id, addr)`
+///       pairs: the directory content was exhausted.
+///   `UnresolvedHint` — a redirect was answered but carried no followable
+///       endpoint (id-only, no id, or garbled — all fail-closed).
+///   `ConnectFailed` / `Timeout` / `Failed` — no redirect was ever answered;
+///       the verdict is the LAST dial's error class.
+///   `NoCandidates` — the pass had an empty candidate set (config validation
+///       upstream makes this unreachable in production).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum WalkTerminal {
+    Registered,
+    RejectedInvalidTicket,
+    DeadlineExhausted,
+    HopCapExhausted,
+    HintCycle,
+    UnresolvedHint,
+    ConnectFailed,
+    Timeout,
+    Failed,
+    NoCandidates,
+}
+
+impl WalkTerminal {
+    fn as_status(self) -> &'static str {
+        match self {
+            Self::Registered => "registered",
+            Self::RejectedInvalidTicket => "rejected_invalid_ticket",
+            Self::DeadlineExhausted => "deadline_exhausted",
+            Self::HopCapExhausted => "hop_cap_exhausted",
+            Self::HintCycle => "hint_cycle",
+            Self::UnresolvedHint => "unresolved_hint",
+            Self::ConnectFailed => "connect_failed",
+            Self::Timeout => "timeout",
+            Self::Failed => "failed",
+            Self::NoCandidates => "no_candidates",
+        }
+    }
+}
+
+/// What a registration walk pass returned to its caller. `InvalidTicket` is
+/// separate from the other terminals because it is a PERMANENT credential
+/// rejection: retrying the pass cannot succeed, while every `Unconfirmed`
+/// reason is legitimately retried on the next pass.
+#[derive(Debug)]
+enum WalkOutcome {
+    Registered {
+        receipt: RegistrationReceipt,
+        /// The exact candidate the receipt came from — the leader that
+        /// committed this registration. Kept because the joiner needs a
+        /// transport route to that leader BEFORE its catalog can name one
+        /// (the transport half of the fresh-joiner catch-22: raft
+        /// responses to an unknown peer are dropped, so catch-up never
+        /// starts). Same pre-TLS trusted-network boundary as the receipt
+        /// itself; the applied catalog overwrites it on first sync.
+        via: (NodeId, std::net::SocketAddr),
+    },
+    InvalidTicket,
+    Unconfirmed(WalkTerminal),
+}
+
+/// One registration pass (task: the 972-not_leader master red): a candidate
+/// walk that starts at the declared seeds and FOLLOWS NotLeader hints that
+/// carry a canonical endpoint, deduped by `(leader id, addr)` with a small
+/// hop cap beyond the seeds.
+///
+/// The cap guards CYCLES and STALE CHAINS alike: a hinted endpoint is a
+/// bounded routing candidate, not proof of the current leader — the answering
+/// node resolves it from its own applied directory, which can lag (old
+/// leader, superseded address). That is why the correct cap is SMALL, not
+/// "big enough for any cycle".
+///
+/// The pass has exactly TWO budgets and neither ever resets within it:
+/// `deadline` is the single absolute time window — every dial receives only
+/// `deadline - now()` and a zero remainder ends the pass before the next
+/// dial, so following hints can never enlarge the wall-clock cost of a pass;
+/// the hop cap bounds how many hints are followed within that window. Every
+/// way a pass can end is a typed [`WalkTerminal`] recorded in the
+/// observation (rendered verbatim in status), never a silent `None`.
+fn registration_walk(
+    seeds: &[(NodeId, std::net::SocketAddr)],
+    obs: &mut RegistrationObservation,
+    deadline: std::time::Instant,
+    mut now: impl FnMut() -> std::time::Instant,
+    mut dial: impl FnMut(
+        std::net::SocketAddr,
+        Duration,
+    ) -> std::result::Result<RegisterOutcome, RegisterError>,
+) -> WalkOutcome {
+    const HINT_HOP_CAP: usize = 4;
+    fn end(obs: &mut RegistrationObservation, terminal: WalkTerminal) -> WalkOutcome {
+        obs.last_walk = Some(terminal);
+        match terminal {
+            WalkTerminal::RejectedInvalidTicket => WalkOutcome::InvalidTicket,
+            other => WalkOutcome::Unconfirmed(other),
+        }
+    }
+    let mut queue: Vec<(NodeId, std::net::SocketAddr)> = seeds.to_vec();
+    let mut visited: std::collections::HashSet<(NodeId, std::net::SocketAddr)> =
+        queue.iter().copied().collect();
+    let mut hint_hops = 0usize;
+    let mut saw_cap = false;
+    let mut saw_cycle = false;
+    let mut saw_unresolved = false;
+    let mut last_error: Option<WalkTerminal> = None;
+    let mut i = 0usize;
+    while i < queue.len() {
+        // The ONE absolute budget: every dial gets only what is left of the
+        // pass's original window; zero remaining means no further dial, no
+        // matter what the frontier still holds.
+        let remaining = deadline.saturating_duration_since(now());
+        if remaining.is_zero() {
+            return end(obs, WalkTerminal::DeadlineExhausted);
+        }
+        let (cand_id, cand_addr) = queue[i];
+        i += 1;
+        obs.record_attempt();
+        match dial(cand_addr, remaining) {
+            Ok(RegisterOutcome::Registered(receipt)) => {
+                obs.record_registered();
+                obs.last_walk = Some(WalkTerminal::Registered);
+                return WalkOutcome::Registered {
+                    receipt,
+                    via: (cand_id, cand_addr),
+                };
+            }
+            Ok(RegisterOutcome::NotLeader { leader }) => {
+                let hint = match &leader {
+                    Some(h) => match h.addr {
+                        Some(addr) => format!("leader={} addr={addr}", h.id.0),
+                        None => format!("leader={} addr=unresolved", h.id.0),
+                    },
+                    None => "leader=unknown".to_string(),
+                };
+                obs.record_not_leader(&hint);
+                match leader {
+                    Some(LeaderHint {
+                        id,
+                        addr: Some(addr),
+                    }) => {
+                        if !visited.insert((id, addr)) {
+                            saw_cycle = true;
+                        } else if hint_hops >= HINT_HOP_CAP {
+                            saw_cap = true;
+                        } else {
+                            hint_hops += 1;
+                            queue.push((id, addr));
+                        }
+                    }
+                    // Id-only or no id at all: nothing followable (the wire
+                    // boundary already made addr-without-id unrepresentable).
+                    _ => saw_unresolved = true,
+                }
+            }
+            Err(error) => {
+                obs.record_error(&error);
+                match error {
+                    RegisterError::InvalidTicket => {
+                        return end(obs, WalkTerminal::RejectedInvalidTicket)
+                    }
+                    RegisterError::Connect(_) => last_error = Some(WalkTerminal::ConnectFailed),
+                    RegisterError::Timeout => last_error = Some(WalkTerminal::Timeout),
+                    RegisterError::Failed(_) => last_error = Some(WalkTerminal::Failed),
+                }
+            }
+        }
+    }
+    // Frontier exhausted: pick the verdict by the documented precedence.
+    let terminal = if saw_cap {
+        WalkTerminal::HopCapExhausted
+    } else if saw_cycle {
+        WalkTerminal::HintCycle
+    } else if saw_unresolved {
+        WalkTerminal::UnresolvedHint
+    } else if let Some(error) = last_error {
+        error
+    } else {
+        WalkTerminal::NoCandidates
+    };
+    end(obs, terminal)
 }
 
 fn bounded_discovery_detail(detail: &str) -> String {
@@ -326,14 +532,91 @@ impl RuntimeAuth {
     }
 }
 
-#[derive(Clone)]
-struct ClusterAuthenticator {
-    expected_token: Arc<str>,
-    voters: Arc<HashSet<NodeId>>,
-    node: Arc<Node<WalEngine>>,
+/// Self-expiring catch-up capability (interface ruling, review thread on the
+/// registration fix): after this node's OWN registration returns a typed
+/// `Registered(receipt)`, inbound raft traffic from the receipt's
+/// `voters ∪ learners` is admitted WHILE this replica's unified
+/// driver-applied watermark has not yet reached the receipt's exact applied
+/// position. This is the window a fresh joiner needs to receive the very
+/// stream that fills its catalog; without it a joiner can never sync from a
+/// dynamic-member leader (catch-22: the authenticator wants catalog rows
+/// that only arrive over the stream it is rejecting).
+///
+/// THIS IS NOT A SECURITY MECHANISM. It is a liveness fix that is sound
+/// only under the project's explicit pre-TLS trusted-network threat model:
+/// the receipt's member list is NOT end-to-end authenticated (plaintext
+/// HTTP; the server never proves anything to the joiner), and the cluster
+/// token in those same requests is equally readable by any on-path
+/// observer — so this window's safety is attributed to the stated network
+/// assumption, deliberately NOT to any mechanism here. The list must never
+/// be described as certified membership and must never be reused for
+/// routing, membership views, persistent identity, or any authorization
+/// outside this window. TLS remains the hard gate for any cross-machine
+/// deployment; this capability is not an exemption.
+///
+/// Lifecycle: installed ONLY on the typed `Registered` outcome (never on
+/// `InvalidTicket` or any `Unconfirmed` reason); memory-only — a restart
+/// that is still behind re-runs idempotent registration and mints a fresh
+/// receipt, this value is never persisted into a second authority; judged
+/// per request against the LIVE watermark via [`Self::admits`], so the
+/// instant the barrier is reached the fallback is dead globally — no
+/// tick-delayed cleanup tail.
+///
+/// The barrier position is the receipt's exact applied `(term, index)` —
+/// the final registration `CatalogTxn` COMMAND, already applied on the
+/// leader when the receipt was minted. The production reader hands
+/// [`Self::admits`] the unified driver watermark (noops + commands + conf
+/// changes — the log-position ruler): by contiguity, reaching the receipt
+/// index there implies the receipt command's prefix, including every
+/// membership row this window was standing in for, is applied locally.
+#[derive(Debug, Clone)]
+struct CatchupCapability {
+    members: HashSet<NodeId>,
+    receipt_position: DriverAppliedPosition,
 }
 
-impl Authenticator for ClusterAuthenticator {
+impl CatchupCapability {
+    fn from_receipt(receipt: &RegistrationReceipt) -> Self {
+        Self {
+            members: receipt
+                .voters
+                .iter()
+                .chain(receipt.learners.iter())
+                .map(|id| NodeId(*id))
+                .collect(),
+            receipt_position: DriverAppliedPosition {
+                term: receipt.applied_term,
+                index: receipt.applied_index,
+            },
+        }
+    }
+
+    /// The window decision, in one place: `true` only while the local
+    /// watermark has NOT reached the receipt barrier AND the sender is in
+    /// the receipt's member set. Once `watermark.index >= receipt.index`
+    /// the answer is `false` forever, even with the capability still in
+    /// memory — after the barrier only the catalog speaks.
+    fn admits(&self, sender: NodeId, watermark: Option<DriverAppliedPosition>) -> bool {
+        let barrier_reached = watermark.is_some_and(|wm| wm.index >= self.receipt_position.index);
+        !barrier_reached && self.members.contains(&sender)
+    }
+}
+
+struct ClusterAuthenticator<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::Engine> {
+    expected_token: Arc<str>,
+    voters: Arc<HashSet<NodeId>>,
+    node: Arc<Node<E>>,
+    /// For the LIVE unified-watermark read in [`CatchupCapability::admits`]
+    /// — the barrier is judged on every request, never on cached state.
+    driver: Arc<NodeDriver<S, E>>,
+    /// Shared slot with the runtime: `advance_registration` installs the
+    /// capability here on the typed `Registered` outcome and nowhere else.
+    catchup: Arc<std::sync::Mutex<Option<CatchupCapability>>>,
+}
+
+impl<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::Engine + 'static> Authenticator
+    for ClusterAuthenticator<S, E>
+{
     fn authenticate(&self, metadata: &MetadataMap) -> std::result::Result<AuthContext, Status> {
         let token = metadata
             .get(CLUSTER_TOKEN_KEY)
@@ -354,22 +637,49 @@ impl Authenticator for ClusterAuthenticator {
         let catalog_allows = if self.voters.contains(&node_id) {
             true
         } else {
+            // Every catalog failure below rejects BEFORE the catch-up
+            // window is ever consulted: a failed read is a failed read,
+            // never "not caught up yet" (fail-closed; the `?`s precede the
+            // fallback structurally).
             let txn = self
                 .node
                 .meta_raft
                 .store
                 .begin()
                 .map_err(|_| Status::unavailable("membership catalog unavailable"))?;
-            let admitted = kv9_meta::admission::admission(&txn, node_id)
-                .map_err(|_| Status::unavailable("membership catalog unavailable"))?
-                .is_some_and(|admission| {
-                    admission.state != kv9_meta::admission::AdmissionState::Revoked
-                });
+            let admission = kv9_meta::admission::admission(&txn, node_id)
+                .map_err(|_| Status::unavailable("membership catalog unavailable"))?;
+            let revoked = admission.as_ref().is_some_and(|admission| {
+                admission.state == kv9_meta::admission::AdmissionState::Revoked
+            });
+            let admitted = admission.is_some() && !revoked;
             let registered = txn
                 .get(&NODES_DESC, &[memcmp_uint(node_id.0)])
                 .map_err(|_| Status::unavailable("membership catalog unavailable"))?
                 .is_some();
-            admitted || registered
+            if revoked {
+                // The explicit applied verdict comes FIRST, before every
+                // positive membership arm: revoking the admission of an
+                // already-registered node is the decommission shape, and
+                // its still-present membership row must not outvote the
+                // revocation (with `registered` checked first, this arm is
+                // dead code for exactly the nodes it exists for). Also
+                // never eligible for the catch-up window — the window
+                // exists for ABSENCE, not for overriding decisions this
+                // replica has already applied.
+                false
+            } else if admitted || registered {
+                true
+            } else {
+                // Absent from the catalog entirely: the receipt-scoped
+                // catch-up window (see CatchupCapability) may still admit
+                // a member, judged against the LIVE unified watermark.
+                self.catchup
+                    .lock()
+                    .expect("catchup capability slot poisoned")
+                    .as_ref()
+                    .is_some_and(|cap| cap.admits(node_id, self.driver.driver_applied()))
+            }
         };
         if !catalog_allows {
             return Err(Status::permission_denied(
@@ -391,9 +701,58 @@ struct RuntimeBackend {
     node: Arc<Node<WalEngine>>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
     transport: Arc<GrpcTransport>,
+    /// The DECLARED initial voters with their durable root-descriptor
+    /// addresses — one of the two authoritative sources a NotLeader answer
+    /// may resolve a leader endpoint from (the other is the local applied
+    /// catalog nodes row). Never bind addresses, request origins, or
+    /// client-supplied values.
+    initial_voters: Vec<(NodeId, std::net::SocketAddr)>,
 }
 
 impl RuntimeBackend {
+    /// Resolve a node's canonical registration endpoint from the LOCAL
+    /// APPLIED authoritative directory: the catalog nodes row (dynamic
+    /// members register their canonical advertised address there), falling
+    /// back to the durable root-descriptor voter list for initial voters
+    /// (whose catalog rows carry no address). Returns None when neither
+    /// source resolves — the NotLeader hint then degrades to id-only,
+    /// fail-closed. The result is a BOUNDED ROUTING CANDIDATE, not proof of
+    /// the current leader's endpoint: this node's applied view can lag, so
+    /// the value may name an old leader or a superseded address; the
+    /// registration client's (id, addr) dedup + hop cap absorb exactly that.
+    ///
+    /// The two sources go stale DIFFERENTLY (Ren's boundary — do not write
+    /// them as one sentence): a catalog row updates on re-registration, so
+    /// its staleness is transient and self-heals; the root descriptor is
+    /// written exactly once and never replaced, so an initial voter that
+    /// changes address yields a hint that resolves FOREVER and is forever
+    /// wrong — the hop cap bounds the damage to one wasted hop per pass,
+    /// but `registration_last_hint` will steadily show that dead address.
+    /// Address migration for initial voters is UNCOVERED here by that
+    /// permanent-mismatch nature, not merely untested.
+    fn resolve_registration_endpoint(&self, id: NodeId) -> Option<String> {
+        let from_catalog = self
+            .node
+            .meta_raft
+            .store
+            .begin()
+            .ok()
+            .and_then(|txn| txn.get(&NODES_DESC, &[memcmp_uint(id.0)]).ok().flatten())
+            .and_then(|row| match row.value.get(ColumnId(2)) {
+                Some(ColumnValue::Text(addr)) if !addr.is_empty() => Some(addr.clone()),
+                _ => None,
+            })
+            // Canonical socket addresses only; a garbled row degrades the
+            // hint to the next source or to id-only, never to a bad value.
+            .filter(|addr| addr.parse::<std::net::SocketAddr>().is_ok());
+        from_catalog.or_else(|| {
+            self.initial_voters
+                .iter()
+                .find(|(vid, _)| *vid == id)
+                .map(|(_, addr)| addr.to_string())
+        })
+    }
+
     /// Public requests may arrive as soon as the listener binds, before election-first
     /// bootstrap has applied the default tenant/catalog rows. Expose that lifecycle state
     /// directly instead of letting a planner misreport missing bootstrap data as a caller
@@ -694,8 +1053,12 @@ impl RegistrationBackend for RuntimeBackend {
     ) -> std::result::Result<RegistrationReceipt, RegistrationError> {
         let leader = self.driver.status();
         if leader.role != Role::Leader {
+            let leader_addr = leader
+                .leader_id
+                .and_then(|id| self.resolve_registration_endpoint(id));
             return Err(RegistrationError::NotLeader {
                 leader: leader.leader_id,
+                leader_addr,
             });
         }
         let now = unix_now();
@@ -1559,6 +1922,9 @@ pub struct NodeRuntime {
     campaign_started: bool,
     initial_proposal: Option<(ProposedAt, kv9_common::ClusterId)>,
     registration_receipt: Option<RegistrationReceipt>,
+    /// Shared with this node's ClusterAuthenticator; written exactly once,
+    /// by `advance_registration` on the typed `Registered` outcome.
+    catchup_capability: Arc<std::sync::Mutex<Option<CatchupCapability>>>,
     next_discovery: Instant,
     next_advertised_endpoint_probe: Instant,
 }
@@ -1780,14 +2146,19 @@ impl NodeRuntime {
             node: node.clone(),
             driver: driver.clone(),
             transport: transport.clone(),
+            initial_voters: seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
         });
         let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
         let public_service =
             Kv9Grpc::new(backend.clone()).authenticated_service(client_authenticator);
+        let catchup_capability: Arc<std::sync::Mutex<Option<CatchupCapability>>> =
+            Arc::new(std::sync::Mutex::new(None));
         let cluster_authenticator = Arc::new(ClusterAuthenticator {
             expected_token: Arc::from(auth.cluster_token.clone()),
             voters: Arc::new(voters.iter().copied().collect()),
             node: node.clone(),
+            driver: driver.clone(),
+            catchup: catchup_capability.clone(),
         });
         let raft_service = RaftGrpcService::new(id, transport.inbox_sender(), discovery.clone())
             .with_registration(backend as Arc<dyn RegistrationBackend>);
@@ -1880,6 +2251,7 @@ impl NodeRuntime {
             campaign_started: false,
             initial_proposal: None,
             registration_receipt: None,
+            catchup_capability,
             next_discovery: Instant::now(),
             next_advertised_endpoint_probe: Instant::now(),
         })
@@ -2310,35 +2682,78 @@ impl NodeRuntime {
                         .into(),
                 )
             })?;
-            for seed in &self.seeds {
-                self.registration_observation.record_attempt();
-                match grpc_register(
-                    self.grpc_runtime.handle(),
-                    self.node.id,
-                    seed.addr,
-                    &self.addr.to_string(),
-                    JoinIdentity {
-                        cluster_id,
-                        ticket_sha256: ticket,
-                        store_incarnation: self.store_identity.store_incarnation,
-                    },
-                    DISCOVERY_TIMEOUT,
-                    Some(self.cluster_token.clone()),
-                ) {
-                    Ok(RegisterOutcome::Registered(receipt)) => {
-                        self.registration_observation.record_registered();
-                        self.registration_receipt = Some(receipt);
-                        break;
-                    }
-                    Ok(RegisterOutcome::NotLeader { .. }) => {
-                        self.registration_observation.record_not_leader();
-                    }
-                    Err(error) => {
-                        self.registration_observation.record_error(&error);
-                        if error == RegisterError::InvalidTicket {
-                            break;
-                        }
-                    }
+            let seeds: Vec<(NodeId, std::net::SocketAddr)> = self
+                .seeds
+                .iter()
+                .map(|seed| (seed.node_id, seed.addr))
+                .collect();
+            let handle = self.grpc_runtime.handle().clone();
+            let node_id = self.node.id;
+            let my_addr = self.addr.to_string();
+            let identity = JoinIdentity {
+                cluster_id,
+                ticket_sha256: ticket,
+                store_incarnation: self.store_identity.store_incarnation,
+            };
+            let token = self.cluster_token.clone();
+            // One absolute window for the whole pass, sized by the DECLARED
+            // seed set only — following hints never enlarges it (that is the
+            // no-reset contract). Sizing it per-seed preserves the previous
+            // guarantee that one slow seed cannot eat every other seed's
+            // chance within the pass; the run loop retries the next pass.
+            let window = DISCOVERY_TIMEOUT.saturating_mul(seeds.len().max(1) as u32);
+            let pass_deadline = Instant::now() + window;
+            match registration_walk(
+                &seeds,
+                &mut self.registration_observation,
+                pass_deadline,
+                Instant::now,
+                |addr, remaining| {
+                    grpc_register(
+                        &handle,
+                        node_id,
+                        addr,
+                        &my_addr,
+                        identity,
+                        // Each dial consumes exactly the window's remainder —
+                        // no per-dial re-grant of any kind. A slow candidate
+                        // can eat the rest of THIS pass (the next run-loop
+                        // pass retries); it can never enlarge the window.
+                        remaining,
+                        Some(token.clone()),
+                    )
+                },
+            ) {
+                WalkOutcome::Registered { receipt, via } => {
+                    // The transport half of the fresh-joiner catch-22: the
+                    // leader that minted this receipt must be routable
+                    // BEFORE the catalog can name it, or this node's raft
+                    // responses are dropped and catch-up never starts. The
+                    // endpoint is the one this node just successfully
+                    // registered against (not an unvalidated hint), and
+                    // the applied catalog overwrites it on first sync —
+                    // mirror of the leader-side eager register_peer.
+                    self.transport.register_peer(via.0, via.1);
+                    // The ONLY install site of the catch-up capability, and
+                    // it is inside the typed Registered arm: InvalidTicket
+                    // and every Unconfirmed reason are structurally unable
+                    // to install one.
+                    *self
+                        .catchup_capability
+                        .lock()
+                        .expect("catchup capability slot poisoned") =
+                        Some(CatchupCapability::from_receipt(&receipt));
+                    self.registration_receipt = Some(receipt);
+                }
+                // Recorded in the observation (typed) and the next run-loop
+                // pass retries; InvalidTicket keeps the loop alive only
+                // because a corrected ticket arrives via restart, and the
+                // status line must keep showing the rejection meanwhile.
+                WalkOutcome::InvalidTicket => {}
+                WalkOutcome::Unconfirmed(reason) => {
+                    // The walk's return value and the observation it filed
+                    // must never disagree — status renders the observation.
+                    debug_assert_eq!(self.registration_observation.last_walk, Some(reason));
                 }
             }
             return Ok(());
@@ -2456,7 +2871,7 @@ impl NodeRuntime {
         // see render_driver_applied for why no tuple crosses this boundary.
         let driver_applied_lines = render_driver_applied(raft.driver_applied);
         let body = format!(
-            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\n{}bootstrap_state={:?}\nadvertised_endpoint={}\nregistration_attempts={}\nregistration_errors={}\nregistration_last={}\n{}fatal={}\n",
+            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\n{}bootstrap_state={:?}\nadvertised_endpoint={}\nregistration_attempts={}\nregistration_errors={}\nregistration_last={}\nregistration_last_walk={}\nregistration_last_hint={}\n{}fatal={}\n",
             std::process::id(),
             raft.node_id.0,
             cluster_id.map_or_else(String::new, |id| id.to_string()),
@@ -2479,6 +2894,16 @@ impl NodeRuntime {
             self.registration_observation.attempts,
             self.registration_observation.errors,
             self.registration_observation.last.label(),
+            // Typed walk verdict rendered from the enum — no string parsing
+            // anywhere between the walk and this line.
+            self.registration_observation
+                .last_walk
+                .map(WalkTerminal::as_status)
+                .unwrap_or("none"),
+            self.registration_observation
+                .last_hint
+                .as_deref()
+                .unwrap_or("none"),
             discovery_status,
             raft.fatal.as_deref().unwrap_or(""),
         );
@@ -2586,8 +3011,14 @@ impl Drop for NodeRuntime {
         if let Some(shutdown) = self.grpc_shutdown.take() {
             let _ = shutdown.send(());
         }
+        // Abort rather than await: graceful drain waits for open inbound
+        // connections to CLOSE, and live raft peers hold their HTTP/2
+        // streams open indefinitely — awaiting here deadlocks any drop
+        // performed while peers are still up (the fatal-error exit path,
+        // and every in-process multi-node test). Both durable logs fsync
+        // before visibility, so nothing is lost by cancelling the acceptor.
         if let Some(server) = self.grpc_server.take() {
-            let _ = self.grpc_runtime.block_on(server);
+            server.abort();
         }
     }
 }
@@ -2767,6 +3198,419 @@ mod tests {
             got, receipt,
             "the receipt must be the wait's applied position, verbatim"
         );
+    }
+
+    // ---- the registration walk (the 972-not_leader master red) ----
+
+    fn walk_receipt() -> RegistrationReceipt {
+        RegistrationReceipt {
+            applied_term: 2,
+            applied_index: 9,
+            voters: vec![1, 2, 3, 4],
+            learners: vec![5],
+        }
+    }
+
+    fn walk_addr(port: u16) -> std::net::SocketAddr {
+        format!("127.0.0.1:{port}").parse().unwrap()
+    }
+
+    /// A deadline far enough away that time plays no role in the test.
+    fn far_deadline() -> std::time::Instant {
+        std::time::Instant::now() + Duration::from_secs(3600)
+    }
+
+    fn walk_hint(id: u64, addr: std::net::SocketAddr) -> RegisterOutcome {
+        RegisterOutcome::NotLeader {
+            leader: Some(LeaderHint {
+                id: NodeId(id),
+                addr: Some(addr),
+            }),
+        }
+    }
+
+    /// The exact master-red scene, deterministic: every seed answers
+    /// NotLeader with a hint pointing at a NON-SEED leader; the walk must
+    /// follow the hint and register there in the same pass. Precondition
+    /// pinned by name: the hinted leader is not in the seed list — without
+    /// that, the walk can succeed through a seed and the hint arm is never
+    /// selected.
+    ///
+    /// Mutant contract: deleting the hint-follow (queue.push) reverts to the
+    /// seeds-only loop — reds at "must register by following the hint".
+    #[test]
+    fn the_walk_follows_a_not_leader_hint_to_a_non_seed_leader() {
+        let seeds = vec![
+            (NodeId(1), walk_addr(24101)),
+            (NodeId(2), walk_addr(24102)),
+            (NodeId(3), walk_addr(24103)),
+        ];
+        let leader_addr = walk_addr(24104);
+        assert!(
+            !seeds.iter().any(|(_, a)| *a == leader_addr),
+            "precondition: the hinted leader must NOT be a seed — otherwise \
+             the seeds-only loop also succeeds and the hint arm is unselected"
+        );
+        let mut obs = RegistrationObservation::new();
+        let mut dialed: Vec<std::net::SocketAddr> = Vec::new();
+        let got = registration_walk(
+            &seeds,
+            &mut obs,
+            far_deadline(),
+            std::time::Instant::now,
+            |addr, _remaining| {
+                dialed.push(addr);
+                if addr == leader_addr {
+                    Ok(RegisterOutcome::Registered(walk_receipt()))
+                } else {
+                    Ok(walk_hint(4, leader_addr))
+                }
+            },
+        );
+        assert!(
+            matches!(got, WalkOutcome::Registered { .. }),
+            "must register by following the hint to the non-seed leader \
+             (the seeds-only loop dies here with endless not_leader)"
+        );
+        assert_eq!(
+            dialed.last(),
+            Some(&leader_addr),
+            "the successful dial must be the hinted endpoint"
+        );
+        assert_eq!(obs.last, RegistrationLastOutcome::Registered);
+        assert_eq!(obs.last_walk, Some(WalkTerminal::Registered));
+    }
+
+    /// Cycles and stale chains terminate on the hop cap within ONE pass —
+    /// the hop budget never resets. Every hint here is a fresh (id, addr)
+    /// pair, the worst case for dedup; the walk must dial exactly seeds +
+    /// cap, stop, and say WHY with the typed terminal.
+    #[test]
+    fn hint_chains_terminate_on_the_hop_cap_with_a_typed_terminal() {
+        let seeds = vec![(NodeId(1), walk_addr(24201))];
+        let mut obs = RegistrationObservation::new();
+        let mut dial_count = 0u64;
+        let got = registration_walk(
+            &seeds,
+            &mut obs,
+            far_deadline(),
+            std::time::Instant::now,
+            |_, _| {
+                dial_count += 1;
+                // Always a NEW (id, addr) hint: an endless stale chain.
+                Ok(walk_hint(
+                    100 + dial_count,
+                    walk_addr(25000 + dial_count as u16),
+                ))
+            },
+        );
+        assert_eq!(
+            dial_count,
+            1 + 4,
+            "a fresh-hint chain must dial exactly seeds + hop cap, then stop \
+             — the cap guards stale chains exactly as it guards cycles"
+        );
+        assert_eq!(obs.attempts, 1 + 4, "the pass hop budget must not reset");
+        assert!(
+            matches!(got, WalkOutcome::Unconfirmed(WalkTerminal::HopCapExhausted)),
+            "a truncated live chain must end as HopCapExhausted, not a \
+             silent generic failure: {got:?}"
+        );
+        assert_eq!(obs.last_walk, Some(WalkTerminal::HopCapExhausted));
+    }
+
+    /// The hint frontier closing on already-visited (id, addr) pairs is its
+    /// own mutually exclusive verdict: the directory content was exhausted,
+    /// nothing was truncated.
+    #[test]
+    fn a_hint_cycle_is_a_typed_terminal_distinct_from_the_cap() {
+        let seeds = vec![(NodeId(1), walk_addr(24501))];
+        let hop = walk_addr(24504);
+        let mut obs = RegistrationObservation::new();
+        let got = registration_walk(
+            &seeds,
+            &mut obs,
+            far_deadline(),
+            std::time::Instant::now,
+            // Every answer names the same (id, addr): the seed's hint is
+            // novel and followed; the hop's own answer points straight back
+            // at the pair already visited — a dedup hit, i.e. the cycle.
+            |_, _| Ok(walk_hint(4, hop)),
+        );
+        assert!(
+            matches!(got, WalkOutcome::Unconfirmed(WalkTerminal::HintCycle)),
+            "a frontier that closes on visited pairs must end as HintCycle: {got:?}"
+        );
+    }
+
+    /// The three dial-error classes stay mutually exclusive all the way to
+    /// the walk terminal — Timeout is NOT folded into a generic failure
+    /// (isolating "the seed is slow" from "the seed refused" from "the seed
+    /// is gone" is exactly what a wedged-join scene needs).
+    #[test]
+    fn dial_error_classes_survive_to_the_walk_terminal_unmerged() {
+        for (error, expected) in [
+            (
+                RegisterError::Connect("refused".into()),
+                WalkTerminal::ConnectFailed,
+            ),
+            (RegisterError::Timeout, WalkTerminal::Timeout),
+            (RegisterError::Failed("boom".into()), WalkTerminal::Failed),
+        ] {
+            let seeds = vec![(NodeId(1), walk_addr(24601))];
+            let mut obs = RegistrationObservation::new();
+            let got = registration_walk(
+                &seeds,
+                &mut obs,
+                far_deadline(),
+                std::time::Instant::now,
+                |_, _| Err(error.clone()),
+            );
+            assert!(
+                matches!(&got, WalkOutcome::Unconfirmed(t) if *t == expected),
+                "error {error:?} must terminate as {expected:?}, got {got:?}"
+            );
+            assert_eq!(obs.last_walk, Some(expected));
+        }
+    }
+
+    /// Multi-cause pass: connect error + dedup cycle + truncation in ONE
+    /// pass. The final verdict follows the fixed documented precedence
+    /// (cap > cycle > unresolved > last dial error); without the truncation
+    /// the same shape ends as the cycle. Both directions pinned so the
+    /// precedence cannot silently reorder.
+    #[test]
+    fn walk_terminal_precedence_is_fixed() {
+        // s1 errors, s2 and s3 hint the SAME pair (second is a dedup hit =
+        // cycle), the chain from that pair keeps yielding novel hints until
+        // the cap truncates it.
+        let seeds = vec![
+            (NodeId(1), walk_addr(24701)),
+            (NodeId(2), walk_addr(24702)),
+            (NodeId(3), walk_addr(24703)),
+        ];
+        let first_hop = walk_addr(24710);
+        let mut obs = RegistrationObservation::new();
+        let mut novel = 0u64;
+        let got = registration_walk(
+            &seeds,
+            &mut obs,
+            far_deadline(),
+            std::time::Instant::now,
+            |addr, _| {
+                if addr == seeds[0].1 {
+                    Err(RegisterError::Connect("refused".into()))
+                } else if addr == seeds[1].1 || addr == seeds[2].1 {
+                    Ok(walk_hint(10, first_hop))
+                } else {
+                    novel += 1;
+                    Ok(walk_hint(10 + novel, walk_addr(24710 + novel as u16)))
+                }
+            },
+        );
+        assert!(
+            matches!(got, WalkOutcome::Unconfirmed(WalkTerminal::HopCapExhausted)),
+            "cap must outrank cycle and the dial error: {got:?}"
+        );
+
+        // Same shape minus truncation: the chain converges back onto the
+        // visited pair instead of growing — now the verdict is the cycle.
+        let mut obs = RegistrationObservation::new();
+        let got = registration_walk(
+            &seeds,
+            &mut obs,
+            far_deadline(),
+            std::time::Instant::now,
+            |addr, _| {
+                if addr == seeds[0].1 {
+                    Err(RegisterError::Connect("refused".into()))
+                } else {
+                    Ok(walk_hint(10, first_hop))
+                }
+            },
+        );
+        assert!(
+            matches!(got, WalkOutcome::Unconfirmed(WalkTerminal::HintCycle)),
+            "without truncation the closed frontier must read as HintCycle, \
+             and the connect error must not mask it: {got:?}"
+        );
+    }
+
+    /// A stale hint costs one hop, then the fresh hint from the real target
+    /// wins (Tess's scripted control): stale A → typed NotLeader with B →
+    /// B registers, all within the same pass.
+    #[test]
+    fn a_stale_hint_is_one_hop_then_the_fresh_hint_wins() {
+        let seeds = vec![(NodeId(1), walk_addr(24301))];
+        let stale = walk_addr(24399); // old leader: answers NotLeader with the real one
+        let real = walk_addr(24304);
+        let mut obs = RegistrationObservation::new();
+        let mut dialed = Vec::new();
+        let got = registration_walk(
+            &seeds,
+            &mut obs,
+            far_deadline(),
+            std::time::Instant::now,
+            |addr, _| {
+                dialed.push(addr);
+                if addr == real {
+                    Ok(RegisterOutcome::Registered(walk_receipt()))
+                } else if addr == stale {
+                    Ok(walk_hint(4, real))
+                } else {
+                    // Seed's lagging view points at the STALE leader.
+                    Ok(walk_hint(9, stale))
+                }
+            },
+        );
+        assert!(
+            matches!(got, WalkOutcome::Registered { .. }),
+            "the fresh hint must win after one stale hop"
+        );
+        assert_eq!(dialed, vec![seeds[0].1, stale, real]);
+    }
+
+    /// An addr-less hint is recorded observably (id + why it could not be
+    /// followed) and never silently swallowed — the 972-loop scene had no
+    /// record of what the hints said. The typed terminal says the same
+    /// thing machine-readably: UnresolvedHint, exclusive of cap/cycle.
+    #[test]
+    fn an_addressless_hint_is_recorded_not_swallowed() {
+        let seeds = vec![(NodeId(1), walk_addr(24401))];
+        let mut obs = RegistrationObservation::new();
+        let got = registration_walk(
+            &seeds,
+            &mut obs,
+            far_deadline(),
+            std::time::Instant::now,
+            |_, _| {
+                Ok(RegisterOutcome::NotLeader {
+                    leader: Some(LeaderHint {
+                        id: NodeId(4),
+                        addr: None,
+                    }),
+                })
+            },
+        );
+        assert!(
+            matches!(got, WalkOutcome::Unconfirmed(WalkTerminal::UnresolvedHint)),
+            "an unfollowable redirect must end as UnresolvedHint: {got:?}"
+        );
+        assert_eq!(
+            obs.last_hint.as_deref(),
+            Some("leader=4 addr=unresolved"),
+            "the status must show WHERE the client was pointed and why it \
+             could not follow"
+        );
+        assert_eq!(obs.last_walk, Some(WalkTerminal::UnresolvedHint));
+
+        // The id-less shape is the same verdict — and is NEVER followed
+        // (the wire boundary already guarantees no addr can accompany it).
+        let mut obs = RegistrationObservation::new();
+        let got = registration_walk(
+            &seeds,
+            &mut obs,
+            far_deadline(),
+            std::time::Instant::now,
+            |_, _| Ok(RegisterOutcome::NotLeader { leader: None }),
+        );
+        assert!(matches!(
+            got,
+            WalkOutcome::Unconfirmed(WalkTerminal::UnresolvedHint)
+        ));
+        assert_eq!(obs.attempts, 1, "an id-less redirect adds no candidate");
+        assert_eq!(obs.last_hint.as_deref(), Some("leader=unknown"));
+    }
+
+    /// The whole pass has ONE absolute window: every dial receives exactly
+    /// the window's remainder — monotone non-increasing, never above the
+    /// original budget, EQUAL remainders legal when the clock does not move
+    /// between cheap dials — and following hints never enlarges the pass
+    /// (the scripted chain still has candidates when the window ends).
+    ///
+    /// Mutant contract: re-granting a fresh per-dial budget turns the
+    /// recorded remainders non-monotone (or endless) and reds here.
+    #[test]
+    fn the_pass_budget_is_one_absolute_window_hints_never_enlarge_it() {
+        let window = Duration::from_millis(50);
+        let base = std::time::Instant::now();
+        // Scripted clock: consecutive per-call advances. The two zeros pin
+        // "equal remainders are legal" (Tess: a clock may not move between
+        // cheap dials; strict decrease would red a correct implementation).
+        let advances = [0u64, 0, 30, 10, 10, 0];
+        let mut calls = 0usize;
+        let now = move || {
+            calls += 1;
+            let elapsed: u64 = advances[..calls.min(advances.len())].iter().sum();
+            base + Duration::from_millis(elapsed)
+        };
+        let seeds = vec![
+            (NodeId(1), walk_addr(24801)),
+            (NodeId(2), walk_addr(24802)),
+            (NodeId(3), walk_addr(24803)),
+        ];
+        let mut obs = RegistrationObservation::new();
+        let mut remainders: Vec<Duration> = Vec::new();
+        let mut novel = 0u64;
+        let got = registration_walk(&seeds, &mut obs, base + window, now, |_, remaining| {
+            remainders.push(remaining);
+            // An endless novel chain: candidates outlive the window.
+            novel += 1;
+            Ok(walk_hint(50 + novel, walk_addr(24810 + novel as u16)))
+        });
+        assert_eq!(
+            remainders,
+            vec![
+                Duration::from_millis(50),
+                Duration::from_millis(50),
+                Duration::from_millis(20),
+                Duration::from_millis(10),
+            ],
+            "each dial must receive exactly the one window's remainder"
+        );
+        assert!(
+            remainders.windows(2).all(|w| w[1] <= w[0]),
+            "remainders must be monotone non-increasing"
+        );
+        assert!(
+            remainders.iter().all(|r| *r <= window),
+            "no dial may ever see more than the original window"
+        );
+        assert!(
+            matches!(
+                got,
+                WalkOutcome::Unconfirmed(WalkTerminal::DeadlineExhausted)
+            ),
+            "candidates remained but the window ended — the typed verdict \
+             is DeadlineExhausted: {got:?}"
+        );
+        assert_eq!(
+            obs.attempts, 4,
+            "the pass must stop dialing when the window is spent, even \
+             though the hint chain still had candidates"
+        );
+    }
+
+    /// A window already spent at entry means ZERO dials — the deadline is
+    /// checked before every dial including the first.
+    #[test]
+    fn an_expired_window_ends_the_pass_before_any_dial() {
+        let base = std::time::Instant::now();
+        let seeds = vec![(NodeId(1), walk_addr(24901))];
+        let mut obs = RegistrationObservation::new();
+        let got = registration_walk(
+            &seeds,
+            &mut obs,
+            base,
+            move || base,
+            |_, _| panic!("no dial may happen after the window is spent"),
+        );
+        assert!(matches!(
+            got,
+            WalkOutcome::Unconfirmed(WalkTerminal::DeadlineExhausted)
+        ));
+        assert_eq!(obs.attempts, 0);
+        assert_eq!(obs.last_walk, Some(WalkTerminal::DeadlineExhausted));
     }
 
     /// `FenceRejected` maps to the typed `StaleEpoch { region }` IMMEDIATELY
@@ -3094,6 +3938,7 @@ mod tests {
                 node,
                 driver,
                 transport,
+                initial_voters: Vec::new(),
             },
             runtime,
             dir,
@@ -3716,14 +4561,24 @@ mod tests {
         ));
         let _ = fs::remove_dir_all(&dir);
         let (wal, _) = WalEngine::open(dir.join("catalog.wal")).unwrap();
+        let wal = Arc::new(wal);
         let peer = Arc::new(RaftPeer::new(NodeId(1), META_REGION_0, &[NodeId(1)]).unwrap());
         let node = Arc::new(
-            Node::with_raft_and_engine(NodeId(1), Config::default(), peer, Arc::new(wal)).unwrap(),
+            Node::with_raft_and_engine(NodeId(1), Config::default(), peer.clone(), wal.clone())
+                .unwrap(),
+        );
+        let hub = InProcHub::new();
+        let driver = NodeDriver::new(
+            peer,
+            Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
+            MemStateMachine::with_engine(wal).unwrap(),
         );
         let authenticator = ClusterAuthenticator {
             expected_token: Arc::from("secret"),
             voters: Arc::new([NodeId(1), NodeId(2)].into_iter().collect()),
             node,
+            driver,
+            catchup: Arc::new(std::sync::Mutex::new(None)),
         };
         let mut metadata = MetadataMap::new();
         assert_eq!(
@@ -3744,6 +4599,176 @@ mod tests {
         assert_eq!(auth.auth_kind, AuthKind::Node);
         assert_eq!(auth.principal.as_ref(), "node:2");
         let _ = fs::remove_dir_all(dir);
+    }
+
+    /// Authenticator + armable catalog for the catch-up-window cells. The
+    /// capability content here is synthetic (the WINDOW TRANSITION on a
+    /// production-minted receipt lives in the hint-follow product-chain
+    /// test); these cells pin the authenticator's DECISION STRUCTURE:
+    /// membership, explicit revocation, and the two catalog-failure arms.
+    struct CatchupAuthHarness {
+        authenticator: ClusterAuthenticator<kv9_raft::rawnode::MemStorage, FaultyEngine<MemEngine>>,
+        engine: Arc<FaultyEngine<MemEngine>>,
+        node: Arc<Node<FaultyEngine<MemEngine>>>,
+    }
+
+    fn catchup_auth_harness() -> CatchupAuthHarness {
+        let engine = Arc::new(FaultyEngine::new(MemEngine::new()));
+        let peer = Arc::new(RaftPeer::new(NodeId(1), META_REGION_0, &[NodeId(1)]).unwrap());
+        let node = Arc::new(
+            Node::with_raft_and_engine(NodeId(1), Config::default(), peer.clone(), engine.clone())
+                .unwrap(),
+        );
+        let hub = InProcHub::new();
+        let driver = NodeDriver::new(
+            peer,
+            Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
+            MemStateMachine::with_engine(engine.clone()).unwrap(),
+        );
+        // A capability naming node 4, with a barrier far ahead of this
+        // fresh driver's (empty) watermark: the window is OPEN.
+        let catchup = Arc::new(std::sync::Mutex::new(Some(CatchupCapability {
+            members: [NodeId(4)].into_iter().collect(),
+            receipt_position: DriverAppliedPosition {
+                term: 1,
+                index: 1_000,
+            },
+        })));
+        CatchupAuthHarness {
+            authenticator: ClusterAuthenticator {
+                expected_token: Arc::from("secret"),
+                voters: Arc::new([NodeId(1), NodeId(2), NodeId(3)].into_iter().collect()),
+                node: node.clone(),
+                driver,
+                catchup,
+            },
+            engine,
+            node,
+        }
+    }
+
+    fn cluster_metadata(sender: u64) -> MetadataMap {
+        let mut metadata = MetadataMap::new();
+        metadata.insert(CLUSTER_TOKEN_KEY, "secret".parse().unwrap());
+        metadata.insert(NODE_ID_KEY, sender.to_string().parse().unwrap());
+        metadata
+    }
+
+    /// Window membership is exact: a receipt member absent from the catalog
+    /// passes while behind; a sender outside the receipt set is refused on
+    /// the same catalog state, same watermark, same token.
+    #[test]
+    fn the_catchup_window_admits_receipt_members_and_only_receipt_members() {
+        let harness = catchup_auth_harness();
+        let admitted = harness.authenticator.authenticate(&cluster_metadata(4));
+        assert!(
+            admitted.is_ok(),
+            "a receipt member absent from the empty catalog must be admitted \
+             while behind the barrier: {admitted:?}"
+        );
+        assert_eq!(
+            harness
+                .authenticator
+                .authenticate(&cluster_metadata(9))
+                .unwrap_err()
+                .code(),
+            Code::PermissionDenied,
+            "a sender outside the receipt member set must be refused even \
+             with the window open"
+        );
+    }
+
+    /// An explicit applied revocation beats BOTH the window and every
+    /// positive membership arm. The scenario is the real decommission
+    /// shape (Tess's blocker on 19adf3b): the node REGISTERED successfully
+    /// — its NODES_DESC membership row is present — and its admission was
+    /// revoked afterwards. With `registered => allow` evaluated before
+    /// `revoked => reject`, the revoked arm is dead code for exactly the
+    /// nodes it exists for; this test reds on that ordering.
+    #[test]
+    fn an_explicit_revocation_beats_the_catchup_window() {
+        let harness = catchup_auth_harness();
+        {
+            let mut txn = harness.node.meta_raft.store.begin().unwrap();
+            kv9_meta::admission::initialize_cluster(
+                &mut txn,
+                kv9_common::ClusterId::from_bytes([7; 16]),
+                1,
+            )
+            .unwrap();
+            kv9_meta::admission::admit_node(
+                &mut txn,
+                NodeId(4),
+                "127.0.0.1:29999",
+                kv9_meta::admission::AdmittedRole::Learner,
+                u64::MAX,
+            )
+            .unwrap();
+            // The node completed registration: a REAL membership row via
+            // the production row builder (state 2 = active), exactly what
+            // register() leaves behind.
+            txn.insert(
+                &NODES_DESC,
+                &[memcmp_uint(4)],
+                membership_node_row(
+                    NodeId(4),
+                    "127.0.0.1:29999",
+                    2,
+                    7,
+                    StoreIncarnation::from_bytes([4; 16]),
+                ),
+            )
+            .unwrap();
+            // ... and was decommissioned afterwards.
+            kv9_meta::admission::revoke_admission(&mut txn, NodeId(4)).unwrap();
+            txn.commit().unwrap();
+        }
+        assert_eq!(
+            harness
+                .authenticator
+                .authenticate(&cluster_metadata(4))
+                .unwrap_err()
+                .code(),
+            Code::PermissionDenied,
+            "a revoked node must be refused even though its membership row \
+             is still present AND it is in the receipt member set — the \
+             explicit verdict outranks both"
+        );
+    }
+
+    /// Both catalog-failure arms reject WITHOUT consulting the window — a
+    /// failed read is a failed read, never "not caught up yet". The two
+    /// switches are armed separately (Ren's boundary: one switch makes
+    /// `begin()` fail first and the read-through arm is never reached).
+    #[test]
+    fn a_failed_catalog_read_rejects_and_never_falls_back_to_the_window() {
+        // Arm 1: snapshot open (`begin`) fails.
+        let harness = catchup_auth_harness();
+        harness.engine.start_failing_snapshots();
+        assert_eq!(
+            harness
+                .authenticator
+                .authenticate(&cluster_metadata(4))
+                .unwrap_err()
+                .code(),
+            Code::Unavailable,
+            "a failed catalog snapshot-open must reject; the open window \
+             (sender IS a receipt member) must not be consulted"
+        );
+
+        // Arm 2: snapshot opens, the read-through fails.
+        let harness = catchup_auth_harness();
+        harness.engine.start_failing_reads();
+        assert_eq!(
+            harness
+                .authenticator
+                .authenticate(&cluster_metadata(4))
+                .unwrap_err()
+                .code(),
+            Code::Unavailable,
+            "a failed catalog read-through must reject; the open window \
+             (sender IS a receipt member) must not be consulted"
+        );
     }
 
     #[test]
@@ -4001,6 +5026,318 @@ mod tests {
         drop(engine);
         let _ = fs::remove_dir_all(&dir);
     }
+
+    /// Full-runtime in-process harness helpers for the deterministic
+    /// product-chain registration scene (Tess's blocker 3 on `6c32536`).
+    fn free_addr_for_e2e() -> std::net::SocketAddr {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        listener.local_addr().unwrap()
+    }
+
+    fn backend_view(rt: &NodeRuntime, root: &RootDescriptor) -> RuntimeBackend {
+        RuntimeBackend {
+            node: rt.node.clone(),
+            driver: rt.driver.clone(),
+            transport: rt.transport.clone(),
+            initial_voters: root
+                .voters
+                .iter()
+                .map(|voter| (voter.node_id, voter.addr))
+                .collect(),
+        }
+    }
+
+    /// One faithful `run()` step per runtime (minus status-file churn), then
+    /// a short real-time yield for the driver/gRPC threads.
+    fn step_cluster(rts: &mut [NodeRuntime]) {
+        for rt in rts.iter_mut() {
+            if let Some(fatal) = rt.driver.status().fatal {
+                panic!("node {} went fatal: {fatal}", rt.node.id.0);
+            }
+            rt.sync_registered_peers().unwrap();
+            rt.advance_bootstrap().unwrap();
+            // Status files are the wedge diagnostics if a phase never
+            // completes — same surface the shell E2E preserves.
+            rt.write_status().unwrap();
+        }
+        std::thread::sleep(Duration::from_millis(5));
+    }
+
+    fn wait_for(
+        rts: &mut [NodeRuntime],
+        secs: u64,
+        what: &str,
+        mut cond: impl FnMut(&[NodeRuntime]) -> bool,
+    ) {
+        eprintln!("[hint-follow e2e] waiting: {what}");
+        let deadline = std::time::Instant::now() + Duration::from_secs(secs);
+        loop {
+            step_cluster(rts);
+            if cond(rts) {
+                eprintln!("[hint-follow e2e] reached: {what}");
+                return;
+            }
+            assert!(
+                std::time::Instant::now() < deadline,
+                "timed out waiting for: {what}"
+            );
+        }
+    }
+
+    fn cluster_leader(rts: &[NodeRuntime]) -> Option<usize> {
+        rts.iter()
+            .position(|rt| rt.driver.status().role == Role::Leader)
+    }
+
+    /// The master-red product scene, rebuilt deterministic and in-process:
+    /// the 972-not_leader loop happened because a real joiner's seed set is
+    /// FOREVER the root descriptor's initial voters, while the leader had
+    /// become an admitted dynamic member outside that set.
+    ///
+    /// Construction: three initial voters bootstrap for real (disk raft +
+    /// catalog WAL + real gRPC on loopback); n4 is admitted and promoted
+    /// through the production admin path; then the TEST-ONLY raft transfer
+    /// seam (`transfer_leader_for_tests`, raft-rs MsgTransferLeader →
+    /// MsgTimeoutNow) makes n4 leader — the one deterministic election
+    /// construction under pre_vote/check_quorum, and the ONLY scripted
+    /// piece: registration, resolver, wire metadata, and runtime below it
+    /// are all production code.
+    ///
+    /// Pinned preconditions, in order, BEFORE the joiner exists:
+    ///   1. the leader is an admitted NON-SEED (not in the root voter set);
+    ///   2. a seed FOLLOWER resolves the leader's canonical endpoint from
+    ///      its own APPLIED catalog via the production resolver.
+    ///
+    /// Only then does n5 join with the unchanged seed set {n1,n2,n3}: every
+    /// seed answers NotLeader + wire hint, and registration must follow the
+    /// hint to the non-seed leader within one pass.
+    ///
+    /// Mutant contract: deleting the hint-follow (the walk's `queue.push`)
+    /// reverts the client to the seeds-only loop — this test then reds at
+    /// "n5 must register by following the wire hint", strictly AFTER both
+    /// pinned preconditions passed.
+    #[test]
+    fn a_real_joiner_follows_the_wire_hint_to_a_non_seed_leader_end_to_end() {
+        let base = std::env::temp_dir().join(format!(
+            "kv9-hint-follow-e2e-{}-{}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let addrs: Vec<std::net::SocketAddr> = (0..5).map(|_| free_addr_for_e2e()).collect();
+        let voters = (1..=3u64)
+            .map(|id| {
+                Ok(kv9_common::RootVoter {
+                    node_id: NodeId(id),
+                    addr: addrs[(id - 1) as usize],
+                    store_incarnation: StoreIncarnation::mint()?,
+                })
+            })
+            .collect::<kv9_common::Result<Vec<_>>>()
+            .unwrap();
+        let root = RootDescriptor::new(
+            kv9_common::ClusterId::mint().unwrap(),
+            kv9_common::BootstrapGeneration::mint().unwrap(),
+            voters,
+            b"hint-follow-bootstrap-credential",
+        )
+        .unwrap();
+        let auth = || RuntimeAuth {
+            cluster_token: "hint-follow-cluster-token".into(),
+            client_tokens: vec![("acceptance".into(), "hint-follow-client-token".into())],
+        };
+        let config_for = |id: u64| Config {
+            addr: addrs[(id - 1) as usize].to_string(),
+            data_dir: base.join(format!("n{id}")).to_string_lossy().into_owned(),
+            join: Vec::new(),
+            wal_streams: 1,
+            replication_factor: 3,
+        };
+
+        let mut rts: Vec<NodeRuntime> = (1..=3u64)
+            .map(|id| {
+                NodeRuntime::start_with_root(
+                    NodeId(id),
+                    config_for(id),
+                    auth(),
+                    root.clone(),
+                    StoreIdentity::for_voter(&root, NodeId(id)).unwrap(),
+                )
+                .unwrap()
+            })
+            .collect();
+        wait_for(&mut rts, 60, "three initial voters Serving", |rts| {
+            rts.iter()
+                .all(|rt| rt.node.meta.lock().unwrap().bootstrap.is_serving())
+        });
+
+        // Admit + start + promote n4 through the production admin path.
+        let leader = cluster_leader(&rts).expect("a serving cluster has a leader");
+        let admit4 = backend_view(&rts[leader], &root)
+            .admit_node("acceptance", NodeId(4), &addrs[3].to_string(), 600)
+            .unwrap();
+        let ticket4 = admit4.join_ticket.expect("admission mints a ticket");
+        rts.push(
+            NodeRuntime::start_with_root_and_ticket(
+                NodeId(4),
+                config_for(4),
+                auth(),
+                root.clone(),
+                StoreIdentity::for_joiner(&root, NodeId(4), StoreIncarnation::mint().unwrap())
+                    .unwrap(),
+                Some(&ticket4),
+            )
+            .unwrap(),
+        );
+        wait_for(
+            &mut rts,
+            60,
+            "n4 registered and Serving as learner",
+            |rts| rts[3].node.meta.lock().unwrap().bootstrap.is_serving(),
+        );
+        let leader = cluster_leader(&rts).expect("leader");
+        backend_view(&rts[leader], &root)
+            .promote_node("acceptance", NodeId(4))
+            .unwrap();
+        wait_for(&mut rts, 60, "n4 a voter on every replica", |rts| {
+            rts.iter().all(|rt| rt.driver.status().voters.contains(&4))
+        });
+
+        // Election seam (the only scripted piece): hand leadership to n4.
+        let leader = cluster_leader(&rts).expect("leader");
+        rts[leader]
+            .driver
+            .peer()
+            .transfer_leader_for_tests(NodeId(4));
+        wait_for(&mut rts, 60, "n4 leads and every replica knows it", |rts| {
+            rts[3].driver.status().role == Role::Leader
+                && rts
+                    .iter()
+                    .all(|rt| rt.driver.status().leader_id == Some(NodeId(4)))
+        });
+
+        // PINNED PRECONDITION 1: the leader is NOT a seed — otherwise the
+        // seeds-only loop also registers the joiner and the hint arm is
+        // never selected (the exact reason the master red was invisible to
+        // the previous E2E pass).
+        assert!(
+            root.voters.iter().all(|voter| voter.node_id != NodeId(4)),
+            "precondition: the leader must be an admitted non-seed"
+        );
+        // PINNED PRECONDITION 2: a seed FOLLOWER resolves the leader's
+        // canonical endpoint from its own APPLIED catalog — the production
+        // resolver over the real replicated row, no scripting.
+        let follower = (0..3)
+            .find(|i| rts[*i].driver.status().role != Role::Leader)
+            .unwrap();
+        assert_eq!(
+            backend_view(&rts[follower], &root).resolve_registration_endpoint(NodeId(4)),
+            Some(addrs[3].to_string()),
+            "precondition: a seed follower must authoritatively resolve the \
+             non-seed leader's endpoint from its applied catalog"
+        );
+
+        // The real joiner: seed set is FOREVER {n1,n2,n3} (root descriptor),
+        // which excludes the leader — the master-red scene, now pinned.
+        let admit5 = backend_view(&rts[3], &root)
+            .admit_node("acceptance", NodeId(5), &addrs[4].to_string(), 600)
+            .unwrap();
+        let ticket5 = admit5.join_ticket.expect("admission mints a ticket");
+        rts.push(
+            NodeRuntime::start_with_root_and_ticket(
+                NodeId(5),
+                config_for(5),
+                auth(),
+                root.clone(),
+                StoreIdentity::for_joiner(&root, NodeId(5), StoreIncarnation::mint().unwrap())
+                    .unwrap(),
+                Some(&ticket5),
+            )
+            .unwrap(),
+        );
+
+        // Freeze n5's APPLY half (raft and registration keep running) so the
+        // catch-up window can be probed deterministically on BOTH sides of
+        // its production-minted barrier: first while provably behind, then
+        // after the exact receipt command has applied.
+        rts[4].driver.pause_apply(true);
+        wait_for(
+            &mut rts,
+            60,
+            "n5 must register by following the wire hint to the non-seed \
+             leader (the seeds-only loop dies here in endless not_leader — \
+             the 972-loop master red)",
+            |rts| rts[4].registration_receipt.is_some(),
+        );
+        let capability = rts[4]
+            .catchup_capability
+            .lock()
+            .unwrap()
+            .clone()
+            .expect("the typed Registered outcome installs the capability");
+        let watermark = rts[4].driver.driver_applied();
+        assert!(
+            watermark.is_none_or(|wm| wm.index < capability.receipt_position.index),
+            "precondition: with apply frozen the joiner is still BEHIND the \
+             receipt barrier"
+        );
+        assert!(
+            capability.admits(NodeId(4), watermark),
+            "behind the production receipt barrier, the non-seed leader — a \
+             receipt member with no row in the joiner's catalog — must be \
+             admitted: without this window the joiner can never receive the \
+             very stream that fills its catalog (the catch-up deadlock)"
+        );
+        assert!(
+            !capability.admits(NodeId(9), watermark),
+            "a sender outside the receipt member set is refused even while \
+             the window is open"
+        );
+        rts[4].driver.pause_apply(false);
+        // Timeout margin (Cindy's measurement on 19adf3b): the whole test
+        // completes in 1.67/1.67/1.82s over three runs against these 60s
+        // phase deadlines — a ~36x margin. A red here is NOT "the machine
+        // was slow" unless it was 36x slow; treat it as a real regression.
+        wait_for(
+            &mut rts,
+            60,
+            "n5 catches up from the non-seed leader and reaches Serving",
+            |rts| rts[4].node.meta.lock().unwrap().bootstrap.is_serving(),
+        );
+
+        // The window transition on the SAME production capability: Serving
+        // implies the exact receipt command applied, and from that instant
+        // the fallback answers no to the very sender it admitted above.
+        // Deleting the barrier comparison in `admits` reds exactly here.
+        let watermark = rts[4].driver.driver_applied();
+        assert!(
+            watermark.is_some_and(|wm| wm.index >= capability.receipt_position.index),
+            "precondition: Serving implies the exact receipt command applied"
+        );
+        assert!(
+            !capability.admits(NodeId(4), watermark),
+            "at and after the exact receipt command the window is closed — \
+             the sender it existed for is refused, only the catalog speaks"
+        );
+
+        // The receipt chain proves HOW it registered: the walk's typed
+        // verdict, and the last wire hint it followed — the seed's NotLeader
+        // metadata naming the non-seed leader's catalog endpoint.
+        let obs = &rts[4].registration_observation;
+        assert_eq!(obs.last, RegistrationLastOutcome::Registered);
+        assert_eq!(obs.last_walk, Some(WalkTerminal::Registered));
+        assert_eq!(
+            obs.last_hint.as_deref(),
+            Some(format!("leader=4 addr={}", addrs[3]).as_str()),
+            "the followed hint must be the seed's wire metadata carrying \
+             the leader's catalog endpoint"
+        );
+
+        drop(rts);
+        let _ = fs::remove_dir_all(&base);
+    }
 }
 
 /// Does the production write path actually hand the fence the values the gate resolved —
@@ -4232,6 +5569,18 @@ mod fence_firing_tests {
             }
             std::thread::sleep(TICK);
         }
+        // Margin, so a future red here is not misread as "the machine was slow".
+        //
+        // Measured 0.46-0.48s across 3 runs on a40ef35 for this whole module -- which
+        // includes TWO full bootstraps -- against the 12s bound below, i.e. a conservative
+        // margin of >=25x. Conservative because it charges the entire module's wall time to a
+        // single wait; the true per-wait margin is larger, and is deliberately not quoted
+        // because it was never measured on its own.
+        //
+        // Range + the head it was measured on + a conservative bound, all three (@Cindy): a
+        // bare figure with no head reads as a regression the moment someone measures a
+        // different value on a different head, and a bare bound invites "did it only just
+        // pass?".
         panic!("single-voter runtime did not reach Serving within 12s");
     }
 
@@ -4240,6 +5589,11 @@ mod fence_firing_tests {
             node: runtime.node.clone(),
             driver: runtime.driver.clone(),
             transport: runtime.transport.clone(),
+            // From the same source `start_core` uses, not an empty placeholder: these tests
+            // never register, so a `Vec::new()` would compile and then silently diverge from
+            // production rather than failing. (Integration with the registration-follow-hint
+            // work, which added this field.)
+            initial_voters: runtime.seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
         }
     }
 
