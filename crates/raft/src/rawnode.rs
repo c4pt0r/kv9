@@ -20,7 +20,10 @@ use protobuf::Message as PbMessage;
 use raft::eraftpb::EntryType;
 use raft::prelude::{ConfChange, ConfChangeV2};
 use raft::prelude::{ConfState, Entry, HardState, Message};
-use raft::storage::MemStorage;
+// Re-exported publicly: `RaftPeer::new` already returns `RaftPeer<MemStorage>`
+// on the public surface, so consumers (e.g. kv9-server's in-proc harnesses)
+// must be able to NAME the type they are already holding.
+pub use raft::storage::MemStorage;
 use raft::{Config, RawNode, ReadOnlyOption, ReadState, StateRole};
 use slog::{o, Discard, Logger};
 
@@ -536,6 +539,19 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     pub fn pump(&self) -> Vec<Message> {
         self.process_ready();
         std::mem::take(&mut self.lock().outbox)
+    }
+
+    /// Testing-only election seam: ask THIS peer (it must currently be the
+    /// leader) to hand leadership to `transferee` (raft-rs MsgTransferLeader
+    /// → MsgTimeoutNow; the transferee campaigns immediately, exempt from
+    /// the pre_vote/check_quorum leader-stickiness that would reject an
+    /// ordinary campaign against a live leader). This is the deterministic
+    /// way to construct "a specific node is leader" in tests; it is NOT a
+    /// product API — deliberately absent from `RawApi` and every server
+    /// surface, so no production path can call it.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn transfer_leader_for_tests(&self, transferee: NodeId) {
+        self.lock().raw.transfer_leader(transferee.0);
     }
 }
 
