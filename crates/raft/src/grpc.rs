@@ -647,6 +647,24 @@ impl std::fmt::Display for RegisterError {
 
 impl std::error::Error for RegisterError {}
 
+/// A followable redirect hint: the stable leader identity plus, optionally,
+/// the canonical endpoint the ANSWERER resolved from its own applied
+/// directory. The contract is "stable NodeId + optional endpoint", and this
+/// type makes the inverse — an endpoint with no identity — UNREPRESENTABLE:
+/// an address alone cannot be `(id, addr)`-deduped or audited against the
+/// directory, so the decode boundary drops it fail-closed instead of letting
+/// a client chase an anonymous address.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct LeaderHint {
+    pub id: NodeId,
+    /// Bounded routing candidate (see [`RegistrationError::NotLeader`]);
+    /// possibly stale — never proof of the current leader's endpoint. Parsed
+    /// to a canonical socket address AT DECODE so no consumer re-parses
+    /// strings; a garbled value degrades the hint to id-only, never to a
+    /// followable garbled endpoint.
+    pub addr: Option<SocketAddr>,
+}
+
 /// A registration attempt's machine-readable outcome. `NotLeader` is decoded
 /// from code + marker (BOTH required — other FAILED_PRECONDITION refusals
 /// share the code and must surface as plain errors, never as redirects).
@@ -654,10 +672,10 @@ impl std::error::Error for RegisterError {}
 pub enum RegisterOutcome {
     Registered(RegistrationReceipt),
     NotLeader {
-        leader: Option<NodeId>,
-        /// Bounded routing candidate (see [`RegistrationError::NotLeader`]);
-        /// possibly stale — never proof of the current leader's endpoint.
-        leader_addr: Option<String>,
+        /// `None` means "rediscover" — the answerer named no leader. An addr
+        /// metadata entry arriving WITHOUT a leader id is malformed and is
+        /// dropped here (fail-closed), not surfaced for following.
+        leader: Option<LeaderHint>,
     },
 }
 
@@ -730,15 +748,18 @@ pub fn grpc_register(
                                 Some(NodeId(id))
                             }
                         };
-                        let leader_addr = status
-                            .metadata()
-                            .get(LEADER_ADDR_KEY)
-                            .and_then(|v| v.to_str().ok())
-                            .map(|s| s.to_string());
-                        Ok(RegisterOutcome::NotLeader {
-                            leader,
-                            leader_addr,
-                        })
+                        // The endpoint is read ONLY under a present leader id:
+                        // addr-without-id is malformed and dies here, so the
+                        // walk above can never follow an anonymous address.
+                        let leader = leader.map(|id| LeaderHint {
+                            id,
+                            addr: status
+                                .metadata()
+                                .get(LEADER_ADDR_KEY)
+                                .and_then(|v| v.to_str().ok())
+                                .and_then(|s| s.parse::<SocketAddr>().ok()),
+                        });
+                        Ok(RegisterOutcome::NotLeader { leader })
                     } else if status.code() == tonic::Code::FailedPrecondition
                         && status
                             .metadata()
@@ -2380,6 +2401,12 @@ mod tests {
             Err(RegistrationError::Failed(Error::Config(
                 "admission expired".into(),
             ))),
+            // Malformed on the wire: an endpoint with NO leader id. The
+            // decode boundary must drop the address, not surface it.
+            Err(RegistrationError::NotLeader {
+                leader: None,
+                leader_addr: Some("127.0.0.1:29996".to_string()),
+            }),
             Err(RegistrationError::NotLeader {
                 leader: None,
                 leader_addr: None,
@@ -2451,21 +2478,27 @@ mod tests {
         };
 
         // Hinted redirect: typed, with the leader id AND its canonical
-        // endpoint (a bounded routing candidate, decoded verbatim).
+        // endpoint (a bounded routing candidate, parsed at decode).
         assert_eq!(
             call().unwrap(),
             RegisterOutcome::NotLeader {
-                leader: Some(NodeId(7)),
-                leader_addr: Some("127.0.0.1:29997".to_string()),
+                leader: Some(LeaderHint {
+                    id: NodeId(7),
+                    addr: Some("127.0.0.1:29997".parse().unwrap()),
+                }),
             }
         );
         // Hintless redirect: typed, leader None (absent keys, never "0"/"").
+        assert_eq!(call().unwrap(), RegisterOutcome::NotLeader { leader: None });
+        // Wire negative (fail-closed boundary): the server sent an endpoint
+        // with NO leader id — the decoded outcome must carry no hint at all.
+        // If the decode read the addr key independently of the id, this
+        // would surface an anonymous followable address.
         assert_eq!(
             call().unwrap(),
-            RegisterOutcome::NotLeader {
-                leader: None,
-                leader_addr: None,
-            }
+            RegisterOutcome::NotLeader { leader: None },
+            "an addr metadata entry without a leader id is malformed and \
+             must be dropped at decode, never surfaced for following"
         );
         // Ordinary precondition refusal — same code, NO marker: a plain
         // error, not a redirect (code-only decoding would fail here).
