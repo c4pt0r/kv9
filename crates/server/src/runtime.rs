@@ -1635,31 +1635,6 @@ impl RuntimeBackend {
         )
     }
 
-    /// A quorum-ESTABLISHED read view (task #28 seam consumer; the server
-    /// half of task #27 item 4). LINEARIZABLE: the ReadIndex barrier
-    /// round-trip runs FIRST — `ReadOnlyOption::Safe` means the returned
-    /// index is valid only after a live quorum acknowledged this leader —
-    /// and the returned credential is exchanged, consumed by value, for
-    /// exactly one engine snapshot taken strictly AFTER the barrier.
-    ///
-    /// Typed failures surface before any snapshot exists: `NotLeader{hint}`
-    /// re-routes the caller; `Unconfirmed{QuorumConfirmation}` is the
-    /// isolated self-believed leader (no live quorum will confirm);
-    /// `Unconfirmed{ApplyCatchUp}` means the confirmed index did not apply
-    /// locally in time. All three mean the read MUST NOT be served — the
-    /// deposed-leader stale window that the previous leadership-check-only
-    /// implementation left open is exactly what the barrier closes.
-    ///
-    /// `is_leader` in the returned tuple is always `true` on success (the
-    /// barrier proves it); it is kept so `LeaderRead::new`'s signature — a
-    /// kv9-txn face — stays untouched in this commit.
-    fn leader_read(&self) -> Result<(Box<dyn ReadView + '_>, Option<NodeId>, bool)> {
-        let barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
-        let hint = self.driver.status().leader_id;
-        let view = self.established_view(barrier)?;
-        Ok((view, hint, true))
-    }
-
     /// The point-read entry: ONE barrier, ONE view, and the context/region
     /// gate judged on that SAME view before it is handed to the executor.
     /// The alternative — gate on its own snapshot — reopens the epoch hole
@@ -5649,13 +5624,38 @@ mod tests {
     /// establishing read with the TYPED NotLeader + hint (the post-deposition
     /// family of the card's phase split — phase-independent on a follower, so
     /// no deposition construction is needed to pin it).
+    /// A context these cells never actually gate on.
+    ///
+    /// `established_read` is barrier-first: `read_barrier(..)?` is its FIRST statement and
+    /// `check_context_in(..)?` its fourth, so every cell below — follower, isolated leader,
+    /// deposed leader — returns from the barrier and the context is never read. A real
+    /// keyspace here would suggest the gate is part of what these cells prove; it is not.
+    ///
+    /// The migration these calls come from (@Tess): they used to call `leader_read()`, a
+    /// wrapper that lost its last production caller when the point reads moved here and
+    /// delete-range moved to `established_view`. A test-only wrapper is where a mutation aimed
+    /// at the old address stays green forever — @Cindy hit exactly that near-miss one head
+    /// earlier. These now enter through the same function production does.
+    fn unreachable_gate_ctx() -> RequestContext {
+        RequestContext {
+            keyspace: KeyspaceId(0),
+            region_epoch: kv9_region::RegionEpoch {
+                conf_ver: 0,
+                version: 0,
+            },
+            caller: Some("establishing-read-cell".into()),
+        }
+    }
+
     #[test]
     fn a_follower_refuses_an_establishing_read_with_a_typed_hint() {
         let (rts, root, _addrs, base) = serving_trio("follower-read");
         let leader = cluster_leader(&rts).expect("leader");
         let leader_id = NodeId(leader as u64 + 1);
         let follower = (0..3).find(|i| *i != leader).unwrap();
-        let err = match backend_view(&rts[follower], &root).leader_read() {
+        let err = match backend_view(&rts[follower], &root)
+            .established_read(&unreachable_gate_ctx(), KeySpan::Point(b"k"))
+        {
             Err(err) => err,
             Ok(_) => panic!("a follower must refuse an establishing read"),
         };
@@ -5760,7 +5760,7 @@ mod tests {
 
         // PHASE 1, pinned: still the self-believed leader at call entry.
         assert_eq!(d1.status().role, Role::Leader, "phase pin: not yet deposed");
-        let err = match backend.leader_read() {
+        let err = match backend.established_read(&unreachable_gate_ctx(), KeySpan::Point(b"k")) {
             Err(err) => err,
             Ok(_) => panic!("an isolated leader must not serve an establishing read"),
         };
@@ -5785,7 +5785,7 @@ mod tests {
             );
             std::thread::sleep(Duration::from_millis(5));
         }
-        let err = match backend.leader_read() {
+        let err = match backend.established_read(&unreachable_gate_ctx(), KeySpan::Point(b"k")) {
             Err(err) => err,
             Ok(_) => panic!("a deposed leader must refuse the establishing read"),
         };
@@ -6135,8 +6135,15 @@ mod fence_firing_tests {
             matches!(outcome, Err(Error::StaleEpoch { region: r }) if r == region.id),
             "a refused fence must surface as StaleEpoch naming the region, got {outcome:?}"
         );
-        let (view, hint, is_leader) = backend.leader_read().expect("read view");
-        let read = LeaderRead::new(view.as_ref(), is_leader, hint).expect("leader");
+        // Composed from the two production pieces rather than kept alive via the old
+        // wrapper: this cell only needs *an established view* to assert against.
+        let barrier = runtime
+            .driver
+            .read_barrier(READ_BARRIER_DEADLINE)
+            .expect("barrier");
+        let view = backend.established_view(barrier).expect("established view");
+        let hint = runtime.driver.status().leader_id;
+        let read = LeaderRead::new(view.as_ref(), true, hint).expect("leader");
         assert_eq!(
             RawExecutor.get(&read, keyspace, b"k").expect("get"),
             None,
@@ -6243,8 +6250,15 @@ mod fence_firing_tests {
 
         // And the range is genuinely empty afterwards — the fences did not come at the cost
         // of the delete.
-        let (view, hint, is_leader) = backend.leader_read().expect("read view");
-        let read = LeaderRead::new(view.as_ref(), is_leader, hint).expect("leader");
+        // Composed from the two production pieces rather than kept alive via the old
+        // wrapper: this cell only needs *an established view* to assert against.
+        let barrier = runtime
+            .driver
+            .read_barrier(READ_BARRIER_DEADLINE)
+            .expect("barrier");
+        let view = backend.established_view(barrier).expect("established view");
+        let hint = runtime.driver.status().leader_id;
+        let read = LeaderRead::new(view.as_ref(), true, hint).expect("leader");
         let left = RawExecutor
             .scan(&read, keyspace, b"", b"", 16)
             .expect("scan");
