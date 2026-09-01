@@ -30,6 +30,8 @@ use crate::{Durability, Engine, ReadView, ScanEntry};
 pub struct FaultyEngine<E: Engine> {
     inner: E,
     fail_writes: AtomicBool,
+    fail_reads: AtomicBool,
+    fail_snapshots: AtomicBool,
     write_attempts: AtomicU64,
 }
 
@@ -39,6 +41,8 @@ impl<E: Engine> FaultyEngine<E> {
         FaultyEngine {
             inner,
             fail_writes: AtomicBool::new(false),
+            fail_reads: AtomicBool::new(false),
+            fail_snapshots: AtomicBool::new(false),
             write_attempts: AtomicU64::new(0),
         }
     }
@@ -53,6 +57,46 @@ impl<E: Engine> FaultyEngine<E> {
         self.fail_writes.store(false, Ordering::SeqCst);
     }
 
+    /// Every subsequent read fails: direct `get`/`scan`/`checksum`, and every read made
+    /// *through* an already-taken snapshot.
+    ///
+    /// Note what this deliberately does NOT do: it does not fail `snapshot()` itself. The
+    /// two are different failure points and a caller can handle one while mishandling the
+    /// other — a caller that opens a snapshot successfully and then loses the read beneath
+    /// it looks, from its own code, exactly like a caller that never opened one. Use
+    /// [`FaultyEngine::start_failing_snapshots`] for the other half.
+    ///
+    /// Read failures matter for a different reason than write failures. A caller that
+    /// cannot *write* knows nothing landed. A caller that cannot *read* may still be
+    /// obliged to produce an answer, and the tempting move is to substitute a default:
+    /// treat "I could not check" as "the check said no". Where that answer then feeds a
+    /// replicated decision, the substitution is a correctness bug rather than a degraded
+    /// read, because replicas whose reads succeed decide differently from replicas whose
+    /// reads fail. Arming reads is how a test can prove a caller propagates the failure
+    /// instead of inventing a verdict.
+    ///
+    /// Seed state with reads unarmed, then arm: the fixture stays realistic and only the
+    /// read under test fails.
+    pub fn start_failing_reads(&self) {
+        self.fail_reads.store(true, Ordering::SeqCst);
+    }
+
+    /// Resume serving reads.
+    pub fn stop_failing_reads(&self) {
+        self.fail_reads.store(false, Ordering::SeqCst);
+    }
+
+    /// Every subsequent [`Engine::snapshot`] fails, without affecting reads through
+    /// snapshots already taken.
+    pub fn start_failing_snapshots(&self) {
+        self.fail_snapshots.store(true, Ordering::SeqCst);
+    }
+
+    /// Resume handing out snapshots.
+    pub fn stop_failing_snapshots(&self) {
+        self.fail_snapshots.store(false, Ordering::SeqCst);
+    }
+
     /// How many writes have been attempted, failed ones included.
     ///
     /// Useful for asserting a caller actually *tried* — distinguishing "handled the error"
@@ -65,10 +109,22 @@ impl<E: Engine> FaultyEngine<E> {
     pub fn inner(&self) -> &E {
         &self.inner
     }
+
+    /// `Err` while reads are armed. Shaped like the real thing: a `WalEngine` surfaces I/O
+    /// failures as `Error::Engine`.
+    fn fail_reads(&self) -> Result<()> {
+        if self.fail_reads.load(Ordering::SeqCst) {
+            return Err(Error::Engine(
+                "injected read failure (simulating an unreadable page / failed open)".into(),
+            ));
+        }
+        Ok(())
+    }
 }
 
 impl<E: Engine> Engine for FaultyEngine<E> {
     fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Value>> {
+        self.fail_reads()?;
         self.inner.get(cf, key)
     }
 
@@ -90,6 +146,7 @@ impl<E: Engine> Engine for FaultyEngine<E> {
         end: &[u8],
         limit: usize,
     ) -> Result<Vec<ScanEntry>> {
+        self.fail_reads()?;
         self.inner.scan(cf, start, end, limit)
     }
 
@@ -101,15 +158,80 @@ impl<E: Engine> Engine for FaultyEngine<E> {
     }
 
     fn checksum(&self, cf: ColumnFamily, start: &[u8], end: &[u8]) -> Result<u64> {
+        self.fail_reads()?;
         self.inner.checksum(cf, start, end)
     }
 
     fn snapshot(&self) -> Result<Box<dyn ReadView + '_>> {
-        self.inner.snapshot()
+        if self.fail_snapshots.load(Ordering::SeqCst) {
+            return Err(Error::Engine(
+                "injected snapshot failure (simulating an engine that cannot open a view)".into(),
+            ));
+        }
+        // The view is wrapped, not passed through: reads taken through a snapshot are a
+        // separate failure point from taking the snapshot, and the caller under test may
+        // handle one and not the other.
+        Ok(Box::new(FaultyReadView {
+            inner: self.inner.snapshot()?,
+            engine: self,
+        }))
     }
 
     fn durability(&self) -> Durability {
         self.inner.durability()
+    }
+}
+
+/// A [`ReadView`] over a [`FaultyEngine`]'s snapshot that honours the read switch.
+///
+/// Exists so "the snapshot opened and then the read under it failed" is constructible.
+/// Without it, arming reads could only ever fail at `snapshot()`, and a caller whose real
+/// failure point is a `get` *inside* the view would be tested at the wrong seam entirely.
+struct FaultyReadView<'a, E: Engine> {
+    inner: Box<dyn ReadView + 'a>,
+    engine: &'a FaultyEngine<E>,
+}
+
+impl<E: Engine> ReadView for FaultyReadView<'_, E> {
+    fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Value>> {
+        self.engine.fail_reads()?;
+        self.inner.get(cf, key)
+    }
+
+    fn scan(
+        &self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: &[u8],
+        limit: usize,
+    ) -> Result<Vec<ScanEntry>> {
+        self.engine.fail_reads()?;
+        self.inner.scan(cf, start, end, limit)
+    }
+
+    fn seek_le(&self, cf: ColumnFamily, target: &[u8]) -> Result<Option<ScanEntry>> {
+        self.engine.fail_reads()?;
+        self.inner.seek_le(cf, target)
+    }
+
+    fn iter<'b>(
+        &'b self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<Box<dyn Iterator<Item = Result<ScanEntry>> + 'b>> {
+        self.engine.fail_reads()?;
+        self.inner.iter(cf, start, end)
+    }
+
+    fn iter_rev<'b>(
+        &'b self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<Box<dyn Iterator<Item = Result<ScanEntry>> + 'b>> {
+        self.engine.fail_reads()?;
+        self.inner.iter_rev(cf, start, end)
     }
 }
 
