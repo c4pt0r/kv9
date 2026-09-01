@@ -77,9 +77,11 @@ leadership change.
   rather than the message text.
 - **Which of the two named outcomes you get is not guaranteed** at any given moment — both are correct refusals, and
   which one appears depends on where the cluster is in reacting. Do not build logic that requires a particular one.
-- **This is held by a partition test, not by this paragraph.** A leader is cut from its peers and every public raw
-  read is required to fail, as one of the named outcomes, for the *whole* isolation. See
-  [`DESIGN.md`](DESIGN.md) §9.2 for the mechanism and the acceptance split.
+- **This is held by a partition test, not by this paragraph.** A leader is cut from its peers, and the public
+  `raw-get` endpoint is driven repeatedly across the whole isolation, required to fail every time as one of the named
+  outcomes. The guarantee extends to the other raw reads because they all go through the same establishing step — not
+  because that one scenario exercises each of them. See [`DESIGN.md`](DESIGN.md) §9.2 for the mechanism and the
+  acceptance split.
 
 ## Influences
 
