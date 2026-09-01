@@ -1859,7 +1859,34 @@ mod tests {
             }
         }
         assert_eq!(d1.status().role, Role::Leader);
-        // From here the peers go silent: d2/d3 never step again — every
+        // Precondition, pinned by name (Tess's review): keep pumping all
+        // three until the leader's CURRENT-TERM barrier has applied - live
+        // quorum contact has demonstrably happened. Without this, cutting
+        // immediately after role=Leader leaves the term's barrier/lease
+        // unestablished, and a LeaseBased mutant also times out - the test
+        // would pass without Safe being load-bearing. With it, the
+        // Safe-to-LeaseBased single-defect mutant reds precisely: an isolated
+        // leader under LeaseBased hands out a barrier from its clock-trusted
+        // lease instead of the typed quorum timeout.
+        for _ in 0..500 {
+            d1.tick_and_step().unwrap();
+            d2.tick_and_step().unwrap();
+            d3.tick_and_step().unwrap();
+            let s1 = d1.status();
+            if d1.driver_applied().is_some_and(|wm| wm.term == s1.term) {
+                break;
+            }
+        }
+        {
+            let s1 = d1.status();
+            assert!(
+                d1.driver_applied().is_some_and(|wm| wm.term == s1.term),
+                "precondition: the leader's current-term barrier must be applied \
+                 (live quorum contact established) BEFORE the cut - otherwise \
+                 LeaseBased also times out and the test cannot distinguish Safe"
+            );
+        }
+        // From here the peers go silent: d2/d3 never step again - every
         // Safe-read heartbeat d1 sends dies unacknowledged.
         let _pump = d1.spawn(Duration::from_millis(2));
         let err = d1
