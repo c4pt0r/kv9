@@ -584,6 +584,21 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
                     eprintln!("cause={cause}");
                     ExitCode::FAILURE
                 }
+                // Stable machine fields, same convention as `not_leader=true`:
+                // the partition E2E's typed-exclusivity assertion keys on
+                // these, never on prose (prose may be reworded; a matcher on
+                // it breaks silently). `phase` uses the same two words as the
+                // wire marker — one vocabulary end to end.
+                Err(kv9_common::Error::ReadUnconfirmed { phase }) => {
+                    eprintln!(
+                        "read_unconfirmed=true phase={}",
+                        match phase {
+                            kv9_common::ReadBarrierPhase::QuorumConfirmation => "quorum",
+                            kv9_common::ReadBarrierPhase::ApplyCatchUp => "apply",
+                        }
+                    );
+                    ExitCode::FAILURE
+                }
                 Err(e) => {
                     eprintln!("client request failed: {e}");
                     ExitCode::FAILURE
