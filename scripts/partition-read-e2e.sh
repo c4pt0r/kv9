@@ -175,10 +175,40 @@ leader_client() {
 # a verdict.
 is_typed_refusal() {
   local output="$1"
-  [[ "$output" =~ read_unconfirmed=true[[:space:]]+phase=(quorum|apply) ]] && return 0
-  [[ "$output" =~ not_leader=true ]] && return 0
+  # WHOLE-LINE exact machine records only (grep -x): a prose line that merely
+  # CONTAINS a marker substring, or a phase word extended past the two
+  # protocol values (phase=quorumjunk), must not pass — otherwise future
+  # generic output could impersonate typed by inclusion. The near-miss
+  # controls below red if these anchors are ever loosened.
+  grep -Eqx 'read_unconfirmed=true phase=(quorum|apply)' <<<"$output" && return 0
+  grep -Eqx 'not_leader=true leader_node_id=([0-9]+|unknown)' <<<"$output" && return 0
   return 1
 }
+
+echo "== matcher self-test: near-miss negatives and exact positives (no server involved)"
+# Near-misses: protocol-shaped but not protocol. Each must be REJECTED —
+# loosening the whole-line anchors reds here, before any cluster exists.
+for near_miss in \
+  'read_unconfirmed=true phase=quorumjunk' \
+  'client request failed: not_leader=true-ish' \
+  'prefix not_leader=true leader_node_id=2 suffix'; do
+  if is_typed_refusal "$near_miss"; then
+    echo "FAIL: matcher accepted a near-miss non-protocol line: $near_miss" >&2
+    exit 1
+  fi
+done
+# Exact records must be ACCEPTED — without this half, a matcher that rejects
+# everything would sail through every negative control above.
+for exact_record in \
+  'read_unconfirmed=true phase=quorum' \
+  'read_unconfirmed=true phase=apply' \
+  'not_leader=true leader_node_id=2' \
+  'not_leader=true leader_node_id=unknown'; do
+  if ! is_typed_refusal "$exact_record"; then
+    echo "FAIL: matcher rejected an exact protocol record: $exact_record" >&2
+    exit 1
+  fi
+done
 
 echo "== forming 3-voter cluster"
 for n in 1 2 3; do start_node "$n"; done
