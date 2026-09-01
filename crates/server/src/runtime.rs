@@ -485,6 +485,16 @@ impl RuntimeBackend {
     /// the current leader's endpoint: this node's applied view can lag, so
     /// the value may name an old leader or a superseded address; the
     /// registration client's (id, addr) dedup + hop cap absorb exactly that.
+    ///
+    /// The two sources go stale DIFFERENTLY (Ren's boundary — do not write
+    /// them as one sentence): a catalog row updates on re-registration, so
+    /// its staleness is transient and self-heals; the root descriptor is
+    /// written exactly once and never replaced, so an initial voter that
+    /// changes address yields a hint that resolves FOREVER and is forever
+    /// wrong — the hop cap bounds the damage to one wasted hop per pass,
+    /// but `registration_last_hint` will steadily show that dead address.
+    /// Address migration for initial voters is UNCOVERED here by that
+    /// permanent-mismatch nature, not merely untested.
     fn resolve_registration_endpoint(&self, id: NodeId) -> Option<String> {
         let from_catalog = self
             .node
