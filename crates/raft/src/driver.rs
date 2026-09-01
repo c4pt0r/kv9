@@ -151,6 +151,19 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngi
     /// `applied_index`/`applied_term` must remain a same-entry pair.
     /// Lock order: leaf — never held while acquiring `applied`/`sm`/peer.
     conf_receipts: Mutex<Vec<ConfReceiptEntry>>,
+    /// Quorum-confirmed read receipts (task #28): `(request_ctx, index)` pairs
+    /// drained from the peer's Ready loop, correlated by EXACT context bytes.
+    /// Bounded like the command ring. Lock order: leaf — never held while
+    /// acquiring any other lock.
+    read_receipts: Mutex<Vec<(Vec<u8>, u64)>>,
+    /// This driver's boot incarnation: 16 random bytes minted at construction.
+    /// Every read context is `incarnation ++ counter`, so a receipt minted in
+    /// a previous process life (same node id, restarted) can never satisfy a
+    /// wait in this one — position alone never confirms a read, the same rule
+    /// the command ring enforces for proposals.
+    read_incarnation: [u8; 16],
+    /// Monotonic per-incarnation read sequence (uniqueness within a life).
+    read_seq: std::sync::atomic::AtomicU64,
     /// First fatal apply-path error; poisons the driver (pump stops).
     fatal: Mutex<Option<String>>,
     /// Testing-only: freeze the APPLY half of the pump (committed entries
@@ -180,6 +193,16 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             sm: Mutex::new(sm),
             applied: Mutex::new(Vec::new()),
             conf_receipts: Mutex::new(Vec::new()),
+            read_receipts: Mutex::new(Vec::new()),
+            read_incarnation: {
+                use std::io::Read;
+                let mut bytes = [0u8; 16];
+                std::fs::File::open("/dev/urandom")
+                    .and_then(|mut f| f.read_exact(&mut bytes))
+                    .expect("read-incarnation entropy");
+                bytes
+            },
+            read_seq: std::sync::atomic::AtomicU64::new(0),
             fatal: Mutex::new(None),
             #[cfg(any(test, feature = "testing"))]
             apply_paused: std::sync::atomic::AtomicBool::new(false),
@@ -216,6 +239,19 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         for msg in self.peer.pump() {
             let to = NodeId(msg.to);
             self.transport.send(to, msg);
+        }
+        {
+            let states = self.peer.take_read_states();
+            if !states.is_empty() {
+                let mut receipts = self.read_receipts.lock().expect("read receipts poisoned");
+                for st in states {
+                    receipts.push((st.request_ctx, st.index));
+                }
+                let len = receipts.len();
+                if len > APPLIED_RING {
+                    receipts.drain(..len - APPLIED_RING);
+                }
+            }
         }
         #[cfg(any(test, feature = "testing"))]
         if self.apply_paused.load(std::sync::atomic::Ordering::Relaxed) {
@@ -552,6 +588,97 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         }
     }
 
+    /// Establish a quorum-confirmed read barrier (task #28 step 3): the
+    /// linearizable-read primitive raw reads and the txn Get both consume.
+    ///
+    /// Sequence, each half with its own typed failure:
+    /// 1. leader check — `NotLeader { hint }` re-routes the caller;
+    /// 2. mint `rctx = incarnation ++ seq` and ask raft for a read index;
+    ///    ReadOnlyOption::Safe means the returned index is valid only after a
+    ///    LIVE quorum acknowledges this leader — an isolated stale leader
+    ///    never gets one (`Unconfirmed { QuorumConfirmation }`);
+    /// 3. wait until the UNIFIED driver watermark reaches the confirmed index
+    ///    (`Unconfirmed { ApplyCatchUp }` on deadline). The command-scoped
+    ///    watermark is wrong here by definition: the confirmed index may be a
+    ///    barrier entry that never touches the state machine — the exact
+    ///    wrong-watermark wiring that burned the 2026-08-31 master red.
+    ///
+    /// The caller MUST take its engine snapshot AFTER this returns (seam
+    /// contract): a snapshot taken before the barrier can miss entries the
+    /// barrier proves applied. Pure condition-poll; the pump must be running.
+    pub fn read_barrier(
+        &self,
+        deadline: Duration,
+    ) -> std::result::Result<ReadBarrier, ReadIndexError> {
+        use std::sync::atomic::Ordering;
+        let start = Instant::now();
+        // 1. Leadership: fail fast and typed.
+        let status = self.peer.status_snapshot();
+        if status.raw_role != Role::Leader {
+            return Err(ReadIndexError::NotLeader {
+                hint: status.leader_hint,
+            });
+        }
+        // 2. Mint the context and request the read index. The incarnation
+        //    prefix makes receipts from a previous process life unmatchable.
+        let seq = self.read_seq.fetch_add(1, Ordering::Relaxed);
+        let mut rctx = Vec::with_capacity(24);
+        rctx.extend_from_slice(&self.read_incarnation);
+        rctx.extend_from_slice(&seq.to_be_bytes());
+        if let Err(e) = self.peer.read_index(rctx.clone()) {
+            return Err(match e {
+                Error::NotLeader { leader } => ReadIndexError::NotLeader { hint: leader },
+                other => ReadIndexError::Failed(other),
+            });
+        }
+        // 3. Wait for the quorum confirmation correlated by EXACT context.
+        let confirmed = loop {
+            if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
+                return Err(ReadIndexError::Failed(Error::Raft(format!(
+                    "driver is poisoned: {f}"
+                ))));
+            }
+            let hit = {
+                let receipts = self.read_receipts.lock().expect("read receipts poisoned");
+                receipts
+                    .iter()
+                    .find(|(ctx, _)| ctx == &rctx)
+                    .map(|&(_, index)| index)
+            };
+            if let Some(index) = hit {
+                break index;
+            }
+            if start.elapsed() > deadline {
+                return Err(ReadIndexError::Unconfirmed {
+                    phase: BarrierPhase::QuorumConfirmation,
+                    waited: start.elapsed(),
+                });
+            }
+            std::thread::sleep(Duration::from_millis(1));
+        };
+        // 4. Wait for the unified watermark to pass the confirmed index.
+        loop {
+            if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
+                return Err(ReadIndexError::Failed(Error::Raft(format!(
+                    "driver is poisoned: {f}"
+                ))));
+            }
+            if self
+                .driver_applied()
+                .is_some_and(|wm| wm.index >= confirmed)
+            {
+                return Ok(ReadBarrier { index: confirmed });
+            }
+            if start.elapsed() > deadline {
+                return Err(ReadIndexError::Unconfirmed {
+                    phase: BarrierPhase::ApplyCatchUp,
+                    waited: start.elapsed(),
+                });
+            }
+            std::thread::sleep(Duration::from_millis(1));
+        }
+    }
+
     /// The queryable status surface.
     pub fn status(&self) -> NodeStatus {
         // ONE peer lock acquisition for everything peer-side: piecemeal reads
@@ -674,6 +801,82 @@ impl From<ApplyWaitError> for Error {
     fn from(e: ApplyWaitError) -> Error {
         match e {
             ApplyWaitError::Failed(inner) => inner,
+            unconfirmed => Error::Raft(unconfirmed.to_string()),
+        }
+    }
+}
+
+/// A quorum-confirmed read barrier (task #28): every entry committed before
+/// the read was issued is applied on THIS node at or below `index`. An engine
+/// snapshot taken AFTER receiving this value observes all of them — take the
+/// snapshot after, never before (the seam contract).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ReadBarrier {
+    /// The quorum-confirmed read index; the unified driver watermark has
+    /// passed it at the moment this value is returned.
+    pub index: u64,
+}
+
+/// Typed failure of [`NodeDriver::read_barrier`] (task #28). Independent from
+/// [`ApplyWaitError`] by seam contract, and its variants deliberately make
+/// "quorum unreachable" DISTINGUISHABLE from a connection-level failure: the
+/// partition E2E's typed-exclusivity assertions cannot be written otherwise
+/// (an isolated leader times out here — it never surfaces a transport error,
+/// because the read never touches the transport on this node).
+#[derive(Debug)]
+pub enum ReadIndexError {
+    /// This node is not the leader; the establishing read type surfaces this
+    /// with the hint so the caller can re-route.
+    NotLeader { hint: Option<NodeId> },
+    /// The deadline passed without the barrier establishing. `phase` says
+    /// which half never arrived — the quorum confirmation (the isolated-
+    /// leader case: check_quorum has not yet deposed us, but no quorum will
+    /// acknowledge the read), or the local apply catching up to the confirmed
+    /// index. Unknown outcome: the caller must not serve the read.
+    Unconfirmed {
+        phase: BarrierPhase,
+        waited: Duration,
+    },
+    /// The driver itself is poisoned.
+    Failed(Error),
+}
+
+/// Which half of the read barrier did not complete (see
+/// [`ReadIndexError::Unconfirmed`]).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BarrierPhase {
+    /// No quorum acknowledgment for the read index arrived.
+    QuorumConfirmation,
+    /// The quorum confirmed an index, but this node's unified driver
+    /// watermark did not reach it in time.
+    ApplyCatchUp,
+}
+
+impl std::fmt::Display for ReadIndexError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ReadIndexError::NotLeader { hint } => match hint {
+                Some(id) => write!(f, "not the leader; current leader hint: node {}", id.0),
+                None => write!(f, "not the leader; no current leader known"),
+            },
+            ReadIndexError::Unconfirmed { phase, waited } => write!(
+                f,
+                "read barrier unconfirmed after {waited:?} ({})",
+                match phase {
+                    BarrierPhase::QuorumConfirmation => "no quorum confirmation for the read index",
+                    BarrierPhase::ApplyCatchUp => "apply did not catch up to the confirmed index",
+                }
+            ),
+            ReadIndexError::Failed(e) => write!(f, "read barrier failed: {e}"),
+        }
+    }
+}
+
+impl From<ReadIndexError> for Error {
+    fn from(e: ReadIndexError) -> Error {
+        match e {
+            ReadIndexError::Failed(inner) => inner,
+            ReadIndexError::NotLeader { hint } => Error::NotLeader { leader: hint },
             unconfirmed => Error::Raft(unconfirmed.to_string()),
         }
     }
@@ -1541,5 +1744,189 @@ mod tests {
             None,
             "a rejected fence writes nothing"
         );
+    }
+    // ---- task #28 step 3: the read barrier ----
+
+    /// Healthy path: a quorum-confirmed barrier covers every prior committed
+    /// write, and the engine read AFTER the barrier observes it (the snapshot-
+    /// after-barrier seam contract, exercised in test form).
+    #[test]
+    fn read_barrier_on_a_healthy_leader_covers_committed_writes() {
+        let driver = single_node_driver();
+        let _pump = driver.spawn(Duration::from_millis(2));
+        let at = driver
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"rb".to_vec(),
+                value: b"v".to_vec(),
+            })
+            .unwrap();
+        assert!(matches!(
+            driver.wait_applied(at, Duration::from_secs(10)).unwrap(),
+            ApplyWaitOutcome::Applied(_)
+        ));
+        let barrier = driver
+            .read_barrier(Duration::from_secs(10))
+            .expect("a healthy single-node leader must establish a barrier");
+        assert!(
+            barrier.index >= at.index.0,
+            "the barrier must cover the committed write: barrier {} < write {}",
+            barrier.index,
+            at.index.0
+        );
+        // Read AFTER the barrier: the value must be there.
+        assert_eq!(
+            driver.get(ColumnFamily::Default, b"rb").unwrap(),
+            Some(b"v".to_vec()),
+            "a post-barrier read must observe the pre-barrier write"
+        );
+        driver.stop();
+    }
+
+    /// A follower answers with the TYPED NotLeader + hint — never a barrier,
+    /// never a bare error (the establishing read type re-routes on this).
+    #[test]
+    fn read_barrier_on_a_follower_is_typed_not_leader() {
+        let hub = InProcHub::new();
+        let ids = [NodeId(1), NodeId(2), NodeId(3)];
+        let mk = |id: NodeId| {
+            NodeDriver::new(
+                Arc::new(RaftPeer::new(id, RegionId(1), &ids).unwrap()),
+                Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
+                MemStateMachine::new(),
+            )
+        };
+        let d1 = mk(NodeId(1));
+        let d2 = mk(NodeId(2));
+        let d3 = mk(NodeId(3));
+        d1.peer().campaign().unwrap();
+        for _ in 0..200 {
+            d1.tick_and_step().unwrap();
+            d2.tick_and_step().unwrap();
+            d3.tick_and_step().unwrap();
+            if d1.status().role == Role::Leader && d2.status().leader_id == Some(NodeId(1)) {
+                break;
+            }
+        }
+        let err = d2
+            .read_barrier(Duration::from_millis(100))
+            .expect_err("a follower must refuse to establish a barrier");
+        assert!(
+            matches!(
+                err,
+                ReadIndexError::NotLeader {
+                    hint: Some(NodeId(1))
+                }
+            ),
+            "the refusal must be typed NotLeader with the leader hint: {err}"
+        );
+    }
+
+    /// The isolated-leader case the linearizable promise exists for: a leader
+    /// whose peers never answer must NOT establish a barrier — the failure is
+    /// the TYPED quorum-confirmation timeout, not a transport error (no
+    /// transport is involved on this node's read path at all; this is what
+    /// makes the partition E2E's typed-exclusivity assertions writable).
+    #[test]
+    fn an_isolated_leader_cannot_confirm_a_read_barrier() {
+        let hub = InProcHub::new();
+        let ids = [NodeId(1), NodeId(2), NodeId(3)];
+        let mk = |id: NodeId| {
+            NodeDriver::new(
+                Arc::new(RaftPeer::new(id, RegionId(1), &ids).unwrap()),
+                Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
+                MemStateMachine::new(),
+            )
+        };
+        let d1 = mk(NodeId(1));
+        let d2 = mk(NodeId(2));
+        let d3 = mk(NodeId(3));
+        d1.peer().campaign().unwrap();
+        for _ in 0..200 {
+            d1.tick_and_step().unwrap();
+            d2.tick_and_step().unwrap();
+            d3.tick_and_step().unwrap();
+            if d1.status().role == Role::Leader {
+                break;
+            }
+        }
+        assert_eq!(d1.status().role, Role::Leader);
+        // From here the peers go silent: d2/d3 never step again — every
+        // Safe-read heartbeat d1 sends dies unacknowledged.
+        let _pump = d1.spawn(Duration::from_millis(2));
+        let err = d1
+            .read_barrier(Duration::from_millis(400))
+            .expect_err("an isolated leader must not confirm a barrier");
+        assert!(
+            matches!(
+                err,
+                ReadIndexError::Unconfirmed {
+                    phase: BarrierPhase::QuorumConfirmation,
+                    ..
+                }
+            ),
+            "isolation must surface as the typed quorum-confirmation timeout: {err}"
+        );
+        d1.stop();
+    }
+
+    /// The committed-but-unapplied window — the arm the UNIFIED watermark
+    /// exists for. Quorum confirms the index fast, but the local apply is
+    /// frozen below it: the barrier must NOT establish (typed ApplyCatchUp),
+    /// and after unfreezing the same barrier establishes and the read sees
+    /// the write.
+    ///
+    /// Mutant contract: returning Ok right after quorum confirmation (deleting
+    /// the watermark wait) must red at the named frozen assertion below.
+    #[test]
+    fn a_read_barrier_waits_for_apply_not_just_confirmation() {
+        let driver = single_node_driver();
+        let _pump = driver.spawn(Duration::from_millis(2));
+        driver.pause_apply(true);
+        let at = driver
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"frozen".to_vec(),
+                value: b"v".to_vec(),
+            })
+            .unwrap();
+        // The entry commits (raft runs; freeze stops APPLY only) — pin that
+        // precondition before asking for the barrier, or the read index can
+        // legitimately land below the put (a read need not cover a write that
+        // was never acknowledged) and the test exercises the wrong arm.
+        for _ in 0..500 {
+            if driver.status().raft_committed >= at.index.0 {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(2));
+        }
+        assert!(
+            driver.status().raft_committed >= at.index.0,
+            "precondition: the frozen write must COMMIT (freeze stops apply, not commits)"
+        );
+        let err = driver.read_barrier(Duration::from_millis(400)).expect_err(
+            "a barrier must not establish while apply lags the confirmed index \
+                 (returning here would let a read miss a committed write)",
+        );
+        assert!(
+            matches!(
+                err,
+                ReadIndexError::Unconfirmed {
+                    phase: BarrierPhase::ApplyCatchUp,
+                    ..
+                }
+            ),
+            "the frozen window must surface as the typed apply-catch-up timeout: {err}"
+        );
+        driver.pause_apply(false);
+        let barrier = driver
+            .read_barrier(Duration::from_secs(10))
+            .expect("after unfreezing the barrier must establish");
+        assert!(barrier.index >= at.index.0);
+        assert_eq!(
+            driver.get(ColumnFamily::Default, b"frozen").unwrap(),
+            Some(b"v".to_vec())
+        );
+        driver.stop();
     }
 }
