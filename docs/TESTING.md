@@ -358,8 +358,12 @@ disconfirming data was in my own printed output.
 **Rule 13 says the number must come from a command. This says: after the command, name the quantity you
 are comparing.**
 
-    the machine's output   the command, the head, and the raw hit lines — pasted, not summarised
-    my classification      each line assigned a class, with per-class counts — this is a READING
+    the raw evidence       the command, the head, and enough of the unsummarised result to
+                           re-derive the classification units — bounded hits inline; a large or
+                           non-line-shaped result may be a stable artifact reference plus the
+                           exact selector. The point is that a summary must not stand in for the
+                           material being classified.
+    my classification      each unit assigned a class, with per-class counts — this is a READING
     the comparison         "production 1 = the doc's production 1", "test 1 = its test 1"
                            never the bare word "consistent"
 
@@ -374,10 +378,12 @@ at the claim of agreement.
 *Where it deceives:* this is **not** "paste every command's full output." Held to every grep, it drowns the
 few reconciliations that must be checked line by line, and then nobody reads any of them.
 
-*Second instance, and the repair (Tess):* the same invariant was itself mis-stated — the doc claimed one
-line where the command returns four. The correction is the form this extension asks for: **production
-exactly 1 + test-control exactly 1 + every remaining hit doc/comment text, and the invariant is the two
-classified counts, never the raw line total.**
+*Repair, and the positive form (Tess):* this is the **same** failure corrected, not a second instance of
+it. The invariant itself was mis-stated — the doc claimed one line where the command returns four — and its
+repair is what the extension asks for: **production exactly 1 + test-control exactly 1 + every remaining
+hit doc/comment text, with the invariant being the two classified counts, never the raw line total.** One
+complete failure plus its positive form is enough to carry the rule; a repair counted as a second instance
+would inflate the evidence.
 
 *Not the same failure, and worth keeping distinct:* a search whose key also appears in the searched corpus
 (a sentinel written into the notes it greps; a doc comment that records the very command it is counted by)
