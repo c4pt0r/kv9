@@ -474,6 +474,14 @@ fn propose_and_wait_loop(
         let remaining = deadline.saturating_sub(start.elapsed());
         match wait(proposed, remaining) {
             Ok(ApplyWaitOutcome::Applied(at)) => return Ok(at),
+            // A fence rejection is a VERDICT, not a transient: the expected
+            // epoch is authoritatively stale and will not come back, so this
+            // maps to the typed StaleEpoch immediately and is NEVER retried
+            // here (retrying re-proposes the same stale expectation; the
+            // client must re-route/re-validate). Only Replaced re-proposes.
+            Ok(ApplyWaitOutcome::FenceRejected { region, .. }) => {
+                return Err(Error::StaleEpoch { region })
+            }
             Ok(ApplyWaitOutcome::Replaced) => {
                 if start.elapsed() >= deadline {
                     return Err(Error::Raft(format!(
@@ -1939,6 +1947,13 @@ impl NodeRuntime {
                 "bootstrap proposal at term {} index {} was overwritten",
                 proposal.term, proposal.index.0
             ))),
+            // The init command is a CatalogTxn; a fence verdict for it would
+            // mean the log carries something this node never proposed.
+            Ok(ApplyWaitOutcome::FenceRejected { at, region }) => Err(Error::Raft(format!(
+                "bootstrap proposal position ({}, {}) reported a fence verdict for \
+                 region {} — the init command is never fenced",
+                at.term, at.index, region.0
+            ))),
             // A one-millisecond condition poll coming back unconfirmed means
             // "pending" — but a FAILED driver is not pending: silently spinning
             // on a poisoned node was only tolerable when the two were the same
@@ -2086,6 +2101,15 @@ impl NodeRuntime {
                 return Err(Error::Raft(format!(
                     "registration receipt at term {} index {} was overwritten",
                     exact.term, exact.index.0
+                )))
+            }
+            // Registration is a CatalogTxn; a fence verdict here is a
+            // protocol violation, not a state to continue past.
+            Ok(ApplyWaitOutcome::FenceRejected { at, region }) => {
+                return Err(Error::Raft(format!(
+                    "registration receipt position ({}, {}) reported a fence \
+                     verdict for region {} — registration is never fenced",
+                    at.term, at.index, region.0
                 )))
             }
             Err(ApplyWaitError::Unconfirmed { .. }) => return Ok(()),
@@ -2488,6 +2512,51 @@ mod tests {
         assert_eq!(
             got, receipt,
             "the receipt must be the wait's applied position, verbatim"
+        );
+    }
+
+    /// `FenceRejected` maps to the typed `StaleEpoch { region }` IMMEDIATELY
+    /// and is NEVER re-proposed: the expected epoch is authoritatively stale
+    /// and will not come back — a retry re-proposes the same stale
+    /// expectation (contrast Replaced, where re-proposing the identical
+    /// command is safe and correct). Fuse for the retry mutant: a loop that
+    /// retries a fence rejection has no exit path.
+    #[test]
+    fn fence_rejected_is_stale_epoch_immediately_and_never_retried() {
+        let proposes = RefCell::new(0u32);
+        let err = propose_and_wait_loop(
+            || {
+                *proposes.borrow_mut() += 1;
+                if *proposes.borrow() > 3 {
+                    return Err(Error::Raft(
+                        "FUSE: the loop kept re-proposing a fence-rejected write".into(),
+                    ));
+                }
+                Ok(at(1, 5))
+            },
+            |_, _| {
+                Ok(ApplyWaitOutcome::FenceRejected {
+                    at: AppliedPosition { term: 1, index: 5 },
+                    region: kv9_common::RegionId(42),
+                })
+            },
+            Duration::from_millis(50),
+        )
+        .expect_err("a fence rejection must surface");
+        assert!(
+            matches!(
+                err,
+                Error::StaleEpoch {
+                    region: kv9_common::RegionId(42)
+                }
+            ),
+            "the verdict must map to the typed StaleEpoch carrying the exact \
+             rejected region: {err:?}"
+        );
+        assert_eq!(
+            *proposes.borrow(),
+            1,
+            "a stale expectation must never be re-proposed"
         );
     }
 
