@@ -315,7 +315,17 @@ impl WalkTerminal {
 /// reason is legitimately retried on the next pass.
 #[derive(Debug)]
 enum WalkOutcome {
-    Registered(RegistrationReceipt),
+    Registered {
+        receipt: RegistrationReceipt,
+        /// The exact candidate the receipt came from — the leader that
+        /// committed this registration. Kept because the joiner needs a
+        /// transport route to that leader BEFORE its catalog can name one
+        /// (the transport half of the fresh-joiner catch-22: raft
+        /// responses to an unknown peer are dropped, so catch-up never
+        /// starts). Same pre-TLS trusted-network boundary as the receipt
+        /// itself; the applied catalog overwrites it on first sync.
+        via: (NodeId, std::net::SocketAddr),
+    },
     InvalidTicket,
     Unconfirmed(WalkTerminal),
 }
@@ -373,14 +383,17 @@ fn registration_walk(
         if remaining.is_zero() {
             return end(obs, WalkTerminal::DeadlineExhausted);
         }
-        let (_cand_id, cand_addr) = queue[i];
+        let (cand_id, cand_addr) = queue[i];
         i += 1;
         obs.record_attempt();
         match dial(cand_addr, remaining) {
             Ok(RegisterOutcome::Registered(receipt)) => {
                 obs.record_registered();
                 obs.last_walk = Some(WalkTerminal::Registered);
-                return WalkOutcome::Registered(receipt);
+                return WalkOutcome::Registered {
+                    receipt,
+                    via: (cand_id, cand_addr),
+                };
             }
             Ok(RegisterOutcome::NotLeader { leader }) => {
                 let hint = match &leader {
@@ -519,14 +532,91 @@ impl RuntimeAuth {
     }
 }
 
-#[derive(Clone)]
-struct ClusterAuthenticator {
-    expected_token: Arc<str>,
-    voters: Arc<HashSet<NodeId>>,
-    node: Arc<Node<WalEngine>>,
+/// Self-expiring catch-up capability (interface ruling, review thread on the
+/// registration fix): after this node's OWN registration returns a typed
+/// `Registered(receipt)`, inbound raft traffic from the receipt's
+/// `voters ∪ learners` is admitted WHILE this replica's unified
+/// driver-applied watermark has not yet reached the receipt's exact applied
+/// position. This is the window a fresh joiner needs to receive the very
+/// stream that fills its catalog; without it a joiner can never sync from a
+/// dynamic-member leader (catch-22: the authenticator wants catalog rows
+/// that only arrive over the stream it is rejecting).
+///
+/// THIS IS NOT A SECURITY MECHANISM. It is a liveness fix that is sound
+/// only under the project's explicit pre-TLS trusted-network threat model:
+/// the receipt's member list is NOT end-to-end authenticated (plaintext
+/// HTTP; the server never proves anything to the joiner), and the cluster
+/// token in those same requests is equally readable by any on-path
+/// observer — so this window's safety is attributed to the stated network
+/// assumption, deliberately NOT to any mechanism here. The list must never
+/// be described as certified membership and must never be reused for
+/// routing, membership views, persistent identity, or any authorization
+/// outside this window. TLS remains the hard gate for any cross-machine
+/// deployment; this capability is not an exemption.
+///
+/// Lifecycle: installed ONLY on the typed `Registered` outcome (never on
+/// `InvalidTicket` or any `Unconfirmed` reason); memory-only — a restart
+/// that is still behind re-runs idempotent registration and mints a fresh
+/// receipt, this value is never persisted into a second authority; judged
+/// per request against the LIVE watermark via [`Self::admits`], so the
+/// instant the barrier is reached the fallback is dead globally — no
+/// tick-delayed cleanup tail.
+///
+/// The barrier position is the receipt's exact applied `(term, index)` —
+/// the final registration `CatalogTxn` COMMAND, already applied on the
+/// leader when the receipt was minted. The production reader hands
+/// [`Self::admits`] the unified driver watermark (noops + commands + conf
+/// changes — the log-position ruler): by contiguity, reaching the receipt
+/// index there implies the receipt command's prefix, including every
+/// membership row this window was standing in for, is applied locally.
+#[derive(Debug, Clone)]
+struct CatchupCapability {
+    members: HashSet<NodeId>,
+    receipt_position: DriverAppliedPosition,
 }
 
-impl Authenticator for ClusterAuthenticator {
+impl CatchupCapability {
+    fn from_receipt(receipt: &RegistrationReceipt) -> Self {
+        Self {
+            members: receipt
+                .voters
+                .iter()
+                .chain(receipt.learners.iter())
+                .map(|id| NodeId(*id))
+                .collect(),
+            receipt_position: DriverAppliedPosition {
+                term: receipt.applied_term,
+                index: receipt.applied_index,
+            },
+        }
+    }
+
+    /// The window decision, in one place: `true` only while the local
+    /// watermark has NOT reached the receipt barrier AND the sender is in
+    /// the receipt's member set. Once `watermark.index >= receipt.index`
+    /// the answer is `false` forever, even with the capability still in
+    /// memory — after the barrier only the catalog speaks.
+    fn admits(&self, sender: NodeId, watermark: Option<DriverAppliedPosition>) -> bool {
+        let barrier_reached = watermark.is_some_and(|wm| wm.index >= self.receipt_position.index);
+        !barrier_reached && self.members.contains(&sender)
+    }
+}
+
+struct ClusterAuthenticator<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::Engine> {
+    expected_token: Arc<str>,
+    voters: Arc<HashSet<NodeId>>,
+    node: Arc<Node<E>>,
+    /// For the LIVE unified-watermark read in [`CatchupCapability::admits`]
+    /// — the barrier is judged on every request, never on cached state.
+    driver: Arc<NodeDriver<S, E>>,
+    /// Shared slot with the runtime: `advance_registration` installs the
+    /// capability here on the typed `Registered` outcome and nowhere else.
+    catchup: Arc<std::sync::Mutex<Option<CatchupCapability>>>,
+}
+
+impl<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::Engine + 'static> Authenticator
+    for ClusterAuthenticator<S, E>
+{
     fn authenticate(&self, metadata: &MetadataMap) -> std::result::Result<AuthContext, Status> {
         let token = metadata
             .get(CLUSTER_TOKEN_KEY)
@@ -547,22 +637,43 @@ impl Authenticator for ClusterAuthenticator {
         let catalog_allows = if self.voters.contains(&node_id) {
             true
         } else {
+            // Every catalog failure below rejects BEFORE the catch-up
+            // window is ever consulted: a failed read is a failed read,
+            // never "not caught up yet" (fail-closed; the `?`s precede the
+            // fallback structurally).
             let txn = self
                 .node
                 .meta_raft
                 .store
                 .begin()
                 .map_err(|_| Status::unavailable("membership catalog unavailable"))?;
-            let admitted = kv9_meta::admission::admission(&txn, node_id)
-                .map_err(|_| Status::unavailable("membership catalog unavailable"))?
-                .is_some_and(|admission| {
-                    admission.state != kv9_meta::admission::AdmissionState::Revoked
-                });
+            let admission = kv9_meta::admission::admission(&txn, node_id)
+                .map_err(|_| Status::unavailable("membership catalog unavailable"))?;
+            let revoked = admission.as_ref().is_some_and(|admission| {
+                admission.state == kv9_meta::admission::AdmissionState::Revoked
+            });
+            let admitted = admission.is_some() && !revoked;
             let registered = txn
                 .get(&NODES_DESC, &[memcmp_uint(node_id.0)])
                 .map_err(|_| Status::unavailable("membership catalog unavailable"))?
                 .is_some();
-            admitted || registered
+            if admitted || registered {
+                true
+            } else if revoked {
+                // An explicit applied verdict: never eligible for the
+                // catch-up window — the window exists for ABSENCE, not for
+                // overriding decisions this replica has already applied.
+                false
+            } else {
+                // Absent from the catalog entirely: the receipt-scoped
+                // catch-up window (see CatchupCapability) may still admit
+                // a member, judged against the LIVE unified watermark.
+                self.catchup
+                    .lock()
+                    .expect("catchup capability slot poisoned")
+                    .as_ref()
+                    .is_some_and(|cap| cap.admits(node_id, self.driver.driver_applied()))
+            }
         };
         if !catalog_allows {
             return Err(Status::permission_denied(
@@ -1615,6 +1726,9 @@ pub struct NodeRuntime {
     campaign_started: bool,
     initial_proposal: Option<(ProposedAt, kv9_common::ClusterId)>,
     registration_receipt: Option<RegistrationReceipt>,
+    /// Shared with this node's ClusterAuthenticator; written exactly once,
+    /// by `advance_registration` on the typed `Registered` outcome.
+    catchup_capability: Arc<std::sync::Mutex<Option<CatchupCapability>>>,
     next_discovery: Instant,
     next_advertised_endpoint_probe: Instant,
 }
@@ -1809,10 +1923,14 @@ impl NodeRuntime {
         let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
         let public_service =
             Kv9Grpc::new(backend.clone()).authenticated_service(client_authenticator);
+        let catchup_capability: Arc<std::sync::Mutex<Option<CatchupCapability>>> =
+            Arc::new(std::sync::Mutex::new(None));
         let cluster_authenticator = Arc::new(ClusterAuthenticator {
             expected_token: Arc::from(auth.cluster_token.clone()),
             voters: Arc::new(voters.iter().copied().collect()),
             node: node.clone(),
+            driver: driver.clone(),
+            catchup: catchup_capability.clone(),
         });
         let raft_service = RaftGrpcService::new(id, transport.inbox_sender(), discovery.clone())
             .with_registration(backend as Arc<dyn RegistrationBackend>);
@@ -1873,6 +1991,7 @@ impl NodeRuntime {
             campaign_started: false,
             initial_proposal: None,
             registration_receipt: None,
+            catchup_capability,
             next_discovery: Instant::now(),
             next_advertised_endpoint_probe: Instant::now(),
         })
@@ -2345,7 +2464,25 @@ impl NodeRuntime {
                     )
                 },
             ) {
-                WalkOutcome::Registered(receipt) => {
+                WalkOutcome::Registered { receipt, via } => {
+                    // The transport half of the fresh-joiner catch-22: the
+                    // leader that minted this receipt must be routable
+                    // BEFORE the catalog can name it, or this node's raft
+                    // responses are dropped and catch-up never starts. The
+                    // endpoint is the one this node just successfully
+                    // registered against (not an unvalidated hint), and
+                    // the applied catalog overwrites it on first sync —
+                    // mirror of the leader-side eager register_peer.
+                    self.transport.register_peer(via.0, via.1);
+                    // The ONLY install site of the catch-up capability, and
+                    // it is inside the typed Registered arm: InvalidTicket
+                    // and every Unconfirmed reason are structurally unable
+                    // to install one.
+                    *self
+                        .catchup_capability
+                        .lock()
+                        .expect("catchup capability slot poisoned") =
+                        Some(CatchupCapability::from_receipt(&receipt));
                     self.registration_receipt = Some(receipt);
                 }
                 // Recorded in the observation (typed) and the next run-loop
@@ -2871,7 +3008,7 @@ mod tests {
             },
         );
         assert!(
-            matches!(got, WalkOutcome::Registered(_)),
+            matches!(got, WalkOutcome::Registered { .. }),
             "must register by following the hint to the non-seed leader \
              (the seeds-only loop dies here with endless not_leader)"
         );
@@ -3067,7 +3204,7 @@ mod tests {
             },
         );
         assert!(
-            matches!(got, WalkOutcome::Registered(_)),
+            matches!(got, WalkOutcome::Registered { .. }),
             "the fresh hint must win after one stale hop"
         );
         assert_eq!(dialed, vec![seeds[0].1, stale, real]);
@@ -4153,14 +4290,24 @@ mod tests {
         ));
         let _ = fs::remove_dir_all(&dir);
         let (wal, _) = WalEngine::open(dir.join("catalog.wal")).unwrap();
+        let wal = Arc::new(wal);
         let peer = Arc::new(RaftPeer::new(NodeId(1), META_REGION_0, &[NodeId(1)]).unwrap());
         let node = Arc::new(
-            Node::with_raft_and_engine(NodeId(1), Config::default(), peer, Arc::new(wal)).unwrap(),
+            Node::with_raft_and_engine(NodeId(1), Config::default(), peer.clone(), wal.clone())
+                .unwrap(),
+        );
+        let hub = InProcHub::new();
+        let driver = NodeDriver::new(
+            peer,
+            Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
+            MemStateMachine::with_engine(wal).unwrap(),
         );
         let authenticator = ClusterAuthenticator {
             expected_token: Arc::from("secret"),
             voters: Arc::new([NodeId(1), NodeId(2)].into_iter().collect()),
             node,
+            driver,
+            catchup: Arc::new(std::sync::Mutex::new(None)),
         };
         let mut metadata = MetadataMap::new();
         assert_eq!(
@@ -4181,6 +4328,154 @@ mod tests {
         assert_eq!(auth.auth_kind, AuthKind::Node);
         assert_eq!(auth.principal.as_ref(), "node:2");
         let _ = fs::remove_dir_all(dir);
+    }
+
+    /// Authenticator + armable catalog for the catch-up-window cells. The
+    /// capability content here is synthetic (the WINDOW TRANSITION on a
+    /// production-minted receipt lives in the hint-follow product-chain
+    /// test); these cells pin the authenticator's DECISION STRUCTURE:
+    /// membership, explicit revocation, and the two catalog-failure arms.
+    struct CatchupAuthHarness {
+        authenticator: ClusterAuthenticator<kv9_raft::rawnode::MemStorage, FaultyEngine<MemEngine>>,
+        engine: Arc<FaultyEngine<MemEngine>>,
+        node: Arc<Node<FaultyEngine<MemEngine>>>,
+    }
+
+    fn catchup_auth_harness() -> CatchupAuthHarness {
+        let engine = Arc::new(FaultyEngine::new(MemEngine::new()));
+        let peer = Arc::new(RaftPeer::new(NodeId(1), META_REGION_0, &[NodeId(1)]).unwrap());
+        let node = Arc::new(
+            Node::with_raft_and_engine(NodeId(1), Config::default(), peer.clone(), engine.clone())
+                .unwrap(),
+        );
+        let hub = InProcHub::new();
+        let driver = NodeDriver::new(
+            peer,
+            Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
+            MemStateMachine::with_engine(engine.clone()).unwrap(),
+        );
+        // A capability naming node 4, with a barrier far ahead of this
+        // fresh driver's (empty) watermark: the window is OPEN.
+        let catchup = Arc::new(std::sync::Mutex::new(Some(CatchupCapability {
+            members: [NodeId(4)].into_iter().collect(),
+            receipt_position: DriverAppliedPosition {
+                term: 1,
+                index: 1_000,
+            },
+        })));
+        CatchupAuthHarness {
+            authenticator: ClusterAuthenticator {
+                expected_token: Arc::from("secret"),
+                voters: Arc::new([NodeId(1), NodeId(2), NodeId(3)].into_iter().collect()),
+                node: node.clone(),
+                driver,
+                catchup,
+            },
+            engine,
+            node,
+        }
+    }
+
+    fn cluster_metadata(sender: u64) -> MetadataMap {
+        let mut metadata = MetadataMap::new();
+        metadata.insert(CLUSTER_TOKEN_KEY, "secret".parse().unwrap());
+        metadata.insert(NODE_ID_KEY, sender.to_string().parse().unwrap());
+        metadata
+    }
+
+    /// Window membership is exact: a receipt member absent from the catalog
+    /// passes while behind; a sender outside the receipt set is refused on
+    /// the same catalog state, same watermark, same token.
+    #[test]
+    fn the_catchup_window_admits_receipt_members_and_only_receipt_members() {
+        let harness = catchup_auth_harness();
+        let admitted = harness.authenticator.authenticate(&cluster_metadata(4));
+        assert!(
+            admitted.is_ok(),
+            "a receipt member absent from the empty catalog must be admitted \
+             while behind the barrier: {admitted:?}"
+        );
+        assert_eq!(
+            harness
+                .authenticator
+                .authenticate(&cluster_metadata(9))
+                .unwrap_err()
+                .code(),
+            Code::PermissionDenied,
+            "a sender outside the receipt member set must be refused even \
+             with the window open"
+        );
+    }
+
+    /// An explicit applied revocation beats the window: the fallback exists
+    /// for catalog ABSENCE, never for overriding an applied verdict.
+    #[test]
+    fn an_explicit_revocation_beats_the_catchup_window() {
+        let harness = catchup_auth_harness();
+        {
+            let mut txn = harness.node.meta_raft.store.begin().unwrap();
+            kv9_meta::admission::initialize_cluster(
+                &mut txn,
+                kv9_common::ClusterId::from_bytes([7; 16]),
+                1,
+            )
+            .unwrap();
+            kv9_meta::admission::admit_node(
+                &mut txn,
+                NodeId(4),
+                "127.0.0.1:29999",
+                kv9_meta::admission::AdmittedRole::Learner,
+                u64::MAX,
+            )
+            .unwrap();
+            kv9_meta::admission::revoke_admission(&mut txn, NodeId(4)).unwrap();
+            txn.commit().unwrap();
+        }
+        assert_eq!(
+            harness
+                .authenticator
+                .authenticate(&cluster_metadata(4))
+                .unwrap_err()
+                .code(),
+            Code::PermissionDenied,
+            "a revoked sender must be refused even though it is in the \
+             receipt member set and the window is still open"
+        );
+    }
+
+    /// Both catalog-failure arms reject WITHOUT consulting the window — a
+    /// failed read is a failed read, never "not caught up yet". The two
+    /// switches are armed separately (Ren's boundary: one switch makes
+    /// `begin()` fail first and the read-through arm is never reached).
+    #[test]
+    fn a_failed_catalog_read_rejects_and_never_falls_back_to_the_window() {
+        // Arm 1: snapshot open (`begin`) fails.
+        let harness = catchup_auth_harness();
+        harness.engine.start_failing_snapshots();
+        assert_eq!(
+            harness
+                .authenticator
+                .authenticate(&cluster_metadata(4))
+                .unwrap_err()
+                .code(),
+            Code::Unavailable,
+            "a failed catalog snapshot-open must reject; the open window \
+             (sender IS a receipt member) must not be consulted"
+        );
+
+        // Arm 2: snapshot opens, the read-through fails.
+        let harness = catchup_auth_harness();
+        harness.engine.start_failing_reads();
+        assert_eq!(
+            harness
+                .authenticator
+                .authenticate(&cluster_metadata(4))
+                .unwrap_err()
+                .code(),
+            Code::Unavailable,
+            "a failed catalog read-through must reject; the open window \
+             (sender IS a receipt member) must not be consulted"
+        );
     }
 
     #[test]
@@ -4669,13 +4964,65 @@ mod tests {
             )
             .unwrap(),
         );
+
+        // Freeze n5's APPLY half (raft and registration keep running) so the
+        // catch-up window can be probed deterministically on BOTH sides of
+        // its production-minted barrier: first while provably behind, then
+        // after the exact receipt command has applied.
+        rts[4].driver.pause_apply(true);
         wait_for(
             &mut rts,
             60,
             "n5 must register by following the wire hint to the non-seed \
              leader (the seeds-only loop dies here in endless not_leader — \
              the 972-loop master red)",
+            |rts| rts[4].registration_receipt.is_some(),
+        );
+        let capability = rts[4]
+            .catchup_capability
+            .lock()
+            .unwrap()
+            .clone()
+            .expect("the typed Registered outcome installs the capability");
+        let watermark = rts[4].driver.driver_applied();
+        assert!(
+            watermark.is_none_or(|wm| wm.index < capability.receipt_position.index),
+            "precondition: with apply frozen the joiner is still BEHIND the \
+             receipt barrier"
+        );
+        assert!(
+            capability.admits(NodeId(4), watermark),
+            "behind the production receipt barrier, the non-seed leader — a \
+             receipt member with no row in the joiner's catalog — must be \
+             admitted: without this window the joiner can never receive the \
+             very stream that fills its catalog (the catch-up deadlock)"
+        );
+        assert!(
+            !capability.admits(NodeId(9), watermark),
+            "a sender outside the receipt member set is refused even while \
+             the window is open"
+        );
+        rts[4].driver.pause_apply(false);
+        wait_for(
+            &mut rts,
+            60,
+            "n5 catches up from the non-seed leader and reaches Serving",
             |rts| rts[4].node.meta.lock().unwrap().bootstrap.is_serving(),
+        );
+
+        // The window transition on the SAME production capability: Serving
+        // implies the exact receipt command applied, and from that instant
+        // the fallback answers no to the very sender it admitted above.
+        // Deleting the barrier comparison in `admits` reds exactly here.
+        let watermark = rts[4].driver.driver_applied();
+        assert!(
+            watermark.is_some_and(|wm| wm.index >= capability.receipt_position.index),
+            "precondition: Serving implies the exact receipt command applied"
+        );
+        assert!(
+            !capability.admits(NodeId(4), watermark),
+            "at and after the exact receipt command the window is closed — \
+             the sender it existed for is refused, only the catalog speaks"
         );
 
         // The receipt chain proves HOW it registered: the walk's typed
