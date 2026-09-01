@@ -20,7 +20,10 @@ use protobuf::Message as PbMessage;
 use raft::eraftpb::EntryType;
 use raft::prelude::{ConfChange, ConfChangeV2};
 use raft::prelude::{ConfState, Entry, HardState, Message};
-use raft::storage::MemStorage;
+// Re-exported publicly: `RaftPeer::new` already returns `RaftPeer<MemStorage>`
+// on the public surface, so consumers (e.g. kv9-server's in-proc harnesses)
+// must be able to NAME the type they are already holding.
+pub use raft::storage::MemStorage;
 use raft::{Config, RawNode, ReadOnlyOption, ReadState, StateRole};
 use slog::{o, Discard, Logger};
 
