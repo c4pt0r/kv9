@@ -344,6 +344,69 @@ fn region_for_key_hits_and_boundaries() {
     assert!(t.region_for_key(KeyspaceId(6), b"a").unwrap().is_none());
 }
 
+/// The by-id reader for the task #48 fence adjudicator: same-snapshot (caller
+/// txn), full row decoded by the ONE decoder, and an authoritative absence is
+/// `Ok(None)` — the log-fact the adjudicator turns into a deterministic
+/// rejection, distinct from `Err` (the read itself failing).
+#[test]
+fn region_by_id_reads_the_authoritative_row_in_the_callers_snapshot() {
+    let s = store();
+    seed_routing(&s);
+
+    let txn = s.begin().unwrap();
+    let region = Tables::region_by_id_in(&txn, RegionId(100))
+        .unwrap()
+        .expect("seeded region 100 must resolve by id");
+    // The epoch pair is what the adjudicator compares — assert it by name.
+    assert_eq!(
+        (region.epoch_conf, region.epoch_ver),
+        (1, 1),
+        "the decoded row must carry the seeded epoch"
+    );
+    assert_eq!(region.keyspace_id, KeyspaceId(7));
+    assert_eq!(
+        (region.start_key.as_slice(), region.end_key.as_slice()),
+        (b"a".as_slice(), b"b".as_slice())
+    );
+
+    // Authoritative absence is a log fact, not an error.
+    assert!(
+        Tables::region_by_id_in(&txn, RegionId(999))
+            .unwrap()
+            .is_none(),
+        "an id the catalog never held must be Ok(None)"
+    );
+
+    // Same-snapshot semantics: a region inserted by an uncommitted writer txn
+    // is visible to ITS OWN reads and invisible to a concurrent snapshot —
+    // the property that lets the adjudicator share the apply's view.
+    let mut writer = s.begin().unwrap();
+    let mut row300 = RowValue::new();
+    row300.set(ColumnId(1), ColumnValue::Uint(300));
+    row300.set(ColumnId(2), ColumnValue::Uint(7));
+    row300.set(ColumnId(3), ColumnValue::Bytes(b"m".to_vec()));
+    row300.set(ColumnId(4), ColumnValue::Bytes(b"n".to_vec()));
+    row300.set(ColumnId(5), ColumnValue::Uint(3));
+    row300.set(ColumnId(6), ColumnValue::Uint(9));
+    row300.set(ColumnId(7), ColumnValue::Uint(0));
+    writer
+        .insert(&schema::REGIONS_DESC, &[memcmp_uint(300)], row300)
+        .unwrap();
+    assert_eq!(
+        Tables::region_by_id_in(&writer, RegionId(300))
+            .unwrap()
+            .map(|r| (r.epoch_conf, r.epoch_ver)),
+        Some((3, 9)),
+        "read-your-writes inside the owning txn"
+    );
+    assert!(
+        Tables::region_by_id_in(&txn, RegionId(300))
+            .unwrap()
+            .is_none(),
+        "an uncommitted region must be invisible to a concurrent snapshot"
+    );
+}
+
 #[test]
 fn regions_on_node_join() {
     let s = store();

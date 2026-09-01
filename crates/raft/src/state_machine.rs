@@ -32,6 +32,12 @@ pub struct ApplyResult {
     /// Bytes returned to the proposer, if the command produces a read-back value
     /// (e.g. a conf-change ack). `None` for plain writes.
     pub response: Option<Vec<u8>>,
+    /// `true` when this entry was a [`Command::Fenced`] whose fence FAILED
+    /// adjudication: the entry was logically rejected — no data written — but it
+    /// still advanced the applied watermark like any applied entry. The proposal
+    /// receipt path (task #28) surfaces this to the proposer; it is a typed field
+    /// here so the verdict never has to be smuggled through `response` bytes.
+    pub fence_rejected: bool,
 }
 
 impl ApplyResult {
@@ -39,8 +45,41 @@ impl ApplyResult {
         ApplyResult {
             applied_index: index,
             response: None,
+            fence_rejected: false,
         }
     }
+
+    /// The entry's fence failed adjudication: watermark advanced, nothing written.
+    pub fn fence_rejected(index: LogIndex) -> Self {
+        ApplyResult {
+            applied_index: index,
+            response: None,
+            fence_rejected: true,
+        }
+    }
+}
+
+/// Adjudicates a [`crate::RegionFence`] against the region state at the calling
+/// entry's ordered-apply position (task #48 layer 2).
+///
+/// Implementations live ABOVE this crate (the server provides one backed by the
+/// region catalog, comparing with `RegionEpoch::is_fresh_as` — the same predicate
+/// the router's `check_epoch` uses, so propose-side and apply-side verdicts cannot
+/// drift). The verdict must be a pure function of state established by the same
+/// log: every replica applies the same entries in the same order, reads the same
+/// epoch, and reaches the same verdict.
+pub trait FenceAdjudicator: Send + Sync {
+    /// `Ok(true)` — the proposer's expected epoch is still fresh, the fenced ops
+    /// may apply. `Ok(false)` — authoritatively stale: the entry is logically
+    /// rejected (watermark still advances). `Err` — the authoritative epoch
+    /// could NOT be read (engine/decode/catalog failure): this is a third
+    /// state, not a verdict, and it propagates as an apply error (driver
+    /// poisons; data and watermark untouched). Crushing it into `false` would
+    /// dress a node-local read failure as a deterministic rejection and
+    /// consume the log position; into `true`, an unfenced write — either way
+    /// replicas whose reads fail diverge from replicas whose reads succeed
+    /// (review round).
+    fn is_fresh(&self, fence: &crate::RegionFence) -> Result<bool>;
 }
 
 /// A deterministic raft state machine (ROADMAP Phase 1).
@@ -64,6 +103,13 @@ pub trait StateMachine: Send + Sync {
 pub struct MemStateMachine<E: Engine = MemEngine> {
     engine: Arc<E>,
     applied: LogIndex,
+    /// Adjudicates [`Command::Fenced`] entries. `None` — the default — makes a
+    /// fenced entry a typed APPLY ERROR (driver poisons): adjudicator presence
+    /// is node-local configuration, not log state, so a node without one must
+    /// refuse rather than pick a verdict that differently-configured replicas
+    /// would not share. The server injects the catalog-backed adjudicator at
+    /// startup, before any fenced proposal is possible.
+    adjudicator: Option<Arc<dyn FenceAdjudicator>>,
 }
 
 impl MemStateMachine<MemEngine> {
@@ -110,7 +156,15 @@ impl<E: Engine> MemStateMachine<E> {
         Ok(MemStateMachine {
             engine,
             applied: LogIndex(applied),
+            adjudicator: None,
         })
+    }
+
+    /// Install the fence adjudicator (server startup; see [`FenceAdjudicator`]).
+    /// Until this is called a committed [`Command::Fenced`] entry is a typed
+    /// apply error, not a verdict.
+    pub fn set_fence_adjudicator(&mut self, adjudicator: Arc<dyn FenceAdjudicator>) {
+        self.adjudicator = Some(adjudicator);
     }
 
     /// The backing engine — the KV the `meta` catalog reads/writes (ROADMAP Phase 1).
@@ -136,7 +190,43 @@ impl<E: Engine> MemStateMachine<E> {
         // only in memory would regress the watermark on restart and re-deliver
         // entries the group considers applied; correctness would again rest on
         // the all-commands-are-idempotent coincidence this change removes.
-        let mut batch = cmd.to_write_batch();
+        //
+        // A Fenced entry is adjudicated HERE, inside ordered apply, because the
+        // verdict must be a pure function of log-established state (task #48
+        // layer 2). That same rule forbids a local default: whether an
+        // adjudicator is INSTALLED is node-local configuration, not log state,
+        // so a node without one must refuse the entry as an apply error — the
+        // driver poisons, exactly like decoding an unknown entry version —
+        // rather than "reject", which would let differently-configured replicas
+        // apply the same committed entry to different states.
+        //
+        // A true stale-fence rejection IS a log-determined verdict, and it is a
+        // logical outcome, not an apply failure: the watermark rides the same
+        // atomic batch as an accepted entry, so a rejected entry advances it
+        // identically — treating rejection as an error would stall the
+        // watermark on every replica.
+        let (mut batch, fence_rejected) = match cmd {
+            Command::Fenced { fence, inner } => {
+                let adjudicator = self.adjudicator.as_ref().ok_or_else(|| {
+                    kv9_common::Error::Raft(
+                        "committed fenced entry on a node with no fence adjudicator: \
+                         this node cannot compute the log-determined verdict and must \
+                         not guess (install the adjudicator before enabling fenced \
+                         proposals)"
+                            .into(),
+                    )
+                })?;
+                // `?` on the verdict itself: an adjudicator whose authoritative
+                // read fails has no verdict to offer — that propagates as an
+                // apply error (poison), never as a fabricated Fresh/Stale.
+                if adjudicator.is_fresh(fence)? {
+                    (inner.to_write_batch(), false)
+                } else {
+                    (kv9_engine::WriteBatch::new(), true)
+                }
+            }
+            _ => (cmd.to_write_batch()?, false),
+        };
         batch.put(
             ColumnFamily::Default,
             APPLIED_INDEX_KEY.to_vec(),
@@ -144,7 +234,11 @@ impl<E: Engine> MemStateMachine<E> {
         );
         self.engine.write(batch)?;
         self.applied = index;
-        Ok(ApplyResult::write_ok(index))
+        if fence_rejected {
+            Ok(ApplyResult::fence_rejected(index))
+        } else {
+            Ok(ApplyResult::write_ok(index))
+        }
     }
 
     /// Direct read-back from the state machine's KV (the `get` of the round-trip).
@@ -369,6 +463,162 @@ mod tests {
         assert_eq!(
             sm.get(ColumnFamily::Default, b"k").unwrap(),
             Some(b"v".to_vec())
+        );
+    }
+
+    /// A fixed-verdict adjudicator for exercising both fence outcomes.
+    struct Verdict(bool);
+    impl FenceAdjudicator for Verdict {
+        fn is_fresh(&self, _fence: &crate::RegionFence) -> Result<bool> {
+            Ok(self.0)
+        }
+    }
+
+    /// An adjudicator whose authoritative read always fails — the third state.
+    struct ReadFails;
+    impl FenceAdjudicator for ReadFails {
+        fn is_fresh(&self, _fence: &crate::RegionFence) -> Result<bool> {
+            Err(kv9_common::Error::Engine(
+                "authoritative epoch read failed".into(),
+            ))
+        }
+    }
+
+    fn fenced_put(key: &[u8], value: &[u8]) -> Command {
+        Command::Fenced {
+            fence: crate::RegionFence {
+                region_id: 1,
+                conf_ver: 1,
+                version: 1,
+            },
+            inner: crate::FencedInner::Write {
+                ops: vec![crate::KvOp::Put {
+                    cf: 0,
+                    key: key.to_vec(),
+                    value: value.to_vec(),
+                }],
+            },
+        }
+    }
+
+    /// The load-bearing pair for task #48 layer 2: a rejected fence writes no
+    /// data but MUST advance the durable watermark exactly like an accepted
+    /// entry — the mutant that turns rejection into an apply error (or skips
+    /// the watermark write on the rejection path) must go red on the watermark
+    /// assertions, the stall symptom Ren predicted.
+    #[test]
+    fn a_rejected_fence_advances_the_watermark_and_writes_nothing() {
+        let engine = Arc::new(MemEngine::new());
+        let mut sm = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
+        sm.set_fence_adjudicator(Arc::new(Verdict(false)));
+
+        let result = sm
+            .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
+            .expect("a rejected fence is a logical outcome, never an apply error");
+        assert!(
+            result.fence_rejected,
+            "the verdict must be typed, not implied"
+        );
+        assert_eq!(
+            sm.get(ColumnFamily::Default, b"k").unwrap(),
+            None,
+            "a rejected fence must write nothing"
+        );
+        assert_eq!(
+            sm.applied_index(),
+            LogIndex(1),
+            "a rejected fence must still advance the applied watermark"
+        );
+        // The advance must be DURABLE (same atomic batch as an accepted entry):
+        // a state machine re-opened over the same engine resumes past the
+        // rejected entry instead of re-delivering it.
+        drop(sm);
+        let reopened = MemStateMachine::with_engine(engine).unwrap();
+        assert_eq!(
+            reopened.applied_index(),
+            LogIndex(1),
+            "the rejected entry's watermark advance must be durable"
+        );
+    }
+
+    #[test]
+    fn a_fresh_fence_applies_the_inner_ops() {
+        let mut sm = MemStateMachine::new();
+        sm.set_fence_adjudicator(Arc::new(Verdict(true)));
+        let result = sm
+            .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
+            .unwrap();
+        assert!(!result.fence_rejected);
+        assert_eq!(
+            sm.get(ColumnFamily::Default, b"k").unwrap(),
+            Some(b"v".to_vec()),
+            "a fresh fence must apply the inner ops"
+        );
+    }
+
+    /// No adjudicator installed = typed apply ERROR, and the watermark must NOT
+    /// advance. Adjudicator presence is node-local configuration, not log
+    /// state: a local "reject" default would let differently-configured
+    /// replicas apply the same committed entry to different states, and an
+    /// empty-batch fallback would report success while silently dropping the
+    /// write (review round). The driver's poison-on-apply-error is the correct
+    /// consequence — same family as decoding an unknown entry version.
+    #[test]
+    fn without_an_adjudicator_a_fence_is_a_typed_apply_error() {
+        let mut sm = MemStateMachine::new();
+        let err = sm
+            .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
+            .expect_err("a node without an adjudicator must refuse, not guess");
+        assert!(
+            err.to_string().contains("no fence adjudicator"),
+            "the refusal must name the missing adjudicator: {err}"
+        );
+        assert_eq!(sm.get(ColumnFamily::Default, b"k").unwrap(), None);
+        assert_eq!(
+            sm.applied_index(),
+            LogIndex(0),
+            "a refused entry must not advance the watermark"
+        );
+    }
+
+    /// The adjudicator's authoritative read failing is a THIRD state, not a
+    /// verdict: the error must propagate with the adjudicator's own message
+    /// recognizable in it.
+    #[test]
+    fn an_adjudicator_read_failure_is_an_apply_error_not_a_verdict() {
+        let mut sm = MemStateMachine::new();
+        sm.set_fence_adjudicator(Arc::new(ReadFails));
+        let err = sm
+            .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
+            .expect_err("a failed authoritative read must propagate, not become a verdict");
+        assert!(
+            err.to_string().contains("authoritative epoch read failed"),
+            "the adjudicator's own error must survive recognizably: {err}"
+        );
+    }
+
+    /// Split from the error-identity test on purpose: this one ignores the
+    /// call's Ok/Err entirely and asserts only STATE, so the mutant that
+    /// crushes `Err` into `Ok(false)` — dressing a node-local read failure as
+    /// a deterministic rejection — cannot hide behind the `expect_err` firing
+    /// first. Under that mutant the fabricated rejection consumes the log
+    /// position, and THIS test's watermark assertion is the one that goes red
+    /// (with multiple assertions in one test, "it went red" doesn't say which
+    /// one guards; one mutant, one owning assertion).
+    #[test]
+    fn a_failed_adjudicator_read_consumes_nothing() {
+        let mut sm = MemStateMachine::new();
+        sm.set_fence_adjudicator(Arc::new(ReadFails));
+        let _ = sm.apply_command(LogIndex(1), &fenced_put(b"k", b"v"));
+        assert_eq!(
+            sm.get(ColumnFamily::Default, b"k").unwrap(),
+            None,
+            "a failed read must not write data"
+        );
+        assert_eq!(
+            sm.applied_index(),
+            LogIndex(0),
+            "a failed read must not consume the log position"
         );
     }
 }

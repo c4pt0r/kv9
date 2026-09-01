@@ -300,6 +300,27 @@ impl<'a, E: Engine> Tables<'a, E> {
         }
     }
 
+    /// Point get — *region by id*, against a CALLER-OWNED transaction (the
+    /// txn-scoped shape of [`Self::keyspace_in`]).
+    ///
+    /// Built for the task #48 fence adjudicator, which holds a `RegionFence`
+    /// (id + expected epoch, no key) and must read the authoritative epoch
+    /// from the SAME snapshot as the apply it serves — opening its own view
+    /// here would let a commit land between the epoch read and the apply and
+    /// stitch a verdict out of two moments. `Ok(None)` means the catalog
+    /// authoritatively has no such region (a log fact — e.g. consumed by a
+    /// split — which the adjudicator maps to a deterministic `Ok(false)`
+    /// rejection); `Err` is the read itself failing (a local fact → apply
+    /// error). Decoding stays HERE so exactly one region decoder exists —
+    /// a server-side copy would drift, and drift here reads a wrong epoch,
+    /// which is a wrong verdict, which is replica divergence.
+    pub fn region_by_id_in(txn: &MetaTxn<'_, E>, id: RegionId) -> Result<Option<Region>> {
+        let Some(row) = txn.get(&schema::REGIONS_DESC, &[memcmp_uint(id.0)])? else {
+            return Ok(None);
+        };
+        Ok(Some(decode_region(id, &row.value)))
+    }
+
     /// Join — *txn group for key K in keyspace KS* → `index_scan(txn_groups,
     /// by_keyspace, KS)`, pick the sub-range ∋ K (METADATA-CATALOG §4).
     ///
