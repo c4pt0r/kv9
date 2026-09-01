@@ -28,7 +28,9 @@ use kv9_meta::schema::{ColumnId, NODES_DESC, SCHEMA_VERSION_DESC};
 use kv9_meta::tables::Tables;
 use kv9_meta::{Bootstrap, BootstrapEvent, BootstrapState};
 use kv9_meta::{ColumnValue, RowValue};
-use kv9_raft::driver::{ApplyWaitError, ApplyWaitOutcome, DriverAppliedPosition, NodeDriver};
+use kv9_raft::driver::{
+    ApplyWaitError, ApplyWaitOutcome, DriverAppliedPosition, NodeDriver, ReadBarrier,
+};
 use kv9_raft::grpc::{
     grpc_discover, grpc_register, pb::kv9_raft_server::Kv9RaftServer, DiscoveryError,
     GrpcDiscoveryState, GrpcTransport, JoinIdentity, LeaderHint, RaftGrpcService, RegisterError,
@@ -1614,16 +1616,50 @@ impl RuntimeBackend {
         )
     }
 
-    /// A read view over applied state, refused unless this node currently leads.
+    /// A quorum-ESTABLISHED read view (task #28 seam consumer; the server
+    /// half of task #27 item 4). LINEARIZABLE: the ReadIndex barrier
+    /// round-trip runs FIRST — `ReadOnlyOption::Safe` means the returned
+    /// index is valid only after a live quorum acknowledged this leader —
+    /// and the returned credential is exchanged, consumed by value, for
+    /// exactly one engine snapshot taken strictly AFTER the barrier.
     ///
-    /// Not linearizable: `check_quorum` bounds how long a deposed leader keeps believing
-    /// it leads, but within that window this returns stale data. See `LeaderRead`.
+    /// Typed failures surface before any snapshot exists: `NotLeader{hint}`
+    /// re-routes the caller; `Unconfirmed{QuorumConfirmation}` is the
+    /// isolated self-believed leader (no live quorum will confirm);
+    /// `Unconfirmed{ApplyCatchUp}` means the confirmed index did not apply
+    /// locally in time. All three mean the read MUST NOT be served — the
+    /// deposed-leader stale window that the previous leadership-check-only
+    /// implementation left open is exactly what the barrier closes.
+    ///
+    /// `is_leader` in the returned tuple is always `true` on success (the
+    /// barrier proves it); it is kept so `LeaderRead::new`'s signature — a
+    /// kv9-txn face — stays untouched in this commit.
     fn leader_read(&self) -> Result<(Box<dyn ReadView + '_>, Option<NodeId>, bool)> {
-        let status = self.driver.status();
-        let is_leader = status.role == Role::Leader;
-        let hint = status.leader_id;
-        let view = self.node.meta_raft.store.engine().snapshot()?;
-        Ok((view, hint, is_leader))
+        let barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        let hint = self.driver.status().leader_id;
+        let view = self.established_view(barrier)?;
+        Ok((view, hint, true))
+    }
+
+    /// Exchange a read barrier for exactly ONE engine snapshot — the only
+    /// read-path snapshot constructor, and the only place in the server
+    /// crate that takes an engine snapshot at all.
+    ///
+    /// Inventory invariant (re-runnable; treat any other count as a signal
+    /// that must be explained, not absorbed):
+    ///   git grep -n -F '.snapshot()' <head> -- crates/server/src
+    /// hits exactly 1 line — this function. `Engine::snapshot()` is a
+    /// public API and the type system cannot forbid a future second call
+    /// site; what IS mechanically held is (a) `ReadBarrier` is neither
+    /// Clone nor Copy (compile-time probe in kv9-raft), so one barrier
+    /// yields one view and loop reuse is unrepresentable, and (b) the
+    /// committed-but-unapplied behavioral regression below reds if the
+    /// production read path takes its snapshot before the barrier or
+    /// bypasses it.
+    fn established_view(&self, barrier: ReadBarrier) -> Result<Box<dyn ReadView + '_>> {
+        // Consumed: the credential cannot be presented twice.
+        let _ = barrier;
+        self.node.meta_raft.store.engine().snapshot()
     }
 
     /// Replicate one planned batch and wait for its exact position to apply.
@@ -1660,6 +1696,12 @@ impl RuntimeBackend {
 
 /// How long to wait for a raw write's own `(term, index)` to reach the state machine.
 const RAW_APPLY_DEADLINE: Duration = Duration::from_secs(10);
+
+/// How long an establishing read waits for its quorum barrier + local apply
+/// catch-up before failing typed (`ReadIndexError::Unconfirmed`). Bounds the
+/// worst-case read latency when the quorum is unreachable (an isolated
+/// self-believed leader waits this long, then fails — it never serves stale).
+const READ_BARRIER_DEADLINE: Duration = Duration::from_secs(2);
 
 impl RawApi for RuntimeBackend {
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>> {
@@ -5337,6 +5379,355 @@ mod tests {
 
         drop(rts);
         let _ = fs::remove_dir_all(&base);
+    }
+
+    /// A Serving 3-voter cluster over real disks and real gRPC — the same
+    /// construction the hint-follow product-chain test opens with, extracted
+    /// for the establishing-read cells (that test's copy stays inline: it is
+    /// a reviewed object and its scene continues past the trio).
+    fn serving_trio(
+        tag: &str,
+    ) -> (
+        Vec<NodeRuntime>,
+        RootDescriptor,
+        Vec<std::net::SocketAddr>,
+        PathBuf,
+    ) {
+        let base = std::env::temp_dir().join(format!(
+            "kv9-{tag}-{}-{}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let addrs: Vec<std::net::SocketAddr> = (0..3).map(|_| free_addr_for_e2e()).collect();
+        let voters = (1..=3u64)
+            .map(|id| {
+                Ok(kv9_common::RootVoter {
+                    node_id: NodeId(id),
+                    addr: addrs[(id - 1) as usize],
+                    store_incarnation: StoreIncarnation::mint()?,
+                })
+            })
+            .collect::<kv9_common::Result<Vec<_>>>()
+            .unwrap();
+        let root = RootDescriptor::new(
+            kv9_common::ClusterId::mint().unwrap(),
+            kv9_common::BootstrapGeneration::mint().unwrap(),
+            voters,
+            b"establishing-read-bootstrap-credential",
+        )
+        .unwrap();
+        let mut rts: Vec<NodeRuntime> = (1..=3u64)
+            .map(|id| {
+                NodeRuntime::start_with_root(
+                    NodeId(id),
+                    Config {
+                        addr: addrs[(id - 1) as usize].to_string(),
+                        data_dir: base.join(format!("n{id}")).to_string_lossy().into_owned(),
+                        join: Vec::new(),
+                        wal_streams: 1,
+                        replication_factor: 3,
+                    },
+                    RuntimeAuth {
+                        cluster_token: "establishing-read-cluster-token".into(),
+                        client_tokens: vec![(
+                            "acceptance".into(),
+                            "establishing-read-token".into(),
+                        )],
+                    },
+                    root.clone(),
+                    StoreIdentity::for_voter(&root, NodeId(id)).unwrap(),
+                )
+                .unwrap()
+            })
+            .collect();
+        wait_for(&mut rts, 60, "establishing-read trio Serving", |rts| {
+            rts.iter()
+                .all(|rt| rt.node.meta.lock().unwrap().bootstrap.is_serving())
+        });
+        (rts, root, addrs, base)
+    }
+
+    /// The committed-but-unapplied window, end to end on the PRODUCT read
+    /// path (card cell c + the interface ruling's behavioral layer 2):
+    ///
+    /// 1. `v1` applied; then the leader's APPLY half is frozen and `v2`
+    ///    COMMITS under it — pinned by name as committed-but-unapplied.
+    /// 2. A `raw_get` starts and provably enters its read barrier while the
+    ///    freeze holds (pinned via the barrier mint counter) — so the key
+    ///    transitions committed→applied strictly INSIDE the barrier window,
+    ///    never before it (Cindy's precondition: without this, a stale view
+    ///    could miss `v2` for reasons other than snapshot order).
+    /// 3. BYPASS CONTROL, same instant: a read built the pre-establishing
+    ///    way (leadership check + direct engine snapshot, no barrier) serves
+    ///    the STALE view — it misses the committed `v2`. This is the exact
+    ///    defect the establishing seam closes, demonstrated in the same
+    ///    scene that proves the seam closes it. (Its direct `.snapshot()`
+    ///    call is the ONE deliberate non-seam use in this crate — listed in
+    ///    the seam doc inventory.)
+    /// 4. Unfreeze: the established read returns and MUST serve `v2`.
+    ///    Moving the production snapshot before the barrier — or bypassing
+    ///    the credential — serves `v1` here and reds at the named assert.
+    #[test]
+    fn an_established_read_serves_the_committed_but_unapplied_write() {
+        let (rts, root, _addrs, base) = serving_trio("established-read");
+        let leader = cluster_leader(&rts).expect("a serving trio has a leader");
+        let backend = backend_view(&rts[leader], &root);
+        let created = backend
+            .create_keyspace(
+                "acceptance",
+                "lin",
+                TenantId::DEFAULT,
+                ApiType::Raw,
+                TxnGroupId(0),
+            )
+            .unwrap();
+        let location = backend
+            .get_region("acceptance", created.keyspace, b"k")
+            .unwrap();
+        let ctx = RequestContext {
+            keyspace: created.keyspace,
+            region_epoch: location.epoch,
+            caller: Some("acceptance".into()),
+        };
+        backend
+            .raw_put(&ctx, b"k".to_vec(), b"v1".to_vec())
+            .unwrap();
+
+        let driver = rts[leader].driver.clone();
+        driver.pause_apply(true);
+        std::thread::scope(|scope| {
+            let put_backend = backend_view(&rts[leader], &root);
+            let put_ctx = ctx.clone();
+            let put =
+                scope.spawn(move || put_backend.raw_put(&put_ctx, b"k".to_vec(), b"v2".to_vec()));
+
+            // NAMED PRECONDITION 1: v2 is committed-but-unapplied — the raft
+            // log accepted it while the frozen apply half has not.
+            let deadline = std::time::Instant::now() + Duration::from_secs(10);
+            loop {
+                let status = driver.status();
+                let applied = driver.driver_applied().map_or(0, |wm| wm.index);
+                if status.raft_committed > applied {
+                    break;
+                }
+                assert!(
+                    std::time::Instant::now() < deadline,
+                    "precondition: v2 must COMMIT while apply is frozen \
+                     (freeze stops apply, not commits)"
+                );
+                std::thread::sleep(Duration::from_millis(2));
+            }
+
+            let mints_before = driver.read_barriers_minted();
+            let get_backend = backend_view(&rts[leader], &root);
+            let get_ctx = ctx.clone();
+            let get = scope.spawn(move || get_backend.raw_get(&get_ctx, b"k"));
+
+            // NAMED PRECONDITION 2: the read has minted its barrier while
+            // the freeze still holds — v2 becomes applied strictly INSIDE
+            // the barrier window. Without this pin, "the stale view misses
+            // v2" could hold for timing reasons unrelated to snapshot order.
+            let deadline = std::time::Instant::now() + Duration::from_secs(10);
+            while driver.read_barriers_minted() == mints_before {
+                assert!(
+                    std::time::Instant::now() < deadline,
+                    "precondition: the established read must mint its barrier \
+                     while apply is still frozen"
+                );
+                std::thread::sleep(Duration::from_millis(1));
+            }
+
+            // BYPASS CONTROL (card cell c): the pre-establishing read shape —
+            // leadership believed, snapshot taken directly, NO barrier. It
+            // serves the stale view: v2, though committed, is invisible.
+            let stale_view = rts[leader]
+                .node
+                .meta_raft
+                .store
+                .engine()
+                .snapshot()
+                .unwrap();
+            let stale_read = LeaderRead::new(stale_view.as_ref(), true, None).unwrap();
+            let stale = RawExecutor.get(&stale_read, ctx.keyspace, b"k").unwrap();
+            assert_eq!(
+                stale.as_deref(),
+                Some(b"v1".as_slice()),
+                "bypass control: a read skipping the establishing seam must \
+                 serve the STALE view during the window — it misses the \
+                 committed-but-unapplied v2 (this is the defect the barrier \
+                 closes; if this ever sees v2 the control lost its teeth)"
+            );
+
+            driver.pause_apply(false);
+            put.join().unwrap().unwrap();
+            let got = get.join().unwrap().unwrap();
+            assert_eq!(
+                got.as_deref(),
+                Some(b"v2".as_slice()),
+                "the established read must serve every write committed before \
+                 its barrier — a production snapshot taken before the barrier \
+                 (or bypassing the credential) serves v1 and reds exactly here"
+            );
+        });
+        drop(rts);
+        let _ = fs::remove_dir_all(&base);
+    }
+
+    /// The re-route half on the product path: a FOLLOWER refuses an
+    /// establishing read with the TYPED NotLeader + hint (the post-deposition
+    /// family of the card's phase split — phase-independent on a follower, so
+    /// no deposition construction is needed to pin it).
+    #[test]
+    fn a_follower_refuses_an_establishing_read_with_a_typed_hint() {
+        let (rts, root, _addrs, base) = serving_trio("follower-read");
+        let leader = cluster_leader(&rts).expect("leader");
+        let leader_id = NodeId(leader as u64 + 1);
+        let follower = (0..3).find(|i| *i != leader).unwrap();
+        let err = match backend_view(&rts[follower], &root).leader_read() {
+            Err(err) => err,
+            Ok(_) => panic!("a follower must refuse an establishing read"),
+        };
+        assert!(
+            matches!(err, Error::NotLeader { leader: Some(id) } if id == leader_id),
+            "the refusal must be the TYPED NotLeader carrying the live leader \
+             hint (never a string, never a transport error): {err:?}"
+        );
+        drop(rts);
+        let _ = fs::remove_dir_all(&base);
+    }
+
+    /// The isolated self-believed leader, phase-split and typed at the SERVER
+    /// seam (card cell a; the driver-level halves live in kv9-raft):
+    ///
+    /// Phase 1 — pre-deposition, pinned: peers go silent under manual tick
+    /// control, the node still believes it leads (asserted immediately before
+    /// the read). The establishing read must fail as the TYPED
+    /// `ReadUnconfirmed { quorum_confirmed: false }` — a transport error
+    /// cannot satisfy this (the read path never touches the transport on
+    /// this node), and stale data is never served.
+    ///
+    /// Phase 2 — post-deposition: check_quorum's own discipline deposes the
+    /// silent-peer leader; the same call now fails typed NotLeader.
+    #[test]
+    fn an_isolated_leader_fails_establishing_typed_in_both_phases() {
+        use kv9_raft::transport::{InProcHub, RaftTransport};
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-isolated-establishing-{}-{:?}",
+            std::process::id(),
+            std::thread::current().id()
+        ));
+        let _ = fs::remove_dir_all(&dir);
+        let hub = InProcHub::new();
+        let ids = [NodeId(1), NodeId(2), NodeId(3)];
+        let mk = |id: NodeId| {
+            let (storage, _) =
+                DiskRaftStorage::open(&dir.join(format!("raft{}", id.0)), &[1, 2, 3]).unwrap();
+            let peer = Arc::new(RaftPeer::with_storage(id, META_REGION_0, storage).unwrap());
+            let (wal, _) = WalEngine::open(dir.join(format!("wal{}", id.0))).unwrap();
+            let wal = Arc::new(wal);
+            (
+                NodeDriver::new(
+                    peer.clone(),
+                    Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
+                    MemStateMachine::with_engine(wal.clone()).unwrap(),
+                ),
+                peer,
+                wal,
+            )
+        };
+        let (d1, p1, wal1) = mk(NodeId(1));
+        let (d2, _p2, _w2) = mk(NodeId(2));
+        let (d3, _p3, _w3) = mk(NodeId(3));
+        let _ = ids;
+        d1.peer().campaign().unwrap();
+        for _ in 0..300 {
+            d1.tick_and_step().unwrap();
+            d2.tick_and_step().unwrap();
+            d3.tick_and_step().unwrap();
+            if d1.status().role == Role::Leader {
+                break;
+            }
+        }
+        assert_eq!(d1.status().role, Role::Leader);
+        // Precondition (same pin as the driver-level isolation cell): the
+        // current-term barrier must be applied — live quorum contact has
+        // demonstrably happened — before the peers go silent.
+        for _ in 0..500 {
+            d1.tick_and_step().unwrap();
+            d2.tick_and_step().unwrap();
+            d3.tick_and_step().unwrap();
+            let s1 = d1.status();
+            if d1.driver_applied().is_some_and(|wm| wm.term == s1.term) {
+                break;
+            }
+        }
+        {
+            let s1 = d1.status();
+            assert!(
+                d1.driver_applied().is_some_and(|wm| wm.term == s1.term),
+                "precondition: current-term barrier applied before the cut"
+            );
+        }
+        let node =
+            Arc::new(Node::with_raft_and_engine(NodeId(1), Config::default(), p1, wal1).unwrap());
+        let tokio_rt = tokio::runtime::Runtime::new().unwrap();
+        let backend = RuntimeBackend {
+            node,
+            driver: d1.clone(),
+            transport: GrpcTransport::new(
+                NodeId(1),
+                None,
+                tokio_rt.handle().clone(),
+                kv9_common::RootDigest::from_bytes([0; 32]),
+            ),
+            initial_voters: Vec::new(),
+        };
+
+        // Peers silent from here; only d1 pumps (real-time thread).
+        let _pump = d1.spawn(Duration::from_millis(2));
+
+        // PHASE 1, pinned: still the self-believed leader at call entry.
+        assert_eq!(d1.status().role, Role::Leader, "phase pin: not yet deposed");
+        let err = match backend.leader_read() {
+            Err(err) => err,
+            Ok(_) => panic!("an isolated leader must not serve an establishing read"),
+        };
+        assert!(
+            matches!(
+                err,
+                Error::ReadUnconfirmed {
+                    quorum_confirmed: false
+                }
+            ),
+            "pre-deposition the failure must be the TYPED quorum-unconfirmed \
+             variant — not a transport error, not NotLeader, and never stale \
+             data: {err:?}"
+        );
+
+        // PHASE 2: check_quorum deposes the silent-peer leader on its own.
+        let deadline = std::time::Instant::now() + Duration::from_secs(20);
+        while d1.status().role == Role::Leader {
+            assert!(
+                std::time::Instant::now() < deadline,
+                "check_quorum must depose a leader with no quorum contact"
+            );
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        let err = match backend.leader_read() {
+            Err(err) => err,
+            Ok(_) => panic!("a deposed leader must refuse the establishing read"),
+        };
+        assert!(
+            matches!(err, Error::NotLeader { .. }),
+            "post-deposition the failure must be the TYPED NotLeader: {err:?}"
+        );
+        d1.stop();
+        d2.stop();
+        d3.stop();
+        let _ = fs::remove_dir_all(&dir);
     }
 }
 
