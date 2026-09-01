@@ -705,25 +705,52 @@ the start:
 `RawPut/RawGet/RawDelete/RawScan/RawBatchGet`, optional TTL, optional causal timestamps for ordering without full
 transactions. No locks, no 2PC. The keyspace's `api_type` selects the executor at routing; a keyspace cannot mix.
 
-**Read semantics — the target is linearizable; v0 does not yet deliver it.** Raw reads are *intended* to be
-linearizable, served through a ReadIndex quorum round-trip. That is not wired yet, and the interim boundary is stated
-here plainly so the intent is not mistaken for the guarantee:
+**Read semantics — linearizable, via an established read.** A raw read takes a ReadIndex barrier first. The barrier
+returns a credential that is consumed, by value, for exactly one engine snapshot, and the context/region gate is
+judged on that same snapshot. Gate and data therefore describe one state, and that state is strictly after a live
+quorum confirmed this node as leader.
 
-- **Today** a read is served by whichever node's *local* raft role says "leader". That is a local judgment, not a
-  quorum-confirmed one. `check_quorum` makes a deposed leader step down, but not instantly, and inside that window it
-  answers from stale state.
-- **The step-down bound is counted in raft ticks, not wall-clock time** — `election_tick: 10` at a 20 ms driver
-  cadence ≈ 200 ms *while the process is scheduled*. **A paused or descheduled process does not tick and therefore
-  does not step down**, and can serve a read on resume before processing anything. The wall-clock staleness window is
-  the pause duration plus one election timeout. Container pause/kill (which our own chaos matrix exercises) puts that
-  in seconds. **Stating the bound as "one election timeout" understates it in exactly the case that occurs in
-  production, which is the dangerous direction for a reader sizing retries or a read-after-write.**
-- **So v0 raw reads are fresh in normal operation, but not linearizable.** Do not build on them where a stale answer
-  during a leadership change would be a correctness problem. In particular, "the write returned success, therefore the
-  next read observes it" does not hold across a leader change.
-- **Closure is a mechanism plus its test, not a docs change**: reads go through the ReadIndex round-trip, and a
-  partition test in which a deposed leader *must fail* to serve a read is what turns this paragraph into a promise.
-  Until that test exists the promise stays unpublished — a guarantee is only worth what reproduces it.
+- **What this replaced, and why the replacement is not merely tighter.** A read used to be served on a node's *local*
+  raft role. `check_quorum` deposed a stale leader, but the bound was counted in raft ticks (`election_tick: 10` at a
+  20 ms cadence ≈ 200 ms) *while the process is scheduled* — and a paused or descheduled process does not tick, so it
+  did not step down, and could answer on resume before processing anything. The wall-clock window was the pause
+  duration plus one election timeout: seconds under the container pause/kill our own chaos matrix exercises. Read
+  correctness no longer rests on that bound at all. A resumed node still believing itself leader must obtain quorum
+  confirmation before any snapshot exists for it to read from.
+- **Failure is typed, and the two families are exclusive.** No barrier, no read. `read_unconfirmed` means the
+  barrier did not fully establish within the deadline, and its `phase` field says which half did not complete:
+  `quorum` (no live quorum confirmed this node) or `apply` (a quorum *did* confirm a safe index, but local apply did
+  not reach it in time). Reading both as "no quorum" is wrong — the second is a catch-up failure on a node whose
+  leadership was confirmed. `not_leader` carries the leader's id where this node knows it, and `unknown` where it
+  does not. Both families are server-sent machine fields, i.e. the server reached a verdict. Note the direction of that statement — a transport failure does not carry these two
+  markers and therefore cannot impersonate them; it does **not** follow that everything lacking them is a transport
+  failure, since an ordinary server-side application error need not carry them either.
+- **Acceptance is split by layer, because the two layers can pin different things.**
+  - *In-process, deterministic*: phase-split assertions with the tick controlled — pre-demotion the read fails
+    unconfirmed, post-demotion it fails `not_leader`. Bypass and stale-read sensitivity live here too: the
+    committed-but-unapplied cell and the full-bypass mutant are both red-verified, deterministically.
+  - *Process level*: typed exclusivity only. A real leader partition, with the public `raw-get` endpoint driven
+    repeatedly across the whole isolation and required to fail every time as one of the named outcomes; a success
+    after a refusal is a failure. **That is the measured quantity — one representative endpoint, driven repeatedly,
+    not four endpoints each exercised.** The promise covers every raw read because they share the one establishing
+    seam; what holds the other three is that shared seam plus the in-process cells and the single-snapshot-source
+    inventory, not this scenario. It deliberately does **not**
+    attempt the stale-read window: catching it there would race `check_quorum` demotion, making the catcher
+    probabilistic. It also does not assert which phase — the node demotes on its own schedule, so a phase assertion
+    would red intermittently while the code is correct. **A document that mandates a technique can mandate a flaky
+    one.**
+- **The matcher proves itself before it is trusted.** Typed exclusivity is only worth what its recogniser is worth, so
+  the process-level scenario first runs its own negative controls: a *far* counterexample (a pure transport failure,
+  carrying neither marker) and *near* counterexamples (protocol-shaped lines that are not protocol output — a marker
+  substring inside prose, a value with an extra suffix). Loosening the matcher must red on these. The far one alone is
+  not enough: it is the easiest counterexample, and a recogniser that rejects only it can still be fooled by output
+  that merely mentions a marker.
+- **Why the criterion is written this way at all.** An earlier draft of this closure said a partition test in which a
+  *deposed* leader "must fail" to serve a read. Both halves were wrong in instructive ways. "Must fail" is an
+  aggregate: isolating a node produces transport errors, so a test asserting only that the read failed is green on a
+  branch where ReadIndex was never implemented — the sentence meant to prevent something insufficient being
+  substituted for completion was itself satisfiable by a test that proves nothing. And "deposed" is narrower than the
+  property: an isolated leader must fail *throughout*, before and after demotion.
 
 The same round-trip is a hard prerequisite for the txn path, where the equivalent window is not merely staleness: a
 2PC read that misses locks or commits landed on the new leader violates snapshot isolation (§9.1).
