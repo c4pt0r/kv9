@@ -388,8 +388,13 @@ would inflate the evidence.
 *Not the same failure, and worth keeping distinct:* a search whose key also appears in the searched corpus
 (a sentinel written into the notes it greps; a doc comment that records the very command it is counted by)
 is **instrument-in-corpus**, not quantity-substitution — the quantity was right and the corpus was wrong.
-@Ren proposed that case as a third instance and then withdrew it on inspection; keeping it out is what
-holds this extension's boundary sharp.
+That case sat in the original proposal and @Ren questioned whether it belonged *before* checking; it was
+removed after. Keeping it out is what holds this extension's boundary sharp.
+
+*Three names, three things, because the failure had parts:* the defective specification sentence — a doc
+asserting the command "hits exactly 1 line" — was @Rafa's seam doc; the comparison that let it pass
+unchallenged was mine; @Tess supplied the repair form. Recording them separately is what lets a later
+reader take the reusable half without inheriting anyone's role.
 
 ## 14. Mutation controls are asymmetric: red self-proves less than you think, green proves nothing
 
