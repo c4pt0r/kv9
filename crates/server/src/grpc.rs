@@ -564,6 +564,17 @@ fn partial_delete_range_from_status(status: &Status) -> Error {
 /// caller only enters here when the marker is PRESENT; absence is not this
 /// family (a transport failure carries no server metadata at all).
 fn read_unconfirmed_from_status(status: &Status) -> Error {
+    // Code + marker TOGETHER are the protocol (the same exclusivity rule as
+    // NotLeader and PartialWrite): the server only ever renders this family
+    // as UNAVAILABLE, so a marker riding any other code is a contract
+    // violation between the two ends — fail closed, never a typed outcome.
+    if status.code() != tonic::Code::Unavailable {
+        return Error::Raft(format!(
+            "protocol error: kv9-read-unconfirmed marker on non-UNAVAILABLE \
+             status ({:?}); refusing to treat it as an established outcome",
+            status.code()
+        ));
+    }
     match status
         .metadata()
         .get(READ_UNCONFIRMED_KEY)
@@ -1799,6 +1810,21 @@ mod tests {
             matches!(&decoded, Error::Raft(m) if m.contains("unrecognized")),
             "an unknown marker value must decode as a protocol error, never \
              a guessed phase: {decoded:?}"
+        );
+
+        // Code + marker exclusivity (Tess's blocker on fead4ed): a VALID
+        // marker riding the WRONG code must not enter the typed family —
+        // the server never renders this family under any code but
+        // UNAVAILABLE, so the combination means the ends disagree.
+        let mut wrong_code = Status::failed_precondition("not this family");
+        wrong_code
+            .metadata_mut()
+            .insert(READ_UNCONFIRMED_KEY, "quorum".parse().unwrap());
+        let decoded = read_unconfirmed_from_status(&wrong_code);
+        assert!(
+            matches!(&decoded, Error::Raft(m) if m.contains("non-UNAVAILABLE")),
+            "wrong code + valid marker must fail closed as a protocol error, \
+             never decode as ReadUnconfirmed: {decoded:?}"
         );
 
         // A plain UNAVAILABLE carries no marker: it is NOT this family. The
