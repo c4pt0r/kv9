@@ -54,6 +54,15 @@ use crate::fence::CatalogFenceAdjudicator;
 use crate::Node;
 
 const TICK: Duration = Duration::from_millis(20);
+
+/// The adjudicator every live node runs: the region catalog decides.
+///
+/// A free function rather than an inline closure so the two public entry points provably pass
+/// the same thing, and so a reader can see at a glance that the only alternative implementation
+/// lives in tests.
+fn production_fence_adjudicator(node: Arc<Node<WalEngine>>) -> Arc<dyn kv9_raft::FenceAdjudicator> {
+    Arc::new(CatalogFenceAdjudicator::new(node))
+}
 const DISCOVERY_INTERVAL: Duration = Duration::from_millis(200);
 const DISCOVERY_TIMEOUT: Duration = Duration::from_millis(50);
 const DISCOVERY_LAST_OUTCOME_MAX_CHARS: usize = 160;
@@ -1323,6 +1332,41 @@ impl NodeRuntime {
         store_identity: StoreIdentity,
         join_ticket: Option<&str>,
     ) -> Result<Self> {
+        Self::start_core(
+            id,
+            config,
+            auth,
+            root,
+            store_identity,
+            join_ticket,
+            production_fence_adjudicator,
+        )
+    }
+
+    /// The whole of startup, with the fence adjudicator supplied rather than hard-wired.
+    ///
+    /// The seam exists at exactly one point and for exactly one reason: the adjudicator is
+    /// chosen when the state machine is built and the driver pump starts immediately after,
+    /// so nothing downstream — not even code holding the finished `RuntimeBackend` — can
+    /// substitute it afterwards. A test that needs to observe what the production write path
+    /// hands the fence has to be here, before the pump, or not at all.
+    ///
+    /// Deliberately private, and deliberately not gated behind a Cargo feature: the factory
+    /// is not a product capability. Both public entry points pass
+    /// [`production_fence_adjudicator`] and nothing else can reach this. Swapping an
+    /// adjudicator on a *running* node is not merely unsupported but unsound — whether one
+    /// is installed is node-local configuration, and a committed fenced entry arriving
+    /// during such a swap would be judged by different rules on different replicas.
+    #[allow(clippy::too_many_arguments)]
+    fn start_core(
+        id: NodeId,
+        config: Config,
+        auth: RuntimeAuth,
+        root: RootDescriptor,
+        store_identity: StoreIdentity,
+        join_ticket: Option<&str>,
+        adjudicator: impl FnOnce(Arc<Node<WalEngine>>) -> Arc<dyn kv9_raft::FenceAdjudicator>,
+    ) -> Result<Self> {
         root.validate()?;
         store_identity.verify(&root, id)?;
         config.validate()?;
@@ -1473,7 +1517,7 @@ impl NodeRuntime {
         // differently-configured replicas would not share. Installing it here means the
         // window in which that error is reachable does not exist on a live node.
         let mut state_machine = MemStateMachine::with_engine(engine)?;
-        state_machine.set_fence_adjudicator(Arc::new(CatalogFenceAdjudicator::new(node.clone())));
+        state_machine.set_fence_adjudicator(adjudicator(node.clone()));
         let driver = NodeDriver::new(peer, transport.clone(), state_machine);
         let driver_thread = Some(driver.spawn(TICK));
         let status_path = data_dir.join("status");
@@ -3223,5 +3267,283 @@ mod tests {
         drop(driver);
         drop(engine);
         let _ = fs::remove_dir_all(&dir);
+    }
+}
+
+/// Does the production write path actually hand the fence the values the gate resolved?
+///
+/// These live here, apart from the adjudicator's own tests in `fence.rs`, and the split is
+/// semantic rather than an accident of visibility (@Tess): `fence.rs` guards the adjudicator's
+/// verdicts — fresh, stale, read-failure — while this guards whether
+/// `validated_context → commit_batch → driver` emits a `Command::Fenced` carrying the *right
+/// content*. The seam under test, the start factory and the private fields all live in this
+/// module. Not placed here because `fence.rs` cannot see them.
+#[cfg(test)]
+mod fence_firing_tests {
+    use super::*;
+    use kv9_common::{
+        ApiType, BootstrapGeneration, ClusterId, RootVoter, StoreIncarnation, TenantId,
+    };
+    use kv9_raft::{FenceAdjudicator, RegionFence};
+    use std::sync::Mutex as StdMutex;
+
+    /// Records every fence it is asked about, then refuses.
+    ///
+    /// Refusing unconditionally is what makes the *absence* of data an observable signal; the
+    /// recording is what makes the fence's *content* observable. An always-false adjudicator
+    /// alone is not enough — a `Command::Fenced` carrying entirely wrong fields is refused just
+    /// the same, so a data-absent assertion says nothing about whether the gate's values were
+    /// carried through (@Tess). Content is the whole of layer 3.
+    #[derive(Default)]
+    struct RecordingAdjudicator {
+        seen: Arc<StdMutex<Vec<RegionFence>>>,
+    }
+
+    impl FenceAdjudicator for RecordingAdjudicator {
+        fn is_fresh(&self, fence: &RegionFence) -> Result<bool> {
+            self.seen.lock().expect("recorder poisoned").push(*fence);
+            Ok(false)
+        }
+    }
+
+    /// A real `NodeRuntime` driven to Serving through the production bootstrap path.
+    ///
+    /// It must NOT use `Node::bootstrap`/`create_keyspace`/`propose_apply`: those reach raft
+    /// through `MetaRaft::drive_apply`, a second destructive `take_ready` consumer alongside the
+    /// driver pump. In a process with the pump running that races, and the harness would be
+    /// intermittently red for reasons that look like fence bugs (@Rafa's analysis; @Tess's
+    /// diagnostic: needing those entry points to reach Serving means you are on the old
+    /// single-node path).
+    fn serving_runtime(seen: Arc<StdMutex<Vec<RegionFence>>>) -> (NodeRuntime, PathBuf, u16) {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-fence-firing-{}-{}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        // Below the ephemeral range, and derived from the pid so concurrent runs of this
+        // suite do not collide on a listener.
+        let port = 24000 + (std::process::id() % 4000) as u16;
+        let addr: std::net::SocketAddr = format!("127.0.0.1:{port}").parse().unwrap();
+
+        let cluster_id = ClusterId::from_bytes([7; 16]);
+        let root = RootDescriptor::new(
+            cluster_id,
+            BootstrapGeneration::mint().unwrap(),
+            vec![RootVoter {
+                node_id: NodeId(1),
+                addr,
+                store_incarnation: StoreIncarnation::mint().unwrap(),
+            }],
+            b"fence-firing-credential",
+        )
+        .unwrap();
+        let identity = StoreIdentity::for_voter(&root, NodeId(1)).unwrap();
+
+        let config = Config {
+            addr: addr.to_string(),
+            data_dir: dir.to_string_lossy().into_owned(),
+            ..Default::default()
+        };
+
+        let auth = RuntimeAuth {
+            cluster_token: "fence-firing-cluster".into(),
+            client_tokens: vec![("admin".into(), "fence-firing-client".into())],
+        };
+
+        let recorder = seen.clone();
+        let runtime = NodeRuntime::start_core(
+            NodeId(1),
+            config,
+            auth,
+            root,
+            identity,
+            None,
+            move |_node| Arc::new(RecordingAdjudicator { seen: recorder }),
+        )
+        .expect("single-voter runtime starts");
+        (runtime, dir, port)
+    }
+
+    /// Drive the runtime to Serving using the same methods `run()` calls.
+    fn drive_to_serving(runtime: &mut NodeRuntime) {
+        for _ in 0..600 {
+            runtime.advance_bootstrap().expect("bootstrap advances");
+            if matches!(
+                runtime
+                    .node
+                    .meta
+                    .lock()
+                    .expect("meta poisoned")
+                    .bootstrap
+                    .state(),
+                BootstrapState::Serving { .. }
+            ) {
+                return;
+            }
+            std::thread::sleep(TICK);
+        }
+        panic!("single-voter runtime did not reach Serving within 12s");
+    }
+
+    /// A real `raw_put` must hand the fence exactly the region and epoch the gate resolved.
+    ///
+    /// This is the assertion task #48 layer 3 exists for, and the one my first attempt failed
+    /// to make: that version built the `Command::Fenced` itself, so reverting `commit_batch`
+    /// to `Command::write_from_batch` — the original defect — left the whole workspace green.
+    /// A test that constructs the input it should have obtained from production code is blind
+    /// to that code's drift (docs/TESTING.md rule 17).
+    ///
+    /// Three assertions, and the second is the one an always-false adjudicator cannot make:
+    /// a `Fenced` command carrying entirely wrong fields is refused just the same, so
+    /// "no data landed" is insensitive to fence *content* — which is the whole of this layer.
+    #[test]
+    fn a_real_raw_put_fences_with_the_region_and_epoch_the_gate_resolved() {
+        let seen: Arc<StdMutex<Vec<RegionFence>>> = Arc::new(StdMutex::new(Vec::new()));
+        let (mut runtime, dir, _port) = serving_runtime(seen.clone());
+        drive_to_serving(&mut runtime);
+
+        let backend = RuntimeBackend {
+            node: runtime.node.clone(),
+            driver: runtime.driver.clone(),
+            transport: runtime.transport.clone(),
+        };
+
+        let keyspace = backend
+            .create_keyspace(
+                "t",
+                "fenced",
+                TenantId::DEFAULT,
+                ApiType::Raw,
+                TxnGroupId(0),
+            )
+            .expect("create_keyspace on a Serving node")
+            .keyspace;
+
+        // The region and epoch the GATE will resolve for this request -- read from the
+        // catalog, not invented, so the assertion below compares production against
+        // production rather than against a value this test chose.
+        let region = Tables::new(&runtime.node.meta_raft.store)
+            .region_for_key(keyspace, b"k")
+            .expect("catalog readable")
+            .expect("CreateKeyspace creates the initial region");
+        let ctx = RequestContext {
+            keyspace,
+            region_epoch: kv9_region::RegionEpoch {
+                conf_ver: region.epoch_conf,
+                version: region.epoch_ver,
+            },
+            caller: Some("fence-firing".into()),
+        };
+
+        let outcome = backend.raw_put(&ctx, b"k".to_vec(), b"v".to_vec());
+
+        // 1. the adjudicator was consulted exactly once
+        let recorded = seen.lock().expect("recorder poisoned").clone();
+        assert_eq!(
+            recorded.len(),
+            1,
+            "a fenced user write must reach the adjudicator exactly once; got {recorded:?}"
+        );
+
+        // 2. it received EXACTLY what the gate resolved -- region id and both epoch halves
+        assert_eq!(
+            recorded[0],
+            RegionFence {
+                region_id: region.id.0,
+                conf_ver: region.epoch_conf,
+                version: region.epoch_ver,
+            },
+            "the fence must carry the region the gate validated and the request's full epoch,              not a value re-derived at commit time"
+        );
+
+        // 3. the refusal wrote nothing. Whether the CALLER is told is a separate property and
+        // is currently broken -- see `a_refused_fence_must_not_report_success_to_the_caller`.
+        let (view, hint, is_leader) = backend.leader_read().expect("read view");
+        let read = LeaderRead::new(view.as_ref(), is_leader, hint).expect("leader");
+        assert_eq!(
+            RawExecutor.get(&read, keyspace, b"k").expect("get"),
+            None,
+            "a write refused at apply must leave nothing behind"
+        );
+        let _ = &outcome;
+
+        drop(runtime);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// A fence refusal must reach the caller. **Today it does not, and this test proves it.**
+    ///
+    /// Ignored rather than deleted, and deliberately NOT rewritten to assert the current
+    /// behaviour: asserting today's `Ok` would freeze a defect into an expectation, and the
+    /// next reader would have no way to tell a codified bug from a decision.
+    ///
+    /// What happens now: the adjudicator refuses, `MemStateMachine` sets
+    /// `ApplyResult::fence_rejected`, and nothing carries it any further —
+    /// `fence_rejected` appears zero times in `crates/raft/src/driver.rs` and
+    /// `crates/server/src/runtime.rs`. `wait_applied` answers with the
+    /// `Applied/Replaced/Unconfirmed/Failed` receipt, `commit_batch` sees "applied at
+    /// (term, index)", and returns success for a write that was refused and stored nothing.
+    /// From the client's side that is a silent lost write — worse than an error, because
+    /// nothing suggests retrying.
+    ///
+    /// Unreachable today (region epochs never move, so no fence ever refuses) and live the
+    /// moment M2 lands split: the first fenced write racing a split is silently dropped.
+    ///
+    /// Blocked on the proposal-receipt seam in task #28, which is @Rafa's — he reserved the
+    /// verdict type there before this layer existed. Remove the `ignore` when it lands; if
+    /// this still fails then, the receipt is not reaching `commit_batch`, which is exactly
+    /// what it should catch.
+    #[test]
+    #[ignore = "fence rejection is not yet carried to the proposer; blocked on task #28's receipt seam"]
+    fn a_refused_fence_must_not_report_success_to_the_caller() {
+        let seen: Arc<StdMutex<Vec<RegionFence>>> = Arc::new(StdMutex::new(Vec::new()));
+        let (mut runtime, dir, _port) = serving_runtime(seen.clone());
+        drive_to_serving(&mut runtime);
+
+        let backend = RuntimeBackend {
+            node: runtime.node.clone(),
+            driver: runtime.driver.clone(),
+            transport: runtime.transport.clone(),
+        };
+        let keyspace = backend
+            .create_keyspace(
+                "t",
+                "fenced",
+                TenantId::DEFAULT,
+                ApiType::Raw,
+                TxnGroupId(0),
+            )
+            .expect("create_keyspace on a Serving node")
+            .keyspace;
+        let region = Tables::new(&runtime.node.meta_raft.store)
+            .region_for_key(keyspace, b"k")
+            .expect("catalog readable")
+            .expect("initial region");
+        let ctx = RequestContext {
+            keyspace,
+            region_epoch: kv9_region::RegionEpoch {
+                conf_ver: region.epoch_conf,
+                version: region.epoch_ver,
+            },
+            caller: Some("fence-firing".into()),
+        };
+
+        let outcome = backend.raw_put(&ctx, b"k".to_vec(), b"v".to_vec());
+        assert_eq!(
+            seen.lock().expect("recorder poisoned").len(),
+            1,
+            "precondition: the write must actually have been fenced and refused"
+        );
+        assert!(
+            outcome.is_err(),
+            "a refused fence must surface to the proposer, not report success \
+             (got {outcome:?}) -- the write stored nothing, so success is a silent lost write"
+        );
+
+        drop(runtime);
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }
