@@ -153,8 +153,16 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngi
     conf_receipts: Mutex<Vec<ConfReceiptEntry>>,
     /// Quorum-confirmed read receipts (task #28): `(request_ctx, index)` pairs
     /// drained from the peer's Ready loop, correlated by EXACT context bytes.
-    /// Bounded like the command ring. Lock order: leaf — never held while
-    /// acquiring any other lock.
+    /// Bounded like the command ring; eviction is FAIL-CLOSED (Cindy's review
+    /// boundary, written down so a load test does not send someone chasing the
+    /// quorum round-trip): if more than APPLIED_RING confirmations arrive
+    /// between a request and its poll, a genuinely-confirmed read can be
+    /// evicted and reported `Unconfirmed{QuorumConfirmation}` — one spurious
+    /// retry, never a false confirmation (contexts are incarnation ++
+    /// monotonic seq, never reused, so a hit can only be OUR receipt).
+    /// Receipts are not deleted on hit — deletion would open a window for a
+    /// concurrent second lookup of the same rctx; aging out is the only exit.
+    /// Lock order: leaf — never held while acquiring any other lock.
     read_receipts: Mutex<Vec<(Vec<u8>, u64)>>,
     /// This driver's boot incarnation: 16 random bytes minted at construction.
     /// Every read context is `incarnation ++ counter`, so a receipt minted in
