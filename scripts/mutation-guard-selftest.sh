@@ -19,6 +19,7 @@ include!("generated.rs");
 pub fn answer() -> u32 { 42 + EXTRA }
 #[cfg(test)]
 mod tests {
+    extra_test!();
     #[test] fn the_answer_is_42() { assert_eq!(super::answer(), 42); }
 }
 RS
@@ -26,7 +27,7 @@ RS
 # mutation whose effect OUTLIVES the declared-file restore: checkout cannot undo
 # it and porcelain cannot see it, which is exactly the state the restored phase
 # exists to catch.
-printf 'pub const EXTRA: u32 = 0;\n' > src/generated.rs
+printf 'pub const EXTRA: u32 = 0;\nmacro_rules! extra_test { () => {} }\n' > src/generated.rs
 printf 'target\nsrc/generated.rs\n' > .gitignore
 # Run the suite ONCE before the first commit so Cargo.lock is tracked, as it is
 # in any real repo. Otherwise `cargo test` creates it mid-run and the guard
@@ -184,10 +185,70 @@ git -C "$R" checkout -- . 2>/dev/null
 # green (@Cindy). A cell that never invokes the thing under test is worse than an
 # absent one, because its name answers the question nobody then asks.
 "$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
-  -- bash -c "cd $R && printf 'pub const EXTRA: u32 = 100;\\n' > src/generated.rs && $MUT" >/dev/null 2>&1; rc=$?
+  -- bash -c "cd $R && printf 'pub const EXTRA: u32 = 100;\\nmacro_rules! extra_test { () => {} }\\n' > src/generated.rs && $MUT" >/dev/null 2>&1; rc=$?
 check "T16 effect outliving restore caught in restored" 10 $rc
-printf 'pub const EXTRA: u32 = 0;\n' > "$R/src/generated.rs"
+printf 'pub const EXTRA: u32 = 0;\nmacro_rules! extra_test { () => {} }\n' > "$R/src/generated.rs"
 git -C "$R" checkout -- . 2>/dev/null
+
+# T17 gate 4 must RESTORE the declared file while PRESERVING the undeclared one.
+# The earlier version left the whole tree alone and called that the contract.
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && $MUT && echo x >> Cargo.toml" >/dev/null 2>&1; rc=$?
+check "T17 gate 4 returns 5" 5 $rc
+if git -C "$R" diff --quiet HEAD -- src/lib.rs; then
+  printf "  PASS  %-52s\n" "T17b declared file WAS restored"; pass=$((pass+1))
+else printf "  FAIL  %-52s\n" "T17b declared file WAS restored"; fail=$((fail+1)); fi
+if git -C "$R" status --porcelain | grep -q "Cargo.toml"; then
+  printf "  PASS  %-52s\n" "T17c undeclared residue WAS preserved"; pass=$((pass+1))
+else printf "  FAIL  %-52s\n" "T17c undeclared residue WAS preserved"; fail=$((fail+1)); fi
+git -C "$R" checkout -- . 2>/dev/null
+
+# T18 a rename OUT of a declared path: the declared file must come back even
+# though the index says it is gone. `checkout --` cannot do this; `checkout HEAD --` can.
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && $MUT && git mv src/lib.rs src/moved.rs" >/dev/null 2>&1; rc=$?
+check "T18 rename-out returns 5" 5 $rc
+if [ -f "$R/src/lib.rs" ] && git -C "$R" diff --quiet HEAD -- src/lib.rs; then
+  printf "  PASS  %-52s\n" "T18b declared path restored after rename-out"; pass=$((pass+1))
+else printf "  FAIL  %-52s\n" "T18b declared path restored after rename-out"; fail=$((fail+1)); fi
+git -C "$R" reset -q --hard >/dev/null 2>&1; rm -f "$R/src/moved.rs"
+
+# T19 a path containing a NEWLINE. Round-tripping paths through command
+# substitution + `read` split this into two, and each half could match a declared
+# name, so an undeclared path walked straight past gate 4 (Tess).
+printf 'a\n' > "$R/a.txt"; printf 'b\n' > "$R/b.txt"
+git -C "$R" add -A >/dev/null 2>&1; git -C "$R" -c user.email=t@t -c user.name=t commit -q -m ab >/dev/null 2>&1
+"$GUARD" --repo "$R" --file src/lib.rs --file a.txt --file b.txt --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && $MUT && python3 -c \"open(chr(97)+'.txt'+chr(10)+chr(98)+'.txt','w').write('x')\"" >/dev/null 2>&1; rc=$?
+check "T19 newline in an undeclared path refused" 5 $rc
+python3 -c "import os; f=chr(97)+'.txt'+chr(10)+chr(98)+'.txt'; os.path.exists('$R/'+f) and os.remove('$R/'+f)" 2>/dev/null
+git -C "$R" checkout -- . 2>/dev/null
+
+# T20 a MULTILINE literal occurring twice must be refused by gate 2. grep cannot
+# see a multi-line literal at all, so this only works on byte occurrences.
+printf 'pub fn dup_a() -> u32 {\n    5\n}\npub fn dup_b() -> u32 {\n    5\n}\n' >> "$R/src/lib.rs"
+git -C "$R" add -A >/dev/null 2>&1; git -C "$R" -c user.email=t@t -c user.name=t commit -q -m dup >/dev/null 2>&1
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  --old-once "$(printf ' -> u32 {\n    5\n}')" -- true >/dev/null 2>&1; rc=$?
+check "T20 multiline literal occurring twice refused" 3 $rc
+
+# T21 wrong selected count in the RESTORED phase. The mutation renames the test
+# via the gitignored include, so restore puts the declared file back but the
+# restored run still selects 0.
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && printf 'pub const EXTRA: u32 = 0;\\nmacro_rules! extra_test { () => { #[test] fn the_answer_is_42_extra() {} } }\\n' > src/generated.rs && sed -i '/extra_test!();/d' src/lib.rs && $MUT" >/dev/null 2>&1; rc=$?
+check "T21 wrong selected count in restored phase" 10 $rc
+printf 'pub const EXTRA: u32 = 0;\nmacro_rules! extra_test { () => {} }\n' > "$R/src/generated.rs"
+git -C "$R" checkout -- . 2>/dev/null
+
+# T22 when cleanup fails the ORIGINAL run outcome must still be reported, not
+# only the cleanup code.
+out=$("$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && $MUT && : > .git/index.lock" 2>&1); rc=$?
+if [ "$rc" = "8" ] && printf '%s' "$out" | grep -q "run result was rc="; then
+  printf "  PASS  %-52s\n" "T22 cleanup failure still reports run outcome"; pass=$((pass+1))
+else printf "  FAIL  %-52s  rc=%s\n" "T22 cleanup failure still reports run outcome" "$rc"; fail=$((fail+1)); fi
+rm -f "$R/.git/index.lock"; git -C "$R" checkout -- . 2>/dev/null
 
 printf "\n  %d passed, %d failed\n" "$pass" "$fail"
 rm -rf "$R"
