@@ -41,6 +41,13 @@
 #     A two-line prefix of one of Ren's patterns matched 2 sites here and 226 in
 #     Cindy's tree; "it only matched a couple extra" is not a safe intuition.
 #   * --test takes the FULL cargo test argument list, e.g. "-p kv9-server foo".
+#     The expect-n gate is a SECOND, fail-closed line under this: drop the word
+#     splitting and the first real multi-word invocation is refused loudly rather
+#     than passing silently. That bounds the damage; it is not coverage. A
+#     capability the docs promise needs a self-test standing on it, or nothing
+#     distinguishes a build that has it from one that does not -- @Cindy proved
+#     exactly that by mutating this line and watching all 11 cases stay green
+#     (T8 in the self-tests now reds on that mutation).
 #     A bare filter at a workspace root whose root is itself a package silently
 #     runs only that package: here `cargo test fence_firing` selects 0 while
 #     `cargo test -p kv9-server fence_firing` selects 3. The expect-n gate turns

@@ -84,6 +84,18 @@ check "T6 wrong expected selection count refused" 6 $rc
   -- bash -c "cd $R && sed -i 's/pub fn other() -> u32 { 42 }/pub fn other() -> u32 { 99 }/' src/lib.rs" >/dev/null 2>&1; rc=$?
 check "T7 undetected mutation reported as SURVIVED" 9 $rc
 
+# T8 --test carries a MULTI-WORD cargo argument list, not just a filter word.
+# Without this, nothing here stands on the documented contract: every other case
+# passes a single word, so a guard that dropped word-splitting keeps all of them
+# green. Found by @Cindy mutating the guard itself
+# (`read -r -a test_args <<<"$2"` -> `test_args=("$2")`) and watching 11/11 survive.
+"$GUARD" --repo "$R" --file src/lib.rs --test "--lib the_answer_is_42" --expect-n 1 \
+  -- python3 -c "
+import sys; p='$R/src/lib.rs'; s=open(p).read()
+open(p,'w').write(s.replace('{ 42 }','{ 43 }',1))" >/dev/null 2>&1; rc=$?
+check "T8 --test carries multi-word cargo args" 0 $rc
+git -C "$R" checkout -- . 2>/dev/null
+
 printf "\n  %d passed, %d failed\n" "$pass" "$fail"
 rm -rf "$R"
 [ "$fail" -eq 0 ]
