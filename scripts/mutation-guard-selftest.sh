@@ -195,9 +195,11 @@ git -C "$R" checkout -- . 2>/dev/null
 "$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
   -- bash -c "cd $R && $MUT && echo x >> Cargo.toml" >/dev/null 2>&1; rc=$?
 check "T17 gate 4 returns 5" 5 $rc
-if git -C "$R" diff --quiet HEAD -- src/lib.rs; then
-  printf "  PASS  %-52s\n" "T17b declared file WAS restored"; pass=$((pass+1))
-else printf "  FAIL  %-52s\n" "T17b declared file WAS restored"; fail=$((fail+1)); fi
+# worktree AND index, separately -- a restore that fixes only the worktree
+# leaves the index staged and the next run refuses at gate 1 (@Cindy).
+if git -C "$R" diff --quiet HEAD -- src/lib.rs && git -C "$R" diff --cached --quiet HEAD -- src/lib.rs; then
+  printf "  PASS  %-52s\n" "T17b declared restored in worktree AND index"; pass=$((pass+1))
+else printf "  FAIL  %-52s\n" "T17b declared restored in worktree AND index"; fail=$((fail+1)); fi
 if git -C "$R" status --porcelain | grep -q "Cargo.toml"; then
   printf "  PASS  %-52s\n" "T17c undeclared residue WAS preserved"; pass=$((pass+1))
 else printf "  FAIL  %-52s\n" "T17c undeclared residue WAS preserved"; fail=$((fail+1)); fi
@@ -208,9 +210,16 @@ git -C "$R" checkout -- . 2>/dev/null
 "$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
   -- bash -c "cd $R && $MUT && git mv src/lib.rs src/moved.rs" >/dev/null 2>&1; rc=$?
 check "T18 rename-out returns 5" 5 $rc
-if [ -f "$R/src/lib.rs" ] && git -C "$R" diff --quiet HEAD -- src/lib.rs; then
-  printf "  PASS  %-52s\n" "T18b declared path restored after rename-out"; pass=$((pass+1))
-else printf "  FAIL  %-52s\n" "T18b declared path restored after rename-out"; fail=$((fail+1)); fi
+if [ -f "$R/src/lib.rs" ] && git -C "$R" diff --quiet HEAD -- src/lib.rs \
+     && git -C "$R" diff --cached --quiet HEAD -- src/lib.rs; then
+  printf "  PASS  %-52s\n" "T18b old declared path restored (worktree+index)"; pass=$((pass+1))
+else printf "  FAIL  %-52s\n" "T18b old declared path restored (worktree+index)"; fail=$((fail+1)); fi
+# The rename DESTINATION must survive as undeclared residue -- asserted apart
+# from the restore, so a future "leave the whole tree" regression cannot satisfy
+# one combined check (@Cindy).
+if [ -f "$R/src/moved.rs" ]; then
+  printf "  PASS  %-52s\n" "T18c rename destination preserved as residue"; pass=$((pass+1))
+else printf "  FAIL  %-52s\n" "T18c rename destination preserved as residue"; fail=$((fail+1)); fi
 git -C "$R" reset -q --hard >/dev/null 2>&1; rm -f "$R/src/moved.rs"
 
 # T19 a path containing a NEWLINE. Round-tripping paths through command
