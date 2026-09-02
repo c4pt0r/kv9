@@ -69,12 +69,14 @@
 #   * The tree must be clean INCLUDING untracked files, so anything your build
 #     creates must be gitignored or committed. An untracked leftover from a
 #     previous run is exactly what contaminates the next one.
-#   * Undeclared changes are reported and LEFT ALONE (exit 5): the whole tree is
-#     left untouched, declared files included. Deleting a file this script did
-#     not create is not tidying, and a mutation that RENAMED a declared file
-#     cannot be restored by path anyway -- attempting it turned a deliberate
-#     refusal into a spurious "cleanup failed". After an exit 5 the tree stays
-#     dirty on purpose and the next run refuses at gate 1 until you resolve it.
+#   * Undeclared changes are reported and PRESERVED (exit 5) -- deleting a file
+#     this script did not create is not tidying -- while the DECLARED files are
+#     still restored. Restoring via `checkout <head> --` rather than
+#     `checkout --` is what makes that possible for a rename out of a declared
+#     path: the plain form cannot resurrect a file the index says is gone.
+#     An earlier version left the whole tree alone and this header described
+#     that as the contract; it was not. Do not let an implementation rewrite
+#     the acceptance criteria it is supposed to meet.
 #   * --test takes the FULL cargo argument list, e.g. "-p kv9-server foo".
 #     A bare filter at a workspace root whose root is itself a package silently
 #     runs only that package. The expect-n gate is a SECOND, fail-closed line
@@ -113,27 +115,35 @@ work="$(mktemp -d /tmp/kv9-mutation-guard.XXXXXX)"   # outside the tree under te
 
 porcelain() { git -C "$repo" status --porcelain; }
 
-# NUL-safe changed-path enumeration; a rename yields BOTH paths.
-changed_paths() {
+# Undeclared-path check, done END TO END in bytes: porcelain -z is parsed, the
+# declared set is compared, and only a human-readable report crosses back. A path
+# containing a newline used to be split into two by command substitution + read,
+# and each half could match a declared name (Tess) -- so nothing here round-trips
+# a path through the shell.
+undeclared_report() {   # stdout: escaped undeclared paths; rc 1 if any
   git -C "$repo" status --porcelain -z | python3 -c '
 import sys
-buf = sys.stdin.buffer.read()
-parts = buf.split(b"\0")
-out, i = [], 0
+declared = set(a.encode() for a in sys.argv[1:])
+parts = sys.stdin.buffer.read().split(b"\0")
+found, i = [], 0
 while i < len(parts):
     e = parts[i]
     if not e:
         i += 1; continue
-    xy, path = e[:2].decode("utf-8", "replace"), e[3:].decode("utf-8", "replace")
-    out.append(path)
-    if "R" in xy or "C" in xy:      # the following record is the ORIGINAL path
+    xy, path = e[:2], e[3:]
+    paths = [path]
+    if b"R" in xy or b"C" in xy:      # the next record is the ORIGINAL path
         i += 1
         if i < len(parts) and parts[i]:
-            out.append(parts[i].decode("utf-8", "replace"))
+            paths.append(parts[i])
+    for pth in paths:
+        if pth not in declared:
+            found.append(pth)
     i += 1
-for p in out:
-    print(p)
-'
+for f in found:
+    sys.stdout.write(repr(f.decode("utf-8", "backslashreplace"))[1:-1] + "\n")
+sys.exit(1 if found else 0)
+' "${files[@]}"
 }
 
 # Byte occurrences of a literal across the declared files (not matching lines).
@@ -183,23 +193,30 @@ note "baseline ok: $base_sel selected, green"
 
 # ---- restore registered BEFORE the mutation exists -------------------------
 cleanup_rc=0
-skip_restore=0          # gate 4 leaves the tree ALONE, by contract
+keep_undeclared=0       # gate 4: declared come back, undeclared stay
 restore() {
-  if [ "$skip_restore" -eq 1 ]; then
-    note "tree left as-is by contract (gate 4); the next run will refuse until you resolve it"
-    return
-  fi
-  git -C "$repo" checkout -- "${files[@]}" 2>/dev/null || cleanup_rc=8
+  # `checkout HEAD --` restores index AND worktree, so it also undoes a rename
+  # OUT of a declared path (which plain `checkout --` cannot: the index says the
+  # file is gone). The rename's destination stays behind as undeclared residue.
+  git -C "$repo" checkout "$head_before" -- "${files[@]}" 2>/dev/null || cleanup_rc=8
   local head_now; head_now="$(git -C "$repo" rev-parse HEAD 2>/dev/null)"
   if [ "$head_now" != "$head_before" ]; then
     note "CLEANUP FAILED: HEAD moved $head_before -> $head_now"; cleanup_rc=8
   fi
   # Undeclared residue left on purpose (exit 5) is NOT a cleanup failure; the
   # declared files still have to come back.
-  local left; left="$(porcelain)"
-  if [ -n "$left" ]; then
-    note "CLEANUP FAILED: tree not clean after restoring declared files"
-    printf '%s\n' "$left" >&2; cleanup_rc=8
+  if [ "$keep_undeclared" -eq 1 ]; then
+    # Only the declared files are our business here; undeclared residue is the
+    # point of the refusal, not a cleanup failure.
+    if ! git -C "$repo" diff --quiet "$head_before" -- "${files[@]}" 2>/dev/null; then
+      note "CLEANUP FAILED: declared files were not restored"; cleanup_rc=8
+    fi
+  else
+    local left; left="$(porcelain)"
+    if [ -n "$left" ]; then
+      note "CLEANUP FAILED: tree not clean after restoring declared files"
+      printf '%s\n' "$left" >&2; cleanup_rc=8
+    fi
   fi
 }
 on_signal() { restore; rm -rf "$work"; exit $(( cleanup_rc ? cleanup_rc : 130 )); }
@@ -236,17 +253,12 @@ if [ -n "$old_once" ]; then
   fi
 fi
 
-undeclared="$(changed_paths | while read -r p; do
-  keep=1; for f in "${files[@]}"; do [ "$p" = "$f" ] && keep=0; done
-  [ "$keep" -eq 1 ] && printf '%s\n' "$p"
-done)"
-if [ -n "$undeclared" ]; then
+undeclared="$(undeclared_report)" || undeclared_found=1
+if [ "${undeclared_found:-0}" -eq 1 ]; then
   note "REFUSING (gate 4): the mutation touched undeclared path(s). They are LEFT IN PLACE:"
   printf '%s\n' "$undeclared" >&2
-  # Contract: preserve, do not tidy. Restoring here would also have to undo a
-  # rename of a declared file, which is exactly the case that turned a
-  # deliberate refusal into a spurious "cleanup failed".
-  skip_restore=1
+  # Contract: declared files come back, undeclared residue is preserved.
+  keep_undeclared=1
   finish 5
 fi
 note "gate 3/4 ok: only declared files changed, and the target literal is gone"
