@@ -193,22 +193,24 @@ git -C "$R" checkout -- . 2>/dev/null
 # T17 gate 4 must RESTORE the declared file while PRESERVING the undeclared one.
 # The earlier version left the whole tree alone and called that the contract.
 "$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
-  -- bash -c "cd $R && $MUT && echo x >> Cargo.toml" >/dev/null 2>&1; rc=$?
+  -- bash -c "cd $R && $MUT && echo x >> Cargo.toml && cp Cargo.toml ../mg-expected-cargo.txt" >/dev/null 2>&1; rc=$?
 check "T17 gate 4 returns 5" 5 $rc
 # worktree AND index, separately -- a restore that fixes only the worktree
 # leaves the index staged and the next run refuses at gate 1 (@Cindy).
 if git -C "$R" diff --quiet HEAD -- src/lib.rs && git -C "$R" diff --cached --quiet HEAD -- src/lib.rs; then
   printf "  PASS  %-52s\n" "T17b declared restored in worktree AND index"; pass=$((pass+1))
 else printf "  FAIL  %-52s\n" "T17b declared restored in worktree AND index"; fail=$((fail+1)); fi
-if git -C "$R" status --porcelain | grep -q "Cargo.toml"; then
-  printf "  PASS  %-52s\n" "T17c undeclared residue WAS preserved"; pass=$((pass+1))
-else printf "  FAIL  %-52s\n" "T17c undeclared residue WAS preserved"; fail=$((fail+1)); fi
+# "preserved" is not "present": assert the bytes are exactly what the mutation
+# produced, so a restore that rewrote the residue would still fail here.
+if [ "$(cat "$R/Cargo.toml")" = "$(cat "$R/../mg-expected-cargo.txt" 2>/dev/null)" ]; then
+  printf "  PASS  %-52s\n" "T17c undeclared residue byte-identical"; pass=$((pass+1))
+else printf "  FAIL  %-52s\n" "T17c undeclared residue byte-identical"; fail=$((fail+1)); fi
 git -C "$R" checkout -- . 2>/dev/null
 
 # T18 a rename OUT of a declared path: the declared file must come back even
 # though the index says it is gone. `checkout --` cannot do this; `checkout HEAD --` can.
 "$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
-  -- bash -c "cd $R && $MUT && git mv src/lib.rs src/moved.rs" >/dev/null 2>&1; rc=$?
+  -- bash -c "cd $R && $MUT && git mv src/lib.rs src/moved.rs && cp src/moved.rs ../mg-expected-moved.txt" >/dev/null 2>&1; rc=$?
 check "T18 rename-out returns 5" 5 $rc
 if [ -f "$R/src/lib.rs" ] && git -C "$R" diff --quiet HEAD -- src/lib.rs \
      && git -C "$R" diff --cached --quiet HEAD -- src/lib.rs; then
@@ -217,9 +219,9 @@ else printf "  FAIL  %-52s\n" "T18b old declared path restored (worktree+index)"
 # The rename DESTINATION must survive as undeclared residue -- asserted apart
 # from the restore, so a future "leave the whole tree" regression cannot satisfy
 # one combined check (@Cindy).
-if [ -f "$R/src/moved.rs" ]; then
-  printf "  PASS  %-52s\n" "T18c rename destination preserved as residue"; pass=$((pass+1))
-else printf "  FAIL  %-52s\n" "T18c rename destination preserved as residue"; fail=$((fail+1)); fi
+if [ -f "$R/src/moved.rs" ] && [ "$(cat "$R/src/moved.rs")" = "$(cat "$R/../mg-expected-moved.txt" 2>/dev/null)" ]; then
+  printf "  PASS  %-52s\n" "T18c rename destination byte-identical residue"; pass=$((pass+1))
+else printf "  FAIL  %-52s\n" "T18c rename destination byte-identical residue"; fail=$((fail+1)); fi
 git -C "$R" reset -q --hard >/dev/null 2>&1; rm -f "$R/src/moved.rs"
 
 # T19 a path containing a NEWLINE. Round-tripping paths through command
@@ -254,10 +256,43 @@ git -C "$R" checkout -- . 2>/dev/null
 # only the cleanup code.
 out=$("$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
   -- bash -c "cd $R && $MUT && : > .git/index.lock" 2>&1); rc=$?
-if [ "$rc" = "8" ] && printf '%s' "$out" | grep -q "run result was rc="; then
+if [ "$rc" = "8" ] && printf '%s' "$out" | grep -q "run result was rc=0,"; then
   printf "  PASS  %-52s\n" "T22 cleanup failure still reports run outcome"; pass=$((pass+1))
 else printf "  FAIL  %-52s  rc=%s\n" "T22 cleanup failure still reports run outcome" "$rc"; fail=$((fail+1)); fi
 rm -f "$R/.git/index.lock"; git -C "$R" checkout -- . 2>/dev/null
+
+# T23 a mutation that STAGES its change to a declared file. `checkout --` reads
+# the INDEX, so the restored phase would re-test the mutant and report a phantom
+# rc=10 (Tess). Restoring from head_before is what makes this 0.
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && $MUT && git add src/lib.rs" >/dev/null 2>&1; rc=$?
+check "T23 staged declared mutation still caught" 0 $rc
+if git -C "$R" diff --quiet HEAD -- src/lib.rs && git -C "$R" diff --cached --quiet HEAD -- src/lib.rs; then
+  printf "  PASS  %-52s\n" "T23b staged mutation restored in both layers"; pass=$((pass+1))
+else printf "  FAIL  %-52s\n" "T23b staged mutation restored in both layers"; fail=$((fail+1)); fi
+git -C "$R" reset -q --hard >/dev/null 2>&1
+
+# T24/T25 real signals. The mutation applies its change and then signals the
+# guard directly ($PPID is the guard's shell), so the handler runs on a genuine
+# caught signal rather than a fixture that fakes one -- and an async child cannot
+# inherit an ignored disposition, because there is no async child.
+for sig in INT TERM; do
+  case $sig in INT) want=130 ;; TERM) want=143 ;; esac
+  # HEAD as of THIS cell -- earlier cells commit, so the fixture's original H0 is
+  # not the right baseline here. Comparing against a stale anchor fails for a
+  # reason that has nothing to do with the guard.
+  head_at_call="$(git -C "$R" rev-parse HEAD)"
+  "$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+    -- bash -c "cd $R && $MUT && kill -$sig \$PPID" >/dev/null 2>&1; rc=$?
+  check "T24/25 $sig restores and exits $want" "$want" $rc
+  if git -C "$R" diff --quiet HEAD -- src/lib.rs \
+     && git -C "$R" diff --cached --quiet HEAD -- src/lib.rs \
+     && [ -z "$(git -C "$R" status --porcelain)" ] \
+     && [ "$(git -C "$R" rev-parse HEAD)" = "$head_at_call" ]; then
+    printf "  PASS  %-52s\n" "T24/25b $sig left tree clean and HEAD unmoved"; pass=$((pass+1))
+  else printf "  FAIL  %-52s\n" "T24/25b $sig left tree clean and HEAD unmoved"; fail=$((fail+1)); fi
+  git -C "$R" reset -q --hard >/dev/null 2>&1
+done
 
 printf "\n  %d passed, %d failed\n" "$pass" "$fail"
 rm -rf "$R"

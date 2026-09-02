@@ -26,6 +26,8 @@
 #   8   cleanup failed -- declared files not restored, or HEAD moved
 #   9   MUTANT SURVIVED: baseline and mutant both green
 #   10  restored phase did not select exactly --expect-n, or was not green
+#   130 interrupted (SIGINT) -- declared files restored first
+#   143 terminated (SIGTERM) -- declared files restored first
 #
 # THREE test phases, not two. Baseline, mutant, and *restored* all assert the
 # same selected count, and the restored phase must be green. Without the third,
@@ -219,8 +221,12 @@ restore() {
     fi
   fi
 }
-on_signal() { restore; rm -rf "$work"; exit $(( cleanup_rc ? cleanup_rc : 130 )); }
-trap on_signal INT TERM
+# 130/143 are the conventional codes; kept distinct so a self-test can assert
+# WHICH signal was handled, not merely that something interrupted the run.
+on_int()  { restore; rm -rf "$work"; exit $(( cleanup_rc ? cleanup_rc : 130 )); }
+on_term() { restore; rm -rf "$work"; exit $(( cleanup_rc ? cleanup_rc : 143 )); }
+trap on_int INT
+trap on_term TERM
 
 finish() {   # $1 = the run's own result code
   local run_rc="$1"
@@ -279,7 +285,10 @@ note "caught: mutant is red"
 grep -E '^test result:|panicked at|assertion' "$work/mutant.out" | head -6 >&2 || true
 
 # ---- restored phase: put it back, then prove it behaves like the baseline ---
-git -C "$repo" checkout -- "${files[@]}" 2>/dev/null || { note "CLEANUP FAILED: could not restore declared files"; cleanup_rc=8; finish 0; }
+# From head_before, NOT `checkout --`: the latter takes content from the INDEX,
+# so a mutation that legally `git add`s a declared file would have the restored
+# phase re-test the mutant and report a phantom rc=10 (Tess).
+git -C "$repo" checkout "$head_before" -- "${files[@]}" 2>/dev/null || { note "CLEANUP FAILED: could not restore declared files"; cleanup_rc=8; finish 0; }
 read -r res_sel res_rc <<<"$(run_tests "$work/restored.out")"
 if [ "$res_sel" != "$expect_n" ]; then
   note "RESTORED PHASE: selected $res_sel tests, expected $expect_n -- the tree does not behave like the baseline"
