@@ -212,7 +212,10 @@ if git -C "$R" diff --quiet HEAD -- src/lib.rs && git -C "$R" diff --cached --qu
 else printf "  FAIL  %-52s\n" "T17b declared restored in worktree AND index"; fail=$((fail+1)); fi
 # "preserved" is not "present": assert the bytes are exactly what the mutation
 # produced, so a restore that rewrote the residue would still fail here.
-if [ "$(cat "$R/Cargo.toml")" = "$(cat "$ART/expected-cargo.txt" 2>/dev/null)" ]; then
+# cmp, not $(cat) = $(cat): command substitution strips ALL trailing newlines, so
+# the string form only proves equality-after-normalisation and a mutation that
+# appends a newline stays green (@Cindy, with a firing counterexample).
+if cmp -s "$R/Cargo.toml" "$ART/expected-cargo.txt"; then
   printf "  PASS  %-52s\n" "T17c undeclared residue byte-identical"; pass=$((pass+1))
 else printf "  FAIL  %-52s\n" "T17c undeclared residue byte-identical"; fail=$((fail+1)); fi
 git -C "$R" checkout -- . 2>/dev/null
@@ -229,7 +232,7 @@ else printf "  FAIL  %-52s\n" "T18b old declared path restored (worktree+index)"
 # The rename DESTINATION must survive as undeclared residue -- asserted apart
 # from the restore, so a future "leave the whole tree" regression cannot satisfy
 # one combined check (@Cindy).
-if [ -f "$R/src/moved.rs" ] && [ "$(cat "$R/src/moved.rs")" = "$(cat "$ART/expected-moved.txt" 2>/dev/null)" ]; then
+if [ -f "$R/src/moved.rs" ] && cmp -s "$R/src/moved.rs" "$ART/expected-moved.txt"; then
   printf "  PASS  %-52s\n" "T18c rename destination byte-identical residue"; pass=$((pass+1))
 else printf "  FAIL  %-52s\n" "T18c rename destination byte-identical residue"; fail=$((fail+1)); fi
 git -C "$R" reset -q --hard >/dev/null 2>&1; rm -f "$R/src/moved.rs"
