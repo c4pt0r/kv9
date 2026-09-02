@@ -737,4 +737,3 @@ not depend on the searcher.
 means "no marked debt for this task" and never "no stale comments about this task". Existing
 comments are not to be marked by guess — audit candidates individually and attach a marker only
 where the canonical task and the expiry condition are both verified.
-
