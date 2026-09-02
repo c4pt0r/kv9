@@ -15,13 +15,19 @@ check() { # name expected_rc actual_rc
 cd "$R"
 cargo init --lib -q --name mg 2>/dev/null
 cat > src/lib.rs <<'RS'
-pub fn answer() -> u32 { 42 }
+include!("generated.rs");
+pub fn answer() -> u32 { 42 + EXTRA }
 #[cfg(test)]
 mod tests {
     #[test] fn the_answer_is_42() { assert_eq!(super::answer(), 42); }
 }
 RS
-echo "target" > .gitignore
+# A gitignored generated file the crate includes. It is what lets T16 construct a
+# mutation whose effect OUTLIVES the declared-file restore: checkout cannot undo
+# it and porcelain cannot see it, which is exactly the state the restored phase
+# exists to catch.
+printf 'pub const EXTRA: u32 = 0;\n' > src/generated.rs
+printf 'target\nsrc/generated.rs\n' > .gitignore
 # Run the suite ONCE before the first commit so Cargo.lock is tracked, as it is
 # in any real repo. Otherwise `cargo test` creates it mid-run and the guard
 # correctly refuses it as an undeclared change -- which is the guard working,
@@ -92,7 +98,7 @@ check "T7 undetected mutation reported as SURVIVED" 9 $rc
 "$GUARD" --repo "$R" --file src/lib.rs --test "--lib the_answer_is_42" --expect-n 1 \
   -- python3 -c "
 import sys; p='$R/src/lib.rs'; s=open(p).read()
-open(p,'w').write(s.replace('{ 42 }','{ 43 }',1))" >/dev/null 2>&1; rc=$?
+open(p,'w').write(s.replace('{ 42 + EXTRA }','{ 43 + EXTRA }',1))" >/dev/null 2>&1; rc=$?
 check "T8 --test carries multi-word cargo args" 0 $rc
 git -C "$R" checkout -- . 2>/dev/null
 
@@ -166,19 +172,22 @@ rm -f "$R/.git/index.lock"; git -C "$R" checkout -- . 2>/dev/null
 check "T15 wrong selected count in mutant refused" 7 $rc
 git -C "$R" checkout -- . 2>/dev/null
 
-# T16 the RESTORED phase runs at all: a mutation whose effect outlives the
-# declared-file restore must be caught there. The command edits a declared file
-# AND leaves the build in a state the restore does not undo.
-cat > "$R/mut_persist.sh" <<'PERSIST'
-set -e
-cd "$1"
-python3 - <<'PY2'
-p='src/lib.rs'; s=open(p).read()
-open(p,'w').write(s.replace('{ 42 }','{ 43 }',1))
-PY2
-PERSIST
-chmod +x "$R/mut_persist.sh"
-git -C "$R" checkout -- . 2>/dev/null; rm -f "$R/mut_persist.sh"
+# T16 the RESTORED phase. A mutation that edits a declared file AND poisons a
+# gitignored generated file: the mutant is red (caught), `git checkout -- src/lib.rs`
+# puts the declared file back, but the poison survives -- checkout cannot undo it
+# and porcelain cannot see it. Only a third test run notices, so this is the one
+# cell that stands on blocker #1's fix.
+#
+# It exists because the first thing written here was a comment named T16, a
+# fixture built and immediately deleted, and no call to the guard at all: labelled
+# as covered, contributing zero. Deleting the whole restored phase left 21/21
+# green (@Cindy). A cell that never invokes the thing under test is worse than an
+# absent one, because its name answers the question nobody then asks.
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && printf 'pub const EXTRA: u32 = 100;\\n' > src/generated.rs && $MUT" >/dev/null 2>&1; rc=$?
+check "T16 effect outliving restore caught in restored" 10 $rc
+printf 'pub const EXTRA: u32 = 0;\n' > "$R/src/generated.rs"
+git -C "$R" checkout -- . 2>/dev/null
 
 printf "\n  %d passed, %d failed\n" "$pass" "$fail"
 rm -rf "$R"
