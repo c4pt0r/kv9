@@ -6,7 +6,17 @@
 # cannot damage a real worktree.
 set -uo pipefail
 GUARD="$1"
-R=$(mktemp -d /tmp/mg-repo.XXXXXX)
+# One unique outer directory per run, holding BOTH the scratch repo and this
+# run's expected-artifact files. The artifacts used to go to fixed paths under
+# /tmp ("$R/../mg-expected-*.txt" -- `..` discards the unique suffix) and were
+# never removed, so two concurrent runs shared them and each run's leftovers
+# became the next run's external state (Tess). That is precisely the cross-run
+# contamination the guard exists to refuse; the self-test must not carry the
+# same blind spot.
+OUT=$(mktemp -d /tmp/mg-run.XXXXXX)
+ART="$OUT/artifacts"; mkdir -p "$ART"
+R="$OUT/repo"; mkdir -p "$R"
+trap 'rm -rf "$OUT"' EXIT INT TERM
 pass=0; fail=0
 check() { # name expected_rc actual_rc
   if [ "$2" = "$3" ]; then printf "  PASS  %-52s rc=%s\n" "$1" "$3"; pass=$((pass+1));
@@ -193,7 +203,7 @@ git -C "$R" checkout -- . 2>/dev/null
 # T17 gate 4 must RESTORE the declared file while PRESERVING the undeclared one.
 # The earlier version left the whole tree alone and called that the contract.
 "$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
-  -- bash -c "cd $R && $MUT && echo x >> Cargo.toml && cp Cargo.toml ../mg-expected-cargo.txt" >/dev/null 2>&1; rc=$?
+  -- bash -c "cd $R && $MUT && echo x >> Cargo.toml && cp Cargo.toml $ART/expected-cargo.txt" >/dev/null 2>&1; rc=$?
 check "T17 gate 4 returns 5" 5 $rc
 # worktree AND index, separately -- a restore that fixes only the worktree
 # leaves the index staged and the next run refuses at gate 1 (@Cindy).
@@ -202,7 +212,7 @@ if git -C "$R" diff --quiet HEAD -- src/lib.rs && git -C "$R" diff --cached --qu
 else printf "  FAIL  %-52s\n" "T17b declared restored in worktree AND index"; fail=$((fail+1)); fi
 # "preserved" is not "present": assert the bytes are exactly what the mutation
 # produced, so a restore that rewrote the residue would still fail here.
-if [ "$(cat "$R/Cargo.toml")" = "$(cat "$R/../mg-expected-cargo.txt" 2>/dev/null)" ]; then
+if [ "$(cat "$R/Cargo.toml")" = "$(cat "$ART/expected-cargo.txt" 2>/dev/null)" ]; then
   printf "  PASS  %-52s\n" "T17c undeclared residue byte-identical"; pass=$((pass+1))
 else printf "  FAIL  %-52s\n" "T17c undeclared residue byte-identical"; fail=$((fail+1)); fi
 git -C "$R" checkout -- . 2>/dev/null
@@ -210,7 +220,7 @@ git -C "$R" checkout -- . 2>/dev/null
 # T18 a rename OUT of a declared path: the declared file must come back even
 # though the index says it is gone. `checkout --` cannot do this; `checkout HEAD --` can.
 "$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
-  -- bash -c "cd $R && $MUT && git mv src/lib.rs src/moved.rs && cp src/moved.rs ../mg-expected-moved.txt" >/dev/null 2>&1; rc=$?
+  -- bash -c "cd $R && $MUT && git mv src/lib.rs src/moved.rs && cp src/moved.rs $ART/expected-moved.txt" >/dev/null 2>&1; rc=$?
 check "T18 rename-out returns 5" 5 $rc
 if [ -f "$R/src/lib.rs" ] && git -C "$R" diff --quiet HEAD -- src/lib.rs \
      && git -C "$R" diff --cached --quiet HEAD -- src/lib.rs; then
@@ -219,7 +229,7 @@ else printf "  FAIL  %-52s\n" "T18b old declared path restored (worktree+index)"
 # The rename DESTINATION must survive as undeclared residue -- asserted apart
 # from the restore, so a future "leave the whole tree" regression cannot satisfy
 # one combined check (@Cindy).
-if [ -f "$R/src/moved.rs" ] && [ "$(cat "$R/src/moved.rs")" = "$(cat "$R/../mg-expected-moved.txt" 2>/dev/null)" ]; then
+if [ -f "$R/src/moved.rs" ] && [ "$(cat "$R/src/moved.rs")" = "$(cat "$ART/expected-moved.txt" 2>/dev/null)" ]; then
   printf "  PASS  %-52s\n" "T18c rename destination byte-identical residue"; pass=$((pass+1))
 else printf "  FAIL  %-52s\n" "T18c rename destination byte-identical residue"; fail=$((fail+1)); fi
 git -C "$R" reset -q --hard >/dev/null 2>&1; rm -f "$R/src/moved.rs"
@@ -282,7 +292,17 @@ for sig in INT TERM; do
   # not the right baseline here. Comparing against a stale anchor fails for a
   # reason that has nothing to do with the guard.
   head_at_call="$(git -C "$R" rev-parse HEAD)"
-  "$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  # Launched through a shim that resets SIGINT/SIGTERM to SIG_DFL before exec.
+  # Bash cannot trap a signal that was ignored on entry, and a suite run in the
+  # background has SIGINT ignored -- so without this the INT cell silently
+  # reports rc=0 and its result depends on how the suite was invoked. Tess named
+  # this hazard; my own concurrency probe is what walked into it.
+  python3 -c "
+import signal, os, sys
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+signal.signal(signal.SIGTERM, signal.SIG_DFL)
+os.execv(sys.argv[1], sys.argv[1:])
+" "$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
     -- bash -c "cd $R && $MUT && kill -$sig \$PPID" >/dev/null 2>&1; rc=$?
   check "T24/25 $sig restores and exits $want" "$want" $rc
   if git -C "$R" diff --quiet HEAD -- src/lib.rs \
@@ -294,6 +314,12 @@ for sig in INT TERM; do
   git -C "$R" reset -q --hard >/dev/null 2>&1
 done
 
+# T26 this run's artifact directory must not outlive the run. Asserted after the
+# removal, so a teardown that silently fails is visible rather than assumed.
+rm -rf "$OUT"
+if [ ! -e "$OUT" ]; then
+  printf "  PASS  %-52s\n" "T26 run artifact dir removed at teardown"; pass=$((pass+1))
+else printf "  FAIL  %-52s\n" "T26 run artifact dir removed at teardown"; fail=$((fail+1)); fi
+
 printf "\n  %d passed, %d failed\n" "$pass" "$fail"
-rm -rf "$R"
 [ "$fail" -eq 0 ]
