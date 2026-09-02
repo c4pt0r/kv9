@@ -698,3 +698,42 @@ observed** — you may not say "every form".
 *Not a generalisation of rule 15 (Ren):* rule 15's third premise is about **reachability** — does the
 test execute this line — while this rule is about **discrimination**. Merging them collapses two
 different properties.
+
+### Convention — a comment whose truth depends on an unlanded task carries a marker
+
+*Origin (case Ren, 2026-09-01):* `crates/txn/src/raw.rs` told readers to document raw reads as
+"fresh in normal operation, never strongly consistent". That was true while the ReadIndex barrier
+was unwired and became false the moment it landed — and it was **instructing other people** to
+publish a promise that no longer held. The public docs were protected by a hard trigger on the
+card; nothing protected the copy of the same fact in a code comment. It was found only because
+someone grepped the old promise's phrasing, which is luck: a different original wording would
+have hidden it.
+
+**When you write a comment whose truth depends on a named future task, mark it:**
+
+    // UNLANDED(task #NNN): leader-only reads are interim. Expires when the
+    // ReadIndex barrier lands and raw reads become linearizable.
+
+(`#NNN` deliberately, not a real number: a worked example carrying a live marker would be found by
+the check for that task and counted as real debt. The instrument must not be written into the
+corpus it searches — the same reason a sentinel value must not appear in the notes that document
+it.)
+
+Two parts, both required: the exact marker `UNLANDED(task #N)`, and the condition that makes the
+statement expire. The marker is what a machine finds; the condition is what tells a human whether
+it has already expired.
+
+**Closing task #N requires `scripts/unlanded-check.sh --task N` to be empty at the exact head**, or
+an explicit reviewed decision to transfer the debt to another task.
+
+*Why an invented marker rather than a wording search:* a search key you invent has no legitimate
+second use, so "zero hits" is a criterion. A wording family — "not implemented yet", "once X
+lands" — is content: explanation, quotation and correction all use it legitimately, so the best it
+can carry is "every hit is classifiable", never "must be zero". The reach of a wording search also
+equals the set of phrasings the searcher happened to think of; the reach of a fixed marker does
+not depend on the searcher.
+
+*What this does not do:* it is prospective. It finds markers someone wrote, so an empty result
+means "no marked debt for this task" and never "no stale comments about this task". Existing
+comments are not to be marked by guess — audit candidates individually and attach a marker only
+where the canonical task and the expiry condition are both verified.
