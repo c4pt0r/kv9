@@ -19,8 +19,11 @@ mkdir -p src
 printf 'pub fn a() {}\n' > src/a.rs
 git add -A >/dev/null 2>&1; git -c user.email=t@t -c user.name=t commit -q -m base >/dev/null 2>&1
 
-# U1 clean repo, no markers -> may close
-"$CHK" --repo "$R" --task 27 >/dev/null 2>&1; check "U1 no markers -> may close" 0 $?
+# U1 clean repo, no markers -> may close, AND says so with an explicit number.
+u1=$("$CHK" --repo "$R" --task 27 2>&1); check "U1 no markers -> may close" 0 $?
+if printf '%s' "$u1" | grep -q "0 marker(s)"; then
+  printf "  PASS  %-54s\n" "U1b legitimate zero reports an explicit count"; pass=$((pass+1))
+else printf "  FAIL  %-54s\n" "U1b legitimate zero reports an explicit count"; fail=$((fail+1)); fi
 
 # U2 a marker for that task blocks closure. Clause 2 of the card.
 # Assembled from fragments: a self-test that writes a LIVE marker into a file
@@ -31,11 +34,14 @@ printf '// %s expires when raw reads are linearizable\n' "$M27" >> src/a.rs
 git add -A >/dev/null 2>&1; git -c user.email=t@t -c user.name=t commit -q -m mark >/dev/null 2>&1
 "$CHK" --repo "$R" --task 27 >/dev/null 2>&1; check "U2 marker present -> blocks closure" 2 $?
 
-# U2b the report must name exact file:line, not just a count (clause 3).
+# U2b clause 3 asks for exact file:LINE. The fixture puts the marker on a known
+# line (src/a.rs had exactly one line, so the appended marker is line 2), and the
+# assertion pins the whole revision:path:line prefix. Matching only the filename
+# left `-n` unguarded: removing it kept the suite at 11/11 (Tess).
 out=$("$CHK" --repo "$R" --task 27 2>&1)
-if printf '%s' "$out" | grep -q "src/a.rs"; then
-  printf "  PASS  %-54s\n" "U2b report names the exact file"; pass=$((pass+1))
-else printf "  FAIL  %-54s\n" "U2b report names the exact file"; fail=$((fail+1)); fi
+if printf '%s' "$out" | grep -q "HEAD:src/a.rs:2:"; then
+  printf "  PASS  %-54s\n" "U2b report gives revision:path:line"; pass=$((pass+1))
+else printf "  FAIL  %-54s\n" "U2b report gives revision:path:line"; fail=$((fail+1)); fi
 
 # U3 markers are per-task: #27's marker must not block #28.
 "$CHK" --repo "$R" --task 28 >/dev/null 2>&1; check "U3 another task's marker does not block" 0 $?
@@ -74,6 +80,15 @@ prev=$(git -C "$R" rev-parse HEAD~1)
 # without a test-only backdoor: an unusable TMPDIR makes the probe impossible.
 TMPDIR=/nonexistent-dir "$CHK" --repo "$R" --task 27 >/dev/null 2>&1
 check "U8 unusable probe -> instrument refuses" 3 $?
+
+# U9/U10 an unreadable target is an INSTRUMENT failure, never a clean result.
+# The positive control runs in a probe repo, so it cannot vouch for the caller's
+# --repo/--head; without checking the scan's own exit code both of these returned
+# rc=0 and would have permitted the card to close (Tess).
+"$CHK" --repo "$R" --task 999 --head definitely-not-a-revision >/dev/null 2>&1
+check "U9 invalid --head refused, not reported clean" 3 $?
+"$CHK" --repo "$OUT/not-a-repo" --task 999 >/dev/null 2>&1
+check "U10 invalid --repo refused, not reported clean" 3 $?
 
 printf "\n  %d passed, %d failed\n" "$pass" "$fail"
 [ "$fail" -eq 0 ]

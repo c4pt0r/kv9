@@ -61,9 +61,26 @@ marker="UNLANDED(task #${task})"
 # `UNLANDED(task #NNN.1)` or a bracketed variant, the default reading starts
 # matching things it should not. Stated here rather than left looking guarded:
 # removing it reds nothing today.
-hits="$(git -C "$repo" grep -n -F -- "$marker" "$head_rev" 2>/dev/null || true)"
+# The target scan's exit code is load-bearing and must NOT be swallowed.
+# `|| true` here turned an unreadable repo or a nonexistent revision into
+# "no markers, rc=0" -- an instrument failure reported as permission to close
+# the card (Tess). git grep: 0 = matched, 1 = legitimately no match, anything
+# else = the scan could not be performed.
+scan_err="$(mktemp "${TMPDIR:-/tmp}/unlanded-scan.XXXXXX")"
+hits="$(git -C "$repo" grep -n -F -- "$marker" "$head_rev" 2>"$scan_err")"; scan_rc=$?
+scan_msg="$(cat "$scan_err" 2>/dev/null)"; rm -f "$scan_err"
+if [ "$scan_rc" -gt 1 ]; then
+  printf 'INSTRUMENT FAILED: could not scan %s at %s (git grep rc=%s).\n' \
+    "$repo" "$head_rev" "$scan_rc" >&2
+  [ -n "$scan_msg" ] && printf '%s\n' "$scan_msg" >&2
+  printf 'This is NOT a clean result; the card may not close on it.\n' >&2
+  exit 3
+fi
 
-# Positive control: the instrument must be able to find this marker shape at all.
+# Positive control: the instrument can find this marker shape at all. Note its
+# BOUNDARY -- it runs in a probe repo, so it says nothing about whether the
+# caller's --repo/--head are readable. That gap is why the target scan's own exit
+# code is checked above; a control in a different repo cannot stand in for it.
 # Without it, "0 hits" is indistinguishable from a search that can never match --
 # a broken pattern, the wrong head, an empty repo. The control is built at run
 # time so it cannot itself be committed into the corpus being searched.
@@ -95,5 +112,7 @@ if [ -n "$hits" ]; then
   printf '\nRemove them, or record an explicit reviewed decision to transfer the debt.\n' >&2
   exit 2
 fi
-printf 'no %s markers at %s (instrument positive control: ok)\n' "$marker" "$head_rev"
+# Explicit zero, so a caller (or a self-test) can consume a number rather than
+# infer absence from prose.
+printf '0 marker(s) for %s at %s (scan ok, instrument positive control: ok)\n' "$marker" "$head_rev"
 exit 0
