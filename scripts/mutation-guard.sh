@@ -4,9 +4,8 @@
 # refusing loudly at every point where a mutation run can silently lie.
 #
 # Why this exists: "commit before running a mutation" failed three times in one
-# day (Ren twice, Rafa once) as a remembered rule, because it asks you to think
-# of it while you are concentrating on the mutation. Every check below is a
-# refusal, not a reminder.
+# day as a remembered rule, because it asks you to think of it while you are
+# concentrating on the mutation. Every check below is a refusal, not a reminder.
 #
 #   scripts/mutation-guard.sh \
 #       --repo <dir> --file <path> [--file <path>...] \
@@ -15,56 +14,80 @@
 #       -- <command that applies the mutation>
 #
 # Exit codes are distinct so a caller can tell refusal from result:
-#   0  baseline passed, mutant FAILED (the mutation was caught)  -- the good case
-#   1  usage
-#   2  gate 1: worktree not clean at start (nothing was modified)
-#   3  gate 2: --old-once literal does not occur exactly once
-#   4  gate 3: the mutation did not change any declared file
-#   5  gate 4: an undeclared path changed (left in place, NOT reverted for you)
-#   6  baseline did not select exactly --expect-n tests, or did not pass
-#   7  mutant did not select exactly --expect-n tests
-#   8  cleanup failed -- tree dirty or HEAD moved after restore
-#   9  MUTANT SURVIVED: baseline and mutant both passed
+#   0   baseline green, mutant RED, restored green -- the mutation was caught
+#   1   usage
+#   2   gate 1: worktree not clean at start (nothing was modified)
+#   3   gate 2: --old-once literal does not occur exactly once
+#   4   gate 3: the mutation did not land (nothing changed, or the target
+#       literal survived)
+#   5   gate 4: an undeclared path changed (left in place, NOT reverted)
+#   6   baseline did not select exactly --expect-n, or was not green
+#   7   mutant did not select exactly --expect-n
+#   8   cleanup failed -- declared files not restored, or HEAD moved
+#   9   MUTANT SURVIVED: baseline and mutant both green
+#   10  restored phase did not select exactly --expect-n, or was not green
+#
+# THREE test phases, not two. Baseline, mutant, and *restored* all assert the
+# same selected count, and the restored phase must be green. Without the third,
+# "the tree was put back" rests on file contents alone -- and a mutation that
+# perturbs something outside the declared files (a lockfile, a generated
+# artifact) leaves a tree that looks restored and no longer behaves like the
+# baseline. The restored run is what makes "no lasting effect" an observation.
+#
+# Exit-code discipline: the run's own result and a cleanup failure are separate
+# facts. If restore fails, the run's result is still printed, but the process
+# exits with the cleanup code -- a dirty tree must never be reported as success
+# just because the mutation was caught.
 #
 # Contract notes, each from a specific failure:
 #
 #   * Cleanliness is `git status --porcelain`, never `git diff --quiet`. The
 #     latter only asserts "no tracked file changed" and reports a tree littered
-#     with untracked mutation leftovers as clean -- its success value coincides
-#     with its blind spot (Cindy).
-#   * Outputs go to a temp dir OUTSIDE the repo. Cindy's own harness lived in
-#     the tree under test, so one gate saw its files and another did not, and
-#     the same tree got opposite verdicts. This script may live in scripts/
-#     because a tracked, unmodified file does not appear in porcelain -- but its
-#     working files must not.
-#   * `--old-once` takes the FULL literal the mutation replaces, never a prefix.
-#     A two-line prefix of one of Ren's patterns matched 2 sites here and 226 in
-#     Cindy's tree; "it only matched a couple extra" is not a safe intuition.
-#   * --test takes the FULL cargo test argument list, e.g. "-p kv9-server foo".
-#     The expect-n gate is a SECOND, fail-closed line under this: drop the word
-#     splitting and the first real multi-word invocation is refused loudly rather
-#     than passing silently. That bounds the damage; it is not coverage. A
-#     capability the docs promise needs a self-test standing on it, or nothing
-#     distinguishes a build that has it from one that does not -- @Cindy proved
-#     exactly that by mutating this line and watching all 11 cases stay green
-#     (T8 in the self-tests now reds on that mutation).
-#     A bare filter at a workspace root whose root is itself a package silently
-#     runs only that package: here `cargo test fence_firing` selects 0 while
-#     `cargo test -p kv9-server fence_firing` selects 3. The expect-n gate turns
-#     that into a refusal instead of a meaningless green.
-#   * Baseline, mutant and restore all assert the SAME selected count. A filter
-#     that silently matches zero or the wrong tests reports "ok" and proves
-#     nothing (TESTING.md).
-#   * Restore is registered BEFORE the mutation is applied, so an interrupt or a
-#     panic still restores. A cleanup failure is loud and keeps its own exit
-#     code rather than masking the run's result.
+#     with untracked leftovers as clean -- its success value coincides with its
+#     blind spot (Cindy).
+#   * Changed paths are enumerated NUL-safe. Parsing `git status --porcelain` by
+#     whitespace columns loses the NEW path of `R  old -> new` -- `awk '{print $2}'`
+#     yields the old one -- so `git mv` out of a declared file read as "only
+#     declared files changed" (Tess). In -z form the new path comes FIRST, which
+#     is what the fix relies on.
+#     The enumerator also emits a rename's OLD path. **No self-test reaches that
+#     branch, and I could not construct one**: in every shape I produced the
+#     deciding path was already the first record (rename out of a declared file
+#     -> new path undeclared; rename onto an existing declared file -> git
+#     reports M+D, not R, and the D record refuses). It is kept as defence
+#     against a rename-detection configuration where the old path is the only
+#     undeclared one -- stated here rather than left looking covered, because
+#     removing it reds nothing.
+#   * `--old-once` counts BYTE OCCURRENCES across the declared files, not
+#     matching lines. `grep -c` collapses `{ 42 + 42 }` to one hit and reports
+#     "exactly once" for a literal that appears twice; it also cannot see a
+#     multi-line literal at all (Tess).
+#   * With `--old-once`, "the mutation landed" means that exact literal went
+#     from 1 to 0. Merely observing that some declared file changed lets an
+#     unrelated edit -- renaming a function while leaving the target intact --
+#     stand in as evidence for the mutation (Tess).
 #   * The tree must be clean INCLUDING untracked files, so anything your build
-#     creates must be gitignored or committed. An untracked Cargo.lock, a stray
-#     .out file, a scratch script -- each is an undeclared change and each is
-#     refused. That is deliberate: an untracked leftover from a previous run is
-#     exactly what silently contaminates the next one.
-#   * Undeclared changes are reported and LEFT ALONE. Deleting a file this
-#     script did not create, to tidy up after itself, is not tidying.
+#     creates must be gitignored or committed. An untracked leftover from a
+#     previous run is exactly what contaminates the next one.
+#   * Undeclared changes are reported and LEFT ALONE (exit 5): the whole tree is
+#     left untouched, declared files included. Deleting a file this script did
+#     not create is not tidying, and a mutation that RENAMED a declared file
+#     cannot be restored by path anyway -- attempting it turned a deliberate
+#     refusal into a spurious "cleanup failed". After an exit 5 the tree stays
+#     dirty on purpose and the next run refuses at gate 1 until you resolve it.
+#   * --test takes the FULL cargo argument list, e.g. "-p kv9-server foo".
+#     A bare filter at a workspace root whose root is itself a package silently
+#     runs only that package. The expect-n gate is a SECOND, fail-closed line
+#     under this: drop the word splitting and the first real multi-word call is
+#     refused loudly rather than passing silently. That bounds the damage; it is
+#     not coverage. A capability the docs promise needs a self-test standing on
+#     it -- @Cindy proved exactly that by mutating the splitting away and
+#     watching all 11 cases stay green (T8 now reds on it).
+#
+# The runner may live in scripts/ because a tracked, unmodified file does not
+# appear in porcelain. When editing the runner ITSELF, drive from a committed
+# baseline or an out-of-repo copy: it gets no dirty-tree exemption for itself.
+# Its working files always go outside the tree under test.
 set -uo pipefail
 
 die() { printf '%s\n' "$*" >&2; exit "${2:-1}"; }
@@ -87,9 +110,46 @@ done
 [ $# -gt 0 ] || die "no mutation command given after --" 1
 
 work="$(mktemp -d /tmp/kv9-mutation-guard.XXXXXX)"   # outside the tree under test
-trap 'rm -rf "$work"' EXIT
 
 porcelain() { git -C "$repo" status --porcelain; }
+
+# NUL-safe changed-path enumeration; a rename yields BOTH paths.
+changed_paths() {
+  git -C "$repo" status --porcelain -z | python3 -c '
+import sys
+buf = sys.stdin.buffer.read()
+parts = buf.split(b"\0")
+out, i = [], 0
+while i < len(parts):
+    e = parts[i]
+    if not e:
+        i += 1; continue
+    xy, path = e[:2].decode("utf-8", "replace"), e[3:].decode("utf-8", "replace")
+    out.append(path)
+    if "R" in xy or "C" in xy:      # the following record is the ORIGINAL path
+        i += 1
+        if i < len(parts) and parts[i]:
+            out.append(parts[i].decode("utf-8", "replace"))
+    i += 1
+for p in out:
+    print(p)
+'
+}
+
+# Byte occurrences of a literal across the declared files (not matching lines).
+occurrences() {
+  ( cd "$repo" && python3 -c '
+import sys
+lit = sys.argv[1].encode()
+total = 0
+for f in sys.argv[2:]:
+    try:
+        total += open(f, "rb").read().count(lit)
+    except FileNotFoundError:
+        pass
+print(total)
+' "$1" "${files[@]}" )
+}
 
 # ---- gate 1: clean start, and say what would have been destroyed ------------
 dirty="$(porcelain)"
@@ -97,75 +157,126 @@ if [ -n "$dirty" ]; then
   note "REFUSING (gate 1): the worktree is not clean; restoring declared files"
   note "would destroy work that exists nowhere else:"
   printf '%s\n' "$dirty" >&2
-  exit 2
+  rm -rf "$work"; exit 2
 fi
 head_before="$(git -C "$repo" rev-parse HEAD)"
 note "gate 1 ok: clean at $head_before"
 
-# ---- gate 2: the literal is unique, and it is the full literal --------------
+# ---- gate 2: the literal is unique, counted as occurrences ------------------
 if [ -n "$old_once" ]; then
-  hits=0
-  for f in "${files[@]}"; do
-    n=$(grep -F -c -- "$old_once" "$repo/$f" 2>/dev/null || true)
-    hits=$((hits + ${n:-0}))
-  done
-  [ "$hits" -eq 1 ] || die "REFUSING (gate 2): --old-once occurs $hits times across declared files, expected exactly 1 (pass the FULL literal, never a prefix)" 3
+  n="$(occurrences "$old_once")"
+  [ "$n" = "1" ] || { rm -rf "$work"; die "REFUSING (gate 2): --old-once occurs $n times across the declared files, expected exactly 1 (occurrences, not matching lines; pass the FULL literal)" 3; }
   note "gate 2 ok: literal occurs exactly once"
 fi
 
-# ---- baseline, before anything is touched ----------------------------------
-run_tests() {  # -> writes output to $1, echoes "<selected> <rc>"
+run_tests() {  # -> "<selected> <rc>"
   local out="$1" rc sel
   ( cd "$repo" && cargo test "${test_args[@]}" ) >"$out" 2>&1; rc=$?
   sel=$(grep -oE '^running [0-9]+ test' "$out" | grep -oE '[0-9]+' | paste -sd+ - | bc 2>/dev/null || echo 0)
   echo "${sel:-0} $rc"
 }
+
 read -r base_sel base_rc <<<"$(run_tests "$work/baseline.out")"
-[ "$base_sel" = "$expect_n" ] || die "REFUSING (gate: filter): baseline selected $base_sel tests, expected $expect_n -- a filter matching the wrong count proves nothing" 6
-[ "$base_rc" -eq 0 ] || die "REFUSING (gate: baseline): baseline is not green (rc=$base_rc); a mutation result means nothing on a red baseline" 6
+[ "$base_sel" = "$expect_n" ] || { rm -rf "$work"; die "REFUSING (gate: filter): baseline selected $base_sel tests, expected $expect_n -- a filter matching the wrong count proves nothing" 6; }
+[ "$base_rc" -eq 0 ] || { rm -rf "$work"; die "REFUSING (gate: baseline): baseline is not green (rc=$base_rc); a mutation result means nothing on a red baseline" 6; }
 note "baseline ok: $base_sel selected, green"
 
 # ---- restore registered BEFORE the mutation exists -------------------------
-restore_rc=0
+cleanup_rc=0
+skip_restore=0          # gate 4 leaves the tree ALONE, by contract
 restore() {
-  git -C "$repo" checkout -- "${files[@]}" 2>/dev/null || restore_rc=8
+  if [ "$skip_restore" -eq 1 ]; then
+    note "tree left as-is by contract (gate 4); the next run will refuse until you resolve it"
+    return
+  fi
+  git -C "$repo" checkout -- "${files[@]}" 2>/dev/null || cleanup_rc=8
+  local head_now; head_now="$(git -C "$repo" rev-parse HEAD 2>/dev/null)"
+  if [ "$head_now" != "$head_before" ]; then
+    note "CLEANUP FAILED: HEAD moved $head_before -> $head_now"; cleanup_rc=8
+  fi
+  # Undeclared residue left on purpose (exit 5) is NOT a cleanup failure; the
+  # declared files still have to come back.
   local left; left="$(porcelain)"
-  local head_now; head_now="$(git -C "$repo" rev-parse HEAD)"
-  if [ -n "$left" ] || [ "$head_now" != "$head_before" ]; then
-    note "CLEANUP FAILED: tree not restored or HEAD moved"
-    [ -n "$left" ] && printf '%s\n' "$left" >&2
-    [ "$head_now" != "$head_before" ] && note "HEAD $head_before -> $head_now"
-    restore_rc=8
+  if [ -n "$left" ]; then
+    note "CLEANUP FAILED: tree not clean after restoring declared files"
+    printf '%s\n' "$left" >&2; cleanup_rc=8
   fi
 }
-trap 'restore; rm -rf "$work"; exit $(( restore_rc ? restore_rc : 130 ))' INT TERM
-trap 'restore; rm -rf "$work"' EXIT
+on_signal() { restore; rm -rf "$work"; exit $(( cleanup_rc ? cleanup_rc : 130 )); }
+trap on_signal INT TERM
+
+finish() {   # $1 = the run's own result code
+  local run_rc="$1"
+  restore
+  rm -rf "$work"
+  if [ "$cleanup_rc" -ne 0 ]; then
+    note "run result was rc=$run_rc, but cleanup failed -- exiting $cleanup_rc"
+    exit "$cleanup_rc"
+  fi
+  exit "$run_rc"
+}
 
 # ---- apply the mutation ----------------------------------------------------
-"$@" >"$work/mutate.out" 2>&1 || { cat "$work/mutate.out" >&2; die "REFUSING (gate 3): the mutation command failed" 4; }
+if ! "$@" >"$work/mutate.out" 2>&1; then
+  cat "$work/mutate.out" >&2
+  note "REFUSING (gate 3): the mutation command failed"
+  finish 4
+fi
 
 changed="$(porcelain)"
-[ -n "$changed" ] || die "REFUSING (gate 3): the mutation changed nothing -- a survivor here would be meaningless" 4
+if [ -z "$changed" ]; then
+  note "REFUSING (gate 3): the mutation changed nothing -- a survivor here would be meaningless"
+  finish 4
+fi
+if [ -n "$old_once" ]; then
+  after="$(occurrences "$old_once")"
+  if [ "$after" != "0" ]; then
+    note "REFUSING (gate 3): the target literal still occurs $after time(s) -- something changed, but not the mutation under test"
+    finish 4
+  fi
+fi
 
-undeclared="$(printf '%s\n' "$changed" | awk '{print $2}' | while read -r p; do
-  for f in "${files[@]}"; do [ "$p" = "$f" ] && continue 2; done; printf '%s\n' "$p"
+undeclared="$(changed_paths | while read -r p; do
+  keep=1; for f in "${files[@]}"; do [ "$p" = "$f" ] && keep=0; done
+  [ "$keep" -eq 1 ] && printf '%s\n' "$p"
 done)"
 if [ -n "$undeclared" ]; then
   note "REFUSING (gate 4): the mutation touched undeclared path(s). They are LEFT IN PLACE:"
   printf '%s\n' "$undeclared" >&2
-  exit 5
+  # Contract: preserve, do not tidy. Restoring here would also have to undo a
+  # rename of a declared file, which is exactly the case that turned a
+  # deliberate refusal into a spurious "cleanup failed".
+  skip_restore=1
+  finish 5
 fi
-note "gate 3/4 ok: only declared files changed"
+note "gate 3/4 ok: only declared files changed, and the target literal is gone"
 
 # ---- mutant ----------------------------------------------------------------
 read -r mut_sel mut_rc <<<"$(run_tests "$work/mutant.out")"
-[ "$mut_sel" = "$expect_n" ] || die "REFUSING (gate: filter): mutant selected $mut_sel tests, expected $expect_n -- baseline and mutant must judge the same set" 7
+if [ "$mut_sel" != "$expect_n" ]; then
+  note "REFUSING (gate: filter): mutant selected $mut_sel tests, expected $expect_n -- baseline and mutant must judge the same set"
+  finish 7
+fi
 
 if [ "$mut_rc" -eq 0 ]; then
   note "MUTANT SURVIVED: baseline green and mutant green -- this cell does not discriminate"
   grep -E '^test result:' "$work/mutant.out" >&2 || true
-  exit 9
+  finish 9
 fi
 note "caught: mutant is red"
 grep -E '^test result:|panicked at|assertion' "$work/mutant.out" | head -6 >&2 || true
-exit 0
+
+# ---- restored phase: put it back, then prove it behaves like the baseline ---
+git -C "$repo" checkout -- "${files[@]}" 2>/dev/null || { note "CLEANUP FAILED: could not restore declared files"; cleanup_rc=8; finish 0; }
+read -r res_sel res_rc <<<"$(run_tests "$work/restored.out")"
+if [ "$res_sel" != "$expect_n" ]; then
+  note "RESTORED PHASE: selected $res_sel tests, expected $expect_n -- the tree does not behave like the baseline"
+  finish 10
+fi
+if [ "$res_rc" -ne 0 ]; then
+  note "RESTORED PHASE: not green (rc=$res_rc) -- the mutation left a lasting effect"
+  grep -E '^test result:' "$work/restored.out" >&2 || true
+  finish 10
+fi
+note "restored ok: $res_sel selected, green"
+finish 0
