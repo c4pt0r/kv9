@@ -96,6 +96,90 @@ open(p,'w').write(s.replace('{ 42 }','{ 43 }',1))" >/dev/null 2>&1; rc=$?
 check "T8 --test carries multi-word cargo args" 0 $rc
 git -C "$R" checkout -- . 2>/dev/null
 
+# --- gaps Tess enumerated after mutating the guard itself --------------------
+
+# T9 untracked-only dirt must still refuse. `git diff --quiet` calls this clean;
+# porcelain does not. Without this cell, swapping the predicate stays green.
+echo "stray" > "$R/leftover.txt"
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 -- true >/dev/null 2>&1; rc=$?
+check "T9 untracked-only dirty start refused" 2 $rc
+rm -f "$R/leftover.txt"
+
+# T10 --old-once that matches nothing is as wrong as one matching twice.
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  --old-once "no_such_literal_anywhere" -- true >/dev/null 2>&1; rc=$?
+check "T10 --old-once with zero matches refused" 3 $rc
+
+# T11 two occurrences on ONE line. `grep -c` counts lines and reports 1, so the
+# uniqueness gate passes for a literal that appears twice.
+printf 'pub fn twice() -> u32 { 7 + 7 }\n' >> "$R/src/lib.rs"
+git -C "$R" add -A >/dev/null 2>&1; git -C "$R" -c user.email=t@t -c user.name=t commit -q -m twice >/dev/null 2>&1
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  --old-once "7" -- true >/dev/null 2>&1; rc=$?
+check "T11 two occurrences on one line refused" 3 $rc
+
+# T12 with --old-once, an unrelated edit must not stand in for the mutation:
+# the target literal has to go from 1 to 0.
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  --old-once "7 + 7" \
+  -- bash -c "cd $R && sed -i 's/fn twice/fn twice_renamed/' src/lib.rs" >/dev/null 2>&1; rc=$?
+check "T12 target literal survived -> not landed" 4 $rc
+
+# T13 an undeclared RENAME. Column-parsing porcelain sees only the old path of
+# `R  old -> new`, so `git mv` out of a declared file reads as declared-only.
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && $MUT && git mv src/lib.rs src/renamed.rs" >/dev/null 2>&1; rc=$?
+check "T13 undeclared rename refused" 5 $rc
+git -C "$R" reset -q --hard >/dev/null 2>&1
+
+# T13c an undeclared file DELETED by the mutation. Named for what it actually
+# exercises: `git mv -f spare.rs lib.rs` is not reported as a rename at all
+# (the target existed), it is `M lib.rs` + `D spare.rs`, and the D record is
+# what refuses. Originally written as "the reverse rename ... needs the rename
+# branch"; removing that branch left this green, so the name was claiming more
+# than the cell proves.
+printf 'pub fn spare() -> u32 { 1 }\n' > "$R/src/spare.rs"
+git -C "$R" add -A >/dev/null 2>&1; git -C "$R" -c user.email=t@t -c user.name=t commit -q -m spare >/dev/null 2>&1
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && $MUT && git mv -f src/spare.rs src/lib.rs" >/dev/null 2>&1; rc=$?
+check "T13c undeclared file deleted by mutation" 5 $rc
+git -C "$R" reset -q --hard >/dev/null 2>&1
+
+# T13b the residue from an undeclared change is deliberate, and must NOT be
+# reported as a cleanup failure (rc 8) by the exit path that reports one.
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && $MUT && echo x >> Cargo.toml" >/dev/null 2>&1; rc=$?
+check "T13b undeclared residue is rc=5, not cleanup 8" 5 $rc
+git -C "$R" checkout -- . 2>/dev/null
+
+# T14 a real cleanup failure must surface with its OWN code even when the run
+# itself succeeded -- a dirty tree cannot be reported as success.
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && $MUT && : > .git/index.lock" >/dev/null 2>&1; rc=$?
+check "T14 cleanup failure keeps its own rc" 8 $rc
+rm -f "$R/.git/index.lock"; git -C "$R" checkout -- . 2>/dev/null
+
+# T15 wrong selected count in the MUTANT phase (baseline fine, mutant renames
+# the test away) must be refused, not read as a caught mutation.
+"$GUARD" --repo "$R" --file src/lib.rs --test "the_answer_is_42" --expect-n 1 \
+  -- bash -c "cd $R && sed -i 's/the_answer_is_42/the_answer_is_renamed/' src/lib.rs" >/dev/null 2>&1; rc=$?
+check "T15 wrong selected count in mutant refused" 7 $rc
+git -C "$R" checkout -- . 2>/dev/null
+
+# T16 the RESTORED phase runs at all: a mutation whose effect outlives the
+# declared-file restore must be caught there. The command edits a declared file
+# AND leaves the build in a state the restore does not undo.
+cat > "$R/mut_persist.sh" <<'PERSIST'
+set -e
+cd "$1"
+python3 - <<'PY2'
+p='src/lib.rs'; s=open(p).read()
+open(p,'w').write(s.replace('{ 42 }','{ 43 }',1))
+PY2
+PERSIST
+chmod +x "$R/mut_persist.sh"
+git -C "$R" checkout -- . 2>/dev/null; rm -f "$R/mut_persist.sh"
+
 printf "\n  %d passed, %d failed\n" "$pass" "$fail"
 rm -rf "$R"
 [ "$fail" -eq 0 ]
