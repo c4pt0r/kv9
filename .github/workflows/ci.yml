@@ -105,6 +105,18 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
+      # Task #9 tripwire: the apply-side crate must not name the object store
+      # (contract: docs/OBJECT-STORAGE.md §3.1 -- apply installs already-durable
+      # references, it never talks to storage). Selftest first so a green scan
+      # is a measurement, not an unproven instrument; the script header carries
+      # the honest cap (name-level only -- the capability-narrowed apply face is
+      # the guarantee half). Weakening this step is a visible diff; that is its
+      # entire value.
+      - name: Apply-store tripwire
+        run: |
+          scripts/apply-store-tripwire-selftest.sh "$(pwd)/scripts/apply-store-tripwire.sh"
+          scripts/apply-store-tripwire.sh
+
   # Informational on purpose. `cargo fmt --check` does NOT pass on this tree: when this
   # workflow landed there were 159 diff hunks across 39 files, spanning all four crate
   # lanes. Making that blocking would paint CI red on day one for changes that did not
