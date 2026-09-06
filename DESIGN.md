@@ -6,6 +6,8 @@
 
 Status: **v0 design + skeleton milestone.** This document defines the architecture and the crate layout the
 skeleton implements. It is the source of truth for module boundaries. Diagrams: `docs/ARCHITECTURE.md`.
+Delivery order and phase boundaries: `docs/ROADMAP.md` — authoritative, and the only place they are stated.
+Object-storage path contract: `docs/OBJECT-STORAGE.md`. Current implementation status: `README.md`.
 
 ---
 
@@ -420,23 +422,53 @@ change through raft** → on commit, all replicas adopt the file-ids and **the W
 truncate**. Upload latency thus gates truncation → the backpressure point (§6.2/§6.4). A committed write is durable
 *immediately* via raft-majority WAL (does not wait for object storage); it becomes object-storage-durable at flush.
 
-**Manifest-change identity — derived from content, and the region epoch is part of that content.** A manifest change
-is identified by a hash of its *canonicalized content* — `(region_id, region_epoch, adds, removes, new_watermark)` —
-never by an allocated id. Content-derived identity is what **enables reconciliation** after a crash without any
-durable intermediate state: the proposer recomputes the same identity instead of having to remember one it was
-issued. **It does not by itself authorize a retry** — an unconfirmed outcome must still be reconciled against
-authoritative applied state first (see below); stable identity is what makes that reconciliation possible, not a
-licence to re-propose.
-**`region_epoch` is a mandatory member of the hashed content, and it is load-bearing twice over.** It is the *fence*
-(a change carrying the wrong epoch must be rejected) **and** the *nonce* (it is what makes a legitimate repeat hash
-differently from a retry). The repeat is real: a split may drop a file from a region while its refcount stays above
-zero because a sibling still references it, and a later merge may add that same file back — so "add F to R" can
-legitimately occur twice in a region's history. Under a bare content hash the second occurrence is judged a retry and
-dropped, losing a `+ref`, which under-counts, which is the dangerous direction. With the epoch inside the hash the
-argument closes: within one epoch a file-id enters a region at most once, and any legitimate re-add necessarily
-crosses an epoch bump and therefore hashes differently. **Removing the epoch field, or excluding it from the hashed
-content as redundant with the fence check, dismantles both protections at once — and no test goes red when it
-happens, because the loss is silent under-counting.**
+**Manifest-change identity — derived from content, ordered by an explicit generation.** A manifest change is
+identified by a hash of its *canonicalized content* — `(region_id, expected_generation, adds, removes,
+new_watermark)` — never by an allocated id. Content-derived identity is what **enables reconciliation** after a crash
+without any durable intermediate state: the proposer recomputes the same identity instead of having to remember one it
+was issued. **It does not by itself authorize a retry** — an unconfirmed outcome must still be reconciled against
+authoritative applied state first; stable identity is what makes that reconciliation possible, not a licence to
+re-propose.
+**Ordering comes from an explicit manifest `generation`, and `region_epoch` is the fence only.** Apply is a
+compare-and-set: a change is applied when `current_generation == expected_generation`, which advances the generation
+and records `(generation, last_change_id)`; a change whose id equals `last_change_id` is an idempotent repeat and is
+reported as *already applied*, never as newly accepted; anything else is rejected as stale.
+**`(generation, last_change_id)` is a bounded-window proof, not a history, and the window is exactly one generation
+wide.** Both outcomes at `current == expected+1` are settled, because the owner of that single transition is recorded:
+`last_change_id == mine` means **applied**; `last_change_id ≠ mine` means **not applied and never will be** — another
+change won the sole `g → g+1` transition, and since `generation` only advances, `expected == g` can never be
+satisfiable again. Beyond that the window has closed: at `current > expected+1` a caller cannot distinguish *applied
+then superseded* from *never arrived*, and the answer is `Unknown` and must stay `Unknown`.
+**`current == expected` is likewise not a negative answer**: it shows only that the authoritative state machine has
+not yet observed the change, which is equally consistent with the change being uncommitted in the log, committed but
+not yet applied, or committing immediately after the query. Concluding *never-reached* from it and then issuing a
+**new** change on that assumption is the duplicate this scheme exists to prevent — the same error as reading absence
+of a file, in the generation coordinate.
+**Re-sending the identical `(expected_generation, change_id)` after an authoritative query is, by contrast, safe and
+is the intended convergence from `Unknown`.** The CAS and the already-applied row make it harmless in every
+interleaving: if the original applied, the repeat matches `last_change_id` and returns *already applied*, never
+newly-accepted; if it did not, the CAS either succeeds at `expected` or stale-refuses. What `Unknown` forbids is
+clearing the slot and inventing a *new* identity — not retrying the same one.
+**The rule this expresses:** a negative conclusion must come from authoritative state together with its complete
+transition invariants — never from absence, silence or timeout. A typed refusal receipt is one such proof; the CAS
+algebra above is another. **Their dependencies are different and must not be stated jointly:** a refusal receipt
+depends only on the integrity of that authoritative receipt, whereas the CAS query table depends on the full set of
+preconditions — an atomic *read* of the pair, the CAS semantics, an immutable attempt identity, and the pair having
+exactly one atomic *writer*. So a path that writes the pair outside the CAS, or that moves the generation backward
+(rollback, restore, re-creation on a reused region identity), invalidates the algebraic form specifically while
+leaving the receipt form untouched. Saying "both depend on ..." would hide exactly that asymmetry. A single in-flight slot does not widen the window: it forbids concurrency
+but retains no history, and clearing the slot cannot be made atomic with delivering the conclusion to the original
+caller across a network. What it protects is the *chance to observe* the decidable window before a later change
+overwrites it.
+**Two things this deliberately avoids.** First, identity must not be resolved by asking whether the *current* manifest
+still contains the change's effects: a change can be applied and then superseded, after which it is absent — so
+absence would be read as never-applied, and **issuing a new change on that reading** is exactly the double-apply the
+scheme exists to prevent — re-sending the identical identity would not, since the already-applied row absorbs it. Second, `region_epoch` must **not** double as the manifest sequence number. The epoch is a routing/membership
+generation; nothing in its contract promises it advances when a region's file set changes, so ordering manifest
+history by it borrows a guarantee the epoch never made. *(An earlier revision of this section did exactly that,
+arguing that a file-id enters a region at most once per epoch so any legitimate re-add must cross an epoch bump. That
+holds only for split/merge-driven re-adds and is an accident of the current operator set, not an enforced invariant.)*
+The generation carries order; the epoch keeps fencing; neither borrows the other's guarantee.
 
 **Reference counting is asymmetric by necessity, and the two directions use different mechanisms.** The conservative
 ordering (`+ref` before, `−ref` after, §5.1) fixes *when* each side commits; this fixes *how*. **`+ref` remains a
@@ -886,12 +918,14 @@ The choices above, as standalone principles:
 ---
 
 ## 15. Milestones
-- **M0 (this milestone):** DESIGN.md + `docs/ARCHITECTURE.md` + compilable workspace skeleton with real module
-  boundaries. ✅ target
-- **M1:** Single-node runnable: create keyspace (txn/raw), MemEngine, raw + txn happy-path, embedded TSO stub,
-  in-process router. `kv9` boots and serves `RawPut/RawGet` and a `txn` Get/Prewrite/Commit.
-- **M2:** Real Raft (one group), persistence (LsmEngine), system-keyspace bootstrap with seed nodes.
-- **M3:** Multi-region: routing table in system keyspace, split/merge (throughput-aware), rebalance.
-- **M4:** Multi-node clustering, MetaLeader election + lease, membership join/leave; sharded WAL pool; sharded TSO.
-- **M5:** Cross-region 2PC, keyspace-aware deadlock detection, GAC token buckets + per-tenant fair scheduling, scrubber.
+
+**Delivery order and phase contents live in [`docs/ROADMAP.md`](docs/ROADMAP.md), which is authoritative.**
+
+This section previously restated the plan as an `M0`–`M5` milestone list. It has been removed rather than
+kept in sync: the two descriptions had already drifted apart — the milestone list placed transactions and
+`LsmEngine` in phases that contradicted the roadmap — and on 2026-09-05 that divergence cost the team a full
+planning round, because four people re-derived the delivery order from memory instead of from either document.
+
+**Two descriptions of one plan will diverge, and the stale one is invisible while it is being believed.**
+Anything that would be written here belongs in the roadmap instead.
 ```
