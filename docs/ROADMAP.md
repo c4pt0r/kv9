@@ -25,7 +25,8 @@ testing** — then bring in the disaggregated object-storage engine (the thesis)
   RocksDB — RocksDB assumes local-first storage and fights the immutable-SST-on-object-storage / manifest-in-raft
   model. Until then the raft state machine runs on the Phase 1 simple WAL engine (`MemEngine` remains for
   tests and the in-process harness).
-- **Object storage (Phase 3+):** the `object_store` crate (pure-Rust S3/GCS/Azure/local) behind `ObjectStore`.
+- **Object storage (Phase 2 onward, amended 2026-09-05):** a pure-Rust S3-API client behind `ObjectStore`,
+  pointed at **MinIO** from Phase 2. Originally scheduled Phase 3+; see the Phase 2 amendment below.
 - **Async I/O:** `tokio`. **Wire (Phase 1-final onward):** pure-Rust `tonic` gRPC for both public APIs and
   node-internal Raft/discovery. The server owns one listener and registers all services; Raft uses long-lived
   client streams with byte/count batching, while the synchronous core is reached only through channels.
@@ -61,12 +62,26 @@ state-machine data, and the bootstrap initialized marker.
   command.
 
 ### Phase 2 — Disaggregated storage engine (the thesis), swapped in behind `Engine`
-`engine`: memtable → **local WAL** → flush to **immutable SST** on an `ObjectStore` (local-dir impl first) →
+`engine`: memtable → **local WAL** → flush to **immutable SST** on an `ObjectStore` →
 **manifest** (file refs, the mutable pointer) → block cache → read path → **recovery** (replay WAL + load manifest).
 Swap the raft state machine from `MemEngine` to this real engine; wrap user data in the **raw KV API**.
-- *Demo:* real disaggregated engine under the raft groups; data flushes to a local "bucket"; **restart recovers**;
+- *Demo:* real disaggregated engine under the raft groups; data flushes to a real bucket; **restart recovers**;
   a region re-opens purely from its manifest.
 - *Retires:* source-of-truth / immutability / flush→manifest→truncate / SST format / recovery — the storage thesis.
+
+> **Amendment 2026-09-05 (EdHuang).** The object-store backend for Phase 2 is **MinIO over the real S3
+> API**, not the local-dir implementation this phase originally specified. The local-dir backend is not
+> built at all: it was scaffolding standing in for a real object store, so pointing at MinIO removes a
+> step rather than adding one. `MemoryObjectStore` remains a unit-test fixture only and is never
+> evidence that object storage works.
+>
+> This moves the *backend* half of Phase 3's first sentence (prefix layout, multipart, checksums,
+> timeout/retry idempotence) into Phase 2. **GC — refcount plus orphan scan — stays in Phase 3**, as do
+> transactions. Contract: `docs/OBJECT-STORAGE.md`.
+>
+> Recorded here because this file is the authoritative delivery order: on 2026-09-05 four of us
+> re-derived the phase order from memory because nothing in `README`/`DESIGN` pointed at it, and an
+> unrecorded amendment would reproduce exactly that.
 
 ### Phase 3 — Real object storage + transactions
 Point `ObjectStore` at **S3 / MinIO** (prefix layout, multipart, checksums, **GC** = refcount + orphan scan, first
