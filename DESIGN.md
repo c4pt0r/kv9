@@ -6,8 +6,8 @@
 
 Status: **v0 design + skeleton milestone.** This document defines the architecture and the crate layout the
 skeleton implements. It is the source of truth for module boundaries. Diagrams: `docs/ARCHITECTURE.md`.
-Delivery order and phase boundaries: `docs/ROADMAP.md` (authoritative; §15 below is the milestone sketch).
-Object-storage path contract: `docs/OBJECT-STORAGE.md`.
+Delivery order and phase boundaries: `docs/ROADMAP.md` — authoritative, and the only place they are stated.
+Object-storage path contract: `docs/OBJECT-STORAGE.md`. Current implementation status: `README.md`.
 
 ---
 
@@ -888,12 +888,14 @@ The choices above, as standalone principles:
 ---
 
 ## 15. Milestones
-- **M0 (this milestone):** DESIGN.md + `docs/ARCHITECTURE.md` + compilable workspace skeleton with real module
-  boundaries. ✅ target
-- **M1:** Single-node runnable: create keyspace (txn/raw), MemEngine, raw + txn happy-path, embedded TSO stub,
-  in-process router. `kv9` boots and serves `RawPut/RawGet` and a `txn` Get/Prewrite/Commit.
-- **M2:** Real Raft (one group), persistence (LsmEngine), system-keyspace bootstrap with seed nodes.
-- **M3:** Multi-region: routing table in system keyspace, split/merge (throughput-aware), rebalance.
-- **M4:** Multi-node clustering, MetaLeader election + lease, membership join/leave; sharded WAL pool; sharded TSO.
-- **M5:** Cross-region 2PC, keyspace-aware deadlock detection, GAC token buckets + per-tenant fair scheduling, scrubber.
+
+**Delivery order and phase contents live in [`docs/ROADMAP.md`](docs/ROADMAP.md), which is authoritative.**
+
+This section previously restated the plan as an `M0`–`M5` milestone list. It has been removed rather than
+kept in sync: the two descriptions had already drifted apart — the milestone list placed transactions and
+`LsmEngine` in phases that contradicted the roadmap — and on 2026-09-05 that divergence cost the team a full
+planning round, because four people re-derived the delivery order from memory instead of from either document.
+
+**Two descriptions of one plan will diverge, and the stale one is invisible while it is being believed.**
+Anything that would be written here belongs in the roadmap instead.
 ```

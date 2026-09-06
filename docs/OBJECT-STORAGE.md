@@ -26,6 +26,7 @@ open and records the contracts that round one must honour.
 | WAL record-format upgrade + segmentation + reclaim | Cross-region or cross-group recovery |
 | `ManifestChange` propose/apply/query seam | `split`/`merge` manifest attach |
 | Recovery: authoritative manifest + WAL tail | Backup / PITR / branch / clone |
+| — | **Refcounts** (§7.4): no delete path, so none maintained; objects leak by design |
 
 `LocalDirObjectStore` is **not** built. It was scaffolding standing in for a real object store;
 MinIO replaces it. `MemoryObjectStore` survives **only** as a unit-test fixture and is never
@@ -68,12 +69,19 @@ the latency nor the ordering requirement above.
 
 ### 2.2 The trade-off this forces, written down rather than discovered later
 
-Because the ack does not wait for object storage, a **double failure** — node down *and* its local
-disk lost — can only recover from the drain watermark. Already-acked data inside that window
-depends on at least one local disk in the quorum surviving.
+Because the ack does not wait for object storage, acknowledged-but-not-yet-drained data lives only
+in local WALs until it lands. Losing **one** node's disk is recoverable from the surviving replicas —
+that is ordinary raft durability. What object storage does *not* cover is narrower and worth stating
+with its quantifiers intact:
 
-That is raft's ordinary durability model, but state it plainly: **object storage does not cover
-single-node disk loss.**
+1. **Every replica holding the acked-but-undrained tail loses its local disk at once.** Only then is
+   that window unrecoverable, because object storage never had it.
+2. **Loss of a node's durable identity** (NodeId / incarnation), after which the identity can be
+   wrongly reused — a failure object storage has no bearing on at all.
+
+*(An earlier draft asserted flatly that "object storage does not cover single-node disk loss". That
+is false under multi-replica raft, and the absolute phrasing hid the quantifier that carries the
+whole meaning.)*
 
 ---
 
@@ -112,9 +120,24 @@ it has a consequence worth stating as a rule rather than as background:**
 > durable. Every deadline and every blocking risk stays on the engine's upload thread.
 
 Written in refusable form deliberately: when someone later proposes to fetch or upload inside
-`apply`, the grounds for refusing it are this sentence, not an oral tradition. It is also why the
-guard against runtime misuse (§3.2) does not belong in the raft layer — the context calling
-`ObjectStore` is a synchronous thread by construction, never an async worker.
+`apply`, the grounds for refusing it are this sentence, not an oral tradition.
+
+**What actually enforces it today, stated exactly** — because "the invariant holds" and "something
+holds it up" are different claims:
+
+```
+today            the Engine trait exposes no object-storage entry point, so the handle apply
+                 holds cannot reach a store  ...  plus review discipline
+                 (kv9_engine::ObjectStore IS re-exported and in scope in that crate; nothing
+                  prevents a direct use, or threading a store in from elsewhere)
+after task #9    apply is narrowed to a capability surface that does not include a store, with a
+                 grep tripwire landing in that card's first commit
+```
+
+`ObjectStore` currently occurs **0 times** across `crates/{raft,server,txn,meta,region,common}` and
+17 times in `crates/engine` alone. **That 0 is the invariant holding because nothing has had reason
+to break it — not because something guards it.** A count of zero looks identical whether a rule is
+enforced or merely unviolated, which is exactly why it should not be read as evidence of the former.
 
 ### 3.2 `ObjectStore` stays synchronous; the backend owns one worker
 
@@ -159,8 +182,14 @@ Two things worth keeping, because the fix is cheap and the habit is not:
   the original.**
 
 Each replica privately maintains its own `applied position → local WAL segment` mapping. That
-mapping is **local, never replicated, and never part of a `ManifestChange`.** Authority is
-unanimous; the reclaim predicate stays locally decidable.
+mapping is **local, never replicated, and never part of a `ManifestChange`.**
+
+The manifest change is **quorum-committed**, not unanimously held: a commit requires a majority, and
+a given replica may not have applied it yet. **Each replica reclaims its own segments only after its
+own local ordered-apply has reached the watermark.** The authority is shared; the act of reclaiming
+is local and independently decidable. (An earlier draft of this section said "authority is
+unanimous", which is simply wrong about raft — and wrong in the same direction as the
+`WalPosition` defect above: describing something local as though it were global.)
 
 ---
 
@@ -188,8 +217,10 @@ This exists because of a failure mode absent from the original crash matrix:
 > **The manifest commits while the SST bytes are not durable → a dangling reference.**
 
 Every other crash point in §8 is recoverable — an orphan is garbage, a double apply must be
-idempotent, a torn segment must be detectable. This one is not, **and raft makes the loss
-unanimous: every replica agrees on a manifest pointing at an object that does not exist.**
+idempotent, a torn segment must be detectable. This one is not, **and replication makes it worse
+rather than better: once the change is committed, every replica applies the same manifest, so all of
+them come to agree on a reference to an object that does not exist.** The dangling reference is not
+one node's corruption that a healthy peer can repair; it is the agreed state.
 
 So in the chain `durably upload → propose manifest → apply → reclaim WAL`, **the first arrow is as
 load-bearing as the third.** Both are enforced:
@@ -259,29 +290,34 @@ file and the parent directory (§5.1).
 
 ## 7. `ManifestChange` — identity, outcomes, refcounts
 
-### 7.1 Identity is content-derived, and the epoch is load-bearing twice
+### 7.1 Identity is content-derived; history is ordered by an explicit generation
 
-Identity is a hash of canonicalized content — `(region_id, region_epoch, adds, removes,
-new_watermark)` — never an allocated id. Content-derived identity is what lets a proposer
-*recompute* the identity after a crash rather than having to have durably remembered one.
+Identity is a hash of canonicalized content, never an allocated id. Content-derived identity is what
+lets a proposer *recompute* the identity after a crash rather than having to have durably remembered
+one.
 
 **Stable identity enables reconciliation. It does not authorize a retry.**
 
-`region_epoch` is a mandatory member of the hashed content, and it is both:
+**`region_epoch` is the fence and only the fence.** A change carrying the wrong epoch is rejected;
+the epoch does **not** double as a manifest sequence number.
 
-- the **fence** — a change carrying the wrong epoch is rejected;
-- the **nonce** — what makes a legitimate repeat hash differently from a retry.
+An earlier draft made it do both, arguing that a file-id enters a region at most once per epoch so
+any legitimate re-add must cross an epoch bump. **That argument does not hold, and the reason
+matters: the region epoch is a routing/membership generation.** Nothing in its contract promises it
+advances when the manifest's file set changes, so relying on it to serialise manifest history
+borrows a guarantee the epoch never made. Even where no path re-adds a file within one epoch today,
+that is an accident of the current operator set rather than something enforced — the same shape as
+§7.5's clone problem, where a planned feature voids an unstated premise.
 
-The repeat is real: a split may drop a file from a region while its refcount stays above zero
-because a sibling still references it, and a later merge may add that same file back. So "add F to
-R" can legitimately occur twice in one region's history. Under a bare content hash the second
-occurrence is judged a retry and dropped — losing a `+ref`, which under-counts, which is the
-dangerous direction. With the epoch inside the hash the argument closes: within one epoch a file-id
-enters a region at most once, and any legitimate re-add necessarily crosses an epoch bump.
+**Manifest history is therefore ordered by an explicit `generation`,** carried in the change and
+advanced by apply (§7.2). The epoch keeps fencing; the generation keeps order; neither borrows the
+other's guarantee.
 
-**Removing the epoch field — or excluding it from the hashed content as "redundant with the fence
-check" — dismantles both protections at once, and nothing goes red, because the loss is silent
-under-counting.**
+> **Upstream defect, not resolved here.** The epoch-as-nonce argument originates in `DESIGN.md` §6.5
+> and this document inherited it. Correcting only this file would leave the two disagreeing, with the
+> error in the more authoritative document that readers reach first. `DESIGN.md` wording belongs to
+> the API/compat owner and is tracked separately — this note exists so the fix is not assumed to have
+> happened here.
 
 ### 7.2 Propose outcomes are three states, divided by result semantics
 
@@ -294,18 +330,50 @@ NotLeader { leader }   KNOWN not applied. Only if refused before proposing, or p
                        term. That case is Unconfirmed.
 Unconfirmed            UNKNOWN. Deadline, lost response, driver dropped mid-wait. May yet
                        commit. Must not drive any reclamation decision, and must not be
-                       blindly re-proposed — reconcile against the authoritative applied
-                       manifest by change-id first.
+                       blindly re-proposed — reconcile first (below).
 Failed(Error)          KNOWN failed, and not a leadership change (queue full, driver closed).
 ```
 
 Collapsing `Unconfirmed` into `Failed` guarantees callers treat *unknown* as *known-failed*.
 **`Failed(Error::NotLeader)` and `Failed(timeout)` are both forbidden.**
 
-**Ordering consequence: if `ManifestChange` has no identity usable for authoritative reconciliation,
-the drain worker cannot start.** So the first thing built is stable change-id plus a query seam —
-*not* the proposer. Otherwise `Unconfirmed`'s contract is unexecutable and the variant is
-decoration.
+#### Reconciliation needs durable state, not a lookup in the current manifest
+
+"Query the authoritative applied manifest for this change-id" is **not executable on its own**, and
+the reason is easy to miss: the manifest's file set keeps evolving. A change can be applied and then
+superseded, after which the current manifest no longer contains its effects — **so absence proves
+nothing.** Any scheme resting on absence silently treats *applied-then-superseded* as *never
+applied*, and re-proposing on that basis is exactly the double-apply this variant exists to prevent.
+
+The seam therefore carries durable ordering state (design owned by Rafa, task #9):
+
+```
+payload        { change_id (content-derived), expected_generation, changes, new_watermark }
+
+apply, in order:
+  current_generation == expected_generation  → apply; generation += 1;
+                                               record (generation, last_change_id)
+  change_id == last_change_id                → idempotent repeat: typed already-applied.
+                                               MUST NOT be reported as newly accepted.
+  otherwise                                  → typed stale, rejected
+
+reconcile      on an unknown outcome, read (current_generation, last_change_id) and compare
+               against the (expected_generation, change_id) proposed. Three states are
+               decidable: applied · superseded by another proposer · never reached.
+```
+
+**One in-flight change per region** keeps a single `last_change_id` slot sufficient — the in-flight
+window *is* the retention window for the criterion. A durable applied-id ledger is deliberately not
+built: its value appears only with multiple in-flight changes, which round one does not need, and
+adding it later is a pure extension.
+
+**Ordering consequence: without this state, the drain worker cannot start** — `Unconfirmed`'s
+contract would be unexecutable and the variant decoration. So the generation/`last_change_id`
+criterion plus its query seam is built *before* the proposer.
+
+The same criterion serves crash point 3 (§8.2): when WAL replay re-presents a record already
+absorbed by an SST, the second row above is what stops the watermark/receipt path from reporting a
+re-apply as newly accepted. **One criterion, two faces, no second channel.**
 
 ### 7.3 Why change-id exists — name the direction, or it gets deleted as redundant
 
@@ -319,10 +387,35 @@ Reconciliation is **universal** (any `Unconfirmed` needs it); exactly-once is **
 requirement. `DESIGN.md`'s "crashes only leak over-counts" protects against *ordering* skew; a
 replay performs one decrement twice, which ordering cannot police.
 
-**Write it as "the change-id exists for `-ref`", or a later reader who sees that the state
-transition is idempotent will remove it as redundant.**
+**A `ManifestChange`'s change-id does not supply that exactly-once.** They are two different
+operations in two different places: the manifest change is committed in the region's raft group,
+while the refcount mutation is a `CatalogTxn` against the system keyspace. A stable identity for the
+first does not deduplicate a retry of the second. When `-ref` is eventually built it needs its own
+durable dedupe — a stable `op_id`, or an absolute/CAS transition carrying a generation — or it must
+ride inside the same ordered apply that already has the generation criterion (§7.2).
 
-### 7.4 The refcount ordering rule, and where it lives
+### 7.4 Round one does not maintain refcounts — and why that is the safe choice
+
+**Round one builds no delete path (see §1), so it maintains no refcount.** Objects leak; nothing is
+reclaimed. This resolves what would otherwise be a contradiction between the scope table and the
+ordering rule below.
+
+The choice is deliberate rather than merely convenient:
+
+```
+no delete path  ⇒  nothing ever decrements, and nothing ever deletes
+                ⇒  over-count is harmless (a leaked object)
+                ⇒  under-count CANNOT cause data loss, because no deletion consumes the count
+                ⇒  -ref's exactly-once problem has no carrier in round one, and needs none
+```
+
+**Enabling condition for Phase 3, written now so it is not rediscovered then:** before GC is switched
+on, refcounts must first be **backfilled from the set of committed manifests** — the manifest is
+authoritative, so the counts are computable — and only then may decrements and deletions begin.
+Turning on `-ref` against counts that were never maintained would start from zeros and delete live
+objects immediately.
+
+The rule below is therefore **the Phase-3 contract, recorded here, not a round-one requirement.**
 
 `DESIGN.md:205-213` already mandates it, and the landing point already exists:
 `crates/meta/src/schema.rs:219-226` — `SST_FILES` carries `refcount` (col 4) and `state` (col 9).
@@ -345,6 +438,10 @@ than an error. Both defences are required:
 - **An ordering-mutation test:** move `+ref` after the commit ⇒ must go red. A type guard still has
   to prove that removing it admits the bad order, or it is one more unverified "structural
   guarantee".
+
+*(Both defences land with the refcount itself, in Phase 3. They are specified here because the
+design decision is live now — the ordering is the whole value of the rule, and it is far cheaper to
+write down while the reasoning is fresh than to reconstruct when someone is implementing GC.)*
 
 ### 7.5 Deletion criterion — write the strong form now, use the weak form today
 
@@ -507,7 +604,14 @@ MinIO up but mute       accepts the connection, never answers → THIS is what e
 ```
 
 Only the second demonstrates that a timeout fails loudly. Build it with a black-hole listener that
-accepts and never responds (test ports below 32768).
+accepts and never responds.
+
+**Bind it as `127.0.0.1:0` and hold the listener for the whole test**, letting the kernel assign the
+port. Do not hand-pick one. *(Note: the project's standing test convention is ports below 32768,
+and a kernel-assigned port usually lands above that. Holding the listener open for the test's
+duration means the port cannot be reassigned underneath it, which is the collision the convention
+exists to prevent — but this is a deviation from the letter of a standing rule and needs an explicit
+waiver rather than an appeal to intent. Pending that, this paragraph is a proposal, not settled.)*
 
 **The general form, which outruns this one case: the easiest way to make something "unavailable" is
 usually not the way it actually becomes unavailable.** Refusing a connection, deleting a file, or
