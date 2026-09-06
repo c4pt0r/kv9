@@ -492,12 +492,26 @@ occupied is a typed refusal, neither queued nor silently accepted.
 **The slot is cleared only by a *settled* outcome, and each settling outcome has an exact source:**
 
 ```
-applied     current == expected+1 && last_id == mine, or a positive current-effect query
-refused     a typed pre-propose refusal, or a definite stale/refused receipt from ordered
-            apply for that exact change
-            ★ NOT current == expected, and NOT a missing effect — neither settles anything
-unknown     does not clear the slot. The slot stays held.
+applied           current == expected+1 && last_id == mine
+                  identifies MY change. May be reported upward as "my proposal succeeded".
+effect satisfied  a positive current-effect query (SST referenced && watermark >= mine)
+                  Enough to clear the slot and reclaim. Does NOT identify whose change
+                  produced it, and MUST NOT be reported as my proposal having applied.
+refused           a typed pre-propose refusal, or a definite stale/refused receipt from
+                  ordered apply for that exact change
+                  ★ NOT current == expected, and NOT a missing effect — neither settles
+unknown           does not clear the slot. The slot stays held.
 ```
+
+**`applied` and `effect satisfied` authorise the same action and carry different claims**, so they
+are separate outcomes rather than one row. The effect query establishes that the effect holds and is
+irrevocable — not its authorship — and a content-addressed SST may have been referenced by another
+change, or the effect subsumed by a higher watermark. Collapsing the two lets a caller that received
+"satisfied" report a proposal success, or emit a receipt, that nothing established.
+
+*This distinction has already been paid for once: `crates/raft/src/driver.rs:764`'s
+`ApplyWaitOutcome` separates `Applied` from `Replaced` for exactly this reason, and its comment
+records that the first draft of that very fix reintroduced the confusion it was opened to kill.*
 
 Restart takes the same path: reconcile the previous in-flight change (its `change_id` is
 recomputable from the engine's durable prepared state) before the slot can be granted again. **A
