@@ -469,6 +469,13 @@ P4  THE PAIR HAS EXACTLY ONE WRITER.
 assertion satisfies neither properly: it can pass while reads are split across two fetches, and it
 can pass while some non-CAS path writes one field.
 
+**And the guards must assert the preconditions themselves, not the rows that rest on them.** This
+follows from the forgery case above: when a non-CAS write hollows out P4, *window-refused* keeps
+returning the right answer, so every test that checks the row's verdict stays green. **A conclusion
+that is still true for a reason that has ceased to exist reds nothing.** Tests of the four rows
+therefore establish that the table is implemented; only direct tests of P1–P4 establish that it is
+still entitled to its answers.
+
 **`current == expected` is not evidence that the change never arrived.** It shows only that the
 authoritative state machine has not yet observed it — and the change may be sitting uncommitted in
 the raft log, committed but not yet applied, or may commit immediately after the query returns:
