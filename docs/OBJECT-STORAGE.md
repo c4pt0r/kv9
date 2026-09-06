@@ -101,10 +101,11 @@ only then         the WAL range it subsumes may be reclaimed
 the server stitches the two together; raft never learns the engine exists. Dependency direction is
 a standing constraint, not a preference of the moment.
 
-The propose-only handle is **the deliverable of task #5** (Rafa, branch
-`rafa/propose-consume-split`, based on `469f151`). Until #5 lands, the manifest proposal path has
-no legitimate seam — this is the one *real* dependency between our two lanes. SST production does
-not depend on #5 and starts immediately.
+The propose-only handle is **delivered**: task #5 separated the propose face from the sole
+Ready-consumer face at the type level, and landed in master merge
+`3d3858d1bf8d434faf3c277bab8920c8a4d60c53`. The manifest proposal path therefore has a legitimate
+seam to consume, and this — the one real dependency between the engine and consensus lanes — is
+satisfied. SST production never depended on it and can proceed independently.
 
 ### 3.1 `apply` never touches object storage
 
