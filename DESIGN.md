@@ -432,9 +432,15 @@ re-propose.
 **Ordering comes from an explicit manifest `generation`, and `region_epoch` is the fence only.** Apply is a
 compare-and-set: a change is applied when `current_generation == expected_generation`, which advances the generation
 and records `(generation, last_change_id)`; a change whose id equals `last_change_id` is an idempotent repeat and is
-reported as *already applied*, never as newly accepted; anything else is rejected as stale. Reconciling an unknown
-outcome is then a comparison against `(current_generation, last_change_id)`, which distinguishes **applied**,
-**superseded by another proposer**, and **never reached**.
+reported as *already applied*, never as newly accepted; anything else is rejected as stale.
+**`(generation, last_change_id)` is a bounded-window proof, not a history.** It settles an outcome only while no
+later change has overwritten `last_change_id`: `current == expected` means not yet applied, and
+`current == expected+1 ∧ last_change_id == mine` means applied. Once further changes land, a caller sees only
+`current > expected ∧ last_change_id ≠ mine`, which is produced equally by *applied and then superseded* and by
+*never arrived*. **Past that window the answer is `Unknown` and must stay `Unknown`** — see the reconciliation rules
+below, which this ordering scheme does not weaken. Note also that a single in-flight slot does not close the gap: it
+forbids concurrency but retains no history, and clearing the slot cannot be made atomic with delivering the
+conclusion to the original caller across a network.
 **Two things this deliberately avoids.** First, identity must not be resolved by asking whether the *current* manifest
 still contains the change's effects: a change can be applied and then superseded, after which it is absent — so
 absence would be read as never-applied, and the resulting re-proposal is exactly the double-apply the scheme exists to

@@ -313,11 +313,9 @@ that is an accident of the current operator set rather than something enforced �
 advanced by apply (§7.2). The epoch keeps fencing; the generation keeps order; neither borrows the
 other's guarantee.
 
-> **Upstream defect, not resolved here.** The epoch-as-nonce argument originates in `DESIGN.md` §6.5
-> and this document inherited it. Correcting only this file would leave the two disagreeing, with the
-> error in the more authoritative document that readers reach first. `DESIGN.md` wording belongs to
-> the API/compat owner and is tracked separately — this note exists so the fix is not assumed to have
-> happened here.
+> **Upstream origin, fixed in the same change.** The epoch-as-nonce argument came from `DESIGN.md`
+> §6.5 and this document inherited it. Both were corrected together, rather than leaving the error
+> standing in the more authoritative document that readers reach first.
 
 ### 7.2 Propose outcomes are three states, divided by result semantics
 
@@ -358,14 +356,53 @@ apply, in order:
   otherwise                                  → typed stale, rejected
 
 reconcile      on an unknown outcome, read (current_generation, last_change_id) and compare
-               against the (expected_generation, change_id) proposed. Three states are
-               decidable: applied · superseded by another proposer · never reached.
+               against the (expected_generation, change_id) proposed:
+
+                 current == expected                        → not yet applied
+                 current == expected+1 && last_id == mine    → applied
+                 anything else                               → UNKNOWN. Stays unknown.
 ```
 
-**One in-flight change per region** is what keeps a single `last_change_id` slot sufficient — the
-in-flight window *is* the retention window for the criterion. A durable applied-id ledger is
-deliberately not built: its value appears only with multiple in-flight changes, which round one does
-not need, and adding it later is a pure extension.
+**`(generation, last_change_id)` proves an outcome only inside a window, and the window closes as
+soon as another change lands.** After that a caller observes `current > expected && last_id != mine`,
+and that observation is produced identically by *applied-then-superseded* and by *never-arrived*:
+
+```
+H1   A applied at g (reply lost) → B applies      ⇒  caller sees current = g+2, last_id ≠ A
+H2   A never arrived             → B, C apply     ⇒  caller sees current = g+2, last_id ≠ A
+```
+
+**The single in-flight slot does not rescue this.** It forbids concurrency; it retains no history.
+Both sequences above are strictly serial and both respect the slot. And clearing the slot cannot be
+made atomic with delivering the conclusion to the original caller across a network — a reconciler
+may settle A's fate, clear the slot, and then lose the reply, after which the next change overwrites
+`last_change_id` and the caller is back to unknown.
+
+**So the contract is: outside the window, return `Unknown`. Never guess applied, superseded, or
+never-arrived.** Treating unknown as known-failed is precisely the error that costs data.
+
+#### The question the caller actually needs answered is not the historical one
+
+`DESIGN.md` §6.5 already states this, and it is the way out without a ledger: reconciliation asks
+**whether this change's intended effect is already satisfied or has been subsumed**, not "did my
+identity ever enter applied state". The first is a question about current authoritative state, which
+current state can answer; the second is a question about history, which it cannot.
+
+For the decision round one actually makes — *may I reclaim WAL up to this watermark?* — the caller
+compares its intended effect against the authoritative manifest: is my SST referenced, and is the
+watermark at least mine. **In round one that is decisive, because nothing removes an SST: there is
+no GC and no compaction (§1).**
+
+> **The condition that voids this, stated with it:** once compaction or GC exists, absence becomes
+> ambiguous again — "never applied" and "applied and since collected" look identical — which is
+> exactly the case `DESIGN.md` §6.5 already prohibits answering from absence. **That is the point at
+> which a durable applied-receipt/history ledger becomes necessary, not optional.** It is deliberately
+> not built now, and this paragraph is the trigger condition for building it.
+
+**One in-flight change per region** is required for a different and narrower reason than an earlier
+draft claimed. It does **not** make `last_change_id` sufficient for reconciliation — that claim was
+wrong (see above). What it does is prevent *concurrent* proposers from interleaving, which would
+break the CAS discipline itself and make even the in-window answers unreliable.
 
 **That single-in-flight property is enforced structurally, not assumed** (task #9). The seam holds
 one proposal slot per region and is the only entry to propose; a second proposal while the slot is
@@ -616,7 +653,28 @@ being the only thing holding the rule up.
 ```
 MinIO not started       connection refused → fails fast, the deadline is never reached
 MinIO up but mute       accepts the connection, never answers → THIS is what exercises the deadline
+MinIO still starting    ← a THIRD state, and it resembles the second
 ```
+
+**MinIO runs here as a container, not a binary** (verified 2026-09-05: no `minio`/`mc` on the
+machine; the image pulls, serves `/minio/health/live` after a startup delay, and answers an
+unauthenticated request with a genuine S3 `AccessDenied`). Startup is therefore not instant, and the
+port may already be forwarded while the backend is not yet ready.
+
+**This is why readiness and the operation deadline must be two independent budgets, never one
+number:**
+
+```
+readiness wait      container reaches a health / S3-ready condition. Expiry here is an
+                    ENVIRONMENT / SETUP failure — the test has not begun
+operation deadline  starts only after ready. Expiry here is the BEHAVIOUR UNDER TEST
+```
+
+Share one budget and a slow start masquerades as "backend ready but unresponsive": **the deadline
+cell goes green while proving only that the wait was too short, not that the timeout works.**
+
+Fixture discipline: the harness manages only containers it created by name, and removes them
+explicitly. No broad Docker sweeps — the same rule as never killing a process you did not record.
 
 Only the second demonstrates that a timeout fails loudly. Build it with a black-hole listener that
 accepts and never responds.
