@@ -425,7 +425,6 @@ watermark at least mine.
 
 ```
 effect PRESENT   (SST referenced && watermark >= mine)  → satisfied or subsumed. Decisive.
-                 Sound in round one because nothing removes an SST — no GC, no compaction (§1)
 effect ABSENT    → UNKNOWN. Never "not applied".
                  The change may be uncommitted, committed-not-yet-applied, or about to apply
 ```
@@ -433,11 +432,32 @@ effect ABSENT    → UNKNOWN. Never "not applied".
 A present effect answers the question the caller actually has. **A missing effect answers nothing**,
 for the same reason `current == expected` answers nothing.
 
-> **The condition that voids this, stated with it:** once compaction or GC exists, absence becomes
-> ambiguous again — "never applied" and "applied and since collected" look identical — which is
-> exactly the case `DESIGN.md` §6.5 already prohibits answering from absence. **That is the point at
-> which a durable applied-receipt/history ledger becomes necessary, not optional.** It is deliberately
-> not built now, and this paragraph is the trigger condition for building it.
+> **The property this rests on — stated as a property, because naming today's exceptions is not the
+> same as naming the condition:**
+>
+> ```
+> required        changes to the authoritative manifest are ADD-ONLY:
+>                 no path removes or replaces an SST reference
+> holds today     round one has no GC and no compaction (§1)
+> known future    compaction; GC; and split/merge IF the child takes over the parent's
+> breakers        reference by MOVING it rather than copying it
+> trigger         any breaker lands ⇒ absence is ambiguous again ⇒ the ledger stops
+>                 being optional
+> ```
+>
+> The third breaker is not hypothetical: meta-only `split`/`merge` attach is already listed as a
+> future consumer of this seam (§1, §10), its data half is "child references the parent's SSTs
+> bounded by range", and moving the reference is a natural way to implement that. **Someone building
+> it who reads "no GC, no compaction — still holds" would not notice they had just removed this
+> argument's foundation.** Write the property; list the instances only as examples.
+
+> **The condition that voids this, stated with it:** the moment manifest changes stop being add-only —
+> that is, as soon as *any* path can remove or replace an SST reference — absence becomes ambiguous
+> again, because "never applied" and "applied and since removed" look identical. That is exactly the
+> case `DESIGN.md` §6.5 prohibits answering from absence. **At that point a durable
+> applied-receipt/history ledger stops being optional.** It is deliberately not built now, and this
+> paragraph is the trigger condition for building it. See the property box above for the currently
+> known breakers — but the trigger is the property, not that list.
 
 **One in-flight change per region** is required for a different and narrower reason than an earlier
 draft claimed. It does **not** make `last_change_id` sufficient for reconciliation — that claim was
