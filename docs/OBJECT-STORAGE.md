@@ -424,11 +424,24 @@ authoritative proof, not the only one.
 
      (b) ONLY APPLY ADVANCES IT.  A non-apply writer breaks the algebra just as badly,
          because (g+1, X) would no longer imply "X applied at g".
-         Named breaker: SPLIT/MERGE. A child region's manifest generation has to be
-         seeded from somewhere, and seeding or rewriting it outside the ordinary apply
-         path is exactly such a writer. Split/merge is already named as a breaker of the
-         add-only property elsewhere in this document; it breaks this one too, by a
-         different mechanism, and the two must be checked separately.
+         Named breaker, CONDITIONAL — split/merge, restore or re-create that bypasses
+         the ManifestChange CAS to write generation or last_change_id ON A SAME OR
+         REUSED region identity. Failure directions on a reused identity:
+             pulled backward        → resurrects an attempt already declared dead
+             exactly +1, non-mine   → FORGES the load-bearing state of window-refused,
+                                      settling a live attempt as permanently dead
+             skips a generation     → degrades safely to superwindow Unknown
+         NOT a breaker: split/merge that allocates a NEW, non-reused region identity.
+         An old attempt carries the old region_id and cannot be resurrected by a new
+         region initialising its own generation.
+         Implementation rule that follows: a new identity may initialise generation
+         freely; a REUSED identity must preserve the monotonic (generation,
+         last_change_id) pair or go through the same CAS seam.
+
+     ★ Split/merge appears on BOTH breaker lists by different mechanisms, and the two
+       entries are not the same claim: against add-only it is UNCONDITIONAL (moving a
+       reference is enough); against P4(b) it is CONDITIONAL as above. Check separately;
+       satisfying one says nothing about the other.
 
      State both halves as properties, not as "we have no rollback today"
 3  an attempt's identity is fixed as (expected_generation, change_id), with no write path
