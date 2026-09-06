@@ -184,6 +184,11 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     read_seq: std::sync::atomic::AtomicU64,
     /// First fatal apply-path error; poisons the driver (pump stops).
     fatal: Mutex<Option<String>>,
+    /// Whether THE manifest seam over this node has been minted (task #9
+    /// review round 1): slot state must be process-unique per node, so seam
+    /// construction is once-CAS here — a second seam instance would carry a
+    /// second slot table and let two proposers race the same region.
+    manifest_seam_minted: std::sync::atomic::AtomicBool,
     /// Testing-only: freeze the APPLY half of the pump (committed entries
     /// stay queued in the peer) while raft itself keeps electing/committing.
     /// This is the deterministic construction of the committed-but-unapplied
@@ -228,6 +233,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             },
             read_seq: std::sync::atomic::AtomicU64::new(0),
             fatal: Mutex::new(None),
+            manifest_seam_minted: std::sync::atomic::AtomicBool::new(false),
             #[cfg(any(test, feature = "testing"))]
             apply_paused: std::sync::atomic::AtomicBool::new(false),
             // None = no position PROVEN yet this run — distinct from "position
@@ -929,6 +935,11 @@ pub trait ManifestNode: Send + Sync {
         deadline: Duration,
     ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError>;
     fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair>;
+    /// Acquire the ONE seam ownership over this node (once-CAS, never
+    /// released): the in-flight slot table must be process-unique per node,
+    /// and a freely-constructible seam would carry its own table (review
+    /// probe: two seams over one driver both held region 5's slot).
+    fn acquire_manifest_seam(&self) -> Result<()>;
 }
 
 impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for NodeDriver<S, E> {
@@ -946,6 +957,23 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for 
 
     fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair> {
         NodeDriver::manifest_pair(self, region)
+    }
+
+    fn acquire_manifest_seam(&self) -> Result<()> {
+        use std::sync::atomic::Ordering;
+        if self
+            .manifest_seam_minted
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+            .is_err()
+        {
+            return Err(Error::Raft(
+                "manifest seam already minted for this node — one slot table per \
+                 node (task #9); a second seam would let two proposers race one \
+                 region's in-flight window"
+                    .into(),
+            ));
+        }
+        Ok(())
     }
 }
 

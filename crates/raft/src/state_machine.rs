@@ -118,10 +118,30 @@ impl ManifestPair {
                 "manifest pair value shorter than its generation field".into(),
             ));
         }
-        Ok(ManifestPair {
+        let pair = ManifestPair {
             generation: u64::from_be_bytes(bytes[..8].try_into().expect("8 bytes")),
             last_change_id: bytes[8..].to_vec(),
-        })
+        };
+        // Impossible states are decode errors, not data: every applied
+        // transition writes a non-empty id with generation >= 1, and a
+        // virgin pair is only ever synthesized (never stored) as (0, empty).
+        // Accepting either asymmetry would let a corrupt value quietly enter
+        // the CAS algebra.
+        if pair.generation > 0 && pair.last_change_id.is_empty() {
+            return Err(kv9_common::Error::Raft(
+                "manifest pair with advanced generation but empty change id: \
+                 no CAS writes that state — corrupt or foreign value"
+                    .into(),
+            ));
+        }
+        if pair.generation == 0 && !pair.last_change_id.is_empty() {
+            return Err(kv9_common::Error::Raft(
+                "manifest pair at generation 0 with a change id: no CAS \
+                 writes that state — corrupt or foreign value"
+                    .into(),
+            ));
+        }
+        Ok(pair)
     }
 }
 
@@ -179,7 +199,13 @@ pub fn classify_reconciliation(
         // the query-side twin.
         return ReconcileObservation::Unknown;
     }
-    if pair.generation == expected_generation + 1 {
+    let Some(exact_window) = expected_generation.checked_add(1) else {
+        // u64::MAX predecessor cannot have a successor generation: nothing
+        // can ever settle this attempt from the query; typed Unknown, never
+        // a wrap or a debug panic (review probe: this panicked).
+        return ReconcileObservation::Unknown;
+    };
+    if pair.generation == exact_window {
         if pair.last_change_id == change_id {
             ReconcileObservation::MyChangeApplied {
                 generation: pair.generation,
@@ -221,6 +247,34 @@ pub enum ManifestVerdict {
         region: kv9_common::RegionId,
         current_generation: u64,
     },
+    /// The change is malformed or impossible AT THIS APPLY POSITION — a
+    /// deterministic, typed, logical refusal (watermark still advances;
+    /// every replica computes the same verdict from the same entry).
+    /// Deliberately NOT an apply error: poisoning every replica over one
+    /// bad proposal would turn an input problem into an outage.
+    Invalid {
+        region: kv9_common::RegionId,
+        reason: ManifestInvalidReason,
+    },
+}
+
+/// Why a manifest change was refused as invalid (Copy so it rides the ring).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ManifestInvalidReason {
+    /// Empty change ids are unidentifiable: they would compare equal to a
+    /// virgin pair's empty last_change_id. Checked BEFORE any CAS arm — on a
+    /// virgin region an empty id at expected=0 must not reach Applied
+    /// (review probe: it did).
+    EmptyChangeId,
+    /// The claimed replicated watermark is at or beyond this manifest
+    /// entry's own log position: a manifest cannot vouch for WAL it could
+    /// not yet have absorbed, and persisting the claim would later authorize
+    /// recycling log the manifest does not cover (review probe: index-1
+    /// entry claiming watermark 100 applied and persisted).
+    WatermarkBeyondEntry,
+    /// The generation counter cannot advance (u64 exhausted) — typed and
+    /// deterministic, never a wrap or a debug panic.
+    GenerationExhausted,
 }
 
 /// The outcome of applying one committed entry to the state machine (ROADMAP Phase 1).
@@ -447,33 +501,62 @@ impl<E: ApplyStore> MemStateMachine<E> {
             };
             let region_id = kv9_common::RegionId(*region);
             let mut batch = kv9_engine::WriteBatch::new();
-            let verdict = if *expected_generation == current.generation {
-                // The unique g → g+1 transition: both pair fields written
-                // together in ONE value of ONE key (P4: this arm is the only
-                // writer; P1: a torn pair is unrepresentable at rest), in the
-                // SAME atomic batch as the changeset install and the applied
-                // watermark.
-                let next = ManifestPair {
-                    generation: current.generation + 1,
-                    last_change_id: change_id.clone(),
-                };
-                batch.put(ColumnFamily::Default, pair_key, next.encode());
-                let mut installed = watermark_term.to_be_bytes().to_vec();
-                installed.extend_from_slice(&watermark_index.to_be_bytes());
-                installed.extend_from_slice(changeset);
-                batch.put(
-                    ColumnFamily::Default,
-                    manifest_gen_key(*region, next.generation),
-                    installed,
-                );
-                ManifestVerdict::Applied {
+            // Validity BEFORE any CAS arm (review round 1, Tess): the empty
+            // identity previously reached the Applied arm on a virgin
+            // region, and a self-reported watermark at/beyond this entry's
+            // own position previously persisted.
+            let verdict = if change_id.is_empty() {
+                ManifestVerdict::Invalid {
                     region: region_id,
-                    generation: next.generation,
+                    reason: ManifestInvalidReason::EmptyChangeId,
                 }
-            } else if !change_id.is_empty() && *change_id == current.last_change_id {
-                // Idempotent duplicate: this identity already performed its
-                // transition. Nothing written; MUST NOT be reported as newly
-                // accepted (crash-point-3 receipt half).
+            } else if *watermark_index >= index.0 {
+                ManifestVerdict::Invalid {
+                    region: region_id,
+                    reason: ManifestInvalidReason::WatermarkBeyondEntry,
+                }
+            } else if *expected_generation == current.generation {
+                match current.generation.checked_add(1) {
+                    None => ManifestVerdict::Invalid {
+                        region: region_id,
+                        reason: ManifestInvalidReason::GenerationExhausted,
+                    },
+                    Some(next_generation) => {
+                        // The unique g → g+1 transition: both pair fields
+                        // written together in ONE value of ONE key (P4 write
+                        // arm; P1: a torn pair is unrepresentable at rest),
+                        // in the SAME atomic batch as the changeset install
+                        // and the applied watermark.
+                        let next = ManifestPair {
+                            generation: next_generation,
+                            last_change_id: change_id.clone(),
+                        };
+                        batch.put(ColumnFamily::Default, pair_key, next.encode());
+                        let mut installed = watermark_term.to_be_bytes().to_vec();
+                        installed.extend_from_slice(&watermark_index.to_be_bytes());
+                        installed.extend_from_slice(changeset);
+                        batch.put(
+                            ColumnFamily::Default,
+                            manifest_gen_key(*region, next_generation),
+                            installed,
+                        );
+                        ManifestVerdict::Applied {
+                            region: region_id,
+                            generation: next_generation,
+                        }
+                    }
+                }
+            } else if expected_generation
+                .checked_add(1)
+                .is_some_and(|g| g == current.generation)
+                && *change_id == current.last_change_id
+            {
+                // Idempotent duplicate of the FULL identity: the same
+                // predecessor window AND the same change id (P3 identity is
+                // the pair, not the id alone — review probe: (expected=99,
+                // id=A) after A applied at 0 was reported AlreadyApplied).
+                // Nothing written; MUST NOT be reported as newly accepted
+                // (crash-point-3 receipt half).
                 ManifestVerdict::AlreadyApplied {
                     region: region_id,
                     generation: current.generation,
@@ -636,7 +719,9 @@ mod tests {
                 expected_generation: expected,
                 changeset: format!("refs-of-{}", String::from_utf8_lossy(id)).into_bytes(),
                 watermark_term: 7,
-                watermark_index: idx,
+                // Strictly BELOW the entry's own position: a manifest cannot
+                // vouch for WAL it could not yet have absorbed.
+                watermark_index: idx.saturating_sub(1),
             },
         )
     }
@@ -666,7 +751,7 @@ mod tests {
         assert_eq!(pair.generation, 1);
         assert_eq!(pair.last_change_id, b"A".to_vec());
         let (term, widx, changeset) = sm.manifest_at(9, 1).unwrap().expect("gen 1 installed");
-        assert_eq!((term, widx), (7, 1));
+        assert_eq!((term, widx), (7, 0));
         assert_eq!(changeset, b"refs-of-A".to_vec());
         // Watermark advanced like any applied entry.
         assert_eq!(sm.applied_index(), at);
@@ -764,20 +849,135 @@ mod tests {
         assert_eq!(sm.manifest_pair(10).unwrap().last_change_id, b"B".to_vec());
     }
 
-    /// The discriminator's empty-identity guard: a virgin region's pair holds
-    /// an empty last_change_id, and an empty-id change with a spent/absent
-    /// predecessor must be Stale — never AlreadyApplied via empty==empty
-    /// (nothing ever applied; reporting otherwise is a fabricated success).
+    /// The discriminator's empty-identity guard runs BEFORE any CAS arm
+    /// (review probe, Tess: empty id + expected=0 on a virgin region walked
+    /// the first arm and returned Applied{1}). Both expected values must be
+    /// the same typed Invalid — never Applied, never AlreadyApplied via
+    /// empty==empty.
     #[test]
     fn an_empty_identity_never_matches_virgin_state() {
+        for expected in [0u64, 1] {
+            let mut sm = MemStateMachine::new();
+            let (at, cmd) = manifest_cmd(9, b"", expected, 1);
+            match verdict(&mut sm, at, &cmd) {
+                ManifestVerdict::Invalid {
+                    reason: ManifestInvalidReason::EmptyChangeId,
+                    ..
+                } => {}
+                other => {
+                    panic!("empty identity at expected={expected} must be Invalid, got {other:?}")
+                }
+            }
+            assert_eq!(sm.manifest_pair(9).unwrap().generation, 0);
+            // Logical refusal: the watermark still advanced.
+            assert_eq!(sm.applied_index(), at);
+        }
+    }
+
+    /// Review probe (Tess): a self-reported replicated watermark at or
+    /// beyond the manifest entry's OWN log position must refuse typed —
+    /// persisting it would later authorize recycling WAL the manifest
+    /// cannot cover. Below the position is legal.
+    #[test]
+    fn a_watermark_at_or_beyond_own_entry_is_invalid() {
         let mut sm = MemStateMachine::new();
-        let (at, cmd) = manifest_cmd(9, b"", 1, 1);
+        let cmd = |wm: u64| Command::ManifestChange {
+            region: 9,
+            change_id: b"A".to_vec(),
+            expected_generation: 0,
+            changeset: b"refs".to_vec(),
+            watermark_term: 7,
+            watermark_index: wm,
+        };
+        // Equal to own index: refused.
+        match verdict(&mut sm, LogIndex(5), &cmd(5)) {
+            ManifestVerdict::Invalid {
+                reason: ManifestInvalidReason::WatermarkBeyondEntry,
+                ..
+            } => {}
+            other => panic!("wm==index must be Invalid, got {other:?}"),
+        }
+        // Far beyond: refused, nothing persisted.
+        match verdict(&mut sm, LogIndex(6), &cmd(100)) {
+            ManifestVerdict::Invalid {
+                reason: ManifestInvalidReason::WatermarkBeyondEntry,
+                ..
+            } => {}
+            other => panic!("wm>index must be Invalid, got {other:?}"),
+        }
+        assert_eq!(sm.manifest_pair(9).unwrap().generation, 0);
+        // Below: applies.
+        assert!(matches!(
+            verdict(&mut sm, LogIndex(7), &cmd(6)),
+            ManifestVerdict::Applied { generation: 1, .. }
+        ));
+    }
+
+    /// Review probe (Tess): P3 identity is (expected_generation, change_id),
+    /// not the id alone. After A applies at expected=0, the identity
+    /// (expected=99, id=A) is Stale — reporting AlreadyApplied would settle
+    /// a DIFFERENT attempt on the strength of a matching id.
+    #[test]
+    fn already_applied_requires_the_full_predecessor_window() {
+        let mut sm = MemStateMachine::new();
+        let (at1, a) = manifest_cmd(9, b"A", 0, 1);
+        verdict(&mut sm, at1, &a);
+        let (at2, wrong_window) = manifest_cmd(9, b"A", 99, 2);
+        match verdict(&mut sm, at2, &wrong_window) {
+            ManifestVerdict::Stale {
+                current_generation, ..
+            } => assert_eq!(current_generation, 1),
+            other => panic!("(expected=99, id=A) must be Stale, got {other:?}"),
+        }
+        // The true full identity still settles AlreadyApplied.
+        let (at3, same) = manifest_cmd(9, b"A", 0, 3);
+        assert!(matches!(
+            verdict(&mut sm, at3, &same),
+            ManifestVerdict::AlreadyApplied { generation: 1, .. }
+        ));
+    }
+
+    /// Review probe (Tess): u64::MAX arithmetic is checked and typed at both
+    /// layers — no debug panic, no wrap; apply still advances the watermark.
+    #[test]
+    fn generation_boundaries_are_checked_not_panics() {
+        // Classifier side: expected=u64::MAX cannot have a successor window.
+        let pair = ManifestPair {
+            generation: 5,
+            last_change_id: b"A".to_vec(),
+        };
+        assert_eq!(
+            classify_reconciliation(&pair, u64::MAX, b"A"),
+            ReconcileObservation::Unknown
+        );
+        // Apply side: the checked comparison itself must not panic with
+        // expected=u64::MAX on a virgin region (falls to Stale).
+        let mut sm = MemStateMachine::new();
+        let (at, cmd) = manifest_cmd(9, b"A", u64::MAX, 1);
         match verdict(&mut sm, at, &cmd) {
             ManifestVerdict::Stale {
                 current_generation, ..
             } => assert_eq!(current_generation, 0),
-            other => panic!("empty identity must be Stale, got {other:?}"),
+            other => panic!("expected Stale, got {other:?}"),
         }
+        assert_eq!(sm.applied_index(), at);
+    }
+
+    /// Impossible pair states are decode errors, not accepted data.
+    #[test]
+    fn manifest_pair_decode_rejects_impossible_states() {
+        // generation>0 with empty id.
+        let mut v = 1u64.to_be_bytes().to_vec();
+        assert!(ManifestPair::decode(&v).is_err());
+        // generation==0 with an id.
+        v = 0u64.to_be_bytes().to_vec();
+        v.extend_from_slice(b"A");
+        assert!(ManifestPair::decode(&v).is_err());
+        // Legal states decode.
+        let mut ok = 1u64.to_be_bytes().to_vec();
+        ok.extend_from_slice(b"A");
+        assert!(ManifestPair::decode(&ok).is_ok());
+        assert!(ManifestPair::decode(&0u64.to_be_bytes()).is_ok());
     }
 
     /// The four-row query table, one test per SETTLED row and one per Unknown
