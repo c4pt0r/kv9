@@ -764,6 +764,22 @@ mod tests {
         assert_eq!(sm.manifest_pair(10).unwrap().last_change_id, b"B".to_vec());
     }
 
+    /// The discriminator's empty-identity guard: a virgin region's pair holds
+    /// an empty last_change_id, and an empty-id change with a spent/absent
+    /// predecessor must be Stale — never AlreadyApplied via empty==empty
+    /// (nothing ever applied; reporting otherwise is a fabricated success).
+    #[test]
+    fn an_empty_identity_never_matches_virgin_state() {
+        let mut sm = MemStateMachine::new();
+        let (at, cmd) = manifest_cmd(9, b"", 1, 1);
+        match verdict(&mut sm, at, &cmd) {
+            ManifestVerdict::Stale {
+                current_generation, ..
+            } => assert_eq!(current_generation, 0),
+            other => panic!("empty identity must be Stale, got {other:?}"),
+        }
+    }
+
     /// The four-row query table, one test per SETTLED row and one per Unknown
     /// row — PAIRED on purpose (card acceptance): an implementation that
     /// merges exact-window-decidable with superwindow-undecidable reds one of
