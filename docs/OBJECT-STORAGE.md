@@ -349,7 +349,9 @@ Collapsing `Unconfirmed` into `Failed` guarantees callers treat *unknown* as *kn
 the reason is easy to miss: the manifest's file set keeps evolving. A change can be applied and then
 superseded, after which the current manifest no longer contains its effects — **so absence proves
 nothing.** Any scheme resting on absence silently treats *applied-then-superseded* as *never
-applied*, and re-proposing on that basis is exactly the double-apply this variant exists to prevent.
+applied*, and **issuing a new change on that basis** is exactly the double-apply this variant exists
+to prevent. (Re-sending the identical identity would *not* double-apply — the already-applied row
+absorbs it. The danger is the new identity, not the retry.)
 
 The seam therefore carries durable ordering state (design owned by Rafa, task #9):
 
@@ -477,8 +479,10 @@ t1   query applied manifest → current == expected
 t2   A commits and applies
 ```
 
-Concluding *never-reached* at `t1`, then clearing the slot or re-proposing, produces exactly the
-duplicate the scheme exists to prevent. **This is `DESIGN.md` §6.5's "absence is not a negative
+Concluding *never-reached* at `t1`, then clearing the slot or **proposing a NEW identity on that
+assumption**, produces exactly the duplicate the scheme exists to prevent. (Re-sending the *identical*
+`(region_id, expected_generation, change_id)` after an authoritative query remains permitted and is
+the intended convergence — see the permitted/forbidden table above.) **This is `DESIGN.md` §6.5's "absence is not a negative
 answer", restated in the generation coordinate** — the same trap as reading absence of a file, and it
 must be refused in both.
 
