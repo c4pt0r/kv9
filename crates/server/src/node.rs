@@ -20,7 +20,9 @@ use kv9_meta::schema::{
 use kv9_meta::store::SequenceKind;
 use kv9_meta::tables::{Keyspace as KeyspaceRow, TxnGroup};
 use kv9_meta::{Bootstrap, MetaStore};
-use kv9_raft::{drive_apply, Command, MemStateMachine, RaftGroup, SingleNodeRaft};
+#[cfg(test)]
+use kv9_raft::drive_apply;
+use kv9_raft::{Command, MemStateMachine, RaftGroup, SingleNodeRaft};
 use kv9_region::RegionRouter;
 use kv9_txn::{PercolatorExecutor, RawExecutor};
 
@@ -71,7 +73,34 @@ impl Default for Store<MemEngine> {
 /// a [`RaftGroup`] (single-node stub) whose committed [`Command`]s are applied into a
 /// [`MemStateMachine`] sharing the store's engine, with a [`MetaStore`] reading that same
 /// KV. `// TODO(phase1): back by tikv/raft-rs`.
+/// The meta-region raft wiring: propose face + state machine + catalog store.
+///
+/// # Resident guards (task #5)
+///
+/// Doc tests compile against production cfg, so these stand where unit tests
+/// cannot: production `MetaRaft` has no combined propose+apply path. This
+/// probe must fail to compile — `propose_apply` is `#[cfg(test)]`:
+///
+/// ```compile_fail,E0599
+/// fn probe<E: kv9_engine::Engine>(m: &kv9_server::MetaRaft<E>) {
+///     let _ = m.propose_apply(todo!());
+/// }
+/// ```
+///
+/// Green twin — same path, receiver and bound resolve; only the pump is
+/// absent (the propose face underneath cannot drain either, guarded at
+/// `kv9_raft::ReadyConsume`):
+///
+/// ```
+/// fn probe<E: kv9_engine::Engine>(m: &kv9_server::MetaRaft<E>) {
+///     let _ = m.raft.committed_index();
+/// }
+/// ```
 pub struct MetaRaft<E: Engine = MemEngine> {
+    /// The PROPOSE face only (task #5): this handle can submit commands but
+    /// can never drain committed entries — `take_ready` lives on the
+    /// separate `ReadyConsume` trait whose sole production holder is the
+    /// driver's pump. A second consumer is unrepresentable from here.
     pub raft: Arc<dyn RaftGroup>,
     pub sm: Mutex<MemStateMachine<E>>,
     pub store: MetaStore<E>,
@@ -79,12 +108,26 @@ pub struct MetaRaft<E: Engine = MemEngine> {
     /// commands, but it cannot repair two overlays that both read the same sequence value
     /// before either proposal is submitted.
     catalog_txn: Mutex<()>,
+    /// Single-node harness pump: the CONSUME face, held concretely and only
+    /// in test builds. Production `MetaRaft` has no drain of any kind — the
+    /// driver applies. Installed by the single-node constructors/tests via
+    /// [`MetaRaft::install_single_node_pump`].
+    #[cfg(test)]
+    single_node_pump: std::sync::Mutex<Option<Arc<SingleNodeRaft>>>,
 }
 
 impl MetaRaft<MemEngine> {
     /// Wire the meta-region raft group + state machine + catalog store over `engine`.
     pub fn new(node: NodeId, engine: Arc<MemEngine>) -> Result<Self> {
-        Self::with_raft(Arc::new(SingleNodeRaft::new(node, META_REGION_0)), engine)
+        let sn = Arc::new(SingleNodeRaft::new(node, META_REGION_0));
+        #[cfg(test)]
+        {
+            let meta = Self::with_raft(sn.clone(), engine)?;
+            meta.install_single_node_pump(sn);
+            Ok(meta)
+        }
+        #[cfg(not(test))]
+        Self::with_raft(sn, engine)
     }
 }
 
@@ -104,6 +147,8 @@ impl<E: Engine> MetaRaft<E> {
             sm: Mutex::new(MemStateMachine::with_engine(engine.clone())?),
             store: MetaStore::new(engine),
             catalog_txn: Mutex::new(()),
+            #[cfg(test)]
+            single_node_pump: std::sync::Mutex::new(None),
         })
     }
 
@@ -113,10 +158,27 @@ impl<E: Engine> MetaRaft<E> {
     /// The command applied here must be reconstructed from the committed log payload.
     /// Applying the caller's typed value directly would create state that a follower or
     /// restart could never replay from Raft.
+    /// TEST-ONLY single-node pump: propose and immediately drain-apply.
+    /// Production has no such combined path — `self.raft` is the propose
+    /// face and cannot drain (task #5); the driver is the only applier.
+    /// Requires the concrete [`SingleNodeRaft`] pump to be installed.
+    #[cfg(test)]
     pub fn propose_apply(&self, cmd: Command) -> Result<()> {
+        let pump = self
+            .single_node_pump
+            .lock()
+            .expect("single-node pump poisoned")
+            .clone()
+            .ok_or_else(|| {
+                Error::Raft(
+                    "propose_apply is the single-node harness pump; this MetaRaft was \
+                     wired to an externally driven peer — pump it via the driver instead"
+                        .into(),
+                )
+            })?;
         self.raft.propose(cmd.encode())?;
         let mut sm = self.sm.lock().expect("meta sm poisoned");
-        let applied = drive_apply(self.raft.as_ref(), &mut *sm)?;
+        let applied = drive_apply(pump.as_ref(), &mut *sm)?;
         if applied.is_empty() {
             return Err(Error::Raft(
                 "proposal produced no committed entry to apply".into(),
@@ -124,9 +186,68 @@ impl<E: Engine> MetaRaft<E> {
         }
         Ok(())
     }
+
+    /// Install the single-node CONSUME face for harness use. Test-only by
+    /// construction: production builds have no field to install into.
+    #[cfg(test)]
+    pub(crate) fn install_single_node_pump(&self, pump: Arc<SingleNodeRaft>) {
+        *self
+            .single_node_pump
+            .lock()
+            .expect("single-node pump poisoned") = Some(pump);
+    }
 }
 
 /// One assembled `kv9` node (DESIGN §3.5, §4).
+///
+/// # Resident guards (task #5)
+///
+/// The single-node harness paths are `#[cfg(test)]` — a bare production
+/// `Node` can propose but cannot pump apply. Doc tests compile against
+/// production cfg, so each probe must fail to compile and turns red if a
+/// harness path leaks back into the production build:
+///
+/// ```compile_fail,E0599
+/// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
+///     let _ = n.bootstrap();
+/// }
+/// ```
+///
+/// ```compile_fail,E0599
+/// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
+///     let _ = n.create_keyspace(todo!(), todo!(), todo!());
+/// }
+/// ```
+///
+/// Green twin — same path, receiver and bound, calling an extant production
+/// method; pins the red probes to capability absence, not spelling:
+///
+/// ```
+/// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
+///     let _ = n.local_cluster_identity();
+/// }
+/// ```
+///
+/// Behavioral cell for the one semantic change in this split: keyspace
+/// creation on a bare `Node` refuses typed in production (the propose face
+/// alone cannot complete a catalog write; `RuntimeBackend` owns the driver
+/// path). This RUNS against production cfg — unit tests cannot reach this
+/// body because `cfg(test)` selects the harness branch:
+///
+/// ```
+/// use kv9_server::AdminApi;
+/// let node = kv9_server::Node::new(kv9_common::NodeId(1), kv9_common::Config::default()).unwrap();
+/// let err = node
+///     .create_keyspace(
+///         "caller",
+///         "k",
+///         kv9_common::TenantId(0),
+///         kv9_common::ApiType::Raw,
+///         kv9_common::TxnGroupId(0),
+///     )
+///     .unwrap_err();
+/// assert!(matches!(err, kv9_common::Error::NotImplemented(_)));
+/// ```
 pub struct Node<E: Engine = MemEngine> {
     pub id: NodeId,
     pub config: Config,
@@ -145,7 +266,15 @@ impl Node<MemEngine> {
     /// Assemble a node from config (DESIGN §4, §11). Does not yet run bootstrap; call
     /// [`Node::bootstrap`] to drive the election-first state machine.
     pub fn new(id: NodeId, config: Config) -> Result<Self> {
-        Self::with_raft(id, config, Arc::new(SingleNodeRaft::new(id, META_REGION_0)))
+        let sn = Arc::new(SingleNodeRaft::new(id, META_REGION_0));
+        #[cfg(test)]
+        {
+            let node = Self::with_raft(id, config, sn.clone())?;
+            node.meta_raft.install_single_node_pump(sn);
+            Ok(node)
+        }
+        #[cfg(not(test))]
+        Self::with_raft(id, config, sn)
     }
 
     /// Assemble a node around a supplied meta-region peer (used by the in-process
@@ -193,6 +322,10 @@ impl<E: Engine> Node<E> {
     /// Allocation of the concrete [`KeyspaceId`]/[`RegionId`]/[`TxnGroupId`] uses system
     /// sequence rows in the same transaction, so the bumps and rows are one replicated
     /// batch.
+    /// TEST-ONLY single-node harness path (task #5): rides the pump in
+    /// `MetaRaft::propose_apply`. Production keyspace creation goes through
+    /// `RuntimeBackend` and the driver.
+    #[cfg(test)]
     pub fn create_keyspace(
         &self,
         name: &str,
@@ -278,6 +411,9 @@ impl<E: Engine> Node<E> {
     /// Drive the election-first bootstrap to `Serving` (DESIGN §5.2). Skeleton: for a
     /// seedless single node, discovery finds the cluster uninitialized, this node wins
     /// the (trivial) election and initializes the default tenant + system keyspace.
+    /// TEST-ONLY single-node bootstrap (task #5): production bootstrap is
+    /// the runtime's election-first flow through the driver.
+    #[cfg(test)]
     pub fn bootstrap(&self) -> Result<()> {
         use kv9_meta::BootstrapEvent::*;
         let mut meta = self.meta.lock().expect("meta poisoned");
@@ -317,6 +453,7 @@ impl<E: Engine> Node<E> {
     /// Write the initial metadata as the winner (DESIGN §5.2): default tenant, system
     /// keyspace, and its fixed system transaction group and TSO timeline. User
     /// transaction groups are created with their owning keyspaces, not at node start.
+    #[cfg(test)]
     fn initialize_metadata(&self, cluster_id: kv9_common::ClusterId) -> Result<()> {
         let _txn_guard = self
             .meta_raft
@@ -519,10 +656,23 @@ impl<E: Engine> crate::api::AdminApi for Node<E> {
     ) -> Result<crate::api::CreateKeyspaceResult> {
         // The txn group is not a caller-supplied field: a `txn` keyspace's default group
         // is created for it (METADATA-CATALOG §2 corrected hierarchy).
-        Ok(crate::api::CreateKeyspaceResult {
-            keyspace: Node::create_keyspace(self, name, tenant, api_type)?,
-            proposed: None,
-        })
+        #[cfg(test)]
+        {
+            Ok(crate::api::CreateKeyspaceResult {
+                keyspace: Node::create_keyspace(self, name, tenant, api_type)?,
+                proposed: None,
+            })
+        }
+        // Production: a bare Node has no apply pump — the propose face alone
+        // cannot complete a catalog write (task #5). RuntimeBackend owns the
+        // production path through the driver.
+        #[cfg(not(test))]
+        {
+            let _ = (name, tenant, api_type);
+            Err(Error::NotImplemented(
+                "keyspace creation on a bare Node — use RuntimeBackend (driver-applied)",
+            ))
+        }
     }
 
     fn list_keyspaces(&self, _caller: &str) -> Result<Vec<kv9_common::Keyspace>> {
@@ -613,13 +763,30 @@ impl<E: Engine> crate::api::AdminApi for Node<E> {
 // The only production `RawApi` is `RuntimeBackend`, which holds the driver (task #25).
 
 impl<E: Engine> crate::api::TxnApi for Node<E> {
+    fn kv_begin(
+        &self,
+        ctx: &crate::api::RequestContext,
+        primary: kv9_txn::QualifiedKey,
+    ) -> Result<kv9_txn::TxnDescriptor> {
+        if primary.keyspace != ctx.keyspace {
+            return Err(Error::ApiTypeMismatch {
+                keyspace: primary.keyspace,
+            });
+        }
+        // Resolving the group here proves the begin request is well scoped, but this
+        // process still has no timeline-generation authority or TSO wired into Node.
+        // Returning a fabricated descriptor would freeze a lie into the public API.
+        self.txn_group_for_primary(ctx, &primary.user_key)?;
+        Err(Error::NotImplemented("TxnAuthorityProvider::begin"))
+    }
+
     fn kv_get(
         &self,
         ctx: &crate::api::RequestContext,
         key: &[u8],
-        start_ts: kv9_common::TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<Option<Vec<u8>>> {
-        let txn_ctx = self.txn_context(ctx, key, start_ts)?;
+        let txn_ctx = self.txn_context(ctx, transaction)?;
         self.txn.get(&txn_ctx, key)
     }
 
@@ -627,12 +794,9 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         &self,
         ctx: &crate::api::RequestContext,
         keys: &[Vec<u8>],
-        start_ts: kv9_common::TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<Vec<Option<Vec<u8>>>> {
-        let primary = keys
-            .first()
-            .ok_or_else(|| Error::WriteConflict("empty transaction key set".into()))?;
-        let txn_ctx = self.txn_context(ctx, primary, start_ts)?;
+        let txn_ctx = self.txn_context(ctx, transaction)?;
         keys.iter().map(|key| self.txn.get(&txn_ctx, key)).collect()
     }
 
@@ -642,7 +806,7 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         _start: &[u8],
         _end: &[u8],
         _limit: usize,
-        _start_ts: kv9_common::TimeStamp,
+        _transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
         Err(Error::NotImplemented("PercolatorExecutor::scan"))
     }
@@ -651,10 +815,9 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         &self,
         ctx: &crate::api::RequestContext,
         mutations: &[(Vec<u8>, Option<Vec<u8>>)],
-        primary: &[u8],
-        start_ts: kv9_common::TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
-        let txn_ctx = self.txn_context(ctx, primary, start_ts)?;
+        let txn_ctx = self.txn_context(ctx, transaction)?;
         let mutations = mutations
             .iter()
             .map(|(key, value)| match value {
@@ -672,21 +835,20 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         &self,
         ctx: &crate::api::RequestContext,
         keys: &[Vec<u8>],
-        start_ts: kv9_common::TimeStamp,
-        commit_ts: kv9_common::TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
-        let primary = keys
-            .first()
-            .ok_or_else(|| Error::WriteConflict("empty transaction key set".into()))?;
-        let txn_ctx = self.txn_context(ctx, primary, start_ts)?;
-        self.txn.commit(&txn_ctx, commit_ts, keys)
+        let _txn_ctx = self.txn_context(ctx, transaction)?;
+        let _ = keys;
+        // Commit timestamps are issued inside the service by the same generation that
+        // issued the descriptor. That provider is deliberately not faked in this task.
+        Err(Error::NotImplemented("TxnAuthorityProvider::issue_commit"))
     }
 
     fn kv_pessimistic_lock(
         &self,
         _ctx: &crate::api::RequestContext,
         _keys: &[Vec<u8>],
-        _start_ts: kv9_common::TimeStamp,
+        _transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
         Err(Error::NotImplemented(
             "PercolatorExecutor::pessimistic_lock",
@@ -697,7 +859,7 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         &self,
         _ctx: &crate::api::RequestContext,
         _keys: &[Vec<u8>],
-        _start_ts: kv9_common::TimeStamp,
+        _transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
         Err(Error::NotImplemented(
             "PercolatorExecutor::pessimistic_rollback",
@@ -706,18 +868,18 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
 
     fn kv_resolve_lock(
         &self,
-        _ctx: &crate::api::RequestContext,
-        start_ts: kv9_common::TimeStamp,
-        commit_ts: Option<kv9_common::TimeStamp>,
+        ctx: &crate::api::RequestContext,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
-        self.txn.resolve_lock(start_ts, commit_ts)
+        let txn_ctx = self.txn_context(ctx, transaction)?;
+        self.txn.resolve_lock(&txn_ctx)
     }
 
     fn kv_cleanup(
         &self,
         _ctx: &crate::api::RequestContext,
         _key: &[u8],
-        _start_ts: kv9_common::TimeStamp,
+        _transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
         Err(Error::NotImplemented("PercolatorExecutor::cleanup"))
     }
@@ -725,9 +887,8 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
     fn kv_check_txn_status(
         &self,
         _ctx: &crate::api::RequestContext,
-        _primary: &[u8],
-        _lock_ts: kv9_common::TimeStamp,
-    ) -> Result<()> {
+        _transaction: &kv9_txn::TxnDescriptor,
+    ) -> Result<kv9_txn::TxnStatus> {
         Err(Error::NotImplemented(
             "PercolatorExecutor::check_txn_status",
         ))
@@ -738,9 +899,32 @@ impl<E: Engine> Node<E> {
     fn txn_context(
         &self,
         ctx: &crate::api::RequestContext,
-        primary: &[u8],
-        start_ts: kv9_common::TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<kv9_txn::TxnContext> {
+        if transaction.keyspace != ctx.keyspace
+            || transaction.primary.keyspace != transaction.keyspace
+        {
+            return Err(Error::ApiTypeMismatch {
+                keyspace: transaction.keyspace,
+            });
+        }
+        let txn_group = self.txn_group_for_primary(ctx, &transaction.primary.user_key)?;
+        if txn_group != transaction.id.txn_group {
+            return Err(Error::CrossTxnGroup {
+                a: transaction.id.txn_group,
+                b: txn_group,
+            });
+        }
+        Ok(kv9_txn::TxnContext {
+            transaction: transaction.clone(),
+        })
+    }
+
+    fn txn_group_for_primary(
+        &self,
+        ctx: &crate::api::RequestContext,
+        primary: &[u8],
+    ) -> Result<TxnGroupId> {
         let tables = kv9_meta::tables::Tables::new(&self.meta_raft.store);
         let keyspace = tables
             .keyspace(ctx.keyspace)?
@@ -756,11 +940,7 @@ impl<E: Engine> Node<E> {
                 .ok_or(Error::ApiTypeMismatch {
                     keyspace: ctx.keyspace,
                 })?;
-        Ok(kv9_txn::TxnContext {
-            start_ts,
-            txn_group,
-            primary: primary.to_vec(),
-        })
+        Ok(txn_group)
     }
 }
 
@@ -791,7 +971,8 @@ mod tests {
     use kv9_common::RegionId;
     use kv9_engine::WalEngine;
     use kv9_meta::BootstrapEvent;
-    use kv9_raft::{CommittedEntry, InProcessCluster, ProposedAt, StateMachine};
+    use kv9_raft::ReadyConsume;
+    use kv9_raft::{CommittedEntry, HarnessPump, InProcessCluster, ProposedAt, StateMachine};
 
     const N1: NodeId = NodeId(1);
     const N2: NodeId = NodeId(2);
@@ -823,7 +1004,7 @@ mod tests {
         cluster.round();
         let mut observed = Vec::new();
         for peer in cluster.peers() {
-            let entries = peer.take_ready().unwrap();
+            let entries = HarnessPump(peer.as_ref()).take_ready().unwrap();
             let mut sm = node(nodes, peer.node_id())
                 .meta_raft
                 .sm
@@ -990,6 +1171,51 @@ mod tests {
                 .map(|region| region.id),
             Some(RegionId(101))
         );
+    }
+
+    #[test]
+    fn transaction_descriptor_is_checked_against_request_and_catalog_group() {
+        let node = Node::new(NodeId(1), Config::default()).unwrap();
+        node.bootstrap().unwrap();
+        let keyspace = node
+            .create_keyspace("txn-wire", TenantId::DEFAULT, ApiType::Txn)
+            .unwrap();
+        let ctx = crate::api::RequestContext {
+            keyspace,
+            region_epoch: kv9_region::RegionEpoch {
+                conf_ver: 1,
+                version: 1,
+            },
+            origin: crate::api::RequestOrigin::from_transport("test"),
+        };
+        let descriptor = kv9_txn::TxnDescriptor {
+            keyspace,
+            id: kv9_txn::TxnId {
+                txn_group: TxnGroupId(999),
+                timeline: kv9_common::TimelineId(5),
+                timeline_generation: kv9_txn::TimelineGeneration(6),
+                start_ts: kv9_common::TimeStamp(7),
+            },
+            primary: kv9_txn::QualifiedKey {
+                keyspace,
+                user_key: b"primary".to_vec(),
+            },
+        };
+
+        assert!(matches!(
+            crate::api::TxnApi::kv_get(&node, &ctx, b"key", &descriptor),
+            Err(Error::CrossTxnGroup {
+                a: TxnGroupId(999),
+                b
+            }) if b == TxnGroupId(keyspace.0 as u64)
+        ));
+
+        let mut wrong_keyspace = descriptor;
+        wrong_keyspace.primary.keyspace = KeyspaceId(keyspace.0 + 1);
+        assert!(matches!(
+            crate::api::TxnApi::kv_get(&node, &ctx, b"key", &wrong_keyspace),
+            Err(Error::ApiTypeMismatch { .. })
+        ));
     }
 
     #[test]
@@ -1352,13 +1578,11 @@ mod tests {
 
         {
             let (engine, _) = WalEngine::open(&wal).unwrap();
-            let node = Node::with_raft_and_engine(
-                N1,
-                Config::default(),
-                Arc::new(SingleNodeRaft::new(N1, META_REGION_0)),
-                Arc::new(engine),
-            )
-            .unwrap();
+            let sn = Arc::new(SingleNodeRaft::new(N1, META_REGION_0));
+            let node =
+                Node::with_raft_and_engine(N1, Config::default(), sn.clone(), Arc::new(engine))
+                    .unwrap();
+            node.meta_raft.install_single_node_pump(sn);
             node.bootstrap().unwrap();
             assert_eq!(AdminApi::list_keyspaces(&node, "test").unwrap().len(), 1);
         }

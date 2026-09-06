@@ -13,7 +13,7 @@ pub mod runtime;
 
 pub use api::{
     AdminApi, AppliedPosition, ClusterInfo, CreateKeyspaceResult, RawApi, RegionLocation,
-    RequestContext, RouterApi, TxnApi,
+    RequestContext, RequestOrigin, RouterApi, TxnApi,
 };
 pub use grpc::proto;
 pub use grpc::{

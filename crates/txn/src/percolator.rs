@@ -8,7 +8,9 @@
 //! - Cross-region transactions are supported **within one txn group**; a transaction
 //!   whose keys resolve to two txn groups is **rejected at begin** (DESIGN §3.6).
 
-use kv9_common::{Error, KeyspaceId, Result, TimeStamp, TxnGroupId, UserKey, Value};
+use kv9_common::{Error, KeyspaceId, Result, TxnGroupId, UserKey, Value};
+
+use crate::{CommitAuthority, TxnDescriptor};
 
 /// A single mutation in a transaction's write set (DESIGN §9.1).
 #[derive(Debug, Clone)]
@@ -20,11 +22,8 @@ pub enum TxnMutation {
 /// The context resolved for one transaction (DESIGN §3.6, §9.1).
 #[derive(Debug, Clone)]
 pub struct TxnContext {
-    pub start_ts: TimeStamp,
-    /// The single txn group all keys must belong to (confinement — DESIGN §3.6).
-    pub txn_group: TxnGroupId,
-    /// The primary key that is the atomic commit point (DESIGN §9.1).
-    pub primary: UserKey,
+    /// Server-issued identity, including qualified primary and timeline generation.
+    pub transaction: TxnDescriptor,
 }
 
 /// The **txn-group confinement check** (DESIGN §3.6, §9.1).
@@ -81,14 +80,14 @@ impl PercolatorExecutor {
     pub fn commit(
         &self,
         _ctx: &TxnContext,
-        _commit_ts: TimeStamp,
+        _authority: CommitAuthority,
         _keys: &[UserKey],
     ) -> Result<()> {
         Err(Error::NotImplemented("PercolatorExecutor::commit"))
     }
 
     /// ResolveLock: clean up locks after a coordinator failure (DESIGN §9.1).
-    pub fn resolve_lock(&self, _start_ts: TimeStamp, _commit_ts: Option<TimeStamp>) -> Result<()> {
+    pub fn resolve_lock(&self, _ctx: &TxnContext) -> Result<()> {
         Err(Error::NotImplemented("PercolatorExecutor::resolve_lock"))
     }
 }

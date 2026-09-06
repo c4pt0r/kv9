@@ -17,8 +17,8 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use kv9_common::{
     persist_root_bundle, ApiType, ClusterId, Config, Error, KeyspaceId, NodeId, RegionId, Result,
-    RootDescriptor, RootDigest, SeedPeer, StoreIdentity, StoreIncarnation, TenantId, TimeStamp,
-    TxnGroupId, UserKey, Value, META_REGION_0,
+    RootDescriptor, RootDigest, SeedPeer, StoreIdentity, StoreIncarnation, TenantId, TxnGroupId,
+    UserKey, Value, META_REGION_0,
 };
 use kv9_engine::{Engine, ReadView, WalEngine};
 use kv9_meta::admission::INVALID_JOIN_TICKET_MESSAGE;
@@ -1857,18 +1857,32 @@ impl RawApi for RuntimeBackend {
 }
 
 impl TxnApi for RuntimeBackend {
-    fn kv_get(&self, ctx: &RequestContext, key: &[u8], ts: TimeStamp) -> Result<Option<Value>> {
+    fn kv_begin(
+        &self,
+        ctx: &RequestContext,
+        primary: kv9_txn::QualifiedKey,
+    ) -> Result<kv9_txn::TxnDescriptor> {
         self.ensure_serving()?;
-        self.node.kv_get(ctx, key, ts)
+        self.node.kv_begin(ctx, primary)
+    }
+
+    fn kv_get(
+        &self,
+        ctx: &RequestContext,
+        key: &[u8],
+        transaction: &kv9_txn::TxnDescriptor,
+    ) -> Result<Option<Value>> {
+        self.ensure_serving()?;
+        self.node.kv_get(ctx, key, transaction)
     }
     fn kv_batch_get(
         &self,
         ctx: &RequestContext,
         keys: &[UserKey],
-        ts: TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<Vec<Option<Value>>> {
         self.ensure_serving()?;
-        self.node.kv_batch_get(ctx, keys, ts)
+        self.node.kv_batch_get(ctx, keys, transaction)
     }
     fn kv_scan(
         &self,
@@ -1876,70 +1890,71 @@ impl TxnApi for RuntimeBackend {
         start: &[u8],
         end: &[u8],
         limit: usize,
-        ts: TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<Vec<(UserKey, Value)>> {
         self.ensure_serving()?;
-        self.node.kv_scan(ctx, start, end, limit, ts)
+        self.node.kv_scan(ctx, start, end, limit, transaction)
     }
     fn kv_prewrite(
         &self,
         ctx: &RequestContext,
         mutations: &[(UserKey, Option<Value>)],
-        primary: &[u8],
-        ts: TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
         self.ensure_serving()?;
-        self.node.kv_prewrite(ctx, mutations, primary, ts)
+        self.node.kv_prewrite(ctx, mutations, transaction)
     }
     fn kv_commit(
         &self,
         ctx: &RequestContext,
         keys: &[UserKey],
-        start_ts: TimeStamp,
-        commit_ts: TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
         self.ensure_serving()?;
-        self.node.kv_commit(ctx, keys, start_ts, commit_ts)
+        self.node.kv_commit(ctx, keys, transaction)
     }
     fn kv_pessimistic_lock(
         &self,
         ctx: &RequestContext,
         keys: &[UserKey],
-        ts: TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
         self.ensure_serving()?;
-        self.node.kv_pessimistic_lock(ctx, keys, ts)
+        self.node.kv_pessimistic_lock(ctx, keys, transaction)
     }
     fn kv_pessimistic_rollback(
         &self,
         ctx: &RequestContext,
         keys: &[UserKey],
-        ts: TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
         self.ensure_serving()?;
-        self.node.kv_pessimistic_rollback(ctx, keys, ts)
+        self.node.kv_pessimistic_rollback(ctx, keys, transaction)
     }
     fn kv_resolve_lock(
         &self,
         ctx: &RequestContext,
-        start_ts: TimeStamp,
-        commit_ts: Option<TimeStamp>,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
         self.ensure_serving()?;
-        self.node.kv_resolve_lock(ctx, start_ts, commit_ts)
+        self.node.kv_resolve_lock(ctx, transaction)
     }
-    fn kv_cleanup(&self, ctx: &RequestContext, key: &[u8], ts: TimeStamp) -> Result<()> {
+    fn kv_cleanup(
+        &self,
+        ctx: &RequestContext,
+        key: &[u8],
+        transaction: &kv9_txn::TxnDescriptor,
+    ) -> Result<()> {
         self.ensure_serving()?;
-        self.node.kv_cleanup(ctx, key, ts)
+        self.node.kv_cleanup(ctx, key, transaction)
     }
     fn kv_check_txn_status(
         &self,
         ctx: &RequestContext,
-        primary: &[u8],
-        lock_ts: TimeStamp,
-    ) -> Result<()> {
+        transaction: &kv9_txn::TxnDescriptor,
+    ) -> Result<kv9_txn::TxnStatus> {
         self.ensure_serving()?;
-        self.node.kv_check_txn_status(ctx, primary, lock_ts)
+        self.node.kv_check_txn_status(ctx, transaction)
     }
 }
 
@@ -2224,7 +2239,7 @@ impl NodeRuntime {
             Some(factory) => factory(node.clone()),
             None => Arc::new(CatalogFenceAdjudicator::new(node.clone())),
         });
-        let driver = NodeDriver::new(peer, transport.clone(), state_machine);
+        let driver = NodeDriver::new(peer, transport.clone(), state_machine)?;
         let driver_thread = Some(driver.spawn(TICK));
         let status_path = data_dir.join("status");
 
@@ -3807,6 +3822,7 @@ mod tests {
                 Arc::new(hub.endpoint(id)) as Arc<dyn kv9_raft::transport::RaftTransport>,
                 MemStateMachine::new(),
             )
+            .expect("drain token minted once per peer")
         };
         let d1 = mk(NodeId(1));
         let d2 = mk(NodeId(2));
@@ -4018,7 +4034,8 @@ mod tests {
             peer,
             transport.clone(),
             MemStateMachine::with_engine(engine).unwrap(),
-        );
+        )
+        .expect("drain token minted once per peer");
         (
             RuntimeBackend {
                 node,
@@ -4066,7 +4083,20 @@ mod tests {
         let ctx = RequestContext {
             keyspace: KeyspaceId(100),
             region_epoch: epoch(1, 1),
-            caller: Some("test-client".into()),
+            origin: crate::api::RequestOrigin::from_transport("test-client"),
+        };
+        let transaction = kv9_txn::TxnDescriptor {
+            keyspace: ctx.keyspace,
+            id: kv9_txn::TxnId {
+                txn_group: TxnGroupId(0),
+                timeline: kv9_common::TimelineId(0),
+                timeline_generation: kv9_txn::TimelineGeneration(1),
+                start_ts: kv9_common::TimeStamp(1),
+            },
+            primary: kv9_txn::QualifiedKey {
+                keyspace: ctx.keyspace,
+                user_key: b"k".to_vec(),
+            },
         };
 
         // Admin: CreateKeyspace used to reach catalog planning here and leak an FK
@@ -4094,30 +4124,25 @@ mod tests {
         assert_meta_not_ready(backend.raw_scan(&ctx, b"", b"", 10));
         assert_meta_not_ready(backend.raw_delete_range(&ctx, b"", b""));
 
-        assert_meta_not_ready(backend.kv_get(&ctx, b"k", TimeStamp(1)));
-        assert_meta_not_ready(backend.kv_batch_get(&ctx, &[b"k".to_vec()], TimeStamp(1)));
-        assert_meta_not_ready(backend.kv_scan(&ctx, b"", b"", 10, TimeStamp(1)));
+        assert_meta_not_ready(backend.kv_begin(&ctx, transaction.primary.clone()));
+        assert_meta_not_ready(backend.kv_get(&ctx, b"k", &transaction));
+        assert_meta_not_ready(backend.kv_batch_get(&ctx, &[b"k".to_vec()], &transaction));
+        assert_meta_not_ready(backend.kv_scan(&ctx, b"", b"", 10, &transaction));
         assert_meta_not_ready(backend.kv_prewrite(
             &ctx,
             &[(b"k".to_vec(), Some(b"v".to_vec()))],
-            b"k",
-            TimeStamp(1),
+            &transaction,
         ));
-        assert_meta_not_ready(backend.kv_commit(
-            &ctx,
-            &[b"k".to_vec()],
-            TimeStamp(1),
-            TimeStamp(2),
-        ));
-        assert_meta_not_ready(backend.kv_pessimistic_lock(&ctx, &[b"k".to_vec()], TimeStamp(1)));
+        assert_meta_not_ready(backend.kv_commit(&ctx, &[b"k".to_vec()], &transaction));
+        assert_meta_not_ready(backend.kv_pessimistic_lock(&ctx, &[b"k".to_vec()], &transaction));
         assert_meta_not_ready(backend.kv_pessimistic_rollback(
             &ctx,
             &[b"k".to_vec()],
-            TimeStamp(1),
+            &transaction,
         ));
-        assert_meta_not_ready(backend.kv_resolve_lock(&ctx, TimeStamp(1), Some(TimeStamp(2))));
-        assert_meta_not_ready(backend.kv_cleanup(&ctx, b"k", TimeStamp(1)));
-        assert_meta_not_ready(backend.kv_check_txn_status(&ctx, b"k", TimeStamp(1)));
+        assert_meta_not_ready(backend.kv_resolve_lock(&ctx, &transaction));
+        assert_meta_not_ready(backend.kv_cleanup(&ctx, b"k", &transaction));
+        assert_meta_not_ready(backend.kv_check_txn_status(&ctx, &transaction));
 
         drop(backend);
         drop(runtime);
@@ -4658,7 +4683,8 @@ mod tests {
             peer,
             Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
             MemStateMachine::with_engine(wal).unwrap(),
-        );
+        )
+        .expect("drain token minted once per peer");
         let authenticator = ClusterAuthenticator {
             expected_token: Arc::from("secret"),
             voters: Arc::new([NodeId(1), NodeId(2)].into_iter().collect()),
@@ -4710,7 +4736,8 @@ mod tests {
             peer,
             Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
             MemStateMachine::with_engine(engine.clone()).unwrap(),
-        );
+        )
+        .expect("drain token minted once per peer");
         // A capability naming node 4, with a barrier far ahead of this
         // fresh driver's (empty) watermark: the window is OPEN.
         let catchup = Arc::new(std::sync::Mutex::new(Some(CatchupCapability {
@@ -5038,7 +5065,8 @@ mod tests {
             peer,
             Arc::new(endpoint) as Arc<dyn RaftTransport>,
             MemStateMachine::with_engine(engine.clone()).unwrap(),
-        );
+        )
+        .expect("drain token minted once per peer");
         driver.peer().campaign().unwrap();
         for _ in 0..50 {
             driver.tick_and_step().unwrap();
@@ -5534,7 +5562,7 @@ mod tests {
         let ctx = RequestContext {
             keyspace: created.keyspace,
             region_epoch: location.epoch,
-            caller: Some("acceptance".into()),
+            origin: crate::api::RequestOrigin::from_transport("acceptance"),
         };
         backend
             .raw_put(&ctx, b"k".to_vec(), b"v1".to_vec())
@@ -5643,7 +5671,7 @@ mod tests {
                 conf_ver: 0,
                 version: 0,
             },
-            caller: Some("establishing-read-cell".into()),
+            origin: crate::api::RequestOrigin::from_transport("establishing-read-cell"),
         }
     }
 
@@ -5702,7 +5730,8 @@ mod tests {
                     peer.clone(),
                     Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
                     MemStateMachine::with_engine(wal.clone()).unwrap(),
-                ),
+                )
+                .expect("drain token minted once per peer"),
                 peer,
                 wal,
             )
@@ -6084,7 +6113,7 @@ mod fence_firing_tests {
                 conf_ver: region.epoch_conf,
                 version: region.epoch_ver,
             },
-            caller: Some("fence-firing".into()),
+            origin: crate::api::RequestOrigin::from_transport("fence-firing"),
         };
         (keyspace, ctx, region)
     }
