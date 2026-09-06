@@ -156,7 +156,7 @@ pub fn classify_reconciliation(
 /// identity already performed its transition must never be reported as newly
 /// accepted (crash-point-3 receipt half). `Stale` is the CAS refusal. All
 /// three advance the applied watermark; none is an apply error.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ManifestVerdict {
     /// This change performed the `expected → expected+1` transition.
     Applied {
