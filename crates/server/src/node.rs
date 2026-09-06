@@ -215,12 +215,6 @@ impl<E: Engine> MetaRaft<E> {
 ///
 /// ```compile_fail,E0599
 /// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
-///     let _ = n.initialize_metadata();
-/// }
-/// ```
-///
-/// ```compile_fail,E0599
-/// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
 ///     let _ = n.create_keyspace(todo!(), todo!(), todo!());
 /// }
 /// ```
