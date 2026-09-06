@@ -117,6 +117,12 @@ jobs:
           scripts/apply-store-tripwire-selftest.sh "$(pwd)/scripts/apply-store-tripwire.sh"
           scripts/apply-store-tripwire.sh
 
+      # Task #9 P4 visibility guard (ruling: resident guard, NOT a type
+      # guarantee — the header carries the honest tier): the manifest pair's
+      # key literals stay in their owning module at the pinned count.
+      - name: Manifest-key tripwire
+        run: scripts/manifest-key-tripwire.sh
+
   # Informational on purpose. `cargo fmt --check` does NOT pass on this tree: when this
   # workflow landed there were 159 diff hunks across 39 files, spanning all four crate
   # lanes. Making that blocking would paint CI red on day one for changes that did not
