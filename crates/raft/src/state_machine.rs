@@ -69,6 +69,31 @@ impl<E: Engine> ApplyStore for E {
 /// Engine key holding the durably applied watermark. The `0x00` first byte
 /// cannot collide with any `mode_byte`-encoded physical key (`'t'`/`'r'`/`'s'`),
 /// so catalog scans never see it.
+///
+/// # Why this stores INDEX ONLY, while `AppliedPosition` docs say index
+/// alone is never sufficient (asked by Ren before building the WAL reclaim
+/// predicate on it — the two statements answer DIFFERENT questions)
+///
+/// `ids.rs`'s warning is about PROPOSAL CORRELATION: a proposal's claimed
+/// index can be consumed by another leader's entry, because the claim is
+/// made before commit — deciding "is the entry at this position MINE"
+/// requires term+index, always.
+///
+/// This watermark never asks that question. It records how far the
+/// COMMITTED prefix has been applied, and raft's Log Matching + Leader
+/// Completeness make that prefix immutable: an entry that advanced this
+/// watermark was applied, hence committed, hence present at that index in
+/// every future log of every leader. Index reuse only ever happens to
+/// UNCOMMITTED suffixes — which were never applied and never advanced this
+/// value. So for prefix-coverage comparisons (restart replay skip here;
+/// the WAL segment reclaim predicate `max_applied_position <= watermark`,
+/// OBJECT-STORAGE §6.3) the index is a complete coordinate; the term
+/// component exists for receipts, not for coverage.
+///
+/// If a future change ever lets this watermark advance on an UNCOMMITTED
+/// entry, that change — not the key format — is the bug, and it breaks the
+/// argument above; the discriminator/driver apply loops only ever feed
+/// committed entries here.
 pub const APPLIED_INDEX_KEY: &[u8] = b"\x00kv9\x00applied_index";
 
 /// Engine key holding one region's authoritative manifest
