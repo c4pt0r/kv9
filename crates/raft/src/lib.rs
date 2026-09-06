@@ -27,7 +27,7 @@ pub use rawnode::HarnessPump;
 pub use rawnode::InProcessCluster;
 pub use rawnode::{DrainToken, ProposedAt, RaftPeer};
 pub use state_machine::{
-    classify_reconciliation, drive_apply, ApplyResult, FenceAdjudicator, ManifestPair,
+    classify_reconciliation, drive_apply, ApplyResult, ApplyStore, FenceAdjudicator, ManifestPair,
     ManifestVerdict, MemStateMachine, ReconcileObservation, StateMachine,
 };
 

@@ -19,6 +19,52 @@ use kv9_common::Result;
 use crate::command::Command;
 use crate::{CommittedEntry, LogIndex};
 
+/// The apply-side storage capability (task #9, the capability-narrowing half
+/// of the apply-never-touches-the-object-store invariant): EXACTLY what ordered
+/// apply needs — an atomic batch write and a point read of log-established
+/// state. Deliberately NOT [`kv9_engine::Engine`]: apply code is generic
+/// over THIS bound, so even when the concrete engine grows richer surfaces
+/// (snapshots, checksums, or one day an object-store accessor), the apply
+/// face does not grow with it — reaching anything beyond these two methods
+/// is a compile error inside this crate, not a review catch.
+///
+/// The blanket impl keeps every real engine usable without call-site
+/// changes; the narrowing is in the BOUND, not the type.
+///
+/// # Resident guards — measured, not assumed, in both directions
+///
+/// Apply's face has no read-view, no scan, no snapshot (this probe fires if
+/// the capability ever widens):
+///
+/// ```compile_fail,E0599
+/// fn probe<A: kv9_raft::ApplyStore>(a: &A) {
+///     let _ = a.snapshot();
+/// }
+/// ```
+///
+/// Green twin — the identical call against the full engine trait compiles,
+/// pinning the red probe to "capability absent from ApplyStore":
+///
+/// ```
+/// fn probe<E: kv9_engine::Engine>(e: &E) {
+///     let _ = e.snapshot();
+/// }
+/// ```
+pub trait ApplyStore: Send + Sync {
+    fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Vec<u8>>>;
+    fn write(&self, batch: kv9_engine::WriteBatch) -> Result<()>;
+}
+
+impl<E: Engine> ApplyStore for E {
+    fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Vec<u8>>> {
+        Engine::get(self, cf, key)
+    }
+
+    fn write(&self, batch: kv9_engine::WriteBatch) -> Result<()> {
+        Engine::write(self, batch)
+    }
+}
+
 /// Engine key holding the durably applied watermark. The `0x00` first byte
 /// cannot collide with any `mode_byte`-encoded physical key (`'t'`/`'r'`/`'s'`),
 /// so catalog scans never see it.
@@ -272,7 +318,7 @@ pub trait StateMachine: Send + Sync {
 /// `Command::CatalogTxn` lands atomically here and is then visible to
 /// [`kv9_meta::MetaStore`] reads. Swapping `MemEngine` for the real disaggregated engine
 /// is Phase-2 and does not change this type's shape (it is generic over [`Engine`]).
-pub struct MemStateMachine<E: Engine = MemEngine> {
+pub struct MemStateMachine<E: ApplyStore = MemEngine> {
     engine: Arc<E>,
     applied: LogIndex,
     /// Adjudicates [`Command::Fenced`] entries. `None` — the default — makes a
@@ -298,7 +344,7 @@ impl Default for MemStateMachine<MemEngine> {
     }
 }
 
-impl<E: Engine> MemStateMachine<E> {
+impl<E: ApplyStore> MemStateMachine<E> {
     /// Build a state machine over an existing shared engine (so the `meta` catalog and
     /// the raft apply loop observe the *same* KV).
     ///
@@ -534,7 +580,7 @@ impl<E: Engine> MemStateMachine<E> {
     }
 }
 
-impl<E: Engine> StateMachine for MemStateMachine<E> {
+impl<E: ApplyStore> StateMachine for MemStateMachine<E> {
     fn apply(&mut self, entry: &CommittedEntry) -> Result<ApplyResult> {
         // Phase-1: the committed entry carries opaque bytes; decode to a Command, then
         // apply its write batch.
@@ -855,7 +901,7 @@ mod tests {
             APPLIED_INDEX_KEY.to_vec(),
             vec![1, 2, 3], // wrong width
         );
-        engine.write(batch).unwrap();
+        Engine::write(engine.as_ref(), batch).unwrap();
         assert!(MemStateMachine::with_engine(Arc::clone(&engine)).is_err());
         // Control: a valid 8-byte watermark opens fine.
         let mut batch = kv9_engine::WriteBatch::new();
@@ -864,7 +910,7 @@ mod tests {
             APPLIED_INDEX_KEY.to_vec(),
             9u64.to_be_bytes().to_vec(),
         );
-        engine.write(batch).unwrap();
+        Engine::write(engine.as_ref(), batch).unwrap();
         assert_eq!(
             MemStateMachine::with_engine(engine)
                 .unwrap()
