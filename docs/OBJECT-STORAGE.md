@@ -441,6 +441,26 @@ P4  THE PAIR HAS EXACTLY ONE WRITER.
     written ONLY by a successful ManifestChange CAS, atomically, both fields together.
     No other path writes either field, independently or otherwise.
 
+    ★ HOW STRONGLY THIS IS HELD TODAY — measured, not guaranteed. The distinction is
+      the same one §3.1 draws, and it was missing here:
+
+        today       the key-building functions are private to the state machine, and an
+                    enumeration shows exactly one production writer (the CAS arm).
+                    That is an OBSERVATION of the current tree.
+        but         the private thing is the constructor, not the key space. The key is a
+                    plain byte string, so any module can assemble it by hand; 126
+                    occurrences of ColumnFamily::Default across 18 files sit outside the
+                    state machine, and none of them is prevented from writing that key.
+        therefore   the enumeration expires the moment a new module writes the Default CF,
+                    and it expires SILENTLY — the count simply becomes stale, with nothing
+                    to red.
+
+      To raise it to a guarantee, either give the pair a typed key whose construction is
+      private to the owning module, or add a tripwire asserting the `manifest_pair` prefix
+      appears nowhere outside it. Neither is built. **Do not read P4 as enforced by types
+      or visibility** (Cindy's measurement on task #9's head; recorded here because this
+      document previously stated P4 as though it simply held).
+
     Everything else in the table descends from this one property:
       provenance   last_change_id names a change that actually applied
       monotonicity generation advances by exactly one per apply and never retreats
