@@ -613,13 +613,30 @@ impl<E: Engine> crate::api::AdminApi for Node<E> {
 // The only production `RawApi` is `RuntimeBackend`, which holds the driver (task #25).
 
 impl<E: Engine> crate::api::TxnApi for Node<E> {
+    fn kv_begin(
+        &self,
+        ctx: &crate::api::RequestContext,
+        primary: kv9_txn::QualifiedKey,
+    ) -> Result<kv9_txn::TxnDescriptor> {
+        if primary.keyspace != ctx.keyspace {
+            return Err(Error::ApiTypeMismatch {
+                keyspace: primary.keyspace,
+            });
+        }
+        // Resolving the group here proves the begin request is well scoped, but this
+        // process still has no timeline-generation authority or TSO wired into Node.
+        // Returning a fabricated descriptor would freeze a lie into the public API.
+        self.txn_group_for_primary(ctx, &primary.user_key)?;
+        Err(Error::NotImplemented("TxnAuthorityProvider::begin"))
+    }
+
     fn kv_get(
         &self,
         ctx: &crate::api::RequestContext,
         key: &[u8],
-        start_ts: kv9_common::TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<Option<Vec<u8>>> {
-        let txn_ctx = self.txn_context(ctx, key, start_ts)?;
+        let txn_ctx = self.txn_context(ctx, transaction)?;
         self.txn.get(&txn_ctx, key)
     }
 
@@ -627,12 +644,9 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         &self,
         ctx: &crate::api::RequestContext,
         keys: &[Vec<u8>],
-        start_ts: kv9_common::TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<Vec<Option<Vec<u8>>>> {
-        let primary = keys
-            .first()
-            .ok_or_else(|| Error::WriteConflict("empty transaction key set".into()))?;
-        let txn_ctx = self.txn_context(ctx, primary, start_ts)?;
+        let txn_ctx = self.txn_context(ctx, transaction)?;
         keys.iter().map(|key| self.txn.get(&txn_ctx, key)).collect()
     }
 
@@ -642,7 +656,7 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         _start: &[u8],
         _end: &[u8],
         _limit: usize,
-        _start_ts: kv9_common::TimeStamp,
+        _transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
         Err(Error::NotImplemented("PercolatorExecutor::scan"))
     }
@@ -651,10 +665,9 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         &self,
         ctx: &crate::api::RequestContext,
         mutations: &[(Vec<u8>, Option<Vec<u8>>)],
-        primary: &[u8],
-        start_ts: kv9_common::TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
-        let txn_ctx = self.txn_context(ctx, primary, start_ts)?;
+        let txn_ctx = self.txn_context(ctx, transaction)?;
         let mutations = mutations
             .iter()
             .map(|(key, value)| match value {
@@ -672,21 +685,20 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         &self,
         ctx: &crate::api::RequestContext,
         keys: &[Vec<u8>],
-        start_ts: kv9_common::TimeStamp,
-        commit_ts: kv9_common::TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
-        let primary = keys
-            .first()
-            .ok_or_else(|| Error::WriteConflict("empty transaction key set".into()))?;
-        let txn_ctx = self.txn_context(ctx, primary, start_ts)?;
-        self.txn.commit(&txn_ctx, commit_ts, keys)
+        let _txn_ctx = self.txn_context(ctx, transaction)?;
+        let _ = keys;
+        // Commit timestamps are issued inside the service by the same generation that
+        // issued the descriptor. That provider is deliberately not faked in this task.
+        Err(Error::NotImplemented("TxnAuthorityProvider::issue_commit"))
     }
 
     fn kv_pessimistic_lock(
         &self,
         _ctx: &crate::api::RequestContext,
         _keys: &[Vec<u8>],
-        _start_ts: kv9_common::TimeStamp,
+        _transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
         Err(Error::NotImplemented(
             "PercolatorExecutor::pessimistic_lock",
@@ -697,7 +709,7 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
         &self,
         _ctx: &crate::api::RequestContext,
         _keys: &[Vec<u8>],
-        _start_ts: kv9_common::TimeStamp,
+        _transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
         Err(Error::NotImplemented(
             "PercolatorExecutor::pessimistic_rollback",
@@ -706,18 +718,18 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
 
     fn kv_resolve_lock(
         &self,
-        _ctx: &crate::api::RequestContext,
-        start_ts: kv9_common::TimeStamp,
-        commit_ts: Option<kv9_common::TimeStamp>,
+        ctx: &crate::api::RequestContext,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
-        self.txn.resolve_lock(start_ts, commit_ts)
+        let txn_ctx = self.txn_context(ctx, transaction)?;
+        self.txn.resolve_lock(&txn_ctx)
     }
 
     fn kv_cleanup(
         &self,
         _ctx: &crate::api::RequestContext,
         _key: &[u8],
-        _start_ts: kv9_common::TimeStamp,
+        _transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<()> {
         Err(Error::NotImplemented("PercolatorExecutor::cleanup"))
     }
@@ -725,9 +737,8 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
     fn kv_check_txn_status(
         &self,
         _ctx: &crate::api::RequestContext,
-        _primary: &[u8],
-        _lock_ts: kv9_common::TimeStamp,
-    ) -> Result<()> {
+        _transaction: &kv9_txn::TxnDescriptor,
+    ) -> Result<kv9_txn::TxnStatus> {
         Err(Error::NotImplemented(
             "PercolatorExecutor::check_txn_status",
         ))
@@ -738,9 +749,32 @@ impl<E: Engine> Node<E> {
     fn txn_context(
         &self,
         ctx: &crate::api::RequestContext,
-        primary: &[u8],
-        start_ts: kv9_common::TimeStamp,
+        transaction: &kv9_txn::TxnDescriptor,
     ) -> Result<kv9_txn::TxnContext> {
+        if transaction.keyspace != ctx.keyspace
+            || transaction.primary.keyspace != transaction.keyspace
+        {
+            return Err(Error::ApiTypeMismatch {
+                keyspace: transaction.keyspace,
+            });
+        }
+        let txn_group = self.txn_group_for_primary(ctx, &transaction.primary.user_key)?;
+        if txn_group != transaction.id.txn_group {
+            return Err(Error::CrossTxnGroup {
+                a: transaction.id.txn_group,
+                b: txn_group,
+            });
+        }
+        Ok(kv9_txn::TxnContext {
+            transaction: transaction.clone(),
+        })
+    }
+
+    fn txn_group_for_primary(
+        &self,
+        ctx: &crate::api::RequestContext,
+        primary: &[u8],
+    ) -> Result<TxnGroupId> {
         let tables = kv9_meta::tables::Tables::new(&self.meta_raft.store);
         let keyspace = tables
             .keyspace(ctx.keyspace)?
@@ -756,11 +790,7 @@ impl<E: Engine> Node<E> {
                 .ok_or(Error::ApiTypeMismatch {
                     keyspace: ctx.keyspace,
                 })?;
-        Ok(kv9_txn::TxnContext {
-            start_ts,
-            txn_group,
-            primary: primary.to_vec(),
-        })
+        Ok(txn_group)
     }
 }
 
@@ -990,6 +1020,51 @@ mod tests {
                 .map(|region| region.id),
             Some(RegionId(101))
         );
+    }
+
+    #[test]
+    fn transaction_descriptor_is_checked_against_request_and_catalog_group() {
+        let node = Node::new(NodeId(1), Config::default()).unwrap();
+        node.bootstrap().unwrap();
+        let keyspace = node
+            .create_keyspace("txn-wire", TenantId::DEFAULT, ApiType::Txn)
+            .unwrap();
+        let ctx = crate::api::RequestContext {
+            keyspace,
+            region_epoch: kv9_region::RegionEpoch {
+                conf_ver: 1,
+                version: 1,
+            },
+            origin: crate::api::RequestOrigin::from_transport("test"),
+        };
+        let descriptor = kv9_txn::TxnDescriptor {
+            keyspace,
+            id: kv9_txn::TxnId {
+                txn_group: TxnGroupId(999),
+                timeline: kv9_common::TimelineId(5),
+                timeline_generation: kv9_txn::TimelineGeneration(6),
+                start_ts: kv9_common::TimeStamp(7),
+            },
+            primary: kv9_txn::QualifiedKey {
+                keyspace,
+                user_key: b"primary".to_vec(),
+            },
+        };
+
+        assert!(matches!(
+            crate::api::TxnApi::kv_get(&node, &ctx, b"key", &descriptor),
+            Err(Error::CrossTxnGroup {
+                a: TxnGroupId(999),
+                b
+            }) if b == TxnGroupId(keyspace.0 as u64)
+        ));
+
+        let mut wrong_keyspace = descriptor;
+        wrong_keyspace.primary.keyspace = KeyspaceId(keyspace.0 + 1);
+        assert!(matches!(
+            crate::api::TxnApi::kv_get(&node, &ctx, b"key", &wrong_keyspace),
+            Err(Error::ApiTypeMismatch { .. })
+        ));
     }
 
     #[test]
