@@ -942,7 +942,7 @@ mod tests {
     use kv9_engine::WalEngine;
     use kv9_meta::BootstrapEvent;
     use kv9_raft::ReadyConsume;
-    use kv9_raft::{CommittedEntry, InProcessCluster, ProposedAt, StateMachine};
+    use kv9_raft::{CommittedEntry, HarnessPump, InProcessCluster, ProposedAt, StateMachine};
 
     const N1: NodeId = NodeId(1);
     const N2: NodeId = NodeId(2);
@@ -974,7 +974,7 @@ mod tests {
         cluster.round();
         let mut observed = Vec::new();
         for peer in cluster.peers() {
-            let entries = peer.take_ready().unwrap();
+            let entries = HarnessPump(peer.as_ref()).take_ready().unwrap();
             let mut sm = node(nodes, peer.node_id())
                 .meta_raft
                 .sm

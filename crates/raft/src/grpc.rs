@@ -1687,11 +1687,14 @@ mod tests {
             serve(&handle, id, addrs[i], transport.inbox_sender(), 42);
             transports.push(Arc::clone(&transport));
             let peer = Arc::new(RaftPeer::new(id, region, &ids).unwrap());
-            drivers.push(NodeDriver::new(
-                peer,
-                transport as Arc<dyn RaftTransport>,
-                MemStateMachine::new(),
-            ));
+            drivers.push(
+                NodeDriver::new(
+                    peer,
+                    transport as Arc<dyn RaftTransport>,
+                    MemStateMachine::new(),
+                )
+                .expect("drain token minted once per peer"),
+            );
         }
         std::thread::sleep(Duration::from_millis(100));
         let _handles: Vec<_> = drivers
@@ -1906,11 +1909,14 @@ mod tests {
             }
             serve(&handle, id, addrs[i], transport.inbox_sender(), 42);
             let peer = Arc::new(RaftPeer::new(id, region, &ids).unwrap());
-            drivers.push(NodeDriver::new(
-                peer,
-                transport as Arc<dyn RaftTransport>,
-                MemStateMachine::new(),
-            ));
+            drivers.push(
+                NodeDriver::new(
+                    peer,
+                    transport as Arc<dyn RaftTransport>,
+                    MemStateMachine::new(),
+                )
+                .expect("drain token minted once per peer"),
+            );
         }
         // Give the listeners a beat to come up, then run production cadence.
         std::thread::sleep(Duration::from_millis(100));

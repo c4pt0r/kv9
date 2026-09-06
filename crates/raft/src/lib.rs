@@ -21,7 +21,11 @@ pub mod testing;
 pub mod transport;
 
 pub use command::{cf_code, cf_from_code, Command, FencedInner, KvOp, RegionFence};
-pub use rawnode::{InProcessCluster, ProposedAt, RaftPeer};
+#[cfg(any(test, feature = "testing"))]
+pub use rawnode::HarnessPump;
+#[cfg(any(test, feature = "testing"))]
+pub use rawnode::InProcessCluster;
+pub use rawnode::{DrainToken, ProposedAt, RaftPeer};
 pub use state_machine::{
     drive_apply, ApplyResult, FenceAdjudicator, MemStateMachine, StateMachine,
 };
@@ -120,15 +124,19 @@ pub trait RaftGroup: Send + Sync {
 /// unrepresentable rather than review-banned; landing this split retires
 /// that temporary review constraint.
 ///
-/// Production wiring gives this face to exactly one holder: `NodeDriver`'s
-/// pump. Single-node test harnesses hold `SingleNodeRaft` concretely and
-/// pump through the same trait.
+/// In production builds exactly one value implements this trait per group:
+/// the [`DrainToken`] minted (at most once — typed refusal on the second
+/// mint) inside `NodeDriver::new` and never exposed. The peer handed out by
+/// `NodeDriver::peer()` does NOT implement this trait, and the harness types
+/// that do (`SingleNodeRaft`, `HarnessPump`) carry the impl only under
+/// `cfg(any(test, feature = "testing"))`.
 ///
 /// # Resident guards — measured, not assumed, in both directions
 ///
-/// A holder of the propose face cannot drain. This probe must fail to
-/// compile, and stays here so re-adding `take_ready` to `RaftGroup` turns
-/// the doc test red:
+/// A holder of the propose face cannot drain. Each probe must fail to
+/// compile and stays here so re-opening the route turns the doc test red.
+///
+/// The trait-object route (re-adding `take_ready` to `RaftGroup` fires it):
 ///
 /// ```compile_fail,E0599
 /// fn probe(g: &dyn kv9_raft::RaftGroup) {
@@ -136,13 +144,37 @@ pub trait RaftGroup: Send + Sync {
 /// }
 /// ```
 ///
-/// Green twin — the identical call against this face compiles, pinning the
-/// red probe to "capability absent from `RaftGroup`" rather than a typo,
-/// missing import, or wrong receiver:
+/// The concrete-peer route — the near bypass: production code holds
+/// `NodeDriver::peer()`'s `Arc<RaftPeer>` legitimately, so a public
+/// `impl ReadyConsume for RaftPeer` (fires this probe) would hand every
+/// such holder the drain:
+///
+/// ```compile_fail,E0599
+/// fn probe(p: &std::sync::Arc<kv9_raft::RaftPeer>) {
+///     use kv9_raft::ReadyConsume;
+///     let _ = p.take_ready();
+/// }
+/// ```
+///
+/// The harness-drain routes (`SingleNodeRaft`'s impl, `HarnessPump`,
+/// `InProcessCluster`) are `cfg(any(test, feature = "testing"))`. A doc
+/// test cannot observe their absence: workspace test runs unify the
+/// `testing` feature on (kv9-server's dev-deps), so a `compile_fail` probe
+/// against them is green in production builds but red under `cargo test`
+/// — an unfireable guard, worse than none. Their enforcement is the
+/// production build itself: any production caller of a gated item fails
+/// `cargo check`. What no build guards is the GATE's presence — removing
+/// the `cfg` breaks nothing until a caller appears; that boundary is
+/// recorded here rather than papered over with a probe that cannot fire.
+///
+/// Green twin — the identical call against the minted drain token compiles,
+/// pinning the red probes to "capability absent from that face" rather than
+/// a typo, missing import, or wrong receiver:
 ///
 /// ```
-/// fn probe(c: &dyn kv9_raft::ReadyConsume) {
-///     let _ = c.take_ready();
+/// fn probe(t: &kv9_raft::DrainToken) {
+///     use kv9_raft::ReadyConsume;
+///     let _ = t.take_ready();
 /// }
 /// ```
 pub trait ReadyConsume: Send + Sync {
@@ -218,6 +250,11 @@ impl RaftGroup for SingleNodeRaft {
     }
 }
 
+/// Harness-only (task #5): production wiring hands `SingleNodeRaft` out as
+/// `Arc<dyn RaftGroup>` — the propose face — and a bare `Node`/`MetaRaft`
+/// must NOT be able to drain it. Test builds pump it through the same trait
+/// the driver's `DrainToken` implements.
+#[cfg(any(test, feature = "testing"))]
 impl ReadyConsume for SingleNodeRaft {
     fn take_ready(&self) -> Result<Vec<CommittedEntry>> {
         let mut log = self.log.lock().expect("raft log poisoned");

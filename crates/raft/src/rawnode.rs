@@ -114,16 +114,20 @@ fn role_of(state: StateRole) -> Role {
 }
 
 /// One member of a raft-rs group on one node, driven by an external pump
-/// ([`InProcessCluster::round`] in Phase-1 tests/harness).
+/// (the `NodeDriver` in production; `InProcessCluster::round` in tests).
 pub struct RaftPeer<S: PersistentRaftStorage = MemStorage> {
     node: NodeId,
     region: RegionId,
     inner: Mutex<PeerInner<S>>,
+    /// Whether THE [`DrainToken`] for this peer has been minted (task #5).
+    /// Set once, never cleared: the drain capability is issued at most once
+    /// per peer for the life of the process.
+    drain_minted: std::sync::atomic::AtomicBool,
 }
 
 struct PeerInner<S: PersistentRaftStorage> {
     raw: RawNode<S>,
-    /// Committed, non-empty entries not yet drained by [`RaftGroup::take_ready`].
+    /// Committed, non-empty entries not yet drained via [`DrainToken`].
     ready: Vec<CommittedEntry>,
     /// Outgoing raft messages awaiting delivery by the cluster pump.
     outbox: Vec<Message>,
@@ -231,6 +235,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         Ok(RaftPeer {
             node,
             region,
+            drain_minted: std::sync::atomic::AtomicBool::new(false),
             inner: Mutex::new(PeerInner {
                 raw,
                 ready: Vec::new(),
@@ -581,20 +586,108 @@ impl<S: PersistentRaftStorage> RaftGroup for RaftPeer<S> {
     }
 }
 
-impl<S: PersistentRaftStorage> crate::ReadyConsume for RaftPeer<S> {
-    fn take_ready(&self) -> Result<Vec<CommittedEntry>> {
+impl<S: PersistentRaftStorage> RaftPeer<S> {
+    /// Crate-internal drain. `RaftPeer` deliberately does NOT implement
+    /// [`crate::ReadyConsume`]: the peer is public and `Arc`-shared
+    /// (`NodeDriver::peer()`, harness accessors), so a public impl here would
+    /// hand the destructive drain to every holder — the exact second-consumer
+    /// hole task #5 closes. The one public consume face over a peer is
+    /// [`DrainToken`], minted at most once.
+    pub(crate) fn drain_ready(&self) -> Result<Vec<CommittedEntry>> {
         Ok(std::mem::take(&mut self.lock().ready))
     }
+}
+
+/// THE drain capability over one [`RaftPeer`] (task #5).
+///
+/// Minted at most once per peer for the life of the process — a second mint
+/// is a typed refusal, so a second production Ready consumer cannot be wired
+/// even on purpose. Deliberately neither `Clone` nor `Copy` (measured below):
+/// duplicating the token would be duplicating the drain.
+///
+/// Production wiring: `NodeDriver::new` mints this token and never exposes
+/// it; `NodeDriver::peer()` keeps handing out the peer, which can propose
+/// and observe but not drain.
+///
+/// The wholesale-peer-accessor route (`InProcessCluster::peers()`) is gated
+/// out of production builds with the other harness types; see the guard
+/// boundary note on [`crate::ReadyConsume`] for why that gate has no
+/// doc-test probe (feature unification makes one unfireable).
+pub struct DrainToken<S: PersistentRaftStorage = MemStorage> {
+    peer: Arc<RaftPeer<S>>,
+}
+
+impl<S: PersistentRaftStorage> DrainToken<S> {
+    /// Mint the single drain token for `peer`.
+    pub fn mint(peer: &Arc<RaftPeer<S>>) -> Result<DrainToken<S>> {
+        use std::sync::atomic::Ordering;
+        if peer
+            .drain_minted
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+            .is_err()
+        {
+            return Err(Error::Raft(format!(
+                "drain token already minted for peer {} region {} — one Ready \
+                 consumer per group (task #5); pump through the existing driver",
+                peer.node.0, peer.region.0
+            )));
+        }
+        Ok(DrainToken { peer: peer.clone() })
+    }
+}
+
+impl<S: PersistentRaftStorage> crate::ReadyConsume for DrainToken<S> {
+    fn take_ready(&self) -> Result<Vec<CommittedEntry>> {
+        self.peer.drain_ready()
+    }
+}
+
+/// Harness-only pump wrapper (task #5): deterministic test drivers hold many
+/// peers and pump each in lockstep, which the once-minted [`DrainToken`]
+/// deliberately does not allow twice over one peer across harness rebuilds.
+/// Gated so production code never regains "any peer holder can drain".
+#[cfg(any(test, feature = "testing"))]
+pub struct HarnessPump<'a, S: PersistentRaftStorage = MemStorage>(pub &'a RaftPeer<S>);
+
+#[cfg(any(test, feature = "testing"))]
+impl<S: PersistentRaftStorage> crate::ReadyConsume for HarnessPump<'_, S> {
+    fn take_ready(&self) -> Result<Vec<CommittedEntry>> {
+        self.0.drain_ready()
+    }
+}
+
+impl DrainToken<MemStorage> {
+    /// Compile-time guard (E0080 pattern shared with `ReadBarrier`): adding
+    /// `Clone` or `Copy` back turns this into a build error, not a silently
+    /// duplicable drain. Verified in both directions when introduced.
+    #[allow(dead_code)]
+    const NOT_CLONE_OR_COPY: () = {
+        struct Probe<T>(core::marker::PhantomData<T>);
+        trait Fallback {
+            const CHECK: () = ();
+        }
+        impl<T> Fallback for Probe<T> {}
+        impl<T: Clone> Probe<T> {
+            const CHECK: () = panic!("DrainToken must be neither Clone nor Copy");
+        }
+        Probe::<DrainToken>::CHECK
+    };
 }
 
 /// A deterministic in-process cluster of [`RaftPeer`]s for one region: explicit
 /// `round()` pumping (tick → process readies → deliver messages), no threads, no
 /// timers, no sleeps — the shape the Phase-1 acceptance harness drives.
+///
+/// Gated out of production builds (task #5): its `peers()`/`peer()` accessors
+/// hand out `Arc<RaftPeer>`s wholesale, which is harness ergonomics — not a
+/// capability production code should be able to reach.
+#[cfg(any(test, feature = "testing"))]
 pub struct InProcessCluster {
     region: RegionId,
     peers: Vec<Arc<RaftPeer<MemStorage>>>,
 }
 
+#[cfg(any(test, feature = "testing"))]
 impl InProcessCluster {
     pub fn new(region: RegionId, voters: &[NodeId]) -> Result<InProcessCluster> {
         let peers = voters
@@ -739,6 +832,23 @@ mod tests {
     const N2: NodeId = NodeId(2);
     const N3: NodeId = NodeId(3);
 
+    /// Task #5: the drain capability is minted at most once per peer — the
+    /// second mint is a typed refusal, not a second consumer.
+    #[test]
+    fn drain_token_mints_exactly_once_per_peer() {
+        let peer = Arc::new(RaftPeer::new(N1, R, &[N1]).unwrap());
+        let _token = DrainToken::mint(&peer).expect("first mint is THE drain");
+        let second = DrainToken::mint(&peer);
+        match second {
+            Err(Error::Raft(msg)) => assert!(
+                msg.contains("already minted"),
+                "refusal must name the cause, got: {msg}"
+            ),
+            Ok(_) => panic!("second mint must refuse, got a second drain token"),
+            Err(other) => panic!("refusal must be Error::Raft, got: {other:?}"),
+        }
+    }
+
     fn put(key: &[u8], value: &[u8]) -> Vec<u8> {
         Command::Put {
             cf: 0,
@@ -757,7 +867,7 @@ mod tests {
     fn drive(cluster: &InProcessCluster, sms: &mut [MemStateMachine]) {
         cluster.round();
         for (p, sm) in cluster.peers().iter().zip(sms.iter_mut()) {
-            drive_apply(p.as_ref(), sm).expect("apply failed in test drive");
+            drive_apply(&HarnessPump(p.as_ref()), sm).expect("apply failed in test drive");
         }
     }
 

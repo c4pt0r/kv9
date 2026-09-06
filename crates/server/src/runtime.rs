@@ -2224,7 +2224,7 @@ impl NodeRuntime {
             Some(factory) => factory(node.clone()),
             None => Arc::new(CatalogFenceAdjudicator::new(node.clone())),
         });
-        let driver = NodeDriver::new(peer, transport.clone(), state_machine);
+        let driver = NodeDriver::new(peer, transport.clone(), state_machine)?;
         let driver_thread = Some(driver.spawn(TICK));
         let status_path = data_dir.join("status");
 
@@ -3807,6 +3807,7 @@ mod tests {
                 Arc::new(hub.endpoint(id)) as Arc<dyn kv9_raft::transport::RaftTransport>,
                 MemStateMachine::new(),
             )
+            .expect("drain token minted once per peer")
         };
         let d1 = mk(NodeId(1));
         let d2 = mk(NodeId(2));
@@ -4018,7 +4019,8 @@ mod tests {
             peer,
             transport.clone(),
             MemStateMachine::with_engine(engine).unwrap(),
-        );
+        )
+        .expect("drain token minted once per peer");
         (
             RuntimeBackend {
                 node,
@@ -4658,7 +4660,8 @@ mod tests {
             peer,
             Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
             MemStateMachine::with_engine(wal).unwrap(),
-        );
+        )
+        .expect("drain token minted once per peer");
         let authenticator = ClusterAuthenticator {
             expected_token: Arc::from("secret"),
             voters: Arc::new([NodeId(1), NodeId(2)].into_iter().collect()),
@@ -4710,7 +4713,8 @@ mod tests {
             peer,
             Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
             MemStateMachine::with_engine(engine.clone()).unwrap(),
-        );
+        )
+        .expect("drain token minted once per peer");
         // A capability naming node 4, with a barrier far ahead of this
         // fresh driver's (empty) watermark: the window is OPEN.
         let catchup = Arc::new(std::sync::Mutex::new(Some(CatchupCapability {
@@ -5038,7 +5042,8 @@ mod tests {
             peer,
             Arc::new(endpoint) as Arc<dyn RaftTransport>,
             MemStateMachine::with_engine(engine.clone()).unwrap(),
-        );
+        )
+        .expect("drain token minted once per peer");
         driver.peer().campaign().unwrap();
         for _ in 0..50 {
             driver.tick_and_step().unwrap();
@@ -5702,7 +5707,8 @@ mod tests {
                     peer.clone(),
                     Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
                     MemStateMachine::with_engine(wal.clone()).unwrap(),
-                ),
+                )
+                .expect("drain token minted once per peer"),
                 peer,
                 wal,
             )
