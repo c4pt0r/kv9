@@ -711,7 +711,7 @@ mod tests {
         body.push(VERSION);
         body.push(cf_code(ColumnFamily::Default));
         body.extend_from_slice(&2u32.to_le_bytes());
-        for k in [b'b', b'a'] {
+        for k in *b"ba" {
             body.extend_from_slice(&1u32.to_le_bytes());
             body.push(k);
             body.extend_from_slice(&1u32.to_le_bytes());
