@@ -10,7 +10,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use kv9_engine::{Engine, MemEngine};
+use kv9_engine::MemEngine;
 use raft::storage::MemStorage;
 
 use kv9_common::{Error, NodeId, Result};
@@ -131,7 +131,7 @@ pub struct DriverAppliedPosition {
     pub index: u64,
 }
 
-pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngine> {
+pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStore = MemEngine> {
     peer: Arc<RaftPeer<S>>,
     /// THE consume face over `peer` (task #5): minted exactly once, held
     /// privately here for the life of the driver. `peer()` keeps handing out
@@ -199,7 +199,7 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngi
     stop: AtomicBool,
 }
 
-impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
+impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> {
     /// Wire a driver over `peer`. Mints THE drain token for the peer — a
     /// typed refusal if one was already minted: two drivers over one peer
     /// would be two destructive Ready consumers, the exact hole task #5
@@ -931,7 +931,7 @@ pub trait ManifestNode: Send + Sync {
     fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair>;
 }
 
-impl<S: PersistentRaftStorage, E: Engine + 'static> ManifestNode for NodeDriver<S, E> {
+impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for NodeDriver<S, E> {
     fn propose_command(&self, cmd: &Command) -> Result<ProposedAt> {
         self.propose(cmd)
     }
