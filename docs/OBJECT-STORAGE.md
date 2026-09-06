@@ -453,12 +453,18 @@ for the same reason `current == expected` answers nothing.
 > ```
 >
 > **Both directions fail together, not just the negative one.** While changes are add-only, a present
-> effect is *permanent* evidence — nothing can take it away, and only the change that added it could
-> have put it there. Once removal or replacement exists, presence degrades to a statement about the
-> instant it was observed: the reference may be removed afterwards, and a re-add means presence no
-> longer identifies *whose* change produced it. **So a breaker does not merely re-break absence; it
-> also demotes presence from proof to observation** — which is precisely why a durable
-> receipt/history ledger becomes a prerequisite rather than an optimisation at that point.
+> effect is *permanent* evidence: nothing can take it away, so what is observed satisfied stays
+> satisfied. **The query deliberately does not identify which change produced the effect, and does
+> not need to** — SSTs are content-addressed, so a later `ManifestChange` may legitimately reference
+> the same object, and a higher watermark may subsume the effect outright. That is exactly the
+> "satisfied *or subsumed*" this section asks for: what must be established is that the effect holds
+> now and cannot be revoked, **not its authorship**.
+>
+> Once removal or replacement exists, the second half is gone — presence degrades to a statement
+> about the instant it was observed, because the reference may be dropped afterwards. **So a breaker
+> does not merely re-break absence; it also demotes presence from proof to observation** — which is
+> precisely why a durable receipt/history ledger becomes a prerequisite rather than an optimisation
+> at that point.
 >
 > The third breaker is not hypothetical: meta-only `split`/`merge` attach is already listed as a
 > future consumer of this seam (§1, §10), its data half is "child references the parent's SSTs
