@@ -7,11 +7,14 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use kv9_common::{ApiType, Error, KeyspaceId, NodeId, RegionId, TenantId, TimeStamp, TxnGroupId};
+use kv9_common::{
+    ApiType, Error, KeyspaceId, NodeId, RegionId, TenantId, TimeStamp, TimelineId, TxnGroupId,
+};
 use kv9_region::RegionEpoch;
+use kv9_txn::{QualifiedKey, TimelineGeneration, TxnDescriptor, TxnId, TxnStatus};
 use tonic::{metadata::MetadataMap, service::Interceptor, Request, Response, Status};
 
-use crate::api::{AdminApi, RawApi, RequestContext, TxnApi};
+use crate::api::{AdminApi, RawApi, RequestContext, RequestOrigin, TxnApi};
 
 pub mod proto {
     tonic::include_proto!("kv9.v1");
@@ -640,8 +643,82 @@ fn request_context(
             conf_ver: epoch.conf_ver,
             version: epoch.version,
         },
-        caller: Some(auth.principal.to_string()),
+        origin: RequestOrigin::from_transport(auth.principal.clone()),
     })
+}
+
+fn qualified_key(key: Option<proto::QualifiedKey>) -> Result<QualifiedKey, Status> {
+    let key = key.ok_or_else(|| Status::invalid_argument("qualified key is required"))?;
+    if key.keyspace_id > KeyspaceId::MAX {
+        return Err(Status::invalid_argument("keyspace id exceeds 3-byte width"));
+    }
+    Ok(QualifiedKey {
+        keyspace: KeyspaceId(key.keyspace_id),
+        user_key: key.user_key,
+    })
+}
+
+fn transaction_descriptor(
+    transaction: Option<proto::TransactionDescriptor>,
+) -> Result<TxnDescriptor, Status> {
+    let transaction = transaction
+        .ok_or_else(|| Status::invalid_argument("transaction descriptor is required"))?;
+    if transaction.keyspace_id > KeyspaceId::MAX {
+        return Err(Status::invalid_argument("keyspace id exceeds 3-byte width"));
+    }
+    let id = transaction
+        .id
+        .ok_or_else(|| Status::invalid_argument("transaction id is required"))?;
+    let primary = qualified_key(transaction.primary)?;
+    let keyspace = KeyspaceId(transaction.keyspace_id);
+    if primary.keyspace != keyspace {
+        return Err(Status::invalid_argument(
+            "transaction and primary keyspace ids must match",
+        ));
+    }
+    Ok(TxnDescriptor {
+        keyspace,
+        id: TxnId {
+            txn_group: TxnGroupId(id.txn_group_id),
+            timeline: TimelineId(id.timeline_id),
+            timeline_generation: TimelineGeneration(id.timeline_generation),
+            start_ts: TimeStamp(id.start_ts),
+        },
+        primary,
+    })
+}
+
+fn transaction_message(transaction: TxnDescriptor) -> proto::TransactionDescriptor {
+    proto::TransactionDescriptor {
+        keyspace_id: transaction.keyspace.0,
+        id: Some(proto::TransactionId {
+            txn_group_id: transaction.id.txn_group.0,
+            timeline_id: transaction.id.timeline.0,
+            timeline_generation: transaction.id.timeline_generation.0,
+            start_ts: transaction.id.start_ts.0,
+        }),
+        primary: Some(proto::QualifiedKey {
+            keyspace_id: transaction.primary.keyspace.0,
+            user_key: transaction.primary.user_key,
+        }),
+    }
+}
+
+fn txn_status_response(status: TxnStatus) -> proto::KvCheckTxnStatusResponse {
+    let decision = match status {
+        TxnStatus::Locked => {
+            proto::kv_check_txn_status_response::Decision::Locked(proto::TxnLocked {})
+        }
+        TxnStatus::Committed { commit_ts } => {
+            proto::kv_check_txn_status_response::Decision::CommittedTs(commit_ts.0)
+        }
+        TxnStatus::RolledBack => {
+            proto::kv_check_txn_status_response::Decision::RolledBack(proto::TxnRolledBack {})
+        }
+    };
+    proto::KvCheckTxnStatusResponse {
+        decision: Some(decision),
+    }
 }
 
 fn nonzero_limit(limit: u32) -> Result<usize, Status> {
@@ -946,6 +1023,23 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             .map(Response::new)
     }
 
+    async fn kv_begin(
+        &self,
+        request: Request<proto::KvBeginRequest>,
+    ) -> Result<Response<proto::KvBeginResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let request = request.into_inner();
+        let context = request_context(request.context, &auth)?;
+        let primary = qualified_key(request.primary)?;
+        let transaction = self
+            .backend
+            .call(move |backend| backend.kv_begin(&context, primary))
+            .await?;
+        Ok(Response::new(proto::KvBeginResponse {
+            transaction: Some(transaction_message(transaction)),
+        }))
+    }
+
     async fn kv_get(
         &self,
         request: Request<proto::KvGetRequest>,
@@ -953,11 +1047,10 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
+        let transaction = transaction_descriptor(request.transaction)?;
         let value = self
             .backend
-            .call(move |backend| {
-                backend.kv_get(&context, &request.key, TimeStamp(request.start_ts))
-            })
+            .call(move |backend| backend.kv_get(&context, &request.key, &transaction))
             .await?;
         Ok(Response::new(proto::KvGetResponse {
             value: Some(optional_value(value)),
@@ -971,11 +1064,10 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
+        let transaction = transaction_descriptor(request.transaction)?;
         let values = self
             .backend
-            .call(move |backend| {
-                backend.kv_batch_get(&context, &request.keys, TimeStamp(request.start_ts))
-            })
+            .call(move |backend| backend.kv_batch_get(&context, &request.keys, &transaction))
             .await?;
         Ok(Response::new(proto::KvBatchGetResponse {
             values: values.into_iter().map(optional_value).collect(),
@@ -990,16 +1082,11 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let limit = nonzero_limit(request.limit)?;
+        let transaction = transaction_descriptor(request.transaction)?;
         let pairs = self
             .backend
             .call(move |backend| {
-                backend.kv_scan(
-                    &context,
-                    &request.start,
-                    &request.end,
-                    limit,
-                    TimeStamp(request.start_ts),
-                )
+                backend.kv_scan(&context, &request.start, &request.end, limit, &transaction)
             })
             .await?;
         Ok(Response::new(scan_response(pairs)))
@@ -1012,6 +1099,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
+        let transaction = transaction_descriptor(request.transaction)?;
         let mutations = request
             .mutations
             .into_iter()
@@ -1029,14 +1117,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             })
             .collect::<Result<Vec<_>, Status>>()?;
         self.backend
-            .call(move |backend| {
-                backend.kv_prewrite(
-                    &context,
-                    &mutations,
-                    &request.primary,
-                    TimeStamp(request.start_ts),
-                )
-            })
+            .call(move |backend| backend.kv_prewrite(&context, &mutations, &transaction))
             .await?;
         Ok(Response::new(proto::Empty {}))
     }
@@ -1048,15 +1129,9 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
+        let transaction = transaction_descriptor(request.transaction)?;
         self.backend
-            .call(move |backend| {
-                backend.kv_commit(
-                    &context,
-                    &request.keys,
-                    TimeStamp(request.start_ts),
-                    TimeStamp(request.commit_ts),
-                )
-            })
+            .call(move |backend| backend.kv_commit(&context, &request.keys, &transaction))
             .await?;
         Ok(Response::new(proto::Empty {}))
     }
@@ -1068,10 +1143,9 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
+        let transaction = transaction_descriptor(request.transaction)?;
         self.backend
-            .call(move |backend| {
-                backend.kv_pessimistic_lock(&context, &request.keys, TimeStamp(request.start_ts))
-            })
+            .call(move |backend| backend.kv_pessimistic_lock(&context, &request.keys, &transaction))
             .await?;
         Ok(Response::new(proto::Empty {}))
     }
@@ -1083,13 +1157,10 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
+        let transaction = transaction_descriptor(request.transaction)?;
         self.backend
             .call(move |backend| {
-                backend.kv_pessimistic_rollback(
-                    &context,
-                    &request.keys,
-                    TimeStamp(request.start_ts),
-                )
+                backend.kv_pessimistic_rollback(&context, &request.keys, &transaction)
             })
             .await?;
         Ok(Response::new(proto::Empty {}))
@@ -1102,14 +1173,9 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
+        let transaction = transaction_descriptor(request.transaction)?;
         self.backend
-            .call(move |backend| {
-                backend.kv_resolve_lock(
-                    &context,
-                    TimeStamp(request.start_ts),
-                    request.commit_ts.map(TimeStamp),
-                )
-            })
+            .call(move |backend| backend.kv_resolve_lock(&context, &transaction))
             .await?;
         Ok(Response::new(proto::Empty {}))
     }
@@ -1121,10 +1187,9 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
+        let transaction = transaction_descriptor(request.transaction)?;
         self.backend
-            .call(move |backend| {
-                backend.kv_cleanup(&context, &request.key, TimeStamp(request.start_ts))
-            })
+            .call(move |backend| backend.kv_cleanup(&context, &request.key, &transaction))
             .await?;
         Ok(Response::new(proto::Empty {}))
     }
@@ -1132,16 +1197,16 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
     async fn kv_check_txn_status(
         &self,
         request: Request<proto::KvCheckTxnStatusRequest>,
-    ) -> Result<Response<proto::Empty>, Status> {
+    ) -> Result<Response<proto::KvCheckTxnStatusResponse>, Status> {
         let auth = auth_context(&request)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
-        self.backend
-            .call(move |backend| {
-                backend.kv_check_txn_status(&context, &request.primary, TimeStamp(request.lock_ts))
-            })
+        let transaction = transaction_descriptor(request.transaction)?;
+        let status = self
+            .backend
+            .call(move |backend| backend.kv_check_txn_status(&context, &transaction))
             .await?;
-        Ok(Response::new(proto::Empty {}))
+        Ok(Response::new(txn_status_response(status)))
     }
 
     async fn create_keyspace(
@@ -1327,7 +1392,7 @@ mod tests {
             self.callers
                 .lock()
                 .unwrap()
-                .push(ctx.caller.clone().unwrap());
+                .push(ctx.origin.label().to_owned());
             Ok(None)
         }
         fn raw_batch_get(&self, _: &RequestContext, _: &[UserKey]) -> Result<Vec<Option<Value>>> {
@@ -1371,14 +1436,17 @@ mod tests {
     }
 
     impl TxnApi for FakeBackend {
-        fn kv_get(&self, _: &RequestContext, _: &[u8], _: TimeStamp) -> Result<Option<Value>> {
+        fn kv_begin(&self, _: &RequestContext, _: QualifiedKey) -> Result<TxnDescriptor> {
+            Err(Error::NotImplemented("kv_begin"))
+        }
+        fn kv_get(&self, _: &RequestContext, _: &[u8], _: &TxnDescriptor) -> Result<Option<Value>> {
             Err(Error::NotImplemented("kv_get"))
         }
         fn kv_batch_get(
             &self,
             _: &RequestContext,
             _: &[UserKey],
-            _: TimeStamp,
+            _: &TxnDescriptor,
         ) -> Result<Vec<Option<Value>>> {
             Err(Error::NotImplemented("kv_batch_get"))
         }
@@ -1388,7 +1456,7 @@ mod tests {
             _: &[u8],
             _: &[u8],
             _: usize,
-            _: TimeStamp,
+            _: &TxnDescriptor,
         ) -> Result<Vec<(UserKey, Value)>> {
             Err(Error::NotImplemented("kv_scan"))
         }
@@ -1396,25 +1464,18 @@ mod tests {
             &self,
             _: &RequestContext,
             _: &[(UserKey, Option<Value>)],
-            _: &[u8],
-            _: TimeStamp,
+            _: &TxnDescriptor,
         ) -> Result<()> {
             Err(Error::NotImplemented("kv_prewrite"))
         }
-        fn kv_commit(
-            &self,
-            _: &RequestContext,
-            _: &[UserKey],
-            _: TimeStamp,
-            _: TimeStamp,
-        ) -> Result<()> {
+        fn kv_commit(&self, _: &RequestContext, _: &[UserKey], _: &TxnDescriptor) -> Result<()> {
             Err(Error::NotImplemented("kv_commit"))
         }
         fn kv_pessimistic_lock(
             &self,
             _: &RequestContext,
             _: &[UserKey],
-            _: TimeStamp,
+            _: &TxnDescriptor,
         ) -> Result<()> {
             Err(Error::NotImplemented("kv_pessimistic_lock"))
         }
@@ -1422,22 +1483,17 @@ mod tests {
             &self,
             _: &RequestContext,
             _: &[UserKey],
-            _: TimeStamp,
+            _: &TxnDescriptor,
         ) -> Result<()> {
             Err(Error::NotImplemented("kv_pessimistic_rollback"))
         }
-        fn kv_resolve_lock(
-            &self,
-            _: &RequestContext,
-            _: TimeStamp,
-            _: Option<TimeStamp>,
-        ) -> Result<()> {
+        fn kv_resolve_lock(&self, _: &RequestContext, _: &TxnDescriptor) -> Result<()> {
             Err(Error::NotImplemented("kv_resolve_lock"))
         }
-        fn kv_cleanup(&self, _: &RequestContext, _: &[u8], _: TimeStamp) -> Result<()> {
+        fn kv_cleanup(&self, _: &RequestContext, _: &[u8], _: &TxnDescriptor) -> Result<()> {
             Err(Error::NotImplemented("kv_cleanup"))
         }
-        fn kv_check_txn_status(&self, _: &RequestContext, _: &[u8], _: TimeStamp) -> Result<()> {
+        fn kv_check_txn_status(&self, _: &RequestContext, _: &TxnDescriptor) -> Result<TxnStatus> {
             Err(Error::NotImplemented("kv_check_txn_status"))
         }
     }
@@ -1490,6 +1546,95 @@ mod tests {
             auth_kind: AuthKind::Client,
         });
         request
+    }
+
+    fn transaction_descriptor_message() -> proto::TransactionDescriptor {
+        proto::TransactionDescriptor {
+            keyspace_id: 7,
+            id: Some(proto::TransactionId {
+                txn_group_id: 11,
+                timeline_id: 13,
+                timeline_generation: 17,
+                start_ts: 19,
+            }),
+            primary: Some(proto::QualifiedKey {
+                keyspace_id: 7,
+                user_key: b"primary".to_vec(),
+            }),
+        }
+    }
+
+    #[test]
+    fn transaction_descriptor_conversion_preserves_every_identity_coordinate() {
+        let decoded = transaction_descriptor(Some(transaction_descriptor_message())).unwrap();
+        assert_eq!(decoded.keyspace, KeyspaceId(7));
+        assert_eq!(decoded.id.txn_group, TxnGroupId(11));
+        assert_eq!(decoded.id.timeline, TimelineId(13));
+        assert_eq!(decoded.id.timeline_generation, TimelineGeneration(17));
+        assert_eq!(decoded.id.start_ts, TimeStamp(19));
+        assert_eq!(decoded.primary.keyspace, KeyspaceId(7));
+        assert_eq!(decoded.primary.user_key, b"primary");
+
+        assert_eq!(
+            transaction_message(decoded),
+            transaction_descriptor_message()
+        );
+    }
+
+    #[test]
+    fn transaction_descriptor_rejects_missing_or_mismatched_qualified_identity() {
+        assert_eq!(
+            transaction_descriptor(None).unwrap_err().code(),
+            Code::InvalidArgument
+        );
+
+        let mut missing_id = transaction_descriptor_message();
+        missing_id.id = None;
+        assert_eq!(
+            transaction_descriptor(Some(missing_id))
+                .unwrap_err()
+                .message(),
+            "transaction id is required"
+        );
+
+        let mut mismatched = transaction_descriptor_message();
+        mismatched.primary.as_mut().unwrap().keyspace_id = 8;
+        assert_eq!(
+            transaction_descriptor(Some(mismatched))
+                .unwrap_err()
+                .message(),
+            "transaction and primary keyspace ids must match"
+        );
+
+        let mut oversized = transaction_descriptor_message();
+        oversized.primary.as_mut().unwrap().keyspace_id = KeyspaceId::MAX + 1;
+        assert_eq!(
+            transaction_descriptor(Some(oversized))
+                .unwrap_err()
+                .message(),
+            "keyspace id exceeds 3-byte width"
+        );
+    }
+
+    #[test]
+    fn transaction_status_has_three_explicit_wire_decisions() {
+        use proto::kv_check_txn_status_response::Decision;
+
+        assert_eq!(
+            txn_status_response(TxnStatus::Locked).decision,
+            Some(Decision::Locked(proto::TxnLocked {}))
+        );
+        assert_eq!(
+            txn_status_response(TxnStatus::Committed {
+                commit_ts: TimeStamp(23),
+            })
+            .decision,
+            Some(Decision::CommittedTs(23))
+        );
+        assert_eq!(
+            txn_status_response(TxnStatus::RolledBack).decision,
+            Some(Decision::RolledBack(proto::TxnRolledBack {}))
+        );
     }
 
     #[tokio::test]

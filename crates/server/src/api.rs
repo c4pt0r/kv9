@@ -5,32 +5,53 @@
 //! carries `(keyspace_id, region_epoch)` so the router can resolve keyspace→region,
 //! epoch-check, and validate the API type against the keyspace declaration.
 
-use kv9_common::{KeyspaceId, Result, TimeStamp, UserKey, Value};
+use std::sync::Arc;
+
+use kv9_common::{KeyspaceId, Result, UserKey, Value};
 use kv9_region::RegionEpoch;
+use kv9_txn::{QualifiedKey, TxnDescriptor, TxnStatus};
+
+/// Transport-established origin label for a request.
+///
+/// This is deliberately not named `Principal`: preserving the current interceptor-derived
+/// label does not add TLS, tenant ACLs, or a tenant-isolation security claim.  Its private
+/// representation prevents request-body decoding from constructing the label directly.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RequestOrigin(Arc<str>);
+
+impl RequestOrigin {
+    pub(crate) fn from_transport(label: impl Into<Arc<str>>) -> Self {
+        Self(label.into())
+    }
+
+    pub fn label(&self) -> &str {
+        &self.0
+    }
+}
 
 /// Context threaded on every data request (DESIGN §11).
 #[derive(Debug, Clone)]
 pub struct RequestContext {
     pub keyspace: KeyspaceId,
     pub region_epoch: RegionEpoch,
-    /// Authenticated caller identity (auth is in scope from day one — DESIGN §11,
-    /// §13 principle 9).
-    pub caller: Option<String>,
+    /// Transport-derived label. It is not authentication or authorization.
+    pub origin: RequestOrigin,
 }
 
 /// The transactional API for `txn` keyspaces (DESIGN §11 Txn surface).
 pub trait TxnApi {
+    fn kv_begin(&self, ctx: &RequestContext, primary: QualifiedKey) -> Result<TxnDescriptor>;
     fn kv_get(
         &self,
         ctx: &RequestContext,
         key: &[u8],
-        start_ts: TimeStamp,
+        transaction: &TxnDescriptor,
     ) -> Result<Option<Value>>;
     fn kv_batch_get(
         &self,
         ctx: &RequestContext,
         keys: &[UserKey],
-        start_ts: TimeStamp,
+        transaction: &TxnDescriptor,
     ) -> Result<Vec<Option<Value>>>;
     fn kv_scan(
         &self,
@@ -38,47 +59,44 @@ pub trait TxnApi {
         start: &[u8],
         end: &[u8],
         limit: usize,
-        start_ts: TimeStamp,
+        transaction: &TxnDescriptor,
     ) -> Result<Vec<(UserKey, Value)>>;
     fn kv_prewrite(
         &self,
         ctx: &RequestContext,
         mutations: &[(UserKey, Option<Value>)],
-        primary: &[u8],
-        start_ts: TimeStamp,
+        transaction: &TxnDescriptor,
     ) -> Result<()>;
     fn kv_commit(
         &self,
         ctx: &RequestContext,
         keys: &[UserKey],
-        start_ts: TimeStamp,
-        commit_ts: TimeStamp,
+        transaction: &TxnDescriptor,
     ) -> Result<()>;
     fn kv_pessimistic_lock(
         &self,
         ctx: &RequestContext,
         keys: &[UserKey],
-        start_ts: TimeStamp,
+        transaction: &TxnDescriptor,
     ) -> Result<()>;
     fn kv_pessimistic_rollback(
         &self,
         ctx: &RequestContext,
         keys: &[UserKey],
-        start_ts: TimeStamp,
+        transaction: &TxnDescriptor,
     ) -> Result<()>;
-    fn kv_resolve_lock(
+    fn kv_resolve_lock(&self, ctx: &RequestContext, transaction: &TxnDescriptor) -> Result<()>;
+    fn kv_cleanup(
         &self,
         ctx: &RequestContext,
-        start_ts: TimeStamp,
-        commit_ts: Option<TimeStamp>,
+        key: &[u8],
+        transaction: &TxnDescriptor,
     ) -> Result<()>;
-    fn kv_cleanup(&self, ctx: &RequestContext, key: &[u8], start_ts: TimeStamp) -> Result<()>;
     fn kv_check_txn_status(
         &self,
         ctx: &RequestContext,
-        primary: &[u8],
-        lock_ts: TimeStamp,
-    ) -> Result<()>;
+        transaction: &TxnDescriptor,
+    ) -> Result<TxnStatus>;
 }
 
 /// The raw API for `raw` keyspaces (DESIGN §11 Raw surface).

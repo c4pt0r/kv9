@@ -15,6 +15,7 @@ service Kv9 {
   rpc RawDeleteRange(RawDeleteRangeRequest) returns (RawDeleteRangeResponse);
 
   // Snapshot-Isolation transactions.
+  rpc KvBegin(KvBeginRequest) returns (KvBeginResponse);
   rpc KvGet(KvGetRequest) returns (KvGetResponse);
   rpc KvBatchGet(KvBatchGetRequest) returns (KvBatchGetResponse);
   rpc KvScan(KvScanRequest) returns (ScanResponse);
@@ -24,7 +25,7 @@ service Kv9 {
   rpc KvPessimisticRollback(KvPessimisticRollbackRequest) returns (Empty);
   rpc KvResolveLock(KvResolveLockRequest) returns (Empty);
   rpc KvCleanup(KvCleanupRequest) returns (Empty);
-  rpc KvCheckTxnStatus(KvCheckTxnStatusRequest) returns (Empty);
+  rpc KvCheckTxnStatus(KvCheckTxnStatusRequest) returns (KvCheckTxnStatusResponse);
 
   // Metadata / administration.
   rpc CreateKeyspace(CreateKeyspaceRequest) returns (CreateKeyspaceResponse);
@@ -150,10 +151,37 @@ message RawDeleteRangeRequest {
   bytes end = 3;
 }
 
+message TransactionId {
+  uint64 txn_group_id = 1;
+  uint64 timeline_id = 2;
+  uint64 timeline_generation = 3;
+  uint64 start_ts = 4;
+}
+
+message QualifiedKey {
+  uint32 keyspace_id = 1;
+  bytes user_key = 2;
+}
+
+message TransactionDescriptor {
+  uint32 keyspace_id = 1;
+  TransactionId id = 2;
+  QualifiedKey primary = 3;
+}
+
+message KvBeginRequest {
+  RequestContext context = 1;
+  QualifiedKey primary = 2;
+}
+
+message KvBeginResponse {
+  TransactionDescriptor transaction = 1;
+}
+
 message KvGetRequest {
   RequestContext context = 1;
   bytes key = 2;
-  uint64 start_ts = 3;
+  TransactionDescriptor transaction = 3;
 }
 
 message KvGetResponse {
@@ -163,7 +191,7 @@ message KvGetResponse {
 message KvBatchGetRequest {
   RequestContext context = 1;
   repeated bytes keys = 2;
-  uint64 start_ts = 3;
+  TransactionDescriptor transaction = 3;
 }
 
 message KvBatchGetResponse {
@@ -176,7 +204,7 @@ message KvScanRequest {
   bytes start = 2;
   bytes end = 3;
   uint32 limit = 4;
-  uint64 start_ts = 5;
+  TransactionDescriptor transaction = 5;
 }
 
 message Mutation {
@@ -190,46 +218,54 @@ message Mutation {
 message KvPrewriteRequest {
   RequestContext context = 1;
   repeated Mutation mutations = 2;
-  bytes primary = 3;
-  uint64 start_ts = 4;
+  TransactionDescriptor transaction = 3;
 }
 
 message KvCommitRequest {
   RequestContext context = 1;
   repeated bytes keys = 2;
-  uint64 start_ts = 3;
-  uint64 commit_ts = 4;
+  TransactionDescriptor transaction = 3;
 }
 
 message KvPessimisticLockRequest {
   RequestContext context = 1;
   repeated bytes keys = 2;
-  uint64 start_ts = 3;
+  TransactionDescriptor transaction = 3;
 }
 
 message KvPessimisticRollbackRequest {
   RequestContext context = 1;
   repeated bytes keys = 2;
-  uint64 start_ts = 3;
+  TransactionDescriptor transaction = 3;
 }
 
 message KvResolveLockRequest {
   RequestContext context = 1;
-  uint64 start_ts = 2;
-  optional uint64 commit_ts = 3;
+  TransactionDescriptor transaction = 2;
 }
 
 message KvCleanupRequest {
   RequestContext context = 1;
   bytes key = 2;
-  uint64 start_ts = 3;
+  TransactionDescriptor transaction = 3;
 }
 
 message KvCheckTxnStatusRequest {
   RequestContext context = 1;
-  bytes primary = 2;
-  uint64 lock_ts = 3;
+  TransactionDescriptor transaction = 2;
 }
+
+message KvCheckTxnStatusResponse {
+  oneof decision {
+    TxnLocked locked = 1;
+    uint64 committed_ts = 2;
+    TxnRolledBack rolled_back = 3;
+  }
+}
+
+message TxnLocked {}
+
+message TxnRolledBack {}
 
 enum ApiType {
   API_TYPE_UNSPECIFIED = 0;
