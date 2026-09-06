@@ -6,6 +6,8 @@
 
 Status: **v0 design + skeleton milestone.** This document defines the architecture and the crate layout the
 skeleton implements. It is the source of truth for module boundaries. Diagrams: `docs/ARCHITECTURE.md`.
+Delivery order and phase boundaries: `docs/ROADMAP.md` (authoritative; §15 below is the milestone sketch).
+Object-storage path contract: `docs/OBJECT-STORAGE.md`.
 
 ---
 

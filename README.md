@@ -6,7 +6,8 @@ source of truth**.
 
 > Status: **v0 — design + compilable skeleton.** APIs and internals are not stable. This repo currently contains the
 > design, the architecture diagrams, and a Rust workspace skeleton with real module boundaries (method bodies are
-> stubs). See the milestones in [`DESIGN.md`](DESIGN.md#15-milestones).
+> stubs). See the milestones in [`DESIGN.md`](DESIGN.md#15-milestones) and the phase plan in
+> [`docs/ROADMAP.md`](docs/ROADMAP.md), which is the authoritative delivery order.
 
 ## Why kv9
 
