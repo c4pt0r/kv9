@@ -408,47 +408,64 @@ own atomic state positively asserts that a different change won the sole predece
 conclusion follows by deduction from that assertion. A typed refusal receipt is *one* form of
 authoritative proof, not the only one.
 
-**Three preconditions, all required, and none of them optional prose:**
+**Four orthogonal preconditions. All required; none is prose.**
 
 ```
-1  (generation, last_change_id) are read from ONE atomic snapshot
-   a torn read invalidates the whole algebra
+P1  ATOMIC READ.  (generation, last_change_id) come from ONE snapshot of applied state.
 
-2  ★ THE PAIR HAS EXACTLY ONE WRITER.
-   For a given region identity, the authoritative (generation, last_change_id) pair is
-   written ONLY by a successful ManifestChange CAS, atomically, both fields together.
-   No other path writes either field, independently or otherwise.
+    ★ P1 and P4 both say "atomic" and are NOT the same precondition. P4 governs writes,
+      P1 governs reads, and write-atomicity does not imply read-atomicity:
 
-   Everything else in the table descends from this one property:
-     provenance   last_change_id names a change that actually applied
-     monotonicity generation advances by exactly one per apply and never retreats
-     attribution  (g+1, X) means "X applied at g", which is what both exact-window
-                  rows read
+          writer   (g, A) --atomic CAS--> (g+1, B)      every write atomic
+          reader   fetches generation  -> g+1
+                   fetches last_id     -> A             (one field a beat stale)
+                   observes (g+1, A) — a pair that NEVER EXISTED
+                   which reads to A as my-change-applied: a false success
 
-   BREAKER, conditional: split/merge, restore or re-create that bypasses the CAS to
-   write the pair on a SAME or REUSED region identity.
-     NOT a breaker: split/merge allocating a NEW, non-reused identity. An old attempt
-     carries the old region_id and is untouched by a new region initialising its own pair.
+      They look like synonyms, which is exactly why they must not be merged into one
+      "the pair is atomic". Whichever half is dropped, the loss is silent.
 
-   Consequences by row, worst first — note the worst one is NOT the row an earlier
-   draft named:
-     non-apply write of (g+1, B), nothing having applied at g
-        → B reads my-change-applied and reports SUCCESS UPWARD for a change that never
-          applied, and clears the slot. This is the only outcome that may be reported as
-          a succeeded proposal, so it is the one whose forgery costs most.
-        → A meanwhile reads window-refused, and that conclusion happens to stay TRUE
-          (monotonicity still holds), but its basis has been hollowed out. A row can be
-          right for a reason that no longer exists.
-     restoring an older pair backward
-        → an identity that already applied can apply again: the same change twice
-     skipping a generation
-        → degrades safely to superwindow Unknown
+P2  CAS SEMANTICS.  A successful apply performs expected == g → (g+1, mine).
 
-3  an attempt's identity is fixed as (expected_generation, change_id), with no write path
-   bypassing the CAS. This is also why "mine can never apply" is safe rather than
-   crippling: expected_generation is inside the content-derived id, so a retry under a
-   new expected generation is a DIFFERENT change, not this one coming back
+P3  IMMUTABLE ATTEMPT IDENTITY.  An attempt is identified by
+    (region_id, expected_generation, change_id) and that triple never changes.
+    This is also why "mine can never apply" is safe rather than crippling:
+    expected_generation is inside the content-derived id, so a retry under a new
+    expected generation is a DIFFERENT change, not this one coming back.
+
+P4  THE PAIR HAS EXACTLY ONE WRITER.
+    For a given region identity, the authoritative (generation, last_change_id) pair is
+    written ONLY by a successful ManifestChange CAS, atomically, both fields together.
+    No other path writes either field, independently or otherwise.
+
+    Everything else in the table descends from this one property:
+      provenance   last_change_id names a change that actually applied
+      monotonicity generation advances by exactly one per apply and never retreats
+      attribution  (g+1, X) means "X applied at g", which is what both exact-window
+                   rows read
+
+    BREAKER, conditional: split/merge, restore or re-create that bypasses the CAS to
+    write the pair on a SAME or REUSED region identity.
+      NOT a breaker: split/merge allocating a NEW, non-reused identity. An old attempt
+      carries the old region_id and is untouched by a new region initialising its pair.
+
+    Consequences by row, worst first — the worst is NOT the row an earlier draft named:
+      non-apply write of (g+1, B), nothing having applied at g
+         → B reads my-change-applied and reports SUCCESS UPWARD for a change that never
+           applied, then clears the slot. my-change-applied is the only outcome that may
+           be reported as a succeeded proposal, so forging it costs the most.
+         → A meanwhile reads window-refused and that conclusion stays TRUE, because
+           monotonicity still holds — but its basis has been hollowed out. A row can be
+           right for a reason that no longer exists, and no test reds for that.
+      restoring an older pair backward
+         → an identity that already applied can apply again: the same change twice
+      skipping a generation
+         → degrades safely to superwindow Unknown
 ```
+
+**P1 and P4 need separate guards in the acceptance suite.** A single "the pair is atomic"
+assertion satisfies neither properly: it can pass while reads are split across two fetches, and it
+can pass while some non-CAS path writes one field.
 
 **`current == expected` is not evidence that the change never arrived.** It shows only that the
 authoritative state machine has not yet observed it — and the change may be sitting uncommitted in
