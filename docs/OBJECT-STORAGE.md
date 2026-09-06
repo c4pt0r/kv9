@@ -413,37 +413,37 @@ authoritative proof, not the only one.
 ```
 1  (generation, last_change_id) are read from ONE atomic snapshot
    a torn read invalidates the whole algebra
-2  every successful apply strictly performs the CAS  expected == g → (g+1, mine)
-   ★ AND generation is written by nothing else. This precondition has TWO halves, and each
-     needs its own named breakers — an earlier draft named breakers for the first half only,
-     which left the second reading as though nothing could threaten it:
 
-     (a) NOTHING MOVES IT BACKWARD.  Monotonicity is what makes "can never apply" true.
-         Named breakers: rollback · restore · region re-creation — any path returning
-         generation to <= g resurrects a change this rule already declared dead.
+2  ★ THE PAIR HAS EXACTLY ONE WRITER.
+   For a given region identity, the authoritative (generation, last_change_id) pair is
+   written ONLY by a successful ManifestChange CAS, atomically, both fields together.
+   No other path writes either field, independently or otherwise.
 
-     (b) ONLY APPLY ADVANCES IT.  A non-apply writer breaks the algebra just as badly,
-         because (g+1, X) would no longer imply "X applied at g".
-         Named breaker, CONDITIONAL — split/merge, restore or re-create that bypasses
-         the ManifestChange CAS to write generation or last_change_id ON A SAME OR
-         REUSED region identity. Failure directions on a reused identity:
-             pulled backward        → resurrects an attempt already declared dead
-             exactly +1, non-mine   → FORGES the load-bearing state of window-refused,
-                                      settling a live attempt as permanently dead
-             skips a generation     → degrades safely to superwindow Unknown
-         NOT a breaker: split/merge that allocates a NEW, non-reused region identity.
-         An old attempt carries the old region_id and cannot be resurrected by a new
-         region initialising its own generation.
-         Implementation rule that follows: a new identity may initialise generation
-         freely; a REUSED identity must preserve the monotonic (generation,
-         last_change_id) pair or go through the same CAS seam.
+   Everything else in the table descends from this one property:
+     provenance   last_change_id names a change that actually applied
+     monotonicity generation advances by exactly one per apply and never retreats
+     attribution  (g+1, X) means "X applied at g", which is what both exact-window
+                  rows read
 
-     ★ Split/merge appears on BOTH breaker lists by different mechanisms, and the two
-       entries are not the same claim: against add-only it is UNCONDITIONAL (moving a
-       reference is enough); against P4(b) it is CONDITIONAL as above. Check separately;
-       satisfying one says nothing about the other.
+   BREAKER, conditional: split/merge, restore or re-create that bypasses the CAS to
+   write the pair on a SAME or REUSED region identity.
+     NOT a breaker: split/merge allocating a NEW, non-reused identity. An old attempt
+     carries the old region_id and is untouched by a new region initialising its own pair.
 
-     State both halves as properties, not as "we have no rollback today"
+   Consequences by row, worst first — note the worst one is NOT the row an earlier
+   draft named:
+     non-apply write of (g+1, B), nothing having applied at g
+        → B reads my-change-applied and reports SUCCESS UPWARD for a change that never
+          applied, and clears the slot. This is the only outcome that may be reported as
+          a succeeded proposal, so it is the one whose forgery costs most.
+        → A meanwhile reads window-refused, and that conclusion happens to stay TRUE
+          (monotonicity still holds), but its basis has been hollowed out. A row can be
+          right for a reason that no longer exists.
+     restoring an older pair backward
+        → an identity that already applied can apply again: the same change twice
+     skipping a generation
+        → degrades safely to superwindow Unknown
+
 3  an attempt's identity is fixed as (expected_generation, change_id), with no write path
    bypassing the CAS. This is also why "mine can never apply" is safe rather than
    crippling: expected_generation is inside the content-derived id, so a retry under a
