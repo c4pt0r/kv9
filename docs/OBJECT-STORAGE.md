@@ -98,6 +98,41 @@ The propose-only handle is **the deliverable of task #5** (Rafa, branch
 no legitimate seam — this is the one *real* dependency between our two lanes. SST production does
 not depend on #5 and starts immediately.
 
+### 3.1 `apply` never touches object storage
+
+The whole `engine → propose → apply` chain is synchronous and contains no tokio; tokio exists only
+at the public gRPC edge, which bridges into the synchronous core. Confirmed by Rafa 2026-09-05:
+`RaftGroup::propose` is a synchronous `fn`, the driver pump is a dedicated OS thread, and
+`drive_apply` runs on that pump thread.
+
+**Uploading completes before the proposal is made. That is part of the call-direction contract, and
+it has a consequence worth stating as a rule rather than as background:**
+
+> **The apply path must never perform object-storage I/O.** It installs references that are already
+> durable. Every deadline and every blocking risk stays on the engine's upload thread.
+
+Written in refusable form deliberately: when someone later proposes to fetch or upload inside
+`apply`, the grounds for refusing it are this sentence, not an oral tradition. It is also why the
+guard against runtime misuse (§3.2) does not belong in the raft layer — the context calling
+`ObjectStore` is a synchronous thread by construction, never an async worker.
+
+### 3.2 `ObjectStore` stays synchronous; the backend owns one worker
+
+Ruled by Tess 2026-09-05. `Engine` and the server core are synchronous contracts, isolated behind
+`spawn_blocking`/blocking-backend boundaries. Making `ObjectStore` async would push the async
+boundary all the way into `Engine`, exceed the slice, and still require bridging back for the
+synchronous read path.
+
+**The MinIO backend owns one dedicated worker thread holding a Tokio runtime.** Synchronous methods
+hand operations to it over a bounded channel and wait for the response. Do **not** build a runtime
+per call, and do **not** `block_on` on the calling thread. A mistaken call from an async worker is
+then merely observable blocking rather than a nested-runtime deadlock.
+
+`Handle::try_current()` is explicitly **not** the guard: it can succeed inside `spawn_blocking`, so
+it would reject the one legitimate route while claiming to protect it.
+
+Channel and operation both carry explicit deadlines, and a timeout fails loudly.
+
 ---
 
 ## 4. Coordinates — the correction that cost us a design defect
@@ -438,6 +473,47 @@ case that can be made red on its own.
 
 **If MinIO is unreachable the job fails.** No `#[ignore]`, no "absent environment ⇒ return early",
 no silent skip, and no fallback to `MemoryObjectStore`. It is a separately named required leg.
+
+### 8.5 Pinning the backend's *shape*, not merely that it works
+
+A test that simply calls the backend from inside `spawn_blocking` and succeeds does **not** pin
+§3.2. All three implementations pass it — the dedicated worker, a runtime built per call, and a
+`block_on` on the calling thread (a `spawn_blocking` thread has no ambient runtime, so `block_on`
+there works fine). It demonstrates that the legitimate path runs; it says nothing about which shape
+is underneath, which is the entire point of writing the rule.
+
+The discriminator has to inspect structure rather than success:
+
+```
+issue N concurrent operations against ONE backend
+  → every async operation lands on the SAME single worker thread
+    runtime-per-call     → thread ids differ            → red
+    caller block_on      → work happens on the CALLING thread → red
+```
+
+**Per backend instance, not per process.** "Exactly one runtime was constructed process-wide" is the
+wrong invariant: constructing two backends (separate buckets, isolated fixtures) is legitimate and
+would make a correct implementation red.
+
+Stronger still, and preferred: the runtime and its worker are owned once at backend construction,
+with no code path able to create a second. The test then *fires against* that structure rather than
+being the only thing holding the rule up.
+
+### 8.6 "Unavailable" is two different failure states
+
+```
+MinIO not started       connection refused → fails fast, the deadline is never reached
+MinIO up but mute       accepts the connection, never answers → THIS is what exercises the deadline
+```
+
+Only the second demonstrates that a timeout fails loudly. Build it with a black-hole listener that
+accepts and never responds (test ports below 32768).
+
+**The general form, which outruns this one case: the easiest way to make something "unavailable" is
+usually not the way it actually becomes unavailable.** Refusing a connection, deleting a file, or
+killing a process are cheap to construct and each tests a *different* failure than the hang, the
+partial read, or the silently-wrong answer that occurs in practice. Whenever a test makes a
+dependency unavailable, say which of the two it built and which one the requirement was about.
 
 Today the repository has zero `#[ignore]` and zero env-gated tests, so this is prevention rather
 than a defect report — and it is worth the sentence, because the failure it prevents is a green
