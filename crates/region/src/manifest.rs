@@ -53,12 +53,10 @@ use kv9_raft::{classify_reconciliation, Command, ManifestVerdict, ReconcileObser
 /// durable prepared capability by value (phase-B).
 #[derive(Debug, Clone)]
 pub struct ManifestAttempt {
-    region: u64,
-    change_id: Vec<u8>,
-    expected_generation: u64,
-    changeset: Vec<u8>,
-    watermark_term: u64,
-    watermark_index: u64,
+    /// The wire payload itself (fields private to kv9-raft — round 3: hiding
+    /// only this wrapper was insufficient while the command variant stayed
+    /// publicly constructable; now BOTH layers refuse external construction).
+    payload: kv9_raft::ManifestChangePayload,
 }
 
 impl ManifestAttempt {
@@ -74,21 +72,27 @@ impl ManifestAttempt {
         watermark_index: u64,
     ) -> ManifestAttempt {
         ManifestAttempt {
-            region,
-            change_id,
-            expected_generation,
-            changeset,
-            watermark_term,
-            watermark_index,
+            payload: kv9_raft::ManifestChangePayload::for_harness(
+                region,
+                change_id,
+                expected_generation,
+                changeset,
+                watermark_term,
+                watermark_index,
+            ),
         }
     }
 
     pub fn region(&self) -> u64 {
-        self.region
+        self.payload.region()
     }
 
     pub fn expected_generation(&self) -> u64 {
-        self.expected_generation
+        self.payload.expected_generation()
+    }
+
+    fn change_id(&self) -> &[u8] {
+        self.payload.change_id()
     }
 }
 
@@ -232,18 +236,18 @@ impl ManifestSeam {
         attempt: ManifestAttempt,
         deadline: Duration,
     ) -> Result<ManifestProposalState, ManifestSeamError> {
-        if attempt.change_id.is_empty() {
+        if attempt.change_id().is_empty() {
             return Err(ManifestSeamError::InvalidAttempt {
                 reason: "empty change id would match virgin regions' empty last_change_id",
             });
         }
-        let region = attempt.region;
+        let region = attempt.region();
         {
             let mut slots = self.slots.lock().expect("manifest slots poisoned");
             if let Some(holder) = slots.get(&region) {
                 return Err(ManifestSeamError::Busy {
                     region,
-                    holder_expected_generation: holder.expected_generation,
+                    holder_expected_generation: holder.expected_generation(),
                 });
             }
             slots.insert(region, attempt);
@@ -261,18 +265,18 @@ impl ManifestSeam {
         attempt: ManifestAttempt,
         deadline: Duration,
     ) -> Result<ManifestProposalState, ManifestSeamError> {
-        if attempt.change_id.is_empty() {
+        if attempt.change_id().is_empty() {
             return Err(ManifestSeamError::InvalidAttempt {
                 reason: "a recovered manifest attempt needs its non-empty change id",
             });
         }
-        let region = attempt.region;
+        let region = attempt.region();
         {
             let mut slots = self.slots.lock().expect("manifest slots poisoned");
             if let Some(holder) = slots.get(&region) {
                 return Err(ManifestSeamError::Busy {
                     region,
-                    holder_expected_generation: holder.expected_generation,
+                    holder_expected_generation: holder.expected_generation(),
                 });
             }
             slots.insert(region, attempt);
@@ -302,7 +306,7 @@ impl ManifestSeam {
             .node
             .manifest_pair(region)
             .map_err(ManifestSeamError::Node)?;
-        match classify_reconciliation(&pair, attempt.expected_generation, &attempt.change_id) {
+        match classify_reconciliation(&pair, attempt.expected_generation(), attempt.change_id()) {
             ReconcileObservation::MyChangeApplied { generation } => {
                 // Applied while we were away — an earlier send landed. This is
                 // NOT a new acceptance (we did not observe the applying
@@ -319,7 +323,7 @@ impl ManifestSeam {
                 ))
             }
             ReconcileObservation::Unknown => {
-                if pair.generation != attempt.expected_generation {
+                if pair.generation != attempt.expected_generation() {
                     // Superwindow (or a behind-pair precondition break):
                     // undecidable in this coordinate; the slot stays occupied
                     // rather than guessing. (The positive effect query — the
@@ -354,14 +358,7 @@ impl ManifestSeam {
             let slots = self.slots.lock().expect("manifest slots poisoned");
             slots.get(&region).expect("caller holds the slot").clone()
         };
-        let cmd = Command::ManifestChange {
-            region: attempt.region,
-            change_id: attempt.change_id.clone(),
-            expected_generation: attempt.expected_generation,
-            changeset: attempt.changeset.clone(),
-            watermark_term: attempt.watermark_term,
-            watermark_index: attempt.watermark_index,
-        };
+        let cmd = Command::ManifestChange(attempt.payload.clone());
         let at = match self.node.propose_command(&cmd) {
             Ok(at) => at,
             Err(e) if first_send => {
@@ -472,6 +469,10 @@ mod tests {
         driver.spawn(TICK);
         let seam = ManifestSeam::mint(driver.clone() as Arc<dyn ManifestNode>).unwrap();
         (driver, seam)
+    }
+
+    fn attempt_with_id(region: u64, id: Vec<u8>, expected: u64, widx: u64) -> ManifestAttempt {
+        ManifestAttempt::for_harness(region, id, expected, b"refs".to_vec(), 1, widx)
     }
 
     fn attempt(region: u64, id: &[u8], expected: u64, widx: u64) -> ManifestAttempt {
@@ -679,9 +680,11 @@ mod tests {
     #[test]
     fn entry_guards_refuse_typed() {
         let (_driver, seam) = seam_over_driver();
-        let mut empty = attempt(5, b"X", 0, 1);
-        empty.change_id = Vec::new();
-        assert!(seam.propose_manifest_change(empty, WAIT).is_err());
+        let empty = attempt_with_id(5, Vec::new(), 0, 1);
+        assert!(matches!(
+            seam.propose_manifest_change(empty, WAIT),
+            Err(ManifestSeamError::InvalidAttempt { .. })
+        ));
         assert!(matches!(
             seam.converge(5, WAIT),
             Err(ManifestSeamError::NoInFlight { region: 5 })

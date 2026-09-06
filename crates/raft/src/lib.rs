@@ -20,7 +20,9 @@ pub mod storage;
 pub mod testing;
 pub mod transport;
 
-pub use command::{cf_code, cf_from_code, Command, FencedInner, KvOp, RegionFence};
+pub use command::{
+    cf_code, cf_from_code, Command, FencedInner, KvOp, ManifestChangePayload, RegionFence,
+};
 #[cfg(any(test, feature = "testing"))]
 pub use rawnode::HarnessPump;
 #[cfg(any(test, feature = "testing"))]
