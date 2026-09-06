@@ -420,13 +420,19 @@ duplicate the scheme exists to prevent. **This is `DESIGN.md` §6.5's "absence i
 answer", restated in the generation coordinate** — the same trap as reading absence of a file, and it
 must be refused in both.
 
-**Only two things establish known-not-applied, and both are positive statements from the authority
-that would have had to apply it:**
+**Three things establish known-not-applied, and each is a positive statement of authoritative state
+rather than an absence:**
 
 ```
 1  a typed pre-propose refusal at the proposal entry (it was never accepted for proposal)
 2  a definite stale/refused receipt from ordered apply, for that exact change
+3  current == expected+1 with someone else's last_change_id — the authoritative state says
+   another change took the sole g -> g+1 transition, so mine did not and now cannot
 ```
+
+*(This list read "only two things" until the third was derived. Kept as a list that grows rather
+than an exclusive enumeration: **an "only X and Y" sentence stays syntactically correct while
+silently excluding a newly-legitimate case**, and nothing goes red when it does.)*
 
 **An observation of state that merely lacks the change is never one of them.** A negative conclusion
 requires the authority to say so, not the absence of it having said so.
@@ -535,18 +541,25 @@ applied           current == expected+1 && last_id == mine
 effect satisfied  a positive current-effect query (SST referenced && watermark >= mine)
                   Enough to clear the slot and reclaim. Does NOT identify whose change
                   produced it, and MUST NOT be reported as my proposal having applied.
-refused           EITHER a typed pre-propose refusal / a definite stale-refused receipt
-                  from ordered apply for that exact change  [receipt-derived]
-                  OR current == expected+1 && last_id != mine                [algebra-derived]
-                  ★ NOT current == expected, and NOT a missing effect — neither settles
-unknown           does not clear the slot. The slot stays held.
+window-refused    current == expected+1 && last_id != mine
+                  Known-not-applied AND can never apply. Settled by the CAS algebra.
+                  Depends on: generation monotonic, advanced only by apply.
+receipt-refused   a typed pre-propose refusal, or a definite stale-refused receipt from
+                  ordered apply for that exact change
+                  Depends on: nothing but the receipt itself.
+unknown           current == expected, current > expected+1, or a missing effect.
+                  Settles nothing. Does NOT clear the slot; the slot stays held.
 ```
 
-**The two `refused` sources are listed separately on purpose: they do not have the same voiding
-conditions.** The receipt-derived one depends on nothing but the receipt. The algebra-derived one
-depends on `generation` being monotonic and advanced only by apply. **Merge them into one row and a
-future change that adds a rollback path silently invalidates half of a rule whose dependency is no
-longer visible anywhere.**
+**Four settled outcomes, each named, none folded into another.** The two refusals in particular are
+*not* one row with two sources: `window-refused` depends on `generation` being monotonic, and
+`receipt-refused` depends on nothing but the receipt. **Merge them and a future rollback path
+invalidates half of a rule whose dependency has become invisible** — the reader sees one refusal
+concept and no reason to suspect that part of it rests on monotonicity.
+
+**An exclusive list is a place this kind of residue hides.** Any sentence of the form "only X, Y and
+Z clear the slot" must be re-checked against this table whenever the table grows, because such a
+list stays syntactically correct while silently excluding a newly-legitimate outcome.
 
 **`applied` and `effect satisfied` authorise the same action and carry different claims**, so they
 are separate outcomes rather than one row. The effect query establishes that the effect holds and is
