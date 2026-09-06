@@ -91,4 +91,14 @@ check "U9 invalid --head refused, not reported clean" 3 $?
 check "U10 invalid --repo refused, not reported clean" 3 $?
 
 printf "\n  %d passed, %d failed\n" "$pass" "$fail"
+
+# Pin the CELL COUNT, not just the failure count. A suite that loses cells reports
+# "N passed, 0 failed" and reads as healthy -- the count is only evidence if something
+# compares it to what it should be. Bump deliberately when adding a cell.
+expected_cells=14
+if [ "$((pass+fail))" -ne "$expected_cells" ]; then
+  printf "  FAIL  cell count %d, expected %d -- cells were added or lost\n" \
+    "$((pass+fail))" "$expected_cells"
+  exit 1
+fi
 [ "$fail" -eq 0 ]
