@@ -105,6 +105,28 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
+      # The repository's two verification tools gate other people's evidence: the mutation
+      # guard is what proves a test actually stands on a defect, and the unlanded check is
+      # what proves a task-scoped marker did not outlive its task. Until now nothing proved
+      # THEY still work -- an instrument nobody exercises is indistinguishable from a broken
+      # one right up to the moment its answer matters.
+      #
+      # Two separate named steps, each invoking its script directly. Deliberately NOT a
+      # wrapper, a shared shell block, or an `&&` chain: those make one failure indistinguishable
+      # from the other, and a reviewer cannot then show that breaking EITHER call site alone
+      # turns this gate red. Each script prints its own "N passed, M failed" line and exits
+      # non-zero on any failure, so the count in the log is the evidence and the exit code is
+      # the gate -- neither is inferred from the other.
+      #
+      # No `continue-on-error`, no `|| true`, no pipe: a pipeline would hand the step `tail`'s
+      # exit status instead of the script's, which is the exact way a red becomes an
+      # invisible green.
+      - name: Self-test — mutation guard
+        run: scripts/mutation-guard-selftest.sh "$GITHUB_WORKSPACE/scripts/mutation-guard.sh"
+
+      - name: Self-test — unlanded marker check
+        run: scripts/unlanded-check-selftest.sh "$GITHUB_WORKSPACE/scripts/unlanded-check.sh"
+
   # Informational on purpose. `cargo fmt --check` does NOT pass on this tree: when this
   # workflow landed there were 159 diff hunks across 39 files, spanning all four crate
   # lanes. Making that blocking would paint CI red on day one for changes that did not
