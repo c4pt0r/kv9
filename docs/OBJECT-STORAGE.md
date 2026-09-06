@@ -673,8 +673,43 @@ operation deadline  starts only after ready. Expiry here is the BEHAVIOUR UNDER 
 Share one budget and a slow start masquerades as "backend ready but unresponsive": **the deadline
 cell goes green while proving only that the wait was too short, not that the timeout works.**
 
-Fixture discipline: the harness manages only containers it created by name, and removes them
-explicitly. No broad Docker sweeps — the same rule as never killing a process you did not record.
+**Separating the budgets is not sufficient, because "have I waited long enough" is still inferred
+from a clock.** Make readiness an *observation* instead, by proving the instrument answers before
+drawing any conclusion from its silence:
+
+```
+1  wait for the container's health condition
+2  perform a REAL round-trip against the real MinIO and assert it succeeds   ← the key step
+3  only then point the client at the black-hole listener
+4  assert the deadline fires loudly
+```
+
+**Once step 2 has succeeded, "it had not started yet" is structurally unavailable as an explanation
+for step 4** — the backend is not assumed ready, it has been seen answering. Same shape as the
+recovery controls: establish that the instrument fires, then let its silence mean something.
+
+**Three distinct causes currently present identically as "cannot connect / no answer", and the
+failure output must tell them apart:**
+
+```
+runner has no Docker        environment missing
+container up, MinIO mute    behaviour under test
+container still starting    environment slow
+```
+
+This matters because of the standing rule that a red holds the scene and is not rerun. **If these
+three share one error path, the first red reads as "MinIO is flaky" and the no-rerun rule starts
+looking like an obstacle rather than a protection.** Readiness and setup failures therefore carry
+their own error type and message, and never return through the same path as an operation timeout.
+
+**This is a genuinely new environment dependency entering the required set:** `.github/workflows/ci.yml`
+today contains `docker` 0 times, `services:` 0 times and `container:` 0 times, with all three jobs on
+plain `ubuntu-latest`.
+
+Fixture discipline: the harness manages only containers it created **by name**, and removes them
+explicitly. **No broad Docker sweeps** — and this is stricter than the analogous rule about killing
+only processes you recorded, because a wide `docker rm -f` filter destroys *other people's
+containers* on a shared machine, not merely a stray process of your own.
 
 Only the second demonstrates that a timeout fails loudly. Build it with a black-hole listener that
 accepts and never responds.
