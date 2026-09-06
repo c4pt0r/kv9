@@ -362,10 +362,23 @@ reconcile      on an unknown outcome, read (current_generation, last_change_id) 
                decidable: applied · superseded by another proposer · never reached.
 ```
 
-**One in-flight change per region** keeps a single `last_change_id` slot sufficient — the in-flight
-window *is* the retention window for the criterion. A durable applied-id ledger is deliberately not
-built: its value appears only with multiple in-flight changes, which round one does not need, and
-adding it later is a pure extension.
+**One in-flight change per region** is what keeps a single `last_change_id` slot sufficient — the
+in-flight window *is* the retention window for the criterion. A durable applied-id ledger is
+deliberately not built: its value appears only with multiple in-flight changes, which round one does
+not need, and adding it later is a pure extension.
+
+**That single-in-flight property is enforced structurally, not assumed** (task #9). The seam holds
+one proposal slot per region and is the only entry to propose; a second proposal while the slot is
+occupied is a typed refusal, neither queued nor silently accepted. The slot is cleared only by a
+*settled* reconciliation — applied, preempted, or refused; "still unknown" does not clear it — and
+restart takes the same path, reconciling the previous in-flight change (whose `change_id` is
+recomputable from the engine's durable prepared state) before the slot can be granted again.
+
+**Why it cannot rest on convention:** the whole three-state criterion is only sufficient while the
+property holds, and its degradation is silent in both directions. With two concurrent proposers, a
+change that was *preempted* reconciles as *never reached*; worse, a change that **succeeded** can
+reconcile as *preempted*, because a following change overwrites `last_change_id` and the original
+proposer then sees an advanced generation with an id that is not its own.
 
 **Ordering consequence: without this state, the drain worker cannot start** — `Unconfirmed`'s
 contract would be unexecutable and the variant decoration. So the generation/`last_change_id`
@@ -415,7 +428,9 @@ authoritative, so the counts are computable — and only then may decrements and
 Turning on `-ref` against counts that were never maintained would start from zeros and delete live
 objects immediately.
 
-The rule below is therefore **the Phase-3 contract, recorded here, not a round-one requirement.**
+> ### ⚠ Everything below in §7.4 is a **Phase-3 contract, not round-one acceptance.**
+> No part of it is implemented, tested, or owed by this slice. It is written now because the design
+> decision is live now; do not read it as a checklist for the current round.
 
 `DESIGN.md:205-213` already mandates it, and the landing point already exists:
 `crates/meta/src/schema.rs:219-226` — `SST_FILES` carries `refcount` (col 4) and `state` (col 9).
@@ -606,12 +621,26 @@ MinIO up but mute       accepts the connection, never answers → THIS is what e
 Only the second demonstrates that a timeout fails loudly. Build it with a black-hole listener that
 accepts and never responds.
 
-**Bind it as `127.0.0.1:0` and hold the listener for the whole test**, letting the kernel assign the
-port. Do not hand-pick one. *(Note: the project's standing test convention is ports below 32768,
-and a kernel-assigned port usually lands above that. Holding the listener open for the test's
-duration means the port cannot be reassigned underneath it, which is the collision the convention
-exists to prevent — but this is a deviation from the letter of a standing rule and needs an explicit
-waiver rather than an appeal to intent. Pending that, this paragraph is a proposal, not settled.)*
+**Bind it as `127.0.0.1:0` and hold the listener from assignment until the test ends**, letting the
+kernel assign the port. Do not hand-pick one.
+
+**Why this does not conflict with the "ports below 32768" convention** — the two rules cover
+different constructions, and the distinction is worth stating so the apparent clash is not
+re-litigated. `.github/workflows/ci.yml:179-181` gives the convention's own reason:
+
+> All bases sit below 32768 to stay clear of the Linux ephemeral range (32768-60999), where an
+> unrelated process can take a port **between the bind check and the bind itself**.
+
+The hazard is the *check-then-bind window*: pre-compute a port number, verify it looks free, release
+it, bind later. Every current use has that shape (`quickstart-smoke`, `root-trust`,
+`dynamic-membership` with `23000+($$%1000)`). **A `:0` fixture has no check step at all** — the
+kernel assigns and the listener never lets go, so no window exists for anything to race into. It
+satisfies a strictly stronger property than the convention asks for, rather than being excused from
+it.
+
+**The residual condition, which is what actually makes this true:** ownership is held continuously
+from assignment to end of test. Dropping the listener and rebinding, or using `SO_REUSEPORT`, brings
+the window straight back and the convention applies again.
 
 **The general form, which outruns this one case: the easiest way to make something "unavailable" is
 usually not the way it actually becomes unavailable.** Refusing a connection, deleting a file, or

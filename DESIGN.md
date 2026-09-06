@@ -422,23 +422,28 @@ change through raft** → on commit, all replicas adopt the file-ids and **the W
 truncate**. Upload latency thus gates truncation → the backpressure point (§6.2/§6.4). A committed write is durable
 *immediately* via raft-majority WAL (does not wait for object storage); it becomes object-storage-durable at flush.
 
-**Manifest-change identity — derived from content, and the region epoch is part of that content.** A manifest change
-is identified by a hash of its *canonicalized content* — `(region_id, region_epoch, adds, removes, new_watermark)` —
-never by an allocated id. Content-derived identity is what **enables reconciliation** after a crash without any
-durable intermediate state: the proposer recomputes the same identity instead of having to remember one it was
-issued. **It does not by itself authorize a retry** — an unconfirmed outcome must still be reconciled against
-authoritative applied state first (see below); stable identity is what makes that reconciliation possible, not a
-licence to re-propose.
-**`region_epoch` is a mandatory member of the hashed content, and it is load-bearing twice over.** It is the *fence*
-(a change carrying the wrong epoch must be rejected) **and** the *nonce* (it is what makes a legitimate repeat hash
-differently from a retry). The repeat is real: a split may drop a file from a region while its refcount stays above
-zero because a sibling still references it, and a later merge may add that same file back — so "add F to R" can
-legitimately occur twice in a region's history. Under a bare content hash the second occurrence is judged a retry and
-dropped, losing a `+ref`, which under-counts, which is the dangerous direction. With the epoch inside the hash the
-argument closes: within one epoch a file-id enters a region at most once, and any legitimate re-add necessarily
-crosses an epoch bump and therefore hashes differently. **Removing the epoch field, or excluding it from the hashed
-content as redundant with the fence check, dismantles both protections at once — and no test goes red when it
-happens, because the loss is silent under-counting.**
+**Manifest-change identity — derived from content, ordered by an explicit generation.** A manifest change is
+identified by a hash of its *canonicalized content* — `(region_id, expected_generation, adds, removes,
+new_watermark)` — never by an allocated id. Content-derived identity is what **enables reconciliation** after a crash
+without any durable intermediate state: the proposer recomputes the same identity instead of having to remember one it
+was issued. **It does not by itself authorize a retry** — an unconfirmed outcome must still be reconciled against
+authoritative applied state first; stable identity is what makes that reconciliation possible, not a licence to
+re-propose.
+**Ordering comes from an explicit manifest `generation`, and `region_epoch` is the fence only.** Apply is a
+compare-and-set: a change is applied when `current_generation == expected_generation`, which advances the generation
+and records `(generation, last_change_id)`; a change whose id equals `last_change_id` is an idempotent repeat and is
+reported as *already applied*, never as newly accepted; anything else is rejected as stale. Reconciling an unknown
+outcome is then a comparison against `(current_generation, last_change_id)`, which distinguishes **applied**,
+**superseded by another proposer**, and **never reached**.
+**Two things this deliberately avoids.** First, identity must not be resolved by asking whether the *current* manifest
+still contains the change's effects: a change can be applied and then superseded, after which it is absent — so
+absence would be read as never-applied, and the resulting re-proposal is exactly the double-apply the scheme exists to
+prevent. Second, `region_epoch` must **not** double as the manifest sequence number. The epoch is a routing/membership
+generation; nothing in its contract promises it advances when a region's file set changes, so ordering manifest
+history by it borrows a guarantee the epoch never made. *(An earlier revision of this section did exactly that,
+arguing that a file-id enters a region at most once per epoch so any legitimate re-add must cross an epoch bump. That
+holds only for split/merge-driven re-adds and is an accident of the current operator set, not an enforced invariant.)*
+The generation carries order; the epoch keeps fencing; neither borrows the other's guarantee.
 
 **Reference counting is asymmetric by necessity, and the two directions use different mechanisms.** The conservative
 ordering (`+ref` before, `−ref` after, §5.1) fixes *when* each side commits; this fixes *how*. **`+ref` remains a
