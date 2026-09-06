@@ -455,11 +455,28 @@ P4  THE PAIR HAS EXACTLY ONE WRITER.
                     and it expires SILENTLY — the count simply becomes stale, with nothing
                     to red.
 
-      To raise it to a guarantee, either give the pair a typed key whose construction is
-      private to the owning module, or add a tripwire asserting the `manifest_pair` prefix
-      appears nowhere outside it. Neither is built. **Do not read P4 as enforced by types
-      or visibility** (Cindy's measurement on task #9's head; recorded here because this
-      document previously stated P4 as though it simply held).
+      Two remedies are often named together. **They are not the same tier, and listing them
+      as alternatives is itself a mistake this document made once:**
+
+        typed key encapsulation   the pair's key type is constructible only inside the
+                                  owning module → other modules CANNOT obtain it.
+                                  Compile-time. This is a GUARANTEE.
+        prefix tripwire           asserts the bytes `manifest_pair` appear nowhere else.
+                                  This is a VISIBILITY DEVICE, not a guarantee — and it is
+                                  weaker than the ObjectStore tripwire it resembles.
+
+      **Why weaker:** the ObjectStore tripwire matches a *type name*, and a type name is a
+      compiler entity — to use the type you must write it. This one matches *bytes*, and the
+      identical key can be produced without ever writing that token: `concat!`, a literal
+      byte array, splicing from variables. So its honest limit is not "cannot catch indirect
+      reach through a helper" but the much cheaper **"cannot catch the same key spelled
+      differently"**, which needs no indirection at all.
+
+      Neither is built. **Do not read P4 as enforced by types or visibility.** If the goal is
+      to make P4 a guarantee, only the encapsulation reaches it; the tripwire reaches
+      "someone evading this will leave the evasion in a diff".
+      *(Measurement and both corrections: Cindy, on task #9's head. This document first
+      stated P4 as though it simply held, then stated the two remedies as equivalent.)*
 
     Everything else in the table descends from this one property:
       provenance   last_change_id names a change that actually applied
