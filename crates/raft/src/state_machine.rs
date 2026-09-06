@@ -24,6 +24,159 @@ use crate::{CommittedEntry, LogIndex};
 /// so catalog scans never see it.
 pub const APPLIED_INDEX_KEY: &[u8] = b"\x00kv9\x00applied_index";
 
+/// Engine key holding one region's authoritative manifest
+/// `(generation, last_change_id)` pair (task #9). ONE key on purpose:
+/// precondition P1 (atomic read) is structural at rest — a single get returns
+/// both fields from one applied snapshot, so a torn pair is unrepresentable
+/// in storage. The key prefix is module-PRIVATE and the only writer is the
+/// `ManifestChange` arm of `apply_command` (precondition P4: the pair is
+/// written only by one successful CAS, both fields together); readers go
+/// through [`MemStateMachine::manifest_pair`].
+fn manifest_pair_key(region: u64) -> Vec<u8> {
+    let mut k = b"\x00kv9\x00manifest_pair\x00".to_vec();
+    k.extend_from_slice(&region.to_be_bytes());
+    k
+}
+
+/// Engine key holding the changeset installed at one region generation
+/// (add-only: a new generation is a new key; nothing rewrites an old one).
+fn manifest_gen_key(region: u64, generation: u64) -> Vec<u8> {
+    let mut k = b"\x00kv9\x00manifest_gen\x00".to_vec();
+    k.extend_from_slice(&region.to_be_bytes());
+    k.push(0);
+    k.extend_from_slice(&generation.to_be_bytes());
+    k
+}
+
+/// One region's authoritative manifest pair, decoded from its single key.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ManifestPair {
+    /// Current generation: number of successful manifest CASes applied.
+    pub generation: u64,
+    /// The change that performed the g-1 → g transition (empty at generation
+    /// 0 — no change has ever applied). Written ONLY together with
+    /// `generation`, in the same value of the same key.
+    pub last_change_id: Vec<u8>,
+}
+
+impl ManifestPair {
+    fn encode(&self) -> Vec<u8> {
+        let mut v = self.generation.to_be_bytes().to_vec();
+        v.extend_from_slice(&self.last_change_id);
+        v
+    }
+
+    fn decode(bytes: &[u8]) -> kv9_common::Result<ManifestPair> {
+        if bytes.len() < 8 {
+            return Err(kv9_common::Error::Raft(
+                "manifest pair value shorter than its generation field".into(),
+            ));
+        }
+        Ok(ManifestPair {
+            generation: u64::from_be_bytes(bytes[..8].try_into().expect("8 bytes")),
+            last_change_id: bytes[8..].to_vec(),
+        })
+    }
+}
+
+/// What a reconciliation QUERY of the authoritative pair can conclude about
+/// one attempt `(expected_generation, change_id)` (task #9, the four-row
+/// table). Pure function of ONE atomically-read pair plus the attempt's own
+/// immutable identity — decidability rests on preconditions P1–P4, each
+/// guarded separately; this function cannot check them and does not try.
+///
+/// Only ONE row is a positive success and only ONE is a negative proof:
+/// - `MyChangeApplied`: exact window, mine — the unique `expected →
+///   expected+1` transition was mine.
+/// - `KnownNotApplied`: exact window, NOT mine — under strict CAS the unique
+///   transition from `expected` belongs to another change; had mine applied,
+///   `last_change_id` would be mine; if mine has not arrived it will
+///   stale-refuse forever (its predecessor is spent). Authoritative negative
+///   BY TRANSITION INVARIANTS, not by absence (the refined general rule).
+/// - `Unknown` covers BOTH remaining rows and is not one state: pending
+///   (`current == expected`; the change may be committed-unapplied or commit
+///   after this query) and superwindow (`current > expected+1`; history
+///   lost — mine-applied-then-superseded and never-arrived are
+///   indistinguishable in this coordinate). Neither clears a slot; neither
+///   licenses a NEW identity. Safe convergence: re-send the SAME identity
+///   and wait for its receipt.
+///
+/// A pair BEHIND the attempt (`current < expected`) is also `Unknown`:
+/// under P4 it cannot happen, so observing it means an expectation was
+/// fabricated or a precondition broke — never grounds for a settled verdict
+/// (fail closed, do not guess which).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ReconcileObservation {
+    MyChangeApplied {
+        /// The generation my change produced (== expected_generation + 1).
+        generation: u64,
+    },
+    KnownNotApplied {
+        /// The change that won my predecessor (diagnostic, not authority).
+        winner_change_id: Vec<u8>,
+    },
+    Unknown,
+}
+
+/// Classify one atomically-read pair against one attempt's identity.
+/// See [`ReconcileObservation`] for the table; the pair must come from
+/// [`MemStateMachine::manifest_pair`] (one key, one get — P1).
+pub fn classify_reconciliation(
+    pair: &ManifestPair,
+    expected_generation: u64,
+    change_id: &[u8],
+) -> ReconcileObservation {
+    if change_id.is_empty() {
+        // An empty identity matches nothing: generation-0 pairs hold an empty
+        // last_change_id, and "empty == empty" would read virgin state as
+        // MyChangeApplied. The propose entry refuses empty ids; this guard is
+        // the query-side twin.
+        return ReconcileObservation::Unknown;
+    }
+    if pair.generation == expected_generation + 1 {
+        if pair.last_change_id == change_id {
+            ReconcileObservation::MyChangeApplied {
+                generation: pair.generation,
+            }
+        } else {
+            ReconcileObservation::KnownNotApplied {
+                winner_change_id: pair.last_change_id.clone(),
+            }
+        }
+    } else {
+        ReconcileObservation::Unknown
+    }
+}
+
+/// The apply-side verdict of one [`crate::Command::ManifestChange`] (task #9).
+///
+/// Separate variants, never a flag: `Applied` is the ONLY variant that may be
+/// reported upward as "this proposal succeeded". `AlreadyApplied` is the
+/// idempotent-duplicate outcome — a WAL-replayed or re-sent change whose
+/// identity already performed its transition must never be reported as newly
+/// accepted (crash-point-3 receipt half). `Stale` is the CAS refusal. All
+/// three advance the applied watermark; none is an apply error.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ManifestVerdict {
+    /// This change performed the `expected → expected+1` transition.
+    Applied {
+        region: kv9_common::RegionId,
+        /// The generation AFTER this apply (== expected_generation + 1).
+        generation: u64,
+    },
+    /// This change's identity already performed its transition earlier —
+    /// nothing written now, and NOT a new acceptance.
+    AlreadyApplied {
+        region: kv9_common::RegionId,
+        generation: u64,
+    },
+    /// The CAS predecessor did not match; nothing written.
+    Stale {
+        region: kv9_common::RegionId,
+        current_generation: u64,
+    },
+}
+
 /// The outcome of applying one committed entry to the state machine (ROADMAP Phase 1).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ApplyResult {
@@ -39,6 +192,10 @@ pub struct ApplyResult {
     /// `StaleEpoch { region }` to the proposer without re-deriving anything
     /// from the original command (apply-time facts only; review contract).
     pub fence_rejected: Option<kv9_common::RegionId>,
+    /// `Some(verdict)` when this entry was a [`crate::Command::ManifestChange`]:
+    /// the discriminator's outcome, riding the receipt path like
+    /// `fence_rejected` does (apply-time facts only; no second apply channel).
+    pub manifest: Option<ManifestVerdict>,
 }
 
 impl ApplyResult {
@@ -47,6 +204,18 @@ impl ApplyResult {
             applied_index: index,
             response: None,
             fence_rejected: None,
+            manifest: None,
+        }
+    }
+
+    /// The entry was a manifest change; its discriminator verdict rides the
+    /// receipt (watermark advanced in all three cases).
+    pub fn manifest(index: LogIndex, verdict: ManifestVerdict) -> Self {
+        ApplyResult {
+            applied_index: index,
+            response: None,
+            fence_rejected: None,
+            manifest: Some(verdict),
         }
     }
 
@@ -57,6 +226,7 @@ impl ApplyResult {
             applied_index: index,
             response: None,
             fence_rejected: Some(region),
+            manifest: None,
         }
     }
 }
@@ -207,6 +377,76 @@ impl<E: Engine> MemStateMachine<E> {
         // atomic batch as an accepted entry, so a rejected entry advances it
         // identically — treating rejection as an error would stall the
         // watermark on every replica.
+        // A ManifestChange runs its generation CAS HERE, inside ordered apply
+        // (task #9): the verdict is a pure function of log-established state
+        // (the pair itself is only ever written by earlier entries of this
+        // same log), and all three outcomes are logical verdicts that advance
+        // the watermark — the `Fenced` precedent, not a second apply channel.
+        if let Command::ManifestChange {
+            region,
+            change_id,
+            expected_generation,
+            changeset,
+            watermark_term,
+            watermark_index,
+        } = cmd
+        {
+            let pair_key = manifest_pair_key(*region);
+            let current = match self.engine.get(ColumnFamily::Default, &pair_key)? {
+                Some(bytes) => ManifestPair::decode(&bytes)?,
+                None => ManifestPair {
+                    generation: 0,
+                    last_change_id: Vec::new(),
+                },
+            };
+            let region_id = kv9_common::RegionId(*region);
+            let mut batch = kv9_engine::WriteBatch::new();
+            let verdict = if *expected_generation == current.generation {
+                // The unique g → g+1 transition: both pair fields written
+                // together in ONE value of ONE key (P4: this arm is the only
+                // writer; P1: a torn pair is unrepresentable at rest), in the
+                // SAME atomic batch as the changeset install and the applied
+                // watermark.
+                let next = ManifestPair {
+                    generation: current.generation + 1,
+                    last_change_id: change_id.clone(),
+                };
+                batch.put(ColumnFamily::Default, pair_key, next.encode());
+                let mut installed = watermark_term.to_be_bytes().to_vec();
+                installed.extend_from_slice(&watermark_index.to_be_bytes());
+                installed.extend_from_slice(changeset);
+                batch.put(
+                    ColumnFamily::Default,
+                    manifest_gen_key(*region, next.generation),
+                    installed,
+                );
+                ManifestVerdict::Applied {
+                    region: region_id,
+                    generation: next.generation,
+                }
+            } else if !change_id.is_empty() && *change_id == current.last_change_id {
+                // Idempotent duplicate: this identity already performed its
+                // transition. Nothing written; MUST NOT be reported as newly
+                // accepted (crash-point-3 receipt half).
+                ManifestVerdict::AlreadyApplied {
+                    region: region_id,
+                    generation: current.generation,
+                }
+            } else {
+                ManifestVerdict::Stale {
+                    region: region_id,
+                    current_generation: current.generation,
+                }
+            };
+            batch.put(
+                ColumnFamily::Default,
+                APPLIED_INDEX_KEY.to_vec(),
+                index.0.to_be_bytes().to_vec(),
+            );
+            self.engine.write(batch)?;
+            self.applied = index;
+            return Ok(ApplyResult::manifest(index, verdict));
+        }
         let (mut batch, fence_rejected): (_, Option<kv9_common::RegionId>) = match cmd {
             Command::Fenced { fence, inner } => {
                 let adjudicator = self.adjudicator.as_ref().ok_or_else(|| {
@@ -249,6 +489,48 @@ impl<E: Engine> MemStateMachine<E> {
     /// Direct read-back from the state machine's KV (the `get` of the round-trip).
     pub fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Vec<u8>>> {
         self.engine.get(cf, key)
+    }
+
+    /// One region's authoritative manifest pair — the reconciliation query's
+    /// read face (task #9). ONE engine get of ONE key: precondition P1 is
+    /// structural here, a caller cannot fetch the two fields separately.
+    /// Generation 0 with an empty change id = no manifest change has ever
+    /// applied to this region.
+    pub fn manifest_pair(&self, region: u64) -> Result<ManifestPair> {
+        match self
+            .engine
+            .get(ColumnFamily::Default, &manifest_pair_key(region))?
+        {
+            Some(bytes) => ManifestPair::decode(&bytes),
+            None => Ok(ManifestPair {
+                generation: 0,
+                last_change_id: Vec::new(),
+            }),
+        }
+    }
+
+    /// The changeset installed at one region generation, with its replicated
+    /// watermark `(term, index)` — `None` if that generation has not been
+    /// reached. Add-only: generations are never rewritten or removed in this
+    /// regime (the contract's load-bearing property; any future remove path
+    /// makes a durable ledger a prerequisite, OBJECT-STORAGE §7).
+    pub fn manifest_at(&self, region: u64, generation: u64) -> Result<Option<(u64, u64, Vec<u8>)>> {
+        match self
+            .engine
+            .get(ColumnFamily::Default, &manifest_gen_key(region, generation))?
+        {
+            None => Ok(None),
+            Some(bytes) => {
+                if bytes.len() < 16 {
+                    return Err(kv9_common::Error::Raft(
+                        "installed manifest shorter than its watermark fields".into(),
+                    ));
+                }
+                let term = u64::from_be_bytes(bytes[..8].try_into().expect("8 bytes"));
+                let idx = u64::from_be_bytes(bytes[8..16].try_into().expect("8 bytes"));
+                Ok(Some((term, idx, bytes[16..].to_vec())))
+            }
+        }
     }
 }
 
@@ -298,6 +580,246 @@ mod tests {
     use super::*;
     use crate::{RaftGroup, ReadyConsume, SingleNodeRaft};
     use kv9_common::{NodeId, RegionId};
+
+    fn manifest_cmd(region: u64, id: &[u8], expected: u64, idx: u64) -> (LogIndex, Command) {
+        (
+            LogIndex(idx),
+            Command::ManifestChange {
+                region,
+                change_id: id.to_vec(),
+                expected_generation: expected,
+                changeset: format!("refs-of-{}", String::from_utf8_lossy(id)).into_bytes(),
+                watermark_term: 7,
+                watermark_index: idx,
+            },
+        )
+    }
+
+    fn verdict(sm: &mut MemStateMachine, at: LogIndex, cmd: &Command) -> ManifestVerdict {
+        sm.apply_command(at, cmd)
+            .unwrap()
+            .manifest
+            .expect("a manifest change must carry a manifest verdict")
+    }
+
+    /// Task #9 discriminator row 1: a matching CAS applies, advances the pair
+    /// atomically (one key, both fields), installs the changeset add-only,
+    /// and reports the ONLY success-reporting verdict.
+    #[test]
+    fn a_matching_manifest_cas_applies_and_advances_the_pair() {
+        let mut sm = MemStateMachine::new();
+        let (at, cmd) = manifest_cmd(9, b"A", 0, 1);
+        match verdict(&mut sm, at, &cmd) {
+            ManifestVerdict::Applied { region, generation } => {
+                assert_eq!(region, RegionId(9));
+                assert_eq!(generation, 1);
+            }
+            other => panic!("expected Applied, got {other:?}"),
+        }
+        let pair = sm.manifest_pair(9).unwrap();
+        assert_eq!(pair.generation, 1);
+        assert_eq!(pair.last_change_id, b"A".to_vec());
+        let (term, widx, changeset) = sm.manifest_at(9, 1).unwrap().expect("gen 1 installed");
+        assert_eq!((term, widx), (7, 1));
+        assert_eq!(changeset, b"refs-of-A".to_vec());
+        // Watermark advanced like any applied entry.
+        assert_eq!(sm.applied_index(), at);
+    }
+
+    /// Task #9 discriminator row 2 (crash-point-3 receipt half): a re-sent
+    /// identity whose transition already happened is AlreadyApplied — a
+    /// DISTINCT variant from Applied, nothing written, generation unmoved.
+    /// The variant split is the guard: a caller matching Applied for
+    /// "success" cannot be handed a duplicate.
+    #[test]
+    fn a_repeated_manifest_identity_is_already_applied_never_newly_accepted() {
+        let mut sm = MemStateMachine::new();
+        let (at1, cmd) = manifest_cmd(9, b"A", 0, 1);
+        assert!(matches!(
+            verdict(&mut sm, at1, &cmd),
+            ManifestVerdict::Applied { .. }
+        ));
+        // Same identity re-sent (same change_id, same expected predecessor) at
+        // a later log position — the safe-convergence path.
+        let (at2, resend) = manifest_cmd(9, b"A", 0, 2);
+        match verdict(&mut sm, at2, &resend) {
+            ManifestVerdict::AlreadyApplied { region, generation } => {
+                assert_eq!(region, RegionId(9));
+                assert_eq!(generation, 1);
+            }
+            other => panic!("expected AlreadyApplied, got {other:?}"),
+        }
+        assert_eq!(sm.manifest_pair(9).unwrap().generation, 1);
+        // Watermark still advanced (logical verdict, not an apply error).
+        assert_eq!(sm.applied_index(), at2);
+    }
+
+    /// Task #9 discriminator row 3: a spent predecessor refuses typed with
+    /// the CURRENT generation in the verdict; nothing written.
+    #[test]
+    fn a_stale_manifest_predecessor_refuses_typed_and_writes_nothing() {
+        let mut sm = MemStateMachine::new();
+        let (at1, a) = manifest_cmd(9, b"A", 0, 1);
+        verdict(&mut sm, at1, &a);
+        let (at2, b) = manifest_cmd(9, b"B", 0, 2);
+        match verdict(&mut sm, at2, &b) {
+            ManifestVerdict::Stale {
+                region,
+                current_generation,
+            } => {
+                assert_eq!(region, RegionId(9));
+                assert_eq!(current_generation, 1);
+            }
+            other => panic!("expected Stale, got {other:?}"),
+        }
+        let pair = sm.manifest_pair(9).unwrap();
+        assert_eq!(pair.generation, 1);
+        assert_eq!(pair.last_change_id, b"A".to_vec());
+        assert_eq!(sm.manifest_at(9, 2).unwrap(), None);
+        assert_eq!(sm.applied_index(), at2);
+    }
+
+    /// The CAS chain: sequential changes each spend the predecessor the
+    /// previous one produced; generations count successful applies exactly.
+    #[test]
+    fn sequential_manifest_changes_chain_generations() {
+        let mut sm = MemStateMachine::new();
+        for (i, id) in [b"A", b"B", b"C"].iter().enumerate() {
+            let (at, cmd) = manifest_cmd(9, *id, i as u64, (i + 1) as u64);
+            match verdict(&mut sm, at, &cmd) {
+                ManifestVerdict::Applied { generation, .. } => {
+                    assert_eq!(generation, (i + 1) as u64)
+                }
+                other => panic!("expected Applied at gen {i}, got {other:?}"),
+            }
+        }
+        let pair = sm.manifest_pair(9).unwrap();
+        assert_eq!(pair.generation, 3);
+        assert_eq!(pair.last_change_id, b"C".to_vec());
+        // Add-only: every generation's install is still readable.
+        for g in 1..=3u64 {
+            assert!(sm.manifest_at(9, g).unwrap().is_some(), "gen {g} present");
+        }
+    }
+
+    /// Regions are independent pairs: a change on one region neither reads
+    /// nor spends another region's predecessor.
+    #[test]
+    fn manifest_pairs_are_per_region() {
+        let mut sm = MemStateMachine::new();
+        let (at1, a) = manifest_cmd(9, b"A", 0, 1);
+        verdict(&mut sm, at1, &a);
+        let (at2, b) = manifest_cmd(10, b"B", 0, 2);
+        assert!(matches!(
+            verdict(&mut sm, at2, &b),
+            ManifestVerdict::Applied { generation: 1, .. }
+        ));
+        assert_eq!(sm.manifest_pair(9).unwrap().last_change_id, b"A".to_vec());
+        assert_eq!(sm.manifest_pair(10).unwrap().last_change_id, b"B".to_vec());
+    }
+
+    /// The four-row query table, one test per SETTLED row and one per Unknown
+    /// row — PAIRED on purpose (card acceptance): an implementation that
+    /// merges exact-window-decidable with superwindow-undecidable reds one of
+    /// these four, whichever direction it merged in.
+    #[test]
+    fn reconciliation_exact_window_mine_is_my_change_applied() {
+        let pair = ManifestPair {
+            generation: 5,
+            last_change_id: b"A".to_vec(),
+        };
+        assert_eq!(
+            classify_reconciliation(&pair, 4, b"A"),
+            ReconcileObservation::MyChangeApplied { generation: 5 }
+        );
+    }
+
+    /// Exact window, NOT mine: the unique transition from my predecessor
+    /// belongs to another change — an authoritative negative from transition
+    /// invariants, and DECIDABLE (this row must never degrade to Unknown).
+    #[test]
+    fn reconciliation_exact_window_non_mine_is_known_not_applied() {
+        let pair = ManifestPair {
+            generation: 5,
+            last_change_id: b"B".to_vec(),
+        };
+        assert_eq!(
+            classify_reconciliation(&pair, 4, b"A"),
+            ReconcileObservation::KnownNotApplied {
+                winner_change_id: b"B".to_vec()
+            }
+        );
+    }
+
+    /// Pending: my predecessor is not yet spent. The change may be
+    /// committed-unapplied or commit AFTER this query — absence is not a
+    /// negative answer; this row must never settle.
+    #[test]
+    fn reconciliation_pending_generation_is_unknown() {
+        let pair = ManifestPair {
+            generation: 4,
+            last_change_id: b"Z".to_vec(),
+        };
+        assert_eq!(
+            classify_reconciliation(&pair, 4, b"A"),
+            ReconcileObservation::Unknown
+        );
+    }
+
+    /// Superwindow: history lost — mine-applied-then-superseded and
+    /// never-arrived are indistinguishable in this coordinate. This row must
+    /// never settle EITHER WAY (calling it preempted would clear a slot on a
+    /// state where mine may have applied).
+    #[test]
+    fn reconciliation_superwindow_is_unknown() {
+        let pair = ManifestPair {
+            generation: 7,
+            last_change_id: b"B".to_vec(),
+        };
+        assert_eq!(
+            classify_reconciliation(&pair, 4, b"A"),
+            ReconcileObservation::Unknown
+        );
+        // And with MY id visible as the latest — still not exact-window, so
+        // still Unknown: a superwindow match is not my window's transition.
+        let pair_mine = ManifestPair {
+            generation: 7,
+            last_change_id: b"A".to_vec(),
+        };
+        assert_eq!(
+            classify_reconciliation(&pair_mine, 4, b"A"),
+            ReconcileObservation::Unknown
+        );
+    }
+
+    /// A pair BEHIND the attempt cannot happen under P4; observing it is a
+    /// broken precondition, never a settled verdict.
+    #[test]
+    fn reconciliation_behind_pair_is_unknown() {
+        let pair = ManifestPair {
+            generation: 2,
+            last_change_id: b"Z".to_vec(),
+        };
+        assert_eq!(
+            classify_reconciliation(&pair, 4, b"A"),
+            ReconcileObservation::Unknown
+        );
+    }
+
+    /// An empty identity matches nothing: virgin pairs hold an empty
+    /// last_change_id, and empty==empty must not read generation-0 state as
+    /// someone's success.
+    #[test]
+    fn reconciliation_empty_identity_is_unknown() {
+        let pair = ManifestPair {
+            generation: 1,
+            last_change_id: Vec::new(),
+        };
+        assert_eq!(
+            classify_reconciliation(&pair, 0, b""),
+            ReconcileObservation::Unknown
+        );
+    }
 
     /// The applied watermark rides in the same batch as the data: a state
     /// machine re-created over the SAME engine resumes at the durable
