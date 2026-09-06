@@ -34,7 +34,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use kv9_common::Error;
-use kv9_raft::driver::{ApplyWaitError, ApplyWaitOutcome, ManifestNode};
+use kv9_raft::driver::{ApplyWaitError, ApplyWaitOutcome, ManifestNode, ProposeOutcome, SeamToken};
 use kv9_raft::{classify_reconciliation, Command, ManifestVerdict, ReconcileObservation};
 
 /// One manifest attempt: the immutable identity `(region, expected_generation,
@@ -156,8 +156,6 @@ pub enum ManifestSeamError {
     /// The attempt is malformed (e.g. empty change id). Nothing proposed,
     /// no slot taken.
     InvalidAttempt { reason: &'static str },
-    /// This node already minted its seam (once-CAS). No slot state touched.
-    SeamAlreadyMinted(Error),
     /// `converge` was called for a region with no in-flight attempt.
     NoInFlight { region: u64 },
     /// A receipt of the wrong kind arrived for a manifest proposal —
@@ -184,7 +182,6 @@ impl std::fmt::Display for ManifestSeamError {
             ManifestSeamError::InvalidAttempt { reason } => {
                 write!(f, "invalid manifest attempt: {reason}")
             }
-            ManifestSeamError::SeamAlreadyMinted(e) => write!(f, "{e}"),
             ManifestSeamError::NoInFlight { region } => {
                 write!(f, "region {region} has no in-flight manifest attempt")
             }
@@ -211,14 +208,17 @@ pub struct ManifestSeam {
 }
 
 impl ManifestSeam {
-    /// Mint THE seam for `node`. A second mint is a typed refusal.
-    pub fn mint(node: Arc<dyn ManifestNode>) -> Result<ManifestSeam, ManifestSeamError> {
-        node.acquire_manifest_seam()
-            .map_err(ManifestSeamError::SeamAlreadyMinted)?;
-        Ok(ManifestSeam {
+    /// Build THE seam for `node`, consuming the node's once-minted
+    /// [`SeamToken`] by value (round 3: mint authority is a capability the
+    /// real driver issues once — never a trait method an implementer can
+    /// answer `Ok(())`; the review probe wrapped the same live driver with
+    /// its own flag and got a second slot table).
+    pub fn mint(node: Arc<dyn ManifestNode>, token: SeamToken) -> ManifestSeam {
+        let _consumed = token;
+        ManifestSeam {
             node,
             slots: Mutex::new(HashMap::new()),
-        })
+        }
     }
 
     /// Propose a manifest change for `region`. Refuses typed if the region's
@@ -360,19 +360,25 @@ impl ManifestSeam {
         };
         let cmd = Command::ManifestChange(attempt.payload.clone());
         let at = match self.node.propose_command(&cmd) {
-            Ok(at) => at,
-            Err(e) if first_send => {
-                // Leadership is checked in-lock before append: this send
-                // never entered the log, and no earlier send of this attempt
-                // exists. Settled: not submitted; prepared state releasable;
-                // the caller retries later against a fresh expected
-                // generation.
+            Ok(ProposeOutcome::Accepted(at)) => at,
+            Ok(ProposeOutcome::RefusedPreAppend(e)) if first_send => {
+                // Provably nothing entered the log, and no earlier send of
+                // this attempt exists. Settled: not submitted; prepared
+                // state releasable; the caller retries later against a
+                // fresh expected generation.
                 self.clear(region);
                 return Ok(ManifestProposalState::Settled(
                     SettledManifest::NotSubmitted {
                         reason: e.to_string(),
                     },
                 ));
+            }
+            // A re-send's pre-append refusal says nothing about the earlier
+            // send still in flight — and an AMBIGUOUS failure says nothing
+            // either way on ANY send. Slot held, typed error, converge
+            // retries.
+            Ok(ProposeOutcome::RefusedPreAppend(e)) => {
+                return Err(ManifestSeamError::Node(e))
             }
             Err(e) => return Err(ManifestSeamError::Node(e)),
         };
@@ -467,7 +473,8 @@ mod tests {
         }
         assert_eq!(driver.status().role, Role::Leader);
         driver.spawn(TICK);
-        let seam = ManifestSeam::mint(driver.clone() as Arc<dyn ManifestNode>).unwrap();
+        let token = driver.mint_seam_token().unwrap();
+        let seam = ManifestSeam::mint(driver.clone() as Arc<dyn ManifestNode>, token);
         (driver, seam)
     }
 
@@ -490,13 +497,16 @@ mod tests {
     /// once-mint refuses by design. Model the restart honestly: a fresh
     /// process = a fresh mint flag; the harness resets it through a fresh
     /// wrapper node sharing the same underlying driver.
-    struct RestartedNode(Arc<NodeDriver>, std::sync::atomic::AtomicBool);
+    struct RestartedNode(Arc<NodeDriver>);
     impl ManifestNode for RestartedNode {
         fn propose_command(
             &self,
             cmd: &kv9_raft::Command,
-        ) -> kv9_common::Result<kv9_raft::ProposedAt> {
-            self.0.propose(cmd)
+        ) -> Result<ProposeOutcome, Error> {
+            match self.0.propose(cmd) {
+                Ok(at) => Ok(ProposeOutcome::Accepted(at)),
+                Err(e) => Ok(ProposeOutcome::RefusedPreAppend(e)),
+            }
         }
         fn wait_manifest(
             &self,
@@ -508,25 +518,16 @@ mod tests {
         fn manifest_pair(&self, region: u64) -> kv9_common::Result<kv9_raft::ManifestPair> {
             self.0.manifest_pair(region)
         }
-        fn acquire_manifest_seam(&self) -> kv9_common::Result<()> {
-            use std::sync::atomic::Ordering;
-            if self
-                .1
-                .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
-                .is_err()
-            {
-                return Err(Error::Raft("already minted".into()));
-            }
-            Ok(())
-        }
     }
 
+    /// Models a RESTART: a new process incarnation legitimately re-mints
+    /// over recovered state — hence the gated harness token, never a second
+    /// live mint from the same driver.
     fn seam2_over(driver: &Arc<NodeDriver>) -> ManifestSeam {
-        ManifestSeam::mint(Arc::new(RestartedNode(
-            driver.clone(),
-            std::sync::atomic::AtomicBool::new(false),
-        )) as Arc<dyn ManifestNode>)
-        .unwrap()
+        ManifestSeam::mint(
+            Arc::new(RestartedNode(driver.clone())) as Arc<dyn ManifestNode>,
+            SeamToken::for_harness(),
+        )
     }
 
     fn applied(state: &ManifestProposalState) -> u64 {
@@ -661,17 +662,18 @@ mod tests {
     }
 
     /// Review probe (Tess, 1/1 red pre-fix): a second seam over the SAME
-    /// node must refuse at mint — a freely-constructed second instance
-    /// carried its own slot table, and both proposers "held" region 5.
+    /// live node must refuse — now at the TOKEN, which only the real driver
+    /// mints (once-CAS) and which the seam consumes by value; a wrapper
+    /// with its own flag can no longer manufacture mint authority.
     #[test]
-    fn a_second_seam_over_one_node_refuses_at_mint() {
+    fn a_second_seam_over_one_node_refuses_at_the_token() {
         let (driver, _seam) = seam_over_driver();
-        match ManifestSeam::mint(driver.clone() as Arc<dyn ManifestNode>) {
-            Err(ManifestSeamError::SeamAlreadyMinted(e)) => {
-                assert!(e.to_string().contains("already minted"))
-            }
-            Err(other) => panic!("wrong refusal type: {other:?}"),
-            Ok(_) => panic!("second mint must refuse, got a second seam"),
+        match driver.mint_seam_token() {
+            Err(e) => assert!(
+                e.to_string().contains("already minted"),
+                "refusal names the cause: {e}"
+            ),
+            Ok(_) => panic!("second token must refuse, got a second mint authority"),
         }
     }
 

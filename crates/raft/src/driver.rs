@@ -247,6 +247,25 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         }))
     }
 
+    /// Mint THE seam token for this node (once-CAS; the second mint is a
+    /// typed refusal). `ManifestSeam::mint` consumes it by value.
+    pub fn mint_seam_token(&self) -> Result<SeamToken> {
+        use std::sync::atomic::Ordering;
+        if self
+            .manifest_seam_minted
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+            .is_err()
+        {
+            return Err(Error::Raft(
+                "manifest seam already minted for this node — one slot table per \
+                 node (task #9); a second seam would let two proposers race one \
+                 region's in-flight window"
+                    .into(),
+            ));
+        }
+        Ok(SeamToken { _priv: () })
+    }
+
     /// The peer: the propose/observe face. Holding it does NOT confer drain —
     /// `take_ready` lives on the private [`crate::DrainToken`] minted in
     /// [`Self::new`] (task #5).
@@ -922,29 +941,91 @@ impl ReadBarrier {
     };
 }
 
+/// The one seam-mint authority over a node (task #9 round 3): a trait
+/// method any implementer could answer `Ok(())` was self-report, not
+/// structure — the review probe wrapped the SAME live driver in a new
+/// wrapper with its own flag and minted a second seam. This token is minted
+/// at most once per `NodeDriver` (once-CAS, never released), its
+/// constructor is private, and `ManifestSeam::mint` CONSUMES it by value —
+/// external `ManifestNode` implementers cannot forge one.
+///
+/// Deliberately neither `Clone` nor `Copy` (guard below): a duplicable
+/// mint authority is two slot tables again.
+pub struct SeamToken {
+    _priv: (),
+}
+
+impl SeamToken {
+    /// Harness-only mint (models a fresh process in restart tests, where a
+    /// new incarnation legitimately re-mints over recovered state).
+    #[cfg(any(test, feature = "testing"))]
+    pub fn for_harness() -> SeamToken {
+        SeamToken { _priv: () }
+    }
+
+    /// Compile-time guard (E0080 pattern shared with `ReadBarrier` and
+    /// `DrainToken`): adding `Clone`/`Copy` back is a build error.
+    #[allow(dead_code)]
+    const NOT_CLONE_OR_COPY: () = {
+        struct Probe<T>(core::marker::PhantomData<T>);
+        trait Fallback {
+            const CHECK: () = ();
+        }
+        impl<T> Fallback for Probe<T> {}
+        impl<T: Clone> Probe<T> {
+            const CHECK: () = panic!("SeamToken must be neither Clone nor Copy");
+        }
+        Probe::<SeamToken>::CHECK
+    };
+}
+
+/// The typed outcome of submitting a command through the propose face
+/// (task #9 round 3). The distinction is load-bearing for slot settlement:
+/// only `RefusedPreAppend` proves NOTHING entered the log from this send —
+/// a generic error proves nothing either way and must hold the slot.
+#[derive(Debug)]
+pub enum ProposeOutcome {
+    /// The command was accepted at this position (a claim, not a commit —
+    /// correlate by term+index as always).
+    Accepted(ProposedAt),
+    /// Refused strictly BEFORE any append: leadership is verified inside
+    /// the peer's lock and raft-rs `propose` returns error without
+    /// appending, so this send left no trace in the log. On a FIRST send
+    /// this settles the attempt; on a re-send it says nothing about
+    /// earlier sends.
+    RefusedPreAppend(Error),
+}
+
 /// The seam-facing face of a driven node (task #9): propose + typed manifest
 /// receipt + the P1 pair read. The region runtime's `ManifestSeam` holds
 /// this as `Arc<dyn ManifestNode>` — it can submit manifest changes and
 /// observe their authoritative outcomes, but it gets no drain, no state
-/// machine, and no engine through this face.
+/// machine, and no engine through this face. Seam-mint authority is NOT on
+/// this trait (see [`SeamToken`]): implementers relay observations, they do
+/// not issue capabilities.
 pub trait ManifestNode: Send + Sync {
-    fn propose_command(&self, cmd: &Command) -> Result<ProposedAt>;
+    /// Submit; `Err` = AMBIGUOUS failure (the send may or may not have
+    /// entered the log) — implementations must only return
+    /// [`ProposeOutcome::RefusedPreAppend`] when refusal provably preceded
+    /// any append.
+    fn propose_command(&self, cmd: &Command) -> std::result::Result<ProposeOutcome, Error>;
     fn wait_manifest(
         &self,
         at: ProposedAt,
         deadline: Duration,
     ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError>;
     fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair>;
-    /// Acquire the ONE seam ownership over this node (once-CAS, never
-    /// released): the in-flight slot table must be process-unique per node,
-    /// and a freely-constructible seam would carry its own table (review
-    /// probe: two seams over one driver both held region 5's slot).
-    fn acquire_manifest_seam(&self) -> Result<()>;
 }
 
 impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for NodeDriver<S, E> {
-    fn propose_command(&self, cmd: &Command) -> Result<ProposedAt> {
-        self.propose(cmd)
+    fn propose_command(&self, cmd: &Command) -> std::result::Result<ProposeOutcome, Error> {
+        // propose_traced verifies leadership and appends under ONE peer
+        // lock, and raft-rs `propose` returns error without appending — an
+        // Err here is a certain pre-append refusal, never ambiguous.
+        match self.propose(cmd) {
+            Ok(at) => Ok(ProposeOutcome::Accepted(at)),
+            Err(e) => Ok(ProposeOutcome::RefusedPreAppend(e)),
+        }
     }
 
     fn wait_manifest(
@@ -959,22 +1040,6 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for 
         NodeDriver::manifest_pair(self, region)
     }
 
-    fn acquire_manifest_seam(&self) -> Result<()> {
-        use std::sync::atomic::Ordering;
-        if self
-            .manifest_seam_minted
-            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
-            .is_err()
-        {
-            return Err(Error::Raft(
-                "manifest seam already minted for this node — one slot table per \
-                 node (task #9); a second seam would let two proposers race one \
-                 region's in-flight window"
-                    .into(),
-            ));
-        }
-        Ok(())
-    }
 }
 
 /// Typed failure of [`NodeDriver::read_barrier`] (task #28). Independent from
