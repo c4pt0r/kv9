@@ -509,9 +509,9 @@ irrevocable — not its authorship — and a content-addressed SST may have been
 change, or the effect subsumed by a higher watermark. Collapsing the two lets a caller that received
 "satisfied" report a proposal success, or emit a receipt, that nothing established.
 
-*This distinction has already been paid for once: `crates/raft/src/driver.rs:764`'s
-`ApplyWaitOutcome` separates `Applied` from `Replaced` for exactly this reason, and its comment
-records that the first draft of that very fix reintroduced the confusion it was opened to kill.*
+*This distinction has already been paid for once: `ApplyWaitOutcome` in `crates/raft/src/driver.rs`
+separates `Applied` from `Replaced` for exactly this reason, and its comment records that the first
+draft of that very fix reintroduced the confusion it was opened to kill.*
 
 Restart takes the same path: reconcile the previous in-flight change (its `change_id` is
 recomputable from the engine's durable prepared state) before the slot can be granted again. **A
@@ -519,12 +519,35 @@ change whose fate is genuinely unknown holds the slot indefinitely rather than b
 guess** — the WAL grows, which is an operational cost, whereas guessing wrong duplicates or drops
 data.
 
-**Why it cannot rest on convention:** without the slot, even the in-window positive answer stops
-holding, and it fails *silently*. Concurrent proposers interleave generations, so a change that
-actually applied can be observed at `current == expected+1` with `last_change_id` belonging to
-somebody else — the one case the table treats as decisive now yields the wrong answer rather than
-`Unknown`. **A convention that degrades into a wrong positive is worse than one that degrades into
-`Unknown`**, which is why this is structural.
+**What the slot is actually for — and what it is *not* for.** It does not rescue the decisive row.
+Under the CAS rule, an apply is a single atomic transition that advances the generation **and** sets
+`last_change_id` together, so `(g+1, X)` can only have been produced by X applying at generation `g`.
+Hence:
+
+```
+mine applied ∧ current == g+1        ⇒  last_id == mine
+current == g+1 ∧ last_id == someone else's  ⇒  mine did NOT apply
+                                              (they won generation g; my CAS then fails as stale)
+```
+
+**So the exact-mine row is sound with or without the slot, and no concurrent interleaving turns it
+into a wrong positive.** (An earlier draft of this section claimed otherwise. It was wrong: the
+sequence it described cannot be constructed unless `(generation, last_change_id)` are read
+non-atomically — which is a torn-read bug to be prohibited in its own right, not a reason for the
+slot.)
+
+**The slot's real justifications, both about liveness rather than correctness:**
+
+```
+1  a later change must not overwrite the single last_change_id window before the previous
+   change has settled — that turns a DECIDABLE outcome into a permanent Unknown, and an
+   Unknown holds the slot, which stalls reclamation
+2  it serialises ownership of the prepared state and of WAL reclamation
+```
+
+Without it the degradation is lost reclaimability and much more complex state management — **not a
+silent wrong answer.** Stating that accurately matters: a guard defended by an overstated danger
+survives review for the wrong reason, and the next person cannot tell which part was real.
 
 **Ordering consequence: without this state, the drain worker cannot start** — `Unconfirmed`'s
 contract would be unexecutable and the variant decoration. So the generation/`last_change_id`
