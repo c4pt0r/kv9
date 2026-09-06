@@ -100,15 +100,33 @@ pub trait RaftGroup: Send + Sync {
     /// accepted by the leader (DESIGN §6.1).
     fn propose(&self, data: Vec<u8>) -> Result<LogIndex>;
 
-    /// Drain entries that have been committed and are ready to apply (DESIGN §6.1).
-    fn take_ready(&self) -> Result<Vec<CommittedEntry>>;
-
     /// The highest log index committed so far.
     fn committed_index(&self) -> LogIndex;
 
     /// Trigger / observe a leadership campaign (used by BootstrapElection over
     /// `META_REGION_0`, DESIGN §5.2, and MetaLeader election, DESIGN §5.3).
     fn campaign(&self) -> Result<()>;
+}
+
+/// The DESTRUCTIVE drain face of a raft group, split from [`RaftGroup`]
+/// (task #5). `take_ready` removes committed entries; whoever calls it owns
+/// applying them. Two drains over one group hole the unified driver
+/// watermark's contiguity — the foundation `wait_applied`, the bootstrap
+/// barrier and ReadIndex all stand on — so the faces are separate TRAITS:
+/// a component holding `Arc<dyn RaftGroup>` (Node, MetaRaft, the future
+/// region runtime proposing manifest changes) can propose but can never
+/// drain, no matter what impls it grows. The former near-miss — one
+/// `impl RawApi for Node` away from a second production consumer — is now
+/// unrepresentable rather than review-banned; landing this split retires
+/// that temporary review constraint.
+///
+/// Production wiring gives this face to exactly one holder: `NodeDriver`'s
+/// pump. Single-node test harnesses hold `SingleNodeRaft` concretely and
+/// pump through the same trait.
+pub trait ReadyConsume: Send + Sync {
+    /// Drain entries that have been committed and are ready to apply
+    /// (DESIGN §6.1).
+    fn take_ready(&self) -> Result<Vec<CommittedEntry>>;
 }
 
 /// Trivial single-node Raft: one replica, entries commit immediately (DESIGN §6.1).
@@ -167,11 +185,6 @@ impl RaftGroup for SingleNodeRaft {
         Ok(idx)
     }
 
-    fn take_ready(&self) -> Result<Vec<CommittedEntry>> {
-        let mut log = self.log.lock().expect("raft log poisoned");
-        Ok(std::mem::take(&mut log.ready))
-    }
-
     fn committed_index(&self) -> LogIndex {
         let log = self.log.lock().expect("raft log poisoned");
         LogIndex(log.next_index.saturating_sub(1))
@@ -180,5 +193,12 @@ impl RaftGroup for SingleNodeRaft {
     fn campaign(&self) -> Result<()> {
         // Already leader; nothing to do for a single node.
         Ok(())
+    }
+}
+
+impl ReadyConsume for SingleNodeRaft {
+    fn take_ready(&self) -> Result<Vec<CommittedEntry>> {
+        let mut log = self.log.lock().expect("raft log poisoned");
+        Ok(std::mem::take(&mut log.ready))
     }
 }

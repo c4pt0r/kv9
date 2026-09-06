@@ -572,16 +572,18 @@ impl<S: PersistentRaftStorage> RaftGroup for RaftPeer<S> {
         Ok(self.propose_traced(data)?.index)
     }
 
-    fn take_ready(&self) -> Result<Vec<CommittedEntry>> {
-        Ok(std::mem::take(&mut self.lock().ready))
-    }
-
     fn committed_index(&self) -> LogIndex {
         self.raft_committed()
     }
 
     fn campaign(&self) -> Result<()> {
         self.lock().raw.campaign().map_err(raft_err)
+    }
+}
+
+impl<S: PersistentRaftStorage> crate::ReadyConsume for RaftPeer<S> {
+    fn take_ready(&self) -> Result<Vec<CommittedEntry>> {
+        Ok(std::mem::take(&mut self.lock().ready))
     }
 }
 
