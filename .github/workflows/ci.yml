@@ -121,7 +121,9 @@ jobs:
       # guarantee — the header carries the honest tier): the manifest pair's
       # key literals stay in their owning module at the pinned count.
       - name: Manifest-key tripwire
-        run: scripts/manifest-key-tripwire.sh
+        run: |
+          scripts/manifest-key-tripwire-selftest.sh "$(pwd)/scripts/manifest-key-tripwire.sh"
+          scripts/manifest-key-tripwire.sh
 
   # Informational on purpose. `cargo fmt --check` does NOT pass on this tree: when this
   # workflow landed there were 159 diff hunks across 39 files, spanning all four crate
