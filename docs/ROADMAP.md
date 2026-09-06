@@ -25,8 +25,9 @@ testing** — then bring in the disaggregated object-storage engine (the thesis)
   RocksDB — RocksDB assumes local-first storage and fights the immutable-SST-on-object-storage / manifest-in-raft
   model. Until then the raft state machine runs on the Phase 1 simple WAL engine (`MemEngine` remains for
   tests and the in-process harness).
-- **Object storage (Phase 2 onward, amended 2026-09-05):** a pure-Rust S3-API client behind `ObjectStore`,
-  pointed at **MinIO** from Phase 2. Originally scheduled Phase 3+; see the Phase 2 amendment below.
+- **Object storage (Phase 2 onward, amended 2026-09-05):** the `object_store` crate (pure-Rust
+  S3/GCS/Azure/local) behind `ObjectStore`, pointed at **MinIO** from Phase 2. The crate choice is
+  unchanged; only the phase moved (originally Phase 3+) — see the Phase 2 amendment below.
 - **Async I/O:** `tokio`. **Wire (Phase 1-final onward):** pure-Rust `tonic` gRPC for both public APIs and
   node-internal Raft/discovery. The server owns one listener and registers all services; Raft uses long-lived
   client streams with byte/count batching, while the synchronous core is reached only through channels.
