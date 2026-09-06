@@ -1039,7 +1039,6 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for 
     fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair> {
         NodeDriver::manifest_pair(self, region)
     }
-
 }
 
 /// Typed failure of [`NodeDriver::read_barrier`] (task #28). Independent from
