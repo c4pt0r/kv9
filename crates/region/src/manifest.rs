@@ -377,9 +377,7 @@ impl ManifestSeam {
             // send still in flight — and an AMBIGUOUS failure says nothing
             // either way on ANY send. Slot held, typed error, converge
             // retries.
-            Ok(ProposeOutcome::RefusedPreAppend(e)) => {
-                return Err(ManifestSeamError::Node(e))
-            }
+            Ok(ProposeOutcome::RefusedPreAppend(e)) => return Err(ManifestSeamError::Node(e)),
             Err(e) => return Err(ManifestSeamError::Node(e)),
         };
         match self.node.wait_manifest(at, deadline) {
@@ -499,10 +497,7 @@ mod tests {
     /// wrapper node sharing the same underlying driver.
     struct RestartedNode(Arc<NodeDriver>);
     impl ManifestNode for RestartedNode {
-        fn propose_command(
-            &self,
-            cmd: &kv9_raft::Command,
-        ) -> Result<ProposeOutcome, Error> {
+        fn propose_command(&self, cmd: &kv9_raft::Command) -> Result<ProposeOutcome, Error> {
             match self.0.propose(cmd) {
                 Ok(at) => Ok(ProposeOutcome::Accepted(at)),
                 Err(e) => Ok(ProposeOutcome::RefusedPreAppend(e)),
