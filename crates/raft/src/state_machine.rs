@@ -17,6 +17,7 @@ use kv9_engine::{ColumnFamily, Engine, MemEngine};
 use kv9_common::Result;
 
 use crate::command::Command;
+use crate::command::ManifestChangePayload;
 use crate::{CommittedEntry, LogIndex};
 
 /// The apply-side storage capability (task #9, the capability-narrowing half
@@ -482,15 +483,15 @@ impl<E: ApplyStore> MemStateMachine<E> {
         // (the pair itself is only ever written by earlier entries of this
         // same log), and all three outcomes are logical verdicts that advance
         // the watermark — the `Fenced` precedent, not a second apply channel.
-        if let Command::ManifestChange {
-            region,
-            change_id,
-            expected_generation,
-            changeset,
-            watermark_term,
-            watermark_index,
-        } = cmd
-        {
+        if let Command::ManifestChange(p) = cmd {
+            let ManifestChangePayload {
+                region,
+                change_id,
+                expected_generation,
+                changeset,
+                watermark_term,
+                watermark_index,
+            } = p;
             let pair_key = manifest_pair_key(*region);
             let current = match self.engine.get(ColumnFamily::Default, &pair_key)? {
                 Some(bytes) => ManifestPair::decode(&bytes)?,
@@ -713,16 +714,16 @@ mod tests {
     fn manifest_cmd(region: u64, id: &[u8], expected: u64, idx: u64) -> (LogIndex, Command) {
         (
             LogIndex(idx),
-            Command::ManifestChange {
+            Command::ManifestChange(ManifestChangePayload::for_harness(
                 region,
-                change_id: id.to_vec(),
-                expected_generation: expected,
-                changeset: format!("refs-of-{}", String::from_utf8_lossy(id)).into_bytes(),
-                watermark_term: 7,
+                id.to_vec(),
+                expected,
+                format!("refs-of-{}", String::from_utf8_lossy(id)).into_bytes(),
+                7,
                 // Strictly BELOW the entry's own position: a manifest cannot
                 // vouch for WAL it could not yet have absorbed.
-                watermark_index: idx.saturating_sub(1),
-            },
+                idx.saturating_sub(1),
+            )),
         )
     }
 
@@ -881,13 +882,15 @@ mod tests {
     #[test]
     fn a_watermark_at_or_beyond_own_entry_is_invalid() {
         let mut sm = MemStateMachine::new();
-        let cmd = |wm: u64| Command::ManifestChange {
-            region: 9,
-            change_id: b"A".to_vec(),
-            expected_generation: 0,
-            changeset: b"refs".to_vec(),
-            watermark_term: 7,
-            watermark_index: wm,
+        let cmd = |wm: u64| {
+            Command::ManifestChange(ManifestChangePayload::for_harness(
+                9,
+                b"A".to_vec(),
+                0,
+                b"refs".to_vec(),
+                7,
+                wm,
+            ))
         };
         // Equal to own index: refused.
         match verdict(&mut sm, LogIndex(5), &cmd(5)) {

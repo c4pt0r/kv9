@@ -11,7 +11,7 @@ kv9-engine.workspace = true
 kv9-raft.workspace = true
 
 [features]
-testing = []
+testing = ["kv9-raft/testing"]
 
 [dev-dependencies]
 kv9-raft = { workspace = true, features = ["testing"] }
