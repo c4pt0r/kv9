@@ -275,6 +275,14 @@ recording because the difference is not stylistic:
 **Two of the five crash points stop being failure modes that need tests and become states that
 cannot occur.** Prefer that trade wherever it is available.
 
+**What that impossibility actually rests on, so it is not silently spent:** reclamation only ever
+*unlinks whole closed segments*. It never rewrites, truncates, or compacts one in place. A crash mid
+reclamation therefore leaves each segment either wholly present or wholly gone, and a segment that
+survives because its removal was not yet durable is merely un-reclaimed — which recovery already
+handles by skipping records at or below the watermark. **Introduce any in-place edit of a segment —
+compacting several into one, trimming a partially-covered segment to reclaim earlier — and the
+impossibility becomes an ordinary failure mode again, needing the detection this design removed.**
+
 ### 6.3 Reclamation predicate
 
 ```
@@ -491,18 +499,20 @@ change whose fate is genuinely unknown holds the slot indefinitely rather than b
 guess** — the WAL grows, which is an operational cost, whereas guessing wrong duplicates or drops
 data.
 
-**Why it cannot rest on convention:** the whole three-state criterion is only sufficient while the
-property holds, and its degradation is silent in both directions. With two concurrent proposers, a
-change that was *preempted* reconciles as *never reached*; worse, a change that **succeeded** can
-reconcile as *preempted*, because a following change overwrites `last_change_id` and the original
-proposer then sees an advanced generation with an id that is not its own.
+**Why it cannot rest on convention:** without the slot, even the in-window positive answer stops
+holding, and it fails *silently*. Concurrent proposers interleave generations, so a change that
+actually applied can be observed at `current == expected+1` with `last_change_id` belonging to
+somebody else — the one case the table treats as decisive now yields the wrong answer rather than
+`Unknown`. **A convention that degrades into a wrong positive is worse than one that degrades into
+`Unknown`**, which is why this is structural.
 
 **Ordering consequence: without this state, the drain worker cannot start** — `Unconfirmed`'s
 contract would be unexecutable and the variant decoration. So the generation/`last_change_id`
 criterion plus its query seam is built *before* the proposer.
 
 The same criterion serves crash point 3 (§8.2): when WAL replay re-presents a record already
-absorbed by an SST, the second row above is what stops the watermark/receipt path from reporting a
+absorbed by an SST, the **apply** table's `change_id == last_change_id` row — not the reconcile
+table — is what stops the watermark/receipt path from reporting a
 re-apply as newly accepted. **One criterion, two faces, no second channel.**
 
 ### 7.3 Why change-id exists — name the direction, or it gets deleted as redundant
