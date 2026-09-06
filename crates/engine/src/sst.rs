@@ -887,6 +887,81 @@ mod tests {
         );
     }
 
+    // ---- input-space coverage, which mutation evidence does not reach ----
+    //
+    // Mutation testing perturbs *code*: "if this check is removed or loosened, does a test
+    // go red?". It says nothing about *which inputs reach a line*. Both are needed, and
+    // neither implies the other — a function can have every check load-bearing and still
+    // panic on a value no test ever supplies. (Cindy, on task #9: three mutations all fired
+    // while a `u64::MAX` overflow sat in the same function.)
+
+    #[test]
+    fn no_buffer_of_any_short_length_panics() {
+        // Every length from 0 through past the header, in several byte patterns. The
+        // assertion is not a value — it is that parse RETURNS. A panic fails the test.
+        for pattern in [0x00u8, 0xFF, b'K'] {
+            for n in 0..80usize {
+                let buf = vec![pattern; n];
+                let _ = Sst::parse(&buf);
+            }
+        }
+        // And a well-formed prefix followed by nothing, at each cut point.
+        let good = build(ColumnFamily::Default, &[(b"a", b"1"), (b"bb", b"22")]);
+        for n in 0..good.len() {
+            let _ = Sst::parse(&good[..n]);
+        }
+    }
+
+    #[test]
+    fn extreme_header_values_are_refused_without_panicking() {
+        // The count and length fields are attacker-controlled u32s. u32::MAX is the value a
+        // limit check must survive, and it is not the same input as `limit + 1`: the tests
+        // above use MAX_ENTRIES + 1, which is nowhere near the type's edge.
+        let frame = |count: u32, first_len: Option<u32>| {
+            let mut b = Vec::new();
+            b.extend_from_slice(&MAGIC);
+            b.push(VERSION);
+            b.push(cf_code(ColumnFamily::Default));
+            b.extend_from_slice(&count.to_le_bytes());
+            if let Some(l) = first_len {
+                b.extend_from_slice(&l.to_le_bytes());
+            }
+            let crc = crc32(&b);
+            b.extend_from_slice(&crc.to_le_bytes());
+            b
+        };
+
+        for count in [0u32, 1, u32::MAX - 1, u32::MAX] {
+            for len in [
+                None,
+                Some(0u32),
+                Some(1),
+                Some(u32::MAX - 1),
+                Some(u32::MAX),
+            ] {
+                let buf = frame(count, len);
+                // Must be a typed refusal, never a panic and never a successful parse of a
+                // frame that carries no entries.
+                assert!(
+                    Sst::parse(&buf).is_err(),
+                    "count={count} len={len:?} was accepted"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_length_field_at_the_type_edge_is_refused_by_the_limit_not_by_arithmetic() {
+        // u32::MAX as a field length must be rejected by the MAX_FIELD_LEN check, so the
+        // refusal is a policy decision rather than an allocation failure or a wrap.
+        let err = on_disk_len(u32::MAX as usize, "key").unwrap_err();
+        assert!(format!("{err}").contains("exceeds"), "{err}");
+        assert!(
+            !format!("{err}").contains("does not fit"),
+            "u32::MAX fits in u32; the limit must reject it first: {err}"
+        );
+    }
+
     #[test]
     fn empty_values_survive() {
         let bytes = build(ColumnFamily::Default, &[(b"k", b"")]);
