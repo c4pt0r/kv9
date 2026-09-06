@@ -366,12 +366,43 @@ apply, in order:
 reconcile      on an unknown outcome, read (current_generation, last_change_id) and compare
                against the (expected_generation, change_id) proposed:
 
-                 current == expected+1 && last_id == mine   → APPLIED
+                 current == expected+1 && last_id == mine   → MY CHANGE APPLIED
+                 current == expected+1 && last_id != mine   → KNOWN-NOT-APPLIED, and can
+                                                              never apply. Settled; clears
+                                                              the slot.
                  current == expected                        → UNKNOWN — "not observed
                                                               applied yet", NOT a negative
                                                               answer. Do not clear the slot,
                                                               do not re-propose.
-                 anything else                              → UNKNOWN
+                 current  > expected+1                      → UNKNOWN (history is gone)
+```
+
+**Why the second row is settled rather than unknown.** The single successful `g → g+1` transition
+belongs to whoever's id is recorded. If mine had applied, `last_id` would be mine; since it is not,
+mine did not apply — and because `generation` only ever advances, `expected == g` can never be
+satisfiable again, so mine can never apply later either. It is dead, not pending.
+
+**This does not contradict "a negative conclusion must be positively stated by the authority", but it
+does sharpen it.** The prohibition is on inferring from *absence or timeout*. Here the authority's
+own atomic state positively asserts that a different change won the sole predecessor slot, and the
+conclusion follows by deduction from that assertion. A typed refusal receipt is *one* form of
+authoritative proof, not the only one.
+
+**Three preconditions, all required, and none of them optional prose:**
+
+```
+1  (generation, last_change_id) are read from ONE atomic snapshot
+   a torn read invalidates the whole algebra
+2  every successful apply strictly performs the CAS  expected == g → (g+1, mine)
+   ★ and NOTHING else ever writes generation — in particular nothing moves it backward.
+     Monotonicity is what makes "can never apply" true; a rollback, a restore, or a
+     region re-creation that returns generation to <= g resurrects a change this rule
+     already declared dead. State it as the property (generation is monotonic and only
+     apply advances it), not as "we have no rollback today"
+3  an attempt's identity is fixed as (expected_generation, change_id), with no write path
+   bypassing the CAS. This is also why "mine can never apply" is safe rather than
+   crippling: expected_generation is inside the content-derived id, so a retry under a
+   new expected generation is a DIFFERENT change, not this one coming back
 ```
 
 **`current == expected` is not evidence that the change never arrived.** It shows only that the
@@ -400,23 +431,30 @@ that would have had to apply it:**
 **An observation of state that merely lacks the change is never one of them.** A negative conclusion
 requires the authority to say so, not the absence of it having said so.
 
-**`(generation, last_change_id)` proves an outcome only inside a window, and the window closes as
-soon as another change lands.** After that a caller observes `current > expected && last_id != mine`,
-and that observation is produced identically by *applied-then-superseded* and by *never-arrived*:
+**The decidable window is exactly one generation wide.** At `current == expected+1` both outcomes are
+settled — mine applied, or mine is dead — because that single transition's owner is recorded. **Once
+a second change lands the window has closed**, and a caller observing `current > expected+1` cannot
+distinguish two histories that are genuinely different:
 
 ```
 H1   A applied at g (reply lost) → B applies      ⇒  caller sees current = g+2, last_id ≠ A
 H2   A never arrived             → B, C apply     ⇒  caller sees current = g+2, last_id ≠ A
 ```
 
-**The single in-flight slot does not rescue this.** It forbids concurrency; it retains no history.
-Both sequences above are strictly serial and both respect the slot. And clearing the slot cannot be
-made atomic with delivering the conclusion to the original caller across a network — a reconciler
-may settle A's fate, clear the slot, and then lose the reply, after which the next change overwrites
-`last_change_id` and the caller is back to unknown.
+**The single in-flight slot does not extend the window.** It forbids concurrency; it retains no
+history. Both sequences above are strictly serial and both respect the slot. And clearing the slot
+cannot be made atomic with delivering the conclusion to the original caller across a network — a
+reconciler may settle A's fate, clear the slot, and then lose the reply, after which the next change
+overwrites `last_change_id` and the caller is back to unknown. **That is what the slot protects: not
+the correctness of the decidable cells, but the chance to observe them before they are overwritten.**
 
-**So the contract is: outside the window, return `Unknown`. Never guess applied, superseded, or
+**So the contract is: past `expected+1`, return `Unknown`. Never guess applied, superseded, or
 never-arrived.** Treating unknown as known-failed is precisely the error that costs data.
+
+**Regressions must pin the two halves separately** — that exact `expected+1` mismatch *is* decidable,
+and that anything beyond it is *not*. An implementation that collapses them into one "not mine ⇒
+unknown" branch loses reclaimability silently; one that collapses them the other way resurrects the
+duplicate. Neither collapse is visible from a passing test that only exercises one side.
 
 #### The question the caller actually needs answered is not the historical one
 
@@ -497,11 +535,18 @@ applied           current == expected+1 && last_id == mine
 effect satisfied  a positive current-effect query (SST referenced && watermark >= mine)
                   Enough to clear the slot and reclaim. Does NOT identify whose change
                   produced it, and MUST NOT be reported as my proposal having applied.
-refused           a typed pre-propose refusal, or a definite stale/refused receipt from
-                  ordered apply for that exact change
+refused           EITHER a typed pre-propose refusal / a definite stale-refused receipt
+                  from ordered apply for that exact change  [receipt-derived]
+                  OR current == expected+1 && last_id != mine                [algebra-derived]
                   ★ NOT current == expected, and NOT a missing effect — neither settles
 unknown           does not clear the slot. The slot stays held.
 ```
+
+**The two `refused` sources are listed separately on purpose: they do not have the same voiding
+conditions.** The receipt-derived one depends on nothing but the receipt. The algebra-derived one
+depends on `generation` being monotonic and advanced only by apply. **Merge them into one row and a
+future change that adds a rollback path silently invalidates half of a rule whose dependency is no
+longer visible anywhere.**
 
 **`applied` and `effect satisfied` authorise the same action and carry different claims**, so they
 are separate outcomes rather than one row. The effect query establishes that the effect holds and is
