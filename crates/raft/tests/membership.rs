@@ -93,7 +93,8 @@ fn learner_joins_catches_up_promotes_and_survives_failover() {
                 peer,
                 Arc::new(endpoint) as Arc<dyn RaftTransport>,
                 MemStateMachine::new(),
-            );
+            )
+            .expect("drain token minted once per peer");
             Node {
                 driver,
                 alive: true,
@@ -128,7 +129,8 @@ fn learner_joins_catches_up_promotes_and_survives_failover() {
         peer4,
         Arc::new(endpoint4) as Arc<dyn RaftTransport>,
         MemStateMachine::new(),
-    );
+    )
+    .expect("drain token minted once per peer");
     nodes.push(Node {
         driver: driver4,
         alive: true,
@@ -240,7 +242,8 @@ fn unadmitted_joiner_reports_unconfigured_not_follower() {
         peer,
         Arc::new(endpoint) as Arc<dyn RaftTransport>,
         MemStateMachine::new(),
-    );
+    )
+    .expect("drain token minted once per peer");
     driver.tick_and_step().unwrap();
     let s = driver.status();
     assert_eq!(s.role, Role::Unconfigured);
@@ -331,7 +334,8 @@ fn status_pair_stays_command_sourced_across_conf_changes() {
                     peer,
                     Arc::new(endpoint) as Arc<dyn RaftTransport>,
                     MemStateMachine::new(),
-                ),
+                )
+                .expect("drain token minted once per peer"),
                 alive: true,
             }
         })
@@ -430,6 +434,7 @@ fn reopen_recovers_conf_state_without_reapplying() {
             Arc::new(endpoint) as Arc<dyn RaftTransport>,
             MemStateMachine::new(),
         )
+        .expect("drain token minted once per peer")
     };
     let mut drivers: Vec<_> = voters.iter().map(|&id| mk(id)).collect();
     type DiskDriver = Arc<NodeDriver<DiskRaftStorage>>;
@@ -489,7 +494,8 @@ fn reopen_recovers_conf_state_without_reapplying() {
         peer,
         Arc::new(hub.endpoint(NodeId(2))) as Arc<dyn RaftTransport>,
         MemStateMachine::new(),
-    );
+    )
+    .expect("drain token minted once per peer");
     // Drive alone: with raft applied starting at 0, the committed prefix is
     // re-handed to the driver; commands re-apply into the fresh (volatile)
     // state machine, conf entries must be SKIPPED by the boundary guard.

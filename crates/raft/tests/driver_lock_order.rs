@@ -64,7 +64,8 @@ fn run_scenario() -> Result<(), String> {
         peer,
         Arc::new(endpoint) as Arc<dyn RaftTransport>,
         MemStateMachine::new(),
-    );
+    )
+    .expect("drain token minted once per peer");
     driver.peer().campaign().map_err(|e| e.to_string())?;
     for _ in 0..200 {
         driver.tick_and_step().map_err(|e| e.to_string())?;

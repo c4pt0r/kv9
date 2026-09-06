@@ -273,7 +273,7 @@ impl<E: Engine> StateMachine for MemStateMachine<E> {
 /// immediately, so this is the whole path; real consensus commits asynchronously.
 pub fn drive_apply<R, S>(raft: &R, sm: &mut S) -> Result<Vec<ApplyResult>>
 where
-    R: crate::RaftGroup + ?Sized,
+    R: crate::ReadyConsume + ?Sized,
     S: StateMachine,
 {
     let ready = raft.take_ready()?;
@@ -296,7 +296,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{RaftGroup, SingleNodeRaft};
+    use crate::{RaftGroup, ReadyConsume, SingleNodeRaft};
     use kv9_common::{NodeId, RegionId};
 
     /// The applied watermark rides in the same batch as the data: a state
