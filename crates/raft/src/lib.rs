@@ -156,16 +156,30 @@ pub trait RaftGroup: Send + Sync {
 /// }
 /// ```
 ///
+/// The mint route — an external peer holder must not mint the token first
+/// (that would make it the production consumer and turn the real
+/// `NodeDriver::new` into a typed failure); `DrainToken::mint` is
+/// crate-internal, so this fires exactly if minting goes public:
+///
+/// ```compile_fail,E0624
+/// fn probe(p: &std::sync::Arc<kv9_raft::RaftPeer>) {
+///     let _ = kv9_raft::DrainToken::mint(p);
+/// }
+/// ```
+///
 /// The harness-drain routes (`SingleNodeRaft`'s impl, `HarnessPump`,
-/// `InProcessCluster`) are `cfg(any(test, feature = "testing"))`. A doc
-/// test cannot observe their absence: workspace test runs unify the
-/// `testing` feature on (kv9-server's dev-deps), so a `compile_fail` probe
-/// against them is green in production builds but red under `cargo test`
-/// — an unfireable guard, worse than none. Their enforcement is the
-/// production build itself: any production caller of a gated item fails
-/// `cargo check`. What no build guards is the GATE's presence — removing
-/// the `cfg` breaks nothing until a caller appears; that boundary is
-/// recorded here rather than papered over with a probe that cannot fire.
+/// `InProcessCluster`) are `cfg(any(test, feature = "testing"))`. They
+/// cannot be guarded by a doc test in this workspace: workspace test runs
+/// unify the `testing` feature on (kv9-server's dev-deps), so a
+/// `compile_fail` probe against them is green in production builds but red
+/// under `cargo test` — an unfireable guard, worse than none. They CAN be
+/// guarded by an independent consumer probe built with
+/// `default-features = false` outside the test feature unification
+/// (measured: a gated import reds E0432 there, and un-gating turns it
+/// green); until such a CI step exists, their enforcement is the
+/// production build itself — any production caller of a gated item fails
+/// `cargo check` — and the un-guarded cell is the GATE's presence with no
+/// caller.
 ///
 /// Green twin — the identical call against the minted drain token compiles,
 /// pinning the red probes to "capability absent from that face" rather than

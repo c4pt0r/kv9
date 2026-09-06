@@ -587,13 +587,15 @@ impl<S: PersistentRaftStorage> RaftGroup for RaftPeer<S> {
 }
 
 impl<S: PersistentRaftStorage> RaftPeer<S> {
-    /// Crate-internal drain. `RaftPeer` deliberately does NOT implement
+    /// Module-private drain. `RaftPeer` deliberately does NOT implement
     /// [`crate::ReadyConsume`]: the peer is public and `Arc`-shared
     /// (`NodeDriver::peer()`, harness accessors), so a public impl here would
     /// hand the destructive drain to every holder — the exact second-consumer
-    /// hole task #5 closes. The one public consume face over a peer is
-    /// [`DrainToken`], minted at most once.
-    pub(crate) fn drain_ready(&self) -> Result<Vec<CommittedEntry>> {
+    /// hole task #5 closes. Private to `rawnode` (not `pub(crate)`): a
+    /// sibling module bypassing the token would be a second in-crate drain,
+    /// the same hole one layer in. The consume faces living in this module
+    /// ([`DrainToken`], the gated `HarnessPump`) are its only callers.
+    fn drain_ready(&self) -> Result<Vec<CommittedEntry>> {
         Ok(std::mem::take(&mut self.lock().ready))
     }
 }
@@ -618,8 +620,13 @@ pub struct DrainToken<S: PersistentRaftStorage = MemStorage> {
 }
 
 impl<S: PersistentRaftStorage> DrainToken<S> {
-    /// Mint the single drain token for `peer`.
-    pub fn mint(peer: &Arc<RaftPeer<S>>) -> Result<DrainToken<S>> {
+    /// Mint the single drain token for `peer`. Crate-internal: an external
+    /// `RaftPeer` holder must not be able to mint first — that would make it
+    /// the production consumer and turn the real `NodeDriver::new` into a
+    /// typed failure. `NodeDriver::new` is the only production mint site;
+    /// the atomic once-mint below keeps even in-crate callers from coexisting
+    /// with it.
+    pub(crate) fn mint(peer: &Arc<RaftPeer<S>>) -> Result<DrainToken<S>> {
         use std::sync::atomic::Ordering;
         if peer
             .drain_minted
