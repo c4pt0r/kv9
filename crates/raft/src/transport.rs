@@ -644,7 +644,8 @@ mod tests {
                 peer,
                 transport.clone() as Arc<dyn RaftTransport>,
                 MemStateMachine::new(),
-            );
+            )
+            .expect("drain token minted once per peer");
             transports.push(transport);
             drivers.push(driver);
         }
