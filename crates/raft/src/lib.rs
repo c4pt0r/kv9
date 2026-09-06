@@ -123,6 +123,28 @@ pub trait RaftGroup: Send + Sync {
 /// Production wiring gives this face to exactly one holder: `NodeDriver`'s
 /// pump. Single-node test harnesses hold `SingleNodeRaft` concretely and
 /// pump through the same trait.
+///
+/// # Resident guards — measured, not assumed, in both directions
+///
+/// A holder of the propose face cannot drain. This probe must fail to
+/// compile, and stays here so re-adding `take_ready` to `RaftGroup` turns
+/// the doc test red:
+///
+/// ```compile_fail,E0599
+/// fn probe(g: &dyn kv9_raft::RaftGroup) {
+///     let _ = g.take_ready();
+/// }
+/// ```
+///
+/// Green twin — the identical call against this face compiles, pinning the
+/// red probe to "capability absent from `RaftGroup`" rather than a typo,
+/// missing import, or wrong receiver:
+///
+/// ```
+/// fn probe(c: &dyn kv9_raft::ReadyConsume) {
+///     let _ = c.take_ready();
+/// }
+/// ```
 pub trait ReadyConsume: Send + Sync {
     /// Drain entries that have been committed and are ready to apply
     /// (DESIGN §6.1).

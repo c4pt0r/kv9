@@ -73,6 +73,29 @@ impl Default for Store<MemEngine> {
 /// a [`RaftGroup`] (single-node stub) whose committed [`Command`]s are applied into a
 /// [`MemStateMachine`] sharing the store's engine, with a [`MetaStore`] reading that same
 /// KV. `// TODO(phase1): back by tikv/raft-rs`.
+/// The meta-region raft wiring: propose face + state machine + catalog store.
+///
+/// # Resident guards (task #5)
+///
+/// Doc tests compile against production cfg, so these stand where unit tests
+/// cannot: production `MetaRaft` has no combined propose+apply path. This
+/// probe must fail to compile — `propose_apply` is `#[cfg(test)]`:
+///
+/// ```compile_fail,E0599
+/// fn probe<E: kv9_engine::Engine>(m: &kv9_server::MetaRaft<E>) {
+///     let _ = m.propose_apply(todo!());
+/// }
+/// ```
+///
+/// Green twin — same path, receiver and bound resolve; only the pump is
+/// absent (the propose face underneath cannot drain either, guarded at
+/// `kv9_raft::ReadyConsume`):
+///
+/// ```
+/// fn probe<E: kv9_engine::Engine>(m: &kv9_server::MetaRaft<E>) {
+///     let _ = m.raft.committed_index();
+/// }
+/// ```
 pub struct MetaRaft<E: Engine = MemEngine> {
     /// The PROPOSE face only (task #5): this handle can submit commands but
     /// can never drain committed entries — `take_ready` lives on the
@@ -176,6 +199,61 @@ impl<E: Engine> MetaRaft<E> {
 }
 
 /// One assembled `kv9` node (DESIGN §3.5, §4).
+///
+/// # Resident guards (task #5)
+///
+/// The single-node harness paths are `#[cfg(test)]` — a bare production
+/// `Node` can propose but cannot pump apply. Doc tests compile against
+/// production cfg, so each probe must fail to compile and turns red if a
+/// harness path leaks back into the production build:
+///
+/// ```compile_fail,E0599
+/// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
+///     let _ = n.bootstrap();
+/// }
+/// ```
+///
+/// ```compile_fail,E0599
+/// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
+///     let _ = n.initialize_metadata();
+/// }
+/// ```
+///
+/// ```compile_fail,E0599
+/// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
+///     let _ = n.create_keyspace(todo!(), todo!(), todo!());
+/// }
+/// ```
+///
+/// Green twin — same path, receiver and bound, calling an extant production
+/// method; pins the red probes to capability absence, not spelling:
+///
+/// ```
+/// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
+///     let _ = n.local_cluster_identity();
+/// }
+/// ```
+///
+/// Behavioral cell for the one semantic change in this split: keyspace
+/// creation on a bare `Node` refuses typed in production (the propose face
+/// alone cannot complete a catalog write; `RuntimeBackend` owns the driver
+/// path). This RUNS against production cfg — unit tests cannot reach this
+/// body because `cfg(test)` selects the harness branch:
+///
+/// ```
+/// use kv9_server::AdminApi;
+/// let node = kv9_server::Node::new(kv9_common::NodeId(1), kv9_common::Config::default()).unwrap();
+/// let err = node
+///     .create_keyspace(
+///         "caller",
+///         "k",
+///         kv9_common::TenantId(0),
+///         kv9_common::ApiType::Raw,
+///         kv9_common::TxnGroupId(0),
+///     )
+///     .unwrap_err();
+/// assert!(matches!(err, kv9_common::Error::NotImplemented(_)));
+/// ```
 pub struct Node<E: Engine = MemEngine> {
     pub id: NodeId,
     pub config: Config,
