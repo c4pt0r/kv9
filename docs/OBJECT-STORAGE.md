@@ -372,10 +372,30 @@ reconcile      on an unknown outcome, read (current_generation, last_change_id) 
                                                               the slot.
                  current == expected                        → UNKNOWN — "not observed
                                                               applied yet", NOT a negative
-                                                              answer. Do not clear the slot,
-                                                              do not re-propose.
+                                                              answer. Does not clear the slot.
+                                                              See re-send rule below.
                  current  > expected+1                      → UNKNOWN (history is gone)
 ```
+
+**What `Unknown` forbids, and what it permits — the boundary is exact:**
+
+```
+FORBIDDEN   clearing the slot
+FORBIDDEN   sending a NEW change that assumes the old one did not apply
+PERMITTED   after querying authoritative state, re-sending the EXACT SAME
+            (expected_generation, change_id)  and waiting for its authoritative receipt
+```
+
+Re-sending the same identity is safe in every interleaving, and the two apply rows are what make it
+so: if the original applied, the repeat matches `last_change_id` and returns *already applied*
+(never counted as newly accepted); if it did not, the CAS either succeeds at `expected` or
+stale-refuses. **A blanket "never re-propose" would be wrong in the other direction — it leaves the
+worker holding the slot forever on an outcome that has a perfectly safe convergence path.**
+
+**A refusal of the re-send does not automatically settle the original.** Only a refusal that is
+authoritative *for this in-flight instance* settles it — a pre-propose refusal of the re-send (slot
+busy, not leader, queue full) is a statement about the re-send's admission, not about the original's
+fate.
 
 **Why the second row is settled rather than unknown.** The single successful `g → g+1` transition
 belongs to whoever's id is recorded. If mine had applied, `last_id` would be mine; since it is not,
@@ -394,11 +414,23 @@ authoritative proof, not the only one.
 1  (generation, last_change_id) are read from ONE atomic snapshot
    a torn read invalidates the whole algebra
 2  every successful apply strictly performs the CAS  expected == g → (g+1, mine)
-   ★ and NOTHING else ever writes generation — in particular nothing moves it backward.
-     Monotonicity is what makes "can never apply" true; a rollback, a restore, or a
-     region re-creation that returns generation to <= g resurrects a change this rule
-     already declared dead. State it as the property (generation is monotonic and only
-     apply advances it), not as "we have no rollback today"
+   ★ AND generation is written by nothing else. This precondition has TWO halves, and each
+     needs its own named breakers — an earlier draft named breakers for the first half only,
+     which left the second reading as though nothing could threaten it:
+
+     (a) NOTHING MOVES IT BACKWARD.  Monotonicity is what makes "can never apply" true.
+         Named breakers: rollback · restore · region re-creation — any path returning
+         generation to <= g resurrects a change this rule already declared dead.
+
+     (b) ONLY APPLY ADVANCES IT.  A non-apply writer breaks the algebra just as badly,
+         because (g+1, X) would no longer imply "X applied at g".
+         Named breaker: SPLIT/MERGE. A child region's manifest generation has to be
+         seeded from somewhere, and seeding or rewriting it outside the ordinary apply
+         path is exactly such a writer. Split/merge is already named as a breaker of the
+         add-only property elsewhere in this document; it breaks this one too, by a
+         different mechanism, and the two must be checked separately.
+
+     State both halves as properties, not as "we have no rollback today"
 3  an attempt's identity is fixed as (expected_generation, change_id), with no write path
    bypassing the CAS. This is also why "mine can never apply" is safe rather than
    crippling: expected_generation is inside the content-derived id, so a retry under a
@@ -524,10 +556,11 @@ for the same reason `current == expected` answers nothing.
 > paragraph is the trigger condition for building it. See the property box above for the currently
 > known breakers — but the trigger is the property, not that list.
 
-**One in-flight change per region** is required for a different and narrower reason than an earlier
-draft claimed. It does **not** make `last_change_id` sufficient for reconciliation — that claim was
-wrong (see above). What it does is prevent *concurrent* proposers from interleaving, which would
-break the CAS discipline itself and make even the in-window answers unreliable.
+**One in-flight change per region** is required for a narrower reason than two earlier drafts
+claimed. It does **not** make `last_change_id` sufficient for reconciliation, and it does **not**
+protect the in-window answers: under strict CAS, concurrent proposers merely race for the single
+`g → g+1` transition, and both exact-window rows stay reliable whoever wins. Its real justifications
+are below.
 
 **That single-in-flight property is enforced structurally, not assumed** (task #9). The seam holds
 one proposal slot per region and is the only entry to propose; a second proposal while the slot is
