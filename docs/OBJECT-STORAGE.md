@@ -358,10 +358,39 @@ apply, in order:
 reconcile      on an unknown outcome, read (current_generation, last_change_id) and compare
                against the (expected_generation, change_id) proposed:
 
-                 current == expected                        → not yet applied
-                 current == expected+1 && last_id == mine    → applied
-                 anything else                               → UNKNOWN. Stays unknown.
+                 current == expected+1 && last_id == mine   → APPLIED
+                 current == expected                        → UNKNOWN — "not observed
+                                                              applied yet", NOT a negative
+                                                              answer. Do not clear the slot,
+                                                              do not re-propose.
+                 anything else                              → UNKNOWN
 ```
+
+**`current == expected` is not evidence that the change never arrived.** It shows only that the
+authoritative state machine has not yet observed it — and the change may be sitting uncommitted in
+the raft log, committed but not yet applied, or may commit immediately after the query returns:
+
+```
+t0   A proposed, receipt lost
+t1   query applied manifest → current == expected
+t2   A commits and applies
+```
+
+Concluding *never-reached* at `t1`, then clearing the slot or re-proposing, produces exactly the
+duplicate the scheme exists to prevent. **This is `DESIGN.md` §6.5's "absence is not a negative
+answer", restated in the generation coordinate** — the same trap as reading absence of a file, and it
+must be refused in both.
+
+**Only two things establish known-not-applied, and both are positive statements from the authority
+that would have had to apply it:**
+
+```
+1  a typed pre-propose refusal at the proposal entry (it was never accepted for proposal)
+2  a definite stale/refused receipt from ordered apply, for that exact change
+```
+
+**An observation of state that merely lacks the change is never one of them.** A negative conclusion
+requires the authority to say so, not the absence of it having said so.
 
 **`(generation, last_change_id)` proves an outcome only inside a window, and the window closes as
 soon as another change lands.** After that a caller observes `current > expected && last_id != mine`,
@@ -390,8 +419,19 @@ current state can answer; the second is a question about history, which it canno
 
 For the decision round one actually makes — *may I reclaim WAL up to this watermark?* — the caller
 compares its intended effect against the authoritative manifest: is my SST referenced, and is the
-watermark at least mine. **In round one that is decisive, because nothing removes an SST: there is
-no GC and no compaction (§1).**
+watermark at least mine.
+
+**This query is positive-only, and the asymmetry is the whole point:**
+
+```
+effect PRESENT   (SST referenced && watermark >= mine)  → satisfied or subsumed. Decisive.
+                 Sound in round one because nothing removes an SST — no GC, no compaction (§1)
+effect ABSENT    → UNKNOWN. Never "not applied".
+                 The change may be uncommitted, committed-not-yet-applied, or about to apply
+```
+
+A present effect answers the question the caller actually has. **A missing effect answers nothing**,
+for the same reason `current == expected` answers nothing.
 
 > **The condition that voids this, stated with it:** once compaction or GC exists, absence becomes
 > ambiguous again — "never applied" and "applied and since collected" look identical — which is
@@ -406,10 +446,23 @@ break the CAS discipline itself and make even the in-window answers unreliable.
 
 **That single-in-flight property is enforced structurally, not assumed** (task #9). The seam holds
 one proposal slot per region and is the only entry to propose; a second proposal while the slot is
-occupied is a typed refusal, neither queued nor silently accepted. The slot is cleared only by a
-*settled* reconciliation — applied, preempted, or refused; "still unknown" does not clear it — and
-restart takes the same path, reconciling the previous in-flight change (whose `change_id` is
-recomputable from the engine's durable prepared state) before the slot can be granted again.
+occupied is a typed refusal, neither queued nor silently accepted.
+
+**The slot is cleared only by a *settled* outcome, and each settling outcome has an exact source:**
+
+```
+applied     current == expected+1 && last_id == mine, or a positive current-effect query
+refused     a typed pre-propose refusal, or a definite stale/refused receipt from ordered
+            apply for that exact change
+            ★ NOT current == expected, and NOT a missing effect — neither settles anything
+unknown     does not clear the slot. The slot stays held.
+```
+
+Restart takes the same path: reconcile the previous in-flight change (its `change_id` is
+recomputable from the engine's durable prepared state) before the slot can be granted again. **A
+change whose fate is genuinely unknown holds the slot indefinitely rather than being cleared on a
+guess** — the WAL grows, which is an operational cost, whereas guessing wrong duplicates or drops
+data.
 
 **Why it cannot rest on convention:** the whole three-state criterion is only sufficient while the
 property holds, and its degradation is silent in both directions. With two concurrent proposers, a
