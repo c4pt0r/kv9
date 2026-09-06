@@ -90,6 +90,11 @@ struct RingEntry {
     /// `Some(region)` = the entry was a fenced write REJECTED for this region
     /// (logical outcome; watermark advanced). `None` = applied normally.
     fence_rejected: Option<NodeIdFreeRegionId>,
+    /// `Some(verdict)` = the entry was a manifest change; its discriminator
+    /// verdict is apply-time fact and rides to the proposer (task #9).
+    /// Mutually exclusive with `fence_rejected` by construction (one command
+    /// is one kind).
+    manifest: Option<crate::ManifestVerdict>,
 }
 
 /// Local alias so the ring stays dependency-light in signatures.
@@ -333,6 +338,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
                         entry.index.0,
                         entry.term,
                         result.fence_rejected,
+                        result.manifest,
                     );
                 }
                 EntryKind::ConfChangeV1 | EntryKind::ConfChangeV2 => {
@@ -514,6 +520,14 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         self.peer.propose_traced(cmd.encode())
     }
 
+    /// One region's authoritative manifest pair, read through this driver's
+    /// state machine (task #9). ONE key, one get — precondition P1 is
+    /// structural; see `MemStateMachine::manifest_pair`. Lock note: takes
+    /// `sm` alone, never while holding `applied` (leaf read).
+    pub fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair> {
+        self.sm.lock().expect("sm poisoned").manifest_pair(region)
+    }
+
     /// Wait until this node has applied `at` — verified by **term + index**,
     /// never position alone. Pure condition-poll: the pump must be running
     /// (via [`Self::spawn`] or a caller-driven loop).
@@ -562,11 +576,15 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
                             term: entry.term,
                             index: entry.index,
                         };
-                        match entry.fence_rejected {
-                            None => Ok(ApplyWaitOutcome::Applied(at_pos)),
-                            Some(region) => {
+                        match (entry.manifest, entry.fence_rejected) {
+                            (Some(verdict), _) => Ok(ApplyWaitOutcome::Manifest {
+                                at: at_pos,
+                                verdict,
+                            }),
+                            (None, Some(region)) => {
                                 Ok(ApplyWaitOutcome::FenceRejected { at: at_pos, region })
                             }
+                            (None, None) => Ok(ApplyWaitOutcome::Applied(at_pos)),
                         }
                     } else {
                         // The position applied here, but as ANOTHER leader's
@@ -799,6 +817,15 @@ pub enum ApplyWaitOutcome {
         at: kv9_common::AppliedPosition,
         region: kv9_common::RegionId,
     },
+    /// The exact proposal applied — as a manifest change; the discriminator's
+    /// verdict rides the receipt (task #9). A manifest entry NEVER surfaces
+    /// as bare `Applied`: `ManifestVerdict::AlreadyApplied` folded into a
+    /// generic success would be the crash-point-3 false acceptance, the same
+    /// disease `FenceRejected` guards against for fenced writes.
+    Manifest {
+        at: kv9_common::AppliedPosition,
+        verdict: crate::ManifestVerdict,
+    },
 }
 
 /// The typed error of [`NodeDriver::wait_applied`] (task #30). `Unconfirmed`
@@ -887,6 +914,39 @@ impl ReadBarrier {
         }
         Probe::<ReadBarrier>::CHECK
     };
+}
+
+/// The seam-facing face of a driven node (task #9): propose + typed manifest
+/// receipt + the P1 pair read. The region runtime's `ManifestSeam` holds
+/// this as `Arc<dyn ManifestNode>` — it can submit manifest changes and
+/// observe their authoritative outcomes, but it gets no drain, no state
+/// machine, and no engine through this face.
+pub trait ManifestNode: Send + Sync {
+    fn propose_command(&self, cmd: &Command) -> Result<ProposedAt>;
+    fn wait_manifest(
+        &self,
+        at: ProposedAt,
+        deadline: Duration,
+    ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError>;
+    fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair>;
+}
+
+impl<S: PersistentRaftStorage, E: Engine + 'static> ManifestNode for NodeDriver<S, E> {
+    fn propose_command(&self, cmd: &Command) -> Result<ProposedAt> {
+        self.propose(cmd)
+    }
+
+    fn wait_manifest(
+        &self,
+        at: ProposedAt,
+        deadline: Duration,
+    ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError> {
+        self.wait_applied(at, deadline)
+    }
+
+    fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair> {
+        NodeDriver::manifest_pair(self, region)
+    }
 }
 
 /// Typed failure of [`NodeDriver::read_barrier`] (task #28). Independent from
@@ -983,11 +1043,13 @@ fn push_ring(
     index: u64,
     term: u64,
     fence_rejected: Option<kv9_common::RegionId>,
+    manifest: Option<crate::ManifestVerdict>,
 ) {
     applied.push(RingEntry {
         index,
         term,
         fence_rejected,
+        manifest,
     });
     let len = applied.len();
     if len > APPLIED_RING {
