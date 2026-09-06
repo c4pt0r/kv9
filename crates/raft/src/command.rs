@@ -96,6 +96,36 @@ pub enum Command {
     ConfChange { add: bool, node: u64 },
     /// A no-op (leader-establish barrier / heartbeat filler).
     Noop,
+    /// A replicated **manifest change** (task #9; contract docs/OBJECT-STORAGE.md §7).
+    ///
+    /// Proposed by the region runtime AFTER the referenced SSTs are durably
+    /// uploaded (apply never touches the object store — it installs
+    /// already-durable references). The apply-side discriminator CASes the
+    /// region's authoritative `(generation, last_change_id)` pair:
+    /// `expected_generation` match applies and advances the pair; a repeat of
+    /// `last_change_id` is a typed already-applied (never reported as newly
+    /// accepted); anything else is a typed stale refusal. All three outcomes
+    /// advance the applied watermark like any entry (logical verdicts, not
+    /// apply errors — the `Fenced` precedent).
+    ManifestChange {
+        /// The region whose manifest this changes.
+        region: u64,
+        /// Content-derived change identity (recomputable from the durable
+        /// prepared state; the attempt's identity `(region, expected_generation,
+        /// change_id)` is immutable — precondition P3).
+        change_id: Vec<u8>,
+        /// The generation this change expects to succeed (CAS predecessor).
+        expected_generation: u64,
+        /// Opaque changeset bytes. The SST-reference shape is frozen with the
+        /// engine's `PreparedSst` types; the seam carries bytes until then so
+        /// the discriminator/receipt machinery does not wait on that freeze.
+        changeset: Vec<u8>,
+        /// Replicated applied position (term, index) through which the WAL is
+        /// absorbed by this manifest — REPLICATED coordinates, never local
+        /// segment/offset (those live in per-replica recycling maps only).
+        watermark_term: u64,
+        watermark_index: u64,
+    },
     /// A command wrapped with the proposer's expected region epoch (task #48 layer 2).
     /// Every replica re-checks the fence against the region epoch at this entry's
     /// ordered-apply position; on mismatch the entry is LOGICALLY rejected — it still
@@ -182,6 +212,14 @@ impl Command {
                         .into(),
                 ));
             }
+            Command::ManifestChange { .. } => {
+                return Err(kv9_common::Error::Raft(
+                    "a manifest change cannot be lowered without its generation CAS; \
+                     the ordered-apply loop must run the discriminator and write the \
+                     pair atomically (task #9 P4: no other path writes either field)"
+                        .into(),
+                ));
+            }
         }
         Ok(wb)
     }
@@ -237,6 +275,22 @@ impl Command {
                 out.extend_from_slice(&node.to_be_bytes());
             }
             Command::Noop => out.push(TAG_NOOP),
+            Command::ManifestChange {
+                region,
+                change_id,
+                expected_generation,
+                changeset,
+                watermark_term,
+                watermark_index,
+            } => {
+                out.push(TAG_MANIFEST_CHANGE);
+                out.extend_from_slice(&region.to_be_bytes());
+                put_bytes(&mut out, change_id);
+                out.extend_from_slice(&expected_generation.to_be_bytes());
+                put_bytes(&mut out, changeset);
+                out.extend_from_slice(&watermark_term.to_be_bytes());
+                out.extend_from_slice(&watermark_index.to_be_bytes());
+            }
             Command::Fenced { fence, inner } => {
                 out.push(TAG_FENCED);
                 out.extend_from_slice(&fence.region_id.to_be_bytes());
@@ -282,6 +336,14 @@ impl Command {
                 node: r.u64()?,
             },
             TAG_NOOP => Command::Noop,
+            TAG_MANIFEST_CHANGE => Command::ManifestChange {
+                region: r.u64()?,
+                change_id: r.bytes()?,
+                expected_generation: r.u64()?,
+                changeset: r.bytes()?,
+                watermark_term: r.u64()?,
+                watermark_index: r.u64()?,
+            },
             TAG_FENCED => {
                 let fence = RegionFence {
                     region_id: r.u64()?,
@@ -335,6 +397,7 @@ const TAG_CONF_CHANGE: u8 = 3;
 const TAG_NOOP: u8 = 4;
 const TAG_WRITE: u8 = 5;
 const TAG_FENCED: u8 = 6;
+const TAG_MANIFEST_CHANGE: u8 = 7;
 const OP_PUT: u8 = 1;
 const OP_DELETE: u8 = 2;
 
@@ -512,6 +575,22 @@ mod tests {
                     key: b"user-gone".to_vec(),
                 },
             ],
+        });
+        roundtrip(&Command::ManifestChange {
+            region: 9,
+            change_id: vec![0xab; 32],
+            expected_generation: u64::MAX,
+            changeset: vec![0x00, 0xff, 0x00],
+            watermark_term: 3,
+            watermark_index: u64::MAX,
+        });
+        roundtrip(&Command::ManifestChange {
+            region: 0,
+            change_id: Vec::new(),
+            expected_generation: 0,
+            changeset: Vec::new(),
+            watermark_term: 0,
+            watermark_index: 0,
         });
         roundtrip(&Command::ConfChange {
             add: true,
