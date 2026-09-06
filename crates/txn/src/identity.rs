@@ -42,13 +42,14 @@ pub struct TxnDescriptor {
     pub primary: QualifiedKey,
 }
 
-/// Server-internal authority to commit one exact transaction.
+/// Server-internal, single-use authority to commit one exact transaction.
 ///
 /// This type is not carried by the public commit request.  The future timeline provider
 /// issues it after validating the presented descriptor; the Percolator executor consumes
-/// it.  Keeping it distinct prevents a public naked `commit_ts` from reappearing in the
-/// Rust API while the provider is still unimplemented.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// it.  Keeping both its representation and constructor private prevents a naked
+/// `commit_ts` from becoming an in-process substitute for provider issuance while the
+/// provider is still unimplemented.
+#[derive(Debug, PartialEq, Eq)]
 pub struct CommitAuthority {
     transaction: TxnId,
     commit_ts: TimeStamp,
@@ -57,9 +58,11 @@ pub struct CommitAuthority {
 impl CommitAuthority {
     /// Construct the result returned by a [`TxnAuthorityProvider`].
     ///
-    /// This constructor is an in-process provider seam, not a wire decoder.  Public
-    /// commit requests never carry this type or a commit timestamp.
-    pub fn from_provider(transaction: TxnId, commit_ts: TimeStamp) -> Self {
+    /// There is deliberately no public constructor: opening an unrestricted
+    /// `(TxnId, TimeStamp)` factory would make the promised authority forgeable.
+    /// Provider implementations supply only a timestamp; the crate-owned default
+    /// issuance method validates it before calling this helper.
+    fn from_provider(transaction: TxnId, commit_ts: TimeStamp) -> Self {
         Self {
             transaction,
             commit_ts,
@@ -68,13 +71,31 @@ impl CommitAuthority {
 
     /// Structural validation that can be performed without consulting the provider.
     /// Freshness of `timeline_generation` still requires the provider's durable state.
-    pub fn is_for(self, descriptor: &TxnDescriptor) -> bool {
+    pub fn is_for(&self, descriptor: &TxnDescriptor) -> bool {
         self.transaction == descriptor.id && self.commit_ts > descriptor.id.start_ts
     }
 
     pub fn commit_ts(self) -> TimeStamp {
         self.commit_ts
     }
+
+    /// Compile-time guard for the single-use property.  The inherent associated
+    /// constant shadows the fallback exactly when `CommitAuthority: Clone`; because
+    /// `Copy: Clone`, either convenience derive turns this into an E0080 build error.
+    /// This is the same measured guard used by the read-barrier and fenced-write
+    /// capabilities: an authority may be inspected by reference, but spent once.
+    #[allow(dead_code)]
+    const NOT_CLONE_OR_COPY: () = {
+        struct Probe<T>(core::marker::PhantomData<T>);
+        trait Fallback {
+            const CHECK: () = ();
+        }
+        impl<T> Fallback for Probe<T> {}
+        impl<T: Clone> Probe<T> {
+            const CHECK: () = panic!("CommitAuthority must be neither Clone nor Copy");
+        }
+        Probe::<CommitAuthority>::CHECK
+    };
 }
 
 /// Authority seam for transaction identity and commit-time issuance.
@@ -90,8 +111,24 @@ pub trait TxnAuthorityProvider: Send + Sync + 'static {
     /// Validate a descriptor presented by a client against current durable authority.
     fn validate(&self, presented: &TxnDescriptor) -> Result<()>;
 
-    /// Issue a commit timestamp from the same group and timeline generation.
-    fn issue_commit(&self, transaction: &TxnDescriptor) -> Result<CommitAuthority>;
+    /// Obtain a commit timestamp from this provider's timeline implementation.
+    ///
+    /// The timestamp is deliberately not exposed to API callers as authority.  The
+    /// crate-owned [`Self::issue_commit`] wrapper validates it and is the only
+    /// production constructor of [`CommitAuthority`].
+    fn issue_commit_timestamp(&self, transaction: &TxnDescriptor) -> Result<TimeStamp>;
+
+    /// Validate and issue a single-use authority for this exact transaction.
+    fn issue_commit(&self, transaction: &TxnDescriptor) -> Result<CommitAuthority> {
+        self.validate(transaction)?;
+        let commit_ts = self.issue_commit_timestamp(transaction)?;
+        if commit_ts <= transaction.id.start_ts {
+            return Err(kv9_common::Error::TsoUnavailable(
+                "commit timestamp must be greater than start timestamp".into(),
+            ));
+        }
+        Ok(CommitAuthority::from_provider(transaction.id, commit_ts))
+    }
 }
 
 /// Durable decision observed at the transaction's qualified primary.
@@ -129,11 +166,11 @@ mod tests {
         let good = CommitAuthority::from_provider(descriptor.id, TimeStamp(20));
         assert!(good.is_for(&descriptor));
 
-        let mut stale = good;
+        let mut stale = CommitAuthority::from_provider(descriptor.id, TimeStamp(20));
         stale.transaction.timeline_generation = TimelineGeneration(16);
         assert!(!stale.is_for(&descriptor));
 
-        let mut other_group = good;
+        let mut other_group = CommitAuthority::from_provider(descriptor.id, TimeStamp(20));
         other_group.transaction.txn_group = TxnGroupId(12);
         assert!(!other_group.is_for(&descriptor));
 
@@ -145,6 +182,7 @@ mod tests {
 
     struct TestProvider {
         current_generation: TimelineGeneration,
+        commit_ts: TimeStamp,
     }
 
     impl TxnAuthorityProvider for TestProvider {
@@ -170,12 +208,8 @@ mod tests {
             Ok(())
         }
 
-        fn issue_commit(&self, transaction: &TxnDescriptor) -> Result<CommitAuthority> {
-            self.validate(transaction)?;
-            Ok(CommitAuthority::from_provider(
-                transaction.id,
-                TimeStamp(transaction.id.start_ts.0 + 1),
-            ))
+        fn issue_commit_timestamp(&self, _transaction: &TxnDescriptor) -> Result<TimeStamp> {
+            Ok(self.commit_ts)
         }
     }
 
@@ -183,6 +217,7 @@ mod tests {
     fn provider_contract_rejects_a_stale_generation_before_issuing_commit_authority() {
         let provider = TestProvider {
             current_generation: TimelineGeneration(17),
+            commit_ts: TimeStamp(20),
         };
         let issued = provider
             .begin(QualifiedKey {
@@ -192,12 +227,22 @@ mod tests {
             .unwrap();
         assert!(provider.issue_commit(&issued).unwrap().is_for(&issued));
 
-        let mut stale = issued;
+        let mut stale = issued.clone();
         stale.id.timeline_generation = TimelineGeneration(16);
         assert!(matches!(
             provider.issue_commit(&stale),
             Err(Error::MetaNotReady(message))
                 if message == "transaction timeline generation is stale"
+        ));
+
+        let non_advancing = TestProvider {
+            current_generation: TimelineGeneration(17),
+            commit_ts: issued.id.start_ts,
+        };
+        assert!(matches!(
+            non_advancing.issue_commit(&issued),
+            Err(Error::TsoUnavailable(message))
+                if message == "commit timestamp must be greater than start timestamp"
         ));
     }
 }
