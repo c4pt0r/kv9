@@ -77,32 +77,65 @@ const _: () = assert!(
     "a single field may not be allowed to exceed a whole table"
 );
 
-/// Convert a length to its on-disk `u32`, refusing rather than truncating.
+/// The three limits, carried as a value.
+///
+/// **Why a value and not three constants read directly:** a limit whose only boundary lies
+/// at a gigabyte cannot be driven by a test, so nothing can stand at the production call
+/// site. Extracting the *predicate* into a free function was not enough — that let a unit
+/// test prove the predicate while a mutation deleting the **call** still survived, because
+/// proving a helper is correct is a different claim from proving production invokes it.
+/// Passing limits in lets a test drive the real code path at a small boundary.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct Limits {
+    field_len: usize,
+    entries: usize,
+    total_bytes: usize,
+}
+
+impl Limits {
+    const PRODUCTION: Limits = Limits {
+        field_len: MAX_FIELD_LEN,
+        entries: MAX_ENTRIES,
+        total_bytes: MAX_SST_BYTES,
+    };
+}
+
+/// Convert a *byte length* to its on-disk `u32`, refusing rather than truncating.
 ///
 /// `n as u32` is a *silent* truncating cast: a length of 4_294_967_300 is written as 4,
 /// producing a well-formed file with a wrong length prefix. This module's whole stance is
 /// "refuse, never guess", and the cast broke that on the write side, where the damage only
 /// becomes visible at read time.
-fn on_disk_len(n: usize, what: &str) -> Result<u32> {
-    if n > MAX_FIELD_LEN {
+fn on_disk_len(n: usize, what: &str, limit: usize) -> Result<u32> {
+    if n > limit {
         return Err(Error::Engine(format!(
-            "sst: {what} of {n} bytes exceeds the {MAX_FIELD_LEN} byte limit"
+            "sst: {what} of {n} bytes exceeds the {limit} byte limit"
         )));
     }
     u32::try_from(n)
         .map_err(|_| Error::Engine(format!("sst: {what} length {n} does not fit in u32")))
 }
 
-/// Refuse a whole-table size over the limit.
+/// Convert an *entry count* to its on-disk `u32`.
 ///
-/// A free function purely so the boundary is *reachable by a test*. Inline in `finish()`
-/// the predicate could only be exercised by actually building a gigabyte, so no test stood
-/// on it — a mutation deleting the check survived, which is how this was found. A limit
-/// nothing can red is a limit nobody is holding.
-fn check_total_size(encoded: usize) -> Result<()> {
-    if encoded > MAX_SST_BYTES {
+/// Separate from [`on_disk_len`] because a count and a byte length are different
+/// dimensions. Routing the count through the byte checker — which an earlier revision did —
+/// re-merges exactly the two quantities this module split apart, and leaves the count with
+/// no boundary of its own.
+fn on_disk_count(n: usize, limit: usize) -> Result<u32> {
+    if n > limit {
         return Err(Error::Engine(format!(
-            "sst: table would encode to {encoded} bytes, over the {MAX_SST_BYTES} byte limit"
+            "sst: entry count {n} exceeds the {limit} entry limit"
+        )));
+    }
+    u32::try_from(n).map_err(|_| Error::Engine(format!("sst: entry count {n} does not fit in u32")))
+}
+
+/// Refuse a whole-table size over the limit.
+fn check_total_size(encoded: usize, limit: usize) -> Result<()> {
+    if encoded > limit {
+        return Err(Error::Engine(format!(
+            "sst: table would encode to {encoded} bytes, over the {limit} byte limit"
         )));
     }
     Ok(())
@@ -150,6 +183,7 @@ fn crc32(bytes: &[u8]) -> u32 {
 pub struct SstWriter {
     cf: ColumnFamily,
     entries: Vec<(UserKey, Value)>,
+    limits: Limits,
 }
 
 impl SstWriter {
@@ -157,6 +191,19 @@ impl SstWriter {
         SstWriter {
             cf,
             entries: Vec::new(),
+            limits: Limits::PRODUCTION,
+        }
+    }
+
+    /// A writer with small limits, so the production gates can be *driven* at a boundary
+    /// instead of merely unit-tested in isolation. Same code path as [`SstWriter::new`];
+    /// only the numbers differ.
+    #[cfg(test)]
+    fn with_limits(cf: ColumnFamily, limits: Limits) -> Self {
+        SstWriter {
+            cf,
+            entries: Vec::new(),
+            limits,
         }
     }
 
@@ -166,11 +213,12 @@ impl SstWriter {
     /// reader applies, so an over-large entry is refused at the point it is offered rather
     /// than discovered when the finished table fails to parse.
     pub fn add(&mut self, key: UserKey, value: Value) -> Result<()> {
-        on_disk_len(key.len(), "key")?;
-        on_disk_len(value.len(), "value")?;
-        if self.entries.len() >= MAX_ENTRIES {
+        on_disk_len(key.len(), "key", self.limits.field_len)?;
+        on_disk_len(value.len(), "value", self.limits.field_len)?;
+        if self.entries.len() >= self.limits.entries {
             return Err(Error::Engine(format!(
-                "sst: entry count would exceed the {MAX_ENTRIES} entry limit"
+                "sst: entry count would exceed the {} entry limit",
+                self.limits.entries
             )));
         }
         if let Some((last, _)) = self.entries.last() {
@@ -230,13 +278,13 @@ impl SstWriter {
             ));
         }
 
-        let count = on_disk_len(self.entries.len(), "entry count")?;
+        let count = on_disk_count(self.entries.len(), self.limits.entries)?;
 
         // Total size is computed and refused BEFORE serialising. Checking afterwards would
         // mean building the whole buffer — up to a gigabyte — only to throw it away, and
         // the point of a resource limit is not to pay the cost first.
         let encoded = self.encoded_len()?;
-        check_total_size(encoded)?;
+        check_total_size(encoded, self.limits.total_bytes)?;
 
         let mut out = Vec::with_capacity(encoded);
         out.extend_from_slice(&MAGIC);
@@ -245,17 +293,25 @@ impl SstWriter {
         out.extend_from_slice(&count.to_le_bytes());
 
         for (k, v) in &self.entries {
-            out.extend_from_slice(&on_disk_len(k.len(), "key")?.to_le_bytes());
+            out.extend_from_slice(
+                &on_disk_len(k.len(), "key", self.limits.field_len)?.to_le_bytes(),
+            );
             out.extend_from_slice(k);
-            out.extend_from_slice(&on_disk_len(v.len(), "value")?.to_le_bytes());
+            out.extend_from_slice(
+                &on_disk_len(v.len(), "value", self.limits.field_len)?.to_le_bytes(),
+            );
             out.extend_from_slice(v);
         }
 
         let smallest = &self.entries.first().expect("non-empty checked above").0;
         let largest = &self.entries.last().expect("non-empty checked above").0;
-        out.extend_from_slice(&on_disk_len(smallest.len(), "smallest key")?.to_le_bytes());
+        out.extend_from_slice(
+            &on_disk_len(smallest.len(), "smallest key", self.limits.field_len)?.to_le_bytes(),
+        );
         out.extend_from_slice(smallest);
-        out.extend_from_slice(&on_disk_len(largest.len(), "largest key")?.to_le_bytes());
+        out.extend_from_slice(
+            &on_disk_len(largest.len(), "largest key", self.limits.field_len)?.to_le_bytes(),
+        );
         out.extend_from_slice(largest);
 
         let crc = crc32(&out);
@@ -286,6 +342,7 @@ pub struct Sst {
 struct Cursor<'a> {
     bytes: &'a [u8],
     pos: usize,
+    limits: Limits,
 }
 
 impl<'a> Cursor<'a> {
@@ -313,9 +370,10 @@ impl<'a> Cursor<'a> {
 
     fn len_prefixed(&mut self) -> Result<Vec<u8>> {
         let n = self.u32()? as usize;
-        if n > MAX_FIELD_LEN {
+        if n > self.limits.field_len {
             return Err(Error::Engine(format!(
-                "sst: length field {n} exceeds the {MAX_FIELD_LEN} byte limit"
+                "sst: length field {n} exceeds the {} byte limit",
+                self.limits.field_len
             )));
         }
         Ok(self.take(n)?.to_vec())
@@ -325,10 +383,18 @@ impl<'a> Cursor<'a> {
 impl Sst {
     /// Parse and verify. Every failure here is a refusal, never a silent empty result.
     pub fn parse(bytes: &[u8]) -> Result<Sst> {
-        if bytes.len() > MAX_SST_BYTES {
+        Sst::parse_with_limits(bytes, Limits::PRODUCTION)
+    }
+
+    /// Parse under explicit limits. `parse` is this with the production numbers; tests use
+    /// small ones so the real refusal path is driven at a reachable boundary instead of
+    /// allocating an object the size of the production cap just to watch it be refused.
+    fn parse_with_limits(bytes: &[u8], limits: Limits) -> Result<Sst> {
+        if bytes.len() > limits.total_bytes {
             return Err(Error::Engine(format!(
-                "sst: buffer of {} bytes exceeds the {MAX_SST_BYTES} byte limit",
-                bytes.len()
+                "sst: buffer of {} bytes exceeds the {} byte limit",
+                bytes.len(),
+                limits.total_bytes
             )));
         }
         // Checksum first: nothing else in the buffer may be trusted until it matches.
@@ -348,6 +414,7 @@ impl Sst {
         let mut c = Cursor {
             bytes: body,
             pos: 0,
+            limits,
         };
         if c.take(4)? != MAGIC {
             return Err(Error::Engine("sst: bad magic — not an SST".into()));
@@ -361,9 +428,10 @@ impl Sst {
         }
         let cf = cf_from_code(c.take(1)?[0])?;
         let count = c.u32()? as usize;
-        if count > MAX_ENTRIES {
+        if count > limits.entries {
             return Err(Error::Engine(format!(
-                "sst: entry count {count} exceeds the {MAX_ENTRIES} entry limit"
+                "sst: entry count {count} exceeds the {} entry limit",
+                limits.entries
             )));
         }
 
@@ -707,16 +775,16 @@ mod tests {
         // The defect this replaced: `n as u32` is a silent truncating cast, so a length of
         // u32::MAX + 5 was written as 4 — a well-formed file with a wrong length prefix.
         // Tested through the predicate so the boundary is reachable without allocating it.
-        assert!(on_disk_len(0, "k").is_ok());
+        assert!(on_disk_len(0, "k", MAX_FIELD_LEN).is_ok());
         assert!(
-            on_disk_len(MAX_FIELD_LEN, "k").is_ok(),
+            on_disk_len(MAX_FIELD_LEN, "k", MAX_FIELD_LEN).is_ok(),
             "the limit itself is allowed"
         );
 
-        let over = on_disk_len(MAX_FIELD_LEN + 1, "k").unwrap_err();
+        let over = on_disk_len(MAX_FIELD_LEN + 1, "k", MAX_FIELD_LEN).unwrap_err();
         assert!(format!("{over}").contains("exceeds"), "{over}");
 
-        let huge = on_disk_len((u32::MAX as usize) + 5, "k").unwrap_err();
+        let huge = on_disk_len((u32::MAX as usize) + 5, "k", MAX_FIELD_LEN).unwrap_err();
         assert!(format!("{huge}").contains("exceeds"), "{huge}");
 
         // And the cast it replaced would have produced this instead of an error:
@@ -768,10 +836,10 @@ mod tests {
     }
 
     #[test]
-    fn whatever_the_writer_produces_the_same_version_parser_accepts() {
-        // The symmetry stated as a property rather than as matching constants: it is not
-        // enough that both sides *cite* MAX_FIELD_LEN, the writer's actual output must be
-        // acceptable. Shapes chosen to sit on the edges the format cares about.
+    fn boundary_shaped_writer_outputs_round_trip_through_the_parser() {
+        // Symmetry as behaviour rather than as matching constants. NOTE the scope: five
+        // boundary-shaped corpora, not a universal claim — the earlier name said "whatever
+        // the writer produces", which is a for-all assertion resting on a finite sample.
         let cases: Vec<Vec<(Vec<u8>, Vec<u8>)>> = vec![
             vec![(b"k".to_vec(), b"".to_vec())],
             vec![(b"".to_vec(), b"v".to_vec())],
@@ -825,11 +893,11 @@ mod tests {
     fn every_limit_is_tested_at_exactly_max_and_max_plus_one() {
         // MAX_FIELD_LEN: predicate form, so the boundary is reachable without allocating it.
         assert!(
-            on_disk_len(MAX_FIELD_LEN, "k").is_ok(),
+            on_disk_len(MAX_FIELD_LEN, "k", MAX_FIELD_LEN).is_ok(),
             "exact max is allowed"
         );
         assert!(
-            on_disk_len(MAX_FIELD_LEN + 1, "k").is_err(),
+            on_disk_len(MAX_FIELD_LEN + 1, "k", MAX_FIELD_LEN).is_err(),
             "max+1 refused"
         );
 
@@ -863,37 +931,113 @@ mod tests {
         // Exists because the inline form of this check could not be exercised without
         // building a gigabyte, so a mutation removing it SURVIVED. Found by
         // scripts/mutation-guard.sh, not by reading the code.
-        assert!(check_total_size(0).is_ok());
+        assert!(check_total_size(0, MAX_SST_BYTES).is_ok());
         assert!(
-            check_total_size(MAX_SST_BYTES).is_ok(),
+            check_total_size(MAX_SST_BYTES, MAX_SST_BYTES).is_ok(),
             "exactly the limit is allowed"
         );
-        let err = check_total_size(MAX_SST_BYTES + 1).unwrap_err();
+        let err = check_total_size(MAX_SST_BYTES + 1, MAX_SST_BYTES).unwrap_err();
         assert!(format!("{err}").contains("byte limit"), "{err}");
     }
 
     #[test]
     fn an_oversized_buffer_is_refused_before_the_checksum_is_computed() {
-        // Ordering matters: CRC over an untrusted gigabyte is exactly the cost the limit
-        // exists to avoid, so the size check must come first. Asserted by the error text —
-        // a buffer this size cannot produce a checksum complaint if it never got there.
-        let huge = vec![0u8; MAX_SST_BYTES + 1];
-        let err = Sst::parse(&huge).unwrap_err();
+        // Driven at a SMALL limit. An earlier version allocated MAX_SST_BYTES + 1 — about a
+        // gigabyte — which contradicted the very purpose of the limit and would abort on a
+        // constrained runner before `parse` was ever entered.
+        let tiny = Limits {
+            total_bytes: 16,
+            ..Limits::PRODUCTION
+        };
+        let err = Sst::parse_with_limits(&[0u8; 17], tiny).unwrap_err();
         let msg = format!("{err}");
         assert!(msg.contains("exceeds"), "{msg}");
         assert!(
             !msg.contains("checksum"),
-            "size must be refused before CRC: {msg}"
+            "size must be refused before CRC is computed: {msg}"
+        );
+        // Exactly at the limit passes the SIZE gate and fails later, on structure.
+        let at = Sst::parse_with_limits(&[0u8; 16], tiny).unwrap_err();
+        assert!(
+            !format!("{at}").contains("exceeds"),
+            "exact limit must pass the size gate"
         );
     }
 
-    // ---- input-space coverage, which mutation evidence does not reach ----
-    //
-    // Mutation testing perturbs *code*: "if this check is removed or loosened, does a test
-    // go red?". It says nothing about *which inputs reach a line*. Both are needed, and
-    // neither implies the other — a function can have every check load-bearing and still
-    // panic on a value no test ever supplies. (Cindy, on task #9: three mutations all fired
-    // while a `u64::MAX` overflow sat in the same function.)
+    #[test]
+    fn the_writer_total_size_gate_is_reached_from_finish() {
+        // Stands at the PRODUCTION CALL SITE, not on the helper. Deleting
+        // `check_total_size(...)` from finish() must red this; a unit test of the predicate
+        // alone cannot, which is how the deleted call previously survived a mutation.
+        let tiny = Limits {
+            total_bytes: 24,
+            ..Limits::PRODUCTION
+        };
+        let mut w = SstWriter::with_limits(ColumnFamily::Default, tiny);
+        w.add(b"key".to_vec(), vec![0u8; 64]).unwrap();
+        let err = w.finish().unwrap_err();
+        assert!(
+            format!("{err}").contains("byte limit"),
+            "finish() must consult the total-size gate: {err}"
+        );
+    }
+
+    #[test]
+    fn the_writer_entry_count_gate_is_reached_from_add() {
+        // Stands at add()'s production gate. Disabling that condition must red this.
+        let tiny = Limits {
+            entries: 2,
+            ..Limits::PRODUCTION
+        };
+        let mut w = SstWriter::with_limits(ColumnFamily::Default, tiny);
+        w.add(b"a".to_vec(), b"1".to_vec()).unwrap();
+        w.add(b"b".to_vec(), b"2".to_vec()).unwrap();
+        let err = w.add(b"c".to_vec(), b"3".to_vec()).unwrap_err();
+        assert!(format!("{err}").contains("entry limit"), "{err}");
+    }
+
+    #[test]
+    fn the_writer_field_length_gate_is_reached_from_add() {
+        let tiny = Limits {
+            field_len: 4,
+            ..Limits::PRODUCTION
+        };
+        // BOTH call sites, separately. An earlier version only offered an over-long VALUE,
+        // so the key check had no witness and deleting it survived a mutation: "the
+        // field-length gate is covered" was true of one of its two call sites.
+        let mut w = SstWriter::with_limits(ColumnFamily::Default, tiny);
+        assert!(
+            w.add(b"ok".to_vec(), b"1234".to_vec()).is_ok(),
+            "exact limit allowed on both fields"
+        );
+
+        let mut wk = SstWriter::with_limits(ColumnFamily::Default, tiny);
+        let key_err = wk.add(b"12345".to_vec(), b"v".to_vec()).unwrap_err();
+        assert!(
+            format!("{key_err}").contains("key of 5 bytes"),
+            "an over-long KEY must be refused, and named as the key: {key_err}"
+        );
+
+        let mut wv = SstWriter::with_limits(ColumnFamily::Default, tiny);
+        let val_err = wv.add(b"k".to_vec(), b"12345".to_vec()).unwrap_err();
+        assert!(
+            format!("{val_err}").contains("value of 5 bytes"),
+            "an over-long VALUE must be refused, and named as the value: {val_err}"
+        );
+    }
+
+    #[test]
+    fn on_disk_count_is_its_own_dimension() {
+        // finish() previously routed the ENTRY COUNT through the BYTE checker, re-merging
+        // the two quantities this module separated. Distinct helper, distinct limit.
+        assert!(on_disk_count(4, 4).is_ok(), "exact limit allowed");
+        let err = on_disk_count(5, 4).unwrap_err();
+        assert!(format!("{err}").contains("entry limit"), "{err}");
+        assert!(
+            !format!("{err}").contains("byte"),
+            "a count is not a byte length: {err}"
+        );
+    }
 
     #[test]
     fn no_buffer_of_any_short_length_panics() {
@@ -954,7 +1098,7 @@ mod tests {
     fn a_length_field_at_the_type_edge_is_refused_by_the_limit_not_by_arithmetic() {
         // u32::MAX as a field length must be rejected by the MAX_FIELD_LEN check, so the
         // refusal is a policy decision rather than an allocation failure or a wrap.
-        let err = on_disk_len(u32::MAX as usize, "key").unwrap_err();
+        let err = on_disk_len(u32::MAX as usize, "key", MAX_FIELD_LEN).unwrap_err();
         assert!(format!("{err}").contains("exceeds"), "{err}");
         assert!(
             !format!("{err}").contains("does not fit"),
