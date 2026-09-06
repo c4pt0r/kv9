@@ -20,7 +20,9 @@ use kv9_meta::schema::{
 use kv9_meta::store::SequenceKind;
 use kv9_meta::tables::{Keyspace as KeyspaceRow, TxnGroup};
 use kv9_meta::{Bootstrap, MetaStore};
-use kv9_raft::{drive_apply, Command, MemStateMachine, RaftGroup, SingleNodeRaft};
+#[cfg(test)]
+use kv9_raft::drive_apply;
+use kv9_raft::{Command, MemStateMachine, RaftGroup, SingleNodeRaft};
 use kv9_region::RegionRouter;
 use kv9_txn::{PercolatorExecutor, RawExecutor};
 
@@ -72,6 +74,10 @@ impl Default for Store<MemEngine> {
 /// [`MemStateMachine`] sharing the store's engine, with a [`MetaStore`] reading that same
 /// KV. `// TODO(phase1): back by tikv/raft-rs`.
 pub struct MetaRaft<E: Engine = MemEngine> {
+    /// The PROPOSE face only (task #5): this handle can submit commands but
+    /// can never drain committed entries — `take_ready` lives on the
+    /// separate `ReadyConsume` trait whose sole production holder is the
+    /// driver's pump. A second consumer is unrepresentable from here.
     pub raft: Arc<dyn RaftGroup>,
     pub sm: Mutex<MemStateMachine<E>>,
     pub store: MetaStore<E>,
@@ -79,12 +85,26 @@ pub struct MetaRaft<E: Engine = MemEngine> {
     /// commands, but it cannot repair two overlays that both read the same sequence value
     /// before either proposal is submitted.
     catalog_txn: Mutex<()>,
+    /// Single-node harness pump: the CONSUME face, held concretely and only
+    /// in test builds. Production `MetaRaft` has no drain of any kind — the
+    /// driver applies. Installed by the single-node constructors/tests via
+    /// [`MetaRaft::install_single_node_pump`].
+    #[cfg(test)]
+    single_node_pump: std::sync::Mutex<Option<Arc<SingleNodeRaft>>>,
 }
 
 impl MetaRaft<MemEngine> {
     /// Wire the meta-region raft group + state machine + catalog store over `engine`.
     pub fn new(node: NodeId, engine: Arc<MemEngine>) -> Result<Self> {
-        Self::with_raft(Arc::new(SingleNodeRaft::new(node, META_REGION_0)), engine)
+        let sn = Arc::new(SingleNodeRaft::new(node, META_REGION_0));
+        #[cfg(test)]
+        {
+            let meta = Self::with_raft(sn.clone(), engine)?;
+            meta.install_single_node_pump(sn);
+            Ok(meta)
+        }
+        #[cfg(not(test))]
+        Self::with_raft(sn, engine)
     }
 }
 
@@ -104,6 +124,8 @@ impl<E: Engine> MetaRaft<E> {
             sm: Mutex::new(MemStateMachine::with_engine(engine.clone())?),
             store: MetaStore::new(engine),
             catalog_txn: Mutex::new(()),
+            #[cfg(test)]
+            single_node_pump: std::sync::Mutex::new(None),
         })
     }
 
@@ -113,16 +135,43 @@ impl<E: Engine> MetaRaft<E> {
     /// The command applied here must be reconstructed from the committed log payload.
     /// Applying the caller's typed value directly would create state that a follower or
     /// restart could never replay from Raft.
+    /// TEST-ONLY single-node pump: propose and immediately drain-apply.
+    /// Production has no such combined path — `self.raft` is the propose
+    /// face and cannot drain (task #5); the driver is the only applier.
+    /// Requires the concrete [`SingleNodeRaft`] pump to be installed.
+    #[cfg(test)]
     pub fn propose_apply(&self, cmd: Command) -> Result<()> {
+        let pump = self
+            .single_node_pump
+            .lock()
+            .expect("single-node pump poisoned")
+            .clone()
+            .ok_or_else(|| {
+                Error::Raft(
+                    "propose_apply is the single-node harness pump; this MetaRaft was \
+                     wired to an externally driven peer — pump it via the driver instead"
+                        .into(),
+                )
+            })?;
         self.raft.propose(cmd.encode())?;
         let mut sm = self.sm.lock().expect("meta sm poisoned");
-        let applied = drive_apply(self.raft.as_ref(), &mut *sm)?;
+        let applied = drive_apply(pump.as_ref(), &mut *sm)?;
         if applied.is_empty() {
             return Err(Error::Raft(
                 "proposal produced no committed entry to apply".into(),
             ));
         }
         Ok(())
+    }
+
+    /// Install the single-node CONSUME face for harness use. Test-only by
+    /// construction: production builds have no field to install into.
+    #[cfg(test)]
+    pub(crate) fn install_single_node_pump(&self, pump: Arc<SingleNodeRaft>) {
+        *self
+            .single_node_pump
+            .lock()
+            .expect("single-node pump poisoned") = Some(pump);
     }
 }
 
@@ -145,7 +194,15 @@ impl Node<MemEngine> {
     /// Assemble a node from config (DESIGN §4, §11). Does not yet run bootstrap; call
     /// [`Node::bootstrap`] to drive the election-first state machine.
     pub fn new(id: NodeId, config: Config) -> Result<Self> {
-        Self::with_raft(id, config, Arc::new(SingleNodeRaft::new(id, META_REGION_0)))
+        let sn = Arc::new(SingleNodeRaft::new(id, META_REGION_0));
+        #[cfg(test)]
+        {
+            let node = Self::with_raft(id, config, sn.clone())?;
+            node.meta_raft.install_single_node_pump(sn);
+            Ok(node)
+        }
+        #[cfg(not(test))]
+        Self::with_raft(id, config, sn)
     }
 
     /// Assemble a node around a supplied meta-region peer (used by the in-process
@@ -193,6 +250,10 @@ impl<E: Engine> Node<E> {
     /// Allocation of the concrete [`KeyspaceId`]/[`RegionId`]/[`TxnGroupId`] uses system
     /// sequence rows in the same transaction, so the bumps and rows are one replicated
     /// batch.
+    /// TEST-ONLY single-node harness path (task #5): rides the pump in
+    /// `MetaRaft::propose_apply`. Production keyspace creation goes through
+    /// `RuntimeBackend` and the driver.
+    #[cfg(test)]
     pub fn create_keyspace(
         &self,
         name: &str,
@@ -278,6 +339,9 @@ impl<E: Engine> Node<E> {
     /// Drive the election-first bootstrap to `Serving` (DESIGN §5.2). Skeleton: for a
     /// seedless single node, discovery finds the cluster uninitialized, this node wins
     /// the (trivial) election and initializes the default tenant + system keyspace.
+    /// TEST-ONLY single-node bootstrap (task #5): production bootstrap is
+    /// the runtime's election-first flow through the driver.
+    #[cfg(test)]
     pub fn bootstrap(&self) -> Result<()> {
         use kv9_meta::BootstrapEvent::*;
         let mut meta = self.meta.lock().expect("meta poisoned");
@@ -317,6 +381,7 @@ impl<E: Engine> Node<E> {
     /// Write the initial metadata as the winner (DESIGN §5.2): default tenant, system
     /// keyspace, and its fixed system transaction group and TSO timeline. User
     /// transaction groups are created with their owning keyspaces, not at node start.
+    #[cfg(test)]
     fn initialize_metadata(&self, cluster_id: kv9_common::ClusterId) -> Result<()> {
         let _txn_guard = self
             .meta_raft
@@ -519,10 +584,23 @@ impl<E: Engine> crate::api::AdminApi for Node<E> {
     ) -> Result<crate::api::CreateKeyspaceResult> {
         // The txn group is not a caller-supplied field: a `txn` keyspace's default group
         // is created for it (METADATA-CATALOG §2 corrected hierarchy).
-        Ok(crate::api::CreateKeyspaceResult {
-            keyspace: Node::create_keyspace(self, name, tenant, api_type)?,
-            proposed: None,
-        })
+        #[cfg(test)]
+        {
+            Ok(crate::api::CreateKeyspaceResult {
+                keyspace: Node::create_keyspace(self, name, tenant, api_type)?,
+                proposed: None,
+            })
+        }
+        // Production: a bare Node has no apply pump — the propose face alone
+        // cannot complete a catalog write (task #5). RuntimeBackend owns the
+        // production path through the driver.
+        #[cfg(not(test))]
+        {
+            let _ = (name, tenant, api_type);
+            Err(Error::NotImplemented(
+                "keyspace creation on a bare Node — use RuntimeBackend (driver-applied)",
+            ))
+        }
     }
 
     fn list_keyspaces(&self, _caller: &str) -> Result<Vec<kv9_common::Keyspace>> {
@@ -791,6 +869,7 @@ mod tests {
     use kv9_common::RegionId;
     use kv9_engine::WalEngine;
     use kv9_meta::BootstrapEvent;
+    use kv9_raft::ReadyConsume;
     use kv9_raft::{CommittedEntry, InProcessCluster, ProposedAt, StateMachine};
 
     const N1: NodeId = NodeId(1);
@@ -1352,13 +1431,11 @@ mod tests {
 
         {
             let (engine, _) = WalEngine::open(&wal).unwrap();
-            let node = Node::with_raft_and_engine(
-                N1,
-                Config::default(),
-                Arc::new(SingleNodeRaft::new(N1, META_REGION_0)),
-                Arc::new(engine),
-            )
-            .unwrap();
+            let sn = Arc::new(SingleNodeRaft::new(N1, META_REGION_0));
+            let node =
+                Node::with_raft_and_engine(N1, Config::default(), sn.clone(), Arc::new(engine))
+                    .unwrap();
+            node.meta_raft.install_single_node_pump(sn);
             node.bootstrap().unwrap();
             assert_eq!(AdminApi::list_keyspaces(&node, "test").unwrap().len(), 1);
         }

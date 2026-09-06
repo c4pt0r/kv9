@@ -19,7 +19,8 @@ use raft::eraftpb::{ConfChangeSingle, ConfChangeType, ConfChangeV2};
 
 use crate::rawnode::{PersistentRaftStorage, ProposedAt, RaftPeer};
 use crate::transport::RaftTransport;
-use crate::{Command, EntryKind, MemStateMachine, RaftGroup, Role, StateMachine};
+use crate::ReadyConsume;
+use crate::{Command, EntryKind, MemStateMachine, Role, StateMachine};
 
 /// Queryable node state (the server's `status` surface, agreed seam with the
 /// acceptance harness: success is judged on these fields, not on log text).
