@@ -441,9 +441,14 @@ satisfiable again. Beyond that the window has closed: at `current > expected+1` 
 then superseded* from *never arrived*, and the answer is `Unknown` and must stay `Unknown`.
 **`current == expected` is likewise not a negative answer**: it shows only that the authoritative state machine has
 not yet observed the change, which is equally consistent with the change being uncommitted in the log, committed but
-not yet applied, or committing immediately after the query. Concluding *never-reached* from it and re-proposing is
-the duplicate this scheme exists to prevent — the same error as reading absence of a file, in the generation
-coordinate.
+not yet applied, or committing immediately after the query. Concluding *never-reached* from it and then issuing a
+**new** change on that assumption is the duplicate this scheme exists to prevent — the same error as reading absence
+of a file, in the generation coordinate.
+**Re-sending the identical `(expected_generation, change_id)` after an authoritative query is, by contrast, safe and
+is the intended convergence from `Unknown`.** The CAS and the already-applied row make it harmless in every
+interleaving: if the original applied, the repeat matches `last_change_id` and returns *already applied*, never
+newly-accepted; if it did not, the CAS either succeeds at `expected` or stale-refuses. What `Unknown` forbids is
+clearing the slot and inventing a *new* identity — not retrying the same one.
 **The rule this expresses:** a negative conclusion must come from authoritative state together with its complete
 transition invariants — never from absence, silence or timeout. A typed refusal receipt is one such proof; the CAS
 algebra above is another. **Both depend on `generation` being monotonic and advanced only by apply**, so any path
