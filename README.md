@@ -4,9 +4,21 @@ A modern, **multi-tenant-first**, cloud-native distributed key-value engine — 
 **single binary** with **no separate control plane**, **self-hosted metadata**, and **object storage as the single
 source of truth**.
 
-> Status: **v0 — design + compilable skeleton.** APIs and internals are not stable. This repo currently contains the
-> design, the architecture diagrams, and a Rust workspace skeleton with real module boundaries (method bodies are
-> stubs). See the milestones in [`DESIGN.md`](DESIGN.md#15-milestones).
+> Status: **v0 — partially implemented. APIs and internals are not stable.**
+>
+> **Working:** raft consensus (a single group), the self-hosted metadata catalog, and the **raw KV path** —
+> `RawPut`/`RawGet`/`RawScan`/`RawDeleteRange` over propose→apply, with linearizable reads and a region-epoch
+> write fence.
+>
+> **Not implemented — these return `NotImplemented`, they are not merely untested:** transactions
+> (`PercolatorExecutor::get`/`prewrite`/`commit`/`resolve_lock`), region split/merge, raw TTL, and
+> `list_keyspaces`.
+>
+> **Not built at all:** object storage as the durable layer (in progress — `docs/OBJECT-STORAGE.md`), the LSM
+> engine, and TLS/authentication. Durability today is a **local-disk WAL**, not object storage, so this is
+> **not deployable across machines or on an untrusted network.**
+>
+> Delivery order: [`docs/ROADMAP.md`](docs/ROADMAP.md) is authoritative.
 
 ## Why kv9
 

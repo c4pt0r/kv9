@@ -25,7 +25,9 @@ testing** — then bring in the disaggregated object-storage engine (the thesis)
   RocksDB — RocksDB assumes local-first storage and fights the immutable-SST-on-object-storage / manifest-in-raft
   model. Until then the raft state machine runs on the Phase 1 simple WAL engine (`MemEngine` remains for
   tests and the in-process harness).
-- **Object storage (Phase 3+):** the `object_store` crate (pure-Rust S3/GCS/Azure/local) behind `ObjectStore`.
+- **Object storage (Phase 2 onward, amended 2026-09-05):** the `object_store` crate (pure-Rust
+  S3/GCS/Azure/local) behind `ObjectStore`, pointed at **MinIO** from Phase 2. The crate choice is
+  unchanged; only the phase moved (originally Phase 3+) — see the Phase 2 amendment below.
 - **Async I/O:** `tokio`. **Wire (Phase 1-final onward):** pure-Rust `tonic` gRPC for both public APIs and
   node-internal Raft/discovery. The server owns one listener and registers all services; Raft uses long-lived
   client streams with byte/count batching, while the synchronous core is reached only through channels.
@@ -61,19 +63,43 @@ state-machine data, and the bootstrap initialized marker.
   command.
 
 ### Phase 2 — Disaggregated storage engine (the thesis), swapped in behind `Engine`
-`engine`: memtable → **local WAL** → flush to **immutable SST** on an `ObjectStore` (local-dir impl first) →
+`engine`: memtable → **local WAL** → flush to **immutable SST** on an `ObjectStore` →
 **manifest** (file refs, the mutable pointer) → block cache → read path → **recovery** (replay WAL + load manifest).
 Swap the raft state machine from `MemEngine` to this real engine; wrap user data in the **raw KV API**.
-- *Demo:* real disaggregated engine under the raft groups; data flushes to a local "bucket"; **restart recovers**;
+- *Demo:* real disaggregated engine under the raft groups; data flushes to a real bucket; **restart recovers**;
   a region re-opens purely from its manifest.
-- *Retires:* source-of-truth / immutability / flush→manifest→truncate / SST format / recovery — the storage thesis.
+- *Retires:* source-of-truth / immutability / flush→manifest→truncate / SST format / recovery — the storage thesis;
+  **plus (2026-09-05 amendment) the S3-backend engineering that moved in from Phase 3: prefix layout, multipart or
+  an explicit small-object threshold, checksum kept distinct from ETag, timeout/retry idempotence.**
 
-### Phase 3 — Real object storage + transactions
-Point `ObjectStore` at **S3 / MinIO** (prefix layout, multipart, checksums, **GC** = refcount + orphan scan, first
-memtable-memory/backpressure tokens). Add **Percolator SI**: embedded TSO (one timeline), `default/lock/write` CFs,
-prewrite/commit/get, MVCC reads — **keyspace-confined**.
-- *Demo:* a `txn` keyspace does SI transactions on real object storage; GC reclaims; slow store throttles, not OOMs.
-- *Retires:* object-storage engineering + the transaction model on the disaggregated engine.
+> **Amendment 2026-09-05 (EdHuang).** The object-store backend for Phase 2 is **MinIO over the real S3
+> API**, not the local-dir implementation this phase originally specified. The local-dir backend is not
+> built at all: it was scaffolding standing in for a real object store, so pointing at MinIO removes a
+> step rather than adding one. `MemoryObjectStore` remains a unit-test fixture only and is never
+> evidence that object storage works.
+>
+> **What moved:** the *backend* half of Phase 3's first sentence — prefix layout, multipart, checksums,
+> timeout/retry idempotence — is now Phase 2, and is named in Phase 2's *Retires* line above so it is
+> owed by this phase's acceptance rather than by nobody. **What did not move:** GC (refcount + orphan
+> scan), backpressure/memtable-memory tokens, and transactions all remain Phase 3.
+> Contract: `docs/OBJECT-STORAGE.md`.
+>
+> **A phase boundary decides who owes which evidence and when.** Anything left in Phase 3 does not become
+> delivered by being incidentally exercised in a Phase-2 demo.
+>
+> Recorded here because this file is the authoritative delivery order: on 2026-09-05 four of us
+> re-derived the phase order from memory because nothing in `README`/`DESIGN` pointed at it, and an
+> unrecorded amendment would reproduce exactly that.
+
+### Phase 3 — Object-storage reclamation + transactions
+*(Retitled 2026-09-05: pointing `ObjectStore` at a real backend moved to Phase 2. What remains here is
+everything that was never about the backend — reclaiming space and spending it.)*
+
+**GC** = refcount + orphan scan, and the first memtable-memory/backpressure tokens. Add **Percolator SI**:
+embedded TSO (one timeline), `default/lock/write` CFs, prewrite/commit/get, MVCC reads — **keyspace-confined**.
+- *Demo:* a `txn` keyspace does SI transactions; GC reclaims; a slow store throttles, not OOMs.
+- *Retires:* object-storage **reclamation** (the delete side, which Phase 2 deliberately does not build) +
+  the transaction model on the disaggregated engine.
 
 ### Phase 4 — Multi-region + meta-only elasticity (the payoff proof)
 User regions each their own raft group (raft-log = the WAL); **leader flushes → manifest change via raft → followers
