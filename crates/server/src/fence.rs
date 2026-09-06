@@ -200,9 +200,13 @@ mod read_failure_tests {
     fn node_with_armable_reads() -> Armable {
         let engine = Arc::new(FaultyEngine::new(MemEngine::new()));
         let raft = Arc::new(SingleNodeRaft::new(NodeId(1), META_REGION_0));
-        let node = Arc::new(
-            Node::with_raft_and_engine(NodeId(1), Config::default(), raft, engine.clone()).unwrap(),
-        );
+        let node =
+            Node::with_raft_and_engine(NodeId(1), Config::default(), raft.clone(), engine.clone())
+                .unwrap();
+        // Task #5: the propose face alone cannot drain; the harness installs
+        // the concrete single-node pump explicitly.
+        node.meta_raft.install_single_node_pump(raft);
+        let node = Arc::new(node);
         node.bootstrap().unwrap();
         let keyspace = node
             .create_keyspace("fenced", TenantId::DEFAULT, ApiType::Raw)

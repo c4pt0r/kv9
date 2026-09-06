@@ -21,7 +21,11 @@ pub mod testing;
 pub mod transport;
 
 pub use command::{cf_code, cf_from_code, Command, FencedInner, KvOp, RegionFence};
-pub use rawnode::{InProcessCluster, ProposedAt, RaftPeer};
+#[cfg(any(test, feature = "testing"))]
+pub use rawnode::HarnessPump;
+#[cfg(any(test, feature = "testing"))]
+pub use rawnode::InProcessCluster;
+pub use rawnode::{DrainToken, ProposedAt, RaftPeer};
 pub use state_machine::{
     drive_apply, ApplyResult, FenceAdjudicator, MemStateMachine, StateMachine,
 };
@@ -100,15 +104,97 @@ pub trait RaftGroup: Send + Sync {
     /// accepted by the leader (DESIGN §6.1).
     fn propose(&self, data: Vec<u8>) -> Result<LogIndex>;
 
-    /// Drain entries that have been committed and are ready to apply (DESIGN §6.1).
-    fn take_ready(&self) -> Result<Vec<CommittedEntry>>;
-
     /// The highest log index committed so far.
     fn committed_index(&self) -> LogIndex;
 
     /// Trigger / observe a leadership campaign (used by BootstrapElection over
     /// `META_REGION_0`, DESIGN §5.2, and MetaLeader election, DESIGN §5.3).
     fn campaign(&self) -> Result<()>;
+}
+
+/// The DESTRUCTIVE drain face of a raft group, split from [`RaftGroup`]
+/// (task #5). `take_ready` removes committed entries; whoever calls it owns
+/// applying them. Two drains over one group hole the unified driver
+/// watermark's contiguity — the foundation `wait_applied`, the bootstrap
+/// barrier and ReadIndex all stand on — so the faces are separate TRAITS:
+/// a component holding `Arc<dyn RaftGroup>` (Node, MetaRaft, the future
+/// region runtime proposing manifest changes) can propose but can never
+/// drain, no matter what impls it grows. The former near-miss — one
+/// `impl RawApi for Node` away from a second production consumer — is now
+/// unrepresentable rather than review-banned; landing this split retires
+/// that temporary review constraint.
+///
+/// In production builds exactly one value implements this trait per group:
+/// the [`DrainToken`] minted (at most once — typed refusal on the second
+/// mint) inside `NodeDriver::new` and never exposed. The peer handed out by
+/// `NodeDriver::peer()` does NOT implement this trait, and the harness types
+/// that do (`SingleNodeRaft`, `HarnessPump`) carry the impl only under
+/// `cfg(any(test, feature = "testing"))`.
+///
+/// # Resident guards — measured, not assumed, in both directions
+///
+/// A holder of the propose face cannot drain. Each probe must fail to
+/// compile and stays here so re-opening the route turns the doc test red.
+///
+/// The trait-object route (re-adding `take_ready` to `RaftGroup` fires it):
+///
+/// ```compile_fail,E0599
+/// fn probe(g: &dyn kv9_raft::RaftGroup) {
+///     let _ = g.take_ready();
+/// }
+/// ```
+///
+/// The concrete-peer route — the near bypass: production code holds
+/// `NodeDriver::peer()`'s `Arc<RaftPeer>` legitimately, so a public
+/// `impl ReadyConsume for RaftPeer` (fires this probe) would hand every
+/// such holder the drain:
+///
+/// ```compile_fail,E0599
+/// fn probe(p: &std::sync::Arc<kv9_raft::RaftPeer>) {
+///     use kv9_raft::ReadyConsume;
+///     let _ = p.take_ready();
+/// }
+/// ```
+///
+/// The mint route — an external peer holder must not mint the token first
+/// (that would make it the production consumer and turn the real
+/// `NodeDriver::new` into a typed failure); `DrainToken::mint` is
+/// crate-internal, so this fires exactly if minting goes public:
+///
+/// ```compile_fail,E0624
+/// fn probe(p: &std::sync::Arc<kv9_raft::RaftPeer>) {
+///     let _ = kv9_raft::DrainToken::mint(p);
+/// }
+/// ```
+///
+/// The harness-drain routes (`SingleNodeRaft`'s impl, `HarnessPump`,
+/// `InProcessCluster`) are `cfg(any(test, feature = "testing"))`. They
+/// cannot be guarded by a doc test in this workspace: workspace test runs
+/// unify the `testing` feature on (kv9-server's dev-deps), so a
+/// `compile_fail` probe against them is green in production builds but red
+/// under `cargo test` — an unfireable guard, worse than none. They CAN be
+/// guarded by an independent consumer probe built with
+/// `default-features = false` outside the test feature unification
+/// (measured: a gated import reds E0432 there, and un-gating turns it
+/// green); until such a CI step exists, their enforcement is the
+/// production build itself — any production caller of a gated item fails
+/// `cargo check` — and the un-guarded cell is the GATE's presence with no
+/// caller.
+///
+/// Green twin — the identical call against the minted drain token compiles,
+/// pinning the red probes to "capability absent from that face" rather than
+/// a typo, missing import, or wrong receiver:
+///
+/// ```
+/// fn probe(t: &kv9_raft::DrainToken) {
+///     use kv9_raft::ReadyConsume;
+///     let _ = t.take_ready();
+/// }
+/// ```
+pub trait ReadyConsume: Send + Sync {
+    /// Drain entries that have been committed and are ready to apply
+    /// (DESIGN §6.1).
+    fn take_ready(&self) -> Result<Vec<CommittedEntry>>;
 }
 
 /// Trivial single-node Raft: one replica, entries commit immediately (DESIGN §6.1).
@@ -167,11 +253,6 @@ impl RaftGroup for SingleNodeRaft {
         Ok(idx)
     }
 
-    fn take_ready(&self) -> Result<Vec<CommittedEntry>> {
-        let mut log = self.log.lock().expect("raft log poisoned");
-        Ok(std::mem::take(&mut log.ready))
-    }
-
     fn committed_index(&self) -> LogIndex {
         let log = self.log.lock().expect("raft log poisoned");
         LogIndex(log.next_index.saturating_sub(1))
@@ -180,5 +261,17 @@ impl RaftGroup for SingleNodeRaft {
     fn campaign(&self) -> Result<()> {
         // Already leader; nothing to do for a single node.
         Ok(())
+    }
+}
+
+/// Harness-only (task #5): production wiring hands `SingleNodeRaft` out as
+/// `Arc<dyn RaftGroup>` — the propose face — and a bare `Node`/`MetaRaft`
+/// must NOT be able to drain it. Test builds pump it through the same trait
+/// the driver's `DrainToken` implements.
+#[cfg(any(test, feature = "testing"))]
+impl ReadyConsume for SingleNodeRaft {
+    fn take_ready(&self) -> Result<Vec<CommittedEntry>> {
+        let mut log = self.log.lock().expect("raft log poisoned");
+        Ok(std::mem::take(&mut log.ready))
     }
 }

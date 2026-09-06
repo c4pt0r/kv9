@@ -19,7 +19,8 @@ use raft::eraftpb::{ConfChangeSingle, ConfChangeType, ConfChangeV2};
 
 use crate::rawnode::{PersistentRaftStorage, ProposedAt, RaftPeer};
 use crate::transport::RaftTransport;
-use crate::{Command, EntryKind, MemStateMachine, RaftGroup, Role, StateMachine};
+use crate::ReadyConsume;
+use crate::{Command, EntryKind, MemStateMachine, Role, StateMachine};
 
 /// Queryable node state (the server's `status` surface, agreed seam with the
 /// acceptance harness: success is judged on these fields, not on log text).
@@ -127,6 +128,10 @@ pub struct DriverAppliedPosition {
 
 pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngine> {
     peer: Arc<RaftPeer<S>>,
+    /// THE consume face over `peer` (task #5): minted exactly once, held
+    /// privately here for the life of the driver. `peer()` keeps handing out
+    /// the peer — which can propose and observe but not drain.
+    drain: crate::DrainToken<S>,
     transport: Arc<dyn RaftTransport>,
     /// Generic over the engine so the durable `WalEngine` (or any other) sits
     /// directly in the apply downstream — the server passes a state machine
@@ -190,13 +195,19 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngi
 }
 
 impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
+    /// Wire a driver over `peer`. Mints THE drain token for the peer — a
+    /// typed refusal if one was already minted: two drivers over one peer
+    /// would be two destructive Ready consumers, the exact hole task #5
+    /// closes.
     pub fn new(
         peer: Arc<RaftPeer<S>>,
         transport: Arc<dyn RaftTransport>,
         sm: MemStateMachine<E>,
-    ) -> Arc<NodeDriver<S, E>> {
-        Arc::new(NodeDriver {
+    ) -> Result<Arc<NodeDriver<S, E>>> {
+        let drain = crate::DrainToken::mint(&peer)?;
+        Ok(Arc::new(NodeDriver {
             peer,
+            drain,
             transport,
             sm: Mutex::new(sm),
             applied: Mutex::new(Vec::new()),
@@ -222,9 +233,12 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             // consumers keep waiting instead of trusting a fabricated 0).
             driver_applied: Mutex::new(None),
             stop: AtomicBool::new(false),
-        })
+        }))
     }
 
+    /// The peer: the propose/observe face. Holding it does NOT confer drain —
+    /// `take_ready` lives on the private [`crate::DrainToken`] minted in
+    /// [`Self::new`] (task #5).
     pub fn peer(&self) -> &Arc<RaftPeer<S>> {
         &self.peer
     }
@@ -268,7 +282,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             // commits proceed, driver_applied does not.
             return Ok(());
         }
-        let entries = self.peer.take_ready().unwrap_or_default();
+        let entries = self.drain.take_ready().unwrap_or_default();
         if entries.is_empty() {
             return Ok(());
         }
@@ -1007,7 +1021,8 @@ mod tests {
             peer,
             Arc::new(endpoint) as Arc<dyn RaftTransport>,
             MemStateMachine::new(),
-        );
+        )
+        .expect("drain token minted once per peer");
         driver.peer().campaign().unwrap();
         for _ in 0..50 {
             driver.tick_and_step().unwrap();
@@ -1091,7 +1106,8 @@ mod tests {
             peer,
             Arc::new(endpoint) as Arc<dyn RaftTransport>,
             MemStateMachine::with_engine(Arc::new(FailingEngine)).unwrap(),
-        );
+        )
+        .expect("drain token minted once per peer");
         driver.peer().campaign().unwrap();
         for _ in 0..50 {
             if driver.tick_and_step().is_err() {
@@ -1242,6 +1258,7 @@ mod tests {
                 Arc::new(hub.endpoint(NodeId(1))) as Arc<dyn RaftTransport>,
                 MemStateMachine::new(),
             )
+            .expect("drain token minted once per peer")
         };
 
         // First incarnation: commit a real command, remember the watermark.
@@ -1374,6 +1391,7 @@ mod tests {
                 Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
                 MemStateMachine::new(),
             )
+            .expect("drain token minted once per peer")
         };
         let d1 = mk(NodeId(1));
         let d2 = mk(NodeId(2));
@@ -1573,6 +1591,7 @@ mod tests {
                 Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
                 MemStateMachine::new(),
             )
+            .expect("drain token minted once per peer")
         };
         let d1 = mk(NodeId(1));
         let d2 = mk(NodeId(2));
@@ -1699,7 +1718,8 @@ mod tests {
             peer,
             Arc::new(endpoint) as Arc<dyn RaftTransport>,
             MemStateMachine::with_engine(Arc::new(FailingEngine)).unwrap(),
-        );
+        )
+        .expect("drain token minted once per peer");
         driver.peer().campaign().unwrap();
         for _ in 0..50 {
             if driver.tick_and_step().is_err() || driver.status().role == Role::Leader {
@@ -1755,7 +1775,8 @@ mod tests {
         let endpoint = hub.endpoint(NodeId(1));
         let mut sm = MemStateMachine::new();
         sm.set_fence_adjudicator(Arc::new(AlwaysStale));
-        let driver = NodeDriver::new(peer, Arc::new(endpoint) as Arc<dyn RaftTransport>, sm);
+        let driver = NodeDriver::new(peer, Arc::new(endpoint) as Arc<dyn RaftTransport>, sm)
+            .expect("drain token minted once per peer");
         driver.peer().campaign().unwrap();
         for _ in 0..50 {
             driver.tick_and_step().unwrap();
@@ -1865,6 +1886,7 @@ mod tests {
                 Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
                 MemStateMachine::new(),
             )
+            .expect("drain token minted once per peer")
         };
         let d1 = mk(NodeId(1));
         let d2 = mk(NodeId(2));
@@ -1907,6 +1929,7 @@ mod tests {
                 Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
                 MemStateMachine::new(),
             )
+            .expect("drain token minted once per peer")
         };
         let d1 = mk(NodeId(1));
         let d2 = mk(NodeId(2));
