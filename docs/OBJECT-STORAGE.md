@@ -441,9 +441,16 @@ for the same reason `current == expected` answers nothing.
 > holds today     round one has no GC and no compaction (§1)
 > known future    compaction; GC; and split/merge IF the child takes over the parent's
 > breakers        reference by MOVING it rather than copying it
-> trigger         any breaker lands ⇒ absence is ambiguous again ⇒ the ledger stops
->                 being optional
+> trigger         any breaker lands ⇒ the ledger stops being optional
 > ```
+>
+> **Both directions fail together, not just the negative one.** While changes are add-only, a present
+> effect is *permanent* evidence — nothing can take it away, and only the change that added it could
+> have put it there. Once removal or replacement exists, presence degrades to a statement about the
+> instant it was observed: the reference may be removed afterwards, and a re-add means presence no
+> longer identifies *whose* change produced it. **So a breaker does not merely re-break absence; it
+> also demotes presence from proof to observation** — which is precisely why a durable
+> receipt/history ledger becomes a prerequisite rather than an optimisation at that point.
 >
 > The third breaker is not hypothetical: meta-only `split`/`merge` attach is already listed as a
 > future consumer of this seam (§1, §10), its data half is "child references the parent's SSTs
