@@ -451,16 +451,19 @@ newly-accepted; if it did not, the CAS either succeeds at `expected` or stale-re
 clearing the slot and inventing a *new* identity — not retrying the same one.
 **The rule this expresses:** a negative conclusion must come from authoritative state together with its complete
 transition invariants — never from absence, silence or timeout. A typed refusal receipt is one such proof; the CAS
-algebra above is another. **Both depend on `generation` being monotonic and advanced only by apply**, so any path
-that could move it backward (rollback, restore, region re-creation) invalidates the algebraic form specifically, and
-must be prohibited or the rule revisited. A single in-flight slot does not widen the window: it forbids concurrency
+algebra above is another. **Their dependencies are different and must not be stated jointly:** a refusal receipt
+depends only on the integrity of that authoritative receipt, whereas the CAS query table depends on the full set of
+preconditions — an atomic *read* of the pair, the CAS semantics, an immutable attempt identity, and the pair having
+exactly one atomic *writer*. So a path that writes the pair outside the CAS, or that moves the generation backward
+(rollback, restore, re-creation on a reused region identity), invalidates the algebraic form specifically while
+leaving the receipt form untouched. Saying "both depend on ..." would hide exactly that asymmetry. A single in-flight slot does not widen the window: it forbids concurrency
 but retains no history, and clearing the slot cannot be made atomic with delivering the conclusion to the original
 caller across a network. What it protects is the *chance to observe* the decidable window before a later change
 overwrites it.
 **Two things this deliberately avoids.** First, identity must not be resolved by asking whether the *current* manifest
 still contains the change's effects: a change can be applied and then superseded, after which it is absent — so
-absence would be read as never-applied, and the resulting re-proposal is exactly the double-apply the scheme exists to
-prevent. Second, `region_epoch` must **not** double as the manifest sequence number. The epoch is a routing/membership
+absence would be read as never-applied, and **issuing a new change on that reading** is exactly the double-apply the
+scheme exists to prevent — re-sending the identical identity would not, since the already-applied row absorbs it. Second, `region_epoch` must **not** double as the manifest sequence number. The epoch is a routing/membership
 generation; nothing in its contract promises it advances when a region's file set changes, so ordering manifest
 history by it borrows a guarantee the epoch never made. *(An earlier revision of this section did exactly that,
 arguing that a file-id enters a region at most once per epoch so any legitimate re-add must cross an epoch bump. That
