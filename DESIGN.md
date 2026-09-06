@@ -433,18 +433,25 @@ re-propose.
 compare-and-set: a change is applied when `current_generation == expected_generation`, which advances the generation
 and records `(generation, last_change_id)`; a change whose id equals `last_change_id` is an idempotent repeat and is
 reported as *already applied*, never as newly accepted; anything else is rejected as stale.
-**`(generation, last_change_id)` is a bounded-window proof, not a history, and it proves only in the positive
-direction.** `current == expected+1 ∧ last_change_id == mine` means applied. Everything else is `Unknown`.
-In particular **`current == expected` is not a negative answer**: it shows only that the authoritative state machine
-has not yet observed the change, which is equally consistent with the change being uncommitted in the log, committed
-but not yet applied, or committing immediately after the query. Concluding *never-reached* from it and then
-re-proposing is the duplicate this scheme exists to prevent — the same error as reading absence of a file, in the
-generation coordinate. **Known-not-applied comes only from a positive statement by the authority that would have had
-to apply it:** a typed pre-propose refusal, or a definite stale/refused receipt from ordered apply for that exact
-change. Once further changes land, a caller sees only `current > expected ∧ last_change_id ≠ mine`, produced equally
-by *applied and then superseded* and by *never arrived*; **past that window the answer is `Unknown` and must stay
-`Unknown`.** A single in-flight slot does not close the gap: it forbids concurrency but retains no history, and
-clearing the slot cannot be made atomic with delivering the conclusion to the original caller across a network.
+**`(generation, last_change_id)` is a bounded-window proof, not a history, and the window is exactly one generation
+wide.** Both outcomes at `current == expected+1` are settled, because the owner of that single transition is recorded:
+`last_change_id == mine` means **applied**; `last_change_id ≠ mine` means **not applied and never will be** — another
+change won the sole `g → g+1` transition, and since `generation` only advances, `expected == g` can never be
+satisfiable again. Beyond that the window has closed: at `current > expected+1` a caller cannot distinguish *applied
+then superseded* from *never arrived*, and the answer is `Unknown` and must stay `Unknown`.
+**`current == expected` is likewise not a negative answer**: it shows only that the authoritative state machine has
+not yet observed the change, which is equally consistent with the change being uncommitted in the log, committed but
+not yet applied, or committing immediately after the query. Concluding *never-reached* from it and re-proposing is
+the duplicate this scheme exists to prevent — the same error as reading absence of a file, in the generation
+coordinate.
+**The rule this expresses:** a negative conclusion must come from authoritative state together with its complete
+transition invariants — never from absence, silence or timeout. A typed refusal receipt is one such proof; the CAS
+algebra above is another. **Both depend on `generation` being monotonic and advanced only by apply**, so any path
+that could move it backward (rollback, restore, region re-creation) invalidates the algebraic form specifically, and
+must be prohibited or the rule revisited. A single in-flight slot does not widen the window: it forbids concurrency
+but retains no history, and clearing the slot cannot be made atomic with delivering the conclusion to the original
+caller across a network. What it protects is the *chance to observe* the decidable window before a later change
+overwrites it.
 **Two things this deliberately avoids.** First, identity must not be resolved by asking whether the *current* manifest
 still contains the change's effects: a change can be applied and then superseded, after which it is absent — so
 absence would be read as never-applied, and the resulting re-proposal is exactly the double-apply the scheme exists to
