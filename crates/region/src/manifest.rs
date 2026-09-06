@@ -33,25 +33,63 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use kv9_common::{Error, Result};
+use kv9_common::Error;
 use kv9_raft::driver::{ApplyWaitError, ApplyWaitOutcome, ManifestNode};
 use kv9_raft::{classify_reconciliation, Command, ManifestVerdict, ReconcileObservation};
 
 /// One manifest attempt: the immutable identity `(region, expected_generation,
 /// change_id)` (P3) plus the changeset and replicated watermark needed to
 /// send — and, from a slot, RE-send — the SAME proposal.
+///
+/// # Phase-A boundary (review round 1, Tess)
+///
+/// The fields are PRIVATE and production code has NO constructor: the
+/// contract's promises — change_id is the canonical content hash, the
+/// referenced SSTs are durable BEFORE propose, the watermark is real —
+/// cannot be enforced on self-reported bytes, so until the engine's
+/// `PreparedSst` capability exists to carry them, the entire propose face
+/// is unreachable outside test builds. The harness constructor below is the
+/// deliberate, gated exception; the production constructor will CONSUME a
+/// durable prepared capability by value (phase-B).
 #[derive(Debug, Clone)]
 pub struct ManifestAttempt {
-    pub region: u64,
-    /// Content-derived, non-empty; rebuilt from durable prepared state on
-    /// recovery.
-    pub change_id: Vec<u8>,
-    pub expected_generation: u64,
-    /// Opaque until the engine's `PreparedSst` shape freezes.
-    pub changeset: Vec<u8>,
-    /// Replicated applied coordinates — never local segment/offset.
-    pub watermark_term: u64,
-    pub watermark_index: u64,
+    region: u64,
+    change_id: Vec<u8>,
+    expected_generation: u64,
+    changeset: Vec<u8>,
+    watermark_term: u64,
+    watermark_index: u64,
+}
+
+impl ManifestAttempt {
+    /// Harness-only raw constructor (phase-A). Production attempts arrive
+    /// via the future durable-prepared capability, never from loose bytes.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn for_harness(
+        region: u64,
+        change_id: Vec<u8>,
+        expected_generation: u64,
+        changeset: Vec<u8>,
+        watermark_term: u64,
+        watermark_index: u64,
+    ) -> ManifestAttempt {
+        ManifestAttempt {
+            region,
+            change_id,
+            expected_generation,
+            changeset,
+            watermark_term,
+            watermark_index,
+        }
+    }
+
+    pub fn region(&self) -> u64 {
+        self.region
+    }
+
+    pub fn expected_generation(&self) -> u64 {
+        self.expected_generation
+    }
 }
 
 /// A SETTLED manifest outcome — every variant clears the slot; the variant
@@ -72,6 +110,17 @@ pub enum SettledManifest {
     /// The discriminator refused THIS attempt typed (stale predecessor
     /// observed at its own apply position).
     ReceiptRefused { current_generation: u64 },
+    /// The FIRST send never entered the log (local leadership gate refused
+    /// inside the peer's lock, before append). Nothing of this attempt
+    /// exists anywhere; prepared state is releasable. ONLY the first send
+    /// may settle this way — a re-send's local refusal proves nothing about
+    /// the earlier send.
+    NotSubmitted { reason: String },
+    /// Ordered apply refused the attempt as invalid at its own position
+    /// (typed, deterministic — see `ManifestInvalidReason`).
+    InvalidRefused {
+        reason: kv9_raft::ManifestInvalidReason,
+    },
 }
 
 /// The outcome of one propose/converge call.
@@ -88,19 +137,84 @@ pub enum ManifestProposalState {
     Unknown,
 }
 
+/// Typed seam failures (review round 1: callers must never parse strings to
+/// learn whether the slot is held or prepared state is releasable). Every
+/// variant documents its slot consequence.
+#[derive(Debug)]
+pub enum ManifestSeamError {
+    /// The region's slot is occupied by an in-flight attempt. Nothing was
+    /// proposed; the caller retries after that attempt settles. Slot: held
+    /// by the OTHER attempt (this call never owned it).
+    Busy {
+        region: u64,
+        holder_expected_generation: u64,
+    },
+    /// The attempt is malformed (e.g. empty change id). Nothing proposed,
+    /// no slot taken.
+    InvalidAttempt { reason: &'static str },
+    /// This node already minted its seam (once-CAS). No slot state touched.
+    SeamAlreadyMinted(Error),
+    /// `converge` was called for a region with no in-flight attempt.
+    NoInFlight { region: u64 },
+    /// A receipt of the wrong kind arrived for a manifest proposal —
+    /// correlation broke. Slot: HELD, fail closed; do not release prepared
+    /// state.
+    ReceiptCorrelationBroke { detail: String },
+    /// The node/driver failed (poisoned pump, storage error). Slot: HELD —
+    /// an earlier send may still land; converge retries after recovery.
+    Node(Error),
+}
+
+impl std::fmt::Display for ManifestSeamError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ManifestSeamError::Busy {
+                region,
+                holder_expected_generation,
+            } => write!(
+                f,
+                "region {region} already has an in-flight manifest attempt \
+                 (expected generation {holder_expected_generation}); settle or \
+                 converge it first"
+            ),
+            ManifestSeamError::InvalidAttempt { reason } => {
+                write!(f, "invalid manifest attempt: {reason}")
+            }
+            ManifestSeamError::SeamAlreadyMinted(e) => write!(f, "{e}"),
+            ManifestSeamError::NoInFlight { region } => {
+                write!(f, "region {region} has no in-flight manifest attempt")
+            }
+            ManifestSeamError::ReceiptCorrelationBroke { detail } => {
+                write!(f, "manifest receipt correlation broke: {detail}")
+            }
+            ManifestSeamError::Node(e) => write!(f, "{e}"),
+        }
+    }
+}
+
+impl std::error::Error for ManifestSeamError {}
+
 /// The proposal seam. Holds the node's [`ManifestNode`] face (propose +
 /// receipt + P1 pair read) and the per-region in-flight slots.
+///
+/// Construction is [`ManifestSeam::mint`] ONLY: the node's once-CAS makes
+/// the slot table process-unique per node (review probe: two `new()`ed
+/// seams over one driver each carried their own table and both "held"
+/// region 5's slot).
 pub struct ManifestSeam {
     node: Arc<dyn ManifestNode>,
     slots: Mutex<HashMap<u64, ManifestAttempt>>,
 }
 
 impl ManifestSeam {
-    pub fn new(node: Arc<dyn ManifestNode>) -> ManifestSeam {
-        ManifestSeam {
+    /// Mint THE seam for `node`. A second mint is a typed refusal.
+    pub fn mint(node: Arc<dyn ManifestNode>) -> Result<ManifestSeam, ManifestSeamError> {
+        node.acquire_manifest_seam()
+            .map_err(ManifestSeamError::SeamAlreadyMinted)?;
+        Ok(ManifestSeam {
             node,
             slots: Mutex::new(HashMap::new()),
-        }
+        })
     }
 
     /// Propose a manifest change for `region`. Refuses typed if the region's
@@ -117,28 +231,24 @@ impl ManifestSeam {
         &self,
         attempt: ManifestAttempt,
         deadline: Duration,
-    ) -> Result<ManifestProposalState> {
+    ) -> Result<ManifestProposalState, ManifestSeamError> {
         if attempt.change_id.is_empty() {
-            return Err(Error::Raft(
-                "a manifest change needs a non-empty content-derived change id \
-                 (an empty identity would match virgin regions' empty last_change_id)"
-                    .into(),
-            ));
+            return Err(ManifestSeamError::InvalidAttempt {
+                reason: "empty change id would match virgin regions' empty last_change_id",
+            });
         }
         let region = attempt.region;
         {
             let mut slots = self.slots.lock().expect("manifest slots poisoned");
             if let Some(holder) = slots.get(&region) {
-                return Err(Error::Raft(format!(
-                    "region {region} already has an in-flight manifest attempt \
-                     (expected generation {}); one attempt per region — settle or \
-                     converge it first, never race a second proposer (task #9 slot)",
-                    holder.expected_generation
-                )));
+                return Err(ManifestSeamError::Busy {
+                    region,
+                    holder_expected_generation: holder.expected_generation,
+                });
             }
             slots.insert(region, attempt);
         }
-        self.drive_attempt(region, deadline)
+        self.drive_attempt(region, deadline, true)
     }
 
     /// Restart path: install a RECOVERED in-flight attempt (its identity
@@ -150,20 +260,20 @@ impl ManifestSeam {
         &self,
         attempt: ManifestAttempt,
         deadline: Duration,
-    ) -> Result<ManifestProposalState> {
+    ) -> Result<ManifestProposalState, ManifestSeamError> {
         if attempt.change_id.is_empty() {
-            return Err(Error::Raft(
-                "a recovered manifest attempt needs its non-empty change id".into(),
-            ));
+            return Err(ManifestSeamError::InvalidAttempt {
+                reason: "a recovered manifest attempt needs its non-empty change id",
+            });
         }
         let region = attempt.region;
         {
             let mut slots = self.slots.lock().expect("manifest slots poisoned");
-            if slots.contains_key(&region) {
-                return Err(Error::Raft(format!(
-                    "region {region} already has an in-flight manifest attempt; \
-                     resume is for a fresh seam recovering a crashed one"
-                )));
+            if let Some(holder) = slots.get(&region) {
+                return Err(ManifestSeamError::Busy {
+                    region,
+                    holder_expected_generation: holder.expected_generation,
+                });
             }
             slots.insert(region, attempt);
         }
@@ -175,20 +285,23 @@ impl ManifestSeam {
     /// pending row — re-send the SAME identity and wait for its receipt.
     /// Superwindow observations stay Unknown (slot occupied): this coordinate
     /// cannot decide them, and nothing here fabricates a decision.
-    pub fn converge(&self, region: u64, deadline: Duration) -> Result<ManifestProposalState> {
+    pub fn converge(
+        &self,
+        region: u64,
+        deadline: Duration,
+    ) -> Result<ManifestProposalState, ManifestSeamError> {
         let attempt = {
             let slots = self.slots.lock().expect("manifest slots poisoned");
             match slots.get(&region) {
                 Some(a) => a.clone(),
-                None => {
-                    return Err(Error::Raft(format!(
-                        "region {region} has no in-flight manifest attempt to converge"
-                    )))
-                }
+                None => return Err(ManifestSeamError::NoInFlight { region }),
             }
         };
         // P1: one atomic pair read; the classifier is a pure function of it.
-        let pair = self.node.manifest_pair(region)?;
+        let pair = self
+            .node
+            .manifest_pair(region)
+            .map_err(ManifestSeamError::Node)?;
         match classify_reconciliation(&pair, attempt.expected_generation, &attempt.change_id) {
             ReconcileObservation::MyChangeApplied { generation } => {
                 // Applied while we were away — an earlier send landed. This is
@@ -217,14 +330,26 @@ impl ManifestSeam {
                 // Pending: my predecessor is unspent. Re-send the SAME
                 // identity — CAS + change-id idempotency make this harmless
                 // in every interleaving — and wait for its receipt.
-                self.drive_attempt(region, deadline)
+                self.drive_attempt(region, deadline, false)
             }
         }
     }
 
     /// Propose the slot's attempt and settle on its receipt. The slot is
-    /// already held by the caller path.
-    fn drive_attempt(&self, region: u64, deadline: Duration) -> Result<ManifestProposalState> {
+    /// already held by the caller path. `first_send` distinguishes the two
+    /// refusal semantics at the local propose gate (review round 1, Tess):
+    /// `propose_traced` verifies leadership inside the peer's lock BEFORE
+    /// appending, so a propose error means THIS send never entered the log —
+    /// on the first send that settles the attempt (nothing of it exists
+    /// anywhere; prepared state is releasable), while on a converge re-send
+    /// an EARLIER send may still land, so the refusal of the re-send must
+    /// not settle the original: slot held, typed error, converge retries.
+    fn drive_attempt(
+        &self,
+        region: u64,
+        deadline: Duration,
+        first_send: bool,
+    ) -> Result<ManifestProposalState, ManifestSeamError> {
         let attempt = {
             let slots = self.slots.lock().expect("manifest slots poisoned");
             slots.get(&region).expect("caller holds the slot").clone()
@@ -239,15 +364,20 @@ impl ManifestSeam {
         };
         let at = match self.node.propose_command(&cmd) {
             Ok(at) => at,
-            Err(e) => {
-                // Nothing entered the log from THIS send... is not knowable
-                // in general (a propose error can race an accepted entry), so
-                // the slot stays occupied and the error surfaces; converge
-                // retries. Only a pre-propose refusal by the entry itself
-                // (empty id, occupied slot) is a settled negative, and those
-                // never reach here.
-                return Err(e);
+            Err(e) if first_send => {
+                // Leadership is checked in-lock before append: this send
+                // never entered the log, and no earlier send of this attempt
+                // exists. Settled: not submitted; prepared state releasable;
+                // the caller retries later against a fresh expected
+                // generation.
+                self.clear(region);
+                return Ok(ManifestProposalState::Settled(
+                    SettledManifest::NotSubmitted {
+                        reason: e.to_string(),
+                    },
+                ));
             }
+            Err(e) => return Err(ManifestSeamError::Node(e)),
         };
         match self.node.wait_manifest(at, deadline) {
             Ok(ApplyWaitOutcome::Manifest { verdict, .. }) => {
@@ -261,26 +391,31 @@ impl ManifestSeam {
                     ManifestVerdict::Stale {
                         current_generation, ..
                     } => SettledManifest::ReceiptRefused { current_generation },
+                    ManifestVerdict::Invalid { reason, .. } => {
+                        SettledManifest::InvalidRefused { reason }
+                    }
                 };
                 self.clear(region);
                 Ok(ManifestProposalState::Settled(settled))
             }
-            Ok(ApplyWaitOutcome::Applied(at)) => Err(Error::Raft(format!(
-                "manifest proposal received a plain Applied receipt at term {} index {} — \
-                 the verdict was lost; receipt correlation broke (fail closed, slot held)",
-                at.term, at.index
-            ))),
-            Ok(ApplyWaitOutcome::FenceRejected { at, .. }) => Err(Error::Raft(format!(
-                "manifest proposal received a fence verdict at term {} index {} — \
-                 receipt correlation broke (fail closed, slot held)",
-                at.term, at.index
-            ))),
+            Ok(ApplyWaitOutcome::Applied(at)) => Err(ManifestSeamError::ReceiptCorrelationBroke {
+                detail: format!(
+                    "plain Applied receipt at term {} index {} — the manifest \
+                         verdict was lost",
+                    at.term, at.index
+                ),
+            }),
+            Ok(ApplyWaitOutcome::FenceRejected { at, .. }) => {
+                Err(ManifestSeamError::ReceiptCorrelationBroke {
+                    detail: format!("fence verdict at term {} index {}", at.term, at.index),
+                })
+            }
             // Replaced says OUR (term,index) claim was consumed by another
             // entry — it says nothing about whether an earlier/later send of
             // this identity lands. Unknown; converge re-queries and re-sends.
             Ok(ApplyWaitOutcome::Replaced) => Ok(ManifestProposalState::Unknown),
             Err(ApplyWaitError::Unconfirmed { .. }) => Ok(ManifestProposalState::Unknown),
-            Err(ApplyWaitError::Failed(e)) => Err(e),
+            Err(ApplyWaitError::Failed(e)) => Err(ManifestSeamError::Node(e)),
         }
     }
 
@@ -335,19 +470,62 @@ mod tests {
         }
         assert_eq!(driver.status().role, Role::Leader);
         driver.spawn(TICK);
-        let seam = ManifestSeam::new(driver.clone() as Arc<dyn ManifestNode>);
+        let seam = ManifestSeam::mint(driver.clone() as Arc<dyn ManifestNode>).unwrap();
         (driver, seam)
     }
 
     fn attempt(region: u64, id: &[u8], expected: u64, widx: u64) -> ManifestAttempt {
-        ManifestAttempt {
+        ManifestAttempt::for_harness(
             region,
-            change_id: id.to_vec(),
-            expected_generation: expected,
-            changeset: format!("refs-{}", String::from_utf8_lossy(id)).into_bytes(),
-            watermark_term: 1,
-            watermark_index: widx,
+            id.to_vec(),
+            expected,
+            format!("refs-{}", String::from_utf8_lossy(id)).into_bytes(),
+            1,
+            widx,
+        )
+    }
+
+    /// The restart-path tests need a SECOND seam over one driver, which the
+    /// once-mint refuses by design. Model the restart honestly: a fresh
+    /// process = a fresh mint flag; the harness resets it through a fresh
+    /// wrapper node sharing the same underlying driver.
+    struct RestartedNode(Arc<NodeDriver>, std::sync::atomic::AtomicBool);
+    impl ManifestNode for RestartedNode {
+        fn propose_command(
+            &self,
+            cmd: &kv9_raft::Command,
+        ) -> kv9_common::Result<kv9_raft::ProposedAt> {
+            self.0.propose(cmd)
         }
+        fn wait_manifest(
+            &self,
+            at: kv9_raft::ProposedAt,
+            deadline: Duration,
+        ) -> Result<kv9_raft::driver::ApplyWaitOutcome, kv9_raft::driver::ApplyWaitError> {
+            self.0.wait_applied(at, deadline)
+        }
+        fn manifest_pair(&self, region: u64) -> kv9_common::Result<kv9_raft::ManifestPair> {
+            self.0.manifest_pair(region)
+        }
+        fn acquire_manifest_seam(&self) -> kv9_common::Result<()> {
+            use std::sync::atomic::Ordering;
+            if self
+                .1
+                .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+                .is_err()
+            {
+                return Err(Error::Raft("already minted".into()));
+            }
+            Ok(())
+        }
+    }
+
+    fn seam2_over(driver: &Arc<NodeDriver>) -> ManifestSeam {
+        ManifestSeam::mint(Arc::new(RestartedNode(
+            driver.clone(),
+            std::sync::atomic::AtomicBool::new(false),
+        )) as Arc<dyn ManifestNode>)
+        .unwrap()
     }
 
     fn applied(state: &ManifestProposalState) -> u64 {
@@ -385,10 +563,11 @@ mod tests {
         assert!(seam.in_flight(5));
         let second = seam.propose_manifest_change(attempt(5, b"B", 0, 2), SHORT);
         match second {
-            Err(kv9_common::Error::Raft(msg)) => {
-                assert!(msg.contains("in-flight"), "refusal names the slot: {msg}")
-            }
-            other => panic!("expected typed slot refusal, got {other:?}"),
+            Err(ManifestSeamError::Busy {
+                region: 5,
+                holder_expected_generation: 0,
+            }) => {}
+            other => panic!("expected typed Busy refusal, got {other:?}"),
         }
         // Convergence after the freeze lifts: the SAME identity re-sends; the
         // frozen first entry applies first, the re-send lands AlreadyApplied —
@@ -449,7 +628,7 @@ mod tests {
             .unwrap();
         // A fresh seam (the restart): its recovered attempt C also expected
         // generation 0, which A spent.
-        let seam2 = ManifestSeam::new(driver.clone() as Arc<dyn ManifestNode>);
+        let seam2 = seam2_over(&driver);
         let state = seam2
             .resume_in_flight(attempt(6, b"C", 0, 2), WAIT)
             .unwrap();
@@ -470,7 +649,7 @@ mod tests {
         let (driver, seam) = seam_over_driver();
         seam.propose_manifest_change(attempt(7, b"A", 0, 1), WAIT)
             .unwrap();
-        let seam2 = ManifestSeam::new(driver.clone() as Arc<dyn ManifestNode>);
+        let seam2 = seam2_over(&driver);
         let state = seam2
             .resume_in_flight(attempt(7, b"A", 0, 1), WAIT)
             .unwrap();
@@ -478,6 +657,21 @@ mod tests {
             state,
             ManifestProposalState::Settled(SettledManifest::AlreadyApplied { generation: 1 })
         );
+    }
+
+    /// Review probe (Tess, 1/1 red pre-fix): a second seam over the SAME
+    /// node must refuse at mint — a freely-constructed second instance
+    /// carried its own slot table, and both proposers "held" region 5.
+    #[test]
+    fn a_second_seam_over_one_node_refuses_at_mint() {
+        let (driver, _seam) = seam_over_driver();
+        match ManifestSeam::mint(driver.clone() as Arc<dyn ManifestNode>) {
+            Err(ManifestSeamError::SeamAlreadyMinted(e)) => {
+                assert!(e.to_string().contains("already minted"))
+            }
+            Err(other) => panic!("wrong refusal type: {other:?}"),
+            Ok(_) => panic!("second mint must refuse, got a second seam"),
+        }
     }
 
     /// The entry guards: empty identity and converge-without-a-slot are typed
@@ -488,6 +682,9 @@ mod tests {
         let mut empty = attempt(5, b"X", 0, 1);
         empty.change_id = Vec::new();
         assert!(seam.propose_manifest_change(empty, WAIT).is_err());
-        assert!(seam.converge(5, WAIT).is_err());
+        assert!(matches!(
+            seam.converge(5, WAIT),
+            Err(ManifestSeamError::NoInFlight { region: 5 })
+        ));
     }
 }

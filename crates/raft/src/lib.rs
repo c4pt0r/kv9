@@ -27,8 +27,9 @@ pub use rawnode::HarnessPump;
 pub use rawnode::InProcessCluster;
 pub use rawnode::{DrainToken, ProposedAt, RaftPeer};
 pub use state_machine::{
-    classify_reconciliation, drive_apply, ApplyResult, ApplyStore, FenceAdjudicator, ManifestPair,
-    ManifestVerdict, MemStateMachine, ReconcileObservation, StateMachine,
+    classify_reconciliation, drive_apply, ApplyResult, ApplyStore, FenceAdjudicator,
+    ManifestInvalidReason, ManifestPair, ManifestVerdict, MemStateMachine, ReconcileObservation,
+    StateMachine,
 };
 
 use kv9_common::{NodeId, RegionId, Result};
