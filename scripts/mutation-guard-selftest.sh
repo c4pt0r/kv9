@@ -324,5 +324,19 @@ if [ ! -e "$OUT" ]; then
   printf "  PASS  %-52s\n" "T26 run artifact dir removed at teardown"; pass=$((pass+1))
 else printf "  FAIL  %-52s\n" "T26 run artifact dir removed at teardown"; fail=$((fail+1)); fi
 
-printf "\n  %d passed, %d failed\n" "$pass" "$fail"
+# Pin the CELL COUNT before printing the marker: a suite that loses cells otherwise
+# prints a well-formed terminal marker with a smaller number, and an external check
+# comparing only the failure count reads it as healthy.
+expected_cells=39
+if [ "$((pass+fail))" -ne "$expected_cells" ]; then
+  printf "\nFAIL cell count %d, expected %d -- cells were added or lost\n" \
+    "$((pass+fail))" "$expected_cells"
+  exit 1
+fi
+
+# TERMINAL MARKER, deliberately unindented and printed LAST. An external consumer
+# compares the final line exactly, so it must not carry cosmetic leading spaces and
+# nothing may print after it.
+printf "\n%d passed, %d failed\n" "$pass" "$fail"
+
 [ "$fail" -eq 0 ]
