@@ -1249,8 +1249,8 @@ mod tests {
             key: b"k".to_vec(),
             value: b"v".to_vec(),
         };
-        // The real path proposes encoded bytes and applies via take_ready → decode.
-        raft.propose(cmd.encode()).unwrap();
+        // The real path proposes the command and applies via take_ready → decode.
+        raft.propose(&cmd).unwrap();
         let results = drive_apply(&raft, &mut sm).unwrap();
         assert_eq!(results.len(), 1);
         assert_eq!(
@@ -1267,7 +1267,7 @@ mod tests {
         let raft = SingleNodeRaft::new(NodeId(1), RegionId(1));
         let mut sm = MemStateMachine::new();
 
-        let index = raft.propose(Vec::new()).unwrap();
+        let index = raft.propose(&Command::Noop).unwrap();
         let _ = raft.take_ready().unwrap();
         let cmd = Command::Put {
             cf: 0,
