@@ -90,15 +90,19 @@ check "U9 invalid --head refused, not reported clean" 3 $?
 "$CHK" --repo "$OUT/not-a-repo" --task 999 >/dev/null 2>&1
 check "U10 invalid --repo refused, not reported clean" 3 $?
 
-printf "\n  %d passed, %d failed\n" "$pass" "$fail"
-
-# Pin the CELL COUNT, not just the failure count. A suite that loses cells reports
-# "N passed, 0 failed" and reads as healthy -- the count is only evidence if something
-# compares it to what it should be. Bump deliberately when adding a cell.
+# Pin the CELL COUNT before printing the marker: a suite that loses cells otherwise
+# prints a well-formed terminal marker with a smaller number, and an external check
+# comparing only the failure count reads it as healthy.
 expected_cells=14
 if [ "$((pass+fail))" -ne "$expected_cells" ]; then
-  printf "  FAIL  cell count %d, expected %d -- cells were added or lost\n" \
+  printf "\nFAIL cell count %d, expected %d -- cells were added or lost\n" \
     "$((pass+fail))" "$expected_cells"
   exit 1
 fi
+
+# TERMINAL MARKER, deliberately unindented and printed LAST. An external consumer
+# compares the final line exactly, so it must not carry cosmetic leading spaces and
+# nothing may print after it.
+printf "\n%d passed, %d failed\n" "$pass" "$fail"
+
 [ "$fail" -eq 0 ]
