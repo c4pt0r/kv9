@@ -30,11 +30,11 @@
 //! the assumption the old one failed.
 
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 use std::time::Duration;
 
 use kv9_common::Error;
-use kv9_raft::driver::{ApplyWaitError, ApplyWaitOutcome, ManifestNode, ProposeOutcome, SeamHandle};
+use kv9_raft::driver::{ApplyWaitError, ApplyWaitOutcome, ProposeOutcome, SeamHandle};
 use kv9_raft::{classify_reconciliation, Command, ManifestVerdict, ReconcileObservation};
 
 /// One manifest attempt: the immutable identity `(region, expected_generation,
@@ -438,7 +438,10 @@ impl ManifestSeam {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::Arc;
+
     use kv9_common::{NodeId, RegionId};
+    use kv9_raft::driver::ManifestNode;
     use kv9_raft::driver::NodeDriver;
     use kv9_raft::transport::{InProcHub, RaftTransport};
     use kv9_raft::{MemStateMachine, RaftGroup, RaftPeer, Role};

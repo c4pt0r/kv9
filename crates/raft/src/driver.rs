@@ -972,10 +972,7 @@ impl SeamHandle {
         SeamHandle { node }
     }
 
-    pub fn propose_command(
-        &self,
-        cmd: &Command,
-    ) -> std::result::Result<ProposeOutcome, Error> {
+    pub fn propose_command(&self, cmd: &Command) -> std::result::Result<ProposeOutcome, Error> {
         self.node.propose_command(cmd)
     }
 
