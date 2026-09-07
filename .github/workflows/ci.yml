@@ -105,25 +105,25 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
-      # Task #9 tripwire: the apply-side crate must not name the object store
-      # (contract: docs/OBJECT-STORAGE.md §3.1 -- apply installs already-durable
-      # references, it never talks to storage). Selftest first so a green scan
-      # is a measurement, not an unproven instrument; the script header carries
-      # the honest cap (name-level only -- the capability-narrowed apply face is
-      # the guarantee half). Weakening this step is a visible diff; that is its
-      # entire value.
-      - name: Apply-store tripwire
-        run: |
-          scripts/apply-store-tripwire-selftest.sh "$(pwd)/scripts/apply-store-tripwire.sh"
-          scripts/apply-store-tripwire.sh
+      # Task #9 tripwires: four INDEPENDENT named steps (round 4, same
+      # per-call-site observability standard as task #12) — a call deleted
+      # from a merged block would leave a green step with an unchanged name,
+      # visible only in a diff; a deleted STEP disappears from the run
+      # summary itself. Selftests run first so a green scan is a measurement
+      # by a proven instrument; each script header carries its honest cap
+      # (apply-store: name-level only, the capability-narrowed face is the
+      # guarantee half; manifest-key: visibility device, not a guarantee).
+      - name: Apply-store tripwire selftest
+        run: scripts/apply-store-tripwire-selftest.sh "$(pwd)/scripts/apply-store-tripwire.sh"
 
-      # Task #9 P4 visibility guard (ruling: resident guard, NOT a type
-      # guarantee — the header carries the honest tier): the manifest pair's
-      # key literals stay in their owning module at the pinned count.
+      - name: Apply-store tripwire
+        run: scripts/apply-store-tripwire.sh
+
+      - name: Manifest-key tripwire selftest
+        run: scripts/manifest-key-tripwire-selftest.sh "$(pwd)/scripts/manifest-key-tripwire.sh"
+
       - name: Manifest-key tripwire
-        run: |
-          scripts/manifest-key-tripwire-selftest.sh "$(pwd)/scripts/manifest-key-tripwire.sh"
-          scripts/manifest-key-tripwire.sh
+        run: scripts/manifest-key-tripwire.sh
 
   # Informational on purpose. `cargo fmt --check` does NOT pass on this tree: when this
   # workflow landed there were 159 diff hunks across 39 files, spanning all four crate
