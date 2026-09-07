@@ -121,38 +121,47 @@ jobs:
       # No `continue-on-error`, no `|| true`, no pipe: a pipeline would hand the step `tail`'s
       # exit status instead of the script's, which is the exact way a red becomes an
       # invisible green.
-      # Each step asserts the CELL COUNT as well as the exit status, because they catch
-      # different bypasses. Exit status catches a missing script (127), a script without
-      # its executable bit (126), and a genuine failure inside the tool under test (1).
-      # It does NOT catch a self-test whose body has been replaced by `exit 0`: that is
-      # rc=0 with empty output, under a step still named "Self-test", having run nothing.
-      # Cindy measured all four; only that last one was silently green.
+      # Each step consumes the self-test's EXACT TERMINAL MARKER from outside the script.
+      # Exit status alone is not enough, and neither is an end-of-script assertion: a body
+      # replaced by `exit 0` at line 1 returns rc=0 with empty output, never reaches any
+      # assertion the script itself contains, and leaves a step still named "Self-test"
+      # reporting success having run nothing. Cindy measured four bypasses -- missing script
+      # (127), no executable bit (126), a real failure in the tool under test (1), and that
+      # stubbed body, which was the only silently green one.
       #
-      # An earlier revision of this comment said the printed count was the evidence and the
-      # exit code was the gate. The first half had no enforcer -- nothing READ the count, so
-      # in practice the exit code was the gate and the count was decoration. The grep is
-      # what makes that sentence true.
+      # The marker is the LAST line and carries no leading whitespace, so the comparison is
+      # equality rather than a search: a `grep` anywhere in the output would also accept a
+      # run that printed the line and then failed afterwards.
       #
-      # Redirect-then-check rather than a pipe: a pipeline would hand this step grep's exit
-      # status instead of the script's. The `if` wrapper keeps `bash -e` from exiting before
-      # rc is captured.
+      # Command substitution rather than a pipe: a pipeline hands this step the exit status
+      # of the last stage instead of the script's.
       - name: Self-test — mutation guard
         run: |
-          if scripts/mutation-guard-selftest.sh "$GITHUB_WORKSPACE/scripts/mutation-guard.sh" \
-               > selftest-mutation-guard.log; then rc=0; else rc=$?; fi
-          cat selftest-mutation-guard.log
+          set +e
+          output="$(scripts/mutation-guard-selftest.sh "$GITHUB_WORKSPACE/scripts/mutation-guard.sh")"
+          rc=$?
+          set -e
+          printf '%s\n' "$output"
           [ "$rc" -eq 0 ] || exit "$rc"
-          grep -qE '^[[:space:]]*39 passed, 0 failed$' selftest-mutation-guard.log \
-            || { echo "::error::mutation-guard self-test did not report its 39 cells"; exit 1; }
+          last="${output##*$'\n'}"
+          [ "$last" = "39 passed, 0 failed" ] || {
+            printf 'expected exact terminal selftest count, got: %s\n' "$last" >&2
+            exit 1
+          }
 
       - name: Self-test — unlanded marker check
         run: |
-          if scripts/unlanded-check-selftest.sh "$GITHUB_WORKSPACE/scripts/unlanded-check.sh" \
-               > selftest-unlanded-check.log; then rc=0; else rc=$?; fi
-          cat selftest-unlanded-check.log
+          set +e
+          output="$(scripts/unlanded-check-selftest.sh "$GITHUB_WORKSPACE/scripts/unlanded-check.sh")"
+          rc=$?
+          set -e
+          printf '%s\n' "$output"
           [ "$rc" -eq 0 ] || exit "$rc"
-          grep -qE '^[[:space:]]*14 passed, 0 failed$' selftest-unlanded-check.log \
-            || { echo "::error::unlanded-check self-test did not report its 14 cells"; exit 1; }
+          last="${output##*$'\n'}"
+          [ "$last" = "14 passed, 0 failed" ] || {
+            printf 'expected exact terminal selftest count, got: %s\n' "$last" >&2
+            exit 1
+          }
 
   # Informational on purpose. `cargo fmt --check` does NOT pass on this tree: when this
   # workflow landed there were 159 diff hunks across 39 files, spanning all four crate
