@@ -247,9 +247,11 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         }))
     }
 
-    /// Mint THE seam token for this node (once-CAS; the second mint is a
-    /// typed refusal). `ManifestSeam::mint` consumes it by value.
-    pub fn mint_seam_token(&self) -> Result<SeamToken> {
+    /// Mint THE seam handle for this node (once-CAS; the second mint is a
+    /// typed refusal). The handle is BOUND to this driver — it is the node
+    /// reference and the authority in one non-duplicable value, so there is
+    /// nothing to cross-pair (task #9 round 4).
+    pub fn mint_seam_handle(self: &Arc<Self>) -> Result<SeamHandle> {
         use std::sync::atomic::Ordering;
         if self
             .manifest_seam_minted
@@ -263,7 +265,9 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     .into(),
             ));
         }
-        Ok(SeamToken { _priv: () })
+        Ok(SeamHandle {
+            node: Arc::clone(self) as Arc<dyn ManifestNode>,
+        })
     }
 
     /// The peer: the propose/observe face. Holding it does NOT confer drain —
@@ -941,26 +945,50 @@ impl ReadBarrier {
     };
 }
 
-/// The one seam-mint authority over a node (task #9 round 3): a trait
-/// method any implementer could answer `Ok(())` was self-report, not
-/// structure — the review probe wrapped the SAME live driver in a new
-/// wrapper with its own flag and minted a second seam. This token is minted
-/// at most once per `NodeDriver` (once-CAS, never released), its
-/// constructor is private, and `ManifestSeam::mint` CONSUMES it by value —
-/// external `ManifestNode` implementers cannot forge one.
+/// The one seam authority over a node (task #9 round 4): round 3's
+/// free-floating token could be minted from driver A and paired with any
+/// node B — the capability counted mints but bound nothing. This handle
+/// BINDS the authority to the exact node it was minted from: the node
+/// reference lives INSIDE (private field), `ManifestSeam::mint` takes only
+/// the handle, and there is no second parameter to cross-pair. Production
+/// construction is `NodeDriver::mint_seam_handle` alone (once-CAS on that
+/// driver); the trait-implementer route to seam authority is gone —
+/// a `Liar: ManifestNode` can still exist, but it can never inhabit a
+/// production handle, so its `RefusedPreAppend` answers never reach a
+/// production slot.
 ///
 /// Deliberately neither `Clone` nor `Copy` (guard below): a duplicable
-/// mint authority is two slot tables again.
-pub struct SeamToken {
-    _priv: (),
+/// seam authority is two slot tables again.
+pub struct SeamHandle {
+    node: Arc<dyn ManifestNode>,
 }
 
-impl SeamToken {
-    /// Harness-only mint (models a fresh process in restart tests, where a
-    /// new incarnation legitimately re-mints over recovered state).
+impl SeamHandle {
+    /// Harness-only construction over an arbitrary `ManifestNode` (models a
+    /// fresh process incarnation in restart tests, and lets fault-injection
+    /// fakes exist WITHOUT being production-eligible).
     #[cfg(any(test, feature = "testing"))]
-    pub fn for_harness() -> SeamToken {
-        SeamToken { _priv: () }
+    pub fn for_harness(node: Arc<dyn ManifestNode>) -> SeamHandle {
+        SeamHandle { node }
+    }
+
+    pub fn propose_command(
+        &self,
+        cmd: &Command,
+    ) -> std::result::Result<ProposeOutcome, Error> {
+        self.node.propose_command(cmd)
+    }
+
+    pub fn wait_manifest(
+        &self,
+        at: ProposedAt,
+        deadline: Duration,
+    ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError> {
+        self.node.wait_manifest(at, deadline)
+    }
+
+    pub fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair> {
+        self.node.manifest_pair(region)
     }
 
     /// Compile-time guard (E0080 pattern shared with `ReadBarrier` and
@@ -973,9 +1001,9 @@ impl SeamToken {
         }
         impl<T> Fallback for Probe<T> {}
         impl<T: Clone> Probe<T> {
-            const CHECK: () = panic!("SeamToken must be neither Clone nor Copy");
+            const CHECK: () = panic!("SeamHandle must be neither Clone nor Copy");
         }
-        Probe::<SeamToken>::CHECK
+        Probe::<SeamHandle>::CHECK
     };
 }
 

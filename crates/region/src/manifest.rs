@@ -34,7 +34,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use kv9_common::Error;
-use kv9_raft::driver::{ApplyWaitError, ApplyWaitOutcome, ManifestNode, ProposeOutcome, SeamToken};
+use kv9_raft::driver::{ApplyWaitError, ApplyWaitOutcome, ManifestNode, ProposeOutcome, SeamHandle};
 use kv9_raft::{classify_reconciliation, Command, ManifestVerdict, ReconcileObservation};
 
 /// One manifest attempt: the immutable identity `(region, expected_generation,
@@ -203,20 +203,18 @@ impl std::error::Error for ManifestSeamError {}
 /// seams over one driver each carried their own table and both "held"
 /// region 5's slot).
 pub struct ManifestSeam {
-    node: Arc<dyn ManifestNode>,
+    handle: SeamHandle,
     slots: Mutex<HashMap<u64, ManifestAttempt>>,
 }
 
 impl ManifestSeam {
-    /// Build THE seam for `node`, consuming the node's once-minted
-    /// [`SeamToken`] by value (round 3: mint authority is a capability the
-    /// real driver issues once — never a trait method an implementer can
-    /// answer `Ok(())`; the review probe wrapped the same live driver with
-    /// its own flag and got a second slot table).
-    pub fn mint(node: Arc<dyn ManifestNode>, token: SeamToken) -> ManifestSeam {
-        let _consumed = token;
+    /// Build THE seam from the node's once-minted, node-BOUND [`SeamHandle`]
+    /// (round 4: the free-floating token could be minted from driver A and
+    /// paired with node B — authority and object are now one value, and
+    /// there is no second parameter to cross-pair).
+    pub fn mint(handle: SeamHandle) -> ManifestSeam {
         ManifestSeam {
-            node,
+            handle,
             slots: Mutex::new(HashMap::new()),
         }
     }
@@ -303,7 +301,7 @@ impl ManifestSeam {
         };
         // P1: one atomic pair read; the classifier is a pure function of it.
         let pair = self
-            .node
+            .handle
             .manifest_pair(region)
             .map_err(ManifestSeamError::Node)?;
         match classify_reconciliation(&pair, attempt.expected_generation(), attempt.change_id()) {
@@ -359,7 +357,7 @@ impl ManifestSeam {
             slots.get(&region).expect("caller holds the slot").clone()
         };
         let cmd = Command::ManifestChange(attempt.payload.clone());
-        let at = match self.node.propose_command(&cmd) {
+        let at = match self.handle.propose_command(&cmd) {
             Ok(ProposeOutcome::Accepted(at)) => at,
             Ok(ProposeOutcome::RefusedPreAppend(e)) if first_send => {
                 // Provably nothing entered the log, and no earlier send of
@@ -380,7 +378,7 @@ impl ManifestSeam {
             Ok(ProposeOutcome::RefusedPreAppend(e)) => return Err(ManifestSeamError::Node(e)),
             Err(e) => return Err(ManifestSeamError::Node(e)),
         };
-        match self.node.wait_manifest(at, deadline) {
+        match self.handle.wait_manifest(at, deadline) {
             Ok(ApplyWaitOutcome::Manifest { verdict, .. }) => {
                 let settled = match verdict {
                     ManifestVerdict::Applied { generation, .. } => {
@@ -471,8 +469,7 @@ mod tests {
         }
         assert_eq!(driver.status().role, Role::Leader);
         driver.spawn(TICK);
-        let token = driver.mint_seam_token().unwrap();
-        let seam = ManifestSeam::mint(driver.clone() as Arc<dyn ManifestNode>, token);
+        let seam = ManifestSeam::mint(driver.mint_seam_handle().unwrap());
         (driver, seam)
     }
 
@@ -519,10 +516,9 @@ mod tests {
     /// over recovered state — hence the gated harness token, never a second
     /// live mint from the same driver.
     fn seam2_over(driver: &Arc<NodeDriver>) -> ManifestSeam {
-        ManifestSeam::mint(
+        ManifestSeam::mint(SeamHandle::for_harness(
             Arc::new(RestartedNode(driver.clone())) as Arc<dyn ManifestNode>,
-            SeamToken::for_harness(),
-        )
+        ))
     }
 
     fn applied(state: &ManifestProposalState) -> u64 {
@@ -661,9 +657,9 @@ mod tests {
     /// mints (once-CAS) and which the seam consumes by value; a wrapper
     /// with its own flag can no longer manufacture mint authority.
     #[test]
-    fn a_second_seam_over_one_node_refuses_at_the_token() {
+    fn a_second_seam_over_one_node_refuses_at_the_handle() {
         let (driver, _seam) = seam_over_driver();
-        match driver.mint_seam_token() {
+        match driver.mint_seam_handle() {
             Err(e) => assert!(
                 e.to_string().contains("already minted"),
                 "refusal names the cause: {e}"
