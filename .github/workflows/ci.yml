@@ -105,22 +105,105 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
-      # Task #9 tripwires: four INDEPENDENT named steps (round 4, same
-      # per-call-site observability standard as task #12) — a call deleted
-      # from a merged block would leave a green step with an unchanged name,
+      # The repository's two verification tools gate other people's evidence: the mutation
+      # guard is what proves a test actually stands on a defect, and the unlanded check is
+      # what proves a task-scoped marker did not outlive its task. Until now nothing proved
+      # THEY still work -- an instrument nobody exercises is indistinguishable from a broken
+      # one right up to the moment its answer matters.
+      #
+      # Two separate named steps, each invoking its script directly. Deliberately NOT a
+      # wrapper, a shared shell block, or an `&&` chain: those make one failure indistinguishable
+      # from the other, and a reviewer cannot then show that breaking EITHER call site alone
+      # turns this gate red. Each script prints its own "N passed, M failed" line and exits
+      # non-zero on any failure, so the count in the log is the evidence and the exit code is
+      # the gate -- neither is inferred from the other.
+      #
+      # No `continue-on-error`, no `|| true`, no pipe: a pipeline would hand the step `tail`'s
+      # exit status instead of the script's, which is the exact way a red becomes an
+      # invisible green.
+      # Each step consumes the self-test's EXACT TERMINAL MARKER from outside the script.
+      # Exit status alone is not enough, and neither is an end-of-script assertion: a body
+      # replaced by `exit 0` at line 1 returns rc=0 with empty output, never reaches any
+      # assertion the script itself contains, and leaves a step still named "Self-test"
+      # reporting success having run nothing. Cindy measured four bypasses -- missing script
+      # (127), no executable bit (126), a real failure in the tool under test (1), and that
+      # stubbed body, which was the only silently green one.
+      #
+      # The marker is the LAST line and carries no leading whitespace, so the comparison is
+      # equality rather than a search: a `grep` anywhere in the output would also accept a
+      # run that printed the line and then failed afterwards.
+      #
+      # Command substitution rather than a pipe: a pipeline hands this step the exit status
+      # of the last stage instead of the script's.
+      - name: Self-test — mutation guard
+        run: |
+          set +e
+          output="$(scripts/mutation-guard-selftest.sh "$GITHUB_WORKSPACE/scripts/mutation-guard.sh")"
+          rc=$?
+          set -e
+          printf '%s\n' "$output"
+          [ "$rc" -eq 0 ] || exit "$rc"
+          last="${output##*$'\n'}"
+          [ "$last" = "39 passed, 0 failed" ] || {
+            printf 'expected exact terminal selftest count, got: %s\n' "$last" >&2
+            exit 1
+          }
+
+      - name: Self-test — unlanded marker check
+        run: |
+          set +e
+          output="$(scripts/unlanded-check-selftest.sh "$GITHUB_WORKSPACE/scripts/unlanded-check.sh")"
+          rc=$?
+          set -e
+          printf '%s\n' "$output"
+          [ "$rc" -eq 0 ] || exit "$rc"
+          last="${output##*$'\n'}"
+          [ "$last" = "14 passed, 0 failed" ] || {
+            printf 'expected exact terminal selftest count, got: %s\n' "$last" >&2
+            exit 1
+          }
+
+      # Task #9 tripwires: four INDEPENDENT named steps (same per-call-site
+      # observability standard as the two steps above) — a call deleted from
+      # a merged block would leave a green step with an unchanged name,
       # visible only in a diff; a deleted STEP disappears from the run
-      # summary itself. Selftests run first so a green scan is a measurement
-      # by a proven instrument; each script header carries its honest cap
-      # (apply-store: name-level only, the capability-narrowed face is the
-      # guarantee half; manifest-key: visibility device, not a guarantee).
+      # summary itself. The two selftest steps consume their scripts' EXACT
+      # TERMINAL MARKERS from outside the script, for the reason documented
+      # above (a body stubbed with `exit 0` at line 1 is rc=0 with empty
+      # output — the only silently green bypass). Each script header carries
+      # its honest cap (apply-store: name-level only, the capability-narrowed
+      # face is the guarantee half; manifest-key: visibility device, not a
+      # guarantee).
       - name: Apply-store tripwire selftest
-        run: scripts/apply-store-tripwire-selftest.sh "$(pwd)/scripts/apply-store-tripwire.sh"
+        run: |
+          set +e
+          output="$(scripts/apply-store-tripwire-selftest.sh "$GITHUB_WORKSPACE/scripts/apply-store-tripwire.sh")"
+          rc=$?
+          set -e
+          printf '%s\n' "$output"
+          [ "$rc" -eq 0 ] || exit "$rc"
+          last="${output##*$'\n'}"
+          [ "$last" = "7 passed, 0 failed" ] || {
+            printf 'expected exact terminal selftest count, got: %s\n' "$last" >&2
+            exit 1
+          }
 
       - name: Apply-store tripwire
         run: scripts/apply-store-tripwire.sh
 
       - name: Manifest-key tripwire selftest
-        run: scripts/manifest-key-tripwire-selftest.sh "$(pwd)/scripts/manifest-key-tripwire.sh"
+        run: |
+          set +e
+          output="$(scripts/manifest-key-tripwire-selftest.sh "$GITHUB_WORKSPACE/scripts/manifest-key-tripwire.sh")"
+          rc=$?
+          set -e
+          printf '%s\n' "$output"
+          [ "$rc" -eq 0 ] || exit "$rc"
+          last="${output##*$'\n'}"
+          [ "$last" = "8 passed, 0 failed" ] || {
+            printf 'expected exact terminal selftest count, got: %s\n' "$last" >&2
+            exit 1
+          }
 
       - name: Manifest-key tripwire
         run: scripts/manifest-key-tripwire.sh
