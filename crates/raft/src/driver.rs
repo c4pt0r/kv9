@@ -1022,12 +1022,14 @@ pub enum ProposeOutcome {
 }
 
 /// The seam-facing face of a driven node (task #9): propose + typed manifest
-/// receipt + the P1 pair read. The region runtime's `ManifestSeam` holds
-/// this as `Arc<dyn ManifestNode>` — it can submit manifest changes and
-/// observe their authoritative outcomes, but it gets no drain, no state
-/// machine, and no engine through this face. Seam-mint authority is NOT on
-/// this trait (see [`SeamToken`]): implementers relay observations, they do
-/// not issue capabilities.
+/// receipt + the P1 pair read. The region runtime's `ManifestSeam` does NOT
+/// hold this trait directly — it holds a [`SeamHandle`], which wraps the
+/// node reference privately and is minted at most once per driver
+/// ([`NodeDriver::mint_seam_handle`]). The trait exists as the internal
+/// abstraction the handle delegates to, and as the surface harness fakes
+/// implement; implementers relay observations, they do not issue
+/// capabilities — only a handle carries seam authority, and only the real
+/// driver (or a testing-gated harness constructor) can produce one.
 pub trait ManifestNode: Send + Sync {
     /// Submit; `Err` = AMBIGUOUS failure (the send may or may not have
     /// entered the log) — implementations must only return

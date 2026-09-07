@@ -195,7 +195,7 @@ impl std::fmt::Display for ManifestSeamError {
 
 impl std::error::Error for ManifestSeamError {}
 
-/// The proposal seam. Holds the node's [`ManifestNode`] face (propose +
+/// The proposal seam. Holds the node's once-minted [`SeamHandle`] (propose +
 /// receipt + P1 pair read) and the per-region in-flight slots.
 ///
 /// Construction is [`ManifestSeam::mint`] ONLY: the node's once-CAS makes
