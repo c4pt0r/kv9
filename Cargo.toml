@@ -17,8 +17,13 @@ license = "Apache-2.0"
 repository = "https://github.com/kv9/kv9"
 description = "kv9 — a single-binary, multi-tenant distributed key-value engine (design skeleton)."
 
-# Pure-Rust runtime dependencies. gRPC `.proto` sources are compiled with the
-# pinned protoc toolchain; raft-rs stays on `protobuf-codec` independently.
+# Runtime dependencies. gRPC `.proto` sources are compiled with the pinned protoc
+# toolchain; raft-rs stays on `protobuf-codec` independently.
+#
+# These were pure Rust until `object_store` (see the note on it below, which records the
+# measurement and the reason). The heading is corrected rather than left standing, because
+# a reader checking whether this tree pulls native code should get the answer here, not
+# forty lines down.
 [workspace.dependencies]
 thiserror = "1"
 serde = { version = "1", features = ["derive"] }
@@ -31,6 +36,34 @@ protobuf = "2"
 # Persistent (structurally-shared) ordered map: O(1) snapshots for MemEngine.
 # MIT-licensed, to keep the dependency set copyleft-free.
 rpds = "1"
+# Object storage client. ROADMAP "Dependency decisions" names this crate; `aws` only,
+# defaults off, because MinIO speaks the S3 API and every other cloud backend stays out.
+#
+# THIS IS WHERE THE "pure-Rust runtime dependencies" LINE ABOVE STOPS BEING TRUE, and the
+# exception is recorded rather than left for someone to discover:
+#
+#   size                    measured at the head that introduced it (see that
+#                           commit message for the numbers). Counts are deliberately
+#                           NOT repeated here: a figure in a comment goes stale on the
+#                           next dependency change and nothing makes it red.
+#   native code             aws-lc-sys and ring carry C and assembly. aws-lc-sys is
+#                           actually compiled, so cmake and a C compiler are now BUILD
+#                           REQUIREMENTS -- the first in this repo since protoc, and the
+#                           same class of thing: it passes locally on a machine that
+#                           happens to have them
+#   licences                no copyleft and none unspecified. aws-lc-sys is a conjunction
+#                           including BSD-3-Clause; the ICU crates are Unicode-3.0
+#
+# Why we took it anyway (Tess, task #12 thread): the alternative was hand-writing
+# PUT/GET/LIST/DELETE plus SigV4, which moves protocol compatibility, signature
+# correctness and their security maintenance into kv9. A native crypto dependency is a
+# smaller risk than a self-maintained authentication implementation.
+# Imported under an explicit alias. `crates/engine/src/object_store.rs` is OUR module and
+# also exports a trait named `ObjectStore`; without the alias a bare `object_store::` path
+# inside any engine submodule silently resolves to the EXTERNAL crate, not ours. Measured,
+# not assumed: `use object_store::aws::AmazonS3Builder` compiles from inside a submodule,
+# and `aws` exists only upstream.
+s3_client = { package = "object_store", version = "0.14", default-features = false, features = ["aws"] }
 # Public and node-internal RPC. tonic 0.14 split its Prost codec/build adapter
 # into dedicated crates; pin the family together so generated code and runtime
 # cannot drift independently.
