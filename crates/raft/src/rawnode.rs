@@ -286,7 +286,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// Propose on the leader, returning the locally assigned [`ProposedAt`].
     /// `propose` and the `last_index` read happen under one lock, so the pair is
     /// exact; it is still only a position claim (see [`ProposedAt`]).
-    pub fn propose_traced(&self, data: Vec<u8>) -> Result<ProposedAt> {
+    pub(crate) fn propose_traced(&self, data: Vec<u8>) -> Result<ProposedAt> {
         let mut g = self.lock();
         if g.raw.raft.state != StateRole::Leader {
             return Err(Error::Raft(format!(
@@ -418,6 +418,14 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
 
     /// Propose a raft configuration change (AddLearnerNode / AddNode / …),
     /// correlated by `(term, index)` exactly like [`Self::propose_traced`].
+    /// Harness-only raw-byte proposal (task #9 round 4): production callers
+    /// propose COMMANDS; the byte surface exists solely so tests can inject
+    /// undecodable garbage and prove the apply loop poisons on it.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn propose_raw_for_harness(&self, data: Vec<u8>) -> Result<ProposedAt> {
+        self.propose_traced(data)
+    }
+
     pub fn propose_conf_change_traced(&self, cc: ConfChangeV2) -> Result<ProposedAt> {
         let mut g = self.lock();
         let term = g.raw.raft.term;
@@ -573,7 +581,8 @@ impl<S: PersistentRaftStorage> RaftGroup for RaftPeer<S> {
         }
     }
 
-    fn propose(&self, data: Vec<u8>) -> Result<LogIndex> {
+    fn propose(&self, cmd: &crate::Command) -> Result<LogIndex> {
+        let data = cmd.encode();
         Ok(self.propose_traced(data)?.index)
     }
 

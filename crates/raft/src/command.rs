@@ -259,6 +259,16 @@ impl Command {
         }
     }
 
+    /// Harness-only decoder (task #9 round 4): production decode happens
+    /// inside ordered apply. A public decoder let an external crate turn a
+    /// hand-encoded tag-7 wire image into a `Command::ManifestChange` whose
+    /// payload it could never construct — decode-then-propose was a working
+    /// bypass of the constructor gate (review probe, rc=0).
+    #[cfg(any(test, feature = "testing"))]
+    pub fn decode_for_harness(bytes: &[u8]) -> kv9_common::Result<Command> {
+        Command::decode(bytes)
+    }
+
     /// Lower this command's KV effect into a [`WriteBatch`] for the state machine to
     /// apply (Phase-1). `ConfChange`/`Noop` produce an empty batch.
     ///
@@ -376,7 +386,7 @@ impl Command {
     ///
     /// Unknown versions/tags and truncated payloads return a typed error — a mixed-version
     /// cluster must surface, not corrupt (DESIGN principle 12).
-    pub fn decode(bytes: &[u8]) -> kv9_common::Result<Command> {
+    pub(crate) fn decode(bytes: &[u8]) -> kv9_common::Result<Command> {
         let mut r = Reader { buf: bytes };
         let version = r.u8()?;
         if version != ENTRY_VERSION {
