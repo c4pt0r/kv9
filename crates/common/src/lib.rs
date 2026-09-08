@@ -9,6 +9,7 @@
 pub mod codec;
 pub mod config;
 pub mod error;
+pub mod fs;
 pub mod ids;
 pub mod keyspace;
 pub mod root;

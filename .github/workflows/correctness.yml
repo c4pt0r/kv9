@@ -31,7 +31,7 @@ jobs:
           set -euo pipefail
           python3 scripts/check-proofs.py --self-test > "$RUNNER_TEMP/proof-check.log" 2>&1
           cat "$RUNNER_TEMP/proof-check.log"
-          test "$(tail -1 "$RUNNER_TEMP/proof-check.log")" = 'PASS: 5 theorems checked; 3 invalid controls rejected'
+          test "$(tail -1 "$RUNNER_TEMP/proof-check.log")" = 'PASS: 9 theorems checked; 4 invalid controls rejected'
       - uses: actions/upload-artifact@v4
         if: always()
         with:

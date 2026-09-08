@@ -136,6 +136,13 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
+      - name: Filesystem fault injection stays out of default builds
+        run: |
+          set -euo pipefail
+          output="$(scripts/fs-testing-boundary.sh)"
+          printf '%s\n' "$output"
+          test "$output" = 'PASS: production filesystem compiles; default fault-injection import is rejected'
+
       # Rustdoc intra-doc links are the one public-surface artifact no other gate
       # validates: clippy never reads them and doctests only run code blocks. Both
       # lints ride ONE cargo doc invocation here; that the two flags each bear load

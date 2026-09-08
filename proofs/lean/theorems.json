@@ -5,5 +5,11 @@
     "Kv9.unique_election",
     "Kv9.quorum_after_failures",
     "Kv9.no_single_voter_dependency"
+  ],
+  "DurableVote": [
+    "Kv9.DurableVote.initial_invariant",
+    "Kv9.DurableVote.step_preserves_invariant",
+    "Kv9.DurableVote.reachable_invariant",
+    "Kv9.DurableVote.replies_agree"
   ]
 }

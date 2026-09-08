@@ -25,7 +25,10 @@ tonic-prost.workspace = true
 # must not exist in a shipped binary: a reverse-import probe in a non-test
 # build must fail to compile; dev-dependencies with resolver = "2" keep the
 # feature out of shipped binaries (kv9-engine precedent).
-testing = []
+testing = ["kv9-common/testing"]
 
 [build-dependencies]
 tonic-prost-build.workspace = true
+
+[dev-dependencies]
+kv9-common = { workspace = true, features = ["testing"] }
