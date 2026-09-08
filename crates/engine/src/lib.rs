@@ -10,10 +10,12 @@ pub mod mem;
 pub mod minio;
 pub mod object_store;
 pub mod persist;
+pub mod replicated;
 pub mod sst;
 #[cfg(any(test, feature = "testing"))]
 pub mod testing;
 pub mod wal;
+pub mod wal_v2;
 pub mod write_batch;
 
 pub use cf::ColumnFamily;
@@ -21,6 +23,7 @@ pub use mem::MemEngine;
 pub use minio::{MinioConfig, MinioObjectStore};
 pub use object_store::{MemoryObjectStore, ObjectKey, ObjectStore};
 pub use persist::WalEngine;
+pub use replicated::{DurableAppliedPosition, ReplicatedEngine};
 pub use sst::{Sst, SstWriter};
 #[cfg(any(test, feature = "testing"))]
 pub use testing::FaultyEngine;
