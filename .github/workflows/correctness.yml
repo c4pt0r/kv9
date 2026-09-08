@@ -1,0 +1,96 @@
+name: Correctness
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 7 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  protocol-proofs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the pinned Lean toolchain
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          curl --fail --location --retry 3 --output lean.tar.zst \
+            https://github.com/leanprover/lean4/releases/download/v4.33.1/lean-4.33.1-linux.tar.zst
+          echo '890afd185370f85666025b883914ab4f4b339136f8c96167b69cfb62aecaf235  lean.tar.zst' | sha256sum --check
+          tar --zstd -xf lean.tar.zst
+          echo "LEAN=$RUNNER_TEMP/lean-4.33.1-linux/bin/lean" >> "$GITHUB_ENV"
+      - name: Check every theorem and reject invalid controls
+        run: |
+          set -euo pipefail
+          python3 scripts/check-proofs.py --self-test > "$RUNNER_TEMP/proof-check.log" 2>&1
+          cat "$RUNNER_TEMP/proof-check.log"
+          test "$(tail -1 "$RUNNER_TEMP/proof-check.log")" = 'PASS: 5 theorems checked; 3 invalid controls rejected'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: protocol-proofs
+          path: ${{ runner.temp }}/proof-check.log
+          if-no-files-found: error
+
+  chaos-mesh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      KV9_KIND_CLUSTER: kv9-chaos-ci-${{ github.run_id }}-${{ github.run_attempt }}
+      KUBECONFIG: ${{ runner.temp }}/kv9-chaos.kubeconfig
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler cmake build-essential
+      - name: Install pinned Kind and Helm
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          mkdir kv9-tools
+          curl --fail --location --retry 3 --output kv9-tools/kind \
+            https://github.com/kubernetes-sigs/kind/releases/download/v0.33.0/kind-linux-amd64
+          echo 'aee6151561422756b764a4ae28e7f44cda5af5a9eead3cc9985112b1de8d8e0d  kv9-tools/kind' | sha256sum --check
+          chmod +x kv9-tools/kind
+          curl --fail --location --retry 3 --output helm.tar.gz \
+            https://get.helm.sh/helm-v3.21.4-linux-amd64.tar.gz
+          echo '61f88ab166748cb19604d7884cb100ae9ccb13804ddeb98e08af167eacbb6a14  helm.tar.gz' | sha256sum --check
+          tar -xzf helm.tar.gz
+          cp linux-amd64/helm kv9-tools/helm
+          echo "$RUNNER_TEMP/kv9-tools" >> "$GITHUB_PATH"
+      - name: Create an isolated cluster with real Chaos Mesh
+        run: scripts/chaos-mesh-setup.sh
+      - name: Build the default production binary
+        run: cargo build --bin kv9
+      - name: Run and verify the Chaos Mesh acceptance matrix
+        run: |
+          set -euo pipefail
+          scripts/chaos-mesh-e2e.sh > "$RUNNER_TEMP/chaos-mesh.log" 2>&1
+          cat "$RUNNER_TEMP/chaos-mesh.log"
+          test "$(grep -Fxc 'PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, and container recovery' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          test "$(grep -c '^Stage: sustained Pod failure for voter [123] and majority service$' "$RUNNER_TEMP/chaos-mesh.log")" = 3
+      - name: Collect cluster diagnostics
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/chaos-cluster"
+          kind export logs --name "$KV9_KIND_CLUSTER" "$RUNNER_TEMP/chaos-cluster" || true
+          kubectl get pods -A -o wide > "$RUNNER_TEMP/chaos-cluster/pods.txt" 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chaos-mesh-evidence
+          path: |
+            ${{ runner.temp }}/chaos-mesh.log
+            ${{ runner.temp }}/chaos-cluster
+            /tmp/kv9-chaos-e2e.*
+          if-no-files-found: error
+      - name: Remove this run's cluster
+        if: always()
+        run: kind delete cluster --name "$KV9_KIND_CLUSTER"

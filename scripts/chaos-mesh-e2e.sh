@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Root-certified three-node fault acceptance on a real Chaos Mesh installation.
 set -euo pipefail
+umask 077
 
 kubectl_bin="${KUBECTL:-kubectl}"
 kind_bin="${KIND:-kind}"
@@ -27,7 +28,21 @@ k() {
   KUBECONFIG="$kubeconfig" "$kubectl_bin" "$@"
 }
 
+# Loading an image into Kind does not prove kubectl targets that same cluster.
+# Refuse before creating any namespace or fault resource if the node sets differ.
+expected_nodes="$("$kind_bin" get nodes --name "$kind_cluster" | sort)"
+actual_nodes="$(k get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | sort)"
+[ -n "$expected_nodes" ] && [ "$actual_nodes" = "$expected_nodes" ] || {
+  echo "FAIL: KUBECONFIG does not select the requested isolated Kind cluster" >&2
+  exit 1
+}
+k get crd podchaos.chaos-mesh.org networkchaos.chaos-mesh.org >/dev/null
+echo "Artifacts: $artifact"
+printf '%s\n' "$actual_nodes" >"$artifact/kubernetes-nodes.txt"
+k get nodes -o wide >"$artifact/node-topology.txt"
+
 collect_scene() {
+  local result="${1:-FAIL}"
   # A timeout path may collect here and cleanup collects once more. Keep both
   # instants: overwriting the first scene with the cleanup scene destroys the
   # evidence needed to tell "stopped" from "recovered just after timeout".
@@ -74,7 +89,7 @@ collect_scene() {
       fi
     done
   done
-  echo "FAIL: collected Chaos scene at $scene" >&2
+  echo "$result: collected Chaos scene at $scene" >&2
 }
 
 cleanup() {
@@ -82,6 +97,7 @@ cleanup() {
   trap - EXIT
   if k get namespace "$namespace" >/dev/null 2>&1; then
     if (( rc == 0 )); then
+      collect_scene PASS
       k delete podchaos,networkchaos --all -n "$namespace" --ignore-not-found \
         --wait=true >/dev/null 2>&1 || true
       k delete namespace "$namespace" --wait=true >/dev/null 2>&1 || true
@@ -90,9 +106,7 @@ cleanup() {
       echo "FAIL: preserving live namespace $namespace for inspection" >&2
     fi
   fi
-  if (( rc == 0 )); then
-    rm -rf "$artifact"
-  else
+  if (( rc != 0 )); then
     echo "FAIL: preserving Chaos Mesh evidence at $artifact" >&2
   fi
   exit "$rc"
@@ -236,6 +250,15 @@ tcp_probe_millis() {
 wait_injected() {
   local kind="$1" name="$2"
   k wait -n "$namespace" --for=condition=AllInjected "$kind/$name" --timeout=15s >/dev/null
+  record_fault "$kind" "$name"
+}
+
+record_fault() {
+  local kind="$1" name="$2"
+  # Success cleanup removes the live resources. Preserve their selectors,
+  # victim records and injection conditions before that evidence disappears.
+  k get -n "$namespace" "$kind/$name" -o yaml \
+    >"$artifact/$kind-$name-$(date +%s%N).yaml"
 }
 
 write_service() {
@@ -576,11 +599,16 @@ replacement_ready() {
   [ -n "$uid" ] && [ "$uid" != "$old_uid" ] && node_serving "$leader"
 }
 wait_until "PodChaos replacement with the same store identity" 45 replacement_ready
+record_fault podchaos kill-member
 k delete podchaos kill-member -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "cluster convergence after Pod kill" 30)"
 
-# Pod failure holds the leader down long enough to force a majority failover.
-echo "Stage: sustained Pod failure and failover"
+# Exercise EVERY voter, rather than treating one observed leader failure as
+# evidence that no particular replica is indispensable. The single Kind host
+# still does not establish host-failure isolation; node-topology.txt records it.
+for victim in 1 2 3; do
+echo "Stage: sustained Pod failure for voter $victim and majority service"
+leader="$(wait_agreed_leader "agreement before voter failure" 30)"
 k apply -f - >/dev/null <<YAML
 apiVersion: chaos-mesh.org/v1alpha1
 kind: PodChaos
@@ -590,19 +618,33 @@ metadata:
 spec:
   action: pod-failure
   mode: one
-  duration: 12s
+  duration: 60s
   selector:
     namespaces: ["$namespace"]
     labelSelectors:
       app: kv9
-      kv9-node: "$leader"
+      kv9-node: "$victim"
 YAML
 wait_injected podchaos fail-leader
-new_leader="$(wait_majority_leader "surviving majority elects after Pod failure" 20 "$leader")"
+new_leader="$(wait_majority_leader "surviving majority serves without voter $victim" 20 "$victim")"
+victim_is_unavailable() {
+  node_serving "$new_leader" && ! tcp_probe "$new_leader" "$victim"
+}
+wait_until "voter $victim failure has an observable network effect" 10 victim_is_unavailable
+printf 'victim=%s\nleader_before=%s\nsurviving_leader=%s\n' \
+  "$victim" "$leader" "$new_leader" >"$artifact/voter-$victim-failure.txt"
+key_hex="766f7465722d3$victim"
 client "$new_leader" raw-put --addr "$(service_ip "$new_leader"):20160" --keyspace "$keyspace" \
-  --key-hex 706f646661696c --value-hex 7632 >"$artifact/pod-failure-put.out"
+  --key-hex "$key_hex" --value-hex 7632 >"$artifact/voter-$victim-put.out"
+client "$new_leader" raw-get --addr "$(service_ip "$new_leader"):20160" --keyspace "$keyspace" \
+  --key-hex "$key_hex" >"$artifact/voter-$victim-live-get.out"
+grep -Fq 'value_hex=7632' "$artifact/voter-$victim-live-get.out"
 k delete podchaos fail-leader -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "failed leader recovers and catches up" 35)"
+client "$leader" raw-get --addr "$(service_ip "$leader"):20160" --keyspace "$keyspace" \
+  --key-hex "$key_hex" >"$artifact/voter-$victim-recovered-get.out"
+grep -Fq 'value_hex=7632' "$artifact/voter-$victim-recovered-get.out"
+done
 
 # A two-way partition must fence the isolated old leader while the majority writes.
 echo "Stage: two-way leader partition and fencing"
@@ -643,13 +685,32 @@ fi
   exit 1
 }
 if (( isolated_write_rc != 124 )) &&
-  ! grep -Eiq 'not (the )?leader|deadline|unconfirmed|not reached|timed out' \
+  ! grep -Eiq '^not_leader=true leader_node_id=(unknown|[0-9]+)$|not (the )?leader|deadline|unconfirmed|not reached|timed out' \
     "$artifact/isolated-write.out"; then
   echo "FAIL: old-leader write failed without a Raft fencing/deadline reason (rc=$isolated_write_rc)" >&2
   exit 1
 fi
 client "$new_leader" raw-put --addr "$(service_ip "$new_leader"):20160" --keyspace "$keyspace" \
   --key-hex 706172746974696f6e --value-hex 7633 >"$artifact/partition-put.out"
+# A loopback request reaches the live isolated server. Require its typed
+# application refusal; a transport error or an external timeout is not evidence
+# that a read barrier prevents a stale read.
+set +e
+k exec -n "$namespace" "$old_pod" -- env KV9_CLIENT_TOKEN="$client_token" \
+  timeout 8 /usr/local/bin/kv9 client raw-get --addr 127.0.0.1:20160 --keyspace "$keyspace" \
+  --key-hex 706172746974696f6e >"$artifact/isolated-read.out" 2>&1
+isolated_read_rc=$?
+set -e
+if (( isolated_read_rc != 1 )) ||
+  ! grep -Eq '^not_leader=true leader_node_id=(unknown|[0-9]+)$|^read_unconfirmed=true phase=(quorum|apply)$' \
+    "$artifact/isolated-read.out"; then
+  echo "FAIL: live isolated replica did not return a typed read refusal (rc=$isolated_read_rc)" >&2
+  exit 1
+fi
+[ "$(pod_uid "$leader")" = "$isolated_uid" ] || {
+  echo "FAIL: isolated replica was replaced during the read fencing probe" >&2
+  exit 1
+}
 k delete networkchaos isolate-leader -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "partition healing and catch-up" 35)"
 isolated_get="$(client "$leader" raw-get --addr "$(service_ip "$leader"):20160" \
@@ -709,6 +770,7 @@ container_restarted() {
   [[ "$after" =~ ^[0-9]+$ ]] && (( after > before_restarts )) && node_serving "$follower"
 }
 wait_until "container restart and durable catch-up" 40 container_restarted
+record_fault podchaos kill-container
 k delete podchaos kill-container -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "final three-node agreement" 30)"
 
