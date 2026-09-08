@@ -15,8 +15,8 @@
 //!
 //! We cannot distinguish "torn tail" from "bit-rot in the middle" by inspection alone, so
 //! we do not try: both stop replay at the same place. What that costs is stated plainly in
-//! [`Wal::replay`]'s return value, which reports how many bytes were discarded so a caller
-//! can log or refuse rather than silently accept truncation.
+//! [`Replay::discarded_tail_bytes`], which reports how many bytes were discarded so a
+//! caller can log or refuse rather than silently accept truncation.
 //!
 //! Versioned so an unknown version is rejected rather than misparsed (DESIGN §13
 //! principle 12, "forward-compatible formats, never panic on the unknown").

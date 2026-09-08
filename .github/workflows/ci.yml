@@ -123,6 +123,50 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
+      # Rustdoc intra-doc links are the one public-surface artifact no other gate
+      # validates: clippy never reads them and doctests only run code blocks. Both
+      # lints ride ONE cargo doc invocation here; that the two flags each bear load
+      # independently was proven once at review time by single-lint red/green twins
+      # (task #14 acceptance), so this step does not re-litigate it — a reviewer
+      # checks both flags are literally present in the command below.
+      #
+      # A dedicated, explicitly removed target dir: rust-cache restores ./target,
+      # and cargo doc suppresses repeated diagnostics on a warm tree — a cached
+      # green would be a reading of some earlier run, not this one.
+      #
+      # The witness lines guard rule 21 (docs/TESTING.md): a green step must carry
+      # positive work only THIS execution produced. `Documenting` lines come from
+      # the real rustdoc runs; their count must equal the workspace member count
+      # read from cargo metadata in the same run (self-adjusting when crates are
+      # added — a pinned number would go stale silently). The terminal marker is
+      # printed only after every check above it has passed under `set -e`; nothing
+      # here is joined with `;` or a pipe, so no stage can hand this step someone
+      # else's exit status.
+      - name: Rustdoc link gate
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/doc-gate-target
+          rc=0
+          RUSTDOCFLAGS="-D rustdoc::broken_intra_doc_links -D rustdoc::private_intra_doc_links" \
+            cargo doc --workspace --no-deps --target-dir /tmp/doc-gate-target >/tmp/doc-gate.out 2>&1 || rc=$?
+          if [ "$rc" -ne 0 ]; then
+            echo "rustdoc gate: cargo doc failed (rc=$rc) — the denied diagnostics follow"
+            cat /tmp/doc-gate.out
+            exit "$rc"
+          fi
+          members=$(cargo metadata --no-deps --format-version 1 | python3 -c 'import json,sys; print(len(json.load(sys.stdin)["packages"]))')
+          documented=$(grep -c "Documenting" /tmp/doc-gate.out) || {
+            echo "rustdoc gate: zero Documenting lines — cargo doc produced no work this run"
+            cat /tmp/doc-gate.out
+            exit 1
+          }
+          if [ "$documented" -ne "$members" ]; then
+            echo "rustdoc gate: documented $documented crates but the workspace has $members — this run did not cover the tree"
+            cat /tmp/doc-gate.out
+            exit 1
+          fi
+          echo "rustdoc-gate: 2 lints denied; $documented/$members crates documented fresh"
+
       # The repository's two verification tools gate other people's evidence: the mutation
       # guard is what proves a test actually stands on a defect, and the unlanded check is
       # what proves a task-scoped marker did not outlive its task. Until now nothing proved

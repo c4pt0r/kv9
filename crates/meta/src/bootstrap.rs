@@ -21,7 +21,7 @@
 //!   ([`Bootstrap::discovered_uninitialized`]); silence or timeouts never qualify.
 //! - (b) the bootstrap election counts votes only within the declared seed set and
 //!   needs a majority of it — enforced by the raft group itself, whose voter set *is*
-//!   the seed set ([`crate::…`]/`kv9_raft`); two disjoint seed lists can never both
+//!   the seed set (`kv9_raft`'s group voter set); two disjoint seed lists can never both
 //!   assemble a quorum.
 //! - (c) initialization is once-per-lifetime: a node whose data-dir carries an
 //!   initialized marker ([`Bootstrap::mark_data_dir_initialized`]) or non-pristine
