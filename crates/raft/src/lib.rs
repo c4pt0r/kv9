@@ -20,14 +20,18 @@ pub mod storage;
 pub mod testing;
 pub mod transport;
 
-pub use command::{cf_code, cf_from_code, Command, FencedInner, KvOp, RegionFence};
+pub use command::{
+    cf_code, cf_from_code, Command, FencedInner, KvOp, ManifestChangePayload, RegionFence,
+};
 #[cfg(any(test, feature = "testing"))]
 pub use rawnode::HarnessPump;
 #[cfg(any(test, feature = "testing"))]
 pub use rawnode::InProcessCluster;
 pub use rawnode::{DrainToken, ProposedAt, RaftPeer};
 pub use state_machine::{
-    drive_apply, ApplyResult, FenceAdjudicator, MemStateMachine, StateMachine,
+    classify_reconciliation, drive_apply, ApplyOutcome, ApplyResult, ApplyStore, FenceAdjudicator,
+    ManifestInvalidReason, ManifestPair, ManifestVerdict, MemStateMachine, ReconcileObservation,
+    StateMachine,
 };
 
 use kv9_common::{NodeId, RegionId, Result};
@@ -100,9 +104,32 @@ pub trait RaftGroup: Send + Sync {
         self.role() == Role::Leader
     }
 
-    /// Propose an opaque command for replication. Returns the assigned log index once
+    /// Propose a COMMAND for replication (task #9 round 4: the byte-level
+    /// surface is closed — a propose face that accepted opaque bytes let any
+    /// holder hand-encode a `ManifestChange` wire image and bypass every
+    /// constructor gate; review probe did exactly that from an external
+    /// crate). Encoding happens inside the implementation; external callers
+    /// can only propose commands they can CONSTRUCT, which is what makes
+    /// payload privacy load-bearing. Returns the assigned log index once
     /// accepted by the leader (DESIGN §6.1).
-    fn propose(&self, data: Vec<u8>) -> Result<LogIndex>;
+    ///
+    /// Resident guard — the decode-then-propose bypass must not compile
+    /// (fires if `Command::decode` returns to the public surface):
+    ///
+    /// ```compile_fail
+    /// fn probe(g: &dyn kv9_raft::RaftGroup, bytes: Vec<u8>) {
+    ///     let _ = g.propose(&kv9_raft::Command::decode(&bytes).unwrap());
+    /// }
+    /// ```
+    ///
+    /// Green twin — proposing an externally-constructible command compiles:
+    ///
+    /// ```
+    /// fn probe(g: &dyn kv9_raft::RaftGroup) {
+    ///     let _ = g.propose(&kv9_raft::Command::Noop);
+    /// }
+    /// ```
+    fn propose(&self, cmd: &Command) -> Result<LogIndex>;
 
     /// The highest log index committed so far.
     fn committed_index(&self) -> LogIndex;
@@ -240,7 +267,8 @@ impl RaftGroup for SingleNodeRaft {
         Role::Leader
     }
 
-    fn propose(&self, data: Vec<u8>) -> Result<LogIndex> {
+    fn propose(&self, cmd: &Command) -> Result<LogIndex> {
+        let data = cmd.encode();
         let mut log = self.log.lock().expect("raft log poisoned");
         let idx = LogIndex(log.next_index);
         log.next_index += 1;

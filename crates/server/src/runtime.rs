@@ -843,6 +843,15 @@ fn propose_and_wait_loop(
             Ok(ApplyWaitOutcome::FenceRejected { region, .. }) => {
                 return Err(Error::StaleEpoch { region })
             }
+            // This path proposes catalog/user writes, never manifest changes:
+            // a manifest verdict here means receipt correlation broke (typed,
+            // not absorbed into success or retry).
+            Ok(ApplyWaitOutcome::Manifest { at, .. }) => {
+                return Err(Error::Raft(format!(
+                    "non-manifest proposal received a manifest verdict at term {} index {}",
+                    at.term, at.index
+                )))
+            }
             Ok(ApplyWaitOutcome::Replaced) => {
                 if start.elapsed() >= deadline {
                     return Err(Error::Raft(format!(
@@ -2658,6 +2667,11 @@ impl NodeRuntime {
         }
         let (proposal, cluster_id) = self.initial_proposal.expect("set above");
         match self.driver.wait_applied(proposal, Duration::from_millis(1)) {
+            Ok(ApplyWaitOutcome::Manifest { at, .. }) => Err(Error::Raft(format!(
+                "initial-metadata proposal received a manifest verdict at term {} \
+                 index {} — receipt correlation broke",
+                at.term, at.index
+            ))),
             Ok(ApplyWaitOutcome::Applied(_)) => {
                 self.verify_certified_root()?;
                 write_init_marker(&self.data_dir)?;
@@ -2867,6 +2881,13 @@ impl NodeRuntime {
         };
         match self.driver.wait_applied(exact, Duration::from_millis(1)) {
             Ok(ApplyWaitOutcome::Applied(_)) => {}
+            Ok(ApplyWaitOutcome::Manifest { at, .. }) => {
+                return Err(Error::Raft(format!(
+                    "registration receipt at term {} index {} carries a manifest \
+                     verdict — receipt correlation broke",
+                    at.term, at.index
+                )))
+            }
             Ok(ApplyWaitOutcome::Replaced) => {
                 return Err(Error::Raft(format!(
                     "registration receipt at term {} index {} was overwritten",

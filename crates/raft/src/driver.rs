@@ -10,7 +10,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use kv9_engine::{Engine, MemEngine};
+use kv9_engine::MemEngine;
 use raft::storage::MemStorage;
 
 use kv9_common::{Error, NodeId, Result};
@@ -87,13 +87,12 @@ const CONF_RECEIPTS: usize = 64;
 struct RingEntry {
     index: u64,
     term: u64,
-    /// `Some(region)` = the entry was a fenced write REJECTED for this region
-    /// (logical outcome; watermark advanced). `None` = applied normally.
-    fence_rejected: Option<NodeIdFreeRegionId>,
+    /// What applying this entry MEANT — exclusive by TYPE (review round:
+    /// two Options + a comment claiming exclusivity let the consumer
+    /// wildcard the impossible dual-verdict state; the enum deletes the
+    /// state instead of trusting it away).
+    outcome: crate::ApplyOutcome,
 }
-
-/// Local alias so the ring stays dependency-light in signatures.
-type NodeIdFreeRegionId = kv9_common::RegionId;
 
 /// A conf change applied HERE: its exact position and the membership
 /// `apply_conf_change` actually produced at that moment.
@@ -126,7 +125,7 @@ pub struct DriverAppliedPosition {
     pub index: u64,
 }
 
-pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngine> {
+pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStore = MemEngine> {
     peer: Arc<RaftPeer<S>>,
     /// THE consume face over `peer` (task #5): minted exactly once, held
     /// privately here for the life of the driver. `peer()` keeps handing out
@@ -179,6 +178,11 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngi
     read_seq: std::sync::atomic::AtomicU64,
     /// First fatal apply-path error; poisons the driver (pump stops).
     fatal: Mutex<Option<String>>,
+    /// Whether THE manifest seam over this node has been minted (task #9
+    /// review round 1): slot state must be process-unique per node, so seam
+    /// construction is once-CAS here — a second seam instance would carry a
+    /// second slot table and let two proposers race the same region.
+    manifest_seam_minted: std::sync::atomic::AtomicBool,
     /// Testing-only: freeze the APPLY half of the pump (committed entries
     /// stay queued in the peer) while raft itself keeps electing/committing.
     /// This is the deterministic construction of the committed-but-unapplied
@@ -194,7 +198,7 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: Engine = MemEngi
     stop: AtomicBool,
 }
 
-impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
+impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> {
     /// Wire a driver over `peer`. Mints THE drain token for the peer — a
     /// typed refusal if one was already minted: two drivers over one peer
     /// would be two destructive Ready consumers, the exact hole task #5
@@ -223,6 +227,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             },
             read_seq: std::sync::atomic::AtomicU64::new(0),
             fatal: Mutex::new(None),
+            manifest_seam_minted: std::sync::atomic::AtomicBool::new(false),
             #[cfg(any(test, feature = "testing"))]
             apply_paused: std::sync::atomic::AtomicBool::new(false),
             // None = no position PROVEN yet this run — distinct from "position
@@ -234,6 +239,29 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
             driver_applied: Mutex::new(None),
             stop: AtomicBool::new(false),
         }))
+    }
+
+    /// Mint THE seam handle for this node (once-CAS; the second mint is a
+    /// typed refusal). The handle is BOUND to this driver — it is the node
+    /// reference and the authority in one non-duplicable value, so there is
+    /// nothing to cross-pair (task #9 round 4).
+    pub fn mint_seam_handle(self: &Arc<Self>) -> Result<SeamHandle> {
+        use std::sync::atomic::Ordering;
+        if self
+            .manifest_seam_minted
+            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+            .is_err()
+        {
+            return Err(Error::Raft(
+                "manifest seam already minted for this node — one slot table per \
+                 node (task #9); a second seam would let two proposers race one \
+                 region's in-flight window"
+                    .into(),
+            ));
+        }
+        Ok(SeamHandle {
+            node: Arc::clone(self) as Arc<dyn ManifestNode>,
+        })
     }
 
     /// The peer: the propose/observe face. Holding it does NOT confer drain —
@@ -328,12 +356,7 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
                             return Err(self.poison(entry.term, entry.index.0, &e));
                         }
                     };
-                    push_ring(
-                        &mut applied,
-                        entry.index.0,
-                        entry.term,
-                        result.fence_rejected,
-                    );
+                    push_ring(&mut applied, entry.index.0, entry.term, result.outcome);
                 }
                 EntryKind::ConfChangeV1 | EntryKind::ConfChangeV2 => {
                     // Peer call first (no driver locks held). The result goes
@@ -514,6 +537,14 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
         self.peer.propose_traced(cmd.encode())
     }
 
+    /// One region's authoritative manifest pair, read through this driver's
+    /// state machine (task #9). ONE key, one get — precondition P1 is
+    /// structural; see `MemStateMachine::manifest_pair`. Lock note: takes
+    /// `sm` alone, never while holding `applied` (leaf read).
+    pub fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair> {
+        self.sm.lock().expect("sm poisoned").manifest_pair(region)
+    }
+
     /// Wait until this node has applied `at` — verified by **term + index**,
     /// never position alone. Pure condition-poll: the pump must be running
     /// (via [`Self::spawn`] or a caller-driven loop).
@@ -562,11 +593,19 @@ impl<S: PersistentRaftStorage, E: Engine + 'static> NodeDriver<S, E> {
                             term: entry.term,
                             index: entry.index,
                         };
-                        match entry.fence_rejected {
-                            None => Ok(ApplyWaitOutcome::Applied(at_pos)),
-                            Some(region) => {
+                        // Exhaustive over the exclusive outcome — no
+                        // wildcard, no impossible state to trust away.
+                        match entry.outcome {
+                            crate::ApplyOutcome::Manifest(verdict) => {
+                                Ok(ApplyWaitOutcome::Manifest {
+                                    at: at_pos,
+                                    verdict,
+                                })
+                            }
+                            crate::ApplyOutcome::FenceRejected(region) => {
                                 Ok(ApplyWaitOutcome::FenceRejected { at: at_pos, region })
                             }
+                            crate::ApplyOutcome::Plain => Ok(ApplyWaitOutcome::Applied(at_pos)),
                         }
                     } else {
                         // The position applied here, but as ANOTHER leader's
@@ -799,6 +838,15 @@ pub enum ApplyWaitOutcome {
         at: kv9_common::AppliedPosition,
         region: kv9_common::RegionId,
     },
+    /// The exact proposal applied — as a manifest change; the discriminator's
+    /// verdict rides the receipt (task #9). A manifest entry NEVER surfaces
+    /// as bare `Applied`: `ManifestVerdict::AlreadyApplied` folded into a
+    /// generic success would be the crash-point-3 false acceptance, the same
+    /// disease `FenceRejected` guards against for fenced writes.
+    Manifest {
+        at: kv9_common::AppliedPosition,
+        verdict: crate::ManifestVerdict,
+    },
 }
 
 /// The typed error of [`NodeDriver::wait_applied`] (task #30). `Unconfirmed`
@@ -887,6 +935,129 @@ impl ReadBarrier {
         }
         Probe::<ReadBarrier>::CHECK
     };
+}
+
+/// The one seam authority over a node (task #9 round 4): round 3's
+/// free-floating token could be minted from driver A and paired with any
+/// node B — the capability counted mints but bound nothing. This handle
+/// BINDS the authority to the exact node it was minted from: the node
+/// reference lives INSIDE (private field), `ManifestSeam::mint` takes only
+/// the handle, and there is no second parameter to cross-pair. Production
+/// construction is `NodeDriver::mint_seam_handle` alone (once-CAS on that
+/// driver); the trait-implementer route to seam authority is gone —
+/// a `Liar: ManifestNode` can still exist, but it can never inhabit a
+/// production handle, so its `RefusedPreAppend` answers never reach a
+/// production slot.
+///
+/// Deliberately neither `Clone` nor `Copy` (guard below): a duplicable
+/// seam authority is two slot tables again.
+pub struct SeamHandle {
+    node: Arc<dyn ManifestNode>,
+}
+
+impl SeamHandle {
+    /// Harness-only construction over an arbitrary `ManifestNode` (models a
+    /// fresh process incarnation in restart tests, and lets fault-injection
+    /// fakes exist WITHOUT being production-eligible).
+    #[cfg(any(test, feature = "testing"))]
+    pub fn for_harness(node: Arc<dyn ManifestNode>) -> SeamHandle {
+        SeamHandle { node }
+    }
+
+    pub fn propose_command(&self, cmd: &Command) -> std::result::Result<ProposeOutcome, Error> {
+        self.node.propose_command(cmd)
+    }
+
+    pub fn wait_manifest(
+        &self,
+        at: ProposedAt,
+        deadline: Duration,
+    ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError> {
+        self.node.wait_manifest(at, deadline)
+    }
+
+    pub fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair> {
+        self.node.manifest_pair(region)
+    }
+
+    /// Compile-time guard (E0080 pattern shared with `ReadBarrier` and
+    /// `DrainToken`): adding `Clone`/`Copy` back is a build error.
+    #[allow(dead_code)]
+    const NOT_CLONE_OR_COPY: () = {
+        struct Probe<T>(core::marker::PhantomData<T>);
+        trait Fallback {
+            const CHECK: () = ();
+        }
+        impl<T> Fallback for Probe<T> {}
+        impl<T: Clone> Probe<T> {
+            const CHECK: () = panic!("SeamHandle must be neither Clone nor Copy");
+        }
+        Probe::<SeamHandle>::CHECK
+    };
+}
+
+/// The typed outcome of submitting a command through the propose face
+/// (task #9 round 3). The distinction is load-bearing for slot settlement:
+/// only `RefusedPreAppend` proves NOTHING entered the log from this send —
+/// a generic error proves nothing either way and must hold the slot.
+#[derive(Debug)]
+pub enum ProposeOutcome {
+    /// The command was accepted at this position (a claim, not a commit —
+    /// correlate by term+index as always).
+    Accepted(ProposedAt),
+    /// Refused strictly BEFORE any append: leadership is verified inside
+    /// the peer's lock and raft-rs `propose` returns error without
+    /// appending, so this send left no trace in the log. On a FIRST send
+    /// this settles the attempt; on a re-send it says nothing about
+    /// earlier sends.
+    RefusedPreAppend(Error),
+}
+
+/// The seam-facing face of a driven node (task #9): propose + typed manifest
+/// receipt + the P1 pair read. The region runtime's `ManifestSeam` does NOT
+/// hold this trait directly — it holds a [`SeamHandle`], which wraps the
+/// node reference privately and is minted at most once per driver
+/// ([`NodeDriver::mint_seam_handle`]). The trait exists as the internal
+/// abstraction the handle delegates to, and as the surface harness fakes
+/// implement; implementers relay observations, they do not issue
+/// capabilities — only a handle carries seam authority, and only the real
+/// driver (or a testing-gated harness constructor) can produce one.
+pub trait ManifestNode: Send + Sync {
+    /// Submit; `Err` = AMBIGUOUS failure (the send may or may not have
+    /// entered the log) — implementations must only return
+    /// [`ProposeOutcome::RefusedPreAppend`] when refusal provably preceded
+    /// any append.
+    fn propose_command(&self, cmd: &Command) -> std::result::Result<ProposeOutcome, Error>;
+    fn wait_manifest(
+        &self,
+        at: ProposedAt,
+        deadline: Duration,
+    ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError>;
+    fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair>;
+}
+
+impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for NodeDriver<S, E> {
+    fn propose_command(&self, cmd: &Command) -> std::result::Result<ProposeOutcome, Error> {
+        // propose_traced verifies leadership and appends under ONE peer
+        // lock, and raft-rs `propose` returns error without appending — an
+        // Err here is a certain pre-append refusal, never ambiguous.
+        match self.propose(cmd) {
+            Ok(at) => Ok(ProposeOutcome::Accepted(at)),
+            Err(e) => Ok(ProposeOutcome::RefusedPreAppend(e)),
+        }
+    }
+
+    fn wait_manifest(
+        &self,
+        at: ProposedAt,
+        deadline: Duration,
+    ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError> {
+        self.wait_applied(at, deadline)
+    }
+
+    fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair> {
+        NodeDriver::manifest_pair(self, region)
+    }
 }
 
 /// Typed failure of [`NodeDriver::read_barrier`] (task #28). Independent from
@@ -978,16 +1149,11 @@ pub struct ConfChangeReceipt {
     pub learners: Vec<u64>,
 }
 
-fn push_ring(
-    applied: &mut Vec<RingEntry>,
-    index: u64,
-    term: u64,
-    fence_rejected: Option<kv9_common::RegionId>,
-) {
+fn push_ring(applied: &mut Vec<RingEntry>, index: u64, term: u64, outcome: crate::ApplyOutcome) {
     applied.push(RingEntry {
         index,
         term,
-        fence_rejected,
+        outcome,
     });
     let len = applied.len();
     if len > APPLIED_RING {

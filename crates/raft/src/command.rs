@@ -66,6 +66,96 @@ impl FencedInner {
         wb
     }
 }
+/// The payload of a [`Command::ManifestChange`] (task #9, review round 3).
+///
+/// Fields are `pub(crate)`: within kv9-raft the encoder, decoder and the
+/// ordered-apply discriminator read and build them freely, but NO external
+/// crate can construct this value — review probe: an out-of-workspace,
+/// default-features crate built `Command::ManifestChange { change_id:
+/// b"caller-picked", .. }` and proposed it through the public propose face,
+/// bypassing every gate the attempt layer carried. Hiding the upper layer
+/// alone was insufficient; the WIRE constructor is what must be closed.
+/// Production construction arrives only with the phase-B durable
+/// `PreparedSst` capability; the harness constructor below is the gated
+/// exception.
+///
+/// # Resident guard
+///
+/// External construction must not compile (fires if the fields go public
+/// or a public constructor appears):
+///
+/// ```compile_fail
+/// let p = kv9_raft::ManifestChangePayload {
+///     region: 1,
+///     change_id: b"caller-picked".to_vec(),
+///     expected_generation: 0,
+///     changeset: b"not-a-prepared-sst".to_vec(),
+///     watermark_term: 99,
+///     watermark_index: 0,
+/// };
+/// ```
+///
+/// Green twin — the type itself is nameable and readable (only construction
+/// is closed):
+///
+/// ```
+/// fn probe(p: &kv9_raft::ManifestChangePayload) {
+///     let _ = p.region();
+/// }
+/// ```
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ManifestChangePayload {
+    pub(crate) region: u64,
+    pub(crate) change_id: Vec<u8>,
+    pub(crate) expected_generation: u64,
+    pub(crate) changeset: Vec<u8>,
+    pub(crate) watermark_term: u64,
+    pub(crate) watermark_index: u64,
+}
+
+impl ManifestChangePayload {
+    /// Harness-only raw constructor (phase A). The production constructor
+    /// arrives with the durable `PreparedSst` capability (phase B) and will
+    /// derive every field from it.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn for_harness(
+        region: u64,
+        change_id: Vec<u8>,
+        expected_generation: u64,
+        changeset: Vec<u8>,
+        watermark_term: u64,
+        watermark_index: u64,
+    ) -> ManifestChangePayload {
+        ManifestChangePayload {
+            region,
+            change_id,
+            expected_generation,
+            changeset,
+            watermark_term,
+            watermark_index,
+        }
+    }
+
+    pub fn region(&self) -> u64 {
+        self.region
+    }
+
+    pub fn change_id(&self) -> &[u8] {
+        &self.change_id
+    }
+
+    pub fn expected_generation(&self) -> u64 {
+        self.expected_generation
+    }
+
+    pub fn changeset(&self) -> &[u8] {
+        &self.changeset
+    }
+
+    pub fn watermark(&self) -> (u64, u64) {
+        (self.watermark_term, self.watermark_index)
+    }
+}
 
 /// The set of commands the metadata-plane raft group replicates (ROADMAP Phase 1).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -96,6 +186,18 @@ pub enum Command {
     ConfChange { add: bool, node: u64 },
     /// A no-op (leader-establish barrier / heartbeat filler).
     Noop,
+    /// A replicated **manifest change** (task #9; contract docs/OBJECT-STORAGE.md §7).
+    ///
+    /// Proposed by the region runtime AFTER the referenced SSTs are durably
+    /// uploaded (apply never touches the object store — it installs
+    /// already-durable references). The apply-side discriminator CASes the
+    /// region's authoritative `(generation, last_change_id)` pair:
+    /// `expected_generation` match applies and advances the pair; a repeat of
+    /// `last_change_id` is a typed already-applied (never reported as newly
+    /// accepted); anything else is a typed stale refusal. All three outcomes
+    /// advance the applied watermark like any entry (logical verdicts, not
+    /// apply errors — the `Fenced` precedent).
+    ManifestChange(ManifestChangePayload),
     /// A command wrapped with the proposer's expected region epoch (task #48 layer 2).
     /// Every replica re-checks the fence against the region epoch at this entry's
     /// ordered-apply position; on mismatch the entry is LOGICALLY rejected — it still
@@ -157,6 +259,16 @@ impl Command {
         }
     }
 
+    /// Harness-only decoder (task #9 round 4): production decode happens
+    /// inside ordered apply. A public decoder let an external crate turn a
+    /// hand-encoded tag-7 wire image into a `Command::ManifestChange` whose
+    /// payload it could never construct — decode-then-propose was a working
+    /// bypass of the constructor gate (review probe, rc=0).
+    #[cfg(any(test, feature = "testing"))]
+    pub fn decode_for_harness(bytes: &[u8]) -> kv9_common::Result<Command> {
+        Command::decode(bytes)
+    }
+
     /// Lower this command's KV effect into a [`WriteBatch`] for the state machine to
     /// apply (Phase-1). `ConfChange`/`Noop` produce an empty batch.
     ///
@@ -179,6 +291,14 @@ impl Command {
                 return Err(kv9_common::Error::Raft(
                     "a fenced command cannot be lowered without its fence check; \
                      the ordered-apply loop must adjudicate and lower the inner ops"
+                        .into(),
+                ));
+            }
+            Command::ManifestChange { .. } => {
+                return Err(kv9_common::Error::Raft(
+                    "a manifest change cannot be lowered without its generation CAS; \
+                     the ordered-apply loop must run the discriminator and write the \
+                     pair atomically (task #9 P4: no other path writes either field)"
                         .into(),
                 ));
             }
@@ -237,6 +357,15 @@ impl Command {
                 out.extend_from_slice(&node.to_be_bytes());
             }
             Command::Noop => out.push(TAG_NOOP),
+            Command::ManifestChange(p) => {
+                out.push(TAG_MANIFEST_CHANGE);
+                out.extend_from_slice(&p.region.to_be_bytes());
+                put_bytes(&mut out, &p.change_id);
+                out.extend_from_slice(&p.expected_generation.to_be_bytes());
+                put_bytes(&mut out, &p.changeset);
+                out.extend_from_slice(&p.watermark_term.to_be_bytes());
+                out.extend_from_slice(&p.watermark_index.to_be_bytes());
+            }
             Command::Fenced { fence, inner } => {
                 out.push(TAG_FENCED);
                 out.extend_from_slice(&fence.region_id.to_be_bytes());
@@ -257,7 +386,7 @@ impl Command {
     ///
     /// Unknown versions/tags and truncated payloads return a typed error — a mixed-version
     /// cluster must surface, not corrupt (DESIGN principle 12).
-    pub fn decode(bytes: &[u8]) -> kv9_common::Result<Command> {
+    pub(crate) fn decode(bytes: &[u8]) -> kv9_common::Result<Command> {
         let mut r = Reader { buf: bytes };
         let version = r.u8()?;
         if version != ENTRY_VERSION {
@@ -282,6 +411,14 @@ impl Command {
                 node: r.u64()?,
             },
             TAG_NOOP => Command::Noop,
+            TAG_MANIFEST_CHANGE => Command::ManifestChange(ManifestChangePayload {
+                region: r.u64()?,
+                change_id: r.bytes()?,
+                expected_generation: r.u64()?,
+                changeset: r.bytes()?,
+                watermark_term: r.u64()?,
+                watermark_index: r.u64()?,
+            }),
             TAG_FENCED => {
                 let fence = RegionFence {
                     region_id: r.u64()?,
@@ -335,6 +472,7 @@ const TAG_CONF_CHANGE: u8 = 3;
 const TAG_NOOP: u8 = 4;
 const TAG_WRITE: u8 = 5;
 const TAG_FENCED: u8 = 6;
+const TAG_MANIFEST_CHANGE: u8 = 7;
 const OP_PUT: u8 = 1;
 const OP_DELETE: u8 = 2;
 
@@ -513,6 +651,19 @@ mod tests {
                 },
             ],
         });
+        roundtrip(&Command::ManifestChange(
+            ManifestChangePayload::for_harness(
+                9,
+                vec![0xab; 32],
+                u64::MAX,
+                vec![0x00, 0xff, 0x00],
+                3,
+                u64::MAX,
+            ),
+        ));
+        roundtrip(&Command::ManifestChange(
+            ManifestChangePayload::for_harness(0, Vec::new(), 0, Vec::new(), 0, 0),
+        ));
         roundtrip(&Command::ConfChange {
             add: true,
             node: u64::MAX,
