@@ -86,9 +86,11 @@ deletion, alongside the three voter failure cells and typed read/write refusals.
 | TSO, placement, transactions, multi-group ownership | The roadmap still owns their distributed runtime and takeover protocols | Replicated authority and recoverable takeover; no indispensable scheduler, coordinator or routing gateway |
 | Test infrastructure | One Kind host runs the three database Pods | Separate hosts and fault domains; a one-host test does not prove host-loss availability |
 
-The current matrix has PodChaos and NetworkChaos coverage. IOChaos, additional
-network fault families, concurrent independent history checking, complete core
-proofs and multi-host availability remain open. Process death is not power loss.
+This initial matrix established PodChaos and NetworkChaos coverage. The subsequent
+[Raft I/O increment](CHAOS-IO-VALIDATION.md) adds real IOChaos EIO/ENOSPC for every
+voter during restart/catch-up. Engine/checkpoint I/O faults, additional network
+families, concurrent independent history checking, complete core proofs and
+multi-host availability remain open. Process death is not power loss.
 
 This increment's persistence audit identified a C01 investigation:
 `DiskRaftStorage::open` created the directory and `raft.log` without synchronizing

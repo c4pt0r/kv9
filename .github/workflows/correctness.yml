@@ -75,8 +75,14 @@ jobs:
           set -euo pipefail
           scripts/chaos-mesh-e2e.sh > "$RUNNER_TEMP/chaos-mesh.log" 2>&1
           cat "$RUNNER_TEMP/chaos-mesh.log"
-          test "$(grep -Fxc 'PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, and container recovery' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          test "$(grep -Fxc 'PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, container recovery, and Raft I/O faults' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -c '^Stage: sustained Pod failure for voter [123] and majority service$' "$RUNNER_TEMP/chaos-mesh.log")" = 3
+          test "$(grep -c '^PASS: IOChaos voter [123] errno \(5\|28\) reached Raft, exited, and recovered with majority service$' "$RUNNER_TEMP/chaos-mesh.log")" = 6
+          for voter in 1 2 3; do
+            for errno in 5 28; do
+              test "$(grep -Fxc "PASS: IOChaos voter $voter errno $errno reached Raft, exited, and recovered with majority service" "$RUNNER_TEMP/chaos-mesh.log")" = 1
+            done
+          done
       - name: Collect cluster diagnostics
         if: always()
         run: |

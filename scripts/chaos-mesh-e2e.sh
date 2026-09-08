@@ -36,7 +36,7 @@ actual_nodes="$(k get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}
   echo "FAIL: KUBECONFIG does not select the requested isolated Kind cluster" >&2
   exit 1
 }
-k get crd podchaos.chaos-mesh.org networkchaos.chaos-mesh.org >/dev/null
+k get crd podchaos.chaos-mesh.org networkchaos.chaos-mesh.org iochaos.chaos-mesh.org >/dev/null
 echo "Artifacts: $artifact"
 printf '%s\n' "$actual_nodes" >"$artifact/kubernetes-nodes.txt"
 k get nodes -o wide >"$artifact/node-topology.txt"
@@ -56,7 +56,7 @@ collect_scene() {
     -n "$namespace" -o yaml >"$scene/topology.yaml" 2>&1 || true
   k get events -n "$namespace" --sort-by=.metadata.creationTimestamp \
     >"$scene/events.txt" 2>&1 || true
-  k get podchaos,networkchaos -n "$namespace" -o yaml >"$scene/chaos.yaml" 2>&1 || true
+  k get podchaos,networkchaos,iochaos -n "$namespace" -o yaml >"$scene/chaos.yaml" 2>&1 || true
   local pod
   while read -r pod; do
     [ -n "$pod" ] || continue
@@ -66,6 +66,8 @@ collect_scene() {
       >"$scene/$pod.previous.log" 2>&1 || true
     k exec -n "$namespace" "$pod" -- cat /data/status \
       >"$scene/$pod.status" 2>&1 || true
+    k exec -n "$namespace" "$pod" -- cat /tmp/kv9-io.log \
+      >"$scene/$pod.io.log" 2>&1 || true
     # /proc/net/tcp preserves SYN_SENT vs ESTABLISHED even though the minimal
     # image intentionally carries no ss/netstat package. This is the direct
     # discriminator for a peer worker stuck in connect/handshake.
@@ -98,7 +100,7 @@ cleanup() {
   if k get namespace "$namespace" >/dev/null 2>&1; then
     if (( rc == 0 )); then
       collect_scene PASS
-      k delete podchaos,networkchaos --all -n "$namespace" --ignore-not-found \
+      k delete podchaos,networkchaos,iochaos --all -n "$namespace" --ignore-not-found \
         --wait=true >/dev/null 2>&1 || true
       k delete namespace "$namespace" --wait=true >/dev/null 2>&1 || true
     else
@@ -780,4 +782,7 @@ grep -q '^value_hex=7633$' <<<"$final_get" || {
   echo "FAIL: replicated value was not readable after the fault matrix" >&2; exit 1;
 }
 
-echo "PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, and container recovery"
+source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-io.sh"
+run_io_matrix
+
+echo "PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, container recovery, and Raft I/O faults"

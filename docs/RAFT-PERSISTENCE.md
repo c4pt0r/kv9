@@ -163,10 +163,11 @@ repeated crashes after recovering a complete unsynced frame. These counts are
 observed workload sizes, not exhaustive filesystem coverage.
 
 Rename/unlink, replacement inode identity, engine WAL/checkpoint/pending paths,
-concurrent fault schedules, expanded nightly seeds, IOChaos and independent
+concurrent fault schedules, expanded nightly seeds and independent
 history checking remain required C01/C02 work. This initial append-log model
-does not claim their coverage. The real Chaos Mesh Pod/Network matrix remains a
-separate E2E gate and does not stand in for modeled power loss.
+does not claim their coverage. The real Chaos Mesh Pod/Network and subsequent
+[Raft I/O matrix](CHAOS-IO-VALIDATION.md) remain separate E2E gates and do not
+stand in for modeled power loss.
 
 ## Reproduction
 
@@ -211,5 +212,18 @@ The default production binary at the same implementation commit passed the real
 Chaos Mesh Pod/Network matrix, including every-voter failure and typed isolated
 read/write refusal. Local log: `/tmp/kv9-c01-chaos.log`, exit 0. Retained evidence:
 `/tmp/kv9-chaos-e2e.gGkNrH`, including all seven fault resource records. This run
-checks the OS-backed runtime under application/network faults; IOChaos and actual
-host power-loss experiments remain separate obligations.
+checks the OS-backed runtime under application/network faults. The subsequent
+I/O increment passed all six real Chaos Mesh voter/EIO/ENOSPC cells, including
+explicit fatal exit, majority service and recovered apply progress. Log:
+`/tmp/kv9-c01-io-chaos-reopen.log`; retained scene: `/tmp/kv9-chaos-e2e.PhkuUk`.
+See [the I/O validation record](CHAOS-IO-VALIDATION.md) for exact scope and
+backend limits. Actual host power-loss experiments remain separate obligations.
+
+The terminal-failure increment passed 423 normal tests and 20 doctests, Clippy,
+rustdoc, formatting, actionlint, and the unchanged nine-theorem/four-control
+proof inventory. Its three additional single-defect mutations ran in the isolated
+worktree `/tmp/kv9-c01-terminal-controls` at `dca83b6`: permitting inbound work
+after failure, hiding driver fatal status, and reintroducing a Ready-lock panic.
+Each selected exactly one discriminating test with a green baseline, intended
+failure and green restored run. Logs: `/tmp/kv9-c01-terminal-controls.log` and
+`/tmp/kv9-c01-terminal-capture-*`.
