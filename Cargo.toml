@@ -64,6 +64,11 @@ rpds = "1"
 # not assumed: `use object_store::aws::AmazonS3Builder` compiles from inside a submodule,
 # and `aws` exists only upstream.
 s3_client = { package = "object_store", version = "0.14", default-features = false, features = ["aws"] }
+# `s3_client::ObjectStore::list` returns a `BoxStream`, and the trait that drives it is not
+# re-exported. Already in the tree as object_store's own dependency, so naming it directly
+# adds no package -- it makes an existing edge visible instead of reaching through another
+# crate's dependency graph. Used only inside the object-store worker.
+futures_util = { package = "futures-util", version = "0.3", default-features = false }
 # Public and node-internal RPC. tonic 0.14 split its Prost codec/build adapter
 # into dedicated crates; pin the family together so generated code and runtime
 # cannot drift independently.
