@@ -37,7 +37,7 @@ use std::time::{Duration, Instant, SystemTime};
 
 use kv9_common::Error;
 use kv9_engine::minio::{
-    MinioConfig, MinioObjectStore, ENV_BUCKET, ENV_ENDPOINT, WORKER_THREAD_NAME,
+    Completion, MinioConfig, MinioObjectStore, ENV_BUCKET, ENV_ENDPOINT, WORKER_THREAD_NAME,
 };
 use kv9_engine::{ObjectKey, ObjectStore};
 
@@ -402,6 +402,183 @@ fn credentials_never_appear_in_an_error_message() {
     // Also the store's own Debug, which is what a log line would format.
     let store_debug = format!("{s:?}");
     assert!(!store_debug.contains(&secret) && !store_debug.contains(&access));
+}
+
+// ---------------------------------------------------------------------------------------
+// Deadline budgets — three independent properties, bound to the SOURCE of the outcome
+//
+// Not to error text. The text is prose and gets reworded; which of the three ways an
+// operation finished is the property under test. `contains("timed out")` keeps passing
+// after a reword and stops meaning anything.
+// ---------------------------------------------------------------------------------------
+
+#[test]
+#[ignore = "requires a MinIO endpoint; see the module docs"]
+fn a_refused_endpoint_answers_from_the_worker_not_the_outer_net() {
+    // Cell 1. A backend that fails fast must produce the WORKER's answer -- the specific one
+    // naming what went wrong -- not the generic outer timeout.
+    //
+    // This was a coin flip before the internal budget was made strictly shorter: measured 8
+    // caught / 2 missed over ten runs against a refused port, and the two misses were the
+    // runs where the outer net fired first.
+    let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
+    let addr = listener.local_addr().expect("addr");
+    drop(listener);
+
+    let s = MinioObjectStore::connect(
+        MinioConfig::from_env_at(format!("http://{addr}"), required(ENV_BUCKET))
+            .expect("credentials from the environment")
+            .with_op_deadline(Duration::from_secs(5)),
+    )
+    .expect("connect");
+
+    // Repeated, because the defect this guards was intermittent. One run of a coin flip
+    // proves nothing about the coin.
+    for attempt in 0..5 {
+        let (source, outcome) = s.put_traced(&key("refused/object"), b"payload");
+        assert!(
+            outcome.is_err(),
+            "attempt {attempt}: refused port must fail"
+        );
+        assert_eq!(
+            source,
+            Completion::WorkerReply,
+            "attempt {attempt}: the backend's own error must win the race with the outer net"
+        );
+    }
+}
+
+#[test]
+#[ignore = "requires a MinIO endpoint; see the module docs"]
+fn the_internal_budget_is_strictly_shorter_than_the_callers_deadline() {
+    // Cell 2. The ORDERING is the property; the fraction is an implementation choice. An
+    // assertion on the fraction would re-pin the constant and go red on a legitimate tuning
+    // change while saying nothing about what matters.
+    let s = store();
+    assert!(
+        s.internal_budget_for_test() < s.op_deadline_for_test(),
+        "internal {:?} must be strictly under caller {:?}, or the two expire together and \
+         which error the caller sees becomes a scheduling race",
+        s.internal_budget_for_test(),
+        s.op_deadline_for_test()
+    );
+    // Non-degenerate: an internal budget of zero would also satisfy `<` while making every
+    // request fail instantly.
+    assert!(s.internal_budget_for_test() > Duration::ZERO);
+}
+
+#[test]
+#[ignore = "requires a MinIO endpoint; see the module docs"]
+fn a_full_queue_refuses_admission_instead_of_parking_the_caller() {
+    // Cell 3. A blocking send would park the caller for an unbounded time that is NOT
+    // charged against its deadline -- it would then wait queue-time plus the full deadline.
+    // Refusal is also the more useful answer: a full queue is backpressure a caller can act
+    // on, a silent stall is not.
+    let (addr, accepted, stop) = black_hole();
+    let s = Arc::new(
+        MinioObjectStore::connect(
+            MinioConfig::from_env_at(&addr, required(ENV_BUCKET))
+                .expect("credentials from the environment")
+                .with_op_deadline(Duration::from_secs(4)),
+        )
+        .expect("connect"),
+    );
+
+    // Enough concurrent callers to overrun a 32-deep queue against a peer that never
+    // answers. Each thread reports its own source so the assertion is about what the
+    // STORE did, not about how many threads happened to be scheduled.
+    let sources = Arc::new(std::sync::Mutex::new(Vec::new()));
+    let mut handles = Vec::new();
+    for i in 0..80 {
+        let s = Arc::clone(&s);
+        let sources = Arc::clone(&sources);
+        handles.push(std::thread::spawn(move || {
+            let (source, outcome) = s.put_traced(&key(&format!("full/{i}")), b"payload");
+            assert!(outcome.is_err(), "a silent peer cannot succeed");
+            sources.lock().expect("not poisoned").push(source);
+        }));
+    }
+    for h in handles {
+        h.join().expect("client thread");
+    }
+    assert!(
+        accepted.load(Ordering::SeqCst),
+        "the black hole never accepted, so the queue was never actually held open"
+    );
+
+    let sources = sources.lock().expect("not poisoned");
+    let refused = sources
+        .iter()
+        .filter(|c| **c == Completion::AdmissionRefused)
+        .count();
+    assert!(
+        refused > 0,
+        "with 80 callers against a 32-deep queue and a peer that never answers, some must be \
+         refused admission rather than parked; sources were {sources:?}"
+    );
+
+    let s = Arc::try_unwrap(s).expect("sole handle");
+    drop(s);
+    stop.store(true, Ordering::SeqCst);
+    let _ = TcpStream::connect(addr.trim_start_matches("http://"));
+}
+
+#[test]
+#[ignore = "requires a MinIO endpoint; see the module docs"]
+fn queue_time_is_charged_to_the_callers_deadline() {
+    // Cell 4. `submit` must wait only what REMAINS of the deadline, not a fresh full one
+    // after the hand-off. Waiting a fresh one means a caller that queued behind a busy
+    // worker waits queue-time PLUS the deadline -- so the deadline stops meaning "from when
+    // I asked", which is the only thing a caller can reason about.
+    //
+    // This cell exists because the discrimination matrix found that reversing this property
+    // reddened NOTHING: the three cells I had all passed with the bug reinstated. An
+    // unwitnessed property is not a property, and the matrix is what surfaced it.
+    let (addr, accepted, stop) = black_hole();
+    let deadline = Duration::from_secs(3);
+    let s = Arc::new(
+        MinioObjectStore::connect(
+            MinioConfig::from_env_at(&addr, required(ENV_BUCKET))
+                .expect("credentials from the environment")
+                .with_op_deadline(deadline),
+        )
+        .expect("connect"),
+    );
+
+    // Occupy the worker so the next caller genuinely queues. One is enough: the worker is
+    // single-threaded by construction.
+    let hog = {
+        let s = Arc::clone(&s);
+        std::thread::spawn(move || {
+            let _ = s.put_traced(&key("queued/hog"), b"payload");
+        })
+    };
+    // Let the hog reach the worker before timing the caller behind it.
+    std::thread::sleep(Duration::from_millis(300));
+
+    let started = Instant::now();
+    let (_source, outcome) = s.put_traced(&key("queued/behind"), b"payload");
+    let elapsed = started.elapsed();
+    assert!(outcome.is_err(), "a silent peer cannot succeed");
+
+    assert!(
+        accepted.load(Ordering::SeqCst),
+        "the black hole never accepted, so nothing was actually stalled and nothing queued"
+    );
+    // Under the bug this is queue-wait + a fresh full deadline, i.e. close to 2x. The bound
+    // is generous on purpose: the failure it catches is a doubling, not a few hundred
+    // milliseconds of scheduling noise.
+    assert!(
+        elapsed < deadline + deadline / 2,
+        "a caller behind a busy worker waited {elapsed:?} against a {deadline:?} deadline; \
+         queue time is not being charged to the caller"
+    );
+
+    hog.join().expect("hog thread");
+    let s = Arc::try_unwrap(s).expect("sole handle");
+    drop(s);
+    stop.store(true, Ordering::SeqCst);
+    let _ = TcpStream::connect(addr.trim_start_matches("http://"));
 }
 
 // ---------------------------------------------------------------------------------------

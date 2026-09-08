@@ -74,9 +74,31 @@ pub const ENV_SECRET_KEY: &str = "KV9_OBJECT_STORE_SECRET_KEY";
 /// timeout test green for the wrong reason.
 const DEFAULT_OP_DEADLINE: Duration = Duration::from_secs(30);
 
-/// Bounded, so a caller that outruns the backend blocks instead of growing a queue without
-/// limit (DESIGN §13 principle 13).
+/// Bounded, so a caller that outruns the backend is refused instead of growing a queue
+/// without limit (DESIGN §13 principle 13).
 const JOB_QUEUE_DEPTH: usize = 32;
+
+/// Fraction of the caller's deadline the internal HTTP/retry budget is allowed to use.
+///
+/// Reserves the remainder for handing the reply back. A worker that spent the entire
+/// deadline on the wire would finish exactly as the caller stopped listening, so its answer
+/// — the *specific* one, naming what the backend said — would be replaced by the generic
+/// outer timeout, at random.
+const INTERNAL_BUDGET_NUMERATOR: u32 = 4;
+/// See [`INTERNAL_BUDGET_NUMERATOR`]. 4/5 leaves a fifth of the deadline for the reply.
+const INTERNAL_BUDGET_DENOMINATOR: u32 = 5;
+
+/// The internal budget for one operation, strictly shorter than `caller_deadline`.
+///
+/// Strictly: the `max(1ms)` floor keeps it non-zero for tiny deadlines, and the
+/// `saturating_sub(1ms)` keeps it below the caller's even when the fraction rounds up to it,
+/// so the ordering holds at every input rather than only at realistic ones.
+fn internal_budget(caller_deadline: Duration) -> Duration {
+    let scaled = caller_deadline
+        .mul_f64(f64::from(INTERNAL_BUDGET_NUMERATOR) / f64::from(INTERNAL_BUDGET_DENOMINATOR));
+    let capped = scaled.min(caller_deadline.saturating_sub(Duration::from_millis(1)));
+    capped.max(Duration::from_millis(1)).min(caller_deadline)
+}
 
 /// Thread name for the worker. Also the string the structural probe counts, so it is a
 /// constant rather than a literal repeated in two places that could drift apart.
@@ -303,33 +325,159 @@ impl MinioObjectStore {
     }
 
     fn submit<T>(&self, make: impl FnOnce(SyncSender<Result<T>>) -> JobKind) -> Result<T> {
+        let (source, outcome) = self.submit_traced(make);
+        // The source is what tests bind to; the caller gets one error type as before.
+        debug_assert!(source.agrees_with(&outcome));
+        outcome
+    }
+
+    /// [`submit`](Self::submit) plus the **source** of the completion.
+    ///
+    /// Three ways an operation can finish, and they mean different things even when the
+    /// caller sees one `Error::Engine`:
+    ///
+    /// * [`Completion::WorkerReply`] — the request was issued and the backend (or the HTTP
+    ///   client on its behalf) answered. Success *and* backend failure both land here.
+    /// * [`Completion::OuterFallback`] — nobody answered within the caller's deadline. This
+    ///   is the last-resort net, and reaching it means the internal budget failed to unwind
+    ///   first, which it is supposed to do.
+    /// * [`Completion::AdmissionRefused`] — the request was never issued: the queue was full
+    ///   or the deadline had already passed at hand-off.
+    ///
+    /// Returned as a value rather than sniffed from the message text, because the message
+    /// text is prose and gets reworded, while which of these three happened is the property
+    /// under test. A test asserting `contains("timed out")` keeps passing after a reword and
+    /// stops meaning anything.
+    fn submit_traced<T>(
+        &self,
+        make: impl FnOnce(SyncSender<Result<T>>) -> JobKind,
+    ) -> (Completion, Result<T>) {
+        let started = Instant::now();
+        let deadline = started + self.op_deadline;
+
         let (reply_tx, reply_rx) = sync_channel::<Result<T>>(1);
         let tx = self
             .tx
             .as_ref()
             .expect("the channel is dropped only in Drop, after which no method runs");
-        // Stamped here, not on the worker: this is the moment the caller starts waiting,
-        // and time spent queued is time the caller has already spent.
+
+        // ADMISSION. `try_send` rather than `send`: a blocking send would park the caller on
+        // a full queue for an unbounded time that is *not* counted against its deadline --
+        // the caller would then wait queue-time plus the full deadline. Refusing is also the
+        // more useful answer, because a full queue is backpressure the caller can act on,
+        // whereas a silent stall is not.
         let job = Job {
-            deadline: Instant::now() + self.op_deadline,
+            // Stamped from the same `started` as the caller's own wait, so the worker and
+            // the caller are measuring one interval rather than two that drift apart.
+            deadline,
             kind: make(reply_tx),
         };
-        tx.send(job).map_err(|_| {
-            Error::Engine("object store: worker is gone, cannot submit request".into())
-        })?;
-        match reply_rx.recv_timeout(self.op_deadline) {
-            Ok(result) => result,
-            // The worker may still be holding the job. The HTTP client's own timeout is
-            // bound to this same deadline (see `worker_loop`), so it unwinds rather than
-            // pinning the worker long after the caller stopped waiting.
-            Err(RecvTimeoutError::Timeout) => Err(Error::Engine(format!(
-                "object store: operation exceeded the {:?} deadline",
-                self.op_deadline
-            ))),
-            Err(RecvTimeoutError::Disconnected) => Err(Error::Engine(
-                "object store: worker dropped the request without replying".into(),
-            )),
+        if let Err(e) = tx.try_send(job) {
+            let why = match e {
+                std::sync::mpsc::TrySendError::Full(_) => {
+                    "object store: request queue is full; the backend is not keeping up"
+                }
+                std::sync::mpsc::TrySendError::Disconnected(_) => {
+                    "object store: worker is gone, cannot submit request"
+                }
+            };
+            return (
+                Completion::AdmissionRefused,
+                Err(Error::Engine(why.to_string())),
+            );
         }
+
+        // Wait only what is LEFT, not a fresh full deadline. The previous version passed
+        // `self.op_deadline` here, so time spent queued was not charged to the caller at all
+        // -- a comment in this function claimed the opposite. `deadline - now`, floored at
+        // zero, is what makes the deadline mean "from when I asked".
+        let remaining = deadline.saturating_duration_since(Instant::now());
+        match reply_rx.recv_timeout(remaining) {
+            Ok(result) => (Completion::WorkerReply, result),
+            // Reaching this is a statement about the INTERNAL budget: the client's own
+            // timeout is set strictly shorter (see `internal_budget`), so in a healthy
+            // configuration the worker replies with its own error first and this net is
+            // never the thing that fires.
+            Err(RecvTimeoutError::Timeout) => (
+                Completion::OuterFallback,
+                Err(Error::Engine(format!(
+                    "object store: no reply within the {:?} deadline",
+                    self.op_deadline
+                ))),
+            ),
+            Err(RecvTimeoutError::Disconnected) => (
+                Completion::WorkerReply,
+                Err(Error::Engine(
+                    "object store: worker dropped the request without replying".into(),
+                )),
+            ),
+        }
+    }
+}
+
+/// Where an operation's outcome came from. See [`MinioObjectStore::submit_traced`].
+///
+/// **Not an error variant, and deliberately not one.** Tess ruled this out: `kv9_common::Error`
+/// is mapped at 80-odd points in the public gRPC surface, so widening it to let a test tell
+/// two internal paths apart would push an internal distinction into the compatibility
+/// surface. Everything still leaves this module as `Error::Engine`.
+///
+/// It is `pub` only under the `testing` feature — the same gate `FaultyEngine` uses, and for
+/// the same reason: a production build cannot name this type, so nothing outside a test can
+/// come to depend on the distinction.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(not(any(test, feature = "testing")), allow(dead_code))]
+pub enum Completion {
+    /// The request was issued and someone answered — success or backend failure alike.
+    WorkerReply,
+    /// Nobody answered within the caller's deadline. Reaching this means the internal
+    /// budget failed to unwind first, which it is built to do.
+    OuterFallback,
+    /// Never issued: the queue was full, or too little of the deadline remained.
+    AdmissionRefused,
+}
+
+impl Completion {
+    /// A source that never answered cannot have produced a success.
+    ///
+    /// Only a `debug_assert` guard, not a contract: it catches a future edit that returns
+    /// `Ok` alongside a non-reply source, which would make every source-bound test
+    /// meaningless without changing any of them.
+    fn agrees_with<T>(&self, outcome: &Result<T>) -> bool {
+        match self {
+            Completion::WorkerReply => true,
+            Completion::OuterFallback | Completion::AdmissionRefused => outcome.is_err(),
+        }
+    }
+}
+
+#[cfg(any(test, feature = "testing"))]
+impl MinioObjectStore {
+    /// A `put` that also reports **where its outcome came from**.
+    ///
+    /// The test seam for the deadline work. Acceptance binds to [`Completion`] rather than
+    /// to error text, because the text is prose that gets reworded while the source is the
+    /// property under test — a `contains("timed out")` assertion keeps passing after a
+    /// reword and stops meaning anything.
+    ///
+    /// Behind the `testing` feature, so this exists only where a test can see it.
+    pub fn put_traced(&self, key: &ObjectKey, bytes: &[u8]) -> (Completion, Result<()>) {
+        let key = key.as_str().to_string();
+        let bytes = bytes.to_vec();
+        self.submit_traced(|reply| JobKind::Put { key, bytes, reply })
+    }
+
+    /// The internal HTTP/retry budget this store derives from its caller deadline.
+    ///
+    /// Exposed so a test can assert the ORDERING (`internal < caller`) rather than
+    /// hard-coding the fraction, which would re-pin the constant instead of the property.
+    pub fn internal_budget_for_test(&self) -> Duration {
+        internal_budget(self.op_deadline)
+    }
+
+    /// This store's caller-facing deadline, for the same comparison.
+    pub fn op_deadline_for_test(&self) -> Duration {
+        self.op_deadline
     }
 }
 
@@ -361,20 +509,35 @@ fn worker_loop(config: MinioConfig, rx: Receiver<Job>, ready: SyncSender<Result<
         }
     };
 
-    // Bound the client's patience by the caller's. Upstream defaults to a three-minute
-    // retry window, which would leave this thread inside `block_on` long after `submit`
-    // returned a timeout — and `Drop` joins this thread, so that delay would resurface as a
-    // store that takes minutes to drop.
+    // STRICTLY SHORTER than the caller's deadline, and that gap is the whole point.
+    //
+    // Upstream defaults to a three-minute retry window, which would leave this thread inside
+    // `block_on` long after `submit` gave up — and `Drop` joins this thread, so that delay
+    // resurfaces as a store that takes minutes to drop. So it has to be bounded by the
+    // caller's deadline. But setting it EQUAL to that deadline, which is what this did
+    // first, makes the two expire at the same instant and turns "which error does the caller
+    // see" into a scheduling race.
+    //
+    // That was not theoretical. Against a refused port, a landed mutation in `do_put`'s
+    // error arm was caught 8 times in 10 and missed twice — and the two misses took 6.4s
+    // against a 5s deadline, i.e. they were the runs where the outer net fired first and the
+    // mutated arm never executed. A test that asserts anything about a backend error was
+    // therefore asserting it about a coin flip.
+    //
+    // With the internal budget strictly shorter, the client's own error is the one that
+    // arrives, and `Completion::OuterFallback` returns to being what it is described as: a
+    // net that should not be reachable in a healthy configuration.
+    let internal_budget = internal_budget(config.op_deadline);
     let client_options = ClientOptions::new()
-        .with_timeout(config.op_deadline)
-        .with_connect_timeout(config.op_deadline)
+        .with_timeout(internal_budget)
+        .with_connect_timeout(internal_budget)
         // Round one runs against a local MinIO over plain HTTP. EdHuang ruled TLS out of
         // this round for internal traffic; stating it keeps it a decision rather than an
         // attempted-and-failed connection.
         .with_allow_http(true);
 
     let retry = RetryConfig {
-        retry_timeout: config.op_deadline,
+        retry_timeout: internal_budget,
         ..Default::default()
     };
 
@@ -400,41 +563,73 @@ fn worker_loop(config: MinioConfig, rx: Receiver<Job>, ready: SyncSender<Result<
         }
     };
 
+    // What the caller's deadline reserves for the reply hop, i.e. everything the internal
+    // budget deliberately does not use. Derived from the same two numbers, so the two cannot
+    // drift into disagreeing about who owns which slice of the deadline.
+    let reply_margin = config.op_deadline.saturating_sub(internal_budget);
+
     if ready.send(Ok(())).is_err() {
         return;
     }
 
     while let Ok(job) = rx.recv() {
-        // The caller has stopped waiting; issuing the request now would spend the worker on
-        // an answer nobody receives while the next caller queues behind it. The reply is
-        // still sent, because a caller that has not *quite* timed out deserves the reason
-        // rather than a disconnect.
-        if Instant::now() >= job.deadline {
+        // Issue only if enough of the caller's budget is left to be worth spending, AND to
+        // get an answer back. Not just `now < deadline`: a job with a millisecond left would
+        // be issued, spend the worker, and complete after the caller had gone -- so the work
+        // is wasted and the next caller queues behind it for nothing.
+        //
+        // `reply_margin` is what makes the reply-side reservation explicit rather than
+        // implied by the internal budget's fraction. The two must agree: an operation
+        // admitted here gets `internal_budget` on the wire, so admitting one with less than
+        // that plus margin remaining would guarantee the outer net fires.
+        let left = job.deadline.saturating_duration_since(Instant::now());
+        if left <= reply_margin {
             job.kind
                 .decline("object store: request expired in the queue before it could be issued");
             continue;
         }
+        // The operation is capped HERE, by us, rather than left to the client's own budget.
+        //
+        // Setting `retry_timeout` shorter than the caller's deadline is necessary but not
+        // sufficient, and assuming otherwise is what made the first attempt at this still
+        // flaky (measured: 1 failure in 8 runs even with a 4/5 ratio). `retry_timeout` bounds
+        // when the client stops STARTING attempts, not when it returns -- a final backoff
+        // sleep begun just inside the window runs to completion outside it, so the client can
+        // hand back its answer after the caller has already gone.
+        //
+        // `tokio::time::timeout` makes the bound ours and hard. The worker now replies within
+        // `internal_budget` whatever the client does, so `Completion::OuterFallback` is
+        // unreachable in a healthy configuration by construction rather than by a margin that
+        // has to be big enough.
+        macro_rules! run_bounded {
+            ($fut:expr, $reply:expr) => {{
+                let result = runtime.block_on(async {
+                    match tokio::time::timeout(internal_budget, $fut).await {
+                        Ok(r) => r,
+                        // Sourced from the worker, like any other answer: the caller is told
+                        // what happened rather than being left to the outer net's silence.
+                        Err(_) => Err(Error::Engine(format!(
+                            "object store: operation did not complete within the {:?} \
+                             internal budget",
+                            internal_budget
+                        ))),
+                    }
+                });
+                let _ = $reply.send(result);
+            }};
+        }
+
         match job.kind {
             JobKind::Put { key, bytes, reply } => {
-                let result = runtime.block_on(do_put(&client, &key, bytes));
-                let _ = reply.send(result);
+                run_bounded!(do_put(&client, &key, bytes), reply)
             }
-            JobKind::Get { key, reply } => {
-                let result = runtime.block_on(do_get(&client, &key));
-                let _ = reply.send(result);
-            }
-            JobKind::Delete { key, reply } => {
-                let result = runtime.block_on(do_delete(&client, &key));
-                let _ = reply.send(result);
-            }
+            JobKind::Get { key, reply } => run_bounded!(do_get(&client, &key), reply),
+            JobKind::Delete { key, reply } => run_bounded!(do_delete(&client, &key), reply),
             JobKind::List {
                 pushdown,
                 literal,
                 reply,
-            } => {
-                let result = runtime.block_on(do_list(&client, pushdown.as_deref(), &literal));
-                let _ = reply.send(result);
-            }
+            } => run_bounded!(do_list(&client, pushdown.as_deref(), &literal), reply),
         }
     }
 }
