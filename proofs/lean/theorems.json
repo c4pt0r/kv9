@@ -1,0 +1,9 @@
+{
+  "Quorum": [
+    "Kv9.disjoint_votes_bound",
+    "Kv9.majority_intersection",
+    "Kv9.unique_election",
+    "Kv9.quorum_after_failures",
+    "Kv9.no_single_voter_dependency"
+  ]
+}

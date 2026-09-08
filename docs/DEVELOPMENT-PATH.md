@@ -13,6 +13,16 @@ Local evidence: 413 normal tests, 20 doctests, 21 real MinIO tests and eight E2E
 
 Hosted baseline acceptance: [GitHub Actions run 34274338807](https://github.com/c4pt0r/kv9/actions/runs/34274338807) completed successfully with all nine jobs passing. This is evidence for the published implementation, not completion of the future work packages.
 
+## Mandatory correctness and availability gates
+
+These requirements supplement every work package without removing existing deliverables. Full contract: [correctness gates](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md).
+
+- Core algorithms require rigorous proofs with explicit state, transitions, invariants, safety and conditional liveness. Machine-check protocol lemmas and document their mapping to implementation events; bounded model checking and E2E tests do not replace proofs.
+- E2E must run actual Chaos Mesh fault injection with positive effect observations, independent operation histories and retained success/failure artifacts. SIGKILL is not a power-loss model.
+- The database must have no service-critical single point of failure except the object-store dependency. Cover metadata, TSO, schedulers, coordinators, discovery and client routing. Availability is conditional on the stated quorum/failure budget; test every voter and later separate host failure domains.
+
+Each issue remains open until its applicable proof, fault and availability obligations have evidence. An abstract lemma does not establish a complete implementation proof, and a one-host Kind run does not establish host-loss tolerance.
+
 ## Execution rules
 
 1. Follow the explicit issue dependencies. Stage exit gates are additional acceptance requirements; interface/design work may overlap, but later-stage claims require the earlier gates.
@@ -179,6 +189,14 @@ The next stages depend on the metadata fixes, positioned WAL recovery, and produ
 
 No incremental LSM, multi-Raft implementation or new TLS configuration in this integration issue. Hosted checks remain pending until actually observed.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -216,6 +234,16 @@ Existing process crash cuts and byte-truncation tests do not cover the complete 
 #### Scope boundary
 
 Do not claim exhaustive hardware coverage. Test hooks must not become default production behavior.
+
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
+Additional C01 deliverables: integrate PodChaos, NetworkChaos and IOChaos in reproducible CI environments; cover kill/failure, partition, delay/loss and storage EIO/ENOSPC/latency where supported. Distinguish process crash, actual Chaos Mesh effects and modeled power loss in the evidence matrix. Exercise bootstrap, membership, checkpoint/pending recovery and every voter. Keep the full deterministic filesystem model and persistence-before-send controls in scope.
 
 #### Completion evidence
 
@@ -255,6 +283,16 @@ Matching final values cannot detect stale reads, false success receipts or trans
 
 This issue covers the existing Raw KV/catalog guarantees. Transaction SI requires the separate model in T02.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
+Additional C02 deliverables: run the independent history checker over workloads spanning actual Chaos Mesh faults, healing and endpoint failover. Preserve unknown results and real-time constraints; final-state agreement is insufficient. Include negative controls for stale reads and lost acknowledged writes.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -292,6 +330,14 @@ Per-record fsync, full checkpoints and O(tail) reclamation currently have no rep
 #### Scope boundary
 
 Establish measurement before optimization; weakening fsync or consistency is not an acceptable performance improvement.
+
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
 
 #### Completion evidence
 
@@ -332,6 +378,16 @@ WAL, checkpoint, pending flush, manifest history, snapshots and future backups n
 
 Deliver contracts, minimal validation and retention interfaces here. Actual Raft truncation, object GC and backup restoration belong to later issues.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
+Additional C04 deliverables: maintain the core proof inventory and checked-theorem toolchain; specify abstract state/transitions and source mappings for durable vote publication, Ready ordering, metadata constraints, checkpoint publication and retention. Formalize file versus directory durability assumptions. Provide proof dependencies for all later ownership, transaction and GC changes; five quorum lemmas alone do not discharge these obligations.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -370,6 +426,14 @@ Checkpoint adoption currently copies the entire surviving WAL tail while holding
 
 This issue reclaims the engine WAL only; Raft protocol-log truncation requires S05.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -407,6 +471,14 @@ Full-object restore and full-dataset memory residency prevent operation beyond R
 #### Scope boundary
 
 This issue supplies reader primitives; S03 integrates the full incremental engine view.
+
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
 
 #### Completion evidence
 
@@ -447,6 +519,14 @@ The current full-state checkpoint has a 48 MiB ceiling and never releases the fu
 
 Correct multi-SST views land here. Compaction and physical deletion are separate S04/S07 deliverables.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -484,6 +564,14 @@ Incremental SSTs alone leave file counts and read amplification unbounded; incor
 #### Scope boundary
 
 Transaction MVCC GC policies are added with T01/T02; retain an explicit interface for their safe points.
+
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
 
 #### Completion evidence
 
@@ -524,6 +612,14 @@ Raft currently retains all logs. Truncation requires recoverable data, position,
 
 Do not bypass cluster identity by rebuilding from a bucket. Cross-cluster backup restore is O01.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -563,6 +659,14 @@ Per-record fsync limits throughput, while slow storage and compaction debt can e
 
 Global limits and basic progress guarantees land here; per-tenant fairness policy is T03.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -600,6 +704,14 @@ SSTs and manifest history are retained forever today. Age or the latest manifest
 #### Scope boundary
 
 Start with dry-run and enable deletion only after acceptance. Elapsed time never proves that an unknown proposal failed.
+
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
 
 #### Completion evidence
 
@@ -639,6 +751,14 @@ Metadata and all user KV currently share META_REGION_0. Catalog region rows do n
 
 D02 owns complete public rerouting. Do not prematurely shard L0/L1 metadata.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -676,6 +796,16 @@ Stale routing, cross-range operations and uncertain write retries can cause miss
 #### Scope boundary
 
 No implicit global Raw snapshot or cross-region transaction guarantee; new semantics require explicit protocol support.
+
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
+Additional D02 deliverable: client failover must use surviving endpoints without depending on one discovery seed, a fixed initial leader or a single routing gateway; test each endpoint unavailable during real Chaos Mesh faults.
 
 #### Completion evidence
 
@@ -715,6 +845,14 @@ New and migrated replicas must join after Raft logs have been truncated while sh
 
 Copying an existing complete data directory is not a learner implementation. D06 owns placement policy.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -752,6 +890,14 @@ Splitting a hot range requires coordinated parent/child consensus state and cata
 #### Scope boundary
 
 D06 decides automatic split policy. Merge has a separate protocol and acceptance in D05.
+
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
 
 #### Completion evidence
 
@@ -791,6 +937,14 @@ Without merge, shard overhead only grows. Coordinating two consensus groups cann
 
 No arbitrary nonadjacent or cross-keyspace merge. D06 owns automatic policy.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -829,6 +983,16 @@ Split/merge/migration primitives need a stable scheduling loop to translate new 
 
 No assumed linear scaling factor and no new external PD/etcd. Metadata sharding must be measurement-driven.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
+Additional D06 deliverable: scheduler authority and in-progress placement decisions survive loss of their current owner; demonstrate takeover without conflicting assignments and test separate machine failure domains.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -866,6 +1030,16 @@ Existing transaction APIs and timestamp structures do not yet form a working tra
 #### Scope boundary
 
 MVCC primitives are not a complete transaction implementation. No cross-transaction-group or external-consistency promise.
+
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
+Additional T01 deliverable: prove timestamp uniqueness, monotonic allocation and provider fencing across crashes and takeover; serve from replicated allocation authority without an indispensable TSO process.
 
 #### Completion evidence
 
@@ -906,6 +1080,16 @@ A successful 2PC example does not establish atomic transactions, safe uncertain 
 
 No serializable, cross-transaction-group or cross-keyspace guarantee without a separate protocol and checker.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
+Additional T02 deliverable: prove commit authority and SI visibility, and recover decisions and locks after coordinator loss without requiring that process to return. Validate the protocol under actual Chaos Mesh combinations and independent histories.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -943,6 +1127,14 @@ Global limits prevent exhaustion but do not stop one tenant from consuming cache
 #### Scope boundary
 
 This can start in parallel once P2 resource interfaces stabilize. Quotas are not yet a billing system or a hard real-time SLA.
+
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
 
 #### Completion evidence
 
@@ -982,6 +1174,14 @@ Shared SSTs and local checkpoints are not backups. Restoration needs protocol id
 
 Do not promise zero RPO after losing every Raft replica's unarchived tail. PITR covers only durably archived, consistently interpretable history.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -1019,6 +1219,14 @@ WAL v2 currently requires offline upgrade and old binaries cannot read it. Produ
 #### Scope boundary
 
 No arbitrary-version downgrade promise. Every release states its supported compatibility window.
+
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
 
 #### Completion evidence
 
@@ -1058,6 +1266,16 @@ Short tests do not establish long-term resource stability or repeatable recovery
 
 Bounded fault and nightly tests begin in P0. This issue is final long-duration acceptance, not permission to defer foundational testing.
 
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
+
+Additional O03 deliverable: the release availability report covers distinct host failure domains, every singleton active role and client/operational dependencies. Demonstrate that object storage is the only allowed service-critical external dependency exception.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
@@ -1095,6 +1313,14 @@ After core consistency, storage and scaling stabilize, deployments need configur
 #### Scope boundary
 
 Explicitly P4 priority: enterprise private-network certificate setup does not block P0/P1 consensus, recovery or throughput work.
+
+#### Mandatory correctness and availability gates
+
+The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs/CORRECTNESS-GATES.md) supplements this issue's original scope.
+
+- [ ] Core protocol changes have rigorous proofs, checked lemmas and an explicit implementation refinement record; unresolved assumptions remain visible. Infrastructure-only changes identify the proof obligations they preserve.
+- [ ] Applicable E2E scenarios run under actual Chaos Mesh with observed fault effects, correct operation histories and retained success/failure evidence. Record any uncovered fault family explicitly.
+- [ ] The component's authority, recovery and client path require no indispensable database node or singleton service. State the quorum/failure-domain assumptions and provide every-voter or role-takeover evidence as applicable; the object store is the sole allowed dependency exception.
 
 #### Completion evidence
 

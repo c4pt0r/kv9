@@ -11,6 +11,11 @@ The target is an industrial-grade distributed database. Prioritize consistency, 
 and scalable architecture. Complex private-network TLS configuration is not a prerequisite for the current
 milestones. Existing identity, root descriptor, token authentication and epoch checks remain part of the baseline.
 
+Hard gates for every stage: rigorous core-protocol proofs with explicit implementation refinement,
+real Chaos Mesh fault-injection E2E, and no service-critical single point of failure except the object-store
+dependency. See [CORRECTNESS-GATES.md](CORRECTNESS-GATES.md) for proof obligations, evidence requirements
+and the distinction between replica failure and host-failure isolation.
+
 ## Current baseline: working distributed Raw KV
 
 - One `META_REGION_0` Raft group replicates both self-hosted metadata and Raw KV. Real multi-process tests cover
