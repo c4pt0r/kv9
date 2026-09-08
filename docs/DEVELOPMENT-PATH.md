@@ -1101,4 +1101,3 @@ Explicitly P4 priority: enterprise private-network certificate setup does not bl
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
 
 Implementation reference: [ec50678](https://github.com/c4pt0r/kv9/commit/ec506780f273663da9b1d37fe9357495d549bf7c). See the published [audit](https://github.com/c4pt0r/kv9/blob/ec506780f273663da9b1d37fe9357495d549bf7c/docs/TAKEOVER-AUDIT.md) and [validation record](https://github.com/c4pt0r/kv9/blob/ec506780f273663da9b1d37fe9357495d549bf7c/docs/TAKEOVER-VALIDATION.md).
-
