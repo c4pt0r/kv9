@@ -737,3 +737,77 @@ not depend on the searcher.
 means "no marked debt for this task" and never "no stale comments about this task". Existing
 comments are not to be marked by guess — audit candidates individually and attach a marker only
 where the canonical task and the expiry condition are both verified.
+
+## 21. A negative result must first prove the command ran
+
+*Origin (three instances in one day, three people, 2026-09-07):* **a failed invocation can produce
+the same observable shape as the negative conclusion you are looking for.** Not always the same exit
+code — sometimes the same empty output, or the same absent artifact. Whichever surface you are
+reading, the broken invocation and the genuine negative are indistinguishable **on that surface**, so
+a negative result cannot by itself establish that the target command executed. The three cases below
+differ in which surface collapsed, which is the point: fixing your attention on exit codes alone
+misses the other two.
+
+    Ren     piped a check through `tail`; the step received `tail`'s rc=0 and went green. The trap
+            was already written in a `ci.yml` comment — see the note below on why that was not enough.
+    Cindy   built two commands as strings in a zsh `for` loop, so each whole string was taken as one
+            filename. Both returned 127 — identical to the "script is missing" case the matrix was
+            built to detect.
+    Cindy   stripped `cmake` from PATH to test whether `aws-lc-sys` invokes it, but `timeout` was
+            also gone from that PATH, so `env` returned 127 and no build ran. The directory then held
+            zero `CMakeCache.txt` — exactly what a successful no-cmake build shows. Reading it would
+            have "confirmed" a build that never happened. Note the exit codes here did NOT match
+            (127 vs the real build's 0); the artifact absence is what collapsed.
+
+**Before reading any negative conclusion, establish that the target command executed.** Not that it
+exited zero — that it ran. Exactly one kind of evidence answers this:
+
+    a positive work witness   something only THIS execution produced — not something the command
+                              is capable of producing. A PASS/selected count, a marker line unique to
+                              this run, or an artifact whose freshness is established (pre-emptied or
+                              unique target dir, timestamp, run-scoped name).
+
+**Freshness is part of the witness, not a detail.** A build product from an earlier run sits in the
+directory whether or not this command ran, so "the artifact is there" rebuilds the false evidence
+this rule exists to refuse. My own no-cmake case only worked because the target dir was fresh; had I
+reused one, the `.a` and the 377 `.o` files would have been there either way.
+
+Two neighbouring practices are often mistaken for it, and are **not** substitutes:
+
+    the mutation landed       grepping the mutant token proves the SETUP completed. The verifier
+                              command afterwards can still be lost to a pipe, a quoting slip or a
+                              PATH strip. This is rule 14's precondition, not an execution witness.
+    the harness is separate   keeping the timeout/driver outside the environment under test stops
+                              the measurer dying alongside it — a structural safeguard that makes
+                              one class of failed invocation legible. It does not show the subject
+                              ran.
+
+*Why exit codes cannot carry this:* 127 means "not found" — whether the subject is missing (the
+finding) or the invocation is malformed (the instrument). 0 means "nothing to report" — whether the
+check passed or never selected anything. **An exit code is a verdict on *some* command — not necessarily the one
+you meant, and not necessarily one that exists.**
+
+*Relation to rules 12, 14, 19 and 20 — this rule answers exactly one question and must not absorb
+theirs:*
+
+    rule 21 (this)  did the target command run at all?
+    rule 14         did the mutation land, and is the red attributable to it?
+    rule 12         is the tool correct?
+    rule 20         is the tool ABLE to see the thing — and was its control wide enough (boundary 2)?
+    rule 19         it ran and was able to see, but answered a narrower question than you asked
+
+Each of these can be answered on its own: whether a mutation landed is decidable before any
+verifier runs, and a tool's self-test stands alone. The dependency is **scenario-scoped**: *when one
+of them is offered in support of a negative conclusion, its verdict does not substitute for rule 21 —
+that particular execution still needs its own positive witness.* Stated this way so the premise is
+not hidden inside the variants, and so "the mutation landed" is not quietly promoted from rule 14's
+precondition into evidence that the verifier ran.
+
+*Why this is here and not only in a comment beside one command:* the `tail` case was already recorded
+in a `ci.yml` comment — **written by the same person who then walked into it**, in wording he had
+chosen deliberately: *"a pipeline would hand the step `tail`'s exit status instead of the script's,
+which is the exact way a red becomes an invisible green."* He hit it the same afternoon. Authorship
+grants no exemption, which rules out the comfortable reading that some other reader was merely
+careless. (The reviewer who found the repeat had also opened that file three times that day, each
+time jumping to a different line range.) **A hazard recorded where only the already-informed will
+pass is not yet a rule.**
