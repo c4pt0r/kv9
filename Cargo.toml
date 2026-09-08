@@ -70,7 +70,8 @@ rpds = "1"
 #   licences                no copyleft and none unspecified. aws-lc-sys is a conjunction
 #                           including BSD-3-Clause; the ICU crates are Unicode-3.0
 #
-# Why we took it anyway (Tess, task #12 thread): the alternative was hand-writing
+# Why we took it anyway (ruled by Tess in the MinIO discussion in #dev): the alternative
+# was hand-writing
 # PUT/GET/LIST/DELETE plus SigV4, which moves protocol compatibility, signature
 # correctness and their security maintenance into kv9. A native crypto dependency is a
 # smaller risk than a self-maintained authentication implementation.

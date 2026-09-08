@@ -17,3 +17,12 @@ tokio.workspace = true
 # Gates `mod testing` (FaultyEngine) out of production builds. Consumers that need
 # fault injection enable this from [dev-dependencies] only, never from [dependencies].
 testing = []
+
+# The MinIO backend's deadline acceptance binds to WHERE an outcome came from
+# (`minio::Completion`), not to error text. That seam is gated behind `testing`, and a file
+# in tests/ compiles as a SEPARATE CRATE, so it cannot see a `cfg(test)` item -- the feature
+# has to be on for the test build specifically. A self-referential dev-dependency is the
+# documented way to say that, and it keeps `testing` off for anyone depending on this crate
+# normally.
+[dev-dependencies]
+kv9-engine = { path = ".", features = ["testing"] }
