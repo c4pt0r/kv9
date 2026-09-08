@@ -3,7 +3,7 @@
 //! The raft group replicates a log; the **state machine** deterministically applies each
 //! committed entry. For the metadata plane the state machine is a KV backed by the
 //! mocked [`kv9_engine::MemEngine`] (ROADMAP: "the raft state machine is the skeleton's
-//! `MemEngine` (mock)"). The `meta` catalog engine ([`kv9_meta::MetaStore`]) runs *on
+//! `MemEngine` (mock)"). The `meta` catalog engine (`kv9_meta::MetaStore`) runs *on
 //! top of* this KV.
 //!
 //! Phase-1 path: `propose(cmd) → committed → apply → read` over the existing
@@ -100,7 +100,7 @@ pub trait StateMachine: Send + Sync {
 ///
 /// The catalog engine writes/read through the same engine, so a committed
 /// `Command::CatalogTxn` lands atomically here and is then visible to
-/// [`kv9_meta::MetaStore`] reads. Swapping `MemEngine` for the real disaggregated engine
+/// `kv9_meta::MetaStore` reads. Swapping `MemEngine` for the real disaggregated engine
 /// is Phase-2 and does not change this type's shape (it is generic over [`Engine`]).
 pub struct MemStateMachine<E: Engine = MemEngine> {
     engine: Arc<E>,

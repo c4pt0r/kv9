@@ -1,6 +1,6 @@
 //! Public gRPC transport for the synchronous kv9 API surface.
 //!
-//! The transport deliberately owns only a [`BlockingBackend`]. Every call into the
+//! The transport deliberately owns only a `BlockingBackend` (private by design). Every call into the
 //! synchronous node is therefore made through [`tokio::task::spawn_blocking`]; an
 //! async handler cannot accidentally block a tonic worker by calling the node
 //! directly.
