@@ -17,8 +17,13 @@ license = "Apache-2.0"
 repository = "https://github.com/kv9/kv9"
 description = "kv9 — a single-binary, multi-tenant distributed key-value engine (design skeleton)."
 
-# Pure-Rust runtime dependencies. gRPC `.proto` sources are compiled with the
-# pinned protoc toolchain; raft-rs stays on `protobuf-codec` independently.
+# Runtime dependencies. gRPC `.proto` sources are compiled with the pinned protoc
+# toolchain; raft-rs stays on `protobuf-codec` independently.
+#
+# These were pure Rust until `object_store` (see the note on it below, which records the
+# measurement and the reason). The heading is corrected rather than left standing, because
+# a reader checking whether this tree pulls native code should get the answer here, not
+# forty lines down.
 [workspace.dependencies]
 thiserror = "1"
 serde = { version = "1", features = ["derive"] }
@@ -31,6 +36,56 @@ protobuf = "2"
 # Persistent (structurally-shared) ordered map: O(1) snapshots for MemEngine.
 # MIT-licensed, to keep the dependency set copyleft-free.
 rpds = "1"
+# Object storage client. ROADMAP "Dependency decisions" names this crate; `aws` only,
+# defaults off, because MinIO speaks the S3 API and every other cloud backend stays out.
+#
+# THIS IS WHERE THE "pure-Rust runtime dependencies" LINE ABOVE STOPS BEING TRUE, and the
+# exception is recorded rather than left for someone to discover:
+#
+#   size                    measured at the head that introduced it (see that
+#                           commit message for the numbers). Counts are deliberately
+#                           NOT repeated here: a figure in a comment goes stale on the
+#                           next dependency change and nothing makes it red.
+#   native code             aws-lc-sys carries C and assembly and IS actually compiled
+#                           (377 .o files and libaws_lc_0_45_0_crypto.a in the build dir).
+#
+#                           An earlier version of this comment said that made "cmake and a
+#                           C compiler" new BUILD REQUIREMENTS. That was written from the
+#                           crate's reputation, not from a measurement, and both halves are
+#                           wrong. Measured on x86_64 linux, aws-lc-sys 0.45.0:
+#                             cmake   NOT used. Two from-scratch builds with cmake absent
+#                                     from PATH both produced the static library, with zero
+#                                     CMakeCache.txt anywhere in the out dir. aws-lc-sys
+#                                     chooses its builder at build time and took the `cc`
+#                                     path.
+#                             cc      required -- but it already was, as rustc's linker
+#                                     driver. Removing it fails `libc`, `proc-macro2` and
+#                                     every other build script long before aws-lc-sys, and
+#                                     it failed that way before this dependency existed.
+#                           So the toolchain delta on a working Rust host is ZERO. CI still
+#                           installs cmake explicitly, for a different and honest reason:
+#                           the builder choice is made on the runner, we do not control the
+#                           runner image, and the fallback path must not be the one thing
+#                           standing between us and a red we cannot reproduce.
+#   licences                no copyleft and none unspecified. aws-lc-sys is a conjunction
+#                           including BSD-3-Clause; the ICU crates are Unicode-3.0
+#
+# Why we took it anyway (ruled by Tess in the MinIO discussion in #dev): the alternative
+# was hand-writing
+# PUT/GET/LIST/DELETE plus SigV4, which moves protocol compatibility, signature
+# correctness and their security maintenance into kv9. A native crypto dependency is a
+# smaller risk than a self-maintained authentication implementation.
+# Imported under an explicit alias. `crates/engine/src/object_store.rs` is OUR module and
+# also exports a trait named `ObjectStore`; without the alias a bare `object_store::` path
+# inside any engine submodule silently resolves to the EXTERNAL crate, not ours. Measured,
+# not assumed: `use object_store::aws::AmazonS3Builder` compiles from inside a submodule,
+# and `aws` exists only upstream.
+s3_client = { package = "object_store", version = "0.14", default-features = false, features = ["aws"] }
+# `s3_client::ObjectStore::list` returns a `BoxStream`, and the trait that drives it is not
+# re-exported. Already in the tree as object_store's own dependency, so naming it directly
+# adds no package -- it makes an existing edge visible instead of reaching through another
+# crate's dependency graph. Used only inside the object-store worker.
+futures_util = { package = "futures-util", version = "0.3", default-features = false }
 # Public and node-internal RPC. tonic 0.14 split its Prost codec/build adapter
 # into dedicated crates; pin the family together so generated code and runtime
 # cannot drift independently.

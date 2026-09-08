@@ -92,8 +92,26 @@ jobs:
       #
       # apt rather than a setup-protoc action: one less third-party action in the trust
       # path, and the Debian package is sufficient for prost-build.
-      - name: Install protoc
-        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+      #
+      # cmake and build-essential ride along since the object-store dependency arrived.
+      # Being precise about WHY, because the first version of this said "aws-lc-sys needs
+      # cmake and a C compiler" and both halves were wrong (measured on x86_64 linux,
+      # aws-lc-sys 0.45.0):
+      #
+      #   cmake  is NOT used. Two from-scratch builds with cmake absent from PATH both
+      #          produced libaws_lc_0_45_0_crypto.a with zero CMakeCache.txt. The crate
+      #          picks its builder at build time and took the `cc` path.
+      #   cc     is required, but already was -- it is rustc's linker driver. Without it
+      #          `libc` and `proc-macro2` fail long before aws-lc-sys, and did so before
+      #          this dependency existed.
+      #
+      # So this line is not fixing a break; the delta on a working Rust host is zero. It is
+      # installed anyway because the builder choice is made ON THE RUNNER, we do not control
+      # the runner image, and "ubuntu-latest happens to have it" is the same assumption that
+      # made protoc fail on this workflow's first real run. Making the choice independent of
+      # the image costs one apt package.
+      - name: Install protoc, cmake and a C toolchain
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler cmake build-essential
 
       - name: Build
         run: cargo build --workspace --all-targets
@@ -162,6 +180,160 @@ jobs:
             printf 'expected exact terminal selftest count, got: %s\n' "$last" >&2
             exit 1
           }
+
+  # The MinIO backend's behaviour is a property of the SERVER, not of our code, so it cannot
+  # be checked without one. `crates/engine/tests/minio_backend.rs` is `#[ignore]`d for exactly
+  # that reason: without an endpoint those tests report as ignored rather than passing
+  # vacuously. This job is what stops "ignored" from meaning "never run anywhere".
+  #
+  # Without it the cmake/toolchain steps above would only prove the backend COMPILES. The
+  # load-bearing claim -- that the endpoint honours `If-None-Match: *`, so a second object
+  # under one file-id is refused rather than silently overwriting bytes a committed manifest
+  # points at -- is only ever established by a real request.
+  minio-backend:
+    name: minio-backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+
+      # This job compiles the engine itself, so it installs the toolchain rather than
+      # inheriting the runner image. See the pr-gate step for why cmake is here at all.
+      - name: Install protoc, cmake and a C toolchain
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler cmake build-essential
+
+      # Generated per run, never stored. There is no credential in this repository, in a
+      # secret, or in a fixture -- so there is nothing to leak, rotate, or accidentally
+      # commit. `add-mask` covers the case where some later step prints one anyway.
+      - name: Mint throwaway credentials
+        run: |
+          access="ci$(openssl rand -hex 8)"
+          secret="$(openssl rand -hex 24)"
+          echo "::add-mask::$access"
+          echo "::add-mask::$secret"
+          {
+            echo "KV9_OBJECT_STORE_ENDPOINT=http://127.0.0.1:19000"
+            echo "KV9_OBJECT_STORE_BUCKET=kv9-ci"
+            echo "KV9_OBJECT_STORE_ACCESS_KEY=$access"
+            echo "KV9_OBJECT_STORE_SECRET_KEY=$secret"
+          } >> "$GITHUB_ENV"
+
+      # Pinned by immutable DIGEST, not by a tag -- including not by `latest`, which is a
+      # moving pointer and would let the server under test change without any commit here.
+      # This exact digest is the image the suite was developed and first passed against
+      # (label release RELEASE.2025-09-07T16-13-09Z), so CI exercises the same object the
+      # evidence came from rather than whatever the tag resolves to on the day.
+      #
+      # 19000 rather than 9000: below the Linux ephemeral range (32768-60999), consistent
+      # with the E2E port policy in the acceptance job.
+      #
+      # `docker run` rather than a `services:` block: the official image needs the `server
+      # /data` argument, and a service container cannot pass one. Running it here also puts
+      # the readiness check under our control instead of a health-check option.
+      - name: Start MinIO
+        run: |
+          docker run -d --name kv9-minio-ci \
+            -p 127.0.0.1:19000:9000 \
+            -e MINIO_ROOT_USER="$KV9_OBJECT_STORE_ACCESS_KEY" \
+            -e MINIO_ROOT_PASSWORD="$KV9_OBJECT_STORE_SECRET_KEY" \
+            quay.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e \
+            server /data
+
+      # BOUNDED, and a failure here is an environment failure reported as one. The wait is a
+      # different quantity from the backend's own operation deadline on purpose: sharing one
+      # number lets a slow start present as an unresponsive backend, which is how a timeout
+      # test goes green for the wrong reason.
+      #
+      # Readiness is OBSERVED (a 200 from the health endpoint), not assumed from `docker run`
+      # having returned. Once this step has succeeded, "MinIO had not come up yet" is no
+      # longer available as an explanation for anything the suite reports.
+      - name: Wait for MinIO to answer, then create the bucket
+        run: |
+          for i in $(seq 1 60); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 \
+              http://127.0.0.1:19000/minio/health/live || true)
+            if [ "$code" = "200" ]; then
+              echo "MinIO answered 200 after ${i} probe(s)"
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "${ready:-0}" != "1" ]; then
+            echo "::error title=MinIO never became ready::No 200 from /minio/health/live within 60s. This is an environment failure, not a test result -- the suite below was never given a server to talk to."
+            docker logs kv9-minio-ci 2>&1 | tail -50
+            exit 1
+          fi
+          docker exec \
+            -e MC_HOST_ci="http://$KV9_OBJECT_STORE_ACCESS_KEY:$KV9_OBJECT_STORE_SECRET_KEY@127.0.0.1:9000" \
+            kv9-minio-ci mc mb --ignore-existing "ci/$KV9_OBJECT_STORE_BUCKET"
+
+      # The exit code is kept, and the counts are checked SEPARATELY. `cargo test --ignored`
+      # exits 0 when it selects nothing at all, so an rc-only gate would read a suite that ran
+      # zero tests exactly like one that ran and passed -- the same zero-selected-is-not-green
+      # problem the mutation-guard self-test steps solve by consuming an exact terminal count.
+      #
+      # Three independent facts are asserted, because they fail differently:
+      #   selected  the harness picked up 11 tests (a renamed file or a lost #[ignore] shows
+      #             here, not as a silent shortfall)
+      #   passed    all 11 passed with 0 failed
+      #   ignored   ZERO were ignored -- an #[ignore] that stayed ignored under --ignored
+      #             would otherwise be invisible
+      #
+      # The count is pinned. Adding a test to that file turns this red until the number here
+      # is updated, which is the point: the pin is what makes a lost test visible.
+      - name: Run the MinIO backend suite against the real server
+        run: |
+          set +e
+          output="$(cargo test -p kv9-engine --test minio_backend -- --ignored --test-threads=1 2>&1)"
+          rc=$?
+          set -e
+          printf '%s\n' "$output"
+          [ "$rc" -eq 0 ] || { printf 'cargo test exited %s\n' "$rc" >&2; exit "$rc"; }
+
+          printf '%s\n' "$output" | grep -qx 'running 18 tests' || {
+            printf 'expected exactly 18 selected tests; the harness reported: %s\n' \
+              "$(printf '%s\n' "$output" | grep -E '^running ')" >&2
+            exit 1
+          }
+          printf '%s\n' "$output" \
+            | grep -q '^test result: ok\. 18 passed; 0 failed; 0 ignored;' || {
+            printf 'expected 18 passed / 0 failed / 0 ignored, got: %s\n' \
+              "$(printf '%s\n' "$output" | grep '^test result:')" >&2
+            exit 1
+          }
+
+      # The non-ignored guards in the same file run without a server: the stop line on minting
+      # `PreparedSst`, and the assertion that its failure message carries its own retirement
+      # instruction. Named separately so "the real suite failed" and "the stop line was
+      # crossed" cannot be confused for each other.
+      #
+      # Counted for the same reason as the suite above, and this one is easy to forget: these
+      # two are the tests that run WITHOUT a fixture, so nothing else would notice if they
+      # stopped being selected.
+      - name: Run the stop-line guards
+        run: |
+          set +e
+          output="$(cargo test -p kv9-engine --test minio_backend 2>&1)"
+          rc=$?
+          set -e
+          printf '%s\n' "$output"
+          [ "$rc" -eq 0 ] || exit "$rc"
+          printf '%s\n' "$output" \
+            | grep -q '^test result: ok\. 3 passed; 0 failed; 18 ignored;' || {
+            printf 'expected 3 passed / 0 failed / 18 ignored, got: %s\n' \
+              "$(printf '%s\n' "$output" | grep '^test result:')" >&2
+            exit 1
+          }
+
+      - name: MinIO logs
+        if: failure()
+        run: docker logs kv9-minio-ci 2>&1 | tail -200
+
+      - name: Stop MinIO
+        if: always()
+        run: docker rm -f kv9-minio-ci || true
 
   # Informational on purpose. `cargo fmt --check` does NOT pass on this tree: when this
   # workflow landed there were 159 diff hunks across 39 files, spanning all four crate
@@ -288,8 +460,13 @@ jobs:
       #
       # apt rather than a setup-protoc action: one less third-party action in the trust
       # path, and the Debian package is sufficient for prost-build.
-      - name: Install protoc
-        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+      #
+      # cmake + build-essential: see the long note on the pr-gate install step. Same
+      # reasoning, stated once there rather than duplicated -- but installed here too,
+      # because this job compiles the workspace itself and must not inherit whatever the
+      # runner image happens to carry.
+      - name: Install protoc, cmake and a C toolchain
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler cmake build-essential
 
       - name: Build binary
         run: cargo build --workspace
