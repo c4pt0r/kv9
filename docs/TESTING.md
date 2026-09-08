@@ -740,9 +740,13 @@ where the canonical task and the expiry condition are both verified.
 
 ## 21. A negative result must first prove the command ran
 
-*Origin (three instances in one day, three people, 2026-09-07):* "the command failed to run" and
-"the command ran and found nothing" are the same exit code and the same empty directory. Nothing in
-the output distinguishes them, so a broken invocation reads as a clean result.
+*Origin (three instances in one day, three people, 2026-09-07):* **a failed invocation can produce
+the same observable shape as the negative conclusion you are looking for.** Not always the same exit
+code — sometimes the same empty output, or the same absent artifact. Whichever surface you are
+reading, the broken invocation and the genuine negative are indistinguishable **on that surface**, so
+a negative result cannot by itself establish that the target command executed. The three cases below
+differ in which surface collapsed, which is the point: fixing your attention on exit codes alone
+misses the other two.
 
     Ren     piped a check through `tail`; the step received `tail`'s rc=0 and went green. The trap
             was already written in a `ci.yml` comment — see the note below on why that was not enough.
@@ -752,25 +756,42 @@ the output distinguishes them, so a broken invocation reads as a clean result.
     Cindy   stripped `cmake` from PATH to test whether `aws-lc-sys` invokes it, but `timeout` was
             also gone from that PATH, so `env` returned 127 and no build ran. The directory then held
             zero `CMakeCache.txt` — exactly what a successful no-cmake build shows. Reading it would
-            have "confirmed" a build that never happened.
+            have "confirmed" a build that never happened. Note the exit codes here did NOT match
+            (127 vs the real build's 0); the artifact absence is what collapsed.
 
-**Before reading any negative conclusion, establish that the instrument executed.** Not that it
-exited zero — that it ran. Cheapest forms, in increasing strength:
+**Before reading any negative conclusion, establish that the target command executed.** Not that it
+exited zero — that it ran. Exactly one kind of evidence answers this:
 
-    the run emitted work     a PASS count, a compiled artifact, any line only a real run prints
-    the mutation landed      grep the mutant token before trusting the probe's exit code
-    the harness is separate  the timeout/driver lives outside the environment under test, so
-                             stripping that environment cannot disable the thing measuring it
+    a positive work witness   something only the target execution itself produces: a PASS/selected
+                              count, a compiled artifact, a marker line unique to a real run
+
+Two neighbouring practices are often mistaken for it, and are **not** substitutes:
+
+    the mutation landed       grepping the mutant token proves the SETUP completed. The verifier
+                              command afterwards can still be lost to a pipe, a quoting slip or a
+                              PATH strip. This is rule 14's precondition, not an execution witness.
+    the harness is separate   keeping the timeout/driver outside the environment under test stops
+                              the measurer dying alongside it — a structural safeguard that makes
+                              one class of failed invocation legible. It does not show the subject
+                              ran.
 
 *Why exit codes cannot carry this:* 127 means "not found" — whether the subject is missing (the
 finding) or the invocation is malformed (the instrument). 0 means "nothing to report" — whether the
 check passed or never selected anything. **An exit code is a verdict on *some* command — not necessarily the one
 you meant, and not necessarily one that exists.**
 
-*Relation to rules 12 and 20:* rule 12 asks whether the tool is correct; rule 20 asks whether it is
-*able* to see the thing. Both assume it ran. Rule 20's boundary 2 asks whether a control that ran was
-wide enough; this rule is the premise underneath it, and stays separate so the premise is not hidden
-inside the variant.
+*Relation to rules 12, 14, 19 and 20 — this rule answers exactly one question and must not absorb
+theirs:*
+
+    rule 21 (this)  did the target command run at all?
+    rule 14         did the mutation land, and is the red attributable to it?
+    rule 12         is the tool correct?
+    rule 20         is the tool ABLE to see the thing — and was its control wide enough (boundary 2)?
+    rule 19         it ran and was able to see, but answered a narrower question than you asked
+
+12, 14, 19 and 20 all presuppose 21. It stays separate so the premise is not hidden inside the
+variants — and so that "the mutation landed" is not quietly promoted from rule 14's precondition
+into evidence of execution.
 
 *Why this is here and not only in a comment beside one command:* the `tail` case was already recorded
 in a `ci.yml` comment — **written by the same person who then walked into it**, in wording he had
