@@ -263,8 +263,10 @@ pub struct Node<E: Engine = MemEngine> {
 }
 
 impl Node<MemEngine> {
-    /// Assemble a node from config (DESIGN §4, §11). Does not yet run bootstrap; call
-    /// [`Node::bootstrap`] to drive the election-first state machine.
+    /// Assemble a node from config (DESIGN §4, §11). Does not yet run bootstrap:
+    /// production drives the runtime's election-first flow through the driver; the
+    /// `#[cfg(test)]`-only `Node::bootstrap` (invisible to these docs by design) is
+    /// the single-node test shortcut.
     pub fn new(id: NodeId, config: Config) -> Result<Self> {
         let sn = Arc::new(SingleNodeRaft::new(id, META_REGION_0));
         #[cfg(test)]
