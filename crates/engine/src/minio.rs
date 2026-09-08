@@ -42,6 +42,7 @@
 //! communication*. MinIO authentication is not inside that ruling's scope and does not
 //! inherit its exemption.
 
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::mpsc::{sync_channel, Receiver, RecvTimeoutError, SyncSender};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
@@ -78,26 +79,62 @@ const DEFAULT_OP_DEADLINE: Duration = Duration::from_secs(30);
 /// without limit (DESIGN §13 principle 13).
 const JOB_QUEUE_DEPTH: usize = 32;
 
-/// Fraction of the caller's deadline the internal HTTP/retry budget is allowed to use.
+/// Fraction of the caller's deadline the wire budget may use.
 ///
-/// Reserves the remainder for handing the reply back. A worker that spent the entire
-/// deadline on the wire would finish exactly as the caller stopped listening, so its answer
-/// — the *specific* one, naming what the backend said — would be replaced by the generic
-/// outer timeout, at random.
-const INTERNAL_BUDGET_NUMERATOR: u32 = 4;
-/// See [`INTERNAL_BUDGET_NUMERATOR`]. 4/5 leaves a fifth of the deadline for the reply.
-const INTERNAL_BUDGET_DENOMINATOR: u32 = 5;
+/// The remainder is reserved for handing the reply back. A worker that spent the whole
+/// deadline on the wire would finish exactly as the caller stopped listening, so its
+/// specific answer would be replaced by the generic outer timeout, at random.
+const WIRE_BUDGET_NUMERATOR: u32 = 4;
+/// See [`WIRE_BUDGET_NUMERATOR`]. 4/5 leaves a fifth of the remaining time for the reply.
+const WIRE_BUDGET_DENOMINATOR: u32 = 5;
 
-/// The internal budget for one operation, strictly shorter than `caller_deadline`.
+/// The reply hop's reserve: an explicit, discrete minimum.
 ///
-/// Strictly: the `max(1ms)` floor keeps it non-zero for tiny deadlines, and the
-/// `saturating_sub(1ms)` keeps it below the caller's even when the fraction rounds up to it,
-/// so the ordering holds at every input rather than only at realistic ones.
-fn internal_budget(caller_deadline: Duration) -> Duration {
-    let scaled = caller_deadline
-        .mul_f64(f64::from(INTERNAL_BUDGET_NUMERATOR) / f64::from(INTERNAL_BUDGET_DENOMINATOR));
-    let capped = scaled.min(caller_deadline.saturating_sub(Duration::from_millis(1)));
-    capped.max(Duration::from_millis(1)).min(caller_deadline)
+/// Not a fraction. A proportional reserve (the previous `1/5 of whatever is left`) shrinks as
+/// queue wait grows, so the longer a job waited the less time it kept for handing its answer
+/// back — exactly backwards. A fixed floor keeps the reply hop's share constant no matter how
+/// long the queue was.
+pub const REPLY_RESERVE: Duration = Duration::from_millis(1);
+
+/// The wire budget for a job with `left` of its caller's deadline remaining, given the
+/// store's configured budget, or `None` if the job must not be issued.
+///
+/// ONE algebra, used both per-job and at the configuration boundary — which is what stops the
+/// two refusals from shadowing each other. The previous version had a separate
+/// `left < MIN_SPLITTABLE_DEADLINE` early return *and* a final `budget >= remaining` check,
+/// and they were mutually redundant: removing either changed nothing, so no single mutation
+/// could redden the test. Needing a compound mutation to get red is the symptom of dead code.
+///
+/// Guarantees, each pinned by a boundary test rather than asserted here in prose:
+///
+/// ```text
+/// left <= REPLY_RESERVE   ->  None
+/// left >  REPLY_RESERVE   ->  wire = min(configured, left - REPLY_RESERVE)
+///                             wire > 0
+///                             wire + REPLY_RESERVE <= left
+///                             wire <= configured
+/// ```
+fn wire_budget(left: Duration, configured: Duration) -> Option<Duration> {
+    if left <= REPLY_RESERVE {
+        return None;
+    }
+    // No zero check. It would be unreachable, and unreachable guards are how the previous
+    // version ended up with two refusals alibiing each other: `left > REPLY_RESERVE` implies
+    // `op_deadline > REPLY_RESERVE` (since `left <= op_deadline`), hence `configured > 0` and
+    // `left - REPLY_RESERVE > 0`, so the `min` of two positives is positive.
+    //
+    // Verified the same way the redundancy was found: with a zero check present, changing
+    // `<=` to `<` above SURVIVED, because the zero check caught it. Without it, that mutation
+    // is caught. One rule, one mutation, one red.
+    Some(configured.min(left - REPLY_RESERVE))
+}
+
+/// The configured wire budget: the most any single job may spend, however much time it has.
+///
+/// A ceiling, not a per-job answer. `wire_budget` takes the smaller of this and what the job
+/// actually has left.
+fn configured_budget(op_deadline: Duration) -> Duration {
+    op_deadline.mul_f64(f64::from(WIRE_BUDGET_NUMERATOR) / f64::from(WIRE_BUDGET_DENOMINATOR))
 }
 
 /// Thread name for the worker. Also the string the structural probe counts, so it is a
@@ -120,15 +157,31 @@ enum JobKind {
     Put {
         key: String,
         bytes: Vec<u8>,
-        reply: SyncSender<Result<()>>,
+        reply: SyncSender<(Completion, Result<()>)>,
     },
     Get {
         key: String,
-        reply: SyncSender<Result<Option<Vec<u8>>>>,
+        reply: SyncSender<(Completion, Result<Option<Vec<u8>>>)>,
     },
     Delete {
         key: String,
-        reply: SyncSender<Result<()>>,
+        reply: SyncSender<(Completion, Result<()>)>,
+    },
+    /// A job whose duration the TEST sets, not the network.
+    ///
+    /// The seam Tess specified. Real peers -- refused, silent, 503 -- all have probabilistic
+    /// timing, which is why every fixture built on them witnessed the worker's hard cap only
+    /// as a tail (2 in 10 at best). A future that simply sleeps for a duration the test chose
+    /// makes the difference between "the worker bounds it" and "the worker does not" a
+    /// certainty: hold longer than the budget and the bound must cut it short.
+    ///
+    /// It runs through the SAME `bounded.run` path as every real operation -- that is the
+    /// point. A seam that bypassed the worker would witness a copy of the logic, not the
+    /// logic.
+    #[cfg(any(test, feature = "testing"))]
+    Hold {
+        duration: Duration,
+        reply: SyncSender<(Completion, Result<()>)>,
     },
     List {
         /// Segment-aligned prefix pushed down to the backend, or `None` for the whole
@@ -136,7 +189,7 @@ enum JobKind {
         pushdown: Option<String>,
         /// The caller's literal string prefix, applied to what comes back.
         literal: String,
-        reply: SyncSender<Result<Vec<String>>>,
+        reply: SyncSender<(Completion, Result<Vec<String>>)>,
     },
 }
 
@@ -324,7 +377,10 @@ impl MinioObjectStore {
         })
     }
 
-    fn submit<T>(&self, make: impl FnOnce(SyncSender<Result<T>>) -> JobKind) -> Result<T> {
+    fn submit<T>(
+        &self,
+        make: impl FnOnce(SyncSender<(Completion, Result<T>)>) -> JobKind,
+    ) -> Result<T> {
         let (source, outcome) = self.submit_traced(make);
         // The source is what tests bind to; the caller gets one error type as before.
         debug_assert!(source.agrees_with(&outcome));
@@ -350,12 +406,12 @@ impl MinioObjectStore {
     /// stops meaning anything.
     fn submit_traced<T>(
         &self,
-        make: impl FnOnce(SyncSender<Result<T>>) -> JobKind,
+        make: impl FnOnce(SyncSender<(Completion, Result<T>)>) -> JobKind,
     ) -> (Completion, Result<T>) {
         let started = Instant::now();
         let deadline = started + self.op_deadline;
 
-        let (reply_tx, reply_rx) = sync_channel::<Result<T>>(1);
+        let (reply_tx, reply_rx) = sync_channel::<(Completion, Result<T>)>(1);
         let tx = self
             .tx
             .as_ref()
@@ -393,7 +449,10 @@ impl MinioObjectStore {
         // zero, is what makes the deadline mean "from when I asked".
         let remaining = deadline.saturating_duration_since(Instant::now());
         match reply_rx.recv_timeout(remaining) {
-            Ok(result) => (Completion::WorkerReply, result),
+            // The WORKER says where this came from. `submit` cannot tell a decline from an
+            // answer -- both arrive down the same channel -- so deriving the source here
+            // would silently file every near-expired decline as a worker reply.
+            Ok((source, result)) => (source, result),
             // Reaching this is a statement about the INTERNAL budget: the client's own
             // timeout is set strictly shorter (see `internal_budget`), so in a healthy
             // configuration the worker replies with its own error first and this net is
@@ -405,8 +464,10 @@ impl MinioObjectStore {
                     self.op_deadline
                 ))),
             ),
+            // NOT `WorkerReply`: nobody replied. An earlier version filed this here, which
+            // says "someone answered" about the case where the worker vanished mid-flight.
             Err(RecvTimeoutError::Disconnected) => (
-                Completion::WorkerReply,
+                Completion::ReplyDropped,
                 Err(Error::Engine(
                     "object store: worker dropped the request without replying".into(),
                 )),
@@ -415,19 +476,34 @@ impl MinioObjectStore {
     }
 }
 
-/// Where an operation's outcome came from. See [`MinioObjectStore::submit_traced`].
+/// How many jobs the worker actually ISSUED, and how many it declined as near-expired.
 ///
-/// **Not an error variant, and deliberately not one.** Tess ruled this out: `kv9_common::Error`
-/// is mapped at 80-odd points in the public gRPC surface, so widening it to let a test tell
-/// two internal paths apart would push an internal distinction into the compatibility
-/// surface. Everything still leaves this module as `Error::Engine`.
+/// A positive control for the near-expired test: asserting "the request was not issued" by
+/// observing that nothing happened is the vacuous shape -- nothing happening is also what a
+/// broken fixture produces. These make the negative claim checkable against a number that
+/// moves.
 ///
-/// It is `pub` only under the `testing` feature — the same gate `FaultyEngine` uses, and for
-/// the same reason: a production build cannot name this type, so nothing outside a test can
-/// come to depend on the distinction.
+/// Process-wide and monotonic, so a test reads a delta rather than an absolute.
+pub(crate) static ISSUED_TOTAL: AtomicU64 = AtomicU64::new(0);
+/// See [`ISSUED_TOTAL`].
+pub(crate) static ISSUED_DECLINED: AtomicU64 = AtomicU64::new(0);
+
+/// Where an operation's outcome came from.
+///
+/// **Private to this module in a production build.** An earlier version wrote
+/// `#[cfg_attr(not(...), allow(dead_code))] pub enum` and a doc comment claiming it was
+/// gated by the `testing` feature. `allow(dead_code)` silences a lint; it is not a gate, and
+/// Tess compiled `use kv9_engine::minio::Completion` from outside the crate with default
+/// features off. The comment described a door that was never built.
+///
+/// Not an error variant either, and deliberately not one: `kv9_common::Error` is mapped at
+/// 80-odd points in the public gRPC surface, so widening it to let a test tell two internal
+/// paths apart would push an internal distinction into the compatibility surface. Everything
+/// still leaves this module as `Error::Engine`.
+///
+/// [`TestCompletion`] is the projection tests see, and it exists only under the feature.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(not(any(test, feature = "testing")), allow(dead_code))]
-pub enum Completion {
+enum Completion {
     /// The request was issued and someone answered — success or backend failure alike.
     WorkerReply,
     /// Nobody answered within the caller's deadline. Reaching this means the internal
@@ -435,6 +511,50 @@ pub enum Completion {
     OuterFallback,
     /// Never issued: the queue was full, or too little of the deadline remained.
     AdmissionRefused,
+    /// The worker dequeued the job and did NOT put it on the wire: too little of the
+    /// caller's deadline was left to issue it and get an answer back.
+    ///
+    /// Distinct from [`Completion::AdmissionRefused`] (never queued at all) and from
+    /// [`Completion::WorkerReply`] (issued, someone answered). It travels FROM the worker,
+    /// because only the worker knows it made this choice — deriving it in `submit_traced`
+    /// from a reply arriving is impossible, since a decline arrives the same way an answer
+    /// does.
+    NotIssued,
+    /// The reply channel closed without an answer — the worker went away mid-flight.
+    ///
+    /// Its own variant because it is NOT a worker reply: an earlier version filed it under
+    /// `WorkerReply`, which says "someone answered" about a case where nobody did.
+    ReplyDropped,
+}
+
+/// The `testing`-only projection of [`Completion`].
+///
+/// A separate type rather than making `Completion` public under the feature, so the
+/// production enum cannot become public by someone relaxing one attribute — the mistake this
+/// replaces. Adding a production variant without projecting it stops compiling.
+#[cfg(any(test, feature = "testing"))]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TestCompletion {
+    WorkerReply,
+    OuterFallback,
+    AdmissionRefused,
+    NotIssued,
+    ReplyDropped,
+}
+
+#[cfg(any(test, feature = "testing"))]
+impl From<Completion> for TestCompletion {
+    fn from(c: Completion) -> Self {
+        // Exhaustive, no wildcard: a new production source must be projected here rather
+        // than silently collapsing into an existing one.
+        match c {
+            Completion::WorkerReply => TestCompletion::WorkerReply,
+            Completion::OuterFallback => TestCompletion::OuterFallback,
+            Completion::AdmissionRefused => TestCompletion::AdmissionRefused,
+            Completion::NotIssued => TestCompletion::NotIssued,
+            Completion::ReplyDropped => TestCompletion::ReplyDropped,
+        }
+    }
 }
 
 impl Completion {
@@ -446,7 +566,10 @@ impl Completion {
     fn agrees_with<T>(&self, outcome: &Result<T>) -> bool {
         match self {
             Completion::WorkerReply => true,
-            Completion::OuterFallback | Completion::AdmissionRefused => outcome.is_err(),
+            Completion::OuterFallback
+            | Completion::AdmissionRefused
+            | Completion::NotIssued
+            | Completion::ReplyDropped => outcome.is_err(),
         }
     }
 }
@@ -461,18 +584,44 @@ impl MinioObjectStore {
     /// reword and stops meaning anything.
     ///
     /// Behind the `testing` feature, so this exists only where a test can see it.
-    pub fn put_traced(&self, key: &ObjectKey, bytes: &[u8]) -> (Completion, Result<()>) {
+    pub fn put_traced(&self, key: &ObjectKey, bytes: &[u8]) -> (TestCompletion, Result<()>) {
         let key = key.as_str().to_string();
         let bytes = bytes.to_vec();
-        self.submit_traced(|reply| JobKind::Put { key, bytes, reply })
+        let (source, outcome) = self.submit_traced(|reply| JobKind::Put { key, bytes, reply });
+        (source.into(), outcome)
     }
 
-    /// The internal HTTP/retry budget this store derives from its caller deadline.
+    /// Submit a job that occupies the worker for exactly `duration`, and report where its
+    /// outcome came from.
     ///
-    /// Exposed so a test can assert the ORDERING (`internal < caller`) rather than
-    /// hard-coding the fraction, which would re-pin the constant instead of the property.
-    pub fn internal_budget_for_test(&self) -> Duration {
-        internal_budget(self.op_deadline)
+    /// No network. The worker's hard cap either cuts this short or it does not, and which one
+    /// happened is visible in the source rather than inferred from timing.
+    pub fn hold_traced(&self, duration: Duration) -> (TestCompletion, Result<()>) {
+        let (source, outcome) = self.submit_traced(|reply| JobKind::Hold { duration, reply });
+        (source.into(), outcome)
+    }
+
+    /// `(issued, declined)` so far, process-wide. Read a DELTA around an operation; the
+    /// absolute value carries other tests' work.
+    pub fn issued_counts() -> (u64, u64) {
+        (
+            ISSUED_TOTAL.load(Ordering::Relaxed),
+            ISSUED_DECLINED.load(Ordering::Relaxed),
+        )
+    }
+
+    /// The wire budget for a job with `remaining` left, or `None` if it cannot be split.
+    ///
+    /// Exposed so a test can assert the ORDERING (`wire < remaining`) across the whole input
+    /// range rather than hard-coding the fraction, which would re-pin the constant instead of
+    /// the property.
+    pub fn wire_budget_for_test(left: Duration, configured: Duration) -> Option<Duration> {
+        wire_budget(left, configured)
+    }
+
+    /// The configured ceiling this store derives from its caller deadline.
+    pub fn configured_budget_for_test(op_deadline: Duration) -> Duration {
+        configured_budget(op_deadline)
     }
 
     /// This store's caller-facing deadline, for the same comparison.
@@ -489,6 +638,42 @@ impl Drop for MinioObjectStore {
         if let Some(handle) = self.worker.take() {
             let _ = handle.join();
         }
+    }
+}
+
+/// The only way to execute an operation on the worker.
+///
+/// Holds the runtime privately, so a caller that has a `Bounded` can run a future *and
+/// cannot run one unbounded* -- there is no accessor for the runtime and no second method.
+/// That turns "every operation is bounded" from a convention each new match arm has to
+/// follow into something the type makes true.
+struct Bounded {
+    runtime: tokio::runtime::Runtime,
+}
+
+impl Bounded {
+    /// Run `fut` under `budget` and hand the outcome to `reply`.
+    ///
+    /// `budget` is a PARAMETER, not a field. It is the time left for *this* job, which
+    /// shrinks with queue wait; storing it on the struct would reinstate the fixed-budget
+    /// bug where a job dequeued late still received the full configured budget.
+    fn run<T>(
+        &self,
+        budget: Duration,
+        fut: impl std::future::Future<Output = Result<T>>,
+        reply: SyncSender<(Completion, Result<T>)>,
+    ) {
+        let result = self.runtime.block_on(async {
+            match tokio::time::timeout(budget, fut).await {
+                Ok(r) => r,
+                // Sourced from the worker like any other answer: the caller is told what
+                // happened rather than left to the outer net's silence.
+                Err(_) => Err(Error::Engine(format!(
+                    "object store: operation did not complete within its {budget:?} wire budget"
+                ))),
+            }
+        });
+        let _ = reply.send((Completion::WorkerReply, result));
     }
 }
 
@@ -527,17 +712,32 @@ fn worker_loop(config: MinioConfig, rx: Receiver<Job>, ready: SyncSender<Result<
     // With the internal budget strictly shorter, the client's own error is the one that
     // arrives, and `Completion::OuterFallback` returns to being what it is described as: a
     // net that should not be reachable in a healthy configuration.
-    let internal_budget = internal_budget(config.op_deadline);
+    // A CEILING for the best case (a job issued the instant it is submitted). The real
+    // bound is recomputed per job below, because these three cannot be changed per request.
+    // The SAME algebra as the per-job check, applied to the full deadline. A deadline that
+    // cannot yield a wire budget even with none of it spent cannot yield one later either, so
+    // this is a configuration error and is reported as one — rather than every operation
+    // failing later for a reason that does not name the cause.
+    let configured = configured_budget(config.op_deadline);
+    let Some(ceiling) = wire_budget(config.op_deadline, configured) else {
+        let _ = ready.send(Err(Error::Config(format!(
+            "object store: op deadline {:?} leaves no wire budget once the {REPLY_RESERVE:?} \
+             reply reserve is held back",
+            config.op_deadline
+        ))));
+        return;
+    };
+
     let client_options = ClientOptions::new()
-        .with_timeout(internal_budget)
-        .with_connect_timeout(internal_budget)
+        .with_timeout(ceiling)
+        .with_connect_timeout(ceiling)
         // Round one runs against a local MinIO over plain HTTP. EdHuang ruled TLS out of
         // this round for internal traffic; stating it keeps it a decision rather than an
         // attempted-and-failed connection.
         .with_allow_http(true);
 
     let retry = RetryConfig {
-        retry_timeout: internal_budget,
+        retry_timeout: ceiling,
         ..Default::default()
     };
 
@@ -566,7 +766,10 @@ fn worker_loop(config: MinioConfig, rx: Receiver<Job>, ready: SyncSender<Result<
     // What the caller's deadline reserves for the reply hop, i.e. everything the internal
     // budget deliberately does not use. Derived from the same two numbers, so the two cannot
     // drift into disagreeing about who owns which slice of the deadline.
-    let reply_margin = config.op_deadline.saturating_sub(internal_budget);
+    // MOVED, not borrowed. This is what makes the guarantee real: after this line
+    // `runtime` no longer exists as a local, so a future match arm cannot call `block_on`
+    // on it -- the bypass stops compiling rather than stopping at review.
+    let bounded = Bounded { runtime };
 
     if ready.send(Ok(())).is_err() {
         return;
@@ -578,58 +781,64 @@ fn worker_loop(config: MinioConfig, rx: Receiver<Job>, ready: SyncSender<Result<
         // be issued, spend the worker, and complete after the caller had gone -- so the work
         // is wasted and the next caller queues behind it for nothing.
         //
-        // `reply_margin` is what makes the reply-side reservation explicit rather than
-        // implied by the internal budget's fraction. The two must agree: an operation
-        // admitted here gets `internal_budget` on the wire, so admitting one with less than
-        // that plus margin remaining would guarantee the outer net fires.
+        // The budget for THIS job comes from the time actually left, not from the configured
+        // deadline. A job dequeued with 0.5s left was previously handed the full configured
+        // 0.8s, so the caller's outer net fired first by construction -- Tess reproduced that
+        // in three independent processes, which also falsified the comment below claiming the
+        // outer net was unreachable in a healthy configuration.
+        //
+        // `wire_budget` returning `None` is the near-expired case: too little left to split
+        // into wire time plus a reply hop, so the request is not issued at all. Declining is
+        // the useful answer -- issuing it would spend the worker on something whose answer
+        // cannot arrive in time, while the next caller queues behind it.
         let left = job.deadline.saturating_duration_since(Instant::now());
-        if left <= reply_margin {
-            job.kind
-                .decline("object store: request expired in the queue before it could be issued");
+        let Some(budget) = wire_budget(left, configured) else {
+            ISSUED_DECLINED.fetch_add(1, Ordering::Relaxed);
+            job.kind.decline(
+                Completion::NotIssued,
+                "object store: too little of the deadline remained to issue the request",
+            );
             continue;
-        }
-        // The operation is capped HERE, by us, rather than left to the client's own budget.
-        //
-        // Setting `retry_timeout` shorter than the caller's deadline is necessary but not
-        // sufficient, and assuming otherwise is what made the first attempt at this still
-        // flaky (measured: 1 failure in 8 runs even with a 4/5 ratio). `retry_timeout` bounds
-        // when the client stops STARTING attempts, not when it returns -- a final backoff
-        // sleep begun just inside the window runs to completion outside it, so the client can
-        // hand back its answer after the caller has already gone.
-        //
-        // `tokio::time::timeout` makes the bound ours and hard. The worker now replies within
-        // `internal_budget` whatever the client does, so `Completion::OuterFallback` is
-        // unreachable in a healthy configuration by construction rather than by a margin that
-        // has to be big enough.
-        macro_rules! run_bounded {
-            ($fut:expr, $reply:expr) => {{
-                let result = runtime.block_on(async {
-                    match tokio::time::timeout(internal_budget, $fut).await {
-                        Ok(r) => r,
-                        // Sourced from the worker, like any other answer: the caller is told
-                        // what happened rather than being left to the outer net's silence.
-                        Err(_) => Err(Error::Engine(format!(
-                            "object store: operation did not complete within the {:?} \
-                             internal budget",
-                            internal_budget
-                        ))),
-                    }
-                });
-                let _ = $reply.send(result);
-            }};
-        }
+        };
 
+        // The bound is ours and hard. Setting the client's `retry_timeout` shorter is
+        // necessary but NOT sufficient: it bounds when the client stops STARTING attempts,
+        // not when it returns, so a final backoff begun just inside the window completes
+        // outside it. Measured: 1 failure in 8 runs on the ratio alone.
+        //
+        // Enforced by construction rather than by remembering to call a macro. `Bounded`
+        // OWNS the runtime -- moved, not borrowed -- so `runtime` no longer exists as a local
+        // and a future match arm cannot call `block_on` on it. Measured both ways: with a
+        // borrow, a fifth variant calling `runtime.block_on` compiles; with the move it is
+        // `error[E0382]`. The exhaustive match already forces a new variant to be HANDLED; it
+        // does not force it to be BOUNDED, and that is the gap this closes.
+        ISSUED_TOTAL.fetch_add(1, Ordering::Relaxed);
         match job.kind {
             JobKind::Put { key, bytes, reply } => {
-                run_bounded!(do_put(&client, &key, bytes), reply)
+                bounded.run(budget, do_put(&client, &key, bytes), reply)
             }
-            JobKind::Get { key, reply } => run_bounded!(do_get(&client, &key), reply),
-            JobKind::Delete { key, reply } => run_bounded!(do_delete(&client, &key), reply),
+            JobKind::Get { key, reply } => bounded.run(budget, do_get(&client, &key), reply),
+            JobKind::Delete { key, reply } => bounded.run(budget, do_delete(&client, &key), reply),
             JobKind::List {
                 pushdown,
                 literal,
                 reply,
-            } => run_bounded!(do_list(&client, pushdown.as_deref(), &literal), reply),
+            } => bounded.run(
+                budget,
+                do_list(&client, pushdown.as_deref(), &literal),
+                reply,
+            ),
+            // Through the SAME `bounded.run` as every real operation — a seam that bypassed
+            // the worker would witness a copy of the logic rather than the logic.
+            #[cfg(any(test, feature = "testing"))]
+            JobKind::Hold { duration, reply } => bounded.run(
+                budget,
+                async move {
+                    tokio::time::sleep(duration).await;
+                    Ok(())
+                },
+                reply,
+            ),
         }
     }
 }
@@ -638,19 +847,23 @@ impl JobKind {
     /// Answer without issuing the request. Exhaustive on purpose: a new variant that forgot
     /// to answer would leave its caller waiting out the full deadline for a job the worker
     /// had already discarded.
-    fn decline(self, why: &str) {
+    fn decline(self, source: Completion, why: &str) {
         match self {
             JobKind::Put { reply, .. } => {
-                let _ = reply.send(Err(Error::Engine(why.to_string())));
+                let _ = reply.send((source, Err(Error::Engine(why.to_string()))));
             }
             JobKind::Get { reply, .. } => {
-                let _ = reply.send(Err(Error::Engine(why.to_string())));
+                let _ = reply.send((source, Err(Error::Engine(why.to_string()))));
             }
             JobKind::Delete { reply, .. } => {
-                let _ = reply.send(Err(Error::Engine(why.to_string())));
+                let _ = reply.send((source, Err(Error::Engine(why.to_string()))));
+            }
+            #[cfg(any(test, feature = "testing"))]
+            JobKind::Hold { reply, .. } => {
+                let _ = reply.send((source, Err(Error::Engine(why.to_string()))));
             }
             JobKind::List { reply, .. } => {
-                let _ = reply.send(Err(Error::Engine(why.to_string())));
+                let _ = reply.send((source, Err(Error::Engine(why.to_string()))));
             }
         }
     }

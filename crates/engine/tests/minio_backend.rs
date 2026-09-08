@@ -29,7 +29,7 @@
 //! - Cross-session visibility is a property of the store, and a second handle inside one
 //!   client can be served from that client's own state.
 
-use std::io::Read;
+use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Arc;
@@ -37,7 +37,8 @@ use std::time::{Duration, Instant, SystemTime};
 
 use kv9_common::Error;
 use kv9_engine::minio::{
-    Completion, MinioConfig, MinioObjectStore, ENV_BUCKET, ENV_ENDPOINT, WORKER_THREAD_NAME,
+    MinioConfig, MinioObjectStore, TestCompletion, ENV_BUCKET, ENV_ENDPOINT, REPLY_RESERVE,
+    WORKER_THREAD_NAME,
 };
 use kv9_engine::{ObjectKey, ObjectStore};
 
@@ -442,29 +443,83 @@ fn a_refused_endpoint_answers_from_the_worker_not_the_outer_net() {
         );
         assert_eq!(
             source,
-            Completion::WorkerReply,
+            TestCompletion::WorkerReply,
             "attempt {attempt}: the backend's own error must win the race with the outer net"
         );
     }
 }
 
+/// Cell 2. The budget algebra, at its boundaries.
+///
+/// Needs no server, so it is not `#[ignore]`d — it is arithmetic, and arithmetic is exactly
+/// where the previous versions were wrong. One asserted `internal < caller` on a single
+/// store under a comment claiming the ordering held "at every input"; at 1ms and 0 it did
+/// not. Another had two mutually-redundant refusal paths, so no single mutation could redden
+/// it. This pins the four guarantees at the exact points where they change.
 #[test]
-#[ignore = "requires a MinIO endpoint; see the module docs"]
-fn the_internal_budget_is_strictly_shorter_than_the_callers_deadline() {
-    // Cell 2. The ORDERING is the property; the fraction is an implementation choice. An
-    // assertion on the fraction would re-pin the constant and go red on a legitimate tuning
-    // change while saying nothing about what matters.
-    let s = store();
+fn the_budget_algebra_holds_at_its_boundaries() {
+    let reserve = REPLY_RESERVE;
+    let tick = Duration::from_nanos(1);
+    let configured = MinioObjectStore::configured_budget_for_test(Duration::from_secs(10));
+
+    // left <= reserve -> None. Both the exact boundary and below it.
+    for left in [Duration::ZERO, reserve - tick, reserve] {
+        assert_eq!(
+            MinioObjectStore::wire_budget_for_test(left, configured),
+            None,
+            "left={left:?} is not more than the {reserve:?} reserve and must not be issued"
+        );
+    }
+
+    // The first input that IS issuable — boundary + one tick. This is the cell that would
+    // catch an off-by-one turning the comparison into `<`.
+    let just_over = reserve + tick;
+    let wire = MinioObjectStore::wire_budget_for_test(just_over, configured)
+        .expect("one tick past the reserve must be issuable");
+    assert!(wire > Duration::ZERO, "wire must be non-zero, got {wire:?}");
     assert!(
-        s.internal_budget_for_test() < s.op_deadline_for_test(),
-        "internal {:?} must be strictly under caller {:?}, or the two expire together and \
-         which error the caller sees becomes a scheduling race",
-        s.internal_budget_for_test(),
-        s.op_deadline_for_test()
+        wire + reserve <= just_over,
+        "{wire:?} + {reserve:?} exceeds the {just_over:?} available"
     );
-    // Non-degenerate: an internal budget of zero would also satisfy `<` while making every
-    // request fail instantly.
-    assert!(s.internal_budget_for_test() > Duration::ZERO);
+
+    // Across the whole usable range, all four guarantees at once.
+    for left in [
+        reserve + tick,
+        Duration::from_millis(2),
+        Duration::from_millis(50),
+        Duration::from_secs(1),
+        Duration::from_secs(10),
+        Duration::from_secs(30),
+    ] {
+        let wire = MinioObjectStore::wire_budget_for_test(left, configured)
+            .unwrap_or_else(|| panic!("{left:?} is past the reserve and must be issuable"));
+        assert!(
+            wire > Duration::ZERO,
+            "left={left:?}: wire must be non-zero"
+        );
+        assert!(
+            wire + reserve <= left,
+            "left={left:?}: {wire:?} + {reserve:?} does not fit"
+        );
+        assert!(
+            wire <= configured,
+            "left={left:?}: {wire:?} exceeds the configured ceiling {configured:?}"
+        );
+    }
+
+    // The ceiling binds for a job with lots of time, the remainder binds for a job with
+    // little. Both branches of the `min` must be exercised, or one of them is unwitnessed.
+    let small = Duration::from_millis(2);
+    assert_eq!(
+        MinioObjectStore::wire_budget_for_test(small, configured),
+        Some(small - reserve),
+        "with little left, the remainder binds"
+    );
+    assert_eq!(
+        MinioObjectStore::wire_budget_for_test(Duration::from_secs(30), configured),
+        Some(configured),
+        "with plenty left, the configured ceiling binds"
+    );
 }
 
 #[test]
@@ -509,7 +564,7 @@ fn a_full_queue_refuses_admission_instead_of_parking_the_caller() {
     let sources = sources.lock().expect("not poisoned");
     let refused = sources
         .iter()
-        .filter(|c| **c == Completion::AdmissionRefused)
+        .filter(|c| **c == TestCompletion::AdmissionRefused)
         .count();
     assert!(
         refused > 0,
@@ -579,6 +634,206 @@ fn queue_time_is_charged_to_the_callers_deadline() {
     drop(s);
     stop.store(true, Ordering::SeqCst);
     let _ = TcpStream::connect(addr.trim_start_matches("http://"));
+}
+
+/// A peer that accepts, reads the request, and answers `503` immediately — forever.
+///
+/// Distinct from [`black_hole`] on purpose. A silent peer is bounded by the client's
+/// *request* timeout; a peer that answers fast and retryably is bounded by its **retry**
+/// budget, so this is the scenario that exercises the retry loop rather than one long wait.
+/// That matters because the retry loop is where the overshoot lives: `retry_timeout` bounds
+/// when the client stops STARTING attempts, so a backoff begun just inside the window runs
+/// to completion outside it.
+fn retry_storm() -> (String, Arc<AtomicUsize>, Arc<AtomicBool>) {
+    let listener = TcpListener::bind("127.0.0.1:0").expect("bind an ephemeral port");
+    let addr = listener.local_addr().expect("local addr");
+    let served = Arc::new(AtomicUsize::new(0));
+    let stop = Arc::new(AtomicBool::new(false));
+
+    let served_thread = Arc::clone(&served);
+    let stop_thread = Arc::clone(&stop);
+    std::thread::spawn(move || {
+        while !stop_thread.load(Ordering::SeqCst) {
+            match listener.accept() {
+                Ok((mut sock, _)) => {
+                    let mut buf = [0u8; 4096];
+                    let _ = sock.set_read_timeout(Some(Duration::from_millis(200)));
+                    let _: std::io::Result<usize> = sock.read(&mut buf);
+                    // 503 is in upstream's retryable class, so each one costs a backoff
+                    // rather than ending the operation.
+                    let _ = sock.write_all(
+                        b"HTTP/1.1 503 Service Unavailable\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
+                    );
+                    let _ = sock.flush();
+                    served_thread.fetch_add(1, Ordering::SeqCst);
+                }
+                Err(_) => break,
+            }
+        }
+    });
+
+    (format!("http://{addr}"), served, stop)
+}
+
+#[test]
+#[ignore = "requires a MinIO endpoint; see the module docs"]
+fn a_retrying_backend_still_answers_within_the_callers_deadline() {
+    // Cell 5, and the point of it is DETERMINISM. Cell 1 witnesses the same worker-bound
+    // property against a refused port, but only 2 runs in 10 -- the overshoot it depends on
+    // is a tail. Against a peer that answers 503 immediately and forever, the retry loop is
+    // the whole cost, so the overshoot stops being rare.
+    let (addr, served, stop) = retry_storm();
+    let deadline = Duration::from_secs(3);
+    let s = MinioObjectStore::connect(
+        MinioConfig::from_env_at(&addr, required(ENV_BUCKET))
+            .expect("credentials from the environment")
+            .with_op_deadline(deadline),
+    )
+    .expect("connect");
+
+    let started = Instant::now();
+    let (source, outcome) = s.put_traced(&key("retry/object"), b"payload");
+    let elapsed = started.elapsed();
+
+    assert!(outcome.is_err(), "a permanently-503 peer cannot succeed");
+    assert!(
+        served.load(Ordering::SeqCst) > 1,
+        "the peer served {} request(s); with fewer than two the retry loop was never \
+         exercised and this cell witnesses nothing",
+        served.load(Ordering::SeqCst)
+    );
+    assert_eq!(
+        source,
+        TestCompletion::WorkerReply,
+        "the worker must answer within its own bound; reaching the outer net means the \
+         operation outlived the caller's deadline"
+    );
+    assert!(
+        elapsed < deadline,
+        "answered after {elapsed:?}, past the {deadline:?} deadline"
+    );
+
+    stop.store(true, Ordering::SeqCst);
+    let _ = TcpStream::connect(addr.trim_start_matches("http://"));
+}
+
+/// A store pointed at an endpoint that is never contacted.
+///
+/// The controlled cells below never touch the network: a `Hold` job sleeps inside the worker
+/// for a duration the test chose. So the endpoint only has to be syntactically valid.
+fn controlled_store(deadline: Duration) -> MinioObjectStore {
+    MinioObjectStore::connect(
+        MinioConfig::from_env_at("http://127.0.0.1:1", required(ENV_BUCKET))
+            .expect("credentials from the environment")
+            .with_op_deadline(deadline),
+    )
+    .expect("connect performs no I/O")
+}
+
+#[test]
+#[ignore = "requires a MinIO endpoint; see the module docs"]
+fn the_worker_cuts_short_an_operation_that_outlives_its_budget() {
+    // Cell 4, deterministic at last. Every earlier attempt at this used a real peer --
+    // refused, silent, 503 -- and every one witnessed the bound only as a tail (2 in 10 at
+    // best), because real peers have probabilistic timing. A future that sleeps for a
+    // duration the TEST picked removes the probability: hold longer than the budget and the
+    // worker must cut it short, or it must not.
+    let deadline = Duration::from_secs(2);
+    let s = controlled_store(deadline);
+
+    // Comfortably longer than any budget derivable from a 2s deadline.
+    let (source, outcome) = s.hold_traced(Duration::from_secs(60));
+
+    assert!(
+        outcome.is_err(),
+        "an operation that never finishes cannot succeed"
+    );
+    assert_eq!(
+        source,
+        TestCompletion::WorkerReply,
+        "the WORKER must cut it short and answer; reaching the outer net means the bound did \
+         not hold"
+    );
+}
+
+#[test]
+#[ignore = "requires a MinIO endpoint; see the module docs"]
+fn a_job_whose_deadline_ran_out_while_queued_is_not_issued() {
+    // Cell 3. Deterministic, and the arithmetic is the point.
+    //
+    // ONE occupying job can never near-expire the next, because the occupant is itself
+    // bounded: it runs for `0.8*D`, so the job behind it still has `0.2*D` of its own
+    // deadline. My earlier fixtures kept missing exactly this.
+    //
+    // Jobs queued together decay GEOMETRICALLY: left = D, 0.2*D, 0.04*D, ... The count has to
+    // be chosen against the 1ms reserve, and I got that wrong once too -- with D=600ms the
+    // fourth job still has ~4.8ms, comfortably above the reserve, so four jobs flaked 1 run
+    // in 6. With D=200ms the sequence is 200, 40, 8, 1.6, 0.32ms: the fifth is well under,
+    // and eight jobs leave margin for the spread in when threads actually stamp their
+    // deadlines (a job stamped later has a later deadline, hence more time left -- that
+    // spread was the flake).
+    let deadline = Duration::from_millis(200);
+    let s = Arc::new(controlled_store(deadline));
+
+    let (issued_before, declined_before) = MinioObjectStore::issued_counts();
+
+    // Each asks to be held far longer than any budget it could receive, so every issued job
+    // is cut short at exactly its budget and the decay is driven by the formula, not by how
+    // long a peer happened to take.
+    let mut handles = Vec::new();
+    for _ in 0..4 {
+        let s = Arc::clone(&s);
+        handles.push(std::thread::spawn(move || {
+            s.hold_traced(Duration::from_secs(30))
+        }));
+    }
+    let sources: Vec<TestCompletion> = handles
+        .into_iter()
+        .map(|h| h.join().expect("client thread").0)
+        .collect();
+
+    // Counters are read AFTER the store is dropped, and that ordering is load-bearing.
+    // `Drop` closes the channel and joins the worker, which drains whatever is still queued.
+    // Reading before that gave "2 issued, 0 declined" -- six jobs had not been reached yet,
+    // and the earlier version of this test read the counters there and failed 9 runs in 12.
+    let s = Arc::try_unwrap(s).expect("all client threads joined");
+    drop(s);
+
+    let (issued_after, declined_after) = MinioObjectStore::issued_counts();
+    let issued = issued_after - issued_before;
+    let declined = declined_after - declined_before;
+
+    // Positive control: something WAS issued. Without it, "at least one declined" is also
+    // satisfied by a store that issues nothing, and nothing-happened is what a broken fixture
+    // produces too.
+    assert!(
+        issued >= 1,
+        "nothing was issued ({issued} issued, {declined} declined); the fixture never \
+         exercised the worker, so the assertion below would be vacuous"
+    );
+    assert!(
+        sources.contains(&TestCompletion::WorkerReply),
+        "no job was issued and answered; sources were {sources:?}"
+    );
+
+    assert!(
+        declined >= 1,
+        "no job ran out of deadline while queued ({issued} issued, {declined} declined); \
+         with eight jobs behind one another the tail must fall under the reserve"
+    );
+
+    // NOT asserted: that a CALLER saw `NotIssued`.
+    //
+    // It is nearly unobservable from the caller by construction, and that is a property of
+    // the design rather than a gap in the fixture. A job is declined exactly when at most
+    // `REPLY_RESERVE` of its deadline is left -- which is also the instant its caller stops
+    // waiting. So the caller has at most 1ms to receive the answer, and usually gets its own
+    // `OuterFallback` first. Requiring it here is asking a 1ms race to be won every run.
+    //
+    // The worker-side counter is the honest witness: it records the decision regardless of
+    // whether anyone is still listening. The `NotIssued` variant still earns its place --
+    // without it the decline would be reported as `WorkerReply`, i.e. "someone answered"
+    // about a case where nobody did -- but the acceptance for it is the counter.
 }
 
 // ---------------------------------------------------------------------------------------
