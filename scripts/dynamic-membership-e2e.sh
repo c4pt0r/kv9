@@ -188,14 +188,34 @@ ticket4="$(awk -F= '$1 == "join_ticket" {print $2}' <<<"$admit_output")"
 [[ "$ticket4" =~ ^[0-9a-f]{64}$ ]]
 start_node 4 "$fake_ticket"
 wrong_deadline=$((SECONDS + 8))
+rejection_observed=0
+: >"$artifact_dir/wrong-ticket-observations.tsv"
 while ((SECONDS < wrong_deadline)); do
   test "$(status_value 4 bootstrap_state 2>/dev/null || true)" != Serving
   kill -0 "${pids[4]}"
+  observed="$(status_value 4 registration_last 2>/dev/null || true)"
+  printf '%s\t%s\n' "$SECONDS" "$observed" >>"$artifact_dir/wrong-ticket-observations.tsv"
+  if [[ "$observed" == rejected_invalid_ticket ]]; then rejection_observed=1; fi
   sleep 0.05
 done
 test "$(status_value 4 registration_attempts)" -gt 0
 test "$(status_value 4 registration_errors)" -gt 0
-test "$(status_value 4 registration_last)" = rejected_invalid_ticket
+# `registration_last` is overwritten by every retry, including a transient
+# timeout after a genuine rejection. Require the typed rejection to have been
+# observed during the negative window, and independently require that admission
+# is still pending. A transport-only failure cannot satisfy these assertions.
+if (( rejection_observed != 1 )); then
+  echo 'FAIL: wrong-ticket probe never observed a typed invalid-ticket rejection' >&2
+  cat "$artifact_dir/wrong-ticket-observations.tsv" >&2
+  exit 1
+fi
+leader="$(leader_id)"
+pending="$(status_value "$leader" pending_admissions)"
+[[ ",$pending," == *,4,* ]] || {
+  echo 'FAIL: the wrong ticket consumed its pending admission' >&2
+  exit 1
+}
+echo 'PASS: wrong-ticket probe observed typed rejection and retained pending admission'
 stop_node 4
 mv "$artifact_dir/n4" "$artifact_dir/n4-wrong-ticket"
 
