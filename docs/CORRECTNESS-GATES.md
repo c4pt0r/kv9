@@ -7,10 +7,14 @@ Updated: 2026-09-08. These requirements supplement every stage of roadmap issue
 
 Every core protocol change must define its state, transitions, failure assumptions,
 invariants, safety theorem and conditional liveness argument before acceptance.
+Use TLA+ as the primary protocol specification and model-check finite instances
+with TLC, including counterexample controls and conditional temporal properties.
 Provide a rigorous proof with explicit lemmas and induction over transitions;
-machine-check the protocol lemmas in the pinned Lean project under `proofs/lean`.
+machine-check deductive protocol proofs with TLAPS or the pinned Lean project
+under `proofs/lean`. Retain existing Lean lemmas with their explicit scope.
 Finite model checking, property tests and E2E histories are complementary evidence,
-not substitutes for an unbounded proof.
+not substitutes for an unbounded proof. TLA+ supports deductive proofs through
+TLAPS; it is not limited to finite model checking.
 
 Each proof must identify the implementation operations it represents and the
 refinement assumptions not yet verified. A proof about an abstract model is not a
@@ -31,6 +35,11 @@ or disabled checker may discharge an obligation.
 Track theorem names, source revisions, model scope, counterexamples and remaining
 refinement obligations with each issue. A green theorem checker does not close a
 broader issue whose implementation or failure coverage is incomplete.
+
+The current TLA+ inventory and reproducible runner are under `proofs/tla`.
+`docs/METADATA-PLANNING.md` records the first metadata protocol model, its written
+induction argument, implementation mapping and still-open deductive proof and
+refinement obligations. A green TLC run does not discharge those obligations.
 
 ## Chaos Mesh E2E is mandatory
 

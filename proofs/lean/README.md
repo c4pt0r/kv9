@@ -1,5 +1,9 @@
 # Checked protocol lemmas
 
+TLA+ is the primary protocol specification; see the [TLA+ inventory](../tla/README.md).
+These Lean results remain deductively checked lemmas with the scopes below.
+Future protocol proofs may use TLAPS or Lean, with explicit model/source mappings.
+
 Toolchain: the exact version in `lean-toolchain`. The project uses Lean's standard
 library only. From the repository root, run:
 
