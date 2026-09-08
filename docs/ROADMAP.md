@@ -3,6 +3,10 @@
 Updated: 2026-09-08. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
 [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md) maps that architecture to the current implementation.
 
+The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 25 work packages,
+explicit dependencies, implementation steps and acceptance criteria. Track delivery in
+[GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
+
 The target is an industrial-grade distributed database. Prioritize consistency, recovery, measured throughput
 and scalable architecture. Complex private-network TLS configuration is not a prerequisite for the current
 milestones. Existing identity, root descriptor, token authentication and epoch checks remain part of the baseline.
