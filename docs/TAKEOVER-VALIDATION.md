@@ -3,6 +3,14 @@
 Date: 2026-09-08. Local Linux, Rust/Cargo 1.94.0. Audit base: `739ca1d`.
 These results came from actual execution against the takeover worktree, not inferred GitHub Actions status.
 
+## Published implementation checks
+
+Implementation commit [ec50678](https://github.com/c4pt0r/kv9/commit/ec506780f273663da9b1d37fe9357495d549bf7c)
+was pushed to `master`. Its [GitHub Actions run](https://github.com/c4pt0r/kv9/actions/runs/34274338807)
+completed successfully: all nine jobs passed, including `pr-gate`, formatting, the real MinIO job
+and six process-level acceptance jobs. The local counts and failure-control logs below remain separate evidence;
+they are not claims that hosted CI executed every local mutation control.
+
 ## Normal checks
 
 | Command | Result |

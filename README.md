@@ -17,6 +17,8 @@ source of truth**.
 > authentication already exist. Acknowledged unflushed writes still depend on the Raft replicas' local disks.
 >
 > Delivery order: [ROADMAP](docs/ROADMAP.md). Implementation review and issue coverage: [TAKEOVER-AUDIT](docs/TAKEOVER-AUDIT.md).
+> Detailed work packages and dependencies: [DEVELOPMENT-PATH](docs/DEVELOPMENT-PATH.md), tracked in
+> [GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
 
 ## Run it
 
