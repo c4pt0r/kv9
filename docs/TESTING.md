@@ -764,8 +764,8 @@ exited zero — that it ran. Cheapest forms, in increasing strength:
 
 *Why exit codes cannot carry this:* 127 means "not found" — whether the subject is missing (the
 finding) or the invocation is malformed (the instrument). 0 means "nothing to report" — whether the
-check passed or never selected anything. **The exit code is a verdict on a command that may not
-exist.**
+check passed or never selected anything. **An exit code is a verdict on *some* command — not necessarily the one
+you meant, and not necessarily one that exists.**
 
 *Relation to rules 12 and 20:* rule 12 asks whether the tool is correct; rule 20 asks whether it is
 *able* to see the thing. Both assume it ran. Rule 20's boundary 2 asks whether a control that ran was
@@ -773,6 +773,10 @@ wide enough; this rule is the premise underneath it, and stays separate so the p
 inside the variant.
 
 *Why this is here and not only in a comment beside one command:* the `tail` case was already recorded
-in a `ci.yml` comment. It did not stop the same person hitting it, and the reviewer who found it had
-opened that file three times the same day, each time jumping to a different line range. A hazard
-recorded where only the already-informed will pass is not yet a rule.
+in a `ci.yml` comment — **written by the same person who then walked into it**, in wording he had
+chosen deliberately: *"a pipeline would hand the step `tail`'s exit status instead of the script's,
+which is the exact way a red becomes an invisible green."* He hit it the same afternoon. Authorship
+grants no exemption, which rules out the comfortable reading that some other reader was merely
+careless. (The reviewer who found the repeat had also opened that file three times that day, each
+time jumping to a different line range.) **A hazard recorded where only the already-informed will
+pass is not yet a rule.**
