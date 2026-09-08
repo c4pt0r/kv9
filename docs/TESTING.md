@@ -737,3 +737,42 @@ not depend on the searcher.
 means "no marked debt for this task" and never "no stale comments about this task". Existing
 comments are not to be marked by guess — audit candidates individually and attach a marker only
 where the canonical task and the expiry condition are both verified.
+
+## 21. A negative result must first prove the command ran
+
+*Origin (three instances in one day, three people, 2026-09-07):* "the command failed to run" and
+"the command ran and found nothing" are the same exit code and the same empty directory. Nothing in
+the output distinguishes them, so a broken invocation reads as a clean result.
+
+    Ren     piped a check through `tail`; the step received `tail`'s rc=0 and went green. The trap
+            was already written in a `ci.yml` comment — see the note below on why that was not enough.
+    Cindy   built two commands as strings in a zsh `for` loop, so each whole string was taken as one
+            filename. Both returned 127 — identical to the "script is missing" case the matrix was
+            built to detect.
+    Cindy   stripped `cmake` from PATH to test whether `aws-lc-sys` invokes it, but `timeout` was
+            also gone from that PATH, so `env` returned 127 and no build ran. The directory then held
+            zero `CMakeCache.txt` — exactly what a successful no-cmake build shows. Reading it would
+            have "confirmed" a build that never happened.
+
+**Before reading any negative conclusion, establish that the instrument executed.** Not that it
+exited zero — that it ran. Cheapest forms, in increasing strength:
+
+    the run emitted work     a PASS count, a compiled artifact, any line only a real run prints
+    the mutation landed      grep the mutant token before trusting the probe's exit code
+    the harness is separate  the timeout/driver lives outside the environment under test, so
+                             stripping that environment cannot disable the thing measuring it
+
+*Why exit codes cannot carry this:* 127 means "not found" — whether the subject is missing (the
+finding) or the invocation is malformed (the instrument). 0 means "nothing to report" — whether the
+check passed or never selected anything. **The exit code is a verdict on a command that may not
+exist.**
+
+*Relation to rules 12 and 20:* rule 12 asks whether the tool is correct; rule 20 asks whether it is
+*able* to see the thing. Both assume it ran. Rule 20's boundary 2 asks whether a control that ran was
+wide enough; this rule is the premise underneath it, and stays separate so the premise is not hidden
+inside the variant.
+
+*Why this is here and not only in a comment beside one command:* the `tail` case was already recorded
+in a `ci.yml` comment. It did not stop the same person hitting it, and the reviewer who found it had
+opened that file three times the same day, each time jumping to a different line range. A hazard
+recorded where only the already-informed will pass is not yet a rule.
