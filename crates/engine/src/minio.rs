@@ -389,7 +389,7 @@ impl MinioObjectStore {
 
     /// [`submit`](Self::submit) plus the **source** of the completion.
     ///
-    /// Three ways an operation can finish, and they mean different things even when the
+    /// Five ways an operation can finish, and they mean different things even when the
     /// caller sees one `Error::Engine`:
     ///
     /// * [`Completion::WorkerReply`] — the request was issued and the backend (or the HTTP
@@ -454,7 +454,7 @@ impl MinioObjectStore {
             // would silently file every near-expired decline as a worker reply.
             Ok((source, result)) => (source, result),
             // Reaching this is a statement about the INTERNAL budget: the client's own
-            // timeout is set strictly shorter (see `internal_budget`), so in a healthy
+            // timeout is bounded by the per-job wire budget (see `wire_budget`), so in a healthy
             // configuration the worker replies with its own error first and this net is
             // never the thing that fires.
             Err(RecvTimeoutError::Timeout) => (
@@ -509,7 +509,10 @@ enum Completion {
     /// Nobody answered within the caller's deadline. Reaching this means the internal
     /// budget failed to unwind first, which it is built to do.
     OuterFallback,
-    /// Never issued: the queue was full, or too little of the deadline remained.
+    /// Never queued: the channel was full, or the worker was gone.
+    ///
+    /// NOT the near-expiry case — that is [`Completion::NotIssued`], decided by the worker
+    /// after the job was accepted. This one is decided at hand-off, before the worker sees it.
     AdmissionRefused,
     /// The worker dequeued the job and did NOT put it on the wire: too little of the
     /// caller's deadline was left to issue it and get an answer back.
