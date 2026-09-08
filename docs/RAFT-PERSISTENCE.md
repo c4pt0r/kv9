@@ -160,3 +160,29 @@ default-build filesystem-injection boundary probe. Logs are retained under
 (`Address already in use`); both affected runtime helpers now retain bound
 listeners and transfer them through the existing startup override. No service
 protocol changed for that harness repair.
+
+Four single-defect mutations were run through `scripts/mutation-guard.sh` at
+commit `4803872ff1a72182a41d5e0888eebaf57ac4b0bf`. Every cell selected exactly one
+test, passed its baseline, failed at the expected invariant after the one edit,
+and passed after restoration:
+
+| Removed protection | Discriminating test |
+|---|---|
+| Directory/ancestor publication | `acknowledged_vote_survives_loss_of_unsynced_namespace` |
+| Failed-writer poisoning | `partial_append_failure_prevents_later_acknowledgment` |
+| Vote-record data sync | `acknowledged_vote_survives_loss_of_unsynced_namespace` |
+| Recovered-prefix data sync | `recovered_unsynced_tail_is_durable_before_a_repeated_crash` |
+
+Raw Cargo outputs, including assertion text, are retained in
+`/tmp/kv9-c01-mutation-capture-*`; guard logs are in
+`/tmp/kv9-c01-mutation-*.log`. The default-build boundary was separately checked
+in an owned archive checkout: removing only the testing-module feature guard
+made `fs-testing-boundary.sh` fail at its production-injection assertion; baseline
+and restored source passed. Its logs are `/tmp/kv9-c01-fs-boundary-{baseline,mutant,restored}.log`.
+
+The default production binary at the same implementation commit passed the real
+Chaos Mesh Pod/Network matrix, including every-voter failure and typed isolated
+read/write refusal. Local log: `/tmp/kv9-c01-chaos.log`, exit 0. Retained evidence:
+`/tmp/kv9-chaos-e2e.gGkNrH`, including all seven fault resource records. This run
+checks the OS-backed runtime under application/network faults; IOChaos and actual
+host power-loss experiments remain separate obligations.
