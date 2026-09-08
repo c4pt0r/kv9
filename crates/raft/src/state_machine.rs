@@ -303,6 +303,29 @@ pub enum ManifestInvalidReason {
     GenerationExhausted,
 }
 
+/// What applying one committed entry MEANT — one EXCLUSIVE outcome
+/// (review round: this was two independent `Option`s declared mutually
+/// exclusive only in a comment, and the sole consumer wildcarded the
+/// impossible `(Some, Some)` state — a broken exclusivity elsewhere would
+/// have returned a fence rejection AS a manifest verdict. The enum makes
+/// the conflicting state unrepresentable instead of trusted away).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ApplyOutcome {
+    /// Applied normally (data written, or a no-effect command).
+    Plain,
+    /// The entry was a [`Command::Fenced`] whose fence FAILED adjudication:
+    /// logically rejected — no data written — but the applied watermark
+    /// advanced like any applied entry. Carries the REJECTED REGION so the
+    /// receipt path surfaces a typed `StaleEpoch {{ region }}` without
+    /// re-deriving anything from the original command (apply-time facts
+    /// only; review contract).
+    FenceRejected(kv9_common::RegionId),
+    /// The entry was a [`crate::Command::ManifestChange`]: the
+    /// discriminator's verdict rides the receipt path (apply-time facts
+    /// only; no second apply channel).
+    Manifest(ManifestVerdict),
+}
+
 /// The outcome of applying one committed entry to the state machine (ROADMAP Phase 1).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ApplyResult {
@@ -311,17 +334,8 @@ pub struct ApplyResult {
     /// Bytes returned to the proposer, if the command produces a read-back value
     /// (e.g. a conf-change ack). `None` for plain writes.
     pub response: Option<Vec<u8>>,
-    /// `Some(region)` when this entry was a [`Command::Fenced`] whose fence
-    /// FAILED adjudication: the entry was logically rejected — no data written
-    /// — but it still advanced the applied watermark like any applied entry.
-    /// Carries the REJECTED REGION so the receipt path can surface a typed
-    /// `StaleEpoch { region }` to the proposer without re-deriving anything
-    /// from the original command (apply-time facts only; review contract).
-    pub fence_rejected: Option<kv9_common::RegionId>,
-    /// `Some(verdict)` when this entry was a [`crate::Command::ManifestChange`]:
-    /// the discriminator's outcome, riding the receipt path like
-    /// `fence_rejected` does (apply-time facts only; no second apply channel).
-    pub manifest: Option<ManifestVerdict>,
+    /// What applying this entry meant — exclusive by type.
+    pub outcome: ApplyOutcome,
 }
 
 impl ApplyResult {
@@ -329,8 +343,7 @@ impl ApplyResult {
         ApplyResult {
             applied_index: index,
             response: None,
-            fence_rejected: None,
-            manifest: None,
+            outcome: ApplyOutcome::Plain,
         }
     }
 
@@ -340,8 +353,7 @@ impl ApplyResult {
         ApplyResult {
             applied_index: index,
             response: None,
-            fence_rejected: None,
-            manifest: Some(verdict),
+            outcome: ApplyOutcome::Manifest(verdict),
         }
     }
 
@@ -351,8 +363,7 @@ impl ApplyResult {
         ApplyResult {
             applied_index: index,
             response: None,
-            fence_rejected: Some(region),
-            manifest: None,
+            outcome: ApplyOutcome::FenceRejected(region),
         }
     }
 }
@@ -753,10 +764,10 @@ mod tests {
     }
 
     fn verdict(sm: &mut MemStateMachine, at: LogIndex, cmd: &Command) -> ManifestVerdict {
-        sm.apply_command(at, cmd)
-            .unwrap()
-            .manifest
-            .expect("a manifest change must carry a manifest verdict")
+        match sm.apply_command(at, cmd).unwrap().outcome {
+            ApplyOutcome::Manifest(v) => v,
+            other => panic!("a manifest change must carry a manifest verdict, got {other:?}"),
+        }
     }
 
     /// Task #9 discriminator row 1: a matching CAS applies, advances the pair
@@ -1333,8 +1344,8 @@ mod tests {
             .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
             .expect("a rejected fence is a logical outcome, never an apply error");
         assert_eq!(
-            result.fence_rejected,
-            Some(kv9_common::RegionId(1)),
+            result.outcome,
+            ApplyOutcome::FenceRejected(kv9_common::RegionId(1)),
             "the verdict must be typed AND name the rejected region"
         );
         assert_eq!(
@@ -1366,7 +1377,7 @@ mod tests {
         let result = sm
             .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
             .unwrap();
-        assert_eq!(result.fence_rejected, None);
+        assert_eq!(result.outcome, ApplyOutcome::Plain);
         assert_eq!(
             sm.get(ColumnFamily::Default, b"k").unwrap(),
             Some(b"v".to_vec()),

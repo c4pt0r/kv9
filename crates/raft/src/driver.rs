@@ -87,18 +87,12 @@ const CONF_RECEIPTS: usize = 64;
 struct RingEntry {
     index: u64,
     term: u64,
-    /// `Some(region)` = the entry was a fenced write REJECTED for this region
-    /// (logical outcome; watermark advanced). `None` = applied normally.
-    fence_rejected: Option<NodeIdFreeRegionId>,
-    /// `Some(verdict)` = the entry was a manifest change; its discriminator
-    /// verdict is apply-time fact and rides to the proposer (task #9).
-    /// Mutually exclusive with `fence_rejected` by construction (one command
-    /// is one kind).
-    manifest: Option<crate::ManifestVerdict>,
+    /// What applying this entry MEANT — exclusive by TYPE (review round:
+    /// two Options + a comment claiming exclusivity let the consumer
+    /// wildcard the impossible dual-verdict state; the enum deletes the
+    /// state instead of trusting it away).
+    outcome: crate::ApplyOutcome,
 }
-
-/// Local alias so the ring stays dependency-light in signatures.
-type NodeIdFreeRegionId = kv9_common::RegionId;
 
 /// A conf change applied HERE: its exact position and the membership
 /// `apply_conf_change` actually produced at that moment.
@@ -362,13 +356,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                             return Err(self.poison(entry.term, entry.index.0, &e));
                         }
                     };
-                    push_ring(
-                        &mut applied,
-                        entry.index.0,
-                        entry.term,
-                        result.fence_rejected,
-                        result.manifest,
-                    );
+                    push_ring(&mut applied, entry.index.0, entry.term, result.outcome);
                 }
                 EntryKind::ConfChangeV1 | EntryKind::ConfChangeV2 => {
                     // Peer call first (no driver locks held). The result goes
@@ -605,15 +593,19 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                             term: entry.term,
                             index: entry.index,
                         };
-                        match (entry.manifest, entry.fence_rejected) {
-                            (Some(verdict), _) => Ok(ApplyWaitOutcome::Manifest {
-                                at: at_pos,
-                                verdict,
-                            }),
-                            (None, Some(region)) => {
+                        // Exhaustive over the exclusive outcome — no
+                        // wildcard, no impossible state to trust away.
+                        match entry.outcome {
+                            crate::ApplyOutcome::Manifest(verdict) => {
+                                Ok(ApplyWaitOutcome::Manifest {
+                                    at: at_pos,
+                                    verdict,
+                                })
+                            }
+                            crate::ApplyOutcome::FenceRejected(region) => {
                                 Ok(ApplyWaitOutcome::FenceRejected { at: at_pos, region })
                             }
-                            (None, None) => Ok(ApplyWaitOutcome::Applied(at_pos)),
+                            crate::ApplyOutcome::Plain => Ok(ApplyWaitOutcome::Applied(at_pos)),
                         }
                     } else {
                         // The position applied here, but as ANOTHER leader's
@@ -1157,18 +1149,11 @@ pub struct ConfChangeReceipt {
     pub learners: Vec<u64>,
 }
 
-fn push_ring(
-    applied: &mut Vec<RingEntry>,
-    index: u64,
-    term: u64,
-    fence_rejected: Option<kv9_common::RegionId>,
-    manifest: Option<crate::ManifestVerdict>,
-) {
+fn push_ring(applied: &mut Vec<RingEntry>, index: u64, term: u64, outcome: crate::ApplyOutcome) {
     applied.push(RingEntry {
         index,
         term,
-        fence_rejected,
-        manifest,
+        outcome,
     });
     let len = applied.len();
     if len > APPLIED_RING {
