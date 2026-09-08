@@ -152,6 +152,32 @@ struct PeerInner<S: PersistentRaftStorage> {
     /// invisible. Observability only; never fatal — a stale message from a
     /// removed peer must not be able to kill a healthy node.
     step_errors: u64,
+    /// Persistence failure is terminal for this incarnation. Never resume a
+    /// RawNode whose Ready may have been only partly written or advanced.
+    fatal: Option<String>,
+}
+
+impl<S: PersistentRaftStorage> PeerInner<S> {
+    fn check_fatal(&self) -> Result<()> {
+        match &self.fatal {
+            Some(cause) => Err(Error::Raft(cause.clone())),
+            None => Ok(()),
+        }
+    }
+
+    fn fail_storage(&mut self, operation: &str, cause: Error) -> Error {
+        let cause = self
+            .fatal
+            .get_or_insert_with(|| {
+                format!("fatal Raft persistence failure during {operation}: {cause}")
+            })
+            .clone();
+        self.alive = false;
+        self.outbox.clear();
+        self.ready.clear();
+        self.read_states.clear();
+        Error::Raft(cause)
+    }
 }
 
 impl RaftPeer<MemStorage> {
@@ -245,6 +271,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 applied_reported: 0,
                 conf_applied,
                 step_errors: 0,
+                fatal: None,
             }),
         })
     }
@@ -266,6 +293,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// by that exact context.
     pub fn read_index(&self, rctx: Vec<u8>) -> Result<()> {
         let mut g = self.lock();
+        g.check_fatal()?;
         if g.raw.raft.state != StateRole::Leader {
             return Err(Error::NotLeader {
                 leader: match g.raw.raft.leader_id {
@@ -297,6 +325,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         expected: Option<u64>,
     ) -> Result<ProposedAt> {
         let mut g = self.lock();
+        g.check_fatal()?;
         if g.raw.raft.state != StateRole::Leader {
             let leader = g.raw.raft.leader_id;
             return Err(Error::NotLeader {
@@ -361,10 +390,11 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
 
     /// Drain this peer's `Ready`: **persist entries + hardstate first**, then queue
     /// messages, then stash committed entries for `take_ready`, then advance.
-    fn process_ready(&self) {
+    fn process_ready(&self) -> Result<()> {
         let mut g = self.lock();
+        g.check_fatal()?;
         if !g.alive || !g.raw.has_ready() {
-            return;
+            return Ok(());
         }
         let mut ready = g.raw.ready();
         // Quorum-confirmed read states (task #28): drained HERE because this
@@ -376,16 +406,14 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         //    BEFORE any message leaves this node — a vote must never outrun its
         //    own persistence).
         if !ready.entries().is_empty() {
-            g.raw
-                .store()
-                .append(ready.entries())
-                .expect("raft storage append");
+            if let Err(cause) = g.raw.store().append(ready.entries()) {
+                return Err(g.fail_storage("append", cause));
+            }
         }
         if let Some(hs) = ready.hs() {
-            g.raw
-                .store()
-                .set_hardstate(hs)
-                .expect("raft storage hardstate");
+            if let Err(cause) = g.raw.store().set_hardstate(hs) {
+                return Err(g.fail_storage("hardstate", cause));
+            }
         }
         // 2. Only now hand messages to the transport.
         msgs.extend(ready.take_persisted_messages());
@@ -412,6 +440,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         g.ready.extend(committed);
         g.outbox.extend(msgs);
         g.read_states.extend(read_states);
+        Ok(())
     }
 
     /// Report real apply progress to raft (task #24). Call ONLY after the
@@ -424,7 +453,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// driver's `applied`/`sm` locks (peer never nests with driver locks).
     pub fn applied_to(&self, idx: u64) {
         let mut g = self.lock();
-        if idx > g.applied_reported {
+        if g.fatal.is_none() && idx > g.applied_reported {
             g.applied_reported = idx;
             g.raw.advance_apply_to(idx);
         }
@@ -442,6 +471,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
 
     pub fn propose_conf_change_traced(&self, cc: ConfChangeV2) -> Result<ProposedAt> {
         let mut g = self.lock();
+        g.check_fatal()?;
         let term = g.raw.raft.term;
         g.raw
             .propose_conf_change(Vec::new(), cc)
@@ -467,6 +497,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         index: u64,
     ) -> Result<(Vec<u64>, Vec<u64>)> {
         let mut g = self.lock();
+        g.check_fatal()?;
         // Replay guard: at or below the recovered boundary this change is
         // already reflected in the ConfState we opened with. Single-step conf
         // ops are RELATIVE (AddLearner on a voter is a demotion), so
@@ -495,7 +526,9 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 )))
             }
         };
-        g.raw.store().set_conf_state(&cs, index)?;
+        if let Err(cause) = g.raw.store().set_conf_state(&cs, index) {
+            return Err(g.fail_storage("confstate", cause));
+        }
         g.conf_applied = index;
         let (mut v, mut l) = (cs.voters.to_vec(), cs.learners.to_vec());
         v.sort_unstable();
@@ -563,9 +596,10 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
 
     /// Process pending Ready state and take the outgoing messages for the
     /// transport. Persistence happens inside, before messages are returned.
-    pub fn pump(&self) -> Vec<Message> {
-        self.process_ready();
-        std::mem::take(&mut self.lock().outbox)
+    /// An error emits nothing and permanently stops this peer until recovery.
+    pub fn pump(&self) -> Result<Vec<Message>> {
+        self.process_ready()?;
+        Ok(std::mem::take(&mut self.lock().outbox))
     }
 
     /// Testing-only election seam: ask THIS peer (it must currently be the
@@ -605,7 +639,9 @@ impl<S: PersistentRaftStorage> RaftGroup for RaftPeer<S> {
     }
 
     fn campaign(&self) -> Result<()> {
-        self.lock().raw.campaign().map_err(raft_err)
+        let mut g = self.lock();
+        g.check_fatal()?;
+        g.raw.campaign().map_err(raft_err)
     }
 }
 
@@ -619,7 +655,9 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// the same hole one layer in. The consume faces living in this module
     /// ([`DrainToken`], the gated `HarnessPump`) are its only callers.
     fn drain_ready(&self) -> Result<Vec<CommittedEntry>> {
-        Ok(std::mem::take(&mut self.lock().ready))
+        let mut g = self.lock();
+        g.check_fatal()?;
+        Ok(std::mem::take(&mut g.ready))
     }
 }
 
@@ -771,7 +809,7 @@ impl InProcessCluster {
         }
         for _ in 0..10 {
             for p in &self.peers {
-                p.process_ready();
+                p.process_ready().expect("in-process persistence");
             }
             let mut in_flight: Vec<Message> = Vec::new();
             for p in &self.peers {
@@ -889,7 +927,7 @@ mod tests {
         ));
         assert_eq!(peer.lock().raw.raft.raft_log.last_index(), empty);
         peer.campaign().unwrap();
-        peer.pump();
+        peer.pump().unwrap();
         assert_eq!(peer.role(), Role::Leader);
         let term = peer.term();
         let before = peer.lock().raw.raft.raft_log.last_index();

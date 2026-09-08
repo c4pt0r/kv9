@@ -5,6 +5,7 @@ use crate::rawnode::RaftPeer;
 use kv9_common::fs::testing::{Crash, Fault, ModelFs, Operation};
 use kv9_common::{NodeId, RegionId};
 use raft::prelude::{Message, MessageType};
+use std::sync::Arc;
 
 const DIRECTORY: &str = "/new-parent/replica/raft";
 
@@ -33,13 +34,140 @@ fn granted(messages: &[Message], candidate: u64, term: u64) -> bool {
     })
 }
 
+#[derive(Clone, Copy, Debug)]
+enum DriverCut {
+    Vote,
+    Configuration,
+}
+
+fn prepared_driver(
+    fs: &ModelFs,
+    scenario: DriverCut,
+) -> (
+    Arc<crate::driver::NodeDriver<DiskRaftStorage<ModelFs>>>,
+    crate::transport::InProcEndpoint,
+) {
+    use crate::{transport::RaftTransport, RaftGroup};
+    let voters: &[u64] = match scenario {
+        DriverCut::Vote => &[1, 2, 3],
+        DriverCut::Configuration => &[1],
+    };
+    let store = DiskRaftStorage::open_on(fs.clone(), Path::new(DIRECTORY), voters)
+        .unwrap()
+        .0;
+    let peer = Arc::new(RaftPeer::with_storage(NodeId(1), RegionId(1), store).unwrap());
+    let hub = crate::transport::InProcHub::new();
+    let remote = hub.endpoint(NodeId(2));
+    let driver = crate::driver::NodeDriver::new(
+        peer.clone(),
+        Arc::new(hub.endpoint(NodeId(1))),
+        crate::MemStateMachine::new(),
+    )
+    .unwrap();
+    match scenario {
+        DriverCut::Vote => remote.send(NodeId(1), vote_request(2, 7)),
+        DriverCut::Configuration => {
+            peer.campaign().unwrap();
+            driver.step().unwrap();
+            driver.step().unwrap();
+            peer.read_index(b"must-not-escape-failed-ready".to_vec())
+                .unwrap();
+            driver.add_learner(NodeId(2)).unwrap();
+        }
+    }
+    fs.clear_events();
+    (driver, remote)
+}
+
+#[test]
+fn driver_persistence_failures_stop_without_poisoning_observation_locks() {
+    use crate::{transport::RaftTransport, RaftGroup};
+    let mut cells = 0;
+    let mut causes = std::collections::BTreeSet::new();
+    for scenario in [DriverCut::Vote, DriverCut::Configuration] {
+        let fs = ModelFs::default();
+        let (driver, remote) = prepared_driver(&fs, scenario);
+        driver.step().unwrap();
+        match scenario {
+            DriverCut::Vote => assert!(granted(&remote.drain(), 2, 7)),
+            DriverCut::Configuration => assert_eq!(driver.status().learners, [2]),
+        }
+        let cuts = fs.events();
+        assert!(!cuts.is_empty());
+        for cut in cuts {
+            assert!(matches!(
+                cut.operation,
+                Operation::Write | Operation::SyncData
+            ));
+            for errno in [5, 28] {
+                for fault in [Fault::Before(errno), Fault::After(errno)] {
+                    let fs = ModelFs::default();
+                    let (driver, remote) = prepared_driver(&fs, scenario);
+                    let before = driver.status();
+                    fs.fail_at(cut.number, fault);
+                    let error = driver
+                        .step()
+                        .expect_err("failed persistence must stop the driver");
+                    assert!(matches!(error, Error::Raft(_)));
+                    assert!(
+                        fs.fault_arrived(),
+                        "fault did not arrive: {scenario:?} {cut:?}"
+                    );
+                    // This used to panic while holding peer.inner, leaving even
+                    // status() unusable. Observation must survive the I/O error.
+                    let status = driver.status();
+                    let fatal = status.fatal.expect("runtime must observe a fatal cause");
+                    for operation in ["append", "hardstate", "confstate"] {
+                        if fatal.contains(&format!("during {operation}:")) {
+                            causes.insert(operation);
+                        }
+                    }
+                    assert_eq!(status.applied_index, before.applied_index);
+                    assert_eq!(status.driver_applied, before.driver_applied);
+                    assert_eq!(status.conf_index, before.conf_index);
+                    assert!(
+                        remote.drain().is_empty(),
+                        "failed Ready must emit no messages"
+                    );
+                    assert!(driver.peer().take_read_states().is_empty());
+                    let operations = fs.events().len();
+                    let term = driver.peer().term();
+                    for _ in 0..3 {
+                        assert!(driver.tick_and_step().is_err());
+                        driver.peer().step_message(vote_request(2, term + 10));
+                        assert!(driver.peer().pump().is_err());
+                        assert!(driver.peer().campaign().is_err());
+                        assert!(driver.peer().read_index(b"after-failure".to_vec()).is_err());
+                        assert!(driver.peer().propose_raw_for_harness(vec![1]).is_err());
+                        assert!(driver.add_learner(NodeId(3)).is_err());
+                    }
+                    assert_eq!(
+                        fs.events().len(),
+                        operations,
+                        "fatal peer performed more I/O"
+                    );
+                    assert_eq!(driver.peer().term(), term, "fatal peer processed a message");
+                    assert_eq!(driver.status().fatal.as_deref(), Some(fatal.as_str()));
+                    assert!(remote.drain().is_empty());
+                    cells += 1;
+                }
+            }
+        }
+    }
+    assert_eq!(
+        causes.into_iter().collect::<Vec<_>>(),
+        ["append", "confstate", "hardstate"]
+    );
+    println!("driver persistence matrix: {cells} named write/sync failure cells");
+}
+
 #[test]
 fn acknowledged_vote_survives_loss_of_unsynced_namespace() {
     let fs = ModelFs::default();
     let peer = RaftPeer::with_storage(NodeId(1), RegionId(1), open(&fs)).unwrap();
     peer.step_message(vote_request(2, 7));
     assert!(
-        granted(&peer.pump(), 2, 7),
+        granted(&peer.pump().unwrap(), 2, 7),
         "positive control: the first vote must leave the real Ready loop"
     );
     assert!(fs
@@ -51,7 +179,7 @@ fn acknowledged_vote_survives_loss_of_unsynced_namespace() {
     let peer = RaftPeer::with_storage(NodeId(1), RegionId(1), open(&fs)).unwrap();
     peer.step_message(vote_request(3, 7));
     assert!(
-        !granted(&peer.pump(), 3, 7),
+        !granted(&peer.pump().unwrap(), 3, 7),
         "a durable voter must not grant two candidates in the same term after power loss"
     );
 }
