@@ -6,7 +6,10 @@ work="$(mktemp -d /tmp/kv9-membership-write-controls.XXXXXX)"
 trap 'rm -rf "$work"' EXIT
 leader_id() { echo 2; }
 client() {
-  test "$*" = 'create-keyspace --addr 127.0.0.1:23102 --name post-membership-failover --api-type raw'
+  if [ "$*" != 'create-keyspace --addr 127.0.0.1:23102 --name post-membership-failover --api-type raw' ]; then
+    echo 'FAIL: retry changed the expected request arguments' >&2
+    return 99
+  fi
   local number=0
   if [ -f "$work/count" ]; then number="$(cat "$work/count")"; fi
   number=$((number + 1)); echo "$number" >"$work/count"
