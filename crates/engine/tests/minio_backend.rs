@@ -732,6 +732,63 @@ fn controlled_store(deadline: Duration) -> MinioObjectStore {
 
 #[test]
 #[ignore = "requires a MinIO endpoint; see the module docs"]
+fn connect_refuses_a_deadline_too_small_to_split() {
+    // Blocker 1. The algebra cell proves the PREDICATE is right; it does not prove production
+    // uses it. Tess demonstrated the gap by replacing the worker's
+    // `wire_budget(config.op_deadline, configured)` with an unconditional `Some(configured)`
+    // — every no-fixture test stayed green, because none of them went through `connect`.
+    //
+    // This one does. It is the call site, not the helper.
+    for too_small in [
+        Duration::ZERO,
+        Duration::from_micros(500),
+        REPLY_RESERVE, // exactly the reserve: nothing left for the wire
+    ] {
+        let result = MinioObjectStore::connect(
+            MinioConfig::from_env_at("http://127.0.0.1:1", required(ENV_BUCKET))
+                .expect("credentials from the environment")
+                .with_op_deadline(too_small),
+        );
+        let err = match result {
+            Ok(_) => panic!("{too_small:?} cannot yield a wire budget and must be refused"),
+            Err(e) => e,
+        };
+        // Typed, and typed as CONFIGURATION — this is a bad setting, not a storage fault, and
+        // a caller distinguishing the two acts differently on each.
+        assert!(
+            matches!(err, Error::Config(_)),
+            "{too_small:?} must be refused as a config error, got {err:?}"
+        );
+    }
+
+    // The OTHER side of the boundary, and it is not the same check as the 50ms control.
+    // Credit: Cindy. A 50ms control only rules out "refuses everything"; it does not rule out
+    // "refuses a little too much". An off-by-one leaning toward rejection -- say the gate
+    // became `d <= RESERVE + 1ms` -- still rejects 0/500us/RESERVE and still accepts 50ms, so
+    // every value above would stay green while the gate turned away legitimate deadlines.
+    //
+    // This is Tess's blocker 1 one level down: the predicate's boundary being right does not
+    // make the production gate's boundary right. Same values as the helper's boundary cell,
+    // applied at the call site.
+    for acceptable in [
+        REPLY_RESERVE + Duration::from_nanos(1),
+        Duration::from_millis(50),
+    ] {
+        let result = MinioObjectStore::connect(
+            MinioConfig::from_env_at("http://127.0.0.1:1", required(ENV_BUCKET))
+                .expect("credentials from the environment")
+                .with_op_deadline(acceptable),
+        );
+        assert!(
+            result.is_ok(),
+            "{acceptable:?} is past the reserve and must connect; got {:?}",
+            result.err()
+        );
+    }
+}
+
+#[test]
+#[ignore = "requires a MinIO endpoint; see the module docs"]
 fn the_worker_cuts_short_an_operation_that_outlives_its_budget() {
     // Cell 4, deterministic at last. Every earlier attempt at this used a real peer --
     // refused, silent, 503 -- and every one witnessed the bound only as a tail (2 in 10 at
@@ -761,17 +818,28 @@ fn the_worker_cuts_short_an_operation_that_outlives_its_budget() {
 fn a_job_whose_deadline_ran_out_while_queued_is_not_issued() {
     // Cell 3. Deterministic, and the arithmetic is the point.
     //
-    // ONE occupying job can never near-expire the next, because the occupant is itself
-    // bounded: it runs for `0.8*D`, so the job behind it still has `0.2*D` of its own
-    // deadline. My earlier fixtures kept missing exactly this.
+    // ONE occupying job can never near-expire the next: the occupant is itself bounded, so
+    // the job behind it still has a fraction of its own deadline.
     //
-    // Jobs queued together decay GEOMETRICALLY: left = D, 0.2*D, 0.04*D, ... The count has to
-    // be chosen against the 1ms reserve, and I got that wrong once too -- with D=600ms the
-    // fourth job still has ~4.8ms, comfortably above the reserve, so four jobs flaked 1 run
-    // in 6. With D=200ms the sequence is 200, 40, 8, 1.6, 0.32ms: the fifth is well under,
-    // and eight jobs leave margin for the spread in when threads actually stamp their
-    // deadlines (a job stamped later has a later deadline, hence more time left -- that
-    // spread was the flake).
+    // The derivation, under the CURRENT formula `min(configured, left - reserve)` with
+    // D=200ms, configured=160ms, reserve=1ms:
+    //
+    //     job 1  left=200ms  issued, budget=min(160, 199)=160ms
+    //     job 2  left= 40ms  issued, budget=min(160,  39)= 39ms
+    //     job 3  left=  1ms  DECLINED  (left <= reserve)
+    //
+    // THREE jobs suffice, and arithmetically must — but only if their deadlines share an
+    // origin. An earlier version of this comment carried the sequence 200/40/8/1.6/0.32ms,
+    // which was computed under the OLD `0.8*left` rule and would send the next reader to
+    // add jobs. The count is not the problem (credit: Cindy recomputed it).
+    //
+    // KNOWN LIMITATION, and it is the real one: this is a SCHEDULING fixture. `Hold` controls
+    // how long an issued job runs; it does not control when each caller stamps its deadline
+    // and enqueues, so there is no common origin and therefore no genuine "behind" relation.
+    // That, not the job count, is why `declined` is a frequency here rather than a certainty.
+    // The replacement is a barrier that completes every stamp/enqueue before the worker is
+    // released; after it, `declined >= 1` should hold every run, and if it still flakes then
+    // something else is uncontrolled.
     let deadline = Duration::from_millis(200);
     let s = Arc::new(controlled_store(deadline));
 
@@ -819,7 +887,7 @@ fn a_job_whose_deadline_ran_out_while_queued_is_not_issued() {
     assert!(
         declined >= 1,
         "no job ran out of deadline while queued ({issued} issued, {declined} declined); \
-         with eight jobs behind one another the tail must fall under the reserve"
+         with four jobs behind one another the tail must fall under the reserve"
     );
 
     // NOT asserted: that a CALLER saw `NotIssued`.
