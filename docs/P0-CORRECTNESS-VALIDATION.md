@@ -90,11 +90,13 @@ The current matrix has PodChaos and NetworkChaos coverage. IOChaos, additional
 network fault families, concurrent independent history checking, complete core
 proofs and multi-host availability remain open. Process death is not power loss.
 
-The persistence audit identified an immediate C01 investigation:
-`DiskRaftStorage::open` creates the directory and `raft.log` without synchronizing
-directory publication, while `write_record` synchronizes file data. The failure
-model must test this distinction and error continuation before the durable-vote
-assumption is considered established. No power-loss coverage is claimed here.
+This increment's persistence audit identified a C01 investigation:
+`DiskRaftStorage::open` created the directory and `raft.log` without synchronizing
+directory publication, while `write_record` synchronized file data. The subsequent
+[Raft persistence increment](RAFT-PERSISTENCE.md) reproduces and fixes the resulting
+double-vote scenario, adds failed-writer fencing and a deterministic persistence
+model, and supplies an abstract durable-vote proof. This earlier record itself
+claims no power-loss coverage.
 
 ## Continuous execution
 
