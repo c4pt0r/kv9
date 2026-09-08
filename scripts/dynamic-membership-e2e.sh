@@ -238,11 +238,11 @@ new_leader_ready() {
   test -n "$leader" && test "$leader" -ne "$old_leader"
 }
 wait_until "five-voter failover" 20 new_leader_ready
-new_leader="$(leader_id)"
-write_output="$(client create-keyspace \
-  --addr "127.0.0.1:$((base_port + new_leader))" \
-  --name post-membership-failover \
-  --api-type raw)"
+# Local leader status may precede a subsequent term/role change. The public
+# mutation receipt, followed by the exact existing catch-up assertions, is the
+# availability observation. Save and bound each leadership-rejected attempt.
+source "$repo_dir/scripts/membership-write.sh"
+write_output="$(membership_write_after_failover "$artifact_dir" "$base_port" "$old_leader")"
 write_term="$(awk -F= '$1 == "proposed_term" {print $2}' <<<"$write_output")"
 write_index="$(awk -F= '$1 == "proposed_index" {print $2}' <<<"$write_output")"
 test "$write_term" -gt 0

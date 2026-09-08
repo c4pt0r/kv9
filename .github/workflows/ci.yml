@@ -231,6 +231,13 @@ jobs:
             exit 1
           }
 
+      - name: Self-test — membership write retry
+        run: |
+          set -euo pipefail
+          bash scripts/membership-write-selftest.sh > "$RUNNER_TEMP/membership-write-selftest.log" 2>&1
+          cat "$RUNNER_TEMP/membership-write-selftest.log"
+          test "$(grep -c '^PASS: ' "$RUNNER_TEMP/membership-write-selftest.log")" = 5
+          test "$(tail -1 "$RUNNER_TEMP/membership-write-selftest.log")" = 'PASS: membership write retry controls completed all four cases'
       - name: Self-test — unlanded marker check
         run: |
           set +e
