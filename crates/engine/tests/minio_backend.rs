@@ -651,9 +651,8 @@ fn the_backend_does_not_mint_a_prepared_sst() {
 
     assert!(
         code_mentions.is_empty(),
-        "no engine source may reach for `PreparedSst`; minting belongs to the sealed uploader \
-         capability, and an acknowledged upload is only part of that badge. Found: \
-         {code_mentions:#?}"
+        "{}",
+        stop_line_failure(&code_mentions)
     );
 
     // Second positive control. Without it, a classifier that filed EVERYTHING as
@@ -664,4 +663,66 @@ fn the_backend_does_not_mint_a_prepared_sst() {
         "the scan found no mention of `PreparedSst` anywhere, not even the module docs that \
          state the stop line. The search is not working."
     );
+}
+
+/// The message this guard fails with.
+///
+/// A function rather than an inline string, so the disposal instruction can be asserted
+/// without having to trip the guard. Unlike an ordinary assertion, **this one has an
+/// expected, legitimate failure**: the day Phase B introduces `PreparedSst`, it fires and it
+/// is right to fire. Whoever hits it that day has the card's ruling somewhere they are not
+/// looking and one line of terminal output in front of them.
+///
+/// So the instruction goes in the output. The failure mode being defended against is not the
+/// guard silently ossifying -- it is someone reading an expected red as an ordinary
+/// regression and reaching for an allowlist, which is exactly the third source of truth this
+/// scope was chosen to avoid.
+fn stop_line_failure(found: &[String]) -> String {
+    format!(
+        "STOP LINE: no source under crates/engine/src may reach for `PreparedSst`.\n\
+         Minting that badge belongs to the sealed uploader capability; an acknowledged \
+         upload is a necessary part of it, not the whole of it, and a backend that returned \
+         one would put the trust root back on a value the store reports about itself.\n\
+         \n\
+         IF YOU ARE SEEING THIS BECAUSE PHASE B (task #9) IS LEGITIMATELY INTRODUCING \
+         `PreparedSst`, THIS RED IS EXPECTED AND THE CORRECT ACTION IS TO RETIRE OR REPLACE \
+         THIS GUARD -- in the same reviewed change, together with its UNLANDED(task #9) \
+         marker. DO NOT add an allowlist or an exception: this scan covers the whole crate \
+         precisely so that there is no second place where the answer lives.\n\
+         \n\
+         Found {} code mention(s):\n{:#?}",
+        found.len(),
+        found
+    )
+}
+
+#[test]
+fn the_stop_line_failure_says_what_to_do_when_it_is_right_to_fail() {
+    // Rev 6 of the card, and Cindy's reasoning for it: this guard's one legitimate failure
+    // scenario WILL happen, and the disposition for it is written on the card -- somewhere
+    // the person hitting the red is not looking. The terminal is where they are.
+    let text = stop_line_failure(&["src/somewhere.rs:1: pub struct PreparedSst;".to_string()]);
+
+    for required in [
+        // that the red may be expected...
+        "EXPECTED",
+        // ...what to do about it...
+        "RETIRE OR REPLACE",
+        // ...what NOT to do...
+        "DO NOT add an allowlist",
+        // ...and where the retirement is tracked.
+        "UNLANDED(task #9)",
+        // Naming the phase, so the reader can tell whether their case is the expected one.
+        "PHASE B",
+    ] {
+        assert!(
+            text.contains(required),
+            "the failure message must carry its own disposal instruction; it is missing \
+             {required:?}.\nMessage was:\n{text}"
+        );
+    }
+
+    // And it must still report the finding, or the instruction would have displaced the
+    // evidence rather than accompanied it.
+    assert!(text.contains("src/somewhere.rs:1"), "{text}");
 }

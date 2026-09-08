@@ -304,11 +304,28 @@ jobs:
             exit 1
           }
 
-      # The non-ignored guard in the same file (the stop line on minting `PreparedSst`) runs
-      # without a server. Named separately so "the real suite failed" and "the stop line was
+      # The non-ignored guards in the same file run without a server: the stop line on minting
+      # `PreparedSst`, and the assertion that its failure message carries its own retirement
+      # instruction. Named separately so "the real suite failed" and "the stop line was
       # crossed" cannot be confused for each other.
-      - name: Run the stop-line guard
-        run: cargo test -p kv9-engine --test minio_backend
+      #
+      # Counted for the same reason as the suite above, and this one is easy to forget: these
+      # two are the tests that run WITHOUT a fixture, so nothing else would notice if they
+      # stopped being selected.
+      - name: Run the stop-line guards
+        run: |
+          set +e
+          output="$(cargo test -p kv9-engine --test minio_backend 2>&1)"
+          rc=$?
+          set -e
+          printf '%s\n' "$output"
+          [ "$rc" -eq 0 ] || exit "$rc"
+          printf '%s\n' "$output" \
+            | grep -q '^test result: ok\. 2 passed; 0 failed; 11 ignored;' || {
+            printf 'expected 2 passed / 0 failed / 11 ignored, got: %s\n' \
+              "$(printf '%s\n' "$output" | grep '^test result:')" >&2
+            exit 1
+          }
 
       - name: MinIO logs
         if: failure()
