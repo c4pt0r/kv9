@@ -4,8 +4,8 @@
 //! the state machine. The call direction is fixed by contract: the engine
 //! durably uploads a prepared SST FIRST, then the runtime proposes a
 //! `ManifestChange` here; ordered apply installs already-durable references.
-//! Apply never touches the object store (the tripwire and, later, the
-//! capability-narrowed apply face guard that from the other side).
+//! Apply never touches the object store; the tripwire and narrowed apply
+//! capability guard that boundary.
 //!
 //! # The in-flight slot
 //!
@@ -13,8 +13,8 @@
 //! per-region slot that is the ONLY propose entry. A second concurrent
 //! propose is a typed refusal — no queueing, no silence. The slot protects
 //! the one-generation-wide decidable window (a later change overwriting
-//! `last_change_id` before the previous attempt settles degrades decidable
-//! outcomes into permanent superwindow Unknown) and serializes prepared-state
+//! `last_change_id` before the previous attempt settles requires retained
+//! historical proof to resolve superwindow Unknown) and serializes prepared-state
 //! ownership; it does NOT protect exact-window correctness — the CAS algebra
 //! does that on its own (Tess's correction, card rev 19).
 //!
@@ -25,9 +25,9 @@
 //! reported as newly accepted), `WindowRefused` (exact-window non-mine — an
 //! authoritative negative from transition invariants), `ReceiptRefused` (the
 //! discriminator's stale verdict for THIS attempt). `Unknown` clears nothing:
-//! the slot stays occupied and the ONLY safe continuation is re-sending the
-//! SAME identity ([`ManifestSeam::converge`]) — never a new change built on
-//! the assumption the old one failed.
+//! the slot stays occupied. [`ManifestSeam::converge`] queries positive effect
+//! and exact historical transition evidence, and may resend the SAME identity
+//! within its CAS window. Absence of evidence never authorizes a new attempt.
 
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -41,16 +41,10 @@ use kv9_raft::{classify_reconciliation, Command, ManifestVerdict, ReconcileObser
 /// change_id)` (P3) plus the changeset and replicated watermark needed to
 /// send — and, from a slot, RE-send — the SAME proposal.
 ///
-/// # Phase-A boundary (review round 1, Tess)
-///
-/// The fields are PRIVATE and production code has NO constructor: the
-/// contract's promises — change_id is the canonical content hash, the
-/// referenced SSTs are durable BEFORE propose, the watermark is real —
-/// cannot be enforced on self-reported bytes, so until the engine's
-/// `PreparedSst` capability exists to carry them, the entire propose face
-/// is unreachable outside test builds. The harness constructor below is the
-/// deliberate, gated exception; the production constructor will CONSUME a
-/// durable prepared capability by value (phase-B).
+/// Production construction consumes a sealed [`kv9_engine::checkpoint::PreparedFlush`]
+/// by value and derives the canonical identity internally. The engine has
+/// already confirmed every referenced SST is remotely readable. Retries clone
+/// this immutable attempt, never the upload capability or a new identity.
 #[derive(Debug, Clone)]
 pub struct ManifestAttempt {
     /// The wire payload itself (fields private to kv9-raft — round 3: hiding
@@ -60,8 +54,17 @@ pub struct ManifestAttempt {
 }
 
 impl ManifestAttempt {
-    /// Harness-only raw constructor (phase-A). Production attempts arrive
-    /// via the future durable-prepared capability, never from loose bytes.
+    pub fn from_prepared(
+        prepared: kv9_engine::checkpoint::PreparedFlush,
+        expected_generation: u64,
+    ) -> kv9_common::Result<Self> {
+        Ok(Self {
+            payload: kv9_raft::ManifestChangePayload::from_prepared(prepared, expected_generation)?,
+        })
+    }
+
+    /// Harness-only raw constructor. Production attempts consume the engine's
+    /// durable prepared capability.
     #[cfg(any(test, feature = "testing"))]
     pub fn for_harness(
         region: u64,
@@ -100,6 +103,9 @@ impl ManifestAttempt {
 /// split is load-bearing (never fold these into a success flag):
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SettledManifest {
+    /// References and coverage are satisfied by immutable applied state, without
+    /// claiming which proposal installed them.
+    EffectSettled,
     /// My change performed its transition NOW. The only "newly accepted".
     MyChangeApplied { generation: u64 },
     /// My identity's transition had already happened (idempotent duplicate /
@@ -321,12 +327,47 @@ impl ManifestSeam {
                 ))
             }
             ReconcileObservation::Unknown => {
+                if self
+                    .handle
+                    .manifest_effect(region, attempt.payload.changeset())
+                    .map_err(ManifestSeamError::Node)?
+                {
+                    self.clear(region);
+                    return Ok(ManifestProposalState::Settled(
+                        SettledManifest::EffectSettled,
+                    ));
+                }
                 if pair.generation != attempt.expected_generation() {
+                    if let Some(window) = attempt.expected_generation().checked_add(1) {
+                        if pair.generation > window {
+                            if let Some(history) = self
+                                .handle
+                                .manifest_transition(region, window)
+                                .map_err(ManifestSeamError::Node)?
+                            {
+                                let settled = match classify_reconciliation(
+                                    &history,
+                                    attempt.expected_generation(),
+                                    attempt.change_id(),
+                                ) {
+                                    ReconcileObservation::MyChangeApplied { generation } => {
+                                        Some(SettledManifest::AlreadyApplied { generation })
+                                    }
+                                    ReconcileObservation::KnownNotApplied { winner_change_id } => {
+                                        Some(SettledManifest::WindowRefused { winner_change_id })
+                                    }
+                                    ReconcileObservation::Unknown => None,
+                                };
+                                if let Some(settled) = settled {
+                                    self.clear(region);
+                                    return Ok(ManifestProposalState::Settled(settled));
+                                }
+                            }
+                        }
+                    }
                     // Superwindow (or a behind-pair precondition break):
-                    // undecidable in this coordinate; the slot stays occupied
-                    // rather than guessing. (The positive effect query — the
-                    // add-only escape hatch — arrives with the SST reference
-                    // shape; until then superwindow attempts wait here.)
+                    // neither positive effect nor retained transition evidence
+                    // settled it. Absence still establishes nothing.
                     return Ok(ManifestProposalState::Unknown);
                 }
                 // Pending: my predecessor is unspent. Re-send the SAME
@@ -530,6 +571,112 @@ mod tests {
                 *generation
             }
             other => panic!("expected MyChangeApplied, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn only_positive_effect_evidence_releases_a_superwindow_attempt() {
+        struct EffectNode(bool);
+        impl ManifestNode for EffectNode {
+            fn propose_command(&self, _: &Command) -> Result<ProposeOutcome, Error> {
+                panic!("superwindow must never re-propose")
+            }
+            fn wait_manifest(
+                &self,
+                _: kv9_raft::ProposedAt,
+                _: Duration,
+            ) -> Result<ApplyWaitOutcome, ApplyWaitError> {
+                panic!("no proposal to await")
+            }
+            fn manifest_pair(&self, _: u64) -> kv9_common::Result<kv9_raft::ManifestPair> {
+                Ok(kv9_raft::ManifestPair {
+                    generation: 3,
+                    last_change_id: b"newer".to_vec(),
+                })
+            }
+            fn manifest_effect(&self, _: u64, _: &[u8]) -> kv9_common::Result<bool> {
+                Ok(self.0)
+            }
+        }
+        for proven in [false, true] {
+            let seam = ManifestSeam::mint(SeamHandle::for_harness(Arc::new(EffectNode(proven))));
+            let result = seam
+                .resume_in_flight(attempt(5, b"old", 0, 1), SHORT)
+                .unwrap();
+            assert_eq!(seam.in_flight(5), !proven);
+            if proven {
+                assert!(matches!(
+                    result,
+                    ManifestProposalState::Settled(SettledManifest::EffectSettled)
+                ));
+            } else {
+                assert!(matches!(result, ManifestProposalState::Unknown));
+            }
+        }
+    }
+
+    #[test]
+    fn superwindow_settles_only_from_exact_retained_transition_evidence() {
+        struct HistoricalNode(Option<kv9_raft::ManifestPair>);
+        impl ManifestNode for HistoricalNode {
+            fn propose_command(&self, _: &Command) -> Result<ProposeOutcome, Error> {
+                panic!("historical reconciliation never reproposes")
+            }
+            fn wait_manifest(
+                &self,
+                _: kv9_raft::ProposedAt,
+                _: Duration,
+            ) -> Result<ApplyWaitOutcome, ApplyWaitError> {
+                panic!("no new proposal")
+            }
+            fn manifest_pair(&self, _: u64) -> kv9_common::Result<kv9_raft::ManifestPair> {
+                Ok(kv9_raft::ManifestPair {
+                    generation: 5,
+                    last_change_id: b"later".to_vec(),
+                })
+            }
+            fn manifest_transition(
+                &self,
+                _: u64,
+                generation: u64,
+            ) -> kv9_common::Result<Option<kv9_raft::ManifestPair>> {
+                assert_eq!(generation, 1);
+                Ok(self.0.clone())
+            }
+        }
+        for (proof, expected) in [
+            (None, "unknown"),
+            (Some((2, b"old".to_vec())), "unknown"),
+            (Some((1, b"old".to_vec())), "applied"),
+            (Some((1, b"winner".to_vec())), "refused"),
+        ] {
+            let history = proof.map(|(generation, last_change_id)| kv9_raft::ManifestPair {
+                generation,
+                last_change_id,
+            });
+            let seam =
+                ManifestSeam::mint(SeamHandle::for_harness(Arc::new(HistoricalNode(history))));
+            let state = seam
+                .resume_in_flight(attempt(5, b"old", 0, 1), SHORT)
+                .unwrap();
+            match expected {
+                "unknown" => assert!(matches!(state, ManifestProposalState::Unknown)),
+                "applied" => assert!(
+                    matches!(
+                        state,
+                        ManifestProposalState::Settled(SettledManifest::AlreadyApplied {
+                            generation: 1
+                        })
+                    ),
+                    "retained historical winner must settle the applied attempt"
+                ),
+                "refused" => assert!(matches!(
+                    state,
+                    ManifestProposalState::Settled(SettledManifest::WindowRefused { .. })
+                )),
+                _ => unreachable!(),
+            }
+            assert_eq!(seam.in_flight(5), expected == "unknown");
         }
     }
 

@@ -4,23 +4,32 @@ A modern, **multi-tenant-first**, cloud-native distributed key-value engine — 
 **single binary** with **no separate control plane**, **self-hosted metadata**, and **object storage as the single
 source of truth**.
 
-> Status: **v0 — partially implemented. APIs and internals are not stable.**
+> Status: **v0, basic distributed Raw KV; APIs and on-disk formats are not stable.**
 >
-> **Working:** raft consensus (a single group), the self-hosted metadata catalog, and the **raw KV path** —
-> `RawPut`/`RawGet`/`RawScan`/`RawDeleteRange` over propose→apply, with linearizable reads and a region-epoch
-> write fence.
+> **Working:** a real single-group Raft runtime, self-hosted metadata, keyspace listing, learner admission/promotion,
+> RawPut/Get/Scan/Delete/DeleteRange, quorum reads, ordered epoch fences, and atomic WAL v2 data/applied-position recovery.
+> With `KV9_STORAGE=minio`, leaders upload immutable SST checkpoints, replicate manifest CAS, and replicas reclaim
+> the covered catalog WAL and recover from MinIO plus the surviving tail.
 >
-> **Not implemented — these return `NotImplemented`, they are not merely untested:** transactions
-> (`PercolatorExecutor::get`/`prewrite`/`commit`/`resolve_lock`), region split/merge, raw TTL, and
-> `list_keyspaces`.
+> **Limits:** the full dataset remains in memory; checkpoints are full-state and capped at 48 MiB. Raft logs and old
+> SSTs are retained. This is not yet the incremental LSM, multi-group or stateless-compute design below.
+> Transactions, region split/merge, raw TTL, block cache and TLS are not implemented. Root/store identity and token
+> authentication already exist. Acknowledged unflushed writes still depend on the Raft replicas' local disks.
 >
-> **Not built at all:** object storage as the durable layer (in progress — `docs/OBJECT-STORAGE.md`), the LSM
-> engine, and TLS/authentication. Durability today is a **local-disk WAL**, not object storage, so this is
-> **not deployable across machines or on an untrusted network.**
->
-> Delivery order: [`docs/ROADMAP.md`](docs/ROADMAP.md) is authoritative.
+> Delivery order: [ROADMAP](docs/ROADMAP.md). Implementation review and issue coverage: [TAKEOVER-AUDIT](docs/TAKEOVER-AUDIT.md).
 
-## Why kv9
+## Run it
+
+```bash
+# Three kv9 processes + a real MinIO container; includes failover and full restart.
+./scripts/minio-kv-e2e.sh
+```
+
+See [QUICKSTART](docs/QUICKSTART.md) for prerequisites, MinIO configuration and a persistent cluster.
+
+## Target architecture
+
+The following are design goals; the status above describes what the current binary implements.
 
 - **Object storage is THE source of truth; compute is stateless.** All durable data lives in object storage
   (S3/GCS/Azure); compute holds only cache + a transient, raft-replicated WAL that stages the not-yet-flushed tail.
@@ -111,7 +120,7 @@ crates/
 src/                   the single `kv9` binary
 ```
 
-Build (v0 skeleton): `cargo check --workspace`.
+Build: `cargo build --workspace`. Test: `cargo test --workspace`; real MinIO tests are explicitly selected in CI.
 
 ## License
 

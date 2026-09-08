@@ -433,14 +433,15 @@ impl Bootstrap {
             // Initializing node writes — and cannot reach Initializing.
             //
             // SAFETY under the root contract: a re-proposal submits the SAME
-            // root-provisioned content (no minting), but a duplicate that
-            // commits still poisons at apply — initialize_cluster refuses a
-            // second insert. The runtime therefore gates the
+            // root-provisioned identity (no minting), but a raw seed batch
+            // planned against stale empty state could overwrite later catalog
+            // updates. The runtime therefore gates the
             // WaitForBootstrap→Initializing promotion behind the current-term
             // barrier (driver_applied().term == leader term ⇒ every committed
             // entry, including any earlier init, is applied locally ⇒ an
             // empty catalog PROVES nothing committed). The FSM provides the
-            // edge; the runtime provides the proof.
+            // edge; the runtime repeats the barrier before planning on ALL
+            // Initializing paths and binds append to that same leader term.
             (WaitForBootstrap { fp }, WonElection) => Initializing { fp },
             (Initializing { fp }, LostElection) => WaitForBootstrap { fp },
             (Initializing { .. }, MetadataInitialized { cluster_id }) => {

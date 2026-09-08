@@ -385,28 +385,34 @@ jobs:
             exit 1
           }
 
-      # The non-ignored guards in the same file run without a server: the stop line on minting
-      # `PreparedSst`, and the assertion that its failure message carries its own retirement
-      # instruction. Named separately so "the real suite failed" and "the stop line was
-      # crossed" cannot be confused for each other.
-      #
-      # Counted for the same reason as the suite above, and this one is easy to forget: these
-      # two are the tests that run WITHOUT a fixture, so nothing else would notice if they
-      # stopped being selected.
-      - name: Run the stop-line guards
+      - name: Run backend configuration guard
         run: |
-          set +e
-          output="$(cargo test -p kv9-engine --test minio_backend 2>&1)"
-          rc=$?
-          set -e
-          printf '%s\n' "$output"
-          [ "$rc" -eq 0 ] || exit "$rc"
-          printf '%s\n' "$output" \
-            | grep -q '^test result: ok\. 3 passed; 0 failed; 18 ignored;' || {
-            printf 'expected 3 passed / 0 failed / 18 ignored, got: %s\n' \
-              "$(printf '%s\n' "$output" | grep '^test result:')" >&2
-            exit 1
-          }
+          set -o pipefail
+          cargo test -p kv9-engine --test minio_backend 2>&1 | tee /tmp/minio-config.out
+          grep -q '^test result: ok\. 1 passed; 0 failed; 18 ignored;' /tmp/minio-config.out
+
+      - name: Run remote checkpoint recovery and corruption controls
+        run: |
+          set -o pipefail
+          cargo test -p kv9-engine --test minio_checkpoint -- --ignored --test-threads=1 2>&1 | tee /tmp/minio-checkpoint.out
+          grep -qx 'running 3 tests' /tmp/minio-checkpoint.out
+          grep -q '^test result: ok\. 3 passed; 0 failed; 0 ignored;' /tmp/minio-checkpoint.out
+
+      - name: Run distributed MinIO recovery acceptance
+        run: |
+          set -o pipefail
+          scripts/minio-kv-e2e.sh 2>&1 | tee /tmp/minio-kv-e2e.out
+          grep -Fxq 'PASS: minio-kv-e2e (3 replicas, failover, remote checkpoint, reclaimed WAL, live tail, deletes)' /tmp/minio-kv-e2e.out
+        env:
+          KV9_MINIO_EXTERNAL: "1"
+
+      - name: Run pending-flush crash recovery cuts
+        run: |
+          set -o pipefail
+          scripts/minio-pending-e2e.sh 2>&1 | tee /tmp/minio-pending-e2e.out
+          grep -Fxq 'PASS: minio-pending-e2e (durable prepare, applied-before-clear, historical settlement, resumed flush)' /tmp/minio-pending-e2e.out
+        env:
+          KV9_MINIO_EXTERNAL: "1"
 
       - name: MinIO logs
         if: failure()

@@ -12,9 +12,9 @@
 
 use std::sync::Arc;
 
-use kv9_engine::{ColumnFamily, Engine, MemEngine};
+use kv9_engine::{ColumnFamily, DurableAppliedPosition, MemEngine, ReplicatedEngine, WriteBatch};
 
-use kv9_common::Result;
+use kv9_common::{AppliedPosition, Result};
 
 use crate::command::Command;
 use crate::command::ManifestChangePayload;
@@ -51,57 +51,41 @@ use crate::{CommittedEntry, LogIndex};
 ///     let _ = e.snapshot();
 /// }
 /// ```
+/// Positioned writes are the only mutation capability:
+/// ```compile_fail,E0599
+/// fn bypass(store: &impl kv9_raft::ApplyStore) {
+///     store.write(kv9_engine::WriteBatch::new());
+/// }
+/// ```
+/// ```
+/// fn apply(store: &impl kv9_raft::ApplyStore) -> kv9_common::Result<()> {
+///     store.write_applied(kv9_engine::WriteBatch::new(), kv9_common::AppliedPosition { term: 1, index: 1 })
+/// }
+/// ```
 pub trait ApplyStore: Send + Sync {
     fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Vec<u8>>>;
-    fn write(&self, batch: kv9_engine::WriteBatch) -> Result<()>;
+    fn write_applied(&self, batch: WriteBatch, at: AppliedPosition) -> Result<()>;
+    fn applied_position(&self) -> Result<DurableAppliedPosition>;
 }
 
-impl<E: Engine> ApplyStore for E {
+impl<E: ReplicatedEngine> ApplyStore for E {
     fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Vec<u8>>> {
-        Engine::get(self, cf, key)
+        kv9_engine::Engine::get(self, cf, key)
     }
-
-    fn write(&self, batch: kv9_engine::WriteBatch) -> Result<()> {
-        Engine::write(self, batch)
+    fn write_applied(&self, batch: WriteBatch, at: AppliedPosition) -> Result<()> {
+        ReplicatedEngine::write_applied(self, batch, at)
+    }
+    fn applied_position(&self) -> Result<DurableAppliedPosition> {
+        ReplicatedEngine::applied_position(self)
     }
 }
-
-/// Engine key holding the durably applied watermark. The `0x00` first byte
-/// cannot collide with any `mode_byte`-encoded physical key (`'t'`/`'r'`/`'s'`),
-/// so catalog scans never see it.
-///
-/// # Why this stores INDEX ONLY, while `AppliedPosition` docs say index
-/// alone is never sufficient (asked by Ren before building the WAL reclaim
-/// predicate on it — the two statements answer DIFFERENT questions)
-///
-/// `ids.rs`'s warning is about PROPOSAL CORRELATION: a proposal's claimed
-/// index can be consumed by another leader's entry, because the claim is
-/// made before commit — deciding "is the entry at this position MINE"
-/// requires term+index, always.
-///
-/// This watermark never asks that question. It records how far the
-/// COMMITTED prefix has been applied, and raft's Log Matching + Leader
-/// Completeness make that prefix immutable: an entry that advanced this
-/// watermark was applied, hence committed, hence present at that index in
-/// every future log of every leader. Index reuse only ever happens to
-/// UNCOMMITTED suffixes — which were never applied and never advanced this
-/// value. So for prefix-coverage comparisons (restart replay skip here;
-/// the WAL segment reclaim predicate `max_applied_position <= watermark`,
-/// OBJECT-STORAGE §6.3) the index is a complete coordinate; the term
-/// component exists for receipts, not for coverage.
-///
-/// If a future change ever lets this watermark advance on an UNCOMMITTED
-/// entry, that change — not the key format — is the bug, and it breaks the
-/// argument above; the discriminator/driver apply loops only ever feed
-/// committed entries here.
-pub const APPLIED_INDEX_KEY: &[u8] = b"\x00kv9\x00applied_index";
 
 /// Engine key holding one region's authoritative manifest
 /// `(generation, last_change_id)` pair (task #9). ONE key on purpose:
 /// precondition P1 (atomic read) is structural at rest — a single get returns
 /// both fields from one applied snapshot, so a torn pair is unrepresentable
 /// in storage. The key prefix is module-PRIVATE and the only writer is the
-/// `ManifestChange` arm of `apply_command` (precondition P4: the pair is
+/// `ManifestChange` arm of `apply_at` (precondition P4: the pair is
 /// written only by one successful CAS, both fields together); readers go
 /// through [`MemStateMachine::manifest_pair`].
 fn manifest_pair_key(region: u64) -> Vec<u8> {
@@ -301,6 +285,8 @@ pub enum ManifestInvalidReason {
     /// The generation counter cannot advance (u64 exhausted) — typed and
     /// deterministic, never a wrap or a debug panic.
     GenerationExhausted,
+    StaleEpoch,
+    InvalidCheckpoint,
 }
 
 /// What applying one committed entry MEANT — one EXCLUSIVE outcome
@@ -408,7 +394,7 @@ pub trait StateMachine: Send + Sync {
 /// The catalog engine writes/read through the same engine, so a committed
 /// `Command::CatalogTxn` lands atomically here and is then visible to
 /// `kv9_meta::MetaStore` reads. Swapping `MemEngine` for the real disaggregated engine
-/// is Phase-2 and does not change this type's shape (it is generic over [`Engine`]).
+/// is Phase-2 and does not change this type's shape (it is generic over [`ApplyStore`]).
 pub struct MemStateMachine<E: ApplyStore = MemEngine> {
     engine: Arc<E>,
     applied: LogIndex,
@@ -440,7 +426,7 @@ impl<E: ApplyStore> MemStateMachine<E> {
     /// the raft apply loop observe the *same* KV).
     ///
     /// Recovers the durably applied watermark from the engine: data and
-    /// watermark are written in ONE atomic batch (see [`Self::apply_command`]),
+    /// watermark are written in ONE atomic batch (see [`Self::apply_at`]),
     /// so on a durable engine they are physically inseparable — a restarted
     /// node resumes from where its data actually is, instead of reporting 0
     /// over a full store (the "durable data, volatile watermark" mismatch).
@@ -450,17 +436,9 @@ impl<E: ApplyStore> MemStateMachine<E> {
     /// re-apply the whole log over unknown state (guessing is worse than
     /// stopping). A missing key is genuinely fresh and starts at 0.
     pub fn with_engine(engine: Arc<E>) -> Result<Self> {
-        let applied = match engine.get(ColumnFamily::Default, APPLIED_INDEX_KEY)? {
-            None => 0,
-            Some(v) => {
-                let bytes: [u8; 8] = v.try_into().map_err(|v: Vec<u8>| {
-                    kv9_common::Error::Engine(format!(
-                        "corrupt applied watermark: {} bytes (want 8)",
-                        v.len()
-                    ))
-                })?;
-                u64::from_be_bytes(bytes)
-            }
+        let applied = match engine.applied_position()? {
+            DurableAppliedPosition::Volatile | DurableAppliedPosition::AppliedNothing => 0,
+            DurableAppliedPosition::AppliedThrough(at) => at.index,
         };
         Ok(MemStateMachine {
             engine,
@@ -490,7 +468,8 @@ impl<E: ApplyStore> MemStateMachine<E> {
     /// correct instead of silently double-applying. The watermark rides in the
     /// SAME atomic batch as the data (cross-CF batch atomicity is the engine's
     /// contract), so the two cannot diverge on disk.
-    pub fn apply_command(&mut self, index: LogIndex, cmd: &Command) -> Result<ApplyResult> {
+    pub fn apply_at(&mut self, at: AppliedPosition, cmd: &Command) -> Result<ApplyResult> {
+        let index = LogIndex(at.index);
         if index <= self.applied {
             return Ok(ApplyResult::write_ok(index));
         }
@@ -542,7 +521,37 @@ impl<E: ApplyStore> MemStateMachine<E> {
             // identity previously reached the Applied arm on a virgin
             // region, and a self-reported watermark at/beyond this entry's
             // own position previously persisted.
-            let verdict = if change_id.is_empty() {
+            let checkpoint_error =
+                if kv9_engine::checkpoint::CheckpointManifest::is_checkpoint(changeset) {
+                    let checkpoint = kv9_engine::checkpoint::CheckpointManifest::decode(changeset)?;
+                    if checkpoint.scope.region != *region
+                        || checkpoint.term != *watermark_term
+                        || checkpoint.index != *watermark_index
+                        || checkpoint.change_id(*expected_generation)? != *change_id
+                    {
+                        Some(ManifestInvalidReason::InvalidCheckpoint)
+                    } else {
+                        let adjudicator = self.adjudicator.as_ref().ok_or_else(|| {
+                            kv9_common::Error::Raft(
+                                "checkpoint apply requires epoch adjudicator".into(),
+                            )
+                        })?;
+                        let fresh = adjudicator.is_fresh(&crate::RegionFence {
+                            region_id: *region,
+                            conf_ver: checkpoint.scope.conf_ver,
+                            version: checkpoint.scope.version,
+                        })?;
+                        (!fresh).then_some(ManifestInvalidReason::StaleEpoch)
+                    }
+                } else {
+                    None
+                };
+            let verdict = if let Some(reason) = checkpoint_error {
+                ManifestVerdict::Invalid {
+                    region: region_id,
+                    reason,
+                }
+            } else if change_id.is_empty() {
                 ManifestVerdict::Invalid {
                     region: region_id,
                     reason: ManifestInvalidReason::EmptyChangeId,
@@ -604,16 +613,11 @@ impl<E: ApplyStore> MemStateMachine<E> {
                     current_generation: current.generation,
                 }
             };
-            batch.put(
-                ColumnFamily::Default,
-                APPLIED_INDEX_KEY.to_vec(),
-                index.0.to_be_bytes().to_vec(),
-            );
-            self.engine.write(batch)?;
+            self.engine.write_applied(batch, at)?;
             self.applied = index;
             return Ok(ApplyResult::manifest(index, verdict));
         }
-        let (mut batch, fence_rejected): (_, Option<kv9_common::RegionId>) = match cmd {
+        let (batch, fence_rejected): (_, Option<kv9_common::RegionId>) = match cmd {
             Command::Fenced { fence, inner } => {
                 let adjudicator = self.adjudicator.as_ref().ok_or_else(|| {
                     kv9_common::Error::Raft(
@@ -638,12 +642,7 @@ impl<E: ApplyStore> MemStateMachine<E> {
             }
             _ => (cmd.to_write_batch()?, None),
         };
-        batch.put(
-            ColumnFamily::Default,
-            APPLIED_INDEX_KEY.to_vec(),
-            index.0.to_be_bytes().to_vec(),
-        );
-        self.engine.write(batch)?;
+        self.engine.write_applied(batch, at)?;
         self.applied = index;
         if let Some(region) = fence_rejected {
             Ok(ApplyResult::fence_rejected(index, region))
@@ -673,6 +672,57 @@ impl<E: ApplyStore> MemStateMachine<E> {
                 last_change_id: Vec::new(),
             }),
         }
+    }
+
+    /// Positive-only add-only reconciliation. Historical generations retain
+    /// every reference; absence never establishes that a proposal did not apply.
+    pub fn manifest_effect(&self, region: u64, intended: &[u8]) -> Result<bool> {
+        if !kv9_engine::checkpoint::CheckpointManifest::is_checkpoint(intended) {
+            return Ok(false);
+        }
+        let intended = kv9_engine::checkpoint::CheckpointManifest::decode(intended)?;
+        let pair = self.manifest_pair(region)?;
+        for generation in (1..=pair.generation).rev() {
+            if let Some((_, _, bytes)) = self.manifest_at(region, generation)? {
+                if kv9_engine::checkpoint::CheckpointManifest::is_checkpoint(&bytes)
+                    && kv9_engine::checkpoint::CheckpointManifest::decode(&bytes)?
+                        .covers_effect(&intended)
+                {
+                    return Ok(true);
+                }
+            }
+        }
+        Ok(false)
+    }
+
+    /// Recover the exact winner of a retained canonical checkpoint transition.
+    /// This is positive historical evidence, not an inference from the latest
+    /// pair or from absent SST references. Legacy opaque changesets supply none.
+    pub fn manifest_transition(
+        &self,
+        region: u64,
+        generation: u64,
+    ) -> Result<Option<ManifestPair>> {
+        let Some(predecessor) = generation.checked_sub(1) else {
+            return Ok(None);
+        };
+        let Some((term, index, bytes)) = self.manifest_at(region, generation)? else {
+            return Ok(None);
+        };
+        if !kv9_engine::checkpoint::CheckpointManifest::is_checkpoint(&bytes) {
+            return Ok(None);
+        }
+        let checkpoint = kv9_engine::checkpoint::CheckpointManifest::decode(&bytes)?;
+        if checkpoint.scope.region != region || checkpoint.term != term || checkpoint.index != index
+        {
+            return Err(kv9_common::Error::Raft(
+                "historical checkpoint binding mismatch".into(),
+            ));
+        }
+        Ok(Some(ManifestPair {
+            generation,
+            last_change_id: checkpoint.change_id(predecessor)?,
+        }))
     }
 
     /// The changeset installed at one region generation, with its replicated
@@ -705,7 +755,13 @@ impl<E: ApplyStore> StateMachine for MemStateMachine<E> {
         // Phase-1: the committed entry carries opaque bytes; decode to a Command, then
         // apply its write batch.
         let cmd = Command::decode(&entry.data)?;
-        self.apply_command(entry.index, &cmd)
+        self.apply_at(
+            AppliedPosition {
+                term: entry.term,
+                index: entry.index.0,
+            },
+            &cmd,
+        )
     }
 
     fn applied_index(&self) -> LogIndex {
@@ -746,6 +802,7 @@ mod tests {
     use super::*;
     use crate::{RaftGroup, ReadyConsume, SingleNodeRaft};
     use kv9_common::{NodeId, RegionId};
+    use kv9_engine::Engine;
 
     fn manifest_cmd(region: u64, id: &[u8], expected: u64, idx: u64) -> (LogIndex, Command) {
         (
@@ -764,10 +821,149 @@ mod tests {
     }
 
     fn verdict(sm: &mut MemStateMachine, at: LogIndex, cmd: &Command) -> ManifestVerdict {
-        match sm.apply_command(at, cmd).unwrap().outcome {
+        match sm
+            .apply_at(
+                AppliedPosition {
+                    term: 1,
+                    index: at.0,
+                },
+                cmd,
+            )
+            .unwrap()
+            .outcome
+        {
             ApplyOutcome::Manifest(v) => v,
             other => panic!("a manifest change must carry a manifest verdict, got {other:?}"),
         }
+    }
+
+    fn checkpoint_fixture(index: u64) -> kv9_engine::checkpoint::CheckpointManifest {
+        use kv9_engine::checkpoint::{CheckpointManifest, FlushScope, SstReference};
+        let hash = "0".repeat(64);
+        CheckpointManifest {
+            scope: FlushScope {
+                cluster: "test".into(),
+                region: 9,
+                conf_ver: 1,
+                version: 1,
+            },
+            term: 1,
+            index,
+            files: vec![SstReference {
+                key: format!("clusters/test/regions/9/sst/{hash}"),
+                sha256: hash,
+                cf: 0,
+                smallest: b"a".to_vec(),
+                largest: b"z".to_vec(),
+                size: 100,
+                count: 2,
+            }],
+        }
+    }
+
+    fn checkpoint_command(
+        m: &kv9_engine::checkpoint::CheckpointManifest,
+        generation: u64,
+    ) -> Command {
+        Command::ManifestChange(ManifestChangePayload::for_harness(
+            9,
+            m.change_id(generation).unwrap(),
+            generation,
+            m.encode().unwrap(),
+            m.term,
+            m.index,
+        ))
+    }
+
+    #[test]
+    fn checkpoint_requires_canonical_identity_and_current_epoch_in_ordered_apply() {
+        let m = checkpoint_fixture(10);
+        let mut sm = MemStateMachine::new();
+        sm.set_fence_adjudicator(Arc::new(Verdict(true)));
+        let mut bad = checkpoint_command(&m, 0);
+        if let Command::ManifestChange(p) = &mut bad {
+            p.change_id[0] ^= 1;
+        }
+        assert!(matches!(
+            verdict(&mut sm, LogIndex(11), &bad),
+            ManifestVerdict::Invalid {
+                reason: ManifestInvalidReason::InvalidCheckpoint,
+                ..
+            }
+        ));
+        assert_eq!(sm.manifest_pair(9).unwrap().generation, 0);
+        sm.set_fence_adjudicator(Arc::new(Verdict(false)));
+        assert!(matches!(
+            verdict(&mut sm, LogIndex(12), &checkpoint_command(&m, 0)),
+            ManifestVerdict::Invalid {
+                reason: ManifestInvalidReason::StaleEpoch,
+                ..
+            }
+        ));
+        assert_eq!(sm.manifest_pair(9).unwrap().generation, 0);
+        sm.set_fence_adjudicator(Arc::new(Verdict(true)));
+        assert!(matches!(
+            verdict(&mut sm, LogIndex(13), &checkpoint_command(&m, 0)),
+            ManifestVerdict::Applied { generation: 1, .. }
+        ));
+    }
+
+    #[test]
+    fn checkpoint_effect_query_retains_positive_history_without_inferring_absence() {
+        let m = checkpoint_fixture(10);
+        let mut sm = MemStateMachine::new();
+        sm.set_fence_adjudicator(Arc::new(Verdict(true)));
+        assert!(!sm.manifest_effect(9, &m.encode().unwrap()).unwrap());
+        verdict(&mut sm, LogIndex(11), &checkpoint_command(&m, 0));
+        let mut later = checkpoint_fixture(12);
+        later.files[0].sha256 = "1".repeat(64);
+        later.files[0].key = format!("clusters/test/regions/9/sst/{}", later.files[0].sha256);
+        verdict(&mut sm, LogIndex(13), &checkpoint_command(&later, 1));
+        assert!(
+            sm.manifest_effect(9, &m.encode().unwrap()).unwrap(),
+            "a newer pair must not erase an older installed effect"
+        );
+        let mut absent = m.clone();
+        absent.scope.version += 1;
+        assert!(
+            !sm.manifest_effect(9, &absent.encode().unwrap()).unwrap(),
+            "no match supplies no negative verdict"
+        );
+    }
+
+    #[test]
+    fn retained_checkpoint_transition_names_the_actual_winner_past_the_latest_pair() {
+        let first = checkpoint_fixture(10);
+        let mut sm = MemStateMachine::new();
+        sm.set_fence_adjudicator(Arc::new(Verdict(true)));
+        assert!(sm.manifest_transition(9, 1).unwrap().is_none());
+        verdict(&mut sm, LogIndex(11), &checkpoint_command(&first, 0));
+        verdict(
+            &mut sm,
+            LogIndex(13),
+            &checkpoint_command(&checkpoint_fixture(12), 1),
+        );
+        verdict(
+            &mut sm,
+            LogIndex(15),
+            &checkpoint_command(&checkpoint_fixture(14), 2),
+        );
+        assert_eq!(sm.manifest_pair(9).unwrap().generation, 3);
+        let history = sm.manifest_transition(9, 1).unwrap().unwrap();
+        assert_eq!(history.generation, 1);
+        assert_eq!(history.last_change_id, first.change_id(0).unwrap());
+        assert!(matches!(
+            classify_reconciliation(&history, 0, &first.change_id(0).unwrap()),
+            ReconcileObservation::MyChangeApplied { generation: 1 }
+        ));
+        assert!(matches!(
+            classify_reconciliation(&history, 0, b"different"),
+            ReconcileObservation::KnownNotApplied { .. }
+        ));
+        assert!(
+            sm.manifest_transition(9, 4).unwrap().is_none(),
+            "future transition absence must supply no proof"
+        );
     }
 
     /// Task #9 discriminator row 1: a matching CAS applies, advances the pair
@@ -1122,125 +1318,213 @@ mod tests {
         );
     }
 
-    /// The applied watermark rides in the same batch as the data: a state
-    /// machine re-created over the SAME engine resumes at the durable
-    /// watermark instead of 0 (the durable-data/volatile-watermark mismatch).
-    #[test]
-    fn applied_watermark_recovers_with_the_engine() {
-        let engine = Arc::new(MemEngine::new());
-        let mut sm = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
-        let cmd = Command::Put {
+    fn at(term: u64, index: u64) -> AppliedPosition {
+        AppliedPosition { term, index }
+    }
+
+    fn put(key: &[u8], value: &[u8]) -> Command {
+        Command::Put {
             cf: 0,
-            key: b"k".to_vec(),
-            value: b"v1".to_vec(),
-        };
-        sm.apply_command(LogIndex(3), &cmd).unwrap();
+            key: key.to_vec(),
+            value: value.to_vec(),
+        }
+    }
+
+    /// A stand-in [`ApplyStore`] whose position SURVIVES state-machine
+    /// re-creation over the same `Arc` — what a durable engine's recovery hands
+    /// back. `MemEngine` honestly reports `Volatile` (its data dies with the
+    /// process), so recovery-semantics tests need a double that plays the
+    /// durable side of the seam. It enforces the seam's strictly-greater rule
+    /// the way the real engines do, so the refusal path is exercised against
+    /// the same contract shape.
+    struct SeamStub {
+        data: MemEngine,
+        /// The truth (used for ordering enforcement even when reporting
+        /// `Volatile` — a volatile engine still refuses out-of-order writes;
+        /// it just never CLAIMS a position across a restart).
+        pos: std::sync::Mutex<Option<AppliedPosition>>,
+        durable: bool,
+        fail_position_reads: bool,
+    }
+
+    impl SeamStub {
+        fn durable() -> Arc<Self> {
+            Arc::new(SeamStub {
+                data: MemEngine::new(),
+                pos: std::sync::Mutex::new(None),
+                durable: true,
+                fail_position_reads: false,
+            })
+        }
+
+        fn volatile() -> Arc<Self> {
+            Arc::new(SeamStub {
+                data: MemEngine::new(),
+                pos: std::sync::Mutex::new(None),
+                durable: false,
+                fail_position_reads: false,
+            })
+        }
+
+        fn broken() -> Arc<Self> {
+            Arc::new(SeamStub {
+                data: MemEngine::new(),
+                pos: std::sync::Mutex::new(None),
+                durable: true,
+                fail_position_reads: true,
+            })
+        }
+    }
+
+    impl ApplyStore for SeamStub {
+        fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Vec<u8>>> {
+            kv9_engine::Engine::get(&self.data, cf, key)
+        }
+
+        fn write_applied(&self, batch: WriteBatch, at: AppliedPosition) -> Result<()> {
+            let mut pos = self.pos.lock().unwrap();
+            if let Some(p) = *pos {
+                if at.index <= p.index {
+                    return Err(kv9_common::Error::Engine(format!(
+                        "non-advancing applied position: index {} after {}",
+                        at.index, p.index
+                    )));
+                }
+            }
+            self.data.write(batch)?;
+            *pos = Some(at);
+            Ok(())
+        }
+
+        fn applied_position(&self) -> Result<DurableAppliedPosition> {
+            if self.fail_position_reads {
+                return Err(kv9_common::Error::Engine(
+                    "durable position unreadable".into(),
+                ));
+            }
+            if !self.durable {
+                return Ok(DurableAppliedPosition::Volatile);
+            }
+            Ok(match *self.pos.lock().unwrap() {
+                None => DurableAppliedPosition::AppliedNothing,
+                Some(p) => DurableAppliedPosition::AppliedThrough(p),
+            })
+        }
+    }
+
+    /// Data and position land in one `write_applied`: a state machine
+    /// re-created over the SAME engine resumes at the durable position instead
+    /// of 0 (the durable-data/volatile-watermark mismatch), and the recorded
+    /// position is the exact `(term, index)` PAIR — not the index dressed up.
+    #[test]
+    fn applied_position_recovers_with_the_engine() {
+        let engine = SeamStub::durable();
+        let mut sm = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
+        sm.apply_at(at(7, 3), &put(b"k", b"v1")).unwrap();
+        assert_eq!(
+            engine.applied_position().unwrap(),
+            DurableAppliedPosition::AppliedThrough(at(7, 3)),
+            "the engine must hold the exact pair, term included"
+        );
         drop(sm);
 
         let sm2 = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
         assert_eq!(sm2.applied_index(), LogIndex(3));
-        // Control (sensitivity): a fresh engine reports 0 — recovery reads
-        // real state, not a constant.
-        let fresh = MemStateMachine::with_engine(Arc::new(MemEngine::new())).unwrap();
+        // Control (sensitivity): a fresh engine reports AppliedNothing and the
+        // state machine starts at 0 — recovery reads real state, not a constant.
+        let fresh = MemStateMachine::with_engine(SeamStub::durable()).unwrap();
         assert_eq!(fresh.applied_index(), LogIndex(0));
     }
 
-    /// A corrupt watermark value refuses to open (typed error) — never
-    /// silently coerces to 0 and replays the log over unknown state.
+    /// An engine that cannot READ its durable position refuses to open (typed
+    /// error) — never silently coerces to 0 and replays the log over unknown
+    /// state. (A MALFORMED durable position is the engine's own typed refusal
+    /// inside `applied_position` — same surface, task #16's witnesses.)
     #[test]
-    fn corrupt_watermark_refuses_to_open() {
-        let engine = Arc::new(MemEngine::new());
-        let mut batch = kv9_engine::WriteBatch::new();
-        batch.put(
-            ColumnFamily::Default,
-            APPLIED_INDEX_KEY.to_vec(),
-            vec![1, 2, 3], // wrong width
+    fn position_read_failure_refuses_to_open() {
+        let err = match MemStateMachine::with_engine(SeamStub::broken()) {
+            Err(e) => e,
+            Ok(_) => panic!("an unreadable durable position must refuse to open"),
+        };
+        assert!(
+            err.to_string().contains("durable position unreadable"),
+            "the engine's own error must survive recognizably: {err}"
         );
-        Engine::write(engine.as_ref(), batch).unwrap();
-        assert!(MemStateMachine::with_engine(Arc::clone(&engine)).is_err());
-        // Control: a valid 8-byte watermark opens fine.
-        let mut batch = kv9_engine::WriteBatch::new();
-        batch.put(
-            ColumnFamily::Default,
-            APPLIED_INDEX_KEY.to_vec(),
-            9u64.to_be_bytes().to_vec(),
-        );
-        Engine::write(engine.as_ref(), batch).unwrap();
+        // Control: the same stub shape with a readable position opens fine.
+        assert!(MemStateMachine::with_engine(SeamStub::durable()).is_ok());
+    }
+
+    /// A volatile engine reports `Volatile` — a positive statement that NO
+    /// durable claim exists — so a re-created state machine starts at 0. And if
+    /// that happens over a still-warm engine in the same process, the replay
+    /// from 0 hits the engine's ordering refusal LOUDLY instead of rewriting
+    /// applied data: the refusal propagates as an apply error (the driver's
+    /// poison), never as a verdict.
+    #[test]
+    fn volatile_recovery_starts_at_zero_and_cannot_silently_rewrite() {
+        let engine = SeamStub::volatile();
+        let mut sm = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
+        sm.apply_at(at(1, 1), &put(b"k", b"v1")).unwrap();
+        drop(sm);
+
+        let mut sm2 = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
         assert_eq!(
-            MemStateMachine::with_engine(engine)
-                .unwrap()
-                .applied_index(),
-            LogIndex(9)
+            sm2.applied_index(),
+            LogIndex(0),
+            "Volatile yields no number to resume from"
+        );
+        let err = sm2
+            .apply_at(at(1, 1), &put(b"k", b"REWRITTEN"))
+            .expect_err("replay into a warm engine must surface the ordering refusal");
+        assert!(
+            err.to_string().contains("non-advancing"),
+            "the engine's refusal must propagate recognizably: {err}"
+        );
+        assert_eq!(
+            engine.get(ColumnFamily::Default, b"k").unwrap(),
+            Some(b"v1".to_vec()),
+            "the refused write must not have touched data"
         );
     }
 
-    /// Commands with NO data mutations (Noop) must still advance the durable
-    /// watermark — otherwise a restart regresses it and re-delivers entries
-    /// the group considers applied.
+    /// Commands with NO data mutations (Noop) still advance the durable
+    /// position — a position-only record — otherwise a restart regresses it
+    /// and re-delivers entries the group considers applied.
     #[test]
-    fn empty_batch_commands_persist_the_watermark() {
-        let engine = Arc::new(MemEngine::new());
+    fn empty_batch_commands_persist_the_position() {
+        let engine = SeamStub::durable();
         let mut sm = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
-        sm.apply_command(
-            LogIndex(1),
-            &Command::Put {
-                cf: 0,
-                key: b"k".to_vec(),
-                value: b"v".to_vec(),
-            },
-        )
-        .unwrap();
-        sm.apply_command(LogIndex(2), &Command::Noop).unwrap();
+        sm.apply_at(at(1, 1), &put(b"k", b"v")).unwrap();
+        sm.apply_at(at(1, 2), &Command::Noop).unwrap();
         drop(sm);
-        // Restart: the watermark reflects the Noop, not just the last data write.
+        // Restart: the position reflects the Noop, not just the last data write.
         let sm2 = MemStateMachine::with_engine(engine).unwrap();
         assert_eq!(sm2.applied_index(), LogIndex(2));
     }
 
-    /// Redelivery at or below the watermark is skipped — replay after restart
-    /// cannot double-apply. Sensitivity: the skipped command carries a
-    /// DIFFERENT value; if it were re-applied the assertion would see it.
+    /// Redelivery at or below the recovered skip state is skipped BEFORE the
+    /// engine sees it — replay after restart cannot double-apply. Sensitivity:
+    /// the skipped command carries a DIFFERENT value; if it were re-applied
+    /// the assertion would see it.
     #[test]
-    fn replayed_entries_below_watermark_are_skipped() {
-        let engine = Arc::new(MemEngine::new());
+    fn replayed_entries_below_the_skip_state_are_skipped() {
+        let engine = SeamStub::durable();
         let mut sm = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
-        sm.apply_command(
-            LogIndex(5),
-            &Command::Put {
-                cf: 0,
-                key: b"k".to_vec(),
-                value: b"original".to_vec(),
-            },
-        )
-        .unwrap();
+        sm.apply_at(at(1, 5), &put(b"k", b"original")).unwrap();
 
         // Restarted state machine over the same engine replays the log; a
-        // conflicting rewrite of index 5 must be ignored.
+        // redelivery of index 5 must be ignored (and must NOT reach the
+        // engine's ordering check — skip is the state machine's job).
         let mut sm2 = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
-        sm2.apply_command(
-            LogIndex(5),
-            &Command::Put {
-                cf: 0,
-                key: b"k".to_vec(),
-                value: b"DOUBLE-APPLIED".to_vec(),
-            },
-        )
-        .unwrap();
+        sm2.apply_at(at(1, 5), &put(b"k", b"DOUBLE-APPLIED"))
+            .unwrap();
         assert_eq!(
             sm2.get(ColumnFamily::Default, b"k").unwrap(),
             Some(b"original".to_vec()),
-            "entries at/below the watermark must not re-apply"
+            "entries at/below the skip state must not re-apply"
         );
         // …while a NEW index applies normally (a watermark, not a wall).
-        sm2.apply_command(
-            LogIndex(6),
-            &Command::Put {
-                cf: 0,
-                key: b"k".to_vec(),
-                value: b"next".to_vec(),
-            },
-        )
-        .unwrap();
+        sm2.apply_at(at(1, 6), &put(b"k", b"next")).unwrap();
         assert_eq!(
             sm2.get(ColumnFamily::Default, b"k").unwrap(),
             Some(b"next".to_vec())
@@ -1285,7 +1569,7 @@ mod tests {
             key: b"k".to_vec(),
             value: b"v".to_vec(),
         };
-        sm.apply_command(index, &cmd).unwrap();
+        sm.apply_at(at(1, index.0), &cmd).unwrap();
 
         assert_eq!(sm.applied_index(), index);
         assert_eq!(
@@ -1336,12 +1620,12 @@ mod tests {
     /// assertions, the stall symptom Ren predicted.
     #[test]
     fn a_rejected_fence_advances_the_watermark_and_writes_nothing() {
-        let engine = Arc::new(MemEngine::new());
+        let engine = SeamStub::durable();
         let mut sm = MemStateMachine::with_engine(Arc::clone(&engine)).unwrap();
         sm.set_fence_adjudicator(Arc::new(Verdict(false)));
 
         let result = sm
-            .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
+            .apply_at(at(1, 1), &fenced_put(b"k", b"v"))
             .expect("a rejected fence is a logical outcome, never an apply error");
         assert_eq!(
             result.outcome,
@@ -1374,9 +1658,7 @@ mod tests {
     fn a_fresh_fence_applies_the_inner_ops() {
         let mut sm = MemStateMachine::new();
         sm.set_fence_adjudicator(Arc::new(Verdict(true)));
-        let result = sm
-            .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
-            .unwrap();
+        let result = sm.apply_at(at(1, 1), &fenced_put(b"k", b"v")).unwrap();
         assert_eq!(result.outcome, ApplyOutcome::Plain);
         assert_eq!(
             sm.get(ColumnFamily::Default, b"k").unwrap(),
@@ -1396,7 +1678,7 @@ mod tests {
     fn without_an_adjudicator_a_fence_is_a_typed_apply_error() {
         let mut sm = MemStateMachine::new();
         let err = sm
-            .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
+            .apply_at(at(1, 1), &fenced_put(b"k", b"v"))
             .expect_err("a node without an adjudicator must refuse, not guess");
         assert!(
             err.to_string().contains("no fence adjudicator"),
@@ -1418,7 +1700,7 @@ mod tests {
         let mut sm = MemStateMachine::new();
         sm.set_fence_adjudicator(Arc::new(ReadFails));
         let err = sm
-            .apply_command(LogIndex(1), &fenced_put(b"k", b"v"))
+            .apply_at(at(1, 1), &fenced_put(b"k", b"v"))
             .expect_err("a failed authoritative read must propagate, not become a verdict");
         assert!(
             err.to_string().contains("authoritative epoch read failed"),
@@ -1438,7 +1720,7 @@ mod tests {
     fn a_failed_adjudicator_read_consumes_nothing() {
         let mut sm = MemStateMachine::new();
         sm.set_fence_adjudicator(Arc::new(ReadFails));
-        let _ = sm.apply_command(LogIndex(1), &fenced_put(b"k", b"v"));
+        let _ = sm.apply_at(at(1, 1), &fenced_put(b"k", b"v"));
         assert_eq!(
             sm.get(ColumnFamily::Default, b"k").unwrap(),
             None,

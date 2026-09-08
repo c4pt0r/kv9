@@ -20,7 +20,7 @@ use kv9_common::{
     RootDescriptor, RootDigest, SeedPeer, StoreIdentity, StoreIncarnation, TenantId, TxnGroupId,
     UserKey, Value, META_REGION_0,
 };
-use kv9_engine::{Engine, ReadView, WalEngine};
+use kv9_engine::{Engine, ReadView, ReplicatedEngine, WalEngine};
 use kv9_meta::admission::INVALID_JOIN_TICKET_MESSAGE;
 use kv9_meta::bootstrap::{init_marker_exists, write_init_marker};
 use kv9_meta::codec::memcmp_uint;
@@ -604,7 +604,10 @@ impl CatchupCapability {
     }
 }
 
-struct ClusterAuthenticator<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::Engine> {
+struct ClusterAuthenticator<
+    S: kv9_raft::rawnode::PersistentRaftStorage,
+    E: kv9_engine::ReplicatedEngine,
+> {
     expected_token: Arc<str>,
     voters: Arc<HashSet<NodeId>>,
     node: Arc<Node<E>>,
@@ -616,8 +619,8 @@ struct ClusterAuthenticator<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_
     catchup: Arc<std::sync::Mutex<Option<CatchupCapability>>>,
 }
 
-impl<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::Engine + 'static> Authenticator
-    for ClusterAuthenticator<S, E>
+impl<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::ReplicatedEngine + 'static>
+    Authenticator for ClusterAuthenticator<S, E>
 {
     fn authenticate(&self, metadata: &MetadataMap) -> std::result::Result<AuthContext, Status> {
         let token = metadata
@@ -777,8 +780,24 @@ impl RuntimeBackend {
         }
     }
 
-    fn commit_catalog(&self, command: &kv9_raft::Command) -> Result<AppliedPosition> {
-        propose_and_wait(&self.driver, command, Duration::from_secs(10))
+    /// Called while holding the catalog mutex, BEFORE reading or allocating.
+    /// An ordered command barrier drains earlier ambiguous proposals as well as
+    /// committed apply lag. ReadIndex alone does not drain an uncommitted suffix.
+    fn prepare_catalog(&self) -> Result<u64> {
+        Ok(propose_and_wait(
+            &self.driver,
+            &kv9_raft::Command::Noop,
+            Duration::from_secs(10),
+        )?
+        .term)
+    }
+
+    fn commit_catalog(&self, command: &kv9_raft::Command, term: u64) -> Result<AppliedPosition> {
+        propose_and_wait_loop(
+            || self.driver.propose_in_term(command, term),
+            |at, remaining| self.driver.wait_applied(at, remaining),
+            Duration::from_secs(10),
+        )
     }
 }
 
@@ -800,7 +819,7 @@ fn propose_and_wait<S, E>(
 ) -> Result<AppliedPosition>
 where
     S: kv9_raft::rawnode::PersistentRaftStorage,
-    E: kv9_engine::Engine + 'static,
+    E: kv9_engine::ReplicatedEngine + 'static,
 {
     // The control loop is the scriptable core below; this wrapper binds it to
     // the real driver. Command reuse across re-proposals is BY CONSTRUCTION:
@@ -879,10 +898,11 @@ impl AdminApi for RuntimeBackend {
     ) -> Result<CreateKeyspaceResult> {
         self.ensure_serving()?;
         let _guard = self.node.meta_raft.lock_catalog_txn();
+        let planning_term = self.prepare_catalog()?;
         let (keyspace, command) = self
             .node
             .build_create_keyspace_command(name, tenant, api_type)?;
-        let applied = propose_and_wait(&self.driver, &command, Duration::from_secs(10))?;
+        let applied = self.commit_catalog(&command, planning_term)?;
         Ok(CreateKeyspaceResult {
             keyspace,
             proposed: Some(applied),
@@ -891,11 +911,13 @@ impl AdminApi for RuntimeBackend {
 
     fn list_keyspaces(&self, caller: &str) -> Result<Vec<kv9_common::Keyspace>> {
         self.ensure_serving()?;
+        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
         self.node.list_keyspaces(caller)
     }
 
     fn get_region(&self, caller: &str, keyspace: KeyspaceId, key: &[u8]) -> Result<RegionLocation> {
         self.ensure_serving()?;
+        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
         self.node.get_region(caller, keyspace, key)
     }
 
@@ -906,6 +928,7 @@ impl AdminApi for RuntimeBackend {
 
     fn cluster_info(&self, caller: &str) -> Result<ClusterInfo> {
         self.ensure_serving()?;
+        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
         self.node.cluster_info(caller)
     }
 
@@ -931,6 +954,7 @@ impl AdminApi for RuntimeBackend {
         let ticket = format!("{}{}", StoreIncarnation::mint()?, StoreIncarnation::mint()?);
         let ticket_sha256 = kv9_common::RootDigest::sha256(ticket.as_bytes());
         let _guard = self.node.meta_raft.lock_catalog_txn();
+        let planning_term = self.prepare_catalog()?;
         let mut txn = self.node.meta_raft.store.begin()?;
         kv9_meta::admission::admit_node_with_ticket_hash(
             &mut txn,
@@ -940,7 +964,10 @@ impl AdminApi for RuntimeBackend {
             ticket_sha256.as_bytes(),
             expires,
         )?;
-        let applied = self.commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()))?;
+        let applied = self.commit_catalog(
+            &kv9_raft::Command::from_batch(&txn.into_batch()),
+            planning_term,
+        )?;
         let status = self.driver.status();
         Ok(MembershipChangeResult {
             applied,
@@ -1024,7 +1051,7 @@ fn bootstrap_takeover_proven<S, E>(
 ) -> Result<bool>
 where
     S: kv9_raft::rawnode::PersistentRaftStorage,
-    E: kv9_engine::Engine + 'static,
+    E: kv9_engine::ReplicatedEngine + 'static,
 {
     let before = driver.status();
     if before.role != Role::Leader {
@@ -1090,6 +1117,7 @@ impl RegistrationBackend for RuntimeBackend {
         // later ConfChange loses leadership, a retry recognizes this durable
         // intermediate state and completes instead of wedging on "consumed".
         let _catalog_guard = self.node.meta_raft.lock_catalog_txn();
+        let planning_term = self.prepare_catalog().map_err(RegistrationError::Failed)?;
         let existing = {
             let txn = self
                 .node
@@ -1168,8 +1196,11 @@ impl RegistrationBackend for RuntimeBackend {
                     )
                     .map_err(RegistrationError::Failed)?;
                 }
-                self.commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()))
-                    .map_err(RegistrationError::Failed)?;
+                self.commit_catalog(
+                    &kv9_raft::Command::from_batch(&txn.into_batch()),
+                    planning_term,
+                )
+                .map_err(RegistrationError::Failed)?;
             }
             Some(_) => {
                 return Err(RegistrationError::Failed(Error::Config(
@@ -1214,7 +1245,10 @@ impl RegistrationBackend for RuntimeBackend {
         )
         .map_err(RegistrationError::Failed)?;
         let applied = self
-            .commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()))
+            .commit_catalog(
+                &kv9_raft::Command::from_batch(&txn.into_batch()),
+                planning_term,
+            )
             .map_err(RegistrationError::Failed)?;
         let status = self.driver.status();
         Ok(RegistrationReceipt {
@@ -2009,6 +2043,7 @@ pub struct NodeRuntime {
     transport: Arc<GrpcTransport>,
     discovery: Arc<RuntimeDiscovery>,
     driver_thread: Option<std::thread::JoinHandle<()>>,
+    remote_storage: Option<crate::remote_storage::RemoteStorage>,
     grpc_runtime: tokio::runtime::Runtime,
     grpc_shutdown: Option<tokio::sync::oneshot::Sender<()>>,
     grpc_server: Option<tokio::task::JoinHandle<std::result::Result<(), tonic::transport::Error>>>,
@@ -2136,9 +2171,54 @@ impl NodeRuntime {
         );
         let voter_ids: Vec<u64> = voters.iter().map(|node| node.0).collect();
         let (storage, was_pristine) = DiskRaftStorage::open(&data_dir.join("raft"), &voter_ids)?;
+        let remote = crate::remote_storage::prepare_remote(
+            &data_dir,
+            root.cluster_id.to_string(),
+            &storage,
+        )?;
+        let checkpoint_path = data_dir.join("catalog.checkpoint");
+        if checkpoint_path.exists() {
+            let bytes = std::fs::read(&checkpoint_path)
+                .map_err(|e| Error::Engine(format!("read checkpoint: {e}")))?;
+            let checkpoint = kv9_engine::checkpoint::CheckpointManifest::decode(&bytes)?;
+            if checkpoint.scope.cluster != root.cluster_id.to_string()
+                || checkpoint.scope.region != META_REGION_0.0
+                || !storage.has_committed_checkpoint(&bytes)?
+            {
+                return Err(Error::Engine(
+                    "checkpoint is not certified by this cluster's committed Raft log".into(),
+                ));
+            }
+        }
+        let (engine, replay) = WalEngine::open_with_uploader(
+            data_dir.join("catalog.wal"),
+            remote.as_ref().map(|config| config.uploader.as_ref()),
+        )?;
+        // Upgrade the old in-band index exactly once, using the durable Raft log
+        // for its term. Atomically rewrite legacy state into ONE v2 record.
+        let legacy_key = b"\x00kv9\x00applied_index";
+        if let Some(bytes) = engine.get(kv9_engine::ColumnFamily::Default, legacy_key)? {
+            if engine.applied_position()? != kv9_engine::DurableAppliedPosition::AppliedNothing {
+                return Err(Error::Engine(
+                    "legacy applied marker coexists with a positioned WAL".into(),
+                ));
+            }
+            let index = u64::from_be_bytes(
+                bytes
+                    .try_into()
+                    .map_err(|_| Error::Engine("invalid legacy applied marker".into()))?,
+            );
+            let term = storage.committed_term(index)?;
+            engine.upgrade_legacy_applied(legacy_key, AppliedPosition { term, index })?;
+        }
+        if let kv9_engine::DurableAppliedPosition::AppliedThrough(at) = engine.applied_position()? {
+            if storage.committed_term(at.index)? != at.term {
+                return Err(Error::Engine(
+                    "engine applied term disagrees with committed Raft history".into(),
+                ));
+            }
+        }
         let peer = Arc::new(RaftPeer::with_storage(id, META_REGION_0, storage)?);
-
-        let (engine, replay) = WalEngine::open(data_dir.join("catalog.wal"))?;
         if replay.discarded_tail_bytes > 0 {
             eprintln!(
                 "node {} recovered catalog WAL after discarding {} torn tail bytes",
@@ -2337,12 +2417,19 @@ impl NodeRuntime {
             .find(|seed| seed.node_id == id)
             .map(|seed| DiscoveryObservation::new(seed, false));
 
+        let remote_storage = remote
+            .map(|uploader| {
+                crate::remote_storage::RemoteStorage::start(node.clone(), driver.clone(), uploader)
+            })
+            .transpose()?;
+
         Ok(Self {
             node,
             driver,
             transport,
             discovery,
             driver_thread,
+            remote_storage,
             grpc_runtime,
             grpc_shutdown: Some(grpc_shutdown_tx),
             grpc_server: Some(grpc_server),
@@ -2637,14 +2724,11 @@ impl NodeRuntime {
     }
 
     fn advance_initialization(&mut self) -> Result<()> {
-        if self.driver.status().role != Role::Leader {
-            // Lost leadership before the init committed. NOT fatal (task
-            // #40): erroring here kills the runtime and strands the new
-            // leader in WaitForBootstrap forever. Demote so the bootstrap
-            // role tracks leadership, and drop the stale-term proposal — it
-            // can never commit, and a later re-promotion must propose fresh
-            // (behind the takeover barrier) rather than wait on a dead
-            // position.
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            // A lost-term proposal may still commit under the next leader.
+            // Drop only the local waiter; a later attempt must first drain
+            // prior terms and inspect the catalog before planning again.
             self.initial_proposal = None;
             self.node
                 .meta
@@ -2654,7 +2738,36 @@ impl NodeRuntime {
                 .on_event(BootstrapEvent::LostElection)?;
             return Ok(());
         }
+        if let Some(cluster_id) = self.node.local_cluster_identity()? {
+            return self.finish_initialization(cluster_id);
+        }
+        if self
+            .initial_proposal
+            .is_some_and(|(proposal, _)| proposal.term != status.term)
+        {
+            // Leadership can be lost and regained between lifecycle ticks.
+            self.initial_proposal = None;
+        }
         if self.initial_proposal.is_none() {
+            // This applies to the FIRST election as well as takeover. The
+            // current-term election no-op proves every earlier committed
+            // initialization has applied before we read an empty catalog.
+            if self
+                .driver
+                .driver_applied()
+                .is_none_or(|at| at.term != status.term)
+            {
+                return Ok(());
+            }
+            let node = self.node.clone();
+            let _guard = node.meta_raft.lock_catalog_txn();
+            let confirm = self.driver.status();
+            if confirm.role != Role::Leader || confirm.term != status.term {
+                return Ok(());
+            }
+            if let Some(cluster_id) = node.local_cluster_identity()? {
+                return self.finish_initialization(cluster_id);
+            }
             // Creation authority existed before Raft opened. Election chooses
             // which provisioned voter may submit the root; it never mints a
             // new identity and therefore cannot fork creation after a retry.
@@ -2662,7 +2775,13 @@ impl NodeRuntime {
             let cmd = self
                 .node
                 .build_initial_metadata_command_for_root(&self.voters, &self.root)?;
-            self.initial_proposal = Some((self.driver.propose(&cmd)?, cluster_id));
+            match self.driver.propose_in_term(&cmd, status.term) {
+                Ok(at) => self.initial_proposal = Some((at, cluster_id)),
+                // Both are pre-append refusals. A subsequent lifecycle tick
+                // rechecks the new term and rebuilds against its applied state.
+                Err(Error::NotLeader { .. } | Error::WriteConflict(_)) => {}
+                Err(error) => return Err(error),
+            }
             return Ok(());
         }
         let (proposal, cluster_id) = self.initial_proposal.expect("set above");
@@ -2672,22 +2791,11 @@ impl NodeRuntime {
                  index {} — receipt correlation broke",
                 at.term, at.index
             ))),
-            Ok(ApplyWaitOutcome::Applied(_)) => {
-                self.verify_certified_root()?;
-                write_init_marker(&self.data_dir)?;
-                self.discovery.set_cluster_id(cluster_id);
-                self.node
-                    .meta
-                    .lock()
-                    .expect("meta poisoned")
-                    .bootstrap
-                    .on_event(BootstrapEvent::MetadataInitialized { cluster_id })?;
+            Ok(ApplyWaitOutcome::Applied(_)) => self.finish_initialization(cluster_id),
+            Ok(ApplyWaitOutcome::Replaced) => {
+                self.initial_proposal = None;
                 Ok(())
             }
-            Ok(ApplyWaitOutcome::Replaced) => Err(Error::Raft(format!(
-                "bootstrap proposal at term {} index {} was overwritten",
-                proposal.term, proposal.index.0
-            ))),
             // The init command is a CatalogTxn; a fence verdict for it would
             // mean the log carries something this node never proposed.
             Ok(ApplyWaitOutcome::FenceRejected { at, region }) => Err(Error::Raft(format!(
@@ -2702,6 +2810,25 @@ impl NodeRuntime {
             Err(ApplyWaitError::Unconfirmed { .. }) => Ok(()),
             Err(ApplyWaitError::Failed(e)) => Err(e),
         }
+    }
+
+    fn finish_initialization(&mut self, cluster_id: ClusterId) -> Result<()> {
+        self.verify_certified_root()?;
+        if cluster_id != self.root.cluster_id {
+            return Err(Error::MetaNotReady(
+                "initialized cluster identity does not match the certified root".into(),
+            ));
+        }
+        write_init_marker(&self.data_dir)?;
+        self.discovery.set_cluster_id(cluster_id);
+        self.node
+            .meta
+            .lock()
+            .expect("meta poisoned")
+            .bootstrap
+            .on_event(BootstrapEvent::MetadataInitialized { cluster_id })?;
+        self.initial_proposal = None;
+        Ok(())
     }
 
     fn advance_joining(&mut self) -> Result<()> {
@@ -3126,6 +3253,7 @@ fn validate_discovery_answer(
 
 impl Drop for NodeRuntime {
     fn drop(&mut self) {
+        self.remote_storage.take();
         self.driver.stop();
         if let Some(handle) = self.driver_thread.take() {
             let _ = handle.join();
@@ -4067,6 +4195,72 @@ mod tests {
             runtime,
             dir,
         )
+    }
+
+    #[test]
+    fn catalog_planning_barrier_drains_an_earlier_unconfirmed_command() {
+        let (backend, _runtime, dir) = pre_serving_runtime_backend();
+        let driver = backend.driver.clone();
+        driver.peer().campaign().unwrap();
+        for _ in 0..20 {
+            driver.tick_and_step().unwrap();
+        }
+        driver.pause_apply(true);
+        let earlier = driver
+            .propose(&kv9_raft::Command::Put {
+                cf: 0,
+                key: b"earlier-catalog-plan".to_vec(),
+                value: b"committed".to_vec(),
+            })
+            .unwrap();
+        driver.step().unwrap();
+        assert!(backend
+            .node
+            .meta_raft
+            .store
+            .engine()
+            .get(kv9_engine::ColumnFamily::Default, b"earlier-catalog-plan")
+            .unwrap()
+            .is_none());
+        let committed_before = driver.status().raft_committed;
+        let (tx, rx) = std::sync::mpsc::sync_channel(1);
+        let waiter = std::thread::spawn(move || {
+            let _guard = backend.node.meta_raft.lock_catalog_txn();
+            let term = backend.prepare_catalog().unwrap();
+            let value = backend
+                .node
+                .meta_raft
+                .store
+                .engine()
+                .get(kv9_engine::ColumnFamily::Default, b"earlier-catalog-plan")
+                .unwrap();
+            tx.send((term, value)).unwrap();
+        });
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        while driver.status().raft_committed <= committed_before {
+            assert!(
+                std::time::Instant::now() < deadline,
+                "planning barrier must be proposed"
+            );
+            driver.step().unwrap();
+            std::thread::yield_now();
+        }
+        assert!(
+            rx.try_recv().is_err(),
+            "planner must wait for ordered apply"
+        );
+        driver.pause_apply(false);
+        driver.step().unwrap();
+        let (term, value) = rx.recv_timeout(Duration::from_secs(5)).unwrap();
+        assert_eq!(term, earlier.term);
+        assert_eq!(
+            value,
+            Some(b"committed".to_vec()),
+            "next plan sees earlier ambiguous write"
+        );
+        waiter.join().unwrap();
+        drop(driver);
+        let _ = std::fs::remove_dir_all(dir);
     }
 
     fn assert_meta_not_ready<T: std::fmt::Debug>(result: Result<T>) {
@@ -5374,6 +5568,18 @@ mod tests {
              non-seed leader's endpoint from its applied catalog"
         );
 
+        wait_for(
+            &mut rts,
+            60,
+            "every seed publishes the non-seed registration hint",
+            |rts| {
+                rts[..3].iter().all(|rt| matches!(
+                backend_view(rt, &root).register(NodeId(5), &addrs[4].to_string(), root.cluster_id, &[], StoreIncarnation::mint().unwrap()),
+                Err(RegistrationError::NotLeader { leader: Some(NodeId(4)), leader_addr: Some(addr) }) if addr == addrs[3].to_string()
+            ))
+            },
+        );
+
         // The real joiner: seed set is FOREVER {n1,n2,n3} (root descriptor),
         // which excludes the leader — the master-red scene, now pinned.
         let admit5 = backend_view(&rts[3], &root)
@@ -5712,6 +5918,25 @@ mod tests {
             matches!(err, Error::NotLeader { leader: Some(id) } if id == leader_id),
             "the refusal must be the TYPED NotLeader carrying the live leader \
              hint (never a string, never a transport error): {err:?}"
+        );
+        let backend = backend_view(&rts[follower], &root);
+        assert!(
+            matches!(
+                backend.list_keyspaces("reader"),
+                Err(Error::NotLeader { .. })
+            ),
+            "catalog listing must use a quorum barrier"
+        );
+        assert!(
+            matches!(
+                backend.get_region("reader", KeyspaceId(0), b"k"),
+                Err(Error::NotLeader { .. })
+            ),
+            "routing must use a quorum barrier"
+        );
+        assert!(
+            matches!(backend.cluster_info("reader"), Err(Error::NotLeader { .. })),
+            "catalog counts must use a quorum barrier"
         );
         drop(rts);
         let _ = fs::remove_dir_all(&base);
@@ -6062,6 +6287,84 @@ mod fence_firing_tests {
     }
 
     /// Drive the runtime to Serving using the same method `run()` calls.
+    fn drive_to_initializing(runtime: &mut NodeRuntime) {
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        loop {
+            runtime.advance_bootstrap().unwrap();
+            if matches!(
+                runtime.node.meta.lock().unwrap().bootstrap.state(),
+                BootstrapState::Initializing { .. }
+            ) {
+                return;
+            }
+            assert!(std::time::Instant::now() < deadline);
+            std::thread::sleep(TICK);
+        }
+    }
+
+    #[test]
+    fn initialization_waits_for_apply_before_planning_a_seed() {
+        let (mut runtime, dir) = serving_runtime(Arc::new(StdMutex::new(Vec::new())), true);
+        runtime.driver.pause_apply(true);
+        drive_to_initializing(&mut runtime);
+        let command = runtime
+            .node
+            .build_initial_metadata_command_for_root(&runtime.voters, &runtime.root)
+            .unwrap();
+        let prior = runtime.driver.propose(&command).unwrap();
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        while runtime.driver.status().raft_committed < prior.index.0 {
+            assert!(std::time::Instant::now() < deadline);
+            std::thread::sleep(TICK);
+        }
+        assert!(runtime.node.local_cluster_identity().unwrap().is_none());
+        assert!(runtime.driver.driver_applied().is_none());
+        runtime.advance_initialization().unwrap();
+        assert!(
+            runtime.initial_proposal.is_none(),
+            "initialization must not plan another seed behind unapplied committed metadata"
+        );
+        let next = runtime.driver.propose(&kv9_raft::Command::Noop).unwrap();
+        assert_eq!(
+            next.index.0,
+            prior.index.0 + 1,
+            "no duplicate seed entered Raft"
+        );
+        runtime.driver.pause_apply(false);
+        drive_to_serving(&mut runtime);
+        runtime.verify_certified_root().unwrap();
+        drop(runtime);
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn initialization_adopts_a_committed_catalog_without_its_original_receipt() {
+        let (mut runtime, dir) = serving_runtime(Arc::new(StdMutex::new(Vec::new())), true);
+        drive_to_initializing(&mut runtime);
+        let command = runtime
+            .node
+            .build_initial_metadata_command_for_root(&runtime.voters, &runtime.root)
+            .unwrap();
+        let prior = propose_and_wait(&runtime.driver, &command, Duration::from_secs(5)).unwrap();
+        assert!(runtime.initial_proposal.is_none());
+        assert_eq!(
+            runtime.node.local_cluster_identity().unwrap(),
+            Some(runtime.root.cluster_id)
+        );
+        runtime.advance_initialization().expect(
+            "already committed metadata must be adopted without rebuilding duplicate seed rows",
+        );
+        assert!(runtime.node.meta.lock().unwrap().bootstrap.is_serving());
+        let next = runtime.driver.propose(&kv9_raft::Command::Noop).unwrap();
+        assert_eq!(
+            next.index.0,
+            prior.index + 1,
+            "adoption must not append a seed"
+        );
+        drop(runtime);
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
     fn drive_to_serving(runtime: &mut NodeRuntime) {
         for _ in 0..600 {
             runtime.advance_bootstrap().expect("bootstrap advances");

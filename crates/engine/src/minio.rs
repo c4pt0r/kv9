@@ -1,8 +1,8 @@
-//! A MinIO / S3 backend for [`ObjectStore`](crate::object_store::ObjectStore).
+//! A MinIO / S3 backend for [`ObjectStore`].
 //!
 //! # Why a worker thread
 //!
-//! [`ObjectStore`](crate::object_store::ObjectStore) is a **synchronous** trait and stays
+//! [`ObjectStore`] is a **synchronous** trait and stays
 //! that way: `Engine` and the server core are synchronous contracts, and making the store
 //! async would push an async boundary all the way into `Engine` while still needing a
 //! bridge back for the synchronous read path.
@@ -24,7 +24,8 @@
 //!
 //! # What this backend does NOT do
 //!
-//! **It never mints a `PreparedSst`.** An acknowledged upload is a necessary part of that
+//! The backend returns bytes and acknowledgements. The checkpoint uploader mints
+//! `PreparedSst` only after verifying remote visibility. An acknowledged upload is part of that
 //! badge, not the whole of it, and its minting authority belongs to a sealed uploader
 //! capability that does not exist yet. A backend that returned one here would put the trust
 //! root back on a value the store reports about itself — the shape rejected when it was
@@ -148,7 +149,26 @@ pub const WORKER_THREAD_NAME: &str = "kv9-objstore";
 /// for: each later job waits behind abandoned ones, so the store falls further behind the
 /// caller with every timeout, and [`Drop`] — which joins the worker — blocks for up to
 /// `JOB_QUEUE_DEPTH` × deadline. Checking it before execution bounds both.
+#[cfg(test)]
+struct DeadlineControl {
+    origin: Instant,
+    elapsed_ns: AtomicU64,
+    stamped: SyncSender<()>,
+    stamp_release: std::sync::Mutex<Receiver<()>>,
+    worker_arrived: SyncSender<()>,
+    worker_release: std::sync::Mutex<Receiver<()>>,
+    caller_wait: SyncSender<Duration>,
+}
+#[cfg(test)]
+impl DeadlineControl {
+    fn now(&self) -> Instant {
+        self.origin + Duration::from_nanos(self.elapsed_ns.load(Ordering::SeqCst))
+    }
+}
+
 struct Job {
+    #[cfg(test)]
+    control: Option<std::sync::Arc<DeadlineControl>>,
     deadline: Instant,
     kind: JobKind,
 }
@@ -309,6 +329,8 @@ fn pushdown_prefix(literal: &str) -> Option<String> {
 /// Owns one worker thread and the channel to it. Dropping the store closes the channel,
 /// which ends the worker loop, and joins the thread.
 pub struct MinioObjectStore {
+    #[cfg(test)]
+    test_control: Option<std::sync::Arc<DeadlineControl>>,
     /// `Option` only so that [`Drop`] can close the channel before joining. Every method
     /// runs while it is `Some`.
     tx: Option<SyncSender<Job>>,
@@ -369,6 +391,8 @@ impl MinioObjectStore {
         }
 
         Ok(MinioObjectStore {
+            #[cfg(test)]
+            test_control: None,
             tx: Some(tx),
             worker: Some(worker),
             op_deadline,
@@ -404,12 +428,33 @@ impl MinioObjectStore {
     /// text is prose and gets reworded, while which of these three happened is the property
     /// under test. A test asserting `contains("timed out")` keeps passing after a reword and
     /// stops meaning anything.
+    fn wait_reply<T>(
+        &self,
+        reply: Receiver<(Completion, Result<T>)>,
+        remaining: Duration,
+    ) -> std::result::Result<(Completion, Result<T>), RecvTimeoutError> {
+        // Observe the actual timeout passed to recv_timeout, not a parallel
+        // calculation. The worker can be held independently in the unit fixture.
+        #[cfg(test)]
+        if let Some(c) = &self.test_control {
+            let _ = c.caller_wait.send(remaining);
+        }
+        reply.recv_timeout(remaining)
+    }
+
     fn submit_traced<T>(
         &self,
         make: impl FnOnce(SyncSender<(Completion, Result<T>)>) -> JobKind,
     ) -> (Completion, Result<T>) {
         let started = Instant::now();
+        #[cfg(test)]
+        let started = self.test_control.as_ref().map_or(started, |c| c.origin);
         let deadline = started + self.op_deadline;
+        #[cfg(test)]
+        if let Some(c) = &self.test_control {
+            let _ = c.stamped.send(());
+            let _ = c.stamp_release.lock().unwrap().recv();
+        }
 
         let (reply_tx, reply_rx) = sync_channel::<(Completion, Result<T>)>(1);
         let tx = self
@@ -423,6 +468,8 @@ impl MinioObjectStore {
         // more useful answer, because a full queue is backpressure the caller can act on,
         // whereas a silent stall is not.
         let job = Job {
+            #[cfg(test)]
+            control: self.test_control.clone(),
             // Stamped from the same `started` as the caller's own wait, so the worker and
             // the caller are measuring one interval rather than two that drift apart.
             deadline,
@@ -447,8 +494,11 @@ impl MinioObjectStore {
         // `self.op_deadline` here, so time spent queued was not charged to the caller at all
         // -- a comment in this function claimed the opposite. `deadline - now`, floored at
         // zero, is what makes the deadline mean "from when I asked".
-        let remaining = deadline.saturating_duration_since(Instant::now());
-        match reply_rx.recv_timeout(remaining) {
+        let now = Instant::now();
+        #[cfg(test)]
+        let now = self.test_control.as_ref().map_or(now, |c| c.now());
+        let remaining = deadline.saturating_duration_since(now);
+        match self.wait_reply(reply_rx, remaining) {
             // The WORKER says where this came from. `submit` cannot tell a decline from an
             // answer -- both arrive down the same channel -- so deriving the source here
             // would silently file every near-expired decline as a worker reply.
@@ -794,7 +844,16 @@ fn worker_loop(config: MinioConfig, rx: Receiver<Job>, ready: SyncSender<Result<
         // into wire time plus a reply hop, so the request is not issued at all. Declining is
         // the useful answer -- issuing it would spend the worker on something whose answer
         // cannot arrive in time, while the next caller queues behind it.
-        let left = job.deadline.saturating_duration_since(Instant::now());
+        let now = Instant::now();
+        #[cfg(test)]
+        let now = if let Some(c) = &job.control {
+            let _ = c.worker_arrived.send(());
+            let _ = c.worker_release.lock().unwrap().recv();
+            c.now()
+        } else {
+            now
+        };
+        let left = job.deadline.saturating_duration_since(now);
         let Some(budget) = wire_budget(left, configured) else {
             ISSUED_DECLINED.fetch_add(1, Ordering::Relaxed);
             job.kind.decline(
@@ -1131,6 +1190,7 @@ mod tests {
         // Built by hand rather than by `connect`, so this needs no server: the subject is
         // the formatter, not the connection.
         let store = MinioObjectStore {
+            test_control: None,
             tx: None,
             worker: None,
             op_deadline: Duration::from_secs(1),
@@ -1144,5 +1204,123 @@ mod tests {
             text.contains(".."),
             "must be finish_non_exhaustive so added fields are not printed: {text}"
         );
+    }
+}
+
+#[cfg(test)]
+mod deadline_barrier_tests {
+    use super::*;
+    use std::sync::{Arc, Mutex};
+    const DEADLINE: Duration = Duration::from_secs(60);
+
+    struct Harness {
+        control: Arc<DeadlineControl>,
+        stamped: Receiver<()>,
+        stamp_release: SyncSender<()>,
+        worker_arrived: Receiver<()>,
+        worker_release: SyncSender<()>,
+        caller_wait: Receiver<Duration>,
+        caller_finished: Receiver<Completion>,
+    }
+    fn start() -> (Harness, std::thread::JoinHandle<(Completion, Result<()>)>) {
+        let (stamped_tx, stamped) = sync_channel(1);
+        let (stamp_release, stamp_rx) = sync_channel(1);
+        let (worker_tx, worker_arrived) = sync_channel(1);
+        let (worker_release, worker_rx) = sync_channel(1);
+        let (wait_tx, caller_wait) = sync_channel(1);
+        let (finished_tx, caller_finished) = sync_channel(1);
+        let control = Arc::new(DeadlineControl {
+            origin: Instant::now(),
+            elapsed_ns: AtomicU64::new(0),
+            stamped: stamped_tx,
+            stamp_release: Mutex::new(stamp_rx),
+            worker_arrived: worker_tx,
+            worker_release: Mutex::new(worker_rx),
+            caller_wait: wait_tx,
+        });
+        let mut store = MinioObjectStore::connect(MinioConfig {
+            endpoint: "http://127.0.0.1:1".into(),
+            bucket: "deadline-probe".into(),
+            access_key: "unused-fixture".into(),
+            secret_key: "unused-fixture".into(),
+            op_deadline: DEADLINE,
+        })
+        .unwrap();
+        store.test_control = Some(control.clone());
+        let thread = std::thread::spawn(move || {
+            let result = store.submit_traced(|reply| JobKind::Hold {
+                duration: Duration::ZERO,
+                reply,
+            });
+            let _ = finished_tx.send(result.0);
+            result
+        });
+        (
+            Harness {
+                control,
+                stamped,
+                stamp_release,
+                worker_arrived,
+                worker_release,
+                caller_wait,
+                caller_finished,
+            },
+            thread,
+        )
+    }
+    fn recv<T>(rx: &Receiver<T>) -> T {
+        rx.recv_timeout(Duration::from_secs(5))
+            .expect("controlled barrier must arrive")
+    }
+    fn advance(h: &Harness, duration: Duration) {
+        h.control
+            .elapsed_ns
+            .store(duration.as_nanos() as u64, Ordering::SeqCst);
+    }
+
+    #[test]
+    fn caller_charges_elapsed_time_without_the_worker_hard_cap_masking_it() {
+        let (h, thread) = start();
+        recv(&h.stamped);
+        advance(&h, DEADLINE);
+        h.stamp_release.send(()).unwrap();
+        // Worker remains behind its release gate: it cannot supply a hard-cap
+        // reply and mask a full-duration caller wait.
+        assert_eq!(
+            recv(&h.caller_wait),
+            Duration::ZERO,
+            "caller must spend only the remaining original deadline"
+        );
+        // Observe caller completion BEFORE releasing the worker. Otherwise a
+        // zero-timeout receive can still race a queued NotIssued response.
+        assert_eq!(recv(&h.caller_finished), Completion::OuterFallback);
+        recv(&h.worker_arrived);
+        h.worker_release.send(()).unwrap();
+        let (source, result) = thread.join().unwrap();
+        assert_eq!(source, Completion::OuterFallback);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn worker_issues_or_refuses_from_the_same_controlled_deadline_origin() {
+        for (left, expected) in [
+            (REPLY_RESERVE, Completion::NotIssued),
+            (Duration::from_millis(100), Completion::WorkerReply),
+        ] {
+            let (h, thread) = start();
+            recv(&h.stamped);
+            advance(&h, Duration::from_secs(30));
+            h.stamp_release.send(()).unwrap();
+            assert_eq!(recv(&h.caller_wait), Duration::from_secs(30));
+            recv(&h.worker_arrived);
+            advance(&h, DEADLINE - left);
+            h.worker_release.send(()).unwrap();
+            let (source, outcome) = thread.join().unwrap();
+            assert_eq!(
+                source, expected,
+                "worker verdict must use the stamped original deadline"
+            );
+            assert_eq!(outcome.is_ok(), expected == Completion::WorkerReply);
+        }
     }
 }

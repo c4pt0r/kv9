@@ -26,3 +26,7 @@ tonic-prost-build.workspace = true
 # unified into the normal build, so FaultyEngine stays out of the shipped binary.
 kv9-engine = { workspace = true, features = ["testing"] }
 kv9-raft = { workspace = true, features = ["testing"] }
+
+[features]
+# Test-only crash gates, never enabled by default.
+checkpoint-testing = []

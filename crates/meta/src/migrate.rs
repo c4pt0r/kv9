@@ -54,7 +54,7 @@ pub fn plan(from_v: u32, to_v: u32) -> Result<Vec<MigrationStep>> {
 ///
 /// Phase-1 stub: computes the plan (real, exercised) but the per-step apply — which adds
 /// tables/columns/indexes and bumps the persisted `schema_version` row atomically — is
-/// `unimplemented!()`. `to_v` defaults to the compiled-in [`SCHEMA_VERSION`].
+/// explicitly `NotImplemented`. Use [`target_version`] for the compiled-in [`SCHEMA_VERSION`].
 pub fn migrate(from_v: u32, to_v: u32) -> Result<()> {
     let steps = plan(from_v, to_v)?;
     if steps.is_empty() {
@@ -62,7 +62,7 @@ pub fn migrate(from_v: u32, to_v: u32) -> Result<()> {
     }
     // TODO(phase1): for each step, open a MetaStore txn, apply the DDL delta, write the
     // new schema_version row, commit; index adds enqueue a backfill task.
-    unimplemented!("migrate: apply {} step(s) toward v{to_v}", steps.len())
+    Err(Error::NotImplemented("catalog migration executor"))
 }
 
 /// The version this binary compiles against (METADATA-CATALOG §7).

@@ -122,6 +122,22 @@ impl<E: Engine> FaultyEngine<E> {
     }
 }
 
+impl<E: crate::ReplicatedEngine> crate::ReplicatedEngine for FaultyEngine<E> {
+    fn write_applied(&self, batch: WriteBatch, at: kv9_common::AppliedPosition) -> Result<()> {
+        self.write_attempts.fetch_add(1, Ordering::SeqCst);
+        if self.fail_writes.load(Ordering::SeqCst) {
+            return Err(Error::Engine(
+                "injected write failure (simulating a full disk / failed fsync)".into(),
+            ));
+        }
+        self.inner.write_applied(batch, at)
+    }
+    fn applied_position(&self) -> Result<crate::DurableAppliedPosition> {
+        self.fail_reads()?;
+        self.inner.applied_position()
+    }
+}
+
 impl<E: Engine> Engine for FaultyEngine<E> {
     fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Value>> {
         self.fail_reads()?;

@@ -287,12 +287,26 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// `propose` and the `last_index` read happen under one lock, so the pair is
     /// exact; it is still only a position claim (see [`ProposedAt`]).
     pub(crate) fn propose_traced(&self, data: Vec<u8>) -> Result<ProposedAt> {
+        self.propose_in_term(data, None)
+    }
+
+    /// Compare leadership and the planning term under the same lock as append.
+    pub(crate) fn propose_in_term(
+        &self,
+        data: Vec<u8>,
+        expected: Option<u64>,
+    ) -> Result<ProposedAt> {
         let mut g = self.lock();
         if g.raw.raft.state != StateRole::Leader {
-            return Err(Error::Raft(format!(
-                "node {} is not the leader of region {}",
-                self.node.0, self.region.0
-            )));
+            let leader = g.raw.raft.leader_id;
+            return Err(Error::NotLeader {
+                leader: (leader != raft::INVALID_ID).then_some(NodeId(leader)),
+            });
+        }
+        if expected.is_some_and(|term| term != g.raw.raft.term) {
+            return Err(Error::WriteConflict(
+                "catalog planning term changed; rebuild the transaction".into(),
+            ));
         }
         let term = g.raw.raft.term;
         g.raw.propose(Vec::new(), data).map_err(raft_err)?;
@@ -863,6 +877,38 @@ mod tests {
             Ok(_) => panic!("second mint must refuse, got a second drain token"),
             Err(other) => panic!("refusal must be Error::Raft, got: {other:?}"),
         }
+    }
+
+    #[test]
+    fn catalog_proposal_checks_planning_term_before_append() {
+        let peer = RaftPeer::new(N1, R, &[N1]).unwrap();
+        let empty = peer.lock().raw.raft.raft_log.last_index();
+        assert!(matches!(
+            peer.propose_in_term(put(b"not-leader", b"v"), Some(1)),
+            Err(Error::NotLeader { leader: None })
+        ));
+        assert_eq!(peer.lock().raw.raft.raft_log.last_index(), empty);
+        peer.campaign().unwrap();
+        peer.pump();
+        assert_eq!(peer.role(), Role::Leader);
+        let term = peer.term();
+        let before = peer.lock().raw.raft.raft_log.last_index();
+        assert!(matches!(
+            peer.propose_in_term(put(b"stale", b"v"), Some(term + 1)),
+            Err(Error::WriteConflict(_))
+        ));
+        assert_eq!(
+            peer.lock().raw.raft.raft_log.last_index(),
+            before,
+            "stale plan never enters log"
+        );
+        assert_eq!(
+            peer.propose_in_term(put(b"fresh", b"v"), Some(term))
+                .unwrap()
+                .index
+                .0,
+            before + 1
+        );
     }
 
     fn put(key: &[u8], value: &[u8]) -> Vec<u8> {

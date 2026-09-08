@@ -4,8 +4,7 @@
 > Inspired by TiKV, but with a **single binary**, **no external control plane (no placement driver)**,
 > and **self-hosted metadata** bootstrapped inside a system keyspace.
 
-Status: **v0 design + skeleton milestone.** This document defines the architecture and the crate layout the
-skeleton implements. It is the source of truth for module boundaries. Diagrams: `docs/ARCHITECTURE.md`.
+Status: **target architecture; implementation is partial.** This document defines the architecture and crate boundaries. It is the source of truth for module boundaries. Diagrams: `docs/ARCHITECTURE.md`.
 Delivery order and phase boundaries: `docs/ROADMAP.md` — authoritative, and the only place they are stated.
 Object-storage path contract: `docs/OBJECT-STORAGE.md`. Current implementation status: `README.md`.
 

@@ -1,130 +1,126 @@
-# kv9 — Development Roadmap
+# kv9 development roadmap
 
-How to build kv9 from the current design (`DESIGN.md`). Ordering principle: **build the distributed backbone first,
-keep storage simple (WAL + replay); then swap in the real disaggregated engine.**
+Updated: 2026-09-08. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
+[TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md) maps that architecture to the current implementation.
 
-Rationale: the *structural* spine of kv9 is the **self-hosted metadata plane** (raft + election-first bootstrap + the
-SQL catalog) — everything else plugs into it, and **raft is needed regardless** (metadata *and* user regions use it).
-So we front-load the highest **distributed-systems** risk (consensus, election, bootstrap, failover, self-hosted
-metadata) behind the `Engine` trait — Phase 1 uses only a **simple WAL-and-replay engine sufficient for restart
-testing** — then bring in the disaggregated object-storage engine (the thesis) as a clean swap. Build vertical slices so there is always a running `kv9`.
+The target is an industrial-grade distributed database. Prioritize consistency, recovery, measured throughput
+and scalable architecture. Complex private-network TLS configuration is not a prerequisite for the current
+milestones. Existing identity, root descriptor, token authentication and epoch checks remain part of the baseline.
 
-## Dependency decisions (make up front — they shape everything)
-- **Consensus:** `raft-rs` (tikv/raft-rs 0.7.x, feature **`protobuf-codec`** — builds with **no protoc / no native
-  toolchain**; the `prost-codec` feature *does* require protoc and **must not be used**). Chosen for: synchronous
-  pull-model (`RawNode`/`Ready`) matching the region apply loop, built-in `pre_vote` + `check_quorum` (§5.3
-  gray-failure discipline), and tick-driven cores compatible with idle-region quiescing (§6.1) and deterministic
-  simulation. raft-rs provides the consensus core only — transport, log storage, state machine, and the drive loop
-  are ours. *Not* `openraft`: async runtime (tokio) + push-model apply would force an async boundary and a
-  state-machine trait redraw across the workspace; no check-quorum primitive. Needed from Phase 1.
-  *(Decision record: build probes + 3-node spike, 2026-08-27; approved by EdHuang.)*
-  CI note: `protobuf-codec` needs no protoc — but a **broken or partial `protoc` earlier on `PATH` fails the
-  build** (protobuf-build probes it, then panics) in a way that looks unrelated to protobuf. CI images should
-  either omit protoc entirely or ensure the one present is functional.
-- **Storage engine (Phase 2):** a **minimal native LSM** (memtable + immutable SST writer/reader + manifest), *not*
-  RocksDB — RocksDB assumes local-first storage and fights the immutable-SST-on-object-storage / manifest-in-raft
-  model. Until then the raft state machine runs on the Phase 1 simple WAL engine (`MemEngine` remains for
-  tests and the in-process harness).
-- **Object storage (Phase 2 onward, amended 2026-09-05):** the `object_store` crate (pure-Rust
-  S3/GCS/Azure/local) behind `ObjectStore`, pointed at **MinIO** from Phase 2. The crate choice is
-  unchanged; only the phase moved (originally Phase 3+) — see the Phase 2 amendment below.
-- **Async I/O:** `tokio`. **Wire (Phase 1-final onward):** pure-Rust `tonic` gRPC for both public APIs and
-  node-internal Raft/discovery. The server owns one listener and registers all services; Raft uses long-lived
-  client streams with byte/count batching, while the synchronous core is reached only through channels.
+## Current baseline: working distributed Raw KV
 
-## Phases
+- One `META_REGION_0` Raft group replicates both self-hosted metadata and Raw KV. Real multi-process tests cover
+  bootstrap, failover, restart, learner registration and promotion.
+- Writes pass through Raft; data and exact `(term,index)` share a WAL v2 record and fsync before publication.
+  Raw and public catalog reads establish a quorum ReadIndex barrier.
+- The catalog has typed tables, indexes, foreign keys and transaction overlays. Production mutations acquire
+  the catalog mutex, commit an ordering barrier, plan against a stable snapshot and propose in the same leader term.
+- With `KV9_STORAGE=minio`, a leader freezes full state, uploads immutable SSTs, confirms PUT and readability,
+  and proposes manifest CAS. Each replica adopts only after local ordered apply, persists a recovery pointer,
+  and reclaims the covered catalog WAL prefix.
+- Cold recovery reads MinIO SSTs and replays the surviving WAL tail. Pending flushes verify cluster and committed
+  history, recheck remote bytes, and recover their original identity before another attempt.
+- Legacy in-band applied markers can be validated against committed Raft history and upgraded atomically.
+  When the legacy full state exceeds the 64 MiB record limit, the old prefix remains and only a verified position
+  transition is appended, preserving the ability to reopen large old stores.
 
-### Phase 1 — Metadata plane: raft + election + SQL catalog, on real multi-process nodes. ← start here
-Bring up `raft-rs` for the **system-keyspace raft group** (`META_REGION_0`), whose state machine applies committed
-entries into the **Phase 1 simple WAL engine** (`MemEngine` stays for tests). On top of that KV, build the **metadata SQL catalog** (`meta` crate,
-`docs/METADATA-CATALOG.md`): row/index codec, hardcoded schema, typed accessors, transactions. Add the
-**election-first bootstrap** FSM (join-set → elect → winner initializes the catalog), **membership**, and
-`CreateKeyspace` / regions catalog.
-**Multi-node means real OS processes, not in-process peers.** Phase 1 acceptance is three `kv9` processes that
-discover each other over the network, elect, bootstrap, survive `kill -9` of the leader, and let the killed node
-restart and rejoin. (An earlier reading treated an in-process 3-peer harness as satisfying "multi-node"; it does
-not, and in-process testing structurally cannot surface restart/identity bugs — the initialized-marker gap was
-found exactly this way.)
-**Storage in Phase 1 is a *simple* persistence engine for testing** — append-only WAL + replay on start,
-tolerating a torn tail record — **not** the disaggregated engine. SST / compaction / manifest / object storage
-remain Phase 2. Restart safety needs three things persisted, in two crates: raft **HardState (term + vote) + log**
-(a raft *safety* requirement — a node that forgets its vote can vote twice in a term and elect two leaders), the
-state-machine data, and the bootstrap initialized marker.
-- *Demo:* **three real `kv9` processes** bootstrap themselves (election-first), self-host metadata as SQL tables on
-  raft, handle membership + keyspace creation, **survive `kill -9` of the leader, and let the killed process
-  restart and rejoin** — reproducible by a single command.
-- *Retires:* the hardest, most structural risk — consensus integration, election, bootstrap, self-hosted catalog,
-  failover — the spine everything hangs on.
-- *First concrete task:* `raft-rs` single-node — `RawNode` behind the synchronous `RaftGroup`, a `Ready` loop that
-  persists entries + hardstate **before** sending messages, and a `MemEngine` state machine — with a
-  `propose(put)→apply→get` round-trip test; then the catalog schema/codec on top; then multi-node election +
-  bootstrap. Correlate a proposal by `(term, index)` matched against the applied entry, never by log position
-  alone: a position can be overwritten by a new leader's entry, so "applied ≥ N" would report success on another
-  command.
+This is a basic implementation, not an industrial capacity or performance claim. The entire dataset remains in RAM,
+full checkpoints have a 48 MiB serialized ceiling, and catalog WAL reclamation copies the surviving tail before rename.
+Raft logs, historical manifests and SSTs are retained. Incremental LSM, block cache, multiple running data groups,
+split/merge and usable transaction execution are still future work.
 
-### Phase 2 — Disaggregated storage engine (the thesis), swapped in behind `Engine`
-`engine`: memtable → **local WAL** → flush to **immutable SST** on an `ObjectStore` →
-**manifest** (file refs, the mutable pointer) → block cache → read path → **recovery** (replay WAL + load manifest).
-Swap the raft state machine from `MemEngine` to this real engine; wrap user data in the **raw KV API**.
-- *Demo:* real disaggregated engine under the raft groups; data flushes to a real bucket; **restart recovers**;
-  a region re-opens purely from its manifest.
-- *Retires:* source-of-truth / immutability / flush→manifest→truncate / SST format / recovery — the storage thesis;
-  **plus (2026-09-05 amendment) the S3-backend engineering that moved in from Phase 3: prefix layout, multipart or
-  an explicit small-object threshold, checksum kept distinct from ETag, timeout/retry idempotence.**
+Acknowledged unflushed writes depend on the replicas' local durable logs. A bucket alone cannot reconstruct cluster
+identity, protocol state or an unuploaded tail.
 
-> **Amendment 2026-09-05 (EdHuang).** The object-store backend for Phase 2 is **MinIO over the real S3
-> API**, not the local-dir implementation this phase originally specified. The local-dir backend is not
-> built at all: it was scaffolding standing in for a real object store, so pointing at MinIO removes a
-> step rather than adding one. `MemoryObjectStore` remains a unit-test fixture only and is never
-> evidence that object storage works.
->
-> **What moved:** the *backend* half of Phase 3's first sentence — prefix layout, multipart, checksums,
-> timeout/retry idempotence — is now Phase 2, and is named in Phase 2's *Retires* line above so it is
-> owed by this phase's acceptance rather than by nobody. **What did not move:** GC (refcount + orphan
-> scan), backpressure/memtable-memory tokens, and transactions all remain Phase 3.
-> Contract: `docs/OBJECT-STORAGE.md`.
->
-> **A phase boundary decides who owes which evidence and when.** Anything left in Phase 3 does not become
-> delivered by being incidentally exercised in a Phase-2 demo.
->
-> Recorded here because this file is the authoritative delivery order: on 2026-09-05 four of us
-> re-derived the phase order from memory because nothing in `README`/`DESIGN` pointed at it, and an
-> unrecorded amendment would reproduce exactly that.
+## P0: make consistency and recovery continuously verifiable
 
-### Phase 3 — Object-storage reclamation + transactions
-*(Retitled 2026-09-05: pointing `ObjectStore` at a real backend moved to Phase 2. What remains here is
-everything that was never about the backend — reclaiming space and spending it.)*
+Complete this gate before capacity or throughput claims:
 
-**GC** = refcount + orphan scan, and the first memtable-memory/backpressure tokens. Add **Percolator SI**:
-embedded TSO (one timeline), `default/lock/write` CFs, prewrite/commit/get, MVCC reads — **keyspace-confined**.
-- *Demo:* a `txn` keyspace does SI transactions; GC reclaims; a slow store throttles, not OOMs.
-- *Retires:* object-storage **reclamation** (the delete side, which Phase 2 deliberately does not build) +
-  the transaction model on the disaggregated engine.
+1. Add named cuts around WAL append/fsync, Ready persistence/send, upload confirmation, manifest apply,
+   checkpoint pointers and WAL replacement. Extend deterministic and real-process fault matrices to disk-full,
+   EIO, reordered/duplicated messages, partitions/healing and interrupted membership changes.
+2. Record concurrent Raw KV and catalog histories and run an independent linearizability checker.
+   Distinguish success, proven refusal and unknown outcomes. Matching final values is insufficient.
+3. Preserve the delivered `catalog.pending` recovery and exact historical-winner reconciliation.
+   Missing files or a latest pair beyond the reconciliation window cannot prove failure.
+   Integrate retained evidence with snapshot/GC pins before deleting history.
+4. Define backup/recovery anchors and format compatibility. WAL v2 currently requires an offline upgrade;
+   mixed-version rolling upgrade and downgrade are not promised.
+5. Retain selected counts, failure cuts, logs and exclusive completion markers. Keep real MinIO process tests
+   in the PR checks and establish metrics and repeatable single-group benchmarks early.
 
-### Phase 4 — Multi-region + meta-only elasticity (the payoff proof)
-User regions each their own raft group (raft-log = the WAL); **leader flushes → manifest change via raft → followers
-adopt**; region routing from the catalog (L0/L1) + epoch checks; **meta-only snapshot** (ship manifest, attach from
-object store); split/merge (throughput-aware) + pre-shard; rebalance (damped).
-- *Demo:* add a node → a region **attaches meta-only in seconds** (scale-out = metadata, not data); split a hot
-  region; leader failover.
-- *Retires:* meta-only movement, multi-region routing, split/merge, elasticity.
+**Exit gate:** under a documented failure model, acknowledged writes survive, deletes do not reappear, minority
+leaders cannot establish successful reads, and replaced log positions cannot produce false success receipts.
+Bad objects or protocol anchors fail recovery explicitly. Each covered cut has reproducible positive and negative
+controls; uncovered power-loss/fsync behavior remains identified.
 
-### Phase 5 — Scale & multi-tenant hardening
-Distributed + L1-sharded scheduler; **sharded TSO** (per-txn-group timelines, provider pool); **idle-region
-quiescing**; full **token flow-control** (cross-node GAC, fair queue, cache-fill); per-tenant metrics; production
-TLS/mTLS and authorization hardening on the existing gRPC wire.
-- *Demo:* elastic, multi-tenant, throughput-scaling cluster with predictable QoS.
+## P1: bounded storage and measured throughput
 
-## Cross-cutting from day one
-Unit + property tests; **per-tenant metrics**; versioned on-disk/raft formats (never panic on unknown); no
-unquota'd in-memory path. Early in Phase 4, invest in a **deterministic simulation harness** (FoundationDB /
-TigerBeetle style) for raft/failure paths — it pays for itself.
+1. Implement active/immutable memtables, incremental SSTs, stable versioned views, range tombstones, leveled
+   compaction and a bounded block cache. Read remote SST blocks directly so memory no longer scales with live data.
+2. Replace O(tail) synchronous copying with segmented WAL and whole closed-segment reclamation.
+   Add atomically installable Raft snapshots before protocol-log truncation.
+   Record the dual-WAL versus unified-log decision; any unification must preserve atomic data/position recovery.
+3. Batch proposals and persistence, add group commit, and bound upload concurrency and queues.
+   Propagate admission/backpressure for slow disks, slow MinIO and compaction debt.
+4. Benchmark fixed CPU/RAM/disk/network/MinIO topologies, key/value sizes, distributions and concurrency.
+   Report throughput, p50/p95/p99, error rates, fsync latency, apply lag, backlog, amplification, memory and recovery.
+   Measure one group before many groups; do not invent QPS targets.
+5. Enable actual SST deletion only after references, reader/checkpoint/snapshot pins, orphan handling and durable
+   delete intents are implemented. Pending proposals, transfers and backups must retain their inputs.
 
-What makes a test *count as evidence* is not decided here: **[docs/TESTING.md](TESTING.md)** is the single
-authority on verification and acceptance *evidence standards*. This section says which kinds of testing the project
-commits to; that file says when a red, a green, or a gate may be believed. Do not restate its criteria here.
+**Exit gate:** data larger than memory remains serviceable; memory and disk usage stay bounded across multiple
+compaction cycles; recovery converges within measured limits; performance improvements pass the same P0 correctness
+suite and publish reproducible before/after results.
 
-## Maps to DESIGN milestones
-Phase 1 ≈ M2/M4 backbone (raft + bootstrap + MetaLeader, simple WAL storage) · Phase 2 ≈ M1/M2 storage ·
-Phase 3 ≈ M1 txn + M2 persistence · Phase 4 ≈ M3 multi-region/split/rebalance · Phase 5 ≈ M4/M5 (sharded TSO, GAC,
-scheduler, scrubber, wire).
+## P2: multiple Raft groups and scale-out
+
+1. Separate metadata and user data groups with RegionManager, shared transport, batched scheduling,
+   per-group lifecycle and explicit resource budgets.
+2. Bind catalog regions to real groups. Implement routing-cache invalidation, epoch fences, leader hints and
+   bounded client rerouting. Define cross-region Raw operation semantics before exposing them.
+3. Attach learners through snapshots and shared SSTs, catch up tails, and change membership safely after log
+   truncation. Recover ConfState, data and position consistently.
+4. Implement durable pre-shard, split, merge and migration protocols before automatic placement.
+   Detect throughput/queue hotspots and use hysteresis and budgets to avoid oscillation.
+5. Measure lazy attachment and cold-cache costs. Claim metadata-only transfer only when byte measurements
+   exclude a hidden full copy. Introduce L0/L1 metadata sharding only after measuring the bottleneck.
+
+**Exit gate:** independent hotspots benefit from added nodes; migration, split and membership changes preserve
+single ownership and complete coverage. Shared SST attachment transfers metadata and an unflushed tail, with
+object-store reads reported separately.
+
+## P3: transactions and tenant service quality
+
+Implement MVCC, durable TSO/timeline generations, Percolator SI, lock recovery and deadlock detection after
+Raw KV, recovery and multi-group ownership are stable. Start within one keyspace and transaction group,
+including multiple regions in that domain. Keep unknown commit outcomes explicit.
+
+Add tenant admission, weighted fairness, cache quotas, background-work attribution, resource accounting and
+bounded tenant metrics. This work can overlap late P2 once the shared scheduling interfaces are stable.
+
+**Exit gate:** independent histories satisfy SI; uncertain results and retries cannot cause duplicate execution;
+hot tenants and slow uploads do not indefinitely starve others. MVCC GC, SST GC, snapshots and long transactions
+share an accountable retention protocol.
+
+## P4: operational completeness
+
+Deliver complete backup/PITR, versioned migrations, verified rolling upgrades, operational APIs, diagnostics,
+capacity guidance and long-duration soak. Run short fault/nightly tests from P0; P4 adds sustained release acceptance.
+
+Add deployment-specific TLS/mTLS, certificate rotation, cloud identities and finer authorization here.
+Keep an explicit HTTP MinIO/token-authenticated development workflow so core protocol testing stays accessible.
+
+Isolate MinIO behind `ObjectStore` and the maintained S3 client. Pin the test image digest and verify at least one
+maintained S3-compatible service or cloud S3 before production backend claims.
+The [official MinIO repository](https://github.com/minio/minio) was marked archived when checked on 2026-09-08.
+
+## Existing issues and execution planning
+
+The takeover checked [#5](https://github.com/c4pt0r/kv9/issues/5),
+[#6](https://github.com/c4pt0r/kv9/issues/6), [#7](https://github.com/c4pt0r/kv9/issues/7) and
+[#8](https://github.com/c4pt0r/kv9/issues/8). Their implementation evidence is in
+[TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md). Publishing code, observing CI and closing an issue are distinct steps.
+
+Bounded storage, recoverable log compaction, measurement and multi-group ownership precede transaction expansion.
+Complex private-network TLS configuration remains later work.

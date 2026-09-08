@@ -1,31 +1,18 @@
 # kv9-engine
 
-The storage engine abstraction (DESIGN §6.2 "Storage engine abstraction") and its v0
-in-memory implementation.
+`Engine` provides atomic multi-column-family batches and stable `ReadView` snapshots.
+`MemEngine` uses structurally shared ordered maps; `WalEngine` adds local durability.
+`ReplicatedEngine` requires data and its exact `(term,index)` in one durable record.
+WAL v2 supports positioned and unpositioned records, reads legacy v1, and rejects
+complete non-monotonic positioned histories.
 
-- `Engine` trait — the per-region logical LSM keyed within a range.
-- `MemEngine` — an in-memory engine for the skeleton and tests, backed by a persistent
-  (structurally shared) ordered map so snapshots are O(1) and writes never copy.
-- `ReadView` / `Engine::snapshot` — a consistent view. Reads taken through one view agree
-  with each other, which two separate `get` calls do not: a whole `WriteBatch` can commit
-  between them. `iter` / `iter_rev` stream in both directions so a caller merging its own
-  write buffer can stop at a limit instead of materializing a range (DESIGN §13
-  principle 13, "no unquota'd in-memory path").
-- `ColumnFamily` (`default` / `lock` / `write`) — the Percolator MVCC layout for `txn`
-  keyspaces (DESIGN §9.1 "Txn keyspaces — Percolator 2PC over MVCC").
-- `WriteBatch` — atomic multi-CF write unit applied from a committed raft entry. Atomic
-  means no reader observes a partial batch, across column families.
+`checkpoint` seals a full-state `FrozenFlush`, writes immutable SSTs through the real
+MinIO backend, verifies remote visibility, and yields non-cloneable `PreparedSst`
+capabilities. The server/region layers consume these into a Raft manifest attempt.
+After ordered apply, `WalEngine` saves the checkpoint reference and reclaims the
+covered WAL by atomic tail replacement. Recovery verifies remote SSTs before replay.
 
-A future `LsmEngine` plugs in behind the same trait (DESIGN §6.2, §12 "Crate layout"). It
-will be a **minimal native LSM, not RocksDB**: RocksDB assumes local-first storage and
-fights the immutable-SST-on-object-storage / manifest-in-raft model this engine is shaped
-around (`docs/ROADMAP.md`, Dependency decisions; DESIGN §6.5 "Storage-compute
-disaggregation").
-
-Note on layering: this crate owns the MVCC *layout and codec*, while the ordered-KV
-container beneath it is opaque-bytes — it never reinterprets keys, and the multi-tenant
-key prefix is encoded above it in `kv9_common::codec`. Flush is likewise not owned here:
-a region's manifest lives in raft-replicated region state, the leader builds and uploads
-SSTs, and followers adopt the resulting file ids (DESIGN §6.5).
-
-See `DESIGN.md` §6 and §9.
+All data currently stays in memory; the 48 MiB full checkpoint cap, synchronous WAL
+copy/rename, and lack of incremental LSM/block cache are explicit initial limits.
+`MemoryObjectStore` is only a test fixture. See [object storage](../../docs/OBJECT-STORAGE.md)
+and [roadmap](../../docs/ROADMAP.md).

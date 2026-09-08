@@ -3,7 +3,7 @@
 //! One record per [`crate::WriteBatch`]. The frame is deliberately boring:
 //!
 //! ```text
-//! magic(4) version(1) len(4, LE) payload(len) crc(4, LE over version..payload)
+//! magic(4) version(1)=2 kind(1) [term(8) index(8)] len(4) payload(len) crc(4)
 //! ```
 //!
 //! ## What the framing has to survive
@@ -11,7 +11,7 @@
 //! A process can die *during* an append, so the last record may be half-written. That is
 //! not corruption, it is the normal shape of a crash, and replay must tolerate it: we
 //! stop at the first record that does not verify and keep everything before it. The
-//! alternative — refusing to open — would turn every crash into data loss.
+//! alternative — refusing every partial tail — would prevent automatic restart.
 //!
 //! We cannot distinguish "torn tail" from "bit-rot in the middle" by inspection alone, so
 //! we do not try: both stop replay at the same place. What that costs is stated plainly in
@@ -25,20 +25,14 @@ use std::fs::{File, OpenOptions};
 use std::io::{BufReader, Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 
-use kv9_common::{Error, Result};
+use crate::wal_v2::{kind, CRC_LEN, MAGIC, MAX_RECORD_LEN, VERSION_V1, VERSION_V2};
+use kv9_common::{AppliedPosition, Error, Result};
 
 use crate::cf::ColumnFamily;
 use crate::write_batch::{Mutation, WriteBatch};
 
-const MAGIC: [u8; 4] = *b"KV9W";
-const VERSION: u8 = 1;
-const HEADER_LEN: usize = 4 + 1 + 4; // magic + version + len
-const CRC_LEN: usize = 4;
-
-/// Guards against a corrupt length field causing a huge allocation. A single batch far
-/// larger than this is a bug, not a legitimate write (DESIGN §13 principle 13 — no
-/// unbounded in-memory path driven by untrusted input).
-const MAX_RECORD_LEN: u32 = 64 * 1024 * 1024;
+#[cfg(test)]
+const HEADER_LEN: usize = crate::wal_v2::UNPOSITIONED_HEADER_LEN;
 
 fn io(e: std::io::Error) -> Error {
     Error::Engine(format!("wal io: {e}"))
@@ -176,11 +170,31 @@ fn decode_batch(payload: &[u8]) -> Result<WriteBatch> {
     Ok(batch)
 }
 
+fn read_complete(reader: &mut impl Read, bytes: &mut [u8]) -> Result<bool> {
+    match reader.read_exact(bytes) {
+        Ok(()) => Ok(true),
+        Err(e) if e.kind() == std::io::ErrorKind::UnexpectedEof => Ok(false),
+        Err(e) => Err(io(e)),
+    }
+}
+
+fn check_position(previous: Option<AppliedPosition>, at: AppliedPosition) -> Result<()> {
+    if previous.is_some_and(|p| at.index <= p.index) {
+        return Err(Error::Engine(format!(
+            "wal: applied position must advance; previous {previous:?}, refused {at:?}"
+        )));
+    }
+    Ok(())
+}
+
 /// Outcome of replaying a log at open time.
 #[derive(Debug, Clone)]
 pub struct Replay {
     /// Batches recovered, oldest first.
     pub batches: Vec<WriteBatch>,
+    /// Position attached to each batch, in the same order. v1 and unpositioned v2
+    /// records carry None and never authorize reclaim.
+    pub positions: Vec<Option<AppliedPosition>>,
     /// Bytes discarded from the tail because they did not form a complete, verified
     /// record — normally a partial append interrupted by a crash. Non-zero is expected
     /// after an unclean shutdown; it is surfaced rather than hidden so a caller can log
@@ -193,6 +207,8 @@ pub struct Replay {
 pub struct Wal {
     path: PathBuf,
     file: File,
+    applied: Option<AppliedPosition>,
+    poisoned: bool,
 }
 
 impl Wal {
@@ -225,7 +241,21 @@ impl Wal {
         }
         file.seek(SeekFrom::Start(valid_len)).map_err(io)?;
 
-        Ok((Wal { path, file }, replay))
+        // Persist creation/truncation before advertising a durable empty engine.
+        file.sync_all().map_err(io)?;
+        if let Some(dir) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
+            File::open(dir).and_then(|f| f.sync_all()).map_err(io)?;
+        }
+        let applied = replay.positions.iter().rev().flatten().next().copied();
+        Ok((
+            Wal {
+                path,
+                file,
+                applied,
+                poisoned: false,
+            },
+            replay,
+        ))
     }
 
     /// Read every complete, checksum-verified record, stopping at the first that is not.
@@ -237,92 +267,149 @@ impl Wal {
         let mut reader = BufReader::new(&mut *file);
 
         let mut batches = Vec::new();
+        let mut positions = Vec::new();
+        let mut previous: Option<AppliedPosition> = None;
         let mut good_end: u64 = 0;
 
         loop {
-            let mut header = [0u8; HEADER_LEN];
-            match reader.read_exact(&mut header) {
-                Ok(()) => {}
-                // A short read here is the tail; everything before it stands.
-                Err(_) => break,
-            }
-            if header[0..4] != MAGIC {
+            let mut preamble = [0u8; 5];
+            if !read_complete(&mut reader, &mut preamble)? {
                 break;
             }
-            if header[4] != VERSION {
-                // Unknown version: refuse rather than misparse. This is not a torn tail,
-                // so it is an error, not a silent truncation (principle 12).
-                return Err(Error::Engine(format!(
-                    "wal: unsupported record version {} (this build writes {VERSION})",
-                    header[4]
-                )));
+            if preamble[..4] != MAGIC {
+                break;
             }
-            let len = u32::from_le_bytes([header[5], header[6], header[7], header[8]]);
+            let mut check = vec![preamble[4]];
+            let position = match preamble[4] {
+                VERSION_V1 => None,
+                VERSION_V2 => {
+                    let mut tag = [0u8; 1];
+                    if !read_complete(&mut reader, &mut tag)? {
+                        break;
+                    }
+                    check.extend_from_slice(&tag);
+                    match tag[0] {
+                        kind::UNPOSITIONED => None,
+                        kind::POSITIONED => {
+                            let mut bytes = [0u8; 16];
+                            if !read_complete(&mut reader, &mut bytes)? {
+                                break;
+                            }
+                            check.extend_from_slice(&bytes);
+                            Some(AppliedPosition {
+                                term: u64::from_le_bytes(bytes[..8].try_into().unwrap()),
+                                index: u64::from_le_bytes(bytes[8..].try_into().unwrap()),
+                            })
+                        }
+                        other => {
+                            return Err(Error::Engine(format!("wal: unknown record kind {other}")))
+                        }
+                    }
+                }
+                other => {
+                    return Err(Error::Engine(format!(
+                        "wal: unsupported record version {other}"
+                    )))
+                }
+            };
+            let mut len_bytes = [0u8; 4];
+            if !read_complete(&mut reader, &mut len_bytes)? {
+                break;
+            }
+            check.extend_from_slice(&len_bytes);
+            let len = u32::from_le_bytes(len_bytes);
             if len > MAX_RECORD_LEN {
                 break;
             }
-
             let mut body = vec![0u8; len as usize + CRC_LEN];
-            if reader.read_exact(&mut body).is_err() {
+            if !read_complete(&mut reader, &mut body)? {
                 break;
             }
             let (payload, crc_bytes) = body.split_at(len as usize);
-            let want = u32::from_le_bytes([crc_bytes[0], crc_bytes[1], crc_bytes[2], crc_bytes[3]]);
-
-            // Cover version + len + payload, so a flipped length is caught too.
-            let mut check = Vec::with_capacity(1 + 4 + payload.len());
-            check.push(header[4]);
-            check.extend_from_slice(&header[5..9]);
             check.extend_from_slice(payload);
+            let want = u32::from_le_bytes(crc_bytes.try_into().unwrap());
             if crc32(&check) != want {
                 break;
             }
-
-            // `?`, deliberately NOT the `break` used for a CRC mismatch above: a record whose
-            // checksum verifies but whose payload will not decode is a real inconsistency, not
-            // a torn tail. Breaking here would silently truncate the log at a point the data
-            // says is intact, so this must propagate.
+            // Only a complete, CRC-valid record can assert a position. An ordering
+            // violation fails the entire open; it must never truncate to a usable prefix.
+            if let Some(at) = position {
+                check_position(previous, at)?;
+                previous = Some(at);
+            }
             batches.push(decode_batch(payload)?);
-            good_end += (HEADER_LEN + len as usize + CRC_LEN) as u64;
+            positions.push(position);
+            good_end += (4 + check.len() + CRC_LEN) as u64;
         }
 
         file.seek(SeekFrom::Start(good_end)).map_err(io)?;
         Ok(Replay {
             batches,
+            positions,
             discarded_tail_bytes: total - good_end,
         })
     }
 
-    /// Append one batch and flush it to the OS, then to the device.
-    ///
-    /// `sync_all` is what makes the write actually survive power loss; without it the
-    /// record sits in the page cache and the durability claim would be false.
+    /// Append an unpositioned v2 batch. It conveys no replicated progress.
     pub fn append(&mut self, batch: &WriteBatch) -> Result<()> {
+        self.append_record(batch, None)
+    }
+
+    /// Persist the batch and its exact apply position under a single CRC and fsync.
+    pub fn append_applied(&mut self, batch: &WriteBatch, at: AppliedPosition) -> Result<()> {
+        check_position(self.applied, at)?;
+        self.append_record(batch, Some(at))
+    }
+
+    fn append_record(&mut self, batch: &WriteBatch, at: Option<AppliedPosition>) -> Result<()> {
+        if self.poisoned {
+            return Err(Error::Engine(
+                "wal: previous append failed; reopen required".into(),
+            ));
+        }
         let payload = encode_batch(batch);
         let len = u32::try_from(payload.len())
             .map_err(|_| Error::Engine("wal: batch exceeds u32 length".into()))?;
         if len > MAX_RECORD_LEN {
             return Err(Error::Engine(format!(
-                "wal: batch of {len} bytes exceeds the {MAX_RECORD_LEN} byte record limit"
+                "wal: batch exceeds the {MAX_RECORD_LEN} byte record limit"
             )));
         }
-
-        let mut check = Vec::with_capacity(1 + 4 + payload.len());
-        check.push(VERSION);
+        let mut check = vec![
+            VERSION_V2,
+            if at.is_some() {
+                kind::POSITIONED
+            } else {
+                kind::UNPOSITIONED
+            },
+        ];
+        if let Some(at) = at {
+            check.extend_from_slice(&at.term.to_le_bytes());
+            check.extend_from_slice(&at.index.to_le_bytes());
+        }
         check.extend_from_slice(&len.to_le_bytes());
         check.extend_from_slice(&payload);
-        let crc = crc32(&check);
-
-        let mut rec = Vec::with_capacity(HEADER_LEN + payload.len() + CRC_LEN);
-        rec.extend_from_slice(&MAGIC);
-        rec.push(VERSION);
-        rec.extend_from_slice(&len.to_le_bytes());
-        rec.extend_from_slice(&payload);
-        rec.extend_from_slice(&crc.to_le_bytes());
-
-        self.file.write_all(&rec).map_err(io)?;
-        self.file.sync_all().map_err(io)?;
+        let mut record = MAGIC.to_vec();
+        record.extend_from_slice(&check);
+        record.extend_from_slice(&crc32(&check).to_le_bytes());
+        // Never append a successful record behind an incomplete/uncertain append.
+        // Otherwise replay would discard a subsequently acknowledged write.
+        if let Err(e) = self
+            .file
+            .write_all(&record)
+            .and_then(|_| self.file.sync_all())
+        {
+            self.poisoned = true;
+            return Err(io(e));
+        }
+        if at.is_some() {
+            self.applied = at;
+        }
         Ok(())
+    }
+
+    pub(crate) fn relocated(&mut self, path: PathBuf) {
+        self.path = path;
     }
 
     /// The log's path, for diagnostics.
@@ -498,7 +585,7 @@ mod tests {
             wal.append(&batch(&[(b"a", b"1")])).unwrap();
         }
         let mut bytes = std::fs::read(&path).unwrap();
-        bytes[5..9].copy_from_slice(&u32::MAX.to_le_bytes());
+        bytes[6..10].copy_from_slice(&u32::MAX.to_le_bytes());
         std::fs::write(&path, &bytes).unwrap();
 
         let (_w, replay) = Wal::open(&path).unwrap();
@@ -540,5 +627,135 @@ mod tests {
         assert_eq!(crc32(b""), 0x0000_0000);
         assert_eq!(crc32(b"123456789"), 0xCBF4_3926);
         assert_eq!(crc32(b"a"), 0xE8B7_BE43);
+    }
+}
+
+#[cfg(test)]
+mod positioned_tests {
+    use super::*;
+    fn path(name: &str) -> PathBuf {
+        let dir =
+            std::env::temp_dir().join(format!("kv9-positioned-{}-{name}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        dir.join("wal")
+    }
+    fn batch(value: &[u8]) -> WriteBatch {
+        let mut batch = WriteBatch::new();
+        batch.put(ColumnFamily::Default, b"key".to_vec(), value.to_vec());
+        batch
+    }
+    fn at(term: u64, index: u64) -> AppliedPosition {
+        AppliedPosition { term, index }
+    }
+
+    #[test]
+    fn positioned_data_and_exact_pair_survive_every_torn_tail_cut() {
+        let source = path("tears");
+        let (mut wal, _) = Wal::open(&source).unwrap();
+        wal.append_applied(&batch(b"first"), at(7, 4)).unwrap();
+        let first_len = std::fs::metadata(&source).unwrap().len() as usize;
+        wal.append_applied(&batch(b"second"), at(9, 15)).unwrap();
+        drop(wal);
+        let bytes = std::fs::read(&source).unwrap();
+        let torn = source.with_extension("torn");
+        for cut in first_len..bytes.len() {
+            std::fs::write(&torn, &bytes[..cut]).unwrap();
+            let (_, replay) = Wal::open(&torn).unwrap();
+            assert_eq!(
+                replay.positions,
+                vec![Some(at(7, 4))],
+                "torn position must not become authoritative at byte {cut}"
+            );
+            assert_eq!(
+                replay.batches.len(),
+                1,
+                "data and position must recover together"
+            );
+        }
+        let (_, replay) = Wal::open(&source).unwrap();
+        assert_eq!(replay.positions, vec![Some(at(7, 4)), Some(at(9, 15))]);
+    }
+
+    #[test]
+    fn crc_covers_term_index_kind_and_payload() {
+        let source = path("crc-position");
+        let (mut wal, _) = Wal::open(&source).unwrap();
+        wal.append_applied(&batch(b"data"), at(1, 12)).unwrap();
+        drop(wal);
+        let original = std::fs::read(&source).unwrap();
+        for offset in [5, 6, 14, 27] {
+            let mut bytes = original.clone();
+            bytes[offset] ^= 1;
+            let damaged = source.with_extension("damaged");
+            std::fs::write(&damaged, bytes).unwrap();
+            if let Ok((_, replay)) = Wal::open(&damaged) {
+                assert!(
+                    replay.positions.is_empty(),
+                    "CRC must cover field at {offset}"
+                );
+                assert!(replay.batches.is_empty());
+            }
+        }
+    }
+
+    #[test]
+    fn valid_crc_out_of_order_records_refuse_the_whole_open_without_truncation() {
+        for next in [7, 3] {
+            let source = path(&format!("ordering-{next}"));
+            let second = source.with_extension("second");
+            let (mut first, _) = Wal::open(&source).unwrap();
+            first.append_applied(&batch(b"first"), at(2, 7)).unwrap();
+            let (mut later, _) = Wal::open(&second).unwrap();
+            later
+                .append_applied(&batch(b"invalid"), at(3, next))
+                .unwrap();
+            drop((first, later));
+            let mut bytes = std::fs::read(&source).unwrap();
+            bytes.extend(std::fs::read(second).unwrap());
+            std::fs::write(&source, &bytes).unwrap();
+            let error = Wal::open(&source).unwrap_err();
+            assert!(
+                error.to_string().contains("applied position must advance"),
+                "{error}"
+            );
+            assert_eq!(
+                std::fs::read(&source).unwrap(),
+                bytes,
+                "ordering refusal must not expose/truncate to a prefix"
+            );
+        }
+    }
+
+    #[test]
+    fn v1_and_unpositioned_v2_do_not_invent_an_applied_position() {
+        let source = path("mixed");
+        let payload = encode_batch(&batch(b"legacy"));
+        let mut check = vec![VERSION_V1];
+        check.extend_from_slice(&(payload.len() as u32).to_le_bytes());
+        check.extend_from_slice(&payload);
+        let mut record = MAGIC.to_vec();
+        record.extend_from_slice(&check);
+        record.extend_from_slice(&crc32(&check).to_le_bytes());
+        std::fs::write(&source, record).unwrap();
+        let (mut wal, _) = Wal::open(&source).unwrap();
+        wal.append(&batch(b"local")).unwrap();
+        wal.append_applied(&batch(b"replicated"), at(4, 30))
+            .unwrap();
+        drop(wal);
+        let (_, replay) = Wal::open(&source).unwrap();
+        assert_eq!(replay.positions, vec![None, None, Some(at(4, 30))]);
+    }
+
+    #[test]
+    fn failed_append_poison_prevents_acknowledgements_behind_a_torn_record() {
+        let source = path("poison");
+        let (mut wal, _) = Wal::open(&source).unwrap();
+        wal.file = File::open(&source).unwrap(); // force a real EBADF on write
+        assert!(wal.append(&batch(b"fails")).is_err());
+        wal.file = OpenOptions::new().append(true).open(&source).unwrap();
+        let error = wal.append(&batch(b"must-not-ack")).unwrap_err();
+        assert!(error.to_string().contains("reopen required"));
+        assert_eq!(std::fs::metadata(source).unwrap().len(), 0);
     }
 }
