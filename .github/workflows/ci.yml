@@ -292,14 +292,14 @@ jobs:
           printf '%s\n' "$output"
           [ "$rc" -eq 0 ] || { printf 'cargo test exited %s\n' "$rc" >&2; exit "$rc"; }
 
-          printf '%s\n' "$output" | grep -qx 'running 15 tests' || {
-            printf 'expected exactly 15 selected tests; the harness reported: %s\n' \
+          printf '%s\n' "$output" | grep -qx 'running 17 tests' || {
+            printf 'expected exactly 17 selected tests; the harness reported: %s\n' \
               "$(printf '%s\n' "$output" | grep -E '^running ')" >&2
             exit 1
           }
           printf '%s\n' "$output" \
-            | grep -q '^test result: ok\. 15 passed; 0 failed; 0 ignored;' || {
-            printf 'expected 15 passed / 0 failed / 0 ignored, got: %s\n' \
+            | grep -q '^test result: ok\. 17 passed; 0 failed; 0 ignored;' || {
+            printf 'expected 17 passed / 0 failed / 0 ignored, got: %s\n' \
               "$(printf '%s\n' "$output" | grep '^test result:')" >&2
             exit 1
           }
@@ -321,8 +321,8 @@ jobs:
           printf '%s\n' "$output"
           [ "$rc" -eq 0 ] || exit "$rc"
           printf '%s\n' "$output" \
-            | grep -q '^test result: ok\. 2 passed; 0 failed; 15 ignored;' || {
-            printf 'expected 2 passed / 0 failed / 15 ignored, got: %s\n' \
+            | grep -q '^test result: ok\. 3 passed; 0 failed; 17 ignored;' || {
+            printf 'expected 3 passed / 0 failed / 17 ignored, got: %s\n' \
               "$(printf '%s\n' "$output" | grep '^test result:')" >&2
             exit 1
           }
