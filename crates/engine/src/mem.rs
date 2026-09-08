@@ -2,10 +2,11 @@
 
 use std::sync::RwLock;
 
-use kv9_common::{Result, Value};
+use kv9_common::{AppliedPosition, Error, Result, Value};
 use rpds::RedBlackTreeMapSync;
 
 use crate::cf::ColumnFamily;
+use crate::replicated::{DurableAppliedPosition, ReplicatedEngine};
 use crate::write_batch::{Mutation, WriteBatch};
 use crate::{Durability, Engine, ReadView, ScanEntry};
 
@@ -31,6 +32,17 @@ struct State {
     default: CfMap,
     lock: CfMap,
     write: CfMap,
+    /// The replicated position of the last [`ReplicatedEngine::write_applied`], if any.
+    ///
+    /// **In this struct, and therefore under this lock, on purpose.** The position and the
+    /// data it describes must move together or not at all: a separate field behind a
+    /// separate lock would let a reader observe the batch without the position, or the
+    /// position without the batch, which is the same crash window that makes a two-call
+    /// write-then-record API unusable.
+    ///
+    /// It never leaves this engine as a number. See
+    /// [`MemEngine::applied_position`](ReplicatedEngine::applied_position).
+    applied: Option<AppliedPosition>,
 }
 
 impl State {
@@ -196,6 +208,76 @@ impl Engine for MemEngine {
         // forces a copy on the next write. A real engine hands back an equally cheap
         // handle (immutable SSTs + a pinned memtable) behind this same signature.
         Ok(Box::new(MemSnapshot { state: self.read() }))
+    }
+}
+
+impl ReplicatedEngine for MemEngine {
+    /// Apply the batch and record its position under **one** acquisition of the state lock.
+    ///
+    /// That single acquisition is the whole implementation of the atomicity this trait
+    /// requires: there is no instant at which a reader, or a later `write_applied`, can
+    /// observe the mutations without the position or the position without the mutations.
+    fn write_applied(&self, batch: WriteBatch, at: AppliedPosition) -> Result<()> {
+        let mut state = self.state.write().expect("mem engine lock poisoned");
+
+        // Checked BEFORE anything is mutated, so a refused position leaves no partial batch
+        // behind — a caller that retries after this error finds the state it had.
+        //
+        // Index only; no ordering is built on term. Ruled for task #13 (acceptance 2c):
+        // term is not monotonic across an election the way index is, so ordering on it
+        // would refuse legitimate sequences. A legal GAP is fine — only repeating or going
+        // backwards is refused.
+        if let Some(previous) = state.applied {
+            if at.index <= previous.index {
+                return Err(Error::Engine(format!(
+                    "engine: applied position must advance; last applied index {}, \
+                     refused index {}",
+                    previous.index, at.index
+                )));
+            }
+        }
+
+        for m in batch.mutations() {
+            match m {
+                Mutation::Put { cf, key, value } => {
+                    state.cf_mut(*cf).insert_mut(key.clone(), value.clone());
+                }
+                Mutation::Delete { cf, key } => {
+                    state.cf_mut(*cf).remove_mut(key);
+                }
+            }
+        }
+        state.applied = Some(at);
+        Ok(())
+    }
+
+    /// Always [`DurableAppliedPosition::Volatile`] — never a number.
+    ///
+    /// This engine *has* a position, and within one process run it is perfectly good. That
+    /// is exactly why this answers with a variant instead of that value: nothing here
+    /// survives a restart, so a number returned through this method could be used to
+    /// authorise truncating a raft log or reclaiming an object, and would then be wrong in
+    /// the one direction that loses data.
+    ///
+    /// The in-memory value is reachable through
+    /// [`MemEngine::volatile_applied_position`] — an *inherent* method, so a caller generic
+    /// over `ReplicatedEngine` cannot reach it at all. Getting at it means naming this
+    /// concrete type, which is a visible decision rather than a silent one.
+    fn applied_position(&self) -> Result<DurableAppliedPosition> {
+        Ok(DurableAppliedPosition::Volatile)
+    }
+}
+
+impl MemEngine {
+    /// The position last recorded by [`write_applied`](ReplicatedEngine::write_applied),
+    /// for tests and diagnostics.
+    ///
+    /// Named `volatile_` because that is the whole caveat: true of this process, and
+    /// meaningless after a restart. **Never a truncation or reclaim bound** — that question
+    /// is [`applied_position`](ReplicatedEngine::applied_position)'s, and it refuses to
+    /// answer with a number.
+    pub fn volatile_applied_position(&self) -> Option<AppliedPosition> {
+        self.state.read().expect("mem engine lock poisoned").applied
     }
 }
 
@@ -552,5 +634,142 @@ mod tests {
         // `limit` truncates.
         let got = view.scan(ColumnFamily::Default, b"a", b"z", 1).unwrap();
         assert_eq!(got, vec![(b"a".to_vec(), b"1".to_vec())]);
+    }
+
+    // -----------------------------------------------------------------------------------
+    // ReplicatedEngine
+    // -----------------------------------------------------------------------------------
+
+    fn at(term: u64, index: u64) -> AppliedPosition {
+        AppliedPosition { term, index }
+    }
+
+    fn one_put(key: &[u8], value: &[u8]) -> WriteBatch {
+        let mut b = WriteBatch::new();
+        b.put(ColumnFamily::Default, key.to_vec(), value.to_vec());
+        b
+    }
+
+    #[test]
+    fn write_applied_lands_the_data_and_the_position_together() {
+        let engine = MemEngine::new();
+        engine
+            .write_applied(one_put(b"k", b"v"), at(7, 42))
+            .unwrap();
+        assert_eq!(
+            engine.get(ColumnFamily::Default, b"k").unwrap().as_deref(),
+            Some(&b"v"[..])
+        );
+        assert_eq!(engine.volatile_applied_position(), Some(at(7, 42)));
+    }
+
+    #[test]
+    fn the_position_is_never_reported_as_a_number_through_the_trait() {
+        // The load-bearing property. A MemEngine that has applied through index 42 still
+        // answers `Volatile`, because that 42 does not survive a restart and would
+        // otherwise be usable to authorise truncation.
+        let engine = MemEngine::new();
+        engine
+            .write_applied(one_put(b"k", b"v"), at(7, 42))
+            .unwrap();
+        assert_eq!(
+            engine.applied_position().unwrap(),
+            DurableAppliedPosition::Volatile
+        );
+        // ...and the value IS there, so this is not passing merely because nothing applied.
+        assert_eq!(engine.volatile_applied_position(), Some(at(7, 42)));
+    }
+
+    #[test]
+    fn a_position_that_does_not_advance_is_refused_and_writes_nothing() {
+        let engine = MemEngine::new();
+        engine
+            .write_applied(one_put(b"k", b"first"), at(1, 10))
+            .unwrap();
+
+        for backwards in [at(1, 10), at(2, 10), at(1, 9), at(9, 1)] {
+            let err = engine
+                .write_applied(one_put(b"k", b"second"), backwards)
+                .expect_err("index must advance");
+            assert!(
+                format!("{err}").contains("must advance"),
+                "unexpected error: {err}"
+            );
+        }
+
+        // Refused before mutating: the value and the position are both untouched. Without
+        // this half, an implementation that wrote the batch and *then* checked would pass
+        // the assertions above while having corrupted the state.
+        assert_eq!(
+            engine.get(ColumnFamily::Default, b"k").unwrap().as_deref(),
+            Some(&b"first"[..])
+        );
+        assert_eq!(engine.volatile_applied_position(), Some(at(1, 10)));
+    }
+
+    #[test]
+    fn a_gap_in_indices_is_legal_and_term_does_not_order() {
+        // Ruled for task #13 (2c): index orders, term does not. A term going BACKWARDS
+        // while the index advances must be accepted -- refusing it would reject a
+        // legitimate sequence, and this is the assertion that stops someone "tightening"
+        // the check into comparing the pair.
+        let engine = MemEngine::new();
+        engine
+            .write_applied(one_put(b"a", b"1"), at(5, 10))
+            .unwrap();
+        engine
+            .write_applied(one_put(b"b", b"2"), at(5, 40))
+            .unwrap();
+        engine
+            .write_applied(one_put(b"c", b"3"), at(2, 41))
+            .unwrap();
+        assert_eq!(engine.volatile_applied_position(), Some(at(2, 41)));
+    }
+
+    #[test]
+    fn plain_write_does_not_move_the_position() {
+        // The named gap, pinned as behaviour rather than left to be discovered. `write` is
+        // still reachable and deliberately does NOT touch the position; task #17 closes the
+        // apply path with a capability trait exposing only `write_applied`.
+        let engine = MemEngine::new();
+        engine
+            .write_applied(one_put(b"k", b"v"), at(1, 10))
+            .unwrap();
+        engine.write(one_put(b"k2", b"v2")).unwrap();
+        assert_eq!(
+            engine.get(ColumnFamily::Default, b"k2").unwrap().as_deref(),
+            Some(&b"v2"[..]),
+            "the data must land"
+        );
+        assert_eq!(
+            engine.volatile_applied_position(),
+            Some(at(1, 10)),
+            "but the position must not move"
+        );
+    }
+
+    #[test]
+    fn a_fresh_engine_has_no_position_and_accepts_any_first_index() {
+        let engine = MemEngine::new();
+        assert_eq!(engine.volatile_applied_position(), None);
+        assert_eq!(
+            engine.applied_position().unwrap(),
+            DurableAppliedPosition::Volatile
+        );
+        // No lower bound on the first index: a restarted volatile engine legitimately
+        // starts wherever the log it is fed starts.
+        engine
+            .write_applied(one_put(b"k", b"v"), at(3, 900))
+            .unwrap();
+        assert_eq!(engine.volatile_applied_position(), Some(at(3, 900)));
+    }
+
+    #[test]
+    fn an_empty_batch_still_advances_the_position() {
+        // A fence-rejected command applies no mutations but must still move the watermark,
+        // or the position falls behind the log and reclaim stalls (task #17 item 3).
+        let engine = MemEngine::new();
+        engine.write_applied(WriteBatch::new(), at(1, 10)).unwrap();
+        assert_eq!(engine.volatile_applied_position(), Some(at(1, 10)));
     }
 }

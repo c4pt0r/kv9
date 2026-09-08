@@ -103,9 +103,20 @@ pub trait ReplicatedEngine: Engine {
     ///
     /// No reader and no restart may observe one without the other.
     ///
-    /// Rejecting a non-monotonic `at` is a **recovery-time** obligation, not a write-time
-    /// one; see the module docs on why a violation fails the whole open rather than
-    /// truncating to a prefix.
+    /// # Ordering
+    ///
+    /// An `at` whose index does not advance past the last applied one is **refused**, and
+    /// refused *before* any mutation is made, so a rejected call leaves no partial batch.
+    /// Comparison is on **index only** — term is not monotonic across an election the way
+    /// index is, so ordering on it would refuse legitimate sequences (task #13, 2c). A gap
+    /// in indices is legal; repeating or going backwards is not.
+    ///
+    /// This is a write-time check *in addition to* the recovery-time obligation, not
+    /// instead of it. They catch different things and neither implies the other: this one
+    /// says a live caller fed a position out of order, which is a bug in the caller and
+    /// surfaces immediately as apply poison; the recovery-time one says the records in a
+    /// *file* disagree with each other, which is discovered only on replay and fails the
+    /// whole open (see the module docs on why it must not yield a usable prefix).
     fn write_applied(&self, batch: WriteBatch, at: AppliedPosition) -> Result<()>;
 
     /// How far this engine has durably applied.
