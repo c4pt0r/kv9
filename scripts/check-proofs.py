@@ -76,6 +76,14 @@ def controls(lean, source, root):
     assert vote.count(prerequisite) == 1
     cases.append(("DurableVote.lean", "missing namespace precondition",
                   vote.replace(prerequisite, "(name : True)"), "Application type mismatch"))
+    history = (source / "History.lean").read_text()
+    eligibility = "previous ≤ slot && allowed slot action"
+    assert history.count(eligibility) == 1
+    cases.append(("History.lean", "missing history eligibility",
+                  history.replace(eligibility, "previous ≤ slot && true"), "Type mismatch"))
+    cases.append(("History.lean", "weakened real-time order",
+                  history.replace("leftResponse < rightInvocation", "leftResponse ≤ rightInvocation"),
+                  "omega could not prove the goal"))
     for i, (filename, name, mutant, expected) in enumerate(cases):
         original = (source / filename).read_text()
         if mutant == original:

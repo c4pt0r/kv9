@@ -8,3 +8,7 @@
 *.swp
 .idea/
 .vscode/
+
+# Python acceptance tooling
+__pycache__/
+*.py[cod]
