@@ -44,10 +44,11 @@ jobs:
     timeout-minutes: 40
     env:
       KV9_KIND_CLUSTER: kv9-chaos-ci-${{ github.run_id }}-${{ github.run_attempt }}
-      KUBECONFIG: ${{ runner.temp }}/kv9-chaos.kubeconfig
     steps:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
+      - name: Select the run's isolated kubeconfig
+        run: echo "KUBECONFIG=$RUNNER_TEMP/kv9-chaos.kubeconfig" >> "$GITHUB_ENV"
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y protobuf-compiler cmake build-essential
       - name: Install pinned Kind and Helm

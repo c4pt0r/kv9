@@ -111,3 +111,10 @@ orchestration availability is a separate deployment obligation.
 
 Hosted results for this new workflow must be observed at its published commit;
 the baseline CI success alone does not establish the new jobs passed.
+
+The first hosted submission rejected a job-level `runner.temp` expression before
+starting either job. Moving kubeconfig selection into a runner step fixes the
+unsupported context. The existing `pr-gate` now runs pinned actionlint over both
+workflow files. Locally, the linter rejected the original expression at the
+expected context error and accepted the corrected workflows. This failure was
+workflow validation, not a proof or database test result.
