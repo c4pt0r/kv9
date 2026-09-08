@@ -176,7 +176,7 @@ impl<E: Engine> MetaRaft<E> {
                         .into(),
                 )
             })?;
-        self.raft.propose(cmd.encode())?;
+        self.raft.propose(&cmd)?;
         let mut sm = self.sm.lock().expect("meta sm poisoned");
         let applied = drive_apply(pump.as_ref(), &mut *sm)?;
         if applied.is_empty() {
@@ -1041,7 +1041,7 @@ mod tests {
         let at = cluster
             .peer(leader)
             .unwrap()
-            .propose_traced(payload.clone())
+            .propose_raw_for_harness(payload.clone())
             .unwrap();
         let mut matched = BTreeSet::new();
         for _ in 0..500 {
@@ -1523,7 +1523,7 @@ mod tests {
         let orphan_at = cluster
             .peer(leader1)
             .unwrap()
-            .propose_traced(orphan_payload.clone())
+            .propose_raw_for_harness(orphan_payload.clone())
             .unwrap();
 
         let (_, durable) = node(&nodes, leader2)

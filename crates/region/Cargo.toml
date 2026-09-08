@@ -9,3 +9,9 @@ description = "kv9 region layer: Region, RegionRouter, epoch, throughput-aware s
 kv9-common.workspace = true
 kv9-engine.workspace = true
 kv9-raft.workspace = true
+
+[features]
+testing = ["kv9-raft/testing"]
+
+[dev-dependencies]
+kv9-raft = { workspace = true, features = ["testing"] }

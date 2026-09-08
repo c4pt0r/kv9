@@ -225,6 +225,43 @@ jobs:
             exit 1
           }
 
+      # Task #9 tripwires: four independent named steps. The two selftests
+      # consume exact terminal markers so an rc=0 early exit cannot masquerade
+      # as a successful instrument run.
+      - name: Apply-store tripwire selftest
+        run: |
+          set +e
+          output="$(scripts/apply-store-tripwire-selftest.sh "$GITHUB_WORKSPACE/scripts/apply-store-tripwire.sh")"
+          rc=$?
+          set -e
+          printf '%s\n' "$output"
+          [ "$rc" -eq 0 ] || exit "$rc"
+          last="${output##*$'\n'}"
+          [ "$last" = "7 passed, 0 failed" ] || {
+            printf 'expected exact terminal selftest count, got: %s\n' "$last" >&2
+            exit 1
+          }
+
+      - name: Apply-store tripwire
+        run: scripts/apply-store-tripwire.sh
+
+      - name: Manifest-key tripwire selftest
+        run: |
+          set +e
+          output="$(scripts/manifest-key-tripwire-selftest.sh "$GITHUB_WORKSPACE/scripts/manifest-key-tripwire.sh")"
+          rc=$?
+          set -e
+          printf '%s\n' "$output"
+          [ "$rc" -eq 0 ] || exit "$rc"
+          last="${output##*$'\n'}"
+          [ "$last" = "8 passed, 0 failed" ] || {
+            printf 'expected exact terminal selftest count, got: %s\n' "$last" >&2
+            exit 1
+          }
+
+      - name: Manifest-key tripwire
+        run: scripts/manifest-key-tripwire.sh
+
   # The MinIO backend's behaviour is a property of the SERVER, not of our code, so it cannot
   # be checked without one. `crates/engine/tests/minio_backend.rs` is `#[ignore]`d for exactly
   # that reason: without an endpoint those tests report as ignored rather than passing
