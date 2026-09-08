@@ -7,7 +7,7 @@
 //!
 //! The schema is **fixed and versioned** — no user DDL (§1). Adding a column is
 //! forward-compatible via the tag-length value encoding ([`crate::codec`]); adding a
-//! table or index is a migration step ([`crate::migrate`], §7).
+//! table or index is a migration step ([`crate::migrate`](mod@crate::migrate), §7).
 
 /// The current hardcoded schema version (METADATA-CATALOG §2, §7). New binaries carry
 /// migration steps `vN → vN+1`; the persisted `schema_version` row gates which run.

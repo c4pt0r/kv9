@@ -9,7 +9,7 @@
 //! provider pool.
 //!
 //! The relational catalog engine (`docs/METADATA-CATALOG.md`) lives in
-//! [`schema`]/[`codec`]/[`store`]/[`tables`]/[`migrate`]: `membership / catalog /
+//! [`schema`]/[`codec`]/[`store`]/[`tables`]/[`migrate`](mod@crate::migrate): `membership / catalog /
 //! routing / placement / tso` become **one [`MetaStore`]** — a fixed, versioned schema
 //! with auto-maintained indexes and transactions over the system keyspace KV. The
 //! legacy in-memory [`Catalog`]/[`Membership`]/[`RoutingTable`] structs remain as the

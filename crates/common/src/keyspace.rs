@@ -8,7 +8,7 @@ use crate::ids::{KeyspaceId, TenantId, TxnGroupId};
 ///
 /// The mode byte in the physical key encoding is derived from this (DESIGN §3.4):
 /// `Txn` → `'t'`, `Raw` → `'r'`. The reserved system keyspace uses `'s'` (see
-/// [`KeyMode::System`]).
+/// [`crate::codec::KeyMode::System`]).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ApiType {
     /// MVCC + Percolator 2PC + Snapshot Isolation (DESIGN §3.2, §9.1).
