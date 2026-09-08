@@ -5358,9 +5358,11 @@ mod tests {
 
     /// Full-runtime in-process harness helpers for the deterministic
     /// product-chain registration scene (Tess's blocker 3 on `6c32536`).
-    fn free_addr_for_e2e() -> std::net::SocketAddr {
-        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
-        listener.local_addr().unwrap()
+    fn bound_listener_for_e2e() -> std::net::TcpListener {
+        // Retain ownership until start_core adopts the listener. Returning an
+        // address and rebinding let another runtime/outbound connection steal
+        // the port during the persistence-matrix workspace run.
+        std::net::TcpListener::bind("127.0.0.1:0").unwrap()
     }
 
     fn backend_view(rt: &NodeRuntime, root: &RootDescriptor) -> RuntimeBackend {
@@ -5455,7 +5457,9 @@ mod tests {
                 .unwrap()
                 .as_nanos()
         ));
-        let addrs: Vec<std::net::SocketAddr> = (0..5).map(|_| free_addr_for_e2e()).collect();
+        let listeners: Vec<_> = (0..5).map(|_| bound_listener_for_e2e()).collect();
+        let addrs: Vec<_> = listeners.iter().map(|l| l.local_addr().unwrap()).collect();
+        let mut listeners = listeners.into_iter();
         let voters = (1..=3u64)
             .map(|id| {
                 Ok(kv9_common::RootVoter {
@@ -5487,12 +5491,17 @@ mod tests {
 
         let mut rts: Vec<NodeRuntime> = (1..=3u64)
             .map(|id| {
-                NodeRuntime::start_with_root(
+                NodeRuntime::start_core(
                     NodeId(id),
                     config_for(id),
                     auth(),
                     root.clone(),
                     StoreIdentity::for_voter(&root, NodeId(id)).unwrap(),
+                    None,
+                    StartOverrides {
+                        listener: Some(listeners.next().unwrap()),
+                        ..Default::default()
+                    },
                 )
                 .unwrap()
             })
@@ -5509,7 +5518,7 @@ mod tests {
             .unwrap();
         let ticket4 = admit4.join_ticket.expect("admission mints a ticket");
         rts.push(
-            NodeRuntime::start_with_root_and_ticket(
+            NodeRuntime::start_core(
                 NodeId(4),
                 config_for(4),
                 auth(),
@@ -5517,6 +5526,10 @@ mod tests {
                 StoreIdentity::for_joiner(&root, NodeId(4), StoreIncarnation::mint().unwrap())
                     .unwrap(),
                 Some(&ticket4),
+                StartOverrides {
+                    listener: Some(listeners.next().unwrap()),
+                    ..Default::default()
+                },
             )
             .unwrap(),
         );
@@ -5587,7 +5600,7 @@ mod tests {
             .unwrap();
         let ticket5 = admit5.join_ticket.expect("admission mints a ticket");
         rts.push(
-            NodeRuntime::start_with_root_and_ticket(
+            NodeRuntime::start_core(
                 NodeId(5),
                 config_for(5),
                 auth(),
@@ -5595,6 +5608,10 @@ mod tests {
                 StoreIdentity::for_joiner(&root, NodeId(5), StoreIncarnation::mint().unwrap())
                     .unwrap(),
                 Some(&ticket5),
+                StartOverrides {
+                    listener: Some(listeners.next().unwrap()),
+                    ..Default::default()
+                },
             )
             .unwrap(),
         );
@@ -5700,7 +5717,9 @@ mod tests {
                 .unwrap()
                 .as_nanos()
         ));
-        let addrs: Vec<std::net::SocketAddr> = (0..3).map(|_| free_addr_for_e2e()).collect();
+        let listeners: Vec<_> = (0..3).map(|_| bound_listener_for_e2e()).collect();
+        let addrs: Vec<_> = listeners.iter().map(|l| l.local_addr().unwrap()).collect();
+        let mut listeners = listeners.into_iter();
         let voters = (1..=3u64)
             .map(|id| {
                 Ok(kv9_common::RootVoter {
@@ -5720,7 +5739,7 @@ mod tests {
         .unwrap();
         let mut rts: Vec<NodeRuntime> = (1..=3u64)
             .map(|id| {
-                NodeRuntime::start_with_root(
+                NodeRuntime::start_core(
                     NodeId(id),
                     Config {
                         addr: addrs[(id - 1) as usize].to_string(),
@@ -5738,6 +5757,11 @@ mod tests {
                     },
                     root.clone(),
                     StoreIdentity::for_voter(&root, NodeId(id)).unwrap(),
+                    None,
+                    StartOverrides {
+                        listener: Some(listeners.next().unwrap()),
+                        ..Default::default()
+                    },
                 )
                 .unwrap()
             })

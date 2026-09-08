@@ -63,20 +63,26 @@ def controls(lean, source, root):
   omega"""
     assert original.count(proof) == 1
     cases = [
-        ("proof hole", original.replace(proof, proof.rsplit("omega", 1)[0] + "sorry"),
+        ("Quorum.lean", "proof hole", original.replace(proof, proof.rsplit("omega", 1)[0] + "sorry"),
          "declaration uses `sorry`"),
-        ("insufficient membership", original.replace("(h : 3 ≤ voters)", "(h : 2 ≤ voters)"),
+        ("Quorum.lean", "insufficient membership", original.replace("(h : 3 ≤ voters)", "(h : 2 ≤ voters)"),
          "omega could not prove the goal"),
-        ("custom axiom", original.replace("import Std", "import Std\naxiom fake : False")
+        ("Quorum.lean", "custom axiom", original.replace("import Std", "import Std\naxiom fake : False")
          .replace(proof, proof.rsplit("omega", 1)[0] + "have _ := h\n  exact False.elim fake"),
          "untrusted axioms"),
     ]
-    for i, (name, mutant, expected) in enumerate(cases):
+    vote = (source / "DurableVote.lean").read_text()
+    prerequisite = "(name : s.published = true)"
+    assert vote.count(prerequisite) == 1
+    cases.append(("DurableVote.lean", "missing namespace precondition",
+                  vote.replace(prerequisite, "(name : True)"), "Application type mismatch"))
+    for i, (filename, name, mutant, expected) in enumerate(cases):
+        original = (source / filename).read_text()
         if mutant == original:
             raise Rejected(f"control did not mutate its target: {name}")
         tree = root / f"control-{i}"
         shutil.copytree(source, tree)
-        (tree / "Quorum.lean").write_text(mutant)
+        (tree / filename).write_text(mutant)
         work = root / f"control-build-{i}"
         work.mkdir()
         try:
