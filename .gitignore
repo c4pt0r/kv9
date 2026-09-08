@@ -1,5 +1,6 @@
 # Rust build artifacts
 /target
+/kv9-local/
 **/*.rs.bk
 
 # Editor / OS

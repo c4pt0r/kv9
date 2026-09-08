@@ -1,8 +1,4 @@
-//! WAL v2 record layout: constants and framing arithmetic only (task #13/#16).
-//!
-//! **No reader and no writer live here yet.** This module exists so the layout is one
-//! reviewable object before anything depends on it, and so task #17 can be written against
-//! fixed numbers rather than against numbers that are still moving.
+//! WAL v2 record layout, shared by the reader and writer in `wal`.
 //!
 //! # The frame
 //!

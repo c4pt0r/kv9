@@ -24,6 +24,8 @@ pub use minio::{MinioConfig, MinioObjectStore};
 pub use object_store::{MemoryObjectStore, ObjectKey, ObjectStore};
 pub use persist::WalEngine;
 pub use replicated::{DurableAppliedPosition, ReplicatedEngine};
+pub mod checkpoint;
+mod flush_journal;
 pub use sst::{Sst, SstWriter};
 #[cfg(any(test, feature = "testing"))]
 pub use testing::FaultyEngine;

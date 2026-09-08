@@ -11,7 +11,7 @@ use kv9_common::{
     ApiType, Config, Error, KeyspaceId, NodeId, RegionId, Result, TenantId, TxnGroupId,
     META_REGION_0,
 };
-use kv9_engine::{Engine, MemEngine};
+use kv9_engine::{Engine, MemEngine, ReplicatedEngine};
 use kv9_meta::codec::{memcmp_uint, ColumnValue, RowValue};
 use kv9_meta::schema::{
     ColumnId, KEYSPACES_DESC, NODES_DESC, REGIONS_DESC, REGION_PEERS_DESC, SCHEMA_VERSION,
@@ -82,7 +82,7 @@ impl Default for Store<MemEngine> {
 /// probe must fail to compile — `propose_apply` is `#[cfg(test)]`:
 ///
 /// ```compile_fail,E0599
-/// fn probe<E: kv9_engine::Engine>(m: &kv9_server::MetaRaft<E>) {
+/// fn probe<E: kv9_engine::ReplicatedEngine>(m: &kv9_server::MetaRaft<E>) {
 ///     let _ = m.propose_apply(todo!());
 /// }
 /// ```
@@ -92,11 +92,11 @@ impl Default for Store<MemEngine> {
 /// `kv9_raft::ReadyConsume`):
 ///
 /// ```
-/// fn probe<E: kv9_engine::Engine>(m: &kv9_server::MetaRaft<E>) {
+/// fn probe<E: kv9_engine::ReplicatedEngine>(m: &kv9_server::MetaRaft<E>) {
 ///     let _ = m.raft.committed_index();
 /// }
 /// ```
-pub struct MetaRaft<E: Engine = MemEngine> {
+pub struct MetaRaft<E: ReplicatedEngine = MemEngine> {
     /// The PROPOSE face only (task #5): this handle can submit commands but
     /// can never drain committed entries — `take_ready` lives on the
     /// separate `ReadyConsume` trait whose sole production holder is the
@@ -131,7 +131,7 @@ impl MetaRaft<MemEngine> {
     }
 }
 
-impl<E: Engine> MetaRaft<E> {
+impl<E: ReplicatedEngine> MetaRaft<E> {
     pub(crate) fn lock_catalog_txn(&self) -> std::sync::MutexGuard<'_, ()> {
         self.catalog_txn
             .lock()
@@ -208,13 +208,13 @@ impl<E: Engine> MetaRaft<E> {
 /// harness path leaks back into the production build:
 ///
 /// ```compile_fail,E0599
-/// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
+/// fn probe<E: kv9_engine::ReplicatedEngine>(n: &kv9_server::Node<E>) {
 ///     let _ = n.bootstrap();
 /// }
 /// ```
 ///
 /// ```compile_fail,E0599
-/// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
+/// fn probe<E: kv9_engine::ReplicatedEngine>(n: &kv9_server::Node<E>) {
 ///     let _ = n.create_keyspace(todo!(), todo!(), todo!());
 /// }
 /// ```
@@ -223,7 +223,7 @@ impl<E: Engine> MetaRaft<E> {
 /// method; pins the red probes to capability absence, not spelling:
 ///
 /// ```
-/// fn probe<E: kv9_engine::Engine>(n: &kv9_server::Node<E>) {
+/// fn probe<E: kv9_engine::ReplicatedEngine>(n: &kv9_server::Node<E>) {
 ///     let _ = n.local_cluster_identity();
 /// }
 /// ```
@@ -248,7 +248,7 @@ impl<E: Engine> MetaRaft<E> {
 ///     .unwrap_err();
 /// assert!(matches!(err, kv9_common::Error::NotImplemented(_)));
 /// ```
-pub struct Node<E: Engine = MemEngine> {
+pub struct Node<E: ReplicatedEngine = MemEngine> {
     pub id: NodeId,
     pub config: Config,
     pub store: Store<E>,
@@ -288,7 +288,7 @@ impl Node<MemEngine> {
     }
 }
 
-impl<E: Engine> Node<E> {
+impl<E: ReplicatedEngine> Node<E> {
     /// Assemble a node around a supplied meta-region peer and engine. The same engine is
     /// shared by committed state-machine apply and MetaStore reads, so a restart cannot
     /// accidentally open a durable store while continuing to apply into a fresh
@@ -466,8 +466,9 @@ impl<E: Engine> Node<E> {
         self.meta_raft.propose_apply(cmd)
     }
 
-    /// Build the idempotent seed-row command. The elected bootstrap leader proposes
-    /// this through raft; the 3-node harness pumps the resulting Ready entries.
+    /// Build seed rows against an empty catalog. The runtime must drain prior
+    /// terms and bind proposal to the planning term; replaying a stale batch
+    /// would overwrite catalog state. This planner is not idempotent.
     pub fn build_initial_metadata_command(
         &self,
         cluster_id: kv9_common::ClusterId,
@@ -647,7 +648,7 @@ fn schema_version_row() -> RowValue {
 /// The admin / meta API over a node (DESIGN §11; METADATA-CATALOG §4). Authenticated
 /// from day one; Phase-1 wires bootstrap, create/list/get, and cluster-info reads through
 /// the catalog engine + raft. Region splitting remains a typed later-phase stub.
-impl<E: Engine> crate::api::AdminApi for Node<E> {
+impl<E: ReplicatedEngine> crate::api::AdminApi for Node<E> {
     fn create_keyspace(
         &self,
         _caller: &str,
@@ -696,8 +697,13 @@ impl<E: Engine> crate::api::AdminApi for Node<E> {
                 let id = u32::try_from(raw_id).map_err(|_| {
                     Error::MalformedKey(format!("catalog keyspace id {raw_id} exceeds u32"))
                 })?;
+                if id > KeyspaceId::MAX {
+                    return Err(Error::MalformedKey(format!(
+                        "catalog keyspace id {id} exceeds namespace width"
+                    )));
+                }
                 let api_type =
-                    kv9_meta::tables::api_type_from_code(uint_column(&row.value, ColumnId(4))?);
+                    kv9_meta::tables::api_type_from_code(uint_column(&row.value, ColumnId(4))?)?;
                 let txn_group = match api_type {
                     ApiType::Raw => TxnGroupId::DEFAULT,
                     ApiType::Txn => *groups.get(&raw_id).ok_or_else(|| {
@@ -764,7 +770,7 @@ impl<E: Engine> crate::api::AdminApi for Node<E> {
 // keeps a plausible-looking entry point that a future caller can wire up by accident.
 // The only production `RawApi` is `RuntimeBackend`, which holds the driver (task #25).
 
-impl<E: Engine> crate::api::TxnApi for Node<E> {
+impl<E: ReplicatedEngine> crate::api::TxnApi for Node<E> {
     fn kv_begin(
         &self,
         ctx: &crate::api::RequestContext,
@@ -897,7 +903,7 @@ impl<E: Engine> crate::api::TxnApi for Node<E> {
     }
 }
 
-impl<E: Engine> Node<E> {
+impl<E: ReplicatedEngine> Node<E> {
     fn txn_context(
         &self,
         ctx: &crate::api::RequestContext,

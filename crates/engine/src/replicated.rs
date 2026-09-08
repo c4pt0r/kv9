@@ -1,30 +1,13 @@
 //! The seam between replicated apply and the storage engine (task #13).
 //!
-//! # What this replaces, and why
+//! # Durable positioned apply
 //!
-//! UNLANDED(task #16) — this paragraph describes the mechanism task #17 retires. When the
-//! WAL v2 body lands, `APPLIED_INDEX_KEY` no longer exists and the present tense below
-//! becomes false. Nothing will fail to compile: it is prose, so no rustdoc link gate and
-//! no type check covers it.
-//!
-//! Today the apply position is written as ordinary data: `crates/raft/src/state_machine.rs`
-//! puts `APPLIED_INDEX_KEY` into the `Default` column family in the same batch as the
-//! mutations, holding `index.0.to_be_bytes()` — **eight bytes, index only**.
-//!
-//! Two problems, and they are different problems.
-//!
-//! The first is that an index alone cannot identify where apply reached. `AppliedPosition`
-//! is documented in `kv9_common::ids` as `(term, index)` precisely because *"after a
-//! failover the new leader may reuse an index"*. A reclaim decision only needs ordering, so
-//! index alone is sufficient **for that**; establishing that a specific entry applied needs
-//! the pair. Storing only the index makes the second question unanswerable and does not
-//! announce that it has.
-//!
-//! The second is that a key in a column family is reachable by anything that can write a
-//! key. The position is not user data — it is a claim about how far replicated apply has
-//! got, and the only writer entitled to make it is replicated apply. Keeping it in the CF
-//! means every scan has to remember to exclude `0x00..`, which `Engine::checksum` already
-//! documents as a live hazard for the scrubber.
+//! `WalEngine` records the batch and exact `(term, index)` together in a WAL-v2
+//! frame. One CRC covers version, kind, position, length and mutations. Recovery
+//! publishes data and position together and refuses non-advancing complete records.
+//! The apply position is engine state, outside user column families and scans.
+//! Unpositioned writes remain readable for tools and v1 compatibility; they never
+//! advance replicated progress or authorize log reclamation.
 //!
 //! # What this module does NOT contain
 //!
@@ -90,19 +73,12 @@ pub enum DurableAppliedPosition {
 /// * position first: a crash leaves the position ahead of the data, and the log above it may
 ///   be truncated. That is silent data loss, and nothing later can detect it.
 ///
-/// # The gap this trait does not yet close
+/// # Apply capability boundary
 ///
-/// [`Engine::write`] remains available on any `ReplicatedEngine`, and it does not move the
-/// position. So a replicated engine written through the wrong method silently accumulates
-/// data its position does not describe. Today that is prevented by *convention* — the raft
-/// apply path must use `write_applied` exclusively — and a convention is exactly the thing
-/// this project keeps converting into a type.
-///
-/// It is recorded here rather than quietly accepted, because the honest options both cost
-/// something: splitting the traits so a replicated engine does not expose `write` breaks
-/// every reader that holds a `dyn Engine`, and sealing `write` behind a capability is the
-/// larger change. **Left as a named question for the implementation head, not decided by
-/// silence.**
+/// [`Engine::write`] remains available on the full engine for local tools and
+/// legacy compatibility. Production Raft apply holds the narrower `ApplyStore`
+/// trait from kv9-raft, whose only mutation is `write_applied`. Compile-fail
+/// probes guard that boundary; unpositioned histories remain non-reclaimable.
 pub trait ReplicatedEngine: Engine {
     /// Apply `batch` and record that it applied at `at`, atomically.
     ///
@@ -112,9 +88,10 @@ pub trait ReplicatedEngine: Engine {
     ///
     /// An `at` whose index does not advance past the last applied one is **refused**, and
     /// refused *before* any mutation is made, so a rejected call leaves no partial batch.
-    /// Comparison is on **index only** — term is not monotonic across an election the way
-    /// index is, so ordering on it would refuse legitimate sequences (task #13, 2c). A gap
-    /// in indices is legal; repeating or going backwards is not.
+    /// This generic engine contract compares **index only** (task #13, 2c).
+    /// A gap in indices is legal; repeating or going backwards is not. Terms in
+    /// an actual Raft log are nondecreasing, but validating Raft history belongs
+    /// to the runtime, which checks the recovered pair against committed entries.
     ///
     /// This is a write-time check *in addition to* the recovery-time obligation, not
     /// instead of it. They catch different things and neither implies the other: this one

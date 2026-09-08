@@ -75,9 +75,8 @@ impl FencedInner {
 /// b"caller-picked", .. }` and proposed it through the public propose face,
 /// bypassing every gate the attempt layer carried. Hiding the upper layer
 /// alone was insufficient; the WIRE constructor is what must be closed.
-/// Production construction arrives only with the phase-B durable
-/// `PreparedSst` capability; the harness constructor below is the gated
-/// exception.
+/// Production construction consumes the remotely verified `PreparedFlush`
+/// capability; the harness constructor below is the gated exception.
 ///
 /// # Resident guard
 ///
@@ -114,8 +113,25 @@ pub struct ManifestChangePayload {
 }
 
 impl ManifestChangePayload {
+    /// Consume the remote-durable upload capability. Derive both the wire
+    /// content and identity internally; callers supply only the CAS predecessor.
+    pub fn from_prepared(
+        prepared: kv9_engine::checkpoint::PreparedFlush,
+        expected_generation: u64,
+    ) -> kv9_common::Result<Self> {
+        let manifest = prepared.into_manifest();
+        Ok(Self {
+            region: manifest.scope.region,
+            change_id: manifest.change_id(expected_generation)?,
+            expected_generation,
+            changeset: manifest.encode()?,
+            watermark_term: manifest.term,
+            watermark_index: manifest.index,
+        })
+    }
+
     /// Harness-only raw constructor (phase A). The production constructor
-    /// arrives with the durable `PreparedSst` capability (phase B) and will
+    /// consumes the durable `PreparedSst` capability (phase B) and must
     /// derive every field from it.
     #[cfg(any(test, feature = "testing"))]
     pub fn for_harness(

@@ -348,7 +348,13 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     }
                     let mut applied = self.applied.lock().expect("applied poisoned");
                     let mut sm = self.sm.lock().expect("sm poisoned");
-                    let result = match sm.apply_command(entry.index, &cmd) {
+                    let result = match sm.apply_at(
+                        kv9_common::AppliedPosition {
+                            term: entry.term,
+                            index: entry.index.0,
+                        },
+                        &cmd,
+                    ) {
                         Ok(r) => r,
                         Err(e) => {
                             drop(sm);
@@ -537,12 +543,24 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         self.peer.propose_traced(cmd.encode())
     }
 
+    /// Catalog plans are valid only in the term whose ordered barrier they read.
+    pub fn propose_in_term(&self, cmd: &Command, term: u64) -> Result<ProposedAt> {
+        self.peer.propose_in_term(cmd.encode(), Some(term))
+    }
+
     /// One region's authoritative manifest pair, read through this driver's
     /// state machine (task #9). ONE key, one get — precondition P1 is
     /// structural; see `MemStateMachine::manifest_pair`. Lock note: takes
     /// `sm` alone, never while holding `applied` (leaf read).
     pub fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair> {
         self.sm.lock().expect("sm poisoned").manifest_pair(region)
+    }
+
+    pub fn manifest_at(&self, region: u64, generation: u64) -> Result<Option<(u64, u64, Vec<u8>)>> {
+        self.sm
+            .lock()
+            .expect("sm poisoned")
+            .manifest_at(region, generation)
     }
 
     /// Wait until this node has applied `at` — verified by **term + index**,
@@ -980,6 +998,18 @@ impl SeamHandle {
         self.node.manifest_pair(region)
     }
 
+    pub fn manifest_effect(&self, region: u64, intended: &[u8]) -> Result<bool> {
+        self.node.manifest_effect(region, intended)
+    }
+
+    pub fn manifest_transition(
+        &self,
+        region: u64,
+        generation: u64,
+    ) -> Result<Option<crate::ManifestPair>> {
+        self.node.manifest_transition(region, generation)
+    }
+
     /// Compile-time guard (E0080 pattern shared with `ReadBarrier` and
     /// `DrainToken`): adding `Clone`/`Copy` back is a build error.
     #[allow(dead_code)]
@@ -1034,6 +1064,16 @@ pub trait ManifestNode: Send + Sync {
         deadline: Duration,
     ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError>;
     fn manifest_pair(&self, region: u64) -> Result<crate::ManifestPair>;
+    fn manifest_effect(&self, _region: u64, _intended: &[u8]) -> Result<bool> {
+        Ok(false)
+    }
+    fn manifest_transition(
+        &self,
+        _region: u64,
+        _generation: u64,
+    ) -> Result<Option<crate::ManifestPair>> {
+        Ok(None)
+    }
 }
 
 impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for NodeDriver<S, E> {
@@ -1045,6 +1085,24 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> ManifestNode for 
             Ok(at) => Ok(ProposeOutcome::Accepted(at)),
             Err(e) => Ok(ProposeOutcome::RefusedPreAppend(e)),
         }
+    }
+
+    fn manifest_effect(&self, region: u64, intended: &[u8]) -> Result<bool> {
+        self.sm
+            .lock()
+            .expect("sm poisoned")
+            .manifest_effect(region, intended)
+    }
+
+    fn manifest_transition(
+        &self,
+        region: u64,
+        generation: u64,
+    ) -> Result<Option<crate::ManifestPair>> {
+        self.sm
+            .lock()
+            .expect("sm poisoned")
+            .manifest_transition(region, generation)
     }
 
     fn wait_manifest(
@@ -1256,6 +1314,18 @@ mod tests {
         }
         fn durability(&self) -> kv9_engine::Durability {
             kv9_engine::Durability::Volatile
+        }
+    }
+    impl kv9_engine::ReplicatedEngine for FailingEngine {
+        fn write_applied(
+            &self,
+            _: WriteBatch,
+            _: kv9_common::AppliedPosition,
+        ) -> kv9_common::Result<()> {
+            Err(Error::Engine("injected write failure".into()))
+        }
+        fn applied_position(&self) -> kv9_common::Result<kv9_engine::DurableAppliedPosition> {
+            Ok(kv9_engine::DurableAppliedPosition::Volatile)
         }
     }
     // Silence unused-variant lint on Mutation import in some cfgs.

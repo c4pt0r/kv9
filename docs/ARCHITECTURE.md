@@ -1,6 +1,7 @@
 # kv9 — Architecture Diagrams (ASCII)
 
-Companion to `DESIGN.md`. Each diagram cites the DESIGN section it visualizes.
+Target-architecture companion to `DESIGN.md`. These are design diagrams, not a claim that multi-Raft/LSM is implemented.
+Current runtime and recovery flow: [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md). Each diagram cites the DESIGN section it visualizes.
 
 ---
 

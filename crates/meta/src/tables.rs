@@ -163,10 +163,13 @@ pub fn api_type_code(api: ApiType) -> u64 {
 }
 
 /// Inverse of [`api_type_code`].
-pub fn api_type_from_code(code: u64) -> ApiType {
+pub fn api_type_from_code(code: u64) -> Result<ApiType> {
     match code {
-        1 => ApiType::Raw,
-        _ => ApiType::Txn,
+        0 => Ok(ApiType::Txn),
+        1 => Ok(ApiType::Raw),
+        _ => Err(kv9_common::Error::MalformedKey(format!(
+            "unknown catalog API type {code}"
+        ))),
     }
 }
 
@@ -199,7 +202,7 @@ impl<'a, E: Engine> Tables<'a, E> {
     /// (Ren's #25 region-gate seam; Tess's same-view ruling).
     pub fn keyspace_in(txn: &MetaTxn<'_, E>, id: KeyspaceId) -> Result<Option<Keyspace>> {
         let row = txn.get(&schema::KEYSPACES_DESC, &[memcmp_uint(id.0 as u64)])?;
-        Ok(row.map(|r| decode_keyspace(id, &r.value)))
+        row.map(|r| decode_keyspace(id, &r.value)).transpose()
     }
 
     /// Join — *keyspaces of tenant T* → `index_scan(keyspaces, by_tenant, T)`
@@ -212,10 +215,14 @@ impl<'a, E: Engine> Tables<'a, E> {
             &[memcmp_uint(tenant.0)],
             usize::MAX,
         )?;
-        Ok(pks
-            .into_iter()
-            .filter_map(|pk| pk.first().map(|c| KeyspaceId(be_u64(c) as u32)))
-            .collect())
+        pks.into_iter()
+            .map(|pk| {
+                let component = pk.first().ok_or_else(|| {
+                    kv9_common::Error::MalformedKey("empty keyspace index primary key".into())
+                })?;
+                checked_keyspace(crate::codec::decode_uint_component(component)?)
+            })
+            .collect()
     }
 
     /// Join — *regions on node N* → `index_scan(region_peers, by_node, N)` →
@@ -236,7 +243,7 @@ impl<'a, E: Engine> Tables<'a, E> {
             };
             let region_id = crate::codec::decode_uint_component(region_comp)?;
             if let Some(row) = txn.get(&schema::REGIONS_DESC, &[memcmp_uint(region_id)])? {
-                out.push(decode_region(RegionId(region_id), &row.value));
+                out.push(decode_region(RegionId(region_id), &row.value)?);
             }
         }
         Ok(out)
@@ -291,7 +298,15 @@ impl<'a, E: Engine> Tables<'a, E> {
         let Some(row) = txn.get(&schema::REGIONS_DESC, &[memcmp_uint(region_id)])? else {
             return Ok(None);
         };
-        let region = decode_region(RegionId(region_id), &row.value);
+        let region = decode_region(RegionId(region_id), &row.value)?;
+        if region.keyspace_id != keyspace
+            || crate::codec::memcmp_bytes(&region.start_key) != comps[0]
+            || key < region.start_key.as_slice()
+        {
+            return Err(kv9_common::Error::MalformedKey(
+                "region row disagrees with routing index".into(),
+            ));
+        }
         // end_key check: empty end_key = unbounded (to the keyspace's end).
         if region.end_key.is_empty() || key < region.end_key.as_slice() {
             Ok(Some(region))
@@ -318,7 +333,7 @@ impl<'a, E: Engine> Tables<'a, E> {
         let Some(row) = txn.get(&schema::REGIONS_DESC, &[memcmp_uint(id.0)])? else {
             return Ok(None);
         };
-        Ok(Some(decode_region(id, &row.value)))
+        Ok(Some(decode_region(id, &row.value)?))
     }
 
     /// Join — *txn group for key K in keyspace KS* → `index_scan(txn_groups,
@@ -357,29 +372,56 @@ impl<'a, E: Engine> Tables<'a, E> {
 }
 
 /// Decode a `regions` [`RowValue`] into the typed [`Region`] (METADATA-CATALOG §3).
-fn decode_region(id: RegionId, v: &RowValue) -> Region {
-    Region {
+fn decode_region(id: RegionId, v: &RowValue) -> Result<Region> {
+    Ok(Region {
         id,
-        keyspace_id: KeyspaceId(uint_or(v, ColumnId(2)) as u32),
-        start_key: bytes_or(v, ColumnId(3)),
-        end_key: bytes_or(v, ColumnId(4)),
-        epoch_conf: uint_or(v, ColumnId(5)),
-        epoch_ver: uint_or(v, ColumnId(6)),
-        leader_node: NodeId(uint_or(v, ColumnId(7))),
-    }
+        keyspace_id: checked_keyspace(required_uint(v, ColumnId(2))?)?,
+        start_key: required_bytes(v, ColumnId(3))?,
+        end_key: required_bytes(v, ColumnId(4))?,
+        epoch_conf: required_uint(v, ColumnId(5))?,
+        epoch_ver: required_uint(v, ColumnId(6))?,
+        leader_node: NodeId(required_uint(v, ColumnId(7))?),
+    })
 }
 
-/// Decode a `keyspaces` [`RowValue`] into the typed [`Keyspace`] (METADATA-CATALOG §3).
-fn decode_keyspace(id: KeyspaceId, v: &RowValue) -> Keyspace {
-    Keyspace {
+fn decode_keyspace(id: KeyspaceId, v: &RowValue) -> Result<Keyspace> {
+    checked_keyspace(id.0 as u64)?;
+    Ok(Keyspace {
         id,
         name: text_or(v, ColumnId(2)),
-        tenant_id: TenantId(uint_or(v, ColumnId(3))),
-        api_type: api_type_from_code(uint_or(v, ColumnId(4))),
-        start_key: bytes_or(v, ColumnId(5)),
-        end_key: bytes_or(v, ColumnId(6)),
-        state: uint_or(v, ColumnId(7)) as u32,
+        tenant_id: TenantId(required_uint(v, ColumnId(3))?),
+        api_type: api_type_from_code(required_uint(v, ColumnId(4))?)?,
+        start_key: required_bytes(v, ColumnId(5))?,
+        end_key: required_bytes(v, ColumnId(6))?,
+        state: u32::try_from(uint_or(v, ColumnId(7)))
+            .map_err(|_| kv9_common::Error::MalformedKey("keyspace state exceeds u32".into()))?,
         config: bytes_or(v, ColumnId(8)),
+    })
+}
+fn checked_keyspace(id: u64) -> Result<KeyspaceId> {
+    if id > kv9_common::KeyspaceId::MAX as u64 {
+        return Err(kv9_common::Error::MalformedKey(
+            "catalog keyspace id exceeds encoded namespace".into(),
+        ));
+    }
+    Ok(KeyspaceId(id as u32))
+}
+fn required_uint(v: &RowValue, c: ColumnId) -> Result<u64> {
+    match v.get(c) {
+        Some(ColumnValue::Uint(n)) => Ok(*n),
+        _ => Err(kv9_common::Error::MalformedKey(format!(
+            "required catalog uint {} missing or mistyped",
+            c.0
+        ))),
+    }
+}
+fn required_bytes(v: &RowValue, c: ColumnId) -> Result<Vec<u8>> {
+    match v.get(c) {
+        Some(ColumnValue::Bytes(bytes)) => Ok(bytes.clone()),
+        _ => Err(kv9_common::Error::MalformedKey(format!(
+            "required catalog bytes {} missing or mistyped",
+            c.0
+        ))),
     }
 }
 
@@ -400,10 +442,4 @@ fn bytes_or(v: &RowValue, c: ColumnId) -> Vec<u8> {
         Some(ColumnValue::Bytes(b)) => b.clone(),
         _ => Vec::new(),
     }
-}
-fn be_u64(b: &[u8]) -> u64 {
-    let mut buf = [0u8; 8];
-    let n = b.len().min(8);
-    buf[8 - n..].copy_from_slice(&b[..n]);
-    u64::from_be_bytes(buf)
 }

@@ -523,6 +523,12 @@ fn region_routing_skips_overlay_tombstoned_candidate() {
     let s = store();
     seed_routing(&s); // regions 100=[a,b), 101=[b,c) in keyspace 7
     let mut txn = s.begin().unwrap();
+    let peers = txn.scan(&schema::REGION_PEERS_DESC, 100).unwrap();
+    for row in peers {
+        if row.pk.first() == Some(&memcmp_uint(101)) {
+            txn.delete(&schema::REGION_PEERS_DESC, &row.pk).unwrap();
+        }
+    }
     txn.delete(&schema::REGIONS_DESC, &[memcmp_uint(101)])
         .unwrap();
     let t = Tables::new(&s);
@@ -546,5 +552,211 @@ fn region_routing_skips_overlay_tombstoned_candidate() {
             .unwrap()
             .map(|r| r.id),
         Some(RegionId(100))
+    );
+}
+
+#[test]
+fn failed_unique_update_preserves_original_index_even_if_transaction_commits() {
+    let s = store();
+    let mut t = s.begin().unwrap();
+    for (id, name) in [(1, "first"), (2, "taken")] {
+        t.insert(
+            &schema::TENANTS_DESC,
+            &[memcmp_uint(id)],
+            tenant_row(id, name),
+        )
+        .unwrap();
+    }
+    t.commit().unwrap();
+    let mut t = s.begin().unwrap();
+    assert!(t
+        .update(
+            &schema::TENANTS_DESC,
+            &[memcmp_uint(1)],
+            vec![(ColumnId(2), ColumnValue::Text("taken".into()))]
+        )
+        .is_err());
+    t.commit().unwrap();
+    let t = s.begin().unwrap();
+    assert_eq!(
+        t.index_scan(
+            &schema::TENANTS_DESC,
+            IndexId(1),
+            &[memcmp_text("first")],
+            2
+        )
+        .unwrap(),
+        vec![vec![memcmp_uint(1)]],
+        "a failed statement must preserve its original index"
+    );
+}
+
+#[test]
+fn exhausted_id_sequence_refuses_without_wrapping_or_mutation() {
+    let s = store();
+    let mut t = s.begin().unwrap();
+    let mut row = RowValue::new();
+    row.set(ColumnId(1), ColumnValue::Uint(SequenceKind::Region as u64));
+    row.set(ColumnId(2), ColumnValue::Uint(u64::MAX));
+    t.insert(
+        &schema::ID_SEQUENCES_DESC,
+        &[memcmp_uint(SequenceKind::Region as u64)],
+        row,
+    )
+    .unwrap();
+    t.commit().unwrap();
+    let mut t = s.begin().unwrap();
+    assert!(
+        t.allocate_id(SequenceKind::Region).is_err(),
+        "sequence exhaustion must be a typed refusal"
+    );
+    t.commit().unwrap();
+    assert_eq!(
+        s.begin()
+            .unwrap()
+            .get(
+                &schema::ID_SEQUENCES_DESC,
+                &[memcmp_uint(SequenceKind::Region as u64)]
+            )
+            .unwrap()
+            .unwrap()
+            .value
+            .get(ColumnId(2)),
+        Some(&ColumnValue::Uint(u64::MAX))
+    );
+}
+
+#[test]
+fn deleting_a_referenced_parent_is_refused_until_children_are_deleted() {
+    let s = store();
+    seed_tenant(&s);
+    let mut t = s.begin().unwrap();
+    let (pk, row) = keyspace_row(7, "child", 1, ApiType::Raw);
+    t.insert(&schema::KEYSPACES_DESC, &pk, row).unwrap();
+    t.commit().unwrap();
+    let mut t = s.begin().unwrap();
+    assert!(
+        t.delete(&schema::TENANTS_DESC, &[memcmp_uint(1)]).is_err(),
+        "deleting a referenced parent must preserve the FK"
+    );
+    t.delete(&schema::KEYSPACES_DESC, &pk).unwrap();
+    t.delete(&schema::TENANTS_DESC, &[memcmp_uint(1)]).unwrap();
+    t.commit().unwrap();
+}
+
+#[test]
+fn malformed_rows_are_rejected_before_any_index_mutation() {
+    let s = store();
+    seed_tenant(&s);
+    let mut txn = s.begin().unwrap();
+    assert!(txn
+        .insert(
+            &schema::TENANTS_DESC,
+            &[memcmp_uint(9)],
+            tenant_row(8, "wrong-pk")
+        )
+        .is_err());
+    let mut bad_type = tenant_row(9, "mistyped");
+    bad_type.set(ColumnId(2), ColumnValue::Uint(9));
+    assert!(txn
+        .insert(&schema::TENANTS_DESC, &[memcmp_uint(9)], bad_type)
+        .is_err());
+    assert!(txn
+        .insert(&schema::TENANTS_DESC, &[memcmp_uint(9)], RowValue::new())
+        .is_err());
+    txn.insert(
+        &schema::TENANTS_DESC,
+        &[memcmp_uint(9)],
+        tenant_row(9, "valid"),
+    )
+    .unwrap();
+    txn.commit().unwrap();
+    assert_eq!(
+        s.begin()
+            .unwrap()
+            .scan(&schema::TENANTS_DESC, 10)
+            .unwrap()
+            .len(),
+        2
+    );
+}
+
+#[test]
+fn unknown_api_and_out_of_namespace_ids_fail_closed() {
+    assert_eq!(
+        kv9_meta::tables::api_type_from_code(0).unwrap(),
+        ApiType::Txn
+    );
+    assert_eq!(
+        kv9_meta::tables::api_type_from_code(1).unwrap(),
+        ApiType::Raw
+    );
+    assert!(kv9_meta::tables::api_type_from_code(2).is_err());
+    let (_, mut row) = keyspace_row(7, "valid", 1, ApiType::Raw);
+    row.set(ColumnId(1), ColumnValue::Uint(KeyspaceId::MAX as u64 + 1));
+    let s = store();
+    seed_tenant(&s);
+    let mut txn = s.begin().unwrap();
+    txn.insert(
+        &schema::KEYSPACES_DESC,
+        &[memcmp_uint(KeyspaceId::MAX as u64 + 1)],
+        row,
+    )
+    .unwrap();
+    txn.commit().unwrap();
+    assert!(Tables::new(&s).keyspaces_of_tenant(TenantId(1)).is_err());
+}
+
+#[test]
+fn catalog_scans_refuse_a_physically_corrupted_primary_key() {
+    use kv9_engine::{ColumnFamily, Engine, WriteBatch};
+    let s = store();
+    seed_tenant(&s);
+    let key = kv9_meta::codec::encode_row_key(schema::TENANTS_DESC.id, &[memcmp_uint(1)]).unwrap();
+    let mut batch = WriteBatch::new();
+    batch.put(
+        ColumnFamily::Default,
+        key,
+        tenant_row(999, "wrong-identity").encode(),
+    );
+    s.engine().write(batch).unwrap();
+    let txn = s.begin().unwrap();
+    assert!(txn.get(&schema::TENANTS_DESC, &[memcmp_uint(1)]).is_err());
+    assert!(txn.scan(&schema::TENANTS_DESC, 10).is_err());
+}
+
+#[test]
+fn routing_rejects_a_region_row_whose_start_disagrees_with_its_index() {
+    use kv9_engine::{ColumnFamily, Engine, WriteBatch};
+    let s = store();
+    seed_tenant(&s);
+    let mut txn = s.begin().unwrap();
+    let (pk, row) = keyspace_row(7, "routes", 1, ApiType::Raw);
+    txn.insert(&schema::KEYSPACES_DESC, &pk, row).unwrap();
+    txn.insert(
+        &schema::REGIONS_DESC,
+        &[memcmp_uint(9)],
+        region_row(9, 7, b"a", b""),
+    )
+    .unwrap();
+    txn.commit().unwrap();
+    assert_eq!(
+        Tables::new(&s)
+            .region_for_key(KeyspaceId(7), b"z")
+            .unwrap()
+            .unwrap()
+            .id,
+        RegionId(9)
+    );
+    let mut corrupt = WriteBatch::new();
+    corrupt.put(
+        ColumnFamily::Default,
+        kv9_meta::codec::encode_row_key(schema::REGIONS_DESC.id, &[memcmp_uint(9)]).unwrap(),
+        region_row(9, 7, b"b", b"").encode(),
+    );
+    s.engine().write(corrupt).unwrap();
+    assert!(
+        Tables::new(&s).region_for_key(KeyspaceId(7), b"z").is_err(),
+        "a plausible containing row cannot validate a stale index boundary"
     );
 }

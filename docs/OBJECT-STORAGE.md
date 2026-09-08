@@ -16,6 +16,83 @@ open and records the contracts that round one must honour.
 
 ---
 
+## Implementation amendment — 2026-09-08
+
+The initial single-group remote KV path is now connected. The older sections below
+preserve the reviewed target contract; this amendment states the current implementation
+and supersedes their descriptions of what is still unimplemented.
+
+1. `WalEngine::freeze` takes an O(1) persistent-map snapshot and its exact durable
+   applied `(term,index)` under the same write lock. The current snapshot includes
+   the **entire** logical engine, all column families and catalog rows.
+2. `RemoteUploader` uses the real MinIO client. SST keys are content addressed under
+   `clusters/<cluster>/regions/<region>/sst/<sha256>`. A non-cloneable `PreparedSst`
+   exists only after successful PUT and byte-identical GET; ETag is not the checksum.
+3. `ManifestAttempt::from_prepared` consumes the prepared flush and derives a canonical
+   change ID from the full descriptor and predecessor generation. Ordered apply checks
+   the descriptor, exact watermark, authoritative epoch and generation CAS. It performs
+   no remote I/O. The add-only history query can positively settle an older effect;
+   lack of a matching reference set supplies no negative verdict.
+4. A background server worker uploads on leaders and adopts on every replica after
+   local ordered apply. The local `catalog.checkpoint` is a recovery pointer to an
+   applied descriptor. Startup verifies cluster/region and the exact descriptor's
+   presence in committed Raft history, restores checksummed SSTs, then replays the WAL
+   tail. Missing/corrupt objects refuse open before the WAL is edited.
+5. WAL v2 now atomically persists batch + applied position. Legacy v1/unpositioned
+   records remain readable. A legacy in-band applied marker is verified against the
+   committed Raft term, then the complete old state is atomically rewritten as v2.
+   If the old full state exceeds the 64 MiB WAL record limit, only the verified
+   marker transition is appended and its unpositioned prefix is retained. This
+   keeps large old databases openable without inventing positions. Arbitrary
+   unpositioned histories without that proof also remain non-reclaimable.
+
+**Explicit storage deviation from §6:** the initial catalog WAL is a single file.
+Reclamation fsyncs and atomically renames the checkpoint pointer, copies only records
+above its cut into a new fsynced tail file, then atomically renames that file over the
+WAL and syncs its directory. There is no in-place truncation of live records. A crash
+before tail replacement leaves the full WAL valid; after replacement it leaves the
+new tail valid; both recover against the already durable pointer. If directory sync
+fails after rename, the live handle has already switched to the new inode.
+This is **O(tail)** work under the write lock, not the segmented unlink protocol
+promised by the target design. Segmentation/group commit remain ROADMAP P1 work.
+
+**Other current limits:** full dataset in RAM; 48 MiB serialized checkpoint ceiling;
+no incremental/block-cache reads, Raft log truncation, SST GC or bucket-only recovery.
+The 8 MiB SST target avoids multipart for ordinary checkpoints; one oversize record
+can exceed the target but never the checkpoint ceiling. Historical manifests and
+objects are retained. The runtime now fsyncs a checksummed `catalog.pending`
+record before first propose and clears it only after typed settlement. Restart
+validates the record against cluster/region and committed Raft term, rechecks the
+remote objects, and resumes the exact identity before accepting another flush.
+Retained canonical manifest generations additionally identify the exact historical
+CAS winner when the latest pair has moved beyond the decidable window. This
+amendment does not declare the complete original Phase-2 acceptance matrix finished.
+
+**Historical proof amendment:** the latest-pair-only classifier in §7 still returns
+Unknown outside its exact window. A separate query now reads the retained record
+at `expected_generation + 1` and reconstructs that transition's canonical change ID.
+A present matching winner proves the attempt applied; a present different winner
+proves the original CAS can never succeed. Missing or noncanonical legacy history
+proves neither. This is independent of the positive-only SST-effect query. History
+must remain pinned before any future GC/snapshot compaction can remove it.
+
+Two production-path crash cuts are gated by the non-default `checkpoint-testing`
+feature: after the pending file is durable but before propose, and after successful
+apply but before clearing the journal. `scripts/minio-pending-e2e.sh` kills the real
+process at each cut, advances the majority's manifest several generations, then
+requires the original identity to settle on restart and subsequent flush to progress.
+The same script checks corrupt journals and valid checksums with incompatible Raft
+terms are refused before serving or editing the state-machine WAL.
+
+The temporary “production cannot name PreparedSst” stopline has been retired because
+the capability and production caller exist. Private-field/non-clone compile-fail
+probes, the apply-store tripwire, canonical/epoch tests, real-MinIO negative recovery
+controls and the three-process script now cover the actual boundary.
+
+Evidence and commands: [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md).
+
+---
+
 ## 1. Scope of round one
 
 | In | Out (named so absence is deliberate, not forgotten) |
@@ -123,22 +200,11 @@ it has a consequence worth stating as a rule rather than as background:**
 Written in refusable form deliberately: when someone later proposes to fetch or upload inside
 `apply`, the grounds for refusing it are this sentence, not an oral tradition.
 
-**What actually enforces it today, stated exactly** — because "the invariant holds" and "something
-holds it up" are different claims:
-
-```
-today            the Engine trait exposes no object-storage entry point, so the handle apply
-                 holds cannot reach a store  ...  plus review discipline
-                 (kv9_engine::ObjectStore IS re-exported and in scope in that crate; nothing
-                  prevents a direct use, or threading a store in from elsewhere)
-after task #9    apply is narrowed to a capability surface that does not include a store, with a
-                 grep tripwire landing in that card's first commit
-```
-
-`ObjectStore` currently occurs **0 times** across `crates/{raft,server,txn,meta,region,common}` and
-17 times in `crates/engine` alone. **That 0 is the invariant holding because nothing has had reason
-to break it — not because something guards it.** A count of zero looks identical whether a rule is
-enforced or merely unviolated, which is exactly why it should not be read as evidence of the former.
+`ApplyStore` exposes only point gets, positioned writes and durable applied-position
+recovery. Compile-fail probes reject plain writes, scans and snapshots on that face;
+`scripts/apply-store-tripwire.sh` guards the Raft crate against direct object-store
+coupling. The server's background worker legitimately owns `RemoteUploader`; a global
+zero-count of object-store mentions across the server is no longer a valid boundary.
 
 ### 3.2 `ObjectStore` stays synchronous; the backend owns one worker
 

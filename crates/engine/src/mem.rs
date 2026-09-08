@@ -43,6 +43,7 @@ struct State {
     /// It never leaves this engine as a number. See
     /// [`MemEngine::applied_position`](ReplicatedEngine::applied_position).
     applied: Option<AppliedPosition>,
+    data_revision: u64,
 }
 
 impl State {
@@ -247,6 +248,14 @@ impl ReplicatedEngine for MemEngine {
                 }
             }
         }
+        if batch.mutations().iter().any(|m| {
+            let key = match m {
+                Mutation::Put { key, .. } | Mutation::Delete { key, .. } => key,
+            };
+            !key.starts_with(b"\x00kv9\x00manifest_")
+        }) {
+            state.data_revision = state.data_revision.saturating_add(1);
+        }
         state.applied = Some(at);
         Ok(())
     }
@@ -269,6 +278,20 @@ impl ReplicatedEngine for MemEngine {
 }
 
 impl MemEngine {
+    pub(crate) fn freeze_parts(&self) -> (MemSnapshot, Option<AppliedPosition>) {
+        let state = self.read();
+        let position = state.applied;
+        (MemSnapshot { state }, position)
+    }
+    pub fn data_revision(&self) -> u64 {
+        self.state
+            .read()
+            .expect("mem engine lock poisoned")
+            .data_revision
+    }
+}
+
+impl MemEngine {
     /// The position last recorded by [`write_applied`](ReplicatedEngine::write_applied),
     /// for tests and diagnostics.
     ///
@@ -283,8 +306,20 @@ impl MemEngine {
 
 /// A point-in-time view of a [`MemEngine`], produced by [`Engine::snapshot`].
 #[derive(Debug)]
-struct MemSnapshot {
+pub(crate) struct MemSnapshot {
     state: State,
+}
+
+impl MemSnapshot {
+    pub(crate) fn iter_all(
+        &self,
+        cf: ColumnFamily,
+    ) -> impl Iterator<Item = Result<ScanEntry>> + '_ {
+        self.state
+            .cf(cf)
+            .iter()
+            .map(|(k, v)| Ok((k.clone(), v.clone())))
+    }
 }
 
 impl ReadView for MemSnapshot {
@@ -709,10 +744,9 @@ mod tests {
 
     #[test]
     fn a_gap_in_indices_is_legal_and_term_does_not_order() {
-        // Ruled for task #13 (2c): index orders, term does not. A term going BACKWARDS
-        // while the index advances must be accepted -- refusing it would reject a
-        // legitimate sequence, and this is the assertion that stops someone "tightening"
-        // the check into comparing the pair.
+        // Pin the generic engine's index-only ordering contract. This synthetic
+        // sequence deliberately is not a valid Raft history; the runtime, rather
+        // than the opaque engine, validates terms against committed Raft entries.
         let engine = MemEngine::new();
         engine
             .write_applied(one_put(b"a", b"1"), at(5, 10))

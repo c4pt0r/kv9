@@ -15,7 +15,7 @@
 use std::sync::Arc;
 
 use kv9_common::{RegionId, Result};
-use kv9_engine::Engine;
+use kv9_engine::ReplicatedEngine;
 use kv9_meta::tables::Tables;
 use kv9_raft::{FenceAdjudicator, RegionFence};
 use kv9_region::RegionEpoch;
@@ -25,17 +25,17 @@ use crate::Node;
 /// Answers "is the proposer's expected region epoch still current?" from the region
 /// catalog, using the same predicate the router's `check_epoch` applies on the propose
 /// side so the two cannot drift.
-pub struct CatalogFenceAdjudicator<E: Engine> {
+pub struct CatalogFenceAdjudicator<E: ReplicatedEngine> {
     node: Arc<Node<E>>,
 }
 
-impl<E: Engine> CatalogFenceAdjudicator<E> {
+impl<E: ReplicatedEngine> CatalogFenceAdjudicator<E> {
     pub fn new(node: Arc<Node<E>>) -> Self {
         CatalogFenceAdjudicator { node }
     }
 }
 
-impl<E: Engine + 'static> FenceAdjudicator for CatalogFenceAdjudicator<E> {
+impl<E: ReplicatedEngine + 'static> FenceAdjudicator for CatalogFenceAdjudicator<E> {
     /// The three states are a deliberate split between what the *log* says and what this
     /// *machine* says, and conflating them is how replicas diverge.
     ///

@@ -151,10 +151,6 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
         self.overlay.insert(key, Some(value));
     }
 
-    fn delete_kv(&mut self, key: Vec<u8>) {
-        self.overlay.insert(key, None);
-    }
-
     /// Streaming merge of the snapshot view with the txn overlay over `[start, end)`
     /// (overlay wins; tombstones skipped), ascending or descending. Nothing beyond
     /// what the caller consumes is materialized (principle 13 — no unmetered
@@ -236,16 +232,21 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
         let key = encode_row_key(table.id, pk)?;
         match self.read_kv(&key)? {
             None => Ok(None),
-            Some(bytes) => Ok(Some(Row {
-                pk: pk.to_vec(),
-                value: RowValue::decode(&bytes)?,
-            })),
+            Some(bytes) => {
+                let value = RowValue::decode(&bytes)?;
+                self.validate_row(table, pk, &value)?;
+                Ok(Some(Row {
+                    pk: pk.to_vec(),
+                    value,
+                }))
+            }
         }
     }
 
     /// Insert a row, maintaining all secondary indexes; PK/UNIQUE/FK are checked
     /// against the merged (engine + buffered) view (METADATA-CATALOG §4).
     pub fn insert(&mut self, table: &TableDesc, pk: &[PkComponent], value: RowValue) -> Result<()> {
+        let mut pending = BTreeMap::new();
         let key = encode_row_key(table.id, pk)?;
         if self.read_kv(&key)?.is_some() {
             return Err(Error::WriteConflict(format!(
@@ -253,6 +254,7 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
                 table.name
             )));
         }
+        self.validate_row(table, pk, &value)?;
         self.check_foreign_keys(table, &value)?;
         for index in table.indexes {
             let cols = self.index_columns(table, index, &value)?;
@@ -265,13 +267,14 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
                         table.name, index.name
                     )));
                 }
-                self.write_kv(idx_key, codec::index_value(pk));
+                pending.insert(idx_key, Some(codec::index_value(pk)));
             } else {
                 let idx_key = codec::encode_index_key(table.id, index.id, &cols, pk)?;
-                self.write_kv(idx_key, Vec::new());
+                pending.insert(idx_key, Some(Vec::new()));
             }
         }
-        self.write_kv(key, value.encode());
+        pending.insert(key, Some(value.encode()));
+        self.overlay.extend(pending);
         Ok(())
     }
 
@@ -282,6 +285,7 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
         pk: &[PkComponent],
         changes: Changes,
     ) -> Result<()> {
+        let mut pending = BTreeMap::new();
         let key = encode_row_key(table.id, pk)?;
         let old_bytes = self.read_kv(&key)?.ok_or_else(|| {
             Error::WriteConflict(format!("update of missing row in `{}`", table.name))
@@ -291,6 +295,7 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
         for (col, v) in changes {
             new_value.set(col, v);
         }
+        self.validate_row(table, pk, &new_value)?;
         self.check_foreign_keys(table, &new_value)?;
         for index in table.indexes {
             let old_cols = self.index_columns(table, index, &old_value)?;
@@ -300,7 +305,7 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
             }
             if index.unique {
                 let old_key = codec::encode_index_key(table.id, index.id, &old_cols, &[])?;
-                self.delete_kv(old_key);
+                pending.insert(old_key, None);
                 let new_key = codec::encode_index_key(table.id, index.id, &new_cols, &[])?;
                 if self.read_kv(&new_key)?.is_some() {
                     return Err(Error::WriteConflict(format!(
@@ -308,25 +313,28 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
                         table.name, index.name
                     )));
                 }
-                self.write_kv(new_key, codec::index_value(pk));
+                pending.insert(new_key, Some(codec::index_value(pk)));
             } else {
                 let old_key = codec::encode_index_key(table.id, index.id, &old_cols, pk)?;
-                self.delete_kv(old_key);
+                pending.insert(old_key, None);
                 let new_key = codec::encode_index_key(table.id, index.id, &new_cols, pk)?;
-                self.write_kv(new_key, Vec::new());
+                pending.insert(new_key, Some(Vec::new()));
             }
         }
-        self.write_kv(key, new_value.encode());
+        pending.insert(key, Some(new_value.encode()));
+        self.overlay.extend(pending);
         Ok(())
     }
 
     /// Delete a row by primary key, removing its index rows too (METADATA-CATALOG §4).
     /// Deleting a missing row is a no-op (idempotent retries, principle 15).
     pub fn delete(&mut self, table: &TableDesc, pk: &[PkComponent]) -> Result<()> {
+        let mut pending = BTreeMap::new();
         let key = encode_row_key(table.id, pk)?;
         let Some(bytes) = self.read_kv(&key)? else {
             return Ok(());
         };
+        self.check_references(table, pk)?;
         let value = RowValue::decode(&bytes)?;
         for index in table.indexes {
             let cols = self.index_columns(table, index, &value)?;
@@ -335,9 +343,10 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
             } else {
                 codec::encode_index_key(table.id, index.id, &cols, pk)?
             };
-            self.delete_kv(idx_key);
+            pending.insert(idx_key, None);
         }
-        self.delete_kv(key);
+        pending.insert(key, None);
+        self.overlay.extend(pending);
         Ok(())
     }
 
@@ -351,10 +360,9 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
         for (k, v) in entries {
             let suffix = row_key_suffix(&k)?;
             let pk = codec::split_components(&pk_ts, suffix, true)?;
-            out.push(Row {
-                pk,
-                value: RowValue::decode(&v)?,
-            });
+            let value = RowValue::decode(&v)?;
+            self.validate_row(table, &pk, &value)?;
+            out.push(Row { pk, value });
         }
         Ok(out)
     }
@@ -459,7 +467,15 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
         };
         let mut row = RowValue::new();
         row.set(crate::schema::ColumnId(1), ColumnValue::Uint(kind as u64));
-        row.set(crate::schema::ColumnId(2), ColumnValue::Uint(next + 1));
+        let successor = next
+            .checked_add(1)
+            .ok_or_else(|| Error::WriteConflict(format!("id sequence {kind:?} exhausted")))?;
+        if kind == SequenceKind::Keyspace && next > u64::from(kv9_common::KeyspaceId::MAX) {
+            return Err(Error::WriteConflict(
+                "keyspace id sequence exhausted".into(),
+            ));
+        }
+        row.set(crate::schema::ColumnId(2), ColumnValue::Uint(successor));
         let key = encode_row_key(table.id, &pk)?;
         self.write_kv(key, row.encode());
         Ok(next)
@@ -495,6 +511,88 @@ impl<'a, E: Engine> MetaTxn<'a, E> {
     }
 
     // -- constraint helpers ----------------------------------------------------
+
+    fn validate_row(&self, table: &TableDesc, pk: &[PkComponent], value: &RowValue) -> Result<()> {
+        let primary: Vec<_> = table.pk_columns().collect();
+        if primary.len() != pk.len() {
+            return Err(Error::MalformedKey(
+                "catalog primary key arity mismatch".into(),
+            ));
+        }
+        for (column, component) in primary.iter().zip(pk) {
+            let expected = match value.get(column.id) {
+                Some(ColumnValue::Uint(v)) => codec::memcmp_uint(*v),
+                Some(ColumnValue::Text(v)) => codec::memcmp_text(v),
+                Some(ColumnValue::Bytes(v)) => codec::memcmp_bytes(v),
+                None => continue, // Older rows may keep their PK only in the physical key.
+                _ => {
+                    return Err(Error::MalformedKey(format!(
+                        "mistyped primary key column in `{}`",
+                        table.name
+                    )))
+                }
+            };
+            if component != &expected {
+                return Err(Error::MalformedKey(format!(
+                    "primary key and row disagree in `{}`",
+                    table.name
+                )));
+            }
+        }
+        for column in table.columns {
+            if let Some(value) = value.get(column.id) {
+                if !matches!(
+                    (column.ty, value),
+                    (ColumnType::Uint, ColumnValue::Uint(_))
+                        | (ColumnType::Text, ColumnValue::Text(_))
+                        | (ColumnType::Bytes, ColumnValue::Bytes(_))
+                ) {
+                    return Err(Error::MalformedKey(format!(
+                        "mistyped column {} in `{}`",
+                        column.name, table.name
+                    )));
+                }
+            }
+        }
+        for column in table
+            .indexes
+            .iter()
+            .flat_map(|index| index.columns.iter())
+            .copied()
+            .chain(table.fks.iter().map(|fk| fk.column))
+        {
+            if value.get(column).is_none() {
+                return Err(Error::MalformedKey(format!(
+                    "missing constrained column {} in `{}`",
+                    column.0, table.name
+                )));
+            }
+        }
+        Ok(())
+    }
+
+    /// RESTRICT parent deletion against the same snapshot + overlay used for
+    /// child writes. Stream the small catalog; do not materialize whole tables.
+    fn check_references(&self, parent: &TableDesc, pk: &[PkComponent]) -> Result<()> {
+        for child in crate::schema::ALL_TABLES {
+            for fk in child.fks.iter().filter(|fk| fk.references == parent.id) {
+                let (start, end) = row_range(child.id)?;
+                for entry in self.merged_range(&start, &end, false)? {
+                    let (_, bytes) = entry?;
+                    let row = RowValue::decode(&bytes)?;
+                    if let Some(ColumnValue::Uint(id)) = row.get(fk.column) {
+                        if pk == [codec::memcmp_uint(*id)] {
+                            return Err(Error::WriteConflict(format!(
+                                "cannot delete `{}`: referenced by `{}`",
+                                parent.name, child.name
+                            )));
+                        }
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
 
     /// Enforce declared FKs: each *present* FK column must reference an existing row,
     /// checked against the merged view so parents inserted earlier in this txn count

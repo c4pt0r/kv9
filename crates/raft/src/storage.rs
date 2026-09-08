@@ -184,6 +184,69 @@ impl DiskRaftStorage {
         Ok((storage, was_pristine))
     }
 
+    /// Recover/validate the exact term of an applied position from durable
+    /// committed Raft history. Never guess a term while upgrading a v1 WAL.
+    pub fn committed_term(&self, index: u64) -> Result<u64> {
+        use raft::Storage;
+        if index
+            > self
+                .mem
+                .initial_state()
+                .map_err(|e| Error::Raft(e.to_string()))?
+                .hard_state
+                .commit
+        {
+            return Err(Error::Raft(
+                "engine applied position exceeds durable Raft commit".into(),
+            ));
+        }
+        self.mem
+            .term(index)
+            .map_err(|e| Error::Raft(format!("applied position missing from Raft history: {e}")))
+    }
+
+    pub fn has_committed_checkpoint(&self, bytes: &[u8]) -> Result<bool> {
+        use raft::Storage;
+        let commit = self
+            .mem
+            .initial_state()
+            .map_err(|e| Error::Raft(e.to_string()))?
+            .hard_state
+            .commit;
+        if commit == 0 {
+            return Ok(false);
+        }
+        let first = self
+            .mem
+            .first_index()
+            .map_err(|e| Error::Raft(e.to_string()))?;
+        for index in first..=commit {
+            let entries = self
+                .mem
+                .entries(
+                    index,
+                    index + 1,
+                    None,
+                    raft::GetEntriesContext::empty(false),
+                )
+                .map_err(|e| Error::Raft(e.to_string()))?;
+            for entry in entries {
+                if entry.entry_type == raft::eraftpb::EntryType::EntryNormal
+                    && !entry.data.is_empty()
+                {
+                    if let crate::Command::ManifestChange(payload) =
+                        crate::Command::decode(&entry.data)?
+                    {
+                        if payload.changeset() == bytes {
+                            return Ok(true);
+                        }
+                    }
+                }
+            }
+        }
+        Ok(false)
+    }
+
     pub fn path(&self) -> &Path {
         &self.path
     }
