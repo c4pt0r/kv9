@@ -9,10 +9,11 @@ python3 scripts/check-proofs.py --lean /path/to/lean --self-test
 
 The checker compiles fresh sources, requires every module in the theorem
 inventory, and inspects each theorem's transitive axioms. Only Lean's standard
-foundations (`propext`, `Classical.choice`, `Quot.sound`) are accepted. Four
+foundations (`propext`, `Classical.choice`, `Quot.sound`) are accepted. Six
 controls must fail for their specific reasons: a proof hole, an insufficient
 membership bound, an otherwise accepted proof using a custom axiom, and removal
-of the durable namespace precondition from the vote-reply transition. The
+of the durable namespace precondition from the vote-reply transition, removal
+of certificate eligibility, and weakening the strict real-time ordering premise. The
 `protocol-proofs` CI job also checks the exact theorem/control counts externally.
 
 `Quorum.lean` proves disjoint vote bounds, intersection of two strict majorities,
@@ -25,6 +26,12 @@ directory publication, reply, crash and stop transitions. Induction establishes
 that all replies agree for arbitrary finite executions, including repeated
 crashes. Its assumptions and mapping to the actual Ready/storage operations are
 documented in [`RAFT-PERSISTENCE.md`](../../docs/RAFT-PERSISTENCE.md).
+
+`History.lean` proves equivalence between a generic Boolean certificate evaluator
+and a logical execution relation, plus the real-time ordering consequence of
+operation interval bounds. It does not compile or verify the Python checker.
+The concrete model, search argument and source refinement obligations are in
+[`HISTORY-CHECKING.md`](../../docs/HISTORY-CHECKING.md).
 
 ## Refinement obligations remain open
 

@@ -11,5 +11,10 @@
     "Kv9.DurableVote.step_preserves_invariant",
     "Kv9.DurableVote.reachable_invariant",
     "Kv9.DurableVote.replies_agree"
+  ],
+  "History": [
+    "Kv9.History.accepted_certificate_is_execution",
+    "Kv9.History.completed_before_invoked",
+    "Kv9.History.execution_is_accepted"
   ]
 }

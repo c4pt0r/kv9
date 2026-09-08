@@ -23,6 +23,7 @@ bootstrap_token="chaos-bootstrap-$run_id"
 cluster_token="chaos-cluster-$run_id"
 client_token="chaos-client-$run_id"
 root="$artifact/root.bin"
+history_pid=""
 
 k() {
   KUBECONFIG="$kubeconfig" "$kubectl_bin" "$@"
@@ -97,6 +98,11 @@ collect_scene() {
 cleanup() {
   local rc=$?
   trap - EXIT
+  if [ -n "$history_pid" ]; then
+    touch "$artifact/history.stop"
+    kill "$history_pid" 2>/dev/null || true
+    wait "$history_pid" 2>/dev/null || true
+  fi
   if k get namespace "$namespace" >/dev/null 2>&1; then
     if (( rc == 0 )); then
       collect_scene PASS
@@ -125,6 +131,30 @@ wait_until() {
   echo "FAIL: timed out waiting for $label" >&2
   collect_scene
   return 1
+}
+
+history_set_phase() {
+  printf '%s\n' "$1" >"$artifact/history.phase.tmp"
+  mv "$artifact/history.phase.tmp" "$artifact/history.phase"
+}
+
+history_phase_observed() {
+  kill -0 "$history_pid" || return 1
+  python3 - "$artifact/history-progress.json" "$1" <<'PYTHON'
+import json, pathlib, sys
+path = pathlib.Path(sys.argv[1])
+counts = json.loads(path.read_text()).get(sys.argv[2], {}) if path.exists() else {}
+sys.exit(0 if counts.get('put') and (counts.get('get') or counts.get('scan')) else 1)
+PYTHON
+}
+
+history_phase() {
+  local phase="$1"
+  history_set_phase "$phase"
+  wait_until "independent put and read complete during $phase" 25 history_phase_observed "$phase"
+  cp "$artifact/history-progress.json" "$artifact/$phase-history-progress.json"
+  date --iso-8601=ns >"$artifact/$phase-history-observed-at.txt"
+  echo "PASS: concurrent put and read completed during $phase"
 }
 
 wait_agreed_leader() {
@@ -556,6 +586,40 @@ keyspace="$(awk -F= '$1=="keyspace_id" {print $2}' <<<"$create_out")"
 client "$leader" raw-put --addr "$(service_ip "$leader"):20160" --keyspace "$keyspace" \
   --key-hex 62617365 --value-hex 7631 >"$artifact/baseline-put.out"
 
+# A separate client Pod stays outside database fault selectors. One external
+# coordinator records calls and responses while the entire fault matrix runs.
+k apply -f - >/dev/null <<YAML
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kv9-history-client
+  namespace: $namespace
+  labels:
+    app: kv9-history-client
+spec:
+  containers:
+    - name: client
+      image: $image
+      imagePullPolicy: IfNotPresent
+      command: ["sleep", "3600"]
+YAML
+k wait -n "$namespace" --for=condition=Ready pod/kv9-history-client --timeout=30s >/dev/null
+python3 - "$keyspace" >"$artifact/history-initial.json" <<'PY'
+import json, sys
+print(json.dumps({'keyspaces': [{'name': 'chaos', 'id': int(sys.argv[1])}]}))
+PY
+history_set_phase baseline
+KV9_CLIENT_TOKEN="$client_token" python3 scripts/history/workload.py \
+  --binary /usr/local/bin/kv9 --addresses "$(service_ip 1):20160,$(service_ip 2):20160,$(service_ip 3):20160" \
+  --name "history-$run_id" --initial-catalog "$artifact/history-initial.json" \
+  --history "$artifact/history.jsonl" --stop "$artifact/history.stop" --ready "$artifact/history.ready" \
+  --phase "$artifact/history.phase" --progress "$artifact/history-progress.json" \
+  --client-pod kv9-history-client --namespace "$namespace" --kubeconfig "$kubeconfig" \
+  --kubectl "$kubectl_bin" >"$artifact/history-recorder.log" 2>&1 &
+history_pid=$!
+history_ready() { kill -0 "$history_pid" && test -s "$artifact/history.ready"; }
+wait_until "independent history client completes baseline API operations" 45 history_ready
+
 # A second root that overlaps node 1 cannot become endorsed by the live root.
 echo "Stage: conflicting root cannot cross-endorse"
 # Let node 9 through the live root's membership authenticator first. Without
@@ -620,7 +684,7 @@ metadata:
 spec:
   action: pod-failure
   mode: one
-  duration: 60s
+  duration: 120s
   selector:
     namespaces: ["$namespace"]
     labelSelectors:
@@ -633,6 +697,9 @@ victim_is_unavailable() {
   node_serving "$new_leader" && ! tcp_probe "$new_leader" "$victim"
 }
 wait_until "voter $victim failure has an observable network effect" 10 victim_is_unavailable
+history_phase "pod-failure-$victim"
+victim_is_unavailable || { echo 'FAIL: voter healed before history progress was observed' >&2; exit 1; }
+record_fault podchaos fail-leader
 printf 'victim=%s\nleader_before=%s\nsurviving_leader=%s\n' \
   "$victim" "$leader" "$new_leader" >"$artifact/voter-$victim-failure.txt"
 key_hex="766f7465722d3$victim"
@@ -641,6 +708,7 @@ client "$new_leader" raw-put --addr "$(service_ip "$new_leader"):20160" --keyspa
 client "$new_leader" raw-get --addr "$(service_ip "$new_leader"):20160" --keyspace "$keyspace" \
   --key-hex "$key_hex" >"$artifact/voter-$victim-live-get.out"
 grep -Fq 'value_hex=7632' "$artifact/voter-$victim-live-get.out"
+history_set_phase healing
 k delete podchaos fail-leader -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "failed leader recovers and catches up" 35)"
 client "$leader" raw-get --addr "$(service_ip "$leader"):20160" --keyspace "$keyspace" \
@@ -663,6 +731,11 @@ if tcp_probe "$survivor_a" "$leader"; then
   exit 1
 fi
 new_leader="$(wait_majority_leader "majority leader under NetworkChaos partition" 20 "$leader")"
+history_phase partition
+if tcp_probe "$survivor_a" "$leader"; then
+  echo 'FAIL: partition healed before history progress was observed' >&2; exit 1
+fi
+record_fault networkchaos isolate-leader
 old_pod="$(pod_for "$leader")"
 isolated_uid="$(pod_uid "$leader")"
 k exec -n "$namespace" "$old_pod" -- timeout 2 /bin/bash -c \
@@ -713,6 +786,7 @@ fi
   echo "FAIL: isolated replica was replaced during the read fencing probe" >&2
   exit 1
 }
+history_set_phase healing
 k delete networkchaos isolate-leader -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "partition healing and catch-up" 35)"
 isolated_get="$(client "$leader" raw-get --addr "$(service_ip "$leader"):20160" \
@@ -741,8 +815,17 @@ if (( injected_delay_ms < 100 || injected_delay_ms < baseline_delay_ms + 100 ));
   echo "FAIL: NetworkChaos delay was not observed (baseline=${baseline_delay_ms}ms injected=${injected_delay_ms}ms)" >&2
   exit 1
 fi
+history_phase delay
+observed_delay_ms="$(tcp_probe_millis "$leader" "$follower")"
+[[ "$observed_delay_ms" =~ ^[0-9]+$ ]] && (( observed_delay_ms >= 100 && observed_delay_ms >= baseline_delay_ms + 100 )) || {
+  echo 'FAIL: delay disappeared before history progress was observed' >&2; exit 1
+}
+printf 'baseline_ms=%s\ninjected_ms=%s\nobserved_after_history_ms=%s\n' \
+  "$baseline_delay_ms" "$injected_delay_ms" "$observed_delay_ms" >"$artifact/delay-history-effect.txt"
+record_fault networkchaos delay-follower
 client "$leader" raw-put --addr "$(service_ip "$leader"):20160" --keyspace "$keyspace" \
   --key-hex 64656c6179 --value-hex 7634 >"$artifact/delay-put.out"
+history_set_phase healing
 k delete networkchaos delay-follower -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "delayed follower recovery" 30)"
 
@@ -784,5 +867,16 @@ grep -q '^value_hex=7633$' <<<"$final_get" || {
 
 source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-io.sh"
 run_io_matrix
+
+touch "$artifact/history.stop"
+wait "$history_pid"
+history_pid=""
+python3 scripts/history/checker.py "$artifact/history.jsonl" --output "$artifact/history-checker.json" \
+  --acceptance --require put get delete scan delete_range create_keyspace --seconds 60 \
+  --require-phase pod-failure-1 pod-failure-2 pod-failure-3 partition delay \
+    io-voter-1-errno-5 io-voter-1-errno-28 io-voter-2-errno-5 io-voter-2-errno-28 \
+    io-voter-3-errno-5 io-voter-3-errno-28 \
+  >"$artifact/history-checker.log" 2>&1
+echo "PASS: concurrent Raw KV/catalog history is valid across the Chaos Mesh matrix"
 
 echo "PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, container recovery, and Raft I/O faults"

@@ -137,6 +137,10 @@ PY
       [ "$(pod_uid "$victim")" = "$io_uid" ] || {
         echo 'FAIL: Pod replacement invalidated the I/O experiment' >&2; return 1;
       }
+      history_phase "$label"
+      io_process_stopped && [ "$(pod_uid "$victim")" = "$io_uid" ] || {
+        echo 'FAIL: failed process changed before history progress was observed' >&2; return 1;
+      }
       record_fault iochaos raft-io-fault
       io_leader="$(wait_majority_leader "surviving majority after I/O failure" 25 "$victim")"
       client "$io_leader" raw-put --addr "$(service_ip "$io_leader"):20160" --keyspace "$keyspace" \
@@ -148,6 +152,7 @@ PY
       client "$io_leader" raw-get --addr "$(service_ip "$io_leader"):20160" --keyspace "$keyspace" \
         --key-hex "$key_hex" >"$artifact/$label-majority-get.out"
       grep -Fxq value_hex=6166746572 "$artifact/$label-majority-get.out"
+      history_set_phase healing
       k delete iochaos raft-io-fault -n "$namespace" --wait=true >/dev/null
       io_start_process
       io_leader="$(wait_agreed_leader "voter catches up after I/O healing" 40)"

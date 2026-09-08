@@ -89,8 +89,10 @@ deletion, alongside the three voter failure cells and typed read/write refusals.
 This initial matrix established PodChaos and NetworkChaos coverage. The subsequent
 [Raft I/O increment](CHAOS-IO-VALIDATION.md) adds real IOChaos EIO/ENOSPC for every
 voter during restart/catch-up. Engine/checkpoint I/O faults, additional network
-families, concurrent independent history checking, complete core proofs and
-multi-host availability remain open. Process death is not power loss.
+families, complete core proofs and multi-host availability remain open. The
+subsequent [history increment](HISTORY-CHECKING.md) adds an independent concurrent
+Raw KV/catalog checker over the existing actual Chaos Mesh matrix; production
+multi-chunk and typed-partial fault histories remain open. Process death is not power loss.
 
 This increment's persistence audit identified a C01 investigation:
 `DiskRaftStorage::open` created the directory and `raft.log` without synchronizing
