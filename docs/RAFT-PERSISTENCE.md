@@ -43,8 +43,12 @@ the replay format's maximum length are refused.
 
 Raft integration retains the existing persist-before-send order in
 `RaftPeer::process_ready`: append entries, persist HardState, then publish outgoing
-messages. Its current persistence-error behavior stops the Ready path by panic;
-typed node-fatal propagation remains a separate runtime improvement. Successful
+messages. Persistence errors now return `Error::Raft` without unwinding through
+mutex guards. The peer records its first failure, disables ticking and inbound
+processing, clears its outgoing/apply/read queues, and refuses campaigns,
+proposals, read barriers and configuration application until reopen. The driver
+publishes the failure in `status().fatal`; the existing runtime exit path remains
+usable and terminates nonzero. Successful
 reopen also synchronizes any complete unsynced records exposed by the previous
 process, so a recovered vote cannot disappear on the next power loss.
 
@@ -100,13 +104,36 @@ availability.
 | publish | successful `sync_ancestors` after log synchronization | Every ancestor is visited; failed opens return no storage handle; model explicitly separates immediate directory children from file contents |
 | reply | outgoing vote returned by `RaftPeer::pump` after Ready persistence | Regression drives real RequestVote messages and checks positive responses before and after modeled power loss |
 | crash | replay into a new DiskRaftStorage and RaftPeer incarnation | Model invalidates old file handles and selects durable/unsynced persistence; actual restart tests cover the OS adapter |
-| stop | failed storage mutation removes its writer; Ready does not publish a response | Error/seed matrix checks no subsequent I/O or memory publication; typed runtime fatal propagation remains open |
+| stop | failed storage mutation removes its writer; Ready returns an error and disables the peer | Error/seed and driver matrices check no subsequent I/O, outgoing messages or apply advancement; runtime status remains observable |
 
 This establishes checked abstract lemmas and concrete regression evidence. It
 does not mechanically verify Rust, prove the frame checksum collision-free, or
 establish all-term Raft safety, log matching, leader completeness, membership
 transitions, snapshots or metadata invariants. Those obligations remain tracked
 by the [mandatory correctness contract](CORRECTNESS-GATES.md).
+
+### Terminal failure argument
+
+The failure transition sets `fatal`, disables `alive` and empties the three peer
+publication queues under `peer.inner`. The only transitions that tick or accept
+messages require `alive`; proposals, campaigns, read-index requests, Ready
+processing and configuration application check `fatal` under the same mutex.
+There is no production transition that clears it. By induction over subsequent
+calls in that incarnation, no further Ready is processed, no response is emitted
+and no new read confirmation or apply position is published by this peer. A
+request concurrent with the failure can finish its earlier proposal assignment,
+but an assignment is not an acknowledgment; the driver cannot apply that failed
+Ready or create its success receipt. Previously durable, successfully applied
+operations remain valid and need not be retracted.
+
+In the fixed-term Lean projection this failure maps to `Step.stop`, preserving
+the vote invariant. Recovery creates a fresh peer from synchronized replayed
+state. This is a source-level refinement argument, not a mechanically checked
+concurrency proof. The driver regression executes actual append, HardState and
+ConfState paths across 24 EIO/ENOSPC write/sync cells, checks terminal closure,
+unchanged apply/configuration watermarks, empty transport/read output and stable
+observable fatal state. Baseline cases separately prove successful vote delivery
+and committed learner admission.
 
 ## Deterministic failure model
 

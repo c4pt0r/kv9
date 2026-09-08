@@ -44,8 +44,8 @@ pub struct NodeStatus {
     /// Term paired with `applied_index`; together they identify the last real
     /// state-machine command across leader failover.
     pub applied_term: u64,
-    /// A fatal apply-path failure (undecodable committed entry / engine apply
-    /// error). Once set, the pump has stopped: continuing past a hole would
+    /// A fatal persistence or apply failure (Raft I/O, undecodable committed
+    /// entry, or engine apply error). Once set, the pump has stopped: continuing past a hole would
     /// silently diverge this replica from the group. The server surfaces this
     /// and exits non-zero.
     pub fatal: Option<String>,
@@ -176,7 +176,7 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     read_incarnation: [u8; 16],
     /// Monotonic per-incarnation read sequence (uniqueness within a life).
     read_seq: std::sync::atomic::AtomicU64,
-    /// First fatal apply-path error; poisons the driver (pump stops).
+    /// First fatal persistence/apply error; poisons the driver (pump stops).
     fatal: Mutex<Option<String>>,
     /// Whether THE manifest seam over this node has been minted (task #9
     /// review round 1): slot state must be process-unique per node, so seam
@@ -274,7 +274,9 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     /// One pump iteration WITHOUT a tick: deliver inbound, persist+send
     /// outbound, apply committed entries.
     ///
-    /// A committed entry that fails to decode or apply is **fatal**: every
+    /// A Raft persistence failure stops the peer before publishing that Ready
+    /// and reaches the same observable fatal state without a mutex-poisoning
+    /// panic. A committed entry that fails to decode or apply is **fatal**: every
     /// replica must apply the same committed sequence, so skipping one and
     /// continuing would silently diverge this node from the group. On error
     /// the driver poisons itself (pump stops, `status().fatal` set) and the
@@ -286,7 +288,11 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         for msg in self.transport.drain() {
             self.peer.step_message(msg);
         }
-        for msg in self.peer.pump() {
+        let messages = self
+            .peer
+            .pump()
+            .map_err(|cause| self.poison_persistence(&cause))?;
+        for msg in messages {
             let to = NodeId(msg.to);
             self.transport.send(to, msg);
         }
@@ -310,7 +316,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             // commits proceed, driver_applied does not.
             return Ok(());
         }
-        let entries = self.drain.take_ready().unwrap_or_default();
+        let entries = self
+            .drain
+            .take_ready()
+            .map_err(|cause| self.poison_persistence(&cause))?;
         if entries.is_empty() {
             return Ok(());
         }
@@ -458,6 +467,15 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     fn poison(&self, term: u64, index: u64, cause: &Error) -> Error {
         let msg = format!("fatal at committed entry (term {term}, index {index}): {cause}");
         *self.fatal.lock().expect("fatal poisoned") = Some(msg.clone());
+        self.stop.store(true, Ordering::Relaxed);
+        Error::Raft(msg)
+    }
+
+    /// Preserve the failure without unwinding through peer/driver mutexes.
+    /// The runtime can still read status and exit through its normal fatal path.
+    fn poison_persistence(&self, cause: &Error) -> Error {
+        let mut fatal = self.fatal.lock().expect("fatal poisoned");
+        let msg = fatal.get_or_insert_with(|| cause.to_string()).clone();
         self.stop.store(true, Ordering::Relaxed);
         Error::Raft(msg)
     }

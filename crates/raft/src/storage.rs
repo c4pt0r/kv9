@@ -554,7 +554,7 @@ mod tests {
             // Single-node: pump until leader, then propose.
             for _ in 0..50 {
                 peer.tick_once();
-                let _ = peer.pump();
+                peer.pump().unwrap();
                 if peer.role() == crate::Role::Leader {
                     break;
                 }
@@ -562,7 +562,7 @@ mod tests {
             let at = peer.propose_traced(b"durable".to_vec()).unwrap();
             for _ in 0..50 {
                 peer.tick_once();
-                let _ = peer.pump();
+                peer.pump().unwrap();
                 if peer.raft_committed() >= at.index {
                     break;
                 }
