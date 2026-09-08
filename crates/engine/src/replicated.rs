@@ -2,6 +2,11 @@
 //!
 //! # What this replaces, and why
 //!
+//! UNLANDED(task #16) — this paragraph describes the mechanism task #17 retires. When the
+//! WAL v2 body lands, `APPLIED_INDEX_KEY` no longer exists and the present tense below
+//! becomes false. Nothing will fail to compile: it is prose, so no rustdoc link gate and
+//! no type check covers it.
+//!
 //! Today the apply position is written as ordinary data: `crates/raft/src/state_machine.rs`
 //! puts `APPLIED_INDEX_KEY` into the `Default` column family in the same batch as the
 //! mutations, holding `index.0.to_be_bytes()` — **eight bytes, index only**.

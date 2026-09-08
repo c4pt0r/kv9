@@ -327,6 +327,13 @@ mod tests {
         assert_eq!(MemEngine::new().durability(), Durability::Volatile);
     }
 
+    /// UNLANDED(task #16) — REWRITE THE ARGUMENT, not the tense. The invariant below still
+    /// holds after WAL v2, but its support moves from "reserved KV key written in the same
+    /// batch" to the positioned record's atomic CRC / fsync / replay (Tess, task #17 rev 7:
+    /// past tense and a bare pointer are both refused). Making this historical would leave
+    /// an invariant asserted with no live justification — and the justification is the only
+    /// thing this paragraph is for.
+    ///
     /// The state machine stores its applied-index watermark under a `0x00`-prefixed key in
     /// the *data* column family, written in the same batch as the data it describes
     /// (`kv9_raft`'s `APPLIED_INDEX_KEY`). That pairing is what stops "durable data,
