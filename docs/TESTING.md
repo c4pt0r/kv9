@@ -762,8 +762,15 @@ misses the other two.
 **Before reading any negative conclusion, establish that the target command executed.** Not that it
 exited zero — that it ran. Exactly one kind of evidence answers this:
 
-    a positive work witness   something only the target execution itself produces: a PASS/selected
-                              count, a compiled artifact, a marker line unique to a real run
+    a positive work witness   something only THIS execution produced — not something the command
+                              is capable of producing. A PASS/selected count, a marker line unique to
+                              this run, or an artifact whose freshness is established (pre-emptied or
+                              unique target dir, timestamp, run-scoped name).
+
+**Freshness is part of the witness, not a detail.** A build product from an earlier run sits in the
+directory whether or not this command ran, so "the artifact is there" rebuilds the false evidence
+this rule exists to refuse. My own no-cmake case only worked because the target dir was fresh; had I
+reused one, the `.a` and the 377 `.o` files would have been there either way.
 
 Two neighbouring practices are often mistaken for it, and are **not** substitutes:
 
@@ -789,9 +796,12 @@ theirs:*
     rule 20         is the tool ABLE to see the thing — and was its control wide enough (boundary 2)?
     rule 19         it ran and was able to see, but answered a narrower question than you asked
 
-12, 14, 19 and 20 all presuppose 21. It stays separate so the premise is not hidden inside the
-variants — and so that "the mutation landed" is not quietly promoted from rule 14's precondition
-into evidence of execution.
+Each of these can be answered on its own: whether a mutation landed is decidable before any
+verifier runs, and a tool's self-test stands alone. The dependency is **scenario-scoped**: *when one
+of them is offered in support of a negative conclusion, its verdict does not substitute for rule 21 —
+that particular execution still needs its own positive witness.* Stated this way so the premise is
+not hidden inside the variants, and so "the mutation landed" is not quietly promoted from rule 14's
+precondition into evidence that the verifier ran.
 
 *Why this is here and not only in a comment beside one command:* the `tail` case was already recorded
 in a `ci.yml` comment — **written by the same person who then walked into it**, in wording he had
