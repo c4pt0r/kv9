@@ -46,11 +46,27 @@ rpds = "1"
 #                           commit message for the numbers). Counts are deliberately
 #                           NOT repeated here: a figure in a comment goes stale on the
 #                           next dependency change and nothing makes it red.
-#   native code             aws-lc-sys and ring carry C and assembly. aws-lc-sys is
-#                           actually compiled, so cmake and a C compiler are now BUILD
-#                           REQUIREMENTS -- the first in this repo since protoc, and the
-#                           same class of thing: it passes locally on a machine that
-#                           happens to have them
+#   native code             aws-lc-sys carries C and assembly and IS actually compiled
+#                           (377 .o files and libaws_lc_0_45_0_crypto.a in the build dir).
+#
+#                           An earlier version of this comment said that made "cmake and a
+#                           C compiler" new BUILD REQUIREMENTS. That was written from the
+#                           crate's reputation, not from a measurement, and both halves are
+#                           wrong. Measured on x86_64 linux, aws-lc-sys 0.45.0:
+#                             cmake   NOT used. Two from-scratch builds with cmake absent
+#                                     from PATH both produced the static library, with zero
+#                                     CMakeCache.txt anywhere in the out dir. aws-lc-sys
+#                                     chooses its builder at build time and took the `cc`
+#                                     path.
+#                             cc      required -- but it already was, as rustc's linker
+#                                     driver. Removing it fails `libc`, `proc-macro2` and
+#                                     every other build script long before aws-lc-sys, and
+#                                     it failed that way before this dependency existed.
+#                           So the toolchain delta on a working Rust host is ZERO. CI still
+#                           installs cmake explicitly, for a different and honest reason:
+#                           the builder choice is made on the runner, we do not control the
+#                           runner image, and the fallback path must not be the one thing
+#                           standing between us and a red we cannot reproduce.
 #   licences                no copyleft and none unspecified. aws-lc-sys is a conjunction
 #                           including BSD-3-Clause; the ICU crates are Unicode-3.0
 #
