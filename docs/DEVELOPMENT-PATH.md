@@ -388,6 +388,13 @@ The [shared correctness contract](https://github.com/c4pt0r/kv9/blob/master/docs
 
 Additional C04 deliverables: maintain the core proof inventory and checked-theorem toolchain; specify abstract state/transitions and source mappings for durable vote publication, Ready ordering, metadata constraints, checkpoint publication and retention. Formalize file versus directory durability assumptions. Provide proof dependencies for all later ownership, transaction and GC changes; five quorum lemmas alone do not discharge these obligations.
 
+TLA+ is the primary protocol specification, with TLC counterexample checks and
+deductive proofs in TLAPS or Lean. The first metadata planning model and its
+implementation mapping are in [METADATA-PLANNING.md](METADATA-PLANNING.md).
+Its finite checks do not complete C04: mechanize the parameterized metadata
+induction, extend Ready/persistence ordering, then model checkpoint publication
+and recovery with their implementation and Chaos Mesh obligations retained.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.
