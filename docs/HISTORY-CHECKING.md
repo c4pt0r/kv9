@@ -204,3 +204,29 @@ The seven mutation controls passed baseline/mutant/restored checks, all 12 Lean
 lemmas passed with six rejected invalid controls, and Bash syntax, actionlint and
 whitespace checks passed. These local observations do not assert hosted CI
 success; published issue evidence records the observed runs at their commit.
+
+## Hosted integration follow-up
+
+The first hosted CI run at `c72d550` failed the existing dynamic-membership E2E
+at its one-shot post-failover CreateKeyspace call. The saved scene shows the
+replacement candidate's local leader status in term 6 while its applied prefix
+still belongs to term 5; the public RPC returned `not leader`. Local role status
+was being treated as a guarantee that the next RPC would succeed. The failure
+is retained in run [34288658386](https://github.com/c4pt0r/kv9/actions/runs/34288658386),
+artifact `scene-dynamic-membership-e2e.sh-34288658386-1`.
+
+`scripts/membership-write.sh` now bounds retries of that observed leadership
+rejection, re-resolves the routing candidate and saves every attempt's endpoint,
+start/end timestamps, stdout, stderr and exit status. It retries the same unique
+name. A timeout, transport failure, duplicate-name response or missing successful
+receipt cannot satisfy the write. The retry-start budget is 20 seconds and each
+in-flight client call remains bounded by the existing 15-second timeout. The
+existing exact term/index checks on every surviving and restarted voter remain
+unchanged; no production protocol, fsync or quorum rule changed.
+
+Four deterministic controls cover transient leadership rejection, timeout,
+duplicate-name refusal and exhausted routing budget. A single-defect source
+mutation disabling the leadership retry fails at the intended refusal; baseline
+and restored controls pass. The full real five-voter join/promotion/failover and
+restart E2E passed locally, with artifacts at `/tmp/kv9-membership.TekcYJ`.
+Hosted validation of the follow-up is recorded separately in issue evidence.
