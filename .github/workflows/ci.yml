@@ -64,6 +64,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate GitHub Actions workflow contexts
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/actionlint"
+          cd "$RUNNER_TEMP/actionlint"
+          curl --fail --location --retry 3 --output actionlint.tar.gz \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz
+          echo '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  actionlint.tar.gz' | sha256sum --check
+          tar -xzf actionlint.tar.gz actionlint
+          cd "$GITHUB_WORKSPACE"
+          "$RUNNER_TEMP/actionlint/actionlint" -shellcheck= -pyflakes= .github/workflows/*.yml
+          echo 'PASS: GitHub Actions workflow contexts validated'
+
       # rust-toolchain.toml names the CHANNEL (`stable`) and requests rustfmt + clippy. It does
       # NOT pin a version, and calling this job deterministic would be false: `stable` moves, so
       # this runner and a contributor's machine resolve different compilers. That is not
