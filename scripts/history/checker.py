@@ -404,9 +404,11 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
             matches_read = competing_write and observed and op.args.get("value") == value
             # A confirmed range can capture its keys before an overlapping
             # insertion, even when the insert returns first. Try that snapshot
-            # before searching unrelated old unknown effects. This only ranks
-            # candidates: the opposite snapshot order remains available.
-            prepare_confirmed_range = (guided_unknown and op.outcome == "ok"
+            # before searching unrelated old unknown effects. Reserve this
+            # preference for the range-preparation attempt; the first guided
+            # attempt prefers the insertion. Both orders remain available in
+            # each search, but sharing one preference can exhaust both budgets.
+            prepare_confirmed_range = (guided_unknown and prepare_ranges and op.outcome == "ok"
                                        and op.kind == "delete_range" and progress.get(i) is None
                                        and pending.kind == "put"
                                        and op.args["keyspace"] == pending.args["keyspace"]
