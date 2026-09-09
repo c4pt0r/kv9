@@ -14,33 +14,39 @@ io_process_serving() {
   [ "$(status_value "$victim" pid)" = "$pid" ] && node_serving "$victim"
 }
 
-io_start_process() {
-  # IOChaos's descriptor replacement can detach the idle fixture supervisor
-  # with a pending SIGSTOP. This is healing of the test launcher, after the
-  # real database has exited and the fault has been deleted, not a database
-  # recovery retry. Never resume a traced process or a live database child.
-  k exec -n "$namespace" "$io_pod" -- cat /proc/1/status >"$artifact/$label-supervisor-before.txt"
-  k exec -n "$namespace" "$io_pod" -- cat /proc/1/cmdline >"$artifact/$label-supervisor-command.bin"
+io_prepare_launcher() {
+  local stage="$1" prefix="$artifact/$label-$1-supervisor"
+  # Normalize only the idle test launcher after IOChaos completes its attach/
+  # detach transition. No database child may exist, and the mount must match
+  # the intended stage. SIGCONT also clears a pending stop signal.
+  k exec -n "$namespace" "$io_pod" -- cat /proc/1/status >"$prefix-before.txt"
+  k exec -n "$namespace" "$io_pod" -- cat /proc/1/cmdline >"$prefix-command.bin"
   k exec -n "$namespace" "$io_pod" -- /bin/bash -c '
     set -euo pipefail
     test ! -e /tmp/kv9-io.pid && test -e /tmp/kv9-io.exit
     test "$(cat /proc/1/comm)" = bash
     tr "\0" "\n" < /proc/1/cmdline | grep -Fq /tmp/kv9-io.start
     test "$(awk '\''$1 == "TracerPid:" {print $2}'\'' /proc/1/status)" = 0
-    ! grep -Eq " /data fuse(\\.[^ ]+)? " /proc/mounts
-    state="$(awk '\''$1 == "State:" {print $2}'\'' /proc/1/status)"
-    if [ "$state" = T ]; then
-      kill -CONT 1
-      echo resume_signal=CONT
+    test -z "$(cat /proc/1/task/1/children)"
+    if [ "$1" = injected ]; then
+      grep -Eq " /data fuse(\\.[^ ]+)? " /proc/mounts
     else
-      [[ "$state" == S || "$state" == R ]]
-      echo resume_signal=none
+      test "$1" = healed
+      ! grep -Eq " /data fuse(\\.[^ ]+)? " /proc/mounts
     fi
-  ' >"$artifact/$label-supervisor-healing.txt"
+    state="$(awk '\''$1 == "State:" {print $2}'\'' /proc/1/status)"
+    [[ "$state" == T || "$state" == S || "$state" == R ]]
+    kill -CONT 1
+    printf "stage=%s\nresume_signal=CONT\n" "$1"
+  ' command "$stage" >"$prefix-healing.txt"
+}
+
+io_start_process() {
+  io_prepare_launcher healed
   k exec -n "$namespace" "$io_pod" -- /bin/bash -c \
     'rm -f /tmp/kv9-io.exit; touch /tmp/kv9-io.start'
   wait_until "fresh process serves on voter $victim" 40 io_process_serving
-  k exec -n "$namespace" "$io_pod" -- cat /proc/1/status >"$artifact/$label-supervisor-after.txt"
+  k exec -n "$namespace" "$io_pod" -- cat /proc/1/status >"$artifact/$label-healed-supervisor-after.txt"
 }
 
 io_stop_process() {
@@ -106,8 +112,10 @@ import json, sys
 node = int(sys.argv[1])
 script = '''set -uo pipefail
 touch /tmp/kv9-io.start
+mkfifo /tmp/kv9-io.wait
+exec 9<>/tmp/kv9-io.wait
 while true; do
-  while [ ! -f /tmp/kv9-io.start ]; do sleep 0.1; done
+  while [ ! -f /tmp/kv9-io.start ]; do read -r -t 0.1 -u 9 idle || true; done
   rm -f /tmp/kv9-io.start /tmp/kv9-io.exit
   /usr/local/bin/kv9 start --node-id NODE --addr 0.0.0.0:20160 --data-dir /data > /tmp/kv9-io.log 2>&1 &
   child=$!
@@ -146,6 +154,7 @@ PY
       grep -Eq ' /data fuse(\.[^ ]+)? ' "$artifact/$label-mounts.txt" || {
         echo 'FAIL: the database restart is not under the IOChaos FUSE mount' >&2; return 1;
       }
+      io_prepare_launcher injected
       k exec -n "$namespace" "$io_pod" -- /bin/bash -c \
         'rm -f /tmp/kv9-io.exit; touch /tmp/kv9-io.start'
       # Force catch-up traffic against the real reopened Raft log.

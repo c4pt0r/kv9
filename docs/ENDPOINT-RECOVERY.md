@@ -187,3 +187,13 @@ process released its store lock. A later same-store `store-prepare` succeeded
 without modifying its identity. The migration fixture now waits for actual
 lock acquisition and retains every attempt; it does not infer owner death from
 Pod UID replacement. This preserves the exclusive-owner requirement.
+
+The third attempt exposed a second launcher race during fault installation:
+toda left the polling `sleep` child stopped while Bash waited for it. No new
+database process existed. Resuming that child launched the original store and
+immediately produced the required Raft `ENOSPC` fatal exit under the still-live
+IOChaos mount. The fixture now waits with a Bash builtin on an idle FIFO,
+without spawning polling children. Before each injected/healed start it records
+the launcher state, verifies no child/tracer and the expected FUSE mount state,
+and clears pending stop signals on the launcher. Database failures, in-fault
+histories and recovery remain separate mandatory observations.
