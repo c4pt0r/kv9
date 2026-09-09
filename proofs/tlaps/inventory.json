@@ -42,6 +42,53 @@
         "WrittenStep"
       ],
       "obligations": 109
+    },
+    "MetadataPlanningControl": {
+      "theorems": [
+        "PlanningControlInit",
+        "PlanningControlStep"
+      ],
+      "obligations": 28
+    },
+    "MetadataPlanningBarrier": {
+      "theorems": [
+        "BarriersInit",
+        "BarriersStep"
+      ],
+      "obligations": 50
+    },
+    "MetadataFreshness": {
+      "theorems": [
+        "DrainedWriteCut",
+        "EqualWriteCuts",
+        "FreshAlways",
+        "FreshStep",
+        "PlannedSnapshot",
+        "PlanningInvariantInit",
+        "PlanningInvariantStep",
+        "SnapshotFrame"
+      ],
+      "obligations": 69
+    },
+    "MetadataAllocation": {
+      "theorems": [
+        "BoundedMaximum",
+        "LastWriteMaximum",
+        "NaturalInduction"
+      ],
+      "obligations": 35
+    },
+    "MetadataUniqueness": {
+      "theorems": [
+        "CatalogAlways",
+        "CatalogInvariantInit",
+        "CatalogInvariantStep",
+        "FreshId",
+        "UniqueImpliesSafety",
+        "UniqueInit",
+        "UniqueStep"
+      ],
+      "obligations": 73
     }
   },
   "model_assumptions": [
@@ -55,5 +102,6 @@
     "Sequences": "f613cffe14133769f0972b6f6e0139aaf0773004a51bac88ada382426e3eb7f4",
     "FiniteSets": "eca905df95c16fb12f0f205a38b429c216a11b5c8429d270af044f05600a6380",
     "TLAPS": "9afe54984062748a0568966434cc0945d682f8cd89fdbc38f73b5579751b0c55"
-  }
+  },
+  "root": "MetadataUniqueness"
 }

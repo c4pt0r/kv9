@@ -3,8 +3,9 @@
 TLA+ is the primary language for protocol state, transitions, safety and temporal
 properties. TLC checks finite instances and produces counterexamples. Deductive
 proofs in [TLAPS](../tlaps/README.md) now cover the metadata model's committed
-prefix and exact receipts; remaining protocol properties and the existing Lean
-lemmas retain their separate scopes. Neither TLC nor an abstract theorem
+prefix, exact receipts, planning freshness and name/ID uniqueness; remaining
+protocol properties and the existing Lean lemmas retain their separate scopes.
+Neither TLC nor an abstract theorem
 mechanically verifies the Rust implementation.
 
 ## Reproduce the metadata checks

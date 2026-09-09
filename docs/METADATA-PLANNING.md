@@ -78,11 +78,12 @@ entries themselves, so an overwrite cannot hide a conflicting allocation.
 ## Safety argument for arbitrary finite executions
 
 The following induction argument is parameterized by finite coordinator/request
-sets and any term budget. The committed-prefix, log/index shape and exact-receipt
+sets and any term budget. The committed-prefix, log/index shape, exact-receipt,
+planner-isolation, freshness and catalog-uniqueness
 parts now have [TLAPS proofs](../proofs/tlaps/README.md) importing this same model:
-19 declarations and 192 checked obligations. The planner-isolation, freshness,
-catalog-uniqueness and draining parts remain written arguments whose deductive
-mechanization is open. TLC's finite instances do not discharge those obligations.
+41 declarations and 447 checked obligations. Conditional draining remains a
+written argument whose deductive mechanization is open. Full `TypeOK` bounds are
+also open. TLC's finite instances do not discharge those obligations.
 
 **Prefix preservation.** Initially the committed/applied prefixes are empty.
 `Begin` and `Submit` append; `Elect` retains at least the committed prefix;
@@ -108,8 +109,10 @@ is absent from the log's catalog. If the term changes before `Submit`, its term
 guard rejects the stale plan. This establishes `FreshPlans` without adding a
 freshness check to `Submit` itself.
 
-**Catalog preservation.** Strengthen uniqueness with the invariant that retained
-write IDs form the sequence 1, 2, ... in log order. It holds initially. A successful
+**Catalog preservation.** Strengthen uniqueness with positive, strictly increasing
+retained write IDs in log order. A checked natural induction establishes that the
+nonempty bounded write-index set has a maximum, making `LastWrite` well-defined.
+The next ID exceeds every retained write ID. This holds initially. A successful
 `Submit` uses the freshness lemma, appending the next ID and an absent name.
 Noops leave write order unchanged; suffix truncation keeps a prefix; other
 actions leave the log unchanged. Induction gives `LogSafety`, hence
@@ -130,6 +133,15 @@ well-formedness, and `MetadataPrefix.PrefixAlways` states the canonical TLA+
 property `Spec => [][PrefixStable]_vars`. All imported project lemmas are checked
 freshly; these are parameterized theorems, not the two finite TLC cases. They
 still rely on the abstract Raft transitions described above.
+
+`MetadataFreshness.FreshAlways` establishes `Spec => []FreshPlans` using the
+planning-control and barrier invariants. `MetadataUniqueness.CatalogAlways`
+establishes `Spec => [](LogSafety /\ CatalogSafety)` using that freshness result
+at the term-fenced submission point. No action acquires a new uniqueness check or
+changes the blind allocator to make the proof pass. Negative controls remove the
+mutex, weaken the barrier to a ReadIndex-only wait, remove the submission term
+fence and stop advancing the allocator; each must fail its specific preservation
+or allocation obligation before the restored full inventory passes again.
 
 ## Conditional draining argument
 
@@ -175,11 +187,14 @@ write from satisfying the acceptance gate.
 
 ## Remaining work and availability boundary
 
-- Complete the remaining planner-isolation, freshness, catalog-uniqueness and
-  conditional draining proofs, extending the checked TLAPS prefix/receipt
-  inventory. The existing 12 Lean lemmas do not prove this metadata protocol.
+- Complete full `TypeOK` bounds and the conditional draining proof, extending the
+  checked TLAPS safety inventory. The existing 12 Lean lemmas do not prove this
+  metadata protocol.
 - Prove/refine the assumed Raft contract: log matching, leader completeness,
   durable Ready ordering, exact receipt publication and configuration changes.
+  The ignored `LightReady` commit update reproduced in
+  [#35](https://github.com/c4pt0r/kv9/issues/35) is a concrete recovery-boundary
+  defect outside this accepted-log model and takes priority in that audit.
 - Extend the metadata model to arbitrary catalog batches, PK/FK constraints,
   bootstrap, membership, allocator bounds, cancellations and typed `Replaced`
   retry loops. One attempt per modeled request does not verify those loops.

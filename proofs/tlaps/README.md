@@ -2,7 +2,7 @@
 
 These proofs import the same `MetadataPlanning.tla` used by TLC. They do not
 translate its transitions into a second state machine. The inventory contains
-19 theorem declarations and 192 checked proof obligations across four modules.
+41 theorem declarations and 447 checked proof obligations across nine modules.
 
 | Module | Theorems | Obligations | Result |
 |---|---:|---:|---|
@@ -10,16 +10,21 @@ translate its transitions into a second state machine. The inventory contains
 | `MetadataShape` | 3 | 35 | Initialization, transition preservation and temporal induction for log shape and committed/applied bounds |
 | `MetadataPrefix` | 2 | 29 | Every transition preserves committed entries; the canonical TLA+ action property holds throughout every specified execution |
 | `MetadataReceipt` | 9 | 109 | Request field preservation, written-entry correlation and `Spec => []ReceiptSafety` |
+| `MetadataPlanningControl` | 2 | 28 | Per-host planner exclusion, planning-term bounds and current-term ownership |
+| `MetadataPlanningBarrier` | 2 | 50 | No later write before current-term submission; exact observed barriers remain in applied prefixes |
+| `MetadataFreshness` | 8 | 69 | Equality of the local and retained write cuts; `Spec => []FreshPlans` |
+| `MetadataAllocation` | 3 | 35 | Checked natural induction, bounded maximum existence and the actual `LastWrite` choice |
+| `MetadataUniqueness` | 7 | 73 | Positive ordered write IDs, unique names and `Spec => [](LogSafety /\ CatalogSafety)` |
 
-`ReceiptAlways` applies to arbitrary legal coordinator/request sets and term
-budgets, and to all executions of the model, including stuttering. It is a
-deductive result, not enumeration of the two TLC configurations. Its premises
+`ReceiptAlways`, `FreshAlways` and `CatalogAlways` apply to arbitrary legal
+coordinator/request sets and term budgets, and to all executions of the model,
+including stuttering. These are deductive results, not enumeration of the two
+TLC configurations. Their premises
 include the model's abstract Raft contract. It does not prove that Rust, the
 network, the filesystem or object storage implements that contract.
 
-The names/ID allocation theorem (`CatalogSafety`), freshness theorem
-(`FreshPlans`), full `TypeOK` bounds and conditional draining proof are **not**
-mechanized by this inventory. `ShapeAlways` proves the specific log/index bounds
+The full `TypeOK` bounds and conditional draining proof are **not** mechanized
+by this inventory. `ShapeAlways` proves the specific log/index bounds
 defined in `MetadataShape`, not every clause of `TypeOK`.
 
 ## Toolchain and reproducibility
@@ -54,10 +59,12 @@ keyword convention. Standard module sources are also fingerprinted. SANY enforce
 TLA+ syntax and semantic levels separately from TLAPS; in particular a temporal
 action property must use the canonical `[][A]_vars` form.
 
-Seven isolated controls each require a passing baseline, a specific rejection and
+Twelve isolated controls each require a passing baseline, a specific rejection and
 a passing restored source: index-only acknowledgement, acknowledgement before
 application, replacement of a committed entry, an omitted proof, a custom axiom,
-an empty inventory and an invalid temporal action property. Three output controls
+an empty inventory, an invalid temporal action property, a missing planner mutex,
+a ReadIndex-only wait, a missing submission term fence, a non-advancing allocator
+and a root module that omits part of the inventory. Three output controls
 reject exit-zero runs with empty output, zero obligations or a missing summary.
 Parser/tool errors are not accepted as protocol counterexamples. Every mutation
 owns exactly one file, and restoration is checked by source hashes.
@@ -83,6 +90,24 @@ index, term and planned value. That last relation matters because the receipt
 guard checks identity, while the value was captured earlier at submission.
 Only after all transitions preserve the strengthened invariant does temporal
 induction establish the receipt theorem.
+
+The planning proof adds the per-host mutex, current-term ownership, exact applied
+barrier and absence of later writes before submission. These facts establish
+snapshot equality and preserve current-term ready plans. A separate checked
+induction proves that every nonempty bounded set of write indices has a maximum;
+the model's `CHOOSE` therefore selects the last retained write. The allocator
+remains the last blindly written ID plus one. Positive, strictly increasing IDs
+and unique names form the additional inductive invariant for catalog safety.
+Discarding an uncommitted suffix may reuse its IDs; acknowledged writes remain
+protected by the prefix and receipt theorems.
+
+Removing the term fence fails `Submit` preservation in `MetadataUniqueness`.
+Freshness alone does not require a stale plan to become current again, so its
+induction is not the load-bearing term-fence obligation. Similarly, removing the
+mutex fails `Begin` preservation, and a ReadIndex-only wait fails exact applied
+barrier preservation. These are specific failed proof goals, not a claim that
+failure to prove an arbitrary statement is itself a counterexample; the TLC
+controls retain concrete protocol traces separately.
 
 The unchanged implementation mapping and open obligations are recorded in
 [METADATA-PLANNING.md](../../docs/METADATA-PLANNING.md). Quorum/log matching,
