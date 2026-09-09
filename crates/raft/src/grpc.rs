@@ -1414,6 +1414,67 @@ mod tests {
         });
     }
 
+    #[test]
+    fn registered_address_change_replaces_live_peer_stream() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let handle = rt.handle().clone();
+        let old_addr = free_addr();
+        let mut new_addr = free_addr();
+        while new_addr == old_addr {
+            new_addr = free_addr();
+        }
+        let (old_tx, mut old_rx) = mpsc::unbounded_channel();
+        let (new_tx, mut new_rx) = mpsc::unbounded_channel();
+        serve(&handle, NodeId(2), old_addr, old_tx, 42);
+        serve(&handle, NodeId(2), new_addr, new_tx, 42);
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            Some("test-cluster-token".into()),
+            handle,
+            test_root().root_digest,
+        );
+        let message = |context: &'static [u8]| Message {
+            from: 1,
+            to: 2,
+            context: context.to_vec().into(),
+            ..Default::default()
+        };
+        transport.register_peer(NodeId(2), old_addr);
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        let mut established = false;
+        while std::time::Instant::now() < deadline {
+            transport.send(NodeId(2), message(b"before"));
+            if old_rx.try_recv().is_ok() {
+                established = true;
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        assert!(
+            established,
+            "original endpoint never received the control message"
+        );
+        transport.register_peer(NodeId(2), new_addr);
+        assert_eq!(transport.peer_address_for_tests(NodeId(2)), Some(new_addr));
+        let deadline = std::time::Instant::now() + Duration::from_secs(3);
+        let mut old_after = 0;
+        let mut migrated = false;
+        while std::time::Instant::now() < deadline {
+            transport.send(NodeId(2), message(b"after"));
+            while let Ok(msg) = old_rx.try_recv() {
+                old_after += usize::from(msg.context.as_ref() == b"after");
+            }
+            if let Ok(msg) = new_rx.try_recv() {
+                if msg.context.as_ref() == b"after" {
+                    migrated = true;
+                    break;
+                }
+            }
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        assert!(migrated, "new configured endpoint received no traffic; old endpoint received {old_after} post-update messages");
+    }
+
     /// Third entry to the task #40 liveness invariant (Tess's review): a peer
     /// whose h2 layer is alive (handshake completes, PINGs acked) but whose
     /// handler never READS the request stream. Flow control stops polling the
