@@ -3,7 +3,6 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-bin="$repo_dir/target/debug/kv9"
 artifact_dir="${KV9_ACCEPTANCE_DIR:-$(mktemp -d /tmp/kv9-phase1-final.XXXXXX)}"
 root_artifact_dir="$artifact_dir"
 # Keep the default listener range below Linux's usual ephemeral range. A
@@ -223,7 +222,7 @@ all_caught_up() {
 }
 
 echo "Building kv9..."
-cargo build --quiet --manifest-path "$repo_dir/Cargo.toml"
+bin="$(build_fixture_binary "$repo_dir" "$artifact_dir/build.jsonl")"
 
 # Negative gate: one member of a declared three-voter set may listen, but it
 # must never turn silence into an 'uninitialized' quorum.
