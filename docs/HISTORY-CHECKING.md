@@ -148,7 +148,7 @@ python3 scripts/history/checker.py /path/history.jsonl --output /path/result.jso
 The checker exits 0 only for valid, 1 for proven invalid, and 2 for inconclusive
 or malformed input. Acceptance requires successful mutations and reads and all
 requested API kinds; zero operations, all errors and missing coverage fail.
-Controls include 36 tests and 200 deterministic small atomic histories checked
+Controls include 38 tests and 200 deterministic small atomic histories checked
 against a separate permutation/subset oracle. Eleven isolated source mutations
 each require exactly one selected test to pass, fail its intended assertion,
 and pass after byte-for-byte restoration. Sources and mutant hashes, all phase
@@ -299,3 +299,35 @@ covers both the reversed-response case with 128 old unknown deletions and the
 opposite legal order. All 36 history tests and the 13 isolated source controls
 remain required. The original failed acceptance attempt is not relabeled as a
 successful process run.
+
+
+### Complete-history search with overlapping writes (#46)
+
+Hosted run `34372066550` at `5335e47` completed the actual 16-window fault
+matrix and its persistent-client history, but its 4,063-operation CLI history
+returned `inconclusive` after the unchanged 60-second search budget. The
+original failure is retained. Filtering eligible candidates before sorting
+removes only operations excluded by the existing interval/read conditions or
+whose completed progress has no successor. Unknown writes remain eligible
+after their responses. The transition graph and relative candidate order are
+unchanged by this filtering.
+
+The guided witness attempt also uses a later successful Get or an explicit
+Scan row to rank overlapping confirmed point writes. It tries the matching
+write last, after both responses and before another invoked write to the same
+key. This is only an ordering hint: older unknown operations can invalidate the
+hint, and every alternative order remains in the same search. It never reads
+server receipt positions, removes history records, infers a timeout refusal,
+or changes the sequential model, global budgets or unrestricted exhaustion.
+Every positive certificate is replayed from the initial state across all
+response barriers. Without a certificate, acceptance still fails.
+
+The original hosted history now yields a complete witness within the same
+60-second budget. Regression coverage includes both response orders, both
+observed values, Get and Scan observations, and an unwritten value that must
+remain invalid even if a future Put supplies it. The 38-test suite includes
+200 independently enumerated small atomic histories. Fourteen isolated source
+controls retain exact baseline, single-test assertion failure, and restored
+checks; disabling the following-read hint fails its fixed-frontier witness
+case. Local retained-corpus success does not change the original hosted run's
+failed conclusion or establish a successful subsequent hosted run.

@@ -155,11 +155,11 @@ jobs:
           set -euo pipefail
           python3 -m unittest discover -s scripts/history -p 'test_*.py' -v > "$RUNNER_TEMP/history-controls.log" 2>&1
           cat "$RUNNER_TEMP/history-controls.log"
-          grep -Eq '^Ran 36 tests in ' "$RUNNER_TEMP/history-controls.log"
+          grep -Eq '^Ran 38 tests in ' "$RUNNER_TEMP/history-controls.log"
           test "$(tail -1 "$RUNNER_TEMP/history-controls.log")" = OK
           python3 scripts/history/check-controls.py --output "$RUNNER_TEMP/history-mutations" > "$RUNNER_TEMP/history-mutations.log" 2>&1
           cat "$RUNNER_TEMP/history-mutations.log"
-          test "$(tail -1 "$RUNNER_TEMP/history-mutations.log")" = 'PASS: 36 history tests and 13 isolated source mutations checked'
+          test "$(tail -1 "$RUNNER_TEMP/history-mutations.log")" = 'PASS: 38 history tests and 14 isolated source mutations checked'
       - uses: actions/upload-artifact@v4
         if: always()
         with:

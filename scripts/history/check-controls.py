@@ -15,8 +15,8 @@ import tempfile
 # specific independently known history/guard that must fail an assertion.
 CONTROLS = [
     ('timeout-is-a-write-upper-bound',
-     '(op.outcome != "unknown" and op.response is not None and op.response < event["seq"])',
-     '(op.response is not None and op.response < event["seq"])',
+     '(op.outcome == "unknown" or op.response is None or op.response >= event["seq"])',
+     '(op.response is None or op.response >= event["seq"])',
      'test_unknown_write_may_commit_after_timeout'),
     ('ignore-observed-get-value',
      'if kv.get((kid, args["key"])) != op.result["value"]:',
@@ -42,6 +42,9 @@ CONTROLS = [
 ]
 
 CONTROLS = [(label, 'checker.py', old, new, test) for label, old, new, test in CONTROLS] + [
+    ('following-read-write-order-ignored', 'checker.py',
+     'matches_read = competing_write and observed', 'matches_read = False and observed',
+     'test_following_read_orders_either_concurrent_write_first'),
     ('reversed-write-responses-expand-unknowns-first', 'checker.py',
      'competing_write = (guided_unknown and op.outcome == "ok"',
      'competing_write = (False and op.outcome == "ok"',
@@ -92,7 +95,7 @@ def main():
             output = process.stdout+process.stderr
             (args.output/(label+'.log')).write_text(output)
             count = re.findall(r'^Ran (\d+) tests? in ', output, re.M)
-            demand(count == [str(1 if test else 36)], f'{label}: wrong selected test count: {count}')
+            demand(count == [str(1 if test else 38)], f'{label}: wrong selected test count: {count}')
             if red:
                 demand(process.returncode == 1 and 'FAILED (failures=1)' in output and 'AssertionError:' in output
                        and f'FAIL: {test} ' in output and 'ERROR:' not in output, f'{label}: no attributable assertion failure')
@@ -123,7 +126,7 @@ def main():
         run('restored-suite')
         unchanged(originals)
     demand(all((source/name).read_bytes() == data for name, data in originals.items()), 'source changed during control run')
-    print(f'PASS: 36 history tests and {len(CONTROLS)} isolated source mutations checked', flush=True)
+    print(f'PASS: 38 history tests and {len(CONTROLS)} isolated source mutations checked', flush=True)
 
 
 if __name__ == '__main__':
