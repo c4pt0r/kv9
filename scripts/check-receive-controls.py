@@ -40,10 +40,15 @@ def main():
     binding = runtime[runtime.index('        // A renewed ticket cannot authorize'):runtime.index('        match existing {')]
     bypass_binding = replace_once(binding, 'if !matches!',
         'if existing.as_ref().is_none_or(|admission| admission.state != kv9_meta::admission::AdmissionState::Pending) && !matches!')
-    endpoint = '        self.transport.register_peer(node, canonical_addr);\n'
-    early_endpoint = replace_once(runtime, endpoint, '')
-    early_endpoint = replace_once(early_endpoint, '        let canonical = canonical_addr.to_string();\n',
-                                  '        let canonical = canonical_addr.to_string();\n' + endpoint)
+    # The production writer now installs the committed catalog generation.
+    # Inject the forbidden side effect before validation for a new node, whose
+    # route has no prior generation. Keep the legitimate later installation.
+    # Moving the old unversioned register_peer call would exercise a retired
+    # path and can be masked by the independent catalog-generation floor.
+    canonical = '        let canonical = canonical_addr.to_string();\n'
+    early_endpoint = replace_once(runtime, canonical, canonical +
+        '        self.transport.register_catalog_peer(node, canonical_addr, 0)\n'
+        '            .map_err(RegistrationError::Failed)?;\n')
     cases = [
         ('allow-unregistered-receive', GRPC, replace_once(grpc,
          'if !self.discovery.raft_receive_allowed() {', 'if false && !self.discovery.raft_receive_allowed() {'),
@@ -55,8 +60,10 @@ def main():
          recover, 'a different store accepted the durable local membership binding'),
         ('route-before-validation', RUNTIME, early_endpoint,
          routes, 'invalid ticket installed a transport route'),
-        ('rebind-with-renewed-ticket', RUNTIME, replace_once(runtime, binding, bypass_binding),
-         routes, 'a renewed ticket rebound an existing replica to an empty store'),
+        # The endpoint writer independently rejects another incarnation. This
+        # control removes the outer typed refusal, not both binding guards.
+        ('lose-renewed-incarnation-refusal', RUNTIME, replace_once(runtime, binding, bypass_binding),
+         routes, 'renewed replacement did not receive a typed incarnation refusal'),
     ]
     env = dict(os.environ, CARGO_TARGET_DIR=os.environ.get('CARGO_TARGET_DIR', str(ROOT / 'target')))
     manifest = dict(sources={p: sha(s) for p, s in sources.items()}, controls=[])
