@@ -201,7 +201,15 @@ histories and recovery remain separate mandatory observations.
 The fourth full attempt completed all 21 fault windows and the actual migration
 cell. The complete persistent-client history passed, but the CLI history checker
 exhausted its frontier and correctly returned `inconclusive`. [#49](https://github.com/c4pt0r/kv9/issues/49)
-tracks the confirmed-range snapshot ordering repair. The original 4,330-event-
-pair history is unchanged; its full witness is accepted by the original model.
+tracks the confirmed-range snapshot ordering repair. The original
+4,330-operation history is unchanged; its full witness is accepted by the original model.
 The [history contract](HISTORY-CHECKING.md#confirmed-range-snapshot-ordering)
 records the permutation argument, reduced failure and unchanged budgets.
+
+The fifth full attempt also completed all 21 fault windows, while its complete
+4,280-operation CLI history exhausted the search budget. It requires a range
+to capture an overlapping insertion, the opposite priority from the fourth
+history. The existing two guided attempts now prefer different snapshot orders;
+both unchanged histories yield complete replayable witnesses within the original
+limits. Both original command failures remain retained. Fresh full-matrix
+acceptance is still required before this increment is accepted.

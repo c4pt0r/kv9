@@ -343,13 +343,18 @@ execution selects the old keys first and applies that captured set later.
 Unrelated unknown effects consumed the search frontier before it retried the
 correct snapshot order.
 
-The guided witness search now prefers an eligible, unselected confirmed range
-before an overlapping insertion of a new key in that range. A reduced history
+The range-preparation witness attempt now prefers an eligible, unselected
+confirmed range before an overlapping insertion of a new key in that range.
+The first guided attempt retains the insertion preference. A reduced history
 with 64 interchangeable unknown deletions reproduces the old failure under a
 100-state budget; the new ordering finds its witness in eight states. A
-separate control requires the opposite snapshot order. The original complete
-history obtains a witness in 4,526 states, and the pre-change independent
-verifier accepts every step. No event, unknown outcome or search limit changes.
+separate control applies the same unknown-effect pressure while requiring the
+opposite snapshot order, also finding an eight-state witness. Sharing the early
+snapshot preference across both attempts exhausted the fifth actual Chaos
+run's search budget. The two existing attempts now use different priorities:
+the fourth complete history obtains a witness in 22,457 states, and the fifth
+4,280-operation history in 7,087 states. Complete witness replay remains
+mandatory. No event, unknown outcome, attempt count or search limit changes.
 
 The preservation argument is a permutation argument. The eligible candidate
 set and each candidate's transition generator are unchanged. Sorting that
@@ -361,9 +366,10 @@ replay; restricted exhaustion still cannot establish invalidity. The existing
 certificate/interval proof boundary is preserved. This is not an additional
 consensus theorem or a completeness guarantee under finite search budgets.
 
-The complete Python gate has 40 tests and 15 isolated source mutations. The
-new mutation disables only the confirmed-range preference and must produce
-the named budget regression; baseline and restoration must pass. Existing
+The complete Python gate has 40 tests and 16 isolated source mutations. One
+mutation disables the confirmed-range preference; another applies it to both
+guided attempts. Each must produce its named budget regression; baseline and
+restoration must pass. Existing
 unknown-write, partial-range, real-time, refusal, witness and unrestricted-search
 controls remain required. The original failed Chaos history is retained; a
 replayed certificate does not rewrite its original command result.

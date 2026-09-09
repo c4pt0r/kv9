@@ -43,9 +43,13 @@ CONTROLS = [
 
 CONTROLS = [(label, 'checker.py', old, new, test) for label, old, new, test in CONTROLS] + [
     ('confirmed-range-snapshot-deferred', 'checker.py',
-     'prepare_confirmed_range = (guided_unknown and op.outcome == "ok"',
+     'prepare_confirmed_range = (guided_unknown and prepare_ranges and op.outcome == "ok"',
      'prepare_confirmed_range = (False and op.outcome == "ok"',
      'test_confirmed_range_snapshot_precedes_overlapping_new_key'),
+    ('confirmed-range-snapshot-preferred-in-both-attempts', 'checker.py',
+     'prepare_confirmed_range = (guided_unknown and prepare_ranges and op.outcome == "ok"',
+     'prepare_confirmed_range = (guided_unknown and op.outcome == "ok"',
+     'test_confirmed_range_can_also_capture_the_overlapping_insert'),
     ('following-read-write-order-ignored', 'checker.py',
      'matches_read = competing_write and observed', 'matches_read = False and observed',
      'test_following_read_orders_either_concurrent_write_first'),
