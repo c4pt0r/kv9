@@ -251,6 +251,129 @@ fn refusal(status: Status) -> Action {
 }
 
 #[tokio::test]
+async fn warmup_failure_preserves_attempts_and_does_not_start_measurement() {
+    use crate::workload::{run, Mix, Mode, RunOptions, WorkloadConfig};
+    use sha2::{Digest, Sha256};
+    use std::io::Read;
+
+    // Both modes must retain diagnosis without turning failed warmup into an
+    // accepted run. An unmarked write error must stay unknown and unreplayed.
+    for mode in [Mode::Correctness, Mode::Performance] {
+        for unknown in [false, true] {
+            let server = Server::new().await;
+            let output = std::env::temp_dir().join(format!(
+                "kv9-warmup-failure-{}-{}",
+                std::process::id(),
+                server.address.port()
+            ));
+            std::fs::create_dir(&output).unwrap();
+            let mut hasher = Sha256::new();
+            let mut executable = std::fs::File::open(std::env::current_exe().unwrap()).unwrap();
+            let mut buffer = [0u8; 65536];
+            loop {
+                let read = executable.read(&mut buffer).unwrap();
+                if read == 0 {
+                    break;
+                }
+                hasher.update(&buffer[..read]);
+            }
+            let manifest = output.join("build.json");
+            std::fs::write(&manifest, serde_json::to_vec(&serde_json::json!({
+                "version": 1, "revision": "0".repeat(40), "dirty": true,
+                "source_tree_sha256": "0".repeat(64), "binary_sha256": format!("{:x}", hasher.finalize()),
+                "profile": "debug", "rustc": "test fixture executable",
+            })).unwrap()).unwrap();
+            let configuration = WorkloadConfig {
+                version: 1,
+                client: config(&[server.address]),
+                mode,
+                run_id: "warmup-failure".into(),
+                keyspace_name: "fresh-warmup".into(),
+                seed: 40,
+                workers: 1,
+                keys: 1,
+                value_bytes: 16,
+                mix: Mix {
+                    get: 0,
+                    put: 100,
+                    delete: 0,
+                },
+                warmup_operations: 2,
+                max_operations: 32,
+                measure_ms: 1000,
+                interval_ms: 0,
+                history_bytes: if mode == Mode::Correctness {
+                    1024 * 1024
+                } else {
+                    0
+                },
+            };
+            {
+                let mut actions = server.state.actions.lock().unwrap();
+                actions.extend([Action::Pass, Action::Pass, Action::Pass, Action::Pass]);
+                for _ in 0..6 {
+                    actions.push_back(refusal(if unknown {
+                        Status::unavailable("private server error must not appear in artifacts")
+                    } else {
+                        not_leader(Some("1"))
+                    }));
+                }
+            }
+            let options = RunOptions {
+                output: output.join("run"),
+                build_manifest: manifest,
+                stop_file: None,
+                phase_file: None,
+            };
+            let report = run(configuration, "test-secret", options).await.unwrap();
+            assert!(!report.complete);
+            assert_eq!(
+                report.failure,
+                Some("warmup operation was not acknowledged")
+            );
+            assert_eq!(report.measured_issued, 0);
+            assert_eq!(report.history.issued, 5);
+            assert_eq!(report.history.terminal, 5);
+            assert!(report.history.accounting_complete);
+            assert!(!output.join("run/ready.json").exists());
+            assert!(!output.join("run/progress.json").exists());
+            let bytes = std::fs::read(output.join("run/warmup-failure.json")).unwrap();
+            assert!(bytes.len() < 4096);
+            let text = String::from_utf8(bytes).unwrap();
+            assert!(!text.contains("test-secret") && !text.contains("private server error"));
+            let diagnostic: serde_json::Value = serde_json::from_str(&text).unwrap();
+            let call = &diagnostic["call"];
+            assert_eq!(call["operation"], "put");
+            assert_eq!(
+                call["outcome"]["kind"],
+                if unknown { "unknown_write" } else { "refused" }
+            );
+            assert_eq!(
+                call["stop"],
+                if unknown { "terminal" } else { "attempt_limit" }
+            );
+            let attempts = call["attempts"].as_array().unwrap();
+            assert_eq!(attempts.len(), if unknown { 1 } else { 6 });
+            for (i, attempt) in attempts.iter().enumerate() {
+                assert_eq!(attempt["ordinal"], i + 1);
+                assert_eq!(attempt["node_id"], 1);
+                assert!(attempt["elapsed_ns"].as_u64().unwrap() > 0);
+                if !unknown {
+                    assert_eq!(attempt["failure"]["leader"], 1);
+                }
+            }
+            assert_eq!(
+                server.state.requests.load(Ordering::SeqCst),
+                4 + attempts.len()
+            );
+            assert_eq!(server.state.writes.load(Ordering::SeqCst), 2);
+            server.stop().await;
+            std::fs::remove_dir_all(output).unwrap();
+        }
+    }
+}
+
+#[tokio::test]
 async fn workload_stop_drains_an_applied_write_until_its_terminal_response() {
     use crate::workload::{run, Mix, Mode, RunOptions, WorkloadConfig};
     use sha2::{Digest, Sha256};
@@ -684,6 +807,36 @@ async fn persistent_response_loss_history_fixture() {
         .unwrap(),
     )
     .unwrap();
+    server.stop().await;
+}
+
+#[tokio::test]
+async fn spaced_refusals_can_succeed_on_the_last_bounded_attempt() {
+    let server = Server::new().await;
+    for _ in 0..5 {
+        server
+            .state
+            .actions
+            .lock()
+            .unwrap()
+            .push_back(refusal(not_leader(None)));
+    }
+    let mut configuration = config(&[server.address]);
+    configuration.deadline_ms = 1500;
+    configuration.retry_backoff_ms = 100;
+    let client = PersistentRawClient::new(configuration, "test-secret").unwrap();
+    let report = client.call(put(b"value")).await;
+    assert!(matches!(report.outcome, Outcome::Success { .. }));
+    assert_eq!(report.attempts.len(), 6);
+    assert!(
+        report.elapsed_ns >= 500_000_000,
+        "refusal retries omitted their configured spacing"
+    );
+    assert!(report.attempts[..5]
+        .iter()
+        .all(|a| matches!(a.failure, Some(Reason::NotLeader { .. }))));
+    assert_eq!(server.state.requests.load(Ordering::SeqCst), 6);
+    assert_eq!(server.state.writes.load(Ordering::SeqCst), 1);
     server.stop().await;
 }
 

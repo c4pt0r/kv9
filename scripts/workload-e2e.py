@@ -8,10 +8,10 @@ from pathlib import Path
 import secrets
 import socket
 import subprocess
-import time
 import urllib.request
 
 from workload_report import validate
+from workload_e2e_support import wait as wait_for
 
 ROOT = Path(__file__).resolve().parents[1]
 MINIO = "quay.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e"
@@ -44,17 +44,8 @@ def main():
             raise RuntimeError(f"{command[0:2]} failed: {result.stdout}{result.stderr}")
         return result.stdout.strip()
 
-    def wait(label, condition, seconds=45):
-        deadline = time.monotonic() + seconds
-        while time.monotonic() < deadline:
-            result = condition()
-            if result:
-                return result
-            for node, process in nodes.items():
-                if process.poll() is not None:
-                    raise RuntimeError(f"replica {node} exited; see its retained log")
-            time.sleep(0.02)
-        raise RuntimeError("timed out: " + label)
+    def wait(label, condition, seconds=45, workload=None):
+        return wait_for(label, condition, nodes, seconds, workload)
 
     def state(node):
         try:
@@ -90,7 +81,10 @@ def main():
         keyspace = int(dict(line.split("=", 1) for line in created_keyspace.splitlines())["keyspace_id"])
         return dict(version=1, client=dict(version=1, peers=peers or [dict(node_id=n, address=addresses[n]) for n in nodes],
                     keyspace_id=keyspace, epoch_conf_ver=1, epoch_version=1, max_in_flight=4, max_attempts=6,
-                    deadline_ms=1500, retry_backoff_ms=5), mode=mode, run_id=name, keyspace_name=name,
+                    # Six immediate refusals previously exhausted the attempt
+                    # budget in 36 ms. Space this functional fixture's retries
+                    # across 500 ms; the original 1500 ms deadline still applies.
+                    deadline_ms=1500, retry_backoff_ms=100), mode=mode, run_id=name, keyspace_name=name,
                     seed=40, workers=4, keys=4, value_bytes=128, mix=dict(get=50, put=40, delete=10),
                     warmup_operations=12, max_operations=250, measure_ms=2000, interval_ms=5,
                     history_bytes=64 * 1024 * 1024 if mode == "correctness" else 0)
@@ -162,7 +156,8 @@ def main():
         performance.update(max_operations=10000, measure_ms=30000)
         stop = output / "performance.stop"
         process = launch("performance-stop", performance, ("--stop-file", stop))
-        wait("performance measured progress", lambda: (output / "performance-stop/progress.json").exists())
+        wait("performance measured progress", lambda: (output / "performance-stop/progress.json").exists(),
+             workload=("performance-stop", process))
         stop.touch()
         collect("performance-stop", process)
         report = json.loads((output / "performance-stop/report.json").read_text())
@@ -196,7 +191,8 @@ def main():
         killed_config = config("killed-generator")
         killed_config.update(max_operations=1000, measure_ms=30000, interval_ms=100)
         process = launch("killed-generator", killed_config)
-        wait("generator measured progress before kill", lambda: (output / "killed-generator/progress.json").exists())
+        wait("generator measured progress before kill", lambda: (output / "killed-generator/progress.json").exists(),
+             workload=("killed-generator", process))
         process.kill()
         code = process.wait(timeout=10)
         if code >= 0 or (output / "killed-generator/report.json").exists():

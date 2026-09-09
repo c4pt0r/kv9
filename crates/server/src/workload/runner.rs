@@ -557,8 +557,15 @@ pub async fn run(
             }
             match shared.call(0, "warmup", shared.traffic()).await {
                 Ok(report) if matches!(report.outcome, Outcome::Success { .. }) => {}
-                Ok(_) => {
-                    execution = Err("warmup operation was not acknowledged");
+                Ok(report) => {
+                    // Failed calls contain only bounded typed outcomes and
+                    // attempts, never successful values, request data or RPC
+                    // prose. Preserve routing evidence in performance mode too.
+                    execution = atomic_json(
+                        &options.output.join("warmup-failure.json"),
+                        &serde_json::json!({"version": 1, "call": report}),
+                    )
+                    .and(Err("warmup operation was not acknowledged"));
                     break;
                 }
                 Err(error) => {
