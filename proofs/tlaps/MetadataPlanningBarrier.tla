@@ -47,9 +47,17 @@ THEOREM BarriersStep == ASSUME Invariant, PlanningControl, Barriers, Next PROVE 
        PlanningControl, TermBounds, Mutex, CurrentOwner, Active, Invariant, Shape, LogSeq, Range, Bounds,
        Control, Exact, Entry, PrefixStable
 <1>8. \A n \in Nodes, keep \in committed..Len(log) : Elect(n, keep) => Barriers'
-    BY <1>0, <1>1, SMT DEF Elect, Barriers, BarrierTail, SeenBarrier, BeforeSubmit, AfterBarrier,
-       PlanningControl, TermBounds, Mutex, CurrentOwner, Active, Invariant, Shape, LogSeq, Range, Bounds,
-       Control, Exact, Entry, PrefixStable
+    <2>1. SUFFICES ASSUME NEW n \in Nodes, NEW keep \in committed..Len(log), Elect(n, keep)
+                  PROVE Barriers'
+        OBVIOUS
+    <2>2. BarrierTail'
+        BY <2>1, SMT DEF Elect, BarrierTail, PlanningControl, TermBounds, Invariant, Control
+    <2>3. UNCHANGED <<phase, host, planningTerm, barrierAt, applied>>
+        BY <2>1, SMT DEF Elect
+    <2>4. SeenBarrier'
+        BY <2>3, <1>0, <1>1, SMT DEF Barriers, SeenBarrier, AfterBarrier, Exact, PrefixStable,
+           Invariant, Shape, LogSeq, Bounds, Control
+    <2> QED BY <2>2, <2>4, SMT DEF Barriers
 <1>9. Commit \/ (\E n \in Nodes : Apply(n)) => Barriers'
     BY <1>0, <1>1, SMT DEF Commit, Apply, Barriers, BarrierTail, SeenBarrier, BeforeSubmit, AfterBarrier,
        PlanningControl, TermBounds, Mutex, CurrentOwner, Active, Invariant, Shape, LogSeq, Range, Bounds,

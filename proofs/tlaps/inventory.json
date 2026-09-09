@@ -55,7 +55,7 @@
         "BarriersInit",
         "BarriersStep"
       ],
-      "obligations": 50
+      "obligations": 62
     },
     "MetadataFreshness": {
       "theorems": [
