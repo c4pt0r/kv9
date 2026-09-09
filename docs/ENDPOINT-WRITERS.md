@@ -1,5 +1,12 @@
 # Endpoint writers and route installation
 
+The production migration extension is documented in
+[Endpoint recovery](ENDPOINT-RECOVERY.md). It adds a transport generation floor
+that accepts remotely certified routes ahead of local snapshots, and separates
+Superseded join credentials from explicit member decommission. The historical
+acceptance below remains bound to its recorded source revision; current proof
+and source-control inventories include these later changes.
+
 This increment of [#47](https://github.com/c4pt0r/kv9/issues/47) composes the
 [catalog CAS](ENDPOINT-MIGRATION.md) with existing registration and local route
 installation. It does not expose the public migration API or complete the

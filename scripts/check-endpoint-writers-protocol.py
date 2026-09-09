@@ -18,7 +18,7 @@ SOURCE = ROOT / "proofs/tla/endpoint-writers"
 PROOFS = ROOT / "proofs/tlaps/endpoint-writers"
 MODULES = ("EndpointWriters.tla", "EndpointWritersMC.tla")
 CONFIGS = ("Writers2.cfg", "Writers3.cfg")
-ACTIONS = ("EWNewAdmission", "EWChange", "EWStart", "EWInstall", "EWEager")
+ACTIONS = ("EWNewAdmission", "EWChange", "EWStart", "EWInstall", "EWEager", "EWCertified", "EWDecommission")
 
 
 def module(name, filename):
@@ -248,7 +248,7 @@ def main():
         verdict(live_output, 0, temporal=True)
         model_outputs += 1
     proof_output = (args.output / "proof-baseline/EndpointWritersProof.log").read_text()
-    proof_outputs = proof.output_controls(proof_output, "EndpointWritersProof", 102)
+    proof_outputs = proof.output_controls(proof_output, "EndpointWritersProof", 111)
     summary = dict(jar_sha256=digest(args.jar), tlapm_version=version, tlapm_sha256=digest(args.tlapm),
                    sources={str(p.relative_to(ROOT)): digest(p) for p in [
                        Path(__file__), ROOT / "scripts/check-tla.py", ROOT / "scripts/check-tlaps.py",
@@ -258,7 +258,7 @@ def main():
                    models=models, proofs=proofs, model_output_controls=model_outputs, proof_output_controls=proof_outputs)
     (args.output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(f"PASS: 4 full endpoint-writer model checks and 2 fair continuations; {len(controls)} protocol controls; 2 witnesses; "
-          "13 TLAPS theorems; 102 obligations; 2 audit controls; 10 output controls", flush=True)
+          "14 TLAPS theorems; 111 obligations; 2 audit controls; 10 output controls", flush=True)
 
 
 if __name__ == "__main__":

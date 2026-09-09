@@ -1533,6 +1533,43 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             join_ticket: String::new(),
         }))
     }
+
+    async fn get_node_endpoint(
+        &self,
+        request: Request<proto::GetNodeEndpointRequest>,
+    ) -> Result<Response<proto::GetNodeEndpointResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
+        let caller = auth.principal.to_string();
+        let node = NodeId(request.into_inner().node_id);
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.get_node_endpoint(&caller, node)
+            })
+            .await?;
+        Ok(Response::new(proto::GetNodeEndpointResponse {
+            cluster_id: result.cluster.as_bytes().to_vec(),
+            endpoint: result.endpoint.map(crate::endpoints::encode_endpoint),
+        }))
+    }
+
+    async fn change_node_endpoint(
+        &self,
+        request: Request<proto::ChangeNodeEndpointRequest>,
+    ) -> Result<Response<proto::ChangeNodeEndpointResponse>, Status> {
+        let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
+        let caller = auth.principal.to_string();
+        let change = crate::endpoints::decode_change(request.into_inner()).map_err(error_status)?;
+        let result = self
+            .backend
+            .call(reservation, move |backend| {
+                backend.change_node_endpoint(&caller, change)
+            })
+            .await?;
+        Ok(Response::new(crate::endpoints::encode_update(result)))
+    }
 }
 
 #[cfg(test)]

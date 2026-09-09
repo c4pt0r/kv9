@@ -33,11 +33,16 @@ use crate::transport::RaftTransport;
 
 /// Generated protobuf/tonic types for `proto/kv9_raft.proto`.
 pub mod pb {
-    tonic::include_proto!("kv9.raft");
+    tonic::include_proto!("kv9.raft.v2");
 }
 
 use pb::kv9_raft_client::Kv9RaftClient;
 use pb::kv9_raft_server::Kv9Raft;
+
+mod endpoint;
+pub use endpoint::{
+    grpc_confirm_endpoint, EndpointConfirmError, EndpointConfirmationReceipt, EndpointRoute,
+};
 
 /// Metadata key carrying the shared cluster token (EdHuang's ruling: token
 /// auth ships with the gRPC rewrite). Threat boundary, stated where it will
@@ -268,6 +273,17 @@ fn invalid_join_ticket_status() -> Status {
 /// path only; a follower returns `RegistrationError::NotLeader` so the
 /// handler can emit the machine-readable redirect.
 pub trait RegistrationBackend: Send + Sync + 'static {
+    fn confirm_endpoint(
+        &self,
+        _node: NodeId,
+        _cluster: ClusterId,
+        _incarnation: StoreIncarnation,
+        _address: SocketAddr,
+    ) -> std::result::Result<EndpointConfirmationReceipt, RegistrationError> {
+        Err(RegistrationError::Failed(Error::NotImplemented(
+            "endpoint confirmation",
+        )))
+    }
     fn register(
         &self,
         node: NodeId,
@@ -328,6 +344,12 @@ impl RaftGrpcService {
 
 #[tonic::async_trait]
 impl Kv9Raft for RaftGrpcService {
+    async fn confirm_endpoint(
+        &self,
+        request: Request<pb::ConfirmEndpointRequest>,
+    ) -> std::result::Result<Response<pb::EndpointConfirmationReceipt>, Status> {
+        self.confirm_endpoint_request(request).await
+    }
     async fn batch_raft(
         &self,
         request: Request<Streaming<pb::BatchRaftMessage>>,
@@ -879,6 +901,7 @@ impl Drop for PeerSender {
 struct PeerRoute {
     destination: Arc<PeerDestination>,
     sender: Option<PeerSender>,
+    catalog_generation: Option<u64>,
 }
 
 /// The outbound half + inbox drain: a [`RaftTransport`] carried by gRPC.
@@ -944,14 +967,52 @@ impl GrpcTransport {
         self.inbox_tx.clone()
     }
 
-    /// Install an already authorized route. Address equality is idempotent;
-    /// a changed route revokes the old connection generation, not membership.
+    /// Install an unversioned bootstrap route. Once a catalog or a remote
+    /// confirmation has versioned this route, bootstrap cannot replace it.
     pub fn register_peer(&self, id: NodeId, addr: SocketAddr) {
         let mut peers = self.peers.lock().expect("peers poisoned");
         let peer = peers.entry(id.0).or_insert_with(|| PeerRoute {
             destination: Arc::new(PeerDestination { addr }),
             sender: None,
+            catalog_generation: None,
         });
+        if peer.catalog_generation.is_some() {
+            return;
+        }
+        Self::install_route(peer, addr);
+    }
+
+    /// Install a route certified by the directory or an exact remote receipt.
+    /// Older local snapshots may lag such a receipt and must not roll it back.
+    /// A generation names one address: conflicting equal versions fail closed.
+    pub fn register_catalog_peer(
+        &self,
+        id: NodeId,
+        addr: SocketAddr,
+        generation: u64,
+    ) -> kv9_common::Result<()> {
+        let mut peers = self.peers.lock().expect("peers poisoned");
+        let peer = peers.entry(id.0).or_insert_with(|| PeerRoute {
+            destination: Arc::new(PeerDestination { addr }),
+            sender: None,
+            catalog_generation: None,
+        });
+        if let Some(current) = peer.catalog_generation {
+            if generation < current {
+                return Ok(());
+            }
+            if generation == current && addr != peer.destination.addr {
+                return Err(Error::Config(
+                    "one endpoint generation names conflicting addresses".into(),
+                ));
+            }
+        }
+        peer.catalog_generation = Some(generation);
+        Self::install_route(peer, addr);
+        Ok(())
+    }
+
+    fn install_route(peer: &mut PeerRoute, addr: SocketAddr) {
         if peer.destination.addr != addr {
             peer.destination = Arc::new(PeerDestination { addr });
             if let Some(sender) = &peer.sender {
@@ -961,13 +1022,17 @@ impl GrpcTransport {
     }
 
     /// Inspect the configured route without establishing a connection.
-    #[cfg(any(test, feature = "testing"))]
-    pub fn peer_address_for_tests(&self, id: NodeId) -> Option<SocketAddr> {
+    pub fn peer_address(&self, id: NodeId) -> Option<SocketAddr> {
         self.peers
             .lock()
             .expect("peers poisoned")
             .get(&id.0)
             .map(|peer| peer.destination.addr)
+    }
+
+    #[cfg(any(test, feature = "testing"))]
+    pub fn peer_address_for_tests(&self, id: NodeId) -> Option<SocketAddr> {
+        self.peer_address(id)
     }
 
     /// Total peer-connect attempts so far (monotonic).
@@ -1785,6 +1850,65 @@ mod tests {
         assert!(migrated, "new configured endpoint received no traffic; old endpoint received {old_after} post-update messages");
     }
 
+    #[test]
+    fn certified_route_generation_never_regresses_or_reinterprets_an_address() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            None,
+            rt.handle().clone(),
+            test_root().root_digest,
+        );
+        let a: SocketAddr = "127.0.0.1:41001".parse().unwrap();
+        let b: SocketAddr = "127.0.0.1:41002".parse().unwrap();
+        let peer = NodeId(2);
+        transport.register_catalog_peer(peer, a, 0).unwrap();
+        transport.register_catalog_peer(peer, b, 2).unwrap();
+        transport.register_catalog_peer(peer, a, 1).unwrap();
+        assert_eq!(
+            transport.peer_address(peer),
+            Some(b),
+            "older catalog snapshot replaced certified route"
+        );
+        transport.register_peer(peer, a);
+        assert_eq!(
+            transport.peer_address(peer),
+            Some(b),
+            "unversioned fallback replaced certified route"
+        );
+        assert!(
+            transport.register_catalog_peer(peer, a, 2).is_err(),
+            "equal generations named different addresses"
+        );
+        assert_eq!(transport.peer_address(peer), Some(b));
+        let destination = transport.peers.lock().unwrap()[&2].destination.clone();
+        transport.register_catalog_peer(peer, b, 3).unwrap();
+        assert!(
+            Arc::ptr_eq(
+                &destination,
+                &transport.peers.lock().unwrap()[&2].destination
+            ),
+            "same-address generation update changed connection ownership"
+        );
+        assert_eq!(
+            transport.peers.lock().unwrap()[&2].catalog_generation,
+            Some(3)
+        );
+        transport.register_catalog_peer(peer, a, 2).unwrap();
+        assert_eq!(
+            transport.peer_address(peer),
+            Some(b),
+            "same-address update lost its version floor"
+        );
+        transport.register_catalog_peer(peer, a, u64::MAX).unwrap();
+        transport.register_catalog_peer(peer, b, 0).unwrap();
+        assert_eq!(
+            transport.peer_address(peer),
+            Some(a),
+            "catalog route generation wrapped"
+        );
+    }
+
     /// Third entry to the task #40 liveness invariant (Tess's review): a peer
     /// whose h2 layer is alive (handshake completes, PINGs acked) but whose
     /// handler never READS the request stream. Flow control stops polling the
@@ -1806,6 +1930,13 @@ mod tests {
         struct FrozenRaft;
         #[tonic::async_trait]
         impl Kv9Raft for FrozenRaft {
+            async fn confirm_endpoint(
+                &self,
+                _: Request<pb::ConfirmEndpointRequest>,
+            ) -> std::result::Result<Response<pb::EndpointConfirmationReceipt>, Status>
+            {
+                Err(Status::unimplemented("frozen test endpoint"))
+            }
             async fn batch_raft(
                 &self,
                 _request: Request<Streaming<pb::BatchRaftMessage>>,
@@ -2781,6 +2912,13 @@ mod tests {
                 struct Fwd(Arc<RaftGrpcService>);
                 #[tonic::async_trait]
                 impl Kv9Raft for Fwd {
+                    async fn confirm_endpoint(
+                        &self,
+                        r: Request<pb::ConfirmEndpointRequest>,
+                    ) -> std::result::Result<Response<pb::EndpointConfirmationReceipt>, Status>
+                    {
+                        self.0.confirm_endpoint(r).await
+                    }
                     async fn batch_raft(
                         &self,
                         r: Request<Streaming<pb::BatchRaftMessage>>,

@@ -136,6 +136,9 @@ pub enum BootstrapEvent {
     MetadataInitialized { cluster_id: ClusterId },
     /// This node has registered itself into membership.
     Registered,
+    /// The configured endpoint has no usable local or freshly applied authority.
+    /// Keep membership/Raft recovery active while the runtime closes public serving.
+    EndpointUnconfirmed,
 }
 
 /// Which of the two bootstrap modes this node runs (task #24).
@@ -456,6 +459,7 @@ impl Bootstrap {
                 Joining { cluster_id }
             }
             (Joining { cluster_id }, Registered) => Serving { cluster_id },
+            (Serving { cluster_id }, EndpointUnconfirmed) => Joining { cluster_id },
             (state, ev) => {
                 return Err(Error::MetaNotReady(format!(
                     "illegal bootstrap transition: {state:?} on {ev:?}"

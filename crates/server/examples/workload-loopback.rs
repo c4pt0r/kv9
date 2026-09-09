@@ -128,6 +128,8 @@ service! {
     cluster_info: ClusterInfoRequest => ClusterInfoResponse,
     admit_node: AdmitNodeRequest => MembershipChangeResponse,
     promote_node: PromoteNodeRequest => MembershipChangeResponse,
+    get_node_endpoint: GetNodeEndpointRequest => GetNodeEndpointResponse,
+    change_node_endpoint: ChangeNodeEndpointRequest => ChangeNodeEndpointResponse,
 }
 
 fn publish(path: &Path, value: serde_json::Value) -> std::io::Result<()> {

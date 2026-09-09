@@ -237,7 +237,7 @@ jobs:
           python3 scripts/check-endpoint-controls.py --output "$RUNNER_TEMP/endpoint-controls" \
             > "$RUNNER_TEMP/endpoint-controls.log" 2>&1
           cat "$RUNNER_TEMP/endpoint-controls.log"
-          test "$(tail -1 "$RUNNER_TEMP/endpoint-controls.log")" = 'PASS: 13 isolated endpoint CAS and writer source controls checked'
+          test "$(tail -1 "$RUNNER_TEMP/endpoint-controls.log")" = 'PASS: 17 isolated endpoint CAS, route and recovery source controls checked'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -245,6 +245,33 @@ jobs:
           path: |
             ${{ runner.temp }}/endpoint-controls.log
             ${{ runner.temp }}/endpoint-controls
+          if-no-files-found: error
+
+      - name: Check out the supported previous metadata writer
+        uses: actions/checkout@v4
+        with:
+          ref: bc5bbd2e8c73c4e811b720f17ab74b0ff7e714f4
+          path: target/previous-writer-source
+          persist-credentials: false
+      - name: Check production endpoint migration and both wire generations
+        run: |
+          set -euo pipefail
+          cargo build --locked --manifest-path target/previous-writer-source/Cargo.toml --bin kv9 --target-dir target
+          cp target/debug/kv9 "$RUNNER_TEMP/previous-kv9"
+          cargo build --locked --bin kv9
+          cargo build --locked -p kv9-raft --example check-wire-floor
+          python3 scripts/endpoint-migration-e2e.py --bin target/debug/kv9 \
+            --previous-bin "$RUNNER_TEMP/previous-kv9" --wire-probe target/debug/examples/check-wire-floor \
+            --output "$RUNNER_TEMP/endpoint-migration" > "$RUNNER_TEMP/endpoint-migration.log" 2>&1
+          cat "$RUNNER_TEMP/endpoint-migration.log"
+          test "$(tail -1 "$RUNNER_TEMP/endpoint-migration.log")" = 'PASS: production CLI endpoint CAS, retained-store migration, durable confirmation, V1 upgrade and downgrade refusal'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: endpoint-migration
+          path: |
+            ${{ runner.temp }}/endpoint-migration.log
+            ${{ runner.temp }}/endpoint-migration
           if-no-files-found: error
       - name: Raft route ownership source controls
         run: |

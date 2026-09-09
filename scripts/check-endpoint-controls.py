@@ -15,6 +15,9 @@ SCHEMA = 'crates/meta/src/schema.rs'
 TESTS = 'crates/meta/tests/endpoint.rs'
 RUNTIME = 'crates/server/src/runtime.rs'
 NODE = 'crates/server/src/node.rs'
+RAFT = 'crates/raft/src/grpc.rs'
+RECOVERY = 'crates/server/src/runtime/endpoint_recovery.rs'
+ADMISSION = 'crates/meta/src/admission.rs'
 
 
 def digest(text):
@@ -33,7 +36,7 @@ def main():
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
-    sources = {p: (ROOT / p).read_text() for p in (ENDPOINT, SCHEMA, TESTS, RUNTIME, NODE)}
+    sources = {p: (ROOT / p).read_text() for p in (ENDPOINT, SCHEMA, TESTS, RUNTIME, NODE, RAFT, RECOVERY, ADMISSION)}
     endpoint = sources[ENDPOINT]
     runtime = sources[RUNTIME]
     cases = [
@@ -85,19 +88,36 @@ def main():
          '                    // Skip the versioned endpoint planner.'),
          'runtime::tests::registration_refusals_preserve_routes_and_renewed_tickets_cannot_rebind',
          'renewed registration bypassed endpoint versioning'),
-        ('unlocked-catalog-route-snapshot', RUNTIME, replace_once(runtime,
-         '''        let _guard = self.node.meta_raft.lock_catalog_txn();
-        let txn = self.node.meta_raft.store.begin()?;
-        let rows = txn.scan(&NODES_DESC, MAX_PHASE1_NODES + 1)?;''',
-         '''        let txn = self.node.meta_raft.store.begin()?;
-        let rows = txn.scan(&NODES_DESC, MAX_PHASE1_NODES + 1)?;'''),
-         'runtime::tests::delayed_catalog_snapshot_cannot_restore_an_older_live_route',
-         'stale catalog snapshot restored the old live endpoint'),
-        ('registration-response-overrides-catalog', RUNTIME, replace_once(runtime,
-         'applied_endpoint.map_or(via.1, |endpoint| endpoint.address)',
-         '{ let _ = applied_endpoint; via.1 }'),
-         'runtime::tests::registration_response_fallback_defers_to_the_applied_directory',
-         'registration response overwrote an applied endpoint with its dial address'),
+        # The generation floor now protects routes independently of the local
+        # catalog mutex and registration fallback. Retire those redundant
+        # mutations and exercise the guards that reject the actual rollback.
+        ('older-catalog-overrides-certification', RAFT, replace_once(sources[RAFT],
+         'if generation < current {', 'if false && generation < current {'),
+         'grpc::tests::certified_route_generation_never_regresses_or_reinterprets_an_address',
+         'older catalog snapshot replaced certified route'),
+        ('bootstrap-overrides-certification', RAFT, replace_once(sources[RAFT],
+         'if peer.catalog_generation.is_some() {', 'if false && peer.catalog_generation.is_some() {'),
+         'grpc::tests::certified_route_generation_never_regresses_or_reinterprets_an_address',
+         'unversioned fallback replaced certified route'),
+        ('equal-generation-reinterprets-address', RAFT, replace_once(sources[RAFT],
+         'if generation == current && addr != peer.destination.addr {',
+         'if false && generation == current && addr != peer.destination.addr {'),
+         'grpc::tests::certified_route_generation_never_regresses_or_reinterprets_an_address',
+         'equal generations named different addresses'),
+        ('endpoint-cancellation-decommissions-member', ENDPOINT, replace_once(endpoint,
+         'crate::admission::supersede_admission(txn, request.node)?;',
+         'crate::admission::revoke_admission(txn, request.node)?;'),
+         'endpoint_change_revokes_prior_admission_in_the_same_batch',
+         'endpoint change retained obsolete registration authority'),
+        ('confirmation-skips-exact-apply', RECOVERY, replace_once(sources[RECOVERY],
+         'self.driver.wait_applied(at, Duration::from_millis(1))',
+         '{ let _ = at; Ok::<_, ApplyWaitError>(ApplyWaitOutcome::Applied(receipt.applied)) }'),
+         'runtime::tests::active_store_restart_at_a_changed_endpoint_waits_for_committed_route',
+         'changed endpoint served before its exact confirmation applied'),
+        ('serving-record-is-not-durable', RECOVERY, replace_once(sources[RECOVERY],
+         'saved.save(&self.data_dir)?;', 'let _ = &self.data_dir;'),
+         'runtime::tests::active_store_restart_at_a_changed_endpoint_waits_for_committed_route',
+         'stable migrated endpoint lost its durable serving authority'),
         ('consumed-retry-ignores-current-endpoint', RUNTIME, replace_once(runtime,
          'if endpoint.address != canonical_addr {',
          'if false && endpoint.address != canonical_addr {'),
@@ -129,7 +149,9 @@ def main():
                 for p, s in sources.items():
                     (tree / p).write_text(text if p == path else s)
                 expected_sources = {p: digest(text if p == path else s) for p, s in sources.items()}
-                target = ['-p', 'kv9-server', '--lib'] if test.startswith('runtime::') else ['-p', 'kv9-meta', '--test', 'endpoint']
+                target = (['-p', 'kv9-server', '--lib'] if test.startswith('runtime::') else
+                          ['-p', 'kv9-raft', '--lib'] if test.startswith('grpc::') else
+                          ['-p', 'kv9-meta', '--test', 'endpoint'])
                 command = ['cargo', 'test', '--locked', *target, test, '--', '--exact']
                 result = subprocess.run(command, cwd=tree, env=env, text=True, stdout=subprocess.PIPE,
                                         stderr=subprocess.STDOUT, timeout=180)
@@ -150,7 +172,7 @@ def main():
             print(f'PASS: {name} baseline, intended failure and restored source', flush=True)
     if any((ROOT / p).read_text() != text for p, text in sources.items()):
         raise RuntimeError('source changed during controls')
-    print('PASS: 13 isolated endpoint CAS and writer source controls checked', flush=True)
+    print(f'PASS: {len(cases)} isolated endpoint CAS, route and recovery source controls checked', flush=True)
 
 
 if __name__ == '__main__':

@@ -23,7 +23,7 @@ def require(value, message):
 
 
 def lifecycle(data):
-    require(len(data) == 97 and data[:8] == b'KV9LIFE1' and
+    require(len(data) == 97 and data[:8] == b'KV9LIFE2' and
             hashlib.sha256(data[:65]).digest() == data[65:], 'invalid lifecycle framing or checksum')
     return dict(node=int.from_bytes(data[8:16], 'big'), incarnation=data[16:32].hex(),
                 phase=data[32], root=data[33:65].hex())

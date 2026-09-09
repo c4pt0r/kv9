@@ -15,7 +15,8 @@ PHASES = ["initialization", "warmup", "measure", "verify", "baseline", "healing"
           "partition", "public-admission-overload", "delay"] + [
               f"io-voter-{node}-errno-{errno}" for node in (1, 2, 3) for errno in (5, 28)] + [
                   f"store-loss-voter-{node}-log-missing" for node in (1, 2, 3)] + [
-                      f"store-loss-voter-{node}-pvc-replacement" for node in (1, 2, 3)]
+                      f"store-loss-voter-{node}-pvc-replacement" for node in (1, 2, 3)] + [
+                          "endpoint-migration-pending", "endpoint-migration-recovered"]
 OPERATIONS = ["get", "put", "delete"]
 POPULATIONS = ["success", "not_leader", "admission_count", "admission_bytes", "admission_oversize",
                "read_quorum_unconfirmed", "read_apply_unconfirmed", "rpc_status", "protocol", "deadline",

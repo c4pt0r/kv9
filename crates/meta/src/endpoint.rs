@@ -167,8 +167,13 @@ pub fn change_endpoint<E: Engine>(
         // A prior Pending/Consumed registration must not be able to reinstall
         // its old address after this operator transition. Read before staging
         // either row so corrupt admission state leaves the transaction intact.
-        let revoke = crate::admission::admission(txn, request.node)?
-            .is_some_and(|admission| admission.state != crate::admission::AdmissionState::Revoked);
+        let revoke = crate::admission::admission(txn, request.node)?.is_some_and(|admission| {
+            matches!(
+                admission.state,
+                crate::admission::AdmissionState::Pending
+                    | crate::admission::AdmissionState::Consumed
+            )
+        });
         txn.update(
             &NODES_DESC,
             &[memcmp_uint(request.node.0)],
@@ -182,7 +187,7 @@ pub fn change_endpoint<E: Engine>(
             ],
         )?;
         if revoke {
-            crate::admission::revoke_admission(txn, request.node)?;
+            crate::admission::supersede_admission(txn, request.node)?;
         }
         return Ok(Changed(NodeEndpoint {
             address: request.new_address,

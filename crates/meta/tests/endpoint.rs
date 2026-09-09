@@ -101,7 +101,7 @@ fn endpoint_change_revokes_prior_admission_in_the_same_batch() {
                 .unwrap()
                 .unwrap()
                 .state,
-            AdmissionState::Revoked,
+            AdmissionState::Superseded,
             "endpoint change retained obsolete registration authority"
         );
         let before = store.begin().unwrap();
@@ -127,13 +127,60 @@ fn endpoint_change_revokes_prior_admission_in_the_same_batch() {
                 .unwrap()
                 .unwrap()
                 .state,
-            AdmissionState::Revoked
+            AdmissionState::Superseded
         );
         assert_eq!(
             node_endpoint(&after, change.node).unwrap().unwrap().address,
             address(2)
         );
     }
+}
+
+#[test]
+fn endpoint_changes_preserve_explicit_decommission_and_cancel_old_tickets() {
+    use kv9_meta::admission::{self, AdmissionState, AdmittedRole};
+    let store = store();
+    let mut txn = store.begin().unwrap();
+    admission::admit_node(
+        &mut txn,
+        NodeId(4),
+        &address(1).to_string(),
+        AdmittedRole::Learner,
+        100,
+    )
+    .unwrap();
+    txn.commit().unwrap();
+    assert!(matches!(
+        apply(&store, request(0, 1, 2)),
+        Outcome::Changed(_)
+    ));
+    let mut txn = store.begin().unwrap();
+    assert!(
+        admission::consume_admission(
+            &mut txn,
+            NodeId(4),
+            request(0, 1, 2).cluster,
+            &address(1).to_string(),
+            1
+        )
+        .is_err(),
+        "superseded ticket was consumed again"
+    );
+    admission::revoke_admission(&mut txn, NodeId(4)).unwrap();
+    txn.commit().unwrap();
+    assert!(matches!(
+        apply(&store, request(1, 2, 3)),
+        Outcome::Changed(_)
+    ));
+    let txn = store.begin().unwrap();
+    assert_eq!(
+        admission::admission(&txn, NodeId(4))
+            .unwrap()
+            .unwrap()
+            .state,
+        AdmissionState::Revoked,
+        "endpoint change lifted an explicit decommission"
+    );
 }
 
 #[test]
