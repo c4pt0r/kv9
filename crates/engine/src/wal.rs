@@ -41,9 +41,13 @@ fn io(e: std::io::Error) -> Error {
 }
 
 /// CRC-32 (IEEE), computed without pulling in a dependency.
-fn crc32(bytes: &[u8]) -> u32 {
+pub(crate) fn crc32(bytes: &[u8]) -> u32 {
+    crc32_parts(&[bytes])
+}
+
+pub(crate) fn crc32_parts(parts: &[&[u8]]) -> u32 {
     let mut crc: u32 = 0xFFFF_FFFF;
-    for &b in bytes {
+    for &b in parts.iter().flat_map(|part| part.iter()) {
         crc ^= u32::from(b);
         for _ in 0..8 {
             let mask = (crc & 1).wrapping_neg();
@@ -75,7 +79,7 @@ fn cf_from_code(code: u8) -> Result<ColumnFamily> {
 }
 
 /// Serialize a batch's mutations: `count(4)` then `tag(1) cf(1) klen(4) k vlen(4) v`.
-fn encode_batch(batch: &WriteBatch) -> Vec<u8> {
+pub(crate) fn encode_batch(batch: &WriteBatch) -> Vec<u8> {
     let mut out = Vec::new();
     put_u32(&mut out, batch.mutations().len() as u32);
     for m in batch.mutations() {
@@ -143,7 +147,7 @@ impl<'a> Cursor<'a> {
     }
 }
 
-fn decode_batch(payload: &[u8]) -> Result<WriteBatch> {
+pub(crate) fn decode_batch(payload: &[u8]) -> Result<WriteBatch> {
     let mut c = Cursor::new(payload);
     let count = c.u32()?;
     let mut batch = WriteBatch::new();
