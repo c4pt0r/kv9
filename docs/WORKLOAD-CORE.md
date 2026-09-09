@@ -3,9 +3,10 @@
 The workload module supplies versioned configuration, deterministic data,
 bounded statistics and a complete point-history recorder for #40. The executable,
 build provenance, resource report, independent artifact checks and real MinIO
-acceptance are described in [WORKLOAD-RUNNER.md](WORKLOAD-RUNNER.md). Persistent
-client Chaos Mesh integration and the measured performance matrix remain
-outstanding. These component tests are not benchmark acceptance.
+acceptance are described in [WORKLOAD-RUNNER.md](WORKLOAD-RUNNER.md). The persistent
+client's 13-window Chaos Mesh gate is described in [PERSISTENT-CHAOS.md](PERSISTENT-CHAOS.md).
+The measured performance matrix remains outstanding. These component tests are
+not benchmark acceptance.
 
 ## Configuration version 1
 

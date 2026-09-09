@@ -217,6 +217,22 @@ class CheckerControls(unittest.TestCase):
         self.verdict(history(call(0, 'create_keyspace', name='new'), returned(0, 'unknown'),
                              call(1, 'put', keyspace=9, key='61', value='31'), returned(1)), 'valid')
 
+    def test_guided_search_prepares_unknown_range_before_new_key(self):
+        # The unknown range captures only a, then deletes it after b is added.
+        # Selecting at the final scan would also capture b and cannot explain it.
+        h = history(call(0, 'delete_range', start='61', end='63'), returned(0, 'unknown'),
+                    call(1, 'put', key='62', value='32'), returned(1),
+                    call(2, 'scan', start='61', end='63', limit=8), returned(2, rows=[['62', '32']]),
+                    initial=header([('61', '31')]))
+        result = search(h, max_states=100, guided_unknown=True, prepare_ranges=True)
+        self.assertEqual(result['verdict'], 'valid', 'early snapshot selection was pruned')
+        self.assertTrue(verify_witness(h, result['witness']))
+        selected = next(a for a in result['witness'] if a['id'] == 0 and a['detail']['phase'] == 'select')
+        put = next(a for a in result['witness'] if a['id'] == 1)
+        chunk = next(a for a in result['witness'] if a['id'] == 0 and a['detail']['phase'] == 'chunk')
+        self.assertLess(result['witness'].index(selected), result['witness'].index(put))
+        self.assertLess(result['witness'].index(put), result['witness'].index(chunk))
+
     def test_range_selection_and_chunk_are_distinct(self):
         self.verdict(history(call(0, 'delete_range', start='', end=''),
                              call(1, 'put', key='62', value='31'), returned(1),

@@ -166,8 +166,9 @@ then a separate client reads v0 and writes v1; the original reports unknown
 without replaying v0. This stateful test uses a scripted server and is not a claim
 of Raft/MinIO durability. The additional retained complete-history fixture runs
 both the correct and unsafe-retry clients through the independent checker:
-the former is valid and the latter has no legal execution. Real Chaos Mesh
-workload integration remains outstanding acceptance work in #40.
+the former is valid and the latter has no legal execution. The full persistent
+workload additionally participates in the actual 13-window fault matrix described
+in [PERSISTENT-CHAOS.md](PERSISTENT-CHAOS.md); its gate preserves every unknown call.
 
 Three isolated Rust mutations must compile, select exactly one test, fail the
 specified behavioral assertion, and pass again after exact source restoration.

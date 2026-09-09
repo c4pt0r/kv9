@@ -24,6 +24,7 @@ cluster_token="chaos-cluster-$run_id"
 client_token="chaos-client-$run_id"
 root="$artifact/root.bin"
 history_pid=""
+source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-persistent.sh"
 
 k() {
   KUBECONFIG="$kubeconfig" "$kubectl_bin" "$@"
@@ -100,6 +101,7 @@ collect_scene() {
 cleanup() {
   local rc=$?
   trap - EXIT
+  persistent_cleanup || true
   if [ -n "$history_pid" ]; then
     touch "$artifact/history.stop"
     kill "$history_pid" 2>/dev/null || true
@@ -138,6 +140,7 @@ wait_until() {
 history_set_phase() {
   printf '%s\n' "$1" >"$artifact/history.phase.tmp"
   mv "$artifact/history.phase.tmp" "$artifact/history.phase"
+  persistent_set_phase "$1"
 }
 
 history_phase_observed() {
@@ -154,6 +157,7 @@ history_phase() {
   local phase="$1"
   history_set_phase "$phase"
   wait_until "independent put and read complete during $phase" 25 history_phase_observed "$phase"
+  persistent_phase "$phase"
   cp "$artifact/history-progress.json" "$artifact/$phase-history-progress.json"
   date --iso-8601=ns >"$artifact/$phase-history-observed-at.txt"
   echo "PASS: concurrent put and read completed during $phase"
@@ -535,6 +539,7 @@ YAML
 echo "Building kv9 and loading $image into kind/$kind_cluster"
 cargo build --bin kv9
 cargo build -p kv9-server --example admission-pressure >/dev/null
+persistent_build
 docker build -q -f chaos/Dockerfile -t "$image" . >/dev/null
 KUBECONFIG="$kubeconfig" "$kind_bin" load docker-image --name "$kind_cluster" "$image" >/dev/null
 
@@ -542,6 +547,7 @@ k create namespace "$namespace" >/dev/null
 k annotate namespace "$namespace" chaos-mesh.org/inject=enabled --overwrite >/dev/null
 k create secret generic kv9-auth -n "$namespace" \
   --from-literal=cluster-token="$cluster_token" \
+  --from-literal=client-token="$client_token" \
   --from-literal=client-tokens="admin=$client_token" >/dev/null
 
 for node in 1 2 3 9; do
@@ -611,9 +617,11 @@ spec:
       command: ["sleep", "3600"]
 YAML
 k wait -n "$namespace" --for=condition=Ready pod/kv9-history-client --timeout=30s >/dev/null
-python3 - "$keyspace" >"$artifact/history-initial.json" <<'PY'
+persistent_start
+python3 - "$keyspace" "$persistent_name" "$persistent_keyspace" >"$artifact/history-initial.json" <<'PY'
 import json, sys
-print(json.dumps({'keyspaces': [{'name': 'chaos', 'id': int(sys.argv[1])}]}))
+print(json.dumps({'keyspaces': [{'name': 'chaos', 'id': int(sys.argv[1])},
+                               {'name': sys.argv[2], 'id': int(sys.argv[3])}]}))
 PY
 history_set_phase baseline
 KV9_CLIENT_TOKEN="$client_token" python3 scripts/history/workload.py \
@@ -883,6 +891,7 @@ grep -q '^value_hex=7633$' <<<"$final_get" || {
 source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-io.sh"
 run_io_matrix
 python3 scripts/check-latency-metrics.py "$artifact"
+persistent_finish
 
 touch "$artifact/history.stop"
 wait "$history_pid"

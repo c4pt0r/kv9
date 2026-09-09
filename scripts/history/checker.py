@@ -310,7 +310,7 @@ def observation_distance(history, index, state):
     return 0
 
 
-def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_unknown=False):
+def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_unknown=False, prepare_ranges=False):
     start = time.monotonic()
     indexes = {op.id: i for i, op in enumerate(history.operations)}
     stack = [(0, history.initial, (), None, 0)]
@@ -365,7 +365,17 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
                         for key in next_progress[0]:
                             values.pop((op.args['keyspace'], key), None)
                         lookahead = freeze(values, catalog)
-                    if observation_distance(history, wanted, lookahead) >= observation_distance(history, wanted, state):
+                    # A timed-out range may capture old keys before a Put adds
+                    # a new key, then delete only those captured keys later.
+                    # This bounded witness attempt permits that neutral selection;
+                    # chunks must still improve the next observation. The model
+                    # and unrestricted search remain unchanged.
+                    allow_preparation = (prepare_ranges and detail['phase'] == 'select' and bool(next_progress[0])
+                                         and history.operations[wanted].kind == 'put'
+                                         and history.operations[wanted].args['keyspace'] == op.args['keyspace']
+                                         and in_range(history.operations[wanted].args['key'], op.args)
+                                         and history.operations[wanted].args['key'] not in next_progress[0])
+                    if not allow_preparation and observation_distance(history, wanted, lookahead) >= observation_distance(history, wanted, state):
                         continue
                 if unknown_limit is not None and unknown_effects + additional > unknown_limit:
                     continue
@@ -383,7 +393,8 @@ def check(history, max_states=200000, seconds=10.0):
     # exhausted search may return invalid. Every positive result is replayed
     # against the complete model, including unknown-write effects.
     started, used, attempts = time.monotonic(), 0, []
-    for limit, guided in [(0, False), (None, True), (1, False), (2, False), (4, False), (None, False)]:
+    for limit, guided, prepare in [(0, False, False), (None, True, False), (None, True, True),
+                                   (1, False, False), (2, False, False), (4, False, False), (None, False, False)]:
         remaining = seconds - (time.monotonic() - started)
         budget = max_states - used
         if remaining <= 0 or budget <= 0:
@@ -391,9 +402,9 @@ def check(history, max_states=200000, seconds=10.0):
         cap = budget if limit is None else min(3000, budget)
         if guided:
             cap = min(20000, budget)
-        result = search(history, cap, remaining, limit, guided)
+        result = search(history, cap, remaining, limit, guided, prepare)
         used += result["states"]
-        attempts.append({"unknown_effect_limit": limit, "guided_unknown": guided, "verdict": result["verdict"], "states": result["states"]})
+        attempts.append({"unknown_effect_limit": limit, "guided_unknown": guided, "prepare_ranges": prepare, "verdict": result["verdict"], "states": result["states"]})
         if result["verdict"] == "valid" or (limit is None and not guided):
             return {**result, "states": used, "attempts": attempts}
     raise AssertionError("unrestricted search must return a verdict")
