@@ -294,6 +294,31 @@ jobs:
           cat "$RUNNER_TEMP/latency-controls.log"
           test "$(tail -1 "$RUNNER_TEMP/latency-controls.log")" = 'PASS: 3 isolated latency source controls checked'
 
+      - name: Workload terminal accounting and history source controls
+        run: |
+          set -euo pipefail
+          python3 scripts/check-workload-controls.py --output "$RUNNER_TEMP/workload-controls" > "$RUNNER_TEMP/workload-controls.log" 2>&1
+          cat "$RUNNER_TEMP/workload-controls.log"
+          test "$(tail -1 "$RUNNER_TEMP/workload-controls.log")" = 'PASS: 2 isolated workload terminal/history controls checked'
+
+      - name: Independent checking of real persistent-client response-loss histories
+        run: |
+          set -euo pipefail
+          python3 scripts/check-client-history.py --output "$RUNNER_TEMP/client-history" > "$RUNNER_TEMP/client-history.log" 2>&1
+          cat "$RUNNER_TEMP/client-history.log"
+          test "$(tail -1 "$RUNNER_TEMP/client-history.log")" = 'PASS: complete response-loss history verified; unsafe retry rejected by independent history checking'
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: workload-history-controls
+          path: |
+            ${{ runner.temp }}/workload-controls
+            ${{ runner.temp }}/workload-controls.log
+            ${{ runner.temp }}/client-history
+            ${{ runner.temp }}/client-history.log
+          if-no-files-found: error
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
