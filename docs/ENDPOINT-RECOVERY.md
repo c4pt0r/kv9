@@ -4,8 +4,8 @@ Tracking: [#47](https://github.com/c4pt0r/kv9/issues/47), under
 [#9](https://github.com/c4pt0r/kv9/issues/9). This extends the
 [catalog CAS](ENDPOINT-MIGRATION.md), [writer ordering](ENDPOINT-WRITERS.md)
 and [transport ownership](RAFT-ROUTING.md) contracts. The implementation and
-acceptance fixtures are present; complete acceptance of this revision, including
-the new actual Chaos Mesh cells, must be recorded before claiming #47 complete.
+acceptance fixtures are present. The accepted local increment below closes #47's
+production endpoint-migration scope; the broader #42 and P0 gates remain open.
 
 ## Operator workflow
 
@@ -211,12 +211,75 @@ The fifth full attempt also completed all 21 fault windows, while its complete
 to capture an overlapping insertion, the opposite priority from the fourth
 history. The existing two guided attempts now prefer different snapshot orders;
 both unchanged histories yield complete replayable witnesses within the original
-limits. Both original command failures remain retained. Fresh full-matrix
-acceptance is still required before this increment is accepted.
+limits. Both original command failures remain retained. The seventh full matrix
+supplies the fresh acceptance recorded below.
 
 The sixth full matrix completed every fault window and its persistent history,
 but its 4,264-operation CLI history again exhausted the checker budget. Reduced
 histories expose mixed snapshot order and an unknown write needed by a read
 overlapping a confirmed mutation. The [history search contract](HISTORY-CHECKING.md#overlapping-observations-and-mixed-snapshot-order)
 records the repair and its preservation argument. This failed command remains
-failed; a fresh complete matrix is required for acceptance.
+failed; the seventh complete matrix supplies the acceptance recorded below.
+
+## Accepted local increment
+
+The runtime and proof sources are frozen at `f73ee1fb1bfda37a531e9d9482a5cf46aa453580`.
+The final fixture/checker revision is `f907da76b4aab7b4f899281c2b9fcb954d4c69bb`.
+Independent source audit verifies that later changes are confined to the two Chaos fixtures,
+history search guidance and its controls, manual workflow counts, and
+documentation. The independent AST audit confines checker changes to read hints,
+candidate priority and expanded guided targets. The complete model, witness
+verifier, budgets and verdict logic are unchanged.
+
+- **554 workspace tests passed, zero failed, 22 ignored.** Formatting,
+  warnings-denied Clippy, fresh rustdoc for all eight workspace packages,
+  Python/Bash syntax and workflow validation pass. Ignored tests are not counted
+  as passes.
+- All six executable E2E paths and real MinIO failover/checkpoint/recovery
+  passed. Production CLI acceptance covers pre-upgrade acknowledged data,
+  V1-to-V2 recovery, both disjoint internal wire directions, old-writer refusal
+  without store mutation, public CAS/fresh duplicate confirmation, root-voter
+  migration and stable restart with every other database process stopped.
+- Seventeen compiled source controls pass baseline, intended failure and
+  restoration. The recovery/writer proofs establish **15/165** and **14/111**
+  declarations/obligations; CAS **11/80** and transport ownership **17/197**
+  regression gates also pass. Independent source binding accepts 134 TLC cases,
+  130 proof/audit cases and 88 positive fresh-cache proof runs across these four
+  inventories, with their rejecting protocol, semantic and output controls.
+- All **21 actual Chaos Mesh windows** pass. The complete CLI history has
+  **4,024 operations**; the persistent-client history has
+  **1,194 operations**. Both original histories are
+  replayed in an independent copy. Every-voter I/O, missing-log and replacement-
+  PVC evidence, formation, collector removal and all five corrupt migration
+  evidence controls pass. The actual learner move is from
+  `10.244.0.193:20160` to `10.96.212.155:20160`,
+  with mutation index **2377** and fresh locally
+  applied confirmation index **2380**.
+- The history checker passes **44 tests / 21 source mutations**. All complete
+  histories from the fourth, fifth and sixth attempts also pass independent
+  replay. They contain 4,330 / 4,280 / 4,264 CLI operations and 1,238 / 1,236 /
+  1,201 persistent-client operations, respectively. Their original inconclusive
+  command results remain retained, alongside the three earlier fixture failures. The unchanged
+  certificate/interval foundation also passes the complete 24-theorem Lean
+  inventory and all nine invalid proof controls.
+
+The accepted production executable is SHA-256
+`10045686b6683acc4c5f83cfb3d46850a5ee5682302d5c5e6abadffa1f11d31d`.
+The exact same bytes passed the real CLI acceptance and run inside image
+`sha256:3a54bc77189a8fcd89b91dcccdc630bfccc3211b41d2c87517725a5619fc2a9c`.
+The build manifest binds the final clean revision and workload executable separately.
+
+Archive: `target/correctness-evidence/2026-09-09-f907da7-endpoint-recovery.tar.gz`,
+**659,428,091 bytes**, SHA-256
+`8de800376319426c668aa8f9c6a3b4f02c8a95acbbef40ba7ed2d7b76ac83577`.
+All **18,351 entries** were independently read and hashed from the completed
+archive. It retains source snapshots,
+executables, proof attempts, source controls, all failed runs, both accepted
+complete histories, raw fault observations, diagnostics and independent audits.
+
+This is single-host Kind evidence. Changed-address recovery still requires
+an eventually reachable known peer or incoming catch-up. The supported writer
+upgrade is stop/upgrade/restart; mixed-generation availability and downgrade
+remain unsupported. The separate initial gRPC apply/read-confirmation timeout
+in #48, #42's broader replacement boundary and C01–C04 acceptance remain open.
+No GitHub workflow was dispatched for this increment.
