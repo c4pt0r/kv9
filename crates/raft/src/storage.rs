@@ -429,6 +429,31 @@ mod tests {
         }
     }
 
+    #[test]
+    fn light_ready_commit_survives_immediate_reopen() {
+        use crate::rawnode::RaftPeer;
+        use crate::RaftGroup;
+        use kv9_common::{NodeId, RegionId};
+
+        let dir = tmp();
+        let at;
+        {
+            let (storage, _) = DiskRaftStorage::open(&dir, &[1]).unwrap();
+            let peer = RaftPeer::with_storage(NodeId(1), RegionId(1), storage).unwrap();
+            peer.campaign().unwrap();
+            peer.pump().unwrap();
+            at = peer.propose_traced(b"committed".to_vec()).unwrap();
+            peer.pump().unwrap();
+            assert_eq!(peer.raft_committed(), at.index);
+        }
+        let (storage, _) = DiskRaftStorage::open(&dir, &[1]).unwrap();
+        let hard_state = raft::Storage::initial_state(&storage).unwrap().hard_state;
+        assert_eq!(hard_state.term, at.term);
+        assert_eq!(hard_state.vote, 1);
+        assert_eq!(storage.committed_term(at.index.0).unwrap(), at.term);
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
     /// HardState + entries survive a reopen — the double-vote scenario is dead:
     /// the reopened storage still knows the term and vote.
     #[test]

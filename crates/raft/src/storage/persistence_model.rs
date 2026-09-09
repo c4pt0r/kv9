@@ -117,7 +117,7 @@ fn driver_persistence_failures_stop_without_poisoning_observation_locks() {
                     // status() unusable. Observation must survive the I/O error.
                     let status = driver.status();
                     let fatal = status.fatal.expect("runtime must observe a fatal cause");
-                    for operation in ["append", "hardstate", "confstate"] {
+                    for operation in ["append", "hardstate", "confstate", "light-ready hardstate"] {
                         if fatal.contains(&format!("during {operation}:")) {
                             causes.insert(operation);
                         }
@@ -156,7 +156,7 @@ fn driver_persistence_failures_stop_without_poisoning_observation_locks() {
     }
     assert_eq!(
         causes.into_iter().collect::<Vec<_>>(),
-        ["append", "confstate", "hardstate"]
+        ["append", "confstate", "hardstate", "light-ready hardstate"]
     );
     println!("driver persistence matrix: {cells} named write/sync failure cells");
 }
@@ -378,4 +378,66 @@ fn recovered_unsynced_tail_is_durable_before_a_repeated_crash() {
         proposed,
         "a recovered vote exposed to Raft must survive the next power loss"
     );
+}
+
+#[test]
+fn three_voter_applied_positions_survive_an_immediate_power_loss() {
+    use crate::{transport::InProcHub, Command, RaftGroup, Role};
+    let filesystems = [ModelFs::default(), ModelFs::default(), ModelFs::default()];
+    let hub = InProcHub::new();
+    let drivers: Vec<_> = filesystems
+        .iter()
+        .enumerate()
+        .map(|(i, fs)| {
+            let id = NodeId(i as u64 + 1);
+            let peer = Arc::new(RaftPeer::with_storage(id, RegionId(1), open(fs)).unwrap());
+            crate::driver::NodeDriver::new(
+                peer,
+                Arc::new(hub.endpoint(id)),
+                crate::MemStateMachine::new(),
+            )
+            .unwrap()
+        })
+        .collect();
+    drivers[0].peer().campaign().unwrap();
+    for _ in 0..20 {
+        for driver in &drivers {
+            driver.step().unwrap();
+        }
+        if drivers[0].status().role == Role::Leader {
+            break;
+        }
+    }
+    assert_eq!(drivers[0].status().role, Role::Leader);
+    let proposal = drivers[0]
+        .propose(&Command::Put {
+            cf: 0,
+            key: b"committed".to_vec(),
+            value: b"recoverable".to_vec(),
+        })
+        .unwrap();
+    // Stop as soon as every replica has applied the proposal. No later Ready
+    // or heartbeat may accidentally repair a missing durable commit watermark.
+    for _ in 0..20 {
+        for driver in &drivers {
+            driver.step().unwrap();
+        }
+        if drivers
+            .iter()
+            .all(|d| d.status().applied_index >= proposal.index.0)
+        {
+            break;
+        }
+    }
+    let positions: Vec<_> = drivers
+        .iter()
+        .map(|d| d.driver_applied().unwrap())
+        .collect();
+    assert!(positions.iter().all(|p| p.index >= proposal.index.0));
+    drop(drivers);
+    for (fs, at) in filesystems.iter().zip(positions) {
+        fs.crash(Crash::LoseUnsynced);
+        let storage = open(fs);
+        assert_eq!(storage.committed_term(at.index).unwrap(), at.term);
+    }
 }

@@ -14,7 +14,7 @@ permissions:
 jobs:
   protocol-deduction:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -40,7 +40,7 @@ jobs:
             --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/protocol-deduction" \
             > "$RUNNER_TEMP/protocol-deduction.log" 2>&1
           cat "$RUNNER_TEMP/protocol-deduction.log"
-          test "$(tail -1 "$RUNNER_TEMP/protocol-deduction.log")" = 'PASS: 41 TLAPS theorems; 459 proof obligations; 12 isolated controls; 3 output controls'
+          test "$(tail -1 "$RUNNER_TEMP/protocol-deduction.log")" = 'PASS: 47 TLAPS theorems; 534 proof obligations; 15 isolated controls; 3 output controls'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -72,6 +72,13 @@ jobs:
             --output "$RUNNER_TEMP/protocol-models" > "$RUNNER_TEMP/protocol-models.log" 2>&1
           cat "$RUNNER_TEMP/protocol-models.log"
           test "$(tail -1 "$RUNNER_TEMP/protocol-models.log")" = 'PASS: 4 full model checks; 6 isolated controls; 3 reachability witnesses; 4 output controls'
+      - name: Check Ready persistence, crash cuts and fail-stop controls
+        run: |
+          set -euo pipefail
+          python3 scripts/check-ready-tla.py --jar "$RUNNER_TEMP/tla2tools.jar" \
+            --output "$RUNNER_TEMP/ready-models" > "$RUNNER_TEMP/ready-models.log" 2>&1
+          cat "$RUNNER_TEMP/ready-models.log"
+          test "$(tail -1 "$RUNNER_TEMP/ready-models.log")" = 'PASS: 4 full Ready model checks; 3 isolated controls; 2 reachability witnesses; 3 output controls'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -79,6 +86,8 @@ jobs:
           path: |
             ${{ runner.temp }}/protocol-models.log
             ${{ runner.temp }}/protocol-models
+            ${{ runner.temp }}/ready-models.log
+            ${{ runner.temp }}/ready-models
           if-no-files-found: error
 
   protocol-proofs:

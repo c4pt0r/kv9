@@ -192,9 +192,10 @@ write from satisfying the acceptance gate.
   metadata protocol.
 - Prove/refine the assumed Raft contract: log matching, leader completeness,
   durable Ready ordering, exact receipt publication and configuration changes.
-  The ignored `LightReady` commit update reproduced in
-  [#35](https://github.com/c4pt0r/kv9/issues/35) is a concrete recovery-boundary
-  defect outside this accepted-log model and takes priority in that audit.
+  The `LightReady` commit defect in [#35](https://github.com/c4pt0r/kv9/issues/35)
+  is repaired with a separate [publication model and safety proof](READY-PUBLICATION.md).
+  Composition with this accepted-log model and mechanical Rust refinement
+  remain open; neither proof family establishes that composition by itself.
 - Extend the metadata model to arbitrary catalog batches, PK/FK constraints,
   bootstrap, membership, allocator bounds, cancellations and typed `Replaced`
   retry loops. One attempt per modeled request does not verify those loops.

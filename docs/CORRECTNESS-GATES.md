@@ -43,6 +43,13 @@ planning freshness and catalog uniqueness proofs under `proofs/tlaps`. Full type
 bounds, conditional draining and implementation refinement remain open. A green
 TLC run does not discharge those obligations.
 
+`docs/READY-PUBLICATION.md` records the separate per-peer Ready model and
+deductive proof of durable commit coverage, failed-cycle publication exclusion
+and fail-stop action safety. `scripts/check-ready-tla.py` checks finite crash
+schedules, three isolated faults and two reachability witnesses. The combined
+TLAPS inventory has 47 theorem declarations and 534 obligations. These results
+do not establish upstream consensus, term/vote identity or composition with Rust.
+
 ## Chaos Mesh E2E is mandatory
 
 Run actual Chaos Mesh resources against dedicated kv9 workloads in an explicitly

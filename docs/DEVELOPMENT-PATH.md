@@ -393,16 +393,19 @@ deductive proofs in TLAPS or Lean. The first metadata planning model and its
 implementation mapping are in [METADATA-PLANNING.md](METADATA-PLANNING.md).
 The [TLAPS inventory](../proofs/tlaps/README.md) now proves log/index bounds,
 committed-prefix preservation, exact receipts, planner isolation, freshness and
-name/ID uniqueness over the same model. These results do not complete C04:
-mechanize full type bounds and conditional draining; extend Ready/persistence
-ordering; then model checkpoint publication and recovery with their
+name/ID uniqueness over the same model. A separate Ready model proves durable
+commit coverage and failure publication exclusion. These results do not complete
+C04: mechanize the metadata model's full type bounds and conditional draining;
+compose the Ready/persistence refinement; then model checkpoint publication and recovery with their
 implementation and Chaos Mesh obligations retained.
 
 The Ready audit identified [#35](https://github.com/c4pt0r/kv9/issues/35):
-`LightReady` can advance commitment after persistence, while kv9 ignores that
-commit-index update. A real-disk immediate-reopen regression fails the runtime's
-durable-commit validation. Prioritize this fix and its publication/failure proofs
-before extending the remaining metadata type and draining bounds.
+`LightReady` can advance commitment after persistence. The integration now
+persists that complete HardState before publishing any work from the cycle;
+the old ordering fails a real-disk immediate-reopen regression. Its model,
+parameterized safety proof, fault controls and remaining refinement obligations
+are recorded in [READY-PUBLICATION.md](READY-PUBLICATION.md). Acceptance evidence
+is tracked in #35; the broader C04 obligations remain open.
 
 #### Completion evidence
 
