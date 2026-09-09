@@ -37,6 +37,26 @@ image. The shipped `kv9` binary has no new fault-control environment variables,
 marker files or runtime features. Its production behavior changed only in the
 explicit propagation and terminal handling of persistence failures.
 
+## Routing setup writes across elections
+
+At `273426a`, the hosted run stopped before the voter-3/EIO injection: its
+pre-fault setup write received the CLI's explicit `NotLeader` refusal after the
+status-based leader observation. The empty `before-put.out` and absence of that
+cell's fault artifacts distinguish this from an I/O failure.
+
+Setup/majority writes and verification reads now use `scripts/chaos_client.py`
+from the independent client Pod. It rotates only through the allowed voter
+endpoints (excluding the failed voter for majority probes), with one 25-second
+monotonic deadline. It retries only an exclusive typed `NotLeader` response with
+empty stdout and exit 1. Transport errors, timeout, partial writes, mixed output
+and every ambiguous outcome are terminal. It does not retry them merely because
+the same key/value might appear harmless. Each attempt retains its node, address,
+remaining budget, outcome, stdout/stderr and times in a JSONL artifact.
+
+Four deterministic controls check refusal routing, budget consumption, terminal
+unknown timeouts and rejection of ambiguous/mixed results. Fault effect, exit,
+receipt and recovered-prefix requirements remain unchanged.
+
 ## Backend limits and observed controls
 
 The pinned [Chaos Mesh IOChaos API](https://chaos-mesh.org/docs/simulate-io-chaos-on-kubernetes/)
