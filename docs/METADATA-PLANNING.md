@@ -78,9 +78,11 @@ entries themselves, so an overwrite cannot hide a conflicting allocation.
 ## Safety argument for arbitrary finite executions
 
 The following induction argument is parameterized by finite coordinator/request
-sets and any term budget. It is a written proof argument; its deductive
-mechanization in TLAPS or Lean is still open. The TLC runs below check finite
-instances and do not discharge that open obligation.
+sets and any term budget. The committed-prefix, log/index shape and exact-receipt
+parts now have [TLAPS proofs](../proofs/tlaps/README.md) importing this same model:
+19 declarations and 192 checked obligations. The planner-isolation, freshness,
+catalog-uniqueness and draining parts remain written arguments whose deductive
+mechanization is open. TLC's finite instances do not discharge those obligations.
 
 **Prefix preservation.** Initially the committed/applied prefixes are empty.
 `Begin` and `Submit` append; `Elect` retains at least the committed prefix;
@@ -119,6 +121,15 @@ entry's exact identity is in the local applied prefix. Prefix preservation then
 keeps that entry, its ID and its position permanently in the committed prefix.
 Induction establishes `ReceiptSafety`. An index watermark alone cannot establish
 this premise because a different term's entry may occupy the same index.
+
+`MetadataReceipt.ReceiptAlways` now establishes `Spec => []ReceiptSafety` by
+initialization, transition preservation and temporal induction. Its strengthened
+invariant also tracks the request phase and each retained entry's submitted
+index, term and planned value. `MetadataShape.ShapeAlways` supplies log/index
+well-formedness, and `MetadataPrefix.PrefixAlways` states the canonical TLA+
+property `Spec => [][PrefixStable]_vars`. All imported project lemmas are checked
+freshly; these are parameterized theorems, not the two finite TLC cases. They
+still rely on the abstract Raft transitions described above.
 
 ## Conditional draining argument
 
@@ -164,8 +175,9 @@ write from satisfying the acceptance gate.
 
 ## Remaining work and availability boundary
 
-- Mechanize the induction and temporal arguments and maintain dependencies to the
-  TLA+ actions. The existing 12 Lean lemmas do not prove this metadata protocol.
+- Complete the remaining planner-isolation, freshness, catalog-uniqueness and
+  conditional draining proofs, extending the checked TLAPS prefix/receipt
+  inventory. The existing 12 Lean lemmas do not prove this metadata protocol.
 - Prove/refine the assumed Raft contract: log matching, leader completeness,
   durable Ready ordering, exact receipt publication and configuration changes.
 - Extend the metadata model to arbitrary catalog batches, PK/FK constraints,

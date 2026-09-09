@@ -391,9 +391,12 @@ Additional C04 deliverables: maintain the core proof inventory and checked-theor
 TLA+ is the primary protocol specification, with TLC counterexample checks and
 deductive proofs in TLAPS or Lean. The first metadata planning model and its
 implementation mapping are in [METADATA-PLANNING.md](METADATA-PLANNING.md).
-Its finite checks do not complete C04: mechanize the parameterized metadata
-induction, extend Ready/persistence ordering, then model checkpoint publication
-and recovery with their implementation and Chaos Mesh obligations retained.
+The [TLAPS inventory](../proofs/tlaps/README.md) now proves log/index bounds,
+committed-prefix preservation and exact receipts over the same model. These
+results do not complete C04: mechanize planner isolation, freshness, allocation
+uniqueness and conditional draining; extend Ready/persistence ordering; then
+model checkpoint publication and recovery with their implementation and Chaos
+Mesh obligations retained.
 
 #### Completion evidence
 
