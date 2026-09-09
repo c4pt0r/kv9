@@ -17,7 +17,7 @@ The seven outcome names are `success`, `error`, `aborted`, `released`,
 `replaced`, `rejected`, and `unconfirmed`. Unsupported outcomes remain empty;
 there is no per-key, tenant, request, endpoint, term, index, or context label.
 No individual samples or dynamic label registry are retained. A production
-node assembles exactly 23 latency objects: ten public, five driver, four Raft
+node assembles exactly 26 latency objects: ten public, eight driver, four Raft
 WAL and four engine WAL observations. Shared `Arc`s do not create additional
 histograms. WAL reader/rewrite/reclamation handles retain the engine's original
 observer, so replacing the active file does not reset its counters.
@@ -38,11 +38,18 @@ sample is valid and has interval `[0,0]`; an empty histogram has null quantiles.
 Each metric's arrays and related counters are copied under one leaf mutex.
 Allocation, quantile calculation, JSON serialization, and filesystem work occur
 after releasing that mutex. The persistent state is constant; export snapshots
-contain exactly 23 by 7 by 65 bucket counters. Export is capped at 512 KiB, with
+contain exactly 26 by 7 by 65 bucket counters. Export is capped at 512 KiB, with
 a test filling every numeric histogram field to its maximum width. The release
 experiment reports the actual `size_of::<Latency>()` for its compiler/target.
 This bound covers observer state and this document, not whole-process memory,
 request response buffers, transport buffering, or object-store uploads.
+
+Schema version 2 adds the three pump observations. The current independent
+validator requires the exact 26-metric version-2 inventory, including for new
+Chaos and benchmark evidence. Historical version-1 reports keep their original
+23-metric inventory and pinned checker sources; they are not silently upgraded
+or accepted as current evidence. The export byte cap and histogram representation
+are unchanged. This is a diagnostic schema change, not a persistent data format.
 
 ## Boundary inventory
 
@@ -55,6 +62,9 @@ summed as independent latency components because several boundaries nest.
 | --- | --- |
 | `public_{raw_read,raw_write,metadata_read,metadata_write,transaction}_prepare_queue` | From granted reservation through preparation and Tokio blocking-pool queueing to the actual blocking closure's start (`success`). A reservation dropped without execution records `released` at drop, with no backend sample. Transport, authentication, protobuf decoding and refused admissions precede this interval. |
 | `public_{raw_read,raw_write,metadata_read,metadata_write,transaction}_backend` | From entry into the actual blocking closure through the backend result, including admission-start bookkeeping, the queue observation, backend locks, consensus waits and storage I/O. `success`/`error` follow the returned result; unwind records `aborted`. The running or queued blocking job owns the reservation even after its RPC future is cancelled. Serialization/transport of the returned response is excluded. |
+| `raft_pump_service` | One actual `NodeDriver::step` invocation: fatal-state check, inbound drain/step, Ready persistence, outbound enqueue, read-state capture and committed-entry application. Its return determines `success`/`error`; unwind is `aborted`. The preceding tick call and following idle sleep are excluded. Manual driver steps in tests are included. |
+| `raft_pump_idle_wait` | The actual background pump's unconditional `thread::sleep`, including OS overshoot. A returned sleep is `success`; it does not imply work was processed. Stop still waits for this sleep to return. |
+| `raft_pump_iteration_spacing` | Time between two entries into the background pump loop before its tick call. The first iteration has no sample. It includes the previous tick/step, observation overhead, sleep and scheduling delay. It is not an actual RawNode tick-delivery timestamp or a configured election-time guarantee. |
 | `raft_proposal_submission` | `NodeDriver::propose` and `propose_in_term`: command encoding and the peer proposal call, including peer-lock wait. Accepted submission is `success`, never an applied receipt. NotLeader is `rejected`; other submission errors are `error`. Direct proposal paths outside these driver entry points are excluded. |
 | `runtime_logical_proposal_wait` | The runtime's `propose_and_wait` and `commit_catalog` loops, including all submission and exact-receipt waits across safely replaced proposals. One sample per logical loop; earlier replacements do not create extra logical samples. Terminal replacement-budget exhaustion is `replaced`; stale fence or NotLeader is `rejected`; unresolved receipt is `unconfirmed`; machinery or unexpected manifest receipt is `error`. This is not the entire public write, transaction, registration protocol or metadata transaction. |
 | `raft_application_wait` | One `wait_applied` invocation, including polling and receipt-lock wait. Exact `(term,index)` receipt matching is unchanged. Applied writes and newly applied manifest changes are `success`; replaced entries are `replaced`; rejected fences and non-new manifest verdicts, including AlreadyApplied, are `rejected`; evicted or unresolved receipts are `unconfirmed`; poisoned drivers are `error`. Bootstrap's short polling calls and manifest callers are included. It is not proposal-to-commit latency. |
@@ -135,10 +145,11 @@ preservation argument plus behavioral/source controls, not a machine-checked
 refinement of all Rust code or a proof that observation has zero performance
 cost. The proof/model inventories are unchanged. Exact receipt, failed Ready,
 read-barrier, poisoned writer, and cancellation tests still execute the real
-boundaries. Three isolated Rust mutations test queue time accidentally included
-in backend duration, replaced receipts reported as successful applies, and
-missing observation of the actual fsync call. Compilation failures are not
-accepted as successful mutation detection.
+boundaries. Six isolated Rust mutations test queue time accidentally included
+in backend duration, replaced receipts reported as successful applies,
+missing observation of the actual fsync call, premature pump completion, failed
+pumps reported successful, and idle timing started after the real sleep.
+Compilation failures are not accepted as successful mutation detection.
 
 ## Reproducible validation
 
@@ -155,7 +166,7 @@ The experiment records the exact commit, dirty state, source hashes, compiler,
 release profile, CPU, affinity and raw trials. It alternates paired baseline
 and recording order, with seven trials each at one and eight threads sharing one
 histogram. The baseline performs the same clock reads without recording. It
-also measures seven sparse and seven dense 23-metric snapshot/JSON trials.
+also measures seven sparse and seven dense 26-metric snapshot/JSON trials.
 Thread creation is outside the timed interval; barrier release and joins are
 inside. Wall time per operation across eight threads is amortized wall time,
 not individual call latency. Snapshot/JSON excludes filesystem publication and
@@ -176,3 +187,21 @@ Accepted exact-revision runs and retained artifacts are recorded on #39 and #9.
 C03 remains open for a persistent-connection end-to-end workload matrix,
 throughput characterization and the remaining internal/transport/response
 resource bounds. Group commit requires its own durability proof and fault gates.
+
+## Scheduling investigation scope
+
+The first #41 increment separates service, actual idle wait and loop spacing.
+Each pump call or returned sleep records one fixed histogram sample; the only
+new loop-local state is one optional monotonic timestamp. No individual samples,
+request identities or dynamic labels are retained. Empty, failed and stopped
+populations remain distinct, and snapshots taken while a step is running do not
+include its unfinished service sample. A poisoned pump records its failed step
+and exits without a new idle sample. Existing histogram saturation/invalidity
+rules still reject unsupported quantitative conclusions.
+
+These observations do not change tick frequency, wake the pump, bound its inbound
+queue or identify individual request queue residence. Loop spacing includes
+service drift and must not be equated with delivered election time. The remaining
+local-submission/inbound/outbound observations, synchronized wakeup and independent
+tick contract, checked scheduling proofs and paired release experiment remain
+part of #41. No performance improvement is claimed by this instrumentation alone.

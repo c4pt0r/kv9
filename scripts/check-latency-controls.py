@@ -24,6 +24,21 @@ CASES = [
      'metrics.sync.measure(|| file.sync_data())', 'file.sync_data()',
      'kv9-raft', 'storage::persistence_model::wal_observation_preserves_write_sync_short_circuit_and_writer_poison',
      'sync observation must match actual fsync attempts'),
+    ('unfinished-pump-reported-complete', 'crates/raft/src/driver.rs',
+     '|| self.step_inner(),',
+     '|| { self.metrics.pump_service.record(Duration::ZERO, Outcome::Success); self.step_inner() },',
+     'kv9-raft', 'driver::tests::pump_service_finishes_only_after_the_actual_transport_drain_returns',
+     'unfinished pump was reported as completed'),
+    ('failed-pump-reported-successful', 'crates/raft/src/driver.rs',
+     '|result| {\n                if result.is_ok() {',
+     '|result| {\n                if result.is_ok() || result.is_err() {',
+     'kv9-raft', 'driver::tests::failed_background_pump_records_error_without_another_idle_wait',
+     'failed pump was reported as successful'),
+    ('idle-observation-after-sleep', 'crates/raft/src/driver.rs',
+     'let idle = driver.metrics.pump_idle_wait.start();\n                std::thread::sleep(tick_every);',
+     'std::thread::sleep(tick_every);\n                let idle = driver.metrics.pump_idle_wait.start();',
+     'kv9-raft', 'driver::tests::background_pump_records_returned_sleeps_and_no_first_spacing_sample',
+     'idle observation did not include the actual configured sleep'),
 ]
 
 
@@ -76,7 +91,7 @@ def main():
             manifest['controls'].append(case)
             print(f'PASS: {name} baseline, intended failure and restored source')
     (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-    print('PASS: 3 isolated latency source controls checked')
+    print('PASS: 6 isolated latency source controls checked')
 
 
 if __name__ == '__main__':

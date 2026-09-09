@@ -134,6 +134,9 @@ pub struct DriverMetrics {
     pub application_wait: Latency,
     pub read_establishment: Latency,
     pub command_apply: Latency,
+    pub pump_service: Latency,
+    pub pump_idle_wait: Latency,
+    pub pump_iteration_spacing: Latency,
 }
 
 impl DriverMetrics {
@@ -144,6 +147,9 @@ impl DriverMetrics {
             NamedLatency::new("raft_application_wait", &self.application_wait),
             NamedLatency::new("raft_read_establishment", &self.read_establishment),
             NamedLatency::new("raft_command_apply", &self.command_apply),
+            NamedLatency::new("raft_pump_service", &self.pump_service),
+            NamedLatency::new("raft_pump_idle_wait", &self.pump_idle_wait),
+            NamedLatency::new("raft_pump_iteration_spacing", &self.pump_iteration_spacing),
         ]
     }
 }
@@ -332,6 +338,19 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     /// the driver poisons itself (pump stops, `status().fatal` set) and the
     /// failed entry never enters the success-correlation ring.
     pub fn step(&self) -> Result<()> {
+        self.metrics.pump_service.observe(
+            || self.step_inner(),
+            |result| {
+                if result.is_ok() {
+                    Outcome::Success
+                } else {
+                    Outcome::Error
+                }
+            },
+        )
+    }
+
+    fn step_inner(&self) -> Result<()> {
         if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
             return Err(Error::Raft(f.clone()));
         }
@@ -934,11 +953,22 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     pub fn spawn(self: &Arc<Self>, tick_every: Duration) -> std::thread::JoinHandle<()> {
         let driver = Arc::clone(self);
         std::thread::spawn(move || {
+            let mut previous_iteration = None;
             while !driver.stop.load(Ordering::Relaxed) {
+                let iteration = Instant::now();
+                if let Some(previous) = previous_iteration {
+                    driver
+                        .metrics
+                        .pump_iteration_spacing
+                        .record(iteration.duration_since(previous), Outcome::Success);
+                }
+                previous_iteration = Some(iteration);
                 if driver.tick_and_step().is_err() {
                     break; // poisoned: fatal is recorded, status carries it
                 }
+                let idle = driver.metrics.pump_idle_wait.start();
                 std::thread::sleep(tick_every);
+                idle.finish(Outcome::Success);
             }
         })
     }
@@ -1413,6 +1443,137 @@ mod tests {
     use crate::RaftGroup;
     use kv9_common::{NodeId, RegionId};
     use kv9_engine::{ColumnFamily, Mutation, ReadView, ScanEntry, WriteBatch};
+
+    #[test]
+    fn pump_service_finishes_only_after_the_actual_transport_drain_returns() {
+        struct GatedTransport {
+            entered: std::sync::mpsc::Sender<Instant>,
+            release: Mutex<std::sync::mpsc::Receiver<()>>,
+        }
+        impl RaftTransport for GatedTransport {
+            fn send(&self, _: NodeId, _: raft::prelude::Message) {}
+            fn drain(&self) -> Vec<raft::prelude::Message> {
+                self.entered.send(Instant::now()).unwrap();
+                self.release.lock().unwrap().recv().unwrap();
+                Vec::new()
+            }
+        }
+        let (entered_tx, entered_rx) = std::sync::mpsc::channel();
+        let (release_tx, release_rx) = std::sync::mpsc::channel();
+        let peer = Arc::new(RaftPeer::new(NodeId(1), RegionId(1), &[NodeId(1)]).unwrap());
+        let driver = NodeDriver::new(
+            peer,
+            Arc::new(GatedTransport {
+                entered: entered_tx,
+                release: Mutex::new(release_rx),
+            }),
+            MemStateMachine::new(),
+        )
+        .unwrap();
+        let worker = driver.clone();
+        let task = std::thread::spawn(move || worker.step());
+        let entered = entered_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+        let during = driver.metrics().pump_service.snapshot();
+        let released = Instant::now();
+        release_tx.send(()).unwrap();
+        task.join().unwrap().unwrap();
+        assert!(
+            during.outcomes.iter().all(|h| h.count == 0),
+            "unfinished pump was reported as completed"
+        );
+        let after = driver.metrics().pump_service.snapshot();
+        let service = &after.outcomes[Outcome::Success as usize];
+        assert_eq!(service.count, 1);
+        assert!(
+            service.sum_ns >= released.duration_since(entered).as_nanos() as u64,
+            "pump observation omitted time inside the actual drain"
+        );
+        assert_eq!(
+            driver.metrics().pump_idle_wait.snapshot().outcomes[Outcome::Success as usize].count,
+            0
+        );
+        assert_eq!(
+            driver.metrics().pump_iteration_spacing.snapshot().outcomes[Outcome::Success as usize]
+                .count,
+            0
+        );
+    }
+
+    #[test]
+    fn background_pump_records_returned_sleeps_and_no_first_spacing_sample() {
+        let driver = single_node_driver();
+        let initial =
+            driver.metrics().pump_service.snapshot().outcomes[Outcome::Success as usize].count;
+        let interval = Duration::from_millis(2);
+        let task = driver.spawn(interval);
+        let deadline = Instant::now() + Duration::from_secs(5);
+        while driver.metrics().pump_idle_wait.snapshot().outcomes[Outcome::Success as usize].count
+            < 3
+            && Instant::now() < deadline
+        {
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        driver.stop();
+        task.join().unwrap();
+        let service = driver.metrics().pump_service.snapshot();
+        let idle = driver.metrics().pump_idle_wait.snapshot();
+        let spacing = driver.metrics().pump_iteration_spacing.snapshot();
+        let iterations = service.outcomes[Outcome::Success as usize].count - initial;
+        let sleeps = &idle.outcomes[Outcome::Success as usize];
+        assert!(
+            iterations >= 3,
+            "background pump did not make observed progress"
+        );
+        assert_eq!(sleeps.count, iterations);
+        assert!(
+            sleeps.min_ns.unwrap() >= interval.as_nanos() as u64,
+            "idle observation did not include the actual configured sleep"
+        );
+        assert_eq!(
+            spacing.outcomes[Outcome::Success as usize].count,
+            iterations - 1
+        );
+        assert_eq!(service.outcomes[Outcome::Error as usize].count, 0);
+    }
+
+    #[test]
+    fn failed_background_pump_records_error_without_another_idle_wait() {
+        let driver = single_node_driver();
+        let initial =
+            driver.metrics().pump_service.snapshot().outcomes[Outcome::Success as usize].count;
+        driver
+            .peer()
+            .propose_traced(vec![0xff, 0xee, 0xdd])
+            .unwrap();
+        let task = driver.spawn(Duration::from_millis(2));
+        let deadline = Instant::now() + Duration::from_secs(5);
+        while driver.status().fatal.is_none() && Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        driver.stop();
+        task.join().unwrap();
+        assert!(
+            driver.status().fatal.is_some(),
+            "committed decode failure did not stop the pump"
+        );
+        let service = driver.metrics().pump_service.snapshot();
+        let successes = service.outcomes[Outcome::Success as usize].count - initial;
+        assert_eq!(
+            service.outcomes[Outcome::Error as usize].count,
+            1,
+            "failed pump was reported as successful"
+        );
+        assert_eq!(
+            driver.metrics().pump_idle_wait.snapshot().outcomes[Outcome::Success as usize].count,
+            successes,
+            "failed pump recorded an extra idle sleep"
+        );
+        assert_eq!(
+            driver.metrics().pump_iteration_spacing.snapshot().outcomes[Outcome::Success as usize]
+                .count,
+            successes
+        );
+    }
 
     fn single_node_driver() -> Arc<NodeDriver> {
         let hub = InProcHub::new();
