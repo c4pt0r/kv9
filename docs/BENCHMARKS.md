@@ -6,6 +6,9 @@ gRPC calibration endpoint. It changes no database read barrier, acknowledgement,
 WAL sync or checkpoint algorithm. Existing protocol proofs and real Chaos Mesh
 acceptance remain mandatory; this experiment itself does not inject faults.
 
+The first clean release matrix, raw population extract and measured limitations
+are recorded in [BENCHMARK-VALIDATION.md](BENCHMARK-VALIDATION.md).
+
 ## Build and reproduce
 
 Build all retained executables from one unchanged source inventory:
