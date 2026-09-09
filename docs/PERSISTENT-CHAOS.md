@@ -1,5 +1,22 @@
 # Persistent workload under Chaos Mesh
 
+The expanded 16-window matrix passed locally at
+`8ed7dec7dc35f10fbecebe20f917e923f8d08c13` on 2026-09-09. Its independent
+checks accepted a 3,240-operation CLI Raw/catalog history and an 869-operation
+persistent-client history, including all three missing-log cells and all six
+Raft I/O failures. Each original voter refused two fresh missing-log starts
+and recovered through a majority receipt after restoring its exact log. All
+five new corrupted-evidence controls were rejected. The original failed
+attempt (Pod replacement preceding old-owner lock release) is also retained.
+
+Evidence archive:
+`target/correctness-evidence/2026-09-09-8ed7dec-store-log-loss.tar.gz`
+(107,650,595 bytes), SHA-256
+`a86e104701791a5a3dd077e7d48dd034bdb5b2abe8ce9005e187ee5c5eb5945d`.
+It includes the exact source/builds, successful and failed scenes, raw logs,
+histories and audits. This is local single-host acceptance; hosted run status
+is tracked in #9. Replacement-PVC acceptance under #42 remains pending.
+
 The existing Chaos Mesh acceptance matrix now runs both its CLI-generated
 Raw/catalog history and a separate persistent public-gRPC workload through every
 selected fault window. Both complete histories must pass independent model

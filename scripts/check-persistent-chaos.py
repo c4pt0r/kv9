@@ -179,6 +179,7 @@ def main():
                   sources={name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
                       for name in ("check-persistent-chaos.py", "chaos-mesh-persistent.sh", "chaos-mesh-e2e.sh",
                                    "chaos-mesh-probes.sh", "chaos-mesh-io.sh", "chaos_client.py",
+                                   "chaos-mesh-store-loss.sh", "check-store-loss-chaos.py",
                                    "workload_report.py", "history/checker.py")},
                   topology="single-host Kind", storage="local WAL mode; MinIO is verified by the separate executable E2E",
                   clock_ticks_per_second=ticks, windows=windows, evidence_controls=controls, history=checked["history"])

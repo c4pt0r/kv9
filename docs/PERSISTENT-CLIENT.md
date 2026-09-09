@@ -167,7 +167,7 @@ without replaying v0. This stateful test uses a scripted server and is not a cla
 of Raft/MinIO durability. The additional retained complete-history fixture runs
 both the correct and unsafe-retry clients through the independent checker:
 the former is valid and the latter has no legal execution. The full persistent
-workload additionally participates in the actual 13-window fault matrix described
+workload additionally participates in the actual 16-window fault matrix described
 in [PERSISTENT-CHAOS.md](PERSISTENT-CHAOS.md); its gate preserves every unknown call.
 
 Three isolated Rust mutations must compile, select exactly one test, fail the
