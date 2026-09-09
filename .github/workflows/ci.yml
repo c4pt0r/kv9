@@ -252,6 +252,30 @@ jobs:
             exit 1
           }
 
+      - name: Registration source controls
+        run: |
+          set -euo pipefail
+          python3 scripts/check-registration-controls.py --output "$RUNNER_TEMP/registration-controls" > "$RUNNER_TEMP/registration-controls.log" 2>&1
+          cat "$RUNNER_TEMP/registration-controls.log"
+          test "$(tail -1 "$RUNNER_TEMP/registration-controls.log")" = 'PASS: 3 isolated registration source controls checked'
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: registration-controls
+          path: |
+            ${{ runner.temp }}/registration-controls
+            ${{ runner.temp }}/registration-controls.log
+          if-no-files-found: error
+
+      - name: Chaos probe routing controls
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p test_chaos_client.py -v > "$RUNNER_TEMP/chaos-routing.log" 2>&1
+          cat "$RUNNER_TEMP/chaos-routing.log"
+          grep -Eq '^Ran 4 tests in [0-9.]+s$' "$RUNNER_TEMP/chaos-routing.log"
+          test "$(tail -1 "$RUNNER_TEMP/chaos-routing.log")" = 'OK'
+
       # Task #9 tripwires: four independent named steps. The two selftests
       # consume exact terminal markers so an rc=0 early exit cannot masquerade
       # as a successful instrument run.

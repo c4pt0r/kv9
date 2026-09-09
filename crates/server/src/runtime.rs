@@ -58,6 +58,9 @@ use crate::Node;
 const TICK: Duration = Duration::from_millis(20);
 const DISCOVERY_INTERVAL: Duration = Duration::from_millis(200);
 const DISCOVERY_TIMEOUT: Duration = Duration::from_millis(50);
+// Registration can require several durable consensus steps. Keep its one
+// absolute pass budget separate from the short discovery health probe.
+const REGISTRATION_PASS_TIMEOUT: Duration = Duration::from_secs(5);
 const DISCOVERY_LAST_OUTCOME_MAX_CHARS: usize = 160;
 const DISCOVERY_ERROR_PREFIX: &str = "error:";
 
@@ -332,6 +335,30 @@ enum WalkOutcome {
     Unconfirmed(WalkTerminal),
 }
 
+#[derive(Default)]
+struct RegistrationSeedCursor {
+    next: usize,
+}
+
+impl RegistrationSeedCursor {
+    fn order(
+        &mut self,
+        seeds: &[(NodeId, std::net::SocketAddr)],
+    ) -> Vec<(NodeId, std::net::SocketAddr)> {
+        let mut ordered = seeds.to_vec();
+        if !ordered.is_empty() {
+            let start = self.next % ordered.len();
+            self.next = if start + 1 == ordered.len() {
+                0
+            } else {
+                start + 1
+            };
+            ordered.rotate_left(start);
+        }
+        ordered
+    }
+}
+
 /// One registration pass (task: the 972-not_leader master red): a candidate
 /// walk that starts at the declared seeds and FOLLOWS NotLeader hints that
 /// carry a canonical endpoint, deduped by `(leader id, addr)` with a small
@@ -417,7 +444,9 @@ fn registration_walk(
                             saw_cap = true;
                         } else {
                             hint_hops += 1;
-                            queue.push((id, addr));
+                            // Follow the new routing hint before unrelated
+                            // seeds can consume the rest of this pass's budget.
+                            queue.insert(i, (id, addr));
                         }
                     }
                     // Id-only or no id at all: nothing followable (the wire
@@ -2053,6 +2082,7 @@ pub struct NodeRuntime {
     discovery_observations: BTreeMap<u64, DiscoveryObservation>,
     advertised_endpoint_observation: Option<DiscoveryObservation>,
     registration_observation: RegistrationObservation,
+    registration_seed_cursor: RegistrationSeedCursor,
     data_dir: PathBuf,
     status_path: PathBuf,
     addr: std::net::SocketAddr,
@@ -2439,6 +2469,7 @@ impl NodeRuntime {
             discovery_observations,
             advertised_endpoint_observation,
             registration_observation: RegistrationObservation::new(),
+            registration_seed_cursor: RegistrationSeedCursor::default(),
             data_dir,
             status_path,
             addr,
@@ -2929,6 +2960,7 @@ impl NodeRuntime {
                 .iter()
                 .map(|seed| (seed.node_id, seed.addr))
                 .collect();
+            let seeds = self.registration_seed_cursor.order(&seeds);
             let handle = self.grpc_runtime.handle().clone();
             let node_id = self.node.id;
             let my_addr = self.addr.to_string();
@@ -2938,13 +2970,9 @@ impl NodeRuntime {
                 store_incarnation: self.store_identity.store_incarnation,
             };
             let token = self.cluster_token.clone();
-            // One absolute window for the whole pass, sized by the DECLARED
-            // seed set only — following hints never enlarges it (that is the
-            // no-reset contract). Sizing it per-seed preserves the previous
-            // guarantee that one slow seed cannot eat every other seed's
-            // chance within the pass; the run loop retries the next pass.
-            let window = DISCOVERY_TIMEOUT.saturating_mul(seeds.len().max(1) as u32);
-            let pass_deadline = Instant::now() + window;
+            // One absolute window for the whole pass. Each new pass rotates
+            // the first seed, so a blackhole cannot consume every seed's turn.
+            let pass_deadline = Instant::now() + REGISTRATION_PASS_TIMEOUT;
             match registration_walk(
                 &seeds,
                 &mut self.registration_observation,
@@ -3120,7 +3148,7 @@ impl NodeRuntime {
         // see render_driver_applied for why no tuple crosses this boundary.
         let driver_applied_lines = render_driver_applied(raft.driver_applied);
         let body = format!(
-            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\n{}bootstrap_state={:?}\nadvertised_endpoint={}\nregistration_attempts={}\nregistration_errors={}\nregistration_last={}\nregistration_last_walk={}\nregistration_last_hint={}\n{}fatal={}\n",
+            "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\n{}bootstrap_state={:?}\nadvertised_endpoint={}\nregistration_attempts={}\nregistration_errors={}\nregistration_last={}\nregistration_last_walk={}\nregistration_last_hint={}\nregistration_receipt_term={}\nregistration_receipt_index={}\n{}fatal={}\n",
             std::process::id(),
             raft.node_id.0,
             cluster_id.map_or_else(String::new, |id| id.to_string()),
@@ -3153,6 +3181,12 @@ impl NodeRuntime {
                 .last_hint
                 .as_deref()
                 .unwrap_or("none"),
+            self.registration_receipt
+                .as_ref()
+                .map_or_else(|| "none".into(), |r| r.applied_term.to_string()),
+            self.registration_receipt
+                .as_ref()
+                .map_or_else(|| "none".into(), |r| r.applied_index.to_string()),
             discovery_status,
             raft.fatal.as_deref().unwrap_or(""),
         );
@@ -3839,6 +3873,139 @@ mod tests {
             "the pass must stop dialing when the window is spent, even \
              though the hint chain still had candidates"
         );
+    }
+
+    #[test]
+    fn repeated_registration_passes_reach_a_healthy_seed_after_a_blackhole() {
+        use std::cell::Cell;
+        let seeds = vec![
+            (NodeId(1), walk_addr(24911)),
+            (NodeId(2), walk_addr(24912)),
+            (NodeId(3), walk_addr(24913)),
+        ];
+        let window = REGISTRATION_PASS_TIMEOUT;
+        let mut cursor = RegistrationSeedCursor::default();
+        let mut obs = RegistrationObservation::new();
+        let mut visited = Vec::new();
+        for _ in 0..seeds.len() {
+            let base = Instant::now();
+            let elapsed = Cell::new(Duration::ZERO);
+            let result = registration_walk(
+                &cursor.order(&seeds),
+                &mut obs,
+                base + window,
+                || base + elapsed.get(),
+                |addr, remaining| {
+                    visited.push(addr);
+                    if addr == seeds[0].1 {
+                        elapsed.set(elapsed.get() + remaining);
+                        Err(RegisterError::Timeout)
+                    } else {
+                        Ok(RegisterOutcome::Registered(walk_receipt()))
+                    }
+                },
+            );
+            if matches!(result, WalkOutcome::Registered { .. }) {
+                return;
+            }
+        }
+        // Sensitivity: the same live seed succeeds with the same absolute
+        // budget when it is selected first. No transport/quorum fault there.
+        let base = Instant::now();
+        let control = registration_walk(
+            &seeds[1..],
+            &mut obs,
+            base + window,
+            || base,
+            |_, _| Ok(RegisterOutcome::Registered(walk_receipt())),
+        );
+        assert!(matches!(control, WalkOutcome::Registered { .. }));
+        assert!(visited.contains(&seeds[1].1),
+            "a blackholed first seed consumed every retry window; the healthy seed was never contacted: {visited:?}");
+    }
+
+    #[test]
+    fn a_novel_leader_hint_precedes_a_blackholed_remaining_seed() {
+        use std::cell::Cell;
+        let seeds = vec![(NodeId(1), walk_addr(24921)), (NodeId(2), walk_addr(24922))];
+        let leader = walk_addr(24924);
+        let base = Instant::now();
+        let elapsed = Cell::new(Duration::ZERO);
+        let mut obs = RegistrationObservation::new();
+        let mut visited = Vec::new();
+        let result = registration_walk(
+            &seeds,
+            &mut obs,
+            base + REGISTRATION_PASS_TIMEOUT,
+            || base + elapsed.get(),
+            |addr, remaining| {
+                visited.push(addr);
+                if addr == seeds[0].1 {
+                    Ok(walk_hint(4, leader))
+                } else if addr == leader {
+                    Ok(RegisterOutcome::Registered(walk_receipt()))
+                } else {
+                    elapsed.set(elapsed.get() + remaining);
+                    Err(RegisterError::Timeout)
+                }
+            },
+        );
+        assert!(
+            matches!(result, WalkOutcome::Registered { .. }),
+            "a pending blackhole prevented following an already received leader hint"
+        );
+        assert_eq!(visited, vec![seeds[0].1, leader]);
+    }
+
+    #[test]
+    fn registration_budget_allows_durable_work_beyond_a_discovery_probe() {
+        let seeds = vec![(NodeId(1), walk_addr(24931))];
+        let base = Instant::now();
+        let mut obs = RegistrationObservation::new();
+        let result = registration_walk(
+            &seeds,
+            &mut obs,
+            base + REGISTRATION_PASS_TIMEOUT,
+            || base,
+            |_, remaining| {
+                if remaining >= Duration::from_millis(250) {
+                    Ok(RegisterOutcome::Registered(walk_receipt()))
+                } else {
+                    Err(RegisterError::Timeout)
+                }
+            },
+        );
+        assert!(
+            matches!(result, WalkOutcome::Registered { .. }),
+            "a discovery-probe timeout cannot budget several durable consensus steps"
+        );
+    }
+
+    #[test]
+    fn registration_seed_rotation_covers_every_position_from_every_start() {
+        for count in 1..=5 {
+            let seeds: Vec<_> = (0..count)
+                .map(|i| (NodeId(i as u64 + 1), walk_addr(24940 + i as u16)))
+                .collect();
+            for start in 0..count {
+                let mut cursor = RegistrationSeedCursor { next: start };
+                let mut firsts = HashSet::new();
+                for _ in 0..count {
+                    let order = cursor.order(&seeds);
+                    assert_eq!(
+                        order.iter().copied().collect::<HashSet<_>>(),
+                        seeds.iter().copied().collect()
+                    );
+                    assert!(
+                        firsts.insert(order[0]),
+                        "a seed repeated before another got its turn"
+                    );
+                }
+                assert_eq!(cursor.next, start);
+            }
+        }
+        let mut empty = RegistrationSeedCursor::default();
+        assert!(empty.order(&[]).is_empty());
     }
 
     /// A window already spent at entry means ZERO dials — the deadline is
@@ -5664,6 +5831,18 @@ mod tests {
             "n5 catches up from the non-seed leader and reaches Serving",
             |rts| rts[4].node.meta.lock().unwrap().bootstrap.is_serving(),
         );
+
+        let status = fs::read_to_string(&rts[4].status_path).unwrap();
+        assert!(status.lines().any(|line| line
+            == format!(
+                "registration_receipt_term={}",
+                capability.receipt_position.term
+            )));
+        assert!(status.lines().any(|line| line
+            == format!(
+                "registration_receipt_index={}",
+                capability.receipt_position.index
+            )));
 
         // The window transition on the SAME production capability: Serving
         // implies the exact receipt command applied, and from that instant

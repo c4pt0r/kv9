@@ -84,6 +84,12 @@ def controls(lean, source, root):
     cases.append(("History.lean", "weakened real-time order",
                   history.replace("leftResponse < rightInvocation", "leftResponse ≤ rightInvocation"),
                   "omega could not prove the goal"))
+    registration = (source / "Registration.lean").read_text()
+    advance = "if cursor + 1 = size then 0 else cursor + 1"
+    assert registration.count(advance) == 1
+    cases.append(("Registration.lean", "frozen registration cursor",
+                  registration.replace(advance, "if cursor + 1 = size then 0 else cursor"),
+                  "unsolved goals"))
     for i, (filename, name, mutant, expected) in enumerate(cases):
         original = (source / filename).read_text()
         if mutant == original:

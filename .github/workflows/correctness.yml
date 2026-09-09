@@ -109,7 +109,7 @@ jobs:
           set -euo pipefail
           python3 scripts/check-proofs.py --self-test > "$RUNNER_TEMP/proof-check.log" 2>&1
           cat "$RUNNER_TEMP/proof-check.log"
-          test "$(tail -1 "$RUNNER_TEMP/proof-check.log")" = 'PASS: 12 theorems checked; 6 invalid controls rejected'
+          test "$(tail -1 "$RUNNER_TEMP/proof-check.log")" = 'PASS: 17 theorems checked; 7 invalid controls rejected'
       - name: Check independent history controls
         run: |
           set -euo pipefail
@@ -171,7 +171,8 @@ jobs:
           test "$(grep -Fxc 'PASS: concurrent Raw KV/catalog history is valid across the Chaos Mesh matrix' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -c '^Stage: sustained Pod failure for voter [123] and majority service$' "$RUNNER_TEMP/chaos-mesh.log")" = 3
           test "$(grep -c '^PASS: IOChaos voter [123] errno \(5\|28\) reached Raft, exited, and recovered with majority service$' "$RUNNER_TEMP/chaos-mesh.log")" = 6
-          for phase in pod-failure-1 pod-failure-2 pod-failure-3 partition delay; do
+          test "$(grep -Fxc 'PASS: joiner reached Serving with an exact receipt while its first seed was blackholed' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          for phase in registration-seed-blackhole pod-failure-1 pod-failure-2 pod-failure-3 partition delay; do
             test "$(grep -Fxc "PASS: concurrent put and read completed during $phase" "$RUNNER_TEMP/chaos-mesh.log")" = 1
           done
           for voter in 1 2 3; do
