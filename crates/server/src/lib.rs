@@ -4,6 +4,7 @@
 //! (`TxnApi`/`RawApi`/`AdminApi`/`RouterApi`), request routing, and the `Node` that
 //! assembles the store, metadata plane, router, and executors into one process.
 
+pub mod admission;
 pub mod api;
 pub mod fence;
 pub mod grpc;

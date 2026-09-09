@@ -41,6 +41,21 @@ CONTROLS = [
      'test_cli_requires_successful_put_and_read_in_each_fault_phase'),
 ]
 
+CONTROLS = [(label, 'checker.py', old, new, test) for label, old, new, test in CONTROLS] + [
+    ('matching-overlapping-read-deferred', 'checker.py',
+     'prefer_observed = (guided_unknown and op.outcome == "ok"', 'prefer_observed = (False and op.outcome == "ok"',
+     'test_guided_search_orders_matching_overlapping_read_before_write'),
+    ('oldest-unknown-first-frontier-explosion', 'checker.py',
+     '-i if op.outcome == "unknown" else i', 'i',
+     'test_recent_unknown_write_avoids_old_range_frontier_explosion'),
+    ('refused-read-treated-as-observed', 'checker.py',
+     'if op.outcome != "ok":', 'if False:',
+     'test_guided_search_handles_refused_reads_without_values'),
+    ('timeout-masquerades-as-admission-refusal', 'workload.py',
+     'if rc != 1 or stdout:', 'if False:',
+     'test_admission_refusal_requires_exclusive_cli_evidence'),
+]
+
 
 def demand(condition, message):
     if not condition:
@@ -60,7 +75,6 @@ def main():
     with tempfile.TemporaryDirectory(prefix='kv9-history-controls-') as directory:
         work = Path(directory)
         for name, data in originals.items(): (work/name).write_bytes(data)
-        target = work/'checker.py'
         def unchanged(expected):
             actual = {p.name: p.read_bytes() for p in work.iterdir() if p.is_file()}
             demand(actual == expected and all(p.is_file() for p in work.iterdir()), 'undeclared files changed in isolated control')
@@ -71,7 +85,7 @@ def main():
             output = process.stdout+process.stderr
             (args.output/(label+'.log')).write_text(output)
             count = re.findall(r'^Ran (\d+) tests? in ', output, re.M)
-            demand(count == [str(1 if test else 30)], f'{label}: wrong selected test count: {count}')
+            demand(count == [str(1 if test else 34)], f'{label}: wrong selected test count: {count}')
             if red:
                 demand(process.returncode == 1 and 'FAILED (failures=1)' in output and 'AssertionError:' in output
                        and f'FAIL: {test} ' in output and 'ERROR:' not in output, f'{label}: no attributable assertion failure')
@@ -79,29 +93,30 @@ def main():
                 demand(process.returncode == 0 and output.rstrip().endswith('\nOK'), f'{label}: baseline/restored tests failed')
         run('baseline-suite')
         unchanged(originals)
-        for label, old, new, test in CONTROLS:
+        for label, filename, old, new, test in CONTROLS:
+            target = work/filename
             run(label+'-baseline', test)
-            text = originals['checker.py'].decode()
+            text = originals[filename].decode()
             demand(text.count(old) == 1, f'{label}: target literal is not unique')
             mutated = text.replace(old, new).encode()
-            demand(mutated != originals['checker.py'] and old not in mutated.decode(), f'{label}: mutation did not land')
+            demand(mutated != originals[filename] and old not in mutated.decode(), f'{label}: mutation did not land')
             try:
                 target.write_bytes(mutated)
-                unchanged({**originals, 'checker.py': mutated})
+                unchanged({**originals, filename: mutated})
                 run(label+'-mutant', test, red=True)
-                unchanged({**originals, 'checker.py': mutated})
+                unchanged({**originals, filename: mutated})
             finally:
-                target.write_bytes(originals['checker.py'])
+                target.write_bytes(originals[filename])
             run(label+'-restored', test)
             unchanged(originals)
-            manifest['controls'].append({'name': label, 'test': test, 'selected': 1, 'verdict': 'rejected',
+            manifest['controls'].append({'name': label, 'source': filename, 'test': test, 'selected': 1, 'verdict': 'rejected',
                                          'mutant_sha256': hashlib.sha256(mutated).hexdigest()})
             (args.output/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
             print(f'PASS: {label}: baseline 1 green, mutant 1 assertion failure, restored 1 green', flush=True)
         run('restored-suite')
         unchanged(originals)
     demand(all((source/name).read_bytes() == data for name, data in originals.items()), 'source changed during control run')
-    print(f'PASS: 30 history tests and {len(CONTROLS)} isolated source mutations checked', flush=True)
+    print(f'PASS: 34 history tests and {len(CONTROLS)} isolated source mutations checked', flush=True)
 
 
 if __name__ == '__main__':

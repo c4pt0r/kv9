@@ -147,8 +147,8 @@ python3 scripts/history/checker.py /path/history.jsonl --output /path/result.jso
 The checker exits 0 only for valid, 1 for proven invalid, and 2 for inconclusive
 or malformed input. Acceptance requires successful mutations and reads and all
 requested API kinds; zero operations, all errors and missing coverage fail.
-Controls include 30 tests and 200 deterministic small atomic histories checked
-against a separate permutation/subset oracle. Seven isolated source mutations
+Controls include 34 tests and 200 deterministic small atomic histories checked
+against a separate permutation/subset oracle. Eleven isolated source mutations
 each require exactly one selected test to pass, fail its intended assertion,
 and pass after byte-for-byte restoration. Sources and mutant hashes, all phase
 logs and exact test counts are retained. A compile/import error cannot count as
@@ -159,7 +159,7 @@ PodChaos, NetworkChaos and IOChaos matrix. Every sustained voter failure,
 partition, delay and each voter/errno cell additionally requires an independent
 successful put and read invoked after the fault effect was observed and completed
 before healing starts. Phase progress is saved and the continuing fault is
-checked after those operations. Final checker coverage requires all 11 named
+checked after those operations. Final checker coverage requires all 13 named
 windows. Pod/container kills are instantaneous events spanned by the history,
 not intervals with an asserted in-fault operation. CI verifies explicit matrix,
 history and per-phase completion markers and uploads all evidence on either
@@ -230,3 +230,27 @@ mutation disabling the leadership retry fails at the intended refusal; baseline
 and restored controls pass. The full real five-voter join/promotion/failover and
 restart E2E passed locally, with artifacts at `/tmp/kv9-membership.TekcYJ`.
 Hosted validation of the follow-up is recorded separately in issue evidence.
+
+Public admission refusals use the existing `refused`/`precommit` model outcome
+only after the recorder checks an exclusive Raw CLI refusal, exit 1, empty stdout
+and the optional exact kubectl trailer. Timeout or mixed output remains unknown.
+The guided search assigns no observation distance to a refused read: it has no
+value/rows result to explain. Both parser and heuristic have isolated source
+controls; the full witness still uses the same sequential transition relation.
+See [PUBLIC-ADMISSION.md](PUBLIC-ADMISSION.md) for the live overload fault window.
+
+Unknown-write candidates are ordered from recent to old after the immediately
+required operation and confirmed work. Older unresolved RPCs remain legal search
+candidates. This avoids trying many obsolete range selections before a recent
+unknown delete that explains the current observation. A fixed-budget known
+witness test and its oldest-first mutation discriminate this ordering. No search
+cap is increased, no transition is pruned from unrestricted search, and bounded
+or guided exhaustion still cannot establish invalidity.
+
+The guided pass prefers an eligible overlapping successful read when its recorded
+result already matches the current state, before applying an overlapping write.
+Otherwise a later read response can be explained by an unrelated old unknown
+delete, causing avoidable backtracking when a subsequent read needs that write.
+This changes candidate ordering only. A fixed-budget known witness and isolated
+deferred-read mutation exercise this case; all positive witnesses are replayed
+and unrestricted exhaustion retains its complete transition set.

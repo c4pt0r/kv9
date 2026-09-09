@@ -137,3 +137,13 @@ production-capacity guarantee. SSTs and historical manifests are retained; Raft 
 Transactions, split/merge, TTL and block cache are future work.
 
 [ROADMAP.md](ROADMAP.md) orders the work needed to remove these limits.
+
+## Public backend limits
+
+Each node defaults to 64 reserved/queued/running public backend requests and a
+64 MiB sum of encoded request weights. Set `KV9_PUBLIC_MAX_REQUESTS` and
+`KV9_PUBLIC_MAX_ENCODED_BYTES` before startup to change these positive integer
+limits. Saturation returns an explicit pre-execution refusal; an in-flight
+cancelled backend job retains its reservation until it finishes. The status file
+exports fixed admission counters and gauges. See [PUBLIC-ADMISSION.md](PUBLIC-ADMISSION.md)
+for units, protocol details and the separate transport/response memory obligations.

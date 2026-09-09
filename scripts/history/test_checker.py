@@ -10,8 +10,8 @@ import tempfile
 import random
 import unittest
 
-from checker import History, Malformed, check, minimize_prefix, verify_witness
-from workload import parse_success
+from checker import History, Malformed, check, minimize_prefix, search, verify_witness
+from workload import admission_refusal, parse_success
 
 
 def header(kv=(), chunk=2):
@@ -123,6 +123,59 @@ class CheckerControls(unittest.TestCase):
     def test_unknown_write_may_have_no_effect(self):
         self.verdict(history(call(0, 'put', key='61', value='31'), returned(0, 'unknown'),
                              call(1, 'get', key='61'), returned(1, value=None)), 'valid')
+
+    def test_admission_refusal_requires_exclusive_cli_evidence(self):
+        for reason in ['request_count', 'encoded_bytes', 'request_too_large']:
+            line = f'admission_refused=true reason={reason}\n'
+            for trailer in ['', 'command terminated with exit code 1\n']:
+                self.assertEqual(admission_refusal(1, '', line + trailer), reason)
+            for code in [None, 0, 124, 137]:
+                self.assertIsNone(admission_refusal(code, '', line))
+            self.assertIsNone(admission_refusal(1, 'applied_index=7\n', line))
+            for extra in ['partial_write=true\n', 'not_leader=true leader_node_id=1\n',
+                          'read_unconfirmed=true phase=apply\n', line, 'transport error\n']:
+                self.assertIsNone(admission_refusal(1, '', line + extra))
+        for line in ['admission_refused=true reason=future\n', 'resource exhausted\n',
+                     'admission_refused=false reason=request_count\n']:
+            self.assertIsNone(admission_refusal(1, '', line))
+
+    def test_guided_search_handles_refused_reads_without_values(self):
+        for kind, args in [('get', {'key': '61'}), ('scan', {'start': '', 'end': '', 'limit': 8})]:
+            h = history(call(0, 'put', key='61', value='31'), returned(0, 'unknown'),
+                        call(1, kind, **args), returned(1, 'refused', proof='precommit'))
+            try:
+                result = search(h, guided_unknown=True)
+            except KeyError as error:
+                self.fail(f'refused reads have no observed value: {error}')
+            self.assertEqual(result['verdict'], 'valid')
+            self.assertTrue(verify_witness(h, result['witness']))
+
+    def test_recent_unknown_write_avoids_old_range_frontier_explosion(self):
+        events = []
+        for i in range(64):
+            events.extend([call(i, 'delete_range', start='61', end='63'), returned(i, 'unknown')])
+        events.extend([call(64, 'delete', key='61'), returned(64, 'unknown'),
+                       call(65, 'get', key='61'), returned(65, value=None),
+                       call(66, 'get', key='62'), returned(66, value='32')])
+        h = history(*events, initial=header(kv=[('61', '31'), ('62', '32')]))
+        result = search(h, max_states=100, guided_unknown=True)
+        self.assertEqual(result['verdict'], 'valid', 'old unresolved ranges exhausted a small known witness')
+        self.assertTrue(verify_witness(h, result['witness']))
+        # This checks witness ordering under a fixed resource budget. It cannot
+        # classify a restricted or budget-exhausted search as invalid.
+
+    def test_guided_search_orders_matching_overlapping_read_before_write(self):
+        events = []
+        for i in range(64):
+            events.extend([call(i, 'delete_range', start='61', end='63'), returned(i, 'unknown')])
+        events.extend([call(64, 'scan', start='61', end='62', limit=8),
+                       call(65, 'put', key='61', value='31'), returned(65), returned(64, rows=[]),
+                       call(66, 'get', key='61'), returned(66, value='31'),
+                       call(67, 'get', key='62'), returned(67, value='32')])
+        h = history(*events, initial=header(kv=[('62', '32')]))
+        result = search(h, max_states=100, guided_unknown=True)
+        self.assertEqual(result['verdict'], 'valid', 'overlapping read ordering hid a small known witness')
+        self.assertTrue(verify_witness(h, result['witness']))
 
     def test_proven_refusal_cannot_create_a_value(self):
         self.verdict(history(call(0, 'put', key='61', value='31'), returned(0, 'refused', proof='precommit'),

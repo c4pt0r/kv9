@@ -109,17 +109,17 @@ jobs:
           set -euo pipefail
           python3 scripts/check-proofs.py --self-test > "$RUNNER_TEMP/proof-check.log" 2>&1
           cat "$RUNNER_TEMP/proof-check.log"
-          test "$(tail -1 "$RUNNER_TEMP/proof-check.log")" = 'PASS: 17 theorems checked; 7 invalid controls rejected'
+          test "$(tail -1 "$RUNNER_TEMP/proof-check.log")" = 'PASS: 24 theorems checked; 9 invalid controls rejected'
       - name: Check independent history controls
         run: |
           set -euo pipefail
           python3 -m unittest discover -s scripts/history -p 'test_*.py' -v > "$RUNNER_TEMP/history-controls.log" 2>&1
           cat "$RUNNER_TEMP/history-controls.log"
-          grep -Eq '^Ran 30 tests in ' "$RUNNER_TEMP/history-controls.log"
+          grep -Eq '^Ran 34 tests in ' "$RUNNER_TEMP/history-controls.log"
           test "$(tail -1 "$RUNNER_TEMP/history-controls.log")" = OK
           python3 scripts/history/check-controls.py --output "$RUNNER_TEMP/history-mutations" > "$RUNNER_TEMP/history-mutations.log" 2>&1
           cat "$RUNNER_TEMP/history-mutations.log"
-          test "$(tail -1 "$RUNNER_TEMP/history-mutations.log")" = 'PASS: 30 history tests and 7 isolated source mutations checked'
+          test "$(tail -1 "$RUNNER_TEMP/history-mutations.log")" = 'PASS: 34 history tests and 11 isolated source mutations checked'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -172,7 +172,9 @@ jobs:
           test "$(grep -c '^Stage: sustained Pod failure for voter [123] and majority service$' "$RUNNER_TEMP/chaos-mesh.log")" = 3
           test "$(grep -c '^PASS: IOChaos voter [123] errno \(5\|28\) reached Raft, exited, and recovered with majority service$' "$RUNNER_TEMP/chaos-mesh.log")" = 6
           test "$(grep -Fxc 'PASS: joiner reached Serving with an exact receipt while its first seed was blackholed' "$RUNNER_TEMP/chaos-mesh.log")" = 1
-          for phase in registration-seed-blackhole pod-failure-1 pod-failure-2 pod-failure-3 partition delay; do
+          test "$(grep -Fxc 'PASS: bounded public admission refused pressure while the partitioned quorum served history' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          test "$(grep -Fxc 'PASS: 4 invalid admission pressure controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          for phase in registration-seed-blackhole pod-failure-1 pod-failure-2 pod-failure-3 partition public-admission-overload delay; do
             test "$(grep -Fxc "PASS: concurrent put and read completed during $phase" "$RUNNER_TEMP/chaos-mesh.log")" = 1
           done
           for voter in 1 2 3; do

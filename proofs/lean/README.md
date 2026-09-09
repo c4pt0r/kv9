@@ -13,12 +13,12 @@ python3 scripts/check-proofs.py --lean /path/to/lean --self-test
 
 The checker compiles fresh sources, requires every module in the theorem
 inventory, and inspects each theorem's transitive axioms. Only Lean's standard
-foundations (`propext`, `Classical.choice`, `Quot.sound`) are accepted. Seven
+foundations (`propext`, `Classical.choice`, `Quot.sound`) are accepted. Nine
 controls must fail for their specific reasons: a proof hole, an insufficient
 membership bound, an otherwise accepted proof using a custom axiom, and removal
 of the durable namespace precondition from the vote-reply transition, removal
 of certificate eligibility, weakening the strict real-time ordering premise, and a
-frozen registration cursor. The
+frozen registration cursor, and removal of either public admission bound. The
 `protocol-proofs` CI job also checks the exact theorem/control counts externally.
 
 `Quorum.lean` proves disjoint vote bounds, intersection of two strict majorities,
@@ -43,7 +43,11 @@ coverage of every first-seed position within one retry cycle. The induction
 connects actual repeated updates to the modulo formula for arbitrary sizes and
 pass counts. Its conditional routing-progress assumptions and Rust controls are
 in [`REGISTRATION-ROUTING.md`](../../docs/REGISTRATION-ROUTING.md). The combined
-inventory now contains 17 declarations and seven invalid controls.
+inventory also includes `Admission.lean`: seven local resource declarations for
+count/byte conservation, transition preservation and induction over arbitrary
+finite reservation traces. Ownership and cancellation refinement obligations are
+in [`PUBLIC-ADMISSION.md`](../../docs/PUBLIC-ADMISSION.md). The complete inventory
+contains 24 declarations and nine invalid controls.
 
 ## Refinement obligations remain open
 

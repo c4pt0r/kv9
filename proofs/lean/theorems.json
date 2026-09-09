@@ -23,5 +23,14 @@
     "Kv9.Registration.every_seed_gets_a_first_turn",
     "Kv9.Registration.cursor_after_is_modulo",
     "Kv9.Registration.repeated_steps_cover_every_seed"
+  ],
+  "Admission": [
+    "Kv9.Admission.empty_within",
+    "Kv9.Admission.reserve_preserves_bounds",
+    "Kv9.Admission.reserve_conserves",
+    "Kv9.Admission.release_conserves",
+    "Kv9.Admission.release_preserves_bounds",
+    "Kv9.Admission.step_preserves_bounds",
+    "Kv9.Admission.reachable_within"
   ]
 }
