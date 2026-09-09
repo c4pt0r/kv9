@@ -6,6 +6,7 @@
 
 pub mod admission;
 pub mod api;
+pub mod client;
 pub mod fence;
 pub mod grpc;
 pub mod node;

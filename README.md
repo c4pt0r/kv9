@@ -107,6 +107,11 @@ leadership change.
   because that one scenario exercises each of them. See [`DESIGN.md`](DESIGN.md) §9.2 for the mechanism and the
   acceptance split.
 
+The asynchronous persistent RawPut/Get/Delete client and its bounded retry
+contract are described in [PERSISTENT-CLIENT.md](docs/PERSISTENT-CLIENT.md).
+Full persistent-client workload and Chaos Mesh acceptance is tracked in
+[#40](https://github.com/c4pt0r/kv9/issues/40).
+
 ## Influences
 
 Bigtable (OSDI 2006) · Spanner (OSDI 2012) · Amazon DynamoDB (USENIX ATC 2022) · TiKV (open source); the
