@@ -230,6 +230,9 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     read_incarnation: [u8; 16],
     /// Monotonic per-incarnation read sequence (uniqueness within a life).
     read_seq: std::sync::atomic::AtomicU64,
+    /// Observe a completed submission attempt without timing sleeps in tests.
+    #[cfg(test)]
+    read_attempt_observer: Mutex<Option<std::sync::mpsc::Sender<()>>>,
     /// First fatal persistence/apply error; poisons the driver (pump stops).
     fatal: Mutex<Option<String>>,
     /// Whether THE manifest seam over this node has been minted (task #9
@@ -281,6 +284,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 bytes
             },
             read_seq: std::sync::atomic::AtomicU64::new(0),
+            #[cfg(test)]
+            read_attempt_observer: Mutex::new(None),
             fatal: Mutex::new(None),
             manifest_seam_minted: std::sync::atomic::AtomicBool::new(false),
             #[cfg(any(test, feature = "testing"))]
@@ -828,6 +833,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 Error::NotLeader { leader } => ReadIndexError::NotLeader { hint: leader },
                 other => ReadIndexError::Failed(other),
             });
+        }
+        #[cfg(test)]
+        if let Some(observer) = self.read_attempt_observer.lock().unwrap().as_ref() {
+            let _ = observer.send(());
         }
         // 3. Wait for the quorum confirmation correlated by EXACT context.
         let confirmed = loop {
@@ -2473,6 +2482,65 @@ mod tests {
                 >= 1,
             "real protocol outcome missing from observation"
         );
+    }
+
+    /// Freeze a real election immediately after the winning vote, before
+    /// followers can acknowledge its no-op. Observe the completed request
+    /// attempt before permitting any further Raft delivery.
+    #[test]
+    fn read_barrier_survives_submission_before_current_term_commit() {
+        let hub = InProcHub::new();
+        let ids = [NodeId(1), NodeId(2), NodeId(3)];
+        let drivers: Vec<_> = ids
+            .iter()
+            .map(|&id| {
+                NodeDriver::new(
+                    Arc::new(RaftPeer::new(id, RegionId(1), &ids).unwrap()),
+                    Arc::new(hub.endpoint(id)) as Arc<dyn RaftTransport>,
+                    MemStateMachine::new(),
+                )
+                .unwrap()
+            })
+            .collect();
+        drivers[0].peer().campaign().unwrap();
+        for _ in 0..16 {
+            drivers[0].step().unwrap();
+            if drivers[0].status().role == Role::Leader {
+                break;
+            }
+            drivers[1].step().unwrap();
+            drivers[2].step().unwrap();
+        }
+        assert_eq!(drivers[0].status().role, Role::Leader);
+        assert_eq!(drivers[0].status().raft_committed, 0);
+        assert_eq!(drivers[0].driver_applied(), None);
+
+        let (attempt_tx, attempt_rx) = std::sync::mpsc::channel();
+        *drivers[0].read_attempt_observer.lock().unwrap() = Some(attempt_tx);
+        let reader = Arc::clone(&drivers[0]);
+        let read = std::thread::spawn(move || reader.read_barrier(Duration::from_secs(2)));
+        attempt_rx
+            .recv_timeout(Duration::from_secs(1))
+            .expect("the early read must attempt submission before quorum delivery resumes");
+        assert_eq!(drivers[0].status().raft_committed, 0);
+
+        // No new client request is issued. The original invocation must
+        // survive establishment of the term's commit and confirm its context.
+        while !read.is_finished() {
+            for driver in &drivers {
+                driver.step().unwrap();
+            }
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        let status = drivers[0].status();
+        assert_eq!(status.raft_committed, 1);
+        assert_eq!(status.driver_applied.unwrap().term, status.term);
+        let barrier = read
+            .join()
+            .unwrap()
+            .expect("read submitted before election barrier was lost after quorum recovered");
+        assert_eq!(barrier.index(), 1);
+        assert_eq!(drivers[0].read_barriers_minted(), 1);
     }
 
     /// A follower answers with the TYPED NotLeader + hint — never a barrier,
