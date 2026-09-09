@@ -175,6 +175,21 @@ generator/collector SIGKILL. Final status and remote checkpoint presence are
 retained. This is a functional single-host fixture, not Chaos Mesh evidence or
 a multi-host performance result.
 
+The functional E2E uses a 100-ms refusal backoff, six attempts and the same
+1,500-ms absolute logical deadline. This leaves 500 ms between the first and last
+possible attempts instead of consuming the hop budget in a few tens of
+milliseconds. It is a fixture configuration, not an election-time guarantee:
+repeated refusals, unknown writes and unacknowledged warmup still fail the run.
+The benchmark protocol retains its separately declared 5-ms backoff; previously
+published measurements are unchanged. Progress waits check the specific workload
+process before accepting a file, so an exited generator is reported immediately.
+
+When warmup returns a non-success call report, it writes bounded `warmup-failure.json`, including
+its typed outcome, stop reason, elapsed time and each attempted node/refusal hint.
+This diagnostic is retained in performance mode without enabling a full history.
+It contains no request keys/values, token or arbitrary server error text. The run
+remains `complete=false`; the diagnostic does not make failed evidence acceptable.
+
 An additional real-gRPC test holds an already-applied write's reply, requests
 stop, and requires the runner to remain draining until the reply is released as
 unknown. An isolated source mutation that aborts tasks at stop must compile,

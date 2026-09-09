@@ -377,6 +377,14 @@ jobs:
           grep -Eq '^Ran 4 tests in [0-9.]+s$' "$RUNNER_TEMP/chaos-routing.log"
           test "$(tail -1 "$RUNNER_TEMP/chaos-routing.log")" = 'OK'
 
+      - name: Workload progress observation controls
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p test_workload_e2e_support.py -v > "$RUNNER_TEMP/workload-progress.log" 2>&1
+          cat "$RUNNER_TEMP/workload-progress.log"
+          grep -Eq '^Ran 5 tests in [0-9.]+s$' "$RUNNER_TEMP/workload-progress.log"
+          test "$(tail -1 "$RUNNER_TEMP/workload-progress.log")" = 'OK'
+
       # Task #9 tripwires: four independent named steps. The two selftests
       # consume exact terminal markers so an rc=0 early exit cannot masquerade
       # as a successful instrument run.
