@@ -14,6 +14,7 @@ pub mod ids;
 pub mod keyspace;
 pub mod metrics;
 pub mod root;
+pub mod store_lifecycle;
 pub mod time;
 
 pub use config::{Config, SeedPeer};

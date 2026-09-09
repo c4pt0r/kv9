@@ -549,3 +549,73 @@ fn wal_observation_preserves_write_sync_short_circuit_and_writer_poison() {
     );
     assert!(fs.events().iter().all(|e| e.operation == Operation::Write));
 }
+
+#[test]
+fn recovery_only_faults_preserve_votes_across_repeated_power_loss() {
+    fn prepared() -> ModelFs {
+        let fs = ModelFs::default();
+        let peer = RaftPeer::with_storage(NodeId(1), RegionId(1), open(&fs)).unwrap();
+        peer.step_message(vote_request(2, 7));
+        assert!(granted(&peer.pump().unwrap(), 2, 7));
+        drop(peer);
+        fs.crash(Crash::LoseUnsynced);
+        fs.clear_events();
+        fs
+    }
+    fn recover(fs: &ModelFs) -> Result<DiskRaftStorage<ModelFs>> {
+        DiskRaftStorage::open_mode(fs.clone(), Path::new(DIRECTORY), &[], false).map(|v| v.0)
+    }
+    let fs = prepared();
+    drop(recover(&fs).unwrap());
+    let cuts = fs.events();
+    assert!(!cuts.is_empty());
+    assert!(cuts
+        .iter()
+        .all(|event| !matches!(event.operation, Operation::CreateDir | Operation::Write)));
+    let mut cells = 0;
+    for cut in &cuts {
+        for errno in [5, 28] {
+            for fault in [Fault::Before(errno), Fault::After(errno)] {
+                for crash in [
+                    Crash::LoseUnsynced,
+                    Crash::KeepUnsynced,
+                    Crash::Seeded(1),
+                    Crash::Seeded(7),
+                ] {
+                    let fs = prepared();
+                    fs.fail_at(cut.number, fault);
+                    assert!(
+                        recover(&fs).is_err(),
+                        "recovery I/O error exposed a usable store"
+                    );
+                    assert!(fs.fault_arrived());
+                    fs.crash(crash);
+                    let peer =
+                        RaftPeer::with_storage(NodeId(1), RegionId(1), recover(&fs).unwrap())
+                            .unwrap();
+                    peer.step_message(vote_request(3, 7));
+                    let messages = peer.pump().unwrap();
+                    assert!(
+                        !granted(&messages, 3, 7),
+                        "recovery-only retry granted a second vote in the same term"
+                    );
+                    assert!(messages
+                        .iter()
+                        .any(|message| message.to == 3 && message.term == 7 && message.reject));
+                    drop(peer);
+                    fs.crash(Crash::LoseUnsynced);
+                    let state = raft::Storage::initial_state(&recover(&fs).unwrap())
+                        .unwrap()
+                        .hard_state;
+                    assert_eq!((state.term, state.vote), (7, 2));
+                    cells += 1;
+                }
+            }
+        }
+    }
+    assert_eq!(cells, cuts.len() * 16);
+    println!(
+        "recovery-only matrix: {} operation cuts, {cells} error/crash cells",
+        cuts.len()
+    );
+}

@@ -252,6 +252,21 @@ jobs:
             exit 1
           }
 
+      - name: Durable store lifecycle source controls
+        run: |
+          set -euo pipefail
+          python3 scripts/check-store-controls.py --output "$RUNNER_TEMP/store-controls" \
+            > "$RUNNER_TEMP/store-controls.log" 2>&1
+          cat "$RUNNER_TEMP/store-controls.log"
+          test "$(tail -1 "$RUNNER_TEMP/store-controls.log")" = 'PASS: 5 isolated store-lifecycle source controls checked'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: store-lifecycle-controls
+          path: |
+            ${{ runner.temp }}/store-controls.log
+            ${{ runner.temp }}/store-controls
+          if-no-files-found: error
       - name: Replica receive authority source controls
         run: |
           set -euo pipefail
