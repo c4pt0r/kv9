@@ -385,6 +385,31 @@ jobs:
           grep -Eq '^Ran 5 tests in [0-9.]+s$' "$RUNNER_TEMP/workload-progress.log"
           test "$(tail -1 "$RUNNER_TEMP/workload-progress.log")" = 'OK'
 
+      - name: Local membership routing controls
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p test_local_admin_client.py -v > "$RUNNER_TEMP/admin-routing.log" 2>&1
+          cat "$RUNNER_TEMP/admin-routing.log"
+          grep -Eq '^Ran 6 tests in [0-9.]+s$' "$RUNNER_TEMP/admin-routing.log"
+          test "$(tail -1 "$RUNNER_TEMP/admin-routing.log")" = 'OK'
+
+      - name: Membership refusal source controls
+        run: |
+          set -euo pipefail
+          python3 scripts/check-membership-controls.py --output "$RUNNER_TEMP/membership-controls" > "$RUNNER_TEMP/membership-controls.log" 2>&1
+          cat "$RUNNER_TEMP/membership-controls.log"
+          test "$(tail -1 "$RUNNER_TEMP/membership-controls.log")" = 'PASS: 4 isolated membership source controls checked'
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: membership-controls
+          path: |
+            ${{ runner.temp }}/membership-controls
+            ${{ runner.temp }}/membership-controls.log
+            ${{ runner.temp }}/admin-routing.log
+          if-no-files-found: error
+
       # Task #9 tripwires: four independent named steps. The two selftests
       # consume exact terminal markers so an rc=0 early exit cannot masquerade
       # as a successful instrument run.

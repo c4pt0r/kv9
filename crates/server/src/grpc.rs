@@ -289,7 +289,7 @@ pub fn admit_node_blocking(
             .admit_node(request)
             .await
             .map(Response::into_inner)
-            .map_err(|status| Error::Raft(format!("AdmitNode RPC: {status}")))
+            .map_err(|status| membership_rpc_error("AdmitNode", status))
     })
 }
 
@@ -315,8 +315,20 @@ pub fn promote_node_blocking(
             .promote_node(request)
             .await
             .map(Response::into_inner)
-            .map_err(|status| Error::Raft(format!("PromoteNode RPC: {status}")))
+            .map_err(|status| membership_rpc_error("PromoteNode", status))
     })
+}
+
+/// Only the exclusive wire refusal permits another membership attempt. In
+/// particular, prose, transport failures and mixed/duplicate control metadata
+/// cannot prove that a ticket or configuration change was never committed.
+fn membership_rpc_error(rpc: &str, status: Status) -> Error {
+    match crate::client::classify_status(&status, false) {
+        crate::client::Reason::NotLeader { leader } => Error::NotLeader {
+            leader: leader.map(NodeId),
+        },
+        _ => Error::Raft(format!("{rpc} RPC: {status}")),
+    }
 }
 
 /// Outcome of a raw client call, with not-leader kept as a *structured* case.
@@ -1537,6 +1549,7 @@ mod tests {
 
     #[derive(Default)]
     struct FakeBackend {
+        membership_hint: Option<NodeId>,
         raw_gate: Option<(
             tokio::sync::mpsc::UnboundedSender<()>,
             Mutex<std::sync::mpsc::Receiver<()>>,
@@ -1664,6 +1677,24 @@ mod tests {
     }
 
     impl AdminApi for FakeBackend {
+        fn admit_node(
+            &self,
+            _: &str,
+            _: NodeId,
+            _: &str,
+            _: u64,
+        ) -> Result<crate::api::MembershipChangeResult> {
+            Err(Error::NotLeader {
+                leader: self.membership_hint,
+            })
+        }
+
+        fn promote_node(&self, _: &str, _: NodeId) -> Result<crate::api::MembershipChangeResult> {
+            Err(Error::NotLeader {
+                leader: self.membership_hint,
+            })
+        }
+
         fn create_keyspace(
             &self,
             _: &str,
@@ -1800,6 +1831,105 @@ mod tests {
             txn_status_response(TxnStatus::RolledBack).decision,
             Some(Decision::RolledBack(proto::TxnRolledBack {}))
         );
+    }
+
+    #[test]
+    fn membership_refusal_rejects_ambiguous_wire_metadata() {
+        for rpc in ["AdmitNode", "PromoteNode"] {
+            let refused = || {
+                error_status(Error::NotLeader {
+                    leader: Some(NodeId(7)),
+                })
+            };
+            let mut duplicate = refused();
+            duplicate
+                .metadata_mut()
+                .append(NOT_LEADER_KEY, "true".parse().unwrap());
+            let mut mixed = refused();
+            mixed
+                .metadata_mut()
+                .insert(PARTIAL_WRITE_KEY, "true".parse().unwrap());
+            let mut malformed = refused();
+            malformed
+                .metadata_mut()
+                .insert(LEADER_HINT_KEY, "07".parse().unwrap());
+            let mut future = refused();
+            future
+                .metadata_mut()
+                .insert("kv9-future-result", "unknown".parse().unwrap());
+            for status in [
+                duplicate,
+                mixed,
+                malformed,
+                future,
+                Status::failed_precondition("not leader; try node 7"),
+                Status::unavailable("response was lost after commitment"),
+            ] {
+                assert!(
+                    matches!(membership_rpc_error(rpc, status), Error::Raft(_)),
+                    "ambiguous membership outcome was converted to a retryable refusal"
+                );
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn blocking_membership_clients_preserve_real_wire_refusals() {
+        for hint in [None, Some(NodeId(7))] {
+            let backend = Arc::new(FakeBackend {
+                membership_hint: hint,
+                ..Default::default()
+            });
+            let authenticator =
+                Arc::new(TokenAuthenticator::new([("wire-secret", "wire-client")]).unwrap());
+            let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let address = listener.local_addr().unwrap().to_string();
+            let (stop, stopped) = tokio::sync::oneshot::channel();
+            let server = tokio::spawn(
+                tonic::transport::Server::builder()
+                    .add_service(Kv9Grpc::new(backend).authenticated_service(authenticator))
+                    .serve_with_incoming_shutdown(
+                        tokio_stream::wrappers::TcpListenerStream::new(listener),
+                        async {
+                            let _ = stopped.await;
+                        },
+                    ),
+            );
+            tokio::task::spawn_blocking(move || {
+                for result in [
+                    admit_node_blocking(
+                        &address,
+                        "wire-secret",
+                        NodeId(4),
+                        "127.0.0.1:12345".into(),
+                        120,
+                    ),
+                    promote_node_blocking(&address, "wire-secret", NodeId(4)),
+                ] {
+                    assert!(
+                        matches!(result, Err(Error::NotLeader { leader }) if leader == hint),
+                        "membership wire refusal lost its typed leader hint: {result:?}"
+                    );
+                }
+                assert!(
+                    matches!(
+                        admit_node_blocking(
+                            &address,
+                            "bad-token",
+                            NodeId(4),
+                            "127.0.0.1:12345".into(),
+                            120
+                        ),
+                        Err(Error::Raft(_))
+                    ),
+                    "authentication failure cannot become a retryable refusal"
+                );
+            })
+            .await
+            .unwrap();
+            stop.send(()).unwrap();
+            server.await.unwrap().unwrap();
+        }
     }
 
     #[tokio::test]

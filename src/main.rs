@@ -814,6 +814,7 @@ fn run_admit_node(mut args: impl Iterator<Item = String>) -> ExitCode {
     };
     match admit_node_blocking(&addr, &token, node_id, node_addr.to_string(), ttl_seconds) {
         Ok(response) => print_membership_response(response),
+        Err(kv9_common::Error::NotLeader { leader }) => print_not_leader(leader),
         Err(error) => {
             eprintln!("client request failed: {error}");
             ExitCode::FAILURE
@@ -850,6 +851,7 @@ fn run_promote_node(mut args: impl Iterator<Item = String>) -> ExitCode {
     };
     match promote_node_blocking(&addr, &token, node_id) {
         Ok(response) => print_membership_response(response),
+        Err(kv9_common::Error::NotLeader { leader }) => print_not_leader(leader),
         Err(error) => {
             eprintln!("client request failed: {error}");
             ExitCode::FAILURE

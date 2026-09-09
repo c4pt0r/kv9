@@ -344,6 +344,7 @@ async fn admission_wire_case(max_requests: usize, max_encoded_bytes: usize, reas
     let (entered_tx, mut entered_rx) = tokio::sync::mpsc::unbounded_channel();
     let (release_tx, release_rx) = std::sync::mpsc::channel();
     let backend = Arc::new(FakeBackend {
+        membership_hint: None,
         callers: Mutex::new(Vec::new()),
         raw_gate: Some((entered_tx, Mutex::new(release_rx))),
     });
