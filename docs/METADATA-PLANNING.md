@@ -81,7 +81,7 @@ The following induction argument is parameterized by finite coordinator/request
 sets and any term budget. The committed-prefix, log/index shape, exact-receipt,
 planner-isolation, freshness and catalog-uniqueness
 parts now have [TLAPS proofs](../proofs/tlaps/README.md) importing this same model:
-41 declarations and 447 checked obligations. Conditional draining remains a
+41 declarations and 459 checked obligations. Conditional draining remains a
 written argument whose deductive mechanization is open. Full `TypeOK` bounds are
 also open. TLC's finite instances do not discharge those obligations.
 

@@ -40,7 +40,7 @@ jobs:
             --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/protocol-deduction" \
             > "$RUNNER_TEMP/protocol-deduction.log" 2>&1
           cat "$RUNNER_TEMP/protocol-deduction.log"
-          test "$(tail -1 "$RUNNER_TEMP/protocol-deduction.log")" = 'PASS: 41 TLAPS theorems; 447 proof obligations; 12 isolated controls; 3 output controls'
+          test "$(tail -1 "$RUNNER_TEMP/protocol-deduction.log")" = 'PASS: 41 TLAPS theorems; 459 proof obligations; 12 isolated controls; 3 output controls'
       - uses: actions/upload-artifact@v4
         if: always()
         with:

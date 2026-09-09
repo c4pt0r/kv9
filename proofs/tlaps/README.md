@@ -2,7 +2,7 @@
 
 These proofs import the same `MetadataPlanning.tla` used by TLC. They do not
 translate its transitions into a second state machine. The inventory contains
-41 theorem declarations and 447 checked proof obligations across nine modules.
+41 theorem declarations and 459 checked proof obligations across nine modules.
 
 | Module | Theorems | Obligations | Result |
 |---|---:|---:|---|
@@ -11,7 +11,7 @@ translate its transitions into a second state machine. The inventory contains
 | `MetadataPrefix` | 2 | 29 | Every transition preserves committed entries; the canonical TLA+ action property holds throughout every specified execution |
 | `MetadataReceipt` | 9 | 109 | Request field preservation, written-entry correlation and `Spec => []ReceiptSafety` |
 | `MetadataPlanningControl` | 2 | 28 | Per-host planner exclusion, planning-term bounds and current-term ownership |
-| `MetadataPlanningBarrier` | 2 | 50 | No later write before current-term submission; exact observed barriers remain in applied prefixes |
+| `MetadataPlanningBarrier` | 2 | 62 | No later write before current-term submission; exact observed barriers remain in applied prefixes |
 | `MetadataFreshness` | 8 | 69 | Equality of the local and retained write cuts; `Spec => []FreshPlans` |
 | `MetadataAllocation` | 3 | 35 | Checked natural induction, bounded maximum existence and the actual `LastWrite` choice |
 | `MetadataUniqueness` | 7 | 73 | Positive ordered write IDs, unique names and `Spec => [](LogSafety /\ CatalogSafety)` |
