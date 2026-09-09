@@ -1,0 +1,117 @@
+# Segmented engine WAL
+
+Tracking: #15 (S01), with the recovery/retention contract in #14 (C04).
+
+## Development status
+
+The first implementation supplies `WalSegment`: exclusively created files,
+checksummed stream/sequence/predecessor headers, atomic data/position frames,
+streaming recovery, active-tail repair, immutable closed descriptors and
+fail-stop append errors. It is a storage primitive; `WalEngine` still uses its
+existing single-file layout. No capacity or checkpoint-latency improvement is
+claimed until the stream owner and engine integration below are complete.
+
+Daily mainline implementation proceeds alongside the existing fault-environment
+closeout. Module regressions run locally as code changes. Deductive protocol
+proofs, modeled durability cuts and actual Chaos Mesh acceptance remain required
+before closing #15 or accepting P1 performance/capacity claims.
+
+## File and record contract
+
+A stream has a nonzero independently allocated 128-bit local identity. A segment
+has a positive sequence and the preceding stream's last exact applied position.
+Its 60-byte `KV9SEG01` header checksums identity, sequence, position presence,
+term/index and reserved bytes. Recovery compares it with the header selected by
+durable topology. A directory entry alone cannot grant recovery authority.
+
+Frames contain a 32-byte header (`KV9R`, payload length, position kind,
+reserved bytes, term/index and header CRC-32), the existing batch payload codec,
+then a CRC-32 binding the segment header and frame header (excluding their inner
+CRC fields) together with the payload. Including an inner CRC would erase its
+message's contribution through the CRC's fixed-residue property.
+Header integrity is checked before using the length. Complete malformed headers,
+payloads and nonmonotonic positions refuse
+the entire open. Only incomplete final frames of the selected active segment
+can be discarded. Closed segments require their exact sealed length, complete
+frames and matching summary. CRC and successful filesystem synchronization are
+explicit storage assumptions, not authentication or hardware guarantees.
+
+Each append fsyncs before updating the synchronized summary. I/O failure fences
+the writer. Sealing consumes that writer and yields a descriptor; publication
+of the descriptor is a separate stream-owner obligation. Streaming replay owns
+at most one encoded record plus the decoded batch at a time. The visitor must
+discard all unpublished recovery state on error. The existing 64 MiB record
+limit remains in force; the complete database still resides in memory.
+
+Applied indexes strictly increase; terms cannot decrease. Index gaps are legal.
+Unpositioned writes carry no watermark authority and pin their segment. A
+segment straddling a checkpoint stays intact until the checkpoint covers its
+last positioned record and every unpositioned write has separate migration
+authority. Neither an upload receipt nor a pending flush permits reclamation.
+
+## Stream-owner implementation path
+
+1. Publish a versioned, checksummed topology containing the stream identity,
+   active sequence, retained closed descriptors and exact checkpoint anchor.
+   The anchor binds the full checkpoint manifest digest/scope and exact
+   `(term,index)`. The existing Raft recovery checks must validate the cluster,
+   region and committed position before tail replay or deletion.
+2. Rotate under the append lock: synchronize the old segment, create/synchronize
+   the successor and namespace, then durably publish the topology transition.
+   Publish with temporary-file write, file fsync, rename and parent fsync. A
+   publication error fences the stream. An orphan successor never becomes
+   authoritative merely because it has the largest filename.
+3. Adopt an ordered-applied checkpoint by atomically publishing its anchor
+   together with the retained segment set. Preserve active and straddling
+   segments. Unlink only closed files no longer required by that durable
+   topology, then sync the namespace. Recovery may skip covered payloads only
+   through validated checkpoint authority; it must reject the same corruption
+   in an uncovered replayable record.
+4. Migrate the old layout without relying on one full-state WAL record. Stream
+   its records into unpublished segments, retain the original layout until
+   the new topology is durable, and install a format fence the old writer
+   refuses. Large unpositioned prefixes remain pinned until a verified full
+   checkpoint accounts for their effects. Migration must not fabricate an
+   applied position for individual unpositioned writes.
+5. Integrate this owner into `WalEngine`, replace checkpoint's O(tail) copy with
+   descriptor publication/unlink, and measure lock time, disk usage and recovery
+   across repeated write/flush cycles. Then run the complete proof, persistence
+   and actual fault-history acceptance. Engine WAL reclamation does not grant
+   Raft protocol-log truncation; S05 retains that separate scope.
+
+The stream topology is local replica durability metadata. It introduces no
+database coordinator and no additional service dependency. Required replicated
+checkpoint authority remains in the existing Raft group.
+
+## Log architecture decision
+
+Retain the present separate Raft protocol log and positioned engine WAL while
+implementing S01. The former owns votes, terms, membership and committed-log
+recovery; the latter atomically publishes applied data and its exact position.
+Segmenting engine storage removes tail copying without changing either role.
+
+The unified shared log described in DESIGN section 6.4 remains the target for
+multi-group batching. Adopting it requires a recoverable per-group index,
+group-aware retention/pins, commit/application ownership and an explicit format
+migration. Replacing two logs before those interfaces exist would transfer
+their obligations without implementing the required protocol. S01 must expose
+segment/position summaries that this later owner can use, while retaining
+independent truncation authority in the meantime. This decision does not
+complete C04's wider snapshot, backup and pending-history retention contract.
+
+## Local implementation checks
+
+The engine library passes 117 tests, including nine segment regressions:
+round-trip/position gaps and unpositioned pinning; every partial byte cut of an
+active frame with subsequent append; complete corruption and valid-checksum
+nonmonotonic positions; identity/predecessor refusal; rejected appends and
+visitor failures; position/payload swaps and cross-stream frame transplantation;
+valid-checksum malformed batches; actual write failure; and actual sync failure.
+Warnings-denied engine Clippy and rustdoc, formatting and diff checks pass.
+
+Independent review identified the need to bind payload, position and stream
+identity in one frame checksum. The first swap regression also exposed the
+fixed-residue mistake of including nested CRC fields. Both unpublished failed
+attempts are retained with the final passing logs. These module checks are not
+new Chaos Mesh or deductive-proof acceptance. The segment proof and stream
+publication/reclamation integration remain work in progress under #15.

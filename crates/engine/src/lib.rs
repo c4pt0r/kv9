@@ -15,6 +15,7 @@ pub mod sst;
 #[cfg(any(test, feature = "testing"))]
 pub mod testing;
 pub mod wal;
+pub mod wal_segment;
 pub mod wal_v2;
 pub mod write_batch;
 
