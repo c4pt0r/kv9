@@ -1,6 +1,6 @@
 # Persistent workload under Chaos Mesh
 
-The expanded 16-window matrix passed locally at
+The 16-window baseline passed locally at
 `8ed7dec7dc35f10fbecebe20f917e923f8d08c13` on 2026-09-09. Its independent
 checks accepted a 3,240-operation CLI Raw/catalog history and an 869-operation
 persistent-client history, including all three missing-log cells and all six
@@ -77,6 +77,7 @@ initial dataset before measuring; mutable-key traffic cannot modify its sentinel
 | Follower delay | Measured TCP delay while the fault remains injected |
 | Voter 1/2/3 × errno 5/28 | Actual Raft WRITE failure, fail-stop exit and recovery through a majority-acknowledged position |
 | Missing Active log, voter 1/2/3 | PodChaos kills the original owner; two fresh starts refuse the missing log; surviving voters serve; the original log restores the same store |
+| New PVC, voter 1/2/3 | PodChaos kills the original owner; a separately prepared PVC carrying the old root/store bundle refuses initialization and two actual starts; the original PVC restores service |
 
 Each common phase callback atomically changes the persistent Pod's phase file.
 It then waits for acknowledged Put and Get calls from **both** histories while
@@ -97,7 +98,7 @@ recovery facts.
 `check-persistent-chaos.py` first uses the independent whole-run verifier from
 `workload_report.py`: full terminal accounting, hashes, lifecycle/populations,
 logical/attempt histograms, initialization, sentinel and a legal history witness
-are mandatory. It then requires all 16 phase snapshots to contain positive
+are mandatory. It then requires all 19 phase snapshots to contain positive
 Put/Get progress. Each snapshot's reported success counts must be supported by
 actual terminal events at or before its monotonic cutoff. The fault resource
 must still be injected and not deleting, must target the owned database namespace
@@ -122,8 +123,29 @@ the before/after Pod and PVC identities, repeated child exits, stopped endpoint
 probes, retained log hashes, client phase times and recovery receipts. It also
 replays the complete KV/catalog history witness. Five evidence controls remove
 the victim, accept a startup, recreate the log, reuse a child PID, or restore
-different bytes; each must fail its specific check. A fresh replacement PVC is
-a separate remaining acceptance case under #42.
+different bytes; each must fail its specific check.
+
+`chaos-mesh-store-replacement.sh` then tests an independent replacement PVC for
+each initial voter. A provisioning Pod mounts the original PVC read-only and
+a newly created PVC writable on the same owned Kind node. The new directory
+mints its own Prepared incarnation. Even with the correct old bootstrap
+credential, `init` must refuse that incarnation before writing a root bundle
+or creating Raft state. The fixture next copies only the old root descriptor
+and store identity files, leaving the new lifecycle untouched, and mounts this
+PVC in the actual voter deployment. Two distinct child processes must refuse
+the mismatched prepared identity without opening Raft, publishing status or
+listening. Both histories and explicit surviving-majority receipts must show
+progress while the replacement remains refused. Switching back to the original
+PVC must recover its original identity and apply through the majority receipt.
+
+`check-store-replacement-chaos.py` verifies distinct PVC/PV UIDs, claim bindings
+and physical paths, independently decodes and checks lifecycle checksums, binds
+the copied bundle to the original bytes, and checks the actual init/process
+refusals and recovery evidence. Six controls reuse the old PVC or lifecycle,
+accept initialization or startup, remove the actual victim, or substitute a
+different bundle. This tests a newly prepared disk carrying a copied identity
+bundle; it does not claim to detect a complete bit-for-bit clone of a disk or
+provide hardware-bound identities. Address migration is a separate #42 task.
 
 The checker rejects three isolated corruptions of real artifacts: missing Put
 progress, a cutoff preceding the claimed completions, and an uninjected fault.
