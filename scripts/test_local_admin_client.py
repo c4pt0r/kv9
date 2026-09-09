@@ -8,7 +8,7 @@ import unittest
 
 
 class LocalAdminTests(unittest.TestCase):
-    def ready(self, status, dead=False, helper=None):
+    def ready(self, status, dead=False, helper=None, rejection=False):
         with tempfile.TemporaryDirectory(prefix='kv9-root-status.') as name:
             root = Path(name)
             (root / 'n1').mkdir()
@@ -26,8 +26,12 @@ if [[ "$2" == dead ]]; then
   node_pids[1]="$child"
 fi
 sed "s/CURRENT/${node_pids[1]}/g" "$artifact/template" > "$artifact/n1/status"
-node_serving 1
-''', 'root-status-test', str(root), 'dead' if dead else 'live'], capture_output=True, text=True)
+if [[ "$3" == rejected ]]; then
+  node_rejected 1 rejected_invalid_incarnation
+else
+  node_serving 1
+fi
+''', 'root-status-test', str(root), 'dead' if dead else 'live', 'rejected' if rejection else 'serving'], capture_output=True, text=True)
 
     def test_readiness_requires_the_current_live_child(self):
         status = 'pid=CURRENT\nbootstrap_state=Serving\nfatal=\n'
@@ -51,6 +55,33 @@ node_serving 1
         self.assertNotEqual(self.ready(stale, helper=source).returncode, 0)
         self.assertEqual(self.ready(stale, helper=source.replace(anchor, '')).returncode, 0)
         self.assertNotEqual(self.ready(stale, helper=source).returncode, 0)
+
+    def test_rejection_requires_positive_live_unauthorized_status(self):
+        status = ('pid=CURRENT\nbootstrap_state=Joining\nfatal=\nregistration_attempts=1\n'
+                  'registration_last=rejected_invalid_incarnation\n'
+                  'registration_last_walk=rejected_invalid_incarnation\n'
+                  'raft_receive_authorized=false\nraft_owner_started=false\nraft_committed=0\n')
+        self.assertEqual(self.ready(status, rejection=True).returncode, 0)
+        self.assertNotEqual(self.ready(status, dead=True, rejection=True).returncode, 0)
+        for line in status.splitlines(keepends=True):
+            with self.subTest(missing=line):
+                self.assertNotEqual(self.ready(status.replace(line, ''), rejection=True).returncode, 0)
+        for before, after in [('pid=CURRENT', 'pid=1'), ('Joining', 'Serving'), ('fatal=', 'fatal=panic'),
+                              ('registration_attempts=1', 'registration_attempts=0'),
+                              ('rejected_invalid_incarnation', 'rejected_invalid_ticket'),
+                              ('raft_receive_authorized=false', 'raft_receive_authorized=true'),
+                              ('raft_owner_started=false', 'raft_owner_started=true'),
+                              ('raft_committed=0', 'raft_committed=40')]:
+            with self.subTest(changed=before):
+                self.assertNotEqual(self.ready(status.replace(before, after), rejection=True).returncode, 0)
+        self.assertNotEqual(self.ready(status + 'raft_committed=0\n', rejection=True).returncode, 0)
+        source = Path(__file__).with_name('root_status.sh').read_text()
+        anchor = 'value["raft_receive_authorized"] == "false" &&'
+        self.assertEqual(source.count(anchor), 1)
+        invalid = status.replace('raft_receive_authorized=false', 'raft_receive_authorized=true')
+        self.assertNotEqual(self.ready(invalid, rejection=True, helper=source).returncode, 0)
+        self.assertEqual(self.ready(invalid, rejection=True, helper=source.replace(anchor, '')).returncode, 0)
+        self.assertNotEqual(self.ready(invalid, rejection=True, helper=source).returncode, 0)
 
     def call(self, command, responses):
         with tempfile.TemporaryDirectory(prefix='kv9-admin-routing.') as name:

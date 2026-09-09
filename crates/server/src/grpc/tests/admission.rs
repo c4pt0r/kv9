@@ -330,6 +330,9 @@ async fn admission_wire_case(max_requests: usize, max_encoded_bytes: usize, reas
     use kv9_raft::grpc::{self as raft, pb, GrpcDiscoveryState, RaftGrpcService};
     struct Discovery;
     impl GrpcDiscoveryState for Discovery {
+        fn raft_receive_allowed(&self) -> bool {
+            true
+        }
         fn answer(&self) -> (NodeId, bool, u64) {
             (NodeId(1), false, 19)
         }

@@ -191,6 +191,7 @@ enum RegistrationLastOutcome {
     Registered,
     NotLeader,
     RejectedInvalidTicket,
+    RejectedInvalidIncarnation,
     ConnectFailed,
     Timeout,
     Failed,
@@ -203,6 +204,7 @@ impl RegistrationLastOutcome {
             Self::Registered => "registered",
             Self::NotLeader => "not_leader",
             Self::RejectedInvalidTicket => "rejected_invalid_ticket",
+            Self::RejectedInvalidIncarnation => "rejected_invalid_incarnation",
             Self::ConnectFailed => "connect_failed",
             Self::Timeout => "timeout",
             Self::Failed => "failed",
@@ -256,6 +258,9 @@ impl RegistrationObservation {
         self.errors = self.errors.saturating_add(1);
         self.last = match error {
             RegisterError::InvalidTicket => RegistrationLastOutcome::RejectedInvalidTicket,
+            RegisterError::InvalidIncarnation => {
+                RegistrationLastOutcome::RejectedInvalidIncarnation
+            }
             RegisterError::Connect(_) => RegistrationLastOutcome::ConnectFailed,
             RegisterError::Timeout => RegistrationLastOutcome::Timeout,
             RegisterError::Failed(_) => RegistrationLastOutcome::Failed,
@@ -287,6 +292,7 @@ impl RegistrationObservation {
 enum WalkTerminal {
     Registered,
     RejectedInvalidTicket,
+    RejectedInvalidIncarnation,
     DeadlineExhausted,
     HopCapExhausted,
     HintCycle,
@@ -302,6 +308,7 @@ impl WalkTerminal {
         match self {
             Self::Registered => "registered",
             Self::RejectedInvalidTicket => "rejected_invalid_ticket",
+            Self::RejectedInvalidIncarnation => "rejected_invalid_incarnation",
             Self::DeadlineExhausted => "deadline_exhausted",
             Self::HopCapExhausted => "hop_cap_exhausted",
             Self::HintCycle => "hint_cycle",
@@ -332,6 +339,7 @@ enum WalkOutcome {
         via: (NodeId, std::net::SocketAddr),
     },
     InvalidTicket,
+    InvalidIncarnation,
     Unconfirmed(WalkTerminal),
 }
 
@@ -392,6 +400,7 @@ fn registration_walk(
         obs.last_walk = Some(terminal);
         match terminal {
             WalkTerminal::RejectedInvalidTicket => WalkOutcome::InvalidTicket,
+            WalkTerminal::RejectedInvalidIncarnation => WalkOutcome::InvalidIncarnation,
             other => WalkOutcome::Unconfirmed(other),
         }
     }
@@ -460,6 +469,9 @@ fn registration_walk(
                     RegisterError::InvalidTicket => {
                         return end(obs, WalkTerminal::RejectedInvalidTicket)
                     }
+                    RegisterError::InvalidIncarnation => {
+                        return end(obs, WalkTerminal::RejectedInvalidIncarnation)
+                    }
                     RegisterError::Connect(_) => last_error = Some(WalkTerminal::ConnectFailed),
                     RegisterError::Timeout => last_error = Some(WalkTerminal::Timeout),
                     RegisterError::Failed(_) => last_error = Some(WalkTerminal::Failed),
@@ -495,6 +507,8 @@ struct RuntimeDiscovery {
     node: NodeId,
     root: RootWireIdentity,
     initialized: AtomicBool,
+    /// Incarnation-scoped, monotonic permission. A new component starts closed.
+    raft_receive: AtomicBool,
     /// The bootstrap fingerprint — present ONLY until initialization:
     /// `set_cluster_id` takes it, so the post-init zero in answers comes
     /// from the value being GONE, not from a condition someone can delete
@@ -513,9 +527,14 @@ impl RuntimeDiscovery {
             node,
             root,
             initialized: AtomicBool::new(initialized),
+            raft_receive: AtomicBool::new(false),
             voter_fp: Mutex::new(if initialized { None } else { Some(voter_fp) }),
             cluster_id: Mutex::new(None),
         }
+    }
+
+    fn authorize_raft(&self) {
+        self.raft_receive.store(true, Ordering::Release);
     }
 
     fn set_cluster_id(&self, id: kv9_common::ClusterId) {
@@ -527,6 +546,10 @@ impl RuntimeDiscovery {
 }
 
 impl GrpcDiscoveryState for RuntimeDiscovery {
+    fn raft_receive_allowed(&self) -> bool {
+        self.raft_receive.load(Ordering::Acquire)
+    }
+
     fn answer(&self) -> (NodeId, bool, u64) {
         (
             self.node,
@@ -1184,11 +1207,6 @@ impl RegistrationBackend for RuntimeBackend {
         })?;
         let canonical = canonical_addr.to_string();
 
-        // The leader must know the new endpoint before proposing AddLearner;
-        // otherwise raft-rs emits catch-up traffic to an unknown peer and the
-        // registration receipt can never become locally observable there.
-        self.transport.register_peer(node, canonical_addr);
-
         // Serialize the catalog half across retries/revocation. Consuming an
         // admission and inserting a Joining node are one command; if the
         // later ConfChange loses leadership, a retry recognizes this durable
@@ -1204,6 +1222,25 @@ impl RegistrationBackend for RuntimeBackend {
                 .map_err(RegistrationError::Failed)?;
             kv9_meta::admission::admission(&txn, node).map_err(RegistrationError::Failed)?
         };
+        // A renewed ticket cannot authorize an empty disk to reuse an existing
+        // replica's durable-log identity. This also precedes endpoint changes.
+        {
+            let txn = self
+                .node
+                .meta_raft
+                .store
+                .begin()
+                .map_err(RegistrationError::Failed)?;
+            if let Some(row) = txn
+                .get(&NODES_DESC, &[memcmp_uint(node.0)])
+                .map_err(RegistrationError::Failed)?
+            {
+                if !matches!(row.value.get(ColumnId(5)), Some(ColumnValue::Bytes(bytes)) if bytes.as_slice() == store_incarnation.as_bytes())
+                {
+                    return Err(RegistrationError::InvalidIncarnation);
+                }
+            }
+        }
         match existing {
             Some(admission) if admission.state == kv9_meta::admission::AdmissionState::Consumed => {
                 if admission.cluster_id != cluster_id || admission.addr != canonical {
@@ -1225,9 +1262,7 @@ impl RegistrationBackend for RuntimeBackend {
                         _ => None,
                     });
                 if bound.as_deref() != Some(store_incarnation.as_bytes()) {
-                    return Err(RegistrationError::Failed(Error::Config(
-                        "registered node store incarnation does not match".into(),
-                    )));
+                    return Err(RegistrationError::InvalidIncarnation);
                 }
             }
             Some(admission) if admission.state == kv9_meta::admission::AdmissionState::Pending => {
@@ -1292,6 +1327,10 @@ impl RegistrationBackend for RuntimeBackend {
             }
         }
 
+        // Admission and incarnation checks have succeeded, including the
+        // durable consume on the new-member path. Routing must be installed
+        // before AddLearner, but must never change for a rejected caller.
+        self.transport.register_peer(node, canonical_addr);
         let status = self.driver.status();
         if !status.voters.contains(&node.0) && !status.learners.contains(&node.0) {
             let proposed = self
@@ -2114,6 +2153,30 @@ struct StartOverrides {
     listener: Option<std::net::TcpListener>,
 }
 
+/// The committed Active row and durable ConfState must name this exact store.
+/// A mismatched local binding is a recovery error, not a fresh admission.
+fn local_member_is_active(
+    node: &Node<WalEngine>,
+    driver: &NodeDriver<DiskRaftStorage, WalEngine>,
+    incarnation: StoreIncarnation,
+) -> Result<bool> {
+    let status = driver.status();
+    let txn = node.meta_raft.store.begin()?;
+    let Some(row) = txn.get(&NODES_DESC, &[memcmp_uint(node.id.0)])? else {
+        return Ok(false);
+    };
+    if !matches!(row.value.get(ColumnId(5)), Some(ColumnValue::Bytes(bytes)) if bytes.as_slice() == incarnation.as_bytes())
+    {
+        return Err(Error::Config(
+            "local registered store incarnation does not match durable store identity".into(),
+        ));
+    }
+    Ok(
+        (status.voters.contains(&node.id.0) || status.learners.contains(&node.id.0))
+            && matches!(row.value.get(ColumnId(3)), Some(ColumnValue::Uint(2))),
+    )
+}
+
 /// A running real-process metadata member.
 pub struct NodeRuntime {
     node: Arc<Node<WalEngine>>,
@@ -2413,7 +2476,19 @@ impl NodeRuntime {
             None => Arc::new(CatalogFenceAdjudicator::new(node.clone())),
         });
         let driver = NodeDriver::new(peer, transport.clone(), state_machine)?;
-        let driver_thread = Some(driver.spawn(TICK));
+        // Initial root voters retain the existing first-formation/stable-log
+        // contract. A dynamic member must carry an exact local incarnation
+        // binding or obtain its own registration receipt before Raft runs.
+        let recovered_member = joining
+            && local_identity.is_some()
+            && local_member_is_active(&node, &driver, store_identity.store_incarnation)?;
+        let authorized = !joining || recovered_member;
+        let driver_thread = if authorized {
+            discovery.authorize_raft();
+            Some(driver.spawn(TICK))
+        } else {
+            None
+        };
         let status_path = data_dir.join("status");
 
         let backend = Arc::new(RuntimeBackend {
@@ -3072,12 +3147,19 @@ impl NodeRuntime {
                         .expect("catchup capability slot poisoned") =
                         Some(CatchupCapability::from_receipt(&receipt));
                     self.registration_receipt = Some(receipt);
+                    // The sender catch-up capability and receipt are published
+                    // before opening ingress. Only this typed success starts
+                    // an owner for a previously unauthorized dynamic member.
+                    self.discovery.authorize_raft();
+                    if self.driver_thread.is_none() {
+                        self.driver_thread = Some(self.driver.spawn(TICK));
+                    }
                 }
                 // Recorded in the observation (typed) and the next run-loop
                 // pass retries; InvalidTicket keeps the loop alive only
                 // because a corrected ticket arrives via restart, and the
                 // status line must keep showing the rejection meanwhile.
-                WalkOutcome::InvalidTicket => {}
+                WalkOutcome::InvalidTicket | WalkOutcome::InvalidIncarnation => {}
                 WalkOutcome::Unconfirmed(reason) => {
                     // The walk's return value and the observation it filed
                     // must never disagree — status renders the observation.
@@ -3135,18 +3217,11 @@ impl NodeRuntime {
     }
 
     fn local_membership_is_active(&self) -> Result<bool> {
-        let status = self.driver.status();
-        if !status.voters.contains(&self.node.id.0) && !status.learners.contains(&self.node.id.0) {
-            return Ok(false);
-        }
-        let txn = self.node.meta_raft.store.begin()?;
-        let Some(row) = txn.get(&NODES_DESC, &[memcmp_uint(self.node.id.0)])? else {
-            return Ok(false);
-        };
-        Ok(matches!(
-            row.value.get(ColumnId(3)),
-            Some(ColumnValue::Uint(2))
-        ))
+        local_member_is_active(
+            &self.node,
+            &self.driver,
+            self.store_identity.store_incarnation,
+        )
     }
 
     fn verify_certified_root(&self) -> Result<()> {
@@ -3257,6 +3332,11 @@ impl NodeRuntime {
             raft.fatal.as_deref().unwrap_or(""),
         );
         body.push_str(&self.public_admission.snapshot().status_lines());
+        body.push_str(&format!(
+            "raft_receive_authorized={}\nraft_owner_started={}\n",
+            self.discovery.raft_receive_allowed(),
+            self.driver_thread.is_some(),
+        ));
         body.push_str(&self.metrics_exporter.status_lines());
         let tmp = self.data_dir.join("status.tmp");
         fs::write(&tmp, body)
@@ -6010,8 +6090,260 @@ mod tests {
              the leader's catalog endpoint"
         );
 
+        assert!(rts[4].discovery.raft_receive_allowed());
+        assert!(rts[4].driver_thread.is_some());
+        assert!(rts[4].local_membership_is_active().unwrap());
+        assert!(
+            local_member_is_active(
+                &rts[4].node,
+                &rts[4].driver,
+                StoreIncarnation::mint().unwrap()
+            )
+            .is_err(),
+            "a different store accepted the durable local membership binding"
+        );
+        let saved_identity = rts[4].store_identity;
+        drop(rts.pop().unwrap());
+        fs::remove_file(base.join("n5").join(kv9_meta::bootstrap::INIT_MARKER_FILE)).unwrap();
+        let recovered = NodeRuntime::start_core(
+            NodeId(5),
+            config_for(5),
+            auth(),
+            root.clone(),
+            saved_identity,
+            None,
+            StartOverrides::default(),
+        )
+        .unwrap();
+        assert!(
+            recovered.discovery.raft_receive_allowed(),
+            "durable member required a registration response"
+        );
+        assert!(
+            recovered.driver_thread.is_some(),
+            "durable member did not start its owner"
+        );
+        assert_eq!(recovered.registration_observation.attempts, 0);
+        assert!(recovered.registration_receipt.is_none());
+        rts.push(recovered);
+        wait_for(
+            &mut rts,
+            60,
+            "same-store recovery without marker or ticket",
+            |rts| rts[4].node.meta.lock().unwrap().bootstrap.is_serving(),
+        );
+        assert_eq!(
+            rts[4].registration_observation.attempts, 0,
+            "same-store recovery depended on a registration leader"
+        );
         drop(rts);
         let _ = fs::remove_dir_all(&base);
+    }
+
+    #[test]
+    fn fresh_joiner_rejects_stale_heartbeat_before_raft_owner_starts() {
+        use kv9_raft::grpc::pb;
+        use protobuf::Message as _;
+        let (rts, root, _, base) = serving_trio("receive-authority");
+        let listener = bound_listener_for_e2e();
+        let addr = listener.local_addr().unwrap();
+        let joiner = NodeRuntime::start_core(
+            NodeId(4),
+            Config {
+                addr: addr.to_string(),
+                data_dir: base.join("n4").to_string_lossy().into_owned(),
+                join: Vec::new(),
+                wal_streams: 1,
+                replication_factor: 3,
+            },
+            RuntimeAuth {
+                cluster_token: "establishing-read-cluster-token".into(),
+                client_tokens: vec![("acceptance".into(), "establishing-read-token".into())],
+            },
+            root.clone(),
+            StoreIdentity::for_joiner(&root, NodeId(4), StoreIncarnation::mint().unwrap()).unwrap(),
+            None,
+            StartOverrides {
+                listener: Some(listener),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        assert!(joiner.driver_thread.is_none(), "unregistered owner started");
+        assert!(
+            !joiner.discovery.raft_receive_allowed(),
+            "unregistered receive authority granted"
+        );
+        let heartbeat = raft::eraftpb::Message {
+            from: 1,
+            to: 4,
+            term: 2,
+            commit: 40,
+            msg_type: raft::eraftpb::MessageType::MsgHeartbeat,
+            ..Default::default()
+        };
+        let status = joiner.grpc_runtime.block_on(async {
+            let mut client = pb::kv9_raft_client::Kv9RaftClient::connect(format!("http://{addr}"))
+                .await
+                .unwrap();
+            let mut request = tonic::Request::new(tokio_stream::iter(vec![pb::BatchRaftMessage {
+                msgs: vec![pb::RaftEnvelope {
+                    from_node: 1,
+                    to_node: 4,
+                    raft_message: heartbeat.write_to_bytes().unwrap(),
+                    ..Default::default()
+                }],
+                root_digest: root.digest().as_bytes().to_vec(),
+                ..Default::default()
+            }]));
+            request.metadata_mut().insert(
+                CLUSTER_TOKEN_KEY,
+                "establishing-read-cluster-token".parse().unwrap(),
+            );
+            request
+                .metadata_mut()
+                .insert(NODE_ID_KEY, "1".parse().unwrap());
+            client
+                .batch_raft(request)
+                .await
+                .expect_err("stale heartbeat entered an unauthorized replica")
+        });
+        assert_eq!(status.code(), tonic::Code::FailedPrecondition);
+        assert_eq!(
+            status.message(),
+            "local replica has no Raft receive authority"
+        );
+        assert!(
+            joiner.transport.drain().is_empty(),
+            "stale heartbeat reached the Raft inbox"
+        );
+        assert_eq!(joiner.driver.status().raft_committed, 0);
+        assert!(joiner.driver_thread.is_none());
+        drop(joiner);
+        drop(rts);
+        fs::remove_dir_all(base).unwrap();
+    }
+
+    #[test]
+    fn registration_refusals_preserve_routes_and_renewed_tickets_cannot_rebind() {
+        let (rts, root, _, base) = serving_trio("registration-binding");
+        let leader = cluster_leader(&rts).unwrap();
+        let backend = backend_view(&rts[leader], &root);
+        let member = NodeId(4);
+        let listener = bound_listener_for_e2e();
+        let addr = listener.local_addr().unwrap();
+        let original = StoreIncarnation::mint().unwrap();
+        let replacement = StoreIncarnation::mint().unwrap();
+        let admission = backend
+            .admit_node("acceptance", member, &addr.to_string(), 600)
+            .unwrap();
+        let ticket = RootDigest::sha256(admission.join_ticket.unwrap().as_bytes());
+        assert_eq!(rts[leader].transport.peer_address_for_tests(member), None);
+        assert!(matches!(
+            backend.register(
+                member,
+                &addr.to_string(),
+                root.cluster_id,
+                &[0; 32],
+                original
+            ),
+            Err(RegistrationError::InvalidTicket)
+        ));
+        assert_eq!(
+            rts[leader].transport.peer_address_for_tests(member),
+            None,
+            "invalid ticket installed a transport route"
+        );
+        let receipt = backend
+            .register(
+                member,
+                &addr.to_string(),
+                root.cluster_id,
+                ticket.as_bytes(),
+                original,
+            )
+            .unwrap();
+        assert!(receipt.applied_index > 0);
+        assert_eq!(
+            rts[leader].transport.peer_address_for_tests(member),
+            Some(addr)
+        );
+        let changed_addr = bound_listener_for_e2e().local_addr().unwrap();
+        assert!(matches!(
+            backend.register(
+                member,
+                &changed_addr.to_string(),
+                root.cluster_id,
+                ticket.as_bytes(),
+                replacement
+            ),
+            Err(RegistrationError::InvalidIncarnation)
+        ));
+        assert_eq!(
+            rts[leader].transport.peer_address_for_tests(member),
+            Some(addr),
+            "replacement incarnation changed an existing transport route"
+        );
+        // A replicated revocation and a new valid ticket do not erase the
+        // immutable binding retained in NODES for this numeric replica id.
+        {
+            let _guard = backend.node.meta_raft.lock_catalog_txn();
+            let term = backend.prepare_catalog().unwrap();
+            let mut txn = backend.node.meta_raft.store.begin().unwrap();
+            kv9_meta::admission::revoke_admission(&mut txn, member).unwrap();
+            backend
+                .commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()), term)
+                .unwrap();
+        }
+        let renewed = backend
+            .admit_node("acceptance", member, &changed_addr.to_string(), 600)
+            .unwrap();
+        let renewed_ticket = RootDigest::sha256(renewed.join_ticket.unwrap().as_bytes());
+        assert!(
+            matches!(
+                backend.register(
+                    member,
+                    &changed_addr.to_string(),
+                    root.cluster_id,
+                    renewed_ticket.as_bytes(),
+                    replacement
+                ),
+                Err(RegistrationError::InvalidIncarnation)
+            ),
+            "a renewed ticket rebound an existing replica to an empty store"
+        );
+        assert_eq!(
+            rts[leader].transport.peer_address_for_tests(member),
+            Some(addr)
+        );
+        let txn = backend.node.meta_raft.store.begin().unwrap();
+        assert_eq!(
+            kv9_meta::admission::admission(&txn, member)
+                .unwrap()
+                .unwrap()
+                .state,
+            kv9_meta::admission::AdmissionState::Pending,
+            "rejected replacement consumed the renewed ticket"
+        );
+        drop(txn);
+        // The original store can complete the same new admission, including
+        // its new canonical address. Rejecting every renewed ticket is wrong.
+        backend
+            .register(
+                member,
+                &changed_addr.to_string(),
+                root.cluster_id,
+                renewed_ticket.as_bytes(),
+                original,
+            )
+            .unwrap();
+        assert_eq!(
+            rts[leader].transport.peer_address_for_tests(member),
+            Some(changed_addr)
+        );
+        drop(backend);
+        drop(rts);
+        fs::remove_dir_all(base).unwrap();
     }
 
     /// A Serving 3-voter cluster over real disks and real gRPC — the same

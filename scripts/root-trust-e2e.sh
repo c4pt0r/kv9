@@ -185,10 +185,9 @@ KV9_JOIN_TICKET="$ticket" "$bin" join --root "$root" --node-id 4 \
 KV9_JOIN_TICKET="$(printf '0%.0s' $(seq 1 64))" "$bin" start --node-id 4 \
   --addr "127.0.0.1:$((base+4))" --data-dir "$artifact/n4" >"$artifact/n4.wrong-ticket.log" 2>&1 &
 wrong_pid=$!; node_pids[4]=$wrong_pid; pids="$pids $wrong_pid"
-sleep 2
-[ "$(status_value 4 bootstrap_state 2>/dev/null || true)" != Serving ] || {
-  echo "FAIL: wrong join ticket reached Serving" >&2; exit 1;
-}
+wait_until 'live node rejected the wrong join ticket before Raft participation' \
+  node_rejected 4 rejected_invalid_ticket
+cp "$artifact/n4/status" "$artifact/wrong-ticket-rejected.status"
 kill "$wrong_pid" 2>/dev/null || true
 wait "$wrong_pid" 2>/dev/null || true
 
@@ -213,10 +212,9 @@ KV9_JOIN_TICKET="$ticket" "$bin" join --root "$root" --node-id 4 \
 KV9_JOIN_TICKET="$ticket" "$bin" start --node-id 4 --addr "127.0.0.1:$((base+4))" \
   --data-dir "$artifact/n4" >"$artifact/n4-replacement.log" 2>&1 &
 replacement_pid=$!; node_pids[4]=$replacement_pid; pids="$pids $replacement_pid"
-sleep 2
-[ "$(status_value 4 bootstrap_state 2>/dev/null || true)" != Serving ] || {
-  echo "FAIL: replacement store reused a consumed node identity" >&2; exit 1;
-}
+wait_until 'live replacement rejected the registered store incarnation before Raft participation' \
+  node_rejected 4 rejected_invalid_incarnation
+cp "$artifact/n4/status" "$artifact/replacement-rejected.status"
 kill "$replacement_pid" 2>/dev/null || true
 wait "$replacement_pid" 2>/dev/null || true
 mv "$artifact/n4" "$artifact/n4-replacement"
