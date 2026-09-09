@@ -215,6 +215,22 @@ jobs:
             exit 1
           }
 
+      - name: Read admission source controls
+        run: |
+          set -euo pipefail
+          python3 scripts/check-read-admission-controls.py --output "$RUNNER_TEMP/read-admission-controls" \
+            > "$RUNNER_TEMP/read-admission-controls.log" 2>&1
+          cat "$RUNNER_TEMP/read-admission-controls.log"
+          test "$(tail -1 "$RUNNER_TEMP/read-admission-controls.log")" = 'PASS: 6 isolated read admission source controls checked'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: read-admission-controls
+          path: |
+            ${{ runner.temp }}/read-admission-controls.log
+            ${{ runner.temp }}/read-admission-controls
+          if-no-files-found: error
+
       - name: Catalog endpoint CAS source controls
         run: |
           set -euo pipefail

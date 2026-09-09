@@ -1496,14 +1496,16 @@ mod tests {
     ) {
         let svc = RaftGrpcService::new(me, inbox, Arc::new(StaticDiscovery(me, false, fp)));
         handle.spawn(async move {
-            tonic::transport::Server::builder()
+            if let Err(error) = tonic::transport::Server::builder()
                 .add_service(Kv9RaftServer::with_interceptor(
                     svc,
                     cluster_token_interceptor("test-cluster-token".into()),
                 ))
                 .serve(addr)
                 .await
-                .ok();
+            {
+                eprintln!("Raft test listener {me:?} at {addr} failed: {error}");
+            }
         });
     }
 
@@ -2493,12 +2495,16 @@ mod tests {
         };
         let at = drivers[leader_idx].propose(&cmd).unwrap();
         for d in &drivers {
+            let result = d.wait_applied(at, Duration::from_secs(20));
             assert!(
-                matches!(
-                    d.wait_applied(at, Duration::from_secs(20)).unwrap(),
-                    crate::driver::ApplyWaitOutcome::Applied(_)
-                ),
-                "exact (term,index) must apply on every node over gRPC"
+                matches!(&result, Ok(crate::driver::ApplyWaitOutcome::Applied(_))),
+                "exact (term,index) must apply on every node over gRPC; waiting={:?}, \
+                 proposal={at:?}, result={result:?}, addresses={addrs:?}, statuses={:?}",
+                d.status().node_id,
+                drivers
+                    .iter()
+                    .map(|driver| driver.status())
+                    .collect::<Vec<_>>()
             );
             assert_eq!(
                 d.get(kv9_engine::ColumnFamily::Default, b"grpc").unwrap(),

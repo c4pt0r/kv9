@@ -828,15 +828,28 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         let mut rctx = Vec::with_capacity(24);
         rctx.extend_from_slice(&self.read_incarnation);
         rctx.extend_from_slice(&seq.to_be_bytes());
-        if let Err(e) = self.peer.read_index(rctx.clone()) {
-            return Err(match e {
+        // A new leader can be observable before its election no-op commits.
+        // Retain this invocation's context until raft-rs can admit it. Never
+        // reset the request deadline or treat readiness as quorum confirmation.
+        loop {
+            let submitted = self.peer.read_index(rctx.clone()).map_err(|e| match e {
                 Error::NotLeader { leader } => ReadIndexError::NotLeader { hint: leader },
                 other => ReadIndexError::Failed(other),
-            });
-        }
-        #[cfg(test)]
-        if let Some(observer) = self.read_attempt_observer.lock().unwrap().as_ref() {
-            let _ = observer.send(());
+            })?;
+            #[cfg(test)]
+            if let Some(observer) = self.read_attempt_observer.lock().unwrap().as_ref() {
+                let _ = observer.send(());
+            }
+            if submitted {
+                break;
+            }
+            if start.elapsed() > deadline {
+                return Err(ReadIndexError::Unconfirmed {
+                    phase: BarrierPhase::QuorumConfirmation,
+                    waited: start.elapsed(),
+                });
+            }
+            std::thread::sleep(Duration::from_millis(1));
         }
         // 3. Wait for the quorum confirmation correlated by EXACT context.
         let confirmed = loop {
@@ -2487,8 +2500,7 @@ mod tests {
     /// Freeze a real election immediately after the winning vote, before
     /// followers can acknowledge its no-op. Observe the completed request
     /// attempt before permitting any further Raft delivery.
-    #[test]
-    fn read_barrier_survives_submission_before_current_term_commit() {
+    fn drivers_before_current_term_commit() -> Vec<Arc<NodeDriver>> {
         let hub = InProcHub::new();
         let ids = [NodeId(1), NodeId(2), NodeId(3)];
         let drivers: Vec<_> = ids
@@ -2514,7 +2526,12 @@ mod tests {
         assert_eq!(drivers[0].status().role, Role::Leader);
         assert_eq!(drivers[0].status().raft_committed, 0);
         assert_eq!(drivers[0].driver_applied(), None);
+        drivers
+    }
 
+    #[test]
+    fn read_barrier_survives_submission_before_current_term_commit() {
+        let drivers = drivers_before_current_term_commit();
         let (attempt_tx, attempt_rx) = std::sync::mpsc::channel();
         *drivers[0].read_attempt_observer.lock().unwrap() = Some(attempt_tx);
         let reader = Arc::clone(&drivers[0]);
@@ -2541,6 +2558,60 @@ mod tests {
             .expect("read submitted before election barrier was lost after quorum recovered");
         assert_eq!(barrier.index(), 1);
         assert_eq!(drivers[0].read_barriers_minted(), 1);
+    }
+
+    #[test]
+    fn deferred_read_admission_respects_the_original_deadline() {
+        let drivers = drivers_before_current_term_commit();
+        let reader = Arc::clone(&drivers[0]);
+        let (done_tx, done_rx) = std::sync::mpsc::channel();
+        let read = std::thread::spawn(move || {
+            let result = reader.read_barrier(Duration::from_millis(30));
+            let _ = done_tx.send(result);
+        });
+        let result = done_rx
+            .recv_timeout(Duration::from_secs(1))
+            .expect("deferred admission exceeded the original request budget");
+        read.join().unwrap();
+        assert!(
+            matches!(
+                result,
+                Err(ReadIndexError::Unconfirmed {
+                    phase: BarrierPhase::QuorumConfirmation,
+                    ..
+                })
+            ),
+            "uncommitted term must refuse the read with a quorum deadline: {result:?}"
+        );
+        assert_eq!(drivers[0].status().raft_committed, 0);
+        assert_eq!(drivers[0].read_barriers_minted(), 1);
+    }
+
+    #[test]
+    fn deferred_read_admission_refuses_a_deposed_leader() {
+        let drivers = drivers_before_current_term_commit();
+        let (attempt_tx, attempt_rx) = std::sync::mpsc::channel();
+        *drivers[0].read_attempt_observer.lock().unwrap() = Some(attempt_tx);
+        let reader = Arc::clone(&drivers[0]);
+        let read = std::thread::spawn(move || reader.read_barrier(Duration::from_millis(200)));
+        attempt_rx.recv_timeout(Duration::from_secs(1)).unwrap();
+        let mut heartbeat = raft::prelude::Message::default();
+        heartbeat.set_msg_type(raft::prelude::MessageType::MsgHeartbeat);
+        heartbeat.from = 2;
+        heartbeat.to = 1;
+        heartbeat.term = drivers[0].status().term + 1;
+        drivers[0].peer().step_message(heartbeat);
+        assert_eq!(drivers[0].status().role, Role::Follower);
+        let result = read.join().unwrap();
+        assert!(
+            matches!(
+                result,
+                Err(ReadIndexError::NotLeader {
+                    hint: Some(NodeId(2))
+                })
+            ),
+            "deferred admission ignored loss of leadership: {result:?}"
+        );
     }
 
     /// A follower answers with the TYPED NotLeader + hint — never a barrier,

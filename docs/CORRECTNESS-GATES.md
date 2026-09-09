@@ -50,6 +50,12 @@ schedules, three isolated faults and two reachability witnesses. The combined
 TLAPS inventory has 47 theorem declarations and 534 obligations. These results
 do not establish upstream consensus, term/vote identity or composition with Rust.
 
+The ReadIndex admission protocol is recorded in [READ-ADMISSION.md](READ-ADMISSION.md).
+It checks the leader/current-term admission handshake, preserved request context
+and budget, exact receipt/application prerequisites and conditional progress. Its
+upstream Raft and refinement assumptions remain explicit; the separate gRPC apply
+timeout under #48 is not closed by this protocol proof.
+
 ## Chaos Mesh E2E is mandatory
 
 Run actual Chaos Mesh resources against dedicated kv9 workloads in an explicitly
