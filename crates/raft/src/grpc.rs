@@ -1494,6 +1494,35 @@ mod tests {
         inbox: mpsc::UnboundedSender<Message>,
         fp: u64,
     ) {
+        let listener = std::net::TcpListener::bind(addr)
+            .unwrap_or_else(|error| panic!("Raft test listener {me:?} at {addr} failed: {error}"));
+        serve_reserved(handle, me, listener, inbox, fp);
+    }
+
+    /// Own each cluster endpoint continuously from allocation to tonic's
+    /// accept loop. Returning only a port number permits another test to
+    /// claim it before the asynchronous server starts.
+    fn cluster_listeners(count: usize) -> Vec<std::net::TcpListener> {
+        (0..count)
+            .map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap())
+            .collect()
+    }
+
+    fn serve_reserved(
+        handle: &tokio::runtime::Handle,
+        me: NodeId,
+        listener: std::net::TcpListener,
+        inbox: mpsc::UnboundedSender<Message>,
+        fp: u64,
+    ) {
+        let addr = listener.local_addr().unwrap();
+        listener.set_nonblocking(true).unwrap();
+        let incoming = {
+            let _entered = handle.enter();
+            tokio_stream::wrappers::TcpListenerStream::new(
+                tokio::net::TcpListener::from_std(listener).unwrap(),
+            )
+        };
         let svc = RaftGrpcService::new(me, inbox, Arc::new(StaticDiscovery(me, false, fp)));
         handle.spawn(async move {
             if let Err(error) = tonic::transport::Server::builder()
@@ -1501,10 +1530,62 @@ mod tests {
                     svc,
                     cluster_token_interceptor("test-cluster-token".into()),
                 ))
-                .serve(addr)
+                .serve_with_incoming(incoming)
                 .await
             {
                 eprintln!("Raft test listener {me:?} at {addr} failed: {error}");
+            }
+        });
+    }
+
+    #[test]
+    fn cluster_listener_handoff_keeps_endpoints_reserved_before_async_poll() {
+        // This runtime cannot poll a server until block_on below. Contenders
+        // run at the exact allocation and asynchronous-handoff boundaries.
+        let rt = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        let listeners = cluster_listeners(3);
+        let addrs: Vec<_> = listeners.iter().map(|l| l.local_addr().unwrap()).collect();
+        assert_eq!(
+            addrs.iter().collect::<std::collections::HashSet<_>>().len(),
+            3
+        );
+        let check_reserved = |stage: &str| {
+            for addr in &addrs {
+                let contender = std::net::TcpListener::bind(addr);
+                assert!(
+                    matches!(contender, Err(ref error) if error.kind() == std::io::ErrorKind::AddrInUse),
+                    "cluster endpoint reservation lost {stage}: {addr}: {contender:?}"
+                );
+            }
+        };
+        check_reserved("after allocation");
+        for (index, listener) in listeners.into_iter().enumerate() {
+            let (tx, _rx) = mpsc::unbounded_channel();
+            serve_reserved(rt.handle(), NodeId(index as u64 + 1), listener, tx, 42);
+        }
+        check_reserved("after handoff before polling");
+        rt.block_on(async {
+            for (index, addr) in addrs.into_iter().enumerate() {
+                let response = tokio::time::timeout(Duration::from_secs(2), async {
+                    let mut client = Kv9RaftClient::connect(format!("http://{addr}"))
+                        .await
+                        .unwrap();
+                    let mut request = Request::new(pb::DiscoverRequest {
+                        from_node: 9,
+                        voter_fingerprint: 42,
+                        bootstrap_generation: test_root().bootstrap_generation.as_bytes().to_vec(),
+                        root_digest: test_root().root_digest.as_bytes().to_vec(),
+                    });
+                    attach_auth(&mut request, &Some("test-cluster-token".into()), NodeId(9));
+                    client.discover(request).await.unwrap().into_inner()
+                })
+                .await
+                .expect("the reserved listener did not become a working gRPC endpoint");
+                assert_eq!(response.node_id, index as u64 + 1);
+                assert_eq!(response.voter_fingerprint, 42);
             }
         });
     }
@@ -2221,11 +2302,12 @@ mod tests {
         let handle = rt.handle().clone();
         let region = RegionId(1);
         let ids = [NodeId(1), NodeId(2), NodeId(3)];
-        let addrs: Vec<SocketAddr> = ids.iter().map(|_| free_addr()).collect();
+        let listeners = cluster_listeners(ids.len());
+        let addrs: Vec<_> = listeners.iter().map(|l| l.local_addr().unwrap()).collect();
 
         let mut transports: Vec<Arc<GrpcTransport>> = Vec::new();
         let mut drivers = Vec::new();
-        for (i, &id) in ids.iter().enumerate() {
+        for (&id, listener) in ids.iter().zip(listeners) {
             let transport = GrpcTransport::new(
                 id,
                 Some("test-cluster-token".into()),
@@ -2237,7 +2319,7 @@ mod tests {
                     transport.register_peer(peer, addrs[j]);
                 }
             }
-            serve(&handle, id, addrs[i], transport.inbox_sender(), 42);
+            serve_reserved(&handle, id, listener, transport.inbox_sender(), 42);
             transports.push(Arc::clone(&transport));
             let peer = Arc::new(RaftPeer::new(id, region, &ids).unwrap());
             drivers.push(
@@ -2249,7 +2331,6 @@ mod tests {
                 .expect("drain token minted once per peer"),
             );
         }
-        std::thread::sleep(Duration::from_millis(100));
         let _handles: Vec<_> = drivers
             .iter()
             .map(|d| d.spawn(Duration::from_millis(10)))
@@ -2445,10 +2526,19 @@ mod tests {
         let handle = rt.handle().clone();
         let region = RegionId(1);
         let ids = [NodeId(1), NodeId(2), NodeId(3)];
-        let addrs: Vec<SocketAddr> = ids.iter().map(|_| free_addr()).collect();
+        let listeners = cluster_listeners(ids.len());
+        let addrs: Vec<_> = listeners.iter().map(|l| l.local_addr().unwrap()).collect();
+
+        // An unrelated concurrent listener must not be able to steal a
+        // fixture's advertised endpoint before its server starts polling.
+        let competing_listener = std::net::TcpListener::bind(addrs[2]);
+        assert!(
+            matches!(competing_listener, Err(ref error) if error.kind() == std::io::ErrorKind::AddrInUse),
+            "cluster fixture released a voter endpoint before serving: {competing_listener:?}"
+        );
 
         let mut drivers = Vec::new();
-        for (i, &id) in ids.iter().enumerate() {
+        for (&id, listener) in ids.iter().zip(listeners) {
             let transport = GrpcTransport::new(
                 id,
                 Some("test-cluster-token".into()),
@@ -2460,7 +2550,7 @@ mod tests {
                     transport.register_peer(peer, addrs[j]);
                 }
             }
-            serve(&handle, id, addrs[i], transport.inbox_sender(), 42);
+            serve_reserved(&handle, id, listener, transport.inbox_sender(), 42);
             let peer = Arc::new(RaftPeer::new(id, region, &ids).unwrap());
             drivers.push(
                 NodeDriver::new(
@@ -2471,8 +2561,7 @@ mod tests {
                 .expect("drain token minted once per peer"),
             );
         }
-        // Give the listeners a beat to come up, then run production cadence.
-        std::thread::sleep(Duration::from_millis(100));
+        // The listener sockets are already bound; run production cadence.
         let handles: Vec<_> = drivers
             .iter()
             .map(|d| d.spawn(Duration::from_millis(10)))
