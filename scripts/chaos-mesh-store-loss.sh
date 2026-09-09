@@ -14,6 +14,15 @@ loss_stopped() {
     'test ! -f /tmp/kv9-loss.pid && test -f /tmp/kv9-loss.exit' 2>/dev/null
 }
 
+loss_owner_released() {
+  # Pod API deletion may precede process exit. On an already prepared Active
+  # store this real CLI command only locks, reads and returns its existing
+  # record. A successful lock acquisition fences any lingering original owner.
+  k exec -n "$namespace" "$loss_pod" -- /usr/local/bin/kv9 store-prepare \
+    --node-id "$victim" --data-dir /data >"$loss_scene/owner-release.prepare" \
+    2>"$loss_scene/owner-release.err"
+}
+
 loss_replaced() {
   local uid pod
   uid="$(pod_uid "$victim")" || return 1
@@ -126,6 +135,8 @@ YAML
     wait_injected podchaos store-loss-kill
     k get podchaos store-loss-kill -n "$namespace" -o json >"$loss_scene/podchaos.json"
     loss_pod="$(pod_for "$victim")"
+    wait_until "original owner releases its exclusive store lock" 30 loss_owner_released
+    date --iso-8601=ns >"$loss_scene/owner-release-at.txt"
     loss_capture held
     # The old owner is gone and the replacement cannot open the data. Save
     # the exact stopped log; never rename a live file behind an open handle.
