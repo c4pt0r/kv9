@@ -6,9 +6,10 @@ RawGet and RawDelete. It uses the existing public protocol and preserves quorum
 reads and exact positive (term,index) write receipts. The existing synchronous
 RawClient and CLI remain available.
 
-This increment is the client foundation. The workload executable, complete
-history recorder, persistent-client Chaos Mesh matrix and measurement reports
-are still required by #40. A connection-reuse test is not throughput evidence.
+The bounded recorder and deterministic workload components are documented in
+[WORKLOAD-CORE.md](WORKLOAD-CORE.md). The workload executable, persistent-client
+Chaos Mesh matrix and measurement reports are still required by #40.
+A connection-reuse test is not throughput evidence.
 
 ## Configuration and bounds
 
@@ -163,11 +164,13 @@ malformed receipts/refusals, admission and capacity outcomes, and a shared logic
 deadline. The response-loss fixture makes v0 visible while withholding its reply,
 then a separate client reads v0 and writes v1; the original reports unknown
 without replaying v0. This stateful test uses a scripted server and is not a claim
-of Raft/MinIO durability. The independent complete-history witness and real
-Chaos Mesh workload remain outstanding acceptance work in #40.
+of Raft/MinIO durability. The additional retained complete-history fixture runs
+both the correct and unsafe-retry clients through the independent checker:
+the former is valid and the latter has no legal execution. Real Chaos Mesh
+workload integration remains outstanding acceptance work in #40.
 
 Three isolated Rust mutations must compile, select exactly one test, fail the
 specified behavioral assertion, and pass again after exact source restoration.
 Constructor counting, zero tests, compilation failures and unrelated failures
-cannot satisfy the gate. Complete workload terminal accounting needs its own
-additional control when the recorder is implemented.
+cannot satisfy the gate. The recorder adds separate controls for missing terminal
+accounting and missing serialized terminal records; see WORKLOAD-CORE.md.

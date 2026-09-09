@@ -12,6 +12,7 @@ pub mod grpc;
 pub mod node;
 pub mod routing;
 pub mod runtime;
+pub mod workload;
 
 pub use api::{
     AdminApi, AppliedPosition, ClusterInfo, CreateKeyspaceResult, RawApi, RegionLocation,

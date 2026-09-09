@@ -477,6 +477,90 @@ async fn logical_deadline_is_not_reset_by_refusals() {
     server.stop().await;
 }
 
+/// Invoked by the independent history gate with a new output directory. Both
+/// the correct client and the unsafe retry mutant must finish this fixture;
+/// the independent checker, rather than an expected-value assertion here,
+/// decides whether the retained public history admits a legal execution.
+#[tokio::test]
+#[ignore = "requires an isolated output path and independent history verification"]
+async fn persistent_response_loss_history_fixture() {
+    use crate::workload::{Mix, Mode, Recorder, WorkloadConfig};
+    let output = std::path::PathBuf::from(
+        std::env::var("KV9_WORKLOAD_HISTORY_FIXTURE").expect("fixture output path required"),
+    );
+    assert!(output.is_dir());
+    let server = Server::new().await;
+    let configuration = WorkloadConfig {
+        version: 1,
+        client: config(&[server.address]),
+        mode: Mode::Correctness,
+        run_id: "response-loss-fixture".into(),
+        keyspace_name: "fixture-fresh".into(),
+        seed: 40,
+        workers: 2,
+        keys: 1,
+        value_bytes: 16,
+        mix: Mix {
+            get: 50,
+            put: 50,
+            delete: 0,
+        },
+        warmup_operations: 0,
+        max_operations: 100,
+        measure_ms: 1000,
+        interval_ms: 0,
+        history_bytes: 1_048_576,
+    };
+    let recorder =
+        Arc::new(Recorder::new(configuration, Some(&output.join("history.jsonl"))).unwrap());
+    let applied = Arc::new(Notify::new());
+    let release = Arc::new(Notify::new());
+    server
+        .state
+        .actions
+        .lock()
+        .unwrap()
+        .push_back(Action::LoseReply {
+            applied: applied.clone(),
+            release: release.clone(),
+        });
+    let original = server.client();
+    let first = recorder.begin(0, "measure", &put(b"v0")).unwrap();
+    let retained = recorder.clone();
+    let pending = tokio::spawn(async move {
+        let report = original.call(put(b"v0")).await;
+        retained.complete(first, &report).unwrap();
+    });
+    tokio::time::timeout(Duration::from_secs(5), applied.notified())
+        .await
+        .unwrap();
+    let other = server.client();
+    let read = recorder.begin(1, "measure", &get()).unwrap();
+    let report = other.call(get()).await;
+    recorder.complete(read, &report).unwrap();
+    let write = recorder.begin(1, "measure", &put(b"v1")).unwrap();
+    let report = other.call(put(b"v1")).await;
+    recorder.complete(write, &report).unwrap();
+    release.notify_one();
+    pending.await.unwrap();
+    let read = recorder.begin(1, "measure", &get()).unwrap();
+    let report = other.call(get()).await;
+    recorder.complete(read, &report).unwrap();
+    let summary = recorder.finish().unwrap();
+    assert!(summary.accounting_complete && summary.full_history_complete);
+    std::fs::write(
+        output.join("fixture.json"),
+        serde_json::to_vec_pretty(&serde_json::json!({
+            "version": 1, "fixture_only": true, "history": summary,
+            "observed_server_effects": server.state.writes.load(Ordering::SeqCst),
+            "observed_tcp_connections": server.state.connections.load(Ordering::SeqCst),
+        }))
+        .unwrap(),
+    )
+    .unwrap();
+    server.stop().await;
+}
+
 #[tokio::test]
 async fn all_refused_attempts_remain_refused_when_hops_or_time_run_out() {
     let server = Server::new().await;
