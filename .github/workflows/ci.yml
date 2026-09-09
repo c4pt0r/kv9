@@ -594,6 +594,39 @@ jobs:
             ${{ runner.temp }}/workload-report-controls.log
           if-no-files-found: error
 
+      - name: Repeated benchmark smoke with actual client calibration
+        run: |
+          set -euo pipefail
+          python3 scripts/build-benchmark.py --debug --output "$RUNNER_TEMP/benchmark-build"
+          python3 scripts/benchmark.py --smoke --build "$RUNNER_TEMP/benchmark-build" --output "$RUNNER_TEMP/benchmark-evidence" --expected-revision "$GITHUB_SHA" > "$RUNNER_TEMP/benchmark.log" 2>&1
+          cat "$RUNNER_TEMP/benchmark.log"
+          test "$(tail -1 "$RUNNER_TEMP/benchmark.log")" = 'PASS: complete benchmark matrix and calibration evidence independently checked'
+          python3 scripts/check-benchmark.py "$RUNNER_TEMP/benchmark-evidence" --build "$RUNNER_TEMP/benchmark-build" --expected-revision "$GITHUB_SHA" --output "$RUNNER_TEMP/benchmark-checked.json" > "$RUNNER_TEMP/benchmark-check.log" 2>&1
+          cat "$RUNNER_TEMP/benchmark-check.log"
+          test "$(tail -1 "$RUNNER_TEMP/benchmark-check.log")" = 'PASS: 36 repeated trials and 12 complete-history guards independently verified'
+
+      - name: Reject corrupted benchmark evidence
+        run: |
+          set -euo pipefail
+          python3 scripts/check-benchmark-controls.py --evidence "$RUNNER_TEMP/benchmark-evidence" --build "$RUNNER_TEMP/benchmark-build" --output "$RUNNER_TEMP/benchmark-controls" > "$RUNNER_TEMP/benchmark-controls.log" 2>&1
+          cat "$RUNNER_TEMP/benchmark-controls.log"
+          test "$(tail -1 "$RUNNER_TEMP/benchmark-controls.log")" = 'PASS: 11 corrupt benchmark evidence controls rejected; original matrix revalidated after each'
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-evidence
+          path: |
+            ${{ runner.temp }}/benchmark-build
+            ${{ runner.temp }}/benchmark-evidence
+            !${{ runner.temp }}/benchmark-evidence/**/data/**
+            ${{ runner.temp }}/benchmark.log
+            ${{ runner.temp }}/benchmark-check.log
+            ${{ runner.temp }}/benchmark-checked.json
+            ${{ runner.temp }}/benchmark-controls
+            ${{ runner.temp }}/benchmark-controls.log
+          if-no-files-found: error
+
       - name: MinIO logs
         if: failure()
         run: docker logs kv9-minio-ci 2>&1 | tail -200
