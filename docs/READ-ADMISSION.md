@@ -168,3 +168,46 @@ does not explain the initial apply timeout. Listener and apply-wait diagnostics
 are now more informative; no specific transport cause is established. Issue #48
 remains open for that diagnosis, #47 remains open for production endpoint migration,
 and this increment does not close P0. No hosted workflow was dispatched.
+
+## Further #48 diagnosis: listener fixture ownership
+
+Commit `60fa59aa695a512c4c25cc4eb15040b6bdcf9a2f` removes a deterministic
+test-environment defect from the two three-voter gRPC fixtures. They previously
+called `free_addr`, which binds and immediately drops a listener, then passed the
+released address to an asynchronously started server. Another concurrent listener
+could claim a voter endpoint in between. A new contender assertion in the existing
+failover test fails on the original fixture: the competing bind succeeds before
+the server starts. This demonstrates the allocation gap; it does not reproduce or
+explain the historical initial proposal/apply timeout.
+
+Both fixtures now retain all three bound listeners and transfer the actual sockets
+to tonic's `serve_with_incoming`. The shared minimal-server helper also reports
+bind failure synchronously to its test caller. A current-thread-runtime regression
+checks exclusive binding after allocation and again after asynchronous handoff,
+before any server task can poll, then verifies discovery from all three actual
+gRPC endpoints. An isolated source mutation restores release-and-later-rebind;
+the new regression rejects it specifically at the second ownership boundary,
+with baseline / mutant / restored exits of 0 / 101 / 0.
+
+Local validation: 533 workspace tests passed, zero failed, 22 ignored; formatting
+and warnings-denied all-target Clippy passed. Four executions of the exact
+workspace-built Raft binary at the fix each passed all 122 tests with default
+concurrent scheduling. The preceding `4de7a6e` binary also passed four executions
+of all 121 tests. Neither series establishes the cause of the earlier failure.
+The original failure, deterministic allocation regression, isolated handoff
+control, both binaries, resolved build metadata and complete logs are retained.
+
+Every source change is inside `#[cfg(test)] mod tests`; the 53,439-byte production
+gRPC prefix is byte-for-byte identical to `4de7a6e` (SHA-256
+`9669eca4e802eb124190ccfadace331e87f4cb0bb2886bfb5a74997db94f1807`).
+This test-fixture increment changes no protocol, client outcome, deadline or apply
+assertion. It does not claim a fresh Chaos/MinIO or proof run; the separately
+scoped production evidence above remains attributed to `dcc3078`. GitHub CI was
+not dispatched. The initial apply timeout remains an open #48 diagnosis; #47
+production endpoint integration remains the next independent development path.
+
+Listener evidence archive:
+`target/correctness-evidence/2026-09-09-60fa59a-grpc-listeners.tar.gz`,
+75,125,727 bytes, SHA-256
+`ca83c636af118c83ca0d0b3a0c356de588dc80b5a93c142ab468c8a1813ffaca`.
+All 36 manifest entries were independently checked for size and SHA-256.
