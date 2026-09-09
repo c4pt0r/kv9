@@ -4,7 +4,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$repo_dir/scripts/membership-write.sh"
-bin="$repo_dir/target/debug/kv9"
 artifact_dir="${KV9_MEMBERSHIP_DIR:-$(mktemp -d /tmp/kv9-membership.XXXXXX)}"
 base_port="${KV9_BASE_PORT:-$((23000 + ($$ % 1000)))}"
 cluster_token="membership-cluster-token"
@@ -152,7 +151,7 @@ promote() {
 }
 
 echo "Building kv9..."
-cargo build --quiet --manifest-path "$repo_dir/Cargo.toml"
+bin="$(build_fixture_binary "$repo_dir" "$artifact_dir/build.jsonl")"
 
 KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root_path" \
   --voters "$initial_join" --store-incarnations "$(prepare_root_stores "$bin" "$artifact_dir" "$initial_join")" >"$artifact_dir/root-create.log"

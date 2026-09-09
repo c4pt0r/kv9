@@ -17,7 +17,6 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-bin="$repo_dir/target/debug/kv9"
 artifact_dir="${KV9_RAW_E2E_DIR:-$(mktemp -d /tmp/kv9-raw-e2e.XXXXXX)}"
 base_port="${KV9_BASE_PORT:-$((23000 + ($$ % 1000)))}"
 cluster_token="raw-e2e-cluster-token"
@@ -34,8 +33,6 @@ if [[ ! "$base_port" =~ ^[0-9]+$ ]] || (( base_port < 1024 || base_port + 3 > 65
   exit 2
 fi
 
-KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root_path" \
-  --voters "$root_voters" --store-incarnations "$(prepare_root_stores "$bin" "$artifact_dir" "$root_voters")" >"$artifact_dir/root-create.log"
 if [[ -r /proc/sys/net/ipv4/ip_local_port_range ]]; then
   read -r ephemeral_low ephemeral_high </proc/sys/net/ipv4/ip_local_port_range
   if (( base_port + 3 >= ephemeral_low && base_port + 1 <= ephemeral_high )); then
@@ -175,7 +172,9 @@ applied_reached() {
 hex() { printf '%s' "$1" | od -An -tx1 -v | tr -d ' \n'; }
 
 echo "Building kv9..."
-cargo build --quiet --manifest-path "$repo_dir/Cargo.toml"
+bin="$(build_fixture_binary "$repo_dir" "$artifact_dir/build.jsonl")"
+KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root_path" \
+  --voters "$root_voters" --store-incarnations "$(prepare_root_stores "$bin" "$artifact_dir" "$root_voters")" >"$artifact_dir/root-create.log"
 
 echo "Starting three nodes on ports $((base_port + 1))-$((base_port + 3))..."
 for node in 1 2 3; do start_node "$node"; done

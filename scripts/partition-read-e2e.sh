@@ -28,7 +28,6 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-bin="$repo_dir/target/debug/kv9"
 artifact_dir="${KV9_PARTITION_E2E_DIR:-$(mktemp -d /tmp/kv9-partition-read-e2e.XXXXXX)}"
 base_port="${KV9_BASE_PORT:-$((27000 + ($$ % 1000)))}"
 cluster_token="partition-e2e-cluster-token"
@@ -54,7 +53,8 @@ fi
 # silent no-op and the whole gate green-washes: the binary is required to
 # have been built with --features partition-testing. There is no runtime
 # probe for a compiled-out feature, so the harness builds it explicitly.
-( cd "$repo_dir" && cargo build --features partition-testing ) >"$artifact_dir/build.log" 2>&1 \
+bin="$(build_fixture_binary "$repo_dir" "$artifact_dir/build.jsonl" --features partition-testing)" \
+  2>"$artifact_dir/build.log" \
   || { cat "$artifact_dir/build.log" >&2; echo "FAIL: partition-testing build failed" >&2; exit 1; }
 
 KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root_path" \
