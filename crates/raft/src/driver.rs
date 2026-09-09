@@ -13,6 +13,7 @@ use std::time::{Duration, Instant};
 use kv9_engine::MemEngine;
 use raft::storage::MemStorage;
 
+use kv9_common::metrics::{Latency, NamedLatency, Outcome};
 use kv9_common::{Error, NodeId, Result};
 
 use raft::eraftpb::{ConfChangeSingle, ConfChangeType, ConfChangeV2};
@@ -125,6 +126,53 @@ pub struct DriverAppliedPosition {
     pub index: u64,
 }
 
+/// Observers are leaf locks: no operation runs while their locks are held.
+#[derive(Default)]
+pub struct DriverMetrics {
+    pub proposal_submission: Latency,
+    pub logical_proposal_wait: Latency,
+    pub application_wait: Latency,
+    pub read_establishment: Latency,
+    pub command_apply: Latency,
+}
+
+impl DriverMetrics {
+    pub fn snapshots(&self) -> Vec<NamedLatency> {
+        vec![
+            NamedLatency::new("raft_proposal_submission", &self.proposal_submission),
+            NamedLatency::new("runtime_logical_proposal_wait", &self.logical_proposal_wait),
+            NamedLatency::new("raft_application_wait", &self.application_wait),
+            NamedLatency::new("raft_read_establishment", &self.read_establishment),
+            NamedLatency::new("raft_command_apply", &self.command_apply),
+        ]
+    }
+}
+
+/// Two peer observations bracket one contiguous driver watermark. A derived
+/// lag is available only when the commit index and current term were stable.
+/// No peer lock nests with a driver lock. This is diagnostic, never authority.
+#[derive(Debug)]
+pub struct ApplyLagObservation {
+    pub term_before: u64,
+    pub term_after: u64,
+    pub committed_before: u64,
+    pub committed_after: u64,
+    pub driver_applied: Option<DriverAppliedPosition>,
+}
+
+impl ApplyLagObservation {
+    pub fn lag(&self) -> Option<u64> {
+        if self.term_before != self.term_after || self.committed_before != self.committed_after {
+            return None;
+        }
+        let applied = self.driver_applied?;
+        if applied.term > self.term_after {
+            return None;
+        }
+        self.committed_after.checked_sub(applied.index)
+    }
+}
+
 pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStore = MemEngine> {
     peer: Arc<RaftPeer<S>>,
     /// THE consume face over `peer` (task #5): minted exactly once, held
@@ -196,6 +244,7 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     /// components separately is forbidden (torn pair = e2ecc5a again).
     driver_applied: Mutex<Option<DriverAppliedPosition>>,
     stop: AtomicBool,
+    metrics: DriverMetrics,
 }
 
 impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> {
@@ -238,6 +287,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             // consumers keep waiting instead of trusting a fabricated 0).
             driver_applied: Mutex::new(None),
             stop: AtomicBool::new(false),
+            metrics: DriverMetrics::default(),
         }))
     }
 
@@ -357,6 +407,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     }
                     let mut applied = self.applied.lock().expect("applied poisoned");
                     let mut sm = self.sm.lock().expect("sm poisoned");
+                    let apply_timer = self.metrics.command_apply.start();
                     let result = match sm.apply_at(
                         kv9_common::AppliedPosition {
                             term: entry.term,
@@ -364,8 +415,12 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                         },
                         &cmd,
                     ) {
-                        Ok(r) => r,
+                        Ok(r) => {
+                            apply_timer.finish(Outcome::Success);
+                            r
+                        }
                         Err(e) => {
+                            apply_timer.finish(Outcome::Error);
                             drop(sm);
                             drop(applied);
                             return Err(self.poison(entry.term, entry.index.0, &e));
@@ -558,12 +613,17 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
 
     /// Propose a command on this node (must currently be leader).
     pub fn propose(&self, cmd: &Command) -> Result<ProposedAt> {
-        self.peer.propose_traced(cmd.encode())
+        self.metrics
+            .proposal_submission
+            .observe(|| self.peer.propose_traced(cmd.encode()), classify_proposal)
     }
 
     /// Catalog plans are valid only in the term whose ordered barrier they read.
     pub fn propose_in_term(&self, cmd: &Command, term: u64) -> Result<ProposedAt> {
-        self.peer.propose_in_term(cmd.encode(), Some(term))
+        self.metrics.proposal_submission.observe(
+            || self.peer.propose_in_term(cmd.encode(), Some(term)),
+            classify_proposal,
+        )
     }
 
     /// One region's authoritative manifest pair, read through this driver's
@@ -595,6 +655,17 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     /// included, so "driver watermark passed the position, ring never saw it"
     /// IS the replacement verdict, delivered in milliseconds.
     pub fn wait_applied(
+        &self,
+        at: ProposedAt,
+        deadline: Duration,
+    ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError> {
+        self.metrics.application_wait.observe(
+            || self.wait_applied_inner(at, deadline),
+            classify_apply_wait,
+        )
+    }
+
+    fn wait_applied_inner(
         &self,
         at: ProposedAt,
         deadline: Duration,
@@ -707,6 +778,15 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         &self,
         deadline: Duration,
     ) -> std::result::Result<ReadBarrier, ReadIndexError> {
+        self.metrics
+            .read_establishment
+            .observe(|| self.read_barrier_inner(deadline), classify_read)
+    }
+
+    fn read_barrier_inner(
+        &self,
+        deadline: Duration,
+    ) -> std::result::Result<ReadBarrier, ReadIndexError> {
         use std::sync::atomic::Ordering;
         let start = Instant::now();
         // 1. Leadership: fail fast and typed.
@@ -786,6 +866,23 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         self.read_seq.load(std::sync::atomic::Ordering::Relaxed)
     }
 
+    pub fn metrics(&self) -> &DriverMetrics {
+        &self.metrics
+    }
+
+    pub fn apply_lag_observation(&self) -> ApplyLagObservation {
+        let before = self.peer.status_snapshot();
+        let driver_applied = self.driver_applied();
+        let after = self.peer.status_snapshot();
+        ApplyLagObservation {
+            term_before: before.term,
+            term_after: after.term,
+            committed_before: before.committed,
+            committed_after: after.committed,
+            driver_applied,
+        }
+    }
+
     /// The queryable status surface.
     pub fn status(&self) -> NodeStatus {
         // ONE peer lock acquisition for everything peer-side: piecemeal reads
@@ -844,6 +941,40 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 std::thread::sleep(tick_every);
             }
         })
+    }
+}
+
+fn classify_proposal(result: &Result<ProposedAt>) -> Outcome {
+    match result {
+        Ok(_) => Outcome::Success,
+        Err(Error::NotLeader { .. }) => Outcome::Rejected,
+        Err(_) => Outcome::Error,
+    }
+}
+
+fn classify_apply_wait(result: &std::result::Result<ApplyWaitOutcome, ApplyWaitError>) -> Outcome {
+    match result {
+        Ok(ApplyWaitOutcome::Applied(_)) => Outcome::Success,
+        Ok(ApplyWaitOutcome::Manifest {
+            verdict: crate::ManifestVerdict::Applied { .. },
+            ..
+        }) => Outcome::Success,
+        Ok(ApplyWaitOutcome::Replaced) => Outcome::Replaced,
+        // AlreadyApplied is not a newly accepted manifest transition.
+        Ok(ApplyWaitOutcome::FenceRejected { .. } | ApplyWaitOutcome::Manifest { .. }) => {
+            Outcome::Rejected
+        }
+        Err(ApplyWaitError::Unconfirmed { .. }) => Outcome::Unconfirmed,
+        Err(ApplyWaitError::Failed(_)) => Outcome::Error,
+    }
+}
+
+fn classify_read(result: &std::result::Result<ReadBarrier, ReadIndexError>) -> Outcome {
+    match result {
+        Ok(_) => Outcome::Success,
+        Err(ReadIndexError::NotLeader { .. }) => Outcome::Rejected,
+        Err(ReadIndexError::Unconfirmed { .. }) => Outcome::Unconfirmed,
+        Err(ReadIndexError::Failed(_)) => Outcome::Error,
     }
 }
 
@@ -1248,6 +1379,34 @@ fn single_change(node: NodeId, kind: ConfChangeType) -> ConfChangeV2 {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn apply_lag_requires_stable_commit_and_term_and_a_compatible_watermark() {
+        let mut sample = super::ApplyLagObservation {
+            term_before: 3,
+            term_after: 3,
+            committed_before: 10,
+            committed_after: 10,
+            driver_applied: Some(super::DriverAppliedPosition { term: 2, index: 7 }),
+        };
+        assert_eq!(sample.lag(), Some(3));
+        sample.committed_after = 11;
+        assert_eq!(sample.lag(), None);
+        sample.committed_after = 10;
+        sample.term_after = 4;
+        assert_eq!(sample.lag(), None);
+        sample.term_after = 3;
+        sample.driver_applied = Some(super::DriverAppliedPosition { term: 3, index: 11 });
+        assert_eq!(
+            sample.lag(),
+            None,
+            "incompatible observation is not zero lag"
+        );
+        sample.driver_applied = Some(super::DriverAppliedPosition { term: 4, index: 7 });
+        assert_eq!(sample.lag(), None);
+        sample.driver_applied = None;
+        assert_eq!(sample.lag(), None);
+    }
     use super::*;
     use crate::rawnode::RaftPeer;
     use crate::transport::{InProcHub, RaftTransport};
@@ -1823,6 +1982,12 @@ mod tests {
                 .unwrap(),
             ApplyWaitOutcome::Applied(_)
         ));
+        assert!(
+            driver.metrics().application_wait.snapshot().outcomes[Outcome::Unconfirmed as usize]
+                .count
+                >= 1,
+            "real protocol outcome missing from observation"
+        );
     }
     /// The SECOND replacement shape (task #30 review round; construction by
     /// Cindy's verification probe): the position is consumed not by a barrier
@@ -1956,6 +2121,11 @@ mod tests {
              reporting Applied would claim this caller's write succeeded while \
              the slot holds someone else's"
         );
+        assert!(
+            d1.metrics().application_wait.snapshot().outcomes[Outcome::Replaced as usize].count
+                >= 1,
+            "real protocol outcome missing from observation"
+        );
     }
 
     /// A poisoned driver answers Failed, never Unconfirmed (task #30 review
@@ -2005,6 +2175,11 @@ mod tests {
         assert!(
             err.to_string().contains("poisoned"),
             "the poison cause must survive recognizably: {err}"
+        );
+        assert!(
+            driver.metrics().application_wait.snapshot().outcomes[Outcome::Error as usize].count
+                >= 1,
+            "real protocol outcome missing from observation"
         );
     }
 
@@ -2089,6 +2264,11 @@ mod tests {
             None,
             "a rejected fence writes nothing"
         );
+        assert!(
+            driver.metrics().application_wait.snapshot().outcomes[Outcome::Rejected as usize].count
+                >= 1,
+            "real protocol outcome missing from observation"
+        );
     }
     // ---- task #28 step 3: the read barrier ----
 
@@ -2126,6 +2306,12 @@ mod tests {
             "a post-barrier read must observe the pre-barrier write"
         );
         driver.stop();
+        assert!(
+            driver.metrics().read_establishment.snapshot().outcomes[Outcome::Success as usize]
+                .count
+                >= 1,
+            "real protocol outcome missing from observation"
+        );
     }
 
     /// A follower answers with the TYPED NotLeader + hint — never a barrier,
@@ -2165,6 +2351,11 @@ mod tests {
                 }
             ),
             "the refusal must be typed NotLeader with the leader hint: {err}"
+        );
+        assert!(
+            d2.metrics().read_establishment.snapshot().outcomes[Outcome::Rejected as usize].count
+                >= 1,
+            "real protocol outcome missing from observation"
         );
     }
 
@@ -2242,6 +2433,12 @@ mod tests {
             "isolation must surface as the typed quorum-confirmation timeout: {err}"
         );
         d1.stop();
+        assert!(
+            d1.metrics().read_establishment.snapshot().outcomes[Outcome::Unconfirmed as usize]
+                .count
+                >= 1,
+            "real protocol outcome missing from observation"
+        );
     }
 
     /// The committed-but-unapplied window — the arm the UNIFIED watermark

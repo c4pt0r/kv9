@@ -21,9 +21,11 @@
 //! Versioned so an unknown version is rejected rather than misparsed (DESIGN §13
 //! principle 12, "forward-compatible formats, never panic on the unknown").
 
+use kv9_common::metrics::WalIoMetrics;
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 use crate::wal_v2::{kind, CRC_LEN, MAGIC, MAX_RECORD_LEN, VERSION_V1, VERSION_V2};
 use kv9_common::{AppliedPosition, Error, Result};
@@ -209,6 +211,7 @@ pub struct Wal {
     file: File,
     applied: Option<AppliedPosition>,
     poisoned: bool,
+    io_metrics: Arc<WalIoMetrics>,
 }
 
 impl Wal {
@@ -218,6 +221,13 @@ impl Wal {
     /// the end of the last *valid* record, so a torn tail is overwritten by the next
     /// append rather than being read again on the following open.
     pub fn open(path: impl AsRef<Path>) -> Result<(Self, Replay)> {
+        Self::open_with_metrics(path, WalIoMetrics::shared())
+    }
+
+    pub(crate) fn open_with_metrics(
+        path: impl AsRef<Path>,
+        io_metrics: Arc<WalIoMetrics>,
+    ) -> Result<(Self, Replay)> {
         let path = path.as_ref().to_path_buf();
         if let Some(dir) = path.parent() {
             if !dir.as_os_str().is_empty() {
@@ -242,9 +252,15 @@ impl Wal {
         file.seek(SeekFrom::Start(valid_len)).map_err(io)?;
 
         // Persist creation/truncation before advertising a durable empty engine.
-        file.sync_all().map_err(io)?;
+        io_metrics
+            .recovery_sync
+            .measure(|| file.sync_all())
+            .map_err(io)?;
         if let Some(dir) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
-            File::open(dir).and_then(|f| f.sync_all()).map_err(io)?;
+            io_metrics
+                .namespace_publish
+                .measure(|| File::open(dir).and_then(|f| f.sync_all()))
+                .map_err(io)?;
         }
         let applied = replay.positions.iter().rev().flatten().next().copied();
         Ok((
@@ -253,6 +269,7 @@ impl Wal {
                 file,
                 applied,
                 poisoned: false,
+                io_metrics,
             },
             replay,
         ))
@@ -395,9 +412,10 @@ impl Wal {
         // Never append a successful record behind an incomplete/uncertain append.
         // Otherwise replay would discard a subsequently acknowledged write.
         if let Err(e) = self
-            .file
-            .write_all(&record)
-            .and_then(|_| self.file.sync_all())
+            .io_metrics
+            .write
+            .measure(|| self.file.write_all(&record))
+            .and_then(|_| self.io_metrics.sync.measure(|| self.file.sync_all()))
         {
             self.poisoned = true;
             return Err(io(e));
@@ -406,6 +424,10 @@ impl Wal {
             self.applied = at;
         }
         Ok(())
+    }
+
+    pub fn io_metrics(&self) -> Arc<WalIoMetrics> {
+        self.io_metrics.clone()
     }
 
     pub(crate) fn relocated(&mut self, path: PathBuf) {
@@ -753,9 +775,62 @@ mod positioned_tests {
         let (mut wal, _) = Wal::open(&source).unwrap();
         wal.file = File::open(&source).unwrap(); // force a real EBADF on write
         assert!(wal.append(&batch(b"fails")).is_err());
+        let metrics = wal.io_metrics();
+        assert_eq!(
+            metrics.write.snapshot().outcomes[kv9_common::metrics::Outcome::Error as usize].count,
+            1
+        );
+        assert!(
+            metrics
+                .sync
+                .snapshot()
+                .outcomes
+                .iter()
+                .all(|h| h.count == 0),
+            "failed record write must not call fsync"
+        );
+
         wal.file = OpenOptions::new().append(true).open(&source).unwrap();
         let error = wal.append(&batch(b"must-not-ack")).unwrap_err();
         assert!(error.to_string().contains("reopen required"));
         assert_eq!(std::fs::metadata(source).unwrap().len(), 0);
+    }
+    #[cfg(unix)]
+    #[test]
+    fn real_sync_failure_is_distinct_from_record_write_failure() {
+        use kv9_common::metrics::Outcome;
+        let source = path("sync-failure");
+        let (mut wal, _) = Wal::open(&source).unwrap();
+        // /dev/null accepts the real write_all but rejects the real fsync.
+        wal.file = OpenOptions::new().write(true).open("/dev/null").unwrap();
+        assert!(wal.append(&batch(b"sync-fails")).is_err());
+        let metrics = wal.io_metrics();
+        assert_eq!(
+            metrics.write.snapshot().outcomes[Outcome::Success as usize].count,
+            1
+        );
+        assert_eq!(
+            metrics.write.snapshot().outcomes[Outcome::Error as usize].count,
+            0
+        );
+        assert_eq!(
+            metrics.sync.snapshot().outcomes[Outcome::Error as usize].count,
+            1
+        );
+        assert_eq!(
+            metrics.sync.snapshot().outcomes[Outcome::Success as usize].count,
+            0
+        );
+        wal.file = OpenOptions::new().append(true).open(&source).unwrap();
+        assert!(wal
+            .append(&batch(b"must-not-ack"))
+            .unwrap_err()
+            .to_string()
+            .contains("reopen required"));
+        assert_eq!(std::fs::metadata(source).unwrap().len(), 0);
+        assert_eq!(
+            metrics.write.snapshot().outcomes[Outcome::Success as usize].count,
+            1
+        );
     }
 }

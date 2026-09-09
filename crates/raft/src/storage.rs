@@ -29,9 +29,10 @@
 //! this. `persisted()`-style flush watermarks live in the engine (Ren's lane);
 //! this file is only the raft-protocol state.
 
+use kv9_common::metrics::WalIoMetrics;
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 use protobuf::Message as PbMessage;
 use raft::prelude::{ConfState, Entry, HardState};
@@ -77,6 +78,7 @@ pub struct DiskRaftStorage<F: FileSystem = OsFileSystem> {
     /// Highest conf-change index recorded via `REC_CONF_STATE_AT` (0 = only
     /// the initial configuration exists). The replay guard boundary.
     conf_index: Mutex<u64>,
+    io_metrics: Arc<WalIoMetrics>,
 }
 
 impl DiskRaftStorage<OsFileSystem> {
@@ -95,6 +97,7 @@ impl DiskRaftStorage<OsFileSystem> {
 
 impl<F: FileSystem> DiskRaftStorage<F> {
     fn open_on(fs: F, data_dir: &Path, voters: &[u64]) -> Result<(Self, bool)> {
+        let io_metrics = WalIoMetrics::shared();
         fs::create_dirs(&fs, data_dir)
             .map_err(|e| Error::Raft(format!("create {}: {e}", data_dir.display())))?;
         let path = data_dir.join("raft.log");
@@ -173,7 +176,9 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         // A process restart can expose valid bytes that were never synchronized
         // by the previous process. Make the replayed prefix (and tail repair)
         // durable before it may justify a Raft response in this incarnation.
-        file.sync_data()
+        io_metrics
+            .recovery_sync
+            .measure(|| file.sync_data())
             .map_err(|e| Error::Raft(format!("sync recovered raft log: {e}")))?;
 
         let storage = DiskRaftStorage {
@@ -181,12 +186,14 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             file: Mutex::new(Some(file)),
             path,
             conf_index: Mutex::new(conf_idx),
+            io_metrics,
         };
         let was_pristine = !saw_any;
         if was_pristine {
             let cs = ConfState::from((voters.to_vec(), vec![]));
             storage.with_writer(|file| {
                 Self::write_record(
+                    &storage.io_metrics,
                     file,
                     REC_CONF_STATE,
                     &cs.write_to_bytes()
@@ -198,7 +205,10 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         }
         // File sync alone cannot make the directory entry durable. Existing
         // directories also need publication after an earlier interrupted open.
-        fs::sync_ancestors(&fs, data_dir)
+        storage
+            .io_metrics
+            .namespace_publish
+            .measure(|| fs::sync_ancestors(&fs, data_dir))
             .map_err(|e| Error::Raft(format!("publish raft log directory: {e}")))?;
         Ok((storage, was_pristine))
     }
@@ -266,6 +276,10 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         Ok(false)
     }
 
+    pub fn io_metrics(&self) -> Arc<WalIoMetrics> {
+        self.io_metrics.clone()
+    }
+
     pub fn path(&self) -> &Path {
         &self.path
     }
@@ -284,7 +298,12 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         result
     }
 
-    fn write_record(file: &mut F::File, kind: u8, payload: &[u8]) -> Result<()> {
+    fn write_record(
+        metrics: &WalIoMetrics,
+        file: &mut F::File,
+        kind: u8,
+        payload: &[u8],
+    ) -> Result<()> {
         if payload.len() >= MAX_RECORD_LEN as usize {
             return Err(Error::Raft(
                 "raft log record exceeds the replay format limit".into(),
@@ -297,8 +316,10 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         rec.extend_from_slice(&(body.len() as u32).to_be_bytes());
         rec.extend_from_slice(&fnv1a(&body).to_be_bytes());
         rec.extend_from_slice(&body);
-        file.write_all(&rec)
-            .and_then(|_| file.sync_data())
+        metrics
+            .write
+            .measure(|| file.write_all(&rec))
+            .and_then(|_| metrics.sync.measure(|| file.sync_data()))
             .map_err(|e| Error::Raft(format!("raft log append: {e}")))
     }
 }
@@ -359,7 +380,7 @@ impl<F: FileSystem> PersistentRaftStorage for DiskRaftStorage<F> {
                 let bytes = e
                     .write_to_bytes()
                     .map_err(|err| Error::Raft(format!("entry encode: {err}")))?;
-                Self::write_record(file, REC_ENTRY, &bytes)?;
+                Self::write_record(&self.io_metrics, file, REC_ENTRY, &bytes)?;
             }
             self.mem
                 .wl()
@@ -373,7 +394,7 @@ impl<F: FileSystem> PersistentRaftStorage for DiskRaftStorage<F> {
             .write_to_bytes()
             .map_err(|e| Error::Raft(format!("hardstate encode: {e}")))?;
         self.with_writer(|file| {
-            Self::write_record(file, REC_HARD_STATE, &bytes)?;
+            Self::write_record(&self.io_metrics, file, REC_HARD_STATE, &bytes)?;
             self.mem.wl().set_hardstate(hs.clone());
             Ok(())
         })
@@ -390,7 +411,7 @@ impl<F: FileSystem> PersistentRaftStorage for DiskRaftStorage<F> {
         bytes.extend_from_slice(&at_index.to_be_bytes());
         bytes.extend_from_slice(&pb);
         self.with_writer(|file| {
-            Self::write_record(file, REC_CONF_STATE_AT, &bytes)?;
+            Self::write_record(&self.io_metrics, file, REC_CONF_STATE_AT, &bytes)?;
             self.mem.wl().set_conf_state(cs.clone());
             *self.conf_index.lock().expect("conf index poisoned") = at_index;
             Ok(())

@@ -4,7 +4,9 @@
 //! transport/response memory. A reservation is owned by the actual backend job;
 //! cancelling its RPC cannot release capacity while the job remains live.
 
+use kv9_common::metrics::{Latency, NamedLatency, Outcome};
 use std::sync::{Arc, Mutex};
+use std::time::Instant;
 
 use kv9_common::{Error, Result};
 
@@ -77,6 +79,25 @@ impl WorkClass {
         Self::Transaction,
     ];
 
+    fn timing_names(self) -> (&'static str, &'static str) {
+        match self {
+            Self::RawRead => ("public_raw_read_prepare_queue", "public_raw_read_backend"),
+            Self::RawWrite => ("public_raw_write_prepare_queue", "public_raw_write_backend"),
+            Self::MetadataRead => (
+                "public_metadata_read_prepare_queue",
+                "public_metadata_read_backend",
+            ),
+            Self::MetadataWrite => (
+                "public_metadata_write_prepare_queue",
+                "public_metadata_write_backend",
+            ),
+            Self::Transaction => (
+                "public_transaction_prepare_queue",
+                "public_transaction_backend",
+            ),
+        }
+    }
+
     fn label(self) -> &'static str {
         match self {
             Self::RawRead => "raw_read",
@@ -139,9 +160,16 @@ pub struct AdmissionSnapshot {
     pub classes: [ClassCounters; CLASS_COUNT],
 }
 
+#[derive(Default)]
+struct WorkTiming {
+    prepare_queue: Latency,
+    backend: Latency,
+}
+
 pub struct PublicAdmission {
     limits: PublicApiLimits,
     state: Mutex<State>,
+    timings: [WorkTiming; CLASS_COUNT],
 }
 
 impl PublicAdmission {
@@ -149,6 +177,7 @@ impl PublicAdmission {
         Ok(Arc::new(Self {
             limits: limits.validate()?,
             state: Mutex::new(State::default()),
+            timings: std::array::from_fn(|_| WorkTiming::default()),
         }))
     }
 
@@ -189,7 +218,21 @@ impl PublicAdmission {
             bytes,
             started: false,
             outcome: None,
+            reserved_at: Instant::now(),
+            started_at: None,
+            finished_at: None,
         })
+    }
+
+    pub(crate) fn latency_snapshots(&self) -> Vec<NamedLatency> {
+        let mut snapshots = Vec::with_capacity(CLASS_COUNT * 2);
+        for class in WorkClass::ALL {
+            let (prepare, backend) = class.timing_names();
+            let timing = &self.timings[class as usize];
+            snapshots.push(NamedLatency::new(prepare, &timing.prepare_queue));
+            snapshots.push(NamedLatency::new(backend, &timing.backend));
+        }
+        snapshots
     }
 
     pub fn snapshot(&self) -> AdmissionSnapshot {
@@ -233,10 +276,17 @@ pub(crate) struct Reservation {
     bytes: usize,
     started: bool,
     outcome: Option<bool>,
+    reserved_at: Instant,
+    started_at: Option<Instant>,
+    finished_at: Option<Instant>,
 }
 
 impl Reservation {
     pub(crate) fn start(&mut self) {
+        self.start_at(Instant::now());
+    }
+
+    fn start_at(&mut self, now: Instant) {
         assert!(!self.started, "a reservation starts only once");
         self.owner
             .state
@@ -244,11 +294,23 @@ impl Reservation {
             .expect("public admission poisoned")
             .running += 1;
         self.started = true;
+        self.started_at = Some(now);
+        self.owner.timings[self.class as usize]
+            .prepare_queue
+            .record(
+                now.saturating_duration_since(self.reserved_at),
+                Outcome::Success,
+            );
     }
 
-    pub(crate) fn finish(mut self, failed: bool) {
+    pub(crate) fn finish(self, failed: bool) {
+        self.finish_at(failed, Instant::now());
+    }
+
+    fn finish_at(mut self, failed: bool, now: Instant) {
         assert!(self.started, "only a started backend job can finish");
         self.outcome = Some(failed);
+        self.finished_at = Some(now);
         // Drop releases gauges and records this outcome in one locked update.
     }
 }
@@ -271,6 +333,25 @@ impl Drop for Reservation {
             }
             None if self.started => c.backend_aborted = c.backend_aborted.saturating_add(1),
             None => c.released_before_execution = c.released_before_execution.saturating_add(1),
+        }
+        drop(state);
+        // Observer locks are leaves; no accounting lock is held during recording.
+        let ended = self.finished_at.unwrap_or_else(Instant::now);
+        let timing = &self.owner.timings[self.class as usize];
+        if let Some(started) = self.started_at {
+            let outcome = match self.outcome {
+                Some(false) => Outcome::Success,
+                Some(true) => Outcome::Error,
+                None => Outcome::Aborted,
+            };
+            timing
+                .backend
+                .record(ended.saturating_duration_since(started), outcome);
+        } else {
+            timing.prepare_queue.record(
+                ended.saturating_duration_since(self.reserved_at),
+                Outcome::Released,
+            );
         }
     }
 }
@@ -401,5 +482,45 @@ mod tests {
                 max_encoded_bytes: 42
             }
         );
+    }
+    #[test]
+    fn admission_timing_separates_queue_execution_and_unsubmitted_release() {
+        use std::time::Duration;
+        let budget = PublicAdmission::new(PublicApiLimits::default()).unwrap();
+        for (failed, outcome) in [(false, Outcome::Success), (true, Outcome::Error)] {
+            let mut held = budget.reserve(WorkClass::RawRead, 3).unwrap();
+            let base = held.reserved_at;
+            held.start_at(base + Duration::from_millis(7));
+            held.finish_at(failed, base + Duration::from_millis(19));
+            let h = budget.timings[0].backend.snapshot();
+            assert_eq!(
+                h.outcomes[outcome as usize].sum_ns, 12_000_000,
+                "backend timing included preparation or queue time"
+            );
+        }
+        let mut unsubmitted = budget.reserve(WorkClass::RawRead, 3).unwrap();
+        unsubmitted.finished_at = Some(unsubmitted.reserved_at + Duration::from_millis(5));
+        drop(unsubmitted);
+        let mut aborted = budget.reserve(WorkClass::RawRead, 3).unwrap();
+        let base = aborted.reserved_at;
+        aborted.start_at(base + Duration::from_millis(3));
+        aborted.finished_at = Some(base + Duration::from_millis(14));
+        drop(aborted);
+        let queued = budget.timings[0].prepare_queue.snapshot();
+        assert_eq!(
+            queued.outcomes[Outcome::Success as usize].sum_ns,
+            17_000_000
+        );
+        assert_eq!(
+            queued.outcomes[Outcome::Released as usize].sum_ns,
+            5_000_000
+        );
+        let backend = budget.timings[0].backend.snapshot();
+        assert_eq!(
+            backend.outcomes[Outcome::Aborted as usize].sum_ns,
+            11_000_000
+        );
+        assert_eq!(backend.outcomes.iter().map(|h| h.count).sum::<u64>(), 3);
+        assert_eq!(budget.snapshot().in_flight, 0);
     }
 }

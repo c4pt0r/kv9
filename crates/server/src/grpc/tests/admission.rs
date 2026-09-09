@@ -1,4 +1,5 @@
 use super::*;
+use kv9_common::metrics::Outcome;
 use proto::kv9_server::Kv9;
 use std::time::Duration;
 
@@ -116,6 +117,16 @@ async fn admission_releases_validation_error_and_backend_error() {
         (state.classes[1].completed, state.classes[1].backend_errors),
         (1, 1)
     );
+    let metrics = service.admission().latency_snapshots();
+    assert_eq!(
+        metrics[0].latency.outcomes[Outcome::Released as usize].count,
+        1
+    );
+    assert!(metrics[1].latency.outcomes.iter().all(|h| h.count == 0));
+    assert_eq!(
+        metrics[3].latency.outcomes[Outcome::Error as usize].count,
+        1
+    );
 }
 
 #[tokio::test]
@@ -136,6 +147,16 @@ async fn admission_releases_budget_on_backend_panic() {
         (0, 0, 0)
     );
     assert_eq!(state.classes[1].backend_aborted, 1);
+    let metrics = service.admission().latency_snapshots();
+    assert_eq!(
+        metrics[3].latency.outcomes[Outcome::Aborted as usize].count,
+        1
+    );
+    assert_eq!(
+        metrics[3].latency.outcomes[Outcome::Success as usize].count,
+        0
+    );
+
     assert!(service
         .admission()
         .reserve(WorkClass::RawRead, 4096)
@@ -189,6 +210,7 @@ fn admission_cancelled_running_and_queued_jobs_retain_their_reservations() {
         assert!(running.await.unwrap_err().is_cancelled());
         let state = service.admission().snapshot();
         let refused = service.admission().reserve(WorkClass::RawRead, 0);
+        let before_release = service.admission().latency_snapshots();
         release_tx.send(()).unwrap(); // Release even when a source control is wrong.
         assert_eq!(
             (
@@ -201,12 +223,43 @@ fn admission_cancelled_running_and_queued_jobs_retain_their_reservations() {
             "cancelled RPC released live backend capacity"
         );
         assert!(matches!(refused, Err(Refusal::RequestCount)));
+        assert!(before_release[1]
+            .latency
+            .outcomes
+            .iter()
+            .all(|h| h.count == 0));
+        assert!(
+            before_release[3]
+                .latency
+                .outcomes
+                .iter()
+                .all(|h| h.count == 0),
+            "RPC cancellation must not finish live backend timing"
+        );
+        assert_eq!(
+            before_release[2].latency.outcomes[Outcome::Success as usize].count,
+            1
+        );
+        assert_eq!(
+            before_release[0].latency.outcomes[Outcome::Success as usize].count,
+            0
+        );
+
         tokio::time::timeout(Duration::from_secs(5), queued_rx)
             .await
             .unwrap()
             .unwrap();
         tokio::time::timeout(Duration::from_secs(5), async {
-            while service.admission().snapshot().in_flight != 0 {
+            while service.admission().snapshot().in_flight != 0
+                || service.admission().latency_snapshots()[1].latency.outcomes
+                    [Outcome::Success as usize]
+                    .count
+                    != 1
+                || service.admission().latency_snapshots()[3].latency.outcomes
+                    [Outcome::Success as usize]
+                    .count
+                    != 1
+            {
                 tokio::task::yield_now().await;
             }
         })

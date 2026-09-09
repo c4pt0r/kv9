@@ -63,6 +63,13 @@ leaders cannot establish successful reads, and replaced log positions cannot pro
 Bad objects or protocol anchors fail recovery explicitly. Each covered cut has reproducible positive and negative
 controls; uncovered power-loss/fsync behavior remains identified.
 
+The bounded public admission increment (#38) is followed by fixed local latency
+observations (#39), documented in [LATENCY-OBSERVABILITY.md](LATENCY-OBSERVABILITY.md).
+The next C03 increment must use persistent RPC connections, record end-to-end
+latency independently, and separate refused requests, unresolved writes and
+acknowledged operations before any throughput claim. Instrumentation itself is
+not benchmark acceptance; exact-revision evidence is tracked on the issues.
+
 ## P1: bounded storage and measured throughput
 
 1. Implement active/immutable memtables, incremental SSTs, stable versioned views, range tombstones, leveled

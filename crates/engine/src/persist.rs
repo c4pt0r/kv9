@@ -32,6 +32,7 @@ pub struct WalEngine {
     /// Durable state. Guarded separately so a write serializes on the log, which is also
     /// what keeps log order and index order identical.
     wal: Mutex<Wal>,
+    io_metrics: std::sync::Arc<kv9_common::metrics::WalIoMetrics>,
 }
 
 impl WalEngine {
@@ -82,6 +83,7 @@ impl WalEngine {
         Ok((
             WalEngine {
                 index,
+                io_metrics: wal.io_metrics(),
                 wal: Mutex::new(wal),
             },
             replay,
@@ -100,6 +102,10 @@ impl WalEngine {
             position,
             scope,
         })
+    }
+
+    pub fn io_metrics(&self) -> std::sync::Arc<kv9_common::metrics::WalIoMetrics> {
+        self.io_metrics.clone()
     }
 
     pub fn data_revision(&self) -> u64 {
@@ -161,12 +167,14 @@ impl WalEngine {
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
             Err(e) => return Err(checkpoint_io(e)),
         }
-        let (mut upgraded, _) = Wal::open(&tmp)?;
+        let (mut upgraded, _) = Wal::open_with_metrics(&tmp, self.io_metrics.clone())?;
         upgraded.append_applied(&state, at)?;
         std::fs::rename(&tmp, wal.path()).map_err(checkpoint_io)?;
         upgraded.relocated(wal.path().to_path_buf());
         *wal = upgraded;
-        sync_parent(wal.path())?;
+        self.io_metrics
+            .namespace_publish
+            .measure(|| sync_parent(wal.path()))?;
         let mut remove_marker = WriteBatch::new();
         remove_marker.delete(ColumnFamily::Default, marker.to_vec());
         self.index.write_applied(remove_marker, at)
@@ -191,7 +199,7 @@ impl WalEngine {
                 "checkpoint ahead of applied data".into(),
             ));
         }
-        let (reader, replay) = Wal::open(wal.path())?;
+        let (reader, replay) = Wal::open_with_metrics(wal.path(), self.io_metrics.clone())?;
         drop(reader);
         // Unpositioned records carry no reclaim authority; retain the entire log.
         if replay.positions.iter().any(Option::is_none) {
@@ -220,7 +228,7 @@ impl WalEngine {
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
             Err(e) => return Err(checkpoint_io(e)),
         }
-        let (mut tail, _) = Wal::open(&tail_path)?;
+        let (mut tail, _) = Wal::open_with_metrics(&tail_path, self.io_metrics.clone())?;
         for (batch, at) in replay.batches.iter().zip(&replay.positions) {
             if let Some(at) = at.filter(|at| at.index > manifest.index) {
                 tail.append_applied(batch, at)?;
@@ -231,7 +239,9 @@ impl WalEngine {
         // directory sync fails, future appends must never hit the unlinked inode.
         tail.relocated(wal.path().to_path_buf());
         *wal = tail;
-        sync_parent(wal.path())?;
+        self.io_metrics
+            .namespace_publish
+            .measure(|| sync_parent(wal.path()))?;
         Ok(true)
     }
 
@@ -385,7 +395,22 @@ mod tests {
                 original,
                 "refused migration cannot edit WAL"
             );
+            let observer = engine.io_metrics();
+            let writes_before = observer.write.snapshot().outcomes
+                [kv9_common::metrics::Outcome::Success as usize]
+                .count;
             engine.upgrade_legacy_applied(marker, at).unwrap();
+            assert!(std::sync::Arc::ptr_eq(
+                &observer,
+                &engine.wal.lock().unwrap().io_metrics()
+            ));
+            assert!(
+                observer.write.snapshot().outcomes[kv9_common::metrics::Outcome::Success as usize]
+                    .count
+                    > writes_before,
+                "WAL replacement lost its process-lifetime observer"
+            );
+
             assert!(engine.get(ColumnFamily::Default, marker).unwrap().is_none());
             assert_eq!(
                 engine.applied_position().unwrap(),
