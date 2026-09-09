@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Verify complete persistent-workload artifacts and positive work in 13 Chaos windows."""
+"""Verify complete persistent-workload artifacts and positive work in 16 Chaos windows."""
 import argparse
 import copy
 import datetime
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 
@@ -11,7 +12,12 @@ from workload_report import PHASES, bounded, require, strict_json, validate
 
 WINDOWS = ["registration-seed-blackhole", "pod-failure-1", "pod-failure-2", "pod-failure-3",
            "partition", "public-admission-overload", "delay"] + [
-               f"io-voter-{node}-errno-{errno}" for node in (1, 2, 3) for errno in (5, 28)]
+               f"io-voter-{node}-errno-{errno}" for node in (1, 2, 3) for errno in (5, 28)] + [
+                   f"store-loss-voter-{node}-log-missing" for node in (1, 2, 3)]
+
+spec = importlib.util.spec_from_file_location('store_loss_audit', Path(__file__).with_name('check-store-loss-chaos.py'))
+store_loss = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(store_loss)
 
 
 def window_check(phase, progress, faults, records, configuration, elapsed, victim_pod=None):
@@ -39,6 +45,8 @@ def window_check(phase, progress, faults, records, configuration, elapsed, victi
         kind, name, action = "PodChaos", "fail-leader", "pod-failure"
     elif phase.startswith("io-voter"):
         kind, name, action = "IOChaos", "raft-io-fault", "fault"
+    elif phase.startswith("store-loss-voter"):
+        kind, name, action = "PodChaos", "store-loss-kill", "pod-kill"
     else:
         kind = "NetworkChaos"
         name, action = {"registration-seed-blackhole": ("registration-seed-blackhole", "partition"),
@@ -54,14 +62,22 @@ def window_check(phase, progress, faults, records, configuration, elapsed, victi
     selector = fault["spec"]["selector"]
     require(selector["namespaces"] == [fault["metadata"]["namespace"]],
             "fault selector is not restricted to the owned database namespace")
-    if phase.startswith("io-voter"):
+    if phase.startswith(("io-voter", "store-loss-voter")):
         require(victim_pod is not None and victim_pod["metadata"]["namespace"] == fault["metadata"]["namespace"] and
                 selector["pods"] == {fault["metadata"]["namespace"]: [victim_pod["metadata"]["name"]]},
-                "I/O fault does not select the retained victim Pod")
+                "fault does not select the retained victim Pod")
         labels = victim_pod["metadata"]["labels"]
-        require(fault["spec"]["volumePath"] == "/data" and fault["spec"]["path"] == "/data/raft/raft.log" and
-                fault["spec"]["methods"] == ["WRITE"] and fault["spec"]["percent"] == 100,
-                "I/O fault does not target the actual Raft log writes")
+        if phase.startswith("io-voter"):
+            require(fault["spec"]["volumePath"] == "/data" and fault["spec"]["path"] == "/data/raft/raft.log" and
+                    fault["spec"]["methods"] == ["WRITE"] and fault["spec"]["percent"] == 100,
+                    "I/O fault does not target the actual Raft log writes")
+        else:
+            require(labels["kv9-node"] == phase.split("-")[3] and
+                    any(r['id'] == fault['metadata']['namespace'] + '/' + victim_pod['metadata']['name'] and
+                        r['phase'] == 'Injected' and r['injectedCount'] > 0 and
+                        any(e['operation'] == 'Apply' and e['type'] == 'Succeeded' for e in r['events'])
+                        for r in fault['status']['experiment']['containerRecords']),
+                    'store-loss fault did not kill the original voter')
     else:
         labels = selector["labelSelectors"]
     require(labels["app"] == "kv9", "fault does not select a database Pod")
@@ -121,6 +137,11 @@ def main():
                     "I/O fault lacks the actual victim's fail-stop evidence")
             require(int(receipt["applied_term"]) > 0 and int(recovered["driver_applied_index"]) >= int(receipt["applied_index"]) > 0,
                     "I/O recovery lacks an exact majority receipt and caught-up replica")
+        elif phase.startswith("store-loss-voter"):
+            victim_pod = strict_json(bounded(root / f"{phase}-persistent-victim.json", 2 * 1024 * 1024))
+            require(victim_pod == strict_json(bounded(root / phase / "before/pod.json", 2 * 1024 * 1024)),
+                    'store-loss snapshot differs from the original victim')
+            store_loss.audit_cell(root, phase)
         window = window_check(phase, progress, faults, records, config, report["elapsed_ns"], victim_pod)
         require(window["namespace"] == pod["metadata"]["namespace"], "fault snapshot belongs to another namespace")
         window["observed_at"] = when.isoformat()
@@ -164,7 +185,7 @@ def main():
     with (root / "persistent-history-checker.json").open("x") as stream:
         json.dump(result, stream, indent=2)
         stream.write("\n")
-    print("PASS: persistent full history verified across 13 Chaos windows; three invalid fault evidence controls rejected")
+    print("PASS: persistent full history verified across 16 Chaos windows; three invalid fault evidence controls rejected")
 
 
 if __name__ == "__main__":

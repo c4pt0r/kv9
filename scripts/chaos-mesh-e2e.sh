@@ -73,6 +73,8 @@ collect_scene() {
       >"$scene/$pod.metrics.json" 2>&1 || true
     k exec -n "$namespace" "$pod" -- cat /tmp/kv9-io.log \
       >"$scene/$pod.io.log" 2>&1 || true
+    k exec -n "$namespace" "$pod" -- cat /tmp/kv9-loss.log \
+      >"$scene/$pod.store-loss.log" 2>&1 || true
     # /proc/net/tcp preserves SYN_SENT vs ESTABLISHED even though the minimal
     # image intentionally carries no ss/netstat package. This is the direct
     # discriminator for a peer worker stuck in connect/handshake.
@@ -714,6 +716,62 @@ k delete service kv9-n9 configmap wrong-root -n "$namespace" --ignore-not-found 
 source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-registration.sh"
 run_registration_seed_fault
 
+# Run container-kill before pod-failure can accumulate kubelet backoff.
+# This still requires kubelet to restart a container in the same Pod/PVC.
+echo "Stage: container kill and durable restart"
+follower=$(( leader == 3 ? 2 : 3 ))
+before_restarts="$(restart_count "$follower")"
+container_pod="$(pod_for "$follower")"
+k get pod -n "$namespace" "$container_pod" -o json >"$artifact/container-before-pod.json"
+k exec -n "$namespace" "$container_pod" -- cat /data/kv9-store-lifecycle >"$artifact/container-before-lifecycle"
+k apply -f - >/dev/null <<YAML
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: kill-container
+  namespace: $namespace
+spec:
+  action: container-kill
+  mode: one
+  containerNames: ["kv9"]
+  selector:
+    namespaces: ["$namespace"]
+    labelSelectors:
+      app: kv9
+      kv9-node: "$follower"
+YAML
+container_restarted() {
+  local after
+  after="$(restart_count "$follower" 2>/dev/null || true)"
+  [[ "$after" =~ ^[0-9]+$ ]] && (( after > before_restarts )) && node_serving "$follower" &&
+    k exec -n "$namespace" "$container_pod" -- timeout 2 /bin/bash -c \
+      'exec 3<>/dev/tcp/127.0.0.1/20160' >/dev/null 2>&1
+}
+wait_until "container restart and durable catch-up" 40 container_restarted
+record_fault podchaos kill-container
+k get podchaos kill-container -n "$namespace" -o json >"$artifact/container-kill-fault.json"
+k get pod -n "$namespace" "$container_pod" -o json >"$artifact/container-after-pod.json"
+k exec -n "$namespace" "$container_pod" -- cat /data/kv9-store-lifecycle >"$artifact/container-after-lifecycle"
+k exec -n "$namespace" "$container_pod" -- cat /data/status >"$artifact/container-after-status.txt"
+python3 - "$artifact" <<'PYTHON'
+import json, pathlib, sys
+p=pathlib.Path(sys.argv[1])
+before,after=[json.loads((p/f'container-{s}-pod.json').read_text()) for s in ('before','after')]
+assert before['metadata']['uid']==after['metadata']['uid']
+assert before['spec']['volumes']==after['spec']['volumes']
+b,a=[o['status']['containerStatuses'][0] for o in (before,after)]
+assert a['restartCount']>b['restartCount'] and a['containerID']!=b['containerID'] and 'running' in a['state']
+assert a['lastState']['terminated']['containerID']==b['containerID'] and a['lastState']['terminated']['exitCode']==137
+assert (p/'container-before-lifecycle').read_bytes()==(p/'container-after-lifecycle').read_bytes()
+f=json.loads((p/'container-kill-fault.json').read_text())
+assert f['spec']['action']=='container-kill' and any(c['type']=='AllInjected' and c['status']=='True' for c in f['status']['conditions'])
+victim=before['metadata']['namespace']+'/'+before['metadata']['name']+'/kv9'
+assert any(r['id']==victim and r['phase']=='Injected' and r['injectedCount']>0 for r in f['status']['experiment']['containerRecords'])
+PYTHON
+echo 'PASS: container-kill restarted the killed container in the same Pod and original store with a live endpoint'
+k delete podchaos kill-container -n "$namespace" --ignore-not-found --wait=true >/dev/null
+leader="$(wait_agreed_leader "agreement after container restart" 30)"
+
 # Pod kill must replace the exact selected member without losing durable identity.
 echo "Stage: Pod kill and replacement"
 leader="$(wait_agreed_leader "pre-Pod-kill agreement" 15)"
@@ -908,36 +966,6 @@ history_set_phase healing
 k delete networkchaos delay-follower -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "delayed follower recovery" 30)"
 
-# Container kill exercises kubelet restart (distinct from deleting the Pod).
-echo "Stage: container kill and durable restart"
-follower=$(( leader == 3 ? 2 : 3 ))
-before_restarts="$(restart_count "$follower")"
-k apply -f - >/dev/null <<YAML
-apiVersion: chaos-mesh.org/v1alpha1
-kind: PodChaos
-metadata:
-  name: kill-container
-  namespace: $namespace
-spec:
-  action: container-kill
-  mode: one
-  containerNames: ["kv9"]
-  selector:
-    namespaces: ["$namespace"]
-    labelSelectors:
-      app: kv9
-      kv9-node: "$follower"
-YAML
-container_restarted() {
-  local after
-  after="$(restart_count "$follower" 2>/dev/null || true)"
-  [[ "$after" =~ ^[0-9]+$ ]] && (( after > before_restarts )) && node_serving "$follower"
-}
-wait_until "container restart and durable catch-up" 40 container_restarted
-record_fault podchaos kill-container
-k delete podchaos kill-container -n "$namespace" --ignore-not-found --wait=true >/dev/null
-leader="$(wait_agreed_leader "final three-node agreement" 30)"
-
 final_get="$(chaos_probe final-get 0 raw-get \
   --keyspace "$keyspace" --key-hex 706172746974696f6e)"
 grep -q '^value_hex=7633$' <<<"$final_get" || {
@@ -947,6 +975,8 @@ grep -q '^value_hex=7633$' <<<"$final_get" || {
 source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-io.sh"
 run_io_matrix
 python3 scripts/check-latency-metrics.py "$artifact"
+source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-store-loss.sh"
+run_store_log_loss_matrix
 persistent_finish
 
 touch "$artifact/history.stop"
@@ -957,8 +987,10 @@ python3 scripts/history/checker.py "$artifact/history.jsonl" --output "$artifact
   --require-phase registration-seed-blackhole pod-failure-1 pod-failure-2 pod-failure-3 partition public-admission-overload delay \
     io-voter-1-errno-5 io-voter-1-errno-28 io-voter-2-errno-5 io-voter-2-errno-28 \
     io-voter-3-errno-5 io-voter-3-errno-28 \
+    store-loss-voter-1-log-missing store-loss-voter-2-log-missing store-loss-voter-3-log-missing \
   >"$artifact/history-checker.log" 2>&1
 echo "PASS: concurrent Raw KV/catalog history is valid across the Chaos Mesh matrix"
 python3 scripts/check-formation-chaos.py "$artifact"
+python3 scripts/check-store-loss-chaos.py "$artifact"
 
 echo "PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, container recovery, and Raft I/O faults"

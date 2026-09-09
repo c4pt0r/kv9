@@ -59,6 +59,7 @@ initial dataset before measuring; mutable-key traffic cannot modify its sentinel
 | Public admission pressure | Live partition, real count refusals, bounded reservations and majority progress |
 | Follower delay | Measured TCP delay while the fault remains injected |
 | Voter 1/2/3 × errno 5/28 | Actual Raft WRITE failure, fail-stop exit and recovery through a majority-acknowledged position |
+| Missing Active log, voter 1/2/3 | PodChaos kills the original owner; two fresh starts refuse the missing log; surviving voters serve; the original log restores the same store |
 
 Each common phase callback atomically changes the persistent Pod's phase file.
 It then waits for acknowledged Put and Get calls from **both** histories while
@@ -79,11 +80,30 @@ recovery facts.
 `check-persistent-chaos.py` first uses the independent whole-run verifier from
 `workload_report.py`: full terminal accounting, hashes, lifecycle/populations,
 logical/attempt histograms, initialization, sentinel and a legal history witness
-are mandatory. It then requires all 13 phase snapshots to contain positive
+are mandatory. It then requires all 16 phase snapshots to contain positive
 Put/Get progress. Each snapshot's reported success counts must be supported by
 actual terminal events at or before its monotonic cutoff. The fault resource
 must still be injected and not deleting, must target the owned database namespace
 and expected voter, and must agree with the retained I/O process evidence.
+
+For each missing-log cell, `chaos-mesh-store-loss.sh` waits for PodChaos to kill
+the original owner and for a new Pod UID held by a fixture shell without a
+database listener. The fixture then moves the stopped Raft log out of the Raft
+directory and retains its exact bytes. File loss is a fixture operation;
+PodChaos supplies the actual process failure. This does not model power loss.
+Two distinct database child PIDs must exit with the missing-file Raft recovery
+error, without recreating the log or updating the old runtime status. The
+surviving majority must acknowledge writes and reads while both histories make
+progress. Restoring the exact saved file must recover the original PVC,
+lifecycle, root and incarnation, and apply through the majority's receipt.
+
+`check-store-loss-chaos.py` independently binds the fault's original victim to
+the before/after Pod and PVC identities, repeated child exits, stopped endpoint
+probes, retained log hashes, client phase times and recovery receipts. It also
+replays the complete KV/catalog history witness. Five evidence controls remove
+the victim, accept a startup, recreate the log, reuse a child PID, or restore
+different bytes; each must fail its specific check. A fresh replacement PVC is
+a separate remaining acceptance case under #42.
 
 The checker rejects three isolated corruptions of real artifacts: missing Put
 progress, a cutoff preceding the claimed completions, and an uninjected fault.
