@@ -201,7 +201,7 @@ original run is independently accepted again after the isolated corruptions.
 
 CI retains the executable/build inventory, raw E2E reports/histories, independent
 witnesses, corrupt artifacts and drain control logs. The persistent workload also
-runs in the actual [16-window Chaos Mesh gate](PERSISTENT-CHAOS.md). #40 was accepted
+runs in the actual [19-window Chaos Mesh gate](PERSISTENT-CHAOS.md). #40 was accepted
 at `ef6e90e` after all exact-revision CI/Correctness gates and independent artifact
 checks passed, including the [measurement matrix and client calibration](BENCHMARKS.md).
 The broader #13 work and #41 scheduling investigation remain open. Existing client

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify complete persistent-workload artifacts and positive work in 16 Chaos windows."""
+"""Verify complete persistent-workload artifacts and positive work in 19 Chaos windows."""
 import argparse
 import copy
 import datetime
@@ -13,11 +13,15 @@ from workload_report import PHASES, bounded, require, strict_json, validate
 WINDOWS = ["registration-seed-blackhole", "pod-failure-1", "pod-failure-2", "pod-failure-3",
            "partition", "public-admission-overload", "delay"] + [
                f"io-voter-{node}-errno-{errno}" for node in (1, 2, 3) for errno in (5, 28)] + [
-                   f"store-loss-voter-{node}-log-missing" for node in (1, 2, 3)]
+                   f"store-loss-voter-{node}-log-missing" for node in (1, 2, 3)] + [
+                       f"store-loss-voter-{node}-pvc-replacement" for node in (1, 2, 3)]
 
 spec = importlib.util.spec_from_file_location('store_loss_audit', Path(__file__).with_name('check-store-loss-chaos.py'))
 store_loss = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(store_loss)
+replacement_spec = importlib.util.spec_from_file_location('store_replacement_audit', Path(__file__).with_name('check-store-replacement-chaos.py'))
+store_replacement = importlib.util.module_from_spec(replacement_spec)
+replacement_spec.loader.exec_module(store_replacement)
 
 
 def window_check(phase, progress, faults, records, configuration, elapsed, victim_pod=None):
@@ -141,7 +145,10 @@ def main():
             victim_pod = strict_json(bounded(root / f"{phase}-persistent-victim.json", 2 * 1024 * 1024))
             require(victim_pod == strict_json(bounded(root / phase / "before/pod.json", 2 * 1024 * 1024)),
                     'store-loss snapshot differs from the original victim')
-            store_loss.audit_cell(root, phase)
+            if phase.endswith('-pvc-replacement'):
+                store_replacement.audit_cell(root, phase)
+            else:
+                store_loss.audit_cell(root, phase)
         window = window_check(phase, progress, faults, records, config, report["elapsed_ns"], victim_pod)
         require(window["namespace"] == pod["metadata"]["namespace"], "fault snapshot belongs to another namespace")
         window["observed_at"] = when.isoformat()
@@ -180,13 +187,14 @@ def main():
                       for name in ("check-persistent-chaos.py", "chaos-mesh-persistent.sh", "chaos-mesh-e2e.sh",
                                    "chaos-mesh-probes.sh", "chaos-mesh-io.sh", "chaos_client.py",
                                    "chaos-mesh-store-loss.sh", "check-store-loss-chaos.py",
+                                   "chaos-mesh-store-replacement.sh", "check-store-replacement-chaos.py",
                                    "workload_report.py", "history/checker.py")},
                   topology="single-host Kind", storage="local WAL mode; MinIO is verified by the separate executable E2E",
                   clock_ticks_per_second=ticks, windows=windows, evidence_controls=controls, history=checked["history"])
     with (root / "persistent-history-checker.json").open("x") as stream:
         json.dump(result, stream, indent=2)
         stream.write("\n")
-    print("PASS: persistent full history verified across 16 Chaos windows; three invalid fault evidence controls rejected")
+    print("PASS: persistent full history verified across 19 Chaos windows; three invalid fault evidence controls rejected")
 
 
 if __name__ == "__main__":

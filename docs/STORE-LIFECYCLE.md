@@ -112,8 +112,11 @@ The [persistent Chaos gate](PERSISTENT-CHAOS.md) includes an initial-voter
 missing-log matrix: actual PodChaos owner death, two refused starts per voter,
 majority service, and recovery of the original retained log. The fixture and
 independent evidence checker keep process death, file loss and restored
-identity observable as separate boundaries. Replacement-PVC acceptance remains
-a distinct #42 obligation.
+identity observable as separate boundaries. A separate three-voter PVC matrix
+prepares new disks, copies only the old root/store identity bundle, verifies
+typed initialization and actual startup refusal, then recovers each original
+PVC. It checks the independently prepared incarnation rather than relying on
+a missing listener or stale status alone.
 
 ```sh
 python3 scripts/check-store-protocol.py --tlapm /path/to/tlapm/bin/tlapm \
