@@ -132,3 +132,52 @@ histories, remains an explicit #47 acceptance requirement. The existing
 19-window matrix exercises other fault/recovery boundaries; passing it does not
 substitute for the new migration cell. Neither single-host Kind nor two local
 socket endpoints establishes cross-host failure tolerance or throughput targets.
+
+## Accepted route-ownership milestone
+
+Clean executable revision `b91e0d8d75c31b5e74a3d3a5470f169020c0b22c` passed
+all 118 Raft library tests, five route source controls and five existing
+receive-authority source controls. Each source control retained its passing
+baseline, exact intended assertion failure and passing restoration. The protocol
+gate and an independent source-bound audit accepted 32 TLC cases and 31 proof
+or audit cases, including 21 positive fresh-cache proof runs with the exact
+17-declaration / 197-obligation inventory, eight protocol faults and eight
+output controls.
+
+A fresh actual Chaos Mesh run at that same clean revision passed the existing
+19-window matrix. Independent formation, missing-log, replacement-PVC and
+persistent-client audits accepted all 4,107 CLI operations and 1,140 persistent
+operations with complete history witnesses. The archive retains the exact source,
+raw scene, histories, proofs, controls, original failing reproduction and
+independent audits:
+`target/correctness-evidence/2026-09-09-b91e0d8-route-ownership.tar.gz`,
+45,083,642 bytes, SHA-256
+`219fed168065451903a7752120720f4c3bae2755787a9d562352eb8fe9ff69bf`.
+This is local acceptance of route ownership and the existing fault matrix;
+hosted acceptance of this revision and the dedicated migration cell are separate.
+
+## Remaining production migration path
+
+The public membership surface currently exposes admission and promotion, while
+renewing a consumed admission requires an internal revocation transaction. The
+runtime test for an authorized new endpoint invokes that helper directly. A
+supported operator workflow must authenticate and commit a conditional endpoint
+change, preserve the immutable node/store binding, check the expected old route
+and return an exact applied receipt. Its conflict and retry semantics need their
+own protocol argument and implementation tests.
+
+An Active store restart currently recognizes its local init marker and durable
+membership before issuing registration. Stable advertised endpoints must retain
+coordinator-free restart. A changed canonical advertised endpoint must first
+complete the authorized route transition and catch up; changing a local bind
+address alone is insufficient. Initial-root seed fallback and current catalog
+routes need explicit behavior during restart and concurrent endpoint changes.
+
+The dedicated Chaos cell must kill the original owner, retain its original PVC
+and incarnation, leave the old endpoint unavailable, and authorize a distinct
+new endpoint through the production API. Acceptance requires actual new-endpoint
+delivery, exact transition and catch-up receipts, surviving-quorum progress and
+both complete histories. Retain the actual PodChaos victim, old/new Pod and
+network observations, identity checks and evidence controls. A fresh prepared
+PVC must remain refused. These requirements keep #47 open; no fixed coordinator
+or test-only route override may supply the missing production path.
