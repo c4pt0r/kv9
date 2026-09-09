@@ -148,7 +148,7 @@ python3 scripts/history/checker.py /path/history.jsonl --output /path/result.jso
 The checker exits 0 only for valid, 1 for proven invalid, and 2 for inconclusive
 or malformed input. Acceptance requires successful mutations and reads and all
 requested API kinds; zero operations, all errors and missing coverage fail.
-Controls include 34 tests and 200 deterministic small atomic histories checked
+Controls include 36 tests and 200 deterministic small atomic histories checked
 against a separate permutation/subset oracle. Eleven isolated source mutations
 each require exactly one selected test to pass, fail its intended assertion,
 and pass after byte-for-byte restoration. Sources and mutant hashes, all phase
@@ -278,3 +278,24 @@ semantics, response barrier or witness validation rule changed. A small explicit
 history reproduces the early-selection requirement under a fixed state budget;
 removing the preparation rule fails that assertion. The gate now requires all
 35 history tests and 12 isolated baseline/mutant/restored source controls.
+
+### Reversed concurrent write responses
+
+The probe-routing acceptance run retained at `/tmp/kv9-chaos-e2e.00U4mD` completed
+all fault windows and its persistent-client history, but the original CLI history
+checker exhausted its unchanged 60-second budget. Its 2,517 operations include
+303 unknown outcomes. Near the end, two overlapping Puts to the same key returned
+in reverse order; a later Scan required the second invoked value. The previous
+response-first search tried many old unknown deletions before reconsidering that
+write pair. An independent diagnostic witness explains the original full history
+in 4,454 states and 3.30 seconds, with every unknown retained.
+
+The guided witness heuristic now tries overlapping confirmed writes to the same
+key in invocation order first. It retains alternative orders, does not trust
+server receipts as model constraints, and still replays every positive witness
+from the initial state. The sequential model, unrestricted exhaustion, search
+limits and treatment of inconclusive results are unchanged. A bounded regression
+covers both the reversed-response case with 128 old unknown deletions and the
+opposite legal order. All 36 history tests and the 13 isolated source controls
+remain required. The original failed acceptance attempt is not relabeled as a
+successful process run.
