@@ -110,9 +110,14 @@ cleanup() {
   if k get namespace "$namespace" >/dev/null 2>&1; then
     if (( rc == 0 )); then
       collect_scene PASS
-      k delete podchaos,networkchaos,iochaos --all -n "$namespace" --ignore-not-found \
-        --wait=true >/dev/null 2>&1 || true
-      k delete namespace "$namespace" --wait=true >/dev/null 2>&1 || true
+      # Best-effort cleanup must not consume the hosted artifact-upload budget.
+      KUBECONFIG="$kubeconfig" timeout --kill-after=5s 30s "$kubectl_bin" \
+        --request-timeout=10s delete podchaos,networkchaos,iochaos --all \
+        -n "$namespace" --ignore-not-found --wait=true \
+        >"$artifact/cleanup-faults.log" 2>&1 || true
+      KUBECONFIG="$kubeconfig" timeout --kill-after=5s 30s "$kubectl_bin" \
+        --request-timeout=10s delete namespace "$namespace" --wait=true \
+        >"$artifact/cleanup-namespace.log" 2>&1 || true
     else
       collect_scene
       echo "FAIL: preserving live namespace $namespace for inspection" >&2

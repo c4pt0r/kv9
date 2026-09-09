@@ -172,11 +172,16 @@ jobs:
         run: scripts/chaos-mesh-setup.sh
       - name: Build the default production binary
         run: cargo build --bin kv9
+      - name: Verify bounded logging and failure preservation
+        run: |
+          set -euo pipefail
+          python3 scripts/check-bounded-log.py --output "$RUNNER_TEMP/bounded-log-controls" > "$RUNNER_TEMP/bounded-log-controls.log" 2>&1
+          cat "$RUNNER_TEMP/bounded-log-controls.log"
+          test "$(tail -1 "$RUNNER_TEMP/bounded-log-controls.log")" = 'PASS: 6 bounded logging controls verified'
       - name: Run and verify the Chaos Mesh acceptance matrix
         run: |
           set -euo pipefail
-          scripts/chaos-mesh-e2e.sh > "$RUNNER_TEMP/chaos-mesh.log" 2>&1
-          cat "$RUNNER_TEMP/chaos-mesh.log"
+          bash scripts/run-bounded-log.sh "$RUNNER_TEMP/chaos-mesh.log" 20m 15s scripts/chaos-mesh-e2e.sh
           test "$(grep -Fxc 'PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, container recovery, and Raft I/O faults' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -Fxc 'PASS: concurrent Raw KV/catalog history is valid across the Chaos Mesh matrix' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -Fxc 'PASS: persistent full history verified across 13 Chaos windows; three invalid fault evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
@@ -202,8 +207,8 @@ jobs:
         if: always()
         run: |
           mkdir -p "$RUNNER_TEMP/chaos-cluster"
-          kind export logs --name "$KV9_KIND_CLUSTER" "$RUNNER_TEMP/chaos-cluster" || true
-          kubectl get pods -A -o wide > "$RUNNER_TEMP/chaos-cluster/pods.txt" 2>&1 || true
+          timeout --kill-after=10s 120s kind export logs --name "$KV9_KIND_CLUSTER" "$RUNNER_TEMP/chaos-cluster" || true
+          timeout --kill-after=5s 30s kubectl --request-timeout=10s get pods -A -o wide > "$RUNNER_TEMP/chaos-cluster/pods.txt" 2>&1 || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -211,8 +216,10 @@ jobs:
           path: |
             ${{ runner.temp }}/chaos-mesh.log
             ${{ runner.temp }}/chaos-cluster
+            ${{ runner.temp }}/bounded-log-controls
+            ${{ runner.temp }}/bounded-log-controls.log
             /tmp/kv9-chaos-e2e.*
           if-no-files-found: error
       - name: Remove this run's cluster
         if: always()
-        run: kind delete cluster --name "$KV9_KIND_CLUSTER"
+        run: timeout --kill-after=10s 120s kind delete cluster --name "$KV9_KIND_CLUSTER"
