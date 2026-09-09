@@ -119,3 +119,52 @@ regression. Single-host Kind evidence does not prove host-loss tolerance.
 
 GitHub workflows retain these gates for manually triggered pre-release or key
 milestone acceptance. Routine development runs locally according to `TESTING.md`.
+
+## Accepted local evidence — 2026-09-09
+
+The failing regression is retained in `7dcca7a`; the implementation and proof gates
+are in `dcc307893ea9bb93e9fee4baeaa81b5193d9e676`. Runtime acceptance used a clean,
+detached worktree at that exact implementation commit. Proof and Rust mutation
+artifacts were independently bound to its source hashes.
+
+| Gate | Accepted evidence |
+| --- | --- |
+| Original regression | Exactly one compiled test fails at the lost-read assertion before the fix and passes after it |
+| Workspace | 532 passed, zero failed, 22 ignored; all-target build, warnings-denied Clippy, formatting and actionlint pass |
+| Rustdoc | All eight workspace crates freshly documented with broken and private intra-doc links denied |
+| Rust source controls | Six isolated baseline / intended failure / restored sequences, with exit codes 0 / 101 / 0 |
+| Protocol | 32 TLC cases, 31 proof/audit cases, 21 fresh positive strict proof runs; 15 theorems and 196 obligations per positive run |
+| Validator compatibility | All 64 retained endpoint/route model cases accepted under their unchanged exploration thresholds |
+| Real process E2E | Six scripts pass: phase-1 acceptance, dynamic membership, Raw KV, quickstart, root trust and partition-read refusal |
+| Real MinIO | Three replicas, failover, remote checkpoint, reclaimed WAL, live tail and deletes pass |
+| Actual Chaos Mesh | Full 19-window matrix passes; complete histories independently accepted for 4,108 CLI operations and 1,148 persistent-client operations |
+
+Chaos coverage includes faults on every voter, leader partition, public admission
+pressure, six actual EIO/ENOSPC failures, repeated missing-log refusal and three
+independently prepared replacement-PVC refusals, followed by original-store
+recovery. Formation, storage-loss, replacement, latency and persistent-history
+auditors were rerun against an independent copy of the successful scene. The
+persistent collector was removed before a final database read/write probe passed.
+The matrix uses single-host Kind and local WAL mode; MinIO has its separate E2E.
+
+Retained archive: `target/correctness-evidence/2026-09-09-dcc3078-read-admission.tar.gz`,
+113,869,460 bytes, SHA-256
+`032a946ce4536431b6bb050fa126814541b0b061e397651dd2cb5e2031090759`.
+Its manifest binds 3,290 entries, including exact source archives, raw logs,
+histories, proof inventories, source controls and independent audit scripts.
+
+Failed attempts remain visible in the archive. The first two protocol runs exposed
+TLC wrapper/adapter errors; the third complete run is the accepted result. A
+temporary E2E wrapper used the wrong partition-read terminal marker and exited one,
+although all six scripts exited zero. The retained independent marker audit checks
+the unchanged logs against the exact committed workflow. The first independent
+persistent audit supplied a short SHA and correctly failed revision matching; the
+corrected invocation uses the full SHA and preserves the original certificates.
+None of these corrections reran or rewrote the successful runtime histories.
+
+The original hosted Raw KV failure and local initial gRPC apply timeout are also
+retained. Three subsequent runs of the original 118-test Raft binary passed, which
+does not explain the initial apply timeout. Listener and apply-wait diagnostics
+are now more informative; no specific transport cause is established. Issue #48
+remains open for that diagnosis, #47 remains open for production endpoint migration,
+and this increment does not close P0. No hosted workflow was dispatched.
