@@ -31,6 +31,21 @@ migration_replaced_held() {
     >/dev/null 2>&1
 }
 
+migration_owner_released() {
+  # Pod deletion can precede the old process releasing StoreGuard. A new Pod
+  # UID alone is not proof that the retained volume has no writer.
+  migration_release_attempt=$((migration_release_attempt + 1))
+  local attempt="$migration_scene/owner-release-attempts/$migration_release_attempt"
+  mkdir -p "$(dirname "$attempt")"
+  date --iso-8601=ns >"$attempt.at.txt"
+  local rc=0
+  k exec -n "$namespace" "$migration_pod" -- /usr/local/bin/kv9 store-prepare \
+    --node-id 4 --data-dir /data >"$attempt.out" 2>"$attempt.err" || rc=$?
+  printf '%s\n' "$rc" >"$attempt.exit"
+  (( rc == 0 )) || return 1
+  cp "$attempt.out" "$migration_scene/owner-release.prepare"
+}
+
 migration_owner_waiting() {
   local pid pod
   pod="$(pod_for 4)" || return 1
@@ -74,6 +89,7 @@ migration_probe_endpoints() {
 run_endpoint_migration() {
   local migration_scene="$artifact/endpoint-migration" migration_pod migration_old_uid
   local migration_address migration_old_address migration_mutation_index leader pod_ip receipt
+  local migration_release_attempt=0
   mkdir -p "$migration_scene"
   migration_pod="$(pod_for 4)"
   migration_old_uid="$(pod_uid 4)"
@@ -103,8 +119,7 @@ YAML
   wait_injected podchaos endpoint-migration-kill
   wait_until 'PodChaos kills the admitted owner and its successor waits with the original PVC' 60 migration_replaced_held
   migration_pod="$(pod_for 4)"
-  k exec -n "$namespace" "$migration_pod" -- /usr/local/bin/kv9 store-prepare \
-    --node-id 4 --data-dir /data >"$migration_scene/owner-release.prepare"
+  wait_until 'original learner releases its exclusive store lock' 60 migration_owner_released
   migration_capture held
   k get podchaos -n "$namespace" endpoint-migration-kill -o json >"$migration_scene/kill.injected.json"
   # Use a distinct Service address for the migrated canonical route. It is a

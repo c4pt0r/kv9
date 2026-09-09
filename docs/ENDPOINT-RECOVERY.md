@@ -180,3 +180,10 @@ The fixture now records supervisor state and explicitly heals an untraced,
 stopped launcher only after the database exit and FUSE unmount are established.
 It retains the original I/O failure, majority history, fresh-process, exact
 catch-up and recovery-metrics requirements.
+
+The second full attempt passed every existing matrix cell and stopped before
+the migration update because the new learner Pod appeared before the old
+process released its store lock. A later same-store `store-prepare` succeeded
+without modifying its identity. The migration fixture now waits for actual
+lock acquisition and retains every attempt; it does not infer owner death from
+Pod UID replacement. This preserves the exclusive-owner requirement.
