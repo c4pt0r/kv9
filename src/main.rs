@@ -569,6 +569,10 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
                     ExitCode::SUCCESS
                 }
                 Ok(RawClientOutcome::NotLeader { leader }) => print_not_leader(leader),
+                Ok(RawClientOutcome::AdmissionRefused { reason }) => {
+                    eprintln!("admission_refused=true reason={reason}");
+                    ExitCode::FAILURE
+                }
                 // A partial write must surface as stable fields, not prose: the caller
                 // has to know how much of the range is already gone.
                 Err(kv9_common::Error::PartialDeleteRange {

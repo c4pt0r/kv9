@@ -107,3 +107,8 @@ The registration routing increment and its checked cyclic-coverage lemmas are
 specified in [REGISTRATION-ROUTING.md](REGISTRATION-ROUTING.md). Its actual Chaos
 Mesh window requires a joining learner to complete exact catch-up while its first
 seed remains partitioned and the surviving quorum serves an independent history.
+
+[PUBLIC-ADMISSION.md](PUBLIC-ADMISSION.md) defines the public backend reservation
+ledger, its local inductive count/byte proof, source controls and overload window
+under an actual leader partition. Its budget excludes transport/decode, response
+materialization and whole-process memory; broader resource obligations stay open.

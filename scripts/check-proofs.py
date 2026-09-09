@@ -90,6 +90,12 @@ def controls(lean, source, root):
     cases.append(("Registration.lean", "frozen registration cursor",
                   registration.replace(advance, "if cursor + 1 = size then 0 else cursor"),
                   "unsolved goals"))
+    admission = (source / "Admission.lean").read_text()
+    for name, guard in [("missing request count bound", "live.length < requests"),
+                        ("missing encoded byte bound", "weight ≤ bytes - live.sum")]:
+        assert admission.count(guard) == 1
+        cases.append(("Admission.lean", name, admission.replace(guard, "True"),
+                      "omega could not prove the goal"))
     for i, (filename, name, mutant, expected) in enumerate(cases):
         original = (source / filename).read_text()
         if mutant == original:

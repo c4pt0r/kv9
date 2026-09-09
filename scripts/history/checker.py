@@ -288,6 +288,8 @@ def verify_witness(history, witness):
 def observation_distance(history, index, state):
     """Witness-ordering heuristic only; never used by unrestricted exhaustion."""
     op = history.operations[index]
+    if op.outcome != "ok":
+        return 0  # A refusal has no value observation to explain.
     kv, catalog = map(dict, state)
     args = op.args
     if op.kind == 'create_keyspace':
@@ -334,7 +336,17 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
         event = history.events[cursor]
         wanted = indexes[event["id"]]
         # Search likely witnesses first without pruning other legal orders.
-        order = sorted(range(len(indexes)), key=lambda i: (i != wanted, history.operations[i].outcome == "unknown", i))
+        # Recently invoked unknown writes are more likely to explain the next
+        # observation than an arbitrary old unresolved RPC. Older candidates
+        # remain in the unrestricted search; every positive witness is replayed.
+        def priority(i):
+            op = history.operations[i]
+            prefer_observed = (guided_unknown and op.outcome == "ok" and op.kind in {"get", "scan"}
+                               and op.invocation < event["seq"] and op.response >= event["seq"]
+                               and observation_distance(history, i, state) == 0)
+            return (not prefer_observed, i != wanted, op.outcome == "unknown",
+                    -i if op.outcome == "unknown" else i)
+        order = sorted(range(len(indexes)), key=priority)
         children = []
         for i in order:
             op = history.operations[i]

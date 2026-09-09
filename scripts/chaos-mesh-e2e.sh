@@ -436,6 +436,10 @@ spec:
               exec /usr/local/bin/kv9 start --node-id '$node' \
                 --addr 0.0.0.0:20160 --data-dir /data
           env:
+            - name: KV9_PUBLIC_MAX_REQUESTS
+              value: "8"
+            - name: KV9_PUBLIC_MAX_ENCODED_BYTES
+              value: "2097152"
             - name: KV9_CLUSTER_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -527,7 +531,8 @@ YAML
 }
 
 echo "Building kv9 and loading $image into kind/$kind_cluster"
-cargo build --bin kv9 >/dev/null
+cargo build --bin kv9
+cargo build -p kv9-server --example admission-pressure >/dev/null
 docker build -q -f chaos/Dockerfile -t "$image" . >/dev/null
 KUBECONFIG="$kubeconfig" "$kind_bin" load docker-image --name "$kind_cluster" "$image" >/dev/null
 
@@ -789,6 +794,11 @@ fi
   echo "FAIL: isolated replica was replaced during the read fencing probe" >&2
   exit 1
 }
+# Keep this actual partition installed throughout public saturation and the
+# independent history observations. The pressure fixture only reads absent keys.
+source scripts/chaos-mesh-admission.sh
+run_public_admission_pressure "$new_leader" "$leader" "$survivor_a"
+
 history_set_phase healing
 k delete networkchaos isolate-leader -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "partition healing and catch-up" 35)"
@@ -876,7 +886,7 @@ wait "$history_pid"
 history_pid=""
 python3 scripts/history/checker.py "$artifact/history.jsonl" --output "$artifact/history-checker.json" \
   --acceptance --require put get delete scan delete_range create_keyspace --seconds 60 \
-  --require-phase registration-seed-blackhole pod-failure-1 pod-failure-2 pod-failure-3 partition delay \
+  --require-phase registration-seed-blackhole pod-failure-1 pod-failure-2 pod-failure-3 partition public-admission-overload delay \
     io-voter-1-errno-5 io-voter-1-errno-28 io-voter-2-errno-5 io-voter-2-errno-28 \
     io-voter-3-errno-5 io-voter-3-errno-28 \
   >"$artifact/history-checker.log" 2>&1

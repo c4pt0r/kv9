@@ -14,6 +14,7 @@ use kv9_region::RegionEpoch;
 use kv9_txn::{QualifiedKey, TimelineGeneration, TxnDescriptor, TxnId, TxnStatus};
 use tonic::{metadata::MetadataMap, service::Interceptor, Request, Response, Status};
 
+use crate::admission::{PublicAdmission, PublicApiLimits, Refusal, Reservation, WorkClass};
 use crate::api::{AdminApi, RawApi, RequestContext, RequestOrigin, TxnApi};
 
 pub mod proto {
@@ -143,19 +144,25 @@ impl<T> PublicApiBackend for T where T: RawApi + TxnApi + AdminApi + Send + Sync
 #[derive(Clone)]
 struct BlockingBackend {
     inner: Arc<dyn PublicApiBackend>,
+    admission: Arc<PublicAdmission>,
 }
 
 impl BlockingBackend {
-    async fn call<T, F>(&self, operation: F) -> Result<T, Status>
+    async fn call<T, F>(&self, mut reservation: Reservation, operation: F) -> Result<T, Status>
     where
         T: Send + 'static,
         F: FnOnce(&dyn PublicApiBackend) -> kv9_common::Result<T> + Send + 'static,
     {
         let inner = Arc::clone(&self.inner);
-        tokio::task::spawn_blocking(move || operation(inner.as_ref()))
-            .await
-            .map_err(|error| Status::internal(format!("blocking API worker failed: {error}")))?
-            .map_err(error_status)
+        tokio::task::spawn_blocking(move || {
+            reservation.start();
+            let result = operation(inner.as_ref());
+            reservation.finish(result.is_err());
+            result
+        })
+        .await
+        .map_err(|error| Status::internal(format!("blocking API worker failed: {error}")))?
+        .map_err(error_status)
     }
 }
 
@@ -172,9 +179,34 @@ pub type AuthenticatedKv9Service = tonic::service::interceptor::InterceptedServi
 
 impl Kv9Grpc {
     pub fn new(backend: Arc<dyn PublicApiBackend>) -> Self {
-        Self {
-            backend: BlockingBackend { inner: backend },
-        }
+        Self::with_limits(backend, PublicApiLimits::default()).expect("valid default limits")
+    }
+
+    pub fn with_limits(
+        backend: Arc<dyn PublicApiBackend>,
+        limits: PublicApiLimits,
+    ) -> Result<Self, Error> {
+        Ok(Self {
+            backend: BlockingBackend {
+                inner: backend,
+                admission: PublicAdmission::new(limits)?,
+            },
+        })
+    }
+
+    pub fn admission(&self) -> Arc<PublicAdmission> {
+        self.backend.admission.clone()
+    }
+
+    fn reserve<T: prost::Message>(
+        &self,
+        request: &Request<T>,
+        class: WorkClass,
+    ) -> Result<Reservation, Status> {
+        self.backend
+            .admission
+            .reserve(class, request.get_ref().encoded_len())
+            .map_err(admission_status)
     }
 
     /// Builds the authenticated service registered on the server-owned listener.
@@ -295,6 +327,10 @@ pub fn promote_node_blocking(
 #[derive(Debug)]
 pub enum RawClientOutcome<T> {
     Ok(T),
+    /// An exclusive, typed refusal before backend submission.
+    AdmissionRefused {
+        reason: &'static str,
+    },
     /// The node refused because it does not lead. `leader` is `None` mid-election.
     NotLeader {
         leader: Option<kv9_common::NodeId>,
@@ -358,6 +394,13 @@ impl RawClient {
             );
             match build(client, metadata).await {
                 Ok(value) => Ok(RawClientOutcome::Ok(value)),
+                Err(status) if status.metadata().contains_key(ADMISSION_REFUSED_KEY) => {
+                    admission_refusal(&status)
+                        .map(|reason| RawClientOutcome::AdmissionRefused { reason })
+                        .ok_or_else(|| {
+                            Error::Raft(format!("{label} RPC: invalid admission refusal: {status}"))
+                        })
+                }
                 // The marker, not the code: stale epoch and API-type mismatch also map to
                 // FAILED_PRECONDITION, so treating the code as "not leader" would silently
                 // convert a real rejection into a pointless redirect.
@@ -884,6 +927,55 @@ pub const LEADER_HINT_KEY: &str = "kv9-leader-node-id";
 /// since both share `FAILED_PRECONDITION`.
 pub const NOT_LEADER_KEY: &str = "kv9-not-leader";
 
+/// Exclusive refusal before public backend execution. The code alone is not evidence
+/// that a mutation was refused; clients must validate this marker and its value.
+pub const ADMISSION_REFUSED_KEY: &str = "kv9-admission-refused";
+
+fn admission_status(reason: Refusal) -> Status {
+    let mut status = Status::resource_exhausted("public backend admission limit reached");
+    status.metadata_mut().insert(
+        ADMISSION_REFUSED_KEY,
+        reason.label().parse().expect("static ASCII"),
+    );
+    status
+}
+
+/// Validate the complete public pre-execution refusal contract, failing closed.
+pub fn admission_refusal(status: &Status) -> Option<&'static str> {
+    if status.code() != tonic::Code::ResourceExhausted
+        || [
+            NOT_LEADER_KEY,
+            LEADER_HINT_KEY,
+            READ_UNCONFIRMED_KEY,
+            PARTIAL_WRITE_KEY,
+            COMMITTED_CHUNKS_KEY,
+            LAST_APPLIED_TERM_KEY,
+            LAST_APPLIED_INDEX_KEY,
+        ]
+        .iter()
+        .any(|key| status.metadata().contains_key(*key))
+        || status
+            .metadata()
+            .get_all(ADMISSION_REFUSED_KEY)
+            .iter()
+            .count()
+            != 1
+    {
+        return None;
+    }
+    match status
+        .metadata()
+        .get(ADMISSION_REFUSED_KEY)?
+        .to_str()
+        .ok()?
+    {
+        "request_count" => Some("request_count"),
+        "encoded_bytes" => Some("encoded_bytes"),
+        "request_too_large" => Some("request_too_large"),
+        _ => None,
+    }
+}
+
 /// Marks an establishing read that could not confirm its quorum barrier — value is
 /// ASCII `quorum` (no live quorum acknowledged the read; the isolated-leader shape)
 /// or `apply` (quorum confirmed, local apply lagged; bounded same-node retry can
@@ -920,11 +1012,14 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RawGetRequest>,
     ) -> Result<Response<proto::RawGetResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::RawRead)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let value = self
             .backend
-            .call(move |backend| backend.raw_get(&context, &request.key))
+            .call(reservation, move |backend| {
+                backend.raw_get(&context, &request.key)
+            })
             .await?;
         Ok(Response::new(proto::RawGetResponse {
             value: Some(optional_value(value)),
@@ -936,11 +1031,14 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RawBatchGetRequest>,
     ) -> Result<Response<proto::RawBatchGetResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::RawRead)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let values = self
             .backend
-            .call(move |backend| backend.raw_batch_get(&context, &request.keys))
+            .call(reservation, move |backend| {
+                backend.raw_batch_get(&context, &request.keys)
+            })
             .await?;
         Ok(Response::new(proto::RawBatchGetResponse {
             values: values.into_iter().map(optional_value).collect(),
@@ -952,11 +1050,14 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RawPutRequest>,
     ) -> Result<Response<proto::RawWriteResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::RawWrite)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let applied = self
             .backend
-            .call(move |backend| backend.raw_put(&context, request.key, request.value))
+            .call(reservation, move |backend| {
+                backend.raw_put(&context, request.key, request.value)
+            })
             .await?;
         Ok(Response::new(applied_response(applied)))
     }
@@ -966,6 +1067,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RawBatchPutRequest>,
     ) -> Result<Response<proto::RawWriteResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::RawWrite)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let pairs: Vec<_> = request
@@ -975,7 +1077,9 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             .collect();
         let applied = self
             .backend
-            .call(move |backend| backend.raw_batch_put(&context, &pairs))
+            .call(reservation, move |backend| {
+                backend.raw_batch_put(&context, &pairs)
+            })
             .await?;
         Ok(Response::new(applied_response(applied)))
     }
@@ -985,10 +1089,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RawDeleteRequest>,
     ) -> Result<Response<proto::RawWriteResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::RawWrite)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         self.backend
-            .call(move |backend| backend.raw_delete(&context, &request.key))
+            .call(reservation, move |backend| {
+                backend.raw_delete(&context, &request.key)
+            })
             .await
             .map(applied_response)
             .map(Response::new)
@@ -999,12 +1106,15 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RawScanRequest>,
     ) -> Result<Response<proto::ScanResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::RawRead)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let limit = nonzero_limit(request.limit)?;
         let pairs = self
             .backend
-            .call(move |backend| backend.raw_scan(&context, &request.start, &request.end, limit))
+            .call(reservation, move |backend| {
+                backend.raw_scan(&context, &request.start, &request.end, limit)
+            })
             .await?;
         Ok(Response::new(scan_response(pairs)))
     }
@@ -1014,10 +1124,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::RawDeleteRangeRequest>,
     ) -> Result<Response<proto::RawDeleteRangeResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::RawWrite)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         self.backend
-            .call(move |backend| backend.raw_delete_range(&context, &request.start, &request.end))
+            .call(reservation, move |backend| {
+                backend.raw_delete_range(&context, &request.start, &request.end)
+            })
             .await
             .map(receipt_response)
             .map(Response::new)
@@ -1028,12 +1141,15 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::KvBeginRequest>,
     ) -> Result<Response<proto::KvBeginResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::Transaction)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let primary = qualified_key(request.primary)?;
         let transaction = self
             .backend
-            .call(move |backend| backend.kv_begin(&context, primary))
+            .call(reservation, move |backend| {
+                backend.kv_begin(&context, primary)
+            })
             .await?;
         Ok(Response::new(proto::KvBeginResponse {
             transaction: Some(transaction_message(transaction)),
@@ -1045,12 +1161,15 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::KvGetRequest>,
     ) -> Result<Response<proto::KvGetResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::Transaction)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let transaction = transaction_descriptor(request.transaction)?;
         let value = self
             .backend
-            .call(move |backend| backend.kv_get(&context, &request.key, &transaction))
+            .call(reservation, move |backend| {
+                backend.kv_get(&context, &request.key, &transaction)
+            })
             .await?;
         Ok(Response::new(proto::KvGetResponse {
             value: Some(optional_value(value)),
@@ -1062,12 +1181,15 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::KvBatchGetRequest>,
     ) -> Result<Response<proto::KvBatchGetResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::Transaction)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let transaction = transaction_descriptor(request.transaction)?;
         let values = self
             .backend
-            .call(move |backend| backend.kv_batch_get(&context, &request.keys, &transaction))
+            .call(reservation, move |backend| {
+                backend.kv_batch_get(&context, &request.keys, &transaction)
+            })
             .await?;
         Ok(Response::new(proto::KvBatchGetResponse {
             values: values.into_iter().map(optional_value).collect(),
@@ -1079,13 +1201,14 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::KvScanRequest>,
     ) -> Result<Response<proto::ScanResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::Transaction)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let limit = nonzero_limit(request.limit)?;
         let transaction = transaction_descriptor(request.transaction)?;
         let pairs = self
             .backend
-            .call(move |backend| {
+            .call(reservation, move |backend| {
                 backend.kv_scan(&context, &request.start, &request.end, limit, &transaction)
             })
             .await?;
@@ -1097,6 +1220,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::KvPrewriteRequest>,
     ) -> Result<Response<proto::Empty>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::Transaction)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let transaction = transaction_descriptor(request.transaction)?;
@@ -1117,7 +1241,9 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             })
             .collect::<Result<Vec<_>, Status>>()?;
         self.backend
-            .call(move |backend| backend.kv_prewrite(&context, &mutations, &transaction))
+            .call(reservation, move |backend| {
+                backend.kv_prewrite(&context, &mutations, &transaction)
+            })
             .await?;
         Ok(Response::new(proto::Empty {}))
     }
@@ -1127,11 +1253,14 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::KvCommitRequest>,
     ) -> Result<Response<proto::Empty>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::Transaction)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let transaction = transaction_descriptor(request.transaction)?;
         self.backend
-            .call(move |backend| backend.kv_commit(&context, &request.keys, &transaction))
+            .call(reservation, move |backend| {
+                backend.kv_commit(&context, &request.keys, &transaction)
+            })
             .await?;
         Ok(Response::new(proto::Empty {}))
     }
@@ -1141,11 +1270,14 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::KvPessimisticLockRequest>,
     ) -> Result<Response<proto::Empty>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::Transaction)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let transaction = transaction_descriptor(request.transaction)?;
         self.backend
-            .call(move |backend| backend.kv_pessimistic_lock(&context, &request.keys, &transaction))
+            .call(reservation, move |backend| {
+                backend.kv_pessimistic_lock(&context, &request.keys, &transaction)
+            })
             .await?;
         Ok(Response::new(proto::Empty {}))
     }
@@ -1155,11 +1287,12 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::KvPessimisticRollbackRequest>,
     ) -> Result<Response<proto::Empty>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::Transaction)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let transaction = transaction_descriptor(request.transaction)?;
         self.backend
-            .call(move |backend| {
+            .call(reservation, move |backend| {
                 backend.kv_pessimistic_rollback(&context, &request.keys, &transaction)
             })
             .await?;
@@ -1171,11 +1304,14 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::KvResolveLockRequest>,
     ) -> Result<Response<proto::Empty>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::Transaction)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let transaction = transaction_descriptor(request.transaction)?;
         self.backend
-            .call(move |backend| backend.kv_resolve_lock(&context, &transaction))
+            .call(reservation, move |backend| {
+                backend.kv_resolve_lock(&context, &transaction)
+            })
             .await?;
         Ok(Response::new(proto::Empty {}))
     }
@@ -1185,11 +1321,14 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::KvCleanupRequest>,
     ) -> Result<Response<proto::Empty>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::Transaction)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let transaction = transaction_descriptor(request.transaction)?;
         self.backend
-            .call(move |backend| backend.kv_cleanup(&context, &request.key, &transaction))
+            .call(reservation, move |backend| {
+                backend.kv_cleanup(&context, &request.key, &transaction)
+            })
             .await?;
         Ok(Response::new(proto::Empty {}))
     }
@@ -1199,12 +1338,15 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::KvCheckTxnStatusRequest>,
     ) -> Result<Response<proto::KvCheckTxnStatusResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::Transaction)?;
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         let transaction = transaction_descriptor(request.transaction)?;
         let status = self
             .backend
-            .call(move |backend| backend.kv_check_txn_status(&context, &transaction))
+            .call(reservation, move |backend| {
+                backend.kv_check_txn_status(&context, &transaction)
+            })
             .await?;
         Ok(Response::new(txn_status_response(status)))
     }
@@ -1214,12 +1356,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::CreateKeyspaceRequest>,
     ) -> Result<Response<proto::CreateKeyspaceResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let api_type = api_type(request.api_type)?;
         let caller = auth.principal.to_string();
         let id = self
             .backend
-            .call(move |backend| {
+            .call(reservation, move |backend| {
                 backend.create_keyspace(
                     &caller,
                     &request.name,
@@ -1241,10 +1384,11 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::ListKeyspacesRequest>,
     ) -> Result<Response<proto::ListKeyspacesResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
         let caller = auth.principal.to_string();
         let keyspaces = self
             .backend
-            .call(move |backend| backend.list_keyspaces(&caller))
+            .call(reservation, move |backend| backend.list_keyspaces(&caller))
             .await?;
         Ok(Response::new(proto::ListKeyspacesResponse {
             keyspaces: keyspaces
@@ -1269,6 +1413,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::GetRegionRequest>,
     ) -> Result<Response<proto::GetRegionResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
         let request = request.into_inner();
         if request.keyspace_id > KeyspaceId::MAX {
             return Err(Status::invalid_argument("keyspace id exceeds 3-byte width"));
@@ -1276,7 +1421,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let caller = auth.principal.to_string();
         let region = self
             .backend
-            .call(move |backend| {
+            .call(reservation, move |backend| {
                 backend.get_region(&caller, KeyspaceId(request.keyspace_id), &request.key)
             })
             .await?;
@@ -1297,10 +1442,11 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::SplitRegionRequest>,
     ) -> Result<Response<proto::Empty>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let caller = auth.principal.to_string();
         self.backend
-            .call(move |backend| {
+            .call(reservation, move |backend| {
                 backend.split_region(&caller, RegionId(request.region_id), request.split_key)
             })
             .await?;
@@ -1312,10 +1458,11 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::ClusterInfoRequest>,
     ) -> Result<Response<proto::ClusterInfoResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataRead)?;
         let caller = auth.principal.to_string();
         let info = self
             .backend
-            .call(move |backend| backend.cluster_info(&caller))
+            .call(reservation, move |backend| backend.cluster_info(&caller))
             .await?;
         Ok(Response::new(proto::ClusterInfoResponse {
             node_count: info.node_count as u64,
@@ -1329,11 +1476,12 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::AdmitNodeRequest>,
     ) -> Result<Response<proto::MembershipChangeResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let caller = auth.principal.to_string();
         let result = self
             .backend
-            .call(move |backend| {
+            .call(reservation, move |backend| {
                 backend.admit_node(
                     &caller,
                     NodeId(request.node_id),
@@ -1356,11 +1504,14 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         request: Request<proto::PromoteNodeRequest>,
     ) -> Result<Response<proto::MembershipChangeResponse>, Status> {
         let auth = auth_context(&request)?;
+        let reservation = self.reserve(&request, WorkClass::MetadataWrite)?;
         let request = request.into_inner();
         let caller = auth.principal.to_string();
         let result = self
             .backend
-            .call(move |backend| backend.promote_node(&caller, NodeId(request.node_id)))
+            .call(reservation, move |backend| {
+                backend.promote_node(&caller, NodeId(request.node_id))
+            })
             .await?;
         Ok(Response::new(proto::MembershipChangeResponse {
             applied_term: result.applied.term,
@@ -1374,6 +1525,8 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
 
 #[cfg(test)]
 mod tests {
+    mod admission;
+
     use std::sync::Mutex;
 
     use kv9_common::{Keyspace, Result, UserKey, Value};
@@ -1384,6 +1537,10 @@ mod tests {
 
     #[derive(Default)]
     struct FakeBackend {
+        raw_gate: Option<(
+            tokio::sync::mpsc::UnboundedSender<()>,
+            Mutex<std::sync::mpsc::Receiver<()>>,
+        )>,
         callers: Mutex<Vec<String>>,
     }
 
@@ -1393,6 +1550,14 @@ mod tests {
                 .lock()
                 .unwrap()
                 .push(ctx.origin.label().to_owned());
+            if let Some((entered, release)) = &self.raw_gate {
+                entered.send(()).unwrap();
+                release
+                    .lock()
+                    .unwrap()
+                    .recv_timeout(std::time::Duration::from_secs(10))
+                    .expect("test must release held backend");
+            }
             Ok(None)
         }
         fn raw_batch_get(&self, _: &RequestContext, _: &[UserKey]) -> Result<Vec<Option<Value>>> {

@@ -252,6 +252,22 @@ jobs:
             exit 1
           }
 
+      - name: Public admission source controls
+        run: |
+          set -euo pipefail
+          python3 scripts/check-admission-controls.py --output "$RUNNER_TEMP/admission-controls" > "$RUNNER_TEMP/admission-controls.log" 2>&1
+          cat "$RUNNER_TEMP/admission-controls.log"
+          test "$(tail -1 "$RUNNER_TEMP/admission-controls.log")" = 'PASS: 3 isolated admission source controls checked'
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: admission-controls
+          path: |
+            ${{ runner.temp }}/admission-controls
+            ${{ runner.temp }}/admission-controls.log
+          if-no-files-found: error
+
       - name: Registration source controls
         run: |
           set -euo pipefail

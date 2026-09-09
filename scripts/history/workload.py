@@ -14,6 +14,16 @@ import time
 from checker import History, Malformed, hex_bytes, require
 
 
+def admission_refusal(rc, stdout, stderr):
+    # The Raw CLI has already validated the exclusive server metadata contract.
+    # Timeout, partial/mixed output and unknown future values cannot prove refusal.
+    if rc != 1 or stdout:
+        return None
+    match = re.fullmatch(r'admission_refused=true reason=(request_count|encoded_bytes|request_too_large)\n'
+                         r'(?:command terminated with exit code 1\n)?', stderr)
+    return match.group(1) if match else None
+
+
 def parse_success(kind, stdout):
     lines = stdout.strip().splitlines()
     if kind == 'scan':
@@ -112,6 +122,8 @@ class Recorder:
                 outcome, reason = 'ok', 'confirmed'
             except Malformed as error:
                 malformed = error
+        elif (refusal := admission_refusal(rc, stdout, stderr)) is not None:
+            outcome, result, reason = 'refused', {'proof': 'precommit'}, 'admission_' + refusal
         elif kind == 'delete_range' and 'partial_write=true' in stderr.splitlines():
             fields = dict(line.split('=', 1) for line in stderr.splitlines() if '=' in line)
             value = fields.get('committed_chunks', '')

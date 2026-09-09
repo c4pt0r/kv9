@@ -2068,6 +2068,7 @@ struct StartOverrides {
 /// A running real-process metadata member.
 pub struct NodeRuntime {
     node: Arc<Node<WalEngine>>,
+    public_admission: Arc<crate::admission::PublicAdmission>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
     transport: Arc<GrpcTransport>,
     discovery: Arc<RuntimeDiscovery>,
@@ -2157,6 +2158,7 @@ impl NodeRuntime {
         join_ticket: Option<&str>,
         overrides: StartOverrides,
     ) -> Result<Self> {
+        let public_limits = crate::admission::PublicApiLimits::from_env()?;
         root.validate()?;
         store_identity.verify(&root, id)?;
         config.validate()?;
@@ -2369,8 +2371,9 @@ impl NodeRuntime {
             initial_voters: seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
         });
         let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
-        let public_service =
-            Kv9Grpc::new(backend.clone()).authenticated_service(client_authenticator);
+        let public_api = Kv9Grpc::with_limits(backend.clone(), public_limits)?;
+        let public_admission = public_api.admission();
+        let public_service = public_api.authenticated_service(client_authenticator);
         let catchup_capability: Arc<std::sync::Mutex<Option<CatchupCapability>>> =
             Arc::new(std::sync::Mutex::new(None));
         let cluster_authenticator = Arc::new(ClusterAuthenticator {
@@ -2461,6 +2464,7 @@ impl NodeRuntime {
             driver_thread,
             remote_storage,
             grpc_runtime,
+            public_admission,
             grpc_shutdown: Some(grpc_shutdown_tx),
             grpc_server: Some(grpc_server),
             cluster_token: auth.cluster_token,
@@ -3147,7 +3151,7 @@ impl NodeRuntime {
         // Rendered as complete labeled lines by the single tested helper —
         // see render_driver_applied for why no tuple crosses this boundary.
         let driver_applied_lines = render_driver_applied(raft.driver_applied);
-        let body = format!(
+        let mut body = format!(
             "pid={}\nnode_id={}\ncluster_id={}\nbootstrap_generation={}\nroot_digest={}\nstore_incarnation={}\nleader_id={}\nrole={}\nmeta_voters={}\nmeta_learners={}\npending_admissions={}\nconf_index={}\nterm={}\nraft_committed={}\napplied_index={}\napplied_term={}\n{}bootstrap_state={:?}\nadvertised_endpoint={}\nregistration_attempts={}\nregistration_errors={}\nregistration_last={}\nregistration_last_walk={}\nregistration_last_hint={}\nregistration_receipt_term={}\nregistration_receipt_index={}\n{}fatal={}\n",
             std::process::id(),
             raft.node_id.0,
@@ -3190,6 +3194,7 @@ impl NodeRuntime {
             discovery_status,
             raft.fatal.as_deref().unwrap_or(""),
         );
+        body.push_str(&self.public_admission.snapshot().status_lines());
         let tmp = self.data_dir.join("status.tmp");
         fs::write(&tmp, body)
             .and_then(|_| fs::rename(&tmp, &self.status_path))
