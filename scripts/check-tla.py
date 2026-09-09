@@ -48,7 +48,8 @@ def messages(output, code, severity=0):
 
 
 def verdict(output, code, expected=None, temporal=False, coverage=False,
-            action_property=False, module="MetadataPlanning", actions=ACTIONS):
+            action_property=False, module="MetadataPlanning", actions=ACTIONS,
+            minimum_distinct=3):
     require(messages(output, 2262) == [VERSION], "missing pinned TLC version")
     require(len(messages(output, 2186)) == 1, "missing TLC completion")
     stats = messages(output, 2199)
@@ -58,7 +59,11 @@ def verdict(output, code, expected=None, temporal=False, coverage=False,
     )
     require(match is not None, "unrecognized final statistics")
     generated, distinct, queued = map(int, match.groups())
-    require(generated >= distinct > 2, "empty or trivial state exploration")
+    # A new protocol can have a valid two-state counterexample (one bad action
+    # from a legal initial state). Positive runs still require at least three
+    # states, and existing callers retain their three-state threshold.
+    require(minimum_distinct >= (3 if expected is None else 2), "invalid exploration threshold")
+    require(generated >= distinct >= minimum_distinct, "empty or trivial state exploration")
     errors = re.findall(r"@!@!@STARTMSG (\d+):1 @!@!@", output)
     if expected is None:
         require(code == 0, "TLC did not exit successfully")

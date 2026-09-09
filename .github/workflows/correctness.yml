@@ -47,6 +47,25 @@ jobs:
             ${{ runner.temp }}/endpoint-protocol
           if-no-files-found: error
 
+      # Reuse the pinned toolchain for the two bounded protocol extensions.
+      # This workflow remains manual-only for release/key-milestone acceptance.
+      - name: Check read admission safety and conditional progress
+        run: |
+          set -euo pipefail
+          python3 scripts/check-read-admission-protocol.py --tlapm "$RUNNER_TEMP/tlapm/bin/tlapm" \
+            --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/read-admission-protocol" \
+            > "$RUNNER_TEMP/read-admission-protocol.log" 2>&1
+          cat "$RUNNER_TEMP/read-admission-protocol.log"
+          test "$(tail -1 "$RUNNER_TEMP/read-admission-protocol.log")" = 'PASS: 4 full read-admission model checks and 2 fair continuations; 8 protocol controls; 2 witnesses; 15 TLAPS theorems; 196 obligations; 2 audit controls; 10 output controls'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: read-admission-protocol
+          path: |
+            ${{ runner.temp }}/read-admission-protocol.log
+            ${{ runner.temp }}/read-admission-protocol
+          if-no-files-found: error
+
   protocol-deduction:
     runs-on: ubuntu-latest
     timeout-minutes: 45

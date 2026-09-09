@@ -290,8 +290,11 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// forbids until it has proven leadership. `rctx` must be unique per
     /// request (the driver mints it from its boot incarnation + a counter);
     /// the confirmation returns through [`Self::take_read_states`] correlated
-    /// by that exact context.
-    pub fn read_index(&self, rctx: Vec<u8>) -> Result<()> {
+    /// by that exact context. Returns `false` when this leader has not yet
+    /// committed an entry from its current term: raft-rs 0.7 silently drops
+    /// such a request. The caller retains the context and retries admission
+    /// within its original deadline. `true` means submitted, not confirmed.
+    pub fn read_index(&self, rctx: Vec<u8>) -> Result<bool> {
         let mut g = self.lock();
         g.check_fatal()?;
         if g.raw.raft.state != StateRole::Leader {
@@ -302,8 +305,13 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 },
             });
         }
+        // This check and submission share the peer lock. A status snapshot
+        // followed by an unlocked submission could cross another election.
+        if !g.raw.raft.commit_to_current_term() {
+            return Ok(false);
+        }
         g.raw.read_index(rctx);
-        Ok(())
+        Ok(true)
     }
 
     /// Drain quorum-confirmed read states captured by the Ready loop.
