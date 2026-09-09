@@ -109,8 +109,9 @@ this model. A time, state or frontier limit yields **inconclusive** instead.
 
 The checker first tries omitting unknown effects, then a guided attempt that
 prefers unknown effects reducing the pending observation's mismatch (including
-range-selection lookahead), small unknown-effect budgets (1, 2, 4), and finally
-the unrestricted search. Restricted attempts are witness-finding heuristics only:
+range-selection lookahead), a second guided attempt permitting an early range
+snapshot before a Put inserts a previously absent key, small unknown-effect
+budgets (1, 2, 4), and finally the unrestricted search. Restricted attempts are witness-finding heuristics only:
 their negative results never establish invalidity, and every positive result
 replays against the unrestricted model. The total time/state budget is shared.
 A valid interpretation that omits an unknown write is not evidence that the
@@ -254,3 +255,26 @@ delete, causing avoidable backtracking when a subsequent read needs that write.
 This changes candidate ordering only. A fixed-budget known witness and isolated
 deferred-read mutation exercise this case; all positive witnesses are replayed
 and unrestricted exhaustion retains its complete transition set.
+
+### Early snapshot preparation under unknown range deletion
+
+An unknown `delete_range` can select existing key `a`, time out, and delete `a`
+after a successful Put inserts `b` in the same range. A subsequent scan may
+therefore observe only `b`. Selecting the range only when that scan becomes the
+next response would capture both keys and miss this legal execution.
+
+The additional bounded guided pass permits a nonempty range selection before a
+pending Put adds a key absent from that selection. Selection still uses the exact
+current model snapshot; subsequent chunks must improve the pending observation.
+The original guided pass runs first, preserving its smaller search frontier for
+histories with many irrelevant unknown ranges. Both share the same total budget.
+Neither restricted exhaustion nor budget exhaustion proves invalidity.
+
+This search gap was reproduced in a complete 2,396-operation Chaos history with
+243 unknown outcomes. The original checker exhausted its 60-second budget. The
+new pass finds and independently replays a complete witness from the initial
+state, retaining every invocation and response. No model transition, timeout
+semantics, response barrier or witness validation rule changed. A small explicit
+history reproduces the early-selection requirement under a fixed state budget;
+removing the preparation rule fails that assertion. The gate now requires all
+35 history tests and 12 isolated baseline/mutant/restored source controls.

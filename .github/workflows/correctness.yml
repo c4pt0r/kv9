@@ -129,7 +129,7 @@ jobs:
           test "$(tail -1 "$RUNNER_TEMP/history-controls.log")" = OK
           python3 scripts/history/check-controls.py --output "$RUNNER_TEMP/history-mutations" > "$RUNNER_TEMP/history-mutations.log" 2>&1
           cat "$RUNNER_TEMP/history-mutations.log"
-          test "$(tail -1 "$RUNNER_TEMP/history-mutations.log")" = 'PASS: 34 history tests and 11 isolated source mutations checked'
+          test "$(tail -1 "$RUNNER_TEMP/history-mutations.log")" = 'PASS: 35 history tests and 12 isolated source mutations checked'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -179,6 +179,8 @@ jobs:
           cat "$RUNNER_TEMP/chaos-mesh.log"
           test "$(grep -Fxc 'PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, container recovery, and Raft I/O faults' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -Fxc 'PASS: concurrent Raw KV/catalog history is valid across the Chaos Mesh matrix' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          test "$(grep -Fxc 'PASS: persistent full history verified across 13 Chaos windows; three invalid fault evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          test "$(grep -Fxc 'PASS: database read and write succeeded after persistent collector removal' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -c '^Stage: sustained Pod failure for voter [123] and majority service$' "$RUNNER_TEMP/chaos-mesh.log")" = 3
           test "$(grep -c '^PASS: IOChaos voter [123] errno \(5\|28\) reached Raft, exited, and recovered with majority service$' "$RUNNER_TEMP/chaos-mesh.log")" = 6
           test "$(grep -Fxc 'PASS: joiner reached Serving with an exact receipt while its first seed was blackholed' "$RUNNER_TEMP/chaos-mesh.log")" = 1
@@ -187,10 +189,12 @@ jobs:
           test "$(grep -Fxc 'PASS: latency metrics cover real pressure, six I/O failures and recovery; three invalid evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           for phase in registration-seed-blackhole pod-failure-1 pod-failure-2 pod-failure-3 partition public-admission-overload delay; do
             test "$(grep -Fxc "PASS: concurrent put and read completed during $phase" "$RUNNER_TEMP/chaos-mesh.log")" = 1
+            test "$(grep -Fxc "PASS: persistent put and read completed during $phase" "$RUNNER_TEMP/chaos-mesh.log")" = 1
           done
           for voter in 1 2 3; do
             for errno in 5 28; do
               test "$(grep -Fxc "PASS: concurrent put and read completed during io-voter-$voter-errno-$errno" "$RUNNER_TEMP/chaos-mesh.log")" = 1
+              test "$(grep -Fxc "PASS: persistent put and read completed during io-voter-$voter-errno-$errno" "$RUNNER_TEMP/chaos-mesh.log")" = 1
               test "$(grep -Fxc "PASS: IOChaos voter $voter errno $errno reached Raft, exited, and recovered with majority service" "$RUNNER_TEMP/chaos-mesh.log")" = 1
             done
           done

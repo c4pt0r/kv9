@@ -42,6 +42,9 @@ CONTROLS = [
 ]
 
 CONTROLS = [(label, 'checker.py', old, new, test) for label, old, new, test in CONTROLS] + [
+    ('early-range-selection-omitted', 'checker.py',
+     "allow_preparation = (prepare_ranges and", "allow_preparation = (False and",
+     'test_guided_search_prepares_unknown_range_before_new_key'),
     ('matching-overlapping-read-deferred', 'checker.py',
      'prefer_observed = (guided_unknown and op.outcome == "ok"', 'prefer_observed = (False and op.outcome == "ok"',
      'test_guided_search_orders_matching_overlapping_read_before_write'),
@@ -85,7 +88,7 @@ def main():
             output = process.stdout+process.stderr
             (args.output/(label+'.log')).write_text(output)
             count = re.findall(r'^Ran (\d+) tests? in ', output, re.M)
-            demand(count == [str(1 if test else 34)], f'{label}: wrong selected test count: {count}')
+            demand(count == [str(1 if test else 35)], f'{label}: wrong selected test count: {count}')
             if red:
                 demand(process.returncode == 1 and 'FAILED (failures=1)' in output and 'AssertionError:' in output
                        and f'FAIL: {test} ' in output and 'ERROR:' not in output, f'{label}: no attributable assertion failure')
@@ -116,7 +119,7 @@ def main():
         run('restored-suite')
         unchanged(originals)
     demand(all((source/name).read_bytes() == data for name, data in originals.items()), 'source changed during control run')
-    print(f'PASS: 34 history tests and {len(CONTROLS)} isolated source mutations checked', flush=True)
+    print(f'PASS: 35 history tests and {len(CONTROLS)} isolated source mutations checked', flush=True)
 
 
 if __name__ == '__main__':

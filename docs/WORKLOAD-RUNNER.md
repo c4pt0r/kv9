@@ -181,7 +181,8 @@ classification, sentinel observations and performance history claims. Every
 original run is independently accepted again after the isolated corruptions.
 
 CI retains the executable/build inventory, raw E2E reports/histories, independent
-witnesses, corrupt artifacts and drain control logs. #40 remains open for the
-persistent workload's actual 13-window Chaos Mesh integration and reproducible
-measurement matrix. Existing client protocol proofs and database proof/Chaos
-gates remain required; this increment does not change their algorithm assumptions.
+witnesses, corrupt artifacts and drain control logs. The persistent workload also
+runs in the actual [13-window Chaos Mesh gate](PERSISTENT-CHAOS.md). #40 remains open
+for the reproducible measurement matrix and client-capacity evidence. Existing
+client protocol proofs and database proof/Chaos gates remain required; this
+increment does not change their algorithm assumptions.
