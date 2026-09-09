@@ -5,8 +5,8 @@ use std::collections::HashMap;
 use kv9_common::codec::validate_keyspace_id;
 use kv9_common::{ApiType, Error, Keyspace, KeyspaceId, Result, Tenant, TenantId, TxnGroupId};
 
-/// The keyspace catalog + tenant registry (DESIGN §5.1). Stored as ordinary KV in the
-/// system keyspace (in L1 meta-regions once split — DESIGN §5.1.1).
+/// Legacy in-memory keyspace catalog and tenant registry (DESIGN §5.1).
+/// The persisted relational catalog lives in [`crate::MetaStore`].
 #[derive(Debug, Default)]
 pub struct Catalog {
     tenants: HashMap<TenantId, Tenant>,
@@ -29,8 +29,8 @@ impl Catalog {
 
     /// Create a keyspace (DESIGN §3.2, §10 `CreateKeyspace`).
     ///
-    /// Validates the keyspace-id width (DESIGN §3.4, §13 principle 4), rejects duplicate names,
-    /// and requires the owning tenant to exist. For `raw` keyspaces the txn group is
+    /// Validates the keyspace-id width (DESIGN §3.4, §13 principle 4), rejects duplicate IDs
+    /// and names, and requires the owning tenant to exist. For `raw` keyspaces the txn group is
     /// ignored; for `txn` keyspaces it defaults to [`TxnGroupId::DEFAULT`] unless given.
     pub fn create_keyspace(
         &mut self,
@@ -41,6 +41,9 @@ impl Catalog {
         txn_group: TxnGroupId,
     ) -> Result<&Keyspace> {
         validate_keyspace_id(id)?;
+        if self.keyspaces.contains_key(&id) {
+            return Err(Error::Config(format!("keyspace id {id:?} already exists")));
+        }
         let name = name.into();
         if self.by_name.contains_key(&name) {
             return Err(Error::Config(format!(
