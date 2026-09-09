@@ -75,6 +75,11 @@ def audit_cell(root, phase, overrides=None):
         require(probe == ('reachable' if stage in ('before', 'healed') else 'stopped-without-listener'),
                 'missing live endpoint or stopped-process probe')
     require(all(times[a] < times[b] for a, b in zip(stages, stages[1:])), 'store-loss observations are reordered')
+    released = datetime.datetime.fromisoformat(read(scene / 'owner-release-at.txt').decode().strip())
+    require(times['before'] < released < times['held'], 'log loss preceded the exclusive-owner release fence')
+    require(read(scene / 'owner-release.prepare').decode().strip() ==
+            f"store_prepared=true node_id={victim} store_incarnation={statuses['before']['store_incarnation']}",
+            'exclusive-owner release did not recover the existing prepared identity')
     fault = obj(scene / 'podchaos.json')
     require(fault['kind'] == 'PodChaos' and fault['metadata']['namespace'] == namespace and
             fault['metadata']['name'] == 'store-loss-kill' and not fault['metadata'].get('deletionTimestamp') and

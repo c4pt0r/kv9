@@ -89,7 +89,10 @@ and expected voter, and must agree with the retained I/O process evidence.
 For each missing-log cell, `chaos-mesh-store-loss.sh` waits for PodChaos to kill
 the original owner and for a new Pod UID held by a fixture shell without a
 database listener. The fixture then moves the stopped Raft log out of the Raft
-directory and retains its exact bytes. File loss is a fixture operation;
+directory and retains its exact bytes. Before moving it, the real idempotent
+`store-prepare` command must acquire the existing store's exclusive lock and
+return the unchanged incarnation: Pod API deletion alone does not prove that
+the original process has finished exiting. File loss is a fixture operation;
 PodChaos supplies the actual process failure. This does not model power loss.
 Two distinct database child PIDs must exit with the missing-file Raft recovery
 error, without recreating the log or updating the old runtime status. The
