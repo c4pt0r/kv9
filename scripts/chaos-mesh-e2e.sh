@@ -273,6 +273,8 @@ client() {
     /usr/local/bin/kv9 client "$@"
 }
 
+source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-probes.sh"
+
 tcp_probe() {
   local from="$1" to="$2" pod addr
   pod="$(pod_for "$from")" || return 1
@@ -726,15 +728,15 @@ record_fault podchaos fail-leader
 printf 'victim=%s\nleader_before=%s\nsurviving_leader=%s\n' \
   "$victim" "$leader" "$new_leader" >"$artifact/voter-$victim-failure.txt"
 key_hex="766f7465722d3$victim"
-client "$new_leader" raw-put --addr "$(service_ip "$new_leader"):20160" --keyspace "$keyspace" \
+chaos_probe "voter-$victim-put" "$victim" raw-put --keyspace "$keyspace" \
   --key-hex "$key_hex" --value-hex 7632 >"$artifact/voter-$victim-put.out"
-client "$new_leader" raw-get --addr "$(service_ip "$new_leader"):20160" --keyspace "$keyspace" \
+chaos_probe "voter-$victim-live-get" "$victim" raw-get --keyspace "$keyspace" \
   --key-hex "$key_hex" >"$artifact/voter-$victim-live-get.out"
 grep -Fq 'value_hex=7632' "$artifact/voter-$victim-live-get.out"
 history_set_phase healing
 k delete podchaos fail-leader -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "failed leader recovers and catches up" 35)"
-client "$leader" raw-get --addr "$(service_ip "$leader"):20160" --keyspace "$keyspace" \
+chaos_probe "voter-$victim-recovered-get" 0 raw-get --keyspace "$keyspace" \
   --key-hex "$key_hex" >"$artifact/voter-$victim-recovered-get.out"
 grep -Fq 'value_hex=7632' "$artifact/voter-$victim-recovered-get.out"
 done
@@ -788,7 +790,7 @@ if (( isolated_write_rc != 124 )) &&
   echo "FAIL: old-leader write failed without a Raft fencing/deadline reason (rc=$isolated_write_rc)" >&2
   exit 1
 fi
-client "$new_leader" raw-put --addr "$(service_ip "$new_leader"):20160" --keyspace "$keyspace" \
+chaos_probe partition-put "$leader" raw-put --keyspace "$keyspace" \
   --key-hex 706172746974696f6e --value-hex 7633 >"$artifact/partition-put.out"
 # A loopback request reaches the live isolated server. Require its typed
 # application refusal; a transport error or an external timeout is not evidence
@@ -817,7 +819,7 @@ run_public_admission_pressure "$new_leader" "$leader" "$survivor_a"
 history_set_phase healing
 k delete networkchaos isolate-leader -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "partition healing and catch-up" 35)"
-isolated_get="$(client "$leader" raw-get --addr "$(service_ip "$leader"):20160" \
+isolated_get="$(chaos_probe isolated-key-after-healing 0 raw-get \
   --keyspace "$keyspace" --key-hex 69736f6c61746564)"
 [ "$isolated_get" = "found=false" ] || {
   echo "FAIL: isolated old-leader mutation entered the cluster: $isolated_get" >&2
@@ -851,7 +853,7 @@ observed_delay_ms="$(tcp_probe_millis "$leader" "$follower")"
 printf 'baseline_ms=%s\ninjected_ms=%s\nobserved_after_history_ms=%s\n' \
   "$baseline_delay_ms" "$injected_delay_ms" "$observed_delay_ms" >"$artifact/delay-history-effect.txt"
 record_fault networkchaos delay-follower
-client "$leader" raw-put --addr "$(service_ip "$leader"):20160" --keyspace "$keyspace" \
+chaos_probe delay-put 0 raw-put --keyspace "$keyspace" \
   --key-hex 64656c6179 --value-hex 7634 >"$artifact/delay-put.out"
 history_set_phase healing
 k delete networkchaos delay-follower -n "$namespace" --ignore-not-found --wait=true >/dev/null
@@ -887,7 +889,7 @@ record_fault podchaos kill-container
 k delete podchaos kill-container -n "$namespace" --ignore-not-found --wait=true >/dev/null
 leader="$(wait_agreed_leader "final three-node agreement" 30)"
 
-final_get="$(client "$leader" raw-get --addr "$(service_ip "$leader"):20160" \
+final_get="$(chaos_probe final-get 0 raw-get \
   --keyspace "$keyspace" --key-hex 706172746974696f6e)"
 grep -q '^value_hex=7633$' <<<"$final_get" || {
   echo "FAIL: replicated value was not readable after the fault matrix" >&2; exit 1;
