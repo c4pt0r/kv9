@@ -304,15 +304,19 @@ impl RaftTransport for InProcEndpoint {
 /// the inbox; discovery requests are answered inline from [`DiscoveryState`]),
 /// lazily-connected outbound streams per peer (dropped on any error; the next
 /// send reconnects).
+struct TcpPeerRoute {
+    addr: SocketAddr,
+    stream: Option<TcpStream>,
+}
+
 pub struct TcpTransport {
     me: NodeId,
     /// node id → address; grows via [`Self::register_peer`] as discovery
     /// resolves seed ADDRESSES into node IDS (three fresh processes must all
     /// listen before any can know its peers' ids — so the map cannot be
     /// required up front).
-    peers: std::sync::RwLock<HashMap<u64, SocketAddr>>,
+    peers: Mutex<HashMap<u64, Arc<Mutex<TcpPeerRoute>>>>,
     inbox: Arc<Mutex<Vec<Message>>>,
-    conns: Mutex<HashMap<u64, TcpStream>>,
     stop: Arc<AtomicBool>,
     local_addr: SocketAddr,
 }
@@ -354,9 +358,18 @@ impl TcpTransport {
         }
         Ok(Arc::new(TcpTransport {
             me,
-            peers: std::sync::RwLock::new(peers),
+            peers: Mutex::new(
+                peers
+                    .into_iter()
+                    .map(|(id, addr)| {
+                        (
+                            id,
+                            Arc::new(Mutex::new(TcpPeerRoute { addr, stream: None })),
+                        )
+                    })
+                    .collect(),
+            ),
             inbox,
-            conns: Mutex::new(HashMap::new()),
             stop,
             local_addr,
         }))
@@ -369,10 +382,18 @@ impl TcpTransport {
     /// Add/replace a peer's address (typically after a discovery response
     /// resolved a seed address into a node id).
     pub fn register_peer(&self, id: NodeId, addr: SocketAddr) {
-        self.peers
-            .write()
+        let peer = self
+            .peers
+            .lock()
             .expect("peers poisoned")
-            .insert(id.0, addr);
+            .entry(id.0)
+            .or_insert_with(|| Arc::new(Mutex::new(TcpPeerRoute { addr, stream: None })))
+            .clone();
+        let mut peer = peer.lock().expect("peer poisoned");
+        if peer.addr != addr {
+            peer.stream = None;
+            peer.addr = addr;
+        }
     }
 
     /// The node this transport answers as.
@@ -382,8 +403,19 @@ impl TcpTransport {
 
     /// Stop accepting/reading. Existing outbound connections are dropped.
     pub fn shutdown(&self) {
-        self.stop.store(true, Ordering::Relaxed);
-        self.conns.lock().expect("conns poisoned").clear();
+        if self.stop.swap(true, Ordering::Relaxed) {
+            return;
+        }
+        let peers: Vec<_> = self
+            .peers
+            .lock()
+            .expect("peers poisoned")
+            .values()
+            .cloned()
+            .collect();
+        for peer in peers {
+            peer.lock().expect("peer poisoned").stream = None;
+        }
         // Nudge the listener out of accept().
         let _ = TcpStream::connect(self.local_addr);
     }
@@ -455,32 +487,55 @@ fn serve_conn(
     }
 }
 
+impl Drop for TcpTransport {
+    fn drop(&mut self) {
+        self.shutdown();
+    }
+}
+
 impl RaftTransport for TcpTransport {
     fn send(&self, to: NodeId, msg: Message) {
-        let addr = {
-            let peers = self.peers.read().expect("peers poisoned");
-            let Some(&addr) = peers.get(&to.0) else {
-                return; // unknown peer: drop (raft retransmits after registration)
-            };
-            addr
-        };
         let Ok(bytes) = msg.write_to_bytes() else {
             return;
         };
         let frame = encode_frame(&Frame::Raft(bytes));
-        let mut conns = self.conns.lock().expect("conns poisoned");
-        // Get-or-connect; on any write error drop the stream (reconnect next send).
-        if let std::collections::hash_map::Entry::Vacant(slot) = conns.entry(to.0) {
-            match TcpStream::connect_timeout(&addr, Duration::from_millis(200)) {
-                Ok(s) => {
-                    slot.insert(s);
-                }
-                Err(_) => return, // peer down: best-effort drop
-            }
+        // The synchronous fallback serializes address selection and writing
+        // with registration. Both connect and write have finite I/O budgets.
+        let Some(peer) = self
+            .peers
+            .lock()
+            .expect("peers poisoned")
+            .get(&to.0)
+            .cloned()
+        else {
+            return;
+        };
+        let mut peer = peer.lock().expect("peer poisoned");
+        if self.stop.load(Ordering::Relaxed) {
+            return;
         }
-        if let Some(stream) = conns.get_mut(&to.0) {
-            if stream.write_all(&frame).is_err() {
-                conns.remove(&to.0);
+        if peer.stream.is_none() {
+            let Ok(stream) = TcpStream::connect_timeout(&peer.addr, Duration::from_millis(200))
+            else {
+                return;
+            };
+            peer.stream = Some(stream);
+        }
+        let deadline = std::time::Instant::now() + Duration::from_millis(200);
+        let mut written = 0;
+        while written < frame.len() {
+            let remaining = deadline.saturating_duration_since(std::time::Instant::now());
+            let stream = peer.stream.as_mut().unwrap();
+            if remaining.is_zero() || stream.set_write_timeout(Some(remaining)).is_err() {
+                peer.stream = None;
+                return;
+            }
+            match stream.write(&frame[written..]) {
+                Ok(n) if n > 0 => written += n,
+                _ => {
+                    peer.stream = None;
+                    return;
+                }
             }
         }
     }
@@ -614,6 +669,97 @@ mod tests {
         // Bind port 0 to reserve an ephemeral port, then release it.
         let l = TcpListener::bind("127.0.0.1:0").unwrap();
         l.local_addr().unwrap()
+    }
+
+    #[test]
+    fn dropping_tcp_transport_closes_its_listener() {
+        let transport = TcpTransport::bind(
+            NodeId(1),
+            "127.0.0.1:0".parse().unwrap(),
+            HashMap::new(),
+            Arc::new(StaticDiscovery(NodeId(1), false, 42)),
+        )
+        .unwrap();
+        let addr = transport.local_addr();
+        assert!(TcpStream::connect_timeout(&addr, Duration::from_millis(200)).is_ok());
+        drop(transport);
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        while std::time::Instant::now() < deadline {
+            if TcpStream::connect_timeout(&addr, Duration::from_millis(200)).is_err() {
+                return;
+            }
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        panic!("dropped TCP transport retained its listener");
+    }
+
+    #[test]
+    fn tcp_address_update_moves_delivery_and_shutdown_drops_connections() {
+        let a = TcpTransport::bind(
+            NodeId(2),
+            "127.0.0.1:0".parse().unwrap(),
+            HashMap::new(),
+            Arc::new(StaticDiscovery(NodeId(2), false, 42)),
+        )
+        .unwrap();
+        let b = TcpTransport::bind(
+            NodeId(2),
+            "127.0.0.1:0".parse().unwrap(),
+            HashMap::new(),
+            Arc::new(StaticDiscovery(NodeId(2), false, 42)),
+        )
+        .unwrap();
+        let sender = TcpTransport::bind(
+            NodeId(1),
+            "127.0.0.1:0".parse().unwrap(),
+            HashMap::new(),
+            Arc::new(StaticDiscovery(NodeId(1), false, 42)),
+        )
+        .unwrap();
+        let message = |index| Message {
+            from: 1,
+            to: 2,
+            index,
+            ..Default::default()
+        };
+        let received = |receiver: &Arc<TcpTransport>, index| {
+            let deadline = std::time::Instant::now() + Duration::from_secs(5);
+            while std::time::Instant::now() < deadline {
+                if receiver.drain().iter().any(|m| m.index == index) {
+                    return true;
+                }
+                std::thread::sleep(Duration::from_millis(10));
+            }
+            false
+        };
+        sender.register_peer(NodeId(2), a.local_addr());
+        sender.send(NodeId(2), message(10));
+        assert!(received(&a, 10));
+        sender.register_peer(NodeId(2), a.local_addr());
+        assert!(
+            sender.peers.lock().unwrap()[&2]
+                .lock()
+                .unwrap()
+                .stream
+                .is_some(),
+            "idempotent update dropped a healthy connection"
+        );
+        sender.register_peer(NodeId(2), b.local_addr());
+        sender.send(NodeId(2), message(20));
+        assert!(
+            received(&b, 20),
+            "new endpoint received no post-update message"
+        );
+        assert!(!a.drain().iter().any(|m| m.index == 20));
+        sender.shutdown();
+        sender.send(NodeId(2), message(30));
+        assert!(sender.peers.lock().unwrap()[&2]
+            .lock()
+            .unwrap()
+            .stream
+            .is_none());
+        a.shutdown();
+        b.shutdown();
     }
 
     /// The full Phase 1-final library path over REAL sockets: three peers on

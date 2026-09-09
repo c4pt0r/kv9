@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""Reject isolated routing faults with actual delivery and ownership regressions."""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import tempfile
+
+ROOT = Path(__file__).resolve().parents[1]
+GRPC = 'crates/raft/src/grpc.rs'
+TCP = 'crates/raft/src/transport.rs'
+
+
+def digest(text):
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+def replace_once(text, before, after):
+    if text.count(before) != 1 or before == after:
+        raise RuntimeError('source control anchor is not unique')
+    return text.replace(before, after)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    output = args.output.resolve()
+    output.mkdir(parents=True, exist_ok=False)
+    sources = {p: (ROOT / p).read_text() for p in (GRPC, TCP)}
+    grpc, tcp = sources[GRPC], sources[TCP]
+    cases = [
+        ('missing-route-notification', GRPC, replace_once(grpc,
+         'sender.destination.send_replace(peer.destination.clone());', 'let _ = sender;'),
+         'grpc::tests::registered_address_change_replaces_live_peer_stream', 'new configured endpoint received no traffic'),
+        ('address-reuse-admits-old-generation', GRPC, replace_once(grpc,
+         'if Arc::ptr_eq(&message.destination, destination) {', 'if message.destination.addr == destination.addr {'),
+         'grpc::tests::route_generation_filter_rejects_old_queue_entries_even_after_address_reuse', 'assertion `left == right` failed'),
+        ('replace-live-worker-on-every-send', GRPC, replace_once(grpc,
+         '.is_none_or(|sender| sender.task.is_finished())', '.is_none_or(|_| true)'),
+         'grpc::tests::route_updates_keep_one_owned_worker_and_same_address_is_idempotent', 'route update spawned another worker'),
+        ('tcp-drop-retains-listener', TCP, replace_once(tcp,
+         'impl Drop for TcpTransport {\n    fn drop(&mut self) {\n        self.shutdown();',
+         'impl Drop for TcpTransport {\n    fn drop(&mut self) {\n        // Detach the listener.'),
+         'transport::tests::dropping_tcp_transport_closes_its_listener', 'dropped TCP transport retained its listener'),
+        ('tcp-retains-old-connection', TCP, replace_once(tcp,
+         'if peer.addr != addr {\n            peer.stream = None;', 'if peer.addr != addr {\n            // Keep the stale stream.'),
+         'transport::tests::tcp_address_update_moves_delivery_and_shutdown_drops_connections', 'new endpoint received no post-update message'),
+    ]
+    env = dict(os.environ, CARGO_TARGET_DIR=os.environ.get('CARGO_TARGET_DIR', str(ROOT / 'target')))
+    manifest = dict(sources={p: digest(s) for p, s in sources.items()}, controls=[])
+    (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    for p, s in sources.items():
+        target = output / 'original' / p
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(s)
+    with tempfile.TemporaryDirectory(prefix='kv9-route-controls.') as directory:
+        tree = Path(directory)
+        for name in ['Cargo.toml', 'Cargo.lock', 'rust-toolchain.toml', 'crates', 'src', 'proto']:
+            source = ROOT / name
+            if source.is_dir():
+                shutil.copytree(source, tree / name)
+            else:
+                shutil.copy2(source, tree / name)
+        for name, path, mutant, test, failure in cases:
+            folder = output / name
+            folder.mkdir()
+            (folder / 'mutant.rs').write_text(mutant)
+            case = dict(name=name, path=path, test=test, expected_failure=failure,
+                        mutant_sha256=digest(mutant), runs=[])
+            for phase, text in [('baseline', sources[path]), ('mutant', mutant), ('restored', sources[path])]:
+                for p, s in sources.items():
+                    (tree / p).write_text(text if p == path else s)
+                expected_sources = {p: digest(text if p == path else s) for p, s in sources.items()}
+                command = ['cargo', 'test', '--locked', '-p', 'kv9-raft', '--lib', test, '--', '--exact']
+                result = subprocess.run(command, cwd=tree, env=env, text=True, stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT, timeout=180)
+                (folder / f'{phase}.log').write_text(result.stdout)
+                if 'running 1 test\n' not in result.stdout:
+                    raise RuntimeError(f'{name}/{phase}: expected exactly one compiled test')
+                if phase == 'mutant':
+                    if result.returncode != 101 or failure not in result.stdout or '0 passed; 1 failed;' not in result.stdout:
+                        raise RuntimeError(f'{name}: mutant missed the intended assertion')
+                elif result.returncode or '1 passed; 0 failed;' not in result.stdout:
+                    raise RuntimeError(f'{name}/{phase}: valid source was rejected')
+                actual_sources = {p: digest((tree / p).read_text()) for p in sources}
+                if actual_sources != expected_sources:
+                    raise RuntimeError('isolated source changed during a control')
+                case['runs'].append(dict(phase=phase, command=command, exit_code=result.returncode, sources=actual_sources))
+            manifest['controls'].append(case)
+            (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+            print(f'PASS: {name} baseline, intended failure and restored source', flush=True)
+    if any((ROOT / p).read_text() != text for p, text in sources.items()):
+        raise RuntimeError('source changed during controls')
+    print('PASS: 5 isolated route ownership source controls checked', flush=True)
+
+
+if __name__ == '__main__':
+    main()

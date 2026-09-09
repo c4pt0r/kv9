@@ -24,7 +24,7 @@ use std::time::Duration;
 
 use protobuf::Message as PbCodec;
 use raft::prelude::Message;
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, watch};
 use tonic::{Request, Response, Status, Streaming};
 
 use kv9_common::{BootstrapGeneration, ClusterId, Error, NodeId, RootDigest, StoreIncarnation};
@@ -850,6 +850,37 @@ pub struct DiscoverAnswer {
     pub root_digest: RootDigest,
 }
 
+/// A route generation is an immutable allocation, not a wrapping counter.
+/// Queued messages retain it, preventing address reuse (A -> B -> A) from
+/// admitting messages queued for the first A into the second A session.
+struct PeerDestination {
+    addr: SocketAddr,
+}
+
+struct OutboundMessage {
+    destination: Arc<PeerDestination>,
+    envelope: pb::RaftEnvelope,
+}
+
+struct PeerSender {
+    queue: mpsc::Sender<OutboundMessage>,
+    destination: watch::Sender<Arc<PeerDestination>>,
+    task: tokio::task::JoinHandle<()>,
+}
+
+impl Drop for PeerSender {
+    fn drop(&mut self) {
+        // Own cancellation in every await state, including failed connects
+        // and backoff. Dropping a JoinHandle alone would detach the task.
+        self.task.abort();
+    }
+}
+
+struct PeerRoute {
+    destination: Arc<PeerDestination>,
+    sender: Option<PeerSender>,
+}
+
 /// The outbound half + inbox drain: a [`RaftTransport`] carried by gRPC.
 ///
 /// `send` enqueues to a per-peer worker (spawned on the provided runtime
@@ -860,8 +891,9 @@ pub struct GrpcTransport {
     me: NodeId,
     token: Option<String>,
     handle: tokio::runtime::Handle,
-    peers: Mutex<HashMap<u64, mpsc::Sender<pb::RaftEnvelope>>>,
-    addrs: Mutex<HashMap<u64, SocketAddr>>,
+    // Registration and enqueue share one linearization lock. No sender
+    // escapes it, and no socket I/O or await occurs under it.
+    peers: Mutex<HashMap<u64, PeerRoute>>,
     inbox_rx: Mutex<mpsc::UnboundedReceiver<Message>>,
     inbox_tx: mpsc::UnboundedSender<Message>,
     root_digest: RootDigest,
@@ -897,7 +929,6 @@ impl GrpcTransport {
             token,
             handle,
             peers: Mutex::new(HashMap::new()),
-            addrs: Mutex::new(HashMap::new()),
             inbox_rx: Mutex::new(inbox_rx),
             inbox_tx,
             root_digest,
@@ -913,56 +944,74 @@ impl GrpcTransport {
         self.inbox_tx.clone()
     }
 
-    /// Declare/replace a peer's address (from the declared `id@addr` set).
+    /// Install an already authorized route. Address equality is idempotent;
+    /// a changed route revokes the old connection generation, not membership.
     pub fn register_peer(&self, id: NodeId, addr: SocketAddr) {
-        self.addrs
-            .lock()
-            .expect("addrs poisoned")
-            .insert(id.0, addr);
+        let mut peers = self.peers.lock().expect("peers poisoned");
+        let peer = peers.entry(id.0).or_insert_with(|| PeerRoute {
+            destination: Arc::new(PeerDestination { addr }),
+            sender: None,
+        });
+        if peer.destination.addr != addr {
+            peer.destination = Arc::new(PeerDestination { addr });
+            if let Some(sender) = &peer.sender {
+                sender.destination.send_replace(peer.destination.clone());
+            }
+        }
     }
 
     /// Inspect the configured route without establishing a connection.
     #[cfg(any(test, feature = "testing"))]
     pub fn peer_address_for_tests(&self, id: NodeId) -> Option<SocketAddr> {
-        self.addrs
+        self.peers
             .lock()
-            .expect("addrs poisoned")
+            .expect("peers poisoned")
             .get(&id.0)
-            .copied()
+            .map(|peer| peer.destination.addr)
     }
 
-    /// Total peer-connect attempts so far (monotonic). Diagnostic surface;
-    /// the task #40 backlog-flood regression asserts on its growth.
+    /// Total peer-connect attempts so far (monotonic).
     pub fn connect_attempts(&self) -> u64 {
         self.connect_attempts.load(Ordering::Relaxed)
     }
 
-    fn peer_sender(&self, to: NodeId) -> Option<mpsc::Sender<pb::RaftEnvelope>> {
-        {
-            let peers = self.peers.lock().expect("peers poisoned");
-            if let Some(s) = peers.get(&to.0) {
-                return Some(s.clone());
-            }
-        }
-        let addr = *self.addrs.lock().expect("addrs poisoned").get(&to.0)?;
+    fn enqueue(&self, to: NodeId, envelope: pb::RaftEnvelope) {
         let mut peers = self.peers.lock().expect("peers poisoned");
-        Some(
-            peers
-                .entry(to.0)
-                .or_insert_with(|| {
-                    let (tx, rx) = mpsc::channel(PEER_QUEUE);
-                    self.handle.spawn(peer_worker(
-                        self.me,
-                        addr,
-                        self.token.clone(),
-                        self.root_digest,
-                        rx,
-                        self.connect_attempts.clone(),
-                    ));
-                    tx
-                })
-                .clone(),
-        )
+        let Some(peer) = peers.get_mut(&to.0) else {
+            return; // unknown peer: Raft retransmits after registration
+        };
+        if peer
+            .sender
+            .as_ref()
+            .is_none_or(|sender| sender.task.is_finished())
+        {
+            let (queue, rx) = mpsc::channel(PEER_QUEUE);
+            let (destination, updates) = watch::channel(peer.destination.clone());
+            let task = self.handle.spawn(peer_worker(
+                self.me,
+                self.token.clone(),
+                self.root_digest,
+                rx,
+                updates,
+                self.connect_attempts.clone(),
+            ));
+            peer.sender = Some(PeerSender {
+                queue,
+                destination,
+                task,
+            });
+        }
+        // This enqueue is the send linearization point, serialized with
+        // register_peer. Queue overflow still drops best-effort Raft traffic.
+        let _ = peer
+            .sender
+            .as_ref()
+            .unwrap()
+            .queue
+            .try_send(OutboundMessage {
+                destination: peer.destination.clone(),
+                envelope,
+            });
     }
 }
 
@@ -975,9 +1024,6 @@ impl RaftTransport for GrpcTransport {
         if self.partition.is_masked(to.0) {
             return;
         }
-        let Some(sender) = self.peer_sender(to) else {
-            return; // unknown peer: drop (raft retransmits after registration)
-        };
         let Ok(bytes) = msg.write_to_bytes() else {
             return;
         };
@@ -989,8 +1035,7 @@ impl RaftTransport for GrpcTransport {
             epoch_conf_ver: 0,
             epoch_version: 0,
         };
-        // Full queue = backpressure by dropping (best-effort, raft recovers).
-        let _ = sender.try_send(env);
+        self.enqueue(to, env);
     }
 
     fn drain(&self) -> Vec<Message> {
@@ -1015,17 +1060,61 @@ impl RaftTransport for GrpcTransport {
     }
 }
 
-/// Per-peer outbound worker: batch by count/bytes with a short flush window,
-/// one long-lived client-stream per connection, reconnect with backoff.
+/// One owned task per peer. A route change drops the whole old session
+/// future (connect, backoff, RPC and pending batch) before starting another.
 async fn peer_worker(
     me: NodeId,
-    addr: SocketAddr,
     token: Option<String>,
     root_digest: RootDigest,
-    mut rx: mpsc::Receiver<pb::RaftEnvelope>,
+    mut rx: mpsc::Receiver<OutboundMessage>,
+    mut updates: watch::Receiver<Arc<PeerDestination>>,
     connect_attempts: Arc<AtomicU64>,
 ) {
-    let url = format!("http://{addr}");
+    loop {
+        // Clone and release the watch borrow before any await or route lock.
+        let destination = updates.borrow_and_update().clone();
+        tokio::select! {
+            biased;
+            changed = updates.changed() => {
+                if changed.is_err() { return; }
+            }
+            _ = peer_session(me, &token, root_digest, &mut rx, &destination,
+                             &connect_attempts) => return,
+        }
+    }
+}
+
+/// Receive only messages admitted to this exact connection generation.
+async fn receive_for_destination(
+    rx: &mut mpsc::Receiver<OutboundMessage>,
+    destination: &Arc<PeerDestination>,
+) -> Option<pb::RaftEnvelope> {
+    let mut discarded = 0;
+    while let Some(message) = rx.recv().await {
+        if Arc::ptr_eq(&message.destination, destination) {
+            return Some(message.envelope);
+        }
+        discarded += 1;
+        if discarded == MAX_BATCH_MSGS {
+            // A producer flooding a revoked generation cannot prevent the
+            // outer route-change/cancellation branch from being polled.
+            tokio::task::yield_now().await;
+            discarded = 0;
+        }
+    }
+    None
+}
+
+/// Batch one route generation by count/bytes/window and reconnect with backoff.
+async fn peer_session(
+    me: NodeId,
+    token: &Option<String>,
+    root_digest: RootDigest,
+    rx: &mut mpsc::Receiver<OutboundMessage>,
+    destination: &Arc<PeerDestination>,
+    connect_attempts: &AtomicU64,
+) {
+    let url = format!("http://{}", destination.addr);
     let mut backoff = RECONNECT_MIN;
     let endpoint = tonic::transport::Endpoint::from_shared(url)
         .expect("peer url is always http://<socketaddr>")
@@ -1050,7 +1139,11 @@ async fn peer_worker(
             // Either way: drain whatever queued during the outage (drop:
             // best-effort), back off, retry.
             Ok(Err(_)) | Err(_) => {
-                while rx.try_recv().is_ok() {}
+                for _ in 0..PEER_QUEUE {
+                    if rx.try_recv().is_err() {
+                        break;
+                    }
+                }
                 tokio::time::sleep(backoff).await;
                 backoff = (backoff * 2).min(RECONNECT_MAX);
                 continue;
@@ -1061,14 +1154,14 @@ async fn peer_worker(
         let (batch_tx, batch_rx) = mpsc::channel::<pb::BatchRaftMessage>(16);
         let stream = tokio_stream::wrappers::ReceiverStream::new(batch_rx);
         let mut stream_req = Request::new(stream);
-        attach_auth(&mut stream_req, &token, me);
+        attach_auth(&mut stream_req, token, me);
         let rpc = client.batch_raft(stream_req);
         tokio::pin!(rpc);
 
         // Batch loop: runs until the peer connection dies or we shut down.
         'batching: loop {
             let first = tokio::select! {
-                m = rx.recv() => match m {
+                m = receive_for_destination(rx, destination) => match m {
                     Some(m) => m,
                     None => return, // transport dropped: shut down worker
                 },
@@ -1085,7 +1178,7 @@ async fn peer_worker(
             tokio::pin!(window);
             while batch.msgs.len() < MAX_BATCH_MSGS && bytes < MAX_BATCH_BYTES {
                 tokio::select! {
-                    m = rx.recv() => match m {
+                    m = receive_for_destination(rx, destination) => match m {
                         Some(m) => {
                             bytes += m.raft_message.len();
                             batch.msgs.push(m);
@@ -1415,6 +1508,140 @@ mod tests {
     }
 
     #[test]
+    fn route_updates_keep_one_owned_worker_and_same_address_is_idempotent() {
+        let rt = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            None,
+            rt.handle().clone(),
+            test_root().root_digest,
+        );
+        let a = "127.0.0.1:1".parse().unwrap();
+        let b = "127.0.0.1:2".parse().unwrap();
+        transport.register_peer(NodeId(2), a);
+        transport.send(NodeId(2), Message::default());
+        let (first, task) = {
+            let peers = transport.peers.lock().unwrap();
+            let peer = &peers[&2];
+            (
+                peer.destination.clone(),
+                peer.sender.as_ref().unwrap().task.abort_handle(),
+            )
+        };
+        transport.register_peer(NodeId(2), a);
+        assert!(Arc::ptr_eq(
+            &first,
+            &transport.peers.lock().unwrap()[&2].destination
+        ));
+        for n in 0..5000 {
+            transport.register_peer(NodeId(2), if n % 2 == 0 { b } else { a });
+            transport.send(NodeId(2), Message::default());
+            let peers = transport.peers.lock().unwrap();
+            let sender = peers[&2].sender.as_ref().unwrap();
+            assert_eq!(
+                sender.task.id(),
+                task.id(),
+                "route update spawned another worker"
+            );
+            assert!(sender.queue.capacity() <= PEER_QUEUE);
+        }
+        let peers = transport.peers.lock().unwrap();
+        assert!(
+            !Arc::ptr_eq(&first, &peers[&2].destination),
+            "A -> B -> A reused its old generation"
+        );
+        assert_eq!(peers[&2].sender.as_ref().unwrap().queue.capacity(), 0);
+        drop(peers);
+        drop(transport);
+        rt.block_on(async {
+            tokio::time::timeout(Duration::from_secs(5), async {
+                while !task.is_finished() {
+                    tokio::task::yield_now().await;
+                }
+            })
+            .await
+            .unwrap();
+        });
+    }
+
+    #[test]
+    fn route_generation_filter_rejects_old_queue_entries_even_after_address_reuse() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(async {
+            let a = Arc::new(PeerDestination {
+                addr: "127.0.0.1:1".parse().unwrap(),
+            });
+            let b = Arc::new(PeerDestination {
+                addr: "127.0.0.1:2".parse().unwrap(),
+            });
+            let new_a = Arc::new(PeerDestination { addr: a.addr });
+            let (tx, mut rx) = mpsc::channel(4);
+            for (destination, from_node) in [(a, 10), (b, 20), (new_a.clone(), 30)] {
+                tx.send(OutboundMessage {
+                    destination,
+                    envelope: pb::RaftEnvelope {
+                        from_node,
+                        ..Default::default()
+                    },
+                })
+                .await
+                .unwrap();
+            }
+            drop(tx);
+            assert_eq!(
+                receive_for_destination(&mut rx, &new_a)
+                    .await
+                    .unwrap()
+                    .from_node,
+                30
+            );
+            assert!(receive_for_destination(&mut rx, &new_a).await.is_none());
+        });
+    }
+
+    #[test]
+    fn dropping_transport_terminates_a_retrying_worker() {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            None,
+            rt.handle().clone(),
+            test_root().root_digest,
+        );
+        let down = free_addr();
+        transport.register_peer(NodeId(2), down);
+        transport.send(NodeId(2), Message::default());
+        let task = transport.peers.lock().unwrap()[&2]
+            .sender
+            .as_ref()
+            .unwrap()
+            .task
+            .abort_handle();
+        let attempts = transport.connect_attempts.clone();
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        while attempts.load(Ordering::Relaxed) < 2 && std::time::Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        assert!(
+            attempts.load(Ordering::Relaxed) >= 2,
+            "connect/backoff control never ran"
+        );
+        drop(transport);
+        rt.block_on(async {
+            tokio::time::timeout(Duration::from_secs(5), async {
+                while !task.is_finished() {
+                    tokio::task::yield_now().await;
+                }
+            })
+            .await
+            .unwrap();
+        });
+    }
+
+    #[test]
     fn registered_address_change_replaces_live_peer_stream() {
         let rt = tokio::runtime::Runtime::new().unwrap();
         let handle = rt.handle().clone();
@@ -1484,6 +1711,15 @@ mod tests {
     /// and reaches the recovered endpoint.
     #[test]
     fn peer_worker_escapes_a_frozen_reader_and_reaches_replacement() {
+        frozen_reader_recovery(false);
+    }
+
+    #[test]
+    fn route_change_escapes_a_frozen_reader_at_a_distinct_address() {
+        frozen_reader_recovery(true);
+    }
+
+    fn frozen_reader_recovery(change_address: bool) {
         struct FrozenRaft;
         #[tonic::async_trait]
         impl Kv9Raft for FrozenRaft {
@@ -1542,16 +1778,26 @@ mod tests {
             ..Default::default()
         };
 
-        // Fill for a while against the frozen reader (worker wedges on old
-        // code), then swap in a live server on the same address.
+        // Exercise both same-address recovery and migration to a distinct
+        // endpoint while the old server stays frozen.
         for _ in 0..30 {
             transport.send(NodeId(2), msg());
             std::thread::sleep(Duration::from_millis(50));
         }
-        frozen.abort();
-        std::thread::sleep(Duration::from_millis(100));
+        let replacement = if change_address {
+            let replacement = free_addr();
+            assert_ne!(addr, replacement);
+            replacement
+        } else {
+            frozen.abort();
+            std::thread::sleep(Duration::from_millis(100));
+            addr
+        };
         let (n2_inbox_tx, mut n2_inbox_rx) = mpsc::unbounded_channel();
-        serve(&handle, NodeId(2), addr, n2_inbox_tx, 42);
+        serve(&handle, NodeId(2), replacement, n2_inbox_tx, 42);
+        if change_address {
+            transport.register_peer(NodeId(2), replacement);
+        }
 
         let deadline = std::time::Instant::now() + Duration::from_secs(15);
         let mut delivered = false;
