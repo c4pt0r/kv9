@@ -170,7 +170,8 @@ refusals and recovery evidence. Six controls reuse the old PVC or lifecycle,
 accept initialization or startup, remove the actual victim, or substitute a
 different bundle. This tests a newly prepared disk carrying a copied identity
 bundle; it does not claim to detect a complete bit-for-bit clone of a disk or
-provide hardware-bound identities. Address migration is a separate #42 task.
+provide hardware-bound identities. Address migration is tracked in #47 under
+the broader #42 replacement/admission boundary.
 
 The checker rejects three isolated corruptions of real artifacts: missing Put
 progress, a cutoff preceding the claimed completions, and an uninjected fault.
@@ -200,3 +201,26 @@ The client retry proof and database protocol/durability proofs are unchanged and
 remain required CI gates. The #40 reproducible measurement protocol, client
 calibration and trial variation are described in [BENCHMARKS.md](BENCHMARKS.md). Fault-test
 operation counts or this paced functional fixture are not server capacity data.
+
+## Hosted replacement and history acceptance
+
+At `ed51dec1b2260bfe87c3ca208ed1a05fe768bcc0`, both
+[CI 34376088154](https://github.com/c4pt0r/kv9/actions/runs/34376088154) and
+[Correctness 34376088293](https://github.com/c4pt0r/kv9/actions/runs/34376088293)
+completed successfully. All nine CI jobs and all four correctness jobs passed.
+Independent audits of the downloaded Chaos artifact accepted all 19 windows,
+all 5,430 CLI operations and 2,809 persistent operations, exact source/build
+provenance, original formation recovery, every initial voter's missing-log and
+replacement-PVC cells, and the evidence controls. This satisfies the remaining
+hosted acceptance for the container-kill sequencing repair (#45) and complete
+history search repair (#46); both issues are closed. Their original failed runs
+remain failed and retained.
+
+Archive: `target/correctness-evidence/2026-09-09-ed51dec-hosted-chaos.tar.gz`,
+43,116,883 bytes, SHA-256
+`d92794cb5d73ef5fa8c1d7c4731c9d6374730e53ec01d25efee0ba64018fada3`.
+The raw scene, exact source and independent audits are retained. Its manifest
+records the deduction job as still running when the archive was created; the
+workflow subsequently completed successfully as linked above. These results
+use one Kind host and local WALs. They do not establish cross-host availability,
+throughput targets or completion of #42/P0.
