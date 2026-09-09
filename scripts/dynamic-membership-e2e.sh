@@ -2,6 +2,7 @@
 set -euo pipefail
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$repo_dir/scripts/membership-write.sh"
 bin="$repo_dir/target/debug/kv9"
 artifact_dir="${KV9_MEMBERSHIP_DIR:-$(mktemp -d /tmp/kv9-membership.XXXXXX)}"
 base_port="${KV9_BASE_PORT:-$((23000 + ($$ % 1000)))}"
@@ -127,7 +128,7 @@ client() {
 
 admit_and_join() {
   local node="$1" leader output ticket
-  leader="$(leader_id)"
+  leader="$(membership_wait_for_leader "$artifact_dir/leader-observations.tsv" "admit-$node")"
   output="$(client admit-node \
     --addr "127.0.0.1:$((base_port + leader))" \
     --node-id "$node" \
@@ -141,7 +142,7 @@ admit_and_join() {
 
 promote() {
   local node="$1" leader output conf_index
-  leader="$(leader_id)"
+  leader="$(membership_wait_for_leader "$artifact_dir/leader-observations.tsv" "promote-$node")"
   output="$(client promote-node \
     --addr "127.0.0.1:$((base_port + leader))" \
     --node-id "$node")"
@@ -177,7 +178,7 @@ mv "$artifact_dir/n4" "$artifact_dir/n4-unadmitted"
 
 # Gate 3 sensitivity: after admission, the same node/address presenting a
 # different one-time ticket must remain outside Serving and leave admission pending.
-leader="$(leader_id)"
+leader="$(membership_wait_for_leader "$artifact_dir/leader-observations.tsv" pre-admission-4)"
 admit_output="$(client admit-node \
   --addr "127.0.0.1:$((base_port + leader))" \
   --node-id 4 \
@@ -209,7 +210,7 @@ if (( rejection_observed != 1 )); then
   cat "$artifact_dir/wrong-ticket-observations.tsv" >&2
   exit 1
 fi
-leader="$(leader_id)"
+leader="$(membership_wait_for_leader "$artifact_dir/leader-observations.tsv" post-wrong-ticket)"
 pending="$(status_value "$leader" pending_admissions)"
 [[ ",$pending," == *,4,* ]] || {
   echo 'FAIL: the wrong ticket consumed its pending admission' >&2
@@ -230,7 +231,7 @@ wait_until "node 5 registered and caught up as learner" 20 membership_converged 
 promote 5
 wait_until "five voters converged" 20 membership_converged 5 "1,2,3,4,5" ""
 
-old_leader="$(leader_id)"
+old_leader="$(membership_wait_for_leader "$artifact_dir/leader-observations.tsv" pre-failover)"
 stop_node "$old_leader" KILL
 new_leader_ready() {
   local leader
@@ -241,7 +242,6 @@ wait_until "five-voter failover" 20 new_leader_ready
 # Local leader status may precede a subsequent term/role change. The public
 # mutation receipt, followed by the exact existing catch-up assertions, is the
 # availability observation. Save and bound each leadership-rejected attempt.
-source "$repo_dir/scripts/membership-write.sh"
 write_output="$(membership_write_after_failover "$artifact_dir" "$base_port" "$old_leader")"
 write_term="$(awk -F= '$1 == "proposed_term" {print $2}' <<<"$write_output")"
 write_index="$(awk -F= '$1 == "proposed_index" {print $2}' <<<"$write_output")"

@@ -2,6 +2,23 @@
 # Shared by the real membership E2E and its bounded retry controls.
 # `leader_id` supplies a routing candidate; only a successful RPC receipt proves
 # that a write completed. Failed attempts remain recorded, not counted as writes.
+membership_wait_for_leader() {
+  local observations="$1" phase="$2" budget="${3:-20}"
+  local deadline=$((SECONDS + budget)) candidate
+  while (( SECONDS < deadline )); do
+    candidate="$(leader_id 2>/dev/null || true)"
+    printf '%s\t%s\t%s\n' "$SECONDS" "$phase" "$candidate" >>"$observations"
+    if (( SECONDS >= deadline )); then break; fi
+    if [[ "$candidate" =~ ^[1-5]$ ]]; then
+      printf '%s' "$candidate"
+      return 0
+    fi
+    sleep 0.05
+  done
+  echo "FAIL: no leader observed for $phase within its selection budget" >&2
+  return 1
+}
+
 membership_write_after_failover() {
   local artifact="$1" base="$2" failed="$3" budget="${4:-20}"
   local deadline=$((SECONDS + budget)) attempt=0 candidate rc output errors

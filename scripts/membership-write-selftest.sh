@@ -44,4 +44,43 @@ if membership_write_after_failover "$work" 23100 1 0 >"$work/budget.out" 2>"$wor
 test ! -s "$work/budget.out"
 grep -Fxq 'FAIL: post-failover creation obtained no successful RPC receipt within its retry budget' "$work/budget.err"
 echo 'PASS: exhausted routing budget emits no receipt'
-echo 'PASS: membership write retry controls completed all four cases'
+
+# Advance this shell's clock deterministically while simulating status snapshots.
+# The candidate function runs in a command substitution, so its observation
+# counter is a file rather than a subshell-local variable.
+sleep() { SECONDS=$((SECONDS + 1)); }
+leader_id() {
+  local number=0
+  if [ -f "$work/selections" ]; then number="$(cat "$work/selections")"; fi
+  number=$((number + 1)); echo "$number" >"$work/selections"
+  if [ "$selection" = delayed ]; then
+    if ((number == 2)); then echo 9; return 0; fi
+    if ((number == 3)); then echo 3; return 0; fi
+  fi
+  return 1
+}
+selection=delayed
+if ! output="$(membership_wait_for_leader "$work/selections.tsv" delayed 3)"; then
+  echo 'FAIL: leader selection did not survive the observed election gap' >&2
+  exit 1
+fi
+test "$output" = 3
+test "$(cat "$work/selections")" = 3
+test "$(wc -l <"$work/selections.tsv")" = 3
+echo 'PASS: delayed leader selection ignores an invalid candidate and captures one successful observation'
+
+selection=absent
+rm "$work/selections"
+if membership_wait_for_leader "$work/absent.tsv" absent 2 >"$work/absent.out" 2>"$work/absent.err"; then exit 1; fi
+test ! -s "$work/absent.out"
+test "$(cat "$work/selections")" = 2
+grep -Fxq 'FAIL: no leader observed for absent within its selection budget' "$work/absent.err"
+echo 'PASS: a persistent election gap exhausts one absolute budget without returning a candidate'
+
+rm "$work/selections"
+if membership_wait_for_leader "$work/zero.tsv" zero 0 >"$work/zero.out" 2>"$work/zero.err"; then exit 1; fi
+test ! -s "$work/zero.out"
+test ! -e "$work/selections"
+test ! -e "$work/zero.tsv"
+echo 'PASS: an exhausted selection budget does not query or fabricate a leader'
+echo 'PASS: membership routing controls completed all seven cases'
