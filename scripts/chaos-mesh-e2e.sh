@@ -979,6 +979,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-store-loss.sh"
 run_store_log_loss_matrix
 source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-store-replacement.sh"
 run_store_replacement_matrix
+source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-endpoint-migration.sh"
+run_endpoint_migration
 persistent_finish
 
 touch "$artifact/history.stop"
@@ -991,10 +993,12 @@ python3 scripts/history/checker.py "$artifact/history.jsonl" --output "$artifact
     io-voter-3-errno-5 io-voter-3-errno-28 \
     store-loss-voter-1-log-missing store-loss-voter-2-log-missing store-loss-voter-3-log-missing \
     store-loss-voter-1-pvc-replacement store-loss-voter-2-pvc-replacement store-loss-voter-3-pvc-replacement \
+    endpoint-migration-pending endpoint-migration-recovered \
   >"$artifact/history-checker.log" 2>&1
 echo "PASS: concurrent Raw KV/catalog history is valid across the Chaos Mesh matrix"
 python3 scripts/check-formation-chaos.py "$artifact"
 python3 scripts/check-store-loss-chaos.py "$artifact"
 python3 scripts/check-store-replacement-chaos.py "$artifact"
+python3 scripts/check-endpoint-migration-chaos.py "$artifact"
 
 echo "PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, container recovery, and Raft I/O faults"

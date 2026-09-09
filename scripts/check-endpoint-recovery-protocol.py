@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the endpoint writer model and its audited parameterized TLAPS proofs."""
+"""Check the endpoint recovery model and its audited parameterized TLAPS proofs."""
 import argparse
 import importlib.util
 import json
@@ -11,14 +11,14 @@ import subprocess
 import tempfile
 import time
 
-from endpoint_writer_controls import mutations
+from endpoint_recovery_controls import mutations
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "proofs/tla/endpoint-writers"
-PROOFS = ROOT / "proofs/tlaps/endpoint-writers"
-MODULES = ("EndpointWriters.tla", "EndpointWritersMC.tla")
-CONFIGS = ("Writers2.cfg", "Writers3.cfg")
-ACTIONS = ("EWNewAdmission", "EWChange", "EWStart", "EWInstall", "EWEager", "EWCertified", "EWDecommission")
+SOURCE = ROOT / "proofs/tla/endpoint-recovery"
+PROOFS = ROOT / "proofs/tlaps/endpoint-recovery"
+MODULES = ("EndpointRecovery.tla", "EndpointRecoveryMC.tla")
+CONFIGS = ("Recovery3.cfg", "Recovery5.cfg")
+ACTIONS = ("ERAdvance", "ERApply", "ERConfirm", "ERPublish", "ERInitial", "ERServe", "ERReject", "ERForget", "ERCrash")
 
 
 def module(name, filename):
@@ -34,9 +34,9 @@ require, digest = tlc.require, tlc.digest
 
 
 def verdict(output, status, expected=None, coverage=False, temporal=False):
-    result = tlc.verdict(output, status, "EventuallyDrained" if expected == "EWConverges" else expected,
-                         temporal=temporal, coverage=coverage, action_property=expected == "EWEffects",
-                         module="EndpointWriters", actions=ACTIONS, minimum_distinct=2 if expected is not None else 3)
+    result = tlc.verdict(output, status, "EventuallyDrained" if expected == "ERConverges" else expected,
+                         temporal=temporal, coverage=coverage, action_property=expected == "EREffects",
+                         module="EndpointRecovery", actions=ACTIONS, minimum_distinct=2 if expected is not None else 3)
     return result
 
 
@@ -45,9 +45,9 @@ def model_case(args, name, config, model, expected=None, fp=0, coverage=False):
     work.mkdir()
     for filename in MODULES:
         shutil.copyfile(SOURCE / filename, work / filename)
-    (work / "EndpointWriters.tla").write_text(model)
+    (work / "EndpointRecovery.tla").write_text(model)
     (work / "Run.cfg").write_text(config)
-    record = dict(name=name, expected=expected, fingerprint=fp, temporal=any(x in config for x in ("EWMCFromOld", "EWMCFromIdle")),
+    record = dict(name=name, expected=expected, fingerprint=fp, temporal=any(x in config for x in ("ERMCStableSpec", "ERMCStableSpec")),
                   sources={p.name: digest(p) for p in sorted(work.iterdir())})
     started = time.monotonic()
     try:
@@ -57,7 +57,7 @@ def model_case(args, name, config, model, expected=None, fp=0, coverage=False):
                        "-metadir", states, "-config", "Run.cfg"]
             if coverage:
                 command += ["-coverage", "999"]
-            command += ["EndpointWritersMC.tla"]
+            command += ["EndpointRecoveryMC.tla"]
             record["command"] = command
             with (work / "tlc.log").open("w") as log:
                 result = subprocess.run(command, cwd=work, stdout=log, stderr=subprocess.STDOUT,
@@ -80,8 +80,8 @@ def model_case(args, name, config, model, expected=None, fp=0, coverage=False):
 def proof_case(args, name, model, source, expected=None, pattern=None):
     work = args.output / name
     work.mkdir()
-    (work / "EndpointWriters.tla").write_text(model)
-    (work / "EndpointWritersProof.tla").write_text(source)
+    (work / "EndpointRecovery.tla").write_text(model)
+    (work / "EndpointRecoveryProof.tla").write_text(source)
     shutil.copyfile(PROOFS / "inventory.json", work / "inventory.json")
     record = dict(name=name, expected=expected,
                   sources={p.name: digest(p) for p in sorted(work.iterdir())})
@@ -92,7 +92,7 @@ def proof_case(args, name, model, source, expected=None, pattern=None):
         require(expected is not None and str(error) == expected,
                 f"{name}: failed outside the intended gate: {error}")
         if pattern:
-            output = (work / "EndpointWritersProof.log").read_text()
+            output = (work / "EndpointRecoveryProof.log").read_text()
             require(re.search(pattern, output) is not None, f"{name}: missing intended failed obligation")
             failures = re.findall(r"\[ERROR\]: (\d+)/(\d+) obligations failed\.", output)
             require(len(failures) == 1 and 0 < int(failures[0][0]) < int(failures[0][1]),
@@ -149,14 +149,14 @@ def counterexample_output_controls(output):
     ]
     for invalid, reason in cases:
         require(invalid != output, "missing counterexample output anchor")
-        verdict(output, 12, "EWInvariant")
+        verdict(output, 12, "ERInvariant")
         try:
-            verdict(invalid, 12, "EWInvariant")
+            verdict(invalid, 12, "ERInvariant")
         except tlc.Rejected as error:
             require(str(error) == reason, f"wrong counterexample output rejection: {error}")
         else:
             raise tlc.Rejected("invalid counterexample output accepted")
-        verdict(output, 12, "EWInvariant")
+        verdict(output, 12, "ERInvariant")
     return len(cases)
 
 
@@ -175,9 +175,9 @@ def main():
     version = subprocess.check_output([str(args.tlapm), "--version"], text=True, timeout=15).strip()
     require(version == inventory["tlapm_version"], "TLAPS version mismatch")
     require({p.name for p in SOURCE.glob("*.tla")} == set(MODULES), "endpoint model inventory mismatch")
-    require({p.name for p in SOURCE.glob("*.cfg")} == set(CONFIGS) | {"WritersOld.cfg", "WritersIdle.cfg"}, "endpoint configuration inventory mismatch")
+    require({p.name for p in SOURCE.glob("*.cfg")} == set(CONFIGS) | {"RecoveryLive.cfg", "RecoveryStable.cfg"}, "endpoint configuration inventory mismatch")
     require({p.stem for p in PROOFS.glob("*.tla")} == set(inventory["modules"]), "endpoint proof inventory mismatch")
-    require(inventory["roots"] == ["EndpointWritersProof"] and set(inventory["models"]) == {"EndpointWriters"},
+    require(inventory["roots"] == ["EndpointRecoveryProof"] and set(inventory["models"]) == {"EndpointRecovery"},
             "endpoint root/model inventory mismatch")
     args.output.mkdir(parents=True)
     args.classes = args.output / "auditor"
@@ -185,8 +185,8 @@ def main():
     shutil.copyfile(ROOT / "scripts/ProofAudit.java", args.classes / "ProofAudit.java")
     subprocess.run(["javac", "-cp", str(args.jar), "-d", str(args.classes),
                     str(args.classes / "ProofAudit.java")], check=True, timeout=30)
-    model = (SOURCE / "EndpointWriters.tla").read_text()
-    source = (PROOFS / "EndpointWritersProof.tla").read_text()
+    model = (SOURCE / "EndpointRecovery.tla").read_text()
+    source = (PROOFS / "EndpointRecoveryProof.tla").read_text()
     models, proofs = [], []
     for filename in CONFIGS:
         config = (SOURCE / filename).read_text()
@@ -206,35 +206,35 @@ def main():
                                    control["property"] if invalid else None)
             model_group.append(record)
             proof_group.append(proof_case(args, f"proof-{control['name']}-{suffix}", text, source,
-                                          "EndpointWritersProof: TLAPS exit 10" if invalid else None,
+                                          "EndpointRecoveryProof: TLAPS exit 10" if invalid else None,
                                           control["proof_pattern"] if invalid else None))
-        check_triple(model_group, "EndpointWriters.tla")
-        check_triple(proof_group, "EndpointWriters.tla")
+        check_triple(model_group, "EndpointRecovery.tla")
+        check_triple(proof_group, "EndpointRecovery.tla")
         models.extend(model_group)
         proofs.extend(proof_group)
-    live, live_output = model_case(args, "WritersOld", (SOURCE / "WritersOld.cfg").read_text(), model)
+    live, live_output = model_case(args, "RecoveryLive", (SOURCE / "RecoveryLive.cfg").read_text(), model)
     models.append(live)
-    stop, _ = model_case(args, "WritersIdle", (SOURCE / "WritersIdle.cfg").read_text(), model)
+    stop, _ = model_case(args, "RecoveryStable", (SOURCE / "RecoveryStable.cfg").read_text(), model)
     models.append(stop)
-    for witness in ("EWNoRemoteAdvanceDuringCapture", "EWNoRevocation"):
+    for witness in ("ERNoPendingCatchup", "ERNoChangedRecovery"):
         config = (SOURCE / CONFIGS[1]).read_text() + f"INVARIANT {witness}\n"
         record, _ = model_case(args, f"witness-{witness}", config, model, witness)
         models.append(record)
     audit_controls = [
         ("omitted-proof", tlc.replace_once(source,
-         "BY EWLegalInputs, SMT DEF EWInit, EWInvariant, EWType, EWOrder",
-         "OMITTED"), "proof hole: EndpointWritersProof.EWInvariantInit"),
-        ("custom-axiom", tlc.replace_once(source, "EXTENDS EndpointWriters, TLAPS",
-         "EXTENDS EndpointWriters, TLAPS\nAXIOM FALSE"), "unapproved module assumption: EndpointWritersProof"),
+         "BY ERLegalInputs, SMT DEF ERInit, ERInvariant, ERType, ERAuthority",
+         "OMITTED"), "proof hole: EndpointRecoveryProof.ERInvariantInit"),
+        ("custom-axiom", tlc.replace_once(source, "EXTENDS EndpointRecovery, TLAPS",
+         "EXTENDS EndpointRecovery, TLAPS\nAXIOM FALSE"), "unapproved module assumption: EndpointRecoveryProof"),
     ]
     for name, mutant, reason in audit_controls:
         group = []
         for suffix, text, expected in (("baseline", source, None), ("mutant", mutant, reason), ("restored", source, None)):
             group.append(proof_case(args, f"audit-{name}-{suffix}", model, text, expected))
-        check_triple(group, "EndpointWritersProof.tla")
+        check_triple(group, "EndpointRecoveryProof.tla")
         proofs.extend(group)
     model_outputs = model_output_controls(good_output)
-    model_outputs += counterexample_output_controls((args.output / "model-capture-wrong-source-mutant/tlc.log").read_text())
+    model_outputs += counterexample_output_controls((args.output / "model-publish-before-apply-mutant/tlc.log").read_text())
     for code in (2192, 2267):
         invalid = re.sub(rf"@!@!@STARTMSG {code}:0 @!@!@.*?@!@!@ENDMSG {code} @!@!@", "", live_output, flags=re.S)
         require(invalid != live_output, "missing temporal output control anchor")
@@ -247,18 +247,18 @@ def main():
             raise tlc.Rejected("incomplete temporal output accepted")
         verdict(live_output, 0, temporal=True)
         model_outputs += 1
-    proof_output = (args.output / "proof-baseline/EndpointWritersProof.log").read_text()
-    proof_outputs = proof.output_controls(proof_output, "EndpointWritersProof", 111)
+    proof_output = (args.output / "proof-baseline/EndpointRecoveryProof.log").read_text()
+    proof_outputs = proof.output_controls(proof_output, "EndpointRecoveryProof", 165)
     summary = dict(jar_sha256=digest(args.jar), tlapm_version=version, tlapm_sha256=digest(args.tlapm),
                    sources={str(p.relative_to(ROOT)): digest(p) for p in [
                        Path(__file__), ROOT / "scripts/check-tla.py", ROOT / "scripts/check-tlaps.py",
-                       ROOT / "scripts/endpoint_writer_controls.py", ROOT / "scripts/ready_controls.py",
+                       ROOT / "scripts/endpoint_recovery_controls.py", ROOT / "scripts/ready_controls.py",
                        ROOT / "scripts/ProofAudit.java", *sorted(SOURCE.iterdir()), *sorted(PROOFS.iterdir())
                    ] if p.is_file()},
                    models=models, proofs=proofs, model_output_controls=model_outputs, proof_output_controls=proof_outputs)
     (args.output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
-    print(f"PASS: 4 full endpoint-writer model checks and 2 fair continuations; {len(controls)} protocol controls; 2 witnesses; "
-          "14 TLAPS theorems; 111 obligations; 2 audit controls; 10 output controls", flush=True)
+    print(f"PASS: 4 full endpoint-recovery model checks and 2 fair continuations; {len(controls)} protocol controls; 2 witnesses; "
+          "15 TLAPS theorems; 165 obligations; 2 audit controls; 10 output controls", flush=True)
 
 
 if __name__ == "__main__":

@@ -56,7 +56,7 @@ jobs:
             --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/endpoint-writers-protocol" \
             > "$RUNNER_TEMP/endpoint-writers-protocol.log" 2>&1
           cat "$RUNNER_TEMP/endpoint-writers-protocol.log"
-          test "$(tail -1 "$RUNNER_TEMP/endpoint-writers-protocol.log")" = 'PASS: 4 full endpoint-writer model checks and 2 fair continuations; 7 protocol controls; 2 witnesses; 13 TLAPS theorems; 102 obligations; 2 audit controls; 10 output controls'
+          test "$(tail -1 "$RUNNER_TEMP/endpoint-writers-protocol.log")" = 'PASS: 4 full endpoint-writer model checks and 2 fair continuations; 8 protocol controls; 2 witnesses; 14 TLAPS theorems; 111 obligations; 2 audit controls; 10 output controls'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -64,6 +64,23 @@ jobs:
           path: |
             ${{ runner.temp }}/endpoint-writers-protocol.log
             ${{ runner.temp }}/endpoint-writers-protocol
+          if-no-files-found: error
+
+      - name: Check endpoint confirmation and durable recovery
+        run: |
+          set -euo pipefail
+          python3 scripts/check-endpoint-recovery-protocol.py --tlapm "$RUNNER_TEMP/tlapm/bin/tlapm" \
+            --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/endpoint-recovery-protocol" \
+            > "$RUNNER_TEMP/endpoint-recovery-protocol.log" 2>&1
+          cat "$RUNNER_TEMP/endpoint-recovery-protocol.log"
+          test "$(tail -1 "$RUNNER_TEMP/endpoint-recovery-protocol.log")" = 'PASS: 4 full endpoint-recovery model checks and 2 fair continuations; 10 protocol controls; 2 witnesses; 15 TLAPS theorems; 165 obligations; 2 audit controls; 10 output controls'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: endpoint-recovery-protocol
+          path: |
+            ${{ runner.temp }}/endpoint-recovery-protocol.log
+            ${{ runner.temp }}/endpoint-recovery-protocol
           if-no-files-found: error
 
       - name: Check read admission safety and conditional progress
@@ -295,7 +312,8 @@ jobs:
           bash scripts/run-bounded-log.sh "$RUNNER_TEMP/chaos-mesh.log" 20m 15s scripts/chaos-mesh-e2e.sh
           test "$(grep -Fxc 'PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, container recovery, and Raft I/O faults' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -Fxc 'PASS: concurrent Raw KV/catalog history is valid across the Chaos Mesh matrix' "$RUNNER_TEMP/chaos-mesh.log")" = 1
-          test "$(grep -Fxc 'PASS: persistent full history verified across 19 Chaos windows; three invalid fault evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          test "$(grep -Fxc 'PASS: persistent full history verified across 21 Chaos windows; three invalid fault evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          test "$(grep -Fxc 'PASS: actual retained-PVC endpoint migration and both complete histories; five invalid evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -Fxc 'PASS: all three voters refused independent replacement PVCs and recovered original stores; six invalid evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -Fxc 'PASS: all three voters refused repeated missing-log starts after PodChaos and recovered; five invalid evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -Fxc 'PASS: container-kill restarted the killed container in the same Pod and original store with a live endpoint' "$RUNNER_TEMP/chaos-mesh.log")" = 1
@@ -306,7 +324,7 @@ jobs:
           test "$(grep -Fxc 'PASS: bounded public admission refused pressure while the partitioned quorum served history' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -Fxc 'PASS: 4 invalid admission pressure controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -Fxc 'PASS: latency metrics cover real pressure, six I/O failures and recovery; three invalid evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
-          for phase in registration-seed-blackhole pod-failure-1 pod-failure-2 pod-failure-3 partition public-admission-overload delay; do
+          for phase in registration-seed-blackhole pod-failure-1 pod-failure-2 pod-failure-3 partition public-admission-overload delay endpoint-migration-pending endpoint-migration-recovered; do
             test "$(grep -Fxc "PASS: concurrent put and read completed during $phase" "$RUNNER_TEMP/chaos-mesh.log")" = 1
             test "$(grep -Fxc "PASS: persistent put and read completed during $phase" "$RUNNER_TEMP/chaos-mesh.log")" = 1
           done

@@ -3,7 +3,10 @@
 // carried by tonic/prost. The synchronous core is reached ONLY through
 // channels — nothing in this service implies an async core.
 syntax = "proto3";
-package kv9.raft;
+// A distinct service path prevents either generation from silently accepting
+// the other's registration or Raft traffic. V2 requires versioned endpoint
+// writers and the durable V2 lifecycle fence before an owner starts.
+package kv9.raft.v2;
 
 service Kv9Raft {
   // Long-lived client-streaming raft transport: a peer opens one stream and
@@ -24,6 +27,32 @@ service Kv9Raft {
   // interceptor, never from the body; a valid cluster token alone is not
   // admission. NotLeader answers carry a redirect hint like the public API.
   rpc Register(RegisterRequest) returns (RegisterReceipt);
+  // Confirms an operator-authorized address for the same existing store.
+  // It never changes the address or membership and needs no old join ticket.
+  rpc ConfirmEndpoint(ConfirmEndpointRequest) returns (EndpointConfirmationReceipt);
+}
+
+message EndpointRoute {
+  uint64 node_id = 1;
+  bytes store_incarnation = 2;
+  string address = 3;
+  uint64 generation = 4;
+}
+message ConfirmEndpointRequest {
+  uint64 node_id = 1;
+  bytes cluster_id = 2;
+  bytes store_incarnation = 3;
+  string address = 4;
+  bytes root_digest = 5;
+}
+message EndpointConfirmationReceipt {
+  EndpointRoute subject = 1;
+  // Certified at the same position, so a recovering node can reach a moved
+  // leader even when its own applied directory still contains the old route.
+  EndpointRoute responder = 2;
+  uint64 applied_term = 3;
+  uint64 applied_index = 4;
+  bytes root_digest = 5;
 }
 
 // Envelope mimicking kvproto's RaftMessage: routing/epoch metadata OUTSIDE

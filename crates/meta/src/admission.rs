@@ -45,12 +45,15 @@ pub enum AdmittedRole {
 }
 
 /// Admission lifecycle. `Pending` → `Consumed` on successful join (exactly
-/// once); `Revoked` closes an admission that must no longer be usable.
+/// once). `Superseded` cancels an obsolete ticket during endpoint migration
+/// without decommissioning its existing member. `Revoked` additionally denies
+/// that member's node authentication until an explicit new admission.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AdmissionState {
     Pending = 1,
     Consumed = 2,
     Revoked = 3,
+    Superseded = 4,
 }
 
 impl AdmissionState {
@@ -59,6 +62,7 @@ impl AdmissionState {
             1 => Ok(AdmissionState::Pending),
             2 => Ok(AdmissionState::Consumed),
             3 => Ok(AdmissionState::Revoked),
+            4 => Ok(AdmissionState::Superseded),
             other => Err(Error::Config(format!(
                 "unknown admission state code {other}"
             ))),
@@ -201,10 +205,12 @@ fn admit_node_inner<E: Engine>(
         ));
     };
     if let Some(existing) = admission(txn, node_id)? {
-        // Only a REVOKED record may be replaced: silently replacing a pending
-        // or consumed one would let a single approval be used twice. Revoked
-        // is the operator's retry path ([`revoke_admission`]).
-        if existing.state != AdmissionState::Revoked {
+        // Only a terminal credential may be replaced. Pending/Consumed
+        // records retain their one-time approval until explicitly invalidated.
+        if !matches!(
+            existing.state,
+            AdmissionState::Revoked | AdmissionState::Superseded
+        ) {
             return Err(Error::Config(format!(
                 "an admission record for node {} already exists in state {:?} \
                  (revoke it first)",
@@ -372,6 +378,27 @@ pub fn revoke_admission<E: Engine>(txn: &mut MetaTxn<'_, E>, node_id: NodeId) ->
     }
     let changes = vec![(NA_STATE, ColumnValue::Uint(AdmissionState::Revoked as u64))];
     txn.update(&NODE_ADMISSIONS_DESC, &[memcmp_uint(node_id.0)], changes)
+}
+
+/// Cancel an obsolete join credential in the same transaction as an endpoint
+/// change. An explicit decommission verdict is stronger and is never lifted.
+pub fn supersede_admission<E: Engine>(txn: &mut MetaTxn<'_, E>, node_id: NodeId) -> Result<()> {
+    let adm = admission(txn, node_id)?
+        .ok_or_else(|| Error::Config(format!("no admission record for node {}", node_id.0)))?;
+    if matches!(
+        adm.state,
+        AdmissionState::Revoked | AdmissionState::Superseded
+    ) {
+        return Ok(());
+    }
+    txn.update(
+        &NODE_ADMISSIONS_DESC,
+        &[memcmp_uint(node_id.0)],
+        vec![(
+            NA_STATE,
+            ColumnValue::Uint(AdmissionState::Superseded as u64),
+        )],
+    )
 }
 
 /// Read one admission record.

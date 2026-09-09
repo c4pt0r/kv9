@@ -7,8 +7,9 @@ without leaking workers or mixing connection generations. This document covers
 the catalog transition that must authorize that route and its remaining runtime
 integration. [Endpoint writer ordering](ENDPOINT-WRITERS.md) extends this foundation
 with atomic admission revocation and serialized runtime route installation.
-The public update/confirmation API and migration Chaos cell are not
-implemented by the catalog foundation alone.
+The public API, CLI, durable recovery gate and actual migration Chaos extension
+are described in [Endpoint recovery](ENDPOINT-RECOVERY.md). Historical foundation
+acceptance below does not by itself establish those later gates.
 
 ## Catalog transition
 
@@ -113,7 +114,10 @@ formatting, Python syntax and workflow validation passed. Archive:
 It retains the exact source, all gate artifacts, controls and independent audit.
 This evidence covers the catalog foundation; it is not migration E2E acceptance.
 
-## Remaining integration and acceptance
+## Integration obligations carried into runtime acceptance
+
+These obligations motivated the current [runtime implementation](ENDPOINT-RECOVERY.md).
+The new revision's complete local acceptance must satisfy them before #47 closes.
 
 1. Expose authenticated current-route read and conditional-update RPC/CLI calls
    with bounded admission, typed conflicts and unknown outcomes, and exact

@@ -141,6 +141,8 @@ service! {
     cluster_info: ClusterInfoRequest => ClusterInfoResponse,
     admit_node: AdmitNodeRequest => MembershipChangeResponse,
     promote_node: PromoteNodeRequest => MembershipChangeResponse,
+    get_node_endpoint: GetNodeEndpointRequest => GetNodeEndpointResponse,
+    change_node_endpoint: ChangeNodeEndpointRequest => ChangeNodeEndpointResponse,
 }
 
 struct Server {

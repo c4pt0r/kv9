@@ -29,6 +29,10 @@ pub struct SeedPeer {
 pub struct Config {
     /// gRPC/serving address this node binds (DESIGN §11 `--addr`).
     pub addr: String,
+    /// Canonical peer endpoint, separate from the local bind. Initial voters
+    /// default to their root address; dynamic members default to the listener.
+    #[serde(default)]
+    pub advertise_addr: Option<String>,
     /// Local data directory for engine + raft state (DESIGN §11 `--data-dir`).
     pub data_dir: String,
     /// Fixed seed voter set (`node-id@socket-address`) used for both discovery
@@ -45,6 +49,7 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             addr: "127.0.0.1:20160".to_string(),
+            advertise_addr: None,
             data_dir: "./kv9-data".to_string(),
             join: Vec::new(),
             wal_streams: 1,
@@ -56,6 +61,16 @@ impl Default for Config {
 impl Config {
     /// Basic validation of a config (DESIGN §11).
     pub fn validate(&self) -> crate::error::Result<()> {
+        if let Some(address) = &self.advertise_addr {
+            let addr: SocketAddr = address.parse().map_err(|_| {
+                crate::Error::Config("advertise_addr must be a numeric socket address".into())
+            })?;
+            if addr.port() == 0 || addr.ip().is_unspecified() {
+                return Err(crate::Error::Config(
+                    "advertise_addr must have a specified IP and non-zero port".into(),
+                ));
+            }
+        }
         if self.wal_streams == 0 {
             return Err(crate::error::Error::Config(
                 "wal_streams must be >= 1".into(),

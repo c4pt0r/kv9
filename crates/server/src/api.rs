@@ -171,6 +171,29 @@ pub struct MembershipChangeResult {
     pub join_ticket: Option<String>,
 }
 
+pub use kv9_meta::endpoint::{EndpointChange, EndpointRefusal, NodeEndpoint};
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EndpointReadResult {
+    pub cluster: kv9_common::ClusterId,
+    pub endpoint: Option<NodeEndpoint>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum EndpointUpdateResult {
+    Changed {
+        endpoint: NodeEndpoint,
+        applied: AppliedPosition,
+    },
+    /// The receipt confirms the current last transition. It does not recover
+    /// an earlier invocation's position or identify which caller won that CAS.
+    Confirmed {
+        endpoint: NodeEndpoint,
+        confirmation: AppliedPosition,
+    },
+    Refused(EndpointRefusal),
+}
+
 /// The admin / meta API (DESIGN §11 Admin surface). Authenticated from day one.
 pub trait AdminApi {
     fn create_keyspace(
@@ -205,6 +228,24 @@ pub trait AdminApi {
         _node: kv9_common::NodeId,
     ) -> Result<MembershipChangeResult> {
         Err(kv9_common::Error::NotImplemented("AdminApi::promote_node"))
+    }
+    fn get_node_endpoint(
+        &self,
+        _caller: &str,
+        _node: kv9_common::NodeId,
+    ) -> Result<EndpointReadResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::get_node_endpoint",
+        ))
+    }
+    fn change_node_endpoint(
+        &self,
+        _caller: &str,
+        _request: EndpointChange,
+    ) -> Result<EndpointUpdateResult> {
+        Err(kv9_common::Error::NotImplemented(
+            "AdminApi::change_node_endpoint",
+        ))
     }
 }
 

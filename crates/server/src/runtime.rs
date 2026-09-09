@@ -55,6 +55,9 @@ use kv9_txn::{LeaderRead, RawExecutor, RawWriteOptions};
 use crate::fence::CatalogFenceAdjudicator;
 use crate::Node;
 
+mod endpoint_recovery;
+use endpoint_recovery::EndpointRecovery;
+
 const TICK: Duration = Duration::from_millis(20);
 const DISCOVERY_INTERVAL: Duration = Duration::from_millis(200);
 const DISCOVERY_TIMEOUT: Duration = Duration::from_millis(50);
@@ -709,7 +712,13 @@ impl<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::ReplicatedEngin
             let revoked = admission.as_ref().is_some_and(|admission| {
                 admission.state == kv9_meta::admission::AdmissionState::Revoked
             });
-            let admitted = admission.is_some() && !revoked;
+            let admitted = admission.as_ref().is_some_and(|admission| {
+                matches!(
+                    admission.state,
+                    kv9_meta::admission::AdmissionState::Pending
+                        | kv9_meta::admission::AdmissionState::Consumed
+                )
+            });
             let registered = txn
                 .get(&NODES_DESC, &[memcmp_uint(node_id.0)])
                 .map_err(|_| Status::unavailable("membership catalog unavailable"))?
@@ -727,6 +736,10 @@ impl<S: kv9_raft::rawnode::PersistentRaftStorage, E: kv9_engine::ReplicatedEngin
                 false
             } else if admitted || registered {
                 true
+            } else if admission.is_some() {
+                // A superseded credential without its existing member is
+                // not catalog absence and grants no catch-up fallback.
+                false
             } else {
                 // Absent from the catalog entirely: the receipt-scoped
                 // catch-up window (see CatchupCapability) may still admit
@@ -758,6 +771,7 @@ struct RuntimeBackend {
     node: Arc<Node<WalEngine>>,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
     transport: Arc<GrpcTransport>,
+    endpoint_ready: Arc<AtomicBool>,
     /// The DECLARED initial voters with their durable root-descriptor
     /// addresses — one of the two authoritative sources a NotLeader answer
     /// may resolve a leader endpoint from (the other is the local applied
@@ -767,6 +781,18 @@ struct RuntimeBackend {
 }
 
 impl RuntimeBackend {
+    /// Recovery control calls must remain available while this node's public
+    /// data endpoint awaits confirmation. They still require a local committed
+    /// catalog; subsequent barriers establish current consensus authority.
+    fn ensure_catalog_ready(&self) -> Result<()> {
+        if self.node.local_cluster_identity()?.is_none() {
+            return Err(Error::MetaNotReady(
+                "catalog cluster identity is missing".into(),
+            ));
+        }
+        Ok(())
+    }
+
     /// Resolve a node's canonical registration endpoint from the LOCAL
     /// APPLIED authoritative directory: the catalog nodes row (dynamic
     /// members register their canonical advertised address there), falling
@@ -778,15 +804,10 @@ impl RuntimeBackend {
     /// the value may name an old leader or a superseded address; the
     /// registration client's (id, addr) dedup + hop cap absorb exactly that.
     ///
-    /// The two sources go stale DIFFERENTLY (Ren's boundary — do not write
-    /// them as one sentence): a catalog row updates on re-registration, so
-    /// its staleness is transient and self-heals; the root descriptor is
-    /// written exactly once and never replaced, so an initial voter that
-    /// changes address yields a hint that resolves FOREVER and is forever
-    /// wrong — the hop cap bounds the damage to one wasted hop per pass,
-    /// but `registration_last_hint` will steadily show that dead address.
-    /// Address migration for initial voters is UNCOVERED here by that
-    /// permanent-mismatch nature, not merely untested.
+    /// Applied catalog routes converge after an authorized versioned update.
+    /// Immutable root addresses are initial routing candidates and may remain
+    /// obsolete after migration. A hint grants no endpoint authority; a fresh
+    /// confirmation must validate the current directory and exact store/root.
     fn resolve_registration_endpoint(&self, id: NodeId) -> Option<String> {
         let from_catalog = self
             .node
@@ -823,7 +844,9 @@ impl RuntimeBackend {
             .expect("meta poisoned")
             .bootstrap
             .state();
-        if matches!(state, BootstrapState::Serving { .. }) {
+        if matches!(state, BootstrapState::Serving { .. })
+            && self.endpoint_ready.load(Ordering::Acquire)
+        {
             Ok(())
         } else {
             Err(Error::MetaNotReady(format!(
@@ -984,6 +1007,76 @@ fn propose_and_wait_loop(
 }
 
 impl AdminApi for RuntimeBackend {
+    fn get_node_endpoint(
+        &self,
+        _caller: &str,
+        node: NodeId,
+    ) -> Result<crate::api::EndpointReadResult> {
+        self.ensure_catalog_ready()?;
+        let _barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        let txn = self.node.meta_raft.store.begin()?;
+        Ok(crate::api::EndpointReadResult {
+            cluster: kv9_meta::admission::cluster_id(&txn)?
+                .ok_or_else(|| Error::MetaNotReady("catalog cluster identity is missing".into()))?,
+            endpoint: kv9_meta::endpoint::node_endpoint(&txn, node)?,
+        })
+    }
+
+    fn change_node_endpoint(
+        &self,
+        _caller: &str,
+        request: crate::api::EndpointChange,
+    ) -> Result<crate::api::EndpointUpdateResult> {
+        use crate::api::EndpointUpdateResult;
+        use kv9_meta::endpoint::EndpointChangeOutcome;
+        self.ensure_catalog_ready()?;
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
+        }
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog()?;
+        let mut txn = self.node.meta_raft.store.begin()?;
+        let result = match kv9_meta::endpoint::change_endpoint(&mut txn, request)? {
+            EndpointChangeOutcome::Changed(endpoint) => {
+                let applied =
+                    self.commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()), term)?;
+                EndpointUpdateResult::Changed { endpoint, applied }
+            }
+            EndpointChangeOutcome::Confirmed(endpoint) => {
+                // A current directory record cannot recover the old proposal
+                // identity. Confirm its predicate with a NEW exact term-fenced
+                // barrier, and label that receipt separately on the wire.
+                drop(txn);
+                let confirmation = self.commit_catalog(&kv9_raft::Command::Noop, term)?;
+                EndpointUpdateResult::Confirmed {
+                    endpoint,
+                    confirmation,
+                }
+            }
+            EndpointChangeOutcome::Refused(reason) => {
+                return Ok(EndpointUpdateResult::Refused(reason));
+            }
+        };
+        // Preserve the local snapshot/install order through the exact receipt.
+        // An error or unknown outcome never grants an eager route update.
+        let endpoint = match result {
+            EndpointUpdateResult::Changed { endpoint, .. }
+            | EndpointUpdateResult::Confirmed { endpoint, .. } => endpoint,
+            EndpointUpdateResult::Refused(_) => {
+                unreachable!("refusals returned before installation")
+            }
+        };
+        self.transport.register_catalog_peer(
+            endpoint.node,
+            endpoint.address,
+            endpoint.generation,
+        )?;
+        Ok(result)
+    }
+
     fn create_keyspace(
         &self,
         _caller: &str,
@@ -1181,6 +1274,80 @@ fn registration_error(error: Error) -> RegistrationError {
 }
 
 impl RegistrationBackend for RuntimeBackend {
+    fn confirm_endpoint(
+        &self,
+        node: NodeId,
+        cluster: ClusterId,
+        incarnation: StoreIncarnation,
+        address: std::net::SocketAddr,
+    ) -> std::result::Result<kv9_raft::grpc::EndpointConfirmationReceipt, RegistrationError> {
+        self.ensure_catalog_ready()
+            .map_err(RegistrationError::Failed)?;
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(RegistrationError::NotLeader {
+                leader: status.leader_id,
+                leader_addr: status
+                    .leader_id
+                    .and_then(|id| self.resolve_registration_endpoint(id)),
+            });
+        }
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let term = self.prepare_catalog().map_err(RegistrationError::Failed)?;
+        let txn = self
+            .node
+            .meta_raft
+            .store
+            .begin()
+            .map_err(RegistrationError::Failed)?;
+        if kv9_meta::admission::cluster_id(&txn).map_err(RegistrationError::Failed)?
+            != Some(cluster)
+        {
+            return Err(RegistrationError::Failed(Error::Config(
+                "endpoint confirmation cluster mismatch".into(),
+            )));
+        }
+        let endpoint = |id| -> std::result::Result<
+            kv9_raft::grpc::EndpointRoute,
+            RegistrationError,
+        > {
+            let row = kv9_meta::endpoint::node_endpoint(&txn, id)
+                .map_err(RegistrationError::Failed)?
+                .filter(|row| row.active)
+                .ok_or_else(|| {
+                    RegistrationError::Failed(Error::Config("endpoint member is not active".into()))
+                })?;
+            Ok(kv9_raft::grpc::EndpointRoute {
+                node: row.node,
+                incarnation: row.incarnation,
+                address: row.address,
+                generation: row.generation,
+            })
+        };
+        let subject = endpoint(node)?;
+        if subject.incarnation != incarnation {
+            return Err(RegistrationError::InvalidIncarnation);
+        }
+        if subject.address != address {
+            return Err(RegistrationError::Failed(Error::Config(
+                "advertised endpoint has no current catalog authorization".into(),
+            )));
+        }
+        let responder = endpoint(self.node.id)?;
+        drop(txn);
+        let applied = self
+            .commit_catalog(&kv9_raft::Command::Noop, term)
+            .map_err(RegistrationError::Failed)?;
+        self.transport
+            .register_catalog_peer(subject.node, subject.address, subject.generation)
+            .map_err(RegistrationError::Failed)?;
+        Ok(kv9_raft::grpc::EndpointConfirmationReceipt {
+            subject,
+            responder,
+            applied,
+        })
+    }
+
     fn register(
         &self,
         node: NodeId,
@@ -1344,7 +1511,24 @@ impl RegistrationBackend for RuntimeBackend {
         // Admission and incarnation checks have succeeded, including the
         // durable consume on the new-member path. Routing must be installed
         // before AddLearner, but must never change for a rejected caller.
-        self.transport.register_peer(node, canonical_addr);
+        let endpoint = kv9_meta::endpoint::node_endpoint(
+            &self
+                .node
+                .meta_raft
+                .store
+                .begin()
+                .map_err(RegistrationError::Failed)?,
+            node,
+        )
+        .map_err(RegistrationError::Failed)?
+        .ok_or_else(|| {
+            RegistrationError::Failed(Error::Config(
+                "registered endpoint disappeared before route installation".into(),
+            ))
+        })?;
+        self.transport
+            .register_catalog_peer(node, endpoint.address, endpoint.generation)
+            .map_err(RegistrationError::Failed)?;
         let status = self.driver.status();
         if !status.voters.contains(&node.0) && !status.learners.contains(&node.0) {
             let proposed = self
@@ -2217,6 +2401,9 @@ pub struct NodeRuntime {
     seeds: Vec<SeedPeer>,
     discovery_observations: BTreeMap<u64, DiscoveryObservation>,
     advertised_endpoint_observation: Option<DiscoveryObservation>,
+    advertised_addr: std::net::SocketAddr,
+    endpoint_ready: Arc<AtomicBool>,
+    endpoint_recovery: EndpointRecovery,
     registration_observation: RegistrationObservation,
     registration_seed_cursor: RegistrationSeedCursor,
     data_dir: PathBuf,
@@ -2300,6 +2487,11 @@ impl NodeRuntime {
         root.validate()?;
         store_identity.verify(&root, id)?;
         config.validate()?;
+        let advertised_override = config
+            .advertise_addr
+            .as_deref()
+            .map(crate::endpoints::socket)
+            .transpose()?;
         auth.validate()?;
         // The address the config REQUESTS. What we end up listening on is read back off the
         // socket further down and shadows this — see the `local_addr()` call after the bind.
@@ -2322,7 +2514,7 @@ impl NodeRuntime {
                 "runtime seed set does not match the canonical root descriptor".into(),
             ));
         }
-        // The root address is the canonical advertised endpoint; `addr` is
+        // The explicit advertisement (or root address by default) is canonical; `addr` is
         // only the local listener bind. They are intentionally allowed to
         // differ (for example a stable Kubernetes Service ClusterIP advertising
         // a Pod that binds 0.0.0.0). Peer identity never comes from the bind
@@ -2351,8 +2543,11 @@ impl NodeRuntime {
         persist_root_bundle(&data_dir, &root, &store_identity)?;
         if !legacy {
             store_guard.bind(&root, &store_identity)?;
+            store_guard.fence_legacy_writers()?;
         }
         let voters: Vec<NodeId> = seeds.iter().map(|seed| seed.node_id).collect();
+        let endpoint_recovery = EndpointRecovery::load(&data_dir, &store_identity)?;
+        let endpoint_ready = Arc::new(AtomicBool::new(false));
         let voter_fp = voter_set_fingerprint(
             &seeds
                 .iter()
@@ -2542,6 +2737,7 @@ impl NodeRuntime {
             node: node.clone(),
             driver: driver.clone(),
             transport: transport.clone(),
+            endpoint_ready: endpoint_ready.clone(),
             initial_voters: seeds.iter().map(|s| (s.node_id, s.addr)).collect(),
         });
         let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
@@ -2598,6 +2794,10 @@ impl NodeRuntime {
         let addr = listener
             .local_addr()
             .map_err(|error| Error::Config(format!("read bound listener address: {error}")))?;
+        let advertised_addr = advertised_override
+            .or_else(|| root.voter(id).map(|voter| voter.addr))
+            .unwrap_or(addr);
+        crate::endpoints::socket(&advertised_addr.to_string())?;
         let incoming = tokio_stream::wrappers::TcpListenerStream::new(listener);
         let (grpc_shutdown_tx, grpc_shutdown_rx) = tokio::sync::oneshot::channel();
         let grpc_server = grpc_runtime.spawn(
@@ -2618,11 +2818,13 @@ impl NodeRuntime {
                 )
             })
             .collect();
-        let advertised_endpoint_observation = seeds
-            .iter()
-            .copied()
-            .find(|seed| seed.node_id == id)
-            .map(|seed| DiscoveryObservation::new(seed, false));
+        let advertised_endpoint_observation = Some(DiscoveryObservation::new(
+            SeedPeer {
+                node_id: id,
+                addr: advertised_addr,
+            },
+            false,
+        ));
 
         let remote_storage = remote
             .map(|uploader| {
@@ -2665,6 +2867,9 @@ impl NodeRuntime {
             seeds,
             discovery_observations,
             advertised_endpoint_observation,
+            advertised_addr,
+            endpoint_ready,
+            endpoint_recovery,
             registration_observation: RegistrationObservation::new(),
             registration_seed_cursor: RegistrationSeedCursor::default(),
             data_dir,
@@ -2767,17 +2972,10 @@ impl NodeRuntime {
             if node == self.node.id {
                 continue;
             }
-            let addr = match row.value.get(ColumnId(2)) {
-                Some(ColumnValue::Text(addr)) if !addr.is_empty() => addr,
-                _ => continue,
-            };
-            let addr = addr.parse().map_err(|_| {
-                Error::Config(format!(
-                    "nodes catalog contains non-canonical address for node {}",
-                    node.0
-                ))
-            })?;
-            self.transport.register_peer(node, addr);
+            let endpoint = kv9_meta::endpoint::node_endpoint(&txn, node)?
+                .ok_or_else(|| Error::Config("scanned endpoint row disappeared".into()))?;
+            self.transport
+                .register_catalog_peer(node, endpoint.address, endpoint.generation)?;
         }
         Ok(())
     }
@@ -2792,10 +2990,12 @@ impl NodeRuntime {
         let _guard = self.node.meta_raft.lock_catalog_txn();
         let txn = self.node.meta_raft.store.begin()?;
         let applied_endpoint = kv9_meta::endpoint::node_endpoint(&txn, via.0)?;
-        self.transport.register_peer(
-            via.0,
-            applied_endpoint.map_or(via.1, |endpoint| endpoint.address),
-        );
+        if let Some(endpoint) = applied_endpoint {
+            self.transport
+                .register_catalog_peer(via.0, endpoint.address, endpoint.generation)?;
+        } else {
+            self.transport.register_peer(via.0, via.1);
+        }
         Ok(())
     }
 
@@ -2816,6 +3016,29 @@ impl NodeRuntime {
     }
 
     fn advance_bootstrap(&mut self) -> Result<()> {
+        self.advance_membership_bootstrap()?;
+        let serving = self
+            .node
+            .meta
+            .lock()
+            .expect("meta poisoned")
+            .bootstrap
+            .is_serving();
+        let ready = self.advance_endpoint_recovery()?;
+        self.endpoint_ready
+            .store(serving && ready, Ordering::Release);
+        if serving && !ready {
+            self.node
+                .meta
+                .lock()
+                .expect("meta poisoned")
+                .bootstrap
+                .on_event(BootstrapEvent::EndpointUnconfirmed)?;
+        }
+        Ok(())
+    }
+
+    fn advance_membership_bootstrap(&mut self) -> Result<()> {
         let state = self
             .node
             .meta
@@ -3189,7 +3412,7 @@ impl NodeRuntime {
             let seeds = self.registration_seed_cursor.order(&seeds);
             let handle = self.grpc_runtime.handle().clone();
             let node_id = self.node.id;
-            let my_addr = self.addr.to_string();
+            let my_addr = self.advertised_addr.to_string();
             let identity = JoinIdentity {
                 cluster_id,
                 ticket_sha256: ticket,
@@ -3426,11 +3649,20 @@ impl NodeRuntime {
         );
         body.push_str(&self.public_admission.snapshot().status_lines());
         body.push_str(&format!(
-            "raft_receive_authorized={}\nraft_owner_started={}\n",
+            "raft_receive_authorized={}\nraft_owner_started={}\nlisten_addr={}\n",
             self.discovery.raft_receive_allowed(),
             self.driver_thread.is_some(),
+            self.addr,
         ));
         body.push_str(&self.metrics_exporter.status_lines());
+        body.push_str(&format!(
+            "endpoint_ready={}\nendpoint_recovery_attempts={}\nendpoint_recovery_last={}\nendpoint_confirmation_term={}\nendpoint_confirmation_index={}\n",
+            self.endpoint_ready.load(Ordering::Acquire),
+            self.endpoint_recovery.attempts,
+            self.endpoint_recovery.last,
+            self.endpoint_recovery.receipt.map_or_else(|| "none".into(), |at| at.term.to_string()),
+            self.endpoint_recovery.receipt.map_or_else(|| "none".into(), |at| at.index.to_string()),
+        ));
         let tmp = self.data_dir.join("status.tmp");
         fs::write(&tmp, body)
             .and_then(|_| fs::rename(&tmp, &self.status_path))
@@ -4674,6 +4906,7 @@ mod tests {
                 node,
                 driver,
                 transport,
+                endpoint_ready: Arc::new(AtomicBool::new(false)),
                 initial_voters: Vec::new(),
             },
             runtime,
@@ -5548,6 +5781,67 @@ mod tests {
         );
     }
 
+    #[test]
+    fn superseded_ticket_preserves_only_existing_member_authentication() {
+        use kv9_meta::admission::{self, AdmittedRole};
+        let harness = catchup_auth_harness();
+        let mut txn = harness.node.meta_raft.store.begin().unwrap();
+        admission::initialize_cluster(&mut txn, ClusterId::from_bytes([7; 16]), 1).unwrap();
+        admission::admit_node(
+            &mut txn,
+            NodeId(4),
+            "127.0.0.1:29999",
+            AdmittedRole::Learner,
+            u64::MAX,
+        )
+        .unwrap();
+        admission::supersede_admission(&mut txn, NodeId(4)).unwrap();
+        txn.commit().unwrap();
+        assert_eq!(
+            harness
+                .authenticator
+                .authenticate(&cluster_metadata(4))
+                .unwrap_err()
+                .code(),
+            Code::PermissionDenied,
+            "superseded ticket granted membership or catch-up authority"
+        );
+        let mut txn = harness.node.meta_raft.store.begin().unwrap();
+        txn.insert(
+            &NODES_DESC,
+            &[memcmp_uint(4)],
+            membership_node_row(
+                NodeId(4),
+                "127.0.0.1:29999",
+                2,
+                7,
+                StoreIncarnation::from_bytes([4; 16]),
+            ),
+        )
+        .unwrap();
+        txn.commit().unwrap();
+        assert!(
+            harness
+                .authenticator
+                .authenticate(&cluster_metadata(4))
+                .is_ok(),
+            "endpoint migration decommissioned the existing member"
+        );
+        let mut txn = harness.node.meta_raft.store.begin().unwrap();
+        admission::revoke_admission(&mut txn, NodeId(4)).unwrap();
+        admission::supersede_admission(&mut txn, NodeId(4)).unwrap();
+        txn.commit().unwrap();
+        assert_eq!(
+            harness
+                .authenticator
+                .authenticate(&cluster_metadata(4))
+                .unwrap_err()
+                .code(),
+            Code::PermissionDenied,
+            "endpoint supersession lifted explicit decommission"
+        );
+    }
+
     /// Both catalog-failure arms reject WITHOUT consulting the window — a
     /// failed read is a failed read, never "not caught up yet". The two
     /// switches are armed separately (Ren's boundary: one switch makes
@@ -5854,6 +6148,7 @@ mod tests {
             node: rt.node.clone(),
             driver: rt.driver.clone(),
             transport: rt.transport.clone(),
+            endpoint_ready: rt.endpoint_ready.clone(),
             initial_voters: root
                 .voters
                 .iter()
@@ -5966,6 +6261,7 @@ mod tests {
             client_tokens: vec![("acceptance".into(), "hint-follow-client-token".into())],
         };
         let config_for = |id: u64| Config {
+            advertise_addr: None,
             addr: addrs[(id - 1) as usize].to_string(),
             data_dir: base.join(format!("n{id}")).to_string_lossy().into_owned(),
             join: Vec::new(),
@@ -6247,6 +6543,249 @@ mod tests {
         let _ = fs::remove_dir_all(&base);
     }
 
+    fn active_store_restart_endpoint_scene(change_address: bool) {
+        let (mut rts, root, _, base) = serving_trio("active-endpoint-restart");
+        let member = NodeId(4);
+        let listener = bound_listener_for_e2e();
+        let original_addr = listener.local_addr().unwrap();
+        let original_identity =
+            StoreIdentity::for_joiner(&root, member, prepare_test_store(&base.join("n4"), member))
+                .unwrap();
+        let config = |addr: std::net::SocketAddr| Config {
+            addr: addr.to_string(),
+            advertise_addr: None,
+            data_dir: base.join("n4").to_string_lossy().into_owned(),
+            join: Vec::new(),
+            wal_streams: 1,
+            replication_factor: 3,
+        };
+        let auth = || RuntimeAuth {
+            cluster_token: "establishing-read-cluster-token".into(),
+            client_tokens: vec![("acceptance".into(), "establishing-read-token".into())],
+        };
+        let leader = cluster_leader(&rts).unwrap();
+        let ticket = backend_view(&rts[leader], &root)
+            .admit_node("acceptance", member, &original_addr.to_string(), 600)
+            .unwrap()
+            .join_ticket
+            .unwrap();
+        rts.push(
+            NodeRuntime::start_core(
+                member,
+                config(original_addr),
+                auth(),
+                root.clone(),
+                original_identity,
+                Some(&ticket),
+                StartOverrides {
+                    listener: Some(listener),
+                    ..Default::default()
+                },
+            )
+            .unwrap(),
+        );
+        wait_for(
+            &mut rts,
+            60,
+            "original endpoint is registered and applied",
+            |rts| {
+                rts[3].node.meta.lock().unwrap().bootstrap.is_serving()
+                    && rts.iter().all(|rt| {
+                        backend_view(rt, &root).resolve_registration_endpoint(member)
+                            == Some(original_addr.to_string())
+                    })
+            },
+        );
+        assert!(rts[3].registration_receipt.is_some());
+        assert!(rts[3].local_membership_is_active().unwrap());
+        assert!(init_marker_exists(&base.join("n4")));
+        drop(rts.pop().unwrap());
+
+        // Keep the old port allocated during the changed-endpoint scene so
+        // the new listener cannot accidentally reuse it. This guard runs no
+        // Raft service. The unchanged scene reopens that same real endpoint.
+        let old_port = std::net::TcpListener::bind(original_addr).unwrap();
+        let listener = if change_address {
+            bound_listener_for_e2e()
+        } else {
+            old_port.try_clone().unwrap()
+        };
+        let restarted_addr = listener.local_addr().unwrap();
+        assert_eq!(restarted_addr != original_addr, change_address);
+        let restarted = NodeRuntime::start_core(
+            member,
+            config(restarted_addr),
+            auth(),
+            root.clone(),
+            original_identity,
+            None,
+            StartOverrides {
+                listener: Some(listener),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            restarted.store_identity.store_incarnation,
+            original_identity.store_incarnation
+        );
+        assert!(restarted.local_membership_is_active().unwrap());
+        assert_eq!(restarted.addr, restarted_addr);
+        rts.push(restarted);
+        for _ in 0..20 {
+            step_cluster(&mut rts);
+        }
+        // No new admission or catalog update was submitted after the first
+        // registration. Every durable directory still names the old endpoint.
+        assert!(rts.iter().all(|rt| {
+            backend_view(rt, &root).resolve_registration_endpoint(member)
+                == Some(original_addr.to_string())
+        }));
+        let restarted = &rts[3];
+        let serving = restarted.node.meta.lock().unwrap().bootstrap.is_serving();
+        eprintln!(
+            "active endpoint restart: original={original_addr} restarted={restarted_addr} \
+             serving={serving} registration_attempts={} receipt={:?}",
+            restarted.registration_observation.attempts, restarted.registration_receipt
+        );
+        if change_address {
+            assert!(
+                !serving,
+                "changed endpoint reused old Active membership to enter Serving without a committed route transition"
+            );
+            assert!(!restarted.endpoint_ready.load(Ordering::Acquire));
+            assert!(backend_view(restarted, &root).ensure_serving().is_err());
+            assert!(restarted.discovery.raft_receive_allowed());
+            assert!(restarted.driver_thread.is_some());
+
+            // Authorization is a public CAS. First apply the changed catalog,
+            // then freeze before the separate fresh confirmation. The catalog
+            // predicate alone must not substitute for that exact receipt.
+            let leader = cluster_leader(&rts).unwrap();
+            let mut client = crate::endpoints::EndpointClient::connect(
+                &rts[leader].addr.to_string(),
+                "acceptance",
+            )
+            .unwrap();
+            let request = crate::api::EndpointChange {
+                cluster: root.cluster_id,
+                node: member,
+                incarnation: original_identity.store_incarnation,
+                expected_address: original_addr,
+                expected_generation: 0,
+                new_address: restarted_addr,
+            };
+            let mutation = match client.change(request).unwrap() {
+                crate::api::EndpointUpdateResult::Changed { applied, .. } => applied,
+                other => panic!("migration did not return a mutation receipt: {other:?}"),
+            };
+            for rt in &rts {
+                rt.sync_registered_peers().unwrap();
+            }
+            let deadline = Instant::now() + Duration::from_secs(10);
+            while rts[3].driver.status().applied_index < mutation.index && Instant::now() < deadline
+            {
+                std::thread::sleep(TICK);
+            }
+            assert!(
+                rts[3].driver.status().applied_index >= mutation.index,
+                "changed catalog did not apply before confirmation freeze"
+            );
+            rts[3].driver.pause_apply(true);
+            wait_for(
+                &mut rts,
+                20,
+                "fresh confirmation before local application",
+                |rts| rts[3].endpoint_recovery.receipt.is_some(),
+            );
+            let confirmation = rts[3].endpoint_recovery.receipt.unwrap();
+            assert!(confirmation.index > mutation.index);
+            for _ in 0..3 {
+                step_cluster(&mut rts);
+                assert!(
+                    !rts[3].endpoint_ready.load(Ordering::Acquire),
+                    "changed endpoint served before its exact confirmation applied"
+                );
+            }
+            assert!(
+                !rts[3].endpoint_ready.load(Ordering::Acquire),
+                "changed endpoint served before its exact confirmation applied"
+            );
+            assert!(!rts[3].node.meta.lock().unwrap().bootstrap.is_serving());
+            assert!(backend_view(&rts[3], &root).ensure_serving().is_err());
+            rts[3].driver.pause_apply(false);
+            wait_for(
+                &mut rts,
+                30,
+                "authorized changed endpoint serves after exact application",
+                |rts| {
+                    rts[3].endpoint_ready.load(Ordering::Acquire)
+                        && rts[3].node.meta.lock().unwrap().bootstrap.is_serving()
+                },
+            );
+            assert!(matches!(rts[3].driver.wait_applied(ProposedAt {
+                term: confirmation.term, index: kv9_raft::LogIndex(confirmation.index),
+            }, Duration::from_secs(1)), Ok(ApplyWaitOutcome::Applied(at)) if at == confirmation));
+            assert_eq!(client.get(member).unwrap().endpoint.unwrap().generation, 1);
+            assert!(rts[3].registration_receipt.is_none());
+            assert_eq!(rts[3].registration_observation.attempts, 0);
+            assert_eq!(
+                kv9_common::load_root_bundle(&base.join("n4")).unwrap(),
+                (root.clone(), original_identity)
+            );
+        } else {
+            assert!(serving, "stable endpoint lost coordinator-free recovery");
+            assert_eq!(restarted.registration_observation.attempts, 0);
+            assert!(restarted.registration_receipt.is_none());
+        }
+        drop(rts);
+        // Both original and migrated stable endpoints recover locally with
+        // every other database process stopped. The saved receipt is durable;
+        // neither a registration coordinator nor a fresh leader is needed.
+        let listener = if change_address {
+            std::net::TcpListener::bind(restarted_addr).unwrap()
+        } else {
+            old_port.try_clone().unwrap()
+        };
+        let mut stable = NodeRuntime::start_core(
+            member,
+            config(restarted_addr),
+            auth(),
+            root.clone(),
+            original_identity,
+            None,
+            StartOverrides {
+                listener: Some(listener),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        for _ in 0..3 {
+            stable.advance_bootstrap().unwrap();
+        }
+        assert!(
+            stable.endpoint_ready.load(Ordering::Acquire),
+            "stable migrated endpoint lost its durable serving authority"
+        );
+        assert!(stable.node.meta.lock().unwrap().bootstrap.is_serving());
+        assert_eq!(stable.endpoint_recovery.attempts, 0);
+        assert_eq!(stable.registration_observation.attempts, 0);
+        assert!(stable.endpoint_recovery.receipt.is_none());
+        drop(stable);
+        drop(old_port);
+        let _ = fs::remove_dir_all(base);
+    }
+
+    #[test]
+    fn active_store_restart_at_the_same_endpoint_needs_no_registration() {
+        active_store_restart_endpoint_scene(false);
+    }
+
+    #[test]
+    fn active_store_restart_at_a_changed_endpoint_waits_for_committed_route() {
+        active_store_restart_endpoint_scene(true);
+    }
+
     #[test]
     fn fresh_joiner_rejects_stale_heartbeat_before_raft_owner_starts() {
         use kv9_raft::grpc::pb;
@@ -6257,6 +6796,7 @@ mod tests {
         let joiner = NodeRuntime::start_core(
             NodeId(4),
             Config {
+                advertise_addr: None,
                 addr: addr.to_string(),
                 data_dir: base.join("n4").to_string_lossy().into_owned(),
                 join: Vec::new(),
@@ -6449,10 +6989,6 @@ mod tests {
                 original,
             )
             .unwrap();
-        assert_eq!(
-            rts[leader].transport.peer_address_for_tests(member),
-            Some(changed_addr)
-        );
         let endpoint = kv9_meta::endpoint::node_endpoint(
             &backend.node.meta_raft.store.begin().unwrap(),
             member,
@@ -6464,6 +7000,120 @@ mod tests {
             "renewed registration bypassed endpoint versioning"
         );
         assert_eq!(endpoint.previous_address, Some(addr));
+        assert_eq!(
+            rts[leader].transport.peer_address_for_tests(member),
+            Some(changed_addr)
+        );
+        drop(backend);
+        drop(rts);
+        fs::remove_dir_all(base).unwrap();
+    }
+
+    #[test]
+    fn public_endpoint_cas_returns_distinct_exact_mutation_and_confirmation_receipts() {
+        use crate::api::{EndpointChange, EndpointRefusal, EndpointUpdateResult};
+        use crate::endpoints::{EndpointClient, EndpointRpcError};
+        let (rts, root, addrs, base) = serving_trio("public-endpoint-cas");
+        let leader = cluster_leader(&rts).unwrap();
+        let backend = backend_view(&rts[leader], &root);
+        let member = NodeId(4);
+        let original_listener = bound_listener_for_e2e();
+        let next_listener = bound_listener_for_e2e();
+        let original = original_listener.local_addr().unwrap();
+        let next = next_listener.local_addr().unwrap();
+        let incarnation = StoreIncarnation::mint().unwrap();
+        let admission = backend
+            .admit_node("admin", member, &original.to_string(), 600)
+            .unwrap();
+        let ticket = RootDigest::sha256(admission.join_ticket.unwrap().as_bytes());
+        backend
+            .register(
+                member,
+                &original.to_string(),
+                root.cluster_id,
+                ticket.as_bytes(),
+                incarnation,
+            )
+            .unwrap();
+        let request = EndpointChange {
+            cluster: root.cluster_id,
+            node: member,
+            incarnation,
+            expected_address: original,
+            expected_generation: 0,
+            new_address: next,
+        };
+        let mut rejected =
+            EndpointClient::connect(&addrs[leader].to_string(), "wrong-token").unwrap();
+        assert!(matches!(
+            rejected.change(request),
+            Err(EndpointRpcError::Unconfirmed(_))
+        ));
+        let follower = (leader + 1) % 3;
+        let mut wrong_leader =
+            EndpointClient::connect(&addrs[follower].to_string(), "acceptance").unwrap();
+        let refused = wrong_leader.change(request);
+        assert!(
+            matches!(refused, Err(EndpointRpcError::NotLeader { .. })),
+            "follower lost its typed refusal: {refused:?}"
+        );
+        let mut client = EndpointClient::connect(&addrs[leader].to_string(), "acceptance").unwrap();
+        let before = client.get(member).unwrap();
+        assert_eq!(before.cluster, root.cluster_id);
+        assert_eq!(before.endpoint.unwrap().generation, 0);
+        let changed = match client.change(request).unwrap() {
+            EndpointUpdateResult::Changed { endpoint, applied } => {
+                assert_eq!((endpoint.address, endpoint.generation), (next, 1));
+                applied
+            }
+            other => panic!("initial endpoint CAS did not return its mutation receipt: {other:?}"),
+        };
+        assert!(matches!(rts[leader].driver.wait_applied(
+            ProposedAt { term: changed.term, index: kv9_raft::LogIndex(changed.index) }, Duration::from_secs(1)),
+            Ok(ApplyWaitOutcome::Applied(at)) if at == changed));
+        let confirmation = match client.change(request).unwrap() {
+            EndpointUpdateResult::Confirmed {
+                endpoint,
+                confirmation,
+            } => {
+                assert_eq!((endpoint.address, endpoint.generation), (next, 1));
+                confirmation
+            }
+            other => {
+                panic!("duplicate endpoint CAS did not return a fresh confirmation: {other:?}")
+            }
+        };
+        assert!(
+            confirmation.index > changed.index,
+            "confirmation reused the original mutation receipt"
+        );
+        assert_eq!(client.get(member).unwrap().endpoint.unwrap().generation, 1);
+        assert_eq!(
+            client
+                .change(EndpointChange {
+                    expected_address: next,
+                    ..request
+                })
+                .unwrap(),
+            EndpointUpdateResult::Refused(EndpointRefusal::Conflict)
+        );
+        assert_eq!(
+            client
+                .change(EndpointChange {
+                    incarnation: StoreIncarnation::mint().unwrap(),
+                    ..request
+                })
+                .unwrap(),
+            EndpointUpdateResult::Refused(EndpointRefusal::InvalidIncarnation)
+        );
+        assert_eq!(
+            rts[leader].transport.peer_address_for_tests(member),
+            Some(next)
+        );
+        assert_eq!(rts[leader].driver.status().learners, vec![4]);
+        drop(client);
+        drop(wrong_leader);
+        drop(rejected);
         drop(backend);
         drop(rts);
         fs::remove_dir_all(base).unwrap();
@@ -6545,7 +7195,7 @@ mod tests {
                 .unwrap()
                 .unwrap()
                 .state,
-            kv9_meta::admission::AdmissionState::Revoked
+            kv9_meta::admission::AdmissionState::Superseded
         );
         let endpoint = kv9_meta::endpoint::node_endpoint(&txn, member)
             .unwrap()
@@ -6707,7 +7357,10 @@ mod tests {
             backend
                 .commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()), term)
                 .unwrap();
-            backend.transport.register_peer(member, addresses[1]);
+            backend
+                .transport
+                .register_catalog_peer(member, addresses[1], 1)
+                .unwrap();
         };
         std::thread::scope(|scope| {
             let sync = scope.spawn(|| runtime.sync_registered_peers());
@@ -6847,6 +7500,7 @@ mod tests {
             client_tokens: vec![("acceptance".into(), "establishing-read-token".into())],
         };
         let config = |directory: &Path| Config {
+            advertise_addr: None,
             addr: addrs[0].to_string(),
             data_dir: directory.to_string_lossy().into_owned(),
             join: Vec::new(),
@@ -7007,6 +7661,7 @@ mod tests {
                 NodeRuntime::start_core(
                     NodeId(id),
                     Config {
+                        advertise_addr: None,
                         addr: addrs[(id - 1) as usize].to_string(),
                         data_dir: base.join(format!("n{id}")).to_string_lossy().into_owned(),
                         join: Vec::new(),
@@ -7071,6 +7726,7 @@ mod tests {
                     NodeRuntime::start_core(
                         voter.node_id,
                         Config {
+                            advertise_addr: None,
                             addr: voter.addr.to_string(),
                             data_dir: base
                                 .join(format!("n{}", voter.node_id.0))
@@ -7536,6 +8192,7 @@ mod tests {
         let backend = RuntimeBackend {
             node,
             driver: d1.clone(),
+            endpoint_ready: Arc::new(AtomicBool::new(false)),
             transport: GrpcTransport::new(
                 NodeId(1),
                 None,
@@ -7917,6 +8574,7 @@ mod fence_firing_tests {
             node: runtime.node.clone(),
             driver: runtime.driver.clone(),
             transport: runtime.transport.clone(),
+            endpoint_ready: runtime.endpoint_ready.clone(),
             // From the same source `start_core` uses, not an empty placeholder: these tests
             // never register, so a `Vec::new()` would compile and then silently diverge from
             // production rather than failing. (Integration with the registration-follow-hint
