@@ -1,5 +1,22 @@
 # Testing contract
 
+## Execution policy
+
+Run CI checks locally during daily development. GitHub Actions is reserved for
+pre-release verification and key milestones after the corresponding local gates
+pass. Both hosted workflows use `workflow_dispatch` only: pushes, pull requests
+and schedules do not start paid runs. A manual CI run includes all six E2E paths.
+Routine fixes and evidence-only commits do not require a hosted run.
+
+The execution location does not relax acceptance: retain the exact source and
+toolchain, test counts, terminal markers, proof and mutation results, real MinIO
+checks, actual Chaos Mesh effects, complete histories and artifacts required for
+the change. Use an explicitly selected, isolated local Kubernetes cluster for
+Chaos injection. Local single-host acceptance does not prove host-loss tolerance.
+Record accepted evidence and remaining gaps in roadmap issue #9.
+
+## Origin
+
 Every rule here exists because it failed on this project. Rules 1-13 come from 2026-08-28,
 during Phase 1 and the M1 raw/membership work; rule 14 onward, and the extension to rule 3,
 come from 2026-08-30/31, during the root-of-trust, bootstrap-barrier and Chaos work. The failure is

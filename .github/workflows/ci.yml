@@ -1,50 +1,13 @@
 name: CI
 
-# The repo ran with no CI at all through Phase 1. Every gate -- 198 tests, clippy, and
-# several multi-process E2E scripts -- was run by hand. This is the minimal automation
-# that makes those checks survive nobody remembering to run them.
-#
-# Deliberate split, and the reason matters more than the shape:
-#
-#   pr-gate      fast. Runs on PRs and master. INTENDED required check --
-#                a workflow cannot block a merge by itself; that takes a branch protection
-#                rule or ruleset, which is a separate change and does not exist yet
-#                (verified: branches/master/protection => 404, rulesets => []).
-#   fmt          BLOCKING. The tree is formatted; drift is now a failure, not a report.
-#   acceptance   multi-process E2E. master pushes only, real pass/fail. Not on PRs.
-#
-# The E2E scripts do not gate pull requests. During Phase 1 two separate diagnostic
-# rounds went red because of bugs in the harness rather than the product (a killed
-# node's stale status file read as live; a `local` declaration referencing the variable
-# it was declaring). A gate that reddens for reasons unrelated to the change trains
-# everyone to skim past red -- and this project's entire review discipline rests on
-# treating a red as something you must explain.
-#
-# But they are not marked informational either: a red nobody is shown is barely
-# different from no check at all. Running them on master with a real failure status
-# keeps the signal visible without handing an unproven harness the power to block
-# someone's PR. Add the PR trigger once a stretch of real runs shows it stable --
-# on evidence, not on the strength of this comment.
+# Daily development uses local build, test, lint and E2E gates. Dispatch this
+# complete hosted workflow before a release or at a key milestone, after the
+# corresponding local acceptance has passed. Keep real failures visible.
 
-# LANDING ORDER -- this commit must not reach master on its own.
-#
-# The acceptance matrix runs three scripts. At the time of writing, master (a75443a)
-# contains only phase1-final-acceptance.sh; dynamic-membership-e2e.sh and raw-kv-e2e.sh
-# arrive with the M1 combined tree (a86c12e), which this workflow is built on. Cherry-pick
-# this file to master alone and two matrix legs die with exit 127 -- a correct red that has
-# nothing to do with code quality, and one that reads as "CI itself is broken". That kind
-# of red is more corrosive than a failing test, because it teaches people the gate is
-# unreliable rather than that the code is.
-#
-# So: land with the combined tree, or after it. Never before, and never as an isolated
-# cherry-pick. Merging this branch normally carries its parent chain and satisfies that on
-# its own -- the hazard is someone lifting just this commit, which is an ordinary thing to
-# want to do.
-
+# Run acceptance locally by default. Hosted execution is explicitly requested only
+# to avoid automatic Actions charges on every development push or pull request.
 on:
-  push:
-    branches: [master]
-  pull_request:
+  workflow_dispatch:
 
 # Nothing here needs to write to the repository. Stated explicitly rather than inherited,
 # so that a later job that does need a write has to ask for it visibly.
@@ -780,19 +743,8 @@ jobs:
           files=$(cargo fmt --all --check 2>/dev/null | grep '^Diff in' | sed 's/:[0-9]*:$//' | sort -u | wc -l)
           echo "::error title=rustfmt::${hunks} hunk(s) across ${files} file(s) are unformatted. Fix with: cargo fmt --all. Judged by $(cargo fmt --version) on $(rustc --version); rust-toolchain.toml pins the channel 'stable', not a version, so an older local rustfmt may disagree -- the runner is canonical."
 
-  # Runs on master pushes only, and NOT on pull requests -- deliberately, and this is a
-  # different choice from the one this job started with.
-  #
-  # It was `continue-on-error: true` on every PR. Cindy asked the question that broke that:
-  # who actually sees a red informational job? If the answer is "someone has to click into
-  # the Actions tab", the job is close to not existing, and the whole reason for putting
-  # E2E in CI was to stop depending on someone remembering. That would only move the
-  # dependency from "remembering to run it" to "remembering to look at it".
-  #
-  # So: no continue-on-error, and no PR trigger. A failure here is a real red on master --
-  # visible on the commit and in the branch's status -- while no one's PR is blocked by a
-  # harness that has not yet earned that authority. If it proves stable, add the PR trigger
-  # then, on evidence rather than on hope.
+  # Manual release/milestone runs include all six E2E paths. They remain hard
+  # failures; changing execution location does not relax acceptance criteria.
   #
   # One runner per script, so a port or leftover-process problem in one cannot be
   # misread as a failure of another. KV9_BASE_PORT is set explicitly rather than left
@@ -804,7 +756,6 @@ jobs:
   # and the bind itself.
   acceptance:
     name: E2E ${{ matrix.script }}
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:

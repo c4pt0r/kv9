@@ -1,12 +1,9 @@
 name: Correctness
 
+# Proofs and actual Chaos Mesh acceptance run locally by default. Keep the hosted
+# workflow available for release/key-milestone acceptance, without automatic charges.
 on:
-  push:
-    branches: [master]
-  pull_request:
   workflow_dispatch:
-  schedule:
-    - cron: '23 7 * * *'
 
 permissions:
   contents: read
