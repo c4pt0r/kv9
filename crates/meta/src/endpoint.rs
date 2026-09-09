@@ -164,6 +164,11 @@ pub fn change_endpoint<E: Engine>(
     if current.generation == request.expected_generation
         && current.address == request.expected_address
     {
+        // A prior Pending/Consumed registration must not be able to reinstall
+        // its old address after this operator transition. Read before staging
+        // either row so corrupt admission state leaves the transaction intact.
+        let revoke = crate::admission::admission(txn, request.node)?
+            .is_some_and(|admission| admission.state != crate::admission::AdmissionState::Revoked);
         txn.update(
             &NODES_DESC,
             &[memcmp_uint(request.node.0)],
@@ -176,6 +181,9 @@ pub fn change_endpoint<E: Engine>(
                 ),
             ],
         )?;
+        if revoke {
+            crate::admission::revoke_admission(txn, request.node)?;
+        }
         return Ok(Changed(NodeEndpoint {
             address: request.new_address,
             generation: next_generation,
@@ -190,4 +198,49 @@ pub fn change_endpoint<E: Engine>(
         return Ok(Confirmed(current));
     }
     Ok(Refused(Conflict))
+}
+
+/// Update the endpoint of an already bound store while consuming a new
+/// registration admission. The caller validates and consumes that admission
+/// in this same transaction and serializes the entire plan through consensus.
+/// Initial insertion remains generation zero. Address changes advance the
+/// same version used by operator CAS; unchanged addresses stage nothing here.
+pub fn refresh_registration_endpoint<E: Engine>(
+    txn: &mut MetaTxn<'_, E>,
+    node: NodeId,
+    incarnation: StoreIncarnation,
+    address: SocketAddr,
+) -> Result<NodeEndpoint> {
+    let current = node_endpoint(txn, node)?
+        .ok_or_else(|| Error::Config("registered endpoint is missing".into()))?;
+    if current.incarnation != incarnation {
+        return Err(Error::Config(
+            "registration cannot replace an endpoint's store incarnation".into(),
+        ));
+    }
+    if current.address == address {
+        return Ok(current);
+    }
+    let generation = current
+        .generation
+        .checked_add(1)
+        .ok_or_else(|| Error::Config("endpoint generation is exhausted".into()))?;
+    txn.update(
+        &NODES_DESC,
+        &[memcmp_uint(node.0)],
+        vec![
+            (ADDRESS, ColumnValue::Text(address.to_string())),
+            (ENDPOINT_GENERATION, ColumnValue::Uint(generation)),
+            (
+                ENDPOINT_PREVIOUS_ADDRESS,
+                ColumnValue::Text(current.address.to_string()),
+            ),
+        ],
+    )?;
+    Ok(NodeEndpoint {
+        address,
+        generation,
+        previous_address: Some(current.address),
+        ..current
+    })
 }
