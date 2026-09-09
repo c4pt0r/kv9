@@ -46,7 +46,7 @@ def main():
             assert row['observed_samples'] == (row['operations'] if row['enabled'] else 0)
             name = f"record/threads={row['threads']}/enabled={row['enabled']}"
         else:
-            assert row['metric_count'] == 23 and row['json_bytes'] < 512 * 1024
+            assert row['metric_count'] == 26 and row['json_bytes'] < 512 * 1024
             name = f"snapshot_json/dense={row['dense']}"
         groups.setdefault(name, []).append(row['wall_ns_per_operation'])
     summary = {name: {'trials': len(values), 'min_wall_ns_per_operation': min(values),

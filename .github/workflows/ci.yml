@@ -292,7 +292,7 @@ jobs:
           set -euo pipefail
           python3 scripts/check-latency-controls.py --output "$RUNNER_TEMP/latency-controls" > "$RUNNER_TEMP/latency-controls.log" 2>&1
           cat "$RUNNER_TEMP/latency-controls.log"
-          test "$(tail -1 "$RUNNER_TEMP/latency-controls.log")" = 'PASS: 3 isolated latency source controls checked'
+          test "$(tail -1 "$RUNNER_TEMP/latency-controls.log")" = 'PASS: 6 isolated latency source controls checked'
 
       - name: Workload terminal accounting and history source controls
         run: |

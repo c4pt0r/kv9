@@ -44,7 +44,7 @@ fn recording(threads: usize, iterations: usize, enabled: bool) -> (u128, u64) {
 }
 
 fn export(iterations: usize, dense: bool) -> (u128, usize) {
-    let metrics: [Latency; 23] = std::array::from_fn(|_| Latency::default());
+    let metrics: [Latency; 26] = std::array::from_fn(|_| Latency::default());
     for metric in &metrics {
         for outcome in Outcome::ALL {
             if dense {
@@ -62,7 +62,7 @@ fn export(iterations: usize, dense: bool) -> (u128, usize) {
     let start = Instant::now();
     let mut bytes = 0;
     for _ in 0..iterations {
-        // A fixed 23-metric fixture, comparable in name width to the exporter.
+        // A fixed 26-metric fixture, comparable in name width to the exporter.
         // Measures snapshot allocation, rank calculation and JSON serialization;
         // filesystem publication and the surrounding envelope are excluded.
         let snapshot: Vec<_> = metrics
@@ -113,7 +113,7 @@ fn main() {
                 "{}",
                 serde_json::json!({
                     "experiment": "snapshot_json", "dense": dense, "trial": trial,
-                    "operations": iterations, "metric_count": 23, "json_bytes": bytes,
+                    "operations": iterations, "metric_count": 26, "json_bytes": bytes,
                     "elapsed_wall_ns": elapsed,
                     "wall_ns_per_operation": elapsed as f64 / iterations as f64,
                 })

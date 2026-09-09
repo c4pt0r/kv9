@@ -9,7 +9,7 @@ use serde::Serialize;
 
 const INTERVAL: Duration = Duration::from_secs(1);
 pub(crate) const MAX_EXPORT_BYTES: usize = 512 * 1024;
-pub(crate) const METRIC_COUNT: usize = 23;
+pub(crate) const METRIC_COUNT: usize = 26;
 
 #[derive(Serialize)]
 struct ApplyLag {
@@ -113,7 +113,7 @@ impl MetricsExporter {
         };
         let (metrics, lag) = capture();
         let document = Document {
-            schema_version: 1,
+            schema_version: 2,
             node_id: self.node_id,
             process_id: std::process::id(),
             exporter_created_unix_ns: &self.started_unix_ns,
@@ -166,7 +166,7 @@ impl MetricsExporter {
 
     pub(crate) fn status_lines(&self) -> String {
         let state = self.state.lock().unwrap_or_else(|e| e.into_inner());
-        format!("metrics_schema_version=1\nmetrics_export_successes={}\nmetrics_export_failures={}\nmetrics_export_failures_saturated={}\nmetrics_export_last={}\n",
+        format!("metrics_schema_version=2\nmetrics_export_successes={}\nmetrics_export_failures={}\nmetrics_export_failures_saturated={}\nmetrics_export_last={}\n",
             state.successes, state.failures, state.failures_saturated, state.last)
     }
 }
@@ -231,6 +231,9 @@ mod tests {
         assert_eq!(names.len(), METRIC_COUNT);
         assert!(names.contains("public_transaction_backend"));
         assert!(names.contains("raft_application_wait"));
+        assert!(names.contains("raft_pump_service"));
+        assert!(names.contains("raft_pump_idle_wait"));
+        assert!(names.contains("raft_pump_iteration_spacing"));
         assert!(names.contains("engine_wal_record_sync"));
         for metric in &mut metrics {
             for h in &mut metric.latency.outcomes {
@@ -263,7 +266,7 @@ mod tests {
             "reserve room for maximum-width envelope fields"
         );
         let value: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
-        assert_eq!(value["schema_version"], 1);
+        assert_eq!(value["schema_version"], 2);
         assert_eq!(value["metrics"].as_array().unwrap().len(), METRIC_COUNT);
         assert!(value["apply_lag"]["lag_entries"].is_null());
         exporter.export(false, || panic!("rate-limited export must not collect"));

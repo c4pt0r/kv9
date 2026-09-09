@@ -9,7 +9,8 @@ OUTCOMES = ['success', 'error', 'aborted', 'released', 'replaced', 'rejected', '
 NAMES = [f'public_{kind}_{phase}' for kind in ['raw_read', 'raw_write', 'metadata_read', 'metadata_write', 'transaction']
          for phase in ['prepare_queue', 'backend']]
 NAMES += ['raft_proposal_submission', 'runtime_logical_proposal_wait', 'raft_application_wait',
-          'raft_read_establishment', 'raft_command_apply']
+          'raft_read_establishment', 'raft_command_apply', 'raft_pump_service',
+          'raft_pump_idle_wait', 'raft_pump_iteration_spacing']
 NAMES += [f'{kind}_wal_{operation}' for kind in ['raft', 'engine']
           for operation in ['record_write', 'record_sync', 'recovery_sync', 'namespace_publish']]
 MAX = 2**64 - 1
@@ -31,7 +32,7 @@ def bounds(index):
 
 
 def validate(doc):
-    assert doc['schema_version'] == 1 and doc['bucket_count'] == 65
+    assert doc['schema_version'] == 2 and doc['bucket_count'] == 65
     assert doc['clock'] == 'monotonic_instant' and doc['duration_unit'] == 'nanoseconds'
     assert doc['reset'] == 'node_component_construction'
     assert doc['snapshot_consistency'] == 'coherent_per_metric_independent_between_metrics'
