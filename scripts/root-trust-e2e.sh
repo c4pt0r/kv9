@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Phase-1 creation-authority and durable-root acceptance.
 set -euo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 
 bin="${KV9_BIN:-./target/debug/kv9}"
 [ -x "$bin" ] || { echo "FAIL: $bin is not executable" >&2; exit 1; }
@@ -120,7 +121,7 @@ fi
 grep -q 'explicit root-create, init, join, start, or client command required' "$artifact/legacy.out"
 [ ! -e "$artifact/legacy/raft" ] || { echo "FAIL: rejected legacy startup opened Raft" >&2; exit 1; }
 
-KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root" --voters "$voters" \
+KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root" --voters "$voters" --store-incarnations "$(prepare_root_stores "$bin" "$artifact" "$voters")" \
   >"$artifact/root-create.out"
 expected_digest="$(awk -F'[ =]' '{for(i=1;i<=NF;i++) if($i=="root_digest") print $(i+1)}' "$artifact/root-create.out")"
 expected_generation="$(awk -F'[ =]' '{for(i=1;i<=NF;i++) if($i=="bootstrap_generation") print $(i+1)}' "$artifact/root-create.out")"
@@ -165,6 +166,26 @@ victim=$(( leader == 1 ? 2 : 1 ))
 victim_pid="$(awk -v n="$victim" '{print $(n)}' <<<"$pids")"
 kill -9 "$victim_pid" 2>/dev/null || true
 wait "$victim_pid" 2>/dev/null || true
+# A new disk cannot obtain the old voter's identity from a root descriptor.
+"$bin" store-prepare --node-id "$victim" --data-dir "$artifact/root-replacement" >"$artifact/root-replacement.prepare"
+if KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" init --root "$root" --node-id "$victim" \
+  --data-dir "$artifact/root-replacement" >"$artifact/root-replacement-refused.out" 2>&1; then
+  echo 'FAIL: a new disk initialized an old root voter' >&2; exit 1
+fi
+grep -Fxq 'error: config error: prepared store identity does not match root/store identity' "$artifact/root-replacement-refused.out"
+[ ! -e "$artifact/root-replacement/kv9-store-identity" ]
+[ ! -e "$artifact/root-replacement/raft" ]
+# Retaining identity while losing the activated log also cannot reopen empty.
+mv "$artifact/n${victim}/raft/raft.log" "$artifact/retained-root-raft.log"
+for attempt in 1 2; do
+  if "$bin" start --node-id "$victim" --addr "127.0.0.1:$((base+victim))" \
+    --data-dir "$artifact/n${victim}" >"$artifact/root-missing-log-$attempt.out" 2>&1; then
+    echo 'FAIL: an activated root voter recreated its missing log' >&2; exit 1
+  fi
+  grep -q 'open .*raft.log' "$artifact/root-missing-log-$attempt.out"
+  [ ! -e "$artifact/n${victim}/raft/raft.log" ]
+done
+mv "$artifact/retained-root-raft.log" "$artifact/n${victim}/raft/raft.log"
 "$bin" start --node-id "$victim" --addr "127.0.0.1:$((base+victim))" \
   --data-dir "$artifact/n${victim}" >"$artifact/n${victim}.restart.log" 2>&1 &
 node_pids[$victim]=$!; pids="$pids $!"
@@ -232,7 +253,7 @@ admin admit-n9 admit-node --node-id 9 \
   --node-addr "127.0.0.1:$((base+9))" --ttl-seconds 120 >"$artifact/admit-n9.out"
 wrong_root="$artifact/wrong-root.bin"
 KV9_BOOTSTRAP_TOKEN=other-root "$bin" root-create --output "$wrong_root" \
-  --voters "1@127.0.0.1:$((base+1)),9@127.0.0.1:$((base+9))" >"$artifact/wrong-root-create.out"
+  --voters "1@127.0.0.1:$((base+1)),9@127.0.0.1:$((base+9))" --store-incarnations "$(prepare_root_stores "$bin" "$artifact" "1@127.0.0.1:$((base+1)),9@127.0.0.1:$((base+9))")" >"$artifact/wrong-root-create.out"
 KV9_BOOTSTRAP_TOKEN=other-root "$bin" init --root "$wrong_root" --node-id 9 \
   --data-dir "$artifact/n9" >"$artifact/n9.init"
 "$bin" start --node-id 9 --addr "127.0.0.1:$((base+9))" --data-dir "$artifact/n9" \

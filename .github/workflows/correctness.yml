@@ -41,6 +41,14 @@ jobs:
             > "$RUNNER_TEMP/store-protocol.log" 2>&1
           cat "$RUNNER_TEMP/store-protocol.log"
           test "$(tail -1 "$RUNNER_TEMP/store-protocol.log")" = 'PASS: 4 full store model checks and 1 fair continuation; 8 protocol controls; 2 witnesses; 14 TLAPS theorems; 128 obligations; 2 audit controls; 8 output controls'
+      - name: Check original-store catalog formation safety and conditional progress
+        run: |
+          set -euo pipefail
+          python3 scripts/check-formation-protocol.py --tlapm "$RUNNER_TEMP/tlapm/bin/tlapm" \
+            --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/formation-protocol" \
+            > "$RUNNER_TEMP/formation-protocol.log" 2>&1
+          cat "$RUNNER_TEMP/formation-protocol.log"
+          test "$(tail -1 "$RUNNER_TEMP/formation-protocol.log")" = 'PASS: 4 full formation model checks and 1 fair continuation; 8 protocol controls; 2 witnesses; 14 TLAPS theorems; 153 obligations; 2 audit controls; 8 output controls'
       - name: Check replica receive authority safety and conditional progress
         run: |
           set -euo pipefail
@@ -70,6 +78,8 @@ jobs:
         with:
           name: protocol-deduction
           path: |
+            ${{ runner.temp }}/formation-protocol.log
+            ${{ runner.temp }}/formation-protocol
             ${{ runner.temp }}/store-protocol.log
             ${{ runner.temp }}/store-protocol
             ${{ runner.temp }}/receive-protocol.log
@@ -216,6 +226,7 @@ jobs:
             test "$(grep -Fxc "PASS: concurrent put and read completed during $phase" "$RUNNER_TEMP/chaos-mesh.log")" = 1
             test "$(grep -Fxc "PASS: persistent put and read completed during $phase" "$RUNNER_TEMP/chaos-mesh.log")" = 1
           done
+          test "$(grep -Fxc 'PASS: original-store formation recovered after all-voter Chaos Mesh faults with accepted KV history' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           for voter in 1 2 3; do
             for errno in 5 28; do
               test "$(grep -Fxc "PASS: concurrent put and read completed during io-voter-$voter-errno-$errno" "$RUNNER_TEMP/chaos-mesh.log")" = 1

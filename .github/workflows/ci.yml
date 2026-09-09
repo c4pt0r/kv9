@@ -258,7 +258,7 @@ jobs:
           python3 scripts/check-store-controls.py --output "$RUNNER_TEMP/store-controls" \
             > "$RUNNER_TEMP/store-controls.log" 2>&1
           cat "$RUNNER_TEMP/store-controls.log"
-          test "$(tail -1 "$RUNNER_TEMP/store-controls.log")" = 'PASS: 5 isolated store-lifecycle source controls checked'
+          test "$(tail -1 "$RUNNER_TEMP/store-controls.log")" = 'PASS: 9 isolated store-lifecycle source controls checked'
       - uses: actions/upload-artifact@v4
         if: always()
         with:

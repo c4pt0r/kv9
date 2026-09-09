@@ -12,6 +12,7 @@
 # Deliberately uses the SAME form a reader is told to use -- ./target/debug/kv9, no PATH
 # assumption -- because the point is to test the instructions, not the binary.
 set -euo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 
 bin=./target/debug/kv9
 [ -x "$bin" ] || { echo "FAIL: $bin missing; run 'cargo build --workspace' first" >&2; exit 1; }
@@ -56,7 +57,7 @@ export KV9_CLUSTER_TOKEN=quickstart-cluster KV9_CLIENT_TOKENS=admin=quickstart-c
 join=""
 for i in 1 2 3; do join="${join}${join:+,}$i@127.0.0.1:$((base+i))"; done
 export KV9_BOOTSTRAP_TOKEN=quickstart-bootstrap
-"$bin" root-create --output "$dir/root.bin" --voters "$join" >"$dir/root-create.log"
+"$bin" root-create --output "$dir/root.bin" --voters "$join" --store-incarnations "$(prepare_root_stores "$bin" "$dir" "$join")" >"$dir/root-create.log"
 for i in 1 2 3; do
   mkdir -p "$dir/n$i"
   "$bin" init --root "$dir/root.bin" --node-id "$i" --data-dir "$dir/n$i" \

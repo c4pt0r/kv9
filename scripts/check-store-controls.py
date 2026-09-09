@@ -10,6 +10,7 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
+RUNTIME = 'crates/server/src/runtime.rs'
 COMMON = 'crates/common/src/store_lifecycle.rs'
 STORAGE = 'crates/raft/src/storage.rs'
 
@@ -30,10 +31,13 @@ def main():
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
-    sources = {p: (ROOT / p).read_text() for p in (COMMON, STORAGE)}
-    common, storage = sources[COMMON], sources[STORAGE]
+    sources = {p: (ROOT / p).read_text() for p in (RUNTIME, COMMON, STORAGE)}
+    runtime, common, storage = sources[RUNTIME], sources[COMMON], sources[STORAGE]
     identity = 'store_lifecycle::tests::preparation_is_independent_and_activation_is_monotonic_across_restarts'
     recovery = 'storage::tests::activated_store_recovery_never_creates_or_reinitializes_a_log'
+    owner_start = runtime.index('        let driver_thread = if authorized {')
+    owner_end = runtime.index('        Ok(Self {', owner_start)
+    owner = runtime[owner_start:owner_end]
     cases = [
         ('copy-root-identity', COMMON, replace_once(common,
          'if record.node_id != identity.node_id || record.incarnation != identity.store_incarnation {',
@@ -45,6 +49,26 @@ def main():
         ('initialize-empty-active-log', STORAGE, replace_once(storage,
          'if !initialize && !saw_any {', 'if false && !initialize && !saw_any {'), 'kv9-raft', recovery,
          'activated store reinitialized an empty or torn log'),
+        ('start-before-activation', RUNTIME, replace_once(runtime,
+         'store_guard.activate(&store_identity)?;', '/* invalid control: activation skipped */'), 'kv9-server',
+         'runtime::tests::root_voter_rejects_another_disk_and_missing_activated_log_before_starting',
+         'Raft owner started before durable store activation'),
+        ('nonpristine-formation-fence', RUNTIME, replace_once(runtime,
+         'if local_identity.is_some() && !marker_initialized {',
+         'if recover_only && !joining { bootstrap.mark_data_dir_initialized(); }\n'
+         '        if local_identity.is_some() && !marker_initialized {'), 'kv9-server',
+         'runtime::tests::original_stores_resume_formation_after_each_pre_catalog_crash_cut',
+         'original root formation resumes after a pre-catalog crash'),
+        ('plan-before-current-term-apply', RUNTIME, replace_once(runtime,
+         '.is_none_or(|at| at.term != status.term)', '.is_some_and(|_at| false)'), 'kv9-server',
+         'runtime::fence_firing_tests::initialization_waits_for_apply_before_planning_a_seed',
+         'initialization must not plan another seed behind unapplied committed metadata'),
+        ('detach-owner-on-startup-error', RUNTIME,
+         replace_once(replace_once(runtime, owner, ''),
+                      '        let status_path = data_dir.join("status");',
+                      owner + '        let status_path = data_dir.join("status");'),
+         'kv9-server', 'runtime::tests::failed_listener_bind_releases_every_store_owner_before_unlocking',
+         'failed startup left a detached Raft owner using an unlocked store'),
         ('reuse-failed-publication', COMMON, replace_once(common, 'self.failed = true;', 'self.failed = false;'),
          'kv9-common', 'store_lifecycle::tests::publication_errors_poison_authority_and_reopen_stabilizes_visible_state',
          'failed guard still authorized a store'),
@@ -87,7 +111,7 @@ def main():
             manifest['controls'].append(case)
             (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
             print(f'PASS: {name} baseline, intended failure and restored source', flush=True)
-    print('PASS: 5 isolated store-lifecycle source controls checked', flush=True)
+    print('PASS: 9 isolated store-lifecycle source controls checked', flush=True)
 
 
 if __name__ == '__main__':

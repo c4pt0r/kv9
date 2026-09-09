@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Root-certified three-voter fault acceptance on a real Chaos Mesh installation.
 set -euo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 umask 077
 
 kubectl_bin="${KUBECTL:-kubectl}"
@@ -411,6 +412,48 @@ wrong_root_was_rejected() {
     [[ "$observation" == *"last=rejected_root_identity"* ]]
 }
 
+maintain_volume() {
+  local node="$1" operation="${2:-prepare}"
+  k apply -f - >/dev/null <<YAML
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kv9-prepare-$node
+  namespace: $namespace
+  labels:
+    app: kv9-provisioning
+spec:
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 0
+  containers:
+    - name: prepare
+      image: $image
+      imagePullPolicy: IfNotPresent
+      command: ["sleep", "3600"]
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: kv9-data-n$node
+YAML
+  k wait -n "$namespace" --for=condition=Ready "pod/kv9-prepare-$node" --timeout=60s >/dev/null
+  if [ "$operation" = prepare ]; then
+    k exec -n "$namespace" "kv9-prepare-$node" -- /usr/local/bin/kv9 store-prepare \
+      --node-id "$node" --data-dir /data > "$artifact/n$node.prepare"
+    if [ "$node" != 9 ]; then
+      k exec -n "$namespace" "kv9-prepare-$node" -- touch /data/preformation-hold
+    fi
+  elif [ "$operation" = release-formation ]; then
+    k exec -n "$namespace" "kv9-prepare-$node" -- rm /data/preformation-hold
+  else
+    echo "FAIL: unknown PVC maintenance operation" >&2
+    return 1
+  fi
+  k delete pod -n "$namespace" "kv9-prepare-$node" --wait=true >/dev/null
+}
+
 write_deployment() {
   local node="$1" root_config="${2:-kv9-root}" bootstrap="${3:-$bootstrap_token}"
   k apply -f - >/dev/null <<YAML
@@ -446,6 +489,7 @@ spec:
                 KV9_BOOTSTRAP_TOKEN='$bootstrap' /usr/local/bin/kv9 init \
                   --root /root/root.bin --node-id '$node' --data-dir /data
               fi
+              while [ -f /data/preformation-hold ]; do sleep 0.1; done
               exec /usr/local/bin/kv9 start --node-id '$node' \
                 --addr 0.0.0.0:20160 --data-dir /data
           env:
@@ -560,11 +604,15 @@ k create secret generic kv9-auth -n "$namespace" \
 for node in 1 2 3 9; do
   write_service "$node"
   write_pvc "$node"
+  maintain_volume "$node"
 done
 voters="1@$(service_ip 1):20160,2@$(service_ip 2):20160,3@$(service_ip 3):20160"
-KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root" --voters "$voters" \
+KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root" --voters "$voters" --store-incarnations "$(prepare_root_stores "$bin" "$artifact" "$voters")" \
   >"$artifact/root-create.out"
 k create configmap kv9-root -n "$namespace" --from-file="root.bin=$root" >/dev/null
+
+source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-formation.sh"
+run_formation_crash
 
 # Deterministically occupy n2's stable Service with a TCP endpoint that accepts
 # connections but never completes HTTP/2. Once both existing voters have a
@@ -598,6 +646,7 @@ wait_until "real n2 endpoint replaces the handshake blackhole" 20 \
 
 echo "Stage: bootstrap and baseline mutation"
 leader="$(wait_agreed_leader "root-certified cluster Serving" 45)"
+formation_capture recovered
 k delete pod handshake-blackhole -n "$namespace" --wait=true >/dev/null
 create_out="$(client "$leader" create-keyspace --addr "$(service_ip "$leader"):20160" \
   --name chaos --api-type raw)"
@@ -653,7 +702,7 @@ client "$leader" admit-node --addr "$(service_ip "$leader"):20160" \
   >"$artifact/wrong-root-admit.out"
 wrong_root="$artifact/wrong-root.bin"
 KV9_BOOTSTRAP_TOKEN=wrong-root "$bin" root-create --output "$wrong_root" \
-  --voters "1@$(service_ip 1):20160,9@$(service_ip 9):20160" >"$artifact/wrong-root-create.out"
+  --voters "1@$(service_ip 1):20160,9@$(service_ip 9):20160" --store-incarnations "$(prepare_root_stores "$bin" "$artifact" "1@$(service_ip 1):20160,9@$(service_ip 9):20160")" >"$artifact/wrong-root-create.out"
 k create configmap wrong-root -n "$namespace" --from-file="root.bin=$wrong_root" >/dev/null
 write_deployment 9 wrong-root wrong-root
 wait_until "wrong-root node runs and records the exact root-identity rejection" 15 \
@@ -910,5 +959,6 @@ python3 scripts/history/checker.py "$artifact/history.jsonl" --output "$artifact
     io-voter-3-errno-5 io-voter-3-errno-28 \
   >"$artifact/history-checker.log" 2>&1
 echo "PASS: concurrent Raw KV/catalog history is valid across the Chaos Mesh matrix"
+python3 scripts/check-formation-chaos.py "$artifact"
 
 echo "PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, container recovery, and Raft I/O faults"
