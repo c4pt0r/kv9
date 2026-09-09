@@ -252,6 +252,21 @@ jobs:
             exit 1
           }
 
+      - name: Catalog endpoint CAS source controls
+        run: |
+          set -euo pipefail
+          python3 scripts/check-endpoint-controls.py --output "$RUNNER_TEMP/endpoint-controls" \
+            > "$RUNNER_TEMP/endpoint-controls.log" 2>&1
+          cat "$RUNNER_TEMP/endpoint-controls.log"
+          test "$(tail -1 "$RUNNER_TEMP/endpoint-controls.log")" = 'PASS: 6 isolated endpoint CAS source controls checked'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: endpoint-cas-controls
+          path: |
+            ${{ runner.temp }}/endpoint-controls.log
+            ${{ runner.temp }}/endpoint-controls
+          if-no-files-found: error
       - name: Raft route ownership source controls
         run: |
           set -euo pipefail

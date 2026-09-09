@@ -26,6 +26,7 @@ pub mod tables;
 pub mod admission;
 pub mod bootstrap;
 pub mod catalog;
+pub mod endpoint;
 pub mod layered;
 pub mod leader;
 pub mod membership;
