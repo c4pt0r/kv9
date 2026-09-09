@@ -7,7 +7,10 @@ independently, and the runtime enforces the lifecycle before starting its Raft
 owner or opening receive authority. The CLI requires `root-create
 --store-incarnations` to name those prepared stores. Initial formation recovery
 and its separate proof are documented in [ROOT-FORMATION.md](ROOT-FORMATION.md).
-Actual lost-disk Chaos Mesh acceptance remains required for closing #42.
+All three initial voters passed actual missing-log and independently prepared
+replacement-PVC Chaos cells at `371163b`; complete histories and retained
+provenance are recorded in [PERSISTENT-CHAOS.md](PERSISTENT-CHAOS.md). Broader #42
+acceptance, including authorized endpoint migration under #47, remains open.
 
 ## Contract
 

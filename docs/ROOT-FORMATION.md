@@ -12,6 +12,17 @@ existing log and pass the [store lifecycle](STORE-LIFECYCLE.md) checks first.
 An initialized marker or recovered catalog still prevents a fresh bootstrap.
 A marker lost after commit is reconstructed from the certified catalog.
 
+The hosted deduction job at `0600a81` completed successfully and independent
+source-bound audits accepted all 153 formation obligations and 138 store
+obligations, including their isolated controls. Archive:
+`target/correctness-evidence/2026-09-09-0600a81-hosted-deduction.tar.gz`
+(6,136,231 bytes), SHA-256
+`59bdd6a1265d1895fe5471f4b198c358a16a1d116ad5c4b91d12310b93bf512c`.
+The overall workflow remains failed on a separate Chaos fixture issue. Combined
+with the real-runtime cuts, actual preformation Chaos and the successful
+nine-job CI at `5335e47`, this completes #44's acceptance. It does not establish
+completion of #42 or multi-host availability.
+
 ## Formation protocol
 
 1. The root descriptor fixes the cluster, generation, original voter addresses,
