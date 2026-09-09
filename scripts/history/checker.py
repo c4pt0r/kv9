@@ -8,6 +8,8 @@ operation, separately from the atomic point/scan and catalog operations.
 from __future__ import annotations
 
 import argparse
+from bisect import bisect_right
+from functools import lru_cache
 from collections import Counter
 from dataclasses import dataclass
 import json
@@ -313,6 +315,31 @@ def observation_distance(history, index, state):
 def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_unknown=False, prepare_ranges=False):
     start = time.monotonic()
     indexes = {op.id: i for i, op in enumerate(history.operations)}
+    invocations = [op.invocation for op in history.operations]
+
+    @lru_cache(maxsize=4096)
+    def following_read(kid, key, after):
+        # A hint for overlapping confirmed point writes, never a constraint.
+        # Look beyond both responses, stopping at a subsequent possible write
+        # to this key. Older unknown writes can still make the hint wrong;
+        # all orders remain reachable and positive witnesses are replayed.
+        for op in history.operations[bisect_right(invocations, after):]:
+            args = op.args
+            if args.get("keyspace") != kid or op.outcome == "refused":
+                continue
+            if op.kind in {"put", "delete"} and args["key"] == key:
+                break
+            if op.kind == "delete_range" and in_range(key, args):
+                break
+            if op.outcome == "ok":
+                if op.kind == "get" and args["key"] == key:
+                    return True, op.result["value"]
+                if op.kind == "scan":
+                    for observed_key, value in op.result["rows"]:
+                        if observed_key == key:
+                            return True, value
+        return False, None
+
     stack = [(0, history.initial, (), None, 0)]
     seen = set()
     while stack:
@@ -335,6 +362,25 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
             return {"verdict": "valid", "states": len(seen), "witness": witness}
         event = history.events[cursor]
         wanted = indexes[event["id"]]
+        # Filter before ranking: the same interval/read exclusions, plus
+        # completed operations whose transition generator has no successors.
+        # Stable sorting preserves the relative order of retained candidates.
+        eligible = [i for i, op in enumerate(history.operations)
+                    if op.invocation < event["seq"]
+                    and (op.outcome == "unknown" or op.response is None or op.response >= event["seq"])
+                    and not (op.outcome == "unknown" and op.kind in {"get", "scan"})
+                    and progress.get(i) != "done"]
+        pending = history.operations[wanted]
+        observed, value = False, None
+        if guided_unknown and pending.kind in {"put", "delete"}:
+            competing = [history.operations[i] for i in eligible
+                         if history.operations[i].outcome == "ok"
+                         and history.operations[i].kind in {"put", "delete"}
+                         and (history.operations[i].args["keyspace"], history.operations[i].args["key"])
+                         == (pending.args["keyspace"], pending.args["key"])]
+            if len(competing) > 1:
+                observed, value = following_read(pending.args["keyspace"], pending.args["key"],
+                                                 max(op.response for op in competing))
         # Search likely witnesses first without pruning other legal orders.
         # Recently invoked unknown writes are more likely to explain the next
         # observation than an arbitrary old unresolved RPC. Older candidates
@@ -344,25 +390,24 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
             prefer_observed = (guided_unknown and op.outcome == "ok" and op.kind in {"get", "scan"}
                                and op.invocation < event["seq"] and op.response >= event["seq"]
                                and observation_distance(history, i, state) == 0)
-            # Concurrent writes to one key may return in reverse apply order.
-            # Trying invocation order first avoids exploring every old unknown
-            # delete to explain a later scan before backtracking to that pair.
+            # Try overlapping confirmed writes before old unknown effects.
+            # Invocation order breaks ties when no following read distinguishes
+            # their values; neither invocation nor response order proves apply order.
             # This only reorders candidates in a witness heuristic. Every legal
             # order remains available, and the complete witness is replayed.
-            pending = history.operations[wanted]
             competing_write = (guided_unknown and op.outcome == "ok"
                                and op.kind in {"put", "delete"} and pending.kind in {"put", "delete"}
                                and (op.args["keyspace"], op.args["key"]) == (pending.args["keyspace"], pending.args["key"]))
+            # Try the write matching a subsequent observation last. This
+            # handles either invocation/response order without trusting server
+            # positions. The opposite ordering remains in the same search.
+            matches_read = competing_write and observed and op.args.get("value") == value
             return (not prefer_observed, not competing_write and i != wanted, op.outcome == "unknown",
-                    -i if op.outcome == "unknown" else i)
-        order = sorted(range(len(indexes)), key=priority)
+                    matches_read, -i if op.outcome == "unknown" else i)
+        order = sorted(eligible, key=priority)
         children = []
         for i in order:
             op = history.operations[i]
-            if op.invocation >= event["seq"] or (op.outcome != "unknown" and op.response is not None and op.response < event["seq"]):
-                continue
-            if op.outcome == "unknown" and op.kind in {"get", "scan"}:
-                continue  # No observation or side effect: omission commutes with every transition.
             for next_state, next_progress, detail in transitions(history, i, state, progress.get(i)):
                 additional = int(op.outcome == "unknown" and detail["phase"] != "omit")
                 if guided_unknown and additional:

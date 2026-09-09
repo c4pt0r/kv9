@@ -105,6 +105,41 @@ class CheckerControls(unittest.TestCase):
         self.assertEqual(result['verdict'], 'valid', result)
         self.assertTrue(verify_witness(opposite, result['witness']))
 
+    def test_following_read_orders_either_concurrent_write_first(self):
+        # Both response orders admit either final value. Old unknown deletions
+        # make choosing a wrong pair order expensive, even though none can
+        # explain the observed value. Server positions are deliberately absent.
+        for responses in [(128, 129), (129, 128)]:
+            for value in ['61', '62']:
+                for read in ['get', 'scan']:
+                    events = []
+                    for i in range(128):
+                        events += [call(i, 'delete', key='06'), returned(i, 'unknown')]
+                    events += [call(128, 'put', key='06', value='61'),
+                               call(129, 'put', key='06', value='62'),
+                               *(returned(i) for i in responses)]
+                    for i in range(130, 134):
+                        events += [call(i, 'get', key='07'), returned(i, value=None)]
+                    if read == 'get':
+                        events += [call(134, 'get', key='06'), returned(134, value=value)]
+                    else:
+                        events += [call(134, 'scan', start='05', end='07', limit=8),
+                                   returned(134, rows=[['06', value]])]
+                    h = history(*events)
+                    result = search(h, max_states=64, guided_unknown=True)
+                    self.assertEqual(result['verdict'], 'valid', result)
+                    self.assertTrue(verify_witness(h, result['witness']))
+
+    def test_following_read_cannot_invent_an_unwritten_value(self):
+        h = history(call(0, 'put', key='06', value='61'),
+                    call(1, 'put', key='06', value='62'), returned(0), returned(1),
+                    call(2, 'get', key='06'), returned(2, value='63'))
+        self.verdict(h, 'invalid')
+        # A write invoked after this observation cannot explain it either.
+        records = [h.header, *h.events, {**call(3, 'put', key='06', value='63'), 'seq': 6},
+                   {**returned(3), 'seq': 7}]
+        self.verdict(History.parse(records), 'invalid')
+
     def test_recorder_refuses_malformed_success_and_receipts(self):
         for kind, output in [('put', ''), ('put', 'applied_term=1\napplied_index=0'),
                              ('scan', 'key_hex=61 value_hex=31\ncount=2'),
