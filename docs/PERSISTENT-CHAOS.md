@@ -110,6 +110,6 @@ failure, available client artifacts and the live namespace are preserved for
 inspection; missing or partial reports never become a passing result.
 
 The client retry proof and database protocol/durability proofs are unchanged and
-remain required CI gates. The next #40 deliverable is the reproducible benchmark
-matrix, including client-capacity measurements and trial variation. Fault-test
+remain required CI gates. The #40 reproducible measurement protocol, client
+calibration and trial variation are described in [BENCHMARKS.md](BENCHMARKS.md). Fault-test
 operation counts or this paced functional fixture are not server capacity data.

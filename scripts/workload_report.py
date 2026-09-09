@@ -407,7 +407,9 @@ def validate(directory, build_directory, expected_revision=None, seconds=30):
         for value in resources.values():
             if value is not None:
                 uint(value)
-    for counter in ("user_ticks", "system_ticks", "peak_rss_bytes"):
+    # VmHWM is approximate asynchronous RSS accounting, not a monotonic counter.
+    # Keep both raw samples; only CPU tick counters establish conservation.
+    for counter in ("user_ticks", "system_ticks"):
         before, after = r["resources_before"][counter], r["resources_after"][counter]
         require(before is None or after is None or after >= before, "process resource counter regressed")
     h = r["history"]

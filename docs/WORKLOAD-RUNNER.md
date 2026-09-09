@@ -132,8 +132,12 @@ steady-state server-capacity claims. The configured operation cap may stop a
 trial before its requested duration; `stop.reason` records that fact.
 
 Linux `/proc/self/stat` CPU ticks and `/proc/self/status` current/peak RSS are
-captured before setup and after verification. Unsupported resource readings are
-null. They describe the process, including transport/runtime/recorder overhead;
+captured before setup and after verification. RSS fields are approximate Linux
+accounting samples, including `VmHWM`; they are not checked as monotonic counters.
+The two raw samples are retained even if the reported high-water value decreases.
+See [BENCHMARKS.md](BENCHMARKS.md) for the observed case and kernel documentation.
+Unsupported resource readings are null. They describe the process, including
+transport/runtime/recorder overhead;
 the E2E harness retains the runtime system's `SC_CLK_TCK` for interpreting ticks.
 They are not per-measurement CPU percentages. Peak in-flight operations and total
 recorder-call time expose additional client-side pressure. Recorder time includes
@@ -183,6 +187,7 @@ original run is independently accepted again after the isolated corruptions.
 CI retains the executable/build inventory, raw E2E reports/histories, independent
 witnesses, corrupt artifacts and drain control logs. The persistent workload also
 runs in the actual [13-window Chaos Mesh gate](PERSISTENT-CHAOS.md). #40 remains open
-for the reproducible measurement matrix and client-capacity evidence. Existing
+for acceptance of the
+[reproducible measurement matrix and client calibration](BENCHMARKS.md). Existing
 client protocol proofs and database proof/Chaos gates remain required; this
 increment does not change their algorithm assumptions.
