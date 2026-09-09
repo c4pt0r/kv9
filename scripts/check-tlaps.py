@@ -44,8 +44,9 @@ def proof_verdict(output, status, module, expected_count):
 
 
 def audit(args, work, inventory):
+    require(inventory["root"] in inventory["modules"], "unlisted root module")
     command = ["java", "-cp", f"{args.jar}:{args.classes}", "ProofAudit",
-               str(work / "MetadataReceipt.tla"), str(work), str(work), str(args.stdlib)]
+               str(work / f"{inventory['root']}.tla"), str(work), str(work), str(args.stdlib)]
     result = subprocess.run(command, cwd=work, text=True, capture_output=True, timeout=30)
     (work / "sany.log").write_text(result.stdout + result.stderr)
     require(result.returncode == 0, "SANY rejected the proof inventory")
@@ -147,20 +148,20 @@ def run_case(args, name, mutation=None, expected=None):
     return record
 
 
-def output_controls(output, count):
+def output_controls(output, module, count):
     cases = [("empty output", ""),
              ("zero obligations", re.sub(r"All \d+ obligations proved", "All 0 obligation proved", output)),
              ("missing summary", re.sub(r"\[INFO\]: All \d+ obligations proved\.", "", output))]
     for name, mutant in cases:
-        proof_verdict(output, 0, "MetadataReceipt", count)
+        proof_verdict(output, 0, module, count)
         try:
-            proof_verdict(mutant, 0, "MetadataReceipt", count)
+            proof_verdict(mutant, 0, module, count)
         except Rejected as error:
-            require(str(error) == "MetadataReceipt: missing or unexpected obligation count",
+            require(str(error) == f"{module}: missing or unexpected obligation count",
                     f"output control failed elsewhere: {name}")
         else:
             raise Rejected(f"output control was accepted: {name}")
-        proof_verdict(output, 0, "MetadataReceipt", count)
+        proof_verdict(output, 0, module, count)
         print(f"PASS: rejected output control: {name}", flush=True)
     return len(cases)
 
@@ -216,6 +217,28 @@ def main():
             text, 'Spec => [][PrefixStable]_vars', 'Spec => []PrefixStable')),
          {"reason": "SANY rejected the proof inventory", "log": "sany.log",
           "pattern": r"\[\] followed by action not of form \[A\]_v"}),
+        ("no-planner-mutex", (MODEL.name, lambda text: replace_once(
+            text, '/\\ \\A other \\in Requests :\n           host[other] = leader => phase[other] \\notin Active',
+            '/\\ TRUE')),
+         {"reason": "MetadataPlanningControl: TLAPS exit 10", "log": "MetadataPlanningControl.log",
+          "pattern": r"PROVE\s+\\A r \\in Requests : Begin\(r\) => PlanningControl'", "failed": 1}),
+        ("read-index-only", (MODEL.name, lambda text: replace_once(
+            text, '/\\ applied[host[r]] >= barrierAt[r]',
+            '/\\ applied[host[r]] >= committed\n    /\\ committed > 0\n    /\\ log[committed].epoch = term')),
+         {"reason": "MetadataPlanningBarrier: TLAPS exit 10", "log": "MetadataPlanningBarrier.log",
+          "pattern": r"PROVE\s+\\A r \\in Requests : Barrier\(r\) => Barriers'", "failed": 1}),
+        ("no-term-fence", (MODEL.name, lambda text: replace_once(
+            text, '/\\ host[r] = leader\n    /\\ planningTerm[r] = term',
+            '/\\ host[r] = leader\n    /\\ TRUE')),
+         {"reason": "MetadataUniqueness: TLAPS exit 10", "log": "MetadataUniqueness.log",
+          "pattern": r"PROVE\s+\\A r \\in Requests : Submit\(r\) => UniqueCatalog'", "failed": 1}),
+        ("allocator-no-advance", (MODEL.name, lambda text: replace_once(
+            text, 'ELSE log[LastWrite(cut)].id + 1', 'ELSE log[LastWrite(cut)].id')),
+         {"reason": "MetadataUniqueness: TLAPS exit 10", "log": "MetadataUniqueness.log",
+          "pattern": r"PROVE\s+/\\ NextId\(Len\(log\)\) \\in Nat \\ \{0\}", "failed": 1}),
+        ("incomplete-root", ("inventory.json", lambda text: json.dumps(
+            dict(json.loads(text), root="MetadataReceipt"), indent=2) + '\n'),
+         {"reason": "incomplete module dependency audit"}),
     ]
     for name, mutation, expected in controls:
         before = run_case(args, name + "-baseline")
@@ -225,8 +248,9 @@ def main():
         changed = [f for f, checksum in before["sources"].items() if mutant["sources"][f] != checksum]
         require(changed == [mutation[0]], "control changed more than its owned source")
         records.extend((before, mutant, after))
-    output = (args.output / "baseline/MetadataReceipt.log").read_text()
-    output_count = output_controls(output, inventory["modules"]["MetadataReceipt"]["obligations"])
+    root = inventory["root"]
+    output = (args.output / f"baseline/{root}.log").read_text()
+    output_count = output_controls(output, root, inventory["modules"][root]["obligations"])
     count = sum(len(item["theorems"]) for item in inventory["modules"].values())
     obligations = sum(item["obligations"] for item in inventory["modules"].values())
     summary = {"version": version, "tlapm_sha256": sha(args.tlapm),

@@ -38,10 +38,10 @@ broader issue whose implementation or failure coverage is incomplete.
 
 The current TLA+ inventory and reproducible runner are under `proofs/tla`.
 `docs/METADATA-PLANNING.md` records the first metadata protocol model, its written
-induction argument, implementation mapping and the checked TLAPS prefix/receipt
-proofs under `proofs/tlaps`. Catalog freshness/uniqueness, conditional draining
-and implementation refinement remain open. A green TLC run does not discharge
-those obligations.
+induction argument, implementation mapping and the checked TLAPS prefix, receipt,
+planning freshness and catalog uniqueness proofs under `proofs/tlaps`. Full type
+bounds, conditional draining and implementation refinement remain open. A green
+TLC run does not discharge those obligations.
 
 ## Chaos Mesh E2E is mandatory
 
