@@ -43,13 +43,28 @@ CONTROLS = [
 
 CONTROLS = [(label, 'checker.py', old, new, test) for label, old, new, test in CONTROLS] + [
     ('confirmed-range-snapshot-deferred', 'checker.py',
-     'prepare_confirmed_range = (guided_unknown and prepare_ranges and op.outcome == "ok"',
+     'prepare_confirmed_range = (guided_unknown and range_preference and op.outcome == "ok"',
      'prepare_confirmed_range = (False and op.outcome == "ok"',
      'test_confirmed_range_snapshot_precedes_overlapping_new_key'),
-    ('confirmed-range-snapshot-preferred-in-both-attempts', 'checker.py',
-     'prepare_confirmed_range = (guided_unknown and prepare_ranges and op.outcome == "ok"',
-     'prepare_confirmed_range = (guided_unknown and op.outcome == "ok"',
+    ('confirmed-range-observation-contradicted', 'checker.py',
+     'range_preference = observed_value == pending.args["value"]',
+     'range_preference = True',
      'test_confirmed_range_can_also_capture_the_overlapping_insert'),
+    ('confirmed-range-read-hint-ignored', 'checker.py',
+     'if hint:', 'if False:',
+     'test_range_snapshot_can_fall_between_two_overlapping_insertions'),
+    ('scan-absence-hint-ignored', 'checker.py',
+     'if covers_key:', 'if False:',
+     'test_range_hint_observes_absence_inside_a_scan'),
+    ('scan-prefix-limit-ignored', 'checker.py',
+     'len(rows) < args["limit"] or (rows and key < rows[-1][0])', 'True',
+     'test_range_hint_respects_scan_bounds_and_limit'),
+    ('scan-interval-bounds-ignored', 'checker.py',
+     'in_range(key, args) and args["limit"] > 0', 'args["limit"] > 0',
+     'test_range_hint_respects_scan_bounds_and_limit'),
+    ('unknown-write-cannot-explain-overlapping-read', 'checker.py',
+     'for target in targets', 'for target in [wanted]',
+     'test_unknown_write_can_explain_an_overlapping_read_before_mutation'),
     ('following-read-write-order-ignored', 'checker.py',
      'matches_read = competing_write and observed', 'matches_read = False and observed',
      'test_following_read_orders_either_concurrent_write_first'),
@@ -103,7 +118,7 @@ def main():
             output = process.stdout+process.stderr
             (args.output/(label+'.log')).write_text(output)
             count = re.findall(r'^Ran (\d+) tests? in ', output, re.M)
-            demand(count == [str(1 if test else 40)], f'{label}: wrong selected test count: {count}')
+            demand(count == [str(1 if test else 44)], f'{label}: wrong selected test count: {count}')
             if red:
                 demand(process.returncode == 1 and 'FAILED (failures=1)' in output and 'AssertionError:' in output
                        and f'FAIL: {test} ' in output and 'ERROR:' not in output, f'{label}: no attributable assertion failure')
@@ -134,7 +149,7 @@ def main():
         run('restored-suite')
         unchanged(originals)
     demand(all((source/name).read_bytes() == data for name, data in originals.items()), 'source changed during control run')
-    print(f'PASS: 40 history tests and {len(CONTROLS)} isolated source mutations checked', flush=True)
+    print(f'PASS: 44 history tests and {len(CONTROLS)} isolated source mutations checked', flush=True)
 
 
 if __name__ == '__main__':

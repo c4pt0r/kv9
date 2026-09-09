@@ -213,3 +213,10 @@ history. The existing two guided attempts now prefer different snapshot orders;
 both unchanged histories yield complete replayable witnesses within the original
 limits. Both original command failures remain retained. Fresh full-matrix
 acceptance is still required before this increment is accepted.
+
+The sixth full matrix completed every fault window and its persistent history,
+but its 4,264-operation CLI history again exhausted the checker budget. Reduced
+histories expose mixed snapshot order and an unknown write needed by a read
+overlapping a confirmed mutation. The [history search contract](HISTORY-CHECKING.md#overlapping-observations-and-mixed-snapshot-order)
+records the repair and its preservation argument. This failed command remains
+failed; a fresh complete matrix is required for acceptance.

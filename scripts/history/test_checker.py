@@ -237,6 +237,81 @@ class CheckerControls(unittest.TestCase):
         self.verdict(history(call(0, 'put', key='61', value='31'), returned(0, 'refused', proof='precommit'),
                              call(1, 'get', key='61'), returned(1, value='31')), 'invalid')
 
+    def test_unknown_write_can_explain_an_overlapping_read_before_mutation(self):
+        for kind in ['get', 'scan']:
+            if kind == 'get':
+                read = call(1, 'get', key='62')
+                result = returned(1, value='32')
+                key = '62'
+            else:
+                read = call(1, 'scan', start='61', end='63', limit=4)
+                result = returned(1, rows=[['61', '31'], ['62', '32']])
+                key = '61'
+            h = history(call(0, 'put', key='62', value='32'), returned(0, 'unknown'),
+                        read, call(2, 'put', key=key, value='33'), returned(2), result,
+                        initial=header([('61', '31')]))
+            checked = search(h, max_states=100, guided_unknown=True)
+            self.assertEqual(checked['verdict'], 'valid',
+                             'unknown write needed by an overlapping read was excluded')
+            self.assertTrue(verify_witness(h, checked['witness']))
+
+    def test_range_snapshot_can_fall_between_two_overlapping_insertions(self):
+        events = []
+        for i in range(64):
+            events.extend([call(i, 'delete', key='78'), returned(i, 'unknown')])
+        events.extend([
+            call(64, 'put', key='62', value='32'),
+            call(65, 'delete_range', start='61', end='65'),
+            call(66, 'put', key='64', value='34'), returned(64), returned(66),
+            returned(65, committed_chunks=1),
+            call(67, 'delete_range', start='78', end='79'), returned(67, committed_chunks=0),
+            call(68, 'get', key='62'), returned(68, value=None),
+            call(69, 'get', key='64'), returned(69, value='34'),
+        ])
+        h = history(*events, initial=header([('61', '31'), ('78', '38')], chunk=8))
+        for prepare in [False, True]:
+            result = search(h, max_states=100, guided_unknown=True, prepare_ranges=prepare)
+            self.assertEqual(result['verdict'], 'valid', 'snapshot must capture only the first insertion')
+            self.assertTrue(verify_witness(h, result['witness']))
+
+    def test_range_hint_observes_absence_inside_a_scan(self):
+        events = []
+        for i in range(64):
+            events.extend([call(i, 'delete', key='63'), returned(i, 'unknown')])
+        events.extend([
+            call(64, 'delete_range', start='61', end='63'),
+            call(65, 'put', key='62', value='32'), returned(65),
+            returned(64, committed_chunks=1),
+            call(66, 'delete_range', start='63', end='64'), returned(66, committed_chunks=0),
+            call(67, 'scan', start='61', end='63', limit=4), returned(67, rows=[]),
+        ])
+        h = history(*events, initial=header([('61', '31'), ('63', '33')]))
+        result = search(h, max_states=100, guided_unknown=True, prepare_ranges=True)
+        self.assertEqual(result['verdict'], 'valid', 'scan absence should favor capturing the inserted key')
+        self.assertTrue(verify_witness(h, result['witness']))
+
+    def test_range_hint_respects_scan_bounds_and_limit(self):
+        for start, end, limit, rows in [
+                ('61', '65', 1, [['61', '31']]),  # b is beyond the returned prefix.
+                ('63', '65', 4, []),              # b is below the scan start.
+                ('61', '62', 4, [['61', '31']]),   # b is at the exclusive end.
+                ('61', '65', 0, [])]:             # No key is observed at limit zero.
+            events = []
+            for i in range(64):
+                events.extend([call(i, 'delete', key='78'), returned(i, 'unknown')])
+            events.extend([
+                call(64, 'delete_range', start='62', end='65'),
+                call(65, 'put', key='62', value='32'), returned(65),
+                returned(64, committed_chunks=1),
+                call(66, 'delete_range', start='78', end='79'), returned(66, committed_chunks=0),
+                call(67, 'scan', start=start, end=end, limit=limit), returned(67, rows=rows),
+                call(68, 'get', key='62'), returned(68, value='32'),
+            ])
+            h = history(*events, initial=header([('61', '31'), ('64', '34'), ('78', '38')]))
+            result = search(h, max_states=100, guided_unknown=True)
+            self.assertEqual(result['verdict'], 'valid', 'scan did not establish absence of the inserted key')
+            self.assertTrue(verify_witness(h, result['witness']))
+
     def test_confirmed_range_snapshot_precedes_overlapping_new_key(self):
         # A range captures a, then b is inserted before the range replies.
         # A separate empty-range receipt needs one old unknown deletion of c.
