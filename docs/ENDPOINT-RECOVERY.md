@@ -5,7 +5,8 @@ Tracking: [#47](https://github.com/c4pt0r/kv9/issues/47), under
 [catalog CAS](ENDPOINT-MIGRATION.md), [writer ordering](ENDPOINT-WRITERS.md)
 and [transport ownership](RAFT-ROUTING.md) contracts. The implementation and
 acceptance fixtures are present. The accepted local increment below closes #47's
-production endpoint-migration scope; the broader #42 and P0 gates remain open.
+production endpoint-migration scope. The [#42 acceptance record](REPLACEMENT-ACCEPTANCE.md)
+reconciles the receive/replacement scope; P0 remains open.
 
 ## Operator workflow
 
@@ -281,5 +282,6 @@ This is single-host Kind evidence. Changed-address recovery still requires
 an eventually reachable known peer or incoming catch-up. The supported writer
 upgrade is stop/upgrade/restart; mixed-generation availability and downgrade
 remain unsupported. The separate initial gRPC apply/read-confirmation timeout
-in #48, #42's broader replacement boundary and C01–C04 acceptance remain open.
+in #48 and C01–C04 acceptance remain open. The broader #42 receive/replacement
+scope is reconciled separately in [REPLACEMENT-ACCEPTANCE.md](REPLACEMENT-ACCEPTANCE.md).
 No GitHub workflow was dispatched for this increment.

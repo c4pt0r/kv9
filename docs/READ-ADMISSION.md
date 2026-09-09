@@ -166,8 +166,8 @@ The original hosted Raw KV failure and local initial gRPC apply timeout are also
 retained. Three subsequent runs of the original 118-test Raft binary passed, which
 does not explain the initial apply timeout. Listener and apply-wait diagnostics
 are now more informative; no specific transport cause is established. Issue #48
-remains open for that diagnosis, #47 remains open for production endpoint migration,
-and this increment does not close P0. No hosted workflow was dispatched.
+remains open for that diagnosis. Later [production endpoint migration](ENDPOINT-RECOVERY.md)
+completes #47's scope; P0 remains open. No hosted workflow was dispatched.
 
 ## Further #48 diagnosis: listener fixture ownership
 

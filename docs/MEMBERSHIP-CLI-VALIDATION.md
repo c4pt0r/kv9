@@ -4,8 +4,9 @@ The root-trust job in [CI 34347685870](https://github.com/c4pt0r/kv9/actions/run
 failed at `38e7666` when AdmitNode used an obsolete leader after a store restart.
 The server returned structured NotLeader metadata, but the blocking membership
 client reduced it to prose. The fixture issued one call to its sampled leader.
-The same scene separately contains a fresh replacement disk's Raft panic;
-[#42](https://github.com/c4pt0r/kv9/issues/42) remains open for that defect.
+The same scene separately contains a fresh replacement disk's Raft panic.
+The later [#42 acceptance record](REPLACEMENT-ACCEPTANCE.md) covers that defect;
+the historical routing increment below did not resolve it.
 
 ## Refusal contract
 
@@ -62,9 +63,9 @@ Retained evidence from development on 2026-09-09:
 The latter directory still contains the **known #42 replacement panic** in
 `n4-replacement.log`. Therefore a successful script exit here establishes the
 routing/restart-readiness regression, not complete identity-rejection acceptance.
-The replacement must remain alive and positively demonstrate its rejection in
-#42's corrected fixture; absence of Serving is insufficient. This limitation is
-not waived by successful unrelated Chaos histories.
+The corrected fixture now requires the replacement to remain alive and positively
+demonstrate its rejection; absence of Serving is insufficient. Its later acceptance
+is recorded separately in [REPLACEMENT-ACCEPTANCE.md](REPLACEMENT-ACCEPTANCE.md).
 
 Validation passed 503 workspace/doc tests (22 explicit integration tests remain
 ignored by that command), denied-warning Clippy, formatting and workflow lint.

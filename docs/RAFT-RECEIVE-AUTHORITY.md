@@ -55,7 +55,7 @@ they cannot erase that binding.
 | Model transition | Implementation boundary |
 |---|---|
 | `GRBind` | Valid pending admission consumption and NODES incarnation committed through `RuntimeBackend::register` |
-| `GRRoute` | `register_peer` after binding/admission validation |
+| `GRRoute` | `register_catalog_peer` with the committed endpoint generation after binding/admission validation |
 | `GRReply`, `GRGrant`, `GRStart` | Successful `WalkOutcome::Registered`, receipt/capability publication, `authorize_raft`, `driver.spawn` |
 | `GRReceive` | Per-batch `RaftGrpcService::batch_raft` receive check before inbox publication |
 | `GRCertify` | Active row and ConfState durably applied to this store |
@@ -101,28 +101,36 @@ do not count as expected protocol rejections.
 
 Five compiled source controls select real runtime tests with original, mutated
 and restored code. They cover stale-heartbeat ingress, premature owner start,
-wrong local incarnation, early endpoint mutation and rebinding through a renewed
-ticket. The existing real non-seed-leader registration test also verifies
+wrong local incarnation, early endpoint mutation and loss of the typed
+incarnation refusal for a renewed ticket. The last control leaves the independent
+endpoint-writer binding check intact; it demonstrates a refusal-classification
+regression, not an actual rebind. The test checks unchanged routing and pending
+admission before checking the public refusal type. The existing real non-seed-leader registration test also verifies
 same-store recovery without an initialization marker or join ticket. The root
 E2E requires a live current child with an explicit rejection, empty fatal field,
 closed authority, no owner and commit position zero; a dead process cannot pass.
 
-## Remaining acceptance boundary
+## Accepted scope and remaining boundaries
 
-This change does not close #42. Initial root voters still use the pre-existing
-formation/stable-log contract; a root descriptor can reproduce their assigned
-incarnation on an empty disk. That case needs a separate formation/recovery
-protocol and proof, with no mandatory single database coordinator. Retained
-binding tombstones, future ID reuse and replica replacement must also compose
-with #24. Do not infer that a plain numeric ID or a copied descriptor proves
-possession of the original log.
+The original #42 receive/replacement scope is reconciled in
+[REPLACEMENT-ACCEPTANCE.md](REPLACEMENT-ACCEPTANCE.md). Initial voters now require
+independently prepared [store lifecycle authority](STORE-LIFECYCLE.md), and
+[formation recovery](ROOT-FORMATION.md) resumes on the original durable stores.
+A copied root descriptor cannot mint the old incarnation on a newly prepared
+disk. [Production endpoint migration](ENDPOINT-RECOVERY.md) also replaces live
+transport workers and has accepted retained-PVC Chaos evidence.
 
-The real Chaos Mesh failure at `6779112` is retained in
-[#43](https://github.com/c4pt0r/kv9/issues/43): the public-admission pressure
-fixture targeted a follower and exited on an unclassified code 9 response.
-Neither a local root E2E pass nor the receive proof completes that separate
-acceptance matrix. Final exact-revision MinIO and Chaos evidence remains
-required before broader roadmap acceptance.
+These component proofs keep their stated trust and durability assumptions.
+Whole-disk clones, future numeric-ID reuse, general replica replacement and
+multi-group migration need their own ownership protocols under #24. No plain
+numeric ID or copied descriptor proves possession of an original log.
+
+The earlier Chaos admission-pressure failure at `6779112` remains retained in
+[#43](https://github.com/c4pt0r/kv9/issues/43). Subsequent accepted complete
+matrices are separate evidence, not a relabeling of that failed command. Daily
+verification is local; hosted runs are reserved for releases and key milestones.
+
+## Historical receive-authority increment
 
 Local validation for this increment passed 505 workspace/unit/integration/doc
 tests (22 opt-in tests remained ignored), Clippy with warnings denied, seven
@@ -134,9 +142,8 @@ source hashes, selected tests, proof inventories, exact obligation counts and
 expected failures. The source controls were rerun after the test-only Clippy
 correction. This local result does not replace exact-revision hosted acceptance.
 
-The endpoint assertions above inspect the configured route. Migration of an
-already-created transport worker is a separate remaining implementation concern:
-`peer_sender` caches a worker with its original address. Changing `addrs` alone
-does not establish that a live cached worker follows the new endpoint. That
-transport/reconfiguration path needs a real-stream regression and should be
-resolved before claiming complete same-store address migration under #24.
+The original endpoint assertions inspected the configured route and did not
+prove replacement of an already-created transport worker. That distinct gap
+was reproduced and resolved under [#47](RAFT-ROUTING.md), followed by the public
+API, durable recovery and actual changed-address Chaos acceptance in
+[ENDPOINT-RECOVERY.md](ENDPOINT-RECOVERY.md).

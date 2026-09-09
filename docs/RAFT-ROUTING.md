@@ -126,12 +126,12 @@ python3 scripts/check-route-protocol.py --jar /path/to/tla2tools.jar \
   --tlapm /path/to/tlapm --output /tmp/kv9-route-protocol-new
 ```
 
-Dedicated actual Chaos Mesh address migration of an authorized existing store,
-with old/new endpoint observations, catch-up receipts and complete concurrent
-histories, remains an explicit #47 acceptance requirement. The existing
-19-window matrix exercises other fault/recovery boundaries; passing it does not
-substitute for the new migration cell. Neither single-host Kind nor two local
-socket endpoints establishes cross-host failure tolerance or throughput targets.
+Dedicated actual Chaos Mesh address migration of an authorized existing store
+now passes in the [21-window production acceptance](ENDPOINT-RECOVERY.md#accepted-local-increment).
+It retains old/new endpoint observations, exact catch-up receipts and both
+complete concurrent histories. The earlier 19-window matrix below supplied
+route-ownership evidence only. Neither single-host Kind nor two local socket
+endpoints establishes cross-host failure tolerance or throughput targets.
 
 ## Accepted route-ownership milestone
 
@@ -169,31 +169,27 @@ persistent operations, with clean exact-revision provenance. Archive:
 The original failed diagnostic remains retained. This confirms the published
 ownership repair and existing matrix; it does not add the missing migration cell.
 
-## Remaining production migration path
+## Production migration acceptance
 
-The [versioned catalog transition](ENDPOINT-MIGRATION.md) defines the conditional
-update, duplicate confirmation and remaining integration/rollout obligations.
+The [versioned catalog transition](ENDPOINT-MIGRATION.md),
+[writer composition](ENDPOINT-WRITERS.md) and
+[durable endpoint recovery](ENDPOINT-RECOVERY.md) now have accepted production
+integration under #47. Authenticated public CAS preserves the immutable
+node/store binding and checks the complete expected endpoint identity and
+generation. Exact mutation and fresh duplicate-confirmation receipts have
+distinct semantics; unknown results never authorize a silent retry.
 
-The public membership surface currently exposes admission and promotion, while
-renewing a consumed admission requires an internal revocation transaction. The
-runtime test for an authorized new endpoint invokes that helper directly. A
-supported operator workflow must authenticate and commit a conditional endpoint
-change, preserve the immutable node/store binding, check the expected old route
-and return an exact applied receipt. Its conflict and retry semantics need their
-own protocol argument and implementation tests.
+An Active store retains coordinator-independent stable-address restart. A
+changed canonical advertised endpoint requires fresh committed confirmation,
+exact local application and durable endpoint publication before public Serving.
+The tested writer upgrade is stop/upgrade/restart with an explicit wire and
+lifecycle compatibility floor; mixed-generation availability remains unsupported.
 
-An Active store restart currently recognizes its local init marker and durable
-membership before issuing registration. Stable advertised endpoints must retain
-coordinator-free restart. A changed canonical advertised endpoint must first
-complete the authorized route transition and catch up; changing a local bind
-address alone is insufficient. Initial-root seed fallback and current catalog
-routes need explicit behavior during restart and concurrent endpoint changes.
-
-The dedicated Chaos cell must kill the original owner, retain its original PVC
-and incarnation, leave the old endpoint unavailable, and authorize a distinct
-new endpoint through the production API. Acceptance requires actual new-endpoint
-delivery, exact transition and catch-up receipts, surviving-quorum progress and
-both complete histories. Retain the actual PodChaos victim, old/new Pod and
-network observations, identity checks and evidence controls. A fresh prepared
-PVC must remain refused. These requirements keep #47 open; no fixed coordinator
-or test-only route override may supply the missing production path.
+The accepted Chaos cell kills the original learner owner, retains its PVC and
+incarnation, verifies that the old endpoint is unavailable, and authorizes a
+distinct new endpoint through the production API. Exact transition/catch-up
+receipts, positive fault observations, surviving-quorum work and independently
+checked complete histories are retained. Independently prepared replacement
+PVCs still receive explicit refusal. No fixed coordinator or test-only route
+override supplies this production path. [#42's acceptance record](REPLACEMENT-ACCEPTANCE.md)
+connects this evidence to the receive/replacement requirements.

@@ -130,11 +130,13 @@ python3 scripts/check-endpoint-writers-protocol.py \
   --output /tmp/endpoint-writers-protocol-new
 ```
 
-Real local MinIO and the existing 19-window Chaos Mesh matrix provide regression
-coverage. They do not replace the required distinct-address migration Chaos cell,
-which must use the forthcoming production API with retained PVC/incarnation,
-unavailable old endpoint, exact receipts and complete histories. Single-host Kind
-tests do not establish cross-host failure isolation. #47 and #42/P0 remain open.
+Real local MinIO and the original 19-window Chaos Mesh matrix provide regression
+coverage. The later [21-window acceptance](ENDPOINT-RECOVERY.md#accepted-local-increment)
+adds the distinct-address migration cell using the production API, retained
+PVC/incarnation, unavailable old endpoint, exact receipts and complete histories.
+Single-host Kind tests do not establish cross-host failure isolation.
+[#42's acceptance record](REPLACEMENT-ACCEPTANCE.md) reconciles the replacement
+scope; P0 remains open.
 
 GitHub CI remains manual-only for pre-release or key-milestone acceptance after
 the corresponding local gates pass. Routine development runs these gates locally.
@@ -171,7 +173,9 @@ proofs, controls, original failures, successful logs, Chaos scenes, complete
 histories and independent audits. Root-trust and quickstart remove their data
 directories on success; their complete process logs are retained.
 
-No GitHub workflow was dispatched. This acceptance completes the existing-writer
-integration foundation, not the public migration API, changed-endpoint restart,
-rollout fencing or dedicated migration Chaos cell. #47 and #42/P0 remain open;
-the separate intermittent initial gRPC apply timeout in #48 is still unexplained.
+No GitHub workflow was dispatched. This historical acceptance completed the
+existing-writer integration foundation. The public migration API,
+changed-endpoint restart, rollout fencing and dedicated migration Chaos cell
+were accepted later in [ENDPOINT-RECOVERY.md](ENDPOINT-RECOVERY.md).
+P0 remains open; the separate intermittent initial gRPC apply timeout in #48
+is still unexplained.
