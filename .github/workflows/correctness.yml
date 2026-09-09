@@ -33,6 +33,14 @@ jobs:
           curl --fail --location --retry 3 --output tla2tools.jar \
             https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar
           echo '936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88  tla2tools.jar' | sha256sum --check
+      - name: Check persistent client protocol and audited deductive proofs
+        run: |
+          set -euo pipefail
+          python3 scripts/check-client-protocol.py --tlapm "$RUNNER_TEMP/tlapm/bin/tlapm" \
+            --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/client-protocol" \
+            > "$RUNNER_TEMP/client-protocol.log" 2>&1
+          cat "$RUNNER_TEMP/client-protocol.log"
+          test "$(tail -1 "$RUNNER_TEMP/client-protocol.log")" = 'PASS: 4 full client model checks; 3 protocol controls; 2 witnesses; 8 TLAPS theorems; 66 obligations; 2 audit controls; 6 output controls'
       - name: Check every deductive proof and reject isolated invalid controls
         run: |
           set -euo pipefail
@@ -46,6 +54,8 @@ jobs:
         with:
           name: protocol-deduction
           path: |
+            ${{ runner.temp }}/client-protocol.log
+            ${{ runner.temp }}/client-protocol
             ${{ runner.temp }}/protocol-deduction.log
             ${{ runner.temp }}/protocol-deduction
           if-no-files-found: error

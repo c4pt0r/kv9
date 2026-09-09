@@ -65,7 +65,9 @@ controls; uncovered power-loss/fsync behavior remains identified.
 
 The bounded public admission increment (#38) is followed by fixed local latency
 observations (#39), documented in [LATENCY-OBSERVABILITY.md](LATENCY-OBSERVABILITY.md).
-The next C03 increment must use persistent RPC connections, record end-to-end
+The client foundation for C03 (#40), including its retry/deadline proof and real
+connection tests, is documented in [PERSISTENT-CLIENT.md](PERSISTENT-CLIENT.md).
+The remaining workload increment must record end-to-end
 latency independently, and separate refused requests, unresolved writes and
 acknowledged operations before any throughput claim. Instrumentation itself is
 not benchmark acceptance; exact-revision evidence is tracked on the issues.

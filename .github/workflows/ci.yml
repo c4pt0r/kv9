@@ -271,6 +271,22 @@ jobs:
       - name: Recovery metrics capture regression
         run: bash scripts/latency-metrics-selftest.sh
 
+      - name: Persistent client connection, retry and deadline source controls
+        run: |
+          set -euo pipefail
+          python3 scripts/check-client-controls.py --output "$RUNNER_TEMP/client-controls" > "$RUNNER_TEMP/client-controls.log" 2>&1
+          cat "$RUNNER_TEMP/client-controls.log"
+          test "$(tail -1 "$RUNNER_TEMP/client-controls.log")" = 'PASS: 3 isolated persistent-client source controls checked'
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: client-controls
+          path: |
+            ${{ runner.temp }}/client-controls
+            ${{ runner.temp }}/client-controls.log
+          if-no-files-found: error
+
       - name: Latency observation source controls
         run: |
           set -euo pipefail
