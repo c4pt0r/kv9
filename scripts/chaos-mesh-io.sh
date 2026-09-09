@@ -71,6 +71,12 @@ io_probe() {
     --exclude "$excluded" --evidence "$artifact/$label-attempts.jsonl" -- "$@"
 }
 
+io_metrics_recovered() {
+  local cell="$1"
+  k exec -n "$namespace" "$io_pod" -- cat /data/metrics.json >"$artifact/$cell-recovered-metrics.json"
+  python3 scripts/check-latency-metrics.py "$artifact" --io "$cell" 2>/dev/null
+}
+
 run_io_matrix() {
   local victim errno io_pod io_uid label rc fatal io_leader key_hex io_required_index
   for victim in 1 2 3; do
@@ -132,6 +138,7 @@ PY
       wait_until "actual Raft I/O failure terminates voter $victim" 30 io_process_stopped
       k exec -n "$namespace" "$io_pod" -- cat /tmp/kv9-io.log >"$artifact/$label-process.log"
       k exec -n "$namespace" "$io_pod" -- cat /data/status >"$artifact/$label-status.txt"
+      k exec -n "$namespace" "$io_pod" -- cat /data/metrics.json >"$artifact/$label-metrics.json"
       rc="$(k exec -n "$namespace" "$io_pod" -- cat /tmp/kv9-io.exit)"
       printf 'pod=%s\nuid=%s\nexit_code=%s\nobserved_at=%s\n' \
         "$io_pod" "$io_uid" "$rc" "$(date --iso-8601=ns)" >"$artifact/$label-exit.txt"
@@ -169,6 +176,7 @@ PY
       io_probe "$label-recovered-get" 0 raw-get --keyspace "$keyspace" \
         --key-hex "$key_hex" >"$artifact/$label-recovered-get.out"
       grep -Fxq value_hex=6166746572 "$artifact/$label-recovered-get.out"
+      wait_until "fresh metrics include recovered durability" 10 io_metrics_recovered "$label"
       echo "PASS: IOChaos voter $victim errno $errno reached Raft, exited, and recovered with majority service"
     done
   done

@@ -822,7 +822,8 @@ impl RuntimeBackend {
     }
 
     fn commit_catalog(&self, command: &kv9_raft::Command, term: u64) -> Result<AppliedPosition> {
-        propose_and_wait_loop(
+        observe_proposal_wait(
+            &self.driver.metrics().logical_proposal_wait,
             || self.driver.propose_in_term(command, term),
             |at, remaining| self.driver.wait_applied(at, remaining),
             Duration::from_secs(10),
@@ -854,10 +855,53 @@ where
     // the real driver. Command reuse across re-proposals is BY CONSTRUCTION:
     // the propose closure borrows the one `command`, so there is no second
     // command for a retry to accidentally use.
-    propose_and_wait_loop(
+    observe_proposal_wait(
+        &driver.metrics().logical_proposal_wait,
         || driver.propose(command),
         |at, remaining| driver.wait_applied(at, remaining),
         deadline,
+    )
+}
+
+/// Observe one logical call across all replacement retries. Classify before
+/// the existing control loop converts typed unknown outcomes into public errors.
+/// The original loop owns the only deadline and all business decisions.
+fn observe_proposal_wait(
+    metric: &kv9_common::metrics::Latency,
+    mut propose: impl FnMut() -> Result<ProposedAt>,
+    mut wait: impl FnMut(ProposedAt, Duration) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError>,
+    deadline: Duration,
+) -> Result<AppliedPosition> {
+    use kv9_common::metrics::Outcome;
+    let outcome = std::cell::Cell::new(Outcome::Error);
+    metric.observe(
+        || {
+            propose_and_wait_loop(
+                || {
+                    let result = propose();
+                    outcome.set(match &result {
+                        Err(Error::NotLeader { .. }) => Outcome::Rejected,
+                        _ => Outcome::Error,
+                    });
+                    result
+                },
+                |at, remaining| {
+                    let result = wait(at, remaining);
+                    outcome.set(match &result {
+                        Ok(ApplyWaitOutcome::Applied(_)) => Outcome::Success,
+                        Ok(ApplyWaitOutcome::Replaced) => Outcome::Replaced,
+                        Ok(ApplyWaitOutcome::FenceRejected { .. }) => Outcome::Rejected,
+                        // A manifest receipt is invalid for this non-manifest path.
+                        Ok(ApplyWaitOutcome::Manifest { .. }) => Outcome::Error,
+                        Err(ApplyWaitError::Unconfirmed { .. }) => Outcome::Unconfirmed,
+                        Err(ApplyWaitError::Failed(_)) => Outcome::Error,
+                    });
+                    result
+                },
+                deadline,
+            )
+        },
+        |_| outcome.get(),
     )
 }
 
@@ -1737,11 +1781,12 @@ impl RuntimeBackend {
     /// Inventory invariant (re-runnable; classify every hit — an
     /// unclassifiable one is a signal that must be explained, not absorbed):
     ///   git grep -n -F '.snapshot()' <head> -- crates/server/src
-    /// Expected classification: PRODUCTION calls exactly 1 (this function);
-    /// TEST calls exactly 1 (the deliberately stale bypass control in the
-    /// committed-but-unapplied cell); every remaining hit is doc/comment
-    /// text, including the command line above. The invariant is the two
-    /// classified COUNTS, never the raw line total. `Engine::snapshot()` is a
+    /// Expected ENGINE classification: PRODUCTION calls exactly 1 (this
+    /// function); TEST calls exactly 1 (the deliberately stale bypass control
+    /// in the committed-but-unapplied cell). Classify admission-ledger and
+    /// latency-histogram snapshots separately: they construct no engine view.
+    /// Other hits are doc/comment text. The invariant is the two ENGINE
+    /// counts, never the raw method-name total. `Engine::snapshot()` is a
     /// public API and the type system cannot forbid a future second call
     /// site; what IS mechanically held is (a) `ReadBarrier` is neither
     /// Clone nor Copy (compile-time probe in kv9-raft), so one barrier
@@ -2069,6 +2114,8 @@ struct StartOverrides {
 pub struct NodeRuntime {
     node: Arc<Node<WalEngine>>,
     public_admission: Arc<crate::admission::PublicAdmission>,
+    raft_io_metrics: Arc<kv9_common::metrics::WalIoMetrics>,
+    metrics_exporter: crate::observability::MetricsExporter,
     driver: Arc<NodeDriver<DiskRaftStorage, WalEngine>>,
     transport: Arc<GrpcTransport>,
     discovery: Arc<RuntimeDiscovery>,
@@ -2203,6 +2250,7 @@ impl NodeRuntime {
         );
         let voter_ids: Vec<u64> = voters.iter().map(|node| node.0).collect();
         let (storage, was_pristine) = DiskRaftStorage::open(&data_dir.join("raft"), &voter_ids)?;
+        let raft_io_metrics = storage.io_metrics();
         let remote = crate::remote_storage::prepare_remote(
             &data_dir,
             root.cluster_id.to_string(),
@@ -2465,6 +2513,8 @@ impl NodeRuntime {
             remote_storage,
             grpc_runtime,
             public_admission,
+            raft_io_metrics,
+            metrics_exporter: crate::observability::MetricsExporter::new(&data_dir, id.0),
             grpc_shutdown: Some(grpc_shutdown_tx),
             grpc_server: Some(grpc_server),
             cluster_token: auth.cluster_token,
@@ -3110,6 +3160,14 @@ impl NodeRuntime {
 
     fn write_status(&self) -> Result<()> {
         let raft = self.driver.status();
+        self.metrics_exporter.export(raft.fatal.is_some(), || {
+            crate::observability::capture(
+                &self.public_admission,
+                &self.driver,
+                &self.raft_io_metrics,
+                &self.node.store.engine.io_metrics(),
+            )
+        });
         let bootstrap = self
             .node
             .meta
@@ -3195,6 +3253,7 @@ impl NodeRuntime {
             raft.fatal.as_deref().unwrap_or(""),
         );
         body.push_str(&self.public_admission.snapshot().status_lines());
+        body.push_str(&self.metrics_exporter.status_lines());
         let tmp = self.data_dir.join("status.tmp");
         fs::write(&tmp, body)
             .and_then(|_| fs::rename(&tmp, &self.status_path))
@@ -3323,6 +3382,76 @@ fn catalog_initialized(node: &Node<WalEngine>) -> Result<bool> {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn logical_observer_keeps_one_sample_across_retries_and_preserves_unknowns() {
+        use kv9_common::metrics::{Latency, Outcome};
+        let metric = Latency::default();
+        let mut proposals = 0;
+        let mut waits = 0;
+        let budget = Duration::from_secs(5);
+        let got = observe_proposal_wait(
+            &metric,
+            || {
+                proposals += 1;
+                Ok(ProposedAt {
+                    term: 3,
+                    index: kv9_raft::LogIndex(proposals),
+                })
+            },
+            |at, remaining| {
+                waits += 1;
+                assert!(remaining <= budget);
+                Ok(if waits < 3 {
+                    ApplyWaitOutcome::Replaced
+                } else {
+                    ApplyWaitOutcome::Applied(AppliedPosition {
+                        term: at.term,
+                        index: at.index.0,
+                    })
+                })
+            },
+            budget,
+        )
+        .unwrap();
+        assert_eq!((proposals, waits, got.index), (3, 3, 3));
+        assert_eq!(
+            metric.snapshot().outcomes[Outcome::Success as usize].count,
+            1
+        );
+        assert_eq!(
+            metric.snapshot().outcomes[Outcome::Replaced as usize].count,
+            0
+        );
+        let error = observe_proposal_wait(
+            &metric,
+            || {
+                proposals += 1;
+                Ok(ProposedAt {
+                    term: 4,
+                    index: kv9_raft::LogIndex(20),
+                })
+            },
+            |at, _| {
+                Err(ApplyWaitError::Unconfirmed {
+                    index: at.index.0,
+                    waited: Duration::ZERO,
+                })
+            },
+            budget,
+        )
+        .unwrap_err();
+        assert_eq!(proposals, 4, "unconfirmed attempt was retried");
+        assert!(error.to_string().contains("unconfirmed"));
+        assert_eq!(
+            metric.snapshot().outcomes[Outcome::Unconfirmed as usize].count,
+            1
+        );
+        assert_eq!(
+            metric.snapshot().outcomes[Outcome::Success as usize].count,
+            1
+        );
+    }
     use super::*;
     use kv9_common::RegionId;
     use std::cell::RefCell;

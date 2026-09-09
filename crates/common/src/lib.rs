@@ -12,6 +12,7 @@ pub mod error;
 pub mod fs;
 pub mod ids;
 pub mod keyspace;
+pub mod metrics;
 pub mod root;
 pub mod time;
 

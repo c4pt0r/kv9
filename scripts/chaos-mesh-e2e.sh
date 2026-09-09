@@ -67,6 +67,8 @@ collect_scene() {
       >"$scene/$pod.previous.log" 2>&1 || true
     k exec -n "$namespace" "$pod" -- cat /data/status \
       >"$scene/$pod.status" 2>&1 || true
+    k exec -n "$namespace" "$pod" -- cat /data/metrics.json \
+      >"$scene/$pod.metrics.json" 2>&1 || true
     k exec -n "$namespace" "$pod" -- cat /tmp/kv9-io.log \
       >"$scene/$pod.io.log" 2>&1 || true
     # /proc/net/tcp preserves SYN_SENT vs ESTABLISHED even though the minimal
@@ -880,6 +882,7 @@ grep -q '^value_hex=7633$' <<<"$final_get" || {
 
 source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-io.sh"
 run_io_matrix
+python3 scripts/check-latency-metrics.py "$artifact"
 
 touch "$artifact/history.stop"
 wait "$history_pid"

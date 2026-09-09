@@ -28,6 +28,7 @@ source of truth**.
 ```
 
 See [QUICKSTART](docs/QUICKSTART.md) for prerequisites, MinIO configuration and a persistent cluster.
+Node-local queue, backend, Raft wait and WAL timing are described in [LATENCY-OBSERVABILITY](docs/LATENCY-OBSERVABILITY.md).
 
 ## Target architecture
 

@@ -441,3 +441,111 @@ fn three_voter_applied_positions_survive_an_immediate_power_loss() {
         assert_eq!(storage.committed_term(at.index).unwrap(), at.term);
     }
 }
+
+#[test]
+fn wal_observation_preserves_write_sync_short_circuit_and_writer_poison() {
+    use kv9_common::metrics::Outcome;
+    for cut in [0, 1] {
+        for errno in [5, 28] {
+            for fault in [Fault::Before(errno), Fault::After(errno)] {
+                let fs = ModelFs::default();
+                let store = open(&fs);
+                let metrics = store.io_metrics();
+                let before_write =
+                    metrics.write.snapshot().outcomes[Outcome::Success as usize].count;
+                let before_sync = metrics.sync.snapshot().outcomes[Outcome::Success as usize].count;
+                fs.clear_events();
+                fs.fail_at(cut, fault);
+                let error = store
+                    .set_hardstate(&HardState {
+                        term: 7,
+                        vote: 2,
+                        commit: 0,
+                        ..Default::default()
+                    })
+                    .unwrap_err();
+                assert!(
+                    error.to_string().contains(&format!("os error {errno}")),
+                    "original errno lost: {error}"
+                );
+                assert!(fs.fault_arrived());
+                let writes = metrics.write.snapshot();
+                let syncs = metrics.sync.snapshot();
+                assert_eq!(
+                    writes.outcomes[Outcome::Success as usize].count - before_write,
+                    u64::from(cut == 1)
+                );
+                assert_eq!(
+                    writes.outcomes[Outcome::Error as usize].count,
+                    u64::from(cut == 0)
+                );
+                assert_eq!(syncs.outcomes[Outcome::Success as usize].count, before_sync);
+                assert_eq!(
+                    syncs.outcomes[Outcome::Error as usize].count,
+                    u64::from(cut == 1),
+                    "sync observation must match actual fsync attempts"
+                );
+                assert_eq!(
+                    fs.events().len(),
+                    cut + 1,
+                    "failed write must short-circuit fsync"
+                );
+                assert!(store
+                    .set_hardstate(&HardState {
+                        term: 8,
+                        vote: 3,
+                        commit: 0,
+                        ..Default::default()
+                    })
+                    .is_err());
+                assert_eq!(
+                    fs.events().len(),
+                    cut + 1,
+                    "poisoned writer performed more I/O"
+                );
+                assert_eq!(
+                    metrics.write.snapshot().outcomes[Outcome::Error as usize].count,
+                    u64::from(cut == 0)
+                );
+                assert_eq!(
+                    raft::Storage::initial_state(&store)
+                        .unwrap()
+                        .hard_state
+                        .term,
+                    0
+                );
+            }
+        }
+    }
+    // write_all can contain a successful short write followed by an error.
+    // It remains one failed record write and performs no record fsync.
+    let fs = ModelFs::default();
+    let store = open(&fs);
+    let metrics = store.io_metrics();
+    let before_sync = metrics.sync.snapshot().outcomes[Outcome::Success as usize].count;
+    fs.clear_events();
+    fs.fail_at(
+        0,
+        Fault::ShortWrite {
+            bytes: 3,
+            errno: 28,
+        },
+    );
+    assert!(store
+        .set_hardstate(&HardState {
+            term: 7,
+            vote: 2,
+            commit: 0,
+            ..Default::default()
+        })
+        .is_err());
+    assert_eq!(
+        metrics.write.snapshot().outcomes[Outcome::Error as usize].count,
+        1
+    );
+    assert_eq!(
+        metrics.sync.snapshot().outcomes[Outcome::Success as usize].count,
+        before_sync
+    );
+    assert!(fs.events().iter().all(|e| e.operation == Operation::Write));
+}
