@@ -344,7 +344,16 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
             prefer_observed = (guided_unknown and op.outcome == "ok" and op.kind in {"get", "scan"}
                                and op.invocation < event["seq"] and op.response >= event["seq"]
                                and observation_distance(history, i, state) == 0)
-            return (not prefer_observed, i != wanted, op.outcome == "unknown",
+            # Concurrent writes to one key may return in reverse apply order.
+            # Trying invocation order first avoids exploring every old unknown
+            # delete to explain a later scan before backtracking to that pair.
+            # This only reorders candidates in a witness heuristic. Every legal
+            # order remains available, and the complete witness is replayed.
+            pending = history.operations[wanted]
+            competing_write = (guided_unknown and op.outcome == "ok"
+                               and op.kind in {"put", "delete"} and pending.kind in {"put", "delete"}
+                               and (op.args["keyspace"], op.args["key"]) == (pending.args["keyspace"], pending.args["key"]))
+            return (not prefer_observed, not competing_write and i != wanted, op.outcome == "unknown",
                     -i if op.outcome == "unknown" else i)
         order = sorted(range(len(indexes)), key=priority)
         children = []

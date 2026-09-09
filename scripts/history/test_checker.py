@@ -84,6 +84,27 @@ class CheckerControls(unittest.TestCase):
         self.assertEqual(result['verdict'], 'valid', result)
         self.assertTrue(verify_witness(h, result['witness']))
 
+    def test_reversed_write_responses_do_not_expand_old_unknown_deletions_first(self):
+        events = []
+        for i in range(128):
+            events += [call(i, 'delete', key='06'), returned(i, 'unknown')]
+        events += [call(128, 'put', key='06', value='61'),
+                   call(129, 'put', key='06', value='62'),
+                   returned(129), returned(128),
+                   call(130, 'scan', start='00', end='08', limit=8),
+                   returned(130, rows=[['06', '62']])]
+        h = history(*events)
+        result = search(h, max_states=64, guided_unknown=True)
+        self.assertEqual(result['verdict'], 'valid', result)
+        self.assertTrue(verify_witness(h, result['witness']))
+        # Invocation order is only a preference: the opposite legal write
+        # order must also remain reachable when the later scan requires it.
+        events[-1] = returned(130, rows=[['06', '61']])
+        opposite = history(*events)
+        result = search(opposite, max_states=1000, guided_unknown=True)
+        self.assertEqual(result['verdict'], 'valid', result)
+        self.assertTrue(verify_witness(opposite, result['witness']))
+
     def test_recorder_refuses_malformed_success_and_receipts(self):
         for kind, output in [('put', ''), ('put', 'applied_term=1\napplied_index=0'),
                              ('scan', 'key_hex=61 value_hex=31\ncount=2'),
