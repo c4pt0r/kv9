@@ -93,17 +93,32 @@ impl DiskRaftStorage<OsFileSystem> {
     pub fn open(data_dir: &Path, voters: &[u64]) -> Result<(DiskRaftStorage, bool)> {
         Self::open_on(OsFileSystem, data_dir, voters)
     }
+
+    /// Recover an activated store. Never create a missing log or initialize an
+    /// empty/torn log with a fresh voting configuration.
+    pub fn recover(data_dir: &Path) -> Result<DiskRaftStorage> {
+        Self::open_mode(OsFileSystem, data_dir, &[], false).map(|(storage, _)| storage)
+    }
 }
 
 impl<F: FileSystem> DiskRaftStorage<F> {
     fn open_on(fs: F, data_dir: &Path, voters: &[u64]) -> Result<(Self, bool)> {
+        Self::open_mode(fs, data_dir, voters, true)
+    }
+
+    fn open_mode(fs: F, data_dir: &Path, voters: &[u64], initialize: bool) -> Result<(Self, bool)> {
         let io_metrics = WalIoMetrics::shared();
-        fs::create_dirs(&fs, data_dir)
-            .map_err(|e| Error::Raft(format!("create {}: {e}", data_dir.display())))?;
+        if initialize {
+            fs::create_dirs(&fs, data_dir)
+                .map_err(|e| Error::Raft(format!("create {}: {e}", data_dir.display())))?;
+        }
         let path = data_dir.join("raft.log");
-        let mut file = fs
-            .open_append(&path)
-            .map_err(|e| Error::Raft(format!("open {}: {e}", path.display())))?;
+        let mut file = (if initialize {
+            fs.open_append(&path)
+        } else {
+            fs.open_existing_append(&path)
+        })
+        .map_err(|e| Error::Raft(format!("open {}: {e}", path.display())))?;
 
         let mut bytes = Vec::new();
         file.seek(SeekFrom::Start(0))
@@ -165,6 +180,11 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             saw_any = true;
             cursor = next;
             valid_len = cursor as u64;
+        }
+        if !initialize && !saw_any {
+            return Err(Error::Raft(
+                "activated store has no recoverable Raft log; refusing reinitialization".into(),
+            ));
         }
         // Drop the torn/corrupt tail so future appends start at a clean point.
         if valid_len < bytes.len() as u64 {
@@ -503,6 +523,60 @@ mod tests {
         assert_eq!(raft::Storage::last_index(&s).unwrap(), 2);
         assert_eq!(raft::Storage::term(&s, 2).unwrap(), 7);
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn activated_store_recovery_never_creates_or_reinitializes_a_log() {
+        let dir = tmp();
+        assert!(DiskRaftStorage::recover(&dir).is_err());
+        assert!(!dir.exists(), "recovery created a missing store directory");
+        let (storage, pristine) = DiskRaftStorage::open(&dir, &[1, 2, 3]).unwrap();
+        assert!(pristine);
+        storage.append(&[entry(1, 7, b"committed")]).unwrap();
+        storage
+            .set_hardstate(&HardState {
+                term: 7,
+                vote: 2,
+                commit: 1,
+                ..Default::default()
+            })
+            .unwrap();
+        drop(storage);
+        let recovered = DiskRaftStorage::recover(&dir).unwrap();
+        assert_eq!(
+            raft::Storage::initial_state(&recovered)
+                .unwrap()
+                .hard_state
+                .vote,
+            2
+        );
+        assert_eq!(raft::Storage::last_index(&recovered).unwrap(), 1);
+        drop(recovered);
+        let file = dir.join("raft.log");
+        let original = std::fs::read(&file).unwrap();
+        std::fs::remove_file(&file).unwrap();
+        assert!(DiskRaftStorage::recover(&dir).is_err());
+        assert!(!file.exists(), "recovery recreated a missing log");
+        for invalid in [Vec::new(), original[..3].to_vec()] {
+            std::fs::write(&file, &invalid).unwrap();
+            for _ in 0..2 {
+                assert!(
+                    DiskRaftStorage::recover(&dir).is_err(),
+                    "activated store reinitialized an empty or torn log"
+                );
+                assert_eq!(
+                    std::fs::read(&file).unwrap(),
+                    invalid,
+                    "refusal modified the corrupt log"
+                );
+            }
+        }
+        std::fs::write(&file, original).unwrap();
+        assert_eq!(
+            raft::Storage::last_index(&DiskRaftStorage::recover(&dir).unwrap()).unwrap(),
+            1
+        );
+        std::fs::remove_dir_all(dir).unwrap();
     }
 
     /// A torn tail (half-written record) is tolerated: everything before it

@@ -33,6 +33,14 @@ jobs:
           curl --fail --location --retry 3 --output tla2tools.jar \
             https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar
           echo '936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88  tla2tools.jar' | sha256sum --check
+      - name: Check durable store lifecycle safety and conditional progress
+        run: |
+          set -euo pipefail
+          python3 scripts/check-store-protocol.py --tlapm "$RUNNER_TEMP/tlapm/bin/tlapm" \
+            --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/store-protocol" \
+            > "$RUNNER_TEMP/store-protocol.log" 2>&1
+          cat "$RUNNER_TEMP/store-protocol.log"
+          test "$(tail -1 "$RUNNER_TEMP/store-protocol.log")" = 'PASS: 4 full store model checks and 1 fair continuation; 8 protocol controls; 2 witnesses; 14 TLAPS theorems; 128 obligations; 2 audit controls; 8 output controls'
       - name: Check replica receive authority safety and conditional progress
         run: |
           set -euo pipefail
@@ -62,6 +70,8 @@ jobs:
         with:
           name: protocol-deduction
           path: |
+            ${{ runner.temp }}/store-protocol.log
+            ${{ runner.temp }}/store-protocol
             ${{ runner.temp }}/receive-protocol.log
             ${{ runner.temp }}/receive-protocol
             ${{ runner.temp }}/client-protocol.log

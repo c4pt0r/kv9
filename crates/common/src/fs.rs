@@ -35,6 +35,7 @@ pub trait FileSystem: Clone + Send + Sync + 'static {
     fn is_dir(&self, path: &Path) -> io::Result<bool>;
     fn canonicalize(&self, path: &Path) -> io::Result<PathBuf>;
     fn open_append(&self, path: &Path) -> io::Result<Self::File>;
+    fn open_existing_append(&self, path: &Path) -> io::Result<Self::File>;
     fn sync_dir(&self, path: &Path) -> io::Result<()>;
 }
 
@@ -62,6 +63,10 @@ impl FileSystem for OsFileSystem {
             .append(true)
             .create(true)
             .open(path)
+    }
+
+    fn open_existing_append(&self, path: &Path) -> io::Result<Self::File> {
+        OpenOptions::new().read(true).append(true).open(path)
     }
 
     fn sync_dir(&self, path: &Path) -> io::Result<()> {

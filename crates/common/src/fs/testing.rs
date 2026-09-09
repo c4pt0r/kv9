@@ -328,6 +328,26 @@ impl FileSystem for ModelFs {
         )
     }
 
+    fn open_existing_append(&self, path: &Path) -> io::Result<Self::File> {
+        let path = normalized(path)?;
+        let mut state = self.0.lock().unwrap();
+        let fault = state.arrive(Operation::OpenAppend, &path)?;
+        let node = state.nodes.get(&path).ok_or(io::ErrorKind::NotFound)?;
+        if node.file.is_none() {
+            return Err(io::Error::from(io::ErrorKind::IsADirectory));
+        }
+        complete(
+            fault,
+            ModelFile {
+                fs: self.clone(),
+                path,
+                offset: 0,
+                epoch: state.epoch,
+                write_error: None,
+            },
+        )
+    }
+
     fn sync_dir(&self, path: &Path) -> io::Result<()> {
         let path = normalized(path)?;
         let mut state = self.0.lock().unwrap();
