@@ -13,7 +13,8 @@ from checker import History, check, coverage, verify_witness
 PHASES = ["initialization", "warmup", "measure", "verify", "baseline", "healing",
           "registration-seed-blackhole", "pod-failure-1", "pod-failure-2", "pod-failure-3",
           "partition", "public-admission-overload", "delay"] + [
-              f"io-voter-{node}-errno-{errno}" for node in (1, 2, 3) for errno in (5, 28)]
+              f"io-voter-{node}-errno-{errno}" for node in (1, 2, 3) for errno in (5, 28)] + [
+                  f"store-loss-voter-{node}-log-missing" for node in (1, 2, 3)]
 OPERATIONS = ["get", "put", "delete"]
 POPULATIONS = ["success", "not_leader", "admission_count", "admission_bytes", "admission_oversize",
                "read_quorum_unconfirmed", "read_apply_unconfirmed", "rpc_status", "protocol", "deadline",

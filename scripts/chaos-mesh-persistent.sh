@@ -142,6 +142,8 @@ persistent_phase() {
   k get podchaos,networkchaos,iochaos -n "$namespace" -o json >"$artifact/$phase-persistent-faults.json"
   if [[ "$phase" == io-voter-* ]]; then
     k get pod -n "$namespace" "$io_pod" -o json >"$artifact/$phase-persistent-victim.json"
+  elif [[ "$phase" == store-loss-voter-* ]]; then
+    cp "$artifact/$phase/before/pod.json" "$artifact/$phase-persistent-victim.json"
   fi
   date --iso-8601=ns >"$artifact/$phase-persistent-observed-at.txt"
   echo "PASS: persistent put and read completed during $phase"

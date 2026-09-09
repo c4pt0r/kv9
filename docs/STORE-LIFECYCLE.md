@@ -108,6 +108,13 @@ in the [TLAPS inventory documentation](../proofs/tlaps/README.md).
 
 ## Reproduction and fault controls
 
+The [persistent Chaos gate](PERSISTENT-CHAOS.md) includes an initial-voter
+missing-log matrix: actual PodChaos owner death, two refused starts per voter,
+majority service, and recovery of the original retained log. The fixture and
+independent evidence checker keep process death, file loss and restored
+identity observable as separate boundaries. Replacement-PVC acceptance remains
+a distinct #42 obligation.
+
 ```sh
 python3 scripts/check-store-protocol.py --tlapm /path/to/tlapm/bin/tlapm \
   --jar /path/to/tla2tools.jar --output /tmp/kv9-store-protocol

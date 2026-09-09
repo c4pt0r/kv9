@@ -214,7 +214,9 @@ jobs:
           bash scripts/run-bounded-log.sh "$RUNNER_TEMP/chaos-mesh.log" 20m 15s scripts/chaos-mesh-e2e.sh
           test "$(grep -Fxc 'PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, container recovery, and Raft I/O faults' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -Fxc 'PASS: concurrent Raw KV/catalog history is valid across the Chaos Mesh matrix' "$RUNNER_TEMP/chaos-mesh.log")" = 1
-          test "$(grep -Fxc 'PASS: persistent full history verified across 13 Chaos windows; three invalid fault evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          test "$(grep -Fxc 'PASS: persistent full history verified across 16 Chaos windows; three invalid fault evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          test "$(grep -Fxc 'PASS: all three voters refused repeated missing-log starts after PodChaos and recovered; five invalid evidence controls rejected' "$RUNNER_TEMP/chaos-mesh.log")" = 1
+          test "$(grep -Fxc 'PASS: container-kill restarted the killed container in the same Pod and original store with a live endpoint' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -Fxc 'PASS: database read and write succeeded after persistent collector removal' "$RUNNER_TEMP/chaos-mesh.log")" = 1
           test "$(grep -c '^Stage: sustained Pod failure for voter [123] and majority service$' "$RUNNER_TEMP/chaos-mesh.log")" = 3
           test "$(grep -c '^PASS: IOChaos voter [123] errno \(5\|28\) reached Raft, exited, and recovered with majority service$' "$RUNNER_TEMP/chaos-mesh.log")" = 6

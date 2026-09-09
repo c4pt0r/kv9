@@ -13,7 +13,7 @@ use crate::client::{CallReport, OperationKind, Outcome, RawOperation, Reason, Va
 use super::config::{Mode, WorkloadConfig, HEADER_ALLOWANCE};
 
 /// Fixed vocabulary; neither a caller's labels nor fault names can grow state.
-pub const PHASES: [&str; 19] = [
+pub const PHASES: [&str; 22] = [
     "initialization",
     "warmup",
     "measure",
@@ -33,6 +33,9 @@ pub const PHASES: [&str; 19] = [
     "io-voter-2-errno-28",
     "io-voter-3-errno-5",
     "io-voter-3-errno-28",
+    "store-loss-voter-1-log-missing",
+    "store-loss-voter-2-log-missing",
+    "store-loss-voter-3-log-missing",
 ];
 
 #[derive(Clone, Copy)]
