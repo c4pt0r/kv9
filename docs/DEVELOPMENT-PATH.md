@@ -407,6 +407,12 @@ parameterized safety proof, fault controls and remaining refinement obligations
 are recorded in [READY-PUBLICATION.md](READY-PUBLICATION.md). Acceptance evidence
 is tracked in #35; the broader C04 obligations remain open.
 
+Hosted membership acceptance also exposed [#36](https://github.com/c4pt0r/kv9/issues/36):
+synchronous registration waits occupied Raft network workers. The bounded
+blocking execution repair and its preserved protocol obligations are documented
+in [REGISTRATION-SCHEDULING.md](REGISTRATION-SCHEDULING.md). Registration fairness
+and broader admission control remain separate availability work.
+
 #### Completion evidence
 
 Link the implementation commits or PRs and actual check runs. Record selected tests, failure cuts, and known coverage limits. Performance claims require the configuration and raw results from C03.

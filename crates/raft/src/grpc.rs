@@ -3,9 +3,9 @@
 //! Layering contract (verified against the local CSE source — its
 //! `RaftStoreRouter` is a fully synchronous trait):
 //! - **The core stays synchronous.** This module's async code lives on a tokio
-//!   runtime owned/handed in at the edge; the only crossing into the core is a
-//!   channel send. Nothing here requires `NodeDriver` or the state machine to
-//!   become async.
+//!   runtime owned/handed in at the edge. Raft messages cross through a channel;
+//!   registration uses bounded blocking work because it waits for committed
+//!   metadata. `NodeDriver` and the state machine remain synchronous.
 //! - **Streams, not unary calls**: each peer pair keeps one long-lived
 //!   client-stream carrying [`pb::BatchRaftMessage`] — batching by count and
 //!   bytes with a short flush window is what makes gRPC viable at raft message
@@ -269,9 +269,9 @@ pub trait RegistrationBackend: Send + Sync + 'static {
     ) -> std::result::Result<RegistrationReceipt, RegistrationError>;
 }
 
-/// The inbound half: implements the generated service. Holds ONLY a channel
-/// sender into the synchronous core — no listener, no runtime, no port. The
-/// server crate registers this on its single shared `tonic` server.
+/// The inbound half: implements the generated service with a Raft inbox and an
+/// optional synchronous registration backend. It owns no listener or runtime;
+/// the server crate registers this on its shared `tonic` server.
 pub struct RaftGrpcService {
     me: NodeId,
     inbox: mpsc::UnboundedSender<Message>,
@@ -280,6 +280,10 @@ pub struct RaftGrpcService {
     /// tests or a build wired before the server injects it — callers get
     /// UNIMPLEMENTED, loudly, never a silent fake success).
     registration: Option<Arc<dyn RegistrationBackend>>,
+    /// Registration serializes catalog planning and may wait for Raft I/O.
+    /// Admit at most one queued/running blocking call per service, including
+    /// calls whose RPC future was cancelled before their backend completed.
+    registration_capacity: Arc<tokio::sync::Semaphore>,
     /// Envelopes rejected for a wrong destination (diagnostic mirror of the
     /// TCP transport's step-error counter: growth = misconfiguration).
     misrouted: AtomicU64,
@@ -296,6 +300,7 @@ impl RaftGrpcService {
             inbox,
             discovery,
             registration: None,
+            registration_capacity: Arc::new(tokio::sync::Semaphore::new(1)),
             misrouted: AtomicU64::new(0),
         }
     }
@@ -452,13 +457,28 @@ impl Kv9Raft for RaftGrpcService {
                 .try_into()
                 .expect("length checked"),
         );
-        let receipt = match backend.register(
-            authenticated,
-            &req.addr,
-            cluster_id,
-            &req.join_ticket_sha256,
-            incarnation,
-        ) {
+        let permit = self
+            .registration_capacity
+            .clone()
+            .try_acquire_owned()
+            .map_err(|_| Status::resource_exhausted("registration is already in progress"))?;
+        let backend = backend.clone();
+        let req = request.into_inner();
+        let outcome = tokio::task::spawn_blocking(move || {
+            // Cancellation cannot stop an already-running blocking task.
+            // Capacity belongs to that task until its backend really exits.
+            let _permit = permit;
+            backend.register(
+                authenticated,
+                &req.addr,
+                cluster_id,
+                &req.join_ticket_sha256,
+                incarnation,
+            )
+        })
+        .await
+        .map_err(|_| Status::internal("registration task failed"))?;
+        let receipt = match outcome {
             Ok(r) => r,
             Err(RegistrationError::NotLeader {
                 leader,
@@ -1139,6 +1159,175 @@ mod tests {
 
     fn test_cid() -> ClusterId {
         ClusterId::from_bytes([0xAB; 16])
+    }
+
+    struct GatedRegistration {
+        started: std::sync::mpsc::Sender<()>,
+        release: Mutex<std::sync::mpsc::Receiver<()>>,
+        calls: AtomicU64,
+    }
+
+    impl RegistrationBackend for GatedRegistration {
+        fn register(
+            &self,
+            node: NodeId,
+            _addr: &str,
+            _cluster_id: ClusterId,
+            _ticket: &[u8],
+            _incarnation: StoreIncarnation,
+        ) -> std::result::Result<RegistrationReceipt, RegistrationError> {
+            if self.calls.fetch_add(1, Ordering::SeqCst) == 0 {
+                self.started.send(()).unwrap();
+                self.release
+                    .lock()
+                    .unwrap()
+                    .recv_timeout(Duration::from_secs(5))
+                    .unwrap();
+            }
+            Ok(RegistrationReceipt {
+                applied_term: 3,
+                applied_index: 17,
+                voters: vec![1, 2, 3],
+                learners: vec![node.0],
+            })
+        }
+    }
+
+    fn registration_request() -> Request<pb::RegisterRequest> {
+        let mut req = Request::new(pb::RegisterRequest {
+            node_id: 4,
+            addr: "127.0.0.1:9004".into(),
+            cluster_id: test_cid().as_bytes().to_vec(),
+            join_ticket_sha256: vec![9; 32],
+            store_incarnation: vec![4; 16],
+        });
+        req.extensions_mut().insert(NodeId(4));
+        req
+    }
+
+    #[test]
+    fn registration_wait_does_not_starve_the_async_executor() {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(1)
+            .enable_all()
+            .build()
+            .unwrap();
+        let (started_tx, started) = std::sync::mpsc::channel();
+        let (release, release_rx) = std::sync::mpsc::channel();
+        let backend = Arc::new(GatedRegistration {
+            started: started_tx,
+            release: Mutex::new(release_rx),
+            calls: AtomicU64::new(0),
+        });
+        let (inbox, _rx) = mpsc::unbounded_channel();
+        let svc = Arc::new(
+            RaftGrpcService::new(
+                NodeId(1),
+                inbox,
+                Arc::new(NamedDiscovery(NodeId(1), test_cid())),
+            )
+            .with_registration(backend),
+        );
+        let registering = svc.clone();
+        let task = rt.spawn(async move { registering.register(registration_request()).await });
+        started.recv_timeout(Duration::from_secs(2)).unwrap();
+
+        // The backend is held until the external test thread releases it.
+        // A single async worker must still serve control-plane discovery.
+        let (progress_tx, progress) = std::sync::mpsc::channel();
+        rt.spawn(async move {
+            let root = svc.discovery.root_identity();
+            let mut req = Request::new(pb::DiscoverRequest {
+                from_node: 4,
+                voter_fingerprint: 0,
+                bootstrap_generation: root.bootstrap_generation.as_bytes().to_vec(),
+                root_digest: root.root_digest.as_bytes().to_vec(),
+            });
+            req.extensions_mut().insert(NodeId(4));
+            progress_tx.send(svc.discover(req).await.is_ok()).unwrap();
+        });
+        let progressed = progress.recv_timeout(Duration::from_millis(500));
+        // Release before asserting, so the negative control also shuts down.
+        release.send(()).unwrap();
+        let receipt = rt.block_on(task).unwrap().unwrap().into_inner();
+        assert_eq!((receipt.applied_term, receipt.applied_index), (3, 17));
+        assert_eq!(
+            progressed.ok(),
+            Some(true),
+            "registration blocked the worker needed for Raft transport and discovery"
+        );
+    }
+
+    #[test]
+    fn cancelled_registration_keeps_capacity_until_backend_completion() {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(2)
+            .enable_all()
+            .build()
+            .unwrap();
+        let (started_tx, started) = std::sync::mpsc::channel();
+        let (release, release_rx) = std::sync::mpsc::channel();
+        let backend = Arc::new(GatedRegistration {
+            started: started_tx,
+            release: Mutex::new(release_rx),
+            calls: AtomicU64::new(0),
+        });
+        let (inbox, _rx) = mpsc::unbounded_channel();
+        let svc = Arc::new(
+            RaftGrpcService::new(
+                NodeId(1),
+                inbox,
+                Arc::new(NamedDiscovery(NodeId(1), test_cid())),
+            )
+            .with_registration(backend.clone()),
+        );
+        let registering = svc.clone();
+        let task = rt.spawn(async move { registering.register(registration_request()).await });
+        started.recv_timeout(Duration::from_secs(2)).unwrap();
+        task.abort();
+        let cancelled = rt.block_on(task).unwrap_err();
+        assert!(cancelled.is_cancelled());
+        for _ in 0..3 {
+            let result = rt.block_on(svc.register(registration_request()));
+            if result.is_ok() {
+                release.send(()).unwrap();
+                panic!("cancelled RPC released capacity before backend completion");
+            }
+            let status = result.unwrap_err();
+            assert_eq!(status.code(), tonic::Code::ResourceExhausted);
+            assert_eq!(
+                backend.calls.load(Ordering::SeqCst),
+                1,
+                "cancellation must not admit work behind an unfinished backend call"
+            );
+        }
+        let mut spoofed = registration_request();
+        spoofed.get_mut().node_id = 9;
+        assert_eq!(
+            rt.block_on(svc.register(spoofed)).unwrap_err().code(),
+            tonic::Code::PermissionDenied,
+            "identity validation precedes admission"
+        );
+        release.send(()).unwrap();
+        let deadline = std::time::Instant::now() + Duration::from_secs(2);
+        loop {
+            match rt.block_on(svc.register(registration_request())) {
+                Ok(receipt) => {
+                    let receipt = receipt.into_inner();
+                    assert_eq!((receipt.applied_term, receipt.applied_index), (3, 17));
+                    assert_eq!(backend.calls.load(Ordering::SeqCst), 2);
+                    break;
+                }
+                Err(status) => {
+                    assert_eq!(status.code(), tonic::Code::ResourceExhausted);
+                    assert!(
+                        std::time::Instant::now() < deadline,
+                        "completion leaked capacity"
+                    );
+                    std::thread::yield_now();
+                }
+            }
+        }
     }
 
     fn free_addr() -> SocketAddr {
