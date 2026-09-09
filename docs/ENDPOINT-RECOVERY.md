@@ -168,3 +168,15 @@ on one host; this is not multi-host availability or a hardware power-loss test.
 
 Daily gates run locally. Hosted workflows remain manual-only for pre-release
 or key-milestone acceptance after local gates pass.
+
+The first full matrix attempt at `f73ee1f` stopped during voter 3 I/O recovery,
+before the new migration cell. The database had exited through the expected
+Raft `EIO` path. After IOChaos deletion, the idle Bash fixture supervisor was
+still in `T (stopped)` with `TracerPid=0`; no database child had been launched.
+The retained daemon trace shows toda's attach/detach sequence during healing.
+Sending `SIGCONT` to that launcher immediately started the original store,
+which recovered Serving and caught up. The failed run remains failed.
+The fixture now records supervisor state and explicitly heals an untraced,
+stopped launcher only after the database exit and FUSE unmount are established.
+It retains the original I/O failure, majority history, fresh-process, exact
+catch-up and recovery-metrics requirements.
