@@ -1,6 +1,7 @@
 # Local latency observations
 
-Tracking: [#39](https://github.com/c4pt0r/kv9/issues/39), within
+Tracking: [#39](https://github.com/c4pt0r/kv9/issues/39) and
+[#41](https://github.com/c4pt0r/kv9/issues/41), within
 [C03](https://github.com/c4pt0r/kv9/issues/13). This increment measures existing
 boundaries before changing persistence scheduling or publishing throughput claims.
 It adds no batching, asynchronous durability acknowledgement, new consensus
@@ -205,3 +206,6 @@ service drift and must not be equated with delivered election time. The remainin
 local-submission/inbound/outbound observations, synchronized wakeup and independent
 tick contract, checked scheduling proofs and paired release experiment remain
 part of #41. No performance improvement is claimed by this instrumentation alone.
+
+The [first pump observation report](PUMP-OBSERVATION-VALIDATION.md) retains the
+release measurements and exact per-voter/trial populations for this increment.
