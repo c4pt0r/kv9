@@ -61,6 +61,7 @@ struct State {
     finished: bool,
     successes: [[u64; 3]; PHASES.len()],
     recorder_ns: u64,
+    peak_in_flight: usize,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -76,6 +77,7 @@ pub struct HistorySummary {
     pub failure: Option<&'static str>,
     pub independently_checked: bool,
     pub recorder_ns: u64,
+    pub peak_in_flight: usize,
     pub phase_successes: Vec<PhaseSuccess>,
 }
 
@@ -85,6 +87,15 @@ pub struct PhaseSuccess {
     pub get: u64,
     pub put: u64,
     pub delete: u64,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct Progress {
+    pub issued: u64,
+    pub terminal: u64,
+    pub in_flight: usize,
+    pub peak_in_flight: usize,
+    pub phase_successes: Vec<PhaseSuccess>,
 }
 
 pub struct Recorder {
@@ -161,6 +172,7 @@ impl Recorder {
                 finished: false,
                 successes: [[0; 3]; PHASES.len()],
                 recorder_ns: 0,
+                peak_in_flight: 0,
             }),
         })
     }
@@ -238,6 +250,7 @@ impl Recorder {
                 terminal_space,
             },
         );
+        state.peak_in_flight = state.peak_in_flight.max(state.active.len());
         state.recorder_ns = state.recorder_ns.saturating_add(ns(started));
         Ok(Ticket {
             id,
@@ -374,6 +387,31 @@ impl Recorder {
             failure: state.failed,
             independently_checked: false,
             recorder_ns: state.recorder_ns,
+            peak_in_flight: state.peak_in_flight,
+            phase_successes: PHASES
+                .iter()
+                .enumerate()
+                .map(|(i, phase)| PhaseSuccess {
+                    phase,
+                    get: state.successes[i][0],
+                    put: state.successes[i][1],
+                    delete: state.successes[i][2],
+                })
+                .collect(),
+        })
+    }
+
+    pub(super) fn epoch(&self) -> Instant {
+        self.start
+    }
+
+    pub fn progress(&self) -> Result<Progress, &'static str> {
+        let state = self.state.lock().map_err(|_| "history lock poisoned")?;
+        Ok(Progress {
+            issued: state.issued,
+            terminal: state.terminal,
+            in_flight: state.active.len(),
+            peak_in_flight: state.peak_in_flight,
             phase_successes: PHASES
                 .iter()
                 .enumerate()

@@ -6,6 +6,7 @@ use tokio_stream::StreamExt;
 use tonic::Response;
 
 enum Action {
+    Pass,
     Refuse {
         delay: Duration,
         status: Status,
@@ -247,6 +248,131 @@ fn refusal(status: Status) -> Action {
         delay: Duration::ZERO,
         status,
     }
+}
+
+#[tokio::test]
+async fn workload_stop_drains_an_applied_write_until_its_terminal_response() {
+    use crate::workload::{run, Mix, Mode, RunOptions, WorkloadConfig};
+    use sha2::{Digest, Sha256};
+    use std::io::Read;
+
+    let server = Server::new().await;
+    // A bound but unserved second endpoint forces the first final read to time
+    // out after the unknown write rotates the preferred endpoint. Verification
+    // must retain that failed read and use a new bounded read on the survivor.
+    let unavailable = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let output = std::env::temp_dir().join(format!(
+        "kv9-workload-drain-{}-{}",
+        std::process::id(),
+        server.address.port()
+    ));
+    std::fs::create_dir(&output).unwrap();
+    let manifest = output.join("build.json");
+    let mut executable = std::fs::File::open(std::env::current_exe().unwrap()).unwrap();
+    let mut hasher = Sha256::new();
+    let mut buffer = [0u8; 65536];
+    loop {
+        let read = executable.read(&mut buffer).unwrap();
+        if read == 0 {
+            break;
+        }
+        hasher.update(&buffer[..read]);
+    }
+    std::fs::write(&manifest, serde_json::to_vec(&serde_json::json!({
+        "version": 1, "revision": "0".repeat(40), "dirty": true,
+        "source_tree_sha256": "0".repeat(64), "binary_sha256": format!("{:x}", hasher.finalize()),
+        "profile": "debug", "rustc": "test fixture executable",
+    })).unwrap()).unwrap();
+    let configuration = WorkloadConfig {
+        version: 1,
+        client: config(&[server.address, unavailable.local_addr().unwrap()]),
+        mode: Mode::Correctness,
+        run_id: "drain-test".into(),
+        keyspace_name: "fresh-drain".into(),
+        seed: 40,
+        workers: 1,
+        keys: 1,
+        value_bytes: 16,
+        mix: Mix {
+            get: 0,
+            put: 100,
+            delete: 0,
+        },
+        warmup_operations: 0,
+        max_operations: 32,
+        measure_ms: 10000,
+        interval_ms: 0,
+        history_bytes: 1024 * 1024,
+    };
+    let applied = Arc::new(Notify::new());
+    let release = Arc::new(Notify::new());
+    {
+        let mut actions = server.state.actions.lock().unwrap();
+        actions.extend([Action::Pass, Action::Pass, Action::Pass, Action::Pass]);
+        actions.push_back(Action::LoseReply {
+            applied: applied.clone(),
+            release: release.clone(),
+        });
+    }
+    let stop = output.join("stop");
+    let options = RunOptions {
+        output: output.join("run"),
+        build_manifest: manifest,
+        stop_file: Some(stop.clone()),
+        phase_file: None,
+    };
+    let task = tokio::spawn(run(configuration, "test-secret", options));
+    tokio::time::timeout(Duration::from_secs(30), applied.notified())
+        .await
+        .unwrap();
+    std::fs::write(stop, b"stop").unwrap();
+    tokio::time::sleep(Duration::from_millis(250)).await;
+    assert!(
+        !task.is_finished(),
+        "stop abandoned the issued write before its terminal response"
+    );
+    release.notify_one();
+    let report = tokio::time::timeout(Duration::from_secs(5), task)
+        .await
+        .unwrap()
+        .unwrap()
+        .unwrap();
+    assert!(
+        report.complete,
+        "drained workload lost its complete accounting"
+    );
+    assert_eq!(report.stop.unwrap().reason, "stop_file");
+    assert_eq!(report.measured_issued, 1);
+    assert_eq!(report.measured_completed, 1);
+    assert_eq!(report.measured_successful, 0);
+    assert_eq!(report.metrics.logical_counts[2][1][7], 1);
+    assert_eq!(report.history.issued, 8);
+    assert_eq!(report.history.terminal, 8);
+    assert_eq!(
+        report.metrics.logical_counts[3][0][7] + report.metrics.logical_counts[3][0][9],
+        1
+    );
+    assert_eq!(report.metrics.logical_counts[3][0][0], 2);
+    assert_eq!(report.history.peak_in_flight, 1);
+    assert_eq!(
+        server.state.writes.load(Ordering::SeqCst),
+        3,
+        "drain retried an unknown write"
+    );
+    let drain = report.stages.drain.unwrap();
+    assert!(drain.end_ns - drain.start_ns >= 100_000_000);
+    let events: Vec<serde_json::Value> = std::fs::read_to_string(output.join("run/history.jsonl"))
+        .unwrap()
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(events.len(), 17);
+    assert_eq!(
+        events.iter().filter(|e| e["outcome"] == "unknown").count(),
+        2
+    );
+    server.stop().await;
+    std::fs::remove_dir_all(output).unwrap();
 }
 
 #[tokio::test]

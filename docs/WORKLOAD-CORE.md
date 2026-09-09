@@ -1,10 +1,11 @@
 # Bounded workload components
 
 The workload module supplies versioned configuration, deterministic data,
-bounded statistics and a complete point-history recorder for #40. The executable
-that composes setup, warmup, measurement, drain and verification, its CPU/memory
-report, real persistent-client Chaos Mesh runs and measured performance matrix
-remain outstanding. These component tests are not benchmark acceptance.
+bounded statistics and a complete point-history recorder for #40. The executable,
+build provenance, resource report, independent artifact checks and real MinIO
+acceptance are described in [WORKLOAD-RUNNER.md](WORKLOAD-RUNNER.md). Persistent
+client Chaos Mesh integration and the measured performance matrix remain
+outstanding. These component tests are not benchmark acceptance.
 
 ## Configuration version 1
 
@@ -30,8 +31,9 @@ and epoch 1/1 is required; the workload cannot silently repair split epochs.
 
 The byte reservation further restricts the effective correctness-operation count.
 Configuration must reserve initialization (absence check plus acknowledged write
-for each key/sentinel), warmup and final reads, leaving at least one measured
-operation. The recorder also checks actual invocation/terminal byte sizes and
+for each key/sentinel, plus at most peers-minus-one additional sentinel reads),
+warmup and up to one final read per configured peer for each key, leaving at least
+one measured operation. The recorder also checks actual invocation/terminal byte sizes and
 reserves completion space before an invocation is written. It stops before a
 new RPC if history space cannot accommodate it; it never samples or truncates
 while claiming a complete history.

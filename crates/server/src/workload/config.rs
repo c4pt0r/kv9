@@ -140,12 +140,13 @@ impl WorkloadConfig {
     }
 
     pub fn initialization_operations(&self) -> u64 {
-        // Establish absence and then acknowledge one write per key + sentinel.
-        2 * (self.keys as u64 + 1)
+        // Absence + acknowledged write per row, plus bounded initial read probes.
+        2 * (self.keys as u64 + 1) + self.client.peers.len() as u64 - 1
     }
 
     pub fn verification_operations(&self) -> u64 {
-        self.keys as u64 + 1
+        // Distinct final reads can rotate past unavailable configured endpoints.
+        (self.keys as u64 + 1) * self.client.peers.len() as u64
     }
 
     pub fn non_measured_operations(&self) -> u64 {
