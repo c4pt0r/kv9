@@ -108,8 +108,9 @@ Thus exhaustive unrestricted search failure establishes no legal execution of
 this model. A time, state or frontier limit yields **inconclusive** instead.
 
 The checker first tries omitting unknown effects, then a guided attempt that
-prefers unknown effects reducing the pending observation's mismatch (including
-range-selection lookahead), a second guided attempt permitting an early range
+prefers unknown effects reducing the pending observation's mismatch or that of
+an eligible overlapping confirmed read (including range-selection lookahead),
+a second guided attempt permitting an early range
 snapshot before a Put inserts a previously absent key, small unknown-effect
 budgets (1, 2, 4), and finally the unrestricted search. Restricted attempts are witness-finding heuristics only:
 their negative results never establish invalidity, and every positive result
@@ -131,7 +132,7 @@ Python execution to Lean's evaluator, and the concrete transition predicates to
 the public API remain source-level refinement obligations. These lemmas do not
 mechanically verify Python, the DFS completeness argument, raft-rs or the Rust
 binary. Removing eligibility or weakening the ordering premise must fail Lean
-for the expected reason. The complete inventory contains 12 lemmas with six
+for the expected reason. The complete inventory contains 24 lemmas with nine
 invalid proof controls.
 
 ## Executable acceptance
@@ -366,10 +367,53 @@ replay; restricted exhaustion still cannot establish invalidity. The existing
 certificate/interval proof boundary is preserved. This is not an additional
 consensus theorem or a completeness guarantee under finite search budgets.
 
-The complete Python gate has 40 tests and 16 isolated source mutations. One
+At `1c5c38f`, the Python gate has 40 tests and 16 isolated source mutations. One
 mutation disables the confirmed-range preference; another applies it to both
 guided attempts. Each must produce its named budget regression; baseline and
 restoration must pass. Existing
 unknown-write, partial-range, real-time, refusal, witness and unrestricted-search
 controls remain required. The original failed Chaos history is retained; a
 replayed certificate does not rewrite its original command result.
+
+## Overlapping observations and mixed snapshot order
+
+The sixth full matrix completed all 21 fault windows, but its unchanged
+4,264-operation CLI history exhausted the checker budget. Two different
+boundaries were reproduced:
+
+- A single confirmed range must select after one overlapping insertion and
+  before another. Neither a globally early nor globally late preference is
+  sufficient. The existing following-read hint now guides range selections as
+  well as competing point writes. Scan absence is usable only inside the scan
+  interval and its returned prefix: a full page cannot establish absence after
+  its last row, and a zero limit observes no keys. A subsequent possible write
+  still terminates the hint search.
+- An unknown write may need to take effect before an overlapping read, which
+  itself must precede the next confirmed mutation even if that mutation returns
+  first. Guiding unknown effects solely by the next response excludes this
+  witness. A three-operation example starts with `a=old`, times out `Put(b,new)`,
+  overlaps a scan observing `a=old,b=new` with `Put(a,replacement)`, and returns
+  the put first. The legal execution applies the unknown put, reads, then
+  overwrites `a`. The guided attempt now also considers mismatch improvement
+  for eligible confirmed reads that have already been invoked.
+
+The preservation argument has three parts. First, changing a hint only permutes
+the existing confirmed-operation candidates; neither hinted order is required.
+Second, the set of guidance targets contains the old target, so the mismatch
+rule only adds eligible unknown transitions to that restricted attempt. Every
+added transition still comes from the unchanged full transition relation and
+respects the existing invocation/outcome/progress filters. Third, both changes
+are unused by unrestricted search, and restricted exhaustion still cannot
+establish invalidity. Every positive result is replayed against the complete
+unchanged model and all response barriers. The certificate/interval lemmas and
+their stated Python refinement boundary therefore remain applicable. Neither
+this argument nor the hints promise completeness within a finite budget.
+
+The complete gate has 44 tests and 21 isolated source mutations. New controls
+require a range snapshot between two inserts, preserve scan interval/limit
+boundaries, observe scan absence, and permit an unknown write to explain an
+overlapping read. Each mutation must cause exactly its intended assertion
+failure, between green baseline and restoration runs. The earlier control
+forcing preparation in both attempts is replaced by one contradicting the
+read-derived preference, which now overrides those defaults. No unknown
+outcome, complete history, attempt count, state limit or time limit is changed.

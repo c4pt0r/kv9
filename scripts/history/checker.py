@@ -319,7 +319,7 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
 
     @lru_cache(maxsize=4096)
     def following_read(kid, key, after):
-        # A hint for overlapping confirmed point writes, never a constraint.
+        # A hint for overlapping confirmed writes/range selections, never a constraint.
         # Look beyond both responses, stopping at a subsequent possible write
         # to this key. Older unknown writes can still make the hint wrong;
         # all orders remain reachable and positive witnesses are replayed.
@@ -338,6 +338,13 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
                     for observed_key, value in op.result["rows"]:
                         if observed_key == key:
                             return True, value
+                    rows = op.result["rows"]
+                    # Absence is observed only inside the returned scan prefix.
+                    # A full page says nothing about keys after its last row.
+                    covers_key = (in_range(key, args) and args["limit"] > 0
+                                  and (len(rows) < args["limit"] or (rows and key < rows[-1][0])))
+                    if covers_key:
+                        return True, None
         return False, None
 
     stack = [(0, history.initial, (), None, 0)]
@@ -371,6 +378,13 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
                     and not (op.outcome == "unknown" and op.kind in {"get", "scan"})
                     and progress.get(i) != "done"]
         pending = history.operations[wanted]
+        # An unresolved write may need to explain an overlapping read before
+        # the next confirmed mutation makes that read impossible. Its response
+        # can occur later than the mutation's response. All these targets have
+        # already been invoked; unknown/refused reads supply no observations.
+        targets = [wanted] + [i for i in eligible if i != wanted
+                              and history.operations[i].outcome == "ok"
+                              and history.operations[i].kind in {"get", "scan"}]
         observed, value = False, None
         if guided_unknown and pending.kind in {"put", "delete"}:
             competing = [history.operations[i] for i in eligible
@@ -404,11 +418,18 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
             matches_read = competing_write and observed and op.args.get("value") == value
             # A confirmed range can capture its keys before an overlapping
             # insertion, even when the insert returns first. Try that snapshot
-            # before searching unrelated old unknown effects. Reserve this
-            # preference for the range-preparation attempt; the first guided
-            # attempt prefers the insertion. Both orders remain available in
-            # each search, but sharing one preference can exhaust both budgets.
-            prepare_confirmed_range = (guided_unknown and prepare_ranges and op.outcome == "ok"
+            # before searching unrelated old unknown effects. A subsequent
+            # read can instead suggest capturing the insertion. Without that
+            # hint the two existing attempts retain their different defaults.
+            # Both orders remain available, including when an old unknown
+            # write makes the hint misleading.
+            range_preference = prepare_ranges
+            if guided_unknown and op.outcome == "ok" and op.kind == "delete_range" and pending.kind == "put":
+                hint, observed_value = following_read(pending.args["keyspace"], pending.args["key"],
+                                                      max(op.response, pending.response))
+                if hint:
+                    range_preference = observed_value == pending.args["value"]
+            prepare_confirmed_range = (guided_unknown and range_preference and op.outcome == "ok"
                                        and op.kind == "delete_range" and progress.get(i) is None
                                        and pending.kind == "put"
                                        and op.args["keyspace"] == pending.args["keyspace"]
@@ -442,7 +463,9 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
                                          and history.operations[wanted].args['keyspace'] == op.args['keyspace']
                                          and in_range(history.operations[wanted].args['key'], op.args)
                                          and history.operations[wanted].args['key'] not in next_progress[0])
-                    if not allow_preparation and observation_distance(history, wanted, lookahead) >= observation_distance(history, wanted, state):
+                    if not allow_preparation and not any(
+                            observation_distance(history, target, lookahead) < observation_distance(history, target, state)
+                            for target in targets):
                         continue
                 if unknown_limit is not None and unknown_effects + additional > unknown_limit:
                     continue
