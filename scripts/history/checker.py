@@ -402,7 +402,18 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
             # handles either invocation/response order without trusting server
             # positions. The opposite ordering remains in the same search.
             matches_read = competing_write and observed and op.args.get("value") == value
-            return (not prefer_observed, not competing_write and i != wanted, op.outcome == "unknown",
+            # A confirmed range can capture its keys before an overlapping
+            # insertion, even when the insert returns first. Try that snapshot
+            # before searching unrelated old unknown effects. This only ranks
+            # candidates: the opposite snapshot order remains available.
+            prepare_confirmed_range = (guided_unknown and op.outcome == "ok"
+                                       and op.kind == "delete_range" and progress.get(i) is None
+                                       and pending.kind == "put"
+                                       and op.args["keyspace"] == pending.args["keyspace"]
+                                       and in_range(pending.args["key"], op.args)
+                                       and (pending.args["keyspace"], pending.args["key"]) not in dict(state[0]))
+            return (not prefer_observed, not prepare_confirmed_range,
+                    not competing_write and i != wanted, op.outcome == "unknown",
                     matches_read, -i if op.outcome == "unknown" else i)
         order = sorted(eligible, key=priority)
         children = []

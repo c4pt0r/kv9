@@ -42,6 +42,10 @@ CONTROLS = [
 ]
 
 CONTROLS = [(label, 'checker.py', old, new, test) for label, old, new, test in CONTROLS] + [
+    ('confirmed-range-snapshot-deferred', 'checker.py',
+     'prepare_confirmed_range = (guided_unknown and op.outcome == "ok"',
+     'prepare_confirmed_range = (False and op.outcome == "ok"',
+     'test_confirmed_range_snapshot_precedes_overlapping_new_key'),
     ('following-read-write-order-ignored', 'checker.py',
      'matches_read = competing_write and observed', 'matches_read = False and observed',
      'test_following_read_orders_either_concurrent_write_first'),
@@ -95,7 +99,7 @@ def main():
             output = process.stdout+process.stderr
             (args.output/(label+'.log')).write_text(output)
             count = re.findall(r'^Ran (\d+) tests? in ', output, re.M)
-            demand(count == [str(1 if test else 38)], f'{label}: wrong selected test count: {count}')
+            demand(count == [str(1 if test else 40)], f'{label}: wrong selected test count: {count}')
             if red:
                 demand(process.returncode == 1 and 'FAILED (failures=1)' in output and 'AssertionError:' in output
                        and f'FAIL: {test} ' in output and 'ERROR:' not in output, f'{label}: no attributable assertion failure')
@@ -126,7 +130,7 @@ def main():
         run('restored-suite')
         unchanged(originals)
     demand(all((source/name).read_bytes() == data for name, data in originals.items()), 'source changed during control run')
-    print(f'PASS: 38 history tests and {len(CONTROLS)} isolated source mutations checked', flush=True)
+    print(f'PASS: 40 history tests and {len(CONTROLS)} isolated source mutations checked', flush=True)
 
 
 if __name__ == '__main__':

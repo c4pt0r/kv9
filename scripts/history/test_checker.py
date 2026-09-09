@@ -237,6 +237,38 @@ class CheckerControls(unittest.TestCase):
         self.verdict(history(call(0, 'put', key='61', value='31'), returned(0, 'refused', proof='precommit'),
                              call(1, 'get', key='61'), returned(1, value='31')), 'invalid')
 
+    def test_confirmed_range_snapshot_precedes_overlapping_new_key(self):
+        # A range captures a, then b is inserted before the range replies.
+        # A separate empty-range receipt needs one old unknown deletion of c.
+        # Choosing the wrong snapshot first needlessly explores every such
+        # deletion before returning to the earlier overlapping insertion.
+        events = []
+        for i in range(64):
+            events.extend([call(i, 'delete', key='63'), returned(i, 'unknown')])
+        events.extend([
+            call(64, 'delete_range', start='61', end='63'),
+            call(65, 'put', key='62', value='32'), returned(65),
+            returned(64, committed_chunks=1),
+            call(66, 'delete_range', start='63', end='64'), returned(66, committed_chunks=0),
+            call(67, 'get', key='62'), returned(67, value='32'),
+            call(68, 'get', key='61'), returned(68, value=None),
+        ])
+        h = history(*events, initial=header(kv=[('61', '31'), ('63', '33')]))
+        result = search(h, max_states=100, guided_unknown=True)
+        self.assertEqual(result['verdict'], 'valid',
+                         'late confirmed snapshot hid a small known witness')
+        self.assertTrue(verify_witness(h, result['witness']))
+
+    def test_confirmed_range_can_also_capture_the_overlapping_insert(self):
+        h = history(call(0, 'delete_range', start='61', end='63'),
+                    call(1, 'put', key='62', value='32'), returned(1),
+                    returned(0, committed_chunks=1),
+                    call(2, 'get', key='62'), returned(2, value=None),
+                    initial=header(kv=[('61', '31')]))
+        result = search(h, max_states=100, guided_unknown=True)
+        self.assertEqual(result['verdict'], 'valid')
+        self.assertTrue(verify_witness(h, result['witness']))
+
     def test_completed_write_cannot_reappear_after_delete(self):
         self.verdict(history(call(0, 'put', key='61', value='31'), returned(0),
                              call(1, 'delete', key='61'), returned(1),
