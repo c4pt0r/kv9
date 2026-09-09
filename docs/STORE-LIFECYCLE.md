@@ -9,8 +9,10 @@ owner or opening receive authority. The CLI requires `root-create
 and its separate proof are documented in [ROOT-FORMATION.md](ROOT-FORMATION.md).
 All three initial voters passed actual missing-log and independently prepared
 replacement-PVC Chaos cells at `371163b`; complete histories and retained
-provenance are recorded in [PERSISTENT-CHAOS.md](PERSISTENT-CHAOS.md). Broader #42
-acceptance, including authorized endpoint migration under #47, remains open.
+provenance are recorded in [PERSISTENT-CHAOS.md](PERSISTENT-CHAOS.md). The later
+21-window matrix includes accepted production endpoint migration under #47.
+[REPLACEMENT-ACCEPTANCE.md](REPLACEMENT-ACCEPTANCE.md) reconciles all five original
+#42 acceptance criteria and the limits retained by the component proofs.
 
 ## Contract
 

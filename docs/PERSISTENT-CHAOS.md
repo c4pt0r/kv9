@@ -1,5 +1,12 @@
 # Persistent workload under Chaos Mesh
 
+The latest [accepted 21-window matrix](ENDPOINT-RECOVERY.md#accepted-local-increment)
+adds retained-PVC production endpoint migration and independently checks all
+4,024 CLI and 1,194 persistent-client operations. The [#42 acceptance matrix](REPLACEMENT-ACCEPTANCE.md)
+connects receive authority, initial-store recovery, positive replacement refusal
+and endpoint migration. Earlier accepted matrices and failed attempts remain
+recorded below.
+
 The complete 19-window matrix passed locally at
 `371163bb2b77ad3ed24f3cffb826c6eb6a7ff8ef` on 2026-09-09. Independent audits
 accepted all 4,133 CLI operations and 1,151 persistent-client operations,
@@ -22,8 +29,8 @@ controls. The revised checker independently replays the complete previously
 inconclusive 4,063-operation hosted history within the same 60-second budget;
 its original hosted result remains failed. See [history checking](HISTORY-CHECKING.md).
 These are local single-host results, not host-loss or throughput acceptance.
-Hosted results are tracked in #9. Broader #42 acceptance and authorized endpoint
-migration [#47](https://github.com/c4pt0r/kv9/issues/47) remain open.
+Hosted results for this historical increment are tracked in #9. Later local
+endpoint-migration and #42 acceptance are linked above; daily hosted CI is disabled.
 
 The 16-window baseline passed locally at
 `8ed7dec7dc35f10fbecebe20f917e923f8d08c13` on 2026-09-09. Its independent

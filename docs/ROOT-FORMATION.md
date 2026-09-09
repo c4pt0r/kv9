@@ -20,8 +20,10 @@ obligations, including their isolated controls. Archive:
 `59bdd6a1265d1895fe5471f4b198c358a16a1d116ad5c4b91d12310b93bf512c`.
 The overall workflow remains failed on a separate Chaos fixture issue. Combined
 with the real-runtime cuts, actual preformation Chaos and the successful
-nine-job CI at `5335e47`, this completes #44's acceptance. It does not establish
-completion of #42 or multi-host availability.
+nine-job CI at `5335e47`, this completes #44's acceptance. The later
+[#42 acceptance record](REPLACEMENT-ACCEPTANCE.md) combines formation with receive,
+replacement and endpoint-migration evidence. Neither establishes multi-host
+availability.
 
 ## Formation protocol
 

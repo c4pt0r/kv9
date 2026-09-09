@@ -4,8 +4,7 @@ Tracking: [#47](https://github.com/c4pt0r/kv9/issues/47), under the
 [#42 store replacement boundary](https://github.com/c4pt0r/kv9/issues/42).
 The [transport ownership foundation](RAFT-ROUTING.md) moves an accepted route
 without leaking workers or mixing connection generations. This document covers
-the catalog transition that must authorize that route and its remaining runtime
-integration. [Endpoint writer ordering](ENDPOINT-WRITERS.md) extends this foundation
+the catalog transition that authorizes that route. [Endpoint writer ordering](ENDPOINT-WRITERS.md) extends this foundation
 with atomic admission revocation and serialized runtime route installation.
 The public API, CLI, durable recovery gate and actual migration Chaos extension
 are described in [Endpoint recovery](ENDPOINT-RECOVERY.md). Historical foundation
@@ -117,7 +116,8 @@ This evidence covers the catalog foundation; it is not migration E2E acceptance.
 ## Integration obligations carried into runtime acceptance
 
 These obligations motivated the current [runtime implementation](ENDPOINT-RECOVERY.md).
-The new revision's complete local acceptance must satisfy them before #47 closes.
+All six are covered by its later accepted local increment. The list preserves
+the foundation's original requirements and the distinction from its earlier tests.
 
 1. Expose authenticated current-route read and conditional-update RPC/CLI calls
    with bounded admission, typed conflicts and unknown outcomes, and exact
@@ -153,5 +153,7 @@ The new revision's complete local acceptance must satisfy them before #47 closes
    histories, source/build/fault provenance and independent corrupted-evidence
    controls are required. Independently prepared replacement PVCs stay refused.
 
-The existing 19-window Chaos matrix and local socket tests do not replace this
-new migration cell. #47 and the broader #42/P0 acceptance remain open.
+The original 19-window Chaos matrix and local socket tests did not replace the
+new migration cell. The later [21-window matrix](ENDPOINT-RECOVERY.md#accepted-local-increment)
+supplies that evidence. [#42's acceptance record](REPLACEMENT-ACCEPTANCE.md)
+reconciles the combined receive/replacement scope; P0 remains open.
