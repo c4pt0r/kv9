@@ -124,7 +124,7 @@ jobs:
       # made protoc fail on this workflow's first real run. Making the choice independent of
       # the image costs one apt package.
       - name: Install protoc, cmake and a C toolchain
-        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler cmake build-essential
+        run: sudo bash scripts/install-ci-deps.sh
 
       - name: Build
         run: cargo build --workspace --all-targets
@@ -527,7 +527,7 @@ jobs:
       # This job compiles the engine itself, so it installs the toolchain rather than
       # inheriting the runner image. See the pr-gate step for why cmake is here at all.
       - name: Install protoc, cmake and a C toolchain
-        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler cmake build-essential
+        run: sudo bash scripts/install-ci-deps.sh
 
       # Generated per run, never stored. There is no credential in this repository, in a
       # secret, or in a fixture -- so there is nothing to leak, rotate, or accidentally
@@ -859,7 +859,7 @@ jobs:
       # because this job compiles the workspace itself and must not inherit whatever the
       # runner image happens to carry.
       - name: Install protoc, cmake and a C toolchain
-        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler cmake build-essential
+        run: sudo bash scripts/install-ci-deps.sh
 
       - name: Build binary
         run: cargo build --workspace

@@ -230,7 +230,7 @@ jobs:
       - name: Select the run's isolated kubeconfig
         run: echo "KUBECONFIG=$RUNNER_TEMP/kv9-chaos.kubeconfig" >> "$GITHUB_ENV"
       - name: Install build dependencies
-        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler cmake build-essential
+        run: sudo bash scripts/install-ci-deps.sh
       - name: Install pinned Kind and Helm
         run: |
           set -euo pipefail
