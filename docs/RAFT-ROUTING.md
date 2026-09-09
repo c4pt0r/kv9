@@ -156,7 +156,23 @@ independent audits:
 This is local acceptance of route ownership and the existing fault matrix;
 hosted acceptance of this revision and the dedicated migration cell are separate.
 
+The published follow-up revision `18447c5d6c8d000bd2a78a581866306b1264b335`
+subsequently passed the entire hosted
+[CI 34381180498](https://github.com/c4pt0r/kv9/actions/runs/34381180498) and
+[Correctness 34381180530](https://github.com/c4pt0r/kv9/actions/runs/34381180530)
+workflows. Independent audits of its downloaded Chaos artifact accepted all
+19 existing windows and complete witnesses for 5,511 CLI operations and 2,867
+persistent operations, with clean exact-revision provenance. Archive:
+`target/correctness-evidence/2026-09-09-18447c5-hosted-chaos.tar.gz`,
+36,258,659 bytes, SHA-256
+`bb542b8bbcd06e513d8e76482198e0eed745130ff75fb814ca932abba862d91e`.
+The original failed diagnostic remains retained. This confirms the published
+ownership repair and existing matrix; it does not add the missing migration cell.
+
 ## Remaining production migration path
+
+The [versioned catalog transition](ENDPOINT-MIGRATION.md) defines the conditional
+update, duplicate confirmation and remaining integration/rollout obligations.
 
 The public membership surface currently exposes admission and promotion, while
 renewing a consumed admission requires an internal revocation transaction. The

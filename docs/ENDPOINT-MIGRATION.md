@@ -97,6 +97,18 @@ python3 scripts/check-endpoint-protocol.py --jar /path/to/tla2tools.jar \
   --tlapm /path/to/tlapm --output /tmp/kv9-endpoint-protocol-new
 ```
 
+Clean revision `57e3ae69fae663fdd9cc85458fc50468a99b5c9c` passed all 65 metadata
+tests, including the eight endpoint tests, and all six source controls. The
+complete protocol gate and independent source-bound audit accepted 32 TLC cases,
+31 proof/audit cases and 21 positive fresh-cache proof runs with the exact
+11-declaration / 80-obligation inventory. Clippy with warnings denied,
+formatting, Python syntax and workflow validation passed. Archive:
+`target/correctness-evidence/2026-09-09-57e3ae6-endpoint-cas.tar.gz`,
+1,257,358 bytes, SHA-256
+`8cc81134f6898be0a6b8fa0fe094f2bb2272446131421e7af8b86f6de1acc93f`.
+It retains the exact source, all gate artifacts, controls and independent audit.
+This evidence covers the catalog foundation; it is not migration E2E acceptance.
+
 ## Remaining integration and acceptance
 
 1. Expose authenticated current-route read and conditional-update RPC/CLI calls
