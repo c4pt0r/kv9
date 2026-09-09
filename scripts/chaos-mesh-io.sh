@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Sourced by chaos-mesh-e2e.sh, after its Pod/Network matrix. All resources
 # inherit that runner's isolated Kind namespace and evidence directory.
+source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-probes.sh"
 
 io_process_stopped() {
   k exec -n "$namespace" "$io_pod" -- /bin/bash -c \
@@ -63,14 +64,6 @@ YAML
   wait_injected iochaos "$name"
 }
 
-io_probe() {
-  local label="$1" excluded="$2"; shift 2
-  KV9_CLIENT_TOKEN="$client_token" python3 scripts/chaos_client.py \
-    --kubectl "$kubectl_bin" --kubeconfig "$kubeconfig" --namespace "$namespace" \
-    --addresses "1=$(service_ip 1):20160,2=$(service_ip 2):20160,3=$(service_ip 3):20160" \
-    --exclude "$excluded" --evidence "$artifact/$label-attempts.jsonl" -- "$@"
-}
-
 io_metrics_recovered() {
   local cell="$1"
   k exec -n "$namespace" "$io_pod" -- cat /data/metrics.json >"$artifact/$cell-recovered-metrics.json"
@@ -121,7 +114,7 @@ PY
       echo "Stage: IOChaos write failure for voter $victim errno $errno"
       io_leader="$(wait_agreed_leader "pre-fault agreement" 30)"
       key_hex="696f2d3${victim}2d$(printf '%s' "$errno" | od -An -tx1 | tr -d ' \n')"
-      io_probe "$label-before-put" 0 raw-put --keyspace "$keyspace" \
+      chaos_probe "$label-before-put" 0 raw-put --keyspace "$keyspace" \
         --key-hex "$key_hex" --value-hex 6265666f7265 >"$artifact/$label-before-put.out"
       io_stop_process
       io_leader="$(wait_majority_leader "surviving majority before restart with I/O fault" 25 "$victim")"
@@ -158,13 +151,13 @@ PY
       }
       record_fault iochaos raft-io-fault
       io_leader="$(wait_majority_leader "surviving majority after I/O failure" 25 "$victim")"
-      io_probe "$label-majority-put" "$victim" raw-put --keyspace "$keyspace" \
+      chaos_probe "$label-majority-put" "$victim" raw-put --keyspace "$keyspace" \
         --key-hex "$key_hex" --value-hex 6166746572 >"$artifact/$label-majority-put.out"
       io_required_index="$(awk -F= '$1 == "applied_index" {print $2}' "$artifact/$label-majority-put.out")"
       [[ "$io_required_index" =~ ^[0-9]+$ ]] || {
         echo 'FAIL: majority write returned no applied receipt' >&2; return 1;
       }
-      io_probe "$label-majority-get" "$victim" raw-get --keyspace "$keyspace" \
+      chaos_probe "$label-majority-get" "$victim" raw-get --keyspace "$keyspace" \
         --key-hex "$key_hex" >"$artifact/$label-majority-get.out"
       grep -Fxq value_hex=6166746572 "$artifact/$label-majority-get.out"
       history_set_phase healing
@@ -173,7 +166,7 @@ PY
       io_leader="$(wait_agreed_leader "voter catches up after I/O healing" 40)"
       wait_until "recovered voter applies the majority's acknowledged prefix" 30 io_caught_up
       k exec -n "$namespace" "$io_pod" -- cat /data/status >"$artifact/$label-recovered-status.txt"
-      io_probe "$label-recovered-get" 0 raw-get --keyspace "$keyspace" \
+      chaos_probe "$label-recovered-get" 0 raw-get --keyspace "$keyspace" \
         --key-hex "$key_hex" >"$artifact/$label-recovered-get.out"
       grep -Fxq value_hex=6166746572 "$artifact/$label-recovered-get.out"
       wait_until "fresh metrics include recovered durability" 10 io_metrics_recovered "$label"

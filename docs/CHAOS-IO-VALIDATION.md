@@ -57,6 +57,19 @@ Four deterministic controls check refusal routing, budget consumption, terminal
 unknown timeouts and rejection of ambiguous/mixed results. Fault effect, exit,
 receipt and recovered-prefix requirements remain unchanged.
 
+The same helper now routes positive Pod/Network/recovery point probes. The hosted
+ce508ef run failed after both histories made progress during voter 2's Pod
+failure: its extra Put used the earlier observed leader 3, which returned an
+exclusive `NotLeader` with leader 1. The retained scene confirms leader 1 and
+follower 3 in term 16, with the selected voter 2 still failed. A leader
+observation does not reserve leadership for a later RPC. Shared routing now
+excludes the failed/isolated voter for majority probes and retains every attempt.
+The direct requests to the isolated old leader remain direct fencing probes;
+their required refusal is never routed away. Unknown writes are still terminal.
+The failed hosted run is retained at
+[Correctness 34339349174](https://github.com/c4pt0r/kv9/actions/runs/34339349174);
+it is not being relabeled as passing acceptance.
+
 ## Backend limits and observed controls
 
 The pinned [Chaos Mesh IOChaos API](https://chaos-mesh.org/docs/simulate-io-chaos-on-kubernetes/)
