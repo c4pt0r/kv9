@@ -1034,6 +1034,8 @@ dependencies = [
  "kv9-region",
  "kv9-txn",
  "prost",
+ "protobuf",
+ "raft",
  "serde",
  "serde_json",
  "sha2",

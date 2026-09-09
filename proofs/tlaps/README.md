@@ -127,3 +127,11 @@ are not yet composed into a machine-checked refinement of Rust. Quorum/log
 matching, term/vote identity in Ready, full catalog invariants, retry-loop
 refinement and cross-host availability remain separate work. Actual Chaos Mesh
 history testing continues alongside the proof jobs.
+
+## Dynamic replica receive authority
+
+The separately inventoried [receive-authority family](../../docs/RAFT-RECEIVE-AUTHORITY.md)
+imports its own TLA+ protocol and checks 13 declarations / 117 obligations,
+including conditional progress after registration. Its counts are separate from
+the metadata/Ready inventory above and from the client retry family. Run
+`scripts/check-receive-protocol.py` to check its models, proofs and controls.

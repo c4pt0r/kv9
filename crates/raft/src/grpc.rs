@@ -147,6 +147,12 @@ const STREAM_PROGRESS_BUDGET: Duration = Duration::from_secs(3);
 pub trait GrpcDiscoveryState: Send + Sync + 'static {
     fn answer(&self) -> (NodeId, bool, u64);
 
+    /// Local authority to participate as this replica incarnation. Discovery
+    /// and registration remain available while this is false. The runtime
+    /// must publish authority before starting the Raft owner, and a fresh
+    /// process must not inherit a previous process's volatile permission.
+    fn raft_receive_allowed(&self) -> bool;
+
     /// Pre-provisioned root identity. Unlike the old voter fingerprint this
     /// remains authoritative before and after catalog initialization.
     fn root_identity(&self) -> RootWireIdentity {
@@ -217,6 +223,8 @@ pub enum RegistrationError {
     /// generic refusal so the wire can preserve the reason without exposing
     /// or parsing credential-bearing diagnostic text.
     InvalidTicket,
+    /// The numeric replica id is already bound to a different durable store.
+    InvalidIncarnation,
     /// Any other refusal (admission missing/expired/wrong cluster, …). Same
     /// gRPC code, NO marker — machine-distinguishable from NotLeader.
     Failed(Error),
@@ -242,6 +250,7 @@ pub const LEADER_ADDR_KEY: &str = "kv9-leader-addr";
 pub const REJECTION_REASON_KEY: &str = "kv9-rejection-reason";
 pub const ROOT_IDENTITY_MISMATCH_REASON: &str = "root-identity-mismatch";
 pub const INVALID_JOIN_TICKET_REASON: &str = "invalid-join-ticket";
+pub const INVALID_STORE_INCARNATION_REASON: &str = "invalid-store-incarnation";
 
 fn invalid_join_ticket_status() -> Status {
     let mut status = Status::failed_precondition("invalid join ticket");
@@ -337,6 +346,11 @@ impl Kv9Raft for RaftGrpcService {
             if batch.root_digest.as_slice() != self.discovery.root_identity().root_digest.as_bytes()
             {
                 return Err(Status::failed_precondition("raft root identity mismatch"));
+            }
+            if !self.discovery.raft_receive_allowed() {
+                return Err(Status::failed_precondition(
+                    "local replica has no Raft receive authority",
+                ));
             }
             for env in batch.msgs {
                 if env.from_node != authenticated.0 {
@@ -511,6 +525,16 @@ impl Kv9Raft for RaftGrpcService {
             Err(RegistrationError::InvalidTicket) => {
                 return Err(invalid_join_ticket_status());
             }
+            Err(RegistrationError::InvalidIncarnation) => {
+                let mut status = Status::failed_precondition(
+                    "store incarnation does not match the registered replica",
+                );
+                status.metadata_mut().insert(
+                    REJECTION_REASON_KEY,
+                    INVALID_STORE_INCARNATION_REASON.parse().expect("ascii"),
+                );
+                return Err(status);
+            }
             // Ordinary refusal: same code, NO marker — never mistakable for
             // a redirect.
             Err(RegistrationError::Failed(e)) => {
@@ -649,6 +673,7 @@ pub fn grpc_discover(
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RegisterError {
     InvalidTicket,
+    InvalidIncarnation,
     Connect(String),
     Timeout,
     Failed(String),
@@ -658,6 +683,9 @@ impl std::fmt::Display for RegisterError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::InvalidTicket => f.write_str("registration rejected: invalid join ticket"),
+            Self::InvalidIncarnation => {
+                f.write_str("registration rejected: invalid store incarnation")
+            }
             Self::Connect(detail) => write!(f, "registration connect failed: {detail}"),
             Self::Timeout => f.write_str("registration timeout"),
             Self::Failed(detail) => write!(f, "registration failed: {detail}"),
@@ -788,6 +816,14 @@ pub fn grpc_register(
                             == Some(INVALID_JOIN_TICKET_REASON)
                     {
                         Err(RegisterError::InvalidTicket)
+                    } else if status.code() == tonic::Code::FailedPrecondition
+                        && status
+                            .metadata()
+                            .get(REJECTION_REASON_KEY)
+                            .and_then(|value| value.to_str().ok())
+                            == Some(INVALID_STORE_INCARNATION_REASON)
+                    {
+                        Err(RegisterError::InvalidIncarnation)
                     } else {
                         Err(RegisterError::Failed(status.to_string()))
                     }
@@ -883,6 +919,16 @@ impl GrpcTransport {
             .lock()
             .expect("addrs poisoned")
             .insert(id.0, addr);
+    }
+
+    /// Inspect the configured route without establishing a connection.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn peer_address_for_tests(&self, id: NodeId) -> Option<SocketAddr> {
+        self.addrs
+            .lock()
+            .expect("addrs poisoned")
+            .get(&id.0)
+            .copied()
     }
 
     /// Total peer-connect attempts so far (monotonic). Diagnostic surface;
@@ -1092,6 +1138,9 @@ mod tests {
 
     struct StaticDiscovery(NodeId, bool, u64);
     impl GrpcDiscoveryState for StaticDiscovery {
+        fn raft_receive_allowed(&self) -> bool {
+            true
+        }
         fn answer(&self) -> (NodeId, bool, u64) {
             (self.0, self.1, self.2)
         }
@@ -1101,6 +1150,9 @@ mod tests {
     /// positive half).
     struct NamedDiscovery(NodeId, ClusterId);
     impl GrpcDiscoveryState for NamedDiscovery {
+        fn raft_receive_allowed(&self) -> bool {
+            true
+        }
         fn answer(&self) -> (NodeId, bool, u64) {
             (self.0, true, 0)
         }
@@ -1113,6 +1165,9 @@ mod tests {
     /// must refuse to publish this answer.
     struct NamelessInitialized(NodeId);
     impl GrpcDiscoveryState for NamelessInitialized {
+        fn raft_receive_allowed(&self) -> bool {
+            true
+        }
         fn answer(&self) -> (NodeId, bool, u64) {
             (self.0, true, 0)
         }
