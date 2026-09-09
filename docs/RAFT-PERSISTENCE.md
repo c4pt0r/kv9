@@ -41,9 +41,11 @@ operations; reopening must replay and repair the log. A failed sync has an
 unknown persistence outcome and never authorizes a response. Records exceeding
 the replay format's maximum length are refused.
 
-Raft integration retains the existing persist-before-send order in
-`RaftPeer::process_ready`: append entries, persist HardState, then publish outgoing
-messages. Persistence errors now return `Error::Raft` without unwinding through
+Raft integration retains the persist-before-send order in `RaftPeer::process_ready`:
+append entries, persist the original HardState, call `advance_append`, persist
+any later LightReady commit in a complete HardState, then publish outgoing messages
+and committed work. The late commit repair and its proof are documented in
+[READY-PUBLICATION.md](READY-PUBLICATION.md). Persistence errors return `Error::Raft` without unwinding through
 mutex guards. The peer records its first failure, disables ticking and inbound
 processing, clears its outgoing/apply/read queues, and refuses campaigns,
 proposals, read barriers and configuration application until reopen. The driver

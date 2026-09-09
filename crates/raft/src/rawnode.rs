@@ -388,8 +388,8 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         self.lock().step_errors
     }
 
-    /// Drain this peer's `Ready`: **persist entries + hardstate first**, then queue
-    /// messages, then stash committed entries for `take_ready`, then advance.
+    /// Persist `Ready` and any commit advance from `LightReady` before publishing
+    /// messages, committed entries or read states. Application is reported later.
     fn process_ready(&self) -> Result<()> {
         let mut g = self.lock();
         g.check_fatal()?;
@@ -415,9 +415,9 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
                 return Err(g.fail_storage("hardstate", cause));
             }
         }
-        // 2. Only now hand messages to the transport.
+        // 2. Collect messages locally; publish only after LightReady persistence.
         msgs.extend(ready.take_persisted_messages());
-        // 3. Committed entries → the take_ready queue, typed by raft entry kind
+        // 3. Collect committed entries for take_ready, typed by raft entry kind
         //    so the apply loop can route them (conf changes must reach
         //    `apply_conf_change`, never `Command::decode`). No-op barriers are
         //    queued too: the driver needs their indexes to advance raft's
@@ -433,6 +433,16 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         // change in before the first is truly applied. The driver reports real
         // progress via [`RaftPeer::applied_to`].
         let mut light = g.raw.advance_append(ready);
+        // Local persistence may complete a quorum and advance commitment here.
+        // raft-rs does not require this watermark to be durable, but kv9 checks
+        // recovered engine positions against the durable HardState commit.
+        // Persist it before exposing any work from this Ready cycle.
+        if light.commit_index().is_some() {
+            let hs = g.raw.raft.hard_state();
+            if let Err(cause) = g.raw.store().set_hardstate(&hs) {
+                return Err(g.fail_storage("light-ready hardstate", cause));
+            }
+        }
         msgs.extend(light.take_messages());
         for e in light.take_committed_entries() {
             committed.push(classify_entry(e));
@@ -984,6 +994,24 @@ mod tests {
             drive(cluster, sms);
         }
         panic!("not reached in 500 rounds: {what}");
+    }
+
+    #[test]
+    fn light_ready_commit_is_reflected_in_storage_before_delivery() {
+        let storage = MemStorage::new_with_conf_state(ConfState::from((vec![N1.0], vec![])));
+        let peer = RaftPeer::with_storage(N1, R, storage.clone()).unwrap();
+        peer.campaign().unwrap();
+        peer.pump().unwrap();
+        let committed = peer.raft_committed().0;
+        assert!(committed > 0);
+        assert_eq!(
+            raft::Storage::initial_state(&storage)
+                .unwrap()
+                .hard_state
+                .commit,
+            committed,
+            "delivered committed entries must have a recoverable commit watermark"
+        );
     }
 
     /// Real consensus single-node: campaign → propose → committed entry drained via

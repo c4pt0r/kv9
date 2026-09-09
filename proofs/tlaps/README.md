@@ -1,8 +1,10 @@
-# Parameterized metadata proofs
+# Parameterized protocol proofs
 
-These proofs import the same `MetadataPlanning.tla` used by TLC. They do not
-translate its transitions into a second state machine. The inventory contains
-41 theorem declarations and 459 checked proof obligations across nine modules.
+These proofs import the same `MetadataPlanning.tla` and `ReadyPublication.tla`
+used by TLC. They do not translate their transitions into second state machines.
+The inventory contains 47 theorem declarations and 534 checked proof obligations
+across ten modules and two separately specified protocol families. The metadata
+family contributes 41 declarations/459 obligations; Ready contributes six/75.
 
 | Module | Theorems | Obligations | Result |
 |---|---:|---:|---|
@@ -15,6 +17,7 @@ translate its transitions into a second state machine. The inventory contains
 | `MetadataFreshness` | 8 | 69 | Equality of the local and retained write cuts; `Spec => []FreshPlans` |
 | `MetadataAllocation` | 3 | 35 | Checked natural induction, bounded maximum existence and the actual `LastWrite` choice |
 | `MetadataUniqueness` | 7 | 73 | Positive ordered write IDs, unique names and `Spec => [](LogSafety /\ CatalogSafety)` |
+| `ReadyPublicationProof` | 6 | 75 | Durable commit coverage of delivered/applied/acknowledged indices, failure publication exclusion and fail-stop action safety |
 
 `ReceiptAlways`, `FreshAlways` and `CatalogAlways` apply to arbitrary legal
 coordinator/request sets and term budgets, and to all executions of the model,
@@ -52,19 +55,27 @@ checks every imported project proof module before publishing an accepted result;
 an imported theorem declaration alone cannot discharge its proof obligation.
 
 The semantic audit checks module dependencies, the exact theorem inventory,
-proof holes, nested modules/instances and module-level assumptions. The model's
-one existing input-assumption block is explicitly fingerprinted. Added axioms or
+proof holes, nested modules/instances and module-level assumptions. Both root
+modules must resolve the complete inventory; shared dependencies must have
+identical audit records. Each model's input-assumption block is explicitly
+fingerprinted. Ready's only such assumption is a positive natural index bound;
+its storage/consensus assumptions are embodied in the transition definitions and
+documented refinement contract. Added axioms or
 assumptions are rejected even if indented; they are not detected by a line-based
 keyword convention. Standard module sources are also fingerprinted. SANY enforces
 TLA+ syntax and semantic levels separately from TLAPS; in particular a temporal
 action property must use the canonical `[][A]_vars` form.
 
-Twelve isolated controls each require a passing baseline, a specific rejection and
+Fifteen isolated controls each require a passing baseline, a specific rejection and
 a passing restored source: index-only acknowledgement, acknowledgement before
 application, replacement of a committed entry, an omitted proof, a custom axiom,
 an empty inventory, an invalid temporal action property, a missing planner mutex,
 a ReadIndex-only wait, a missing submission term fence, a non-advancing allocator
-and a root module that omits part of the inventory. Three output controls
+and a root module that omits part of the inventory. Three Ready controls remove
+the late commit sync, publish work on a persistence error, and allow application
+after fatal failure. They mutate the same model text used by the corresponding
+TLC controls. The full runner checks 46 source trees, including 31 passing trees.
+Three output controls
 reject exit-zero runs with empty output, zero obligations or a missing summary.
 Parser/tool errors are not accepted as protocol counterexamples. Every mutation
 owns exactly one file, and restoration is checked by source hashes.
@@ -109,8 +120,10 @@ barrier preservation. These are specific failed proof goals, not a claim that
 failure to prove an arbitrary statement is itself a counterexample; the TLC
 controls retain concrete protocol traces separately.
 
-The unchanged implementation mapping and open obligations are recorded in
-[METADATA-PLANNING.md](../../docs/METADATA-PLANNING.md). Quorum/log matching,
-Ready/persistence refinement, full catalog invariants, retry-loop refinement and
-cross-host availability remain separate work. Actual Chaos Mesh history testing
-continues alongside the proof jobs.
+The implementation mappings and open obligations are recorded in
+[METADATA-PLANNING.md](../../docs/METADATA-PLANNING.md) and
+[READY-PUBLICATION.md](../../docs/READY-PUBLICATION.md). The two proof families
+are not yet composed into a machine-checked refinement of Rust. Quorum/log
+matching, term/vote identity in Ready, full catalog invariants, retry-loop
+refinement and cross-host availability remain separate work. Actual Chaos Mesh
+history testing continues alongside the proof jobs.

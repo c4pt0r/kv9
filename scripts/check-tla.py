@@ -47,7 +47,8 @@ def messages(output, code, severity=0):
     )]
 
 
-def verdict(output, code, expected=None, temporal=False, coverage=False):
+def verdict(output, code, expected=None, temporal=False, coverage=False,
+            action_property=False, module="MetadataPlanning", actions=ACTIONS):
     require(messages(output, 2262) == [VERSION], "missing pinned TLC version")
     require(len(messages(output, 2186)) == 1, "missing TLC completion")
     stats = messages(output, 2199)
@@ -68,13 +69,18 @@ def verdict(output, code, expected=None, temporal=False, coverage=False):
             require(len(messages(output, 2192)) == 1 and len(messages(output, 2267)) == 1,
                     "missing complete temporal check")
         if coverage:
-            for action in ACTIONS:
+            for action in actions:
                 hits = re.findall(
-                    rf"^<{action} line [^\n]+ of module MetadataPlanning>: (\d+):(\d+)$",
+                    rf"^<{action} line [^\n]+ of module {module}>: (\d+):(\d+)$",
                     output, re.M,
                 )
                 require(len(hits) == 1 and int(hits[0][1]) > 0,
                         f"missing action coverage: {action}")
+    elif action_property:
+        require(code == 13, "control did not produce an action-property violation")
+        require(messages(output, 2112, 1) == [f"Action property {expected} is violated."],
+                "wrong action-property violation")
+        require(set(errors) <= {"2112", "2121"}, "unrelated error in action-property control")
     elif expected == "EventuallyDrained":
         require(code == 13, "liveness control did not produce a temporal violation")
         require(messages(output, 2116, 1) == ["Temporal properties were violated."],

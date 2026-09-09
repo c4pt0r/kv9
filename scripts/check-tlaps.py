@@ -44,17 +44,28 @@ def proof_verdict(output, status, module, expected_count):
 
 
 def audit(args, work, inventory):
-    require(inventory["root"] in inventory["modules"], "unlisted root module")
-    command = ["java", "-cp", f"{args.jar}:{args.classes}", "ProofAudit",
-               str(work / f"{inventory['root']}.tla"), str(work), str(work), str(args.stdlib)]
-    result = subprocess.run(command, cwd=work, text=True, capture_output=True, timeout=30)
-    (work / "sany.log").write_text(result.stdout + result.stderr)
-    require(result.returncode == 0, "SANY rejected the proof inventory")
-    lines = [line.removeprefix("AUDIT_JSON=") for line in result.stdout.splitlines()
-             if line.startswith("AUDIT_JSON=")]
-    require(len(lines) == 1, "missing semantic audit result")
-    records = json.loads(lines[0])
-    owned = set(inventory["modules"]) | {"MetadataPlanning"}
+    roots = inventory["roots"]
+    require(roots and len(roots) == len(set(roots)), "empty or duplicate root inventory")
+    require(set(roots) <= set(inventory["modules"]), "unlisted root module")
+    merged = {}
+    for root in roots:
+        command = ["java", "-cp", f"{args.jar}:{args.classes}", "ProofAudit",
+                   str(work / f"{root}.tla"), str(work), str(work), str(args.stdlib)]
+        result = subprocess.run(command, cwd=work, text=True, capture_output=True, timeout=30)
+        with (work / "sany.log").open("a") as log:
+            log.write(result.stdout + result.stderr)
+        require(result.returncode == 0, "SANY rejected the proof inventory")
+        lines = [line.removeprefix("AUDIT_JSON=") for line in result.stdout.splitlines()
+                 if line.startswith("AUDIT_JSON=")]
+        require(len(lines) == 1, "missing semantic audit result")
+        records = json.loads(lines[0])
+        require(len(records) == len({r["module"] for r in records}), "duplicate semantic module")
+        for record in records:
+            name = record["module"]
+            require(name not in merged or merged[name] == record, "inconsistent shared module audit")
+            merged[name] = record
+    records = [merged[name] for name in sorted(merged)]
+    owned = set(inventory["modules"]) | set(inventory["models"])
     found = set()
     for record in records:
         module = record["module"]
@@ -69,10 +80,10 @@ def audit(args, work, inventory):
                 f"module resolved outside the copied source: {module}")
         require(record["inner_modules"] == record["instances"] == 0,
                 f"unlisted nested module or instance: {module}")
-        expected_assumptions = inventory["model_assumptions"] if module == "MetadataPlanning" else []
+        expected_assumptions = inventory["models"][module]["assumptions"] if module in inventory["models"] else []
         require(record["assumptions"] == expected_assumptions,
                 f"unapproved module assumption: {module}")
-        expected = [] if module == "MetadataPlanning" else inventory["modules"][module]["theorems"]
+        expected = [] if module in inventory["models"] else inventory["modules"][module]["theorems"]
         require(sorted(t["name"] for t in record["theorems"]) == sorted(expected),
                 f"theorem inventory mismatch: {module}")
         for theorem in record["theorems"]:
@@ -112,7 +123,12 @@ def run_case(args, name, mutation=None, expected=None):
     work.mkdir()
     for path in SOURCE.glob("*.tla"):
         shutil.copyfile(path, work / path.name)
-    shutil.copyfile(MODEL, work / MODEL.name)
+    inventory = json.loads((SOURCE / "inventory.json").read_text())
+    for module, item in inventory["models"].items():
+        path = ROOT / item["source"]
+        require(path.resolve().is_relative_to(ROOT / "proofs/tla") and path.name == f"{module}.tla",
+                "unlisted model source path")
+        shutil.copyfile(path, work / path.name)
     shutil.copyfile(SOURCE / "inventory.json", work / "inventory.json")
     if mutation is not None:
         filename, transform = mutation
@@ -237,9 +253,17 @@ def main():
          {"reason": "MetadataUniqueness: TLAPS exit 10", "log": "MetadataUniqueness.log",
           "pattern": r"PROVE\s+/\\ NextId\(Len\(log\)\) \\in Nat \\ \{0\}", "failed": 1}),
         ("incomplete-root", ("inventory.json", lambda text: json.dumps(
-            dict(json.loads(text), root="MetadataReceipt"), indent=2) + '\n'),
+            dict(json.loads(text), roots=["MetadataReceipt"]), indent=2) + '\n'),
          {"reason": "incomplete module dependency audit"}),
     ]
+    from ready_controls import mutations
+    ready_model = (ROOT / inventory["models"]["ReadyPublication"]["source"]).read_text()
+    for control in mutations(ready_model):
+        controls.append((control["name"],
+                         ("ReadyPublication.tla", lambda text, source=control["model"]: source),
+                         {"reason": "ReadyPublicationProof: TLAPS exit 10",
+                          "log": "ReadyPublicationProof.log", "failed": 1,
+                          "pattern": control["proof_pattern"]}))
     for name, mutation, expected in controls:
         before = run_case(args, name + "-baseline")
         mutant = run_case(args, name + "-mutant", mutation, expected)
@@ -248,13 +272,14 @@ def main():
         changed = [f for f, checksum in before["sources"].items() if mutant["sources"][f] != checksum]
         require(changed == [mutation[0]], "control changed more than its owned source")
         records.extend((before, mutant, after))
-    root = inventory["root"]
+    root = inventory["roots"][-1]
     output = (args.output / f"baseline/{root}.log").read_text()
     output_count = output_controls(output, root, inventory["modules"][root]["obligations"])
     count = sum(len(item["theorems"]) for item in inventory["modules"].values())
     obligations = sum(item["obligations"] for item in inventory["modules"].values())
     summary = {"version": version, "tlapm_sha256": sha(args.tlapm),
                "sany_jar_sha256": sha(args.jar), "runner_sha256": sha(Path(__file__)),
+               "controls_sha256": sha(ROOT / "scripts/ready_controls.py"),
                "auditor_sha256": sha(ROOT / "scripts/ProofAudit.java"), "runs": records,
                "theorems": count, "obligations": obligations, "output_controls": output_count}
     (args.output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
