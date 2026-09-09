@@ -469,7 +469,7 @@ fn single<'a>(metadata: &'a MetadataMap, key: &str) -> Option<&'a str> {
 
 /// Fail closed on duplicated, mixed, unknown or malformed kv9 control metadata.
 /// Unmarked statuses retain only their code and NEVER prove a write was refused.
-fn classify_status(status: &Status, read: bool) -> Reason {
+pub(crate) fn classify_status(status: &Status, read: bool) -> Reason {
     let metadata = status.metadata();
     if metadata.contains_key(NOT_LEADER_KEY)
         && status.code() == Code::FailedPrecondition

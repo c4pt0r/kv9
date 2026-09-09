@@ -12,13 +12,16 @@ base="${KV9_BASE_PORT:-28300}"
 
 artifact="$(mktemp -d /tmp/kv9-root-e2e.XXXXXX)"
 pids=""
+declare -A node_pids=()
+# shellcheck source=scripts/root_status.sh
+source scripts/root_status.sh
 cleanup() {
   local rc=$?
   for pid in $pids; do kill "$pid" 2>/dev/null || true; done
-  if (( rc == 0 )); then
+  if (( rc == 0 )) && [[ "${KV9_KEEP_ARTIFACTS:-0}" != 1 ]]; then
     rm -rf "$artifact"
   else
-    echo "FAIL: preserving root-trust evidence at $artifact" >&2
+    echo "Preserving root-trust evidence at $artifact (exit=$rc)" >&2
   fi
 }
 trap cleanup EXIT
@@ -29,6 +32,20 @@ export KV9_CLIENT_TOKEN=root-e2e-client
 bootstrap_token=root-e2e-bootstrap
 root="$artifact/root.bin"
 voters="1@127.0.0.1:$((base+1)),2@127.0.0.1:$((base+2)),3@127.0.0.1:$((base+3))"
+
+admin() {
+  local evidence="$1"; shift
+  # Start with a known follower in the healthy case: every run must exercise
+  # the real CLI refusal path. Only configured voters are routing candidates.
+  # A later leadership change is handled by the same bounded refusal contract.
+  local first=$(( leader == 1 ? 2 : 1 )) addresses="" node
+  for node in "$first" 1 2 3; do
+    [[ ",$addresses," == *",$node="* ]] && continue
+    addresses="${addresses:+$addresses,}$node=127.0.0.1:$((base+node))"
+  done
+  python3 scripts/local_admin_client.py --bin "$bin" --addresses "$addresses" \
+    --evidence "$artifact/$evidence.routing.jsonl" -- "$@"
+}
 
 status_value() {
   local node="$1" key="$2"
@@ -52,8 +69,7 @@ wait_until() {
 all_serving() {
   local node leader=0 seen digest="" generation=""
   for node in 1 2 3; do
-    [ "$(status_value "$node" bootstrap_state 2>/dev/null || true)" = Serving ] || return 1
-    [ -z "$(status_value "$node" fatal 2>/dev/null || true)" ] || return 1
+    node_serving "$node" || return 1
     seen="$(status_value "$node" leader_id 2>/dev/null || true)"
     [ -n "$seen" ] && (( seen > 0 )) || return 1
     if (( leader == 0 )); then leader="$seen"; fi
@@ -71,20 +87,14 @@ all_serving() {
 }
 
 node4_learner() {
-  [ "$(status_value 4 bootstrap_state 2>/dev/null || true)" = Serving ] || return 1
-  [ -z "$(status_value 4 fatal 2>/dev/null || true)" ] || return 1
+  node_serving 4 || return 1
   [[ ",$(status_value 4 meta_learners 2>/dev/null || true)," == *,4,* ]]
-}
-
-node_serving() {
-  [ "$(status_value "$1" bootstrap_state 2>/dev/null || true)" = Serving ] &&
-    [ -z "$(status_value "$1" fatal 2>/dev/null || true)" ]
 }
 
 node4_voter_everywhere() {
   local node
   for node in 1 2 3 4; do
-    [ "$(status_value "$node" bootstrap_state 2>/dev/null || true)" = Serving ] || return 1
+    node_serving "$node" || return 1
     [[ ",$(status_value "$node" meta_voters 2>/dev/null || true)," == *,4,* ]] || return 1
   done
 }
@@ -142,7 +152,7 @@ grep -q 'does not match durable store identity' "$artifact/rebind.out"
 for node in 1 2 3; do
   "$bin" start --node-id "$node" --addr "127.0.0.1:$((base+node))" \
     --data-dir "$artifact/n${node}" >"$artifact/n${node}.log" 2>&1 &
-  pids="$pids $!"
+  node_pids[$node]=$!; pids="$pids $!"
 done
 leader=""
 for _ in $(seq 1 120); do if leader="$(all_serving)"; then break; fi; leader=""; sleep 0.25; done
@@ -157,7 +167,7 @@ kill -9 "$victim_pid" 2>/dev/null || true
 wait "$victim_pid" 2>/dev/null || true
 "$bin" start --node-id "$victim" --addr "127.0.0.1:$((base+victim))" \
   --data-dir "$artifact/n${victim}" >"$artifact/n${victim}.restart.log" 2>&1 &
-pids="$pids $!"
+node_pids[$victim]=$!; pids="$pids $!"
 wait_until 'exact-root restart Serving' node_serving "$victim"
 [ "$(status_value "$victim" root_digest)" = "$expected_digest" ]
 
@@ -165,7 +175,7 @@ wait_until 'exact-root restart Serving' node_serving "$victim"
 # cannot consume the committed admission; the same durable store then joins
 # with the issued ticket and is promoted only after learner catch-up.
 admit_out="$artifact/admit.out"
-"$bin" client admit-node --addr "127.0.0.1:$((base+leader))" --node-id 4 \
+admin admit-n4 admit-node --node-id 4 \
   --node-addr "127.0.0.1:$((base+4))" --ttl-seconds 120 >"$admit_out"
 ticket="$(awk -F= '$1=="join_ticket"{print $2}' "$admit_out")"
 [[ "$ticket" =~ ^[0-9a-f]{64}$ ]] || { echo "FAIL: admit-node returned no 64-hex ticket" >&2; exit 1; }
@@ -174,7 +184,7 @@ KV9_JOIN_TICKET="$ticket" "$bin" join --root "$root" --node-id 4 \
 
 KV9_JOIN_TICKET="$(printf '0%.0s' $(seq 1 64))" "$bin" start --node-id 4 \
   --addr "127.0.0.1:$((base+4))" --data-dir "$artifact/n4" >"$artifact/n4.wrong-ticket.log" 2>&1 &
-wrong_pid=$!; pids="$pids $wrong_pid"
+wrong_pid=$!; node_pids[4]=$wrong_pid; pids="$pids $wrong_pid"
 sleep 2
 [ "$(status_value 4 bootstrap_state 2>/dev/null || true)" != Serving ] || {
   echo "FAIL: wrong join ticket reached Serving" >&2; exit 1;
@@ -184,11 +194,11 @@ wait "$wrong_pid" 2>/dev/null || true
 
 KV9_JOIN_TICKET="$ticket" "$bin" start --node-id 4 --addr "127.0.0.1:$((base+4))" \
   --data-dir "$artifact/n4" >"$artifact/n4.log" 2>&1 &
-n4_pid=$!; pids="$pids $n4_pid"
+n4_pid=$!; node_pids[4]=$n4_pid; pids="$pids $n4_pid"
 wait_until 'credentialed node joined as learner' node4_learner
 
 leader="$(status_value 1 leader_id)"
-"$bin" client promote-node --addr "127.0.0.1:$((base+leader))" --node-id 4 \
+admin promote-n4 promote-node --node-id 4 \
   >"$artifact/promote.out"
 wait_until 'joined learner promoted on all members' node4_voter_everywhere
 
@@ -202,7 +212,7 @@ KV9_JOIN_TICKET="$ticket" "$bin" join --root "$root" --node-id 4 \
   --addr "127.0.0.1:$((base+4))" --data-dir "$artifact/n4" >"$artifact/n4-replacement.join"
 KV9_JOIN_TICKET="$ticket" "$bin" start --node-id 4 --addr "127.0.0.1:$((base+4))" \
   --data-dir "$artifact/n4" >"$artifact/n4-replacement.log" 2>&1 &
-replacement_pid=$!; pids="$pids $replacement_pid"
+replacement_pid=$!; node_pids[4]=$replacement_pid; pids="$pids $replacement_pid"
 sleep 2
 [ "$(status_value 4 bootstrap_state 2>/dev/null || true)" != Serving ] || {
   echo "FAIL: replacement store reused a consumed node identity" >&2; exit 1;
@@ -213,14 +223,14 @@ mv "$artifact/n4" "$artifact/n4-replacement"
 mv "$artifact/n4-original" "$artifact/n4"
 "$bin" start --node-id 4 --addr "127.0.0.1:$((base+4))" --data-dir "$artifact/n4" \
   >"$artifact/n4.original-restart.log" 2>&1 &
-n4_pid=$!; pids="$pids $n4_pid"
+n4_pid=$!; node_pids[4]=$n4_pid; pids="$pids $n4_pid"
 wait_until 'original store incarnation restarted' node_serving 4
 
 # Admit node 9 first so membership authentication opens; only then can this
 # fixture prove the discovery root-identity gate itself rejects a different
 # root with an overlapping seed.
 leader="$(status_value 1 leader_id)"
-"$bin" client admit-node --addr "127.0.0.1:$((base+leader))" --node-id 9 \
+admin admit-n9 admit-node --node-id 9 \
   --node-addr "127.0.0.1:$((base+9))" --ttl-seconds 120 >"$artifact/admit-n9.out"
 wrong_root="$artifact/wrong-root.bin"
 KV9_BOOTSTRAP_TOKEN=other-root "$bin" root-create --output "$wrong_root" \

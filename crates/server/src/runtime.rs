@@ -1013,8 +1013,11 @@ impl AdminApi for RuntimeBackend {
         ttl_seconds: u64,
     ) -> Result<MembershipChangeResult> {
         self.ensure_serving()?;
-        if self.driver.status().role != Role::Leader {
-            return Err(Error::Raft("admit-node must be sent to the leader".into()));
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
         }
         if ttl_seconds == 0 {
             return Err(Error::Config(
@@ -1052,10 +1055,11 @@ impl AdminApi for RuntimeBackend {
 
     fn promote_node(&self, _caller: &str, node: NodeId) -> Result<MembershipChangeResult> {
         self.ensure_serving()?;
-        if self.driver.status().role != Role::Leader {
-            return Err(Error::Raft(
-                "promote-node must be sent to the leader".into(),
-            ));
+        let status = self.driver.status();
+        if status.role != Role::Leader {
+            return Err(Error::NotLeader {
+                leader: status.leader_id,
+            });
         }
         let proposed = self.driver.promote_voter(node)?;
         let receipt = self
@@ -6257,6 +6261,15 @@ mod tests {
              hint (never a string, never a transport error): {err:?}"
         );
         let backend = backend_view(&rts[follower], &root);
+        for result in [
+            backend.admit_node("admin", NodeId(8), "127.0.0.1:20168", 120),
+            backend.promote_node("admin", NodeId(8)),
+        ] {
+            assert!(
+                matches!(result, Err(Error::NotLeader { leader: Some(id) }) if id == leader_id),
+                "membership follower refusal must be typed before any mutation: {result:?}"
+            );
+        }
         assert!(
             matches!(
                 backend.list_keyspaces("reader"),
