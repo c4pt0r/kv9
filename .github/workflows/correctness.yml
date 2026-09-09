@@ -12,6 +12,44 @@ permissions:
   contents: read
 
 jobs:
+  endpoint-protocol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install the pinned TLAPS and SANY toolchains
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          curl --fail --location --retry 3 --output tlapm.tar.gz \
+            https://github.com/tlaplus/tlapm/releases/download/1.6.0-pre/tlapm-1.6.0-pre-x86_64-linux-gnu.tar.gz
+          echo 'bfa5e5350ac1ec7202feecad0a4a71a5bb58c16a49660448b35b6f371ba9e2f5  tlapm.tar.gz' | sha256sum --check
+          mkdir tlapm
+          tar -xzf tlapm.tar.gz --strip-components=1 -C tlapm
+          curl --fail --location --retry 3 --output tla2tools.jar \
+            https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar
+          echo '936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88  tla2tools.jar' | sha256sum --check
+      - name: Check versioned endpoint CAS safety and conditional progress
+        run: |
+          set -euo pipefail
+          python3 scripts/check-endpoint-protocol.py --tlapm "$RUNNER_TEMP/tlapm/bin/tlapm" \
+            --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/endpoint-protocol" \
+            > "$RUNNER_TEMP/endpoint-protocol.log" 2>&1
+          cat "$RUNNER_TEMP/endpoint-protocol.log"
+          test "$(tail -1 "$RUNNER_TEMP/endpoint-protocol.log")" = 'PASS: 4 full endpoint model checks and 2 fair continuations; 8 protocol controls; 2 witnesses; 11 TLAPS theorems; 80 obligations; 2 audit controls; 8 output controls'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: endpoint-protocol
+          path: |
+            ${{ runner.temp }}/endpoint-protocol.log
+            ${{ runner.temp }}/endpoint-protocol
+          if-no-files-found: error
+
   protocol-deduction:
     runs-on: ubuntu-latest
     timeout-minutes: 45

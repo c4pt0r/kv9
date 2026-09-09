@@ -193,6 +193,8 @@ mod cols {
         col!(3, "state", Uint),
         col!(4, "last_heartbeat", Uint),
         col!(5, "capacity", Bytes),
+        col!(6, "endpoint_generation", Uint),
+        col!(7, "endpoint_previous_address", Text),
     ];
 
     pub const REGIONS: &[ColumnDesc] = &[
