@@ -33,6 +33,14 @@ jobs:
           curl --fail --location --retry 3 --output tla2tools.jar \
             https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar
           echo '936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88  tla2tools.jar' | sha256sum --check
+      - name: Check Raft route ownership safety, delivery and termination
+        run: |
+          set -euo pipefail
+          python3 scripts/check-route-protocol.py --tlapm "$RUNNER_TEMP/tlapm/bin/tlapm" \
+            --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/route-protocol" \
+            > "$RUNNER_TEMP/route-protocol.log" 2>&1
+          cat "$RUNNER_TEMP/route-protocol.log"
+          test "$(tail -1 "$RUNNER_TEMP/route-protocol.log")" = 'PASS: 4 full route model checks and 2 fair continuations; 8 protocol controls; 2 witnesses; 17 TLAPS theorems; 197 obligations; 2 audit controls; 8 output controls'
       - name: Check durable store lifecycle safety and conditional progress
         run: |
           set -euo pipefail
@@ -78,6 +86,8 @@ jobs:
         with:
           name: protocol-deduction
           path: |
+            ${{ runner.temp }}/route-protocol.log
+            ${{ runner.temp }}/route-protocol
             ${{ runner.temp }}/formation-protocol.log
             ${{ runner.temp }}/formation-protocol
             ${{ runner.temp }}/store-protocol.log

@@ -252,6 +252,21 @@ jobs:
             exit 1
           }
 
+      - name: Raft route ownership source controls
+        run: |
+          set -euo pipefail
+          python3 scripts/check-route-controls.py --output "$RUNNER_TEMP/route-controls" \
+            > "$RUNNER_TEMP/route-controls.log" 2>&1
+          cat "$RUNNER_TEMP/route-controls.log"
+          test "$(tail -1 "$RUNNER_TEMP/route-controls.log")" = 'PASS: 5 isolated route ownership source controls checked'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: route-ownership-controls
+          path: |
+            ${{ runner.temp }}/route-controls.log
+            ${{ runner.temp }}/route-controls
+          if-no-files-found: error
       - name: Durable store lifecycle source controls
         run: |
           set -euo pipefail
