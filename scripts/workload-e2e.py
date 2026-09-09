@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Run the real workload executable against three local replicas and owned MinIO."""
+from root_provision import prepare_stores
 import argparse
 import hashlib
 import json
@@ -140,7 +141,8 @@ def main():
         del env["MC_HOST_workload"]
         secret_file.unlink()
         root = output / "root.bin"
-        run([server, "root-create", "--output", root, "--voters", ",".join(f"{n}@{address}" for n, address in addresses.items())])
+        prepared = prepare_stores(run, server, {n: output / f"n{n}" for n in addresses})
+        run([server, "root-create", "--output", root, "--voters", ",".join(f"{n}@{address}" for n, address in addresses.items()), "--store-incarnations", prepared])
         for connection in sockets:
             connection.close()
         for node in addresses:

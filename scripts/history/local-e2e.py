@@ -9,6 +9,9 @@ import sys
 import tempfile
 import time
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from root_provision import prepare_stores
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -28,7 +31,9 @@ def main():
     def run(argv, **kw):
         return subprocess.run(list(map(str, argv)), env=env, check=True, **kw)
     try:
-        run([binary, 'root-create', '--output', artifact/'root.bin', '--voters', ','.join(f'{i}@{addr}' for i, addr in enumerate(endpoints, 1))], stdout=subprocess.DEVNULL)
+        prepared = prepare_stores(lambda argv: run(argv, capture_output=True, text=True).stdout,
+                                  binary, {i: artifact/f'n{i}' for i in (1, 2, 3)})
+        run([binary, 'root-create', '--output', artifact/'root.bin', '--voters', ','.join(f'{i}@{addr}' for i, addr in enumerate(endpoints, 1)), '--store-incarnations', prepared], stdout=subprocess.DEVNULL)
         for i, addr in enumerate(endpoints, 1):
             data = artifact/f'n{i}'
             run([binary, 'init', '--root', artifact/'root.bin', '--node-id', i, '--data-dir', data], stdout=subprocess.DEVNULL)

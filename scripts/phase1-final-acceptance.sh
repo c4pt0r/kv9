@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 bin="$repo_dir/target/debug/kv9"
@@ -65,7 +66,7 @@ start_node() {
   mkdir -p "$artifact_dir/n${node}"
   if [[ ! -e "$artifact_dir/root.bin" ]]; then
     KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create \
-      --output "$artifact_dir/root.bin" --voters "$declared_join" \
+      --output "$artifact_dir/root.bin" --voters "$declared_join" --store-incarnations "$(prepare_root_stores "$bin" "$artifact_dir" "$declared_join")" \
       >"$artifact_dir/root-create.log"
   fi
   if [[ ! -e "$artifact_dir/n${node}/kv9-store-identity" ]]; then

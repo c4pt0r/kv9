@@ -14,6 +14,7 @@
 #   * Reading an old value on the new leader does not prove the *write* path survived
 #     failover, so the script also writes again afterwards.
 set -euo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 bin="$repo_dir/target/debug/kv9"
@@ -34,7 +35,7 @@ if [[ ! "$base_port" =~ ^[0-9]+$ ]] || (( base_port < 1024 || base_port + 3 > 65
 fi
 
 KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root_path" \
-  --voters "$root_voters" >"$artifact_dir/root-create.log"
+  --voters "$root_voters" --store-incarnations "$(prepare_root_stores "$bin" "$artifact_dir" "$root_voters")" >"$artifact_dir/root-create.log"
 if [[ -r /proc/sys/net/ipv4/ip_local_port_range ]]; then
   read -r ephemeral_low ephemeral_high </proc/sys/net/ipv4/ip_local_port_range
   if (( base_port + 3 >= ephemeral_low && base_port + 1 <= ephemeral_high )); then

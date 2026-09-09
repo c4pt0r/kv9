@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Run owned, repeated single-host trials; retain every attempted trial and its raw evidence."""
+from root_provision import prepare_stores
 import argparse
 import json
 import hashlib
@@ -146,7 +147,8 @@ class Fixture:
             for _ in range(3):
                 s=socket.socket();s.bind(('127.0.0.1',0));self.sockets.append(s)
             self.addresses={i:f'127.0.0.1:{s.getsockname()[1]}' for i,s in enumerate(self.sockets,1)}
-            self.command([self.build/'kv9','root-create','--output',self.out/'root.bin','--voters',','.join(f'{n}@{a}' for n,a in self.addresses.items())])
+            prepared = prepare_stores(self.command, self.build/'kv9', {n: self.out/'data'/f'n{n}' for n in self.addresses})
+            self.command([self.build/'kv9','root-create','--output',self.out/'root.bin','--voters',','.join(f'{n}@{a}' for n,a in self.addresses.items()),'--store-incarnations',prepared])
             for s in self.sockets: s.close()
             for n,a in self.addresses.items():
                 directory=self.out/'data'/f'n{n}'

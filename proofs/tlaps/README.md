@@ -135,3 +135,14 @@ imports its own TLA+ protocol and checks 13 declarations / 117 obligations,
 including conditional progress after registration. Its counts are separate from
 the metadata/Ready inventory above and from the client retry family. Run
 `scripts/check-receive-protocol.py` to check its models, proofs and controls.
+
+## Store lifecycle and original-root formation
+
+The [store lifecycle](../../docs/STORE-LIFECYCLE.md) and
+[first catalog formation](../../docs/ROOT-FORMATION.md) each have a separate
+inventory and strict protocol runner. Their 14 / 128 and 14 / 153 declaration /
+obligation counts are separate from the families above. The former establishes
+local store authority and publication ordering; the latter establishes safe
+formation retries and conditional progress on an original store. Their explicit
+Raft, filesystem, and fairness interface assumptions remain part of the trust
+boundary; the two results are not a complete Rust refinement proof.

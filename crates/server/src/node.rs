@@ -547,7 +547,19 @@ impl<E: ReplicatedEngine> Node<E> {
         )?;
 
         for voter in voters {
-            txn.insert(&NODES_DESC, &[memcmp_uint(voter.0)], node_row(*voter))?;
+            let mut row = node_row(*voter);
+            if let Some(root) = root {
+                let provisioned = root.voter(*voter).ok_or_else(|| {
+                    Error::Config("bootstrap voter is absent from the certified root".into())
+                })?;
+                row.set(ColumnId(2), ColumnValue::Text(provisioned.addr.to_string()));
+                row.set(ColumnId(3), ColumnValue::Uint(2));
+                row.set(
+                    ColumnId(5),
+                    ColumnValue::Bytes(provisioned.store_incarnation.as_bytes().to_vec()),
+                );
+            }
+            txn.insert(&NODES_DESC, &[memcmp_uint(voter.0)], row)?;
         }
         txn.insert(
             &TSO_TIMELINES_DESC,

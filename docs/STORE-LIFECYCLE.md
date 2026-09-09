@@ -1,11 +1,13 @@
-# Durable store lifecycle primitives
+# Durable store lifecycle
 
 Issue [#42](https://github.com/c4pt0r/kv9/issues/42) requires initial root voters
 to distinguish an original disk from a replacement disk carrying an old root
-descriptor. These primitives and their protocol proof are the first part of
-that integration. The production runtime does not yet call them in this commit.
-This is not acceptance of the initial-voter lost-disk fix; runtime integration,
-CLI provisioning, and actual Chaos Mesh acceptance remain required.
+descriptor. Production provisioning now prepares each actual data directory
+independently, and the runtime enforces the lifecycle before starting its Raft
+owner or opening receive authority. The CLI requires `root-create
+--store-incarnations` to name those prepared stores. Initial formation recovery
+and its separate proof are documented in [ROOT-FORMATION.md](ROOT-FORMATION.md).
+Actual lost-disk Chaos Mesh acceptance remains required for closing #42.
 
 ## Contract
 
@@ -36,9 +38,9 @@ imports the orphan's identity. Arbitrary data, malformed temporary records,
 records for another node, and orphan Bound/Active records do not authorize a
 new preparation. Unrecoverable preparation debris therefore fails explicitly.
 
-The runtime integration must make the initial Raft log and namespace durable
-before calling `activate`, and activation durable before any Raft owner starts
-or receive gate opens. Every Active restart must call `DiskRaftStorage::recover`,
+The runtime makes the initial Raft log and namespace durable
+before calling `activate`, and makes activation durable before any Raft owner starts
+or receive gate opens. Every Active restart calls `DiskRaftStorage::recover`,
 which opens an existing file without creating directories or files. Missing,
 empty, or wholly torn logs are rejected before tail repair or fresh ConfState
 creation. A valid recoverable prefix still receives the existing durability
@@ -49,8 +51,9 @@ Legacy migration is a separate caller obligation. `adopt_certified_recovery`
 requires the caller to recover the existing log, validate the applied Raft
 position and local catalog identity, and check the exact committed root
 certificate first. A copied root/identity bundle alone is insufficient. The
-primitive cannot itself establish that catalog certificate. Runtime acceptance
-must exercise these ordering and migration obligations directly.
+primitive cannot itself establish that catalog certificate. Runtime tests exercise these ordering and migration obligations directly.
+`NodeRuntime` retains the guard until its Raft owner has joined and its gRPC
+runtime and store-owning fields have been dropped.
 
 ## Model and proof
 
@@ -115,9 +118,12 @@ Every fault must produce its intended TLC violation and failed proof obligation
 between passing original/restored checks. Missing proofs, extra axioms, and
 incomplete model/proof output are independently rejected.
 
-Five compiled source controls cover identity verification, exclusive ownership,
-missing/empty log recreation, and continued authorization after a publication
-error. Common tests inject both EIO and ENOSPC before and after each publication
+Nine compiled source controls cover identity verification, exclusive ownership,
+missing/empty log recreation, continued authorization after a publication
+error, owner start before activation, the non-pristine formation fence, and
+planning before the current-term application barrier, and detached owners
+after a failed listener bind. Owner creation follows all fallible startup
+work so an error cannot release the guard while a detached thread uses the store. Common tests inject both EIO and ENOSPC before and after each publication
 operation, and exercise a process interruption after temporary-file sync.
 These host-filesystem tests check ordering and failure propagation; they are
 not simulated power-loss evidence. The separate deterministic filesystem model

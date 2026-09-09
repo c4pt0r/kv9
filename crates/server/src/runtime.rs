@@ -2118,7 +2118,7 @@ impl TxnApi for RuntimeBackend {
     }
 }
 
-/// The two things a test may substitute at startup — and the reason each one has to be a
+/// The things a test may substitute at startup — and the reason each one has to be a
 /// startup parameter rather than something a test does afterwards.
 ///
 /// `Default` is exactly production, so the public entry points are visibly unaffected: they
@@ -2151,6 +2151,10 @@ struct StartOverrides {
     /// the worst possible failure signature. Holding the listener the whole way across means
     /// the port is never unbound and never reserved-then-reclaimed.
     listener: Option<std::net::TcpListener>,
+    /// Stop at the durable activation boundary before any Raft tick. This is
+    /// compiled only into unit tests; default production startup never defers.
+    #[cfg(test)]
+    defer_owner: bool,
 }
 
 /// The committed Active row and durable ConfState must name this exact store.
@@ -2217,6 +2221,7 @@ pub struct NodeRuntime {
     catchup_capability: Arc<std::sync::Mutex<Option<CatchupCapability>>>,
     next_discovery: Instant,
     next_advertised_endpoint_probe: Instant,
+    _store_guard: kv9_common::store_lifecycle::StoreGuard,
 }
 
 impl NodeRuntime {
@@ -2307,7 +2312,27 @@ impl NodeRuntime {
         let join_ticket_sha256 = join_ticket.map(|ticket| RootDigest::sha256(ticket.as_bytes()));
 
         let data_dir = PathBuf::from(&config.data_dir);
+        let mut store_guard = kv9_common::store_lifecycle::StoreGuard::lock(&data_dir)?;
+        let legacy = store_guard.record().is_none();
+        let recover_only = if legacy {
+            let (saved_root, saved_identity) = kv9_common::load_root_bundle(&data_dir)?;
+            if saved_root != root || saved_identity != store_identity {
+                return Err(Error::Config(
+                    "legacy recovery requires the matching durable identity bundle".into(),
+                ));
+            }
+            true
+        } else {
+            let record = store_guard.verify(&store_identity)?;
+            matches!(
+                record.phase,
+                kv9_common::store_lifecycle::StorePhase::Active(_)
+            )
+        };
         persist_root_bundle(&data_dir, &root, &store_identity)?;
+        if !legacy {
+            store_guard.bind(&root, &store_identity)?;
+        }
         let voters: Vec<NodeId> = seeds.iter().map(|seed| seed.node_id).collect();
         let voter_fp = voter_set_fingerprint(
             &seeds
@@ -2316,7 +2341,11 @@ impl NodeRuntime {
                 .collect::<Vec<_>>(),
         );
         let voter_ids: Vec<u64> = voters.iter().map(|node| node.0).collect();
-        let (storage, was_pristine) = DiskRaftStorage::open(&data_dir.join("raft"), &voter_ids)?;
+        let storage = if recover_only {
+            DiskRaftStorage::recover(&data_dir.join("raft"))?
+        } else {
+            DiskRaftStorage::open(&data_dir.join("raft"), &voter_ids)?.0
+        };
         let raft_io_metrics = storage.io_metrics();
         let remote = crate::remote_storage::prepare_remote(
             &data_dir,
@@ -2415,6 +2444,14 @@ impl NodeRuntime {
                     .into(),
             ));
         }
+        if legacy {
+            if local_identity.is_none() {
+                return Err(Error::Config("legacy store lacks a committed root certificate; independent store preparation is required".into()));
+            }
+            store_guard.adopt_certified_recovery(&root, &store_identity)?;
+        } else {
+            store_guard.activate(&store_identity)?;
+        }
         let marker_initialized = init_marker_exists(&data_dir);
         let mut bootstrap = if joining {
             Bootstrap::join_existing_at(id, voters.clone(), root.cluster_id, voter_fp, &data_dir)?
@@ -2424,15 +2461,12 @@ impl NodeRuntime {
         if init_marker_exists(&data_dir) {
             bootstrap.mark_data_dir_initialized();
         }
-        // A non-pristine Raft member must never form a second cluster, even if
-        // it crashed before the marker rename. It rejoins and waits for catalog.
-        // This fence prevents an initial voter with durable Raft history from
-        // ever re-entering creation. A joiner has no creation authority in
-        // the first place; retaining a failed pre-registration Raft open must
-        // not suppress its next discovery attempt with a corrected ticket.
-        if !was_pristine && !joining {
-            bootstrap.mark_data_dir_initialized();
-        }
+        // Durable Raft history alone is not a completed catalog. An exact
+        // original store may resume first formation after an activation or
+        // election crash. The lifecycle check above prevents replacement-disk
+        // reuse; advance_initialization drains the current-term barrier and
+        // checks the catalog under the planner mutex before a term-fenced
+        // proposal. A retained init therefore wins over any new seed plan.
         if local_identity.is_some() && !marker_initialized {
             write_init_marker(&data_dir)?;
             bootstrap.mark_data_dir_initialized();
@@ -2483,12 +2517,6 @@ impl NodeRuntime {
             && local_identity.is_some()
             && local_member_is_active(&node, &driver, store_identity.store_incarnation)?;
         let authorized = !joining || recovered_member;
-        let driver_thread = if authorized {
-            discovery.authorize_raft();
-            Some(driver.spawn(TICK))
-        } else {
-            None
-        };
         let status_path = data_dir.join("status");
 
         let backend = Arc::new(RuntimeBackend {
@@ -2583,6 +2611,23 @@ impl NodeRuntime {
             })
             .transpose()?;
 
+        // No fallible startup work may follow owner creation. In particular,
+        // a bind/auth/checkpoint setup failure must drop every store reference
+        // before the local guard unlocks; dropping a JoinHandle detaches it.
+        let driver_thread = if authorized {
+            discovery.authorize_raft();
+            #[cfg(test)]
+            let defer_owner = overrides.defer_owner;
+            #[cfg(not(test))]
+            let defer_owner = false;
+            if defer_owner {
+                None
+            } else {
+                Some(driver.spawn(TICK))
+            }
+        } else {
+            None
+        };
         Ok(Self {
             node,
             driver,
@@ -2615,6 +2660,7 @@ impl NodeRuntime {
             catchup_capability,
             next_discovery: Instant::now(),
             next_advertised_endpoint_probe: Instant::now(),
+            _store_guard: store_guard,
         })
     }
 
@@ -3462,6 +3508,12 @@ fn catalog_initialized(node: &Node<WalEngine>) -> Result<bool> {
         .begin()?
         .get(&SCHEMA_VERSION_DESC, &[memcmp_uint(0)])?
         .is_some())
+}
+
+#[cfg(test)]
+fn prepare_test_store(directory: &Path, id: NodeId) -> StoreIncarnation {
+    let mut guard = kv9_common::store_lifecycle::StoreGuard::lock(directory).unwrap();
+    guard.prepare(id).unwrap().incarnation
 }
 
 #[cfg(test)]
@@ -5850,7 +5902,7 @@ mod tests {
                 Ok(kv9_common::RootVoter {
                     node_id: NodeId(id),
                     addr: addrs[(id - 1) as usize],
-                    store_incarnation: StoreIncarnation::mint()?,
+                    store_incarnation: prepare_test_store(&base.join(format!("n{id}")), NodeId(id)),
                 })
             })
             .collect::<kv9_common::Result<Vec<_>>>()
@@ -5908,8 +5960,12 @@ mod tests {
                 config_for(4),
                 auth(),
                 root.clone(),
-                StoreIdentity::for_joiner(&root, NodeId(4), StoreIncarnation::mint().unwrap())
-                    .unwrap(),
+                StoreIdentity::for_joiner(
+                    &root,
+                    NodeId(4),
+                    prepare_test_store(&base.join("n4"), NodeId(4)),
+                )
+                .unwrap(),
                 Some(&ticket4),
                 StartOverrides {
                     listener: Some(listeners.next().unwrap()),
@@ -5990,8 +6046,12 @@ mod tests {
                 config_for(5),
                 auth(),
                 root.clone(),
-                StoreIdentity::for_joiner(&root, NodeId(5), StoreIncarnation::mint().unwrap())
-                    .unwrap(),
+                StoreIdentity::for_joiner(
+                    &root,
+                    NodeId(5),
+                    prepare_test_store(&base.join("n5"), NodeId(5)),
+                )
+                .unwrap(),
                 Some(&ticket5),
                 StartOverrides {
                     listener: Some(listeners.next().unwrap()),
@@ -6161,7 +6221,12 @@ mod tests {
                 client_tokens: vec![("acceptance".into(), "establishing-read-token".into())],
             },
             root.clone(),
-            StoreIdentity::for_joiner(&root, NodeId(4), StoreIncarnation::mint().unwrap()).unwrap(),
+            StoreIdentity::for_joiner(
+                &root,
+                NodeId(4),
+                prepare_test_store(&base.join("n4"), NodeId(4)),
+            )
+            .unwrap(),
             None,
             StartOverrides {
                 listener: Some(listener),
@@ -6346,12 +6411,189 @@ mod tests {
         fs::remove_dir_all(base).unwrap();
     }
 
+    #[test]
+    fn failed_listener_bind_releases_every_store_owner_before_unlocking() {
+        let (rts, root, addrs, base) = unformed_trio("failed-start-owner", true);
+        drop(rts);
+        let held = std::net::TcpListener::bind(addrs[0]).unwrap();
+        let observed = Arc::new(std::sync::Mutex::new(None));
+        let captured = observed.clone();
+        let refused = NodeRuntime::start_core(
+            NodeId(1),
+            Config {
+                addr: addrs[0].to_string(),
+                data_dir: base.join("n1").to_string_lossy().into_owned(),
+                ..Default::default()
+            },
+            RuntimeAuth {
+                cluster_token: "establishing-read-cluster-token".into(),
+                client_tokens: vec![("acceptance".into(), "establishing-read-token".into())],
+            },
+            root.clone(),
+            StoreIdentity::for_voter(&root, NodeId(1)).unwrap(),
+            None,
+            StartOverrides {
+                adjudicator: Some(Box::new(move |node| {
+                    *captured.lock().unwrap() = Some(Arc::downgrade(&node));
+                    Arc::new(CatalogFenceAdjudicator::new(node))
+                })),
+                ..Default::default()
+            },
+        );
+        assert!(
+            matches!(refused, Err(Error::Config(ref reason)) if reason.contains("bind gRPC listener"))
+        );
+        assert!(
+            observed
+                .lock()
+                .unwrap()
+                .as_ref()
+                .unwrap()
+                .upgrade()
+                .is_none(),
+            "failed startup left a detached Raft owner using an unlocked store"
+        );
+        let guard = kv9_common::store_lifecycle::StoreGuard::lock(&base.join("n1")).unwrap();
+        drop(guard);
+        drop(held);
+        fs::remove_dir_all(base).unwrap();
+    }
+
+    #[test]
+    fn root_voter_rejects_another_disk_and_missing_activated_log_before_starting() {
+        let (mut rts, root, addrs, base) = serving_trio("root-store-recovery");
+        let identity = rts[0].store_identity;
+        assert_eq!(
+            rts[0]._store_guard.record().unwrap().phase,
+            kv9_common::store_lifecycle::StorePhase::Active(root.digest()),
+            "Raft owner started before durable store activation"
+        );
+        let auth = || RuntimeAuth {
+            cluster_token: "establishing-read-cluster-token".into(),
+            client_tokens: vec![("acceptance".into(), "establishing-read-token".into())],
+        };
+        let config = |directory: &Path| Config {
+            addr: addrs[0].to_string(),
+            data_dir: directory.to_string_lossy().into_owned(),
+            join: Vec::new(),
+            wal_streams: 1,
+            replication_factor: 3,
+        };
+        let replacement = base.join("replacement");
+        assert_ne!(
+            prepare_test_store(&replacement, NodeId(1)),
+            identity.store_incarnation
+        );
+        let refused = NodeRuntime::start_core(
+            NodeId(1),
+            config(&replacement),
+            auth(),
+            root.clone(),
+            identity,
+            None,
+            StartOverrides::default(),
+        );
+        assert!(
+            matches!(refused, Err(Error::Config(ref reason)) if reason == "prepared store identity does not match root/store identity"),
+            "a new disk acquired an initial root voter's identity"
+        );
+        assert!(
+            !replacement.join("raft").exists(),
+            "rejected root replacement opened Raft storage"
+        );
+        let duplicate = NodeRuntime::start_core(
+            NodeId(1),
+            config(&base.join("n1")),
+            auth(),
+            root.clone(),
+            identity,
+            None,
+            StartOverrides::default(),
+        );
+        assert!(
+            matches!(duplicate, Err(Error::Config(ref reason)) if reason.contains("already owned")),
+            "two runtimes concurrently opened one durable store"
+        );
+        drop(rts.remove(0));
+        let path = base.join("n1/raft/raft.log");
+        let saved = base.join("original-raft.log");
+        fs::rename(&path, &saved).unwrap();
+        for _ in 0..2 {
+            let refused = NodeRuntime::start_core(
+                NodeId(1),
+                config(&base.join("n1")),
+                auth(),
+                root.clone(),
+                identity,
+                None,
+                StartOverrides::default(),
+            );
+            assert!(
+                matches!(refused, Err(Error::Raft(_))),
+                "missing activated log was recreated for an old voter"
+            );
+            assert!(
+                !path.exists(),
+                "a rejected recovery created an empty replacement log"
+            );
+        }
+        fs::rename(saved, path).unwrap();
+        rts.push(
+            NodeRuntime::start_core(
+                NodeId(1),
+                config(&base.join("n1")),
+                auth(),
+                root.clone(),
+                identity,
+                None,
+                StartOverrides::default(),
+            )
+            .unwrap(),
+        );
+        wait_for(
+            &mut rts,
+            60,
+            "original root voter recovers retained log",
+            |rts| {
+                rts.iter()
+                    .all(|rt| rt.node.meta.lock().unwrap().bootstrap.is_serving())
+            },
+        );
+        // A verified legacy store can acquire the lifecycle record from its
+        // exact committed root certificate; an identity bundle alone cannot.
+        drop(rts.pop().unwrap());
+        fs::remove_file(
+            base.join("n1")
+                .join(kv9_common::store_lifecycle::STORE_LIFECYCLE_FILE),
+        )
+        .unwrap();
+        let recovered = NodeRuntime::start_core(
+            NodeId(1),
+            config(&base.join("n1")),
+            auth(),
+            root.clone(),
+            identity,
+            None,
+            StartOverrides::default(),
+        )
+        .unwrap();
+        assert_eq!(
+            recovered._store_guard.record().unwrap().phase,
+            kv9_common::store_lifecycle::StorePhase::Active(root.digest())
+        );
+        assert!(recovered.discovery.raft_receive_allowed());
+        drop(recovered);
+        drop(rts);
+        fs::remove_dir_all(base).unwrap();
+    }
+
     /// A Serving 3-voter cluster over real disks and real gRPC — the same
     /// construction the hint-follow product-chain test opens with, extracted
     /// for the establishing-read cells (that test's copy stays inline: it is
     /// a reviewed object and its scene continues past the trio).
-    fn serving_trio(
+    fn unformed_trio(
         tag: &str,
+        defer_owner: bool,
     ) -> (
         Vec<NodeRuntime>,
         RootDescriptor,
@@ -6374,7 +6616,7 @@ mod tests {
                 Ok(kv9_common::RootVoter {
                     node_id: NodeId(id),
                     addr: addrs[(id - 1) as usize],
-                    store_incarnation: StoreIncarnation::mint()?,
+                    store_incarnation: prepare_test_store(&base.join(format!("n{id}")), NodeId(id)),
                 })
             })
             .collect::<kv9_common::Result<Vec<_>>>()
@@ -6386,7 +6628,7 @@ mod tests {
             b"establishing-read-bootstrap-credential",
         )
         .unwrap();
-        let mut rts: Vec<NodeRuntime> = (1..=3u64)
+        let rts: Vec<NodeRuntime> = (1..=3u64)
             .map(|id| {
                 NodeRuntime::start_core(
                     NodeId(id),
@@ -6409,17 +6651,234 @@ mod tests {
                     None,
                     StartOverrides {
                         listener: Some(listeners.next().unwrap()),
+                        defer_owner,
                         ..Default::default()
                     },
                 )
                 .unwrap()
             })
             .collect();
+        (rts, root, addrs, base)
+    }
+
+    fn serving_trio(
+        tag: &str,
+    ) -> (
+        Vec<NodeRuntime>,
+        RootDescriptor,
+        Vec<std::net::SocketAddr>,
+        PathBuf,
+    ) {
+        let (mut rts, root, addrs, base) = unformed_trio(tag, false);
         wait_for(&mut rts, 60, "establishing-read trio Serving", |rts| {
             rts.iter()
                 .all(|rt| rt.node.meta.lock().unwrap().bootstrap.is_serving())
         });
         (rts, root, addrs, base)
+    }
+
+    #[test]
+    fn original_stores_resume_formation_after_each_pre_catalog_crash_cut() {
+        fn wait_driver(rts: &[NodeRuntime], predicate: impl Fn(&[NodeRuntime]) -> bool) {
+            let deadline = Instant::now() + Duration::from_secs(10);
+            while !predicate(rts) {
+                assert!(rts.iter().all(|rt| rt.driver.status().fatal.is_none()));
+                assert!(
+                    Instant::now() < deadline,
+                    "pre-catalog Raft cut was not reached"
+                );
+                std::thread::sleep(TICK);
+            }
+        }
+        fn reopen(root: &RootDescriptor, base: &Path) -> Vec<NodeRuntime> {
+            root.voters
+                .iter()
+                .map(|voter| {
+                    NodeRuntime::start_core(
+                        voter.node_id,
+                        Config {
+                            addr: voter.addr.to_string(),
+                            data_dir: base
+                                .join(format!("n{}", voter.node_id.0))
+                                .to_string_lossy()
+                                .into_owned(),
+                            join: Vec::new(),
+                            wal_streams: 1,
+                            replication_factor: 3,
+                        },
+                        RuntimeAuth {
+                            cluster_token: "establishing-read-cluster-token".into(),
+                            client_tokens: vec![(
+                                "acceptance".into(),
+                                "establishing-read-token".into(),
+                            )],
+                        },
+                        root.clone(),
+                        StoreIdentity::for_voter(root, voter.node_id).unwrap(),
+                        None,
+                        StartOverrides::default(),
+                    )
+                    .unwrap()
+                })
+                .collect()
+        }
+        for cut in [
+            "initial-confstate",
+            "election-only",
+            "committed-unapplied-catalog",
+        ] {
+            let (mut rts, root, _, base) = unformed_trio(cut, cut == "initial-confstate");
+            assert!(rts
+                .iter()
+                .all(|rt| rt.node.local_cluster_identity().unwrap().is_none()));
+            if cut == "initial-confstate" {
+                assert!(rts.iter().all(|rt| rt.driver_thread.is_none()
+                    && rt.driver.status().term == 0
+                    && rt.driver.status().raft_committed == 0));
+            } else {
+                wait_driver(&rts, |rts| {
+                    cluster_leader(rts).is_some_and(|leader| {
+                        let status = rts[leader].driver.status();
+                        rts.iter().all(|rt| {
+                            rt.driver
+                                .driver_applied()
+                                .is_some_and(|at| at.term == status.term)
+                        })
+                    })
+                });
+                if cut == "committed-unapplied-catalog" {
+                    for rt in &rts {
+                        rt.driver.pause_apply(true);
+                    }
+                    for rt in &mut rts {
+                        rt.advance_discovery().unwrap();
+                        rt.advance_election().unwrap();
+                    }
+                    let leader = cluster_leader(&rts).unwrap();
+                    rts[leader].advance_initialization().unwrap();
+                    let (at, _) = rts[leader]
+                        .initial_proposal
+                        .expect("real initialization must append a catalog command");
+                    wait_driver(&rts, |rts| {
+                        rts.iter()
+                            .all(|rt| rt.driver.status().raft_committed >= at.index.0)
+                    });
+                    assert!(rts
+                        .iter()
+                        .all(|rt| rt.driver.driver_applied().unwrap().index < at.index.0));
+                }
+            }
+            for rt in &rts {
+                assert!(!init_marker_exists(&rt.data_dir));
+                assert!(rt.node.local_cluster_identity().unwrap().is_none());
+                assert_eq!(
+                    rt._store_guard.record().unwrap().phase,
+                    kv9_common::store_lifecycle::StorePhase::Active(root.digest())
+                );
+            }
+            drop(rts);
+            rts = reopen(&root, &base);
+            wait_for(
+                &mut rts,
+                10,
+                "original root formation resumes after a pre-catalog crash",
+                |rts| {
+                    rts.iter()
+                        .all(|rt| rt.node.meta.lock().unwrap().bootstrap.is_serving())
+                },
+            );
+            for rt in &rts {
+                rt.verify_certified_root().unwrap();
+                assert_eq!(
+                    rt.node.local_cluster_identity().unwrap(),
+                    Some(root.cluster_id)
+                );
+            }
+            wait_driver(&rts, |rts| {
+                cluster_leader(rts).is_some_and(|leader| {
+                    let status = rts[leader].driver.status();
+                    rts.iter().all(|rt| {
+                        rt.driver
+                            .driver_applied()
+                            .is_some_and(|at| at.term == status.term)
+                    })
+                })
+            });
+            let leader = cluster_leader(&rts).unwrap();
+            let created = backend_view(&rts[leader], &root)
+                .create_keyspace(
+                    "acceptance",
+                    "formation-survives",
+                    TenantId::DEFAULT,
+                    ApiType::Raw,
+                    TxnGroupId(0),
+                )
+                .unwrap();
+            wait_driver(&rts, |rts| {
+                rts.iter().all(|rt| {
+                    rt.driver
+                        .driver_applied()
+                        .is_some_and(|at| at.index >= created.proposed.unwrap().index)
+                })
+            });
+            drop(rts);
+            for voter in &root.voters {
+                fs::remove_file(
+                    base.join(format!("n{}", voter.node_id.0))
+                        .join(kv9_meta::bootstrap::INIT_MARKER_FILE),
+                )
+                .unwrap();
+            }
+            rts = reopen(&root, &base);
+            wait_for(
+                &mut rts,
+                10,
+                "committed catalog survives marker-loss restart",
+                |rts| {
+                    rts.iter()
+                        .all(|rt| rt.node.meta.lock().unwrap().bootstrap.is_serving())
+                },
+            );
+            wait_driver(&rts, |rts| {
+                cluster_leader(rts).is_some_and(|leader| {
+                    let status = rts[leader].driver.status();
+                    rts.iter().all(|rt| {
+                        rt.driver
+                            .driver_applied()
+                            .is_some_and(|at| at.term == status.term)
+                    })
+                })
+            });
+            let leader = cluster_leader(&rts).unwrap();
+            let recovered = backend_view(&rts[leader], &root)
+                .list_keyspaces("acceptance")
+                .unwrap();
+            assert!(
+                recovered.iter().any(|keyspace| {
+                    keyspace.name == "formation-survives" && keyspace.id == created.keyspace
+                }),
+                "formation retry lost an acknowledged catalog row"
+            );
+            let next = backend_view(&rts[leader], &root)
+                .create_keyspace(
+                    "acceptance",
+                    "formation-next",
+                    TenantId::DEFAULT,
+                    ApiType::Raw,
+                    TxnGroupId(0),
+                )
+                .unwrap();
+            assert!(
+                next.keyspace > created.keyspace,
+                "formation retry reset the catalog allocator"
+            );
+            for rt in &rts {
+                rt.verify_certified_root().unwrap();
+            }
+            drop(rts);
+            fs::remove_dir_all(base).unwrap();
+            eprintln!("PASS: original root formation recovered at {cut}");
+        }
     }
 
     /// The committed-but-unapplied window, end to end on the PRODUCT read
@@ -6774,9 +7233,7 @@ mod tests {
 #[cfg(test)]
 mod fence_firing_tests {
     use super::*;
-    use kv9_common::{
-        ApiType, BootstrapGeneration, ClusterId, RootVoter, StoreIncarnation, TenantId,
-    };
+    use kv9_common::{ApiType, BootstrapGeneration, ClusterId, RootVoter, TenantId};
     use kv9_raft::{FenceAdjudicator, RegionFence};
     use std::sync::Mutex as StdMutex;
 
@@ -6847,7 +7304,7 @@ mod fence_firing_tests {
             vec![RootVoter {
                 node_id: NodeId(1),
                 addr,
-                store_incarnation: StoreIncarnation::mint().unwrap(),
+                store_incarnation: prepare_test_store(&dir, NodeId(1)),
             }],
             b"fence-firing-credential",
         )
@@ -6876,6 +7333,7 @@ mod fence_firing_tests {
                     Arc::new(RecordingAdjudicator { seen, verdict })
                 })),
                 listener: Some(listener),
+                ..Default::default()
             },
         )
         .expect("single-voter runtime starts");
@@ -6927,7 +7385,7 @@ mod fence_firing_tests {
             vec![RootVoter {
                 node_id: NodeId(1),
                 addr: decoy_addr,
-                store_incarnation: StoreIncarnation::mint().unwrap(),
+                store_incarnation: prepare_test_store(&dir, NodeId(1)),
             }],
             b"adopted-addr-credential",
         )
@@ -6953,6 +7411,7 @@ mod fence_firing_tests {
             StartOverrides {
                 adjudicator: None,
                 listener: Some(adopted),
+                ..Default::default()
             },
         )
         .expect("runtime starts on the adopted listener");

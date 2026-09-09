@@ -39,7 +39,8 @@ fn print_usage() {
         "kv9 — single-binary distributed KV\n\
          \n\
          USAGE:\n\
-           KV9_BOOTSTRAP_TOKEN=<token> kv9 root-create --output <file> --voters <id@ip:port,...>\n\
+           kv9 store-prepare --node-id <id> --data-dir <path>\n\
+           KV9_BOOTSTRAP_TOKEN=<token> kv9 root-create --output <file> --voters <id@ip:port,...> --store-incarnations <id=hex,...>\n\
            KV9_BOOTSTRAP_TOKEN=<token> kv9 init --root <file> --node-id <id> --data-dir <path>\n\
            KV9_JOIN_TICKET=<ticket> kv9 join --root <file> --node-id <id> --addr <ip:port> --data-dir <path>\n\
            KV9_CLUSTER_TOKEN=<token> KV9_CLIENT_TOKENS=<principal=token,...> kv9 start --node-id <id> --addr <ip:port> --data-dir <path>\n\
@@ -197,6 +198,30 @@ fn take_named_arg(arguments: &mut Vec<String>, name: &str) -> Result<String, Str
     Ok(value)
 }
 
+fn run_store_prepare(args: impl Iterator<Item = String>) -> ExitCode {
+    let cli = match parse_cli(args) {
+        Ok(cli) => cli,
+        Err(error) => return command_error(&error),
+    };
+    if !cli.join.is_empty() || cli.cluster_id.is_some() || cli.addr.is_some() {
+        return command_error("store-prepare accepts only --node-id and --data-dir");
+    }
+    let node_id = cli.node_id.expect("parse_cli enforces node id");
+    let config = config_from_cli(cli);
+    let result = kv9_common::store_lifecycle::StoreGuard::lock(Path::new(&config.data_dir))
+        .and_then(|mut guard| guard.prepare(node_id));
+    match result {
+        Ok(record) => {
+            println!(
+                "store_prepared=true node_id={} store_incarnation={}",
+                record.node_id.0, record.incarnation
+            );
+            ExitCode::SUCCESS
+        }
+        Err(error) => command_error(&error.to_string()),
+    }
+}
+
 fn run_root_create(args: impl Iterator<Item = String>) -> ExitCode {
     let mut arguments: Vec<String> = args.collect();
     let output = match take_named_arg(&mut arguments, "--output") {
@@ -207,6 +232,32 @@ fn run_root_create(args: impl Iterator<Item = String>) -> ExitCode {
         Ok(value) => value,
         Err(error) => return command_error(&error),
     };
+    let incarnations =
+        match take_named_arg(&mut arguments, "--store-incarnations") {
+            Ok(value) => value,
+            Err(_) => return command_error(
+                "--store-incarnations is required; run store-prepare on each data directory first",
+            ),
+        };
+    let mut prepared = std::collections::BTreeMap::new();
+    for item in incarnations.split(',') {
+        let Some((id, incarnation)) = item.split_once('=') else {
+            return command_error("store incarnations must be node_id=32_hex pairs");
+        };
+        let (Ok(id), Ok(incarnation)) =
+            (id.parse::<u64>(), incarnation.parse::<StoreIncarnation>())
+        else {
+            return command_error("invalid store incarnation pair");
+        };
+        if id == 0
+            || incarnation.as_bytes() == &[0; 16]
+            || prepared.insert(NodeId(id), incarnation).is_some()
+        {
+            return command_error(
+                "store incarnations require unique non-zero node ids and non-zero identities",
+            );
+        }
+    }
     if !arguments.is_empty() {
         return command_error(&format!("unknown argument: {}", arguments[0]));
     }
@@ -229,7 +280,11 @@ fn run_root_create(args: impl Iterator<Item = String>) -> ExitCode {
             Ok(RootVoter {
                 node_id: seed.node_id,
                 addr: seed.addr,
-                store_incarnation: StoreIncarnation::mint()?,
+                store_incarnation: prepared.remove(&seed.node_id).ok_or_else(|| {
+                    kv9_common::Error::Config(
+                        "every root voter needs its independently prepared incarnation".into(),
+                    )
+                })?,
             })
         })
         .collect::<kv9_common::Result<Vec<_>>>()
@@ -237,6 +292,9 @@ fn run_root_create(args: impl Iterator<Item = String>) -> ExitCode {
         Ok(voters) => voters,
         Err(error) => return command_error(&error.to_string()),
     };
+    if !prepared.is_empty() {
+        return command_error("store incarnation supplied for a node outside the root voter set");
+    }
     let root = match ClusterId::mint().and_then(|cluster_id| {
         BootstrapGeneration::mint().and_then(|generation| {
             RootDescriptor::new(cluster_id, generation, voters, credential.as_bytes())
@@ -287,6 +345,11 @@ fn run_provision(args: impl Iterator<Item = String>, joining: bool) -> ExitCode 
     };
     let node_id = cli.node_id.expect("parse_cli enforces node id");
     let config = config_from_cli(cli);
+    let mut store = match kv9_common::store_lifecycle::StoreGuard::lock(Path::new(&config.data_dir))
+    {
+        Ok(store) => store,
+        Err(error) => return command_error(&error.to_string()),
+    };
     let identity = if joining {
         let ticket = std::env::var("KV9_JOIN_TICKET").unwrap_or_default();
         if ticket.len() != 64 || !ticket.bytes().all(|byte| byte.is_ascii_hexdigit()) {
@@ -310,8 +373,9 @@ fn run_provision(args: impl Iterator<Item = String>, joining: bool) -> ExitCode 
                 }
                 Err(error) => return command_error(&error.to_string()),
             },
-            (false, false) => match StoreIncarnation::mint()
-                .and_then(|incarnation| StoreIdentity::for_joiner(&root, node_id, incarnation))
+            (false, false) => match store
+                .prepare(node_id)
+                .and_then(|record| StoreIdentity::for_joiner(&root, node_id, record.incarnation))
             {
                 Ok(identity) => identity,
                 Err(error) => return command_error(&error.to_string()),
@@ -334,7 +398,13 @@ fn run_provision(args: impl Iterator<Item = String>, joining: bool) -> ExitCode 
             Err(error) => return command_error(&error.to_string()),
         }
     };
+    if let Err(error) = store.verify(&identity) {
+        return command_error(&error.to_string());
+    }
     if let Err(error) = persist_root_bundle(Path::new(&config.data_dir), &root, &identity) {
+        return command_error(&error.to_string());
+    }
+    if let Err(error) = store.bind(&root, &identity) {
         return command_error(&error.to_string());
     }
     println!(
@@ -368,6 +438,7 @@ fn main() -> ExitCode {
         return ExitCode::FAILURE;
     };
     match command {
+        "store-prepare" => return run_store_prepare(arguments.into_iter().skip(1)),
         "root-create" => return run_root_create(arguments.into_iter().skip(1)),
         "init" => return run_provision(arguments.into_iter().skip(1), false),
         "join" => return run_provision(arguments.into_iter().skip(1), true),

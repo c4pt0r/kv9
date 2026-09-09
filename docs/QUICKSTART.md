@@ -72,7 +72,12 @@ docker exec -e "MC_HOST_local=http://$KV9_OBJECT_STORE_ACCESS_KEY:$KV9_OBJECT_ST
 Keep the object-store environment for restart. Reuse the original MinIO credentials with an existing volume.
 
 The following Bash commands create a local three-node cluster. Nodes inherit the MinIO settings.
-Use separate, uninitialized data directories. The generated authentication file has mode 600 and must be retained.
+Use separate, uninitialized data directories. Each directory must be prepared on its actual disk with
+`kv9 store-prepare --node-id ID --data-dir PATH` before creating the root. The helper below prepares
+three local directories and collects their public incarnation identifiers. For different hosts, run
+that command on each host, then pass the collected `ID=INCARNATION,...` map to `root-create`.
+The descriptor records these identities; it cannot recreate a lost voter's identity on a new disk.
+The generated authentication file has mode 600 and must be retained.
 
 ```bash
 cargo build --workspace
@@ -85,8 +90,11 @@ for name in ('KV9_BOOTSTRAP_TOKEN', 'KV9_CLUSTER_TOKEN', 'KV9_CLIENT_TOKEN'):
 print('export KV9_CLIENT_TOKENS="admin=$KV9_CLIENT_TOKEN"')
 PY
 source ./kv9-local/auth.env
+source scripts/root_provision.sh
+kv9_voters=1@127.0.0.1:22401,2@127.0.0.1:22402,3@127.0.0.1:22403
+kv9_prepared="$(prepare_root_stores ./target/debug/kv9 ./kv9-local "$kv9_voters")"
 ./target/debug/kv9 root-create --output ./kv9-local/root.bin \
-  --voters 1@127.0.0.1:22401,2@127.0.0.1:22402,3@127.0.0.1:22403
+  --voters "$kv9_voters" --store-incarnations "$kv9_prepared"
 for n in 1 2 3; do
   ./target/debug/kv9 init --root ./kv9-local/root.bin --node-id "$n" --data-dir "./kv9-local/n$n"
   ./target/debug/kv9 start --node-id "$n" --addr "127.0.0.1:$((22400+n))" \

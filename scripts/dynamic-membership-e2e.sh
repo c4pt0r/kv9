@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$repo_dir/scripts/membership-write.sh"
@@ -154,7 +155,7 @@ echo "Building kv9..."
 cargo build --quiet --manifest-path "$repo_dir/Cargo.toml"
 
 KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root_path" \
-  --voters "$initial_join" >"$artifact_dir/root-create.log"
+  --voters "$initial_join" --store-incarnations "$(prepare_root_stores "$bin" "$artifact_dir" "$initial_join")" >"$artifact_dir/root-create.log"
 
 for node in 1 2 3; do start_node "$node"; done
 wait_until "initial three voters Serving" 20 membership_converged 3 "1,2,3" ""

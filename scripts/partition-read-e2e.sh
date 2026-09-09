@@ -25,6 +25,7 @@
 # the isolated leader, which is the point: the leader must REFUSE typed, not
 # vanish.
 set -euo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/root_provision.sh"
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 bin="$repo_dir/target/debug/kv9"
@@ -57,7 +58,7 @@ fi
   || { cat "$artifact_dir/build.log" >&2; echo "FAIL: partition-testing build failed" >&2; exit 1; }
 
 KV9_BOOTSTRAP_TOKEN="$bootstrap_token" "$bin" root-create --output "$root_path" \
-  --voters "$root_voters" >"$artifact_dir/root-create.log"
+  --voters "$root_voters" --store-incarnations "$(prepare_root_stores "$bin" "$artifact_dir" "$root_voters")" >"$artifact_dir/root-create.log"
 
 status_value() {
   local node="$1" key="$2"

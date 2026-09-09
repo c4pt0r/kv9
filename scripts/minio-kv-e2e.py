@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Three real nodes, real S3, killed leaders, reclaimed WAL and remote recovery."""
+from root_provision import prepare_stores
 import json
 import hashlib
 import re
@@ -234,7 +235,8 @@ try:
         gates.mkdir()
         env['KV9_TESTING_FLUSH_PAUSE_DIR'] = str(gates)
     root = artifacts / 'root.bin'
-    run([binary, 'root-create', '--output', root, '--voters', ','.join(f'{n}@127.0.0.1:{base+n}' for n in (1,2,3))])
+    prepared = prepare_stores(run, binary, {n: artifacts/f'n{n}' for n in (1,2,3)})
+    run([binary, 'root-create', '--output', root, '--voters', ','.join(f'{n}@127.0.0.1:{base+n}' for n in (1,2,3)), '--store-incarnations', prepared])
     for node in (1,2,3):
         run([binary, 'init', '--root', root, '--node-id', node, '--data-dir', artifacts/f'n{node}'])
         start(node)
