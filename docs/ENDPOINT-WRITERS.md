@@ -131,3 +131,40 @@ tests do not establish cross-host failure isolation. #47 and #42/P0 remain open.
 
 GitHub CI remains manual-only for pre-release or key-milestone acceptance after
 the corresponding local gates pass. Routine development runs these gates locally.
+
+## Accepted local increment
+
+Clean revision `bc5bbd2e8c73c4e811b720f17ab74b0ff7e714f4` passed 540 workspace
+tests with zero failures and 22 ignored tests, warnings-denied Clippy, formatting,
+Python syntax and workflow validation. All six executable E2E paths and the real
+MinIO three-replica failover/checkpoint/recovery path passed. Thirteen compiled
+source controls passed baseline, intended failure and restoration.
+
+Independent source binding accepted 29 TLC cases, 28 proof/audit cases and 19
+positive fresh-cache TLAPS runs with exactly 13 declarations and 102 obligations.
+The two finite instances explored 296 and 2,170 distinct states under each of two
+fingerprints. The first full gate attempt matched the wrong failed obligation for
+the unlocked-writer fault; the corrected second attempt passed. The accepted third
+attempt additionally makes absent admission remain absent, matching the physical
+implementation. All earlier attempts and their sources are retained.
+
+Actual local Chaos Mesh acceptance passed the existing 19-window matrix. Independent
+audits accepted the complete 4,443-operation CLI history and 1,242-operation
+persistent-client history, formation/recovery evidence and corrupted-evidence
+controls. The database served after the test collector was removed. Image
+`sha256:90f0d7a9de89baf2e4455c6813937703a8f246b6e5f1422c1b7231c3fdd251bb`
+contains the retained database executable, whose SHA-256 is
+`0ee03532859f5b02a268ecd30b8815e7aff014e080d4ba0c241a7074bf83d2a2`.
+
+Archive: `target/correctness-evidence/2026-09-09-bc5bbd2-endpoint-writers.tar.gz`,
+122,683,578 bytes, SHA-256
+`2c617348eea9d25fbbd7fa7c0ecf86100789151de7a2d75d8fbdfcd5da3277c9`.
+All 3,426 entries independently verify. It retains exact source, the executable,
+proofs, controls, original failures, successful logs, Chaos scenes, complete
+histories and independent audits. Root-trust and quickstart remove their data
+directories on success; their complete process logs are retained.
+
+No GitHub workflow was dispatched. This acceptance completes the existing-writer
+integration foundation, not the public migration API, changed-endpoint restart,
+rollout fencing or dedicated migration Chaos cell. #47 and #42/P0 remain open;
+the separate intermittent initial gRPC apply timeout in #48 is still unexplained.
