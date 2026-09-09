@@ -197,3 +197,11 @@ without spawning polling children. Before each injected/healed start it records
 the launcher state, verifies no child/tracer and the expected FUSE mount state,
 and clears pending stop signals on the launcher. Database failures, in-fault
 histories and recovery remain separate mandatory observations.
+
+The fourth full attempt completed all 21 fault windows and the actual migration
+cell. The complete persistent-client history passed, but the CLI history checker
+exhausted its frontier and correctly returned `inconclusive`. [#49](https://github.com/c4pt0r/kv9/issues/49)
+tracks the confirmed-range snapshot ordering repair. The original 4,330-event-
+pair history is unchanged; its full witness is accepted by the original model.
+The [history contract](HISTORY-CHECKING.md#confirmed-range-snapshot-ordering)
+records the permutation argument, reduced failure and unchanged budgets.

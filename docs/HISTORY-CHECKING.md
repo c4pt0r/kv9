@@ -331,3 +331,39 @@ controls retain exact baseline, single-test assertion failure, and restored
 checks; disabling the following-read hint fails its fixed-frontier witness
 case. Local retained-corpus success does not change the original hosted run's
 failed conclusion or establish a successful subsequent hosted run.
+
+## Confirmed range snapshot ordering
+
+Tracking: [#49](https://github.com/c4pt0r/kv9/issues/49). The 21-window actual
+Chaos matrix at `362097a` completed its fault observations, but its complete
+4,330-operation CLI history returned `inconclusive` after 197,068 states. A
+confirmed range and a later insertion overlapped. Selecting the range after
+the insertion deleted a value required by a subsequent scan; the legal
+execution selects the old keys first and applies that captured set later.
+Unrelated unknown effects consumed the search frontier before it retried the
+correct snapshot order.
+
+The guided witness search now prefers an eligible, unselected confirmed range
+before an overlapping insertion of a new key in that range. A reduced history
+with 64 interchangeable unknown deletions reproduces the old failure under a
+100-state budget; the new ordering finds its witness in eight states. A
+separate control requires the opposite snapshot order. The original complete
+history obtains a witness in 4,526 states, and the pre-change independent
+verifier accepts every step. No event, unknown outcome or search limit changes.
+
+The preservation argument is a permutation argument. The eligible candidate
+set and each candidate's transition generator are unchanged. Sorting that
+finite set changes exploration order, and all children remain in the frontier.
+For unrestricted search, `guided_unknown` is false, so the added priority
+component is constant: its relative order is identical to the old order. For
+guided search, a positive result still passes the unchanged full witness
+replay; restricted exhaustion still cannot establish invalidity. The existing
+certificate/interval proof boundary is preserved. This is not an additional
+consensus theorem or a completeness guarantee under finite search budgets.
+
+The complete Python gate has 40 tests and 15 isolated source mutations. The
+new mutation disables only the confirmed-range preference and must produce
+the named budget regression; baseline and restoration must pass. Existing
+unknown-write, partial-range, real-time, refusal, witness and unrestricted-search
+controls remain required. The original failed Chaos history is retained; a
+replayed certificate does not rewrite its original command result.
