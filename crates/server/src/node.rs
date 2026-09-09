@@ -138,6 +138,17 @@ impl<E: ReplicatedEngine> MetaRaft<E> {
             .expect("catalog transaction lock poisoned")
     }
 
+    #[cfg(test)]
+    pub(crate) fn try_lock_catalog_txn(&self) -> Option<std::sync::MutexGuard<'_, ()>> {
+        match self.catalog_txn.try_lock() {
+            Ok(guard) => Some(guard),
+            Err(std::sync::TryLockError::WouldBlock) => None,
+            Err(std::sync::TryLockError::Poisoned(_)) => {
+                panic!("catalog transaction lock poisoned")
+            }
+        }
+    }
+
     /// Wire the state machine/catalog around an externally driven raft peer and a shared
     /// engine. The deterministic harness supplies [`MemEngine`]; the process runtime
     /// supplies the durable Phase-1 engine.

@@ -231,13 +231,13 @@ jobs:
             ${{ runner.temp }}/read-admission-controls
           if-no-files-found: error
 
-      - name: Catalog endpoint CAS source controls
+      - name: Catalog endpoint CAS and writer source controls
         run: |
           set -euo pipefail
           python3 scripts/check-endpoint-controls.py --output "$RUNNER_TEMP/endpoint-controls" \
             > "$RUNNER_TEMP/endpoint-controls.log" 2>&1
           cat "$RUNNER_TEMP/endpoint-controls.log"
-          test "$(tail -1 "$RUNNER_TEMP/endpoint-controls.log")" = 'PASS: 6 isolated endpoint CAS source controls checked'
+          test "$(tail -1 "$RUNNER_TEMP/endpoint-controls.log")" = 'PASS: 13 isolated endpoint CAS and writer source controls checked'
       - uses: actions/upload-artifact@v4
         if: always()
         with:

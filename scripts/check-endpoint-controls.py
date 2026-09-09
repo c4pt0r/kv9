@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reject isolated endpoint CAS faults using the real catalog planner."""
+"""Reject isolated endpoint CAS and route-writer faults in catalog/runtime paths."""
 import argparse
 import hashlib
 import json
@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 ENDPOINT = 'crates/meta/src/endpoint.rs'
 SCHEMA = 'crates/meta/src/schema.rs'
 TESTS = 'crates/meta/tests/endpoint.rs'
+RUNTIME = 'crates/server/src/runtime.rs'
+NODE = 'crates/server/src/node.rs'
 
 
 def digest(text):
@@ -31,8 +33,9 @@ def main():
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
-    sources = {p: (ROOT / p).read_text() for p in (ENDPOINT, SCHEMA, TESTS)}
+    sources = {p: (ROOT / p).read_text() for p in (ENDPOINT, SCHEMA, TESTS, RUNTIME, NODE)}
     endpoint = sources[ENDPOINT]
+    runtime = sources[RUNTIME]
     cases = [
         ('ignore-cas-generation', ENDPOINT, replace_once(endpoint,
          'current.generation == request.expected_generation', 'true'),
@@ -58,6 +61,48 @@ def main():
          'if !current.active {', 'if false && !current.active {'),
          'endpoint_update_requires_active_membership',
          'inactive member received endpoint authorization'),
+        ('retain-obsolete-admission', ENDPOINT, replace_once(endpoint,
+         'if revoke {', 'if false && revoke {'),
+         'endpoint_change_revokes_prior_admission_in_the_same_batch',
+         'endpoint change retained obsolete registration authority'),
+        ('confirmation-revokes-later-admission', ENDPOINT, replace_once(endpoint,
+         'return Ok(Confirmed(current));',
+         'crate::admission::revoke_admission(txn, request.node)?;\n        return Ok(Confirmed(current));'),
+         'endpoint_confirmation_does_not_revoke_a_later_admission',
+         'confirmation or refusal staged catalog mutations'),
+        ('registration-reuses-generation', ENDPOINT, replace_once(endpoint,
+         '.generation\n        .checked_add(1)', '.generation\n        .checked_add(0)'),
+         'registration_address_changes_participate_in_endpoint_aba_fencing',
+         'registration did not advance the endpoint generation'),
+        ('registration-skips-versioned-writer', RUNTIME, replace_once(runtime,
+         '''                    kv9_meta::endpoint::refresh_registration_endpoint(
+                        &mut txn,
+                        node,
+                        store_incarnation,
+                        canonical_addr,
+                    )
+                    .map_err(RegistrationError::Failed)?;''',
+         '                    // Skip the versioned endpoint planner.'),
+         'runtime::tests::registration_refusals_preserve_routes_and_renewed_tickets_cannot_rebind',
+         'renewed registration bypassed endpoint versioning'),
+        ('unlocked-catalog-route-snapshot', RUNTIME, replace_once(runtime,
+         '''        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let txn = self.node.meta_raft.store.begin()?;
+        let rows = txn.scan(&NODES_DESC, MAX_PHASE1_NODES + 1)?;''',
+         '''        let txn = self.node.meta_raft.store.begin()?;
+        let rows = txn.scan(&NODES_DESC, MAX_PHASE1_NODES + 1)?;'''),
+         'runtime::tests::delayed_catalog_snapshot_cannot_restore_an_older_live_route',
+         'stale catalog snapshot restored the old live endpoint'),
+        ('registration-response-overrides-catalog', RUNTIME, replace_once(runtime,
+         'applied_endpoint.map_or(via.1, |endpoint| endpoint.address)',
+         '{ let _ = applied_endpoint; via.1 }'),
+         'runtime::tests::registration_response_fallback_defers_to_the_applied_directory',
+         'registration response overwrote an applied endpoint with its dial address'),
+        ('consumed-retry-ignores-current-endpoint', RUNTIME, replace_once(runtime,
+         'if endpoint.address != canonical_addr {',
+         'if false && endpoint.address != canonical_addr {'),
+         'runtime::tests::committed_endpoint_change_revokes_registration_and_rejects_its_retry',
+         'obsolete consumed admission bypassed current endpoint validation'),
     ]
     env = dict(os.environ, CARGO_TARGET_DIR=os.environ.get('CARGO_TARGET_DIR', str(ROOT / 'target')))
     manifest = dict(sources={p: digest(s) for p, s in sources.items()}, controls=[])
@@ -84,7 +129,8 @@ def main():
                 for p, s in sources.items():
                     (tree / p).write_text(text if p == path else s)
                 expected_sources = {p: digest(text if p == path else s) for p, s in sources.items()}
-                command = ['cargo', 'test', '--locked', '-p', 'kv9-meta', '--test', 'endpoint', test, '--', '--exact']
+                target = ['-p', 'kv9-server', '--lib'] if test.startswith('runtime::') else ['-p', 'kv9-meta', '--test', 'endpoint']
+                command = ['cargo', 'test', '--locked', *target, test, '--', '--exact']
                 result = subprocess.run(command, cwd=tree, env=env, text=True, stdout=subprocess.PIPE,
                                         stderr=subprocess.STDOUT, timeout=180)
                 (folder / f'{phase}.log').write_text(result.stdout)
@@ -104,7 +150,7 @@ def main():
             print(f'PASS: {name} baseline, intended failure and restored source', flush=True)
     if any((ROOT / p).read_text() != text for p, text in sources.items()):
         raise RuntimeError('source changed during controls')
-    print('PASS: 6 isolated endpoint CAS source controls checked', flush=True)
+    print('PASS: 13 isolated endpoint CAS and writer source controls checked', flush=True)
 
 
 if __name__ == '__main__':

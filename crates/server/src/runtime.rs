@@ -1264,6 +1264,18 @@ impl RegistrationBackend for RuntimeBackend {
                 if bound.as_deref() != Some(store_incarnation.as_bytes()) {
                     return Err(RegistrationError::InvalidIncarnation);
                 }
+                let endpoint = kv9_meta::endpoint::node_endpoint(&txn, node)
+                    .map_err(RegistrationError::Failed)?
+                    .ok_or_else(|| {
+                        RegistrationError::Failed(Error::Config(
+                            "consumed registration has no endpoint".into(),
+                        ))
+                    })?;
+                if endpoint.address != canonical_addr {
+                    return Err(RegistrationError::Failed(Error::Config(
+                        "consumed admission names a superseded endpoint".into(),
+                    )));
+                }
             }
             Some(admission) if admission.state == kv9_meta::admission::AdmissionState::Pending => {
                 let mut txn = self
@@ -1286,17 +1298,19 @@ impl RegistrationBackend for RuntimeBackend {
                     .map_err(RegistrationError::Failed)?
                     .is_some()
                 {
+                    kv9_meta::endpoint::refresh_registration_endpoint(
+                        &mut txn,
+                        node,
+                        store_incarnation,
+                        canonical_addr,
+                    )
+                    .map_err(RegistrationError::Failed)?;
                     txn.update(
                         &NODES_DESC,
                         &[memcmp_uint(node.0)],
                         vec![
-                            (ColumnId(2), ColumnValue::Text(canonical.clone())),
                             (ColumnId(3), ColumnValue::Uint(1)),
                             (ColumnId(4), ColumnValue::Uint(now)),
-                            (
-                                ColumnId(5),
-                                ColumnValue::Bytes(store_incarnation.as_bytes().to_vec()),
-                            ),
                         ],
                     )
                     .map_err(RegistrationError::Failed)?;
@@ -2181,6 +2195,9 @@ fn local_member_is_active(
     )
 }
 
+#[cfg(test)]
+type RouteSnapshotGate = (std::sync::mpsc::Sender<()>, std::sync::mpsc::Receiver<()>);
+
 /// A running real-process metadata member.
 pub struct NodeRuntime {
     node: Arc<Node<WalEngine>>,
@@ -2221,6 +2238,8 @@ pub struct NodeRuntime {
     catchup_capability: Arc<std::sync::Mutex<Option<CatchupCapability>>>,
     next_discovery: Instant,
     next_advertised_endpoint_probe: Instant,
+    #[cfg(test)]
+    route_snapshot_gate: std::sync::Mutex<Option<RouteSnapshotGate>>,
     _store_guard: kv9_common::store_lifecycle::StoreGuard,
 }
 
@@ -2660,6 +2679,8 @@ impl NodeRuntime {
             catchup_capability,
             next_discovery: Instant::now(),
             next_advertised_endpoint_probe: Instant::now(),
+            #[cfg(test)]
+            route_snapshot_gate: std::sync::Mutex::new(None),
             _store_guard: store_guard,
         })
     }
@@ -2722,8 +2743,17 @@ impl NodeRuntime {
     /// out-of-band address authority.
     fn sync_registered_peers(&self) -> Result<()> {
         const MAX_PHASE1_NODES: usize = 1024;
+        // Capture and installation share the planner lock with registration
+        // and operator updates. A delayed snapshot cannot overwrite a route
+        // installed by a newer committed catalog transaction.
+        let _guard = self.node.meta_raft.lock_catalog_txn();
         let txn = self.node.meta_raft.store.begin()?;
         let rows = txn.scan(&NODES_DESC, MAX_PHASE1_NODES + 1)?;
+        #[cfg(test)]
+        if let Some((captured, resume)) = self.route_snapshot_gate.lock().unwrap().take() {
+            captured.send(()).unwrap();
+            resume.recv().unwrap();
+        }
         if rows.len() > MAX_PHASE1_NODES {
             return Err(Error::Config(format!(
                 "nodes catalog reached Phase-1 limit {MAX_PHASE1_NODES}"
@@ -2749,6 +2779,23 @@ impl NodeRuntime {
             })?;
             self.transport.register_peer(node, addr);
         }
+        Ok(())
+    }
+
+    /// The successful registration endpoint bootstraps a missing route only.
+    /// Once this replica has an applied row, that row owns the route. Share
+    /// the catalog lock so this fallback cannot race a newer local installer.
+    fn install_registration_response_route(
+        &self,
+        via: (NodeId, std::net::SocketAddr),
+    ) -> Result<()> {
+        let _guard = self.node.meta_raft.lock_catalog_txn();
+        let txn = self.node.meta_raft.store.begin()?;
+        let applied_endpoint = kv9_meta::endpoint::node_endpoint(&txn, via.0)?;
+        self.transport.register_peer(
+            via.0,
+            applied_endpoint.map_or(via.1, |endpoint| endpoint.address),
+        );
         Ok(())
     }
 
@@ -3182,7 +3229,7 @@ impl NodeRuntime {
                     // registered against (not an unvalidated hint), and
                     // the applied catalog overwrites it on first sync —
                     // mirror of the leader-side eager register_peer.
-                    self.transport.register_peer(via.0, via.1);
+                    self.install_registration_response_route(via)?;
                     // The ONLY install site of the catch-up capability, and
                     // it is inside the typed Registered arm: InvalidTicket
                     // and every Unconfirmed reason are structurally unable
@@ -6406,7 +6453,334 @@ mod tests {
             rts[leader].transport.peer_address_for_tests(member),
             Some(changed_addr)
         );
+        let endpoint = kv9_meta::endpoint::node_endpoint(
+            &backend.node.meta_raft.store.begin().unwrap(),
+            member,
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(
+            endpoint.generation, 1,
+            "renewed registration bypassed endpoint versioning"
+        );
+        assert_eq!(endpoint.previous_address, Some(addr));
         drop(backend);
+        drop(rts);
+        fs::remove_dir_all(base).unwrap();
+    }
+
+    #[test]
+    fn committed_endpoint_change_revokes_registration_and_rejects_its_retry() {
+        let (rts, root, _, base) = serving_trio("endpoint-revoked-retry");
+        let leader = cluster_leader(&rts).unwrap();
+        let backend = backend_view(&rts[leader], &root);
+        let member = NodeId(4);
+        let original_listener = bound_listener_for_e2e();
+        let replacement_listener = bound_listener_for_e2e();
+        let original_addr = original_listener.local_addr().unwrap();
+        let replacement_addr = replacement_listener.local_addr().unwrap();
+        let incarnation = StoreIncarnation::mint().unwrap();
+        let granted = backend
+            .admit_node("admin", member, &original_addr.to_string(), 600)
+            .unwrap();
+        let ticket = RootDigest::sha256(granted.join_ticket.unwrap().as_bytes());
+        backend
+            .register(
+                member,
+                &original_addr.to_string(),
+                root.cluster_id,
+                ticket.as_bytes(),
+                incarnation,
+            )
+            .unwrap();
+        let applied = {
+            let _guard = backend.node.meta_raft.lock_catalog_txn();
+            let term = backend.prepare_catalog().unwrap();
+            let mut txn = backend.node.meta_raft.store.begin().unwrap();
+            assert!(matches!(
+                kv9_meta::endpoint::change_endpoint(
+                    &mut txn,
+                    kv9_meta::endpoint::EndpointChange {
+                        cluster: root.cluster_id,
+                        node: member,
+                        incarnation,
+                        expected_address: original_addr,
+                        expected_generation: 0,
+                        new_address: replacement_addr,
+                    }
+                )
+                .unwrap(),
+                kv9_meta::endpoint::EndpointChangeOutcome::Changed(_)
+            ));
+            backend
+                .commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()), term)
+                .unwrap()
+        };
+        assert!(applied.index > 0);
+        rts[leader].sync_registered_peers().unwrap();
+        assert_eq!(
+            rts[leader].transport.peer_address_for_tests(member),
+            Some(replacement_addr)
+        );
+        assert!(
+            backend
+                .register(
+                    member,
+                    &original_addr.to_string(),
+                    root.cluster_id,
+                    ticket.as_bytes(),
+                    incarnation
+                )
+                .is_err(),
+            "old registration was accepted after its endpoint authority was revoked"
+        );
+        assert_eq!(
+            rts[leader].transport.peer_address_for_tests(member),
+            Some(replacement_addr),
+            "old registration restored a superseded transport endpoint"
+        );
+        let txn = backend.node.meta_raft.store.begin().unwrap();
+        assert_eq!(
+            kv9_meta::admission::admission(&txn, member)
+                .unwrap()
+                .unwrap()
+                .state,
+            kv9_meta::admission::AdmissionState::Revoked
+        );
+        let endpoint = kv9_meta::endpoint::node_endpoint(&txn, member)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            (endpoint.generation, endpoint.address),
+            (1, replacement_addr)
+        );
+        drop(txn);
+        // Recreate an obsolete consumed admission left by a writer that did
+        // not revoke it. Address validation must independently refuse this
+        // retry before its eager transport update, even with a valid ticket.
+        {
+            let _guard = backend.node.meta_raft.lock_catalog_txn();
+            let term = backend.prepare_catalog().unwrap();
+            let mut txn = backend.node.meta_raft.store.begin().unwrap();
+            txn.update(
+                &kv9_meta::schema::NODE_ADMISSIONS_DESC,
+                &[memcmp_uint(member.0)],
+                vec![(
+                    ColumnId(5),
+                    ColumnValue::Uint(kv9_meta::admission::AdmissionState::Consumed as u64),
+                )],
+            )
+            .unwrap();
+            backend
+                .commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()), term)
+                .unwrap();
+        }
+        assert!(
+            backend
+                .register(
+                    member,
+                    &original_addr.to_string(),
+                    root.cluster_id,
+                    ticket.as_bytes(),
+                    incarnation
+                )
+                .is_err(),
+            "obsolete consumed admission bypassed current endpoint validation"
+        );
+        assert_eq!(
+            rts[leader].transport.peer_address_for_tests(member),
+            Some(replacement_addr)
+        );
+        drop(backend);
+        drop(rts);
+        fs::remove_dir_all(base).unwrap();
+    }
+
+    #[test]
+    fn delayed_catalog_snapshot_cannot_restore_an_older_live_route() {
+        use kv9_raft::transport::RaftTransport;
+        let (rts, root, _, base) = serving_trio("endpoint-snapshot-order");
+        let leader = cluster_leader(&rts).unwrap();
+        let runtime = &rts[leader];
+        let backend = backend_view(runtime, &root);
+        let member = NodeId(4);
+        let mut addresses = Vec::new();
+        let mut receivers = Vec::new();
+        for _ in 0..2 {
+            let listener = bound_listener_for_e2e();
+            addresses.push(listener.local_addr().unwrap());
+            listener.set_nonblocking(true).unwrap();
+            let incoming = {
+                let _entered = runtime.grpc_runtime.enter();
+                tokio_stream::wrappers::TcpListenerStream::new(
+                    tokio::net::TcpListener::from_std(listener).unwrap(),
+                )
+            };
+            let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+            receivers.push(rx);
+            let discovery = Arc::new(RuntimeDiscovery::new(
+                member,
+                false,
+                0,
+                RootWireIdentity {
+                    bootstrap_generation: root.bootstrap_generation,
+                    root_digest: root.digest(),
+                },
+            ));
+            discovery.authorize_raft();
+            let service = RaftGrpcService::new(member, tx, discovery);
+            let token = runtime.cluster_token.clone();
+            runtime.grpc_runtime.spawn(async move {
+                tonic::transport::Server::builder()
+                    .add_service(
+                        kv9_raft::grpc::pb::kv9_raft_server::Kv9RaftServer::with_interceptor(
+                            service,
+                            kv9_raft::grpc::cluster_token_interceptor(token),
+                        ),
+                    )
+                    .serve_with_incoming(incoming)
+                    .await
+                    .unwrap();
+            });
+        }
+        let incarnation = StoreIncarnation::mint().unwrap();
+        let granted = backend
+            .admit_node("admin", member, &addresses[0].to_string(), 600)
+            .unwrap();
+        let ticket = RootDigest::sha256(granted.join_ticket.unwrap().as_bytes());
+        backend
+            .register(
+                member,
+                &addresses[0].to_string(),
+                root.cluster_id,
+                ticket.as_bytes(),
+                incarnation,
+            )
+            .unwrap();
+        let send = |context: &[u8]| {
+            runtime.transport.send(
+                member,
+                raft::eraftpb::Message {
+                    from: runtime.node.id.0,
+                    to: member.0,
+                    context: context.to_vec().into(),
+                    ..Default::default()
+                },
+            )
+        };
+        let deadline = Instant::now() + Duration::from_secs(3);
+        loop {
+            send(b"before-snapshot");
+            if receivers[0]
+                .try_recv()
+                .is_ok_and(|message| message.context.as_ref() == b"before-snapshot")
+            {
+                break;
+            }
+            assert!(
+                Instant::now() < deadline,
+                "original endpoint never received the control message"
+            );
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        let (captured, captured_rx) = std::sync::mpsc::channel();
+        let (resume, resumed) = std::sync::mpsc::channel();
+        *runtime.route_snapshot_gate.lock().unwrap() = Some((captured, resumed));
+        let write = || {
+            let term = backend.prepare_catalog().unwrap();
+            let mut txn = backend.node.meta_raft.store.begin().unwrap();
+            assert!(matches!(
+                kv9_meta::endpoint::change_endpoint(
+                    &mut txn,
+                    kv9_meta::endpoint::EndpointChange {
+                        cluster: root.cluster_id,
+                        node: member,
+                        incarnation,
+                        expected_address: addresses[0],
+                        expected_generation: 0,
+                        new_address: addresses[1],
+                    }
+                )
+                .unwrap(),
+                kv9_meta::endpoint::EndpointChangeOutcome::Changed(_)
+            ));
+            backend
+                .commit_catalog(&kv9_raft::Command::from_batch(&txn.into_batch()), term)
+                .unwrap();
+            backend.transport.register_peer(member, addresses[1]);
+        };
+        std::thread::scope(|scope| {
+            let sync = scope.spawn(|| runtime.sync_registered_peers());
+            captured_rx.recv_timeout(Duration::from_secs(3)).unwrap();
+            // Try the real planner mutex at the captured-snapshot cut. If a
+            // mutant omitted the lock, the writer commits first and the stale
+            // sync subsequently overwrites it. Otherwise the writer follows
+            // the completed sync. Neither order depends on a scheduling sleep.
+            let wrote_early = if let Some(_guard) = backend.node.meta_raft.try_lock_catalog_txn() {
+                write();
+                true
+            } else {
+                false
+            };
+            resume.send(()).unwrap();
+            sync.join().unwrap().unwrap();
+            if !wrote_early {
+                let _guard = backend.node.meta_raft.lock_catalog_txn();
+                write();
+            }
+        });
+        let deadline = Instant::now() + Duration::from_secs(3);
+        let mut old_deliveries = 0;
+        loop {
+            send(b"after-snapshot");
+            while let Ok(message) = receivers[0].try_recv() {
+                old_deliveries += usize::from(message.context.as_ref() == b"after-snapshot");
+            }
+            if receivers[1]
+                .try_recv()
+                .is_ok_and(|message| message.context.as_ref() == b"after-snapshot")
+            {
+                break;
+            }
+            assert!(Instant::now() < deadline,
+                "stale catalog snapshot restored the old live endpoint: old deliveries={old_deliveries}");
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert_eq!(old_deliveries, 0);
+        drop(backend);
+        drop(rts);
+        fs::remove_dir_all(base).unwrap();
+    }
+
+    #[test]
+    fn registration_response_fallback_defers_to_the_applied_directory() {
+        let (rts, root, _, base) = serving_trio("endpoint-response-route");
+        let runtime = &rts[cluster_leader(&rts).unwrap()];
+        let peer = root
+            .voters
+            .iter()
+            .find(|voter| voter.node_id != runtime.node.id)
+            .unwrap();
+        let stale_listener = bound_listener_for_e2e();
+        let stale = stale_listener.local_addr().unwrap();
+        assert_ne!(stale, peer.addr);
+        runtime
+            .install_registration_response_route((peer.node_id, stale))
+            .unwrap();
+        assert_eq!(
+            runtime.transport.peer_address_for_tests(peer.node_id),
+            Some(peer.addr),
+            "registration response overwrote an applied endpoint with its dial address"
+        );
+        // A fresh joiner still needs the successfully contacted leader before
+        // its own catalog catches up; absence must preserve that bootstrap path.
+        runtime
+            .install_registration_response_route((NodeId(100), stale))
+            .unwrap();
+        assert_eq!(
+            runtime.transport.peer_address_for_tests(NodeId(100)),
+            Some(stale)
+        );
         drop(rts);
         fs::remove_dir_all(base).unwrap();
     }

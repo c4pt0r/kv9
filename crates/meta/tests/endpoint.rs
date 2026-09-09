@@ -5,8 +5,9 @@ use kv9_common::{ClusterId, NodeId, StoreIncarnation};
 use kv9_engine::{ColumnFamily, Engine, MemEngine, WriteBatch};
 use kv9_meta::codec::{encode_row_key, memcmp_uint, ColumnValue, RowValue};
 use kv9_meta::endpoint::{
-    change_endpoint, node_endpoint, EndpointChange, EndpointChangeOutcome as Outcome,
-    EndpointRefusal as Refusal, ENDPOINT_GENERATION, ENDPOINT_PREVIOUS_ADDRESS,
+    change_endpoint, node_endpoint, refresh_registration_endpoint, EndpointChange,
+    EndpointChangeOutcome as Outcome, EndpointRefusal as Refusal, ENDPOINT_GENERATION,
+    ENDPOINT_PREVIOUS_ADDRESS,
 };
 use kv9_meta::schema::{ColumnId, NODES_DESC};
 use kv9_meta::MetaStore;
@@ -57,6 +58,192 @@ fn apply(store: &MetaStore<MemEngine>, change: EndpointChange) -> Outcome {
         );
     }
     result
+}
+
+#[test]
+fn endpoint_change_revokes_prior_admission_in_the_same_batch() {
+    use kv9_meta::admission::{self, AdmissionState, AdmittedRole};
+    for consumed in [false, true] {
+        let store = store();
+        let change = request(0, 1, 2);
+        let mut txn = store.begin().unwrap();
+        admission::admit_node(
+            &mut txn,
+            change.node,
+            &address(1).to_string(),
+            AdmittedRole::Learner,
+            100,
+        )
+        .unwrap();
+        if consumed {
+            admission::consume_admission(
+                &mut txn,
+                change.node,
+                change.cluster,
+                &address(1).to_string(),
+                1,
+            )
+            .unwrap();
+        }
+        txn.commit().unwrap();
+        let original_state = if consumed {
+            AdmissionState::Consumed
+        } else {
+            AdmissionState::Pending
+        };
+        let mut txn = store.begin().unwrap();
+        assert!(matches!(
+            change_endpoint(&mut txn, change).unwrap(),
+            Outcome::Changed(_)
+        ));
+        assert_eq!(
+            admission::admission(&txn, change.node)
+                .unwrap()
+                .unwrap()
+                .state,
+            AdmissionState::Revoked,
+            "endpoint change retained obsolete registration authority"
+        );
+        let before = store.begin().unwrap();
+        assert_eq!(
+            admission::admission(&before, change.node)
+                .unwrap()
+                .unwrap()
+                .state,
+            original_state
+        );
+        assert_eq!(
+            node_endpoint(&before, change.node)
+                .unwrap()
+                .unwrap()
+                .address,
+            address(1)
+        );
+        drop(before);
+        txn.commit().unwrap();
+        let after = store.begin().unwrap();
+        assert_eq!(
+            admission::admission(&after, change.node)
+                .unwrap()
+                .unwrap()
+                .state,
+            AdmissionState::Revoked
+        );
+        assert_eq!(
+            node_endpoint(&after, change.node).unwrap().unwrap().address,
+            address(2)
+        );
+    }
+}
+
+#[test]
+fn endpoint_confirmation_does_not_revoke_a_later_admission() {
+    use kv9_meta::admission::{self, AdmissionState, AdmittedRole};
+    let store = store();
+    let change = request(0, 1, 2);
+    assert!(matches!(apply(&store, change), Outcome::Changed(_)));
+    let mut txn = store.begin().unwrap();
+    admission::admit_node(
+        &mut txn,
+        change.node,
+        &address(3).to_string(),
+        AdmittedRole::Learner,
+        100,
+    )
+    .unwrap();
+    txn.commit().unwrap();
+    assert!(matches!(apply(&store, change), Outcome::Confirmed(_)));
+    assert_eq!(
+        admission::admission(&store.begin().unwrap(), change.node)
+            .unwrap()
+            .unwrap()
+            .state,
+        AdmissionState::Pending
+    );
+    assert!(matches!(
+        apply(&store, request(0, 1, 3)),
+        Outcome::Refused(Refusal::Conflict)
+    ));
+    assert_eq!(
+        admission::admission(&store.begin().unwrap(), change.node)
+            .unwrap()
+            .unwrap()
+            .state,
+        AdmissionState::Pending
+    );
+}
+
+#[test]
+fn registration_address_changes_participate_in_endpoint_aba_fencing() {
+    let store = store();
+    let change = request(0, 1, 3);
+    for (old, new, generation) in [(1, 2, 1), (2, 1, 2)] {
+        let mut txn = store.begin().unwrap();
+        let next =
+            refresh_registration_endpoint(&mut txn, change.node, change.incarnation, address(new))
+                .unwrap();
+        assert_eq!(
+            next.generation, generation,
+            "registration did not advance the endpoint generation"
+        );
+        assert_eq!(next.previous_address, Some(address(old)));
+        txn.commit().unwrap();
+    }
+    assert_eq!(
+        apply(&store, change),
+        Outcome::Refused(Refusal::Conflict),
+        "registration ABA admitted an obsolete operator CAS"
+    );
+    let mut txn = store.begin().unwrap();
+    let unchanged =
+        refresh_registration_endpoint(&mut txn, change.node, change.incarnation, address(1))
+            .unwrap();
+    assert_eq!(unchanged.generation, 2);
+    assert!(txn.into_batch().mutations().is_empty());
+}
+
+#[test]
+fn registration_endpoint_refuses_rebinding_and_generation_overflow() {
+    let store = store();
+    let change = request(0, 1, 2);
+    let mut txn = store.begin().unwrap();
+    assert!(refresh_registration_endpoint(
+        &mut txn,
+        change.node,
+        StoreIncarnation::from_bytes([9; 16]),
+        address(2)
+    )
+    .is_err());
+    assert!(txn.into_batch().mutations().is_empty());
+    let mut txn = store.begin().unwrap();
+    txn.update(
+        &NODES_DESC,
+        &[memcmp_uint(4)],
+        vec![
+            (ENDPOINT_GENERATION, ColumnValue::Uint(u64::MAX)),
+            (
+                ENDPOINT_PREVIOUS_ADDRESS,
+                ColumnValue::Text(address(3).to_string()),
+            ),
+        ],
+    )
+    .unwrap();
+    txn.commit().unwrap();
+    let mut txn = store.begin().unwrap();
+    assert!(
+        refresh_registration_endpoint(&mut txn, change.node, change.incarnation, address(2))
+            .is_err(),
+        "registration wrapped the endpoint generation"
+    );
+    assert!(txn.into_batch().mutations().is_empty());
+    let mut txn = store.begin().unwrap();
+    assert_eq!(
+        refresh_registration_endpoint(&mut txn, change.node, change.incarnation, address(1))
+            .unwrap()
+            .generation,
+        u64::MAX
+    );
+    assert!(txn.into_batch().mutations().is_empty());
 }
 
 #[test]

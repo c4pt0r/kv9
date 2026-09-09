@@ -47,8 +47,25 @@ jobs:
             ${{ runner.temp }}/endpoint-protocol
           if-no-files-found: error
 
-      # Reuse the pinned toolchain for the two bounded protocol extensions.
+      # Reuse the pinned toolchain for the parameterized protocol extensions.
       # This workflow remains manual-only for release/key-milestone acceptance.
+      - name: Check endpoint writer ordering and admission revocation
+        run: |
+          set -euo pipefail
+          python3 scripts/check-endpoint-writers-protocol.py --tlapm "$RUNNER_TEMP/tlapm/bin/tlapm" \
+            --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/endpoint-writers-protocol" \
+            > "$RUNNER_TEMP/endpoint-writers-protocol.log" 2>&1
+          cat "$RUNNER_TEMP/endpoint-writers-protocol.log"
+          test "$(tail -1 "$RUNNER_TEMP/endpoint-writers-protocol.log")" = 'PASS: 4 full endpoint-writer model checks and 2 fair continuations; 7 protocol controls; 2 witnesses; 13 TLAPS theorems; 102 obligations; 2 audit controls; 10 output controls'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: endpoint-writers-protocol
+          path: |
+            ${{ runner.temp }}/endpoint-writers-protocol.log
+            ${{ runner.temp }}/endpoint-writers-protocol
+          if-no-files-found: error
+
       - name: Check read admission safety and conditional progress
         run: |
           set -euo pipefail

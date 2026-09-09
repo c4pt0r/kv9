@@ -56,6 +56,11 @@ and budget, exact receipt/application prerequisites and conditional progress. It
 upstream Raft and refinement assumptions remain explicit; the separate gRPC apply
 timeout under #48 is not closed by this protocol proof.
 
+[ENDPOINT-WRITERS.md](ENDPOINT-WRITERS.md) records the shared endpoint generation,
+atomic admission revocation and serialized route-installation extension. Its
+parameterized safety and conditional-convergence proof covers existing writers;
+public migration, changed-endpoint restart and rollout fencing remain open in #47.
+
 ## Chaos Mesh E2E is mandatory
 
 Run actual Chaos Mesh resources against dedicated kv9 workloads in an explicitly

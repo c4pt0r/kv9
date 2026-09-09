@@ -5,7 +5,9 @@ Tracking: [#47](https://github.com/c4pt0r/kv9/issues/47), under the
 The [transport ownership foundation](RAFT-ROUTING.md) moves an accepted route
 without leaking workers or mixing connection generations. This document covers
 the catalog transition that must authorize that route and its remaining runtime
-integration. The public update/confirmation API and migration Chaos cell are not
+integration. [Endpoint writer ordering](ENDPOINT-WRITERS.md) extends this foundation
+with atomic admission revocation and serialized runtime route installation.
+The public update/confirmation API and migration Chaos cell are not
 implemented by the catalog foundation alone.
 
 ## Catalog transition
@@ -24,7 +26,9 @@ The `nodes` row adds two tag-length fields:
 | 7 | Previous address of the most recent endpoint transition | Absent only at generation zero |
 
 A changed result stages the new address, generation `g + 1` and previous address
-together in one catalog row update. Other fields and unknown extension tags are
+together in one catalog row update. Any existing Pending/Consumed admission is
+revoked in the same transaction. Confirmation and refusal leave a later admission
+untouched. Other fields and unknown extension tags are
 preserved. A same-address CAS also advances the catalog version; its duplicate
 does not advance it again. The transport may still treat the unchanged socket
 address as an idempotent connection update. Catalog versions and immutable
@@ -114,13 +118,14 @@ This evidence covers the catalog foundation; it is not migration E2E acceptance.
 1. Expose authenticated current-route read and conditional-update RPC/CLI calls
    with bounded admission, typed conflicts and unknown outcomes, and exact
    mutation/confirmation receipts. An update must not change the immutable root,
-   store incarnation or Raft membership. Define cancellation of older pending
-   or consumed admission authority atomically with an explicit route update.
-2. Make every route writer participate in version ordering. Registration must
-   advance the endpoint version when it changes an existing address. A stale
-   consumed admission must not reinstall an obsolete endpoint. A delayed catalog
-   snapshot must not overwrite a newer installed version; serialize its capture
-   and installation or reject obsolete versions at installation.
+   store incarnation or Raft membership. The planner now cancels older pending
+   or consumed admission authority atomically with an explicit route update;
+   the public API must preserve that batch and observe its exact receipt.
+2. Preserve the integrated writer ordering when adding that API. Registration
+   now advances the endpoint version when it changes an existing address;
+   consumed retries validate the current endpoint. Catalog capture/installation,
+   registration and the successful-response fallback use the same local planner
+   mutex. The new API must hold it through its own committed route installation.
 3. Add canonical advertised-endpoint configuration separately from listener
    binding. Preserve Service/NAT use and coordinator-free recovery at a stable
    endpoint. A restarted Active store at a changed advertised endpoint must
