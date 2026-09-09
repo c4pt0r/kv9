@@ -6200,6 +6200,135 @@ mod tests {
         let _ = fs::remove_dir_all(&base);
     }
 
+    fn active_store_restart_endpoint_scene(change_address: bool) {
+        let (mut rts, root, _, base) = serving_trio("active-endpoint-restart");
+        let member = NodeId(4);
+        let listener = bound_listener_for_e2e();
+        let original_addr = listener.local_addr().unwrap();
+        let original_identity =
+            StoreIdentity::for_joiner(&root, member, prepare_test_store(&base.join("n4"), member))
+                .unwrap();
+        let config = |addr: std::net::SocketAddr| Config {
+            addr: addr.to_string(),
+            data_dir: base.join("n4").to_string_lossy().into_owned(),
+            join: Vec::new(),
+            wal_streams: 1,
+            replication_factor: 3,
+        };
+        let auth = || RuntimeAuth {
+            cluster_token: "establishing-read-cluster-token".into(),
+            client_tokens: vec![("acceptance".into(), "establishing-read-token".into())],
+        };
+        let leader = cluster_leader(&rts).unwrap();
+        let ticket = backend_view(&rts[leader], &root)
+            .admit_node("acceptance", member, &original_addr.to_string(), 600)
+            .unwrap()
+            .join_ticket
+            .unwrap();
+        rts.push(
+            NodeRuntime::start_core(
+                member,
+                config(original_addr),
+                auth(),
+                root.clone(),
+                original_identity,
+                Some(&ticket),
+                StartOverrides {
+                    listener: Some(listener),
+                    ..Default::default()
+                },
+            )
+            .unwrap(),
+        );
+        wait_for(
+            &mut rts,
+            60,
+            "original endpoint is registered and applied",
+            |rts| {
+                rts[3].node.meta.lock().unwrap().bootstrap.is_serving()
+                    && rts.iter().all(|rt| {
+                        backend_view(rt, &root).resolve_registration_endpoint(member)
+                            == Some(original_addr.to_string())
+                    })
+            },
+        );
+        assert!(rts[3].registration_receipt.is_some());
+        assert!(rts[3].local_membership_is_active().unwrap());
+        assert!(init_marker_exists(&base.join("n4")));
+        drop(rts.pop().unwrap());
+
+        // Keep the old port allocated during the changed-endpoint scene so
+        // the new listener cannot accidentally reuse it. This guard runs no
+        // Raft service. The unchanged scene reopens that same real endpoint.
+        let old_port = std::net::TcpListener::bind(original_addr).unwrap();
+        let listener = if change_address {
+            bound_listener_for_e2e()
+        } else {
+            old_port.try_clone().unwrap()
+        };
+        let restarted_addr = listener.local_addr().unwrap();
+        assert_eq!(restarted_addr != original_addr, change_address);
+        let restarted = NodeRuntime::start_core(
+            member,
+            config(restarted_addr),
+            auth(),
+            root.clone(),
+            original_identity,
+            None,
+            StartOverrides {
+                listener: Some(listener),
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        assert_eq!(
+            restarted.store_identity.store_incarnation,
+            original_identity.store_incarnation
+        );
+        assert!(restarted.local_membership_is_active().unwrap());
+        assert_eq!(restarted.addr, restarted_addr);
+        rts.push(restarted);
+        for _ in 0..20 {
+            step_cluster(&mut rts);
+        }
+        // No new admission or catalog update was submitted after the first
+        // registration. Every durable directory still names the old endpoint.
+        assert!(rts.iter().all(|rt| {
+            backend_view(rt, &root).resolve_registration_endpoint(member)
+                == Some(original_addr.to_string())
+        }));
+        let restarted = &rts[3];
+        let serving = restarted.node.meta.lock().unwrap().bootstrap.is_serving();
+        eprintln!(
+            "active endpoint restart: original={original_addr} restarted={restarted_addr} \
+             serving={serving} registration_attempts={} receipt={:?}",
+            restarted.registration_observation.attempts, restarted.registration_receipt
+        );
+        if change_address {
+            assert!(
+                !serving,
+                "changed endpoint reused old Active membership to enter Serving without a committed route transition"
+            );
+        } else {
+            assert!(serving, "stable endpoint lost coordinator-free recovery");
+            assert_eq!(restarted.registration_observation.attempts, 0);
+            assert!(restarted.registration_receipt.is_none());
+        }
+        drop(rts);
+        drop(old_port);
+        let _ = fs::remove_dir_all(base);
+    }
+
+    #[test]
+    fn active_store_restart_at_the_same_endpoint_needs_no_registration() {
+        active_store_restart_endpoint_scene(false);
+    }
+
+    #[test]
+    fn active_store_restart_at_a_changed_endpoint_waits_for_committed_route() {
+        active_store_restart_endpoint_scene(true);
+    }
+
     #[test]
     fn fresh_joiner_rejects_stale_heartbeat_before_raft_owner_starts() {
         use kv9_raft::grpc::pb;
