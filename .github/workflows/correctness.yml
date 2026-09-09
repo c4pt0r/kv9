@@ -40,7 +40,7 @@ jobs:
             --jar "$RUNNER_TEMP/tla2tools.jar" --output "$RUNNER_TEMP/store-protocol" \
             > "$RUNNER_TEMP/store-protocol.log" 2>&1
           cat "$RUNNER_TEMP/store-protocol.log"
-          test "$(tail -1 "$RUNNER_TEMP/store-protocol.log")" = 'PASS: 4 full store model checks and 1 fair continuation; 8 protocol controls; 2 witnesses; 14 TLAPS theorems; 128 obligations; 2 audit controls; 8 output controls'
+          test "$(tail -1 "$RUNNER_TEMP/store-protocol.log")" = 'PASS: 4 full store model checks and 1 fair continuation; 8 protocol controls; 2 witnesses; 14 TLAPS theorems; 138 obligations; 2 audit controls; 8 output controls'
       - name: Check original-store catalog formation safety and conditional progress
         run: |
           set -euo pipefail

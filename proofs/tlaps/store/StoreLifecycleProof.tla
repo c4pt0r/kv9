@@ -92,7 +92,16 @@ THEOREM SLStartProgress == SLFairSpec => (SLActiveReady ~> SLStarted)
     <2>1. SLHealthy /\ slPhase = 3 /\ slLog = slInc /\ slInc = slRoot /\ slInc # 0
         BY <1>3, SMT DEF SLActiveReady, SLReady
     <2>2. slOwner = FALSE BY <1>3, SMT DEF SLActiveReady, SLReady, SLInvariant, SLType
-    <2> QED BY <2>1, <2>2, ExpandENABLED, SMT DEF SLStart, slVars
+    (* Separate the next-state witness from nonstuttering: starting changes
+       slOwner from FALSE to TRUE, so SLStart already changes the full frame.
+       Lift the proved action equivalence using TLAPS's checked ENABLED rule. *)
+    <2>3. ENABLED SLStart
+        BY <2>1, <2>2, ExpandENABLED, SMT DEF SLStart
+    <2>4. SLStart <=> <<SLStart>>_slVars
+        BY <2>2, SMT DEF SLStart, slVars
+    <2>5. ENABLED SLStart <=> ENABLED <<SLStart>>_slVars
+        BY <2>4, ENABLEDaxioms
+    <2> QED BY <2>3, <2>5, SMT
 <1> QED BY <1>1, <1>2, <1>3, PTL DEF SLFairSpec, SLStarted
 
 THEOREM SLProgressProof == SLFairSpec => SLProgress

@@ -75,7 +75,7 @@ startup does not consult a global identity registry.
 | `SLLoseLifecycle`, `SLLegacyWrite` | Migration from recovered matching log and committed catalog certificate |
 
 [StoreLifecycleProof.tla](../proofs/tlaps/store/StoreLifecycleProof.tla) contains
-14 declarations and 128 obligations. Induction establishes immutable root
+14 declarations and 138 obligations. Induction establishes immutable root
 binding, owner authorization, no recreation of a retired incarnation's log,
 and activation only after durable log recovery and the required binding or
 certificate. These safety results permit arbitrary modeled crashes and errors.
@@ -86,6 +86,15 @@ fairness of activation write, publication, and owner start, eventually starts
 the owner. This proves local authorization progress; it does not prove catalog
 formation, quorum availability, replication progress, or progress under
 unlimited failures.
+
+The start-progress proof separates an executable `SLStart` witness from its
+effect on the state frame. With `slOwner = FALSE`, starting sets it to `TRUE`,
+so `SLStart` is equivalent to its nonstuttering action. TLAPS's built-in
+`ENABLEDaxioms` equivalence rule lifts that proved action equivalence to
+enabledness. This decomposition avoids asking SMT to discover both a
+13-variable successor and a changed tuple component in one obligation. The
+model, fairness assumptions, pinned tools, and default solver timeouts are
+unchanged; the strict inventory includes every added proof obligation.
 
 Incarnation freshness is an explicit abstraction of successful random ID
 allocation, not a proof that finite random identifiers cannot collide. The
