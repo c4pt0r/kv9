@@ -102,3 +102,8 @@ Every relevant issue links its proof/refinement record, actual Chaos Mesh run an
 single-failure-domain analysis. These are additional hard gates, alongside the
 existing unit, mutation, history, recovery and performance checks. Missing or
 inconclusive evidence keeps the corresponding obligation open.
+
+The registration routing increment and its checked cyclic-coverage lemmas are
+specified in [REGISTRATION-ROUTING.md](REGISTRATION-ROUTING.md). Its actual Chaos
+Mesh window requires a joining learner to complete exact catch-up while its first
+seed remains partitioned and the surviving quorum serves an independent history.

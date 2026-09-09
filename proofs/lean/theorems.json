@@ -16,5 +16,12 @@
     "Kv9.History.accepted_certificate_is_execution",
     "Kv9.History.completed_before_invoked",
     "Kv9.History.execution_is_accepted"
+  ],
+  "Registration": [
+    "Kv9.Registration.next_seed_is_modulo",
+    "Kv9.Registration.next_seed_stays_in_range",
+    "Kv9.Registration.every_seed_gets_a_first_turn",
+    "Kv9.Registration.cursor_after_is_modulo",
+    "Kv9.Registration.repeated_steps_cover_every_seed"
   ]
 }

@@ -75,9 +75,9 @@ Conditional progress requires a scheduled blocking worker, eventual catalog-lock
 availability, a connected Raft quorum, successful storage/application, and client
 deadlines sufficient to observe the receipt. Registration no longer occupies the
 async worker while waiting for those conditions. The capacity gate itself makes
-no fairness promise between many joining clients. Client retry budgets, candidate
-fairness, broader admission control and cross-host failure domains remain separate
-obligations; no cluster-wide coordinator or singleton service is introduced.
+no fairness promise between many joining clients. The bounded retry policy and conditional seed coverage are documented in
+[registration routing](REGISTRATION-ROUTING.md). Broader admission control and
+cross-host failure domains remain separate obligations; no cluster-wide coordinator or singleton service is introduced.
 
 ## Validation
 

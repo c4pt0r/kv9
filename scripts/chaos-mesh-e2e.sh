@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Root-certified three-node fault acceptance on a real Chaos Mesh installation.
+# Root-certified three-voter fault acceptance on a real Chaos Mesh installation.
 set -euo pipefail
 umask 077
 
@@ -640,6 +640,9 @@ wait_until "live root remains Serving during wrong-root contact" 15 agreed_leade
 k delete deployment kv9-n9 -n "$namespace" --wait=true >/dev/null
 k delete service kv9-n9 configmap wrong-root -n "$namespace" --ignore-not-found >/dev/null
 
+source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-registration.sh"
+run_registration_seed_fault
+
 # Pod kill must replace the exact selected member without losing durable identity.
 echo "Stage: Pod kill and replacement"
 leader="$(wait_agreed_leader "pre-Pod-kill agreement" 15)"
@@ -873,7 +876,7 @@ wait "$history_pid"
 history_pid=""
 python3 scripts/history/checker.py "$artifact/history.jsonl" --output "$artifact/history-checker.json" \
   --acceptance --require put get delete scan delete_range create_keyspace --seconds 60 \
-  --require-phase pod-failure-1 pod-failure-2 pod-failure-3 partition delay \
+  --require-phase registration-seed-blackhole pod-failure-1 pod-failure-2 pod-failure-3 partition delay \
     io-voter-1-errno-5 io-voter-1-errno-28 io-voter-2-errno-5 io-voter-2-errno-28 \
     io-voter-3-errno-5 io-voter-3-errno-28 \
   >"$artifact/history-checker.log" 2>&1
