@@ -1,5 +1,30 @@
 # Persistent workload under Chaos Mesh
 
+The complete 19-window matrix passed locally at
+`371163bb2b77ad3ed24f3cffb826c6eb6a7ff8ef` on 2026-09-09. Independent audits
+accepted all 4,133 CLI operations and 1,151 persistent-client operations,
+including three independently prepared replacement PVCs, three missing-log
+cells and six Raft I/O fault cells. Each replacement retained a fresh lifecycle
+while carrying the old root/store bundle; real initialization and two actual
+runtime starts refused its incarnation before Raft or a listener opened. The
+surviving quorum served during each rejection, and the exact original PVC
+recovered through the majority receipt. Six replacement-evidence controls,
+five missing-log controls and the existing fault-evidence controls were rejected.
+Collector removal left the database able to serve reads and writes.
+
+Retained evidence:
+`target/correctness-evidence/2026-09-09-371163b-pvc-history.tar.gz`
+(128,633,289 bytes), SHA-256
+`eeea1e1708a9628d9c92b3442c29d4fbff8f0bee89272db1ac43e474d82fbf07`.
+It includes exact sources/builds, both local 19-window runs, the original failed
+hosted history, independent audits, 38 history tests and 14 isolated source
+controls. The revised checker independently replays the complete previously
+inconclusive 4,063-operation hosted history within the same 60-second budget;
+its original hosted result remains failed. See [history checking](HISTORY-CHECKING.md).
+These are local single-host results, not host-loss or throughput acceptance.
+Hosted results are tracked in #9. Broader #42 acceptance and authorized endpoint
+migration [#47](https://github.com/c4pt0r/kv9/issues/47) remain open.
+
 The 16-window baseline passed locally at
 `8ed7dec7dc35f10fbecebe20f917e923f8d08c13` on 2026-09-09. Its independent
 checks accepted a 3,240-operation CLI Raw/catalog history and an 869-operation
@@ -15,7 +40,7 @@ Evidence archive:
 `a86e104701791a5a3dd077e7d48dd034bdb5b2abe8ce9005e187ee5c5eb5945d`.
 It includes the exact source/builds, successful and failed scenes, raw logs,
 histories and audits. This is local single-host acceptance; hosted run status
-is tracked in #9. Replacement-PVC acceptance under #42 remains pending.
+is tracked in #9. This is the earlier baseline, before the replacement-PVC matrix.
 
 The existing Chaos Mesh acceptance matrix now runs both its CLI-generated
 Raw/catalog history and a separate persistent public-gRPC workload through every
