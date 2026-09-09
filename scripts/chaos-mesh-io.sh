@@ -15,9 +15,32 @@ io_process_serving() {
 }
 
 io_start_process() {
+  # IOChaos's descriptor replacement can detach the idle fixture supervisor
+  # with a pending SIGSTOP. This is healing of the test launcher, after the
+  # real database has exited and the fault has been deleted, not a database
+  # recovery retry. Never resume a traced process or a live database child.
+  k exec -n "$namespace" "$io_pod" -- cat /proc/1/status >"$artifact/$label-supervisor-before.txt"
+  k exec -n "$namespace" "$io_pod" -- cat /proc/1/cmdline >"$artifact/$label-supervisor-command.bin"
+  k exec -n "$namespace" "$io_pod" -- /bin/bash -c '
+    set -euo pipefail
+    test ! -e /tmp/kv9-io.pid && test -e /tmp/kv9-io.exit
+    test "$(cat /proc/1/comm)" = bash
+    tr "\0" "\n" < /proc/1/cmdline | grep -Fq /tmp/kv9-io.start
+    test "$(awk '\''$1 == "TracerPid:" {print $2}'\'' /proc/1/status)" = 0
+    ! grep -Eq " /data fuse(\\.[^ ]+)? " /proc/mounts
+    state="$(awk '\''$1 == "State:" {print $2}'\'' /proc/1/status)"
+    if [ "$state" = T ]; then
+      kill -CONT 1
+      echo resume_signal=CONT
+    else
+      [[ "$state" == S || "$state" == R ]]
+      echo resume_signal=none
+    fi
+  ' >"$artifact/$label-supervisor-healing.txt"
   k exec -n "$namespace" "$io_pod" -- /bin/bash -c \
     'rm -f /tmp/kv9-io.exit; touch /tmp/kv9-io.start'
   wait_until "fresh process serves on voter $victim" 40 io_process_serving
+  k exec -n "$namespace" "$io_pod" -- cat /proc/1/status >"$artifact/$label-supervisor-after.txt"
 }
 
 io_stop_process() {
