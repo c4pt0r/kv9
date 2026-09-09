@@ -6951,22 +6951,17 @@ mod tests {
             .admit_node("acceptance", member, &changed_addr.to_string(), 600)
             .unwrap();
         let renewed_ticket = RootDigest::sha256(renewed.join_ticket.unwrap().as_bytes());
-        assert!(
-            matches!(
-                backend.register(
-                    member,
-                    &changed_addr.to_string(),
-                    root.cluster_id,
-                    renewed_ticket.as_bytes(),
-                    replacement
-                ),
-                Err(RegistrationError::InvalidIncarnation)
-            ),
-            "a renewed ticket rebound an existing replica to an empty store"
+        let replacement_result = backend.register(
+            member,
+            &changed_addr.to_string(),
+            root.cluster_id,
+            renewed_ticket.as_bytes(),
+            replacement,
         );
         assert_eq!(
             rts[leader].transport.peer_address_for_tests(member),
-            Some(addr)
+            Some(addr),
+            "renewed replacement changed the existing transport route"
         );
         let txn = backend.node.meta_raft.store.begin().unwrap();
         assert_eq!(
@@ -6978,6 +6973,15 @@ mod tests {
             "rejected replacement consumed the renewed ticket"
         );
         drop(txn);
+        // The endpoint writer also validates the immutable store binding.
+        // Check the public refusal separately from those side-effect guards.
+        assert!(
+            matches!(
+                replacement_result,
+                Err(RegistrationError::InvalidIncarnation)
+            ),
+            "renewed replacement did not receive a typed incarnation refusal: {replacement_result:?}"
+        );
         // The original store can complete the same new admission, including
         // its new canonical address. Rejecting every renewed ticket is wrong.
         backend
