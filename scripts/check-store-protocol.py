@@ -222,7 +222,7 @@ def main():
         verdict(live_output, 0, temporal=True)
         model_outputs += 1
     proof_output = (args.output / "proof-baseline/StoreLifecycleProof.log").read_text()
-    proof_outputs = proof.output_controls(proof_output, "StoreLifecycleProof", 128)
+    proof_outputs = proof.output_controls(proof_output, "StoreLifecycleProof", 138)
     summary = dict(jar_sha256=digest(args.jar), tlapm_version=version, tlapm_sha256=digest(args.tlapm),
                    sources={str(p.relative_to(ROOT)): digest(p) for p in [
                        Path(__file__), ROOT / "scripts/check-tla.py", ROOT / "scripts/check-tlaps.py",
@@ -232,7 +232,7 @@ def main():
                    models=models, proofs=proofs, model_output_controls=model_outputs, proof_output_controls=proof_outputs)
     (args.output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(f"PASS: 4 full store model checks and 1 fair continuation; {len(controls)} protocol controls; 2 witnesses; "
-          "14 TLAPS theorems; 128 obligations; 2 audit controls; 8 output controls", flush=True)
+          "14 TLAPS theorems; 138 obligations; 2 audit controls; 8 output controls", flush=True)
 
 
 if __name__ == "__main__":

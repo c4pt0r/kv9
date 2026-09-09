@@ -21,7 +21,7 @@
         "SLStableInvariant",
         "SLStartProgress"
       ],
-      "obligations": 128
+      "obligations": 138
     }
   },
   "standard_modules": {
