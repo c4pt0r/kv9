@@ -37,6 +37,19 @@ accepting scale-out. This sequence does not mark those prerequisites complete.
 
 ## Current evidence
 
+The new opt-in [RPC framework comparison](../scripts/redis-reference/results/b49a2f6-rpc-framework-c64-tmpfs-diagnostic.md)
+uses the same clean `b49a2f6` feature-enabled release client/server for both unary
+gRPC and tarpc/TCP. In its repeated c64 tmpfs bracket, tarpc reaches 185,665 GET/s,
+93,692 PUT/s and 115,714 mixed operations/s: +48.07%, +26.31% and +32.98% against
+the surrounding unary arms. The paired Redis reference remains 2.67x, 5.16x and
+4.23x faster. All 36 measured cohorts completed, with zero failed/unknown/refused
+operations or extra measured KV9 attempts. This is a new 1.5-second diagnostic;
+its feature build, client and window differ from the older a00e comparison.
+Tarpc remains a separate experimental candidate. Complete the streaming-gRPC
+control and exact-feature Chaos/refinement work before selecting a production
+transport; Redis-class performance remains the prerequisite for the next
+dynamic multi-Raft/automatic-split mainline stage.
+
 Main now includes the selected runtime through asynchronous exact-apply waiting
 and process-status identity, integrated in `2627825`. All 131 runtime/build-tree
 files match exact `23bc58b`: the inherited append/Raw/Ready grouping, asynchronous
