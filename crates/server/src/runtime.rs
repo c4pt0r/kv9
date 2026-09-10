@@ -67,6 +67,13 @@ const REGISTRATION_PASS_TIMEOUT: Duration = Duration::from_secs(5);
 const DISCOVERY_LAST_OUTCOME_MAX_CHARS: usize = 160;
 const DISCOVERY_ERROR_PREFIX: &str = "error:";
 
+fn grpc_incoming(listener: tokio::net::TcpListener) -> tonic::transport::server::TcpIncoming {
+    // Tonic ignores Server::tcp_nodelay for caller-supplied incoming streams.
+    // Configure accepted sockets while retaining this already-owned listener.
+    // This covers both public replies and node-internal Raft/discovery traffic.
+    tonic::transport::server::TcpIncoming::from(listener).with_nodelay(Some(true))
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum DiscoveryRejection {
     NodeId,
@@ -2800,7 +2807,7 @@ impl NodeRuntime {
             .or_else(|| root.voter(id).map(|voter| voter.addr))
             .unwrap_or(addr);
         crate::endpoints::socket(&advertised_addr.to_string())?;
-        let incoming = tokio_stream::wrappers::TcpListenerStream::new(listener);
+        let incoming = grpc_incoming(listener);
         let (grpc_shutdown_tx, grpc_shutdown_rx) = tokio::sync::oneshot::channel();
         let grpc_server = grpc_runtime.spawn(
             tonic::transport::Server::builder()
@@ -3799,6 +3806,42 @@ fn prepare_test_store(directory: &Path, id: NodeId) -> StoreIncarnation {
 
 #[cfg(test)]
 mod tests {
+
+    #[tokio::test]
+    async fn accepted_grpc_sockets_disable_nagle_without_rebinding() {
+        use tokio_stream::StreamExt;
+
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap();
+        let mut incoming = grpc_incoming(listener);
+        assert_eq!(incoming.local_addr().unwrap(), address);
+        assert!(matches!(
+            std::net::TcpListener::bind(address),
+            Err(error) if error.kind() == std::io::ErrorKind::AddrInUse
+        ));
+        // Read the option from actual accepted kernel sockets. A builder flag
+        // alone is insufficient when tonic receives a custom incoming stream.
+        for _ in 0..2 {
+            let client = tokio::time::timeout(
+                Duration::from_secs(5),
+                tokio::net::TcpStream::connect(address),
+            )
+            .await
+            .unwrap()
+            .unwrap();
+            let accepted = tokio::time::timeout(Duration::from_secs(5), incoming.next())
+                .await
+                .unwrap()
+                .unwrap()
+                .unwrap();
+            assert!(
+                accepted.nodelay().unwrap(),
+                "accepted gRPC socket retained Nagle buffering"
+            );
+            drop(accepted);
+            drop(client);
+        }
+    }
 
     #[test]
     fn logical_observer_keeps_one_sample_across_retries_and_preserves_unknowns() {
