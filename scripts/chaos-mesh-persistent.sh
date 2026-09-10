@@ -39,7 +39,7 @@ persistent_start() {
     >"$artifact/persistent-config.json" <<'PY'
 import json, sys
 name, keyspace, *addresses = sys.argv[1:]
-print(json.dumps(dict(version=1, client=dict(version=1,
+print(json.dumps(dict(version=1, rpc_transport='tonic_stream', client=dict(version=1,
     peers=[dict(node_id=i, address=address) for i,address in enumerate(addresses,1)],
     keyspace_id=int(keyspace), epoch_conf_ver=1, epoch_version=1,
     max_in_flight=2, max_attempts=6, deadline_ms=1500, retry_backoff_ms=10),

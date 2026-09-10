@@ -212,7 +212,8 @@ class Fixture:
                                  '--name',name,'--api-type','raw'])
             (directory/'create-keyspace.out').write_text(receipt+'\n')
             keyspace=int(dict(line.split('=',1) for line in receipt.splitlines())['keyspace_id'])
-        c=dict(version=1,client=dict(version=1,peers=[dict(node_id=n,address=a) for n,a in self.addresses.items()],
+        c=dict(version=1,rpc_transport='tonic_unary' if self.target=='loopback' else 'tonic_stream',
+               client=dict(version=1,peers=[dict(node_id=n,address=a) for n,a in self.addresses.items()],
                keyspace_id=keyspace,epoch_conf_ver=1,epoch_version=1,max_in_flight=concurrency,max_attempts=6,deadline_ms=1500,retry_backoff_ms=5),
                mode='correctness' if guard else 'performance',run_id=name,keyspace_name=name,seed=40+repeat,
                workers=concurrency,keys=8,value_bytes=128,mix=MIXES[mix],warmup_operations=32,

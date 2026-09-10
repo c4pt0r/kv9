@@ -63,8 +63,15 @@ def strict_json(data):
     return json.loads(data, object_pairs_hook=pairs, parse_constant=constant)
 
 
-def config_check(c):
-    keys(c, "version client mode run_id keyspace_name seed workers keys value_bytes mix warmup_operations max_operations measure_ms interval_ms history_bytes".split())
+def config_check(c, report_version=1):
+    fields = "version client mode run_id keyspace_name seed workers keys value_bytes mix warmup_operations max_operations measure_ms interval_ms history_bytes".split()
+    if report_version == 2:
+        require(isinstance(c, dict) and "rpc_transport" in c,
+                "version 2 requires an explicit recorded RPC transport")
+    if "rpc_transport" in c:
+        fields.append("rpc_transport")
+        require(c["rpc_transport"] in ("tonic_unary", "tarpc_tcp", "tonic_stream"), "unsupported experimental RPC transport")
+    keys(c, fields)
     require(c["version"] == 1 and c["mode"] in ("correctness", "performance"), "unsupported workload configuration")
     for name in ("run_id", "keyspace_name"):
         require(isinstance(c[name], str) and re.fullmatch(r"[A-Za-z0-9_-]{1,64}", c[name]), "invalid workload name")
@@ -366,9 +373,11 @@ def validate(directory, build_directory, expected_revision=None, seconds=30):
     build_bytes = bounded(directory / "build.json", 65536)
     report_bytes = bounded(directory / "report.json", 2 * 1024 * 1024)
     c, b, r = map(strict_json, (config_bytes, build_bytes, report_bytes))
-    config_check(c)
     keys(r, REPORT_KEYS)
-    require(r["version"] == 1 and r["complete"] is True and r["failure"] is None and r["independently_checked"] is False, "workload did not produce a complete unverified report")
+    require(r["version"] in (1, 2) and r["complete"] is True and r["failure"] is None and r["independently_checked"] is False, "workload did not produce a complete unverified report")
+    if r["version"] == 2:
+        require(type(r["version"]) is int, "invalid version 2 report version")
+    config_check(c, r["version"])
     require(r["configuration"] == c and r["config_sha256"] == sha(config_bytes) and r["build"] == b and r["build_sha256"] == sha(build_bytes), "report configuration/build provenance differs")
     keys(b, "version revision dirty source_tree_sha256 binary_sha256 profile rustc".split())
     require(b["version"] == 1 and type(b["dirty"]) is bool and b["profile"] in ("debug", "release") and isinstance(b["rustc"], str) and 0 < len(b["rustc"]) <= 4096, "invalid build manifest")
@@ -384,6 +393,29 @@ def validate(directory, build_directory, expected_revision=None, seconds=30):
             inventory["binary_sha256"] == b["binary_sha256"], "source inventory build mismatch")
     require(sha(json.dumps(inventory["sources"], sort_keys=True, separators=(",", ":")).encode()) ==
             inventory["source_tree_sha256"] == b["source_tree_sha256"], "source inventory hash mismatch")
+    experimental = (r["version"] == 1 and "rpc_transport" in c) or c.get("rpc_transport") == "tarpc_tcp"
+    if experimental:
+        command = inventory["command"]
+        require("--features" in command and command[command.index("--features") + 1:] and
+                command[command.index("--features") + 1] == "rpc-experiment",
+                "experimental RPC configuration requires its explicit build feature")
+    if experimental or r["version"] == 2:
+        records = [strict_json(line) for line in bounded(build_directory / "cargo.jsonl", 16 * 1024 * 1024).splitlines()]
+        artifacts = [item for item in records if item.get("reason") == "compiler-artifact" and
+                     item.get("target", {}).get("name") == "kv9-workload" and item.get("executable")]
+        if experimental:
+            require(len(artifacts) == 1 and "rpc-experiment" in artifacts[0]["features"],
+                    "workload Cargo artifact does not attest the RPC experiment feature")
+        else:
+            require(len(artifacts) == 1, "version 2 requires exactly one retained workload Cargo artifact")
+        if r["version"] == 2:
+            require(isinstance(artifacts[0].get("features"), list) and
+                    all(isinstance(feature, str) for feature in artifacts[0]["features"]),
+                    "invalid workload Cargo feature list")
+            require(isinstance(artifacts[0]["executable"], str) and
+                    isinstance(artifacts[0]["target"].get("kind"), list) and
+                    "bin" in artifacts[0]["target"]["kind"],
+                    "version 2 requires a workload executable Cargo artifact")
     if expected_revision:
         require(b["revision"] == expected_revision and b["dirty"] is False, "run is not from the required clean revision")
     require(r["workload_model"] == "closed_loop", "unsupported measurement model")

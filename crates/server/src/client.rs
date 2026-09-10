@@ -11,6 +11,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
+use prost::Message;
 use serde::{Deserialize, Serialize};
 use tokio::sync::Semaphore;
 use tokio::time::{sleep_until, timeout_at, Instant};
@@ -27,6 +28,18 @@ pub const MAX_ATTEMPTS: usize = 16;
 pub const MAX_KEY_BYTES: usize = 4096;
 pub const MAX_VALUE_BYTES: usize = 65_536;
 pub const MAX_MESSAGE_BYTES: usize = 1_048_576;
+pub const MAX_BATCH_ITEMS: usize = 256;
+
+/// Streaming is the normal transport; unary remains an explicit reference.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TransportKind {
+    TonicUnary,
+    #[default]
+    TonicStream,
+    #[cfg(feature = "rpc-experiment")]
+    TarpcTcp,
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -86,6 +99,8 @@ pub enum RawOperation {
     Get { key: Vec<u8> },
     Put { key: Vec<u8>, value: Vec<u8> },
     Delete { key: Vec<u8> },
+    BatchGet { keys: Vec<Vec<u8>> },
+    BatchPut { pairs: Vec<(Vec<u8>, Vec<u8>)> },
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
@@ -94,6 +109,14 @@ pub enum OperationKind {
     Get,
     Put,
     Delete,
+    BatchGet,
+    BatchPut,
+}
+
+impl OperationKind {
+    pub fn is_read(self) -> bool {
+        matches!(self, Self::Get | Self::BatchGet)
+    }
 }
 
 impl RawOperation {
@@ -102,20 +125,70 @@ impl RawOperation {
             Self::Get { .. } => OperationKind::Get,
             Self::Put { .. } => OperationKind::Put,
             Self::Delete { .. } => OperationKind::Delete,
+            Self::BatchGet { .. } => OperationKind::BatchGet,
+            Self::BatchPut { .. } => OperationKind::BatchPut,
         }
     }
 
-    fn valid(&self) -> bool {
-        let key = match self {
-            Self::Get { key } | Self::Delete { key } => key,
+    fn valid(&self, context: Option<proto::RequestContext>) -> bool {
+        match self {
+            Self::Get { key } | Self::Delete { key } => key.len() <= MAX_KEY_BYTES,
             Self::Put { key, value } => {
-                if value.len() > MAX_VALUE_BYTES {
-                    return false;
-                }
-                key
+                key.len() <= MAX_KEY_BYTES && value.len() <= MAX_VALUE_BYTES
             }
-        };
-        key.len() <= MAX_KEY_BYTES
+            Self::BatchGet { keys } => {
+                valid_batch_keys(keys)
+                    && proto::RawBatchGetRequest {
+                        context,
+                        keys: keys.clone(),
+                    }
+                    .encoded_len()
+                        <= MAX_MESSAGE_BYTES
+            }
+            Self::BatchPut { pairs } => {
+                valid_batch_pairs(pairs)
+                    && proto::RawBatchPutRequest {
+                        context,
+                        pairs: wire_pairs(pairs),
+                    }
+                    .encoded_len()
+                        <= MAX_MESSAGE_BYTES
+            }
+        }
+    }
+}
+
+pub(crate) fn valid_batch_keys(keys: &[Vec<u8>]) -> bool {
+    (1..=MAX_BATCH_ITEMS).contains(&keys.len()) && keys.iter().all(|key| key.len() <= MAX_KEY_BYTES)
+}
+
+pub(crate) fn valid_batch_pairs(pairs: &[(Vec<u8>, Vec<u8>)]) -> bool {
+    (1..=MAX_BATCH_ITEMS).contains(&pairs.len())
+        && pairs
+            .iter()
+            .all(|(key, value)| key.len() <= MAX_KEY_BYTES && value.len() <= MAX_VALUE_BYTES)
+        && pairs
+            .iter()
+            .map(|(key, value)| key.len() + value.len())
+            .sum::<usize>()
+            <= MAX_MESSAGE_BYTES
+}
+
+fn wire_pairs(pairs: &[(Vec<u8>, Vec<u8>)]) -> Vec<proto::KeyValue> {
+    pairs
+        .iter()
+        .map(|(key, value)| proto::KeyValue {
+            key: key.clone(),
+            value: value.clone(),
+        })
+        .collect()
+}
+
+pub(crate) fn valid_optional(value: &proto::OptionalValue) -> bool {
+    if value.found {
+        value.value.len() <= MAX_VALUE_BYTES
+    } else {
+        value.value.is_empty()
     }
 }
 
@@ -123,6 +196,7 @@ impl RawOperation {
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum Value {
     Get { value: Option<Vec<u8>> },
+    BatchGet { values: Vec<Option<Vec<u8>>> },
     Applied { term: u64, index: u64 },
 }
 
@@ -184,6 +258,9 @@ pub struct CallReport {
 struct Inner {
     config: ClientConfig,
     clients: Vec<Kv9Client<Channel>>,
+    #[cfg(feature = "rpc-experiment")]
+    experimental: Option<Vec<crate::rpc_experiment::ExperimentClient>>,
+    streaming: Option<Vec<crate::point_stream::StreamClient>>,
     authorization: MetadataValue<Ascii>,
     capacity: Arc<Semaphore>,
     preferred: AtomicUsize,
@@ -197,6 +274,10 @@ pub struct PersistentRawClient(Arc<Inner>);
 impl PersistentRawClient {
     /// Must run inside a Tokio runtime. Secrets are excluded from config/reports.
     pub fn new(config: ClientConfig, token: &str) -> Result<Self, &'static str> {
+        Self::new_with_transport(config, token, TransportKind::default())
+    }
+
+    fn new_base(config: ClientConfig, token: &str) -> Result<Self, &'static str> {
         config.validate()?;
         if token.is_empty() || token.len() > 4096 {
             return Err("authentication token length is invalid");
@@ -230,9 +311,55 @@ impl PersistentRawClient {
             capacity: Arc::new(Semaphore::new(config.max_in_flight)),
             config,
             clients,
+            #[cfg(feature = "rpc-experiment")]
+            experimental: None,
+            streaming: None,
             authorization,
             preferred: AtomicUsize::new(0),
         })))
+    }
+
+    /// Explicit transport selection; retry and outcome classification stay shared.
+    pub fn new_with_transport(
+        config: ClientConfig,
+        token: &str,
+        transport: TransportKind,
+    ) -> Result<Self, &'static str> {
+        let mut client = Self::new_base(config, token)?;
+        #[cfg(feature = "rpc-experiment")]
+        if transport == TransportKind::TarpcTcp {
+            let inner = Arc::get_mut(&mut client.0).ok_or("new client unexpectedly shared")?;
+            inner.experimental = Some(
+                inner
+                    .config
+                    .peers
+                    .iter()
+                    .map(|peer| {
+                        crate::rpc_experiment::ExperimentClient::new(
+                            peer.address,
+                            inner.config.max_in_flight,
+                        )
+                    })
+                    .collect(),
+            );
+        }
+        if transport == TransportKind::TonicStream {
+            let inner = Arc::get_mut(&mut client.0).ok_or("new client unexpectedly shared")?;
+            inner.streaming = Some(
+                inner
+                    .config
+                    .peers
+                    .iter()
+                    .map(|peer| {
+                        crate::point_stream::StreamClient::new(
+                            peer.address,
+                            inner.config.max_in_flight,
+                        )
+                    })
+                    .collect(),
+            );
+        }
+        Ok(client)
     }
 
     /// One invocation, one immutable payload, one absolute monotonic deadline.
@@ -250,7 +377,7 @@ impl PersistentRawClient {
                 reason: Reason::ClientInput,
             },
         };
-        if !operation.valid() {
+        if !operation.valid(self.context()) {
             return finish(report, start);
         }
         let Ok(_permit) = self.0.capacity.clone().try_acquire_owned() else {
@@ -318,7 +445,7 @@ impl PersistentRawClient {
                     self.0
                         .preferred
                         .store(self.next_peer(peer, None), Ordering::Relaxed);
-                    report.outcome = if operation.kind() == OperationKind::Get {
+                    report.outcome = if operation.kind().is_read() {
                         Outcome::ReadFailure { reason }
                     } else {
                         Outcome::UnknownWrite { reason }
@@ -328,6 +455,27 @@ impl PersistentRawClient {
             }
         }
         finish(report, start)
+    }
+
+    /// One quorum-confirmed read view, with results in input order including duplicates.
+    pub async fn batch_get(&self, keys: Vec<Vec<u8>>) -> CallReport {
+        self.call(RawOperation::BatchGet { keys }).await
+    }
+
+    /// One atomic Raft command and one applied receipt for the whole batch.
+    /// Empty/oversized batches are rejected locally; batches are never split.
+    pub async fn batch_put(&self, pairs: Vec<(Vec<u8>, Vec<u8>)>) -> CallReport {
+        self.call(RawOperation::BatchPut { pairs }).await
+    }
+
+    fn context(&self) -> Option<proto::RequestContext> {
+        Some(proto::RequestContext {
+            keyspace_id: self.0.config.keyspace_id,
+            region_epoch: Some(proto::RegionEpoch {
+                conf_ver: self.0.config.epoch_conf_ver,
+                version: self.0.config.epoch_version,
+            }),
+        })
     }
 
     fn next_peer(&self, peer: usize, hint: Option<u64>) -> usize {
@@ -345,30 +493,107 @@ impl PersistentRawClient {
         request
     }
 
+    async fn raw_get(
+        &self,
+        peer: usize,
+        request: Request<proto::RawGetRequest>,
+        _deadline: Instant,
+    ) -> Result<tonic::Response<proto::RawGetResponse>, Status> {
+        #[cfg(feature = "rpc-experiment")]
+        if let Some(clients) = &self.0.experimental {
+            return clients[peer].raw_get(request, _deadline).await;
+        }
+        if let Some(clients) = &self.0.streaming {
+            return clients[peer].raw_get(request, _deadline).await;
+        }
+        self.0.clients[peer].clone().raw_get(request).await
+    }
+
+    async fn raw_put(
+        &self,
+        peer: usize,
+        request: Request<proto::RawPutRequest>,
+        _deadline: Instant,
+    ) -> Result<tonic::Response<proto::RawWriteResponse>, Status> {
+        #[cfg(feature = "rpc-experiment")]
+        if let Some(clients) = &self.0.experimental {
+            return clients[peer].raw_put(request, _deadline).await;
+        }
+        if let Some(clients) = &self.0.streaming {
+            return clients[peer].raw_put(request, _deadline).await;
+        }
+        self.0.clients[peer].clone().raw_put(request).await
+    }
+
+    async fn raw_delete(
+        &self,
+        peer: usize,
+        request: Request<proto::RawDeleteRequest>,
+        _deadline: Instant,
+    ) -> Result<tonic::Response<proto::RawWriteResponse>, Status> {
+        #[cfg(feature = "rpc-experiment")]
+        if let Some(clients) = &self.0.experimental {
+            return clients[peer].raw_delete(request, _deadline).await;
+        }
+        if let Some(clients) = &self.0.streaming {
+            return clients[peer].raw_delete(request, _deadline).await;
+        }
+        self.0.clients[peer].clone().raw_delete(request).await
+    }
+
+    async fn raw_batch_get(
+        &self,
+        peer: usize,
+        request: Request<proto::RawBatchGetRequest>,
+        deadline: Instant,
+    ) -> Result<tonic::Response<proto::RawBatchGetResponse>, Status> {
+        #[cfg(feature = "rpc-experiment")]
+        if let Some(clients) = &self.0.experimental {
+            return clients[peer].raw_batch_get(request, deadline).await;
+        }
+        if let Some(clients) = &self.0.streaming {
+            return clients[peer].raw_batch_get(request, deadline).await;
+        }
+        self.0.clients[peer].clone().raw_batch_get(request).await
+    }
+
+    async fn raw_batch_put(
+        &self,
+        peer: usize,
+        request: Request<proto::RawBatchPutRequest>,
+        deadline: Instant,
+    ) -> Result<tonic::Response<proto::RawWriteResponse>, Status> {
+        #[cfg(feature = "rpc-experiment")]
+        if let Some(clients) = &self.0.experimental {
+            return clients[peer].raw_batch_put(request, deadline).await;
+        }
+        if let Some(clients) = &self.0.streaming {
+            return clients[peer].raw_batch_put(request, deadline).await;
+        }
+        self.0.clients[peer].clone().raw_batch_put(request).await
+    }
+
     async fn dispatch(
         &self,
         peer: usize,
         operation: &RawOperation,
         deadline: Instant,
     ) -> Result<Value, Reason> {
-        let mut client = self.0.clients[peer].clone();
-        let context = Some(proto::RequestContext {
-            keyspace_id: self.0.config.keyspace_id,
-            region_epoch: Some(proto::RegionEpoch {
-                conf_ver: self.0.config.epoch_conf_ver,
-                version: self.0.config.epoch_version,
-            }),
-        });
+        let context = self.context();
         match operation {
             RawOperation::Get { key } => {
-                let response = client
-                    .raw_get(self.request(
-                        proto::RawGetRequest {
-                            context,
-                            key: key.clone(),
-                        },
+                let response = self
+                    .raw_get(
+                        peer,
+                        self.request(
+                            proto::RawGetRequest {
+                                context,
+                                key: key.clone(),
+                            },
+                            deadline,
+                        ),
                         deadline,
-                    ))
+                    )
                     .await
                     .map_err(|status| classify_status(&status, true))?;
                 if has_control(response.metadata()) {
@@ -387,28 +612,78 @@ impl PersistentRawClient {
                 }
             }
             RawOperation::Put { key, value } => {
-                let response = client
-                    .raw_put(self.request(
-                        proto::RawPutRequest {
-                            context,
-                            key: key.clone(),
-                            value: value.clone(),
-                        },
+                let response = self
+                    .raw_put(
+                        peer,
+                        self.request(
+                            proto::RawPutRequest {
+                                context,
+                                key: key.clone(),
+                                value: value.clone(),
+                            },
+                            deadline,
+                        ),
                         deadline,
-                    ))
+                    )
                     .await
                     .map_err(|status| classify_status(&status, false))?;
                 applied(response)
             }
+            RawOperation::BatchGet { keys } => {
+                let request = self.request(
+                    proto::RawBatchGetRequest {
+                        context,
+                        keys: keys.clone(),
+                    },
+                    deadline,
+                );
+                let response = self
+                    .raw_batch_get(peer, request, deadline)
+                    .await
+                    .map_err(|status| classify_status(&status, true))?;
+                if has_control(response.metadata())
+                    || response.get_ref().encoded_len() > MAX_MESSAGE_BYTES
+                {
+                    return Err(Reason::Protocol);
+                }
+                let values = response.into_inner().values;
+                if values.len() != keys.len() || !values.iter().all(valid_optional) {
+                    return Err(Reason::Protocol);
+                }
+                Ok(Value::BatchGet {
+                    values: values
+                        .into_iter()
+                        .map(|value| value.found.then_some(value.value))
+                        .collect(),
+                })
+            }
+            RawOperation::BatchPut { pairs } => {
+                let request = self.request(
+                    proto::RawBatchPutRequest {
+                        context,
+                        pairs: wire_pairs(pairs),
+                    },
+                    deadline,
+                );
+                applied(
+                    self.raw_batch_put(peer, request, deadline)
+                        .await
+                        .map_err(|status| classify_status(&status, false))?,
+                )
+            }
             RawOperation::Delete { key } => {
-                let response = client
-                    .raw_delete(self.request(
-                        proto::RawDeleteRequest {
-                            context,
-                            key: key.clone(),
-                        },
+                let response = self
+                    .raw_delete(
+                        peer,
+                        self.request(
+                            proto::RawDeleteRequest {
+                                context,
+                                key: key.clone(),
+                            },
+                            deadline,
+                        ),
                         deadline,
-                    ))
+                    )
                     .await
                     .map_err(|status| classify_status(&status, false))?;
                 applied(response)
@@ -448,7 +723,7 @@ fn control_key(entry: KeyAndValueRef<'_>) -> &str {
     }
 }
 
-fn has_control(metadata: &MetadataMap) -> bool {
+pub(crate) fn has_control(metadata: &MetadataMap) -> bool {
     metadata
         .iter()
         .any(|entry| control_key(entry).starts_with("kv9-"))
@@ -520,3 +795,6 @@ pub(crate) fn classify_status(status: &Status, read: bool) -> Reason {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod batch_tests;

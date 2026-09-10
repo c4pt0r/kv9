@@ -211,6 +211,9 @@ impl Recorder {
         let (key, value) = match operation {
             RawOperation::Get { key } | RawOperation::Delete { key } => (key, None),
             RawOperation::Put { key, value } => (key, Some(value)),
+            RawOperation::BatchGet { .. } | RawOperation::BatchPut { .. } => {
+                return invalidate(&mut state, "batch calls require atomic batch history")
+            }
         };
         if key.len() as u64 > self.config.key_bytes()
             || value.is_some_and(|v| v.len() > self.config.value_bytes)

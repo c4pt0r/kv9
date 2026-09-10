@@ -194,7 +194,7 @@ impl Server {
     }
 
     fn client(&self) -> PersistentRawClient {
-        PersistentRawClient::new(config(&[self.address]), "test-secret").unwrap()
+        unary_client(config(&[self.address]), "test-secret").unwrap()
     }
 }
 
@@ -286,6 +286,7 @@ async fn warmup_failure_preserves_attempts_and_does_not_start_measurement() {
                 "profile": "debug", "rustc": "test fixture executable",
             })).unwrap()).unwrap();
             let configuration = WorkloadConfig {
+                rpc_transport: TransportKind::TonicUnary,
                 version: 1,
                 client: config(&[server.address]),
                 mode,
@@ -409,6 +410,7 @@ async fn workload_stop_drains_an_applied_write_until_its_terminal_response() {
         "profile": "debug", "rustc": "test fixture executable",
     })).unwrap()).unwrap();
     let configuration = WorkloadConfig {
+        rpc_transport: TransportKind::TonicUnary,
         version: 1,
         client: config(&[server.address, unavailable.local_addr().unwrap()]),
         mode: Mode::Correctness,
@@ -596,9 +598,7 @@ async fn exclusive_refusal_follows_only_a_configured_identity() {
         .lock()
         .unwrap()
         .push_back(refusal(not_leader(Some("2"))));
-    let client =
-        PersistentRawClient::new(config(&[follower.address, leader.address]), "test-secret")
-            .unwrap();
+    let client = unary_client(config(&[follower.address, leader.address]), "test-secret").unwrap();
     let report = client.call(put(b"value")).await;
     assert!(matches!(report.outcome, Outcome::Success { .. }));
     assert_eq!(
@@ -692,7 +692,7 @@ async fn logical_deadline_is_not_reset_by_refusals() {
     }
     let mut configuration = config(&[server.address]);
     configuration.deadline_ms = 300;
-    let client = PersistentRawClient::new(configuration, "test-secret").unwrap();
+    let client = unary_client(configuration, "test-secret").unwrap();
     let started = Instant::now();
     let report = client.call(put(b"value")).await;
     assert!(
@@ -742,6 +742,7 @@ async fn persistent_response_loss_history_fixture() {
     assert!(output.is_dir());
     let server = Server::new().await;
     let configuration = WorkloadConfig {
+        rpc_transport: TransportKind::TonicUnary,
         version: 1,
         client: config(&[server.address]),
         mode: Mode::Correctness,
@@ -826,7 +827,7 @@ async fn spaced_refusals_can_succeed_on_the_last_bounded_attempt() {
     let mut configuration = config(&[server.address]);
     configuration.deadline_ms = 1500;
     configuration.retry_backoff_ms = 100;
-    let client = PersistentRawClient::new(configuration, "test-secret").unwrap();
+    let client = unary_client(configuration, "test-secret").unwrap();
     let report = client.call(put(b"value")).await;
     assert!(matches!(report.outcome, Outcome::Success { .. }));
     assert_eq!(report.attempts.len(), 6);
@@ -855,7 +856,7 @@ async fn all_refused_attempts_remain_refused_when_hops_or_time_run_out() {
     }
     let mut configuration = config(&[server.address]);
     configuration.max_attempts = 2;
-    let client = PersistentRawClient::new(configuration, "test-secret").unwrap();
+    let client = unary_client(configuration, "test-secret").unwrap();
     let report = client.call(put(b"v0")).await;
     assert_eq!(report.stop, Stop::AttemptLimit);
     assert_eq!(report.attempts.len(), 2);
@@ -875,7 +876,7 @@ async fn all_refused_attempts_remain_refused_when_hops_or_time_run_out() {
     let mut configuration = config(&[server.address]);
     configuration.deadline_ms = 100;
     configuration.retry_backoff_ms = 100;
-    let client = PersistentRawClient::new(configuration, "test-secret").unwrap();
+    let client = unary_client(configuration, "test-secret").unwrap();
     let report = client.call(put(b"v1")).await;
     assert_eq!(report.stop, Stop::Deadline);
     assert_eq!(
@@ -910,7 +911,7 @@ async fn expired_write_remains_unknown_and_releases_only_client_capacity() {
     let mut configuration = config(&[server.address]);
     configuration.max_in_flight = 1;
     configuration.deadline_ms = 100;
-    let client = PersistentRawClient::new(configuration, "test-secret").unwrap();
+    let client = unary_client(configuration, "test-secret").unwrap();
     let cloned = client.clone();
     let pending = tokio::spawn(async move { cloned.call(put(b"v0")).await });
     tokio::time::timeout(Duration::from_secs(5), applied.notified())
@@ -1024,7 +1025,7 @@ async fn dead_seed_does_not_prevent_later_operations_on_survivors() {
     let address = dead.local_addr().unwrap();
     drop(dead);
     let live = Server::new().await;
-    let client = PersistentRawClient::new(config(&[address, live.address]), "test-secret").unwrap();
+    let client = unary_client(config(&[address, live.address]), "test-secret").unwrap();
     let first = client.call(put(b"v0")).await;
     assert!(matches!(first.outcome, Outcome::UnknownWrite { .. }));
     assert_eq!(first.attempts.len(), 1);
@@ -1045,8 +1046,8 @@ async fn limits_reject_before_any_rpc() {
     let server = Server::new().await;
     let mut configuration = config(&[server.address]);
     configuration.peers.push(configuration.peers[0].clone());
-    assert!(PersistentRawClient::new(configuration, "test-secret").is_err());
-    assert!(PersistentRawClient::new(config(&[server.address]), "secret\ninvalid").is_err());
+    assert!(unary_client(configuration, "test-secret").is_err());
+    assert!(unary_client(config(&[server.address]), "secret\ninvalid").is_err());
     let report = server
         .client()
         .call(put(&vec![0; MAX_VALUE_BYTES + 1]))
@@ -1092,4 +1093,8 @@ fn marker_decoder_fails_closed_and_keeps_read_failures_distinct() {
             code: Code::FailedPrecondition as i32
         }
     );
+}
+
+fn unary_client(config: ClientConfig, token: &str) -> Result<PersistentRawClient, &'static str> {
+    PersistentRawClient::new_with_transport(config, token, TransportKind::TonicUnary)
 }
