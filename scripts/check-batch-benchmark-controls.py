@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import time
 
-from batch_benchmark_report import report_check, validate
+from batch_benchmark_report import bucket_bounds, report_check, validate
 from workload_report import bounded, require, sha, strict_json
 
 
@@ -50,6 +50,7 @@ def controls(report):
     change('worker-issued', ['workers', 0, 'issued'], report['workers'][0]['issued'] + 1)
     change('worker-identity-type', ['workers', 0, 'worker'], False)
     change('worker-terminal-after-stop', ['workers', 0, 'last_terminal_ns'], report['workers'][0]['stopped_ns'] + 1)
+    change('worker-stop-after-report', ['workers', 0, 'stopped_ns'], (1 << 64) - 1)
     change('cutoff', ['stages', 'measurement', 'end_ns'], report['stages']['measurement']['end_ns'] + 1)
     change('overlapping-verification', ['stages', 'verification', 'start_ns'], 0)
     change('missing-drain', ['stages', 'drain', 'end_ns'], report['stages']['measurement']['start_ns'])
@@ -72,6 +73,8 @@ def controls(report):
     change('input-item-understatement', p + ['input_items'], pop['input_items'] - 1)
     change('omitted-terminal-call', p + ['calls'], pop['calls'] + 1)
     change('too-many-before-cutoff', p + ['completed_before_cutoff'], pop['calls'] + 1)
+    change('wrong-before-cutoff-count-within-range', p + ['completed_before_cutoff'],
+           pop['completed_before_cutoff'] - 1 if pop['completed_before_cutoff'] else 1)
     change('boolean-count', p + ['calls'], True)
     h = p + ['whole_call']
     change('histogram-overflow', h + ['raw', 'valid'], False)
@@ -94,6 +97,24 @@ def controls(report):
     else:
         field('offered_slots', report['measured_issued'])
         field('dropped_slots', 1)
+        def exceed_span(r):
+            def constant(count, sample):
+                if not count:
+                    return dict(raw=dict(count=0, sum_ns=0, min_ns=None, max_ns=None, valid=True, buckets=[]),
+                                mean_ns=None, p50=None, p95=None, p99=None)
+                slot = next(i for i in range(3776) if bucket_bounds(i)[0] <= sample <= bucket_bounds(i)[1])
+                buckets = [0] * 3776
+                buckets[slot] = count
+                low, high = bucket_bounds(slot)
+                interval = dict(lower_ns=low, upper_ns=high)
+                return dict(raw=dict(count=count, sum_ns=count*sample, min_ns=sample, max_ns=sample,
+                                     valid=True, buckets=buckets), mean_ns=float(sample),
+                            p50=interval.copy(), p95=interval.copy(), p99=interval.copy())
+            for op in r['metrics']['measurement']['statistics']:
+                for pop in op['populations']:
+                    pop['whole_call'] = constant(pop['calls'], 1_000_000_000_000)
+                    pop['sdk_call'] = constant(pop['calls'], 500_000_000_000)
+        result.append(('whole-and-sdk-samples-exceed-cohort', exceed_span))
     return result
 
 

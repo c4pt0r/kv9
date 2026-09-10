@@ -3,7 +3,7 @@ import copy
 import unittest
 
 from batch_benchmark_report import (OPERATIONS, OUTCOMES, REASONS, bucket_bounds,
-                                    histogram_check, metrics_check, strict_json)
+                                    dominance_check, histogram_check, metrics_check, strict_json)
 
 
 def exact_histogram(samples):
@@ -65,6 +65,29 @@ class Histograms(unittest.TestCase):
         for text in ('{"count":1,"count":2}', '{"count":NaN}', '{"count":Infinity}'):
             with self.assertRaises(ValueError):
                 strict_json(text)
+
+    def test_paired_latencies_require_distribution_containment(self):
+        a, b = exact_histogram([10, 20, 50]), exact_histogram([10, 30, 40])
+        histogram_check(a)
+        histogram_check(b)
+        # Equal counts/sums and compatible extrema alone cannot pair these
+        # samples such that every containing duration is at least its child.
+        with self.assertRaises(ValueError):
+            dominance_check(a['raw'], b['raw'])
+        dominance_check(exact_histogram([10, 30, 50])['raw'], b['raw'])
+        dominance_check(exact_histogram([])['raw'], exact_histogram([])['raw'])
+
+    def test_exact_extrema_detect_containment_failures_inside_shared_buckets(self):
+        for whole, scheduled in (([129, 130, 132], [128, 131, 132]),
+                                 ([128, 130, 133], [129, 130, 132])):
+            a, b = exact_histogram(scheduled), exact_histogram(whole)
+            histogram_check(a)
+            histogram_check(b)
+            self.assertEqual(a['raw']['buckets'], b['raw']['buckets'])
+            self.assertEqual(a['raw']['sum_ns'], b['raw']['sum_ns'])
+            with self.assertRaises(ValueError):
+                dominance_check(a['raw'], b['raw'])
+            dominance_check(b['raw'], b['raw'])
 
 
 class FailureAccounting(unittest.TestCase):

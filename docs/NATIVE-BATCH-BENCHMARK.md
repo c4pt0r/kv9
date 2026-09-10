@@ -5,10 +5,10 @@
 unary remains selectable and tarpc requires the existing experimental feature.
 This tool does not change the server, consensus, storage or client retry path.
 
-This checkpoint supplies a development-tested measurement tool and independent
-aggregate validator. It supplies **no accepted batch performance result**. Fresh
-clean release builds, enclosing runtime/environment checks, offered-load sweeps
-and paired Redis MGET/MSET measurements remain required. The separate
+This checkpoint supplies a measurement tool checked against actual debug and
+clean release processes, plus an independent aggregate validator. It supplies
+**no accepted batch performance result**. Enclosing runtime/environment checks,
+offered-load sweeps and paired Redis MGET/MSET measurements remain required. The separate
 `kv9-batch-workload` and atomic history checker continue to own correctness
 histories; aggregate measurements cannot replace them.
 
@@ -132,6 +132,10 @@ For honest dirty/debug development checks, omit `--expected-revision` and
 JSON, rejects duplicate fields and boolean/integer substitutions, independently
 calculates protobuf sizes, histogram sums/quantiles, phase and worker counts,
 offered/issued/dropped populations, terminal drain spans and throughput rates.
+Cutoff completion totals must agree with the sequential workers' final calls.
+Contained latency populations must obey cumulative-bucket order, and call
+durations must fit their enclosing phase and worker-time envelopes. These are
+necessary aggregate checks; they cannot recover individual sample pairings.
 It also checks aggregate retry conservation: only nonterminal NotLeader
 refusals may add attempts. These aggregate identities are necessary checks,
 not a reconstruction of each call's retry history.
@@ -178,7 +182,63 @@ Control summary SHA-256:
 The original early test-build type-inference and Clippy clone-on-copy failures
 remain in their development logs; both were corrected before the passing gates.
 
-None of these debug runs is an accepted performance sample. The next measurement
-stage needs clean release builds, batch sizes 1/4/16/64/128/256 where byte limits
+None of these debug runs is an accepted performance sample.
+
+## Release process and validator review checkpoint
+
+Standalone default-feature release client and server builds completed at clean
+`53dcc9309ddad4e854c76f54dc5ce1307701e9e0`. Both use release optimization level 3;
+server, client, engine and Raft feature arrays are empty. The retained build is
+`/tmp/kv9-native-batch-release-build-first`, with manifest SHA-256
+`1f79c6082fc84b99f5441b64010d2e86398f56475b19d0738e511e3af785c476`.
+The client SHA-256 is
+`d8abdb64695b8c7b003ca207dffb82a1cbbf83dbd0b9367b1e227f5ba236fa6d`;
+the server SHA-256 is
+`82cf715e6d8d1ea8898db1ad3624431958a21213c50ebc00ae5320943cc03991`.
+
+Nine actual release-client cases completed against three ordinary WAL-backed
+processes: batch sizes 1/4/16/64/128/256, a one-call operation cap, fewer offered
+slots than workers, and loss/recovery of two voters. The final case retained
+1,377 calls: 322 successful, 503 unknown writes, 511 read failures and 41
+refusals. Every case completed final value/sentinel verification. All fourteen
+owned client/server lifetimes exited. Reports and process identities remain in
+`/tmp/kv9-native-batch-release-smoke-first`; summary SHA-256:
+`75ba4a9e210431c17a3a9aa7b97e17dd4c1f6956d49708bb57dc9ea1083a896e`.
+
+These runs used shared-host client CPUs 6-7 and server CPUs 8-31, with fixture
+admission/flush settings. They check release execution and outcome accounting;
+they are not isolated memory performance measurements, a Redis comparison,
+new linearizability acceptance or Chaos Mesh evidence. The two-voter case used
+process termination and original-directory restart.
+
+Independent review of the original `53dcc93` validator found three acceptance
+gaps: relabeled post-cutoff completions, impossible contained-latency
+distributions, and durations/worker stops outside their enclosing stages.
+The genuine reports are retained unchanged. The validator now checks worker-tail
+conservation, distribution containment, attempt maxima, phase spans and total
+available worker time. The original review and reproductions remain in
+`/tmp/kv9-native-batch-benchmark-independent-review`.
+
+Follow-up review supplied two additional controls with identical bucket counts
+but impossible exact scheduled-latency extrema. Containment now checks both
+bucket order and exact minima/maxima. Eleven Python tests passed. The corrected
+validator revalidated all thirteen unchanged reports and rejected 783 copied
+report corruptions, with each original restored and checked between controls:
+
+- Four debug reports, 242 controls:
+  `/tmp/kv9-native-batch-validator-final-debug-controls/summary.json`, SHA-256
+  `992aa53494fba3c37821b836f98dbe51019eb3f0cbe4557e4ccd37a116244df1`.
+- Nine release reports, 541 controls:
+  `/tmp/kv9-native-batch-validator-final-release-controls/summary.json`, SHA-256
+  `9d9b1fad7197434e58ceb648c12d7248f49abd0cc7f14538a8edaf9c357d29ff`.
+
+An earlier invocation incorrectly paired a release run with the debug build
+directory; it failed at the retained-manifest identity check. That failed
+invocation remains recorded, and the two final groups use their matching builds.
+This checkpoint changes validation and documentation only; it does not rebuild
+or change the retained release client, SDK or database runtime.
+
+The next measurement stage needs batch sizes 1/4/16/64/128/256 where byte limits
 permit, concurrent-batch and offered-load sweeps, failure-inclusive whole-batch
-latency curves and paired order-balanced Redis MGET/MSET controls.
+latency curves and paired order-balanced Redis MGET/MSET controls, all under
+independently checked runtime and isolation settings.
