@@ -221,7 +221,7 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     /// Receipts are not deleted on hit — deletion would open a window for a
     /// concurrent second lookup of the same rctx; aging out is the only exit.
     /// Lock order: leaf — never held while acquiring any other lock.
-    read_receipts: Mutex<Vec<(Vec<u8>, u64)>>,
+    read_receipts: Mutex<crate::read_receipts::ReadReceipts>,
     /// This driver's boot incarnation: 16 random bytes minted at construction.
     /// Every read context is `incarnation ++ counter`, so a receipt minted in
     /// a previous process life (same node id, restarted) can never satisfy a
@@ -278,7 +278,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             sm: Mutex::new(sm),
             applied: Mutex::new(Vec::new()),
             conf_receipts: Mutex::new(Vec::new()),
-            read_receipts: Mutex::new(Vec::new()),
+            read_receipts: Mutex::new(crate::read_receipts::ReadReceipts::new(APPLIED_RING)),
             read_incarnation: {
                 use std::io::Read;
                 let mut bytes = [0u8; 16];
@@ -395,11 +395,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             if !states.is_empty() {
                 let mut receipts = self.read_receipts.lock().expect("read receipts poisoned");
                 for st in states {
-                    receipts.push((st.request_ctx, st.index));
-                }
-                let len = receipts.len();
-                if len > APPLIED_RING {
-                    receipts.drain(..len - APPLIED_RING);
+                    receipts.push(st.request_ctx, st.index);
                 }
             }
         }
@@ -953,10 +949,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             }
             let hit = {
                 let receipts = self.read_receipts.lock().expect("read receipts poisoned");
-                receipts
-                    .iter()
-                    .find(|(ctx, _)| ctx == &rctx)
-                    .map(|&(_, index)| index)
+                receipts.get(&rctx)
             };
             if let Some(index) = hit {
                 break index;
