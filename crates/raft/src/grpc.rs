@@ -297,9 +297,37 @@ pub trait RegistrationBackend: Send + Sync + 'static {
 /// The inbound half: implements the generated service with a Raft inbox and an
 /// optional synchronous registration backend. It owns no listener or runtime;
 /// the server crate registers this on its shared `tonic` server.
+/// The production service accepts the bounded shared inbox. Unit fixtures can
+/// retain their independent channel receivers to observe wire delivery.
+pub enum InboundSender {
+    Bounded(crate::work::RaftInbox),
+    #[cfg(test)]
+    Fixture(mpsc::UnboundedSender<Message>),
+}
+impl From<crate::work::RaftInbox> for InboundSender {
+    fn from(value: crate::work::RaftInbox) -> Self {
+        Self::Bounded(value)
+    }
+}
+#[cfg(test)]
+impl From<mpsc::UnboundedSender<Message>> for InboundSender {
+    fn from(value: mpsc::UnboundedSender<Message>) -> Self {
+        Self::Fixture(value)
+    }
+}
+impl InboundSender {
+    fn send(&self, message: Message) -> bool {
+        match self {
+            Self::Bounded(inbox) => inbox.send(message).is_ok(),
+            #[cfg(test)]
+            Self::Fixture(inbox) => inbox.send(message).is_ok(),
+        }
+    }
+}
+
 pub struct RaftGrpcService {
     me: NodeId,
-    inbox: mpsc::UnboundedSender<Message>,
+    inbox: InboundSender,
     discovery: Arc<dyn GrpcDiscoveryState>,
     /// The registration seam (None = this node serves no registration, e.g.
     /// tests or a build wired before the server injects it — callers get
@@ -317,12 +345,12 @@ pub struct RaftGrpcService {
 impl RaftGrpcService {
     pub fn new(
         me: NodeId,
-        inbox: mpsc::UnboundedSender<Message>,
+        inbox: impl Into<InboundSender>,
         discovery: Arc<dyn GrpcDiscoveryState>,
     ) -> RaftGrpcService {
         RaftGrpcService {
             me,
-            inbox,
+            inbox: inbox.into(),
             discovery,
             registration: None,
             registration_capacity: Arc::new(tokio::sync::Semaphore::new(1)),
@@ -398,10 +426,10 @@ impl Kv9Raft for RaftGrpcService {
                         "raft sender does not match authenticated node",
                     ));
                 }
-                // Unbounded send into the sync core never blocks the runtime;
-                // a closed core (shutdown) just ends the stream.
-                if self.inbox.send(msg).is_err() {
-                    return Err(Status::unavailable("node is shutting down"));
+                // Bounded best-effort admission never blocks this runtime.
+                // Ending a saturated stream permits Raft retransmission.
+                if !self.inbox.send(msg) {
+                    return Err(Status::resource_exhausted("raft inbox is full"));
                 }
             }
         }
@@ -917,8 +945,7 @@ pub struct GrpcTransport {
     // Registration and enqueue share one linearization lock. No sender
     // escapes it, and no socket I/O or await occurs under it.
     peers: Mutex<HashMap<u64, PeerRoute>>,
-    inbox_rx: Mutex<mpsc::UnboundedReceiver<Message>>,
-    inbox_tx: mpsc::UnboundedSender<Message>,
+    inbox: crate::work::RaftInbox,
     root_digest: RootDigest,
     /// Total (re)connect attempts across all peer workers. One relaxed
     /// increment per attempt; the observable that lets a regression prove a
@@ -946,14 +973,13 @@ impl GrpcTransport {
         handle: tokio::runtime::Handle,
         root_digest: RootDigest,
     ) -> Arc<GrpcTransport> {
-        let (inbox_tx, inbox_rx) = mpsc::unbounded_channel();
+        let inbox = crate::work::RaftInbox::default();
         Arc::new(GrpcTransport {
             me,
             token,
             handle,
             peers: Mutex::new(HashMap::new()),
-            inbox_rx: Mutex::new(inbox_rx),
-            inbox_tx,
+            inbox,
             root_digest,
             connect_attempts: Arc::new(AtomicU64::new(0)),
             #[cfg(any(test, feature = "testing"))]
@@ -963,8 +989,8 @@ impl GrpcTransport {
 
     /// The sender the service side pushes inbound messages into (register it
     /// with [`RaftGrpcService::new`] on the shared server).
-    pub fn inbox_sender(&self) -> mpsc::UnboundedSender<Message> {
-        self.inbox_tx.clone()
+    pub fn inbox_sender(&self) -> crate::work::RaftInbox {
+        self.inbox.clone()
     }
 
     /// Install an unversioned bootstrap route. Once a catalog or a remote
@@ -1081,6 +1107,9 @@ impl GrpcTransport {
 }
 
 impl RaftTransport for GrpcTransport {
+    fn set_work_signal(&self, signal: Arc<crate::work::WorkSignal>) {
+        self.inbox.set_signal(signal);
+    }
     fn send(&self, to: NodeId, msg: Message) {
         // Partition injection (task #28): drop outbound to a masked peer, as if
         // the wire were cut. Same effect as the "unknown peer: drop" below —
@@ -1112,9 +1141,8 @@ impl RaftTransport for GrpcTransport {
         // (this and `send`) consult the same mask, giving symmetric isolation.
         #[cfg(any(test, feature = "testing"))]
         self.partition.refresh();
-        let mut rx = self.inbox_rx.lock().expect("inbox poisoned");
         let mut out = Vec::new();
-        while let Ok(msg) = rx.try_recv() {
+        for msg in self.inbox.drain() {
             #[cfg(any(test, feature = "testing"))]
             if self.partition.is_masked(msg.from) {
                 continue;
@@ -1556,7 +1584,7 @@ mod tests {
         handle: &tokio::runtime::Handle,
         me: NodeId,
         addr: SocketAddr,
-        inbox: mpsc::UnboundedSender<Message>,
+        inbox: impl Into<InboundSender>,
         fp: u64,
     ) {
         let listener = std::net::TcpListener::bind(addr)
@@ -1577,7 +1605,7 @@ mod tests {
         handle: &tokio::runtime::Handle,
         me: NodeId,
         listener: std::net::TcpListener,
-        inbox: mpsc::UnboundedSender<Message>,
+        inbox: impl Into<InboundSender>,
         fp: u64,
     ) {
         let addr = listener.local_addr().unwrap();
@@ -2464,7 +2492,7 @@ mod tests {
         }
         let _handles: Vec<_> = drivers
             .iter()
-            .map(|d| d.spawn(Duration::from_millis(10)))
+            .map(|d| d.spawn(Duration::from_millis(10)).unwrap())
             .collect();
 
         let deadline = |secs: u64| std::time::Instant::now() + Duration::from_secs(secs);
@@ -2695,7 +2723,7 @@ mod tests {
         // The listener sockets are already bound; run production cadence.
         let handles: Vec<_> = drivers
             .iter()
-            .map(|d| d.spawn(Duration::from_millis(10)))
+            .map(|d| d.spawn(Duration::from_millis(10)).unwrap())
             .collect();
 
         drivers[0].peer().campaign().unwrap();
