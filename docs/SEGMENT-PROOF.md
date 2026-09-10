@@ -180,3 +180,17 @@ second was deliberately interrupted to add the missing scalar-summary induction.
 Neither is counted as final acceptance. The final gate has the corrected exact
 inventory of 469 obligations and includes the two additional summary controls.
 This proof-only acceptance did not rerun Cargo, MinIO, Chaos Mesh or hosted CI.
+
+## Alignment with integrated runtime `1698f6c`
+
+Source review of `wal_segment.rs` from `738a029` through `1698f6c` found three
+additions: checked reconstruction of published closed descriptors, crate-visible
+header encode/decode for the topology owner, and an encoded-size preflight before
+append allocation. The preflight rejects oversized input before file mutation;
+it does not change accepted frame encoding or data/position publication. The
+summary fold, synchronization-before-acknowledgement order, failure fencing,
+sealing and active-tail recovery transitions remain unchanged. Thus the original
+primitive protocol mapping still applies to accepted operations in that runtime.
+The new descriptor/topology entry validation and byte arithmetic remain outside
+this parameterized protocol proof. This is an explicit source review, not a
+machine-checked refinement of Rust or an extension to the topology protocol.
