@@ -135,3 +135,8 @@ The bounded Raw engine group-commit candidate's performance evidence is in
 [results/b3cbc35-fe650ed.md](results/b3cbc35-fe650ed.md), including both
 high-concurrency repetitions and scoped engine synchronization counts.
 Correctness acceptance remains separate from this report.
+
+The Raft Ready group-sync candidate's disk performance evidence is in
+[results/fe650ed-892b2a1.md](results/fe650ed-892b2a1.md). It preserves both
+repetitions and whole-trial Raft/engine sync counts. Volatile storage diagnostics
+are separate from this durable matrix and its acceptance gates.
