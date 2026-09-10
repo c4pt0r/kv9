@@ -6,6 +6,7 @@
 //! committed entries → expose queryable [`NodeStatus`]. Acceptance criteria
 //! read `status()` — never logs, never sleeps-as-proof.
 
+use std::collections::VecDeque;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -203,7 +204,7 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     /// advanced, nothing written) and enters WITH its rejection verdict, so
     /// the receipt reaches the proposer instead of dying at this boundary
     /// (the silent-lost-write blocker Ren's layer-3 test caught).
-    applied: Mutex<Vec<RingEntry>>,
+    applied: Mutex<VecDeque<RingEntry>>,
     /// Conf-change receipts by exact (index, term) — the correlation store for
     /// [`Self::wait_conf_applied`]. Conf entries NEVER enter the command ring:
     /// `applied_index`/`applied_term` must remain a same-entry pair.
@@ -280,7 +281,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             drain,
             transport,
             sm: Mutex::new(sm),
-            applied: Mutex::new(Vec::new()),
+            applied: Mutex::new(VecDeque::new()),
             conf_receipts: Mutex::new(Vec::new()),
             read_receipts: Mutex::new(Vec::new()),
             read_incarnation: {
@@ -912,7 +913,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             // caller to retry a possibly-SUCCEEDED non-idempotent write;
             // Unconfirmed keeps the unknown unknown.
             if applied.len() == APPLIED_RING
-                && applied.first().is_some_and(|e| at.index.0 < e.index)
+                && applied.front().is_some_and(|e| at.index.0 < e.index)
             {
                 return Some(Err(ApplyWaitError::Unconfirmed {
                     index: at.index.0,
@@ -1147,7 +1148,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             term: p.term,
             raft_committed: p.committed,
             applied_index: self.sm.lock().expect("sm poisoned").applied_index().0,
-            applied_term: applied.last().map_or(0, |e| e.term),
+            applied_term: applied.back().map_or(0, |e| e.term),
             fatal: self.fatal.lock().expect("fatal poisoned").clone(),
             step_errors: p.step_errors,
             conf_index: p.conf_applied,
@@ -1652,16 +1653,22 @@ pub struct ConfChangeReceipt {
     pub learners: Vec<u64>,
 }
 
-fn push_ring(applied: &mut Vec<RingEntry>, index: u64, term: u64, outcome: crate::ApplyOutcome) {
-    applied.push(RingEntry {
+fn push_ring(
+    applied: &mut VecDeque<RingEntry>,
+    index: u64,
+    term: u64,
+    outcome: crate::ApplyOutcome,
+) {
+    // Preserve the same chronological suffix without shifting every retained
+    // receipt per command. Evict before push so a full FIFO reuses its capacity.
+    if applied.len() == APPLIED_RING {
+        let _ = applied.pop_front();
+    }
+    applied.push_back(RingEntry {
         index,
         term,
         outcome,
     });
-    let len = applied.len();
-    if len > APPLIED_RING {
-        applied.drain(..len - APPLIED_RING);
-    }
 }
 
 fn single_change(node: NodeId, kind: ConfChangeType) -> ConfChangeV2 {
@@ -1871,6 +1878,58 @@ mod tests {
             result.is_pending(),
             "read completed before its required evidence"
         );
+    }
+
+    #[test]
+    fn receipt_fifo_preserves_order_verdicts_and_allocation_across_wraparound() {
+        let mut actual = VecDeque::new();
+        let published: Vec<_> = (0..3 * APPLIED_RING + 17)
+            .map(|ordinal| RingEntry {
+                // Gaps represent entries that do not create command receipts.
+                index: 7 + 2 * ordinal as u64,
+                term: 1 + ordinal as u64 / 300,
+                outcome: match ordinal % 3 {
+                    0 => crate::ApplyOutcome::Plain,
+                    1 => crate::ApplyOutcome::FenceRejected(kv9_common::RegionId(ordinal as u64)),
+                    _ => crate::ApplyOutcome::Manifest(crate::ManifestVerdict::AlreadyApplied {
+                        region: kv9_common::RegionId(ordinal as u64),
+                        generation: ordinal as u64 + 1,
+                    }),
+                },
+            })
+            .collect();
+        let mut full_capacity = None;
+        let mut wrapped = false;
+        for (ordinal, entry) in published.iter().enumerate() {
+            push_ring(&mut actual, entry.index, entry.term, entry.outcome);
+            let end = ordinal + 1;
+            let expected = &published[end.saturating_sub(APPLIED_RING)..end];
+            assert!(
+                actual.iter().eq(expected.iter()),
+                "receipt FIFO changed the retained chronological suffix"
+            );
+            assert_eq!(
+                actual.front(),
+                expected.first(),
+                "receipt eviction floor changed"
+            );
+            assert_eq!(
+                actual.back(),
+                expected.last(),
+                "latest recorded receipt changed"
+            );
+            if let Some(capacity) = full_capacity {
+                assert_eq!(
+                    actual.capacity(),
+                    capacity,
+                    "full receipt FIFO grew its allocation"
+                );
+            } else if actual.len() == APPLIED_RING {
+                full_capacity = Some(actual.capacity());
+            }
+            wrapped |= !actual.as_slices().1.is_empty();
+        }
+        assert!(wrapped, "receipt FIFO never exercised physical wraparound");
     }
 
     #[tokio::test]
