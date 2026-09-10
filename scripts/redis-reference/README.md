@@ -130,3 +130,8 @@ The isolated accepted-socket TCP_NODELAY result is in
 The append-slice synchronization candidate's performance evidence is in
 [results/cc8bc87-b3cbc35.md](results/cc8bc87-b3cbc35.md); its correctness
 acceptance gates are tracked separately from these measurements.
+
+The bounded Raw engine group-commit candidate's performance evidence is in
+[results/b3cbc35-fe650ed.md](results/b3cbc35-fe650ed.md), including both
+high-concurrency repetitions and scoped engine synchronization counts.
+Correctness acceptance remains separate from this report.
