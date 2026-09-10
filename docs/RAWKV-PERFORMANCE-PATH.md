@@ -37,6 +37,20 @@ accepting scale-out. This sequence does not mark those prerequisites complete.
 
 ## Current evidence
 
+**Streaming gRPC with tonic is selected** for the next point-transport integration
+and performance work. The [same-artifact five-arm comparison](../scripts/redis-reference/results/40e813f-streaming-rpc-c64-tmpfs-diagnostic.md)
+at clean `40e813f` measures 208,849 GET/s, 96,078 PUT/s and 123,137 mixed
+operations/s: +10.56%, +2.06% and +5.42% versus surrounding tarpc, and +65.71%,
++29.26% and +40.71% versus surrounding unary. Both repetitions exceed all
+surrounding control repetitions for every workload. The independent audit
+passes all 60 cohorts, 10 full-history guards and 5,411,907 measured KV9 successes
+without measured retries. Redis remains 2.38x, 4.99x and 3.95x faster.
+This is a short single-host volatile-memory diagnostic, with the same 1.5-second
+protocol and a new clean build. Integrate the selected stream into the ordinary
+service/client path and complete exact-source actual Chaos/proof gates before
+default runtime promotion. Then profile and optimize the selected Raft/WAL write
+path; retain the other transports as reproducible controls.
+
 The [bounded streaming-gRPC control](https://github.com/c4pt0r/kv9/blob/40e813f/docs/RPC-STREAM-CONTROL.md)
 is now committed on the experiment branch. It shares the existing handlers and
 Raft semantics, correlates multiplexed responses, bounds unfinished/buffered work
@@ -45,8 +59,8 @@ focused transport tests pass, alongside 670 feature-enabled and 645 default
 workspace tests/doctests (23 ignored in each workspace run). The independently
 audited three-transport leader-loss/restart run validates all 495 history
 operations, including 43 retained unknown outcomes, and fresh final resource
-drain. Streaming throughput and exact-feature actual Chaos remain open; this
-increment does not select a production transport.
+drain. Exact integrated-source actual Chaos remains open; the selected stream
+has not yet replaced the default production transport.
 
 The new opt-in [RPC framework comparison](../scripts/redis-reference/results/b49a2f6-rpc-framework-c64-tmpfs-diagnostic.md)
 uses the same clean `b49a2f6` feature-enabled release client/server for both unary
@@ -56,10 +70,10 @@ the surrounding unary arms. The paired Redis reference remains 2.67x, 5.16x and
 4.23x faster. All 36 measured cohorts completed, with zero failed/unknown/refused
 operations or extra measured KV9 attempts. This is a new 1.5-second diagnostic;
 its feature build, client and window differ from the older a00e comparison.
-Tarpc remains a separate experimental candidate. Complete the streaming-gRPC
-control and exact-feature Chaos/refinement work before selecting a production
-transport; Redis-class performance remains the prerequisite for the next
-dynamic multi-Raft/automatic-split mainline stage.
+This earlier tarpc comparison remains a retained reference. The later five-arm
+comparison selects streaming gRPC, with integration and exact-source
+Chaos/refinement work still required. Redis-class performance remains the
+prerequisite for the next dynamic multi-Raft/automatic-split mainline stage.
 
 Main now includes the selected runtime through asynchronous exact-apply waiting
 and process-status identity, integrated in `2627825`. All 131 runtime/build-tree
