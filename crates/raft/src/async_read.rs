@@ -1,8 +1,8 @@
 //! Bounded asynchronous ReadIndex waiters, serviced by the existing Raft owner.
 //! Registration never acquires the peer/persistence mutex. A sender completes
-//! only after its exact context is confirmed and the unified apply covers it.
+//! only after its sealed group's exact context is confirmed and unified apply covers it.
 
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, Weak};
 use std::time::{Duration, Instant};
@@ -35,7 +35,6 @@ fn expired(start: Instant, confirmed: bool) -> ReadIndexError {
 struct Request {
     context: [u8; 24],
     sender: Option<oneshot::Sender<ReadResult>>,
-    confirmed: Option<u64>,
     quorum_observed: Arc<AtomicBool>,
     started: Instant,
     deadline: Instant,
@@ -61,21 +60,35 @@ impl Drop for Request {
             let _ = sender.send(Err(failed("read owner dropped a pending request")));
         }
         if let Some(owner) = self.owner.upgrade() {
-            owner
-                .state
-                .lock()
-                .expect("async read queue poisoned")
-                .in_flight -= 1;
+            let mut state = owner.state.lock().expect("async read queue poisoned");
+            assert!(
+                state.reserved.remove(&self.context),
+                "read reservation missing"
+            );
+            state.in_flight -= 1;
         }
     }
+}
+
+struct ReadGroup {
+    // Membership is sealed before invoking ReadIndex. Removing canceled or
+    // expired members never changes the map key or admits a later caller.
+    members: Vec<Request>,
+    confirmed: Option<u64>,
 }
 
 #[derive(Default)]
 struct State {
     queued: VecDeque<Request>,
-    active: BTreeMap<[u8; 24], Request>,
+    active: BTreeMap<[u8; 24], ReadGroup>,
+    reserved: BTreeSet<[u8; 24]>,
     in_flight: usize,
     peak: usize,
+    inspected: u64,
+    group_attempts: u64,
+    admitted_groups: u64,
+    admitted_members: u64,
+    max_admitted_group: usize,
     stopped: bool,
 }
 
@@ -92,8 +105,14 @@ pub struct AsyncReadSnapshot {
     pub limit: usize,
     pub queued: usize,
     pub active: usize,
+    pub active_groups: usize,
     pub in_flight: usize,
     pub peak: usize,
+    pub inspected: u64,
+    pub group_attempts: u64,
+    pub admitted_groups: u64,
+    pub admitted_members: u64,
+    pub max_admitted_group: usize,
     pub stopped: bool,
 }
 
@@ -162,9 +181,7 @@ impl AsyncReads {
                 return Err(expired(started, false));
             }
             // Contexts are minted by the driver's checked, process-unique counter.
-            if state.active.contains_key(&context)
-                || state.queued.iter().any(|r| r.context == context)
-            {
+            if state.active.contains_key(&context) || !state.reserved.insert(context) {
                 return Err(failed("duplicate asynchronous read context"));
             }
             state.in_flight += 1;
@@ -172,7 +189,6 @@ impl AsyncReads {
             state.queued.push_back(Request {
                 context,
                 sender: Some(sender),
-                confirmed: None,
                 quorum_observed: quorum_observed.clone(),
                 started,
                 deadline,
@@ -190,28 +206,22 @@ impl AsyncReads {
         })
     }
 
-    /// One owner only. Callbacks run without the queue lock. Deferred admission
-    /// retains its context and absolute deadline; it does not create a quorum receipt.
+    /// One owner only. Seal a bounded prefix before invoking ReadIndex once.
+    /// Deferred admission has not initiated a quorum read; members may be
+    /// regrouped on retry, retaining their identities and absolute deadlines.
     pub(crate) fn submit(&self, mut read_index: impl FnMut(Vec<u8>) -> kv9_common::Result<bool>) {
-        // Snapshot the available prefix: requeued unready requests are not
-        // retried repeatedly within this turn.
-        let (count, retained) = {
-            let state = self.0.state.lock().expect("async read queue poisoned");
+        let (prefix, retained) = {
+            let mut state = self.0.state.lock().expect("async read queue poisoned");
+            if state.stopped {
+                return;
+            }
             let count = state.queued.len().min(TURN_REQUESTS);
-            (count, state.queued.len() > count)
+            state.inspected = state.inspected.saturating_add(count as u64);
+            let prefix: Vec<_> = state.queued.drain(..count).collect();
+            (prefix, !state.queued.is_empty())
         };
-        let mut deferred = false;
-        for _ in 0..count {
-            let request = {
-                let mut state = self.0.state.lock().expect("async read queue poisoned");
-                if state.stopped {
-                    break;
-                }
-                state.queued.pop_front()
-            };
-            let Some(request) = request else {
-                break;
-            };
+        let mut members = Vec::with_capacity(prefix.len());
+        for request in prefix {
             if request.abandoned() {
                 continue;
             }
@@ -220,33 +230,71 @@ impl AsyncReads {
                 request.finish(Err(error));
                 continue;
             }
-            let admitted = read_index(request.context.to_vec());
+            members.push(request);
+        }
+        let mut deferred = false;
+        if let Some(first) = members.first() {
+            // The checked invocation context is unique, and the sealed group
+            // retains it independently of the first member's later lifetime.
+            let context = first.context;
+            {
+                let mut state = self.0.state.lock().expect("async read queue poisoned");
+                if state.stopped {
+                    drop(state);
+                    for request in members {
+                        request.finish(Err(failed("read owner stopped before group admission")));
+                    }
+                    return;
+                }
+                state.group_attempts = state.group_attempts.saturating_add(1);
+            }
+            let admitted = read_index(context.to_vec());
             let admitted = match admitted {
-                Ok(value) => value,
+                Ok(value) => Some(value),
                 Err(Error::NotLeader { leader }) => {
-                    request.finish(Err(ReadIndexError::NotLeader { hint: leader }));
-                    continue;
+                    for request in members.drain(..) {
+                        request.finish(Err(ReadIndexError::NotLeader { hint: leader }));
+                    }
+                    None
                 }
                 Err(error) => {
-                    request.finish(Err(ReadIndexError::Failed(error)));
-                    continue;
+                    // Peer admission's non-routing failure is terminal Raft
+                    // failure. Each member receives its own typed read error.
+                    let message = error.to_string();
+                    for request in members.drain(..) {
+                        request.finish(Err(failed(&message)));
+                    }
+                    None
                 }
             };
             let mut state = self.0.state.lock().expect("async read queue poisoned");
+            if admitted == Some(true) {
+                state.admitted_groups = state.admitted_groups.saturating_add(1);
+                state.admitted_members =
+                    state.admitted_members.saturating_add(members.len() as u64);
+                state.max_admitted_group = state.max_admitted_group.max(members.len());
+            }
             if state.stopped {
                 drop(state);
-                request.finish(Err(failed("read owner stopped during admission")));
-            } else if admitted {
-                // No other owner inserts while this callback is running.
-                let previous = state.active.insert(request.context, request);
+                for request in members {
+                    request.finish(Err(failed("read owner stopped during admission")));
+                }
+            } else if admitted == Some(true) {
+                let previous = state.active.insert(
+                    context,
+                    ReadGroup {
+                        members,
+                        confirmed: None,
+                    },
+                );
                 drop(state);
                 assert!(
                     previous.is_none(),
-                    "unique asynchronous read context replaced"
+                    "unique asynchronous read group replaced"
                 );
-            } else {
+            } else if admitted == Some(false) {
                 deferred = true;
-                state.queued.push_back(request);
+                state.queued.extend(members);
             }
         }
         // A full prefix can retain uninspected requests. An unready short
@@ -256,19 +304,21 @@ impl AsyncReads {
         }
     }
 
-    /// First exact-context confirmation wins. Other request contexts, including
+    /// First exact-group-context confirmation wins. Other contexts, including
     /// synchronous callers, remain the responsibility of their original path.
     pub(crate) fn confirm(&self, context: &[u8], index: u64) -> bool {
         let Ok(context) = <[u8; 24]>::try_from(context) else {
             return false;
         };
         let mut state = self.0.state.lock().expect("async read queue poisoned");
-        let Some(request) = state.active.get_mut(&context) else {
+        let Some(group) = state.active.get_mut(&context) else {
             return false;
         };
-        if request.confirmed.is_none() {
-            request.confirmed = Some(index);
-            request.quorum_observed.store(true, Ordering::Release);
+        if group.confirmed.is_none() {
+            group.confirmed = Some(index);
+            for request in &group.members {
+                request.quorum_observed.store(true, Ordering::Release);
+            }
         }
         true
     }
@@ -284,32 +334,26 @@ impl AsyncReads {
 
     fn select_completions(&self, applied: Option<u64>) -> Vec<(Request, ReadResult)> {
         let mut state = self.0.state.lock().expect("async read queue poisoned");
-        let keys: Vec<_> = state
-            .active
-            .iter()
-            .filter_map(|(key, request)| {
-                (request.abandoned()
-                    || Instant::now() >= request.deadline
-                    || request
-                        .confirmed
-                        .is_some_and(|index| applied.is_some_and(|at| at >= index)))
-                .then_some(*key)
-            })
-            .collect();
-        keys.into_iter()
-            .map(|key| {
-                let request = state.active.remove(&key).expect("selected request");
-                let result = if let Some(index) = request
-                    .confirmed
-                    .filter(|index| applied.is_some_and(|at| at >= *index))
-                {
-                    Ok(index)
+        let mut selected = Vec::new();
+        state.active.retain(|_, group| {
+            let covered = group
+                .confirmed
+                .filter(|index| applied.is_some_and(|at| at >= *index));
+            let mut pos = 0;
+            while pos < group.members.len() {
+                let request = &group.members[pos];
+                if covered.is_some() || request.abandoned() || Instant::now() >= request.deadline {
+                    let request = group.members.swap_remove(pos);
+                    let result =
+                        covered.ok_or_else(|| expired(request.started, group.confirmed.is_some()));
+                    selected.push((request, result));
                 } else {
-                    Err(expired(request.started, request.confirmed.is_some()))
-                };
-                (request, result)
-            })
-            .collect()
+                    pos += 1;
+                }
+            }
+            !group.members.is_empty()
+        });
+        selected
     }
 
     pub(crate) fn close(&self) {
@@ -321,7 +365,10 @@ impl AsyncReads {
                 std::mem::take(&mut state.active),
             )
         };
-        for request in queued.into_iter().chain(active.into_values()) {
+        for request in queued
+            .into_iter()
+            .chain(active.into_values().flat_map(|g| g.members))
+        {
             request.finish(Err(failed("read owner is stopped")));
         }
     }
@@ -331,9 +378,15 @@ impl AsyncReads {
         AsyncReadSnapshot {
             limit: MAX_REQUESTS,
             queued: state.queued.len(),
-            active: state.active.len(),
+            active: state.active.values().map(|g| g.members.len()).sum(),
+            active_groups: state.active.len(),
             in_flight: state.in_flight,
             peak: state.peak,
+            inspected: state.inspected,
+            group_attempts: state.group_attempts,
+            admitted_groups: state.admitted_groups,
+            admitted_members: state.admitted_members,
+            max_admitted_group: state.max_admitted_group,
             stopped: state.stopped,
         }
     }
@@ -356,9 +409,189 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn sealed_members_share_one_confirmation_and_late_arrivals_require_another() {
+        let queue = AsyncReads::new(Arc::default());
+        let first = register(&queue, 1);
+        let second = register(&queue, 2);
+        let mut late = None;
+        let mut calls = Vec::new();
+        queue.submit(|ctx| {
+            calls.push(ctx);
+            late = Some(register(&queue, 3));
+            Ok(true)
+        });
+        assert_eq!(
+            calls,
+            vec![context(1).to_vec()],
+            "sealed group emitted more than one ReadIndex"
+        );
+        assert_eq!(
+            queue.snapshot().queued,
+            1,
+            "arrival joined a group after its quorum request started"
+        );
+        assert_eq!(queue.snapshot().active, 2);
+        let mut late = late.unwrap();
+        queue.submit(|ctx| {
+            assert_eq!(ctx, context(3));
+            Ok(true)
+        });
+        assert!(
+            !queue.confirm(&context(2), 1),
+            "member identity was accepted as a group confirmation"
+        );
+        queue.confirm(&context(1), 7);
+        queue.complete(Some(7));
+        assert_eq!(first.wait().await.unwrap(), 7);
+        assert_eq!(second.wait().await.unwrap(), 7);
+        assert!(
+            matches!(
+                late.receiver.try_recv(),
+                Err(oneshot::error::TryRecvError::Empty)
+            ),
+            "late arrival borrowed an earlier group's confirmation"
+        );
+        queue.confirm(&context(3), 8);
+        queue.complete(Some(7));
+        assert!(
+            matches!(
+                late.receiver.try_recv(),
+                Err(oneshot::error::TryRecvError::Empty)
+            ),
+            "late group bypassed its own apply coverage"
+        );
+        queue.complete(Some(8));
+        assert_eq!(late.wait().await.unwrap(), 8);
+        let state = queue.snapshot();
+        assert_eq!(
+            (
+                state.admitted_groups,
+                state.admitted_members,
+                state.max_admitted_group
+            ),
+            (2, 3, 2)
+        );
+        assert_eq!(state.in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn canceled_representative_leaves_group_identity_for_its_live_members() {
+        let queue = AsyncReads::new(Arc::default());
+        let representative = register(&queue, 1);
+        let survivor = register(&queue, 2);
+        queue.submit(|_| Ok(true));
+        drop(representative);
+        queue.complete(Some(0));
+        assert_eq!(queue.snapshot().in_flight, 1);
+        assert_eq!(queue.snapshot().active_groups, 1);
+        assert!(
+            queue
+                .register(context(1), Instant::now(), Duration::from_secs(1))
+                .is_err(),
+            "a live group's context was reused after representative cancellation"
+        );
+        assert!(
+            queue.confirm(&context(1), 7),
+            "representative cancellation destroyed confirmation routing"
+        );
+        queue.complete(Some(7));
+        assert_eq!(survivor.wait().await.unwrap(), 7);
+        assert_eq!(queue.snapshot().in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn group_members_keep_independent_deadlines_and_capacity() {
+        let queue = AsyncReads::new(Arc::default());
+        let mut expired_member = register(&queue, 1);
+        let mut live_member = register(&queue, 2);
+        queue.submit(|_| Ok(true));
+        queue.confirm(&context(1), 7);
+        expired_member.deadline = Instant::now();
+        assert!(matches!(
+            expired_member.wait().await,
+            Err(ReadIndexError::Unconfirmed {
+                phase: BarrierPhase::ApplyCatchUp,
+                ..
+            })
+        ));
+        assert_eq!(
+            queue.snapshot().in_flight,
+            2,
+            "one member's timeout released owner storage"
+        );
+        queue.complete(Some(6));
+        assert_eq!(queue.snapshot().in_flight, 1);
+        assert!(
+            matches!(
+                live_member.receiver.try_recv(),
+                Err(oneshot::error::TryRecvError::Empty)
+            ),
+            "one member's deadline completed a live sibling"
+        );
+        queue.confirm(&context(1), 3);
+        queue.complete(Some(6));
+        assert!(
+            matches!(
+                live_member.receiver.try_recv(),
+                Err(oneshot::error::TryRecvError::Empty)
+            ),
+            "duplicate group confirmation lowered a live member's barrier"
+        );
+        queue.complete(Some(7));
+        assert_eq!(live_member.wait().await.unwrap(), 7);
+        assert_eq!(queue.snapshot().in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn full_queue_emits_two_bounded_groups_and_retains_every_member() {
+        let queue = AsyncReads::new(Arc::default());
+        let tickets: Vec<_> = (0..MAX_REQUESTS as u64)
+            .map(|id| register(&queue, id))
+            .collect();
+        let mut calls = 0;
+        queue.submit(|_| {
+            calls += 1;
+            Ok(true)
+        });
+        let first = queue.snapshot();
+        assert_eq!(
+            (calls, first.active, first.active_groups, first.queued),
+            (1, TURN_REQUESTS, 1, MAX_REQUESTS - TURN_REQUESTS),
+            "sealed group exceeded its inspection or membership bound"
+        );
+        queue.submit(|_| {
+            calls += 1;
+            Ok(true)
+        });
+        let full = queue.snapshot();
+        assert_eq!(
+            (calls, full.active, full.active_groups, full.queued),
+            (2, MAX_REQUESTS, 2, 0)
+        );
+        assert_eq!(
+            (
+                full.inspected,
+                full.admitted_groups,
+                full.admitted_members,
+                full.max_admitted_group
+            ),
+            (MAX_REQUESTS as u64, 2, MAX_REQUESTS as u64, TURN_REQUESTS)
+        );
+        queue.close();
+        for ticket in tickets {
+            assert!(matches!(
+                ticket.wait().await,
+                Err(ReadIndexError::Failed(_))
+            ));
+        }
+        assert_eq!(queue.snapshot().in_flight, 0);
+    }
+
+    #[tokio::test]
     async fn exact_first_confirmation_and_apply_coverage_are_both_required() {
         let queue = AsyncReads::new(Arc::default());
         let mut first = register(&queue, 1);
+        queue.submit(|_| Ok(true));
         let mut second = register(&queue, 2);
         queue.submit(|_| Ok(true));
         assert!(!queue.confirm(&context(9), 1));
@@ -440,8 +673,10 @@ mod tests {
     #[tokio::test]
     async fn stop_reaches_unclaimed_suffix_while_one_callback_is_blocked() {
         let queue = AsyncReads::new(Arc::default());
-        let first = register(&queue, 1);
-        let second = register(&queue, 2);
+        let claimed: Vec<_> = (0..TURN_REQUESTS as u64)
+            .map(|id| register(&queue, id))
+            .collect();
+        let unclaimed = register(&queue, TURN_REQUESTS as u64);
         let (entered_tx, entered_rx) = mpsc::channel();
         let (release_tx, release_rx) = mpsc::channel();
         let worker_queue = queue.clone();
@@ -462,12 +697,12 @@ mod tests {
         entered_rx.recv_timeout(Duration::from_secs(5)).unwrap();
         queue.close();
         assert!(
-            matches!(second.wait().await, Err(ReadIndexError::Failed(_))),
+            matches!(unclaimed.wait().await, Err(ReadIndexError::Failed(_))),
             "unclaimed suffix survived stop"
         );
         assert_eq!(
             queue.snapshot().in_flight,
-            1,
+            TURN_REQUESTS,
             "claimed storage was released before callback completion"
         );
         release_tx.send(()).unwrap();
@@ -476,7 +711,12 @@ mod tests {
             1,
             "stop admitted an unclaimed suffix"
         );
-        assert!(matches!(first.wait().await, Err(ReadIndexError::Failed(_))));
+        for member in claimed {
+            assert!(matches!(
+                member.wait().await,
+                Err(ReadIndexError::Failed(_))
+            ));
+        }
         assert_eq!(queue.snapshot().in_flight, 0);
     }
 
@@ -514,9 +754,11 @@ mod tests {
             calls += 1;
             Ok(false)
         });
+        assert_eq!(calls, 1, "unready admission retried within the same turn");
         assert_eq!(
-            calls, TURN_REQUESTS,
-            "unready admission retried within the same turn"
+            queue.snapshot().inspected,
+            TURN_REQUESTS as u64,
+            "grouping bypassed the owner inspection bound"
         );
         assert_eq!(queue.snapshot().queued, MAX_REQUESTS);
         let parked = signal.observe_next_park();
@@ -539,6 +781,7 @@ mod tests {
     async fn selected_completion_survives_later_stop_and_late_observation() {
         let queue = AsyncReads::new(Arc::default());
         let mut selected = register(&queue, 1);
+        queue.submit(|_| Ok(true));
         let rejected = register(&queue, 2);
         queue.submit(|_| Ok(true));
         queue.confirm(&context(1), 7);

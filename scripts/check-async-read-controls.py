@@ -27,17 +27,15 @@ WAKE = '''            if self.async_reads.snapshot().queued != 0 && self.peer.re
             }'''
 CASES = [
     ('ignored-context-sequence', ASYNC, [(
-        'let Some(request) = state.active.get_mut(&context) else {',
-        '''let Some(request) = state.active.iter_mut().find_map(|(key, request)| {
-            (key[..16] == context[..16]).then_some(request)
+        'let Some(group) = state.active.get_mut(&context) else {',
+        '''let Some(group) = state.active.iter_mut().find_map(|(key, group)| {
+            (key[..16] == context[..16]).then_some(group)
         }) else {''')], CONFIRMATION,
      'assertion failed: !queue.confirm(&context(9), 1)'),
     ('overwritten-first-confirmation', ASYNC, [(
-        'if request.confirmed.is_none() {', 'if true {')],
+        'if group.confirmed.is_none() {', 'if true {')],
      CONFIRMATION, COVERAGE_FAILURE),
     ('omitted-apply-coverage', ASYNC, [(
-        '.is_some_and(|index| applied.is_some_and(|at| at >= index))',
-        '.is_some_and(|_index| applied.is_some())'), (
         '.filter(|index| applied.is_some_and(|at| at >= *index))',
         '.filter(|_index| applied.is_some())')],
      CONFIRMATION, COVERAGE_FAILURE),
@@ -46,13 +44,16 @@ CASES = [
      TESTS + 'cancellation_never_submits_and_capacity_is_bounded_until_owner_cleanup',
      'cancelled read reached Raft'),
     ('released-claimed-reservation', ASYNC, [(
-        '            let admitted = read_index(request.context.to_vec());',
-        '''            let mut request = request;
-            if let Some(owner) = request.owner.upgrade() {
-                owner.state.lock().expect("async read queue poisoned").in_flight -= 1;
+        '            let admitted = read_index(context.to_vec());',
+        '''            for request in &mut members {
+                if let Some(owner) = request.owner.upgrade() {
+                    let mut state = owner.state.lock().expect("async read queue poisoned");
+                    state.reserved.remove(&request.context);
+                    state.in_flight -= 1;
+                }
+                request.owner = Weak::new();
             }
-            request.owner = Weak::new();
-            let admitted = read_index(request.context.to_vec());''')],
+            let admitted = read_index(context.to_vec());''')],
      TESTS + 'stop_reaches_unclaimed_suffix_while_one_callback_is_blocked',
      'claimed storage was released before callback completion'),
     ('omitted-election-progress-wake', DRIVER, [(WAKE, '')],
@@ -62,6 +63,32 @@ CASES = [
         'if retained && !deferred {', 'if retained || deferred {')],
      TESTS + 'deferred_admission_has_a_finite_turn_and_does_not_self_spin',
      'deferred admission spun without new Raft work'),
+    ('late-member-after-quorum-start', ASYNC, [(
+        '            if admitted == Some(true) {\n                state.admitted_groups',
+        '            members.extend(state.queued.drain(..));\n            if admitted == Some(true) {\n                state.admitted_groups')],
+     TESTS + 'sealed_members_share_one_confirmation_and_late_arrivals_require_another',
+     'arrival joined a group after its quorum request started'),
+    ('representative-dependent-confirmation', ASYNC, [(
+        '        if group.confirmed.is_none() {',
+        '''        if !group.members.iter().any(|request| request.context == context) {
+            return false;
+        }
+        if group.confirmed.is_none() {''')],
+     TESTS + 'canceled_representative_leaves_group_identity_for_its_live_members',
+     'representative cancellation destroyed confirmation routing'),
+    ('unbounded-group-inspection', ASYNC, [(
+        'state.queued.len().min(TURN_REQUESTS)', 'state.queued.len().min(MAX_REQUESTS)')],
+     TESTS + 'full_queue_emits_two_bounded_groups_and_retains_every_member',
+     'sealed group exceeded its inspection or membership bound'),
+    ('per-member-quorum-broadcast', ASYNC, [(
+        '            let admitted = read_index(context.to_vec());',
+        '''            let mut admitted = Ok(true);
+            for request in &members {
+                admitted = read_index(request.context.to_vec());
+                if !matches!(admitted, Ok(true)) { break; }
+            }''')],
+     'driver::tests::sealed_read_groups_use_one_heartbeat_per_follower_and_fence_late_reads',
+     'sealed group emitted per-reader heartbeat broadcasts'),
 ]
 
 
