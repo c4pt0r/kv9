@@ -192,6 +192,55 @@ view afterward. Retain stale-leader partition and committed-but-unapplied
 counterexamples. Lease reads would require a separate protocol and timing
 contract and are outside this increment.
 
+The next candidate, [asynchronous point-read preparation](https://github.com/c4pt0r/kv9/blob/1ad259e78c148b0b6b8d837b142a2e9521b60b3f/docs/ASYNC-READ-BARRIER.md),
+is pushed as `1ad259e` from the Ready baseline. Public GET registers a bounded
+owner-serviced ReadIndex request and awaits an individual completion without
+occupying a blocking worker during quorum wait. One blocking engine job then
+consumes the same public admission reservation and the existing established,
+context-checked view. It retains exact contexts, apply coverage, and normal
+Raft/read semantics; no lease or new service is introduced.
+
+Its initial local gate passes 622 tests/doctests, seven compiled semantic-control
+triples, warnings-denied Clippy, and the default-feature three-process
+failover/restart fixture. Product tests cover committed-but-unapplied data and
+both epoch halves changing between preparation and engine execution. Checked
+protocol composition and actual Chaos Mesh on the new candidate remain open;
+the master runtime is unchanged. Performance selection requires an independently
+checked comparison with the same client and workload, including write/mixed
+regression checks and fresh before/after Ready measurements.
+
+The fresh c64 volatile tmpfs bracket passes all 36 cohorts and independent
+outcome, identity, CPU-placement and queue-drain checks. Successful throughput
+(operations/s), pooled across the two repetitions within each matrix:
+
+| Workload | Ready before | Async candidate | Ready after |
+|---|---:|---:|---:|
+| GET | 86,172.5 | 112,459.5 | 86,424.3 |
+| PUT | 67,151.7 | 67,347.6 | 66,927.3 |
+| Mixed | 68,886.6 | 75,992.7 | 68,905.5 |
+
+This supports approximately 30% higher GET and 10% higher mixed throughput in
+this local bracket, with unchanged PUT throughput. Every measured operation
+succeeded, and all three replicas' asynchronous queues and reservations drained
+after verification. Candidate GET p99 moves to the 0.524-1.049 ms histogram
+bucket from the Ready matrices' 1.049-2.097 ms bucket, while total GET voter CPU
+falls to 3.15-3.23 cores from 3.59-3.62. The paired Redis GET reference is
+494,564/s, leaving the candidate at approximately 23% of that reference.
+See the [complete bracket report](../scripts/redis-reference/results/892b2a1-1ad259e-c64-tmpfs-diagnostic.md).
+The initial bracket was rejected for incorrect inherited
+CPU placement; a subsequent preflight-only observer failure was also retained.
+Only the corrected, independently checked bracket contributes these numbers.
+This is volatile-storage evidence, not disk-durability, cross-host capacity,
+or complete protocol/fault acceptance. The remaining Redis gap still requires
+work on bounded quorum-read grouping and RPC/allocation cost.
+
+The initial local correctness archive is
+`target/correctness-evidence/2026-09-09-1ad259e-async-read-local-second.tar.gz`
+(57,192,174 bytes; 644 entries). All members were read back and hash-verified;
+SHA-256 is `8dad4a64cabb7b5db649f2716faecb2b9ed0f8e37364f6ef465475de0d96467a`.
+It retains source, default executable, tests, control inputs/logs, process stores,
+and failed early attempts. It contains no new Chaos Mesh acceptance.
+
 ### 5. Reconcile improvements before extending capacity
 
 Publish throughput, successful-operation latency, refusal/unknown counts,
