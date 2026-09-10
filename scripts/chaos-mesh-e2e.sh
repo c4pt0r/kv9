@@ -19,13 +19,14 @@ command -v docker >/dev/null || { echo "FAIL: docker is unavailable" >&2; exit 1
 
 run_id="$(date +%s)-$$"
 namespace="kv9-chaos-$run_id"
-artifact="$(mktemp -d /tmp/kv9-chaos-e2e.XXXXXX)"
+artifact="$(mktemp -d "${KV9_CHAOS_EVIDENCE_PARENT:-/tmp}/kv9-chaos-e2e.XXXXXX")"
 bootstrap_token="chaos-bootstrap-$run_id"
 cluster_token="chaos-cluster-$run_id"
 client_token="chaos-client-$run_id"
 root="$artifact/root.bin"
 history_pid=""
 source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-persistent.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/native_batch_chaos/fixture.sh"
 
 k() {
   KUBECONFIG="$kubeconfig" "$kubectl_bin" "$@"
@@ -104,6 +105,7 @@ collect_scene() {
 cleanup() {
   local rc=$?
   trap - EXIT
+  native_cleanup || true
   persistent_cleanup || true
   if [ -n "$history_pid" ]; then
     touch "$artifact/history.stop"
@@ -149,6 +151,7 @@ history_set_phase() {
   printf '%s\n' "$1" >"$artifact/history.phase.tmp"
   mv "$artifact/history.phase.tmp" "$artifact/history.phase"
   persistent_set_phase "$1"
+  native_set_phase "$1"
 }
 
 history_phase_observed() {
@@ -166,6 +169,7 @@ history_phase() {
   history_set_phase "$phase"
   wait_until "independent put and read complete during $phase" 25 history_phase_observed "$phase"
   persistent_phase "$phase"
+  native_phase "$phase"
   cp "$artifact/history-progress.json" "$artifact/$phase-history-progress.json"
   date --iso-8601=ns >"$artifact/$phase-history-observed-at.txt"
   echo "PASS: concurrent put and read completed during $phase"
@@ -589,12 +593,16 @@ spec:
 YAML
 }
 
+if native_enabled; then
+  native_prebuilt
+else
 echo "Building kv9 and loading $image into kind/$kind_cluster"
 cargo build --bin kv9
 cargo build -p kv9-server --example admission-pressure >/dev/null
 persistent_build
 docker build -q -f chaos/Dockerfile -t "$image" . >/dev/null
 KUBECONFIG="$kubeconfig" "$kind_bin" load docker-image --name "$kind_cluster" "$image" >/dev/null
+fi
 
 k create namespace "$namespace" >/dev/null
 k annotate namespace "$namespace" chaos-mesh.org/inject=enabled --overwrite >/dev/null
@@ -676,11 +684,16 @@ spec:
 YAML
 k wait -n "$namespace" --for=condition=Ready pod/kv9-history-client --timeout=30s >/dev/null
 persistent_start
+native_start
+if native_enabled; then
+  native_catalog
+else
 python3 - "$keyspace" "$persistent_name" "$persistent_keyspace" >"$artifact/history-initial.json" <<'PY'
 import json, sys
 print(json.dumps({'keyspaces': [{'name': 'chaos', 'id': int(sys.argv[1])},
                                {'name': sys.argv[2], 'id': int(sys.argv[3])}]}))
 PY
+fi
 history_set_phase baseline
 KV9_CLIENT_TOKEN="$client_token" python3 scripts/history/workload.py \
   --binary /usr/local/bin/kv9 --addresses "$(service_ip 1):20160,$(service_ip 2):20160,$(service_ip 3):20160" \
@@ -953,6 +966,7 @@ if (( injected_delay_ms < 100 || injected_delay_ms < baseline_delay_ms + 100 ));
   exit 1
 fi
 history_phase delay
+native_delay_gate
 observed_delay_ms="$(tcp_probe_millis "$leader" "$follower")"
 [[ "$observed_delay_ms" =~ ^[0-9]+$ ]] && (( observed_delay_ms >= 100 && observed_delay_ms >= baseline_delay_ms + 100 )) || {
   echo 'FAIL: delay disappeared before history progress was observed' >&2; exit 1
@@ -981,6 +995,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-store-replacement.sh"
 run_store_replacement_matrix
 source "$(dirname "${BASH_SOURCE[0]}")/chaos-mesh-endpoint-migration.sh"
 run_endpoint_migration
+native_finish
 persistent_finish
 
 touch "$artifact/history.stop"
@@ -1000,5 +1015,7 @@ python3 scripts/check-formation-chaos.py "$artifact"
 python3 scripts/check-store-loss-chaos.py "$artifact"
 python3 scripts/check-store-replacement-chaos.py "$artifact"
 python3 scripts/check-endpoint-migration-chaos.py "$artifact"
+
+native_check
 
 echo "PASS: Chaos Mesh root boundary, Pod kill/failure, partition, delay, container recovery, and Raft I/O faults"
