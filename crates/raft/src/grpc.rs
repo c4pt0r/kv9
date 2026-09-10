@@ -8,8 +8,8 @@
 //!   metadata. `NodeDriver` and the state machine remain synchronous.
 //! - **Streams, not unary calls**: each peer pair keeps one long-lived
 //!   client-stream carrying [`pb::BatchRaftMessage`] — batching by count and
-//!   bytes with a short flush window is what makes gRPC viable at raft message
-//!   rates (CSE's `batch_raft`).
+//!   bytes amortizes messages already queued without delaying an idle peer's
+//!   first message to wait for a future batch.
 //! - **Best-effort delivery**: raft tolerates loss; a full queue or a dead
 //!   connection drops messages and raft retransmits. Reconnection backs off.
 //! - Discovery keeps its fencing semantics verbatim: silence is a transport
@@ -97,7 +97,6 @@ fn attach_auth<T>(req: &mut Request<T>, token: &Option<String>, node: NodeId) {
 /// Batching knobs (CSE defaults are config-driven; Phase 1 fixes sane values).
 const MAX_BATCH_MSGS: usize = 128;
 const MAX_BATCH_BYTES: usize = 1024 * 1024;
-const FLUSH_WINDOW: Duration = Duration::from_millis(2);
 /// Per-peer outbound queue; overflow drops (raft retransmits).
 const PEER_QUEUE: usize = 4096;
 const RECONNECT_MIN: Duration = Duration::from_millis(100);
@@ -1198,7 +1197,38 @@ async fn receive_for_destination(
     None
 }
 
-/// Batch one route generation by count/bytes/window and reconnect with backoff.
+/// Coalesce only messages already admitted to this connection generation.
+/// Count every inspected envelope, including stale generations, so a revoked
+/// producer cannot monopolize a Tokio turn. A single legal message may cross
+/// the byte target, as in the existing transport contract.
+fn coalesce_queued(
+    first: pb::RaftEnvelope,
+    root_digest: RootDigest,
+    rx: &mut mpsc::Receiver<OutboundMessage>,
+    destination: &Arc<PeerDestination>,
+) -> pb::BatchRaftMessage {
+    let mut bytes = first.raft_message.len();
+    let mut batch = pb::BatchRaftMessage {
+        msgs: vec![first],
+        flushed_unix_nanos: 0,
+        root_digest: root_digest.as_bytes().to_vec(),
+    };
+    for _ in 1..MAX_BATCH_MSGS {
+        if bytes >= MAX_BATCH_BYTES {
+            break;
+        }
+        let Ok(message) = rx.try_recv() else {
+            break;
+        };
+        if Arc::ptr_eq(&message.destination, destination) {
+            bytes += message.envelope.raft_message.len();
+            batch.msgs.push(message.envelope);
+        }
+    }
+    batch
+}
+
+/// Batch one route generation by queued count/bytes and reconnect with backoff.
 async fn peer_session(
     me: NodeId,
     token: &Option<String>,
@@ -1261,26 +1291,7 @@ async fn peer_session(
                 // The RPC resolving means the server closed our stream.
                 _ = &mut rpc => break 'batching,
             };
-            let mut batch = pb::BatchRaftMessage {
-                msgs: vec![first],
-                flushed_unix_nanos: 0,
-                root_digest: root_digest.as_bytes().to_vec(),
-            };
-            let mut bytes: usize = batch.msgs[0].raft_message.len();
-            let window = tokio::time::sleep(FLUSH_WINDOW);
-            tokio::pin!(window);
-            while batch.msgs.len() < MAX_BATCH_MSGS && bytes < MAX_BATCH_BYTES {
-                tokio::select! {
-                    m = receive_for_destination(rx, destination) => match m {
-                        Some(m) => {
-                            bytes += m.raft_message.len();
-                            batch.msgs.push(m);
-                        }
-                        None => break,
-                    },
-                    _ = &mut window => break,
-                }
-            }
+            let batch = coalesce_queued(first, root_digest, rx, destination);
             // Three-way select: the send may complete (normal path), the RPC
             // may resolve (server closed the stream — reconnect), or neither
             // within STREAM_PROGRESS_BUDGET (established stream stopped
@@ -1776,6 +1787,112 @@ mod tests {
             );
             assert!(receive_for_destination(&mut rx, &new_a).await.is_none());
         });
+    }
+
+    #[test]
+    fn queued_batch_bounds_stale_work_and_keeps_same_address_generations_separate() {
+        let destination = Arc::new(PeerDestination {
+            addr: "127.0.0.1:1".parse().unwrap(),
+        });
+        let stale = Arc::new(PeerDestination {
+            addr: destination.addr,
+        });
+        let (tx, mut rx) = mpsc::channel(MAX_BATCH_MSGS * 2);
+        for index in 0..MAX_BATCH_MSGS {
+            tx.try_send(OutboundMessage {
+                destination: stale.clone(),
+                envelope: pb::RaftEnvelope {
+                    from_node: index as u64 + 2,
+                    ..Default::default()
+                },
+            })
+            .unwrap();
+        }
+        tx.try_send(OutboundMessage {
+            destination: destination.clone(),
+            envelope: pb::RaftEnvelope {
+                from_node: 999,
+                ..Default::default()
+            },
+        })
+        .unwrap();
+        let batch = coalesce_queued(
+            pb::RaftEnvelope {
+                from_node: 1,
+                ..Default::default()
+            },
+            RootDigest::from_bytes([1; 32]),
+            &mut rx,
+            &destination,
+        );
+        assert_eq!(
+            batch.msgs.len(),
+            1,
+            "revoked generation leaked into a new session"
+        );
+        assert_eq!(batch.msgs[0].from_node, 1);
+        assert_eq!(rx.len(), 2, "stale ingress monopolized the coalescing turn");
+        assert_eq!(batch.root_digest, vec![1; 32]);
+    }
+
+    #[test]
+    fn queued_batch_flushes_available_work_and_preserves_fifo_at_count_and_byte_bounds() {
+        let destination = Arc::new(PeerDestination {
+            addr: "127.0.0.1:1".parse().unwrap(),
+        });
+        let (tx, mut rx) = mpsc::channel(MAX_BATCH_MSGS * 2);
+        let envelope = |id, size| pb::RaftEnvelope {
+            from_node: id,
+            raft_message: vec![7; size],
+            ..Default::default()
+        };
+        let empty = coalesce_queued(
+            envelope(0, 0),
+            RootDigest::from_bytes([0; 32]),
+            &mut rx,
+            &destination,
+        );
+        assert_eq!(
+            empty.msgs.len(),
+            1,
+            "an idle peer must flush its first message"
+        );
+        for index in 1..=MAX_BATCH_MSGS {
+            tx.try_send(OutboundMessage {
+                destination: destination.clone(),
+                envelope: envelope(index as u64, 0),
+            })
+            .unwrap();
+        }
+        let full = coalesce_queued(
+            envelope(0, 0),
+            RootDigest::from_bytes([0; 32]),
+            &mut rx,
+            &destination,
+        );
+        assert_eq!(
+            full.msgs.iter().map(|m| m.from_node).collect::<Vec<_>>(),
+            (0..MAX_BATCH_MSGS as u64).collect::<Vec<_>>()
+        );
+        assert_eq!(
+            rx.try_recv().unwrap().envelope.from_node,
+            MAX_BATCH_MSGS as u64
+        );
+        for id in 1..=2 {
+            tx.try_send(OutboundMessage {
+                destination: destination.clone(),
+                envelope: envelope(id, MAX_BATCH_BYTES / 2 + 1),
+            })
+            .unwrap();
+        }
+        let bytes = coalesce_queued(
+            envelope(0, MAX_BATCH_BYTES / 2),
+            RootDigest::from_bytes([0; 32]),
+            &mut rx,
+            &destination,
+        );
+        assert_eq!(bytes.msgs.len(), 2);
+        assert_eq!(rx.try_recv().unwrap().envelope.from_node, 2);
     }
 
     #[test]
