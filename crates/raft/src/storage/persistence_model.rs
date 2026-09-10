@@ -186,6 +186,368 @@ fn batch_failure_matrix(replace_suffix: bool) {
     println!("append batch matrix (replace_suffix={replace_suffix}): {cells} write/sync/error/crash cells");
 }
 
+fn hard_state(store: &DiskRaftStorage<ModelFs>) -> HardState {
+    raft::Storage::initial_state(store).unwrap().hard_state
+}
+
+#[test]
+fn original_ready_synchronizes_entries_and_hardstate_once_and_empty_does_no_io() {
+    let fs = ModelFs::default();
+    let store = open(&fs);
+    let entries = batch_entries(1, 3);
+    let hs = HardState {
+        term: 2,
+        vote: 1,
+        commit: 3,
+        ..Default::default()
+    };
+    fs.clear_events();
+    store.persist_ready(&entries, Some(&hs)).unwrap();
+    assert_eq!(
+        fs.events()
+            .iter()
+            .map(|event| event.operation)
+            .collect::<Vec<_>>(),
+        [
+            Operation::Write,
+            Operation::Write,
+            Operation::Write,
+            Operation::Write,
+            Operation::SyncData
+        ],
+        "original Ready must use one common sync after all entry and HardState frames"
+    );
+    assert_eq!(stored_entries(&store), entries);
+    assert_eq!(hard_state(&store), hs);
+    fs.clear_events();
+    store.persist_ready(&[], None).unwrap();
+    assert!(fs.events().is_empty());
+    drop(store);
+    fs.crash(Crash::LoseUnsynced);
+    let recovered = open(&fs);
+    assert_eq!(
+        stored_entries(&recovered),
+        entries,
+        "acknowledged Ready lost an entry"
+    );
+    assert_eq!(
+        hard_state(&recovered),
+        hs,
+        "acknowledged Ready lost term, vote or commit"
+    );
+}
+
+#[test]
+fn original_ready_ack_survives_loss_of_unsynced_bytes() {
+    let fs = ModelFs::default();
+    let store = open(&fs);
+    let entries = batch_entries(1, 3);
+    let hs = HardState {
+        term: 2,
+        vote: 1,
+        commit: 3,
+        ..Default::default()
+    };
+    store.persist_ready(&entries, Some(&hs)).unwrap();
+    drop(store);
+    fs.crash(Crash::LoseUnsynced);
+    let recovered = open(&fs);
+    assert_eq!(
+        stored_entries(&recovered),
+        entries,
+        "acknowledged Ready lost an entry"
+    );
+    assert_eq!(
+        hard_state(&recovered),
+        hs,
+        "acknowledged Ready lost term, vote or commit"
+    );
+}
+
+#[test]
+fn real_ready_combines_election_records_but_keeps_light_commit_durable() {
+    use crate::RaftGroup;
+    let fs = ModelFs::default();
+    let store = DiskRaftStorage::open_on(fs.clone(), Path::new(DIRECTORY), &[1])
+        .unwrap()
+        .0;
+    let peer = RaftPeer::with_storage(NodeId(1), RegionId(1), store).unwrap();
+    peer.campaign().unwrap();
+    fs.clear_events();
+    peer.pump().unwrap();
+    assert_eq!(
+        fs.events()
+            .iter()
+            .map(|event| event.operation)
+            .collect::<Vec<_>>(),
+        [
+            Operation::Write,
+            Operation::Write,
+            Operation::SyncData,
+            Operation::Write,
+            Operation::SyncData
+        ],
+        "original Ready and subsequent LightReady must have two ordered durability boundaries"
+    );
+    assert_eq!(peer.status_snapshot().committed, 1);
+    fs.clear_events();
+    peer.read_index(b"read-without-persistence".to_vec())
+        .unwrap();
+    peer.pump().unwrap();
+    assert!(
+        fs.events().is_empty(),
+        "read-only Ready acquired a persistence boundary"
+    );
+    assert!(peer
+        .take_read_states()
+        .iter()
+        .any(|state| state.request_ctx == b"read-without-persistence"));
+    drop(peer);
+    fs.crash(Crash::LoseUnsynced);
+    let recovered = open(&fs);
+    assert_eq!(
+        hard_state(&recovered).commit,
+        1,
+        "LightReady commit was not durable"
+    );
+    assert_eq!(hard_state(&recovered).vote, 1);
+}
+
+#[test]
+fn combined_follower_ready_never_sends_an_append_ack_after_any_persistence_failure() {
+    fn prepare() -> (ModelFs, RaftPeer<DiskRaftStorage<ModelFs>>) {
+        let fs = ModelFs::default();
+        let peer = RaftPeer::with_storage(NodeId(1), RegionId(1), open(&fs)).unwrap();
+        let entries: Vec<_> = batch_entries(1, 2)
+            .into_iter()
+            .map(|mut entry| {
+                entry.term = 3;
+                entry
+            })
+            .collect();
+        peer.step_message(Message {
+            msg_type: MessageType::MsgAppend,
+            from: 2,
+            to: 1,
+            term: 3,
+            commit: 2,
+            entries: entries.into(),
+            ..Default::default()
+        });
+        fs.clear_events();
+        (fs, peer)
+    }
+    let (fs, peer) = prepare();
+    let replies = peer.pump().unwrap();
+    assert!(replies
+        .iter()
+        .any(|m| m.msg_type == MessageType::MsgAppendResponse
+            && m.to == 2
+            && m.index == 2
+            && !m.reject));
+    let cuts = fs.events();
+    assert_eq!(
+        cuts.iter().map(|c| c.operation).collect::<Vec<_>>(),
+        [
+            Operation::Write,
+            Operation::Write,
+            Operation::Write,
+            Operation::SyncData
+        ]
+    );
+    drop(peer);
+    fs.crash(Crash::LoseUnsynced);
+    let recovered = open(&fs);
+    assert_eq!(hard_state(&recovered).commit, 2);
+    assert_eq!(hard_state(&recovered).term, 3);
+    assert_eq!(stored_entries(&recovered).len(), 2);
+    let mut cells = 0;
+    for cut in cuts {
+        for errno in [5, 28] {
+            let mut faults = vec![Fault::Before(errno), Fault::After(errno)];
+            if cut.operation == Operation::Write {
+                faults.push(Fault::ShortWrite { bytes: 4, errno });
+            }
+            for fault in faults {
+                let (fs, peer) = prepare();
+                fs.fail_at(cut.number, fault);
+                assert!(
+                    peer.pump().is_err(),
+                    "failed joint Ready returned append acknowledgements"
+                );
+                assert!(fs.fault_arrived());
+                assert_eq!(peer.status_snapshot().term, 3);
+                assert!(peer.take_read_states().is_empty());
+                let before = fs.events().len();
+                assert!(peer.pump().is_err());
+                assert_eq!(fs.events().len(), before);
+                cells += 1;
+            }
+        }
+    }
+    assert_eq!(cells, 22);
+}
+
+#[derive(Clone, Copy, Debug)]
+enum ReadyCut {
+    EntriesOnly,
+    HardStateOnly,
+    AppendAndCommit,
+    ReplaceAndCommit,
+}
+
+#[test]
+fn every_ready_group_failure_preserves_a_valid_recovery_prefix_and_commit() {
+    let mut cells = 0;
+    for scenario in [
+        ReadyCut::EntriesOnly,
+        ReadyCut::HardStateOnly,
+        ReadyCut::AppendAndCommit,
+        ReadyCut::ReplaceAndCommit,
+    ] {
+        let old = batch_entries(
+            1,
+            if matches!(scenario, ReadyCut::ReplaceAndCommit) {
+                5
+            } else {
+                1
+            },
+        );
+        let prior = HardState {
+            term: 2,
+            vote: 1,
+            commit: 1,
+            ..Default::default()
+        };
+        let entries = if matches!(scenario, ReadyCut::HardStateOnly) {
+            vec![]
+        } else {
+            let mut entries = batch_entries(2, 3);
+            if !matches!(scenario, ReadyCut::EntriesOnly) {
+                for entry in &mut entries {
+                    entry.term = 3;
+                    entry.data = format!("ready-new-{}", entry.index).into_bytes().into();
+                }
+            }
+            entries
+        };
+        let next = (!matches!(scenario, ReadyCut::EntriesOnly)).then(|| HardState {
+            term: 3,
+            vote: 2,
+            commit: if entries.is_empty() { 1 } else { 4 },
+            ..Default::default()
+        });
+        let expected: Vec<_> = if entries.is_empty() {
+            old.clone()
+        } else {
+            old[..1].iter().chain(&entries).cloned().collect()
+        };
+        let expected_hs = next.as_ref().unwrap_or(&prior);
+        let prepare = || {
+            let fs = ModelFs::default();
+            let store = open(&fs);
+            store.append(&old).unwrap();
+            store.set_hardstate(&prior).unwrap();
+            fs.clear_events();
+            (fs, store)
+        };
+        let (fs, store) = prepare();
+        store.persist_ready(&entries, next.as_ref()).unwrap();
+        assert_eq!(stored_entries(&store), expected);
+        assert_eq!(hard_state(&store), *expected_hs);
+        let cuts = fs.events();
+        assert_eq!(cuts.len(), entries.len() + usize::from(next.is_some()) + 1);
+        assert_eq!(cuts.last().unwrap().operation, Operation::SyncData);
+        for cut in cuts {
+            for errno in [5, 28] {
+                let mut faults = vec![Fault::Before(errno), Fault::After(errno)];
+                if cut.operation == Operation::Write {
+                    faults.push(Fault::ShortWrite { bytes: 4, errno });
+                }
+                for fault in faults {
+                    for crash in [Crash::LoseUnsynced, Crash::KeepUnsynced]
+                        .into_iter()
+                        .chain((0..16).map(Crash::Seeded))
+                    {
+                        let (fs, store) = prepare();
+                        fs.fail_at(cut.number, fault);
+                        assert!(
+                            store.persist_ready(&entries, next.as_ref()).is_err(),
+                            "failed original Ready was acknowledged"
+                        );
+                        assert!(fs.fault_arrived(), "selected Ready fault never arrived");
+                        assert_eq!(
+                            stored_entries(&store),
+                            old,
+                            "failed original Ready published memory entries"
+                        );
+                        assert_eq!(
+                            hard_state(&store),
+                            prior,
+                            "failed original Ready published memory HardState"
+                        );
+                        let after = fs.events().len();
+                        assert!(store.persist_ready(&[], None).is_err());
+                        assert!(store.persist_ready(&entries, next.as_ref()).is_err());
+                        assert!(store.append(&[]).is_err());
+                        assert!(store.set_hardstate(&prior).is_err());
+                        assert_eq!(
+                            fs.events().len(),
+                            after,
+                            "fenced Ready writer performed more I/O"
+                        );
+                        drop(store);
+                        fs.crash(crash);
+                        let recovered = open(&fs);
+                        let log = stored_entries(&recovered);
+                        let hs = hard_state(&recovered);
+                        assert!(log == old || (2..=expected.len()).any(|end| log == expected[..end]), "Ready recovery mixed suffix identities: {scenario:?} {cut:?} {fault:?} {crash:?}");
+                        assert!(
+                            hs == prior || hs == *expected_hs,
+                            "Ready recovery invented a term/vote/commit"
+                        );
+                        if hs != prior {
+                            assert_eq!(
+                                log, expected,
+                                "new HardState survived without its complete preceding log"
+                            );
+                        }
+                        assert!(
+                            hs.commit <= log.last().unwrap().index,
+                            "recovered commit exceeded the complete log"
+                        );
+                        assert_eq!(
+                            log[0], old[0],
+                            "Ready recovery lost the previously committed prefix"
+                        );
+                        if cut.operation == Operation::SyncData && matches!(fault, Fault::After(_))
+                        {
+                            assert_eq!(log, expected, "completed Ready sync lost log entries");
+                            assert_eq!(hs, *expected_hs, "completed Ready sync lost HardState");
+                        }
+                        drop(recovered);
+                        fs.crash(Crash::LoseUnsynced);
+                        let recovered = open(&fs);
+                        assert_eq!(
+                            stored_entries(&recovered),
+                            log,
+                            "recovered Ready log was not synchronized"
+                        );
+                        assert_eq!(
+                            hard_state(&recovered),
+                            hs,
+                            "recovered Ready HardState was not synchronized"
+                        );
+                        cells += 1;
+                    }
+                }
+            }
+        }
+    }
+    assert_eq!(cells, 1584);
+    println!("Ready group matrix: {cells} actual storage write/sync/failure/crash cells");
+}
+
 fn vote_request(candidate: u64, term: u64) -> Message {
     Message {
         msg_type: MessageType::MsgRequestVote,
@@ -288,7 +650,13 @@ fn driver_persistence_failures_stop_without_poisoning_observation_locks() {
                     // status() unusable. Observation must survive the I/O error.
                     let status = driver.status();
                     let fatal = status.fatal.expect("runtime must observe a fatal cause");
-                    for operation in ["append", "hardstate", "confstate", "light-ready hardstate"] {
+                    for operation in [
+                        "append",
+                        "hardstate",
+                        "ready sync",
+                        "confstate",
+                        "light-ready hardstate",
+                    ] {
                         if fatal.contains(&format!("during {operation}:")) {
                             causes.insert(operation);
                         }
@@ -327,7 +695,13 @@ fn driver_persistence_failures_stop_without_poisoning_observation_locks() {
     }
     assert_eq!(
         causes.into_iter().collect::<Vec<_>>(),
-        ["append", "confstate", "hardstate", "light-ready hardstate"]
+        [
+            "append",
+            "confstate",
+            "hardstate",
+            "light-ready hardstate",
+            "ready sync"
+        ]
     );
     println!("driver persistence matrix: {cells} named write/sync failure cells");
 }
