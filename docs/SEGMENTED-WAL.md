@@ -216,3 +216,14 @@ passes leader death, new-leader reads/writes, deletes and old-node restart, with
 version-3 topology and segment files observed on all three data directories.
 Those process tests are local fault/restart evidence, not actual Chaos Mesh
 acceptance or measured S01 performance results.
+
+## Empty-source interruption fix
+
+Before staging a segmented migration from a zero-length legacy WAL, the engine
+now durably writes an empty legacy framing record. A checkpoint-backed tail
+keeps its exact position; an initially empty source gets no invented progress.
+This distinguishes the valid old root from a truncated new topology after a
+failed migration. Migration omits only empty unpositioned batches so that the
+framing no-op does not create a permanent reclaim pin. The failure and its
+[syscall-cut regressions](SEGMENT-PUBLICATION-FAULTS.md) cover migration retry,
+new writes, segment pinning and real MinIO checkpoint-backed empty tails.
