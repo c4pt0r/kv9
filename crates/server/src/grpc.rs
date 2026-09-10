@@ -1,14 +1,15 @@
 //! Public gRPC transport for the synchronous kv9 API surface.
 //!
 //! The transport deliberately owns only a `BlockingBackend` (private by design). Every call into the
-//! synchronous node is therefore made through [`tokio::task::spawn_blocking`]; an
-//! async handler cannot accidentally block a tonic worker by calling the node
-//! directly.
+//! potentially blocking engine is made through [`tokio::task::spawn_blocking`].
+//! Point reads may finish on a memory-only view after asynchronous quorum
+//! preparation. Unfinished jobs cross the blocking boundary with their reservation.
 
 use std::{collections::HashMap, sync::Arc};
 
 use kv9_common::{
-    ApiType, Error, KeyspaceId, NodeId, RegionId, TenantId, TimeStamp, TimelineId, TxnGroupId,
+    ApiType, AppliedPosition, Error, KeyspaceId, NodeId, RegionId, TenantId, TimeStamp, TimelineId,
+    TxnGroupId,
 };
 use kv9_region::RegionEpoch;
 use kv9_txn::{QualifiedKey, TimelineGeneration, TxnDescriptor, TxnId, TxnStatus};
@@ -148,6 +149,72 @@ struct BlockingBackend {
 }
 
 impl BlockingBackend {
+    async fn prepared_write(
+        &self,
+        mut reservation: Reservation,
+        preparation: crate::api::RawWritePreparation,
+    ) -> Result<AppliedPosition, Status> {
+        // Dropping the RPC's JoinHandle detaches this task. It owns the SAME
+        // reservation until preparation and the internal logical wait finish.
+        // The blocking closure owns it while queued/running, so cancelling the
+        // outer RPC cannot release capacity around a potentially live proposal.
+        tokio::spawn(async move {
+            let (prepared, reservation) = tokio::task::spawn_blocking(move || {
+                reservation.start();
+                (preparation(), reservation)
+            })
+            .await
+            .map_err(|error| {
+                Status::internal(format!("blocking write preparation failed: {error}"))
+            })?;
+            let result = match prepared {
+                Ok(completion) => completion.await,
+                Err(error) => Err(error),
+            };
+            reservation.finish(result.is_err());
+            result.map_err(error_status)
+        })
+        .await
+        .map_err(|error| Status::internal(format!("write completion task failed: {error}")))?
+    }
+
+    async fn prepared_read<T: Send + 'static>(
+        &self,
+        mut reservation: Reservation,
+        preparation: crate::api::RawReadPreparation<T>,
+    ) -> Result<T, Status> {
+        // Preparation is an async, cancellable read wait. Once the engine job
+        // exists, move the SAME reservation into it so RPC cancellation cannot
+        // release capacity while synchronous work is still executing.
+        reservation.start();
+        let job = match preparation.await {
+            Ok(job) => job,
+            Err(error) => {
+                reservation.finish(true);
+                return Err(error_status(error));
+            }
+        };
+        let job = match job {
+            crate::api::RawReadJob::Completed(value) => {
+                self.admission.record_prepared_read(true);
+                reservation.finish(false);
+                return Ok(value);
+            }
+            crate::api::RawReadJob::Blocking(job) => {
+                self.admission.record_prepared_read(false);
+                job
+            }
+        };
+        tokio::task::spawn_blocking(move || {
+            let result = job();
+            reservation.finish(result.is_err());
+            result
+        })
+        .await
+        .map_err(|error| Status::internal(format!("blocking read worker failed: {error}")))?
+        .map_err(error_status)
+    }
+
     async fn call<T, F>(&self, mut reservation: Reservation, operation: F) -> Result<T, Status>
     where
         T: Send + 'static,
@@ -1029,9 +1096,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let context = request_context(request.context, &auth)?;
         let value = self
             .backend
-            .call(reservation, move |backend| {
-                backend.raw_get(&context, &request.key)
-            })
+            .prepared_read(
+                reservation,
+                self.backend
+                    .inner
+                    .clone()
+                    .prepare_raw_get(context, request.key),
+            )
             .await?;
         Ok(Response::new(proto::RawGetResponse {
             value: Some(optional_value(value)),
@@ -1067,9 +1138,16 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let context = request_context(request.context, &auth)?;
         let applied = self
             .backend
-            .call(reservation, move |backend| {
-                backend.raw_put(&context, request.key, request.value)
-            })
+            .prepared_write(
+                reservation,
+                self.backend.inner.clone().prepare_raw_write(
+                    context,
+                    crate::api::RawWrite::Put {
+                        key: request.key,
+                        value: request.value,
+                    },
+                ),
+            )
             .await?;
         Ok(Response::new(applied_response(applied)))
     }
@@ -1089,9 +1167,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             .collect();
         let applied = self
             .backend
-            .call(reservation, move |backend| {
-                backend.raw_batch_put(&context, &pairs)
-            })
+            .prepared_write(
+                reservation,
+                self.backend
+                    .inner
+                    .clone()
+                    .prepare_raw_write(context, crate::api::RawWrite::BatchPut(pairs)),
+            )
             .await?;
         Ok(Response::new(applied_response(applied)))
     }
@@ -1105,9 +1187,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         self.backend
-            .call(reservation, move |backend| {
-                backend.raw_delete(&context, &request.key)
-            })
+            .prepared_write(
+                reservation,
+                self.backend
+                    .inner
+                    .clone()
+                    .prepare_raw_write(context, crate::api::RawWrite::Delete { key: request.key }),
+            )
             .await
             .map(applied_response)
             .map(Response::new)
@@ -1584,8 +1670,16 @@ mod tests {
     use super::*;
     use crate::api::{ClusterInfo, RegionLocation};
 
+    struct RawPreparationGate {
+        entered: tokio::sync::mpsc::UnboundedSender<()>,
+        release: Mutex<Option<tokio::sync::oneshot::Receiver<()>>>,
+        dropped: tokio::sync::mpsc::UnboundedSender<()>,
+    }
+
     #[derive(Default)]
     struct FakeBackend {
+        raw_preparation_gate: Option<RawPreparationGate>,
+        raw_completed: bool,
         membership_hint: Option<NodeId>,
         raw_gate: Option<(
             tokio::sync::mpsc::UnboundedSender<()>,
@@ -1595,6 +1689,40 @@ mod tests {
     }
 
     impl RawApi for FakeBackend {
+        fn prepare_raw_get(
+            self: Arc<Self>,
+            ctx: RequestContext,
+            key: UserKey,
+        ) -> crate::api::RawReadPreparation<Option<Value>> {
+            Box::pin(async move {
+                if let Some(gate) = &self.raw_preparation_gate {
+                    struct Dropped(tokio::sync::mpsc::UnboundedSender<()>);
+                    impl Drop for Dropped {
+                        fn drop(&mut self) {
+                            let _ = self.0.send(());
+                        }
+                    }
+                    let _dropped = Dropped(gate.dropped.clone());
+                    let release = gate
+                        .release
+                        .lock()
+                        .unwrap()
+                        .take()
+                        .expect("one controlled preparation per backend");
+                    gate.entered.send(()).unwrap();
+                    release.await.expect("test must release held preparation");
+                }
+                if self.raw_completed {
+                    return self
+                        .raw_get(&ctx, &key)
+                        .map(crate::api::RawReadJob::Completed);
+                }
+                Ok(crate::api::RawReadJob::Blocking(Box::new(move || {
+                    self.raw_get(&ctx, &key)
+                })))
+            })
+        }
+
         fn raw_get(&self, ctx: &RequestContext, _key: &[u8]) -> Result<Option<Value>> {
             self.callers
                 .lock()

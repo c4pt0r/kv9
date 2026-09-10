@@ -36,6 +36,13 @@ impl<E: ReplicatedEngine> CatalogFenceAdjudicator<E> {
 }
 
 impl<E: ReplicatedEngine + 'static> FenceAdjudicator for CatalogFenceAdjudicator<E> {
+    fn independent_of_raw_writes(&self) -> bool {
+        // The sole read below addresses REGIONS_DESC in the System keyspace.
+        // The apply grouper validates every mutation's Raw mode, non-system
+        // keyspace and Default CF before relying on this declaration.
+        true
+    }
+
     /// The three states are a deliberate split between what the *log* says and what this
     /// *machine* says, and conflating them is how replicas diverge.
     ///

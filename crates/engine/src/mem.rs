@@ -109,6 +109,18 @@ impl MemEngine {
         MemEngine::default()
     }
 
+    /// Try to capture an owned, memory-only view without waiting for a writer.
+    /// `None` means contention, never absence of data. No state guard escapes.
+    /// Point lookups on the returned view perform no I/O or lock acquisition.
+    pub fn try_resident_snapshot(&self) -> Option<Box<dyn ReadView>> {
+        let state = match self.state.try_read() {
+            Ok(state) => state.clone(),
+            Err(std::sync::TryLockError::WouldBlock) => return None,
+            Err(std::sync::TryLockError::Poisoned(_)) => panic!("mem engine lock poisoned"),
+        };
+        Some(Box::new(MemSnapshot { state }))
+    }
+
     /// A snapshot of the current state. O(1): the maps share their structure.
     ///
     /// **Must return an owned `State`, never a `RwLockReadGuard`.** Returning a guard
@@ -368,6 +380,53 @@ impl ReadView for MemSnapshot {
                 .rev()
                 .map(|(k, v)| Ok((k.clone(), v.clone()))),
         ))
+    }
+}
+
+#[cfg(test)]
+mod resident_tests {
+    use super::*;
+
+    #[test]
+    fn resident_snapshot_never_waits_for_a_writer_and_owns_its_version() {
+        let engine = std::sync::Arc::new(MemEngine::new());
+        let mut first = WriteBatch::new();
+        first.put(ColumnFamily::Default, b"k".to_vec(), b"before".to_vec());
+        first.put(ColumnFamily::Lock, b"k".to_vec(), b"before".to_vec());
+        engine.write(first).unwrap();
+        let held = engine.state.write().unwrap();
+        let (sent, received) = std::sync::mpsc::channel();
+        let reader = engine.clone();
+        let worker = std::thread::spawn(move || {
+            sent.send(reader.try_resident_snapshot().is_none()).unwrap();
+        });
+        let result = received.recv_timeout(std::time::Duration::from_secs(2));
+        drop(held); // Always release before asserting, including faulty implementations.
+        worker.join().unwrap();
+        assert_eq!(
+            result.ok(),
+            Some(true),
+            "resident snapshot waited for an index writer"
+        );
+
+        let view = engine
+            .try_resident_snapshot()
+            .expect("uncontended resident view");
+        let mut second = WriteBatch::new();
+        second.put(ColumnFamily::Default, b"k".to_vec(), b"after".to_vec());
+        second.put(ColumnFamily::Lock, b"k".to_vec(), b"after".to_vec());
+        engine.write(second).unwrap();
+        for cf in [ColumnFamily::Default, ColumnFamily::Lock] {
+            assert_eq!(
+                view.get(cf, b"k").unwrap().as_deref(),
+                Some(b"before".as_slice()),
+                "resident view changed after a later atomic batch"
+            );
+            assert_eq!(
+                engine.get(cf, b"k").unwrap().as_deref(),
+                Some(b"after".as_slice())
+            );
+        }
     }
 }
 

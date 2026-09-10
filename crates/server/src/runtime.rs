@@ -851,6 +851,19 @@ impl RuntimeBackend {
             .expect("meta poisoned")
             .bootstrap
             .state();
+        self.check_serving_state(state)
+    }
+
+    fn try_ensure_serving(&self) -> Option<Result<()>> {
+        let state = match self.node.meta.try_lock() {
+            Ok(meta) => meta.bootstrap.state(),
+            Err(std::sync::TryLockError::WouldBlock) => return None,
+            Err(std::sync::TryLockError::Poisoned(_)) => panic!("meta poisoned"),
+        };
+        Some(self.check_serving_state(state))
+    }
+
+    fn check_serving_state(&self, state: BootstrapState) -> Result<()> {
         if matches!(state, BootstrapState::Serving { .. })
             && self.endpoint_ready.load(Ordering::Acquire)
         {
@@ -978,38 +991,127 @@ fn propose_and_wait_loop(
     loop {
         let proposed = propose()?;
         let remaining = deadline.saturating_sub(start.elapsed());
-        match wait(proposed, remaining) {
-            Ok(ApplyWaitOutcome::Applied(at)) => return Ok(at),
-            // A fence rejection is a VERDICT, not a transient: the expected
-            // epoch is authoritatively stale and will not come back, so this
-            // maps to the typed StaleEpoch immediately and is NEVER retried
-            // here (retrying re-proposes the same stale expectation; the
-            // client must re-route/re-validate). Only Replaced re-proposes.
-            Ok(ApplyWaitOutcome::FenceRejected { region, .. }) => {
-                return Err(Error::StaleEpoch { region })
-            }
-            // This path proposes catalog/user writes, never manifest changes:
-            // a manifest verdict here means receipt correlation broke (typed,
-            // not absorbed into success or retry).
-            Ok(ApplyWaitOutcome::Manifest { at, .. }) => {
-                return Err(Error::Raft(format!(
-                    "non-manifest proposal received a manifest verdict at term {} index {}",
-                    at.term, at.index
-                )))
-            }
-            Ok(ApplyWaitOutcome::Replaced) => {
-                if start.elapsed() >= deadline {
-                    return Err(Error::Raft(format!(
-                        "proposal at term {} index {} was replaced and the retry \
-                         budget is exhausted",
-                        proposed.term, proposed.index.0
-                    )));
-                }
-                continue;
-            }
-            Err(e @ ApplyWaitError::Unconfirmed { .. }) => return Err(e.into()),
-            Err(ApplyWaitError::Failed(e)) => return Err(e),
+        if let Some(applied) = settle_proposal(
+            proposed,
+            wait(proposed, remaining),
+            start.elapsed() >= deadline,
+        )? {
+            return Ok(applied);
         }
+    }
+}
+
+// The synchronous and asynchronous paths share every receipt/retry decision.
+fn settle_proposal(
+    proposed: ProposedAt,
+    outcome: std::result::Result<ApplyWaitOutcome, ApplyWaitError>,
+    retry_exhausted: bool,
+) -> Result<Option<AppliedPosition>> {
+    match outcome {
+        Ok(ApplyWaitOutcome::Applied(at)) => Ok(Some(at)),
+        // A fence rejection is a VERDICT, not a transient: the expected
+        // epoch is authoritatively stale and will not come back, so this
+        // maps to the typed StaleEpoch immediately and is NEVER retried
+        // here (retrying re-proposes the same stale expectation; the
+        // client must re-route/re-validate). Only Replaced re-proposes.
+        Ok(ApplyWaitOutcome::FenceRejected { region, .. }) => Err(Error::StaleEpoch { region }),
+        // This path proposes catalog/user writes, never manifest changes:
+        // a manifest verdict here means receipt correlation broke (typed,
+        // not absorbed into success or retry).
+        Ok(ApplyWaitOutcome::Manifest { at, .. }) => Err(Error::Raft(format!(
+            "non-manifest proposal received a manifest verdict at term {} index {}",
+            at.term, at.index
+        ))),
+        Ok(ApplyWaitOutcome::Replaced) => {
+            if retry_exhausted {
+                return Err(Error::Raft(format!(
+                    "proposal at term {} index {} was replaced and the retry \
+                         budget is exhausted",
+                    proposed.term, proposed.index.0
+                )));
+            }
+            Ok(None)
+        }
+        Err(e @ ApplyWaitError::Unconfirmed { .. }) => Err(e.into()),
+        Err(ApplyWaitError::Failed(e)) => Err(e),
+    }
+}
+
+async fn finish_async_proposal<S, E>(
+    driver: Arc<NodeDriver<S, E>>,
+    command: Arc<Command>,
+    pending: (ProposedAt, kv9_raft::driver::AsyncApplyWait),
+    deadline: Instant,
+) -> (Result<AppliedPosition>, kv9_common::metrics::Outcome)
+where
+    S: kv9_raft::rawnode::PersistentRaftStorage,
+    E: kv9_engine::ReplicatedEngine + 'static,
+{
+    finish_async_proposal_loop(
+        command,
+        pending,
+        deadline,
+        |wait| wait.wait(),
+        move |same_command, same_deadline| {
+            let proposer = driver.clone();
+            async move {
+                tokio::task::spawn_blocking(move || {
+                    proposer.propose_with_async_wait(&same_command, same_deadline)
+                })
+                .await
+                .map_err(|error| {
+                    Error::Raft(format!(
+                        "asynchronous write submission worker failed: {error}"
+                    ))
+                })?
+            }
+        },
+    )
+    .await
+}
+
+// The production loop owns the original command and deadline. Its effect
+// parameters allow exact receipt, retry identity and deadline controls without
+// timing-dependent leader elections. Real-driver tests exercise its producer.
+async fn finish_async_proposal_loop<W, WaitFuture, ProposeFuture>(
+    command: Arc<Command>,
+    mut pending: (ProposedAt, W),
+    deadline: Instant,
+    mut wait: impl FnMut(W) -> WaitFuture,
+    mut propose: impl FnMut(Arc<Command>, Instant) -> ProposeFuture,
+) -> (Result<AppliedPosition>, kv9_common::metrics::Outcome)
+where
+    WaitFuture: std::future::Future<Output = std::result::Result<ApplyWaitOutcome, ApplyWaitError>>,
+    ProposeFuture: std::future::Future<Output = Result<(ProposedAt, W)>>,
+{
+    use kv9_common::metrics::Outcome;
+    loop {
+        let (proposed, waiter) = pending;
+        let outcome = wait(waiter).await;
+        let category = match &outcome {
+            Ok(ApplyWaitOutcome::Applied(_)) => Outcome::Success,
+            Ok(ApplyWaitOutcome::Replaced) => Outcome::Replaced,
+            Ok(ApplyWaitOutcome::FenceRejected { .. }) => Outcome::Rejected,
+            Ok(ApplyWaitOutcome::Manifest { .. }) => Outcome::Error,
+            Err(ApplyWaitError::Unconfirmed { .. }) => Outcome::Unconfirmed,
+            Err(ApplyWaitError::Failed(_)) => Outcome::Error,
+        };
+        match settle_proposal(proposed, outcome, Instant::now() >= deadline) {
+            Ok(Some(applied)) => return (Ok(applied), category),
+            Err(error) => return (Err(error), category),
+            Ok(None) => {}
+        }
+        pending = match propose(command.clone(), deadline).await {
+            Ok(next) => next,
+            Err(error) => {
+                let category = if matches!(error, Error::NotLeader { .. }) {
+                    Outcome::Rejected
+                } else {
+                    Outcome::Error
+                };
+                return (Err(error), category);
+            }
+        };
     }
 }
 
@@ -2011,7 +2113,25 @@ impl RuntimeBackend {
         span: KeySpan<'_>,
     ) -> Result<Box<dyn ReadView + '_>> {
         let barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        self.read_view_after_barrier(barrier, ctx, span)
+    }
+
+    fn read_view_after_barrier(
+        &self,
+        barrier: ReadBarrier,
+        ctx: &RequestContext,
+        span: KeySpan<'_>,
+    ) -> Result<Box<dyn ReadView + '_>> {
         let view = self.established_view(barrier)?;
+        self.check_read_view(view, ctx, span)
+    }
+
+    fn check_read_view<'a>(
+        &'a self,
+        view: Box<dyn ReadView + 'a>,
+        ctx: &RequestContext,
+        span: KeySpan<'_>,
+    ) -> Result<Box<dyn ReadView + 'a>> {
         let store = &self.node.meta_raft.store;
         let txn = store.begin_at(view);
         // Reads drop the minted fence: it is the WRITE-authorisation half of
@@ -2022,9 +2142,9 @@ impl RuntimeBackend {
         Ok(txn.into_view())
     }
 
-    /// Exchange a read barrier for exactly ONE engine snapshot — the only
-    /// read-path snapshot constructor, and the only place in the server
-    /// crate that takes an engine snapshot at all.
+    /// Exchange a read barrier for exactly ONE blocking engine snapshot.
+    /// `try_established_resident_view` is the second, nonblocking constructor;
+    /// it returns the unconsumed credential when no view was captured.
     ///
     /// Inventory invariant (re-runnable; classify every hit — an
     /// unclassifiable one is a signal that must be explained, not absorbed):
@@ -2034,7 +2154,9 @@ impl RuntimeBackend {
     /// in the committed-but-unapplied cell). Classify admission-ledger and
     /// latency-histogram snapshots separately: they construct no engine view.
     /// Other hits are doc/comment text. The invariant is the two ENGINE
-    /// counts, never the raw method-name total. `Engine::snapshot()` is a
+    /// counts, never the raw method-name total. Additionally inventory the one
+    /// production `.try_resident_snapshot()` call in the resident constructor.
+    /// `Engine::snapshot()` is a
     /// public API and the type system cannot forbid a future second call
     /// site; what IS mechanically held is (a) `ReadBarrier` is neither
     /// Clone nor Copy (compile-time probe in kv9-raft), so one barrier
@@ -2046,6 +2168,67 @@ impl RuntimeBackend {
         // Consumed: the credential cannot be presented twice.
         let _ = barrier;
         self.node.meta_raft.store.engine().snapshot()
+    }
+
+    /// A contended try creates no snapshot and returns the unconsumed barrier
+    /// for the blocking path. Success consumes it for exactly one owned view.
+    fn try_established_resident_view(
+        &self,
+        barrier: ReadBarrier,
+    ) -> std::result::Result<Box<dyn ReadView>, ReadBarrier> {
+        match self.node.meta_raft.store.engine().try_resident_snapshot() {
+            Some(view) => {
+                let _ = barrier;
+                Ok(view)
+            }
+            None => Err(barrier),
+        }
+    }
+
+    fn prepared_get_from_view(
+        &self,
+        view: Box<dyn ReadView + '_>,
+        ctx: &RequestContext,
+        key: &[u8],
+    ) -> Result<Option<Value>> {
+        let view = self.check_read_view(view, ctx, KeySpan::Point(key))?;
+        // The consumed quorum credential established authority. LeaderRead's
+        // hint is used only when is_leader is false, so no driver/status locks
+        // are needed here to compute an unused hint.
+        let read = LeaderRead::new(view.as_ref(), true, None)?;
+        RawExecutor.get(&read, ctx.keyspace, key)
+    }
+
+    fn blocking_prepared_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        key: UserKey,
+        established: std::result::Result<ReadBarrier, kv9_raft::driver::ReadIndexError>,
+    ) -> crate::api::RawReadJob<Option<Value>> {
+        crate::api::RawReadJob::Blocking(Box::new(move || {
+            self.ensure_serving()?;
+            let view = self.established_view(established?)?;
+            self.prepared_get_from_view(view, &ctx, &key)
+        }))
+    }
+
+    fn finish_prepared_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        key: UserKey,
+        established: std::result::Result<ReadBarrier, kv9_raft::driver::ReadIndexError>,
+    ) -> Result<crate::api::RawReadJob<Option<Value>>> {
+        let Some(serving) = self.try_ensure_serving() else {
+            return Ok(self.blocking_prepared_get(ctx, key, established));
+        };
+        serving?; // Preserve lifecycle-before-barrier-error ordering.
+        let barrier = established?;
+        let view = match self.try_established_resident_view(barrier) {
+            Ok(view) => view,
+            Err(barrier) => return Ok(self.blocking_prepared_get(ctx, key, Ok(barrier))),
+        };
+        let value = self.prepared_get_from_view(view, &ctx, &key)?;
+        Ok(crate::api::RawReadJob::Completed(value))
     }
 
     /// Replicate one planned batch and wait for its exact position to apply.
@@ -2090,6 +2273,104 @@ const RAW_APPLY_DEADLINE: Duration = Duration::from_secs(10);
 const READ_BARRIER_DEADLINE: Duration = Duration::from_secs(2);
 
 impl RawApi for RuntimeBackend {
+    fn prepare_raw_write(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        operation: crate::api::RawWrite,
+    ) -> crate::api::RawWritePreparation {
+        Box::new(move || {
+            self.ensure_serving()?;
+            let (fence, batch) = match operation {
+                crate::api::RawWrite::Put { key, value } => {
+                    let fence = self.validated_context(&ctx, KeySpan::Point(&key))?;
+                    let batch = RawExecutor.plan_put(
+                        ctx.keyspace,
+                        &key,
+                        value,
+                        RawWriteOptions::default(),
+                    )?;
+                    (fence, batch)
+                }
+                crate::api::RawWrite::BatchPut(pairs) => {
+                    let fence = self.validated_context(
+                        &ctx,
+                        KeySpan::Batch(pairs.iter().map(|(key, _)| key.as_slice()).collect()),
+                    )?;
+                    let batch = RawExecutor.plan_batch_put(
+                        ctx.keyspace,
+                        &pairs,
+                        RawWriteOptions::default(),
+                    )?;
+                    (fence, batch)
+                }
+                crate::api::RawWrite::Delete { key } => {
+                    let fence = self.validated_context(&ctx, KeySpan::Point(&key))?;
+                    let batch = RawExecutor.plan_delete(ctx.keyspace, &key)?;
+                    (fence, batch)
+                }
+            };
+            if batch.is_empty() {
+                return Ok(
+                    Box::pin(async { Ok(AppliedPosition { term: 0, index: 0 }) })
+                        as crate::api::RawWriteCompletion,
+                );
+            }
+            // Keep one command and one fence across the exact same replacement
+            // policy as commit_batch. Submission stays on this blocking worker.
+            let command = Arc::new(Command::fenced_write_from_batch(
+                fence.into_region_fence(),
+                &batch,
+            ));
+            let started = Instant::now();
+            let deadline = started + RAW_APPLY_DEADLINE;
+            let first = self.driver.propose_with_async_wait(&command, deadline);
+            let first = match first {
+                Ok(value) => value,
+                Err(error) => {
+                    let outcome = if matches!(error, Error::NotLeader { .. }) {
+                        kv9_common::metrics::Outcome::Rejected
+                    } else {
+                        kv9_common::metrics::Outcome::Error
+                    };
+                    self.driver
+                        .metrics()
+                        .logical_proposal_wait
+                        .record(started.elapsed(), outcome);
+                    return Err(error);
+                }
+            };
+            Ok(Box::pin(async move {
+                let (result, outcome) =
+                    finish_async_proposal(self.driver.clone(), command, first, deadline).await;
+                self.driver
+                    .metrics()
+                    .logical_proposal_wait
+                    .record(started.elapsed(), outcome);
+                result
+            }) as crate::api::RawWriteCompletion)
+        })
+    }
+
+    fn prepare_raw_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        key: UserKey,
+    ) -> crate::api::RawReadPreparation<Option<Value>> {
+        // The published endpoint predicate is false through bootstrap/recovery.
+        // Its cold path retains the original synchronous lifecycle/error order.
+        if !self.endpoint_ready.load(Ordering::Acquire) {
+            return Box::pin(async move {
+                Ok(crate::api::RawReadJob::Blocking(Box::new(move || {
+                    self.raw_get(&ctx, &key)
+                })))
+            });
+        }
+        Box::pin(async move {
+            let established = self.driver.read_barrier_async(READ_BARRIER_DEADLINE).await;
+            self.finish_prepared_get(ctx, key, established)
+        })
+    }
+
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>> {
         self.ensure_serving()?;
         let view = self.established_read(ctx, KeySpan::Point(key))?;
@@ -3657,6 +3938,14 @@ impl NodeRuntime {
             raft.fatal.as_deref().unwrap_or(""),
         );
         body.push_str(&self.public_admission.snapshot().status_lines());
+        let applies = self.driver.async_apply_snapshot();
+        body.push_str(&format!("raft_async_apply_limit={}\nraft_async_apply_queued={}\nraft_async_apply_in_flight={}\nraft_async_apply_peak={}\nraft_async_apply_stopped={}\n",
+            applies.limit, applies.queued, applies.in_flight, applies.peak, applies.stopped));
+        let reads = self.driver.async_read_snapshot();
+        body.push_str(&format!("raft_async_read_limit={}\nraft_async_read_queued={}\nraft_async_read_active={}\nraft_async_read_in_flight={}\nraft_async_read_peak={}\nraft_async_read_stopped={}\n",
+            reads.limit, reads.queued, reads.active, reads.in_flight, reads.peak, reads.stopped));
+        body.push_str(&format!("raft_async_read_active_groups={}\nraft_async_read_inspected={}\nraft_async_read_group_attempts={}\nraft_async_read_admitted_groups={}\nraft_async_read_admitted_members={}\nraft_async_read_max_admitted_group={}\n",
+            reads.active_groups, reads.inspected, reads.group_attempts, reads.admitted_groups, reads.admitted_members, reads.max_admitted_group));
         body.push_str(&format!(
             "raft_receive_authorized={}\nraft_owner_started={}\nlisten_addr={}\n",
             self.discovery.raft_receive_allowed(),
@@ -3923,6 +4212,131 @@ mod tests {
         ProposedAt {
             term,
             index: kv9_raft::LogIndex(index),
+        }
+    }
+
+    #[tokio::test]
+    async fn async_replacement_reuses_one_command_and_deadline_and_returns_the_receipt() {
+        use kv9_common::metrics::Outcome;
+        let original = Arc::new(Command::Put {
+            cf: 0,
+            key: b"same-key".to_vec(),
+            value: b"same-value".to_vec(),
+        });
+        let deadline = Instant::now() + Duration::from_secs(5);
+        let receipt = AppliedPosition { term: 9, index: 27 };
+        let mut attempts = 0;
+        let (result, category) = finish_async_proposal_loop(
+            original.clone(),
+            (at(1, 5), Ok(ApplyWaitOutcome::Replaced)),
+            deadline,
+            std::future::ready,
+            |command, remaining_deadline| {
+                attempts += 1;
+                assert!(
+                    Arc::ptr_eq(&command, &original),
+                    "replacement changed the original command"
+                );
+                assert_eq!(
+                    remaining_deadline, deadline,
+                    "replacement reset the original deadline"
+                );
+                std::future::ready(Ok((
+                    at(2, 6),
+                    Ok(if attempts == 1 {
+                        ApplyWaitOutcome::Replaced
+                    } else {
+                        ApplyWaitOutcome::Applied(receipt)
+                    }),
+                )))
+            },
+        )
+        .await;
+        assert_eq!(attempts, 2, "known replacements were not retried");
+        assert_eq!(
+            result.unwrap(),
+            receipt,
+            "asynchronous completion echoed the proposal instead of its receipt"
+        );
+        assert_eq!(category, Outcome::Success);
+    }
+
+    #[tokio::test]
+    async fn async_terminal_outcomes_and_expired_replacements_are_never_retried() {
+        use kv9_common::metrics::Outcome;
+        let position = AppliedPosition { term: 1, index: 5 };
+        let cases = [
+            (
+                Err(ApplyWaitError::Unconfirmed {
+                    index: 5,
+                    waited: Duration::ZERO,
+                }),
+                false,
+                Outcome::Unconfirmed,
+                "unconfirmed",
+            ),
+            (
+                Err(ApplyWaitError::Failed(Error::Raft("poisoned".into()))),
+                false,
+                Outcome::Error,
+                "poisoned",
+            ),
+            (
+                Ok(ApplyWaitOutcome::FenceRejected {
+                    at: position,
+                    region: RegionId(3),
+                }),
+                false,
+                Outcome::Rejected,
+                "epoch",
+            ),
+            (
+                Ok(ApplyWaitOutcome::Manifest {
+                    at: position,
+                    verdict: kv9_raft::ManifestVerdict::AlreadyApplied {
+                        region: RegionId(3),
+                        generation: 8,
+                    },
+                }),
+                false,
+                Outcome::Error,
+                "non-manifest proposal",
+            ),
+            (
+                Ok(ApplyWaitOutcome::Replaced),
+                true,
+                Outcome::Replaced,
+                "budget is exhausted",
+            ),
+        ];
+        for (outcome, expired, expected_category, expected_error) in cases {
+            let deadline = Instant::now()
+                + if expired {
+                    Duration::ZERO
+                } else {
+                    Duration::from_secs(5)
+                };
+            let mut proposals = 0;
+            let (result, category) = finish_async_proposal_loop(
+                Arc::new(Command::Noop),
+                (at(1, 5), outcome),
+                deadline,
+                std::future::ready,
+                |_, _| {
+                    proposals += 1;
+                    std::future::ready(Err(Error::Raft(
+                        "FUSE: forbidden asynchronous retry".into(),
+                    )))
+                },
+            )
+            .await;
+            assert_eq!(proposals, 0, "terminal asynchronous outcome was retried");
+            assert_eq!(category, expected_category);
+            let error = result.unwrap_err().to_string();
+            assert!(
+                error.contains(expected_error),
+                "lost terminal outcome: {error}"
+            );
         }
     }
 
@@ -7990,7 +8404,20 @@ mod tests {
     ///    the credential — serves `v1` here and reds at the named assert.
     #[test]
     fn an_established_read_serves_the_committed_but_unapplied_write() {
-        let (rts, root, _addrs, base) = serving_trio("established-read");
+        established_read_observes_committed_apply(false);
+    }
+
+    #[test]
+    fn an_async_prepared_read_serves_the_committed_but_unapplied_write() {
+        established_read_observes_committed_apply(true);
+    }
+
+    fn established_read_observes_committed_apply(prepared: bool) {
+        let (rts, root, _addrs, base) = serving_trio(if prepared {
+            "async-established-read"
+        } else {
+            "established-read"
+        });
         let leader = cluster_leader(&rts).expect("a serving trio has a leader");
         let backend = backend_view(&rts[leader], &root);
         let created = backend
@@ -8042,7 +8469,19 @@ mod tests {
             let mints_before = driver.read_barriers_minted();
             let get_backend = backend_view(&rts[leader], &root);
             let get_ctx = ctx.clone();
-            let get = scope.spawn(move || get_backend.raw_get(&get_ctx, b"k"));
+            let get = scope.spawn(move || {
+                if prepared {
+                    let runtime = tokio::runtime::Builder::new_current_thread()
+                        .enable_time()
+                        .build()
+                        .unwrap();
+                    let job = runtime
+                        .block_on(Arc::new(get_backend).prepare_raw_get(get_ctx, b"k".to_vec()))?;
+                    job.run()
+                } else {
+                    get_backend.raw_get(&get_ctx, b"k")
+                }
+            });
 
             // NAMED PRECONDITION 2: the read has minted its barrier while
             // the freeze still holds — v2 becomes applied strictly INSIDE
@@ -8089,7 +8528,159 @@ mod tests {
                  its barrier — a production snapshot taken before the barrier \
                  (or bypassing the credential) serves v1 and reds exactly here"
             );
+            if prepared {
+                assert_eq!(
+                    driver.async_read_snapshot().peak,
+                    1,
+                    "prepared read fell back to the synchronous barrier"
+                );
+                assert_eq!(driver.async_read_snapshot().in_flight, 0);
+            }
         });
+        drop(rts);
+        let _ = fs::remove_dir_all(&base);
+    }
+
+    #[test]
+    fn a_contended_prepared_read_checks_the_epoch_when_its_engine_job_runs() {
+        prepared_read_epoch_case(true);
+    }
+
+    #[test]
+    fn a_resident_prepared_read_finishes_on_one_authorized_version() {
+        prepared_read_epoch_case(false);
+    }
+
+    fn prepared_read_epoch_case(force_blocking: bool) {
+        use kv9_meta::codec::{memcmp_uint, ColumnValue};
+        use kv9_meta::schema::{ColumnId, REGIONS_DESC};
+
+        let (rts, root, _addrs, base) = serving_trio("async-read-epoch");
+        let leader = cluster_leader(&rts).expect("a serving trio has a leader");
+        let backend = Arc::new(backend_view(&rts[leader], &root));
+        let executor = tokio::runtime::Builder::new_current_thread()
+            .enable_time()
+            .build()
+            .unwrap();
+        for (column, name) in [(5, "async-conf-epoch"), (6, "async-version-epoch")] {
+            let created = backend
+                .create_keyspace(
+                    "acceptance",
+                    name,
+                    TenantId::DEFAULT,
+                    ApiType::Raw,
+                    TxnGroupId(0),
+                )
+                .unwrap();
+            let location = backend
+                .get_region("acceptance", created.keyspace, b"k")
+                .unwrap();
+            let ctx = RequestContext {
+                keyspace: created.keyspace,
+                region_epoch: location.epoch,
+                origin: crate::api::RequestOrigin::from_transport("acceptance"),
+            };
+            backend
+                .raw_put(&ctx, b"k".to_vec(), b"before".to_vec())
+                .unwrap();
+            let barrier =
+                executor.block_on(backend.driver.read_barrier_async(READ_BARRIER_DEADLINE));
+            // Hold the lifecycle lock after quorum completion to deterministically
+            // select the real contention fallback without blocking the Raft owner.
+            let held = force_blocking.then(|| backend.node.meta.lock().unwrap());
+            let mut prepared = backend
+                .clone()
+                .finish_prepared_get(ctx.clone(), b"k".to_vec(), barrier)
+                .unwrap();
+            drop(held);
+            if force_blocking {
+                assert!(
+                    matches!(prepared, crate::api::RawReadJob::Blocking(_)),
+                    "a contended lifecycle check must defer the engine job"
+                );
+            } else {
+                // Background lifecycle publication may briefly contend. Repeat
+                // only reads until the actual inline branch is observed.
+                let until = std::time::Instant::now() + Duration::from_secs(5);
+                while matches!(prepared, crate::api::RawReadJob::Blocking(_)) {
+                    assert!(
+                        std::time::Instant::now() < until,
+                        "quiescent resident read never completed without a blocking job"
+                    );
+                    prepared = executor
+                        .block_on(backend.clone().prepare_raw_get(ctx.clone(), b"k".to_vec()))
+                        .unwrap();
+                }
+            }
+            assert!(
+                backend.driver.async_read_snapshot().peak > 0,
+                "epoch test must use asynchronous preparation"
+            );
+
+            // A blocking job has not read the engine. Completed already read
+            // the old authorized version. Commit an epoch change before consuming
+            // either return value; each must reflect its own execution cut.
+            let region = Tables::new(&backend.node.meta_raft.store)
+                .region_for_key(ctx.keyspace, b"k")
+                .unwrap()
+                .unwrap();
+            let mut next_ctx = ctx.clone();
+            let next = if column == 5 {
+                next_ctx.region_epoch.conf_ver += 1;
+                next_ctx.region_epoch.conf_ver
+            } else {
+                next_ctx.region_epoch.version += 1;
+                next_ctx.region_epoch.version
+            };
+            let term = backend.prepare_catalog().unwrap();
+            let mut change = backend.node.meta_raft.store.begin().unwrap();
+            change
+                .update(
+                    &REGIONS_DESC,
+                    &[memcmp_uint(region.id.0)],
+                    vec![(ColumnId(column), ColumnValue::Uint(next))],
+                )
+                .unwrap();
+            backend
+                .commit_catalog(&Command::from_batch(&change.into_batch()), term)
+                .unwrap();
+            backend
+                .raw_put(&next_ctx, b"k".to_vec(), b"after".to_vec())
+                .unwrap();
+
+            let result = prepared.run();
+            if force_blocking {
+                assert!(
+                    matches!(result, Err(Error::StaleEpoch { region: id }) if id == region.id),
+                    "prepared job served data under an obsolete epoch: {result:?}"
+                );
+            } else {
+                assert_eq!(
+                    result.unwrap().as_deref(),
+                    Some(b"before".as_slice()),
+                    "completed resident read was reevaluated on a later version"
+                );
+            }
+            let stale = executor
+                .block_on(backend.clone().prepare_raw_get(ctx.clone(), b"k".to_vec()))
+                .and_then(crate::api::RawReadJob::run);
+            assert!(
+                matches!(stale, Err(Error::StaleEpoch { region: id }) if id == region.id),
+                "a fresh prepared read accepted the obsolete epoch: {stale:?}"
+            );
+            let current = executor
+                .block_on(backend.clone().prepare_raw_get(next_ctx, b"k".to_vec()))
+                .unwrap()
+                .run()
+                .unwrap();
+            assert_eq!(
+                current.as_deref(),
+                Some(b"after".as_slice()),
+                "current context must observe the post-change value"
+            );
+        }
+        assert_eq!(backend.driver.async_read_snapshot().in_flight, 0);
+        drop(backend);
         drop(rts);
         let _ = fs::remove_dir_all(&base);
     }
@@ -8735,6 +9326,80 @@ mod fence_firing_tests {
 
         drop(runtime);
         let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn prepared_point_and_batch_writes_preserve_apply_fences_and_effects() {
+        for accepted in [true, false] {
+            let seen = Arc::new(StdMutex::new(Vec::new()));
+            let (mut runtime, dir) = serving_runtime(seen.clone(), accepted);
+            drive_to_serving(&mut runtime);
+            let backend = Arc::new(backend_of(&runtime));
+            let (_, ctx, region) = keyspace_and_ctx(&runtime, &backend, b"k");
+            seen.lock().unwrap().clear();
+            let executor = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .max_blocking_threads(1)
+                .build()
+                .unwrap();
+            for operation in [
+                crate::api::RawWrite::Put {
+                    key: b"k".to_vec(),
+                    value: b"v1".to_vec(),
+                },
+                crate::api::RawWrite::BatchPut(vec![
+                    (b"k".to_vec(), b"v2".to_vec()),
+                    (b"b".to_vec(), b"v3".to_vec()),
+                ]),
+                crate::api::RawWrite::Delete { key: b"k".to_vec() },
+            ] {
+                let preparation = backend.clone().prepare_raw_write(ctx.clone(), operation);
+                let result = executor.block_on(async {
+                    let completion = tokio::task::spawn_blocking(preparation).await.unwrap()?;
+                    completion.await
+                });
+                if accepted {
+                    assert!(result.is_ok(), "accepted prepared write failed: {result:?}");
+                    let at = result.unwrap();
+                    assert!(at.term > 0 && at.index > 0);
+                } else {
+                    assert!(
+                        matches!(result, Err(Error::StaleEpoch { region: got }) if got == region.id),
+                        "prepared write hid an ordered fence rejection: {result:?}"
+                    );
+                }
+            }
+            let fences = seen.lock().unwrap().clone();
+            assert_eq!(
+                fences.len(),
+                3,
+                "prepared writes bypassed or retried the fence gate"
+            );
+            for fence in fences {
+                assert_eq!(
+                    fence,
+                    RegionFence {
+                        region_id: region.id.0,
+                        conf_ver: region.epoch_conf,
+                        version: region.epoch_ver
+                    }
+                );
+            }
+            assert_eq!(backend.raw_get(&ctx, b"k").unwrap(), None);
+            assert_eq!(
+                backend.raw_get(&ctx, b"b").unwrap(),
+                accepted.then(|| b"v3".to_vec())
+            );
+            assert_eq!(backend.driver.async_apply_snapshot().in_flight, 0);
+            assert!(
+                backend.driver.async_apply_snapshot().peak > 0,
+                "prepared writes did not use async apply waits"
+            );
+            drop(executor);
+            drop(backend);
+            drop(runtime);
+            fs::remove_dir_all(dir).unwrap();
+        }
     }
 
     /// **Exactly what this proves, and no more (@Tess): under a static catalog, a delete range

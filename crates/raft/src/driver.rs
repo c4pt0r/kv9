@@ -252,11 +252,13 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     /// is read as one snapshot under this single lock; reading the two
     /// components separately is forbidden (torn pair = e2ecc5a again).
     driver_applied: Mutex<Option<DriverAppliedPosition>>,
+    async_reads: crate::async_read::AsyncReads,
+    async_applies: crate::async_apply::AsyncApplies,
     stop: AtomicBool,
     pump_started: AtomicBool,
     pump_gate: Mutex<()>,
     completion: crate::work::CompletionSignal,
-    metrics: DriverMetrics,
+    metrics: Arc<DriverMetrics>,
 }
 
 impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> {
@@ -272,6 +274,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         let drain = crate::DrainToken::mint(&peer)?;
         transport.set_work_signal(peer.work_signal.clone());
         Ok(Arc::new(NodeDriver {
+            async_reads: crate::async_read::AsyncReads::new(peer.work_signal.clone()),
+            async_applies: crate::async_apply::AsyncApplies::new(peer.work_signal.clone()),
             peer,
             drain,
             transport,
@@ -305,7 +309,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             pump_started: AtomicBool::new(false),
             pump_gate: Mutex::new(()),
             completion: crate::work::CompletionSignal::default(),
-            metrics: DriverMetrics::default(),
+            metrics: Arc::default(),
         }))
     }
 
@@ -372,6 +376,21 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 return Err(self.poison_persistence(&cause));
             }
         }
+        if result.is_ok() {
+            self.async_applies
+                .service(|at, waited| self.inspect_applied(at, waited));
+            self.async_reads
+                .complete(self.driver_applied().map(|at| at.index));
+            // A pump can commit this leader's election no-op after this turn's
+            // deferred read admission. Retry promptly, without spinning while
+            // that commitment is still absent or waiting for a new timer tick.
+            if self.async_reads.snapshot().queued != 0 && self.peer.read_admission_can_progress() {
+                self.peer.work_signal.notify();
+            }
+        } else {
+            self.async_applies.close();
+            self.async_reads.close();
+        }
         result
     }
 
@@ -382,6 +401,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         for msg in self.transport.drain() {
             self.peer.step_message(msg);
         }
+        self.async_reads
+            .submit(|context| self.peer.read_index(context));
         let messages = self
             .peer
             .pump()
@@ -391,7 +412,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             self.transport.send(to, msg);
         }
         {
-            let states = self.peer.take_read_states();
+            let mut states = self.peer.take_read_states();
+            states.retain(|st| !self.async_reads.confirm(&st.request_ctx, st.index));
             if !states.is_empty() {
                 let mut receipts = self.read_receipts.lock().expect("read receipts poisoned");
                 for st in states {
@@ -417,13 +439,14 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         if entries.is_empty() {
             return Ok(());
         }
-        // Items are processed strictly in log order. Locks are taken per item
+        // Items are processed strictly in log order. Locks are taken per apply group
         // (always `applied` then `sm`, per the declared order) and NEVER held
         // across a peer call: conf changes go through `peer.inner`, and peer
         // must not nest with driver locks in either direction.
         let mut last_seen: u64 = 0;
         let mut last_term: u64 = 0;
-        for entry in entries {
+        let mut entries = entries.into_iter().peekable();
+        while let Some(entry) = entries.next() {
             last_seen = entry.index.0;
             last_term = entry.term;
             match entry.kind {
@@ -451,26 +474,82 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     }
                     let mut applied = self.applied.lock().expect("applied poisoned");
                     let mut sm = self.sm.lock().expect("sm poisoned");
-                    let apply_timer = self.metrics.command_apply.start();
-                    let result = match sm.apply_at(
+                    let mut bytes = entry.data.len();
+                    let mut commands = vec![(
                         kv9_common::AppliedPosition {
                             term: entry.term,
                             index: entry.index.0,
                         },
-                        &cmd,
-                    ) {
+                        cmd,
+                    )];
+                    // Coalesce only an already-queued Raw prefix. An oversized
+                    // legal command remains a singleton; no timer or queue is added.
+                    // Catalog, manifest, no-op and configuration entries are barriers.
+                    use crate::state_machine::raw_group::{
+                        MAX_RAW_GROUP_BYTES, MAX_RAW_GROUP_ENTRIES,
+                    };
+                    if bytes <= MAX_RAW_GROUP_BYTES
+                        && entry.index > sm.applied_index()
+                        && sm.can_group_raw(&commands[0].1)
+                    {
+                        while commands.len() < MAX_RAW_GROUP_ENTRIES {
+                            let Some(next) = entries.peek() else { break };
+                            if next.kind != EntryKind::Command
+                                || next.data.len() > MAX_RAW_GROUP_BYTES - bytes
+                            {
+                                break;
+                            }
+                            let Ok(next_cmd) = Command::decode(&next.data) else {
+                                // Apply the preceding valid group first; the next
+                                // iteration reports the undecodable entry itself.
+                                break;
+                            };
+                            if !sm.can_group_raw(&next_cmd) {
+                                break;
+                            }
+                            bytes += next.data.len();
+                            last_seen = next.index.0;
+                            last_term = next.term;
+                            commands.push((
+                                kv9_common::AppliedPosition {
+                                    term: next.term,
+                                    index: next.index.0,
+                                },
+                                next_cmd,
+                            ));
+                            entries.next();
+                        }
+                    }
+                    // Each sample remains a command's complete apply interval;
+                    // commands in one group share its persistence wait.
+                    let apply_timers: Vec<_> = commands
+                        .iter()
+                        .map(|_| self.metrics.command_apply.start())
+                        .collect();
+                    let outcome = if commands.len() == 1 {
+                        sm.apply_at(commands[0].0, &commands[0].1).map(|r| vec![r])
+                    } else {
+                        sm.apply_raw_group(&commands)
+                    };
+                    let results = match outcome {
                         Ok(r) => {
-                            apply_timer.finish(Outcome::Success);
+                            for timer in apply_timers {
+                                timer.finish(Outcome::Success);
+                            }
                             r
                         }
                         Err(e) => {
-                            apply_timer.finish(Outcome::Error);
+                            for timer in apply_timers {
+                                timer.finish(Outcome::Error);
+                            }
                             drop(sm);
                             drop(applied);
-                            return Err(self.poison(entry.term, entry.index.0, &e));
+                            return Err(self.poison(last_term, last_seen, &e));
                         }
                     };
-                    push_ring(&mut applied, entry.index.0, entry.term, result.outcome);
+                    for ((at, _), result) in commands.iter().zip(results) {
+                        push_ring(&mut applied, at.index, at.term, result.outcome);
+                    }
                 }
                 EntryKind::ConfChangeV1 | EntryKind::ConfChangeV2 => {
                     // Peer call first (no driver locks held). The result goes
@@ -565,6 +644,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     /// Record a fatal apply-path failure and stop the pump (the poison path:
     /// skipping a committed entry would silently diverge this replica).
     fn poison(&self, term: u64, index: u64, cause: &Error) -> Error {
+        self.async_applies.close();
+        self.async_reads.close();
         let msg = format!("fatal at committed entry (term {term}, index {index}): {cause}");
         *self.fatal.lock().expect("fatal poisoned") = Some(msg.clone());
         self.stop.store(true, Ordering::Relaxed);
@@ -576,6 +657,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     /// Preserve the failure without unwinding through peer/driver mutexes.
     /// The runtime can still read status and exit through its normal fatal path.
     fn poison_persistence(&self, cause: &Error) -> Error {
+        self.async_applies.close();
+        self.async_reads.close();
         let mut fatal = self.fatal.lock().expect("fatal poisoned");
         let msg = fatal.get_or_insert_with(|| cause.to_string()).clone();
         drop(fatal);
@@ -671,6 +754,33 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .observe(|| self.peer.propose_traced(cmd.encode()), classify_proposal)
     }
 
+    /// Synchronous submission with a bounded asynchronous exact-apply wait.
+    /// Reserve before proposing; a queue refusal therefore has no proposal
+    /// side effect. Submission itself may block on persistence and belongs on
+    /// the blocking boundary. The absolute logical deadline is never reset.
+    pub fn propose_with_async_wait(
+        &self,
+        command: &Command,
+        deadline: Instant,
+    ) -> Result<(ProposedAt, AsyncApplyWait)> {
+        let reservation = self.async_applies.reserve(deadline)?;
+        let at = self.propose(command)?;
+        let started = Instant::now();
+        let ticket = reservation.register(at)?;
+        Ok((
+            at,
+            AsyncApplyWait {
+                ticket,
+                metrics: self.metrics.clone(),
+                started,
+            },
+        ))
+    }
+
+    pub fn async_apply_snapshot(&self) -> crate::AsyncApplySnapshot {
+        self.async_applies.snapshot()
+    }
+
     /// Catalog plans are valid only in the term whose ordered barrier they read.
     pub fn propose_in_term(&self, cmd: &Command, term: u64) -> Result<ProposedAt> {
         self.metrics.proposal_submission.observe(
@@ -726,79 +836,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         let start = Instant::now();
         loop {
             let observed = self.completion.observe().map_err(ApplyWaitError::Failed)?;
-            if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
-                return Err(ApplyWaitError::Failed(Error::Raft(format!(
-                    "driver is poisoned: {f}"
-                ))));
-            }
-            // Snapshot the unified watermark BEFORE the ring lock (never
-            // nested inside it — the pump publishes under these locks in its
-            // own order). A stale-low read only delays a Replaced verdict by
-            // one recheck; monotonicity makes a stale read safe, never
-            // wrong.
-            let wm_passed = self
-                .driver_applied()
-                .is_some_and(|wm| wm.index >= at.index.0);
-            {
-                let applied = self.applied.lock().expect("applied poisoned");
-                if let Some(entry) = applied.iter().find(|e| e.index == at.index.0) {
-                    return if entry.term == at.term {
-                        // The receipt is the RING's recorded values — position
-                        // AND verdict as the apply loop stored them, never the
-                        // proposal echoed back. A fence-rejected entry applied
-                        // successfully (watermark advanced, nothing written)
-                        // and its verdict must reach the proposer — dropping
-                        // it here reported a rejected write as a success (the
-                        // silent-lost-write blocker).
-                        let at_pos = kv9_common::AppliedPosition {
-                            term: entry.term,
-                            index: entry.index,
-                        };
-                        // Exhaustive over the exclusive outcome — no
-                        // wildcard, no impossible state to trust away.
-                        match entry.outcome {
-                            crate::ApplyOutcome::Manifest(verdict) => {
-                                Ok(ApplyWaitOutcome::Manifest {
-                                    at: at_pos,
-                                    verdict,
-                                })
-                            }
-                            crate::ApplyOutcome::FenceRejected(region) => {
-                                Ok(ApplyWaitOutcome::FenceRejected { at: at_pos, region })
-                            }
-                            crate::ApplyOutcome::Plain => Ok(ApplyWaitOutcome::Applied(at_pos)),
-                        }
-                    } else {
-                        // The position applied here, but as ANOTHER leader's
-                        // command.
-                        Ok(ApplyWaitOutcome::Replaced)
-                    };
-                }
-                // Ring-eviction honesty (review round, Cindy): the ring is
-                // bounded, so an index below its oldest retained entry — with
-                // the ring at capacity — may have applied and been evicted:
-                // indistinguishable from never-applied. When we cannot
-                // distinguish, say so. A fabricated Replaced invites the
-                // caller to retry a possibly-SUCCEEDED non-idempotent write;
-                // Unconfirmed keeps the unknown unknown.
-                if applied.len() == APPLIED_RING
-                    && applied.first().is_some_and(|e| at.index.0 < e.index)
-                {
-                    return Err(ApplyWaitError::Unconfirmed {
-                        index: at.index.0,
-                        waited: start.elapsed(),
-                    });
-                }
-                // The position was passed without this index entering the
-                // command ring. Two watermarks can prove that:
-                //  - the state-machine watermark (some LATER command applied);
-                //  - the unified driver watermark (ANY later entry applied —
-                //    the only arm that fires when the replacing entry is the
-                //    new leader's barrier and no further command traffic
-                //    arrives; exactly the CI scene: driver=3, sm=2, wait=3).
-                if self.sm.lock().expect("sm poisoned").applied_index() >= at.index || wm_passed {
-                    return Ok(ApplyWaitOutcome::Replaced);
-                }
+            if let Some(result) = self.inspect_applied(at, start.elapsed()) {
+                return result;
             }
             if start.elapsed() > deadline {
                 return Err(ApplyWaitError::Unconfirmed {
@@ -810,6 +849,88 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 .wait(observed, deadline.saturating_sub(start.elapsed()))
                 .map_err(ApplyWaitError::Failed)?;
         }
+    }
+
+    // Both synchronous and asynchronous waiters use the exact same receipt,
+    // eviction and replacement discriminator. Called off async executor threads.
+    fn inspect_applied(
+        &self,
+        at: ProposedAt,
+        waited: Duration,
+    ) -> Option<std::result::Result<ApplyWaitOutcome, ApplyWaitError>> {
+        if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
+            return Some(Err(ApplyWaitError::Failed(Error::Raft(format!(
+                "driver is poisoned: {f}"
+            )))));
+        }
+        // Snapshot the unified watermark BEFORE the ring lock (never
+        // nested inside it — the pump publishes under these locks in its
+        // own order). A stale-low read only delays a Replaced verdict by
+        // one recheck; monotonicity makes a stale read safe, never
+        // wrong.
+        let wm_passed = self
+            .driver_applied()
+            .is_some_and(|wm| wm.index >= at.index.0);
+        {
+            let applied = self.applied.lock().expect("applied poisoned");
+            if let Some(entry) = applied.iter().find(|e| e.index == at.index.0) {
+                return Some(if entry.term == at.term {
+                    // The receipt is the RING's recorded values — position
+                    // AND verdict as the apply loop stored them, never the
+                    // proposal echoed back. A fence-rejected entry applied
+                    // successfully (watermark advanced, nothing written)
+                    // and its verdict must reach the proposer — dropping
+                    // it here reported a rejected write as a success (the
+                    // silent-lost-write blocker).
+                    let at_pos = kv9_common::AppliedPosition {
+                        term: entry.term,
+                        index: entry.index,
+                    };
+                    // Exhaustive over the exclusive outcome — no
+                    // wildcard, no impossible state to trust away.
+                    match entry.outcome {
+                        crate::ApplyOutcome::Manifest(verdict) => Ok(ApplyWaitOutcome::Manifest {
+                            at: at_pos,
+                            verdict,
+                        }),
+                        crate::ApplyOutcome::FenceRejected(region) => {
+                            Ok(ApplyWaitOutcome::FenceRejected { at: at_pos, region })
+                        }
+                        crate::ApplyOutcome::Plain => Ok(ApplyWaitOutcome::Applied(at_pos)),
+                    }
+                } else {
+                    // The position applied here, but as ANOTHER leader's
+                    // command.
+                    Ok(ApplyWaitOutcome::Replaced)
+                });
+            }
+            // Ring-eviction honesty (review round, Cindy): the ring is
+            // bounded, so an index below its oldest retained entry — with
+            // the ring at capacity — may have applied and been evicted:
+            // indistinguishable from never-applied. When we cannot
+            // distinguish, say so. A fabricated Replaced invites the
+            // caller to retry a possibly-SUCCEEDED non-idempotent write;
+            // Unconfirmed keeps the unknown unknown.
+            if applied.len() == APPLIED_RING
+                && applied.first().is_some_and(|e| at.index.0 < e.index)
+            {
+                return Some(Err(ApplyWaitError::Unconfirmed {
+                    index: at.index.0,
+                    waited,
+                }));
+            }
+            // The position was passed without this index entering the
+            // command ring. Two watermarks can prove that:
+            //  - the state-machine watermark (some LATER command applied);
+            //  - the unified driver watermark (ANY later entry applied —
+            //    the only arm that fires when the replacing entry is the
+            //    new leader's barrier and no further command traffic
+            //    arrives; exactly the CI scene: driver=3, sm=2, wait=3).
+            if self.sm.lock().expect("sm poisoned").applied_index() >= at.index || wm_passed {
+                return Some(Ok(ApplyWaitOutcome::Replaced));
+            }
+        }
+        None
     }
 
     /// Establish a quorum-confirmed read barrier (task #28 step 3): the
@@ -839,11 +960,47 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .observe(|| self.read_barrier_inner(deadline), classify_read)
     }
 
+    /// Nonblocking registration and per-request completion. The existing owner
+    /// performs peer admission; no peer/storage mutex is taken by this future.
+    pub async fn read_barrier_async(
+        &self,
+        deadline: Duration,
+    ) -> std::result::Result<ReadBarrier, ReadIndexError> {
+        let timer = self.metrics.read_establishment.start();
+        let started = Instant::now();
+        let result = async {
+            let context = self.mint_read_context()?;
+            let ticket = self.async_reads.register(context, started, deadline)?;
+            ticket.wait().await.map(|index| ReadBarrier { index })
+        }
+        .await;
+        timer.finish(classify_read(&result));
+        result
+    }
+
+    pub fn async_read_snapshot(&self) -> crate::AsyncReadSnapshot {
+        self.async_reads.snapshot()
+    }
+
+    fn mint_read_context(&self) -> std::result::Result<[u8; 24], ReadIndexError> {
+        let seq = self
+            .read_seq
+            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+                value.checked_add(1)
+            })
+            .map_err(|_| {
+                ReadIndexError::Failed(Error::Raft("read context sequence exhausted".into()))
+            })?;
+        let mut context = [0; 24];
+        context[..16].copy_from_slice(&self.read_incarnation);
+        context[16..].copy_from_slice(&seq.to_be_bytes());
+        Ok(context)
+    }
+
     fn read_barrier_inner(
         &self,
         deadline: Duration,
     ) -> std::result::Result<ReadBarrier, ReadIndexError> {
-        use std::sync::atomic::Ordering;
         let start = Instant::now();
         // 1. Leadership: fail fast and typed.
         let status = self.peer.status_snapshot();
@@ -856,10 +1013,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         //    prefix makes receipts from a previous process life unmatchable.
         // The mint counter doubles as the observable "how many barriers did
         // this node request" diagnostic (see `read_barriers_minted`).
-        let seq = self.read_seq.fetch_add(1, Ordering::Relaxed);
-        let mut rctx = Vec::with_capacity(24);
-        rctx.extend_from_slice(&self.read_incarnation);
-        rctx.extend_from_slice(&seq.to_be_bytes());
+        let rctx = self.mint_read_context()?.to_vec();
         // A new leader can be observable before its election no-op commits.
         // Retain this invocation's context until raft-rs can admit it. Never
         // reset the request deadline or treat readiness as quorum confirmation.
@@ -1009,6 +1163,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     }
 
     pub fn stop(&self) {
+        self.async_applies.close();
+        self.async_reads.close();
         self.stop.store(true, Ordering::Relaxed);
         self.peer.work_signal.stop();
         let _ = self.completion.publish();
@@ -1101,8 +1257,25 @@ fn classify_read(result: &std::result::Result<ReadBarrier, ReadIndexError>) -> O
     }
 }
 
-/// The typed outcome of [`NodeDriver::wait_applied`] (task #30): what became
-/// of the proposal's position, judged on applied state, never on elapsed time.
+/// One reserved proposal's asynchronous wait, tied to its driver's producer.
+/// Dropping this handle does not cancel the proposal in the Raft log.
+pub struct AsyncApplyWait {
+    ticket: crate::async_apply::ApplyTicket,
+    metrics: Arc<DriverMetrics>,
+    started: Instant,
+}
+
+impl AsyncApplyWait {
+    pub async fn wait(self) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError> {
+        let result = self.ticket.wait().await;
+        self.metrics
+            .application_wait
+            .record(self.started.elapsed(), classify_apply_wait(&result));
+        result
+    }
+}
+
+/// The exact effect observed at a proposed term/index.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ApplyWaitOutcome {
     /// The exact position APPLIED on this node — built by the driver from the
@@ -1689,6 +1862,456 @@ mod tests {
         }
         assert_eq!(driver.status().role, Role::Leader);
         driver
+    }
+
+    async fn assert_read_pending<F: std::future::Future>(mut future: std::pin::Pin<&mut F>) {
+        let result =
+            std::future::poll_fn(|cx| std::task::Poll::Ready(future.as_mut().poll(cx))).await;
+        assert!(
+            result.is_pending(),
+            "read completed before its required evidence"
+        );
+    }
+
+    #[tokio::test]
+    async fn async_apply_requires_application_and_preserves_the_exact_receipt() {
+        let driver = single_node_driver();
+        driver.pause_apply(true);
+        let (at, wait) = driver
+            .propose_with_async_wait(
+                &Command::Put {
+                    cf: 0,
+                    key: b"async".to_vec(),
+                    value: b"applied".to_vec(),
+                },
+                Instant::now() + Duration::from_secs(5),
+            )
+            .unwrap();
+        driver.tick_and_step().unwrap();
+        assert!(driver.status().raft_committed >= at.index.0);
+        assert!(driver.status().applied_index < at.index.0);
+        let mut waiting = Box::pin(wait.wait());
+        let observed = std::future::poll_fn(|cx| {
+            std::task::Poll::Ready(std::future::Future::poll(waiting.as_mut(), cx))
+        })
+        .await;
+        assert!(
+            observed.is_pending(),
+            "commit alone was fabricated as an applied write receipt"
+        );
+        driver.pause_apply(false);
+        driver.step().unwrap();
+        assert_eq!(
+            waiting.await.unwrap(),
+            ApplyWaitOutcome::Applied(kv9_common::AppliedPosition {
+                term: at.term,
+                index: at.index.0
+            })
+        );
+        assert_eq!(
+            driver.get(ColumnFamily::Default, b"async").unwrap(),
+            Some(b"applied".to_vec())
+        );
+        assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn async_apply_registration_after_publication_wakes_an_idle_owner() {
+        let driver = single_node_driver();
+        let reserved = driver
+            .async_applies
+            .reserve(Instant::now() + Duration::from_secs(5))
+            .unwrap();
+        let at = driver
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"late".to_vec(),
+                value: b"receipt".to_vec(),
+            })
+            .unwrap();
+        driver.step().unwrap();
+        assert!(driver.status().applied_index >= at.index.0);
+        let parked = driver.peer.work_signal.observe_next_park();
+        let pump = driver.spawn(Duration::from_secs(30)).unwrap();
+        parked.recv_timeout(Duration::from_secs(2)).unwrap();
+        let ticket = reserved.register(at).unwrap();
+        let result = tokio::time::timeout(Duration::from_secs(1), ticket.wait()).await;
+        driver.stop();
+        pump.join().unwrap();
+        assert!(
+            matches!(result, Ok(Ok(ApplyWaitOutcome::Applied(position))) if position.term == at.term && position.index == at.index.0),
+            "registration after apply lost the completion wakeup: {result:?}"
+        );
+        assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn async_apply_preserves_term_fence_manifest_and_fatal_outcomes() {
+        let region = kv9_common::RegionId(3);
+        let manifest = crate::ManifestVerdict::AlreadyApplied {
+            region,
+            generation: 8,
+        };
+        let position = kv9_common::AppliedPosition { term: 7, index: 19 };
+        for (recorded_term, recorded, expected) in [
+            (8, crate::ApplyOutcome::Plain, ApplyWaitOutcome::Replaced),
+            (
+                7,
+                crate::ApplyOutcome::FenceRejected(region),
+                ApplyWaitOutcome::FenceRejected {
+                    at: position,
+                    region,
+                },
+            ),
+            (
+                7,
+                crate::ApplyOutcome::Manifest(manifest),
+                ApplyWaitOutcome::Manifest {
+                    at: position,
+                    verdict: manifest,
+                },
+            ),
+        ] {
+            let driver = single_node_driver();
+            let ticket = driver
+                .async_applies
+                .reserve(Instant::now() + Duration::from_secs(5))
+                .unwrap()
+                .register(ProposedAt {
+                    term: 7,
+                    index: crate::LogIndex(19),
+                })
+                .unwrap();
+            push_ring(
+                &mut driver.applied.lock().unwrap(),
+                19,
+                recorded_term,
+                recorded,
+            );
+            driver.step().unwrap();
+            assert_eq!(
+                ticket.wait().await.unwrap(),
+                expected,
+                "asynchronous waiter changed its exact receipt verdict"
+            );
+            assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+        }
+        let driver = single_node_driver();
+        driver.pause_apply(true);
+        let (_, waiting) = driver
+            .propose_with_async_wait(&Command::Noop, Instant::now() + Duration::from_secs(5))
+            .unwrap();
+        driver.poison_persistence(&Error::Raft("controlled persistence failure".into()));
+        assert!(
+            matches!(waiting.wait().await, Err(ApplyWaitError::Failed(_))),
+            "fatal persistence failure fabricated an apply receipt"
+        );
+        assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+        assert!(driver.async_apply_snapshot().stopped);
+    }
+
+    #[tokio::test]
+    async fn async_apply_eviction_is_unknown_even_when_the_watermark_passed() {
+        let driver = single_node_driver();
+        let at = ProposedAt {
+            term: 7,
+            index: crate::LogIndex(19),
+        };
+        let ticket = driver
+            .async_applies
+            .reserve(Instant::now() + Duration::from_secs(5))
+            .unwrap()
+            .register(at)
+            .unwrap();
+        {
+            let mut ring = driver.applied.lock().unwrap();
+            for index in 20..20 + APPLIED_RING as u64 {
+                push_ring(&mut ring, index, 7, crate::ApplyOutcome::Plain);
+            }
+        }
+        *driver.driver_applied.lock().unwrap() = Some(DriverAppliedPosition {
+            term: 7,
+            index: 20 + APPLIED_RING as u64,
+        });
+        driver.step().unwrap();
+        let result = ticket.wait().await;
+        assert!(
+            matches!(result, Err(ApplyWaitError::Unconfirmed { index: 19, .. })),
+            "evicted receipt became a safely retryable replacement: {result:?}"
+        );
+        assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+    }
+
+    #[test]
+    fn async_apply_capacity_is_reserved_before_any_proposal() {
+        let driver = single_node_driver();
+        let deadline = Instant::now() + Duration::from_secs(5);
+        let held: Vec<_> = (0..128)
+            .map(|_| driver.async_applies.reserve(deadline).unwrap())
+            .collect();
+        let submissions = || {
+            driver
+                .metrics()
+                .proposal_submission
+                .snapshot()
+                .outcomes
+                .iter()
+                .map(|o| o.count)
+                .sum::<u64>()
+        };
+        let before = submissions();
+        assert!(driver
+            .propose_with_async_wait(&Command::Noop, deadline)
+            .is_err());
+        assert_eq!(
+            submissions(),
+            before,
+            "capacity refusal already submitted a command"
+        );
+        drop(held);
+        assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn sealed_read_groups_use_one_heartbeat_per_follower_and_fence_late_reads() {
+        use raft::prelude::{Message, MessageType};
+
+        struct RecordingTransport {
+            inner: Arc<dyn RaftTransport>,
+            sent: Arc<Mutex<Vec<Message>>>,
+        }
+        impl RaftTransport for RecordingTransport {
+            fn send(&self, to: NodeId, message: Message) {
+                self.sent.lock().unwrap().push(message.clone());
+                self.inner.send(to, message);
+            }
+            fn drain(&self) -> Vec<Message> {
+                self.inner.drain()
+            }
+        }
+        let hub = InProcHub::new();
+        let ids = [NodeId(1), NodeId(2), NodeId(3)];
+        let sent = Arc::new(Mutex::new(Vec::new()));
+        let drivers: Vec<_> = ids
+            .iter()
+            .map(|&id| {
+                let endpoint: Arc<dyn RaftTransport> = Arc::new(hub.endpoint(id));
+                let transport: Arc<dyn RaftTransport> = if id == ids[0] {
+                    Arc::new(RecordingTransport {
+                        inner: endpoint,
+                        sent: sent.clone(),
+                    })
+                } else {
+                    endpoint
+                };
+                NodeDriver::new(
+                    Arc::new(RaftPeer::new(id, RegionId(1), &ids).unwrap()),
+                    transport,
+                    MemStateMachine::new(),
+                )
+                .unwrap()
+            })
+            .collect();
+        drivers[0].peer().campaign().unwrap();
+        for _ in 0..16 {
+            for driver in &drivers {
+                driver.step().unwrap();
+            }
+        }
+        assert_eq!(drivers[0].status().role, Role::Leader);
+        assert!(
+            drivers
+                .iter()
+                .all(|driver| driver.driver_applied().is_some_and(|at| at.index == 1)),
+            "fixture must establish the election commit on all voters"
+        );
+        sent.lock().unwrap().clear();
+
+        let mut readers: Vec<_> = (0..3)
+            .map(|_| Box::pin(drivers[0].read_barrier_async(Duration::from_secs(5))))
+            .collect();
+        for read in &mut readers {
+            assert_read_pending(read.as_mut()).await;
+        }
+        drivers[0].step().unwrap();
+        let contexts: Vec<_> = sent
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|m| m.get_msg_type() == MessageType::MsgHeartbeat && !m.context.is_empty())
+            .map(|m| (m.to, m.context.clone()))
+            .collect();
+        assert_eq!(
+            contexts.len(),
+            2,
+            "sealed group emitted per-reader heartbeat broadcasts"
+        );
+        assert_eq!(contexts[0].1, contexts[1].1);
+        assert_eq!(
+            contexts
+                .iter()
+                .map(|(to, _)| *to)
+                .collect::<std::collections::BTreeSet<_>>(),
+            [2, 3].into_iter().collect()
+        );
+        for read in &mut readers {
+            assert_read_pending(read.as_mut()).await;
+        }
+
+        let mut late = Box::pin(drivers[0].read_barrier_async(Duration::from_secs(5)));
+        assert_read_pending(late.as_mut()).await;
+        // This voter sees only the earlier group's heartbeat. Its real ack
+        // forms a majority with the leader but cannot confirm the later group.
+        drivers[1].step().unwrap();
+        drivers[0].step().unwrap();
+        for read in readers {
+            assert_eq!(read.await.unwrap().index(), 1);
+        }
+        assert_read_pending(late.as_mut()).await;
+        let contexts: Vec<_> = sent
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|m| m.get_msg_type() == MessageType::MsgHeartbeat && !m.context.is_empty())
+            .map(|m| m.context.clone())
+            .collect();
+        assert_eq!(
+            contexts.len(),
+            4,
+            "two sealed groups must emit two distinct quorum broadcasts"
+        );
+        assert_ne!(
+            contexts[0], contexts[2],
+            "late group reused an old quorum context"
+        );
+        drivers[1].step().unwrap();
+        drivers[0].step().unwrap();
+        assert_eq!(late.await.unwrap().index(), 1);
+        let snapshot = drivers[0].async_read_snapshot();
+        assert_eq!(
+            (
+                snapshot.admitted_groups,
+                snapshot.admitted_members,
+                snapshot.max_admitted_group
+            ),
+            (2, 4, 3)
+        );
+        assert_eq!(snapshot.in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn async_read_waits_for_unified_apply_and_keeps_its_exact_context() {
+        let driver = single_node_driver();
+        driver.pause_apply(true);
+        let at = driver
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"async".to_vec(),
+                value: b"value".to_vec(),
+            })
+            .unwrap();
+        driver.step().unwrap();
+        assert!(driver.driver_applied().unwrap().index < at.index.0);
+        let mut read = Box::pin(driver.read_barrier_async(Duration::from_secs(5)));
+        assert_read_pending(read.as_mut()).await;
+        assert_eq!(driver.async_read_snapshot().queued, 1);
+        driver.step().unwrap();
+        assert_read_pending(read.as_mut()).await;
+        assert_eq!(driver.async_read_snapshot().active, 1);
+        assert!(
+            driver.read_receipts.lock().unwrap().is_empty(),
+            "async confirmation leaked into the legacy search ring"
+        );
+        driver.pause_apply(false);
+        driver.step().unwrap();
+        let barrier = read.await.unwrap();
+        assert_eq!(barrier.index(), at.index.0);
+        assert_eq!(driver.async_read_snapshot().in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn async_read_deferred_before_election_commit_progresses_without_a_tick() {
+        let hub = InProcHub::new();
+        let peer = Arc::new(RaftPeer::new(NodeId(1), RegionId(1), &[NodeId(1)]).unwrap());
+        let driver = NodeDriver::new(
+            peer,
+            Arc::new(hub.endpoint(NodeId(1))),
+            MemStateMachine::new(),
+        )
+        .unwrap();
+        driver.peer().campaign().unwrap();
+        assert_eq!(driver.status().role, Role::Leader);
+        assert_eq!(
+            driver.status().raft_committed,
+            0,
+            "fixture must precede durable election commitment"
+        );
+        let mut read = Box::pin(driver.read_barrier_async(Duration::from_secs(2)));
+        assert_read_pending(read.as_mut()).await;
+        let owner = driver.spawn(Duration::from_secs(60)).unwrap();
+        let result = read.await;
+        driver.stop();
+        owner.join().unwrap();
+        assert!(
+            result.is_ok(),
+            "election-ready admission waited for another tick: {result:?}"
+        );
+        assert_eq!(driver.read_barriers_minted(), 1);
+    }
+
+    #[tokio::test]
+    async fn async_read_cannot_succeed_when_a_confirmed_ready_fails_apply() {
+        let driver = single_node_driver();
+        let before = driver.driver_applied().unwrap();
+        driver.pause_apply(true);
+        let bad = driver
+            .peer()
+            .propose_traced(vec![0xff, 0xee, 0xdd])
+            .unwrap();
+        driver.step().unwrap();
+        let mut read = Box::pin(driver.read_barrier_async(Duration::from_secs(5)));
+        assert_read_pending(read.as_mut()).await;
+        driver.step().unwrap();
+        assert_read_pending(read.as_mut()).await;
+        driver.pause_apply(false);
+        assert!(driver.step().is_err());
+        assert!(
+            matches!(read.await, Err(ReadIndexError::Failed(_))),
+            "failed Ready authorized an asynchronous read"
+        );
+        assert_eq!(driver.driver_applied().unwrap(), before);
+        assert!(before.index < bad.index.0);
+        assert_eq!(driver.async_read_snapshot().in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn async_read_refuses_actual_follower_and_shared_context_counter_never_wraps() {
+        let hub = InProcHub::new();
+        let peer = Arc::new(
+            RaftPeer::new(NodeId(1), RegionId(1), &[NodeId(1), NodeId(2), NodeId(3)]).unwrap(),
+        );
+        let driver = NodeDriver::new(
+            peer,
+            Arc::new(hub.endpoint(NodeId(1))),
+            MemStateMachine::new(),
+        )
+        .unwrap();
+        let mut read = Box::pin(driver.read_barrier_async(Duration::from_secs(5)));
+        assert_read_pending(read.as_mut()).await;
+        driver.step().unwrap();
+        assert!(matches!(read.await, Err(ReadIndexError::NotLeader { .. })));
+        driver.read_seq.store(u64::MAX - 1, Ordering::Relaxed);
+        assert_eq!(
+            &driver.mint_read_context().unwrap()[16..],
+            &(u64::MAX - 1).to_be_bytes()
+        );
+        assert!(driver.mint_read_context().is_err());
+        assert_eq!(driver.read_barriers_minted(), u64::MAX);
+        assert!(matches!(
+            driver.read_barrier_async(Duration::from_secs(1)).await,
+            Err(ReadIndexError::Failed(_))
+        ));
+        assert_eq!(driver.async_read_snapshot().in_flight, 0);
     }
 
     #[test]
