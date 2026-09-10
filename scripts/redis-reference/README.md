@@ -120,3 +120,5 @@ The renderer requires identical protocol and driver-source hashes, preserves
 acknowledgment and refusal populations separately, and includes a scoped
 before/after durable-write stage sample. The first retained result is in
 [results/f2c1-4201d04.md](results/f2c1-4201d04.md).
+The subsequent combined outbound/completion-notification result is in
+[results/4201d04-b4a74b2.md](results/4201d04-b4a74b2.md).
