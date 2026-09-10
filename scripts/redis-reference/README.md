@@ -173,3 +173,8 @@ auditor rechecks complete reports and storage/copy evidence, including four
 invalid-evidence controls, without modifying the shared durable validators.
 The retained [Ready diagnostic](results/892b2a1-tmpfs-diagnostic.md) reports
 repetition spread, CPU observations and the limits of the storage comparison.
+
+The indexed read-receipt candidate's unchanged disk matrix is in
+[results/892b2a1-73ddb0d.md](results/892b2a1-73ddb0d.md). It did not establish
+an end-to-end read-throughput gain; all decreases, reference drift, memory
+tradeoffs and repetition data remain visible.
