@@ -123,3 +123,45 @@ actual gRPC failover, blackhole/reconnect and endpoint-migration tests also pass
 Completion polling still uses its original 1-ms interval. Paired measurements,
 applicable source controls and full exact-candidate failure acceptance remain
 pending; this change does not claim a measured performance result.
+
+## Receipt and read completion notifications
+
+The third candidate removes the 1-ms completion polls. A driver-local
+`CompletionSignal` carries a monotonically increasing generation and a condition
+variable. Each waiter captures the generation before inspecting its receipt,
+read state or applied watermark. It parks only while that generation remains
+unchanged, under the same mutex used by publication. A publication between the
+state lookup and parking therefore prevents parking; publication after parking
+wakes all registered waiters. Repeated notifications coalesce without allocating
+per-request wait records.
+
+The driver publishes after a complete pump turn, after releasing observable
+state locks. Fatal application/persistence paths and stop also notify. All five
+wait sites retain their original invocation deadline: configuration application,
+exact write application, read admission, exact read-context confirmation and
+read application catch-up. Notifications are hints, never acknowledgements or
+quorum certificates. An unrelated notification, stop, a missing or evicted
+receipt, and an unknown write do not manufacture a successful result. A manual
+stop alone leaves an unresolved caller subject to its original deadline.
+
+The generation uses checked arithmetic. Exhaustion becomes a permanent error,
+wakes parked waiters and fences a subsequent otherwise successful driver turn;
+it cannot wrap and make a later publication indistinguishable from an earlier
+observation. The signal mutex is a leaf lock: waiters release it before acquiring
+application locks, and publishers release application locks before notifying.
+The existing receipt retention limits and exact term/index/context checks remain
+unchanged. Wake-all can increase condition-check work at high concurrency; its
+CPU and tail-latency effects require measurement.
+
+The workspace passes 588 tests with 23 explicitly ignored tests, including new
+regressions for publication before parking, generation exhaustion, waking all
+parked waiters, a hint without an exact receipt, and fatal application while a
+caller is parked. The first workspace build found a missing test-only import;
+the corrected full run passed. Warning-denying workspace/all-target Clippy also
+passed. The three-process Raw KV regression passed leader failure, continued
+writes, deletes/range deletion and original-node restart through (term 2,
+index 14). Its initial invocation omitted the explicitly configured artifact
+directory and exited before compilation or node startup; the corrected
+invocation and both logs are retained. These checks do not close the scheduling
+proof, implementation fault controls, exact-candidate Chaos acceptance or paired
+performance measurements.
