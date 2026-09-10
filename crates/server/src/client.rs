@@ -186,6 +186,8 @@ struct Inner {
     clients: Vec<Kv9Client<Channel>>,
     #[cfg(feature = "rpc-experiment")]
     experimental: Option<Vec<crate::rpc_experiment::ExperimentClient>>,
+    #[cfg(feature = "rpc-experiment")]
+    streaming: Option<Vec<crate::rpc_experiment::stream::StreamClient>>,
     authorization: MetadataValue<Ascii>,
     capacity: Arc<Semaphore>,
     preferred: AtomicUsize,
@@ -234,6 +236,8 @@ impl PersistentRawClient {
             clients,
             #[cfg(feature = "rpc-experiment")]
             experimental: None,
+            #[cfg(feature = "rpc-experiment")]
+            streaming: None,
             authorization,
             preferred: AtomicUsize::new(0),
         })))
@@ -256,6 +260,22 @@ impl PersistentRawClient {
                     .iter()
                     .map(|peer| {
                         crate::rpc_experiment::ExperimentClient::new(
+                            peer.address,
+                            inner.config.max_in_flight,
+                        )
+                    })
+                    .collect(),
+            );
+        }
+        if transport == crate::rpc_experiment::TransportKind::TonicStream {
+            let inner = Arc::get_mut(&mut client.0).ok_or("new client unexpectedly shared")?;
+            inner.streaming = Some(
+                inner
+                    .config
+                    .peers
+                    .iter()
+                    .map(|peer| {
+                        crate::rpc_experiment::stream::StreamClient::new(
                             peer.address,
                             inner.config.max_in_flight,
                         )
@@ -386,6 +406,10 @@ impl PersistentRawClient {
         if let Some(clients) = &self.0.experimental {
             return clients[peer].raw_get(request, _deadline).await;
         }
+        #[cfg(feature = "rpc-experiment")]
+        if let Some(clients) = &self.0.streaming {
+            return clients[peer].raw_get(request, _deadline).await;
+        }
         self.0.clients[peer].clone().raw_get(request).await
     }
 
@@ -399,6 +423,10 @@ impl PersistentRawClient {
         if let Some(clients) = &self.0.experimental {
             return clients[peer].raw_put(request, _deadline).await;
         }
+        #[cfg(feature = "rpc-experiment")]
+        if let Some(clients) = &self.0.streaming {
+            return clients[peer].raw_put(request, _deadline).await;
+        }
         self.0.clients[peer].clone().raw_put(request).await
     }
 
@@ -410,6 +438,10 @@ impl PersistentRawClient {
     ) -> Result<tonic::Response<proto::RawWriteResponse>, Status> {
         #[cfg(feature = "rpc-experiment")]
         if let Some(clients) = &self.0.experimental {
+            return clients[peer].raw_delete(request, _deadline).await;
+        }
+        #[cfg(feature = "rpc-experiment")]
+        if let Some(clients) = &self.0.streaming {
             return clients[peer].raw_delete(request, _deadline).await;
         }
         self.0.clients[peer].clone().raw_delete(request).await
@@ -529,7 +561,7 @@ fn control_key(entry: KeyAndValueRef<'_>) -> &str {
     }
 }
 
-fn has_control(metadata: &MetadataMap) -> bool {
+pub(crate) fn has_control(metadata: &MetadataMap) -> bool {
     metadata
         .iter()
         .any(|entry| control_key(entry).starts_with("kv9-"))

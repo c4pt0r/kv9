@@ -23,18 +23,18 @@ use tokio::sync::{mpsc, oneshot};
 use tonic::metadata::MetadataValue;
 use tonic::Code;
 
-const APPLIED: AppliedPosition = AppliedPosition { term: 7, index: 19 };
+pub(super) const APPLIED: AppliedPosition = AppliedPosition { term: 7, index: 19 };
 
-struct WriteGate {
-    entered: mpsc::UnboundedSender<()>,
-    release: Mutex<Option<oneshot::Receiver<()>>>,
+pub(super) struct WriteGate {
+    pub(super) entered: mpsc::UnboundedSender<()>,
+    pub(super) release: Mutex<Option<oneshot::Receiver<()>>>,
 }
 
 #[derive(Default)]
-struct Backend {
-    values: Mutex<HashMap<UserKey, Value>>,
-    calls: Mutex<Vec<RequestContext>>,
-    write_gate: Option<WriteGate>,
+pub(super) struct Backend {
+    pub(super) values: Mutex<HashMap<UserKey, Value>>,
+    pub(super) calls: Mutex<Vec<RequestContext>>,
+    pub(super) write_gate: Option<WriteGate>,
 }
 
 impl Backend {
@@ -140,10 +140,10 @@ impl AdminApi for Backend {
     }
 }
 
-fn authenticator() -> Arc<dyn Authenticator> {
+pub(super) fn authenticator() -> Arc<dyn Authenticator> {
     Arc::new(TokenAuthenticator::new([("secret", "alice")]).unwrap())
 }
-fn context_message() -> proto::RequestContext {
+pub(super) fn context_message() -> proto::RequestContext {
     proto::RequestContext {
         keyspace_id: 7,
         region_epoch: Some(proto::RegionEpoch {
@@ -152,20 +152,20 @@ fn context_message() -> proto::RequestContext {
         }),
     }
 }
-fn get(key: &[u8]) -> proto::RawGetRequest {
+pub(super) fn get(key: &[u8]) -> proto::RawGetRequest {
     proto::RawGetRequest {
         context: Some(context_message()),
         key: key.to_vec(),
     }
 }
-fn put(key: &[u8], value: &[u8]) -> proto::RawPutRequest {
+pub(super) fn put(key: &[u8], value: &[u8]) -> proto::RawPutRequest {
     proto::RawPutRequest {
         context: Some(context_message()),
         key: key.to_vec(),
         value: value.to_vec(),
     }
 }
-fn request<T>(message: T) -> Request<T> {
+pub(super) fn request<T>(message: T) -> Request<T> {
     let mut request = Request::new(message);
     request
         .metadata_mut()
@@ -181,11 +181,11 @@ fn direct_request<T>(message: T) -> Request<T> {
     });
     request
 }
-fn deadline() -> Instant {
+pub(super) fn deadline() -> Instant {
     Instant::now() + Duration::from_secs(5)
 }
 
-fn control_metadata() -> MetadataMap {
+pub(super) fn control_metadata() -> MetadataMap {
     let mut metadata = MetadataMap::new();
     metadata.append(NOT_LEADER_KEY, "true".parse().unwrap());
     metadata.append(LEADER_HINT_KEY, "3".parse().unwrap());
@@ -194,7 +194,7 @@ fn control_metadata() -> MetadataMap {
     metadata.append_bin("control-bin", MetadataValue::from_bytes(&[0x80, 0]));
     metadata
 }
-fn assert_control_metadata(metadata: &MetadataMap) {
+pub(super) fn assert_control_metadata(metadata: &MetadataMap) {
     assert_eq!(metadata.get(NOT_LEADER_KEY).unwrap(), "true");
     assert_eq!(
         metadata

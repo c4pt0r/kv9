@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check both public transports against three real Raft voters and leader restart."""
+"""Check all experimental public transports against three real Raft voters and leader restart."""
 import argparse
 import hashlib
 import json
@@ -27,6 +27,13 @@ class RpcFixture(Fixture):
             self.rpc_sockets.append(stream)
         self.rpc_addresses = {n: f"127.0.0.1:{stream.getsockname()[1]}"
                               for n, stream in enumerate(self.rpc_sockets, 1)}
+        self.stream_sockets = []
+        for _ in range(3):
+            stream = socket.socket()
+            stream.bind(("127.0.0.1", 0))
+            self.stream_sockets.append(stream)
+        self.stream_addresses = {n: f"127.0.0.1:{stream.getsockname()[1]}"
+                                 for n, stream in enumerate(self.stream_sockets, 1)}
         self.boot_id = Path("/proc/sys/kernel/random/boot_id").read_text().strip()
 
     def state(self, node):
@@ -47,10 +54,13 @@ class RpcFixture(Fixture):
             node = int(values[values.index("--node-id") + 1])
             self.rpc_sockets[node - 1].close()
             self.env["KV9_RPC_EXPERIMENT_ADDR"] = self.rpc_addresses[node]
+            self.stream_sockets[node - 1].close()
+            self.env["KV9_GRPC_STREAM_EXPERIMENT_ADDR"] = self.stream_addresses[node]
         try:
             return super().launch(command, logfile, client)
         finally:
             self.env.pop("KV9_RPC_EXPERIMENT_ADDR", None)
+            self.env.pop("KV9_GRPC_STREAM_EXPERIMENT_ADDR", None)
 
     def restart(self, node):
         self.nodes[node] = self.launch(
@@ -58,9 +68,44 @@ class RpcFixture(Fixture):
              "--data-dir", self.out / "data" / f"n{node}"], self.out / f"n{node}-restart.log")
         self.wait("restarted original directory", self.leader)
 
+    def listener_evidence(self, node):
+        """Capture only experiment endpoint env keys and owned listening sockets."""
+        process = self.nodes[node]
+        expected = {"KV9_RPC_EXPERIMENT_ADDR": self.rpc_addresses[node],
+                    "KV9_GRPC_STREAM_EXPERIMENT_ADDR": self.stream_addresses[node]}
+        selected = {}
+        for entry in Path("/proc", str(process.pid), "environ").read_bytes().split(b"\0"):
+            key, separator, value = entry.partition(b"=")
+            if separator and key.decode(errors="replace") in expected:
+                selected[key.decode()] = value.decode()
+        if selected != expected:
+            raise ValueError("executing voter endpoint assignment differs from fixture")
+        owned_inodes = set()
+        for fd in Path("/proc", str(process.pid), "fd").iterdir():
+            try:
+                target = str(fd.readlink())
+            except FileNotFoundError:
+                continue
+            if target.startswith("socket:[") and target.endswith("]"):
+                owned_inodes.add(target[8:-1])
+        listeners = {}
+        for line in Path("/proc", str(process.pid), "net/tcp").read_text().splitlines()[1:]:
+            fields = line.split()
+            if fields[3] != "0A" or fields[9] not in owned_inodes:
+                continue
+            address, port = fields[1].split(":")
+            if address == "0100007F":
+                endpoint = f"127.0.0.1:{int(port, 16)}"
+                if endpoint in expected.values():
+                    listeners[endpoint] = fields[9]
+        if set(listeners) != set(expected.values()):
+            raise ValueError("experimental listener socket ownership is unproven")
+        return dict(selected_environment=selected, listener_inodes=listeners,
+                    observed_unix_ns=time.time_ns(), pid=process.pid)
+
     def close(self):
         super().close()
-        for stream in self.rpc_sockets:
+        for stream in self.rpc_sockets + self.stream_sockets:
             stream.close()
 
 
@@ -95,7 +140,8 @@ def main():
                 raise ValueError("executing voter differs from bound artifact/lifetime")
             if not any(row["pid"] == process.pid for row in summary["lifetimes"]):
                 summary["lifetimes"].append(dict(node_id=node, **identity, executable_sha256=actual,
-                                                  boot_id=fixture.boot_id, status=state))
+                    boot_id=fixture.boot_id, status=state,
+                    experimental_listeners=fixture.listener_evidence(node)))
 
     def success_progress(folder):
         try:
@@ -107,14 +153,15 @@ def main():
     try:
         fixture.start()
         capture()
-        for transport in ("tonic_unary", "tarpc_tcp"):
+        for transport in ("tonic_unary", "tarpc_tcp", "tonic_stream"):
             name = transport.replace("_", "-")
             folder = out / name
             leader = fixture.wait("leader before keyspace creation", fixture.leader)
             receipt = fixture.command([build / "kv9", "client", "create-keyspace", "--addr",
                                        fixture.addresses[leader], "--name", name, "--api-type", "raw"])
             keyspace = int(dict(line.split("=", 1) for line in receipt.splitlines())["keyspace_id"])
-            endpoints = fixture.rpc_addresses if transport == "tarpc_tcp" else fixture.addresses
+            endpoints = {"tonic_unary": fixture.addresses, "tarpc_tcp": fixture.rpc_addresses,
+                         "tonic_stream": fixture.stream_addresses}[transport]
             configuration = dict(version=1, rpc_transport=transport,
                 client=dict(version=1, peers=[dict(node_id=n, address=endpoints[n]) for n in fixture.nodes],
                             keyspace_id=keyspace, epoch_conf_ver=1, epoch_version=1, max_in_flight=4,
@@ -236,7 +283,7 @@ def main():
         save(out / "summary.json", summary)
     if not summary["complete"]:
         raise ValueError("runtime cleanup or binary identity failed")
-    print("PASS: both RPC transports retain checked histories and progress across leader restart", flush=True)
+    print("PASS: all three RPC transports retain checked histories and progress across leader restart", flush=True)
 
 
 if __name__ == "__main__":
