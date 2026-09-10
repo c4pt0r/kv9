@@ -269,11 +269,27 @@ impl WalEngine {
         }
         let path = log.path.clone();
         let checkpoint = Self::checkpoint_reference(&path)?;
-        let Some(WalBacking::Legacy(legacy)) = log.backing.take() else {
+        let Some(WalBacking::Legacy(mut legacy)) = log.backing.take() else {
             return Err(kv9_common::Error::Engine(
                 "WAL layout transition requires recovery".into(),
             ));
         };
+        // A zero-length legacy tail is valid, but once segment directories
+        // exist it is indistinguishable from a truncated new topology. Make
+        // the old selected source explicitly framed and durable BEFORE any
+        // staging directory can survive a failed migration. The empty record
+        // changes no data; a checkpoint-backed tail retains its exact position.
+        if std::fs::metadata(legacy.path())
+            .map_err(checkpoint_io)?
+            .len()
+            == 0
+        {
+            let empty = WriteBatch::new();
+            match self.index.volatile_applied_position() {
+                Some(at) => legacy.append_applied(&empty, at)?,
+                None => legacy.append(&empty)?,
+            }
+        }
         let temporary = path.with_extension("migration");
         match std::fs::remove_file(&temporary) {
             Ok(()) => {}
@@ -289,6 +305,13 @@ impl WalEngine {
             checkpoint.clone(),
         )?;
         Wal::visit_strict(legacy.path(), |batch, at| {
+            // Unpositioned empty batches have neither data effects nor applied
+            // authority. Omitting only those no-ops prevents the empty-source
+            // framing record from pinning the new stream forever. Positioned
+            // empty batches still carry progress and must be preserved.
+            if at.is_none() && batch.is_empty() {
+                return Ok(());
+            }
             if let Some(base) = checkpoint.as_ref() {
                 if checkpoint_covers(base.position(), at)? {
                     return Ok(());
