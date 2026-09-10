@@ -148,6 +148,11 @@ and attempt latency populations (mean, p50, p95 and p99). Refusals and timeouts
 remain visible. Latency is never divided by batch size. No new batch QPS or
 latency claim is made by this implementation increment.
 
+The standalone native and Redis measurement clients subsequently passed
+[clean release correctness checks](NATIVE-BATCH-RELEASE-CHECKS.md), including
+caps, sparse workers, failure accounting and consumed-write no-replay controls.
+Those runs are not paired performance samples.
+
 The current API amortizes one RPC and one established read view or atomic
 Raft write command across the input vector. `RawExecutor::batch_get` still
 looks up keys individually through that view, and the runtime BatchGet entry
