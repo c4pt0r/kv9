@@ -67,7 +67,13 @@ and retry refinement. Consensus, fencing, engine atomicity and established
 read authority remain its explicit premises; whole-adapter verification stays
 open. The [client-link preflight](NATIVE-BATCH-LINK-PREFLIGHT.md) qualified
 Service VIP fault selectors and same-process socket reset observation.
-Actual native batch Chaos Mesh remains required. Batch throughput and mean/p50/p95/p99 must be measured
+The [original 21-window matrix with native atomic histories](NATIVE-BATCH-CHAOS-ACCEPTANCE.md)
+now has independently accepted evidence on exact `5cc9861`. Its original
+fixture exit remains 1 due to a final timestamp parser failure; a separately
+checked read-only adapter accepted the unchanged run without repeating faults.
+Scoped cleanup completed with historical namespaces preserved. Dedicated
+native client-link/reset and quorum-loss acceptance remain required.
+Batch throughput and mean/p50/p95/p99 must be measured
 with explicit batch sizes, RPC and input-item counts, and all failure populations.
 The previous `40e813f` performance numbers remain evidence for that frozen
 point-RPC experiment only. This checkpoint does not assert production readiness,

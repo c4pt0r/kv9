@@ -126,7 +126,11 @@ full atomic histories passed with overlapping point calls on three WAL voters
 through leader loss and restart. The separate
 [client-link preflight](NATIVE-BATCH-LINK-PREFLIGHT.md) qualified effective
 Service VIP fault selectors and a same-process socket reset. The complete
-native batch Chaos Mesh acceptance remains outstanding.
+native [21-window Chaos Mesh matrix](NATIVE-BATCH-CHAOS-ACCEPTANCE.md) now has
+accepted atomic histories and actual voter/storage/endpoint effects. Its
+original final observer parser failed; a separately checked read-only timestamp
+correction accepted the unchanged retained run. Dedicated client-link and
+quorum-loss acceptance remain outstanding.
 
 ## Performance reporting contract
 
