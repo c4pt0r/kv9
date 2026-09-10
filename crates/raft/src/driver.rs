@@ -255,6 +255,7 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     stop: AtomicBool,
     pump_started: AtomicBool,
     pump_gate: Mutex<()>,
+    completion: crate::work::CompletionSignal,
     metrics: DriverMetrics,
 }
 
@@ -303,6 +304,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             stop: AtomicBool::new(false),
             pump_started: AtomicBool::new(false),
             pump_gate: Mutex::new(()),
+            completion: crate::work::CompletionSignal::default(),
             metrics: DriverMetrics::default(),
         }))
     }
@@ -353,7 +355,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     }
 
     fn step_observed(&self) -> Result<()> {
-        self.metrics.pump_service.observe(
+        let result = self.metrics.pump_service.observe(
             || self.step_inner(),
             |result| {
                 if result.is_ok() {
@@ -362,7 +364,15 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     Outcome::Error
                 }
             },
-        )
+        );
+        // Receipt/read-state/watermark publication precedes this notification.
+        // Waiters still validate their exact identity and original deadline.
+        if let Err(cause) = self.completion.publish() {
+            if result.is_ok() {
+                return Err(self.poison_persistence(&cause));
+            }
+        }
+        result
     }
 
     fn step_inner(&self) -> Result<()> {
@@ -559,6 +569,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         *self.fatal.lock().expect("fatal poisoned") = Some(msg.clone());
         self.stop.store(true, Ordering::Relaxed);
         self.peer.work_signal.stop();
+        let _ = self.completion.publish();
         Error::Raft(msg)
     }
 
@@ -567,8 +578,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     fn poison_persistence(&self, cause: &Error) -> Error {
         let mut fatal = self.fatal.lock().expect("fatal poisoned");
         let msg = fatal.get_or_insert_with(|| cause.to_string()).clone();
+        drop(fatal);
         self.stop.store(true, Ordering::Relaxed);
         self.peer.work_signal.stop();
+        let _ = self.completion.publish();
         Error::Raft(msg)
     }
 
@@ -599,6 +612,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     ) -> Result<ConfChangeReceipt> {
         let start = Instant::now();
         loop {
+            let observed = self.completion.observe()?;
             if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
                 return Err(Error::Raft(format!("driver is poisoned: {f}")));
             }
@@ -638,7 +652,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     at.index.0
                 )));
             }
-            std::thread::sleep(Duration::from_millis(1));
+            self.completion
+                .wait(observed, deadline.saturating_sub(start.elapsed()))?;
         }
     }
 
@@ -710,6 +725,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     ) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError> {
         let start = Instant::now();
         loop {
+            let observed = self.completion.observe().map_err(ApplyWaitError::Failed)?;
             if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
                 return Err(ApplyWaitError::Failed(Error::Raft(format!(
                     "driver is poisoned: {f}"
@@ -718,7 +734,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             // Snapshot the unified watermark BEFORE the ring lock (never
             // nested inside it — the pump publishes under these locks in its
             // own order). A stale-low read only delays a Replaced verdict by
-            // one poll iteration; monotonicity makes a stale read safe, never
+            // one recheck; monotonicity makes a stale read safe, never
             // wrong.
             let wm_passed = self
                 .driver_applied()
@@ -790,7 +806,9 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     waited: deadline,
                 });
             }
-            std::thread::sleep(Duration::from_millis(1));
+            self.completion
+                .wait(observed, deadline.saturating_sub(start.elapsed()))
+                .map_err(ApplyWaitError::Failed)?;
         }
     }
 
@@ -811,7 +829,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     ///
     /// The caller MUST take its engine snapshot AFTER this returns (seam
     /// contract): a snapshot taken before the barrier can miss entries the
-    /// barrier proves applied. Pure condition-poll; the pump must be running.
+    /// barrier proves applied. Notification-driven condition recheck; the pump must be running.
     pub fn read_barrier(
         &self,
         deadline: Duration,
@@ -846,6 +864,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         // Retain this invocation's context until raft-rs can admit it. Never
         // reset the request deadline or treat readiness as quorum confirmation.
         loop {
+            let observed = self.completion.observe().map_err(ReadIndexError::Failed)?;
             let submitted = self.peer.read_index(rctx.clone()).map_err(|e| match e {
                 Error::NotLeader { leader } => ReadIndexError::NotLeader { hint: leader },
                 other => ReadIndexError::Failed(other),
@@ -863,10 +882,13 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     waited: start.elapsed(),
                 });
             }
-            std::thread::sleep(Duration::from_millis(1));
+            self.completion
+                .wait(observed, deadline.saturating_sub(start.elapsed()))
+                .map_err(ReadIndexError::Failed)?;
         }
         // 3. Wait for the quorum confirmation correlated by EXACT context.
         let confirmed = loop {
+            let observed = self.completion.observe().map_err(ReadIndexError::Failed)?;
             if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
                 return Err(ReadIndexError::Failed(Error::Raft(format!(
                     "driver is poisoned: {f}"
@@ -888,10 +910,13 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     waited: start.elapsed(),
                 });
             }
-            std::thread::sleep(Duration::from_millis(1));
+            self.completion
+                .wait(observed, deadline.saturating_sub(start.elapsed()))
+                .map_err(ReadIndexError::Failed)?;
         };
         // 4. Wait for the unified watermark to pass the confirmed index.
         loop {
+            let observed = self.completion.observe().map_err(ReadIndexError::Failed)?;
             if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
                 return Err(ReadIndexError::Failed(Error::Raft(format!(
                     "driver is poisoned: {f}"
@@ -909,7 +934,9 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     waited: start.elapsed(),
                 });
             }
-            std::thread::sleep(Duration::from_millis(1));
+            self.completion
+                .wait(observed, deadline.saturating_sub(start.elapsed()))
+                .map_err(ReadIndexError::Failed)?;
         }
     }
 
@@ -984,6 +1011,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     pub fn stop(&self) {
         self.stop.store(true, Ordering::Relaxed);
         self.peer.work_signal.stop();
+        let _ = self.completion.publish();
     }
 
     /// One event-driven owner. Tick deadlines are independent of work arrival;
@@ -1505,7 +1533,7 @@ mod tests {
     use super::*;
     use crate::rawnode::RaftPeer;
     use crate::transport::{InProcHub, RaftTransport};
-    use crate::RaftGroup;
+    use crate::{KvOp, RaftGroup};
     use kv9_common::{NodeId, RegionId};
     use kv9_engine::{ColumnFamily, Mutation, ReadView, ScanEntry, WriteBatch};
 
@@ -1679,6 +1707,69 @@ mod tests {
         assert!(
             result.is_ok(),
             "parked owner failed to process local work: {result:?}"
+        );
+    }
+
+    #[test]
+    fn completion_notifications_require_the_exact_applied_receipt() {
+        let driver = single_node_driver();
+        let at = driver
+            .propose(&Command::Write {
+                ops: vec![KvOp::Put {
+                    cf: 0,
+                    key: b"completion".to_vec(),
+                    value: b"confirmed".to_vec(),
+                }],
+            })
+            .unwrap();
+        let parked = driver.completion.observe_next_park();
+        let waiter = driver.clone();
+        let (tx, rx) = std::sync::mpsc::channel();
+        let task = std::thread::spawn(move || {
+            tx.send(waiter.wait_applied(at, Duration::from_secs(5)))
+                .unwrap();
+        });
+        parked.recv_timeout(Duration::from_secs(1)).unwrap();
+        let parked_again = driver.completion.observe_next_park();
+        driver.completion.publish().unwrap(); // a hint without a receipt
+        parked_again.recv_timeout(Duration::from_secs(1)).unwrap();
+        assert!(
+            matches!(rx.try_recv(), Err(std::sync::mpsc::TryRecvError::Empty)),
+            "notification was mistaken for a committed write receipt"
+        );
+        driver.step().unwrap();
+        let result = rx.recv_timeout(Duration::from_secs(1)).unwrap().unwrap();
+        task.join().unwrap();
+        assert_eq!(
+            result,
+            ApplyWaitOutcome::Applied(kv9_common::AppliedPosition {
+                term: at.term,
+                index: at.index.0,
+            })
+        );
+    }
+
+    #[test]
+    fn fatal_application_wakes_a_parked_completion_waiter() {
+        let driver = single_node_driver();
+        let at = driver
+            .peer()
+            .propose_traced(vec![0xff, 0xee, 0xdd])
+            .unwrap();
+        let parked = driver.completion.observe_next_park();
+        let waiter = driver.clone();
+        let (tx, rx) = std::sync::mpsc::channel();
+        let task = std::thread::spawn(move || {
+            tx.send(waiter.wait_applied(at, Duration::from_secs(5)))
+                .unwrap();
+        });
+        parked.recv_timeout(Duration::from_secs(1)).unwrap();
+        assert!(driver.step().is_err());
+        let result = rx.recv_timeout(Duration::from_secs(1)).unwrap();
+        task.join().unwrap();
+        assert!(
+            matches!(result, Err(ApplyWaitError::Failed(_))),
+            "fatal notification did not preserve the failed outcome: {result:?}"
         );
     }
 

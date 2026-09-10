@@ -12,6 +12,72 @@ use std::time::{Duration, Instant};
 use protobuf::Message as _;
 use raft::eraftpb::Message;
 
+/// Completion notifications are hints to recheck exact receipts, never receipts
+/// themselves. A waiter observes the generation BEFORE inspecting application
+/// state, then waits only if it is unchanged. This closes publication between
+/// the receipt lookup and parking without allocating a per-request wait queue.
+pub(crate) struct CompletionSignal {
+    generation: Mutex<Option<u64>>,
+    changed: Condvar,
+    #[cfg(test)]
+    park_observer: Mutex<Option<std::sync::mpsc::Sender<()>>>,
+}
+
+impl Default for CompletionSignal {
+    fn default() -> Self {
+        Self {
+            generation: Mutex::new(Some(0)),
+            changed: Condvar::new(),
+            #[cfg(test)]
+            park_observer: Mutex::new(None),
+        }
+    }
+}
+
+impl CompletionSignal {
+    pub(crate) fn observe(&self) -> kv9_common::Result<u64> {
+        self.generation
+            .lock()
+            .expect("completion signal poisoned")
+            .ok_or_else(Self::exhausted)
+    }
+
+    /// Call only AFTER publishing observable state and releasing its locks.
+    /// Exhaustion is terminal and wakes everyone; generations never wrap.
+    pub(crate) fn publish(&self) -> kv9_common::Result<()> {
+        let mut generation = self.generation.lock().expect("completion signal poisoned");
+        *generation = generation.and_then(|value| value.checked_add(1));
+        self.changed.notify_all();
+        generation.map(|_| ()).ok_or_else(Self::exhausted)
+    }
+
+    pub(crate) fn wait(&self, observed: u64, remaining: Duration) -> kv9_common::Result<()> {
+        let generation = self.generation.lock().expect("completion signal poisoned");
+        #[cfg(test)]
+        if *generation == Some(observed) && !remaining.is_zero() {
+            if let Some(observer) = self.park_observer.lock().unwrap().take() {
+                let _ = observer.send(());
+            }
+        }
+        let (generation, _) = self
+            .changed
+            .wait_timeout_while(generation, remaining, |current| *current == Some(observed))
+            .expect("completion signal poisoned");
+        generation.map(|_| ()).ok_or_else(Self::exhausted)
+    }
+
+    fn exhausted() -> kv9_common::Error {
+        kv9_common::Error::Raft("completion notification generation exhausted".into())
+    }
+
+    #[cfg(test)]
+    pub(crate) fn observe_next_park(&self) -> std::sync::mpsc::Receiver<()> {
+        let (tx, rx) = std::sync::mpsc::channel();
+        *self.park_observer.lock().unwrap() = Some(tx);
+        rx
+    }
+}
+
 #[derive(Debug, Default)]
 struct State {
     pending: bool,
@@ -188,6 +254,66 @@ impl RaftInbox {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn completion_between_lookup_and_wait_is_retained_and_exhaustion_cannot_wrap() {
+        let signal = Arc::new(CompletionSignal::default());
+        let observed = signal.observe().unwrap();
+        signal.publish().unwrap();
+        let waiter = signal.clone();
+        let (tx, rx) = std::sync::mpsc::channel();
+        let task = std::thread::spawn(move || {
+            tx.send(waiter.wait(observed, Duration::from_secs(5)))
+                .unwrap();
+        });
+        let result = rx.recv_timeout(Duration::from_secs(1));
+        // Unblock even a deliberately faulty implementation before reporting
+        // the assertion, so the failure does not leave an owned waiter behind.
+        signal.publish().unwrap();
+        task.join().unwrap();
+        assert!(result.unwrap().is_ok(), "publication before park was lost");
+        *signal.generation.lock().unwrap() = Some(u64::MAX - 1);
+        signal.publish().unwrap();
+        assert_eq!(signal.observe().unwrap(), u64::MAX);
+        assert!(signal.publish().is_err());
+        assert!(signal.observe().is_err());
+        assert!(signal.wait(u64::MAX, Duration::from_secs(5)).is_err());
+        assert!(signal.publish().is_err(), "exhausted generation restarted");
+    }
+
+    #[test]
+    fn one_completion_wakes_all_registered_waiters() {
+        let signal = Arc::new(CompletionSignal::default());
+        let (done_tx, done_rx) = std::sync::mpsc::channel();
+        let mut tasks = Vec::new();
+        for _ in 0..4 {
+            let parked = signal.observe_next_park();
+            let signal = signal.clone();
+            let done = done_tx.clone();
+            tasks.push(std::thread::spawn(move || {
+                let observed = signal.observe().unwrap();
+                done.send(signal.wait(observed, Duration::from_secs(5)))
+                    .unwrap();
+            }));
+            parked.recv_timeout(Duration::from_secs(1)).unwrap();
+        }
+        signal.publish().unwrap();
+        let results: Vec<_> = (0..4)
+            .map(|_| done_rx.recv_timeout(Duration::from_secs(1)))
+            .collect();
+        for _ in 0..4 {
+            signal.publish().unwrap();
+        }
+        for task in tasks {
+            task.join().unwrap();
+        }
+        assert!(
+            results
+                .into_iter()
+                .all(|result| result.is_ok_and(|waited| waited.is_ok())),
+            "one or more registered completion waiters were left parked"
+        );
+    }
 
     #[test]
     fn notification_survives_drain_and_coalescing_and_cannot_restart_a_stopped_owner() {
