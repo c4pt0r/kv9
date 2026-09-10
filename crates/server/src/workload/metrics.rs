@@ -59,7 +59,7 @@ fn attempt_outcome(kind: OperationKind, reason: Option<&Reason>) -> MetricOutcom
             | Reason::AdmissionBytes
             | Reason::AdmissionOversize,
         ) => MetricOutcome::Rejected,
-        _ if kind == OperationKind::Get => MetricOutcome::Error,
+        _ if kind.is_read() => MetricOutcome::Error,
         _ => MetricOutcome::Unconfirmed,
     }
 }
@@ -137,7 +137,14 @@ impl Metrics {
             .0
             .lock()
             .map_err(|_| "workload metrics lock poisoned")?;
-        let kind = report.operation as usize;
+        let kind = match report.operation {
+            OperationKind::Get => 0,
+            OperationKind::Put => 1,
+            OperationKind::Delete => 2,
+            OperationKind::BatchGet | OperationKind::BatchPut => {
+                return Err("batch calls require a batch metrics schema")
+            }
+        };
         let outcome = match &report.outcome {
             Outcome::Success { .. } => MetricOutcome::Success,
             Outcome::Refused { .. } => MetricOutcome::Rejected,

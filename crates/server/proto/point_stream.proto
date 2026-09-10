@@ -1,0 +1,35 @@
+syntax = "proto3";
+package kv9.point.v1;
+
+// Bounded point transport served beside the existing public and Raft APIs.
+service PointStream {
+  rpc Exchange(stream PointRequest) returns (stream PointResponse);
+}
+
+message PointRequest {
+  uint64 id = 1;
+  // 0 = RawGet, 1 = RawPut, 2 = RawDelete, 3 = RawBatchGet, 4 = RawBatchPut.
+  uint32 operation = 2;
+  uint64 remaining_micros = 3;
+  string authorization = 4;
+  bytes payload = 5;
+}
+
+message Metadata {
+  string key = 1;
+  bytes value = 2;
+  bool binary = 3;
+}
+
+message Reply {
+  int32 code = 1;
+  string message = 2;
+  bytes details = 3;
+  repeated Metadata metadata = 4;
+  bytes payload = 5;
+}
+
+message PointResponse {
+  uint64 id = 1;
+  Reply reply = 2;
+}

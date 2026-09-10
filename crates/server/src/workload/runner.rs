@@ -511,7 +511,11 @@ pub async fn run(
     if file_digest(&executable, MAX_BINARY_BYTES)? != build.binary_sha256 {
         return Err("build manifest does not match this executable");
     }
-    let client = PersistentRawClient::new(config.client.clone(), token)?;
+    let client = PersistentRawClient::new_with_transport(
+        config.client.clone(),
+        token,
+        config.rpc_transport,
+    )?;
     let generator = Generator::new(config.clone())?;
     fs::create_dir(&options.output).map_err(|_| "workload output directory must be new")?;
     let config_bytes =
@@ -646,7 +650,7 @@ pub async fn run(
         .lock()
         .map_err(|_| "workload failure lock poisoned")?;
     let report = RunReport {
-        version: 1,
+        version: 2,
         complete: failure.is_none(),
         failure,
         configuration: config,

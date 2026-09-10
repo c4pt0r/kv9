@@ -85,6 +85,9 @@ mod tests {
             kinds[operation.kind() as usize] += 1;
             let key = match operation {
                 RawOperation::Get { key } | RawOperation::Delete { key } => key,
+                RawOperation::BatchGet { .. } | RawOperation::BatchPut { .. } => {
+                    panic!("point generator emitted a batch")
+                }
                 RawOperation::Put { key, value } => {
                     assert_eq!(&value[..8], &nonce.to_be_bytes());
                     assert_eq!(value.len(), 128);

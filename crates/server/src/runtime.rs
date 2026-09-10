@@ -2682,7 +2682,12 @@ pub struct NodeRuntime {
     driver_thread: Option<std::thread::JoinHandle<()>>,
     remote_storage: Option<crate::remote_storage::RemoteStorage>,
     grpc_runtime: tokio::runtime::Runtime,
+    #[cfg(feature = "rpc-experiment")]
+    experimental_rpc: Option<crate::rpc_experiment::ExperimentalServer>,
+    #[cfg(feature = "rpc-experiment")]
+    streaming_rpc: Option<crate::point_stream::StreamServer>,
     grpc_shutdown: Option<tokio::sync::oneshot::Sender<()>>,
+    point_shutdown: tokio_util::sync::CancellationToken,
     grpc_server: Option<tokio::task::JoinHandle<std::result::Result<(), tonic::transport::Error>>>,
     cluster_token: String,
     voters: Vec<NodeId>,
@@ -3033,6 +3038,58 @@ impl NodeRuntime {
         let client_authenticator = Arc::new(TokenAuthenticator::new(auth.client_tokens)?);
         let public_api = Kv9Grpc::with_limits(backend.clone(), public_limits)?;
         let public_admission = public_api.admission();
+        #[cfg(feature = "rpc-experiment")]
+        let experimental_rpc = match std::env::var("KV9_RPC_EXPERIMENT_ADDR") {
+            Ok(address) => {
+                let address = address
+                    .parse()
+                    .map_err(|_| Error::Config("invalid experimental RPC address".into()))?;
+                Some(
+                    grpc_runtime
+                        .block_on(crate::rpc_experiment::start(
+                            address,
+                            public_api.clone(),
+                            client_authenticator.clone(),
+                        ))
+                        .map_err(|error| {
+                            Error::Config(format!("start experimental RPC listener: {error}"))
+                        })?,
+                )
+            }
+            Err(std::env::VarError::NotPresent) => None,
+            Err(_) => {
+                return Err(Error::Config(
+                    "experimental RPC address is not Unicode".into(),
+                ))
+            }
+        };
+        #[cfg(feature = "rpc-experiment")]
+        let streaming_rpc = match std::env::var("KV9_GRPC_STREAM_EXPERIMENT_ADDR") {
+            Ok(address) => {
+                let address = address
+                    .parse()
+                    .map_err(|_| Error::Config("invalid streaming RPC address".into()))?;
+                Some(
+                    grpc_runtime
+                        .block_on(crate::point_stream::start(
+                            address,
+                            public_api.clone(),
+                            client_authenticator.clone(),
+                        ))
+                        .map_err(|error| {
+                            Error::Config(format!("start streaming RPC listener: {error}"))
+                        })?,
+                )
+            }
+            Err(std::env::VarError::NotPresent) => None,
+            Err(_) => return Err(Error::Config("streaming RPC address is not Unicode".into())),
+        };
+        let point_shutdown = tokio_util::sync::CancellationToken::new();
+        let point_service = crate::point_stream::service(
+            public_api.clone(),
+            client_authenticator.clone(),
+            point_shutdown.clone(),
+        );
         let public_service = public_api.authenticated_service(client_authenticator);
         let catchup_capability: Arc<std::sync::Mutex<Option<CatchupCapability>>> =
             Arc::new(std::sync::Mutex::new(None));
@@ -3093,6 +3150,7 @@ impl NodeRuntime {
         let grpc_server = grpc_runtime.spawn(
             tonic::transport::Server::builder()
                 .add_service(public_service)
+                .add_service(point_service)
                 .add_service(raft_service)
                 .serve_with_incoming_shutdown(incoming, async {
                     let _ = grpc_shutdown_rx.await;
@@ -3150,8 +3208,13 @@ impl NodeRuntime {
             public_admission,
             raft_io_metrics,
             metrics_exporter: crate::observability::MetricsExporter::new(&data_dir, id.0),
+            #[cfg(feature = "rpc-experiment")]
+            experimental_rpc,
+            #[cfg(feature = "rpc-experiment")]
+            streaming_rpc,
             grpc_shutdown: Some(grpc_shutdown_tx),
             grpc_server: Some(grpc_server),
+            point_shutdown,
             cluster_token: auth.cluster_token,
             voters,
             seeds,
@@ -3290,6 +3353,23 @@ impl NodeRuntime {
     }
 
     fn check_grpc_server(&mut self) -> Result<()> {
+        #[cfg(feature = "rpc-experiment")]
+        if self
+            .streaming_rpc
+            .as_ref()
+            .is_some_and(|server| server.task.is_finished())
+        {
+            return Err(Error::Raft("streaming RPC listener stopped".into()));
+        }
+        #[cfg(feature = "rpc-experiment")]
+        if self
+            .experimental_rpc
+            .as_ref()
+            .is_some_and(|server| server.task.is_finished())
+        {
+            return Err(Error::Raft("experimental RPC listener stopped".into()));
+        }
+
         let finished = self
             .grpc_server
             .as_ref()
@@ -4058,6 +4138,11 @@ fn validate_discovery_answer(
 
 impl Drop for NodeRuntime {
     fn drop(&mut self) {
+        self.point_shutdown.cancel();
+        #[cfg(feature = "rpc-experiment")]
+        self.experimental_rpc.take();
+        #[cfg(feature = "rpc-experiment")]
+        self.streaming_rpc.take();
         self.remote_storage.take();
         self.driver.stop();
         if let Some(handle) = self.driver_thread.take() {

@@ -125,6 +125,7 @@ path = "src/main.rs"
 partition-testing = ["kv9-raft/testing"]
 # Deterministic remote-flush crash cuts; absent from production binaries.
 checkpoint-testing = ["kv9-server/checkpoint-testing"]
+rpc-experiment = ["kv9-server/rpc-experiment"]
 
 [dependencies]
 kv9-common.workspace = true
