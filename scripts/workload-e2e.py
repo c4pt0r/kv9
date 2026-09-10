@@ -13,6 +13,7 @@ import urllib.request
 
 from workload_report import validate
 from workload_e2e_support import wait as wait_for
+from wal_layout import read_checkpoint, read_layout
 
 ROOT = Path(__file__).resolve().parents[1]
 MINIO = "quay.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e"
@@ -208,7 +209,8 @@ def main():
         (output / "after-generator-kill-put.txt").write_text(receipt + "\n")
         (output / "after-generator-kill-get.txt").write_text(observed + "\n")
         summary["cases"].append(dict(name="killed-generator", exit_code=code, database_progress=True, complete_report=False))
-        wait("remote checkpoints on every replica", lambda: all((output / f"n{n}/catalog.checkpoint").exists() for n in nodes))
+        wait("remote checkpoints on every replica", lambda: all(read_checkpoint(output / f"n{n}") is not None for n in nodes))
+        summary["wal_layouts"] = {str(n): read_layout(output / f"n{n}").evidence() for n in nodes}
         for n in nodes:
             (output / f"n{n}-final-status.txt").write_text((output / f"n{n}/status").read_text())
         (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")

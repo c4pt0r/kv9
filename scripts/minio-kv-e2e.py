@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Three real nodes, real S3, killed leaders, reclaimed WAL and remote recovery."""
 from root_provision import prepare_stores
+from wal_layout import read_checkpoint, read_layout, wal_contains, wal_snapshot
 import json
 import hashlib
 import re
@@ -13,7 +14,7 @@ import time
 import urllib.request
 
 repo = Path(__file__).resolve().parent.parent
-binary = repo / 'target/debug/kv9'
+binary = Path(os.environ.get('KV9_BIN', repo / 'target/debug/kv9')).resolve()
 artifacts = Path(tempfile.mkdtemp(prefix='kv9-minio-kv-'))
 env = os.environ.copy()
 processes = {}
@@ -95,13 +96,50 @@ def check(key, value, keyspace):
     assert output == expected, f'key {key!r}: wanted {expected}, got {output}'
 
 def checkpoint(node):
-    path = artifacts / f'n{node}/catalog.checkpoint'
-    try:
-        data = path.read_bytes()
-        assert data.startswith(b'KV9CHECKPOINT\x01')
-        return json.loads(data[len(b'KV9CHECKPOINT\x01'):])
-    except FileNotFoundError:
-        return None
+    return read_checkpoint(artifacts / f'n{node}')
+
+def reclaim_confirmed_prefix(keyspace):
+    # Segment checkpoints preserve active/straddling files. Force actual
+    # production-sized rotation rather than accepting an empty topology file
+    # as evidence that the payload has disappeared from the physical WAL.
+    layouts = {n: read_layout(artifacts / f'n{n}') for n in processes}
+    kinds = {layout.kind for layout in layouts.values()}
+    assert len(kinds) == 1, 'one fresh-binary fixture selected mixed WAL formats'
+    evidence = dict(version=1, layout=kinds.pop(), initial={str(n): layout.evidence() for n, layout in layouts.items()},
+                    filler_writes=0, filler_value_bytes=60 * 1024, target_files={})
+    if evidence['layout'] == 'segmented':
+        targets = {n: [layout.segment_path(item) for item in (*layout.closed, layout.active)] for n, layout in layouts.items()}
+        evidence['target_files'] = {str(n): [str(p.relative_to(artifacts / f'n{n}')) for p in paths] for n, paths in targets.items()}
+        for n, layout in layouts.items():
+            (artifacts / f'n{n}-before-reclamation.topology.bin').write_bytes(layout.authority)
+        (artifacts / 'wal-reclamation.json').write_text(json.dumps(evidence, indent=2) + '\n')
+        def rotated():
+            return all(read_layout(artifacts / f'n{n}').active['sequence'] > layouts[n].active['sequence'] for n in processes)
+        filler_key = b'wal-rotation-filler'
+        # 300 * 60 KiB exceeds the default 16 MiB target. Reusing one key keeps
+        # the remote snapshot small; its 120 KiB hex argument fits Linux's
+        # per-argument limit. This is ordinary acknowledged API traffic.
+        for turn in range(300):
+            if rotated():
+                break
+            value = f'rotation-{turn:04d}:'.encode().ljust(60 * 1024, b'x')
+            put(filler_key, value, keyspace)
+            evidence['filler_writes'] += 1
+        (artifacts / 'wal-reclamation.json').write_text(json.dumps(evidence, indent=2) + '\n')
+        wait('all voters rotate past the initially selected prefix', rotated)
+        receipt = client('raw-delete', '--keyspace', keyspace, '--key-hex', filler_key.hex())
+        through = int(dict(line.split('=', 1) for line in receipt.splitlines())['applied_index'])
+        evidence['checkpoint_after_filler_delete'] = through
+        wait('checkpoint covers filler deletion on every voter',
+             lambda: all((checkpoint(n) or {}).get('index', 0) >= through for n in processes))
+        wait('initial selected closed segment files are actually unlinked',
+             lambda: all(not path.exists() for paths in targets.values() for path in paths))
+        check(filler_key, None, keyspace)
+    needles = (b'remote-value', b'old-value', b'new-value')
+    wait('absorbed values absent from every physical WAL file',
+         lambda: all(not wal_contains(artifacts / f'n{n}', needles) for n in processes))
+    evidence['final'] = {str(n): read_layout(artifacts / f'n{n}').evidence() for n in processes}
+    (artifacts / 'wal-reclamation.json').write_text(json.dumps(evidence, indent=2) + '\n')
 
 def pending_record(node):
     path = artifacts/f'n{node}/catalog.pending'
@@ -117,8 +155,7 @@ def pending_record(node):
 
 def pending_startup_refusals(node, original):
     path = artifacts/f'n{node}/catalog.pending'
-    wal = artifacts/f'n{node}/catalog.wal'
-    before = wal.read_bytes()
+    before = wal_snapshot(artifacts/f'n{node}')
     bad_crc = bytearray(original)
     bad_crc[-1] ^= 1
     magic = b'KV9PENDING\x01'
@@ -142,7 +179,7 @@ def pending_startup_refusals(node, original):
         output = (artifacts/f'n{node}.log').read_text()[offset:]
         assert code != 0 and expected in output, f'pending preflight must refuse before serving: {output}'
         assert path.read_bytes() == damaged, 'invalid pending record must not be reset'
-        assert wal.read_bytes() == before, 'invalid pending record must not edit state-machine WAL'
+        assert wal_snapshot(artifacts/f'n{node}') == before, 'invalid pending record must not edit any state-machine WAL file'
     path.write_bytes(original)
 
 def latest_generation(node):
@@ -248,14 +285,7 @@ try:
     client('raw-delete', '--keyspace', keyspace, '--key-hex', b'deleted'.hex())
     boundary = put(b'overwrite', b'new-value', keyspace)
     wait('all replicas install remote checkpoint', lambda: all((checkpoint(n) or {}).get('index', 0) >= boundary for n in processes))
-    # Wait for the actual tail replacement, not merely for the sidecar rename.
-    def reclaimed():
-        for n in processes:
-            data = (artifacts/f'n{n}/catalog.wal').read_bytes()
-            if b'remote-value' in data or b'old-value' in data or b'new-value' in data:
-                return False
-        return True
-    wait('absorbed values absent from reclaimed WALs', reclaimed)
+    reclaim_confirmed_prefix(keyspace)
     print('Remote checkpoint committed on all replicas; absorbed data reclaimed.', flush=True)
     if env.get('KV9_TEST_PENDING_CRASHES') == '1':
         pending_crash_cases(keyspace)

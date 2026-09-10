@@ -15,6 +15,7 @@ import time
 import urllib.request
 
 from workload_report import bounded, strict_json, validate
+from wal_layout import read_checkpoint, read_layout
 
 MINIO = 'quay.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e'
 MIXES = {'read': dict(get=100, put=0, delete=0), 'write': dict(get=0, put=100, delete=0),
@@ -241,10 +242,13 @@ class Fixture:
             (self.out/'stop').touch()
             if self.nodes[1].wait(timeout=10): raise ValueError('calibration endpoint failed to drain')
         elif self.target=='minio':
-            self.wait('remote checkpoint on each voter',lambda:all((self.out/'data'/f'n{n}'/'catalog.checkpoint').exists() for n in self.nodes))
+            self.wait('remote checkpoint on each voter',lambda:all(read_checkpoint(self.out/'data'/f'n{n}') is not None for n in self.nodes))
             self.record['remote_checkpoints']={}
+            self.record['wal_layouts']={}
             for n in self.nodes:
-                data=bounded(self.out/'data'/f'n{n}'/'catalog.checkpoint',48*1024*1024)
+                layout=read_layout(self.out/'data'/f'n{n}')
+                data=layout.checkpoint_bytes
+                self.record['wal_layouts'][str(n)]=layout.evidence()
                 (self.out/f'n{n}-checkpoint.bin').write_bytes(data)
                 self.record['remote_checkpoints'][str(n)]=dict(bytes=len(data),sha256=hashlib.sha256(data).hexdigest())
         self.record['complete']=True;save(self.out/'fixture.json',self.record)
