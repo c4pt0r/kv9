@@ -8,7 +8,7 @@ use crate::client::{CallReport, OperationKind, Outcome, Reason};
 
 use super::recorder::PHASES;
 
-const POPULATIONS: [&str; 12] = [
+const POPULATIONS: [&str; 13] = [
     "success",
     "not_leader",
     "admission_count",
@@ -21,6 +21,7 @@ const POPULATIONS: [&str; 12] = [
     "deadline",
     "client_capacity",
     "client_input",
+    "proposal_refused",
 ];
 
 fn population(reason: Option<&Reason>) -> usize {
@@ -37,6 +38,7 @@ fn population(reason: Option<&Reason>) -> usize {
         Some(Reason::Deadline) => 9,
         Some(Reason::ClientCapacity) => 10,
         Some(Reason::ClientInput) => 11,
+        Some(Reason::ProposalRefused { .. }) => 12,
     }
 }
 
@@ -57,7 +59,8 @@ fn attempt_outcome(kind: OperationKind, reason: Option<&Reason>) -> MetricOutcom
             Reason::NotLeader { .. }
             | Reason::AdmissionCount
             | Reason::AdmissionBytes
-            | Reason::AdmissionOversize,
+            | Reason::AdmissionOversize
+            | Reason::ProposalRefused { .. },
         ) => MetricOutcome::Rejected,
         _ if kind == OperationKind::Get => MetricOutcome::Error,
         _ => MetricOutcome::Unconfirmed,

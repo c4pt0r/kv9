@@ -1019,6 +1019,119 @@ async fn malformed_responses_and_admission_are_terminal() {
 }
 
 #[tokio::test]
+async fn proposal_refusals_are_exclusive_terminal_and_never_replayed() {
+    use crate::grpc::PROPOSAL_REFUSED_KEY;
+    use kv9_common::ProposalRefusal;
+    let marked = |reason: ProposalRefusal| {
+        let mut status = Status::resource_exhausted("submission refused");
+        status
+            .metadata_mut()
+            .insert(PROPOSAL_REFUSED_KEY, reason.label().parse().unwrap());
+        status
+    };
+    let server = Server::new().await;
+    let client = server.client();
+    for reason in [
+        ProposalRefusal::RequestCount,
+        ProposalRefusal::EncodedBytes,
+        ProposalRefusal::RequestTooLarge,
+        ProposalRefusal::Expired,
+        ProposalRefusal::Stopped,
+    ] {
+        let status = marked(reason);
+        assert_eq!(crate::grpc::proposal_refusal(&status), Some(reason));
+        assert_eq!(classify_status(&status, true), Reason::Protocol);
+        server
+            .state
+            .actions
+            .lock()
+            .unwrap()
+            .push_back(refusal(status));
+        let report = client.call(put(b"refused")).await;
+        assert_eq!(
+            report.attempts.len(),
+            1,
+            "definite queue refusal was replayed"
+        );
+        assert_eq!(
+            report.outcome,
+            Outcome::Refused {
+                reason: Reason::ProposalRefused { reason }
+            }
+        );
+    }
+    assert_eq!(server.state.writes.load(Ordering::SeqCst), 0);
+    let valid = || marked(ProposalRefusal::Expired);
+    let mut duplicate = valid();
+    duplicate
+        .metadata_mut()
+        .append(PROPOSAL_REFUSED_KEY, "expired".parse().unwrap());
+    let mut unknown = valid();
+    unknown
+        .metadata_mut()
+        .insert(PROPOSAL_REFUSED_KEY, "future".parse().unwrap());
+    let mut wrong_code = Status::unavailable("expired");
+    wrong_code
+        .metadata_mut()
+        .insert(PROPOSAL_REFUSED_KEY, "expired".parse().unwrap());
+    let mut statuses = vec![duplicate, unknown, wrong_code];
+    for key in [
+        ADMISSION_REFUSED_KEY,
+        NOT_LEADER_KEY,
+        LEADER_HINT_KEY,
+        crate::grpc::READ_UNCONFIRMED_KEY,
+        crate::grpc::PARTIAL_WRITE_KEY,
+        "kv9-future",
+    ] {
+        let mut mixed = valid();
+        mixed.metadata_mut().insert(key, "true".parse().unwrap());
+        statuses.push(mixed);
+    }
+    let mut binary = valid();
+    binary.metadata_mut().insert_bin(
+        "kv9-future-bin",
+        tonic::metadata::MetadataValue::from_bytes(b"x"),
+    );
+    statuses.push(binary);
+    for status in statuses {
+        assert_eq!(crate::grpc::proposal_refusal(&status), None);
+        server
+            .state
+            .actions
+            .lock()
+            .unwrap()
+            .push_back(refusal(status));
+        let report = client.call(put(b"uncertain")).await;
+        assert_eq!(report.attempts.len(), 1);
+        assert_eq!(
+            report.outcome,
+            Outcome::UnknownWrite {
+                reason: Reason::Protocol
+            }
+        );
+    }
+    let unmarked = Status::resource_exhausted("proposal refused before append");
+    assert_eq!(
+        classify_status(&unmarked, false),
+        Reason::RpcStatus { code: 8 }
+    );
+    server
+        .state
+        .actions
+        .lock()
+        .unwrap()
+        .push_back(refusal(valid()));
+    assert_eq!(
+        client.call(get()).await.outcome,
+        Outcome::ReadFailure {
+            reason: Reason::Protocol
+        }
+    );
+    assert_eq!(server.state.writes.load(Ordering::SeqCst), 0);
+    server.stop().await;
+}
+
+#[tokio::test]
 async fn dead_seed_does_not_prevent_later_operations_on_survivors() {
     let dead = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
     let address = dead.local_addr().unwrap();

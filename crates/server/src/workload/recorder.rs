@@ -310,7 +310,8 @@ impl Recorder {
                     Reason::NotLeader { .. }
                     | Reason::AdmissionCount
                     | Reason::AdmissionBytes
-                    | Reason::AdmissionOversize,
+                    | Reason::AdmissionOversize
+                    | Reason::ProposalRefused { .. },
             } => "refused",
             Outcome::ClientRejected { .. } if report.attempts.is_empty() => "refused",
             Outcome::UnknownWrite { .. } if invocation.kind != OperationKind::Get => "unknown",

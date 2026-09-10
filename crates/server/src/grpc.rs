@@ -339,6 +339,10 @@ fn membership_rpc_error(rpc: &str, status: Status) -> Error {
 #[derive(Debug)]
 pub enum RawClientOutcome<T> {
     Ok(T),
+    /// Exclusive no-submission evidence from the Raft proposal queue.
+    ProposalRefused {
+        reason: kv9_common::ProposalRefusal,
+    },
     /// An exclusive, typed refusal before backend submission.
     AdmissionRefused {
         reason: &'static str,
@@ -385,7 +389,12 @@ impl RawClient {
         })
     }
 
-    fn call<T, F, Fut>(&self, label: &str, build: F) -> Result<RawClientOutcome<T>, Error>
+    fn call<T, F, Fut>(
+        &self,
+        label: &str,
+        read: bool,
+        build: F,
+    ) -> Result<RawClientOutcome<T>, Error>
     where
         F: FnOnce(proto::kv9_client::Kv9Client<tonic::transport::Channel>, MetadataMap) -> Fut,
         Fut: std::future::Future<Output = Result<T, Status>>,
@@ -406,6 +415,14 @@ impl RawClient {
             );
             match build(client, metadata).await {
                 Ok(value) => Ok(RawClientOutcome::Ok(value)),
+                Err(status) if status.metadata().contains_key(PROPOSAL_REFUSED_KEY) => {
+                    proposal_refusal(&status)
+                        .filter(|_| !read)
+                        .map(|reason| RawClientOutcome::ProposalRefused { reason })
+                        .ok_or_else(|| {
+                            Error::Raft(format!("{label} RPC: invalid proposal refusal: {status}"))
+                        })
+                }
                 Err(status) if status.metadata().contains_key(ADMISSION_REFUSED_KEY) => {
                     admission_refusal(&status)
                         .map(|reason| RawClientOutcome::AdmissionRefused { reason })
@@ -450,7 +467,7 @@ impl RawClient {
         value: Vec<u8>,
     ) -> Result<RawClientOutcome<proto::RawWriteResponse>, Error> {
         let context = self.context();
-        self.call("RawPut", move |mut client, metadata| async move {
+        self.call("RawPut", false, move |mut client, metadata| async move {
             let mut request = Request::from_parts(
                 metadata,
                 Default::default(),
@@ -467,7 +484,7 @@ impl RawClient {
 
     pub fn get(&self, key: Vec<u8>) -> Result<RawClientOutcome<Option<Vec<u8>>>, Error> {
         let context = self.context();
-        self.call("RawGet", move |mut client, metadata| async move {
+        self.call("RawGet", true, move |mut client, metadata| async move {
             let request = Request::from_parts(
                 metadata,
                 Default::default(),
@@ -482,7 +499,7 @@ impl RawClient {
 
     pub fn delete(&self, key: Vec<u8>) -> Result<RawClientOutcome<proto::RawWriteResponse>, Error> {
         let context = self.context();
-        self.call("RawDelete", move |mut client, metadata| async move {
+        self.call("RawDelete", false, move |mut client, metadata| async move {
             let request = Request::from_parts(
                 metadata,
                 Default::default(),
@@ -499,7 +516,7 @@ impl RawClient {
         limit: u32,
     ) -> Result<RawClientOutcome<Vec<RawRow>>, Error> {
         let context = self.context();
-        self.call("RawScan", move |mut client, metadata| async move {
+        self.call("RawScan", true, move |mut client, metadata| async move {
             let request = Request::from_parts(
                 metadata,
                 Default::default(),
@@ -527,21 +544,25 @@ impl RawClient {
         end: Vec<u8>,
     ) -> Result<RawClientOutcome<proto::RawDeleteRangeResponse>, Error> {
         let context = self.context();
-        self.call("RawDeleteRange", move |mut client, metadata| async move {
-            let request = Request::from_parts(
-                metadata,
-                Default::default(),
-                proto::RawDeleteRangeRequest {
-                    context,
-                    start,
-                    end,
-                },
-            );
-            client
-                .raw_delete_range(request)
-                .await
-                .map(Response::into_inner)
-        })
+        self.call(
+            "RawDeleteRange",
+            false,
+            move |mut client, metadata| async move {
+                let request = Request::from_parts(
+                    metadata,
+                    Default::default(),
+                    proto::RawDeleteRangeRequest {
+                        context,
+                        start,
+                        end,
+                    },
+                );
+                client
+                    .raw_delete_range(request)
+                    .await
+                    .map(Response::into_inner)
+            },
+        )
     }
 }
 
@@ -847,8 +868,17 @@ fn error_status(error: Error) -> Status {
         // diagnostics -- the redaction is at the wire boundary, not at the source, so we do
         // not lose the detail where it is actually useful.
         Error::ObjectContentMismatch { .. } => Status::internal("object store invariant violation"),
-        Error::TsoUnavailable(_) | Error::MetaNotReady(_) | Error::Raft(_) => {
-            Status::unavailable(message)
+        Error::TsoUnavailable(_)
+        | Error::MetaNotReady(_)
+        | Error::Raft(_)
+        | Error::ProposalUnconfirmed => Status::unavailable(message),
+        Error::ProposalRefused { reason } => {
+            let mut status = Status::resource_exhausted(message);
+            status.metadata_mut().insert(
+                PROPOSAL_REFUSED_KEY,
+                reason.label().parse().expect("static ASCII"),
+            );
+            status
         }
         // UNAVAILABLE + a server-sent marker naming which barrier half never
         // arrived. The marker (not the code) is the protocol: transport
@@ -943,6 +973,31 @@ pub const NOT_LEADER_KEY: &str = "kv9-not-leader";
 /// that a mutation was refused; clients must validate this marker and its value.
 pub const ADMISSION_REFUSED_KEY: &str = "kv9-admission-refused";
 
+/// Exclusive proof that this proposal never reached Raft submission. This is
+/// distinct from admission before the public blocking backend starts executing.
+pub const PROPOSAL_REFUSED_KEY: &str = "kv9-proposal-refused";
+
+pub fn proposal_refusal(status: &Status) -> Option<kv9_common::ProposalRefusal> {
+    use tonic::metadata::KeyAndValueRef;
+    if status.code() != tonic::Code::ResourceExhausted
+        || status.metadata().iter().any(|entry| {
+            let key = match entry {
+                KeyAndValueRef::Ascii(key, _) => key.as_str(),
+                KeyAndValueRef::Binary(key, _) => key.as_str(),
+            };
+            key.starts_with("kv9-") && key != PROPOSAL_REFUSED_KEY
+        })
+    {
+        return None;
+    }
+    let mut values = status.metadata().get_all(PROPOSAL_REFUSED_KEY).iter();
+    let value = values.next()?.to_str().ok()?;
+    if values.next().is_some() {
+        return None;
+    }
+    kv9_common::ProposalRefusal::parse(value)
+}
+
 fn admission_status(reason: Refusal) -> Status {
     let mut status = Status::resource_exhausted("public backend admission limit reached");
     status.metadata_mut().insert(
@@ -956,6 +1011,7 @@ fn admission_status(reason: Refusal) -> Status {
 pub fn admission_refusal(status: &Status) -> Option<&'static str> {
     if status.code() != tonic::Code::ResourceExhausted
         || [
+            PROPOSAL_REFUSED_KEY,
             NOT_LEADER_KEY,
             LEADER_HINT_KEY,
             READ_UNCONFIRMED_KEY,
@@ -1575,6 +1631,40 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
 #[cfg(test)]
 mod tests {
     mod admission;
+
+    #[test]
+    fn proposal_refusal_wire_mapping_preserves_certainty_and_partial_ranges() {
+        use kv9_common::ProposalRefusal;
+        for reason in [
+            ProposalRefusal::RequestCount,
+            ProposalRefusal::EncodedBytes,
+            ProposalRefusal::RequestTooLarge,
+            ProposalRefusal::Expired,
+            ProposalRefusal::Stopped,
+        ] {
+            let status = error_status(Error::ProposalRefused { reason });
+            assert_eq!(proposal_refusal(&status), Some(reason));
+            assert_eq!(admission_refusal(&status), None);
+        }
+        let unknown = error_status(Error::ProposalUnconfirmed);
+        assert_eq!(unknown.code(), Code::Unavailable);
+        assert_eq!(proposal_refusal(&unknown), None);
+        let partial = error_status(Error::PartialDeleteRange {
+            committed_chunks: 1,
+            last_applied_term: 7,
+            last_applied_index: 9,
+            cause: Error::ProposalRefused {
+                reason: ProposalRefusal::Stopped,
+            }
+            .to_string(),
+        });
+        assert_eq!(
+            proposal_refusal(&partial),
+            None,
+            "a refused later chunk erased earlier effects"
+        );
+        assert!(partial_write_marked(&partial));
+    }
 
     use std::sync::Mutex;
 

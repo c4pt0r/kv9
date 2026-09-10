@@ -20,7 +20,9 @@ PHASES = ["initialization", "warmup", "measure", "verify", "baseline", "healing"
 OPERATIONS = ["get", "put", "delete"]
 POPULATIONS = ["success", "not_leader", "admission_count", "admission_bytes", "admission_oversize",
                "read_quorum_unconfirmed", "read_apply_unconfirmed", "rpc_status", "protocol", "deadline",
-               "client_capacity", "client_input"]
+               "client_capacity", "client_input", "proposal_refused"]
+LEGACY_POPULATIONS = POPULATIONS[:-1]
+PROPOSAL_REFUSALS = {"request_count", "encoded_bytes", "request_too_large", "expired", "stopped"}
 OUTCOMES = ["success", "error", "aborted", "released", "replaced", "rejected", "unconfirmed"]
 U64 = (1 << 64) - 1
 REPORT_KEYS = "version complete failure configuration config_sha256 build build_sha256 history_sha256 process_id wall_anchor_unix_ns wall_anchor_monotonic_ns elapsed_ns runtime_threads workload_model independently_checked stop stages measured_issued measured_completed measured_successful cohort_elapsed_ns cohort_terminal_ops_per_second cohort_success_ops_per_second resources_before resources_after history metrics".split()
@@ -148,14 +150,15 @@ def histogram_check(h):
 
 def metrics_check(m):
     keys(m, "populations phases operations logical_counts attempt_counts logical_rpc_codes attempt_rpc_codes logical_latency attempt_latency".split())
-    require(m["populations"] == POPULATIONS and m["phases"] == PHASES and m["operations"] == OPERATIONS, "metrics vocabulary changed")
+    require(m["populations"] in (LEGACY_POPULATIONS, POPULATIONS) and m["phases"] == PHASES and m["operations"] == OPERATIONS, "metrics vocabulary changed")
+    width = len(m["populations"])
     for name in ("logical_counts", "attempt_counts", "logical_rpc_codes", "attempt_rpc_codes"):
         rows = m[name]
         require(isinstance(rows, list) and len(rows) == len(PHASES), "missing metric phases")
         for row in rows:
             require(isinstance(row, list) and len(row) == 3, "missing metric operations")
             for counts in row:
-                require(isinstance(counts, list) and len(counts) == (17 if "codes" in name else 12), "missing outcome counts")
+                require(isinstance(counts, list) and len(counts) == (17 if "codes" in name else width), "missing outcome counts")
                 for count in counts:
                     uint(count, 0, 16_000_000)
     for level in ("logical", "attempt"):
@@ -169,7 +172,7 @@ def metrics_check(m):
                     require(h["outcome"] == outcome, "latency outcome order changed")
                     histogram_check(h)
                 counts = m[f"{level}_counts"][p][op]
-                expected = [counts[0], 0, 0, 0, 0, sum(counts[1:5]), 0]
+                expected = [counts[0], 0, 0, 0, 0, sum(counts[1:5]) + sum(counts[12:]), 0]
                 if level == "logical":
                     # Deadline expiry before the first attempt is a local
                     # rejection; after an attempt it is an unknown/read failure.
@@ -179,23 +182,26 @@ def metrics_check(m):
                     expected[3] = released
                     expected[1 if op == 0 else 6] = sum(counts[5:10]) - local_deadlines
                 else:
-                    expected[1 if op == 0 else 6] = sum(counts[5:])
+                    expected[1 if op == 0 else 6] = sum(counts[5:12])
+                require(op != 0 or not sum(counts[12:]), "read cannot have a proposal refusal")
                 require([h["count"] for h in latency["outcomes"]] == expected, "latency and outcome counts disagree")
                 require(sum(m[f"{level}_rpc_codes"][p][op]) == counts[7], "RPC status counts disagree")
 
 
-def reason_population(reason):
+def reason_population(reason, populations=POPULATIONS):
     if reason is None:
         return 0
-    require(isinstance(reason, dict) and reason.get("kind") in POPULATIONS[1:], "invalid outcome reason")
+    require(isinstance(reason, dict) and reason.get("kind") in populations[1:], "invalid outcome reason")
     kind = reason["kind"]
-    keys(reason, ["kind", "leader"] if kind == "not_leader" else ["kind", "code"] if kind == "rpc_status" else ["kind"])
+    keys(reason, ["kind", "leader"] if kind == "not_leader" else ["kind", "code"] if kind == "rpc_status" else ["kind", "reason"] if kind == "proposal_refused" else ["kind"])
+    if kind == "proposal_refused":
+        require(isinstance(reason["reason"], str) and reason["reason"] in PROPOSAL_REFUSALS, "unknown proposal refusal")
     if kind == "rpc_status":
         uint(reason["code"], 0, 16)
     if kind == "not_leader" and reason["leader"] is not None:
         uint(reason["leader"], 1)
     require(kind != "protocol", "protocol failure invalidates a workload")
-    return POPULATIONS.index(kind)
+    return populations.index(kind)
 
 
 def history_check(records, r, c, seconds):
@@ -207,7 +213,8 @@ def history_check(records, r, c, seconds):
     keyset = {f'{c["run_id"]}:{i:016x}'.encode().hex() for i in range(c["keys"] + 1)}
     worker_ids = {str(i) for i in range(c["workers"])}
     peer_ids = {peer["node_id"] for peer in c["client"]["peers"]}
-    counts = {level: [[[0] * 12 for _ in OPERATIONS] for _ in PHASES] for level in ("logical", "attempt")}
+    populations = r["metrics"]["populations"]
+    counts = {level: [[[0] * len(populations) for _ in OPERATIONS] for _ in PHASES] for level in ("logical", "attempt")}
     codes = {level: [[[0] * 17 for _ in OPERATIONS] for _ in PHASES] for level in ("logical", "attempt")}
     samples = {level: [[[[] for _ in OUTCOMES] for _ in OPERATIONS] for _ in PHASES] for level in ("logical", "attempt")}
     for seq, event in enumerate(records[1:]):
@@ -248,14 +255,15 @@ def history_check(records, r, c, seconds):
             require(observation["malformed"] is None, "malformed response in history")
             elapsed = uint(observation["elapsed_ns"], 0, now - invocation["monotonic_ns"])
             p, op = PHASES.index(invocation["phase"]), OPERATIONS.index(invocation["op"])
-            population = reason_population(observation["reason"])
+            population = reason_population(observation["reason"], populations)
+            require(op != 0 or population != 12, "read cannot have a proposal refusal")
             attempts = observation["attempts"]
             require(isinstance(attempts, list) and len(attempts) <= c["client"]["max_attempts"], "attempt bound exceeded")
             local = not attempts
             require(not local or population in (9, 10, 11), "zero-attempt outcome lacks a local refusal")
             require(local or population not in (10, 11), "local refusal has network attempts")
             outcome = event["outcome"]
-            expected_outcome = "ok" if population == 0 else "refused" if local or population in (1, 2, 3, 4) else "unknown"
+            expected_outcome = "ok" if population == 0 else "refused" if local or population in (1, 2, 3, 4, 12) else "unknown"
             require(outcome == expected_outcome, "reason does not justify history outcome")
             if outcome == "ok" and op:
                 receipt = observation["receipt"]
@@ -280,11 +288,11 @@ def history_check(records, r, c, seconds):
                 require(attempt["ordinal"] == ordinal and attempt["node_id"] in peer_ids, "attempt identity/routing mismatch")
                 duration = uint(attempt["elapsed_ns"], 0, elapsed)
                 attempt_sum += duration
-                ap = reason_population(attempt["failure"])
+                ap = reason_population(attempt["failure"], populations)
                 require(ordinal == len(attempts) or ap == 1, "retry lacks exclusive NotLeader refusal")
                 if ordinal == len(attempts):
                     require(attempt["failure"] == observation["reason"], "last attempt differs from terminal reason")
-                ag = 0 if ap == 0 else 5 if ap in (1, 2, 3, 4) else 1 if op == 0 else 6
+                ag = 0 if ap == 0 else 5 if ap in (1, 2, 3, 4, 12) else 1 if op == 0 else 6
                 counts["attempt"][p][op][ap] += 1
                 samples["attempt"][p][op][ag].append(duration)
                 if ap == 7:

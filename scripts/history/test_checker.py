@@ -11,7 +11,7 @@ import random
 import unittest
 
 from checker import History, Malformed, check, minimize_prefix, search, verify_witness
-from workload import admission_refusal, parse_success
+from workload import admission_refusal, proposal_refusal, parse_success
 
 
 def header(kv=(), chunk=2):
@@ -194,6 +194,23 @@ class CheckerControls(unittest.TestCase):
         for line in ['admission_refused=true reason=future\n', 'resource exhausted\n',
                      'admission_refused=false reason=request_count\n']:
             self.assertIsNone(admission_refusal(1, '', line))
+
+    def test_proposal_refusal_requires_exclusive_cli_evidence(self):
+        for reason in ['request_count', 'encoded_bytes', 'request_too_large', 'expired', 'stopped']:
+            line = f'proposal_refused=true reason={reason}\n'
+            for trailer in ['', 'command terminated with exit code 1\n']:
+                self.assertEqual(proposal_refusal(1, '', line + trailer), reason)
+            for code in [None, 0, 124, 137]:
+                self.assertIsNone(proposal_refusal(code, '', line))
+            self.assertIsNone(proposal_refusal(1, 'applied_index=7\n', line))
+            for extra in ['partial_write=true\n', 'not_leader=true leader_node_id=1\n',
+                          'read_unconfirmed=true phase=apply\n', line, 'transport error\n',
+                          'admission_refused=true reason=request_count\n']:
+                self.assertIsNone(proposal_refusal(1, '', line + extra))
+                self.assertIsNone(admission_refusal(1, '', line + extra))
+        for line in ['proposal_refused=true reason=future\n', 'resource exhausted\n',
+                     'proposal_refused=false reason=request_count\n']:
+            self.assertIsNone(proposal_refusal(1, '', line))
 
     def test_guided_search_handles_refused_reads_without_values(self):
         for kind, args in [('get', {'key': '61'}), ('scan', {'start': '', 'end': '', 'limit': 8})]:

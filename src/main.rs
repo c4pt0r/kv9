@@ -659,6 +659,10 @@ fn run_raw_client(command: &str, mut args: impl Iterator<Item = String>) -> Exit
                     ExitCode::SUCCESS
                 }
                 Ok(RawClientOutcome::NotLeader { leader }) => print_not_leader(leader),
+                Ok(RawClientOutcome::ProposalRefused { reason }) => {
+                    eprintln!("proposal_refused=true reason={}", reason.label());
+                    ExitCode::FAILURE
+                }
                 Ok(RawClientOutcome::AdmissionRefused { reason }) => {
                     eprintln!("admission_refused=true reason={reason}");
                     ExitCode::FAILURE

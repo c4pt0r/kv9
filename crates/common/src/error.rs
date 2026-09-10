@@ -68,6 +68,15 @@ pub enum Error {
     #[error("raft error: {0}")]
     Raft(String),
 
+    /// The proposal queue proved that this invocation never reached Raft submission.
+    #[error("proposal refused before Raft submission ({reason:?})")]
+    ProposalRefused { reason: ProposalRefusal },
+
+    /// The owner claimed the request, but no exact submission result arrived in budget.
+    /// This never establishes that a write failed or that retrying it is safe.
+    #[error("proposal submission unconfirmed; write outcome unknown")]
+    ProposalUnconfirmed,
+
     /// A range or batch spans more than one region, so a single `RequestContext` (which
     /// authorises exactly one region at one epoch) cannot cover it.
     ///
@@ -154,4 +163,37 @@ pub enum ReadBarrierPhase {
     /// The quorum confirmed an index but this replica's apply did not catch
     /// up to it in time — local lag; a bounded same-node retry can succeed.
     ApplyCatchUp,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ProposalRefusal {
+    RequestCount,
+    EncodedBytes,
+    RequestTooLarge,
+    Expired,
+    Stopped,
+}
+
+impl ProposalRefusal {
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::RequestCount => "request_count",
+            Self::EncodedBytes => "encoded_bytes",
+            Self::RequestTooLarge => "request_too_large",
+            Self::Expired => "expired",
+            Self::Stopped => "stopped",
+        }
+    }
+
+    pub fn parse(value: &str) -> Option<Self> {
+        Some(match value {
+            "request_count" => Self::RequestCount,
+            "encoded_bytes" => Self::EncodedBytes,
+            "request_too_large" => Self::RequestTooLarge,
+            "expired" => Self::Expired,
+            "stopped" => Self::Stopped,
+            _ => return None,
+        })
+    }
 }
