@@ -14,6 +14,7 @@ pub mod command;
 pub mod driver;
 pub mod grpc;
 pub mod rawnode;
+mod read_receipts;
 pub mod state_machine;
 pub mod storage;
 #[cfg(any(test, feature = "testing"))]
