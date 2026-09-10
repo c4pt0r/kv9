@@ -99,3 +99,27 @@ release performance, idle CPU and sustained-ingress tick observations. Existing
 observation source controls must be updated for the changed wait contract before
 being counted as acceptance. A passing workspace run proves none of these
 remaining obligations by itself.
+
+## Queued-only outbound coalescing candidate
+
+The second candidate removes the fixed 2-ms outbound window. After obtaining
+one envelope for the current connection generation, the worker coalesces only
+already queued envelopes and immediately offers the batch to the existing
+stream. It inspects at most 127 additional envelopes, counting stale generations
+toward that bound. Accepted envelopes preserve FIFO order and exact destination
+identity, including address reuse. Byte/count targets, reconnect budgets, stream
+progress deadlines and the outer route-change cancellation remain in force.
+
+The batch is the first valid envelope followed by the destination-filtered
+prefix consumed from the queue. Coalescing cannot create or reorder entries or
+grant a Raft acknowledgement. Its notification-free synchronous loop is bounded;
+future arrivals belong to a subsequent batch. This is an implementation contract,
+not the completed proof/control gate.
+
+Local checks pass 133 Raft tests and warning-denying all-target Raft Clippy. New
+regressions cover stale-generation work bounds, address reuse, idle first-message
+flush, FIFO/count limits and a legal message crossing the byte target. Existing
+actual gRPC failover, blackhole/reconnect and endpoint-migration tests also pass.
+Completion polling still uses its original 1-ms interval. Paired measurements,
+applicable source controls and full exact-candidate failure acceptance remain
+pending; this change does not claim a measured performance result.
