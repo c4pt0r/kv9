@@ -69,7 +69,90 @@ pub(crate) struct MetricsExporter {
     path: PathBuf,
     started: Instant,
     started_unix_ns: String,
+    process_identity: ProcessIdentity,
     state: Mutex<ExportState>,
+}
+
+/// Bind persisted status to the process that wrote it. PID alone can name a
+/// different lifetime, especially PID 1 after a container restarts on its PVC.
+/// Capture once; procfs is never read on the request or status-export hot path.
+struct ProcessIdentity {
+    start_ticks: Option<u64>,
+    boot_id: Option<String>,
+}
+
+impl ProcessIdentity {
+    fn capture() -> Self {
+        #[cfg(target_os = "linux")]
+        {
+            Self {
+                start_ticks: read_identity_file("/proc/self/stat")
+                    .and_then(|stat| process_start_ticks(&stat, std::process::id())),
+                boot_id: read_identity_file("/proc/sys/kernel/random/boot_id")
+                    .and_then(|value| process_boot_id(&value)),
+            }
+        }
+        #[cfg(not(target_os = "linux"))]
+        {
+            Self {
+                start_ticks: None,
+                boot_id: None,
+            }
+        }
+    }
+
+    fn status_lines(&self) -> String {
+        format!(
+            "process_start_ticks={}\nprocess_boot_id={}\n",
+            self.start_ticks
+                .map_or_else(|| "unavailable".into(), |value| value.to_string()),
+            self.boot_id.as_deref().unwrap_or("unavailable"),
+        )
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn read_identity_file(path: &str) -> Option<String> {
+    use std::io::Read;
+    let mut bytes = Vec::new();
+    std::fs::File::open(path)
+        .ok()?
+        .take(4097)
+        .read_to_end(&mut bytes)
+        .ok()?;
+    if bytes.len() > 4096 {
+        return None;
+    }
+    String::from_utf8(bytes).ok()
+}
+
+#[cfg(any(target_os = "linux", test))]
+fn process_start_ticks(stat: &str, expected_pid: u32) -> Option<u64> {
+    let (pid, _) = stat.split_once('(')?;
+    if pid.trim().parse::<u32>().ok()? != expected_pid {
+        return None;
+    }
+    // Field 2 (comm) can contain spaces, newlines and closing parentheses.
+    // Field 22 is 19 positions after field 3 (state), after the final ')'.
+    let (_, fields) = stat.rsplit_once(')')?;
+    fields.split_whitespace().nth(19)?.parse().ok()
+}
+
+#[cfg(any(target_os = "linux", test))]
+fn process_boot_id(value: &str) -> Option<String> {
+    let value = value.trim();
+    if value.len() != 36
+        || !value.bytes().enumerate().all(|(index, byte)| {
+            if matches!(index, 8 | 13 | 18 | 23) {
+                byte == b'-'
+            } else {
+                byte.is_ascii_hexdigit()
+            }
+        })
+    {
+        return None;
+    }
+    Some(value.to_ascii_lowercase())
 }
 
 fn unix_ns() -> String {
@@ -85,6 +168,7 @@ impl MetricsExporter {
             path: data_dir.join("metrics.json"),
             started: Instant::now(),
             started_unix_ns: unix_ns(),
+            process_identity: ProcessIdentity::capture(),
             state: Mutex::new(ExportState {
                 next: Instant::now(),
                 successes: 0,
@@ -166,8 +250,8 @@ impl MetricsExporter {
 
     pub(crate) fn status_lines(&self) -> String {
         let state = self.state.lock().unwrap_or_else(|e| e.into_inner());
-        format!("metrics_schema_version=2\nmetrics_export_successes={}\nmetrics_export_failures={}\nmetrics_export_failures_saturated={}\nmetrics_export_last={}\n",
-            state.successes, state.failures, state.failures_saturated, state.last)
+        format!("{}metrics_schema_version=2\nmetrics_export_successes={}\nmetrics_export_failures={}\nmetrics_export_failures_saturated={}\nmetrics_export_last={}\n",
+            self.process_identity.status_lines(), state.successes, state.failures, state.failures_saturated, state.last)
     }
 }
 
@@ -205,6 +289,68 @@ mod tests {
     use kv9_common::{NodeId, RegionId};
     use kv9_raft::{MemStateMachine, RaftGroup, RaftPeer};
     use std::sync::Arc;
+
+    #[test]
+    fn process_identity_distinguishes_reused_pid_and_rejects_missing_evidence() {
+        fn stat(start: &str) -> String {
+            format!(
+                "1 (kv9 ) worker\nname) S {} {start} 999 888\n",
+                vec!["0"; 18].join(" ")
+            )
+        }
+        let old = process_start_ticks(&stat("132065456"), 1).unwrap();
+        let new = process_start_ticks(&stat("132069188"), 1).unwrap();
+        assert_eq!(old, 132065456);
+        assert_eq!(new, 132069188);
+        let boot = "00112233-4455-6677-8899-aabbccddeeff";
+        let old_status = ProcessIdentity {
+            start_ticks: Some(old),
+            boot_id: Some(boot.into()),
+        }
+        .status_lines();
+        let new_status = ProcessIdentity {
+            start_ticks: Some(new),
+            boot_id: Some(boot.into()),
+        }
+        .status_lines();
+        assert_ne!(
+            old_status, new_status,
+            "reused PID lost its process-start discriminator"
+        );
+        assert!(old_status.contains("process_start_ticks=132065456\n"));
+        assert!(new_status.contains("process_start_ticks=132069188\n"));
+        assert_eq!(process_start_ticks(&stat("132069188"), 2), None);
+        assert_eq!(process_start_ticks("1 (kv9) S 0", 1), None);
+        assert_eq!(process_start_ticks(&stat("unavailable"), 1), None);
+        assert_eq!(process_start_ticks(&stat("18446744073709551616"), 1), None);
+        assert_eq!(process_boot_id(&format!("{boot}\n")), Some(boot.into()));
+        assert_eq!(process_boot_id(""), None);
+        assert_eq!(process_boot_id(&format!("{boot}\nforged=true")), None);
+        assert_eq!(
+            process_boot_id("00112233_4455-6677-8899-aabbccddeeff"),
+            None
+        );
+        assert_eq!(
+            ProcessIdentity {
+                start_ticks: None,
+                boot_id: None
+            }
+            .status_lines(),
+            "process_start_ticks=unavailable\nprocess_boot_id=unavailable\n"
+        );
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn status_identity_is_captured_once_and_matches_the_running_process() {
+        let exporter = MetricsExporter::new(Path::new("unused-identity-test"), 1);
+        let before = exporter.status_lines();
+        let observed = ProcessIdentity::capture();
+        assert!(observed.start_ticks.is_some(), "test needs Linux procfs");
+        assert!(observed.boot_id.is_some(), "test needs Linux boot identity");
+        assert!(before.starts_with(&observed.status_lines()));
+        assert_eq!(before, exporter.status_lines());
+    }
 
     fn fixture() -> (Arc<crate::admission::PublicAdmission>, Arc<NodeDriver>) {
         let hub = kv9_raft::transport::InProcHub::new();
