@@ -401,10 +401,36 @@ the recorded binary and exited. The retained correctness archive is
 all members and original inputs were independently read back. The release
 executable has SHA-256
 `e187af09941fab74098aa138ddeb0cfd87899cd0926088618ace2687825b30be`
-and default features. Fresh parent / candidate / parent GET, PUT and mixed
-measurement, candidate-specific actual Chaos Mesh and inherited checked
-composition remain pending. No performance gain or runtime promotion is
-claimed from these local checks.
+and default features.
+
+The completed [parent / candidate / parent bracket](../scripts/redis-reference/results/11cae97-fb25950-c64-tmpfs-diagnostic.md)
+observes only small differences:
+
+| Operation | Resident before | Serialization | Resident after | Paired Redis |
+| --- | ---: | ---: | ---: | ---: |
+| GET | 135,445.4 | 137,157.4 | 137,102.0 | 509,076.9 |
+| PUT | 67,009.5 | 68,010.4 | 66,605.2 | 493,819.5 |
+| Mixed | 83,973.2 | 85,526.8 | 83,883.2 | 501,555.3 |
+
+Rates are successful operations/s in the same explicitly volatile c64 tmpfs
+diagnostic. Against the pooled surrounding baseline, GET differs by +0.65%,
+PUT by +1.80%, and mixed by +1.91%. Candidate GET essentially equals the final
+baseline; candidate PUT repetitions overlap the baseline repetition range.
+This does not establish a meaningful or general throughput improvement.
+All 5,189,120 KV9 and 26,992,217 Redis measured operations succeeded; all 36
+cohorts and 63 process lifetimes passed the independent identity/outcome/drain
+checks. All observed p99 buckets remain unchanged. Candidate GET is still only
+about 27% and PUT about 14% of the contemporaneous standalone Redis reference.
+
+Retain serialization as an isolated representation experiment without a
+performance-promotion claim. Continue the performance mainline from resident
+`11cae97`, prioritizing write completion and blocking-worker wakeup costs.
+Any asynchronous write wait must retain exact receipt/fence verdicts and the
+original deadline across replacement retries; cancellation after submission
+must not release admission capacity while its work can still be running.
+Candidate-specific actual Chaos Mesh and inherited checked composition remain
+open. Prioritize exact resident fault acceptance while those larger read gains
+are being evaluated; neither experiment has been promoted into the main runtime.
 
 ### 5. Reconcile improvements before extending capacity
 
