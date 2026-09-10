@@ -1,5 +1,9 @@
 # Native batch measurement client
 
+The measurement-only point GET control is described in
+[POINT-BATCH1-MEASUREMENT.md](POINT-BATCH1-MEASUREMENT.md). Legacy version-1
+batch configurations and reports keep their original schema and behavior.
+
 `kv9-batch-benchmark` adds bounded measurements of native `batch_get` and
 `batch_put` through the ordinary persistent SDK. Streaming gRPC is the default;
 unary remains selectable and tarpc requires the existing experimental feature.

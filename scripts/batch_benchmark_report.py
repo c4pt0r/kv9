@@ -66,9 +66,15 @@ def blob_size(length):
 
 
 def config_check(c):
-    keys(c, '''version client rpc_transport run_id seed workers keys batch_size
-value_bytes read_percent warmup_calls measure_ms max_calls load'''.split())
-    uint(c['version'], 1, 1)
+    version = uint(c.get('version'), 1, 2)
+    fields = '''version client rpc_transport run_id seed workers keys batch_size
+value_bytes read_percent warmup_calls measure_ms max_calls load'''.split()
+    keys(c, fields + (['read_api'] if version == 2 else []))
+    if version == 2:
+        require(c['read_api'] in ('batch_get', 'point_get'), 'invalid read API')
+        if c['read_api'] == 'point_get':
+            require(c['batch_size'] == 1 and c['read_percent'] == 100,
+                    'point GET requires batch size one and read-only traffic')
     require(c['rpc_transport'] in ('tonic_stream', 'tonic_unary', 'tarpc_tcp'), 'invalid transport')
     require(type(c['run_id']) is str and re.fullmatch(r'[A-Za-z0-9_-]{1,64}', c['run_id']), 'invalid run ID')
     client = c['client']
@@ -115,6 +121,9 @@ max_in_flight max_attempts deadline_ms retry_backoff_ms'''.split())
         offered = None
     # Independent protobuf size calculation: all keys/values are nonempty, and
     # keyspace plus both epoch fields are nonzero. Field numbers fit one byte.
+    # Point GET's singular key/value fields have the same encoding as a
+    # one-element BatchGet (both responses nest OptionalValue at field 1).
+    # config_check rejects point mode with any batch size other than one.
     context = blob_size(1 + varint_size(client['keyspace_id']) + blob_size(4))
     key_bytes = len(c['run_id']) + 17
     key_field, value_field = blob_size(key_bytes), blob_size(c['value_bytes'])
@@ -205,7 +214,10 @@ def dominance_check(containing, contained):
 
 def metrics_check(m, c, phase):
     keys(m, ['operations', 'outcomes', 'reasons', 'attempt_outcomes', 'histogram_subdivisions', 'valid', 'statistics'])
-    for name, expected in [('operations', OPERATIONS), ('outcomes', OUTCOMES), ('reasons', REASONS),
+    operations = (['get', 'batch_put']
+                  if c.get('read_api') == 'point_get' and phase in ('warmup', 'measurement')
+                  else OPERATIONS)
+    for name, expected in [('operations', operations), ('outcomes', OUTCOMES), ('reasons', REASONS),
                            ('attempt_outcomes', ['success', 'refused', 'failed_or_unknown'])]:
         equal(m[name], expected, 'metric vocabulary differs: ' + name)
     uint(m['histogram_subdivisions'], 64, 64)
@@ -306,8 +318,11 @@ def proc_check(before, after, pid):
 
 def report_check(r, c, b):
     keys(r, REPORT_FIELDS)
-    uint(r['version'], 1, 1)
-    require(r['workload_model'] == 'bounded_native_batch_performance', 'wrong workload model')
+    uint(r['version'], 1, 2)
+    equal(r['version'], c['version'], 'report and configuration versions differ')
+    expected_model = ('bounded_native_point_get_diagnostic'
+                      if c.get('read_api') == 'point_get' else 'bounded_native_batch_performance')
+    require(r['workload_model'] == expected_model, 'wrong workload model')
     require(r['complete'] is True and r['failure'] is None, 'measurement incomplete')
     require(r['full_history_recorded'] is False and r['independently_checked'] is False, 'client claims independent history verification')
     equal(r['configuration'], c, 'reported configuration differs')

@@ -8,6 +8,21 @@ pub const MAX_PENDING_INPUT_BYTES: usize = 64 * 1024 * 1024;
 
 pub use super::common::{Histogram, Load};
 
+/// Explicit workload shape. Point reads are a batch-size-one diagnostic only.
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum ReadApi {
+    BatchGet,
+    PointGet,
+}
+
+fn deserialize_read_api<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Option<ReadApi>, D::Error> {
+    // Missing is the legacy default; an explicitly present null is not an API.
+    ReadApi::deserialize(deserializer).map(Some)
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
@@ -15,6 +30,12 @@ pub struct Config {
     pub client: ClientConfig,
     #[serde(default)]
     pub rpc_transport: TransportKind,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_read_api"
+    )]
+    pub read_api: Option<ReadApi>,
     pub run_id: String,
     pub seed: u64,
     pub workers: usize,
@@ -40,7 +61,9 @@ pub struct WireSizes {
 impl Config {
     pub fn validate(&self) -> Result<WireSizes, &'static str> {
         self.client.validate()?;
-        if self.version != 1
+        if !matches!((self.version, self.read_api), (1, None) | (2, Some(_)))
+            || (self.effective_read_api() == ReadApi::PointGet
+                && (self.batch_size != 1 || self.read_percent != 100))
             || self.run_id.is_empty()
             || self.run_id.len() > 64
             || !self
@@ -81,11 +104,18 @@ impl Config {
         });
         let keys: Vec<_> = (0..self.batch_size).map(|i| self.key(i)).collect();
         let sizes = WireSizes {
-            get_request_bytes: proto::RawBatchGetRequest {
-                context,
-                keys: keys.clone(),
-            }
-            .encoded_len(),
+            get_request_bytes: match self.effective_read_api() {
+                ReadApi::BatchGet => proto::RawBatchGetRequest {
+                    context,
+                    keys: keys.clone(),
+                }
+                .encoded_len(),
+                ReadApi::PointGet => proto::RawGetRequest {
+                    context,
+                    key: keys[0].clone(),
+                }
+                .encoded_len(),
+            },
             put_request_bytes: proto::RawBatchPutRequest {
                 context,
                 pairs: keys
@@ -98,15 +128,24 @@ impl Config {
                     .collect(),
             }
             .encoded_len(),
-            get_response_bytes: proto::RawBatchGetResponse {
-                values: (0..self.batch_size)
-                    .map(|i| proto::OptionalValue {
+            get_response_bytes: match self.effective_read_api() {
+                ReadApi::BatchGet => proto::RawBatchGetResponse {
+                    values: (0..self.batch_size)
+                        .map(|i| proto::OptionalValue {
+                            found: true,
+                            value: self.value(i, 0),
+                        })
+                        .collect(),
+                }
+                .encoded_len(),
+                ReadApi::PointGet => proto::RawGetResponse {
+                    value: Some(proto::OptionalValue {
                         found: true,
-                        value: self.value(i, 0),
-                    })
-                    .collect(),
-            }
-            .encoded_len(),
+                        value: self.value(0, 0),
+                    }),
+                }
+                .encoded_len(),
+            },
             maximum_input_items_in_flight: self.workers * self.batch_size,
             maximum_input_payload_bytes_in_flight: self.workers
                 * self.batch_size
@@ -124,6 +163,11 @@ impl Config {
             return Err("batch benchmark exceeds wire or pending input bounds");
         }
         Ok(sizes)
+    }
+
+    /// Legacy v1 configurations omit the selector and retain batch reads.
+    pub fn effective_read_api(&self) -> ReadApi {
+        self.read_api.unwrap_or(ReadApi::BatchGet)
     }
 
     pub fn key(&self, index: usize) -> Vec<u8> {
@@ -144,7 +188,11 @@ impl Config {
 
     pub fn operation(&self, nonce: u64) -> RawOperation {
         let first = self.first_key(nonce);
-        if self.is_read(nonce) {
+        if self.is_read(nonce) && self.effective_read_api() == ReadApi::PointGet {
+            RawOperation::Get {
+                key: self.key(first),
+            }
+        } else if self.is_read(nonce) {
             RawOperation::BatchGet {
                 keys: (0..self.batch_size)
                     .map(|i| self.key((first + i) % self.keys))

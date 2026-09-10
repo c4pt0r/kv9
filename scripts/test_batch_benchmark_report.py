@@ -2,7 +2,7 @@
 import copy
 import unittest
 
-from batch_benchmark_report import (OPERATIONS, OUTCOMES, REASONS, bucket_bounds,
+from batch_benchmark_report import (OPERATIONS, OUTCOMES, REASONS, bucket_bounds, config_check,
                                     dominance_check, histogram_check, metrics_check, strict_json)
 
 
@@ -26,6 +26,52 @@ def exact_histogram(samples):
             lo, hi = next(bucket_bounds(i) for i in range(3776) if bucket_bounds(i)[0] <= sample <= bucket_bounds(i)[1])
             result['p' + str(p)] = {'lower_ns': lo, 'upper_ns': hi}
     return result
+
+
+class ReadApiConfigurations(unittest.TestCase):
+    def config(self):
+        return dict(version=1, client=dict(version=1,
+                    peers=[dict(node_id=1, address='127.0.0.1:12345')],
+                    keyspace_id=7, epoch_conf_ver=1, epoch_version=1,
+                    max_in_flight=1, max_attempts=1, deadline_ms=1000, retry_backoff_ms=1),
+                    rpc_transport='tonic_stream', run_id='paired', seed=71, workers=1,
+                    keys=2, batch_size=1, value_bytes=128, read_percent=100,
+                    warmup_calls=0, measure_ms=1, max_calls=100,
+                    load=dict(kind='closed_loop'))
+
+    def test_legacy_schema_and_explicit_single_key_apis_have_equal_payload_sizes(self):
+        legacy = self.config()
+        expected = config_check(legacy)
+        for api in ('batch_get', 'point_get'):
+            selected = dict(legacy, version=2, read_api=api)
+            self.assertEqual(config_check(selected), expected)
+        for extra in (None, 'batch_get', 'point_get'):
+            with self.assertRaises(ValueError):
+                config_check(dict(legacy, read_api=extra))
+
+    def test_missing_null_unknown_or_unmatched_point_selector_is_rejected(self):
+        original = dict(self.config(), version=2, read_api='point_get')
+        config_check(original)
+        missing = dict(original)
+        del missing['read_api']
+        cases = [missing] + [dict(original, read_api=value) for value in (None, 'unknown', False)]
+        cases += [dict(original, batch_size=2), dict(original, read_percent=50)]
+        for invalid in cases:
+            with self.assertRaises(ValueError):
+                config_check(invalid)
+
+    def test_point_labels_apply_only_to_the_selected_measured_and_warmup_phases(self):
+        metrics, _ = FailureAccounting().case()
+        # Zero populations isolate the label contract from unrelated call mix.
+        metrics['statistics'][1] = copy.deepcopy(metrics['statistics'][0])
+        config = dict(self.config(), version=2, read_api='point_get')
+        for phase in ('initialization', 'warmup', 'measurement', 'verification'):
+            selected = ['get', 'batch_put'] if phase in ('warmup', 'measurement') else OPERATIONS
+            metrics['operations'] = selected
+            metrics_check(metrics, config, phase)
+            metrics['operations'] = OPERATIONS if selected != OPERATIONS else ['get', 'batch_put']
+            with self.assertRaisesRegex(ValueError, 'metric vocabulary differs: operations'):
+                metrics_check(metrics, config, phase)
 
 
 class Histograms(unittest.TestCase):
