@@ -138,8 +138,42 @@ inspection, ignored turn-byte limit, ignored request/byte capacity and admission
 after stop. Exactly one selected test must pass, fail at its intended assertion,
 then pass again; compilation failures do not count as a detected violation.
 
-Remaining gates include fresh default-build process acceptance, actual exact
-candidate MinIO/Chaos Mesh injection with independently checked histories,
+The frozen implementation `95fb5cd968411009a41ba4f7ed287cd6597115fa` also passes
+all-target warnings-denied Clippy and fresh default-build process acceptance.
+The default executable SHA-256 is
+`e132277a03212e18ec65cdf927390d788f67aa4ad5ad0dbde932b2230463e70c`;
+Cargo reports no enabled features. Four executing server lifetimes were checked
+through `/proc/PID/exe` and PID start ticks, and all exited. The three-node
+fixture writes after leader failover, replicates deletes/range deletes and
+restarts the original node to term 3/index 14. Retained root:
+`/tmp/kv9-proposal-queue-process-first`.
+
+The same default server and a retained exact-revision persistent client passed
+`scripts/workload-e2e.py` with actual owned MinIO: correctness (180 measured
+operations), graceful performance stop (9), a dead initial seed (179), rejection
+of an invalid phase report, and database progress after killing the generator.
+The correctness/dead-seed full histories were independently checked. Every
+replica produced a remote checkpoint. Final queue occupancy was zero; the
+observed leader peak was four requests/603 encoded bytes, so this small fixture
+is not an overload acceptance test. Twelve intentionally corrupted report
+artifacts were rejected at their intended reasons and all three complete
+original reports were revalidated. Workload/container cleanup was checked.
+Retained roots are `/tmp/kv9-proposal-queue-workload-e2e-first` and
+`/tmp/kv9-proposal-queue-workload-report-controls-first`.
+
+The local evidence archive is
+`target/correctness-evidence/2026-09-09-95fb5cd-proposal-queue-local.tar.gz`:
+267 entries, 85,962,607 bytes, SHA-256
+`978236da98ca46ad0bb59fa11b88004076b733e9a078e44b23e11df12be50791`.
+Its manifest SHA-256 is
+`155d85db761aacfb3830b7d606161a0fc326b1be786354b653aef68e929e42fe`.
+Every entry was read back and byte/hash verified. The archive includes frozen
+source, exact executables, original failed/successful local attempts, process
+stores and identities, functional workload evidence and all eight compiled
+control triples. Originals remain available.
+
+Remaining gates include actual exact candidate Chaos Mesh injection with
+independently checked histories, adversarial MinIO/recovery acceptance,
 parameterized proof composition, and repeated disk/tmpfs/Redis comparisons with
 the existing complete outcome populations. No local unit test or short shared
 host benchmark closes those gates. The queue is in memory; loss before
