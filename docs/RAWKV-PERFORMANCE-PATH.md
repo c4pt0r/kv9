@@ -305,6 +305,31 @@ Machine-checked group composition and exact-candidate actual Chaos Mesh remain
 open; `1ad259e`'s fault evidence does not establish this later runtime's gate.
 Master runtime is unchanged. tmpfs results remain volatile-storage diagnostics.
 
+The next implementation candidate is
+[resident point-read execution](https://github.com/c4pt0r/kv9/blob/11cae977f15df0912c2a35561480d45447bae660/docs/RESIDENT-READ.md),
+pushed as `11cae97` from `2cbbe26`. After the same quorum/apply barrier, the
+concrete memory-indexed engine tries its lifecycle and snapshot locks. An
+uncontended GET completes on an owned memory view without dispatching a blocking
+job; contention transfers the original credential and reservation to the existing
+blocking path. Both use the same context/epoch gate and data view. An unused
+full-driver status query is also removed from prepared GET execution. Generic
+engine contracts and other APIs retain their existing blocking boundaries.
+
+This candidate passes 630 workspace tests/doctests (23 ignored), warnings-denied
+all-target Clippy, four compiled semantic-control triples, and the default-feature
+three-process failover/restart fixture to term 2/index 14. Tests distinguish an
+already completed old-view read from a queued job that must reject a now-stale
+epoch; they also cover committed-but-unapplied writes, writer contention and a
+completed public GET while the sole blocking worker is occupied. The initial
+workspace failure was an obsolete 13-line status assertion after adding two
+counters; the corrected full run passed, and the original failure is retained.
+
+No performance improvement is claimed until a fresh unchanged-client
+groups-before/resident/groups-after bracket is independently checked. The new
+inline-success and blocking-submission counters will distinguish actual execution
+paths. Exact-candidate fault evidence and machine-checked composition remain open;
+master runtime is unchanged.
+
 ### 5. Reconcile improvements before extending capacity
 
 Publish throughput, successful-operation latency, refusal/unknown counts,
