@@ -597,8 +597,29 @@ all reopened and verified, SHA-256
 
 Retain FIFO as an isolated representation experiment. Continue the performance
 mainline from `a00e39f`; the earlier 18.4% PUT improvement belongs only to its
-async-write comparison. The next step is a fresh CPU call-stack profile of the
-current GET and PUT paths before choosing another implementation change.
+async-write comparison. The new exact-source
+[GET/PUT CPU profiles](../scripts/redis-reference/results/a00e39f-get-put-cpu-profile.md)
+are complete: GET RPC/framing/serialization/buffer leaves account for 27.08%,
+generic allocation/copy/comparison for 20.67%, and scheduler/generic
+synchronization for 12.62%. PUT RPC and allocation shares are 19.40% and 23.60%;
+182 samples fall in the exact executable's WAL CRC loop (5.61%, a subset of
+engine samples). These are instrumented on-CPU populations, not additive
+inclusive stack costs, end-to-end latency fractions or throughput gains.
+The report retains both failed GET attempts and the first audit's dense
+follower-coverage failure; accepted GET aggregate/leader coverage is complete,
+while each sparse follower lacks the first measurement bin.
+
+Prioritize RPC framework comparisons: current unary gRPC, streaming gRPC as a
+control, and the scaffolded tarpc/TCP prototype. The scaffold has no completed
+measurement result. Preserve payloads, bounded admission/backpressure,
+cancellation ownership, deadlines, retry/unknown accounting, quorum-confirmed
+reads and exact committed/applied write receipts. Raft consistency remains a
+mandatory constraint for every experiment and integration. Consider DPDK or
+other kernel bypass only after measurements establish a relevant network
+bottleneck; these loopback profiles do not establish NIC limits. The separate
+table-CRC prototype `89b9755` remains unselected with three focused tests only;
+RPC experiments supersede it in priority.
+
 Earlier profiles describe earlier runtimes; lower representation complexity
 alone is insufficient evidence of an end-to-end gain. Exact-FIFO Chaos and
 inherited checked protocol composition remain open. Main runtime promotion and
