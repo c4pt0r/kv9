@@ -112,9 +112,11 @@ progress deadlines and the outer route-change cancellation remain in force.
 
 The batch is the first valid envelope followed by the destination-filtered
 prefix consumed from the queue. Coalescing cannot create or reorder entries or
-grant a Raft acknowledgement. Its notification-free synchronous loop is bounded;
-future arrivals belong to a subsequent batch. This is an implementation contract,
-not the completed proof/control gate.
+grant a Raft acknowledgement. Its notification-free synchronous loop is bounded
+and never waits for another envelope. Each nonblocking receive observes the
+queue at that call, rather than an atomic snapshot at function entry: a
+concurrently arriving envelope can join this batch if already queued before a
+later receive. This describes the implementation's membership rule.
 
 Local checks pass 133 Raft tests and warning-denying all-target Raft Clippy. New
 regressions cover stale-generation work bounds, address reuse, idle first-message
