@@ -8,7 +8,8 @@ listener. There is no extra production port or centralized proxy.
 
 This document describes the integration candidate. Its normal-port
 [point process acceptance](STREAMING-RPC-PROCESS-ACCEPTANCE.md) passed. Promotion
-to main still requires the fresh Chaos Mesh and batch-specific acceptance;
+to main still requires batch-specific acceptance. The fresh
+[point Chaos Mesh matrix](STREAMING-RPC-CHAOS-ACCEPTANCE.md) passed;
 earlier point-RPC benchmarks/fault results are not batch measurements or batch
 fault evidence.
 

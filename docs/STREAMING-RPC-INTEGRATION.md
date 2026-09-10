@@ -54,9 +54,10 @@ have now passed on clean retained standalone server/client binaries; see
 [the independently audited process checkpoint](STREAMING-RPC-PROCESS-ACCEPTANCE.md).
 Its leader-loss/restart histories are point-operation evidence, not atomic
 batch fault coverage.
-The local Chaos Mesh environment has been checked read-only and is available;
-a fresh candidate-bound build/image/observer overlay must precede the original
-21-window point matrix. Historical namespaces and failed attempts remain intact.
+The fresh normal-build [21-window point Chaos Mesh acceptance](STREAMING-RPC-CHAOS-ACCEPTANCE.md)
+has passed on exact `f0eaf23`, including independent full histories, effects and
+post-history drain observations. Historical namespaces and failed attempts
+remain intact. This covers point operations, not native batches.
 
 A separate atomic batch history format/checker and actual Chaos Mesh batch
 fault run remain required. Batch throughput and mean/p50/p95/p99 must be measured
