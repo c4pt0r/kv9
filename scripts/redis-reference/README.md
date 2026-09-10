@@ -118,9 +118,15 @@ python3 scripts/report-redis-comparison.py \
 
 The renderer requires identical protocol and driver-source hashes, preserves
 acknowledgment and refusal populations separately, and includes a scoped
-before/after durable-write stage sample. The first retained result is in
+before/after durable-write stage sample. When concurrency 16 is present, it
+also compares that concurrent snapshot interval between the two revisions.
+Use `--candidate-status` to retain explicit pending correctness gates for
+an unaccepted optimization. The first retained result is in
 [results/f2c1-4201d04.md](results/f2c1-4201d04.md).
 The subsequent combined outbound/completion-notification result is in
 [results/4201d04-b4a74b2.md](results/4201d04-b4a74b2.md).
 The isolated accepted-socket TCP_NODELAY result is in
 [results/b4a74b2-cc8bc87.md](results/b4a74b2-cc8bc87.md).
+The append-slice synchronization candidate's performance evidence is in
+[results/cc8bc87-b3cbc35.md](results/cc8bc87-b3cbc35.md); its correctness
+acceptance gates are tracked separately from these measurements.
