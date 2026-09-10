@@ -49,18 +49,34 @@ failure analysis. No indispensable node or new coordination service is added.
 
 ## Local validation and outstanding acceptance
 
-The Raft package passes 140 unit tests, 19 integration tests and 12 doctests.
+The Raft package passes 141 unit tests, 19 integration tests and 12 doctests.
 New tests check one synchronization for three ordered frames, zero I/O for an
 empty slice, and acknowledged batch survival after loss of unsynchronized bytes.
-The actual storage implementation also passes 396 modeled write/synchronization
-error and crash combinations: EIO/ENOSPC before and after each operation, short
+The actual storage implementation also passes 792 modeled write/synchronization
+error and crash combinations: 396 extending a log and 396 replacing its
+uncommitted suffix, with EIO/ENOSPC before and after each operation, short
 writes, loss/retention/seeded survival of unsynchronized bytes, fencing without
 further I/O, exact durable-prefix recovery and a second immediate crash after
-recovery. These are deterministic `ModelFs` executions, not physical power loss
+recovery. Replacement recovery preserves the committed prefix and either the
+complete old log or a complete-frame prefix of the new suffix; it cannot splice
+old and new suffix identities. These are deterministic `ModelFs` executions, not physical power loss
 or actual Chaos Mesh.
 
-Warning-denying all-target Raft Clippy passed. Applicable premature-publication
-and omitted-sync implementation controls, exact-candidate process/MinIO/Chaos
-histories, the checked refinement record, and paired release throughput/batch
-observations remain required before acceptance. This candidate does not close
+Warning-denying all-target Raft Clippy passed. The isolated runner
+`scripts/check-raft-append-controls.py` accepts baseline and restored source and
+rejects three compiling implementations at their named semantic assertions:
+omitted batch sync, memory publication before sync, and ignored sync errors.
+The first attempt exposed an empty-log read panic in the test helper before the
+intended omitted-sync assertion. That attempt remains rejected; the helper now
+handles an empty recovered log and the complete second attempt passes.
+
+The exact b3cbc35 release candidate's complete 60-trial paired benchmark was
+independently rechecked. At concurrency 64, PUT improved from 42.0 to 93.9/s and
+the mixed workload from 101.2 to 174.4/s; GET stayed near 85,100/s. This candidate
+had no measured unacknowledged/refused requests or residual jobs. These are
+short, two-repetition, one-host observations, not sustained capacity. The report
+is retained on main as `scripts/redis-reference/results/cc8bc87-b3cbc35.md`.
+
+Exact-candidate process/MinIO/Chaos histories and the checked refinement record
+remain required before acceptance. This candidate does not close
 #20 or any original roadmap item. Daily verification remains local.

@@ -28,6 +28,9 @@ fn batch_entries(first: u64, count: u64) -> Vec<Entry> {
 
 fn stored_entries(store: &DiskRaftStorage<ModelFs>) -> Vec<Entry> {
     let end = raft::Storage::last_index(store).unwrap() + 1;
+    if end == 1 {
+        return Vec::new();
+    }
     raft::Storage::entries(store, 1, end, None, GetEntriesContext::empty(false)).unwrap()
 }
 
@@ -78,13 +81,22 @@ fn append_batch_ack_survives_loss_of_unsynced_bytes() {
 
 #[test]
 fn every_append_batch_cut_fences_publication_and_preserves_a_recoverable_prefix() {
-    fn prepared() -> (ModelFs, DiskRaftStorage<ModelFs>) {
+    batch_failure_matrix(false);
+}
+
+#[test]
+fn replacement_batch_cuts_preserve_committed_prefix_and_valid_suffix_identity() {
+    batch_failure_matrix(true);
+}
+
+fn batch_failure_matrix(replace_suffix: bool) {
+    fn prepared(old: &[Entry], term: u64) -> (ModelFs, DiskRaftStorage<ModelFs>) {
         let fs = ModelFs::default();
         let store = open(&fs);
-        store.append(&batch_entries(1, 1)).unwrap();
+        store.append(old).unwrap();
         store
             .set_hardstate(&HardState {
-                term: 2,
+                term,
                 vote: 1,
                 commit: 1,
                 ..Default::default()
@@ -93,10 +105,21 @@ fn every_append_batch_cut_fences_publication_and_preserves_a_recoverable_prefix(
         fs.clear_events();
         (fs, store)
     }
-    let suffix = batch_entries(2, 3);
-    let expected = batch_entries(1, 4);
-    let (fs, store) = prepared();
+    let old = batch_entries(1, if replace_suffix { 5 } else { 1 });
+    let mut suffix = batch_entries(2, 3);
+    let term = if replace_suffix { 3 } else { 2 };
+    for entry in &mut suffix {
+        entry.term = term;
+        if replace_suffix {
+            entry.data = format!("replacement-entry-{}", entry.index)
+                .into_bytes()
+                .into();
+        }
+    }
+    let expected: Vec<_> = old[..1].iter().chain(&suffix).cloned().collect();
+    let (fs, store) = prepared(&old, term);
     store.append(&suffix).unwrap();
+    assert_eq!(stored_entries(&store), expected);
     let cuts = fs.events();
     let mut cells = 0;
     for cut in cuts {
@@ -110,7 +133,7 @@ fn every_append_batch_cut_fences_publication_and_preserves_a_recoverable_prefix(
                     .into_iter()
                     .chain((0..16).map(Crash::Seeded))
                 {
-                    let (fs, store) = prepared();
+                    let (fs, store) = prepared(&old, term);
                     fs.fail_at(cut.number, fault);
                     assert!(
                         store.append(&suffix).is_err(),
@@ -119,7 +142,7 @@ fn every_append_batch_cut_fences_publication_and_preserves_a_recoverable_prefix(
                     assert!(fs.fault_arrived(), "selected batch fault did not arrive");
                     assert_eq!(
                         stored_entries(&store),
-                        expected[..1],
+                        old,
                         "failed append batch published a memory suffix"
                     );
                     let after = fs.events().len();
@@ -134,10 +157,12 @@ fn every_append_batch_cut_fences_publication_and_preserves_a_recoverable_prefix(
                     fs.crash(crash);
                     let store = open(&fs);
                     let recovered = stored_entries(&store);
-                    assert!((1..=expected.len()).contains(&recovered.len()));
-                    assert_eq!(
-                        recovered, expected[..recovered.len()],
-                        "batch recovery invented entries or lost the durable prefix: {cut:?} {fault:?} {crash:?}"
+                    // Before any replacement frame survives, the entire old
+                    // suffix can remain. Once a new frame survives, its index
+                    // truncates the old suffix: no mixed identity is allowed.
+                    assert!(
+                        recovered == old || (2..=expected.len()).any(|end| recovered == expected[..end]),
+                        "batch recovery invented entries, mixed suffix identities, or lost the durable prefix: {cut:?} {fault:?} {crash:?}"
                     );
                     if cut.operation == Operation::SyncData && matches!(fault, Fault::After(_)) {
                         assert_eq!(
@@ -158,7 +183,7 @@ fn every_append_batch_cut_fences_publication_and_preserves_a_recoverable_prefix(
         }
     }
     assert_eq!(cells, 396);
-    println!("append batch matrix: {cells} write/sync/error/crash cells");
+    println!("append batch matrix (replace_suffix={replace_suffix}): {cells} write/sync/error/crash cells");
 }
 
 fn vote_request(candidate: u64, term: u64) -> Message {
