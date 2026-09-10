@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "tlapm_version": "4600b24",
+  "tlapm_archive_sha256": "bfa5e5350ac1ec7202feecad0a4a71a5bb58c16a49660448b35b6f371ba9e2f5",
+  "sany_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+  "modules": {
+    "RawMutationProof": {
+      "theorems": [
+        "RMApplyAppend",
+        "RMApplyConcatenation",
+        "RMApplyEmpty",
+        "RMApplySystem",
+        "RMApplyType",
+        "RMMutateSystem",
+        "RMMutateType",
+        "RMRawBatchConcatenation",
+        "RMRawBatchEmpty",
+        "RMSequencesInductionAppend",
+        "RMTraceDefinition",
+        "RMTracePrefix",
+        "RMTraceRecurrence",
+        "RMTraceType"
+      ],
+      "obligations": 183
+    },
+    "RawGroupProof": {
+      "theorems": [
+        "RGBoundedProgress",
+        "RGBudgetProgress",
+        "RGChooseDoneEnabled",
+        "RGChooseDoneStep",
+        "RGDelegateEnabled",
+        "RGDelegateStep",
+        "RGEffectEnabled",
+        "RGEffectStep",
+        "RGEffectiveRaw",
+        "RGEffectiveType",
+        "RGEnabledDisjunction",
+        "RGEngineSuccessEnabled",
+        "RGEngineSuccessStep",
+        "RGEntryType",
+        "RGFailEnabled",
+        "RGFailStep",
+        "RGFairInvariant",
+        "RGFallbackAlways",
+        "RGGrowEnabled",
+        "RGGrowLedger",
+        "RGGrowStep",
+        "RGInitialTypes",
+        "RGInputBounds",
+        "RGIntervalExtend",
+        "RGIntervalNext",
+        "RGIntervalPredecessor",
+        "RGInvariantAlways",
+        "RGInvariantInit",
+        "RGInvariantStep",
+        "RGLedgerExtension",
+        "RGLoadEnabled",
+        "RGLoadStep",
+        "RGPlanDoneEnabled",
+        "RGPlanDoneStep",
+        "RGPlanEnabled",
+        "RGPlanStep",
+        "RGPlanVerdictTypes",
+        "RGPublishEnabled",
+        "RGPublishStep",
+        "RGRankDecreases",
+        "RGRankType",
+        "RGReportEnabled",
+        "RGReportStep",
+        "RGSequenceDefinition",
+        "RGSequenceRecurrence",
+        "RGSequenceType",
+        "RGServiceEnabled",
+        "RGSingletonFallback",
+        "RGStateNumbers",
+        "RGStutterStep",
+        "RGTailPassEnabled",
+        "RGTailPassStep",
+        "RGTerminalAlways",
+        "RGTerminalStep",
+        "RGVerdictSameSystem"
+      ],
+      "obligations": 1522
+    }
+  },
+  "standard_modules": {
+    "Integers": "071da69e5eea383d361ef308ba12ecc931bf968fcea98175c3bca419bbd8cbf2",
+    "Naturals": "73f2a68412039aa86f37ad08f0d0fef50fa8327d0ad8806f515548c75e9d9d84",
+    "NaturalsInduction": "08f52420cdaaf11292ed366782b5ce5b596bb7cbe789526a1cfd8806dbf98624",
+    "Sequences": "f613cffe14133769f0972b6f6e0139aaf0773004a51bac88ada382426e3eb7f4",
+    "TLAPS": "9afe54984062748a0568966434cc0945d682f8cd89fdbc38f73b5579751b0c55"
+  },
+  "models": {
+    "RawGroup": {
+      "source": "proofs/tla/raw_group/RawGroup.tla",
+      "assumptions": [
+        {
+          "axiom": false,
+          "sha256": "f64254fefbe4bde9f49623c4e63809e0371b3ce1087d88d0fdbab23171efb5d8"
+        }
+      ]
+    },
+    "RawMutation": {
+      "source": "proofs/tla/raw_group/RawMutation.tla",
+      "assumptions": [
+        {
+          "axiom": false,
+          "sha256": "a679792157cf86bf138622b52848334878b5b311b0854dacd66676fd1569abaa"
+        }
+      ]
+    }
+  },
+  "roots": [
+    "RawGroupProof"
+  ]
+}
