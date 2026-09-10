@@ -417,13 +417,14 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         if entries.is_empty() {
             return Ok(());
         }
-        // Items are processed strictly in log order. Locks are taken per item
+        // Items are processed strictly in log order. Locks are taken per apply group
         // (always `applied` then `sm`, per the declared order) and NEVER held
         // across a peer call: conf changes go through `peer.inner`, and peer
         // must not nest with driver locks in either direction.
         let mut last_seen: u64 = 0;
         let mut last_term: u64 = 0;
-        for entry in entries {
+        let mut entries = entries.into_iter().peekable();
+        while let Some(entry) = entries.next() {
             last_seen = entry.index.0;
             last_term = entry.term;
             match entry.kind {
@@ -451,26 +452,82 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                     }
                     let mut applied = self.applied.lock().expect("applied poisoned");
                     let mut sm = self.sm.lock().expect("sm poisoned");
-                    let apply_timer = self.metrics.command_apply.start();
-                    let result = match sm.apply_at(
+                    let mut bytes = entry.data.len();
+                    let mut commands = vec![(
                         kv9_common::AppliedPosition {
                             term: entry.term,
                             index: entry.index.0,
                         },
-                        &cmd,
-                    ) {
+                        cmd,
+                    )];
+                    // Coalesce only an already-queued Raw prefix. An oversized
+                    // legal command remains a singleton; no timer or queue is added.
+                    // Catalog, manifest, no-op and configuration entries are barriers.
+                    use crate::state_machine::raw_group::{
+                        MAX_RAW_GROUP_BYTES, MAX_RAW_GROUP_ENTRIES,
+                    };
+                    if bytes <= MAX_RAW_GROUP_BYTES
+                        && entry.index > sm.applied_index()
+                        && sm.can_group_raw(&commands[0].1)
+                    {
+                        while commands.len() < MAX_RAW_GROUP_ENTRIES {
+                            let Some(next) = entries.peek() else { break };
+                            if next.kind != EntryKind::Command
+                                || next.data.len() > MAX_RAW_GROUP_BYTES - bytes
+                            {
+                                break;
+                            }
+                            let Ok(next_cmd) = Command::decode(&next.data) else {
+                                // Apply the preceding valid group first; the next
+                                // iteration reports the undecodable entry itself.
+                                break;
+                            };
+                            if !sm.can_group_raw(&next_cmd) {
+                                break;
+                            }
+                            bytes += next.data.len();
+                            last_seen = next.index.0;
+                            last_term = next.term;
+                            commands.push((
+                                kv9_common::AppliedPosition {
+                                    term: next.term,
+                                    index: next.index.0,
+                                },
+                                next_cmd,
+                            ));
+                            entries.next();
+                        }
+                    }
+                    // Each sample remains a command's complete apply interval;
+                    // commands in one group share its persistence wait.
+                    let apply_timers: Vec<_> = commands
+                        .iter()
+                        .map(|_| self.metrics.command_apply.start())
+                        .collect();
+                    let outcome = if commands.len() == 1 {
+                        sm.apply_at(commands[0].0, &commands[0].1).map(|r| vec![r])
+                    } else {
+                        sm.apply_raw_group(&commands)
+                    };
+                    let results = match outcome {
                         Ok(r) => {
-                            apply_timer.finish(Outcome::Success);
+                            for timer in apply_timers {
+                                timer.finish(Outcome::Success);
+                            }
                             r
                         }
                         Err(e) => {
-                            apply_timer.finish(Outcome::Error);
+                            for timer in apply_timers {
+                                timer.finish(Outcome::Error);
+                            }
                             drop(sm);
                             drop(applied);
-                            return Err(self.poison(entry.term, entry.index.0, &e));
+                            return Err(self.poison(last_term, last_seen, &e));
                         }
                     };
-                    push_ring(&mut applied, entry.index.0, entry.term, result.outcome);
+                    for ((at, _), result) in commands.iter().zip(results) {
+                        push_ring(&mut applied, at.index, at.term, result.outcome);
+                    }
                 }
                 EntryKind::ConfChangeV1 | EntryKind::ConfChangeV2 => {
                     // Peer call first (no driver locks held). The result goes
