@@ -15,6 +15,152 @@ fn open(fs: &ModelFs) -> DiskRaftStorage<ModelFs> {
         .0
 }
 
+fn batch_entries(first: u64, count: u64) -> Vec<Entry> {
+    (first..first + count)
+        .map(|index| Entry {
+            term: 2,
+            index,
+            data: format!("group-entry-{index}").into_bytes().into(),
+            ..Default::default()
+        })
+        .collect()
+}
+
+fn stored_entries(store: &DiskRaftStorage<ModelFs>) -> Vec<Entry> {
+    let end = raft::Storage::last_index(store).unwrap() + 1;
+    raft::Storage::entries(store, 1, end, None, GetEntriesContext::empty(false)).unwrap()
+}
+
+#[test]
+fn append_slice_uses_one_sync_and_empty_slices_do_no_io() {
+    let fs = ModelFs::default();
+    let store = open(&fs);
+    let entries = batch_entries(1, 3);
+    fs.clear_events();
+    store.append(&entries).unwrap();
+    assert_eq!(
+        fs.events()
+            .into_iter()
+            .map(|event| event.operation)
+            .collect::<Vec<_>>(),
+        [
+            Operation::Write,
+            Operation::Write,
+            Operation::Write,
+            Operation::SyncData
+        ],
+        "one append slice must synchronize its ordered frames exactly once"
+    );
+    assert_eq!(stored_entries(&store), entries);
+    fs.clear_events();
+    store.append(&[]).unwrap();
+    assert!(
+        fs.events().is_empty(),
+        "empty append performed filesystem I/O"
+    );
+    assert_eq!(stored_entries(&store), entries);
+}
+
+#[test]
+fn append_batch_ack_survives_loss_of_unsynced_bytes() {
+    let fs = ModelFs::default();
+    let store = open(&fs);
+    let entries = batch_entries(1, 3);
+    store.append(&entries).unwrap();
+    drop(store);
+    fs.crash(Crash::LoseUnsynced);
+    assert_eq!(
+        stored_entries(&open(&fs)),
+        entries,
+        "acknowledged append batch lost an entry after loss of unsynced bytes"
+    );
+}
+
+#[test]
+fn every_append_batch_cut_fences_publication_and_preserves_a_recoverable_prefix() {
+    fn prepared() -> (ModelFs, DiskRaftStorage<ModelFs>) {
+        let fs = ModelFs::default();
+        let store = open(&fs);
+        store.append(&batch_entries(1, 1)).unwrap();
+        store
+            .set_hardstate(&HardState {
+                term: 2,
+                vote: 1,
+                commit: 1,
+                ..Default::default()
+            })
+            .unwrap();
+        fs.clear_events();
+        (fs, store)
+    }
+    let suffix = batch_entries(2, 3);
+    let expected = batch_entries(1, 4);
+    let (fs, store) = prepared();
+    store.append(&suffix).unwrap();
+    let cuts = fs.events();
+    let mut cells = 0;
+    for cut in cuts {
+        for errno in [5, 28] {
+            let mut faults = vec![Fault::Before(errno), Fault::After(errno)];
+            if cut.operation == Operation::Write {
+                faults.push(Fault::ShortWrite { bytes: 4, errno });
+            }
+            for fault in faults {
+                for crash in [Crash::LoseUnsynced, Crash::KeepUnsynced]
+                    .into_iter()
+                    .chain((0..16).map(Crash::Seeded))
+                {
+                    let (fs, store) = prepared();
+                    fs.fail_at(cut.number, fault);
+                    assert!(
+                        store.append(&suffix).is_err(),
+                        "failed batch was acknowledged"
+                    );
+                    assert!(fs.fault_arrived(), "selected batch fault did not arrive");
+                    assert_eq!(
+                        stored_entries(&store),
+                        expected[..1],
+                        "failed append batch published a memory suffix"
+                    );
+                    let after = fs.events().len();
+                    assert!(store.append(&suffix).is_err());
+                    assert!(store.append(&[]).is_err());
+                    assert_eq!(
+                        fs.events().len(),
+                        after,
+                        "fenced batch writer performed more I/O"
+                    );
+                    drop(store);
+                    fs.crash(crash);
+                    let store = open(&fs);
+                    let recovered = stored_entries(&store);
+                    assert!((1..=expected.len()).contains(&recovered.len()));
+                    assert_eq!(
+                        recovered, expected[..recovered.len()],
+                        "batch recovery invented entries or lost the durable prefix: {cut:?} {fault:?} {crash:?}"
+                    );
+                    if cut.operation == Operation::SyncData && matches!(fault, Fault::After(_)) {
+                        assert_eq!(
+                            recovered, expected,
+                            "completed batch sync lost its durable effect"
+                        );
+                    }
+                    drop(store);
+                    fs.crash(Crash::LoseUnsynced);
+                    assert_eq!(
+                        stored_entries(&open(&fs)),
+                        recovered,
+                        "recovered append prefix was exposed before becoming durable"
+                    );
+                    cells += 1;
+                }
+            }
+        }
+    }
+    assert_eq!(cells, 396);
+    println!("append batch matrix: {cells} write/sync/error/crash cells");
+}
+
 fn vote_request(candidate: u64, term: u64) -> Message {
     Message {
         msg_type: MessageType::MsgRequestVote,
