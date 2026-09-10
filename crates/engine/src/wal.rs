@@ -45,13 +45,31 @@ pub(crate) fn crc32(bytes: &[u8]) -> u32 {
     crc32_parts(&[bytes])
 }
 
-pub(crate) fn crc32_parts(parts: &[&[u8]]) -> u32 {
-    let mut crc: u32 = 0xFFFF_FFFF;
-    for &b in parts.iter().flat_map(|part| part.iter()) {
-        crc ^= u32::from(b);
-        for _ in 0..8 {
+// Eight reflected polynomial steps for each possible low byte. This changes
+// only the computation, not the polynomial, initial state or final complement.
+// See docs/CRC32-TABLE.md for the byte-transition equivalence argument.
+const CRC32_TABLE: [u32; 256] = {
+    let mut table = [0; 256];
+    let mut byte = 0;
+    while byte < table.len() {
+        let mut crc = byte as u32;
+        let mut bit = 0;
+        while bit < 8 {
             let mask = (crc & 1).wrapping_neg();
             crc = (crc >> 1) ^ (0xEDB8_8320 & mask);
+            bit += 1;
+        }
+        table[byte] = crc;
+        byte += 1;
+    }
+    table
+};
+
+pub(crate) fn crc32_parts(parts: &[&[u8]]) -> u32 {
+    let mut crc: u32 = 0xFFFF_FFFF;
+    for part in parts {
+        for &byte in *part {
+            crc = (crc >> 8) ^ CRC32_TABLE[((crc ^ u32::from(byte)) & 0xff) as usize];
         }
     }
     !crc
@@ -704,6 +722,57 @@ mod tests {
         assert_eq!(crc32(b""), 0x0000_0000);
         assert_eq!(crc32(b"123456789"), 0xCBF4_3926);
         assert_eq!(crc32(b"a"), 0xE8B7_BE43);
+    }
+
+    // Retained pre-optimization algorithm: this oracle does not use the table.
+    fn bitwise_crc32(bytes: &[u8]) -> u32 {
+        let mut crc = u32::MAX;
+        for &byte in bytes {
+            crc ^= u32::from(byte);
+            for _ in 0..8 {
+                let mask = (crc & 1).wrapping_neg();
+                crc = (crc >> 1) ^ (0xEDB8_8320 & mask);
+            }
+        }
+        !crc
+    }
+
+    #[test]
+    fn crc32_table_preserves_every_two_byte_input() {
+        for value in 0..=u16::MAX {
+            let bytes = value.to_le_bytes();
+            assert_eq!(crc32(&bytes), bitwise_crc32(&bytes), "input {value}");
+        }
+    }
+
+    #[test]
+    fn crc32_table_preserves_long_inputs_and_part_boundaries() {
+        let mut state = 0x913a_728bu32;
+        let data: Vec<u8> = (0..65_536)
+            .map(|_| {
+                state ^= state << 13;
+                state ^= state >> 17;
+                state ^= state << 5;
+                state as u8
+            })
+            .collect();
+        assert_eq!(crc32_parts(&[]), bitwise_crc32(&[]));
+        for length in [0, 1, 2, 3, 7, 8, 15, 16, 255, 256, 257, 4095, 4096, 65_536] {
+            let bytes = &data[..length];
+            let expected = bitwise_crc32(bytes);
+            assert_eq!(crc32(bytes), expected, "length {length}");
+            for split in [0, length / 2, length.saturating_sub(1), length] {
+                assert_eq!(
+                    crc32_parts(&[&[], &bytes[..split], &[], &bytes[split..], &[]]),
+                    expected,
+                    "length {length}, split {split}"
+                );
+            }
+            for chunk in [1, 7, 16, 255, 4096] {
+                let parts: Vec<&[u8]> = bytes.chunks(chunk).collect();
+                assert_eq!(crc32_parts(&parts), expected, "length {length}, chunk {chunk}");
+            }
+        }
     }
 }
 
