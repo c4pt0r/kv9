@@ -13,12 +13,13 @@ Main now includes the accepted scheduling/completion/socket lineage through
 this integration. The later append, Raw and Ready grouping implementations
 remain candidates, and their measurements below are identified separately.
 
-The latest measured memory-path candidate is sealed read groups `2cbbe26`, built
-on asynchronous read preparation `1ad259e`. In its fresh c64 tmpfs bracket,
-GET reaches 120,359/s, PUT 67,202/s and mixed 79,767/s. GET is approximately
-24% of its contemporaneous standalone Redis reference. This is a modest local
-gain, not attainment of the Redis-class target or runtime promotion. The full
-comparison and remaining correctness gates appear under increment 4 below.
+The latest measured memory-path candidate is resident GET execution `11cae97`,
+built on sealed read groups `2cbbe26`. In its fresh c64 tmpfs bracket,
+GET reaches 136,227/s, PUT 66,203/s and mixed 83,436/s. GET is approximately
+27% of its contemporaneous standalone Redis reference. GET improves by 14.6%
+against its surrounding baseline, while PUT falls by 1.3%; this is not an
+across-the-board improvement or attainment of the Redis-class target. The full
+comparison and remaining promotion gates appear under increment 4 below.
 
 The earlier performance development baseline was the `892b2a1` Ready candidate. At 64
 outstanding calls, pooled GET throughput is 84,810/s and PUT throughput is 836/s;
@@ -332,11 +333,49 @@ completed public GET while the sole blocking worker is occupied. The initial
 workspace failure was an obsolete 13-line status assertion after adding two
 counters; the corrected full run passed, and the original failure is retained.
 
-No performance improvement is claimed until a fresh unchanged-client
-groups-before/resident/groups-after bracket is independently checked. The new
-inline-success and blocking-submission counters will distinguish actual execution
-paths. Exact-candidate fault evidence and machine-checked composition remain open;
-master runtime is unchanged.
+The completed fresh
+[groups-before/resident/groups-after bracket](../scripts/redis-reference/results/2cbbe26-11cae97-c64-tmpfs-diagnostic.md)
+passes all 36 cohorts with complete successful outcomes and drained registries.
+All 63 owned process lifetimes exit. Pooled successful operations/s are:
+
+| Workload | Groups before | Resident candidate | Groups after | Candidate's paired Redis |
+|---|---:|---:|---:|---:|
+| GET | 119,586.6 | 136,227.1 | 118,208.8 | 503,462.3 |
+| PUT | 66,810.7 | 66,203.1 | 67,368.8 | 491,936.4 |
+| Mixed | 79,782.8 | 83,435.7 | 80,012.8 | 499,728.3 |
+
+Relative to the pooled surrounding baseline, GET improves by 14.6% and mixed
+by 4.4%, while PUT decreases by 1.3%. Preserve that write result; the experiment
+does not establish a no-regression claim. The candidate GET repetitions are
+136,887/135,567 operations/s. GET voter CPU is 3.091/3.150 aggregate cores, and
+client CPU is 1.413/1.397 of two allowed cores. GET p99 remains in the
+0.524288-1.048575 ms bucket; PUT/mixed remain in 1.048576-2.097151 ms. Redis
+remains in 0.131072-0.262143 ms. There is no p99 bucket improvement.
+
+Whole-trial inline success accounts for 99.8771%/99.8909% of the observed GET
+execution-path counters, and 98.9644%/98.8646% for mixed traffic. The nonzero
+fallback is expected under the try-lock contract. These counters include setup,
+warmup and verification; they are not measurement-only hit rates. An additional
+observer initially assumed zero fallback and was rejected. Its source/log are
+retained, and only that observer was corrected to validate the intended branch
+accounting and drained boundaries. No cohort, runtime or shared validator was
+changed or rerun to address the observer error.
+
+The local correctness archive is
+`target/correctness-evidence/2026-09-10-11cae97-resident-read-local-first.tar.gz`
+(57,614,894 bytes; 624 entries), SHA-256
+`3cfcf7f686d76703e4db983566a2b8e2c9c9ba2a194d462c38ac3c32fb8ec826`.
+Every member was read back and verified, with original inputs unchanged.
+Performance evidence is inventoried separately. Exact-candidate fault evidence
+and machine-checked composition remain open; master runtime is unchanged.
+
+The next performance priority is the write path: it remains around 66,000/s
+against a roughly 492,000/s Redis memory reference in this bracket. Capture an
+exact-current PUT CPU profile before selecting completion, dispatch or protocol
+changes. Source inspection shows synchronous completion waiting on a shared
+notification and repeated exact-receipt lookup; neither is yet established as
+the dominant write bottleneck. Keep the original durable acknowledgement,
+fence verdict and unknown-outcome semantics while measuring the next change.
 
 ### 5. Reconcile improvements before extending capacity
 
