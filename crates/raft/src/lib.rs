@@ -19,6 +19,7 @@ pub mod storage;
 #[cfg(any(test, feature = "testing"))]
 pub mod testing;
 pub mod transport;
+pub mod work;
 
 pub use command::{
     cf_code, cf_from_code, Command, FencedInner, KvOp, ManifestChangePayload, RegionFence,

@@ -238,6 +238,9 @@ pub trait DiscoveryState: Send + Sync {
 /// `send` is non-blocking best-effort; `drain` returns messages delivered to
 /// this node since the last drain, in arrival order.
 pub trait RaftTransport: Send + Sync {
+    /// Bind the exclusive driver wakeup. Custom harness transports may retain
+    /// periodic delivery; all built-in transports notify admitted work.
+    fn set_work_signal(&self, _signal: Arc<crate::work::WorkSignal>) {}
     fn send(&self, to: NodeId, msg: Message);
     fn drain(&self) -> Vec<Message>;
 }
@@ -246,7 +249,7 @@ pub trait RaftTransport: Send + Sync {
 // In-process transport (tests / single-process clusters).
 // ---------------------------------------------------------------------------
 
-type Inboxes = Mutex<HashMap<u64, Vec<Message>>>;
+type Inboxes = Mutex<HashMap<u64, crate::work::RaftInbox>>;
 
 /// Shared hub connecting in-process endpoints; the deterministic counterpart
 /// of the TCP transport (same trait, no sockets, no threads).
@@ -280,10 +283,21 @@ pub struct InProcEndpoint {
 }
 
 impl RaftTransport for InProcEndpoint {
+    fn set_work_signal(&self, signal: Arc<crate::work::WorkSignal>) {
+        if let Some(inbox) = self
+            .hub
+            .inboxes
+            .lock()
+            .expect("hub poisoned")
+            .get(&self.me.0)
+        {
+            inbox.set_signal(signal);
+        }
+    }
     fn send(&self, to: NodeId, msg: Message) {
         let mut inboxes = self.hub.inboxes.lock().expect("hub poisoned");
         if let Some(inbox) = inboxes.get_mut(&to.0) {
-            inbox.push(msg);
+            let _ = inbox.send(msg);
         } // unknown/dead peer: drop, like the network would
     }
 
@@ -291,7 +305,7 @@ impl RaftTransport for InProcEndpoint {
         let mut inboxes = self.hub.inboxes.lock().expect("hub poisoned");
         inboxes
             .get_mut(&self.me.0)
-            .map(std::mem::take)
+            .map(|inbox| inbox.drain())
             .unwrap_or_default()
     }
 }
@@ -316,7 +330,7 @@ pub struct TcpTransport {
     /// listen before any can know its peers' ids — so the map cannot be
     /// required up front).
     peers: Mutex<HashMap<u64, Arc<Mutex<TcpPeerRoute>>>>,
-    inbox: Arc<Mutex<Vec<Message>>>,
+    inbox: crate::work::RaftInbox,
     stop: Arc<AtomicBool>,
     local_addr: SocketAddr,
 }
@@ -335,10 +349,10 @@ impl TcpTransport {
         let local_addr = listener
             .local_addr()
             .map_err(|e| Error::Raft(format!("local_addr: {e}")))?;
-        let inbox: Arc<Mutex<Vec<Message>>> = Arc::default();
+        let inbox = crate::work::RaftInbox::default();
         let stop = Arc::new(AtomicBool::new(false));
         {
-            let inbox = Arc::clone(&inbox);
+            let inbox = inbox.clone();
             let stop = Arc::clone(&stop);
             std::thread::spawn(move || {
                 // The listener thread exits when `stop` is set and one more
@@ -349,7 +363,7 @@ impl TcpTransport {
                         break;
                     }
                     let Ok(stream) = conn else { continue };
-                    let inbox = Arc::clone(&inbox);
+                    let inbox = inbox.clone();
                     let discovery = Arc::clone(&discovery);
                     let stop = Arc::clone(&stop);
                     std::thread::spawn(move || serve_conn(stream, inbox, discovery, stop));
@@ -455,7 +469,7 @@ impl TcpTransport {
 
 fn serve_conn(
     mut stream: TcpStream,
-    inbox: Arc<Mutex<Vec<Message>>>,
+    inbox: crate::work::RaftInbox,
     discovery: Arc<dyn DiscoveryState>,
     stop: Arc<AtomicBool>,
 ) {
@@ -464,7 +478,9 @@ fn serve_conn(
             Ok(Frame::Raft(bytes)) => {
                 // A malformed protobuf payload poisons only this message.
                 match Message::parse_from_bytes(&bytes) {
-                    Ok(msg) => inbox.lock().expect("inbox poisoned").push(msg),
+                    Ok(msg) => {
+                        let _ = inbox.send(msg);
+                    }
                     Err(_) => return, // corrupt payload: kill the connection
                 }
             }
@@ -494,6 +510,9 @@ impl Drop for TcpTransport {
 }
 
 impl RaftTransport for TcpTransport {
+    fn set_work_signal(&self, signal: Arc<crate::work::WorkSignal>) {
+        self.inbox.set_signal(signal);
+    }
     fn send(&self, to: NodeId, msg: Message) {
         let Ok(bytes) = msg.write_to_bytes() else {
             return;
@@ -541,7 +560,7 @@ impl RaftTransport for TcpTransport {
     }
 
     fn drain(&self) -> Vec<Message> {
-        std::mem::take(&mut self.inbox.lock().expect("inbox poisoned"))
+        self.inbox.drain()
     }
 }
 
@@ -811,7 +830,7 @@ mod tests {
         // the test only observes status — the same shape the server uses.
         let handles: Vec<_> = drivers
             .iter()
-            .map(|d| d.spawn(Duration::from_millis(10)))
+            .map(|d| d.spawn(Duration::from_millis(10)).unwrap())
             .collect();
 
         // Elect: campaign node 1, wait (condition-based) for a leader.

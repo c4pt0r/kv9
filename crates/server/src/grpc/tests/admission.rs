@@ -363,7 +363,7 @@ async fn admission_wire_case(max_requests: usize, max_encoded_bytes: usize, reas
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
     let address = listener.local_addr().unwrap();
     let (shutdown_tx, shutdown_rx) = tokio::sync::oneshot::channel();
-    let (inbox, _receiver) = tokio::sync::mpsc::unbounded_channel();
+    let inbox = kv9_raft::work::RaftInbox::default();
     let server = tonic::transport::Server::builder()
         .add_service(api.authenticated_service(Arc::new(
             TokenAuthenticator::new([("wire-secret", "wire-client")]).unwrap(),
