@@ -251,6 +251,38 @@ impl RawExecutor {
             .collect()
     }
 
+    /// Materialize an ordered batch only if every value can be borrowed from
+    /// this view and their combined length fits the inline copying budget.
+    /// Repeated keys consume the budget at every returned position. Declining
+    /// copies no value bytes and leaves the caller's view available for fallback.
+    pub fn try_batch_get_resident(
+        &self,
+        read: &LeaderRead<'_>,
+        keyspace: KeyspaceId,
+        keys: &[UserKey],
+        max_value_bytes: usize,
+    ) -> Result<Option<Vec<Option<Value>>>> {
+        let mut remaining = max_value_bytes;
+        let mut borrowed = Vec::with_capacity(keys.len());
+        for key in keys {
+            let physical = encode_key(KeyMode::Raw, keyspace, key)?;
+            let Some(value) = read.view.get_resident(RAW_CF, &physical) else {
+                return Ok(None);
+            };
+            let Some(next) = remaining.checked_sub(value.map_or(0, <[u8]>::len)) else {
+                return Ok(None);
+            };
+            remaining = next;
+            borrowed.push(value);
+        }
+        Ok(Some(
+            borrowed
+                .into_iter()
+                .map(|value| value.map(<[u8]>::to_vec))
+                .collect(),
+        ))
+    }
+
     /// Range scan, returning **user** keys (the physical prefix is stripped back off).
     pub fn scan(
         &self,
@@ -337,6 +369,98 @@ mod tests {
     /// Reads in tests still have to go through the leader gate, exactly like production.
     fn leader<'a>(view: &'a dyn ReadView) -> LeaderRead<'a> {
         LeaderRead::new(view, true, Some(NodeId(1))).unwrap()
+    }
+
+    #[test]
+    fn resident_batch_budget_counts_duplicate_positions_and_preserves_empty_values() {
+        let engine = MemEngine::new();
+        put(&engine, KS_A, b"k", b"abc");
+        put(&engine, KS_A, b"empty", b"");
+        put(&engine, KS_B, b"k", b"other");
+        let view = engine.snapshot().unwrap();
+        let read = leader(view.as_ref());
+        let keys = [
+            b"k".to_vec(),
+            b"missing".to_vec(),
+            b"empty".to_vec(),
+            b"k".to_vec(),
+        ];
+        assert_eq!(
+            RawExecutor
+                .try_batch_get_resident(&read, KS_A, &keys, 5)
+                .unwrap(),
+            None
+        );
+        put(&engine, KS_A, b"k", b"new");
+        assert_eq!(
+            RawExecutor
+                .try_batch_get_resident(&read, KS_A, &keys, 6)
+                .unwrap(),
+            Some(vec![
+                Some(b"abc".to_vec()),
+                None,
+                Some(vec![]),
+                Some(b"abc".to_vec()),
+            ])
+        );
+        assert_eq!(
+            RawExecutor
+                .try_batch_get_resident(&read, KS_A, &keys[1..3], 0)
+                .unwrap(),
+            Some(vec![None, Some(vec![])])
+        );
+        assert_eq!(
+            RawExecutor.batch_get(&read, KS_A, &keys).unwrap()[0],
+            Some(b"abc".to_vec())
+        );
+    }
+
+    #[test]
+    fn resident_batch_declines_unsupported_views_without_materializing_values() {
+        struct BlockingOnly;
+        impl ReadView for BlockingOnly {
+            fn get(&self, _: kv9_engine::ColumnFamily, _: &[u8]) -> Result<Option<Value>> {
+                panic!("resident budget probe materialized a blocking value")
+            }
+            fn scan(
+                &self,
+                _: kv9_engine::ColumnFamily,
+                _: &[u8],
+                _: &[u8],
+                _: usize,
+            ) -> Result<Vec<kv9_engine::ScanEntry>> {
+                unreachable!()
+            }
+            fn seek_le(
+                &self,
+                _: kv9_engine::ColumnFamily,
+                _: &[u8],
+            ) -> Result<Option<kv9_engine::ScanEntry>> {
+                unreachable!()
+            }
+            fn iter<'a>(
+                &'a self,
+                _: kv9_engine::ColumnFamily,
+                _: &[u8],
+                _: &[u8],
+            ) -> Result<Box<dyn Iterator<Item = Result<kv9_engine::ScanEntry>> + 'a>> {
+                unreachable!()
+            }
+            fn iter_rev<'a>(
+                &'a self,
+                _: kv9_engine::ColumnFamily,
+                _: &[u8],
+                _: &[u8],
+            ) -> Result<Box<dyn Iterator<Item = Result<kv9_engine::ScanEntry>> + 'a>> {
+                unreachable!()
+            }
+        }
+        assert_eq!(
+            RawExecutor
+                .try_batch_get_resident(&leader(&BlockingOnly), KS_A, &[b"k".to_vec()], usize::MAX)
+                .unwrap(),
+            None
+        );
     }
 
     #[test]

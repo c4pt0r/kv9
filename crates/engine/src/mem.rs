@@ -339,6 +339,10 @@ impl ReadView for MemSnapshot {
         Ok(self.state.get(cf, key))
     }
 
+    fn get_resident(&self, cf: ColumnFamily, key: &[u8]) -> Option<Option<&[u8]>> {
+        Some(self.state.cf(cf).get(key).map(Vec::as_slice))
+    }
+
     fn scan(
         &self,
         cf: ColumnFamily,
@@ -417,6 +421,20 @@ mod resident_tests {
         second.put(ColumnFamily::Lock, b"k".to_vec(), b"after".to_vec());
         engine.write(second).unwrap();
         for cf in [ColumnFamily::Default, ColumnFamily::Lock] {
+            let borrowed: &dyn ReadView = view.as_ref();
+            let wrapper: Box<dyn ReadView + '_> = Box::new(borrowed);
+            assert_eq!(
+                wrapper.get_resident(cf, b"k"),
+                Some(Some(b"before".as_slice()))
+            );
+            assert_eq!(wrapper.get_resident(cf, b"missing"), Some(None));
+            assert!(
+                std::ptr::eq(
+                    wrapper.get_resident(cf, b"k").unwrap().unwrap(),
+                    view.get_resident(cf, b"k").unwrap().unwrap(),
+                ),
+                "borrowed wrapper copied the snapshot value"
+            );
             assert_eq!(
                 view.get(cf, b"k").unwrap().as_deref(),
                 Some(b"before".as_slice()),

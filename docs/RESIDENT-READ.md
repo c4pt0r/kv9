@@ -1,5 +1,9 @@
 # Resident point-read execution
 
+This document records the original point-read candidate. The later native batch
+extension, optional resident borrowing contract and captured-view byte-budget
+fallback are specified in [ASYNC-BATCH-READ.md](ASYNC-BATCH-READ.md).
+
 Tracking: #20 and #9. This candidate extends sealed groups `2cbbe26`.
 Its purpose is to remove the remaining blocking-pool handoff from uncontended
 memory-index GETs. It changes neither quorum confirmation nor acknowledgement

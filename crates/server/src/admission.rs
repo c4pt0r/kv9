@@ -163,6 +163,14 @@ pub struct AdmissionSnapshot {
     pub classes: [ClassCounters; CLASS_COUNT],
     pub raw_get_completed_inline: u64,
     pub raw_get_blocking_submitted: u64,
+    pub raw_batch_get_completed_inline: u64,
+    pub raw_batch_get_blocking_submitted: u64,
+}
+
+#[derive(Clone, Copy)]
+pub(crate) enum PreparedReadKind {
+    Point,
+    Batch,
 }
 
 #[derive(Default)]
@@ -177,6 +185,8 @@ pub struct PublicAdmission {
     timings: [WorkTiming; CLASS_COUNT],
     raw_get_completed_inline: AtomicU64,
     raw_get_blocking_submitted: AtomicU64,
+    raw_batch_get_completed_inline: AtomicU64,
+    raw_batch_get_blocking_submitted: AtomicU64,
 }
 
 impl PublicAdmission {
@@ -187,6 +197,8 @@ impl PublicAdmission {
             timings: std::array::from_fn(|_| WorkTiming::default()),
             raw_get_completed_inline: AtomicU64::new(0),
             raw_get_blocking_submitted: AtomicU64::new(0),
+            raw_batch_get_completed_inline: AtomicU64::new(0),
+            raw_batch_get_blocking_submitted: AtomicU64::new(0),
         }))
     }
 
@@ -257,14 +269,21 @@ impl PublicAdmission {
             classes: state.classes,
             raw_get_completed_inline: self.raw_get_completed_inline.load(Ordering::Relaxed),
             raw_get_blocking_submitted: self.raw_get_blocking_submitted.load(Ordering::Relaxed),
+            raw_batch_get_completed_inline: self
+                .raw_batch_get_completed_inline
+                .load(Ordering::Relaxed),
+            raw_batch_get_blocking_submitted: self
+                .raw_batch_get_blocking_submitted
+                .load(Ordering::Relaxed),
         }
     }
 
-    pub(crate) fn record_prepared_read(&self, completed_inline: bool) {
-        let counter = if completed_inline {
-            &self.raw_get_completed_inline
-        } else {
-            &self.raw_get_blocking_submitted
+    pub(crate) fn record_prepared_read(&self, kind: PreparedReadKind, completed_inline: bool) {
+        let counter = match (kind, completed_inline) {
+            (PreparedReadKind::Point, true) => &self.raw_get_completed_inline,
+            (PreparedReadKind::Point, false) => &self.raw_get_blocking_submitted,
+            (PreparedReadKind::Batch, true) => &self.raw_batch_get_completed_inline,
+            (PreparedReadKind::Batch, false) => &self.raw_batch_get_blocking_submitted,
         };
         let _ = counter.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
             Some(value.saturating_add(1))
@@ -284,6 +303,12 @@ impl AdmissionSnapshot {
             text,
             "public_raw_get_completed_inline={}\npublic_raw_get_blocking_submitted={}",
             self.raw_get_completed_inline, self.raw_get_blocking_submitted
+        )
+        .expect("writing to String");
+        writeln!(
+            text,
+            "public_raw_batch_get_completed_inline={}\npublic_raw_batch_get_blocking_submitted={}",
+            self.raw_batch_get_completed_inline, self.raw_batch_get_blocking_submitted
         )
         .expect("writing to String");
         for class in WorkClass::ALL {
@@ -467,9 +492,21 @@ mod tests {
         .unwrap();
         budget.state.lock().unwrap().classes[0].admitted = u64::MAX;
         budget.state.lock().unwrap().classes[0].completed = u64::MAX;
+        for counter in [
+            &budget.raw_get_completed_inline,
+            &budget.raw_get_blocking_submitted,
+            &budget.raw_batch_get_completed_inline,
+            &budget.raw_batch_get_blocking_submitted,
+        ] {
+            counter.store(u64::MAX, Ordering::Relaxed);
+        }
         for _ in 0..2 {
             let mut held = budget.reserve(WorkClass::RawRead, 1).unwrap();
             held.start();
+            for kind in [PreparedReadKind::Point, PreparedReadKind::Batch] {
+                budget.record_prepared_read(kind, true);
+                budget.record_prepared_read(kind, false);
+            }
             held.finish(false);
         }
         let state = budget.snapshot();
@@ -481,7 +518,16 @@ mod tests {
             (state.classes[0].admitted, state.classes[0].completed),
             (u64::MAX, u64::MAX)
         );
-        assert_eq!(state.status_lines().lines().count(), 15);
+        assert_eq!(
+            [
+                state.raw_get_completed_inline,
+                state.raw_get_blocking_submitted,
+                state.raw_batch_get_completed_inline,
+                state.raw_batch_get_blocking_submitted
+            ],
+            [u64::MAX; 4]
+        );
+        assert_eq!(state.status_lines().lines().count(), 17);
     }
 
     #[test]

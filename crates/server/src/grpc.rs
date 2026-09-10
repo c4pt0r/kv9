@@ -2,7 +2,7 @@
 //!
 //! The transport deliberately owns only a `BlockingBackend` (private by design). Every call into the
 //! potentially blocking engine is made through [`tokio::task::spawn_blocking`].
-//! Point reads may finish on a memory-only view after asynchronous quorum
+//! Point and bounded batch reads may finish on a memory-only view after asynchronous quorum
 //! preparation. Unfinished jobs cross the blocking boundary with their reservation.
 
 use std::{collections::HashMap, sync::Arc};
@@ -15,7 +15,9 @@ use kv9_region::RegionEpoch;
 use kv9_txn::{QualifiedKey, TimelineGeneration, TxnDescriptor, TxnId, TxnStatus};
 use tonic::{metadata::MetadataMap, service::Interceptor, Request, Response, Status};
 
-use crate::admission::{PublicAdmission, PublicApiLimits, Refusal, Reservation, WorkClass};
+use crate::admission::{
+    PreparedReadKind, PublicAdmission, PublicApiLimits, Refusal, Reservation, WorkClass,
+};
 use crate::api::{AdminApi, RawApi, RequestContext, RequestOrigin, TxnApi};
 
 pub mod proto {
@@ -182,6 +184,7 @@ impl BlockingBackend {
         &self,
         mut reservation: Reservation,
         preparation: crate::api::RawReadPreparation<T>,
+        kind: PreparedReadKind,
     ) -> Result<T, Status> {
         // Preparation is an async, cancellable read wait. Once the engine job
         // exists, move the SAME reservation into it so RPC cancellation cannot
@@ -196,12 +199,12 @@ impl BlockingBackend {
         };
         let job = match job {
             crate::api::RawReadJob::Completed(value) => {
-                self.admission.record_prepared_read(true);
+                self.admission.record_prepared_read(kind, true);
                 reservation.finish(false);
                 return Ok(value);
             }
             crate::api::RawReadJob::Blocking(job) => {
-                self.admission.record_prepared_read(false);
+                self.admission.record_prepared_read(kind, false);
                 job
             }
         };
@@ -1102,6 +1105,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
                     .inner
                     .clone()
                     .prepare_raw_get(context, request.key),
+                PreparedReadKind::Point,
             )
             .await?;
         Ok(Response::new(proto::RawGetResponse {
@@ -1119,9 +1123,14 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let context = request_context(request.context, &auth)?;
         let values = self
             .backend
-            .call(reservation, move |backend| {
-                backend.raw_batch_get(&context, &request.keys)
-            })
+            .prepared_read(
+                reservation,
+                self.backend
+                    .inner
+                    .clone()
+                    .prepare_raw_batch_get(context, request.keys),
+                PreparedReadKind::Batch,
+            )
             .await?;
         Ok(Response::new(proto::RawBatchGetResponse {
             values: values.into_iter().map(optional_value).collect(),
@@ -1661,6 +1670,7 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
 #[cfg(test)]
 mod tests {
     mod admission;
+    mod async_batch_read;
 
     use std::sync::Mutex;
 
@@ -1688,42 +1698,28 @@ mod tests {
         callers: Mutex<Vec<String>>,
     }
 
-    impl RawApi for FakeBackend {
-        fn prepare_raw_get(
-            self: Arc<Self>,
-            ctx: RequestContext,
-            key: UserKey,
-        ) -> crate::api::RawReadPreparation<Option<Value>> {
-            Box::pin(async move {
-                if let Some(gate) = &self.raw_preparation_gate {
-                    struct Dropped(tokio::sync::mpsc::UnboundedSender<()>);
-                    impl Drop for Dropped {
-                        fn drop(&mut self) {
-                            let _ = self.0.send(());
-                        }
+    impl FakeBackend {
+        async fn wait_raw_preparation(&self) {
+            if let Some(gate) = &self.raw_preparation_gate {
+                struct Dropped(tokio::sync::mpsc::UnboundedSender<()>);
+                impl Drop for Dropped {
+                    fn drop(&mut self) {
+                        let _ = self.0.send(());
                     }
-                    let _dropped = Dropped(gate.dropped.clone());
-                    let release = gate
-                        .release
-                        .lock()
-                        .unwrap()
-                        .take()
-                        .expect("one controlled preparation per backend");
-                    gate.entered.send(()).unwrap();
-                    release.await.expect("test must release held preparation");
                 }
-                if self.raw_completed {
-                    return self
-                        .raw_get(&ctx, &key)
-                        .map(crate::api::RawReadJob::Completed);
-                }
-                Ok(crate::api::RawReadJob::Blocking(Box::new(move || {
-                    self.raw_get(&ctx, &key)
-                })))
-            })
+                let _dropped = Dropped(gate.dropped.clone());
+                let release = gate
+                    .release
+                    .lock()
+                    .unwrap()
+                    .take()
+                    .expect("one controlled preparation per backend");
+                gate.entered.send(()).unwrap();
+                release.await.expect("test must release held preparation");
+            }
         }
 
-        fn raw_get(&self, ctx: &RequestContext, _key: &[u8]) -> Result<Option<Value>> {
+        fn observe_raw_read(&self, ctx: &RequestContext) {
             self.callers
                 .lock()
                 .unwrap()
@@ -1736,10 +1732,57 @@ mod tests {
                     .recv_timeout(std::time::Duration::from_secs(10))
                     .expect("test must release held backend");
             }
+        }
+    }
+
+    impl RawApi for FakeBackend {
+        fn prepare_raw_get(
+            self: Arc<Self>,
+            ctx: RequestContext,
+            key: UserKey,
+        ) -> crate::api::RawReadPreparation<Option<Value>> {
+            Box::pin(async move {
+                self.wait_raw_preparation().await;
+                if self.raw_completed {
+                    return self
+                        .raw_get(&ctx, &key)
+                        .map(crate::api::RawReadJob::Completed);
+                }
+                Ok(crate::api::RawReadJob::Blocking(Box::new(move || {
+                    self.raw_get(&ctx, &key)
+                })))
+            })
+        }
+
+        fn prepare_raw_batch_get(
+            self: Arc<Self>,
+            ctx: RequestContext,
+            keys: Vec<UserKey>,
+        ) -> crate::api::RawReadPreparation<Vec<Option<Value>>> {
+            Box::pin(async move {
+                self.wait_raw_preparation().await;
+                if self.raw_completed {
+                    return self
+                        .raw_batch_get(&ctx, &keys)
+                        .map(crate::api::RawReadJob::Completed);
+                }
+                Ok(crate::api::RawReadJob::Blocking(Box::new(move || {
+                    self.raw_batch_get(&ctx, &keys)
+                })))
+            })
+        }
+
+        fn raw_get(&self, ctx: &RequestContext, _key: &[u8]) -> Result<Option<Value>> {
+            self.observe_raw_read(ctx);
             Ok(None)
         }
-        fn raw_batch_get(&self, _: &RequestContext, _: &[UserKey]) -> Result<Vec<Option<Value>>> {
-            Err(Error::NotImplemented("raw_batch_get"))
+        fn raw_batch_get(
+            &self,
+            ctx: &RequestContext,
+            keys: &[UserKey],
+        ) -> Result<Vec<Option<Value>>> {
+            self.observe_raw_read(ctx);
+            Ok(vec![None; keys.len()])
         }
         fn raw_put(
             &self,
