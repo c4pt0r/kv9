@@ -13,13 +13,14 @@ Main now includes the accepted scheduling/completion/socket lineage through
 this integration. The later append, Raw and Ready grouping implementations
 remain candidates, and their measurements below are identified separately.
 
-The latest measured memory-path candidate is resident GET execution `11cae97`,
-built on sealed read groups `2cbbe26`. In its fresh c64 tmpfs bracket,
-GET reaches 136,227/s, PUT 66,203/s and mixed 83,436/s. GET is approximately
-27% of its contemporaneous standalone Redis reference. GET improves by 14.6%
-against its surrounding baseline, while PUT falls by 1.3%; this is not an
-across-the-board improvement or attainment of the Redis-class target. The full
-comparison and remaining promotion gates appear under increment 4 below.
+The latest measured memory-path candidate is asynchronous exact-apply waiting
+`a00e39f`, built on resident GET execution `11cae97`. In its fresh c64 tmpfs
+bracket, GET reaches 136,171/s, PUT 78,501/s and mixed 92,712/s. PUT improves by
+18.4% and mixed by 10.6% against the pooled surrounding resident baseline;
+GET differs by -0.26%. Both candidate PUT repetitions exceed all four baseline
+repetitions. PUT is still approximately 16% of its contemporaneous standalone
+Redis reference, so the Redis-class target remains open. The comparison and
+remaining promotion gates appear under increment 4 below.
 
 The earlier performance development baseline was the `892b2a1` Ready candidate. At 64
 outstanding calls, pooled GET throughput is 84,810/s and PUT throughput is 836/s;
@@ -486,14 +487,60 @@ The retained archive is
 `target/correctness-evidence/2026-09-10-a00e39f-async-write-wait-local-first.tar.gz`
 (2,369,910 bytes; 509 entries), SHA-256
 `b621a5d34d1198daae843eff8fc1c536ba08d9b76278d43a26467529aa237ab5`.
-Every archive member and original input was read back. This is local
-implementation acceptance only: no new performance number or speedup is claimed.
-The new task/oneshot/mutex work and bounded per-owner ring scans may offset the
-saved worker wakeups; use a fresh unchanged before/candidate/after comparison.
-Resident-read actual Chaos validation is now accepted for its exact source;
-inherited checked protocol composition continues separately. Those results
-cannot be relabeled as exact asynchronous write acceptance. The main runtime and original roadmap checklist are unchanged;
-no hosted workflow was dispatched.
+Every archive member and original input was read back. This archive covers local
+implementation tests; performance artifacts are separately retained below.
+
+The completed [resident-before / async-write / resident-after bracket](../scripts/redis-reference/results/11cae97-a00e39f-c64-tmpfs-diagnostic.md)
+passes all 36 cohorts and six unchanged matrix/outcome checks. Pooled successful
+operations/s in the same explicitly volatile c64 tmpfs diagnostic are:
+
+| Operation | Resident before | Async write | Resident after | Change vs pooled baseline |
+| --- | ---: | ---: | ---: | ---: |
+| GET | 136,110.3 | 136,171.3 | 136,948.0 | -0.26% |
+| PUT | 66,315.0 | 78,501.3 | 66,292.8 | +18.40% |
+| Mixed | 84,218.4 | 92,711.6 | 83,419.0 | +10.61% |
+
+The candidate PUT repetitions are 78,363.6/78,638.9 operations/s, above all four
+baseline repetitions (65,955.1-66,674.8). Every one of the 5,284,937 measured KV9
+operations succeeded, and all 63 owned process lifetimes exited. Existing public,
+read-group and inline/fallback checks pass. The additional read-only async-apply
+audit uses existing per-PID snapshots without adding live polling: the candidate
+leader's process-lifetime peak increases from 1 to 64 during the first PUT trial,
+remains bounded by 128, and all before/after queue and in-flight observations are
+zero with stopped=false. These are whole-trial/lifetime observations, not
+per-response or measurement-only counts.
+
+Client p99 buckets remain unchanged: GET 0.524288-1.048575 ms, PUT/mixed
+1.048576-2.097151 ms, and Redis 0.131072-0.262143 ms. Existing whole-trial stage
+observations show candidate PUT queue means of 20.84/16.45 microseconds versus
+39.33-42.44 around it, and application-wait means of 429.29/439.44 versus
+515.48-520.40. Submission means remain approximately 9-11 microseconds. These
+are overlapping wall-time intervals with export/setup/drain boundaries, not
+additive CPU attribution or a measurement-only request breakdown.
+
+The complete performance inventory contains 1,714 files / 2,369,292,591 bytes,
+all independently reopened and hash-verified; SHA-256
+`eddd8086c5eb7be1f006c6a5a435978d8ae435547c7d68664b97bdf59f2bf916`.
+All 26,968,000 Redis measured operations also succeeded. Original matrices,
+identities, full outcomes, CPU/histograms, and volatile-data copies are retained.
+
+Retain `a00e39f` as the next performance candidate. Its short volatile-memory
+write improvement is separated from the surrounding baseline, while GET does
+not improve. The paired standalone Redis PUT rate is 492,632.4/s, leaving a large
+remaining gap. No result here establishes disk durability, sustained capacity
+or cross-host performance. The normal quorum/sync code and fixed Ready/Redis
+clients remained unchanged; only new proof launches were paused, and all active
+provers finished before timing. The same proof scheduler resumed immediately
+after timing and owned fixture cleanup.
+
+Resident-read actual Chaos validation is accepted for exact `11cae97`; the later
+async-write candidate needs its own full fault/history acceptance. That is the
+next independent test task. The next bounded implementation experiment removes
+per-command shifting from the 1,024-entry receipt FIFO while preserving its
+chronological contents and the existing exact receipt/eviction decisions;
+measure its benefit separately. Inherited checked protocol composition remains
+open. Main runtime promotion and the
+original roadmap checklist remain unchanged; no hosted workflow was dispatched.
 
 ### 5. Reconcile improvements before extending capacity
 
