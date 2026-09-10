@@ -5,22 +5,62 @@ memory-resident RawKV data. Data residency, durable acknowledgement, replication
 and API overhead are separate dimensions. Performance work must improve the
 implementation while keeping each measured mode's guarantees explicit.
 
+## Product sequence, updated 2026-09-10
+
+First bring client-visible memory RawKV throughput to Redis-class performance,
+then implement dynamic multi-Raft and automatic range partitioning/splits.
+The current GET/PUT/mixed rates remain below that target. Evaluate the same
+payloads, concurrency and resource budget with repeated paired Redis runs;
+report latency, refusals and unknown outcomes alongside throughput. Raft quorum,
+linearizable reads and committed/applied write acknowledgements are mandatory.
+Keep volatile-memory diagnostics separate from durable-storage results.
+
+After that performance gate, execute the existing scale-out work in this order:
+
+1. #22: a bounded RegionManager that creates, recovers and schedules independent
+   Raft groups dynamically, with shared transport and fair resource accounting.
+2. #23 and #24: range-aware routing with epoch fencing, learner attachment and
+   recoverable membership/ownership changes. Stale routing must never admit a
+   write to an obsolete owner; unknown writes must not be retried blindly.
+3. #25: size/load-triggered automatic splits with durable intent, fenced parent
+   and child ownership, data handoff and idempotent crash recovery. Establish
+   split safety and conditional progress with source-mapped proofs and actual
+   Chaos Mesh histories under leader loss, partition and restart.
+4. #27: demonstrate balanced placement and throughput scaling with multiple
+   groups and failure domains; retain #26's separate merge/recovery dependency
+   before claiming the complete scale-out package.
+
+Metadata and scheduling authority must be replicated or safely replaceable;
+there must be no service-critical singleton except the object-store dependency.
+Existing snapshot, retention and storage prerequisites remain required before
+accepting scale-out. This sequence does not mark those prerequisites complete.
+
 ## Current evidence
 
-Main now includes the accepted scheduling/completion/socket lineage through
-`a9510e2`, whose runtime/build inputs match candidate `cc8bc87`. Its
-[composition and local/fault acceptance](RAFT-SCHEDULING-ACCEPTANCE.md) cover
-this integration. The later append, Raw and Ready grouping implementations
-remain candidates, and their measurements below are identified separately.
+Main now includes the selected runtime through asynchronous exact-apply waiting
+and process-status identity, integrated in `2627825`. All 131 runtime/build-tree
+files match exact `23bc58b`: the inherited append/Raw/Ready grouping, asynchronous
+read preparation, sealed read groups, resident GET execution and asynchronous
+write waiting are included. The [integration record](ASYNC-WRITE-MAIN-INTEGRATION.md)
+records fresh local checks and the exact-source [full Chaos Mesh acceptance](ASYNC-WRITE-CHAOS-ACCEPTANCE.md).
+Unselected proposal-queue, indexed-receipt, FIFO, serialization, CRC and RPC
+experiments remain separate; retained structures follow the exact selected source.
 
-The latest measured memory-path candidate is asynchronous exact-apply waiting
+This is a staged integration after correctness validation. Whole-lineage
+machine-checked composition, Redis-class performance and broader production
+acceptance remain open. Earlier [scheduling/completion proofs](RAFT-SCHEDULING-ACCEPTANCE.md)
+and the [Raw group composition proof](RAW-GROUP-PROOF.md) keep their stated source
+boundaries. Development-time gate statements below retain their original scope;
+the linked integration record states the current runtime selection.
+
+The latest measured memory-path implementation is asynchronous exact-apply waiting
 `a00e39f`, built on resident GET execution `11cae97`. In its fresh c64 tmpfs
 bracket, GET reaches 136,171/s, PUT 78,501/s and mixed 92,712/s. PUT improves by
 18.4% and mixed by 10.6% against the pooled surrounding resident baseline;
 GET differs by -0.26%. Both candidate PUT repetitions exceed all four baseline
 repetitions. PUT is still approximately 16% of its contemporaneous standalone
-Redis reference, so the Redis-class target remains open. The comparison and
-remaining promotion gates appear under increment 4 below.
+Redis reference, so the Redis-class target remains open. The comparison appears under increment 4 below; `23bc58b` adds only diagnostic
+process identity and is not relabeled as a new performance measurement.
 
 The earlier performance development baseline was the `892b2a1` Ready candidate. At 64
 outstanding calls, pooled GET throughput is 84,810/s and PUT throughput is 836/s;
@@ -597,8 +637,29 @@ all reopened and verified, SHA-256
 
 Retain FIFO as an isolated representation experiment. Continue the performance
 mainline from `a00e39f`; the earlier 18.4% PUT improvement belongs only to its
-async-write comparison. The next step is a fresh CPU call-stack profile of the
-current GET and PUT paths before choosing another implementation change.
+async-write comparison. The new exact-source
+[GET/PUT CPU profiles](../scripts/redis-reference/results/a00e39f-get-put-cpu-profile.md)
+are complete: GET RPC/framing/serialization/buffer leaves account for 27.08%,
+generic allocation/copy/comparison for 20.67%, and scheduler/generic
+synchronization for 12.62%. PUT RPC and allocation shares are 19.40% and 23.60%;
+182 samples fall in the exact executable's WAL CRC loop (5.61%, a subset of
+engine samples). These are instrumented on-CPU populations, not additive
+inclusive stack costs, end-to-end latency fractions or throughput gains.
+The report retains both failed GET attempts and the first audit's dense
+follower-coverage failure; accepted GET aggregate/leader coverage is complete,
+while each sparse follower lacks the first measurement bin.
+
+Prioritize RPC framework comparisons: current unary gRPC, streaming gRPC as a
+control, and the scaffolded tarpc/TCP prototype. The scaffold has no completed
+measurement result. Preserve payloads, bounded admission/backpressure,
+cancellation ownership, deadlines, retry/unknown accounting, quorum-confirmed
+reads and exact committed/applied write receipts. Raft consistency remains a
+mandatory constraint for every experiment and integration. Consider DPDK or
+other kernel bypass only after measurements establish a relevant network
+bottleneck; these loopback profiles do not establish NIC limits. The separate
+table-CRC prototype `89b9755` remains unselected with three focused tests only;
+RPC experiments supersede it in priority.
+
 Earlier profiles describe earlier runtimes; lower representation complexity
 alone is insufficient evidence of an end-to-end gain. Exact-FIFO Chaos and
 inherited checked protocol composition remain open. Main runtime promotion and
