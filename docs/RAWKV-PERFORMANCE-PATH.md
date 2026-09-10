@@ -5,6 +5,36 @@ memory-resident RawKV data. Data residency, durable acknowledgement, replication
 and API overhead are separate dimensions. Performance work must improve the
 implementation while keeping each measured mode's guarantees explicit.
 
+## Product sequence, updated 2026-09-10
+
+First bring client-visible memory RawKV throughput to Redis-class performance,
+then implement dynamic multi-Raft and automatic range partitioning/splits.
+The current GET/PUT/mixed rates remain below that target. Evaluate the same
+payloads, concurrency and resource budget with repeated paired Redis runs;
+report latency, refusals and unknown outcomes alongside throughput. Raft quorum,
+linearizable reads and committed/applied write acknowledgements are mandatory.
+Keep volatile-memory diagnostics separate from durable-storage results.
+
+After that performance gate, execute the existing scale-out work in this order:
+
+1. #22: a bounded RegionManager that creates, recovers and schedules independent
+   Raft groups dynamically, with shared transport and fair resource accounting.
+2. #23 and #24: range-aware routing with epoch fencing, learner attachment and
+   recoverable membership/ownership changes. Stale routing must never admit a
+   write to an obsolete owner; unknown writes must not be retried blindly.
+3. #25: size/load-triggered automatic splits with durable intent, fenced parent
+   and child ownership, data handoff and idempotent crash recovery. Establish
+   split safety and conditional progress with source-mapped proofs and actual
+   Chaos Mesh histories under leader loss, partition and restart.
+4. #27: demonstrate balanced placement and throughput scaling with multiple
+   groups and failure domains; retain #26's separate merge/recovery dependency
+   before claiming the complete scale-out package.
+
+Metadata and scheduling authority must be replicated or safely replaceable;
+there must be no service-critical singleton except the object-store dependency.
+Existing snapshot, retention and storage prerequisites remain required before
+accepting scale-out. This sequence does not mark those prerequisites complete.
+
 ## Current evidence
 
 Main now includes the accepted scheduling/completion/socket lineage through
