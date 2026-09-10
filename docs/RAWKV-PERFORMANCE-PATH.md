@@ -534,13 +534,52 @@ provers finished before timing. The same proof scheduler resumed immediately
 after timing and owned fixture cleanup.
 
 Resident-read actual Chaos validation is accepted for exact `11cae97`; the later
-async-write candidate needs its own full fault/history acceptance. That is the
-next independent test task. The next bounded implementation experiment removes
-per-command shifting from the 1,024-entry receipt FIFO while preserving its
-chronological contents and the existing exact receipt/eviction decisions;
-measure its benefit separately. Inherited checked protocol composition remains
-open. Main runtime promotion and the
-original roadmap checklist remain unchanged; no hosted workflow was dispatched.
+async-write candidate needs its own full fault/history acceptance. The separate
+test task uses a frozen exact-source default image and the unchanged complete
+21-window Chaos Mesh fixture, with a PID-aware observer for the new bounded
+async-apply registry. Performance timing waits until fault injection finishes.
+
+The next bounded implementation experiment is now published as
+[`c7313ec`](https://github.com/c4pt0r/kv9/commit/c7313ecd9918c3f1a8269dcf4bcf31ba5ba69c73),
+starting from `a00e39f`. It replaces the 1,024-entry command receipt Vec with a
+VecDeque, evicting the oldest receipt before appending to a full container.
+This removes per-command shifting and avoids growing an already full allocation.
+Chronological contents and all existing exact receipt/eviction decisions remain
+unchanged; lookup still scans oldest first. The
+[sequence-equivalence proof](https://github.com/c4pt0r/kv9/blob/c7313ecd9918c3f1a8269dcf4bcf31ba5ba69c73/docs/RECEIPT-FIFO.md)
+uses induction over arbitrary finite receipt streams and requires no ordering,
+uniqueness or contiguity premise about indices. It assumes successful standard
+container operations and the existing mutex contract; it does not prove the
+underlying consensus, persistence or publication protocol.
+
+Local validation passes 644 workspace tests/doctests (zero failures, 23 ignored),
+all-target Clippy with warnings denied, formatting, three compiled FIFO controls
+and seven inherited async-write controls. All 30 baseline/mutant/restored phases
+pass their acceptance checks. A wraparound test compares complete chronological
+suffixes, exact verdicts, front/back observations and stable full allocation.
+The unchanged default three-process failover/delete/original-directory restart
+fixture passes; all four observed executing lifetimes match default binary
+SHA-256 `e9a235f13741ed17b9945b3ee39c0e9ecf7a2ed86cc563d48e2451a97b30a084`
+and exited. The raw pre-commit manifests retain parent HEAD `a00e39f` and their
+recorded modified source state. Every recorded control and process source input
+was rehashed against committed `c7313ec` and matches; those manifests have not
+been relabeled after the commit.
+
+The local correctness archive is
+`target/correctness-evidence/2026-09-10-c7313ec-receipt-fifo-local-first.tar.gz`
+(2,755,866 bytes; 525 entries), SHA-256
+`b8fd64ed1ab55c37f30ce46200d236ba75534b5518b2eaf203434eb9a57f3313`.
+All members and original inputs passed readback. A subsequent clean exact-source
+default-feature release build has SHA-256
+`f2402a9321e19dd937c980496255df2402b090b1aa08445139223d555fb27150`;
+its 417 recorded source files still match, and the separately identified Ready
+benchmark client remains unchanged. This build is preparation for measurement.
+
+There is no FIFO throughput result or exact-FIFO Chaos acceptance yet. Measure
+its benefit in a separate `a00e39f` / FIFO / `a00e39f` bracket; the earlier 18.4%
+PUT improvement belongs only to async-write waiting. Inherited checked protocol
+composition remains open. Main runtime promotion and the original roadmap
+checklist remain unchanged; no hosted workflow was dispatched.
 
 ### 5. Reconcile improvements before extending capacity
 
