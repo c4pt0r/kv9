@@ -2158,7 +2158,7 @@ impl RuntimeBackend {
         if batch.mutations().is_empty() {
             return Ok(AppliedPosition { term: 0, index: 0 });
         }
-        // A FENCED write, not a bare one. `fenced_write_from_batch`, not `from_batch`: the
+        // A FENCED write, not a bare one. `fenced_write_from_owned_batch`, not `from_batch`: the
         // latter yields a `CatalogTxn`, and sharing the catalog's wire tag would replay user
         // data through the catalog path and inherit its serializing lock.
         //
@@ -2166,7 +2166,7 @@ impl RuntimeBackend {
         // point at which a split that committed after the gate ran is visible. The
         // adjudicator refuses the write there rather than letting it land on a region that
         // has moved underneath it.
-        let command = Command::fenced_write_from_batch(fence.into_region_fence(), &batch);
+        let command = Command::fenced_write_from_owned_batch(fence.into_region_fence(), batch);
         // Success is judged on (term, index), never on elapsed time; a typed
         // Replaced re-proposes within the deadline (provably-never-applied is
         // the one safely retryable outcome — see `propose_and_wait`).

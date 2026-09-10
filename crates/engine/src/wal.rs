@@ -80,7 +80,19 @@ fn cf_from_code(code: u8) -> Result<ColumnFamily> {
 
 /// Serialize a batch's mutations: `count(4)` then `tag(1) cf(1) klen(4) k vlen(4) v`.
 pub(crate) fn encode_batch(batch: &WriteBatch) -> Vec<u8> {
-    let mut out = Vec::new();
+    // This is an allocation hint, not validation or a format change. Keep the
+    // append paths' existing length limits and error ordering. Saturation
+    // avoids wrapping if a hypothetical image exceeds addressable memory.
+    let capacity = batch.mutations().iter().fold(4usize, |length, mutation| {
+        let extra = match mutation {
+            Mutation::Put { key, value, .. } => 10usize
+                .saturating_add(key.len())
+                .saturating_add(value.len()),
+            Mutation::Delete { key, .. } => 6usize.saturating_add(key.len()),
+        };
+        length.saturating_add(extra)
+    });
+    let mut out = Vec::with_capacity(capacity);
     put_u32(&mut out, batch.mutations().len() as u32);
     for m in batch.mutations() {
         match m {
@@ -100,6 +112,7 @@ pub(crate) fn encode_batch(batch: &WriteBatch) -> Vec<u8> {
             }
         }
     }
+    debug_assert_eq!(out.len(), capacity);
     out
 }
 

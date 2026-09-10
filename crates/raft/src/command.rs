@@ -275,6 +275,31 @@ impl Command {
         }
     }
 
+    /// The consuming counterpart of [`Self::fenced_write_from_batch`]. Keep the
+    /// same envelope and mutation order, moving the already owned key/value
+    /// buffers into the command retained across safe replacement retries.
+    pub fn fenced_write_from_owned_batch(fence: RegionFence, batch: WriteBatch) -> Command {
+        let ops = batch
+            .into_mutations()
+            .into_iter()
+            .map(|mutation| match mutation {
+                Mutation::Put { cf, key, value } => KvOp::Put {
+                    cf: cf_code(cf),
+                    key,
+                    value,
+                },
+                Mutation::Delete { cf, key } => KvOp::Delete {
+                    cf: cf_code(cf),
+                    key,
+                },
+            })
+            .collect();
+        Command::Fenced {
+            fence,
+            inner: FencedInner::Write { ops },
+        }
+    }
+
     /// Harness-only decoder (task #9 round 4): production decode happens
     /// inside ordered apply. A public decoder let an external crate turn a
     /// hand-encoded tag-7 wire image into a `Command::ManifestChange` whose
@@ -351,7 +376,8 @@ impl Command {
     /// bytes reject), so ANY new tag or layout is a decode-before-propose two-phase
     /// rollout: every replica must decode the shape before any proposer emits it.
     pub fn encode(&self) -> Vec<u8> {
-        let mut out = Vec::new();
+        let capacity = self.encoded_len();
+        let mut out = Vec::with_capacity(capacity);
         out.push(ENTRY_VERSION);
         match self {
             Command::Put { cf, key, value } => {
@@ -395,7 +421,29 @@ impl Command {
                 }
             }
         }
+        debug_assert_eq!(out.len(), capacity);
         out
+    }
+
+    // Capacity only: the existing encoder below defines the wire format.
+    // Saturating arithmetic prevents a wrapped underestimate; an image larger
+    // than the allocator's addressable capacity still fails allocation.
+    fn encoded_len(&self) -> usize {
+        let payload = match self {
+            Command::Put { key, value, .. } => {
+                9usize.saturating_add(key.len()).saturating_add(value.len())
+            }
+            Command::CatalogTxn { ops } | Command::Write { ops } => encoded_ops_len(ops),
+            Command::ConfChange { .. } => 9,
+            Command::Noop => 0,
+            Command::ManifestChange(p) => 40usize
+                .saturating_add(p.change_id.len())
+                .saturating_add(p.changeset.len()),
+            Command::Fenced { inner, .. } => match inner {
+                FencedInner::Write { ops } => 25usize.saturating_add(encoded_ops_len(ops)),
+            },
+        };
+        2usize.saturating_add(payload)
     }
 
     /// Decode from opaque committed-entry bytes (inverse of [`Command::encode`]).
@@ -539,6 +587,18 @@ fn put_ops(out: &mut Vec<u8>, ops: &[KvOp]) {
             }
         }
     }
+}
+
+fn encoded_ops_len(ops: &[KvOp]) -> usize {
+    ops.iter().fold(4usize, |length, op| {
+        let extra = match op {
+            KvOp::Put { key, value, .. } => 10usize
+                .saturating_add(key.len())
+                .saturating_add(value.len()),
+            KvOp::Delete { key, .. } => 6usize.saturating_add(key.len()),
+        };
+        length.saturating_add(extra)
+    })
 }
 
 /// Lower an op list into a batch (shared by the generic path and the fenced
@@ -831,6 +891,42 @@ mod tests {
             Command::decode(&fenced).unwrap(),
             Command::Fenced { .. }
         ));
+    }
+
+    #[test]
+    fn consuming_batch_preserves_the_fence_and_ordered_wire_effect() {
+        let fence = RegionFence {
+            region_id: 17,
+            conf_ver: 23,
+            version: 31,
+        };
+        for count in [0, 1, 2, 7, 64] {
+            let mut batch = WriteBatch::new();
+            for i in 0..count {
+                let cf = [
+                    ColumnFamily::Default,
+                    ColumnFamily::Lock,
+                    ColumnFamily::Write,
+                ][i % 3];
+                // Repeated keys make mutation order observable after apply.
+                let key = vec![(i % 2) as u8; i % 5];
+                batch.put(cf, key.clone(), vec![i as u8; [0, 1, 128, 4096][i % 4]]);
+                batch.delete(cf, key.clone());
+                batch.put(cf, key, vec![255 - i as u8]);
+            }
+            let expected = Command::fenced_write_from_batch(fence, &batch);
+            let actual = Command::fenced_write_from_owned_batch(fence, batch);
+            assert_eq!(
+                actual, expected,
+                "consuming the batch changed its fenced effect"
+            );
+            assert_eq!(actual.encode(), expected.encode());
+            assert_eq!(Command::decode(&actual.encode()).unwrap(), expected);
+            assert!(
+                actual.to_write_batch().is_err(),
+                "the envelope lost its fence gate"
+            );
+        }
     }
 
     #[test]
