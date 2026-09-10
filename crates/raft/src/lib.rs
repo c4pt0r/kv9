@@ -13,6 +13,7 @@
 pub mod command;
 pub mod driver;
 pub mod grpc;
+mod proposal_queue;
 pub mod rawnode;
 pub mod state_machine;
 pub mod storage;
@@ -24,6 +25,7 @@ pub mod work;
 pub use command::{
     cf_code, cf_from_code, Command, FencedInner, KvOp, ManifestChangePayload, RegionFence,
 };
+pub use proposal_queue::ProposalQueueSnapshot;
 #[cfg(any(test, feature = "testing"))]
 pub use rawnode::HarnessPump;
 #[cfg(any(test, feature = "testing"))]

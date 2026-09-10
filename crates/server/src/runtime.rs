@@ -933,7 +933,10 @@ fn observe_proposal_wait(
                 || {
                     let result = propose();
                     outcome.set(match &result {
-                        Err(Error::NotLeader { .. }) => Outcome::Rejected,
+                        Err(Error::NotLeader { .. } | Error::ProposalRefused { .. }) => {
+                            Outcome::Rejected
+                        }
+                        Err(Error::ProposalUnconfirmed) => Outcome::Unconfirmed,
                         _ => Outcome::Error,
                     });
                     result
@@ -2076,7 +2079,18 @@ impl RuntimeBackend {
         // Success is judged on (term, index), never on elapsed time; a typed
         // Replaced re-proposes within the deadline (provably-never-applied is
         // the one safely retryable outcome — see `propose_and_wait`).
-        propose_and_wait(&self.driver, &command, RAW_APPLY_DEADLINE)
+        let deadline = Instant::now() + RAW_APPLY_DEADLINE;
+        observe_proposal_wait(
+            &self.driver.metrics().logical_proposal_wait,
+            || self.driver.propose_queued(&command, None, deadline),
+            |at, remaining| {
+                self.driver.wait_applied(
+                    at,
+                    remaining.min(deadline.saturating_duration_since(Instant::now())),
+                )
+            },
+            deadline.saturating_duration_since(Instant::now()),
+        )
     }
 }
 
@@ -3657,6 +3671,12 @@ impl NodeRuntime {
             raft.fatal.as_deref().unwrap_or(""),
         );
         body.push_str(&self.public_admission.snapshot().status_lines());
+        let proposals = self.driver.proposal_queue_snapshot();
+        body.push_str(&format!(
+            "raft_proposal_queue_max_requests={}\nraft_proposal_queue_max_bytes={}\nraft_proposal_queue_queued={}\nraft_proposal_queue_in_flight={}\nraft_proposal_queue_encoded_bytes={}\nraft_proposal_queue_peak_requests={}\nraft_proposal_queue_peak_bytes={}\nraft_proposal_queue_stopped={}\n",
+            proposals.max_requests, proposals.max_bytes, proposals.queued, proposals.in_flight,
+            proposals.encoded_bytes, proposals.peak_requests, proposals.peak_bytes, proposals.stopped,
+        ));
         body.push_str(&format!(
             "raft_receive_authorized={}\nraft_owner_started={}\nlisten_addr={}\n",
             self.discovery.raft_receive_allowed(),

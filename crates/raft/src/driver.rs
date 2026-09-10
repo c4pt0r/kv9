@@ -256,6 +256,7 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     pump_started: AtomicBool,
     pump_gate: Mutex<()>,
     completion: crate::work::CompletionSignal,
+    proposals: crate::proposal_queue::ProposalQueue,
     metrics: DriverMetrics,
 }
 
@@ -271,6 +272,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     ) -> Result<Arc<NodeDriver<S, E>>> {
         let drain = crate::DrainToken::mint(&peer)?;
         transport.set_work_signal(peer.work_signal.clone());
+        let proposals = crate::proposal_queue::ProposalQueue::new(peer.work_signal.clone());
         Ok(Arc::new(NodeDriver {
             peer,
             drain,
@@ -305,6 +307,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             pump_started: AtomicBool::new(false),
             pump_gate: Mutex::new(()),
             completion: crate::work::CompletionSignal::default(),
+            proposals,
             metrics: DriverMetrics::default(),
         }))
     }
@@ -382,6 +385,12 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         for msg in self.transport.drain() {
             self.peer.step_message(msg);
         }
+        // Incoming term changes precede queued submission. Every request is
+        // checked against actual leadership/planning term at this handoff.
+        // Queue guards are released before the peer lock is taken. Submitting
+        // an available prefix before pump() lets one Ready contain its entries.
+        self.proposals
+            .drain(|data, term| self.peer.propose_in_term(data, term));
         let messages = self
             .peer
             .pump()
@@ -625,6 +634,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         let msg = format!("fatal at committed entry (term {term}, index {index}): {cause}");
         *self.fatal.lock().expect("fatal poisoned") = Some(msg.clone());
         self.stop.store(true, Ordering::Relaxed);
+        self.proposals.close();
         self.peer.work_signal.stop();
         let _ = self.completion.publish();
         Error::Raft(msg)
@@ -637,6 +647,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         let msg = fatal.get_or_insert_with(|| cause.to_string()).clone();
         drop(fatal);
         self.stop.store(true, Ordering::Relaxed);
+        self.proposals.close();
         self.peer.work_signal.stop();
         let _ = self.completion.publish();
         Error::Raft(msg)
@@ -734,6 +745,29 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             || self.peer.propose_in_term(cmd.encode(), Some(term)),
             classify_proposal,
         )
+    }
+
+    /// Queue one command without acquiring the peer/persistence mutex, then
+    /// await its exact submission result within the original absolute deadline.
+    /// The owner must be running. Queue acceptance is not commitment or apply.
+    pub fn propose_queued(
+        &self,
+        cmd: &Command,
+        expected_term: Option<u64>,
+        deadline: Instant,
+    ) -> Result<ProposedAt> {
+        self.metrics.proposal_submission.observe(
+            || {
+                self.proposals
+                    .enqueue(cmd.encode(), expected_term, deadline)?
+                    .wait()
+            },
+            classify_proposal,
+        )
+    }
+
+    pub fn proposal_queue_snapshot(&self) -> crate::ProposalQueueSnapshot {
+        self.proposals.snapshot()
     }
 
     /// One region's authoritative manifest pair, read through this driver's
@@ -1067,6 +1101,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
 
     pub fn stop(&self) {
         self.stop.store(true, Ordering::Relaxed);
+        self.proposals.close();
         self.peer.work_signal.stop();
         let _ = self.completion.publish();
     }
@@ -1127,7 +1162,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
 fn classify_proposal(result: &Result<ProposedAt>) -> Outcome {
     match result {
         Ok(_) => Outcome::Success,
-        Err(Error::NotLeader { .. }) => Outcome::Rejected,
+        Err(Error::NotLeader { .. } | Error::ProposalRefused { .. }) => Outcome::Rejected,
+        Err(Error::ProposalUnconfirmed) => Outcome::Unconfirmed,
         Err(_) => Outcome::Error,
     }
 }
@@ -1746,6 +1782,178 @@ mod tests {
         }
         assert_eq!(driver.status().role, Role::Leader);
         driver
+    }
+
+    #[test]
+    fn queued_proposals_keep_exact_positions_and_wait_for_real_apply() {
+        let driver = single_node_driver();
+        let before = driver.driver_applied().unwrap();
+        driver.pause_apply(true);
+        let tickets: Vec<_> = (0..4u8)
+            .map(|value| {
+                driver
+                    .proposals
+                    .enqueue(
+                        Command::Put {
+                            cf: 0,
+                            key: vec![value],
+                            value: vec![value + 1],
+                        }
+                        .encode(),
+                        Some(before.term),
+                        Instant::now() + Duration::from_secs(5),
+                    )
+                    .unwrap()
+            })
+            .collect();
+        assert_eq!(driver.proposal_queue_snapshot().queued, 4);
+        driver.step().unwrap();
+        let positions: Vec<_> = tickets
+            .into_iter()
+            .map(|ticket| ticket.wait().unwrap())
+            .collect();
+        for (offset, at) in positions.iter().copied().enumerate() {
+            assert_eq!(at.term, before.term);
+            assert_eq!(at.index.0, before.index + offset as u64 + 1);
+            assert!(
+                matches!(
+                    driver.wait_applied(at, Duration::ZERO),
+                    Err(ApplyWaitError::Unconfirmed { .. })
+                ),
+                "a submission receipt was promoted to apply success"
+            );
+            assert_eq!(
+                driver.get(ColumnFamily::Default, &[offset as u8]).unwrap(),
+                None
+            );
+        }
+        driver.pause_apply(false);
+        driver.step().unwrap();
+        for (offset, at) in positions.into_iter().enumerate() {
+            assert!(
+                matches!(driver.wait_applied(at, Duration::ZERO), Ok(ApplyWaitOutcome::Applied(actual)) if actual.term == at.term && actual.index == at.index.0)
+            );
+            assert_eq!(
+                driver.get(ColumnFamily::Default, &[offset as u8]).unwrap(),
+                Some(vec![offset as u8 + 1])
+            );
+        }
+        let queue = driver.proposal_queue_snapshot();
+        assert_eq!(
+            (queue.queued, queue.in_flight, queue.encoded_bytes),
+            (0, 0, 0)
+        );
+    }
+
+    #[test]
+    fn queued_term_check_occurs_at_submission_and_inbound_leadership_wins() {
+        let driver = single_node_driver();
+        let before = driver.driver_applied().unwrap();
+        let command = Command::Put {
+            cf: 0,
+            key: b"stale".to_vec(),
+            value: b"v".to_vec(),
+        };
+        let stale = driver
+            .proposals
+            .enqueue(
+                command.encode(),
+                Some(before.term + 1),
+                Instant::now() + Duration::from_secs(5),
+            )
+            .unwrap();
+        driver.step().unwrap();
+        assert!(matches!(stale.wait(), Err(Error::WriteConflict(_))));
+        assert_eq!(driver.driver_applied().unwrap(), before);
+
+        let hub = InProcHub::new();
+        let peer = Arc::new(RaftPeer::new(NodeId(1), RegionId(1), &[NodeId(1)]).unwrap());
+        let inbound = Arc::new(hub.endpoint(NodeId(1)));
+        let sender = hub.endpoint(NodeId(2));
+        let driver = NodeDriver::new(peer, inbound, MemStateMachine::new()).unwrap();
+        driver.peer().campaign().unwrap();
+        driver.step().unwrap();
+        assert_eq!(driver.status().role, Role::Leader);
+        let term = driver.status().term;
+        let queued = driver
+            .proposals
+            .enqueue(
+                command.encode(),
+                Some(term),
+                Instant::now() + Duration::from_secs(5),
+            )
+            .unwrap();
+        let mut heartbeat = raft::prelude::Message::default();
+        heartbeat.set_msg_type(raft::prelude::MessageType::MsgHeartbeat);
+        heartbeat.from = 2;
+        heartbeat.to = 1;
+        heartbeat.term = term + 1;
+        sender.send(NodeId(1), heartbeat);
+        driver.step().unwrap();
+        assert!(
+            matches!(
+                queued.wait(),
+                Err(Error::NotLeader {
+                    leader: Some(NodeId(2))
+                })
+            ),
+            "queued proposal used leadership from before the inbound term change"
+        );
+        assert_eq!(driver.get(ColumnFamily::Default, b"stale").unwrap(), None);
+    }
+
+    #[test]
+    fn queued_suffix_is_refused_when_a_real_committed_decode_failure_stops_the_owner() {
+        let driver = single_node_driver();
+        let bad = driver
+            .peer()
+            .propose_traced(vec![0xff, 0xee, 0xdd])
+            .unwrap();
+        let mut tickets: Vec<_> = (0..65u8)
+            .map(|value| {
+                driver
+                    .proposals
+                    .enqueue(
+                        Command::Put {
+                            cf: 0,
+                            key: vec![value],
+                            value: vec![1],
+                        }
+                        .encode(),
+                        None,
+                        Instant::now() + Duration::from_secs(5),
+                    )
+                    .unwrap()
+            })
+            .collect();
+        let suffix = tickets.pop().unwrap();
+        assert!(
+            driver.step().is_err(),
+            "malformed committed command did not fence the owner"
+        );
+        assert!(
+            matches!(
+                suffix.wait(),
+                Err(Error::ProposalRefused {
+                    reason: kv9_common::ProposalRefusal::Stopped
+                })
+            ),
+            "fatal pump retained an unclaimed request"
+        );
+        for ticket in tickets {
+            let at = ticket.wait().unwrap();
+            assert!(
+                driver.wait_applied(at, Duration::ZERO).is_err(),
+                "failed Ready produced false apply success"
+            );
+        }
+        assert!(driver.status().applied_index < bad.index.0);
+        let queue = driver.proposal_queue_snapshot();
+        assert!(queue.stopped);
+        assert_eq!(
+            (queue.queued, queue.in_flight, queue.encoded_bytes),
+            (0, 0, 0)
+        );
     }
 
     #[test]

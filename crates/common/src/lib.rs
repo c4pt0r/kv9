@@ -18,7 +18,7 @@ pub mod store_lifecycle;
 pub mod time;
 
 pub use config::{Config, SeedPeer};
-pub use error::{Error, ReadBarrierPhase, Result};
+pub use error::{Error, ProposalRefusal, ReadBarrierPhase, Result};
 pub use ids::AppliedPosition;
 pub use ids::{
     ClusterId, KeyspaceId, NodeId, RegionId, TenantId, TimelineId, TsoProviderId, TxnGroupId,

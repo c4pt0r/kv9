@@ -135,6 +135,7 @@ pub enum Reason {
     AdmissionCount,
     AdmissionBytes,
     AdmissionOversize,
+    ProposalRefused { reason: kv9_common::ProposalRefusal },
     ReadQuorumUnconfirmed,
     ReadApplyUnconfirmed,
     RpcStatus { code: i32 },
@@ -308,7 +309,8 @@ impl PersistentRawClient {
                 Err(
                     reason @ (Reason::AdmissionCount
                     | Reason::AdmissionBytes
-                    | Reason::AdmissionOversize),
+                    | Reason::AdmissionOversize
+                    | Reason::ProposalRefused { .. }),
                 ) => {
                     report.outcome = Outcome::Refused { reason };
                     break;
@@ -471,6 +473,14 @@ fn single<'a>(metadata: &'a MetadataMap, key: &str) -> Option<&'a str> {
 /// Unmarked statuses retain only their code and NEVER prove a write was refused.
 pub(crate) fn classify_status(status: &Status, read: bool) -> Reason {
     let metadata = status.metadata();
+    if let Some(reason) = crate::grpc::proposal_refusal(status) {
+        // A read never enters the proposal queue; a marked read is a protocol error.
+        return if read {
+            Reason::Protocol
+        } else {
+            Reason::ProposalRefused { reason }
+        };
+    }
     if metadata.contains_key(NOT_LEADER_KEY)
         && status.code() == Code::FailedPrecondition
         && exclusive(metadata, &[NOT_LEADER_KEY, LEADER_HINT_KEY])

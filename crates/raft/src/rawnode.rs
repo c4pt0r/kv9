@@ -949,6 +949,56 @@ mod tests {
     const N2: NodeId = NodeId(2);
     const N3: NodeId = NodeId(3);
 
+    #[test]
+    fn queued_proposal_admission_does_not_wait_for_the_peer_persistence_mutex() {
+        use crate::driver::NodeDriver;
+        use crate::transport::{InProcHub, RaftTransport};
+        use std::time::{Duration, Instant};
+        let hub = InProcHub::new();
+        let peer = Arc::new(RaftPeer::new(N1, R, &[N1]).unwrap());
+        let driver = NodeDriver::new(
+            peer.clone(),
+            Arc::new(hub.endpoint(N1)) as Arc<dyn RaftTransport>,
+            MemStateMachine::new(),
+        )
+        .unwrap();
+        peer.campaign().unwrap();
+        driver.step().unwrap();
+        let guard = peer.lock();
+        let caller = driver.clone();
+        let worker = std::thread::spawn(move || {
+            caller.propose_queued(
+                &Command::Put {
+                    cf: 0,
+                    key: b"unblocked-admission".to_vec(),
+                    value: b"v".to_vec(),
+                },
+                None,
+                Instant::now() + Duration::from_secs(5),
+            )
+        });
+        let deadline = Instant::now() + Duration::from_secs(2);
+        while driver.proposal_queue_snapshot().queued == 0 && Instant::now() < deadline {
+            std::thread::yield_now();
+        }
+        let queued_while_peer_locked = driver.proposal_queue_snapshot().queued;
+        drop(guard);
+        driver.step().unwrap();
+        let result = worker.join().unwrap();
+        assert_eq!(
+            queued_while_peer_locked, 1,
+            "admission blocked behind the peer/persistence mutex"
+        );
+        let at = result.unwrap();
+        assert!(driver.wait_applied(at, Duration::ZERO).is_ok());
+        assert_eq!(
+            driver
+                .get(ColumnFamily::Default, b"unblocked-admission")
+                .unwrap(),
+            Some(b"v".to_vec())
+        );
+    }
+
     /// Task #5: the drain capability is minted at most once per peer — the
     /// second mint is a typed refusal, not a second consumer.
     #[test]
