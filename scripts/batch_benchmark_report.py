@@ -185,6 +185,24 @@ def histogram_check(h):
     return r
 
 
+def dominance_check(containing, contained):
+    """Necessary bucket-order condition for paired samples where A >= B.
+
+    At each bucket's upper boundary, A cannot have more completed samples below
+    that boundary than B. Bucket intervals prevent exact per-call reconstruction.
+    """
+    require(containing['count'] == contained['count'], 'paired latency counts differ')
+    if not containing['count']:
+        return
+    require(containing['min_ns'] >= contained['min_ns'] and containing['max_ns'] >= contained['max_ns'],
+            'paired latency extrema violate containment')
+    left = right = 0
+    for a, b in zip(containing['buckets'], contained['buckets']):
+        left += a
+        right += b
+        require(left <= right, 'paired latency distributions violate containment')
+
+
 def metrics_check(m, c, phase):
     keys(m, ['operations', 'outcomes', 'reasons', 'attempt_outcomes', 'histogram_subdivisions', 'valid', 'statistics'])
     for name, expected in [('operations', OPERATIONS), ('outcomes', OUTCOMES), ('reasons', REASONS),
@@ -199,7 +217,9 @@ def metrics_check(m, c, phase):
                   'attempts', 'dispatch_lateness', 'data_failures'])
         uint(op['data_failures'], 0, 0)
         require(type(op['populations']) is list and len(op['populations']) == 5, 'outcome populations missing')
-        calls = sdk_sum = whole_sum = scheduled_sum = 0
+        calls = sdk_sum = whole_sum = scheduled_sum = sdk_max = 0
+        scheduled_buckets = [0] * 3776 if fixed else []
+        scheduled_min = scheduled_max = None
         for outcome, pop in enumerate(op['populations']):
             keys(pop, ['calls', 'input_items', 'completed_before_cutoff', 'whole_call', 'sdk_call', 'scheduled_to_completion'])
             n = uint(pop['calls'], 0, 10_500_000)
@@ -215,8 +235,16 @@ def metrics_check(m, c, phase):
             whole, sdk, scheduled = [histogram_check(pop[name]) for name in ('whole_call', 'sdk_call', 'scheduled_to_completion')]
             require(whole['count'] == sdk['count'] == n and scheduled['count'] == (n if fixed else 0), 'logical latency population differs')
             require(whole['sum_ns'] >= sdk['sum_ns'], 'SDK time exceeds containing call time')
+            dominance_check(whole, sdk)
             if n:
-                require(whole['min_ns'] >= sdk['min_ns'] and whole['max_ns'] >= sdk['max_ns'], 'SDK extrema exceed containing call')
+                sdk_max = max(sdk_max, sdk['max_ns'])
+            if fixed:
+                dominance_check(scheduled, whole)
+                if n:
+                    scheduled_min = scheduled['min_ns'] if scheduled_min is None else min(scheduled_min, scheduled['min_ns'])
+                    scheduled_max = scheduled['max_ns'] if scheduled_max is None else max(scheduled_max, scheduled['max_ns'])
+                for i, count in enumerate(scheduled['buckets']):
+                    scheduled_buckets[i] += count
             calls += n
             sdk_sum += sdk['sum_ns']
             whole_sum += whole['sum_ns']
@@ -240,9 +268,13 @@ def metrics_check(m, c, phase):
         require(attempt_count == calls - rejected + ar[1] - reasons[1], 'non-NotLeader retry or omitted attempt')
         require(calls - rejected <= attempt_count <= (calls - rejected) * c['client']['max_attempts'], 'attempt budget differs')
         require(sum(h['sum_ns'] for h in ah) <= sdk_sum, 'attempt durations exceed SDK time')
+        require(all(not h['count'] or h['max_ns'] <= sdk_max for h in ah), 'attempt sample exceeds every SDK call')
         lateness = histogram_check(op['dispatch_lateness'])
         require(lateness['count'] == (calls if fixed else 0), 'dispatch lateness population differs')
         require(scheduled_sum == (whole_sum + lateness['sum_ns'] if fixed else 0), 'scheduled latency omits dispatch wait or call time')
+        if fixed:
+            dominance_check({'count': calls, 'buckets': scheduled_buckets,
+                             'min_ns': scheduled_min, 'max_ns': scheduled_max}, lateness)
         counts.append(calls)
         successes += p[0]['calls']
         items += p[0]['input_items']
@@ -329,6 +361,12 @@ def report_check(r, c, b):
         worker_issued += n
         worker_dropped += drop
     require(worker_issued == total and worker_dropped == dropped, 'worker/global accounting differs')
+    nominal = c['measure_ms'] * 1_000_000
+    after_cutoff = sum(w['issued'] > 0 and w['last_terminal_ns'] >= nominal for w in workers)
+    before_cutoff = sum(p['completed_before_cutoff'] for op in r['metrics']['measurement']['statistics'] for p in op['populations'])
+    # One sequential call per worker: if any call completes after the dispatch
+    # cutoff it is that worker's final call, because no new call may then start.
+    require(before_cutoff == total - after_cutoff, 'cutoff completion count differs from worker tails')
     keys(r['stages'], ['initialization', 'warmup', 'measurement', 'drain', 'verification'])
     previous = 0
     for stage in ('initialization', 'warmup', 'measurement', 'drain', 'verification'):
@@ -339,7 +377,6 @@ def report_check(r, c, b):
     require(r['stages']['initialization']['start_ns'] == 0, 'initialization origin differs')
     start = r['stages']['measurement']['start_ns']
     cutoff = r['stages']['measurement']['end_ns'] - start
-    nominal = c['measure_ms'] * 1_000_000
     if r['stop_reason'] == 'duration':
         require(cutoff == nominal, 'measurement duration differs')
     else:
@@ -347,6 +384,20 @@ def report_check(r, c, b):
     elapsed = uint(r['cohort_elapsed_ns'], 1)
     require(elapsed == max(cutoff, last), 'terminal drain excluded or extra time included')
     require(r['stages']['drain']['start_ns'] == start + cutoff and r['stages']['drain']['end_ns'] == start + elapsed, 'drain stage differs')
+    require(stopped <= r['stages']['verification']['start_ns'] - start, 'worker stopped after verification began')
+    for phase in PHASES:
+        span = elapsed if phase == 'measurement' else r['stages'][phase]['end_ns'] - r['stages'][phase]['start_ns']
+        whole_sum = 0
+        for op in r['metrics'][phase]['statistics']:
+            for pop in op['populations']:
+                whole_sum += pop['whole_call']['raw']['sum_ns']
+                for name in ('whole_call', 'sdk_call', 'scheduled_to_completion'):
+                    h = pop[name]['raw']
+                    require(not h['count'] or h['max_ns'] <= (last if phase == 'measurement' else span), 'latency sample exceeds containing stage')
+        # Whole calls are sequential within a worker. Scheduled-to-completion
+        # intervals may overlap, so their sums do not have this same bound.
+        maximum_sum = sum(w['last_terminal_ns'] for w in workers) if phase == 'measurement' else span
+        require(whole_sum <= maximum_sum, 'whole-call durations exceed available worker time')
     for name, numerator in [('completed_batches_per_second', total),
                             ('successful_batches_per_second', measured['successes']),
                             ('successful_input_items_per_second', measured['successful_items'])]:
