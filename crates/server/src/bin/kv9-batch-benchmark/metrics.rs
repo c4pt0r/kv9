@@ -1,4 +1,4 @@
-use super::model::Histogram;
+use super::model::{Histogram, ReadApi};
 use kv9_server::client::{CallReport, OperationKind, Outcome, Reason};
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -99,9 +99,9 @@ impl Metrics {
     pub fn record(&mut self, sample: Sample<'_>) {
         let report = sample.report;
         let kind = match report.operation {
-            OperationKind::BatchGet => 0,
+            OperationKind::BatchGet | OperationKind::Get => 0,
             OperationKind::BatchPut => 1,
-            OperationKind::Get | OperationKind::Put | OperationKind::Delete => {
+            OperationKind::Put | OperationKind::Delete => {
                 panic!("point operation in batch benchmark")
             }
         };
@@ -214,11 +214,19 @@ impl Metrics {
     }
 
     pub fn report(&self) -> Value {
+        self.report_for_read_api(ReadApi::BatchGet)
+    }
+
+    pub fn report_for_read_api(&self, read_api: ReadApi) -> Value {
+        let read_operation = match read_api {
+            ReadApi::BatchGet => "batch_get",
+            ReadApi::PointGet => "get",
+        };
         fn histogram(h: &Histogram) -> Value {
             json!({"raw": h, "mean_ns": if h.valid && h.count > 0 { Some(h.sum_ns as f64 / h.count as f64) } else { None },
                 "p50": h.quantile(50), "p95": h.quantile(95), "p99": h.quantile(99)})
         }
-        json!({"operations": ["batch_get", "batch_put"], "outcomes": OUTCOMES,
+        json!({"operations": [read_operation, "batch_put"], "outcomes": OUTCOMES,
             "reasons": REASONS, "attempt_outcomes": ["success", "refused", "failed_or_unknown"],
             "histogram_subdivisions": 64, "valid": self.valid(),
             "statistics": self.operations.iter().map(|op| json!({

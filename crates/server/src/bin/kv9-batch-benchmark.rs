@@ -9,7 +9,7 @@ mod model;
 
 use kv9_server::client::{CallReport, Outcome, PersistentRawClient, Reason, Value};
 use metrics::{Metrics, Sample};
-use model::{Config, Load};
+use model::{Config, Load, ReadApi};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as Json};
 use sha2::{Digest, Sha256};
@@ -100,7 +100,7 @@ fn valid_outcome(config: &Config, nonce: u64, outcome: &Outcome) -> bool {
     match outcome {
         Outcome::Success {
             value: Value::BatchGet { values },
-        } if config.is_read(nonce) => {
+        } if config.is_read(nonce) && config.effective_read_api() == ReadApi::BatchGet => {
             let first = config.first_key(nonce);
             values.len() == config.batch_size
                 && values.iter().enumerate().all(|(i, value)| {
@@ -112,6 +112,17 @@ fn valid_outcome(config: &Config, nonce: u64, outcome: &Outcome) -> bool {
                         )
                     })
                 })
+        }
+        Outcome::Success {
+            value: Value::Get { value },
+        } if config.is_read(nonce) && config.effective_read_api() == ReadApi::PointGet => {
+            value.as_ref().is_some_and(|v| {
+                config.valid_value(
+                    config.first_key(nonce),
+                    v,
+                    config.warmup_calls + config.max_calls,
+                )
+            })
         }
         Outcome::Success {
             value: Value::Applied { term, index },
@@ -610,7 +621,11 @@ async fn execute() -> Result<(), String> {
         .iter()
         .map(|op| op.populations[0].input_items)
         .sum();
-    let report = json!({"version":1,"workload_model":"bounded_native_batch_performance","full_history_recorded":false,
+    let workload_model = match config.effective_read_api() {
+        ReadApi::BatchGet => "bounded_native_batch_performance",
+        ReadApi::PointGet => "bounded_native_point_get_diagnostic",
+    };
+    let report = json!({"version":config.version,"workload_model":workload_model,"full_history_recorded":false,
         "independently_checked":false,"complete":outcome.is_ok(),"failure":outcome.as_ref().err(),
         "configuration":config,"config_sha256":digest(&config_bytes),"build":build,"build_sha256":digest(&build_bytes),
         "wire_sizes":sizes,"process_id":std::process::id(),"runtime_threads":2,
@@ -623,8 +638,10 @@ async fn execute() -> Result<(), String> {
         "successful_input_items_per_second":if seconds>0.0 {Some(successful_items as f64/seconds)} else {None},
         "timing_eligible":outcome.is_ok() && result.stop_reason==Some("duration") && build.profile=="release" && !build.dirty,
         "proc_stat_before":result.proc_before,"proc_stat_after":result.proc_after,"workers":result.workers,
-        "metrics":{"initialization":result.initialization.report(),"warmup":result.warmup.report(),
-            "measurement":result.measurement.report(),"verification":result.verification.report()}});
+        "metrics":{"initialization":result.initialization.report(),
+            "warmup":result.warmup.report_for_read_api(config.effective_read_api()),
+            "measurement":result.measurement.report_for_read_api(config.effective_read_api()),
+            "verification":result.verification.report()}});
     write_json(&output.join("report.json"), &report)?;
     outcome?;
     println!("PASS: native batch benchmark drained; independent artifact validation is required");
@@ -654,6 +671,7 @@ mod tests {
                 retry_backoff_ms: 1,
             },
             rpc_transport: TransportKind::TonicStream,
+            read_api: None,
             run_id: "batch_probe".into(),
             seed: 71,
             workers: 3,
@@ -689,6 +707,109 @@ mod tests {
         }
         owned.sort_unstable();
         assert_eq!(owned, (0..17).collect::<Vec<_>>());
+    }
+
+    #[test]
+    fn point_get_control_selects_the_same_key_and_accepts_only_its_reply_shape() {
+        use kv9_server::client::RawOperation;
+        let mut c = config();
+        c.version = 2;
+        c.read_api = Some(ReadApi::BatchGet);
+        c.batch_size = 1;
+        c.read_percent = 100;
+        let batch_sizes = c.validate().unwrap();
+        let nonce = 17;
+        let RawOperation::BatchGet { keys } = c.operation(nonce) else {
+            panic!("expected batch read");
+        };
+        let expected = c.value(c.first_key(nonce), 0);
+        let batch_reply = Outcome::Success {
+            value: Value::BatchGet {
+                values: vec![Some(expected.clone())],
+            },
+        };
+        let point_reply = Outcome::Success {
+            value: Value::Get {
+                value: Some(expected),
+            },
+        };
+        assert!(valid_outcome(&c, nonce, &batch_reply));
+        assert!(!valid_outcome(&c, nonce, &point_reply));
+        c.read_api = Some(ReadApi::PointGet);
+        let point_sizes = c.validate().unwrap();
+        let RawOperation::Get { key } = c.operation(nonce) else {
+            panic!("expected point read");
+        };
+        assert_eq!(keys, vec![key]);
+        assert_eq!(batch_sizes.get_request_bytes, point_sizes.get_request_bytes);
+        assert_eq!(
+            batch_sizes.get_response_bytes,
+            point_sizes.get_response_bytes
+        );
+        assert!(valid_outcome(&c, nonce, &point_reply));
+        assert!(!valid_outcome(&c, nonce, &batch_reply));
+        assert_eq!(
+            Metrics::default().report_for_read_api(c.effective_read_api())["operations"],
+            json!(["get", "batch_put"])
+        );
+        assert_eq!(
+            Metrics::default().report()["operations"],
+            json!(["batch_get", "batch_put"])
+        );
+    }
+
+    #[test]
+    fn legacy_v1_round_trip_omits_selector_and_retains_batch_behavior() {
+        use kv9_server::client::RawOperation;
+        let c = config();
+        c.validate().unwrap();
+        assert_eq!(c.version, 1);
+        assert_eq!(c.read_api, None);
+        assert_eq!(c.effective_read_api(), ReadApi::BatchGet);
+        let encoded = serde_json::to_value(&c).unwrap();
+        assert!(encoded.get("read_api").is_none());
+        let decoded: Config = serde_json::from_value(encoded.clone()).unwrap();
+        decoded.validate().unwrap();
+        assert_eq!(serde_json::to_value(&decoded).unwrap(), encoded);
+        assert_eq!(decoded.effective_read_api(), ReadApi::BatchGet);
+        let read_nonce = (1..=100).find(|nonce| decoded.is_read(*nonce)).unwrap();
+        assert!(matches!(
+            decoded.operation(read_nonce),
+            RawOperation::BatchGet { .. }
+        ));
+    }
+
+    #[test]
+    fn explicit_v2_selector_and_point_get_bounds_are_required() {
+        let mut c = config();
+        for version in [1, 2] {
+            let mut encoded = serde_json::to_value(&c).unwrap();
+            encoded["version"] = json!(version);
+            for invalid in [Json::Null, json!("unknown"), json!(false)] {
+                encoded["read_api"] = invalid;
+                assert!(serde_json::from_value::<Config>(encoded.clone()).is_err());
+            }
+        }
+        c.version = 2;
+        assert!(c.validate().is_err());
+        let missing: Config = serde_json::from_value(serde_json::to_value(&c).unwrap()).unwrap();
+        assert!(missing.validate().is_err());
+        c.read_api = Some(ReadApi::BatchGet);
+        c.validate().unwrap();
+        assert_eq!(serde_json::to_value(&c).unwrap()["read_api"], "batch_get");
+        c.read_api = Some(ReadApi::PointGet);
+        assert!(c.validate().is_err());
+        c.batch_size = 1;
+        assert!(c.validate().is_err());
+        c.read_percent = 100;
+        c.validate().unwrap();
+        c.version = 1;
+        assert!(c.validate().is_err());
+        c.read_api = Some(ReadApi::BatchGet);
+        assert!(c.validate().is_err());
+        c.read_api = None;
+        c.validate().unwrap();
+        assert_eq!(c.effective_read_api(), ReadApi::BatchGet);
     }
 
     #[test]
