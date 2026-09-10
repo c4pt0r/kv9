@@ -366,8 +366,33 @@ The local correctness archive is
 (57,614,894 bytes; 624 entries), SHA-256
 `3cfcf7f686d76703e4db983566a2b8e2c9c9ba2a194d462c38ac3c32fb8ec826`.
 Every member was read back and verified, with original inputs unchanged.
-Performance evidence is inventoried separately. Exact-candidate fault evidence
-and machine-checked composition remain open; master runtime is unchanged.
+Performance evidence is inventoried separately.
+
+The exact resident `11cae97` [full Chaos Mesh acceptance](RESIDENT-READ-CHAOS-ACCEPTANCE.md)
+now passes all 21 original fault windows and independent full-history/effect
+checks. The accepted second run contains 5,109 CLI operations (4,650 successful,
+453 unknown, six refused) and 1,405 persistent-client operations (1,378
+successful, 23 unknown, four refused). Every invocation has a terminal record;
+unknown writes remain unknown and are not retried. Actual fault coverage includes
+formation/seed loss, every voter's Pod faults, partition/admission pressure,
+delay, all six EIO/ENOSPC cases, missing logs, replacement PVCs and endpoint
+migration with the retained original stores.
+
+A separate PID-aware observer attests 35 sampled runtime lifetimes and 468
+wrapped-child samples. It binds actual child executables to Pod UID, status PID
+and process start ticks before/after observation. Positive resident-read counter
+growth occurs in the partition, delay and recovered endpoint envelopes with
+independently checked persistent GETs; this is envelope-scoped activity, not
+per-response attribution. All four final public/read-group ledgers drained,
+owned fixtures exited/cleaned, and eight preexisting namespace UIDs remained
+unchanged. The first full matrix and three rejected extra observer audits are
+retained separately: its original history/effect checks passed, but that extra
+observer's hard-coded limits and PID-1-only attestation were incomplete. Only the
+owned observer was repaired before running the unchanged complete second matrix.
+
+This evidence applies to exact resident `11cae97` on one Kind host, not the later
+asynchronous-write candidate, cross-host loss or physical power failure.
+Machine-checked protocol composition remains open; master runtime is unchanged.
 
 The next performance priority is the write path: it remains around 66,000/s
 against a roughly 492,000/s Redis memory reference in this bracket. The exact
@@ -465,9 +490,9 @@ Every archive member and original input was read back. This is local
 implementation acceptance only: no new performance number or speedup is claimed.
 The new task/oneshot/mutex work and bounded per-owner ring scans may offset the
 saved worker wakeups; use a fresh unchanged before/candidate/after comparison.
-Resident-read actual Chaos validation and inherited checked protocol composition
-continue separately. Their results cannot be relabeled as exact asynchronous
-write acceptance. The main runtime and original roadmap checklist are unchanged;
+Resident-read actual Chaos validation is now accepted for its exact source;
+inherited checked protocol composition continues separately. Those results
+cannot be relabeled as exact asynchronous write acceptance. The main runtime and original roadmap checklist are unchanged;
 no hosted workflow was dispatched.
 
 ### 5. Reconcile improvements before extending capacity
