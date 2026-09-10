@@ -2,7 +2,7 @@
 
 Tracking: #41, #13 and #9. This proof is bound to production source
 `4201d04d52e5532652a670c7d27df1e8a32106be` and the contract in
-[RAFT-SCHEDULING.md](RAFT-SCHEDULING.md). It covers one runtime-assembled
+[RAFT-SCHEDULING.md](https://github.com/c4pt0r/kv9/blob/4201d04d52e5532652a670c7d27df1e8a32106be/docs/RAFT-SCHEDULING.md). It covers one runtime-assembled
 `NodeDriver`/peer/transport lifetime. Later queued-only outbound coalescing,
 completion generations, write batching and engine group commit require separate
 refinement and acceptance. The 2-ms outbound batching window and 1-ms client
