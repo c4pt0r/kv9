@@ -770,7 +770,11 @@ mod tests {
             }
             for chunk in [1, 7, 16, 255, 4096] {
                 let parts: Vec<&[u8]> = bytes.chunks(chunk).collect();
-                assert_eq!(crc32_parts(&parts), expected, "length {length}, chunk {chunk}");
+                assert_eq!(
+                    crc32_parts(&parts),
+                    expected,
+                    "length {length}, chunk {chunk}"
+                );
             }
         }
     }
