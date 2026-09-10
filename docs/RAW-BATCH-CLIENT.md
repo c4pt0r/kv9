@@ -145,13 +145,18 @@ Batch measurements must report batch size, concurrent batches, total in-flight
 items, completed RPCs/second, successful input KV items/second, transport attempts,
 whole-batch unknown writes and their item counts, plus complete-batch logical
 and attempt latency populations (mean, p50, p95 and p99). Refusals and timeouts
-remain visible. Latency is never divided by batch size. No new batch QPS or
-latency claim is made by this implementation increment.
+remain visible. Latency is never divided by batch size.
 
 The standalone native and Redis measurement clients subsequently passed
 [clean release correctness checks](NATIVE-BATCH-RELEASE-CHECKS.md), including
 caps, sparse workers, failure accounting and consumed-write no-replay controls.
 Those runs are not paired performance samples.
+
+The first [paired native/Redis batch baseline](NATIVE-BATCH-PERFORMANCE.md)
+now covers all six sizes, 16/64 concurrent batches and read/write/mixed loads
+with two reversed repetitions. It reports throughput and whole-batch latency
+under explicit same-host tmpfs-WAL scope. Fixed offered-load curves and matched
+point controls remain open, and the measured candidate still trails Redis.
 
 The current API amortizes one RPC and one established read view or atomic
 Raft write command across the input vector. `RawExecutor::batch_get` still
