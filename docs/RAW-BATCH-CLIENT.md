@@ -116,7 +116,10 @@ unknown-write non-replay and whole-batch reservation lifetime. The existing
 runtime prepared-write fence test also exercises a real batch command. These
 are supplemented by the [native batch process acceptance](NATIVE-BATCH-ACCEPTANCE.md):
 full atomic histories passed with overlapping point calls on three WAL voters
-through leader loss and restart. Native batch Chaos Mesh remains outstanding.
+through leader loss and restart. The separate
+[client-link preflight](NATIVE-BATCH-LINK-PREFLIGHT.md) qualified effective
+Service VIP fault selectors and a same-process socket reset. The complete
+native batch Chaos Mesh acceptance remains outstanding.
 
 ## Performance reporting contract
 
@@ -130,3 +133,9 @@ whole-batch unknown writes and their item counts, plus complete-batch logical
 and attempt latency populations (mean, p50, p95 and p99). Refusals and timeouts
 remain visible. Latency is never divided by batch size. No new batch QPS or
 latency claim is made by this implementation increment.
+
+The current API amortizes one RPC and one established read view or atomic
+Raft write command across the input vector. `RawExecutor::batch_get` still
+looks up keys individually through that view, and the runtime BatchGet entry
+uses the synchronous established-read path. Storage multi-get and the shared
+async batch-read path have not been optimized or measured by this checkpoint.
