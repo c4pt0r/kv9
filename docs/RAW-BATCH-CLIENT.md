@@ -114,8 +114,9 @@ The new controlled unary and real-HTTP/2 adapter tests cover ordered results,
 duplicates, count and exact byte boundaries, malformed vectors, shared deadlines,
 unknown-write non-replay and whole-batch reservation lifetime. The existing
 runtime prepared-write fence test also exercises a real batch command. These
-are distinct from an atomic batch history checker running against a multi-node
-cluster during Chaos Mesh faults; that batch-specific gate remains outstanding.
+are supplemented by the [native batch process acceptance](NATIVE-BATCH-ACCEPTANCE.md):
+full atomic histories passed with overlapping point calls on three WAL voters
+through leader loss and restart. Native batch Chaos Mesh remains outstanding.
 
 ## Performance reporting contract
 

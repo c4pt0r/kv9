@@ -118,9 +118,61 @@ The full histories, exact executable lifetimes, source-bound helpers, healthy
 Serving state and fresh zero-admission/read/apply ledgers are mandatory.
 All attempts and original errors remain retained if cleanup also fails.
 
-The initial standalone fixture and its independent artifact audit are pending
-at this source checkpoint. Actual native-batch Chaos Mesh and dedicated
-client-link fault acceptance remain separate gates. The accepted
+The first retained standalone fixture and independent audit passed on exact
+`e246eae6ff48ef1f27dd8f0527b20ae48dc26280`, with 558 inventoried source files
+and default features. All five server and two client lifetimes exited; original
+source/build/run artifacts remained unchanged. Every voter was healthy Serving
+with empty fatal status, drained public/read/apply ledgers, and two fresh status
+export advances after each complete client history.
+
+| Full history | Calls | Successful | Unknown | Refused | Traffic batch calls / input items |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Default streaming | 188 | 173 | 15 | 0 | 130 / 1,040 |
+| Explicit unary | 190 | 173 | 17 | 0 | 132 / 1,056 |
+
+The item counts include duplicate keys. Setup/final reads are included in full
+history counts but excluded from traffic batch counts. In the fully contained
+leader-loss window, streaming had 9 successful BatchGets and 10 BatchPuts;
+unary had 12 and 12. After original-directory restart those counts were 10/12
+and 10/11. Every configured point operation also had successful overlapping
+traffic. All 32 unknown outcomes are preserved rather than reclassified as
+refusals or discarded. Both complete atomic histories and witnesses were
+independently checked again.
+
+| Evidence | Location / SHA-256 |
+| --- | --- |
+| Clean retained build | `/tmp/kv9-native-batch-build-first` |
+| First process attempt | `/tmp/kv9-native-batch-e2e-first` |
+| Process summary | `974ab33a1b0280807505399c5bd565ad805a7981b1109cdb5065be9ab349cf01` |
+| Independent audit | `/tmp/kv9-native-batch-independent-first/audit.json`; `1479aee7fcfa1a8edbd3c459be497cfa16782565de017ac2ba056cd6e92ccac5` |
+| Exact counts and fault windows | `/tmp/kv9-native-batch-independent-first/counts-and-windows.json`; `47211dc3f50c7541332a4df273668beff90ec9a2cd455e5a999bdb5a68338dbe` |
+| Server executable | `f7e88b6c2f2514748c13fbaf85c3ee0540284138b3f3cc6bd774bdfd17e7eb4e` |
+| Native workload executable | `6fb5633bd42cd34c9121d9bd8c04103b146beb79fcad52cb1fc8df41529db6d8` |
+
+The new workload's 9 unit tests and all-target workspace Clippy with the
+RPC-experiment feature and warnings denied passed locally. The 65 checker
+tests, 28 source mutations and 12 report-validator tests are described above.
+No production consensus or storage algorithm changed in this increment.
+
+The first genuine-artifact controls rejected 24/24 mutations, twelve for each
+real transport arm. They cover batch result cardinality, successful/unknown
+receipts, omitted verification or traffic calls, nonce identity, uncertain
+retries, duplicate item counts, unknown whole-batch item counts, whole-call
+latency and the immutable empty sentinel. History hashes/byte counts were
+repaired in the corrupted copies so semantic checks, not stale digests, reject
+them; omitted whole calls also had their ledgers reconstructed. Both original
+complete histories passed before and after, and all 29 protected original,
+source and build paths remained byte-identical.
+
+Controls: `/tmp/kv9-native-batch-genuine-controls-attempt1/summary.json`, SHA-256
+`52663b093ac97329c2495171b1e204b94704e4e594d36162e28b7393879a187c`.
+The read-back inventory covers 176 files and 15,447,399 bytes, SHA-256
+`81ced920075b67f2d7fb415e24b4462dc639d36b373af3a8e9d2789223bea723`.
+These are copied-artifact corruption controls; they do not authenticate a
+fabricated receipt cryptographically or add a new process/fault execution.
+
+Actual native-batch Chaos Mesh and dedicated client-link fault acceptance
+remain separate gates. The accepted
 [normal point Chaos matrix](STREAMING-RPC-CHAOS-ACCEPTANCE.md) is point-only.
 Batch-size/load curves, paired Redis MGET/MSET measurements, adapter proof
 composition and main promotion remain open in #50.
