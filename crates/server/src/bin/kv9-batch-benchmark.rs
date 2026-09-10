@@ -1,5 +1,7 @@
 //! Native batch performance workload. Full correctness histories use the
 //! separate kv9-batch-workload executable; this tool retains aggregate outcomes.
+#[path = "kv9-batch-benchmark/common.rs"]
+mod common;
 #[path = "kv9-batch-benchmark/metrics.rs"]
 mod metrics;
 #[path = "kv9-batch-benchmark/model.rs"]
@@ -200,14 +202,13 @@ struct Worker {
 /// waiting or executing per worker. Overdue slots are counted and shed rather
 /// than accumulated into a burst or an unbounded client queue.
 fn latest_due_slot(config: &Config, elapsed_ns: u64, worker: usize) -> Option<u64> {
-    let Load::FixedRate { batches_per_second } = config.load else {
-        return None;
-    };
-    let last = ((u128::from(elapsed_ns) + 1) * u128::from(batches_per_second) - 1) / 1_000_000_000;
-    let last = (last as u64).min(config.offered_slots()?.saturating_sub(1));
-    let worker = worker as u64;
-    (last >= worker)
-        .then(|| worker + ((last - worker) / config.workers as u64) * config.workers as u64)
+    common::latest_due_slot(
+        config.load,
+        config.measure_ms,
+        elapsed_ns,
+        worker,
+        config.workers,
+    )
 }
 
 async fn worker(

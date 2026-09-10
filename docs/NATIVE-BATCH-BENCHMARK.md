@@ -5,6 +5,12 @@
 unary remains selectable and tarpc requires the existing experimental feature.
 This tool does not change the server, consensus, storage or client retry path.
 
+The companion [Redis batch reference](../scripts/redis-reference/BATCH.md) now
+uses the same deterministic data, offered-slot arithmetic and histogram code.
+Its MGET/MSET outcomes and connection/command accounting remain separate from
+KV9 SDK attempts and Raft receipts. Both validators share transport-neutral
+cohort arithmetic; paired performance acceptance remains outstanding.
+
 This checkpoint supplies a measurement tool checked against actual debug and
 clean release processes, plus an independent aggregate validator. It supplies
 **no accepted batch performance result**. Enclosing runtime/environment checks,
