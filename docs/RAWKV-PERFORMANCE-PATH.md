@@ -107,8 +107,14 @@ eight compiled control triples, default three-process failover/restart and the
 actual MinIO persistent-workload functional suite with twelve report-corruption
 controls. The candidate remains outside the main runtime. Parameterized proof
 composition, actual Chaos Mesh, overload/service fairness and repeated
-performance acceptance remain open. Targeted c64 disk/tmpfs comparisons are
-running separately; there is no established queue throughput gain yet.
+performance acceptance remain open. The completed
+[targeted c64 comparison](../scripts/redis-reference/results/892b2a1-95fb5cd-c64-diagnostic.md)
+observes a local disk PUT increase from 838 to 1,018 operations/s, but lower
+tmpfs PUT (67,160 to 61,318/s) and mixed throughput (69,081 to 63,326/s).
+All 48 cohorts passed independent outcome/identity checks after retained
+observer-environment failures were corrected without timing reruns. This is
+not a general throughput improvement. Keep the queue as an experiment and
+continue the memory read-path mainline from Ready `892b2a1`.
 
 The acceptance contract requires explicit count and byte limits. Admission and queueing must not
 require the mutex held during a device sync. Drain already available work under
