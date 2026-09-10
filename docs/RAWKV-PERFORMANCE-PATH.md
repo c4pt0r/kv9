@@ -7,21 +7,33 @@ implementation while keeping each measured mode's guarantees explicit.
 
 ## Current evidence
 
-The latest completed paired measurement is the `fe650ed` candidate. At 64
-outstanding calls, pooled GET throughput is 83,384/s and PUT throughput is 734/s;
-the corresponding standalone Redis memory reference is 493,146/s and 477,393/s.
-The two kv9 PUT repetitions are 958/s and 514/s. These short shared-host runs
-establish a large remaining gap and repetition spread, not a stable capacity.
-See the [retained report](../scripts/redis-reference/results/b3cbc35-fe650ed.md).
+The latest completed paired measurement is the `892b2a1` Ready candidate. At 64
+outstanding calls, pooled GET throughput is 84,810/s and PUT throughput is 836/s;
+the corresponding standalone Redis memory reference is 500,842/s and 491,739/s.
+The two kv9 PUT repetitions are 854/s and 818/s. The previous fe candidate pooled
+734/s with repetitions of 958/s and 514/s, so this comparison alone cannot
+establish a repeatable 14% improvement. These short shared-host runs establish
+a large remaining gap, not a stable capacity. See the
+[retained report](../scripts/redis-reference/results/fe650ed-892b2a1.md).
 
 In the single-outstanding-write sample, each voter performs two Raft syncs and
 one engine sync per acknowledged write across the observed trial interval;
 mean sync times are approximately 5-8 ms. In the concurrency-64 write trials,
-the three servers together use approximately 0.10-0.11 CPU cores. Those counters
+the three servers together use approximately 0.12-0.14 CPU cores. Those counters
 show substantial waiting, although they do not alone assign every millisecond
 to a cause. Concurrent reads consume about 3.61 aggregate server CPU cores out
 of four allowed CPUs. A storage-only optimization cannot explain away that read
 CPU cost.
+
+The independent [volatile tmpfs diagnostic](../scripts/redis-reference/results/892b2a1-tmpfs-diagnostic.md)
+uses the same Ready executable and protocol code, with explicitly volatile voter
+directories and a shorter concurrency sweep. At concurrency 64 it observes
+74,657 GET/s and 59,534 PUT/s, with approximately 3.6 aggregate server CPU cores
+and client CPU headroom. All 24 trials pass complete outcome and storage-identity
+audits. The large write difference supports work on the storage wait, while the
+remaining CPU cost supports optimizing the protocol path. Different substrates,
+trial order and accumulated work preclude treating the ratio as a precise causal
+speedup. tmpfs supplies no disk durability or power-loss guarantee.
 
 Source inspection identifies two concrete follow-up candidates:
 
@@ -67,10 +79,11 @@ and the exact-source three-process failover/restart fixture. Its [recovery
 argument](https://github.com/c4pt0r/kv9/blob/892b2a178450309859113c942f1738c070130eb5/docs/RAFT-READY-GROUP.md)
 spells out the remaining parameterized composition/refinement gate.
 
-Compare it with fe before attributing a throughput gain. Joint Ready frequency,
-group occupancy and synchronization counts matter; entry-only and
-HardState-only calls do not save a sync. Complete candidate-specific MinIO and
-actual Chaos Mesh validation. Earlier source revisions' evidence stays separate.
+The full 60-trial comparison with fe and its independent audit are complete.
+Joint Ready frequency, group occupancy and synchronization counts matter;
+entry-only and HardState-only calls do not save a sync. Candidate-specific MinIO,
+actual Chaos Mesh and checked composition remain open. Earlier source revisions'
+evidence stays separate.
 
 ### 2. Bound and batch proposal submission before persistence
 
@@ -117,6 +130,15 @@ Profile the persistent-client GET path after the volatile diagnostic. Candidate
 changes include indexed exact-context receipt lookup, fewer duplicate context
 decodes/allocations, and bounded read-barrier batching. Each change gets its own
 unchanged-protocol comparison so CPU and latency effects can be attributed.
+
+The first indexed-receipt implementation is pushed as `73ddb0d`. It passes 611
+local tests/doctests, three implementation-control triples, the default-build
+three-process failover/restart fixture and a separately identified
+`partition-testing` typed read-refusal fixture. Its own full paired measurement
+is running; no speedup or complete acceptance is claimed yet. The
+[representation argument](https://github.com/c4pt0r/kv9/blob/73ddb0db123d5ee5cecfbe95bdb476e30f6380bc/docs/READ-RECEIPT-INDEX.md)
+preserves FIFO retention and first-match duplicate behavior for arbitrary finite
+histories. Its new process checks do not replace actual Chaos Mesh.
 
 An indexed receipt cache must preserve exact context identity, FIFO retention,
 duplicate-context behavior and the existing unknown result after eviction. A
