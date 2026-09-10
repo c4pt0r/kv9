@@ -34,11 +34,11 @@ CASES = [
      '|result| {\n                if result.is_ok() || result.is_err() {',
      'kv9-raft', 'driver::tests::failed_background_pump_records_error_without_another_idle_wait',
      'failed pump was reported as successful'),
-    ('idle-observation-after-sleep', 'crates/raft/src/driver.rs',
-     'let idle = driver.metrics.pump_idle_wait.start();\n                std::thread::sleep(tick_every);',
-     'std::thread::sleep(tick_every);\n                let idle = driver.metrics.pump_idle_wait.start();',
-     'kv9-raft', 'driver::tests::background_pump_records_returned_sleeps_and_no_first_spacing_sample',
-     'idle observation did not include the actual configured sleep'),
+    ('idle-observation-after-wait', 'crates/raft/src/driver.rs',
+     'let idle = driver.metrics.pump_idle_wait.start();\n                driver.peer.work_signal.wait_until(ticks.next());',
+     'driver.peer.work_signal.wait_until(ticks.next());\n                let idle = driver.metrics.pump_idle_wait.start();',
+     'kv9-raft', 'driver::tests::idle_observation_includes_the_actual_parked_interval',
+     'idle observation omitted the actual parked interval'),
 ]
 
 

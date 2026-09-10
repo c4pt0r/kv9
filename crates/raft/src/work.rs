@@ -271,11 +271,14 @@ mod tests {
         // the assertion, so the failure does not leave an owned waiter behind.
         signal.publish().unwrap();
         task.join().unwrap();
-        assert!(result.unwrap().is_ok(), "publication before park was lost");
+        assert!(
+            result.is_ok_and(|waited| waited.is_ok()),
+            "publication before park was lost"
+        );
         *signal.generation.lock().unwrap() = Some(u64::MAX - 1);
         signal.publish().unwrap();
         assert_eq!(signal.observe().unwrap(), u64::MAX);
-        assert!(signal.publish().is_err());
+        assert!(signal.publish().is_err(), "exhausted generation wrapped");
         assert!(signal.observe().is_err());
         assert!(signal.wait(u64::MAX, Duration::from_secs(5)).is_err());
         assert!(signal.publish().is_err(), "exhausted generation restarted");
@@ -338,9 +341,12 @@ mod tests {
         let period = Duration::from_millis(20);
         let mut clock = TickDeadline::new(start, period);
         for millis in 0..20 {
-            assert!(!clock.due(start + Duration::from_millis(millis)));
+            assert!(
+                !clock.due(start + Duration::from_millis(millis)),
+                "traffic accelerated a tick before its deadline"
+            );
         }
-        assert!(clock.due(start + period));
+        assert!(clock.due(start + period), "traffic postponed a due tick");
         assert!(!clock.due(start + period));
         assert!(clock.due(start + Duration::from_secs(60)));
         assert!(!clock.due(start + Duration::from_secs(60)));
@@ -364,7 +370,10 @@ mod tests {
         let first = inbox.drain();
         assert_eq!(first.len(), DRAIN_MESSAGES);
         assert_eq!(first.last().unwrap().index, (DRAIN_MESSAGES - 1) as u64);
-        assert!(signal.state.lock().unwrap().pending);
+        assert!(
+            signal.state.lock().unwrap().pending,
+            "retained inbox work did not request another turn"
+        );
         let mut seen = first.len();
         while seen < MAX_INBOX_MESSAGES {
             assert!(signal.begin_turn());

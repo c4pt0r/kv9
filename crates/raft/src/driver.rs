@@ -1632,6 +1632,33 @@ mod tests {
     }
 
     #[test]
+    fn idle_observation_includes_the_actual_parked_interval() {
+        let driver = single_node_driver();
+        let parked = driver.peer.work_signal.observe_next_park();
+        let task = driver.spawn(Duration::from_secs(60)).unwrap();
+        parked.recv_timeout(Duration::from_secs(5)).unwrap();
+        let waiting = Instant::now();
+        // No work or tick can finish the observed wait until stop releases it.
+        std::thread::sleep(Duration::from_millis(20));
+        let during = driver.metrics().pump_idle_wait.snapshot();
+        let released = Instant::now();
+        driver.stop();
+        task.join().unwrap();
+        assert_eq!(
+            during.outcomes[Outcome::Success as usize].count,
+            0,
+            "unfinished idle wait was reported complete"
+        );
+        let after = driver.metrics().pump_idle_wait.snapshot();
+        let idle = &after.outcomes[Outcome::Success as usize];
+        assert_eq!(idle.count, 1);
+        assert!(
+            idle.sum_ns >= released.duration_since(waiting).as_nanos() as u64,
+            "idle observation omitted the actual parked interval"
+        );
+    }
+
+    #[test]
     fn failed_background_pump_records_error_without_another_idle_wait() {
         let driver = single_node_driver();
         let initial =
@@ -1738,8 +1765,13 @@ mod tests {
             "notification was mistaken for a committed write receipt"
         );
         driver.step().unwrap();
-        let result = rx.recv_timeout(Duration::from_secs(1)).unwrap().unwrap();
+        let result = rx.recv_timeout(Duration::from_secs(1));
+        // Release an owned waiter before reporting a missing publication.
+        driver.completion.publish().unwrap();
         task.join().unwrap();
+        let result = result
+            .expect("exact applied receipt did not wake a parked waiter")
+            .unwrap();
         assert_eq!(
             result,
             ApplyWaitOutcome::Applied(kv9_common::AppliedPosition {
