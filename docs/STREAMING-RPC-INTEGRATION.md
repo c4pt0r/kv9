@@ -61,6 +61,12 @@ remain intact. This covers point operations, not native batches.
 
 The separate [atomic batch history checker and three-voter process fixture](NATIVE-BATCH-ACCEPTANCE.md)
 have passed, including independent audits and copied-artifact counterexamples.
+The scoped [native batch safety proof](NATIVE-BATCH-PROOF.md) also passed its
+fresh TLA+/TLAPS gate with ordered mutation/read projection, receipt binding
+and retry refinement. Consensus, fencing, engine atomicity and established
+read authority remain its explicit premises; whole-adapter verification stays
+open. The [client-link preflight](NATIVE-BATCH-LINK-PREFLIGHT.md) qualified
+Service VIP fault selectors and same-process socket reset observation.
 Actual native batch Chaos Mesh remains required. Batch throughput and mean/p50/p95/p99 must be measured
 with explicit batch sizes, RPC and input-item counts, and all failure populations.
 The previous `40e813f` performance numbers remain evidence for that frozen
