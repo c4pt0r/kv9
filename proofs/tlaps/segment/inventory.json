@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "tlapm_version": "4600b24",
+  "tlapm_archive_sha256": "bfa5e5350ac1ec7202feecad0a4a71a5bb58c16a49660448b35b6f371ba9e2f5",
+  "sany_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+  "modules": {
+    "SegmentDurabilityProof": {
+      "theorems": [
+        "SGAcknowledgedAlways",
+        "SGAcknowledgedStable",
+        "SGAcknowledgedStep",
+        "SGAdvanceTransitive",
+        "SGBindingAlways",
+        "SGClosedPreserved",
+        "SGClosedReplayProgress",
+        "SGClosedReplayStep",
+        "SGClosedStepProof",
+        "SGCrashStep",
+        "SGFailStep",
+        "SGFencedPreserved",
+        "SGFencedStepProof",
+        "SGFoldLawAlways",
+        "SGInvariantAlways",
+        "SGInvariantInit",
+        "SGInvariantStep",
+        "SGLastGuardEquivalence",
+        "SGOpenStep",
+        "SGProgressProof",
+        "SGPublishProgress",
+        "SGPublishStep",
+        "SGRecoveryPublishProgress",
+        "SGRecoveryPublishStep",
+        "SGRecoverySyncProgress",
+        "SGRecoverySyncStep",
+        "SGRejectProgress",
+        "SGRejectStep",
+        "SGRepairProgress",
+        "SGRepairStep",
+        "SGSealProgress",
+        "SGSealStartStep",
+        "SGSealSyncStep",
+        "SGStableInvariant",
+        "SGStartStep",
+        "SGSummaryFoldCorrect",
+        "SGSummaryFoldInitial",
+        "SGSummaryFoldStep",
+        "SGSyncProgress",
+        "SGSyncStep",
+        "SGUnpositionedPreservedAlways",
+        "SGValidateProgress",
+        "SGValidateStep",
+        "SGWriteProgress",
+        "SGWriteStep"
+      ],
+      "obligations": 469
+    }
+  },
+  "standard_modules": {
+    "Naturals": "73f2a68412039aa86f37ad08f0d0fef50fa8327d0ad8806f515548c75e9d9d84",
+    "Integers": "071da69e5eea383d361ef308ba12ecc931bf968fcea98175c3bca419bbd8cbf2",
+    "NaturalsInduction": "08f52420cdaaf11292ed366782b5ce5b596bb7cbe789526a1cfd8806dbf98624",
+    "TLAPS": "9afe54984062748a0568966434cc0945d682f8cd89fdbc38f73b5579751b0c55"
+  },
+  "models": {
+    "SegmentDurability": {
+      "source": "proofs/tla/segment/SegmentDurability.tla",
+      "assumptions": [
+        {
+          "axiom": false,
+          "sha256": "af5a3deb1100eaaad0c513dffe402d22f9439419334afb33efa48a2321747d13"
+        }
+      ]
+    }
+  },
+  "roots": [
+    "SegmentDurabilityProof"
+  ]
+}
