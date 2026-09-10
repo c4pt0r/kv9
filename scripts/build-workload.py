@@ -49,7 +49,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--release", action="store_true")
-    parser.add_argument("--binary", choices=("kv9-workload", "kv9-batch-workload"), default="kv9-workload")
+    parser.add_argument("--binary", choices=("kv9-workload", "kv9-batch-workload", "kv9-batch-benchmark"), default="kv9-workload")
     parser.add_argument("--rpc-experiment", action="store_true",
                         help="explicitly compile the opt-in RPC transport experiment")
     args = parser.parse_args()
