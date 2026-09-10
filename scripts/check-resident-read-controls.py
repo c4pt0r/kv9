@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Require compiled semantic failures for isolated resident read mutations.
+"""Require compiled semantic failures for isolated point/batch resident read mutations.
 
 Every control runs one exact baseline test, its semantic mutant, and the restored
 source. All copied inputs and attempt logs remain under a fresh output directory.
@@ -20,6 +20,12 @@ ROOT = Path(__file__).resolve().parents[1]
 MEM = 'crates/engine/src/mem.rs'
 RUNTIME = 'crates/server/src/runtime.rs'
 GRPC = 'crates/server/src/grpc.rs'
+BATCH_TESTS = 'runtime::tests::async_batch_read_tests::'
+BATCH_BUDGET_TEST = BATCH_TESTS + 'oversized_resident_batch_moves_its_captured_authorized_view_into_the_job'
+POINT_PREPARATION = '''        self.finish_prepared_read(established, move |backend, view| {
+            backend.prepared_get_from_view(view, &ctx, &key)
+        })'''
+COMPLETED_COUNTER = '                self.admission.record_prepared_read(kind, true);'
 CASES = [
     ('waiting-for-index-writer', MEM, [(
         'self.state.try_read()',
@@ -27,13 +33,21 @@ CASES = [
      'mem::resident_tests::resident_snapshot_never_waits_for_a_writer_and_owns_its_version',
      'resident snapshot waited for an index writer'),
     ('dispatching-completed-read', GRPC, [(
-        '                self.admission.record_prepared_read(true);',
-        '                let value = tokio::task::spawn_blocking(move || value).await.unwrap();\n                self.admission.record_prepared_read(true);')],
+        COMPLETED_COUNTER,
+        '''                let value = if matches!(kind, PreparedReadKind::Point) {
+                    tokio::task::spawn_blocking(move || value).await.unwrap()
+                } else {
+                    value
+                };
+''' + COMPLETED_COUNTER)],
      'grpc::tests::admission::completed_public_get_does_not_wait_for_the_blocking_pool',
      'completed public GET was dispatched behind a blocked engine worker'),
     ('discarding-contended-read', RUNTIME, [(
-        'return Ok(self.blocking_prepared_get(ctx, key, established));',
-        'return Ok(crate::api::RawReadJob::Completed(None));')],
+        POINT_PREPARATION,
+        '''        if self.try_ensure_serving().is_none() {
+            return Ok(crate::api::RawReadJob::Completed(None));
+        }
+''' + POINT_PREPARATION)],
      'runtime::tests::a_contended_prepared_read_checks_the_epoch_when_its_engine_job_runs',
      'a contended lifecycle check must defer the engine job'),
     ('bypassing-resident-context-gate', RUNTIME, [(
@@ -41,6 +55,41 @@ CASES = [
         '// Deliberately omit the context gate for this compiled control.')],
      'runtime::tests::a_resident_prepared_read_finishes_on_one_authorized_version',
      'a fresh prepared read accepted the obsolete epoch'),
+    ('bypassing-batch-value-budget', RUNTIME, [(
+        '                MAX_RESIDENT_BATCH_READ_BYTES,',
+        '                usize::MAX,')],
+     BATCH_BUDGET_TEST,
+     'large or repeated values must defer materialization before copying the full batch'),
+    ('recapturing-batch-fallback-view', RUNTIME, [(
+        '''            // No second barrier, snapshot, or current-epoch lookup: both the
+            // authorization and the deferred copy refer to the captured view.
+            let read = LeaderRead::new(view.as_ref(), true, None)?;''',
+        '''            // Deliberately replace only the already-authorized snapshot.
+            // No new barrier or context check is added by this control.
+            drop(view);
+            let view = self.node.meta_raft.store.engine().snapshot()?;
+            let read = LeaderRead::new(view.as_ref(), true, None)?;''')],
+     BATCH_BUDGET_TEST,
+     'captured byte-budget fallback lost its old ordered view at slot'),
+    # One defect (omitted batch context validation) at both materialization
+    # branches. Covering both avoids a scheduling-dependent false green if
+    # the fresh stale-epoch read happens to encounter lifecycle contention.
+    ('bypassing-batch-context-gate', RUNTIME, [(
+        '''        let view = self.check_read_view(
+            view,
+            ctx,
+            KeySpan::Batch(keys.iter().map(|key| key.as_slice()).collect()),
+        )?;
+''',
+        ''), (
+        '''            let authorized = self.check_read_view(
+                Box::new(view.as_ref()),
+                &ctx,
+                KeySpan::Batch(keys.iter().map(|key| key.as_slice()).collect()),
+            )?;''',
+        '''            let authorized: Box<dyn ReadView + '_> = Box::new(view.as_ref());''')],
+     BATCH_TESTS + 'resident_batch_keeps_its_authorized_values_after_both_epoch_changes',
+     'fresh batch accepted the old epoch'),
 ]
 
 
@@ -120,9 +169,11 @@ def main():
                 shutil.copy2(source, tree / name)
         manifest['source_files'] = inventory(tree)
         originals = {name: (tree / name).read_text() for name in (MEM, RUNTIME, GRPC)}
-        frozen_root = {name: digest(ROOT / name) for name in originals}
-        if any(digest(tree / name) != frozen_root[name] for name in originals):
-            raise RuntimeError('reviewed core changed during source snapshot')
+        # The new resident borrower and exact selected tests are dependencies
+        # too: bind all retained build inputs, not only mutation target files.
+        frozen_root = {name: digest(ROOT / name) for name in manifest['source_files']}
+        if manifest['source_files'] != frozen_root:
+            raise RuntimeError('reviewed build input changed during source snapshot')
         save()
         # Validate every anchor and unchanged test body before paying for a build.
         mutants = {name: mutate(originals[path], edits, name)
@@ -209,7 +260,7 @@ def main():
         if inventory(tree) != manifest['source_files']:
             raise RuntimeError('final source restoration differs from original snapshot')
         if any(digest(ROOT / path) != expected for path, expected in frozen_root.items()):
-            raise RuntimeError('reviewed core changed during controls; retained snapshot cannot attest current source')
+            raise RuntimeError('reviewed build input changed during controls; retained snapshot cannot attest current source')
         manifest['accepted'] = True
         save()
         print(f'PASS: {len(CASES)} isolated resident read implementation controls', flush=True)

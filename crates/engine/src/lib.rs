@@ -82,6 +82,13 @@ pub trait ReadView: Send + Sync {
     /// Point read from a column family, within this view.
     fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Value>>;
 
+    /// Borrow the same immutable value as `get`, without I/O, waiting on locks,
+    /// or copying value bytes. Outer `None` declines this optional resident path;
+    /// `Some(None)` means absent, and `Some(Some(&[]))` means present but empty.
+    fn get_resident(&self, _cf: ColumnFamily, _key: &[u8]) -> Option<Option<&[u8]>> {
+        None
+    }
+
     /// Forward range scan `[start, end)` over a column family, bounded by `limit`.
     fn scan(
         &self,
@@ -144,6 +151,50 @@ pub trait ReadView: Send + Sync {
         start: &[u8],
         end: &[u8],
     ) -> Result<Box<dyn Iterator<Item = Result<ScanEntry>> + 'a>>;
+}
+
+// A temporary borrowed wrapper can pass through an existing view-consuming
+// context gate while the caller retains ownership of that exact snapshot.
+impl<T: ReadView + ?Sized> ReadView for &T {
+    fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Value>> {
+        (**self).get(cf, key)
+    }
+
+    fn get_resident(&self, cf: ColumnFamily, key: &[u8]) -> Option<Option<&[u8]>> {
+        (**self).get_resident(cf, key)
+    }
+
+    fn scan(
+        &self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: &[u8],
+        limit: usize,
+    ) -> Result<Vec<ScanEntry>> {
+        (**self).scan(cf, start, end, limit)
+    }
+
+    fn seek_le(&self, cf: ColumnFamily, target: &[u8]) -> Result<Option<ScanEntry>> {
+        (**self).seek_le(cf, target)
+    }
+
+    fn iter<'a>(
+        &'a self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<Box<dyn Iterator<Item = Result<ScanEntry>> + 'a>> {
+        (**self).iter(cf, start, end)
+    }
+
+    fn iter_rev<'a>(
+        &'a self,
+        cf: ColumnFamily,
+        start: &[u8],
+        end: &[u8],
+    ) -> Result<Box<dyn Iterator<Item = Result<ScanEntry>> + 'a>> {
+        (**self).iter_rev(cf, start, end)
+    }
 }
 
 /// The storage engine trait (DESIGN §6.2).

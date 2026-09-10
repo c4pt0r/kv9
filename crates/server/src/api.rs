@@ -1,7 +1,7 @@
 //! The v0 API surface as Rust traits (DESIGN §11).
 //!
 //! Transport is gRPC; these traits are the synchronous core contract behind tonic's
-//! blocking boundary, with an optional asynchronous point-read preparation. Every data request
+//! blocking boundary, with optional asynchronous RawKV read preparation. Every data request
 //! carries `(keyspace_id, region_epoch)` so the router can resolve keyspace→region,
 //! epoch-check, and validate the API type against the keyspace declaration.
 
@@ -130,6 +130,21 @@ pub trait RawApi: Send + Sync + 'static {
         Box::pin(async move {
             Ok(RawReadJob::Blocking(Box::new(move || {
                 self.raw_get(&ctx, &key)
+            })))
+        })
+    }
+
+    /// Prepare one atomic batch read. Implementations must preserve one
+    /// quorum-established view for the complete ordered result, including
+    /// duplicates. The default keeps the synchronous backend contract.
+    fn prepare_raw_batch_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        keys: Vec<UserKey>,
+    ) -> RawReadPreparation<Vec<Option<Value>>> {
+        Box::pin(async move {
+            Ok(RawReadJob::Blocking(Box::new(move || {
+                self.raw_batch_get(&ctx, &keys)
             })))
         })
     }

@@ -1921,6 +1921,11 @@ enum KeySpan<'a> {
     },
 }
 
+enum PreparedReadView {
+    Resident(Box<dyn ReadView>),
+    Blocking(std::result::Result<ReadBarrier, kv9_raft::driver::ReadIndexError>),
+}
+
 impl<'a> KeySpan<'a> {
     /// The key used to resolve the region. An empty range start means the keyspace's
     /// first key, which `region_for_key` already treats as the leading region.
@@ -2199,17 +2204,73 @@ impl RuntimeBackend {
         RawExecutor.get(&read, ctx.keyspace, key)
     }
 
-    fn blocking_prepared_get(
+    fn prepared_batch_get_from_view(
+        &self,
+        view: Box<dyn ReadView + '_>,
+        ctx: &RequestContext,
+        keys: &[UserKey],
+    ) -> Result<Vec<Option<Value>>> {
+        let view = self.check_read_view(
+            view,
+            ctx,
+            KeySpan::Batch(keys.iter().map(|key| key.as_slice()).collect()),
+        )?;
+        let read = LeaderRead::new(view.as_ref(), true, None)?;
+        RawExecutor.batch_get(&read, ctx.keyspace, keys)
+    }
+
+    fn blocking_prepared_read<T, F>(
         self: Arc<Self>,
-        ctx: RequestContext,
-        key: UserKey,
         established: std::result::Result<ReadBarrier, kv9_raft::driver::ReadIndexError>,
-    ) -> crate::api::RawReadJob<Option<Value>> {
+        read: F,
+    ) -> crate::api::RawReadJob<T>
+    where
+        T: Send + 'static,
+        F: for<'a> FnOnce(&'a Self, Box<dyn ReadView + 'a>) -> Result<T> + Send + 'static,
+    {
         crate::api::RawReadJob::Blocking(Box::new(move || {
             self.ensure_serving()?;
             let view = self.established_view(established?)?;
-            self.prepared_get_from_view(view, &ctx, &key)
+            read(&self, view)
         }))
+    }
+
+    /// Point and batch reads exchange the same single-use quorum credential
+    /// for exactly one view. Contention transfers the unconsumed credential
+    /// and the complete read into the blocking job; it never takes a new view
+    /// or repeats the barrier before validating the request context.
+    fn prepare_resident_read_view(
+        &self,
+        established: std::result::Result<ReadBarrier, kv9_raft::driver::ReadIndexError>,
+    ) -> Result<PreparedReadView> {
+        let Some(serving) = self.try_ensure_serving() else {
+            return Ok(PreparedReadView::Blocking(established));
+        };
+        serving?; // Preserve lifecycle-before-barrier-error ordering.
+        let barrier = established?;
+        Ok(match self.try_established_resident_view(barrier) {
+            Ok(view) => PreparedReadView::Resident(view),
+            Err(barrier) => PreparedReadView::Blocking(Ok(barrier)),
+        })
+    }
+
+    fn finish_prepared_read<T, F>(
+        self: Arc<Self>,
+        established: std::result::Result<ReadBarrier, kv9_raft::driver::ReadIndexError>,
+        read: F,
+    ) -> Result<crate::api::RawReadJob<T>>
+    where
+        T: Send + 'static,
+        F: for<'a> FnOnce(&'a Self, Box<dyn ReadView + 'a>) -> Result<T> + Send + 'static,
+    {
+        Ok(match self.prepare_resident_read_view(established)? {
+            PreparedReadView::Resident(view) => {
+                crate::api::RawReadJob::Completed(read(&self, view)?)
+            }
+            PreparedReadView::Blocking(established) => {
+                self.blocking_prepared_read(established, read)
+            }
+        })
     }
 
     fn finish_prepared_get(
@@ -2218,17 +2279,58 @@ impl RuntimeBackend {
         key: UserKey,
         established: std::result::Result<ReadBarrier, kv9_raft::driver::ReadIndexError>,
     ) -> Result<crate::api::RawReadJob<Option<Value>>> {
-        let Some(serving) = self.try_ensure_serving() else {
-            return Ok(self.blocking_prepared_get(ctx, key, established));
+        self.finish_prepared_read(established, move |backend, view| {
+            backend.prepared_get_from_view(view, &ctx, &key)
+        })
+    }
+
+    fn finish_prepared_batch_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        keys: Vec<UserKey>,
+        established: std::result::Result<ReadBarrier, kv9_raft::driver::ReadIndexError>,
+    ) -> Result<crate::api::RawReadJob<Vec<Option<Value>>>> {
+        match self.prepare_resident_read_view(established)? {
+            PreparedReadView::Resident(view) => self.finish_resident_batch_get(ctx, keys, view),
+            PreparedReadView::Blocking(established) => Ok(self
+                .blocking_prepared_read(established, move |backend, view| {
+                    backend.prepared_batch_get_from_view(view, &ctx, &keys)
+                })),
+        }
+    }
+
+    fn finish_resident_batch_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        keys: Vec<UserKey>,
+        view: Box<dyn ReadView>,
+    ) -> Result<crate::api::RawReadJob<Vec<Option<Value>>>> {
+        let inline = {
+            // Authorize a borrowed wrapper; retain ownership of this exact view
+            // in case the values cannot be copied within the async CPU budget.
+            let authorized = self.check_read_view(
+                Box::new(view.as_ref()),
+                &ctx,
+                KeySpan::Batch(keys.iter().map(|key| key.as_slice()).collect()),
+            )?;
+            let read = LeaderRead::new(authorized.as_ref(), true, None)?;
+            RawExecutor.try_batch_get_resident(
+                &read,
+                ctx.keyspace,
+                &keys,
+                MAX_RESIDENT_BATCH_READ_BYTES,
+            )?
         };
-        serving?; // Preserve lifecycle-before-barrier-error ordering.
-        let barrier = established?;
-        let view = match self.try_established_resident_view(barrier) {
-            Ok(view) => view,
-            Err(barrier) => return Ok(self.blocking_prepared_get(ctx, key, Ok(barrier))),
-        };
-        let value = self.prepared_get_from_view(view, &ctx, &key)?;
-        Ok(crate::api::RawReadJob::Completed(value))
+        if let Some(values) = inline {
+            return Ok(crate::api::RawReadJob::Completed(values));
+        }
+        Ok(crate::api::RawReadJob::Blocking(Box::new(move || {
+            self.ensure_serving()?;
+            // No second barrier, snapshot, or current-epoch lookup: both the
+            // authorization and the deferred copy refer to the captured view.
+            let read = LeaderRead::new(view.as_ref(), true, None)?;
+            RawExecutor.batch_get(&read, ctx.keyspace, &keys)
+        })))
     }
 
     /// Replicate one planned batch and wait for its exact position to apply.
@@ -2271,6 +2373,11 @@ const RAW_APPLY_DEADLINE: Duration = Duration::from_secs(10);
 /// worst-case read latency when the quorum is unreachable (an isolated
 /// self-believed leader waits this long, then fails — it never serves stale).
 const READ_BARRIER_DEADLINE: Duration = Duration::from_secs(2);
+
+/// Bound inline batch lookup work. Larger low-level requests retain their
+/// existing synchronous behavior; this is a scheduling bound, not a wire limit.
+const MAX_RESIDENT_BATCH_READ_KEYS: usize = 256;
+const MAX_RESIDENT_BATCH_READ_BYTES: usize = 1024 * 1024;
 
 impl RawApi for RuntimeBackend {
     fn prepare_raw_write(
@@ -2376,6 +2483,32 @@ impl RawApi for RuntimeBackend {
         let view = self.established_read(ctx, KeySpan::Point(key))?;
         let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
         RawExecutor.get(&read, ctx.keyspace, key)
+    }
+
+    fn prepare_raw_batch_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        keys: Vec<UserKey>,
+    ) -> crate::api::RawReadPreparation<Vec<Option<Value>>> {
+        if !self.endpoint_ready.load(Ordering::Acquire)
+            || keys.len() > MAX_RESIDENT_BATCH_READ_KEYS
+            || keys
+                .iter()
+                .try_fold(MAX_RESIDENT_BATCH_READ_BYTES, |left, key| {
+                    left.checked_sub(key.len())
+                })
+                .is_none()
+        {
+            return Box::pin(async move {
+                Ok(crate::api::RawReadJob::Blocking(Box::new(move || {
+                    self.raw_batch_get(&ctx, &keys)
+                })))
+            });
+        }
+        Box::pin(async move {
+            let established = self.driver.read_barrier_async(READ_BARRIER_DEADLINE).await;
+            self.finish_prepared_batch_get(ctx, keys, established)
+        })
     }
 
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>> {
@@ -4180,6 +4313,7 @@ fn prepare_test_store(directory: &Path, id: NodeId) -> StoreIncarnation {
 
 #[cfg(test)]
 mod tests {
+    mod async_batch_read_tests;
 
     #[tokio::test]
     async fn accepted_grpc_sockets_disable_nagle_without_rebinding() {
