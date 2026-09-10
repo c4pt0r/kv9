@@ -453,6 +453,7 @@ async fn admission_wire_case(max_requests: usize, max_encoded_bytes: usize, reas
     let (prepare_dropped_tx, mut prepare_dropped_rx) = tokio::sync::mpsc::unbounded_channel();
     let backend = Arc::new(FakeBackend {
         membership_hint: None,
+        raw_completed: false,
         callers: Mutex::new(Vec::new()),
         raw_gate: Some((entered_tx, Mutex::new(release_rx))),
         raw_preparation_gate: Some(RawPreparationGate {
@@ -626,4 +627,65 @@ async fn admission_real_wire_aggregate_bytes_are_charged_by_encoded_length() {
         key: vec![7; 32],
     };
     admission_wire_case(2, request.encoded_len(), "encoded_bytes").await;
+}
+
+#[test]
+fn completed_public_get_does_not_wait_for_the_blocking_pool() {
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .max_blocking_threads(1)
+        .build()
+        .unwrap();
+    runtime.block_on(async {
+        let (entered_tx, entered_rx) = tokio::sync::oneshot::channel();
+        let (release_tx, release_rx) = std::sync::mpsc::channel();
+        let blocker = tokio::task::spawn_blocking(move || {
+            entered_tx.send(()).unwrap();
+            release_rx.recv_timeout(Duration::from_secs(10)).unwrap();
+        });
+        entered_rx.await.unwrap();
+        let backend = Arc::new(FakeBackend {
+            raw_completed: true,
+            ..Default::default()
+        });
+        let service = Kv9Grpc::with_limits(
+            backend.clone(),
+            PublicApiLimits {
+                max_requests: 1,
+                max_encoded_bytes: 4096,
+            },
+        )
+        .unwrap();
+        let result = tokio::time::timeout(
+            Duration::from_secs(2),
+            service.raw_get(authenticated(proto::RawGetRequest {
+                context: Some(request_context_message()),
+                key: b"k".to_vec(),
+            })),
+        )
+        .await;
+        let state = service.admission().snapshot();
+        release_tx.send(()).unwrap(); // Release even when a source control fails.
+        blocker.await.unwrap();
+        assert!(
+            matches!(result, Ok(Ok(_))),
+            "completed public GET was dispatched behind a blocked engine worker"
+        );
+        assert_eq!(backend.callers.lock().unwrap().len(), 1);
+        assert_eq!(
+            (state.in_flight, state.running, state.encoded_bytes),
+            (0, 0, 0)
+        );
+        assert_eq!(
+            (
+                state.raw_get_completed_inline,
+                state.raw_get_blocking_submitted
+            ),
+            (1, 0)
+        );
+        assert_eq!(
+            (state.classes[0].completed, state.classes[0].backend_errors),
+            (1, 0)
+        );
+    });
 }

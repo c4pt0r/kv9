@@ -519,6 +519,15 @@ fn sync_parent(path: &Path) -> Result<()> {
     .map_err(checkpoint_io)
 }
 
+impl WalEngine {
+    /// Capture the resident index without acquiring the WAL mutex or waiting
+    /// for an index writer. This is specific to this memory-indexed engine;
+    /// arbitrary engines do not acquire an inline-execution capability.
+    pub fn try_resident_snapshot(&self) -> Option<Box<dyn ReadView>> {
+        self.index.try_resident_snapshot()
+    }
+}
+
 impl Engine for WalEngine {
     fn get(&self, cf: ColumnFamily, key: &[u8]) -> Result<Option<Value>> {
         self.index.get(cf, key)

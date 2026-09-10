@@ -101,16 +101,19 @@ pub trait TxnApi {
 
 /// The raw API for `raw` keyspaces (DESIGN §11 Raw surface).
 pub trait RawApi: Send + Sync + 'static {
-    /// Prepare a point-read job without blocking an async worker. The default
-    /// defers all work to the existing blocking boundary. Implementations may
-    /// await a quorum credential here; engine access belongs in the returned job.
+    /// Prepare a point read without blocking an async worker. The default
+    /// defers all work to the blocking boundary. Implementations may complete
+    /// a memory-only read after its quorum credential, using only try-locks;
+    /// contended or potentially blocking work must return a blocking job.
     fn prepare_raw_get(
         self: Arc<Self>,
         ctx: RequestContext,
         key: UserKey,
     ) -> RawReadPreparation<Option<Value>> {
         Box::pin(async move {
-            Ok(Box::new(move || self.raw_get(&ctx, &key)) as RawReadJob<Option<Value>>)
+            Ok(RawReadJob::Blocking(Box::new(move || {
+                self.raw_get(&ctx, &key)
+            })))
         })
     }
 
@@ -138,7 +141,24 @@ pub trait RawApi: Send + Sync + 'static {
     ) -> Result<DeleteRangeReceipt>;
 }
 
-pub type RawReadJob<T> = Box<dyn FnOnce() -> Result<T> + Send>;
+/// Preparation either finished the read or transfers unexecuted blocking work.
+/// A completed read has already checked its context and consumed its view;
+/// it is not a cached credential that may authorize a later engine access.
+pub enum RawReadJob<T> {
+    Completed(T),
+    Blocking(Box<dyn FnOnce() -> Result<T> + Send>),
+}
+
+impl<T> RawReadJob<T> {
+    /// Execute from a synchronous caller. Async callers must dispatch the
+    /// `Blocking` variant to a blocking worker, as the public handler does.
+    pub fn run(self) -> Result<T> {
+        match self {
+            Self::Completed(value) => Ok(value),
+            Self::Blocking(job) => job(),
+        }
+    }
+}
 pub type RawReadPreparation<T> =
     std::pin::Pin<Box<dyn std::future::Future<Output = Result<RawReadJob<T>>> + Send>>;
 
