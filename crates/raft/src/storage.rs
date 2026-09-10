@@ -324,6 +324,32 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         kind: u8,
         payload: &[u8],
     ) -> Result<()> {
+        Self::write_record_unsynced(metrics, file, kind, payload)?;
+        Self::sync_records(metrics, file)
+    }
+
+    fn write_entries_unsynced(
+        metrics: &WalIoMetrics,
+        file: &mut F::File,
+        entries: &[Entry],
+    ) -> Result<()> {
+        for entry in entries {
+            let bytes = entry
+                .write_to_bytes()
+                .map_err(|err| Error::Raft(format!("entry encode: {err}")))?;
+            Self::write_record_unsynced(metrics, file, REC_ENTRY, &bytes)?;
+        }
+        Ok(())
+    }
+
+    /// The caller must synchronize before publishing the corresponding state.
+    /// Keep the existing frame format and one-frame temporary allocation bound.
+    fn write_record_unsynced(
+        metrics: &WalIoMetrics,
+        file: &mut F::File,
+        kind: u8,
+        payload: &[u8],
+    ) -> Result<()> {
         if payload.len() >= MAX_RECORD_LEN as usize {
             return Err(Error::Raft(
                 "raft log record exceeds the replay format limit".into(),
@@ -339,8 +365,12 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         metrics
             .write
             .measure(|| file.write_all(&rec))
-            .and_then(|_| metrics.sync.measure(|| file.sync_data()))
             .map_err(|e| Error::Raft(format!("raft log append: {e}")))
+    }
+
+    fn sync_records(metrics: &WalIoMetrics, file: &mut F::File) -> Result<()> {
+        let result = metrics.sync.measure(|| file.sync_data());
+        result.map_err(|e| Error::Raft(format!("raft log append: {e}")))
     }
 }
 
@@ -392,21 +422,55 @@ impl<F: FileSystem> raft::Storage for DiskRaftStorage<F> {
 }
 
 impl<F: FileSystem> PersistentRaftStorage for DiskRaftStorage<F> {
-    /// Entries hit disk (fsync'd) BEFORE the runtime view exposes them — the
-    /// Ready loop sends no message until this returns.
+    /// One synchronization covers the complete append slice before the runtime
+    /// view exposes any member. The Ready loop sends no message until return.
     fn append(&self, entries: &[Entry]) -> Result<()> {
         self.with_writer(|file| {
-            for e in entries {
-                let bytes = e
-                    .write_to_bytes()
-                    .map_err(|err| Error::Raft(format!("entry encode: {err}")))?;
-                Self::write_record(&self.io_metrics, file, REC_ENTRY, &bytes)?;
+            Self::write_entries_unsynced(&self.io_metrics, file, entries)?;
+            if !entries.is_empty() {
+                Self::sync_records(&self.io_metrics, file)?;
             }
             self.mem
                 .wl()
                 .append(entries)
                 .map_err(|e| Error::Raft(e.to_string()))
         })
+    }
+
+    fn persist_ready(&self, entries: &[Entry], hs: Option<&HardState>) -> Result<()> {
+        let mut operation = "ready writer";
+        let result = self.with_writer(|file| {
+            if entries.is_empty() && hs.is_none() {
+                return Ok(());
+            }
+            operation = "append";
+            Self::write_entries_unsynced(&self.io_metrics, file, entries)?;
+            if let Some(hs) = hs {
+                operation = "hardstate";
+                let bytes = hs
+                    .write_to_bytes()
+                    .map_err(|err| Error::Raft(format!("hardstate encode: {err}")))?;
+                Self::write_record_unsynced(&self.io_metrics, file, REC_HARD_STATE, &bytes)?;
+            }
+            if !entries.is_empty() || hs.is_some() {
+                operation = "ready sync";
+                Self::sync_records(&self.io_metrics, file)?;
+            }
+            // One memory write lock publishes the complete successful Ready.
+            // No entry or vote/commit update is exposed before the common sync.
+            operation = "ready memory publication";
+            let mut memory = self.mem.wl();
+            if !entries.is_empty() {
+                memory
+                    .append(entries)
+                    .map_err(|err| Error::Raft(err.to_string()))?;
+            }
+            if let Some(hs) = hs {
+                memory.set_hardstate(hs.clone());
+            }
+            Ok(())
+        });
+        result.map_err(|cause| Error::Raft(format!("during {operation}: {cause}")))
     }
 
     fn set_hardstate(&self, hs: &HardState) -> Result<()> {

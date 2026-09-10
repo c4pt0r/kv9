@@ -5,7 +5,10 @@
 //! cancelling its RPC cannot release capacity while the job remains live.
 
 use kv9_common::metrics::{Latency, NamedLatency, Outcome};
-use std::sync::{Arc, Mutex};
+use std::sync::{
+    atomic::{AtomicU64, Ordering},
+    Arc, Mutex,
+};
 use std::time::Instant;
 
 use kv9_common::{Error, Result};
@@ -158,6 +161,8 @@ pub struct AdmissionSnapshot {
     pub peak_requests: usize,
     pub peak_encoded_bytes: usize,
     pub classes: [ClassCounters; CLASS_COUNT],
+    pub raw_get_completed_inline: u64,
+    pub raw_get_blocking_submitted: u64,
 }
 
 #[derive(Default)]
@@ -170,6 +175,8 @@ pub struct PublicAdmission {
     limits: PublicApiLimits,
     state: Mutex<State>,
     timings: [WorkTiming; CLASS_COUNT],
+    raw_get_completed_inline: AtomicU64,
+    raw_get_blocking_submitted: AtomicU64,
 }
 
 impl PublicAdmission {
@@ -178,6 +185,8 @@ impl PublicAdmission {
             limits: limits.validate()?,
             state: Mutex::new(State::default()),
             timings: std::array::from_fn(|_| WorkTiming::default()),
+            raw_get_completed_inline: AtomicU64::new(0),
+            raw_get_blocking_submitted: AtomicU64::new(0),
         }))
     }
 
@@ -246,7 +255,20 @@ impl PublicAdmission {
             peak_requests: state.peak_requests,
             peak_encoded_bytes: state.peak_encoded_bytes,
             classes: state.classes,
+            raw_get_completed_inline: self.raw_get_completed_inline.load(Ordering::Relaxed),
+            raw_get_blocking_submitted: self.raw_get_blocking_submitted.load(Ordering::Relaxed),
         }
+    }
+
+    pub(crate) fn record_prepared_read(&self, completed_inline: bool) {
+        let counter = if completed_inline {
+            &self.raw_get_completed_inline
+        } else {
+            &self.raw_get_blocking_submitted
+        };
+        let _ = counter.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+            Some(value.saturating_add(1))
+        });
     }
 }
 
@@ -258,6 +280,12 @@ impl AdmissionSnapshot {
             self.limits.max_requests, self.limits.max_encoded_bytes, self.in_flight,
             self.queued, self.running, self.encoded_bytes, self.peak_requests, self.peak_encoded_bytes,
         );
+        writeln!(
+            text,
+            "public_raw_get_completed_inline={}\npublic_raw_get_blocking_submitted={}",
+            self.raw_get_completed_inline, self.raw_get_blocking_submitted
+        )
+        .expect("writing to String");
         for class in WorkClass::ALL {
             let c = self.classes[class as usize];
             writeln!(text, "public_rpc_{}=admitted={},completed={},backend_errors={},released_before_execution={},backend_aborted={},refused_count={},refused_bytes={},request_too_large={}",
@@ -453,7 +481,7 @@ mod tests {
             (state.classes[0].admitted, state.classes[0].completed),
             (u64::MAX, u64::MAX)
         );
-        assert_eq!(state.status_lines().lines().count(), 13);
+        assert_eq!(state.status_lines().lines().count(), 15);
     }
 
     #[test]

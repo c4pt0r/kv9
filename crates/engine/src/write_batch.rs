@@ -52,4 +52,9 @@ impl WriteBatch {
     pub fn mutations(&self) -> &[Mutation] {
         &self.mutations
     }
+
+    /// Move another batch's mutations after this batch, preserving their order.
+    pub fn append(&mut self, other: WriteBatch) {
+        self.mutations.extend(other.mutations);
+    }
 }

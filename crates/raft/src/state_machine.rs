@@ -20,6 +20,8 @@ use crate::command::Command;
 use crate::command::ManifestChangePayload;
 use crate::{CommittedEntry, LogIndex};
 
+pub(crate) mod raw_group;
+
 /// The apply-side storage capability (task #9, the capability-narrowing half
 /// of the apply-never-touches-the-object-store invariant): EXACTLY what ordered
 /// apply needs — an atomic batch write and a point read of log-established
@@ -375,6 +377,17 @@ pub trait FenceAdjudicator: Send + Sync {
     /// replicas whose reads fail diverge from replicas whose reads succeed
     /// (review round).
     fn is_fresh(&self, fence: &crate::RegionFence) -> Result<bool>;
+
+    /// Opt into deferred application of validated Raw Default-CF mutations.
+    ///
+    /// Returning true asserts that this adjudicator's verdict depends only on
+    /// log state outside non-system Raw keys. Consecutive Raw writes may then
+    /// be planned against the same catalog view and persisted together. The
+    /// default preserves single-entry application for arbitrary adjudicators
+    /// that might read user data. Metadata and manifest entries remain barriers.
+    fn independent_of_raw_writes(&self) -> bool {
+        false
+    }
 }
 
 /// A deterministic raft state machine (ROADMAP Phase 1).

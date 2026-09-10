@@ -1,7 +1,7 @@
 //! The v0 API surface as Rust traits (DESIGN §11).
 //!
 //! Transport is gRPC; these traits are the synchronous core contract behind tonic's
-//! blocking boundary. Every data request
+//! blocking boundary, with an optional asynchronous point-read preparation. Every data request
 //! carries `(keyspace_id, region_epoch)` so the router can resolve keyspace→region,
 //! epoch-check, and validate the API type against the keyspace declaration.
 
@@ -100,7 +100,40 @@ pub trait TxnApi {
 }
 
 /// The raw API for `raw` keyspaces (DESIGN §11 Raw surface).
-pub trait RawApi {
+pub trait RawApi: Send + Sync + 'static {
+    /// Prepare a write on the blocking boundary, then await its completion
+    /// without retaining a blocking worker. The public boundary owns the
+    /// admission reservation across both phases, including RPC cancellation.
+    fn prepare_raw_write(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        operation: RawWrite,
+    ) -> RawWritePreparation {
+        Box::new(move || {
+            let at = match operation {
+                RawWrite::Put { key, value } => self.raw_put(&ctx, key, value),
+                RawWrite::BatchPut(pairs) => self.raw_batch_put(&ctx, &pairs),
+                RawWrite::Delete { key } => self.raw_delete(&ctx, &key),
+            }?;
+            Ok(Box::pin(async move { Ok(at) }))
+        })
+    }
+    /// Prepare a point read without blocking an async worker. The default
+    /// defers all work to the blocking boundary. Implementations may complete
+    /// a memory-only read after its quorum credential, using only try-locks;
+    /// contended or potentially blocking work must return a blocking job.
+    fn prepare_raw_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        key: UserKey,
+    ) -> RawReadPreparation<Option<Value>> {
+        Box::pin(async move {
+            Ok(RawReadJob::Blocking(Box::new(move || {
+                self.raw_get(&ctx, &key)
+            })))
+        })
+    }
+
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>>;
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>>;
     fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<AppliedPosition>;
@@ -124,6 +157,38 @@ pub trait RawApi {
         end: &[u8],
     ) -> Result<DeleteRangeReceipt>;
 }
+
+/// Preparation either finished the read or transfers unexecuted blocking work.
+/// A completed read has already checked its context and consumed its view;
+/// it is not a cached credential that may authorize a later engine access.
+pub enum RawReadJob<T> {
+    Completed(T),
+    Blocking(Box<dyn FnOnce() -> Result<T> + Send>),
+}
+
+/// Owned operations that preserve the existing point/batch RawKV wire APIs.
+pub enum RawWrite {
+    Put { key: UserKey, value: Value },
+    BatchPut(Vec<(UserKey, Value)>),
+    Delete { key: UserKey },
+}
+
+pub type RawWriteCompletion =
+    std::pin::Pin<Box<dyn std::future::Future<Output = Result<AppliedPosition>> + Send>>;
+pub type RawWritePreparation = Box<dyn FnOnce() -> Result<RawWriteCompletion> + Send>;
+
+impl<T> RawReadJob<T> {
+    /// Execute from a synchronous caller. Async callers must dispatch the
+    /// `Blocking` variant to a blocking worker, as the public handler does.
+    pub fn run(self) -> Result<T> {
+        match self {
+            Self::Completed(value) => Ok(value),
+            Self::Blocking(job) => job(),
+        }
+    }
+}
+pub type RawReadPreparation<T> =
+    std::pin::Pin<Box<dyn std::future::Future<Output = Result<RawReadJob<T>>> + Send>>;
 
 /// How far a chunked range delete got.
 ///
