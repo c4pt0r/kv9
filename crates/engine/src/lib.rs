@@ -24,7 +24,7 @@ pub use cf::ColumnFamily;
 pub use mem::MemEngine;
 pub use minio::{MinioConfig, MinioObjectStore};
 pub use object_store::{MemoryObjectStore, ObjectKey, ObjectStore};
-pub use persist::WalEngine;
+pub use persist::{EngineReplay, WalEngine};
 pub use replicated::{DurableAppliedPosition, ReplicatedEngine};
 pub mod checkpoint;
 mod flush_journal;

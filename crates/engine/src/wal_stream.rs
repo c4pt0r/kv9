@@ -46,6 +46,18 @@ pub struct RecoveryPlan {
 }
 
 impl RecoveryPlan {
+    pub(crate) fn is_segmented(path: &Path) -> Result<bool> {
+        let mut bytes = [0; 5];
+        match File::open(path) {
+            Ok(mut file) => match file.read_exact(&mut bytes) {
+                Ok(()) => Ok(bytes == MAGIC[..5]),
+                Err(e) if e.kind() == std::io::ErrorKind::UnexpectedEof => Ok(false),
+                Err(e) => Err(io(e)),
+            },
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(false),
+            Err(e) => Err(io(e)),
+        }
+    }
     pub fn read(path: impl AsRef<Path>) -> Result<Self> {
         let path = path.as_ref().to_path_buf();
         let bytes = read_bounded(&path)?;
@@ -159,6 +171,16 @@ impl SegmentedWal {
         target_bytes: u64,
         metrics: Arc<WalIoMetrics>,
     ) -> Result<Self> {
+        Self::create_with_checkpoint(path, stream_id, target_bytes, metrics, None)
+    }
+
+    pub(crate) fn create_with_checkpoint(
+        path: impl AsRef<Path>,
+        stream_id: [u8; 16],
+        target_bytes: u64,
+        metrics: Arc<WalIoMetrics>,
+        checkpoint: Option<CheckpointManifest>,
+    ) -> Result<Self> {
         validate_target(target_bytes)?;
         let path = path.as_ref().to_path_buf();
         if path.try_exists().map_err(io)? {
@@ -167,7 +189,7 @@ impl SegmentedWal {
         let header = SegmentHeader {
             stream_id,
             sequence: 1,
-            previous: None,
+            previous: checkpoint.as_ref().map(CheckpointManifest::position),
         };
         header.encode()?;
         std::fs::create_dir_all(segment_directory(&path, stream_id)).map_err(io)?;
@@ -176,7 +198,7 @@ impl SegmentedWal {
             generation: 1,
             active: header,
             closed: Vec::new(),
-            checkpoint: None,
+            checkpoint,
         };
         let bytes = topology.encode()?;
         let mut file = OpenOptions::new()
@@ -215,6 +237,26 @@ impl SegmentedWal {
     }
     pub fn path(&self) -> &Path {
         &self.path
+    }
+
+    /// Install a completed offline migration at the original WAL path. Both
+    /// names must resolve to the same stream directory. The caller has already
+    /// fenced the legacy writer before this irreversible publication step.
+    pub(crate) fn install_as(&mut self, target: &Path) -> Result<()> {
+        self.ensure_healthy()?;
+        if segment_directory(target, self.topology.active.stream_id)
+            != segment_directory(&self.path, self.topology.active.stream_id)
+        {
+            return Err(bad("migration would change the selected segment directory"));
+        }
+        self.poisoned = true;
+        std::fs::rename(&self.path, target).map_err(io)?;
+        self.path = target.to_path_buf();
+        self.metrics
+            .namespace_publish
+            .measure(|| sync_parent(target))?;
+        self.poisoned = false;
+        Ok(())
     }
 
     pub fn append(&mut self, batch: &WriteBatch, at: Option<AppliedPosition>) -> Result<()> {
@@ -458,7 +500,12 @@ impl Topology {
             .map(ClosedSegment::header)
             .unwrap_or(self.active);
         if first.sequence == 1 {
-            if first.previous.is_some() {
+            if first.previous.is_some()
+                && !self
+                    .checkpoint
+                    .as_ref()
+                    .is_some_and(|c| covers(c.position(), first.previous))
+            {
                 return Err(bad("first segment has a predecessor"));
             }
         } else if !self

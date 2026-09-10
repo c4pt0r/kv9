@@ -48,9 +48,10 @@ fn fixture(
 
 #[test]
 #[ignore = "requires a real MinIO server"]
-fn remote_checkpoint_reclaims_prefix_and_replays_the_exact_frozen_tail() {
+fn remote_checkpoint_skips_covered_frames_and_replays_the_exact_frozen_tail() {
     let (path, store, uploader, scope) = fixture("tail");
     let (engine, _) = WalEngine::open(&path).unwrap();
+    engine.enable_segmentation().unwrap();
     let mut batch = WriteBatch::new();
     for cf in ColumnFamily::ALL {
         batch.put(cf, vec![255, 255], b"at-cut".to_vec());
@@ -75,10 +76,10 @@ fn remote_checkpoint_reclaims_prefix_and_replays_the_exact_frozen_tail() {
     assert!(engine.checkpoint_applied(&manifest).unwrap());
     drop(engine);
     let (recovered, replay) = WalEngine::open_with_uploader(&path, Some(&uploader)).unwrap();
+    assert_eq!(replay.replayed_records, 1, "only the tail may be applied");
     assert_eq!(
-        replay.positions,
-        vec![Some(AppliedPosition { term: 2, index: 3 })],
-        "covered records must actually leave the WAL"
+        replay.covered_records, 1,
+        "the active segment is retained without rewriting"
     );
     assert_eq!(
         recovered.applied_position().unwrap(),
@@ -112,6 +113,7 @@ fn remote_checkpoint_reclaims_prefix_and_replays_the_exact_frozen_tail() {
 fn missing_or_corrupt_remote_sst_refuses_reopen_without_editing_the_wal() {
     let (path, store, uploader, scope) = fixture("corrupt");
     let (engine, _) = WalEngine::open(&path).unwrap();
+    engine.enable_segmentation().unwrap();
     let mut batch = WriteBatch::new();
     batch.put(
         ColumnFamily::Default,
@@ -169,6 +171,7 @@ fn pending_flush_recovers_the_same_identity_only_after_rechecking_remote_bytes()
     use kv9_engine::checkpoint::FlushJournal;
     let (path, store, uploader, scope) = fixture("pending");
     let (engine, _) = WalEngine::open(&path).unwrap();
+    engine.enable_segmentation().unwrap();
     let mut batch = WriteBatch::new();
     batch.put(
         ColumnFamily::Default,
@@ -220,6 +223,78 @@ fn pending_flush_recovers_the_same_identity_only_after_rechecking_remote_bytes()
     recovered.clear_settled().unwrap();
     assert!(FlushJournal::new(&journal_path).load().unwrap().is_none());
     for file in &manifest.files {
+        store
+            .delete(&ObjectKey::new(file.key.clone()).unwrap())
+            .unwrap();
+    }
+    std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
+}
+
+#[test]
+#[ignore = "requires a real MinIO server"]
+fn segmentation_migrates_an_empty_checkpoint_tail_and_advances_the_selected_anchor() {
+    let (path, store, uploader, scope) = fixture("migration-empty-tail");
+    let (engine, _) = WalEngine::open(&path).unwrap();
+    let mut batch = WriteBatch::new();
+    batch.put(
+        ColumnFamily::Default,
+        b"base".to_vec(),
+        b"remote-value".to_vec(),
+    );
+    engine
+        .write_applied(batch, AppliedPosition { term: 2, index: 10 })
+        .unwrap();
+    let old = uploader
+        .upload(engine.freeze(scope.clone()).unwrap())
+        .unwrap()
+        .into_manifest();
+    assert!(engine.checkpoint_applied(&old).unwrap());
+    assert_eq!(std::fs::metadata(&path).unwrap().len(), 0);
+    engine.enable_segmentation().unwrap();
+    assert_eq!(
+        WalEngine::checkpoint_reference(&path).unwrap(),
+        Some(old.clone())
+    );
+    drop(engine);
+    let (engine, report) = WalEngine::open_with_uploader(&path, Some(&uploader)).unwrap();
+    assert_eq!(report.replayed_records, 0);
+    assert_eq!(
+        engine.get(ColumnFamily::Default, b"base").unwrap(),
+        Some(b"remote-value".to_vec())
+    );
+    let mut tail = WriteBatch::new();
+    tail.put(ColumnFamily::Lock, b"tail".to_vec(), b"later".to_vec());
+    engine
+        .write_applied(tail, AppliedPosition { term: 2, index: 20 })
+        .unwrap();
+    let next = uploader
+        .upload(engine.freeze(scope).unwrap())
+        .unwrap()
+        .into_manifest();
+    assert!(engine.checkpoint_applied(&next).unwrap());
+    assert_eq!(
+        WalEngine::checkpoint_reference(&path).unwrap(),
+        Some(next.clone())
+    );
+    // A retained obsolete sidecar cannot override the embedded selected anchor.
+    std::fs::write(path.with_extension("checkpoint"), b"obsolete sidecar").unwrap();
+    drop(engine);
+    assert!(
+        WalEngine::open(&path).is_err(),
+        "the selected remote anchor requires MinIO"
+    );
+    let (engine, report) = WalEngine::open_with_uploader(&path, Some(&uploader)).unwrap();
+    assert_eq!(report.replayed_records, 0);
+    assert_eq!(
+        engine.applied_position().unwrap(),
+        DurableAppliedPosition::AppliedThrough(next.position())
+    );
+    assert_eq!(
+        engine.get(ColumnFamily::Lock, b"tail").unwrap(),
+        Some(b"later".to_vec())
+    );
+    drop(engine);
+    for file in old.files.iter().chain(&next.files) {
         store
             .delete(&ObjectKey::new(file.key.clone()).unwrap())
             .unwrap();

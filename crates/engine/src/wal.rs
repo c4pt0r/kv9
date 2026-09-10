@@ -232,6 +232,18 @@ impl Wal {
         path: impl AsRef<Path>,
         io_metrics: Arc<WalIoMetrics>,
     ) -> Result<(Self, Replay)> {
+        Self::open_mode(path, io_metrics, false)
+    }
+
+    pub(crate) fn open_strict(path: impl AsRef<Path>) -> Result<(Self, Replay)> {
+        Self::open_mode(path, WalIoMetrics::shared(), true)
+    }
+
+    fn open_mode(
+        path: impl AsRef<Path>,
+        io_metrics: Arc<WalIoMetrics>,
+        strict: bool,
+    ) -> Result<(Self, Replay)> {
         let path = path.as_ref().to_path_buf();
         if let Some(dir) = path.parent() {
             if !dir.as_os_str().is_empty() {
@@ -246,7 +258,7 @@ impl Wal {
             .open(&path)
             .map_err(io)?;
 
-        let replay = Self::replay(&mut file)?;
+        let replay = Self::replay(&mut file, strict)?;
 
         // Drop a torn tail so the next append starts from a clean boundary.
         let valid_len = file.stream_position().map_err(io)?;
@@ -282,13 +294,46 @@ impl Wal {
     /// Read every complete, checksum-verified record, stopping at the first that is not.
     ///
     /// Leaves `file` positioned immediately after the last good record.
-    fn replay(file: &mut File) -> Result<Replay> {
+    fn replay(file: &mut File, strict: bool) -> Result<Replay> {
+        let mut batches = Vec::new();
+        let mut positions = Vec::new();
+        let discarded_tail_bytes = Self::visit_file(file, strict, |batch, at| {
+            batches.push(batch);
+            positions.push(at);
+            Ok(())
+        })?;
+        Ok(Replay {
+            batches,
+            positions,
+            discarded_tail_bytes,
+        })
+    }
+
+    /// Stream an already recovered legacy WAL during offline migration. A
+    /// changed/incomplete source is refused, never repaired behind the owner.
+    pub(crate) fn visit_strict(
+        path: &Path,
+        visitor: impl FnMut(WriteBatch, Option<AppliedPosition>) -> Result<()>,
+    ) -> Result<()> {
+        let mut file = File::open(path).map_err(io)?;
+        let discarded = Self::visit_file(&mut file, true, visitor)?;
+        if discarded != 0 {
+            return Err(Error::Engine(
+                "wal: incomplete legacy migration source".into(),
+            ));
+        }
+        Ok(())
+    }
+
+    fn visit_file(
+        file: &mut File,
+        strict: bool,
+        mut visitor: impl FnMut(WriteBatch, Option<AppliedPosition>) -> Result<()>,
+    ) -> Result<u64> {
         let total = file.metadata().map_err(io)?.len();
         file.seek(SeekFrom::Start(0)).map_err(io)?;
         let mut reader = BufReader::new(&mut *file);
 
-        let mut batches = Vec::new();
-        let mut positions = Vec::new();
         let mut previous: Option<AppliedPosition> = None;
         let mut good_end: u64 = 0;
 
@@ -298,6 +343,9 @@ impl Wal {
                 break;
             }
             if preamble[..4] != MAGIC {
+                if strict {
+                    return Err(Error::Engine("wal: invalid complete record magic".into()));
+                }
                 break;
             }
             let mut check = vec![preamble[4]];
@@ -340,6 +388,9 @@ impl Wal {
             check.extend_from_slice(&len_bytes);
             let len = u32::from_le_bytes(len_bytes);
             if len > MAX_RECORD_LEN {
+                if strict {
+                    return Err(Error::Engine("wal: record length exceeds limit".into()));
+                }
                 break;
             }
             let mut body = vec![0u8; len as usize + CRC_LEN];
@@ -350,6 +401,11 @@ impl Wal {
             check.extend_from_slice(payload);
             let want = u32::from_le_bytes(crc_bytes.try_into().unwrap());
             if crc32(&check) != want {
+                if strict {
+                    return Err(Error::Engine(
+                        "wal: complete record checksum mismatch".into(),
+                    ));
+                }
                 break;
             }
             // Only a complete, CRC-valid record can assert a position. An ordering
@@ -358,17 +414,12 @@ impl Wal {
                 check_position(previous, at)?;
                 previous = Some(at);
             }
-            batches.push(decode_batch(payload)?);
-            positions.push(position);
+            visitor(decode_batch(payload)?, position)?;
             good_end += (4 + check.len() + CRC_LEN) as u64;
         }
 
         file.seek(SeekFrom::Start(good_end)).map_err(io)?;
-        Ok(Replay {
-            batches,
-            positions,
-            discarded_tail_bytes: total - good_end,
-        })
+        Ok(total - good_end)
     }
 
     /// Append an unpositioned v2 batch. It conveys no replicated progress.

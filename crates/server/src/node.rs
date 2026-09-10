@@ -1619,7 +1619,7 @@ mod tests {
         }
 
         let (engine, replay) = WalEngine::open(&wal).unwrap();
-        assert!(!replay.batches.is_empty());
+        assert!(replay.replayed_records > 0);
         let reopened = Node::with_raft_and_engine(
             N1,
             Config::default(),
