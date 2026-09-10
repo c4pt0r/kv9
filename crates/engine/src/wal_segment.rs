@@ -91,6 +91,28 @@ pub struct ClosedSegment {
 }
 
 impl ClosedSegment {
+    pub(crate) fn from_published(header: SegmentHeader, summary: SegmentSummary) -> Result<Self> {
+        header.encode()?;
+        let minimum = summary
+            .records
+            .checked_mul((FRAME_HEADER_BYTES + 8) as u64)
+            .and_then(|bytes| bytes.checked_add(HEADER_BYTES as u64))
+            .ok_or_else(|| bad("published summary length overflow"))?;
+        if summary.bytes < minimum
+            || summary.first.is_some() != summary.last.is_some()
+            || (summary.records == 0 && summary != SegmentSummary::default())
+            || (summary.records > 0 && summary.first.is_none() && !summary.has_unpositioned)
+        {
+            return Err(bad("invalid published closed summary"));
+        }
+        check_position(header.previous, summary.first)?;
+        if let (Some(first), Some(last)) = (summary.first, summary.last) {
+            if last.index < first.index || last.term < first.term {
+                return Err(bad("published summary positions regress"));
+            }
+        }
+        Ok(Self { header, summary })
+    }
     pub fn header(&self) -> SegmentHeader {
         self.header
     }
@@ -224,6 +246,7 @@ impl WalSegment {
             return Err(bad("failed writer requires recovery"));
         }
         check_position(self.summary.last.or(self.header.previous), position)?;
+        encoded_size(batch)?;
         let payload = encode_batch(batch);
         let length = u32::try_from(payload.len()).map_err(|_| bad("record length overflow"))?;
         if length > MAX_RECORD_LEN {
@@ -278,7 +301,7 @@ impl WalSegment {
 }
 
 impl SegmentHeader {
-    fn encode(self) -> Result<[u8; HEADER_BYTES]> {
+    pub(crate) fn encode(self) -> Result<[u8; HEADER_BYTES]> {
         if self.stream_id == [0; 16] || self.sequence == 0 {
             return Err(bad("zero stream identity or sequence"));
         }
@@ -295,6 +318,49 @@ impl SegmentHeader {
         bytes[56..].copy_from_slice(&checksum.to_le_bytes());
         Ok(bytes)
     }
+
+    pub(crate) fn decode(bytes: &[u8]) -> Result<Self> {
+        if bytes.len() != HEADER_BYTES {
+            return Err(bad("invalid published header size"));
+        }
+        let previous = match bytes[32] {
+            0 => None,
+            1 => Some(AppliedPosition {
+                term: u64::from_le_bytes(bytes[40..48].try_into().unwrap()),
+                index: u64::from_le_bytes(bytes[48..56].try_into().unwrap()),
+            }),
+            _ => return Err(bad("invalid published predecessor kind")),
+        };
+        let header = Self {
+            stream_id: bytes[8..24].try_into().unwrap(),
+            sequence: u64::from_le_bytes(bytes[24..32].try_into().unwrap()),
+            previous,
+        };
+        if bytes != header.encode()? {
+            return Err(bad("invalid published segment header"));
+        }
+        Ok(header)
+    }
+}
+
+pub(crate) fn encoded_size(batch: &WriteBatch) -> Result<u64> {
+    let mut payload = 4u64;
+    for mutation in batch.mutations() {
+        let extra = match mutation {
+            crate::Mutation::Put { key, value, .. } => 10u64
+                .checked_add(key.len() as u64)
+                .and_then(|n| n.checked_add(value.len() as u64)),
+            crate::Mutation::Delete { key, .. } => 6u64.checked_add(key.len() as u64),
+        }
+        .ok_or_else(|| bad("record length overflow"))?;
+        payload = payload
+            .checked_add(extra)
+            .ok_or_else(|| bad("record length overflow"))?;
+        if payload > u64::from(MAX_RECORD_LEN) {
+            return Err(bad("record exceeds the size limit"));
+        }
+    }
+    Ok(payload + FRAME_HEADER_BYTES as u64 + 4)
 }
 
 fn frame_header(length: u32, position: Option<AppliedPosition>) -> [u8; FRAME_HEADER_BYTES] {

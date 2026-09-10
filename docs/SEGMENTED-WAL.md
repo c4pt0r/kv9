@@ -7,9 +7,11 @@ Tracking: #15 (S01), with the recovery/retention contract in #14 (C04).
 The first implementation supplies `WalSegment`: exclusively created files,
 checksummed stream/sequence/predecessor headers, atomic data/position frames,
 streaming recovery, active-tail repair, immutable closed descriptors and
-fail-stop append errors. It is a storage primitive; `WalEngine` still uses its
-existing single-file layout. No capacity or checkpoint-latency improvement is
-claimed until the stream owner and engine integration below are complete.
+fail-stop append errors. `SegmentedWal` now adds durable topology selection,
+rotation, checkpoint publication and whole closed-segment reclamation.
+`WalEngine` still uses its existing single-file layout until engine/migration
+integration completes; no runtime capacity or checkpoint-latency improvement
+is claimed from these storage interfaces alone.
 
 Daily mainline implementation proceeds alongside the existing fault-environment
 closeout. Module regressions run locally as code changes. Deductive protocol
@@ -115,3 +117,45 @@ fixed-residue mistake of including nested CRC fields. Both unpublished failed
 attempts are retained with the final passing logs. These module checks are not
 new Chaos Mesh or deductive-proof acceptance. The segment proof and stream
 publication/reclamation integration remain work in progress under #15.
+
+## Stream owner increment
+
+`wal_stream::SegmentedWal` owns one selected topology and active writer. Its
+bounded, SHA-256-checked topology contains the active header, up to 4,096 closed
+summaries and the complete checkpoint reference. The `KV9W` version-3 prefix
+makes the old single-file writer refuse before editing this format. Segment
+files are selected by that topology under the stream's identity directory;
+unpublished successors cannot select themselves through filenames.
+
+Rotation consumes the old writer, synchronizes a successor and its namespace,
+then publishes the next topology by file fsync, rename and parent fsync. A
+failure fences subsequent writes until recovery. The exact previous applied
+position is carried through empty and entirely unpositioned segments.
+
+Checkpoint adoption checks the caller's ordered-applied reference against local
+progress and known segment position bounds. Cluster/region identity stays fixed;
+checkpoint epochs may advance monotonically. The caller still certifies exact
+Raft and object authority. A rejected older checkpoint has no side effects, and
+unpositioned history keeps its reclaim ban. Successful topology publication
+removes only completely covered closed descriptors. Physical unlink follows
+publication and can be retried independently; straddling and active files are
+never rewritten. A housekeeping error can therefore follow a durably adopted
+checkpoint, and callers must preserve that unknown/completed distinction.
+
+`RecoveryPlan::read` is read-only. Recovery first invokes the caller's checkpoint
+validation/restore callback, verifies that the selected topology has not changed,
+and stabilizes it. It then streams retained records and repairs only the selected
+active tail. Failed restore never repairs files. Covered files absent from the
+published retained set are not opened, so a non-durable unlink or covered body
+corruption cannot force replay of obsolete data. Missing or corrupt retained
+files still refuse the whole open.
+
+Local engine checks pass 128 tests, including eleven stream tests for rotation,
+position gaps, empty successors, unpositioned pins, checkpoint epochs and term
+contradictions, old-writer refusal, corrupted authority/retained identities,
+pre-publication I/O failures, post-publication unlink failure, and comparable
+within-frame covered/tail corruption. Engine Clippy with warnings denied passes.
+The checkpoint unit fixture explicitly simulates the caller's committed-object
+premise; it is not real MinIO or Raft certification. Full modeled file/directory
+sync cuts, particularly failure after topology rename, and actual Chaos Mesh
+acceptance remain in the integrated S01 gate.

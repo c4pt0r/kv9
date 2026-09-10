@@ -16,6 +16,7 @@ pub mod sst;
 pub mod testing;
 pub mod wal;
 pub mod wal_segment;
+pub mod wal_stream;
 pub mod wal_v2;
 pub mod write_batch;
 
