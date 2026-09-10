@@ -88,6 +88,37 @@ PID-namespace restart. Raw records and the observer are retained at
 `/tmp/kv9-status-process-identity-process-first` and
 `/tmp/kv9-status-process-identity-process-run.py`.
 
-The later async-write runtime needs its own integration validation and exact
-fault observer acceptance. No earlier binary is relabeled with this evidence;
-no hosted CI was dispatched.
+The main-line fix is committed as `14b7c50` (the same patch as `e67711a`).
+Its source, executed binary, test logs, process records and original stale-status
+failure are archived in
+`target/correctness-evidence/2026-09-10-e67711a-status-process-identity-local-first.tar.gz`:
+48,678,984 bytes, 540 entries, SHA-256
+`12ae5da13a0a64f4be4a263be6936a98cd545887c262a842a6632b21b4742a80`.
+Every archive member was read back and compared with its retained source.
+
+### Async-write integration validation, 2026-09-10
+
+Commit `23bc58b` applies only this identity patch to the selected async-write
+candidate `a00e39f`. All 645 workspace tests/doctests passed, with zero failures
+and 23 ignored; all-target Clippy with warnings denied passed. The unchanged
+three-process RawKV fixture passed failover, subsequent writes, delete and
+original-directory restart. All four executing lifetimes had both status
+snapshots bound to their actual PID/start/boot identity. The stale-PID,
+missing-field and unavailable-field observer controls also passed.
+
+The executed default binary has SHA-256
+`e44cfe74f916799e97b4d476f42a44528a2338d0629a562e48fc617ccd39c9ca`.
+Root, engine, Raft and server package feature lists were empty. Source and
+binary bytes remained unchanged, and all owned processes exited. The source,
+pinned executed binary, local logs and process records are archived in
+`target/correctness-evidence/2026-09-10-23bc58b-async-write-status-process-identity-local-first.tar.gz`:
+49,491,782 bytes, 474 entries, SHA-256
+`a2dbc87d04cb5444677190cf2d3257e049c722bb27336deab95e629300e05749`.
+Every archive member and original file was rehashed during readback.
+
+These local results establish integration of the diagnostic fix. The stronger
+exact-source Chaos observer acceptance remains outstanding, including fresh
+counter observations during the active delay fault. Earlier failed observations
+remain failures; no earlier binary is relabeled with this evidence. This patch
+does not promote the async-write runtime to main or complete #13. No hosted CI
+was dispatched.
