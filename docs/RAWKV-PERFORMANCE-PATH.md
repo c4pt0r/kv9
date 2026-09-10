@@ -37,6 +37,17 @@ accepting scale-out. This sequence does not mark those prerequisites complete.
 
 ## Current evidence
 
+The [bounded streaming-gRPC control](https://github.com/c4pt0r/kv9/blob/40e813f/docs/RPC-STREAM-CONTROL.md)
+is now committed on the experiment branch. It shares the existing handlers and
+Raft semantics, correlates multiplexed responses, bounds unfinished/buffered work
+and closes uncertain stream generations without replaying writes. Fifteen
+focused transport tests pass, alongside 670 feature-enabled and 645 default
+workspace tests/doctests (23 ignored in each workspace run). The independently
+audited three-transport leader-loss/restart run validates all 495 history
+operations, including 43 retained unknown outcomes, and fresh final resource
+drain. Streaming throughput and exact-feature actual Chaos remain open; this
+increment does not select a production transport.
+
 The new opt-in [RPC framework comparison](../scripts/redis-reference/results/b49a2f6-rpc-framework-c64-tmpfs-diagnostic.md)
 uses the same clean `b49a2f6` feature-enabled release client/server for both unary
 gRPC and tarpc/TCP. In its repeated c64 tmpfs bracket, tarpc reaches 185,665 GET/s,
