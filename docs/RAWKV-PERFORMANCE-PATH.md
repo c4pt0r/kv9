@@ -48,7 +48,8 @@ Source inspection identifies two concrete follow-up candidates:
   mutex. Submission can therefore wait behind device latency.
 - Quorum read confirmations are retained in a bounded vector and looked up by
   scanning from its beginning. The bound is 1,024 receipts. This is avoidable
-  lookup work, but its actual contribution requires measurement.
+  lookup work. The completed profile and indexed experiment below distinguish
+  its measured CPU population from an established end-to-end gain.
 
 ## Measurement lanes
 
@@ -93,8 +94,23 @@ evidence stays separate.
 
 ### 2. Bound and batch proposal submission before persistence
 
-Introduce an owner-consumed proposal queue with explicit count and byte limits
-only after the measured wait budget supports it. Admission and queueing must not
+The implementation is now pushed separately as
+[`95fb5cd`](https://github.com/c4pt0r/kv9/commit/95fb5cd968411009a41ba4f7ed287cd6597115fa).
+It reserves at most 128 requests/64 MiB of encoded commands per owner and
+consumes at most 64 inspections per turn, including cancelled entries, with a
+1 MiB soft turn target. Reservations include in-progress handoffs. Its
+[contract and local evidence](https://github.com/c4pt0r/kv9/blob/codex/raft-proposal-queue/docs/RAFT-PROPOSAL-QUEUE.md)
+cover atomic cancellation/claim, typed pre-submission refusal, exact receipt
+identity, term checks, failure fencing and independent workload accounting.
+Local validation passed 626 Rust tests/doctests (23 ignored), all-target Clippy,
+eight compiled control triples, default three-process failover/restart and the
+actual MinIO persistent-workload functional suite with twelve report-corruption
+controls. The candidate remains outside the main runtime. Parameterized proof
+composition, actual Chaos Mesh, overload/service fairness and repeated
+performance acceptance remain open. Targeted c64 disk/tmpfs comparisons are
+running separately; there is no established queue throughput gain yet.
+
+The acceptance contract requires explicit count and byte limits. Admission and queueing must not
 require the mutex held during a device sync. Drain already available work under
 an explicit per-turn budget so one busy producer cannot starve messages or ticks.
 Do not add an unconditional sleep merely to form a batch.
@@ -132,8 +148,18 @@ must not introduce an indispensable cluster-wide batching service.
 
 ### 4. Reduce the measured read-path CPU cost
 
-Profile the persistent-client GET path after the volatile diagnostic. Candidate
-changes include indexed exact-context receipt lookup, fewer duplicate context
+The exact Ready [GET CPU diagnostic](../scripts/redis-reference/results/892b2a1-get-cpu-profile.md)
+is complete. In the kernel-inclusive recording, RPC/framing/serialization/buffer
+leaves account for 21.58% of selected samples, generic allocation/copy/comparison
+for 14.87%, and receipt vector search for 7.02%. Actual stacks also show
+completion publication and blocking-pool dispatch waking threads through
+futexes. Inclusive stack populations overlap; optimized/async unwinding and
+software sampling limit attribution. This supports reducing RPC/allocation and
+blocking wakeup/dispatch costs alongside lookup work; it is not a causal speedup
+estimate. Both instrumented cohorts retained complete successful outcomes and
+zero residual admission occupancy.
+
+Follow-up changes include fewer blocking dispatches, duplicate context
 decodes/allocations, and bounded read-barrier batching. Each change gets its own
 unchanged-protocol comparison so CPU and latency effects can be attributed.
 
@@ -145,8 +171,8 @@ checked [60-trial comparison](../scripts/redis-reference/results/892b2a1-73ddb0d
 does not establish an end-to-end gain: c64 GET is 79,067/s versus 84,810/s for
 Ready, and results vary across concurrency levels while Redis also drifts lower.
 The candidate remains an experiment and is not selected for runtime promotion.
-Continue the performance mainline from Ready; profile before further lookup
-changes. The
+Continue the performance mainline from Ready, using the profile to prioritize
+further changes. The
 [representation argument](https://github.com/c4pt0r/kv9/blob/73ddb0db123d5ee5cecfbe95bdb476e30f6380bc/docs/READ-RECEIPT-INDEX.md)
 preserves FIFO retention and first-match duplicate behavior for arbitrary finite
 histories. Its new process checks do not replace actual Chaos Mesh.
