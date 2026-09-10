@@ -59,8 +59,9 @@ has passed on exact `f0eaf23`, including independent full histories, effects and
 post-history drain observations. Historical namespaces and failed attempts
 remain intact. This covers point operations, not native batches.
 
-A separate atomic batch history format/checker and actual Chaos Mesh batch
-fault run remain required. Batch throughput and mean/p50/p95/p99 must be measured
+The separate [atomic batch history checker and three-voter process fixture](NATIVE-BATCH-ACCEPTANCE.md)
+have passed, including independent audits and copied-artifact counterexamples.
+Actual native batch Chaos Mesh remains required. Batch throughput and mean/p50/p95/p99 must be measured
 with explicit batch sizes, RPC and input-item counts, and all failure populations.
 The previous `40e813f` performance numbers remain evidence for that frozen
 point-RPC experiment only. This checkpoint does not assert production readiness,
