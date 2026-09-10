@@ -12,6 +12,8 @@ pub mod fence;
 pub mod grpc;
 pub mod node;
 pub mod routing;
+#[cfg(feature = "rpc-experiment")]
+pub mod rpc_experiment;
 pub mod runtime;
 pub mod workload;
 

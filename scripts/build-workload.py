@@ -49,6 +49,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--release", action="store_true")
+    parser.add_argument("--rpc-experiment", action="store_true",
+                        help="explicitly compile the opt-in RPC transport experiment")
     args = parser.parse_args()
     output = args.output.resolve()
     if output.is_relative_to(ROOT):
@@ -58,6 +60,8 @@ def main():
     command = ["cargo", "build", "--locked", "-p", "kv9-server", "--bin", "kv9-workload", "--message-format=json-render-diagnostics"]
     if args.release:
         command.append("--release")
+    if args.rpc_experiment:
+        command.extend(["--features", "rpc-experiment"])
     rustc = subprocess.check_output(["rustc", "-vV"], cwd=ROOT, text=True)
     # These are build inputs, not a dump of credentials or the process environment.
     build_environment = {key: os.environ[key] for key in (
