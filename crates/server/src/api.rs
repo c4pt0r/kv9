@@ -1,7 +1,7 @@
 //! The v0 API surface as Rust traits (DESIGN §11).
 //!
 //! Transport is gRPC; these traits are the synchronous core contract behind tonic's
-//! blocking boundary. Every data request
+//! blocking boundary, with an optional asynchronous point-read preparation. Every data request
 //! carries `(keyspace_id, region_epoch)` so the router can resolve keyspace→region,
 //! epoch-check, and validate the API type against the keyspace declaration.
 
@@ -100,7 +100,20 @@ pub trait TxnApi {
 }
 
 /// The raw API for `raw` keyspaces (DESIGN §11 Raw surface).
-pub trait RawApi {
+pub trait RawApi: Send + Sync + 'static {
+    /// Prepare a point-read job without blocking an async worker. The default
+    /// defers all work to the existing blocking boundary. Implementations may
+    /// await a quorum credential here; engine access belongs in the returned job.
+    fn prepare_raw_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        key: UserKey,
+    ) -> RawReadPreparation<Option<Value>> {
+        Box::pin(async move {
+            Ok(Box::new(move || self.raw_get(&ctx, &key)) as RawReadJob<Option<Value>>)
+        })
+    }
+
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>>;
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>>;
     fn raw_put(&self, ctx: &RequestContext, key: UserKey, value: Value) -> Result<AppliedPosition>;
@@ -124,6 +137,10 @@ pub trait RawApi {
         end: &[u8],
     ) -> Result<DeleteRangeReceipt>;
 }
+
+pub type RawReadJob<T> = Box<dyn FnOnce() -> Result<T> + Send>;
+pub type RawReadPreparation<T> =
+    std::pin::Pin<Box<dyn std::future::Future<Output = Result<RawReadJob<T>>> + Send>>;
 
 /// How far a chunked range delete got.
 ///

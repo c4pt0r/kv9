@@ -278,6 +278,107 @@ fn admission_cancelled_running_and_queued_jobs_retain_their_reservations() {
     });
 }
 
+#[tokio::test(flavor = "current_thread")]
+async fn admission_cancelled_read_preparation_drops_future_without_starting_engine() {
+    use prost::Message;
+
+    let (entered_tx, mut entered_rx) = tokio::sync::mpsc::unbounded_channel();
+    let (release_tx, release_rx) = tokio::sync::oneshot::channel();
+    let (dropped_tx, mut dropped_rx) = tokio::sync::mpsc::unbounded_channel();
+    let backend = Arc::new(FakeBackend {
+        raw_preparation_gate: Some(RawPreparationGate {
+            entered: entered_tx,
+            release: Mutex::new(Some(release_rx)),
+            dropped: dropped_tx,
+        }),
+        ..Default::default()
+    });
+    let message = proto::RawGetRequest {
+        context: Some(request_context_message()),
+        key: vec![7; 32],
+    };
+    let bytes = message.encoded_len();
+    let service = Kv9Grpc::with_limits(
+        backend.clone(),
+        PublicApiLimits {
+            max_requests: 1,
+            max_encoded_bytes: bytes,
+        },
+    )
+    .unwrap();
+    let admission = service.admission();
+    let pending = tokio::spawn(async move { service.raw_get(authenticated(message)).await });
+    tokio::time::timeout(Duration::from_secs(5), entered_rx.recv())
+        .await
+        .expect("public handler must start the asynchronous preparation")
+        .unwrap();
+    let preparing = admission.snapshot();
+    // Running now counts logical backend work, including an asynchronous quorum
+    // wait. It does not imply that a blocking worker or engine job has started.
+    assert_eq!(
+        (
+            preparing.in_flight,
+            preparing.queued,
+            preparing.running,
+            preparing.encoded_bytes,
+        ),
+        (1, 0, 1, bytes)
+    );
+    assert!(backend.callers.lock().unwrap().is_empty());
+    let before_cancel = admission.latency_snapshots();
+    assert_eq!(
+        before_cancel[0].latency.outcomes[Outcome::Success as usize].count,
+        1
+    );
+    assert!(before_cancel[1]
+        .latency
+        .outcomes
+        .iter()
+        .all(|h| h.count == 0));
+
+    pending.abort();
+    assert!(tokio::time::timeout(Duration::from_secs(5), pending)
+        .await
+        .unwrap()
+        .unwrap_err()
+        .is_cancelled());
+    tokio::time::timeout(Duration::from_secs(5), dropped_rx.recv())
+        .await
+        .expect("cancellation must destroy the pending preparation future")
+        .unwrap();
+    assert!(
+        release_tx.send(()).is_err(),
+        "preparation receiver survived cancellation"
+    );
+    assert!(
+        backend.callers.lock().unwrap().is_empty(),
+        "cancelled preparation must not start an engine job"
+    );
+    let released = admission.snapshot();
+    assert_eq!(
+        (
+            released.in_flight,
+            released.running,
+            released.encoded_bytes,
+            released.classes[0].admitted,
+            released.classes[0].completed,
+            released.classes[0].backend_aborted,
+            released.classes[0].released_before_execution,
+        ),
+        (0, 0, 0, 1, 0, 1, 0)
+    );
+    let after_cancel = admission.latency_snapshots();
+    assert_eq!(
+        after_cancel[1].latency.outcomes[Outcome::Aborted as usize].count,
+        1
+    );
+    assert_eq!(
+        after_cancel[1].latency.outcomes[Outcome::Success as usize].count,
+        0
+    );
+    assert!(admission.reserve(WorkClass::RawRead, bytes).is_ok());
+}
+
 #[test]
 fn admission_marker_is_exclusive_and_fail_closed() {
     for reason in [
@@ -328,6 +429,7 @@ fn admission_marker_is_exclusive_and_fail_closed() {
 
 async fn admission_wire_case(max_requests: usize, max_encoded_bytes: usize, reason: &str) {
     use kv9_raft::grpc::{self as raft, pb, GrpcDiscoveryState, RaftGrpcService};
+    use prost::Message;
     struct Discovery;
     impl GrpcDiscoveryState for Discovery {
         fn raft_receive_allowed(&self) -> bool {
@@ -346,10 +448,18 @@ async fn admission_wire_case(max_requests: usize, max_encoded_bytes: usize, reas
     }
     let (entered_tx, mut entered_rx) = tokio::sync::mpsc::unbounded_channel();
     let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let (preparing_tx, mut preparing_rx) = tokio::sync::mpsc::unbounded_channel();
+    let (prepare_release_tx, prepare_release_rx) = tokio::sync::oneshot::channel();
+    let (prepare_dropped_tx, mut prepare_dropped_rx) = tokio::sync::mpsc::unbounded_channel();
     let backend = Arc::new(FakeBackend {
         membership_hint: None,
         callers: Mutex::new(Vec::new()),
         raw_gate: Some((entered_tx, Mutex::new(release_rx))),
+        raw_preparation_gate: Some(RawPreparationGate {
+            entered: preparing_tx,
+            release: Mutex::new(Some(prepare_release_rx)),
+            dropped: prepare_dropped_tx,
+        }),
     });
     let api = Kv9Grpc::with_limits(
         backend.clone(),
@@ -392,7 +502,29 @@ async fn admission_wire_case(max_requests: usize, max_encoded_bytes: usize, reas
     let mut first_client = client.clone();
     let first_request = message.clone();
     let pending = tokio::spawn(async move { first_client.raw_get(wire(first_request)).await });
+    tokio::time::timeout(Duration::from_secs(5), preparing_rx.recv())
+        .await
+        .expect("wire read must enter its asynchronous preparation")
+        .unwrap();
+    let preparing = admission.snapshot();
+    assert_eq!(
+        (
+            preparing.in_flight,
+            preparing.queued,
+            preparing.running,
+            preparing.encoded_bytes,
+            preparing.classes[0].admitted,
+        ),
+        (1, 0, 1, message.encoded_len(), 1),
+        "one logical reservation must cover asynchronous preparation"
+    );
+    assert!(backend.callers.lock().unwrap().is_empty());
+    prepare_release_tx.send(()).unwrap();
     tokio::time::timeout(Duration::from_secs(5), entered_rx.recv())
+        .await
+        .unwrap()
+        .unwrap();
+    tokio::time::timeout(Duration::from_secs(5), prepare_dropped_rx.recv())
         .await
         .unwrap()
         .unwrap();
@@ -406,7 +538,7 @@ async fn admission_wire_case(max_requests: usize, max_encoded_bytes: usize, reas
     .unwrap()
     .unwrap_err();
     assert_eq!(admission_refusal(&refusal), Some(reason));
-    let unauthorized = client.raw_get(message).await.unwrap_err();
+    let unauthorized = client.raw_get(message.clone()).await.unwrap_err();
     assert_eq!(unauthorized.code(), Code::Unauthenticated);
     // The same listener and single async worker must still serve authenticated
     // Raft discovery while a public backend is held and its RPC is cancelled.
@@ -429,15 +561,41 @@ async fn admission_wire_case(max_requests: usize, max_encoded_bytes: usize, reas
         .unwrap()
         .into_inner();
     assert!(!reply.initialized);
-    assert_eq!(
-        admission.snapshot().in_flight,
-        1,
-        "wire cancellation released live backend capacity"
-    );
-    assert_eq!(backend.callers.lock().unwrap().as_slice(), ["wire-client"]);
+    let held = admission.snapshot();
+    let held_metrics = admission.latency_snapshots();
+    let callers = backend.callers.lock().unwrap().clone();
     release_tx.send(()).unwrap();
+    assert_eq!(
+        (
+            held.in_flight,
+            held.queued,
+            held.running,
+            held.encoded_bytes,
+            held.classes[0].admitted,
+            held.classes[0].completed,
+            held.classes[0].backend_aborted,
+            held.classes[0].released_before_execution,
+        ),
+        (1, 0, 1, message.encoded_len(), 1, 0, 0, 0),
+        "wire cancellation must retain the same live engine reservation"
+    );
+    assert_eq!(callers.as_slice(), ["wire-client"]);
+    // One logical start spans preparation, the blocking-pool queue and engine
+    // execution. Cancelling the caller cannot finish that backend interval.
+    assert_eq!(
+        held_metrics[0].latency.outcomes[Outcome::Success as usize].count,
+        1
+    );
+    assert!(held_metrics[1]
+        .latency
+        .outcomes
+        .iter()
+        .all(|h| h.count == 0));
     tokio::time::timeout(Duration::from_secs(5), async {
-        while admission.snapshot().in_flight != 0 {
+        while admission.snapshot().in_flight != 0
+            || admission.latency_snapshots()[1].latency.outcomes[Outcome::Success as usize].count
+                != 1
+        {
             tokio::task::yield_now().await;
         }
     })
@@ -448,6 +606,9 @@ async fn admission_wire_case(max_requests: usize, max_encoded_bytes: usize, reas
         .await
         .is_ok());
     assert_eq!(admission.snapshot().classes[0].completed, 1);
+    assert_eq!(admission.snapshot().classes[0].admitted, 1);
+    assert_eq!(admission.snapshot().classes[0].backend_aborted, 0);
+    assert_eq!(admission.snapshot().encoded_bytes, 0);
     shutdown_tx.send(()).unwrap();
     server_task.await.unwrap().unwrap();
 }

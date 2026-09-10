@@ -337,6 +337,12 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         Ok(true)
     }
 
+    /// Owner-side wake decision only; admission still rechecks under its lock.
+    pub(crate) fn read_admission_can_progress(&self) -> bool {
+        let g = self.lock();
+        g.raw.raft.state != StateRole::Leader || g.raw.raft.commit_to_current_term()
+    }
+
     /// Drain quorum-confirmed read states captured by the Ready loop.
     pub fn take_read_states(&self) -> Vec<ReadState> {
         std::mem::take(&mut self.lock().read_states)
