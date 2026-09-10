@@ -42,9 +42,10 @@ def aggregate(root, mix, workers, target):
                                   unsuccessful=e['summary']['failed'],cpu=e['summary']['cpu']) for e in entries])
 
 
-def write_stages(root):
+def write_stages(root, workers=None):
     entries=read(root/'matrix.json',16*1024*1024)['attempts']
-    trial=next(e for e in entries if e['target']=='kv9' and e['mix']=='write' and e['workers']==min(x['workers'] for x in entries) and e['repeat']==0)
+    if workers is None: workers=min(x['workers'] for x in entries)
+    trial=next(e for e in entries if e['target']=='kv9' and e['mix']=='write' and e['workers']==workers and e['repeat']==0)
     directory=root/'kv9'/trial['name']
     before=read(directory/'before-metrics.json'); after=read(directory/'after-metrics.json')
     config=read(directory/'requested-config.json'); report=read(directory/'run/report.json')
@@ -70,6 +71,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for name in ('baseline','candidate','baseline-check','candidate-check','output'):
         parser.add_argument('--'+name,type=Path,required=True)
+    parser.add_argument('--candidate-status',default='Performance evidence only; correctness acceptance is tracked separately.')
     args=parser.parse_args(); args.output.mkdir(parents=True,exist_ok=False)
     paths={'baseline':args.baseline,'candidate':args.candidate}
     checks={'baseline':args.baseline_check,'candidate':args.candidate_check}
@@ -98,13 +100,16 @@ def main():
             row['acknowledgment_rate_ratio']=row['candidate']['success_ops_per_second']/row['baseline']['success_ops_per_second']
             rows.append(row)
     stages=write_stages(args.candidate)
-    result=dict(version=1,complete=True,protocols=protocols,rows=rows,durable_write_stages=stages,
+    concurrent_stages={name:write_stages(path,16) for name,path in paths.items()} if 16 in protocols['baseline']['concurrency'] else {}
+    result=dict(version=1,complete=True,protocols=protocols,rows=rows,durable_write_stages=stages,candidate_status=args.candidate_status,
+                concurrent_write_stages=concurrent_stages,
                 matrices={name:dict(path=str(path),sha256=comparison.sha(path/'matrix.json'),check_sha256=comparison.sha(checks[name])) for name,path in paths.items()},
                 interpretation=outcomes['baseline']['interpretation'])
     save(args.output/'paired.json',result)
     protocol=protocols['baseline']; highest=max(protocol['concurrency'])
     lines=['# Redis reference and KV9 scheduling comparison','',
            f"Baseline: `{protocols['baseline']['revision']}`. Candidate: `{protocols['candidate']['revision']}`.",'',
+           args.candidate_status,'',
            f"The complete baseline ({checked['baseline']['trials']} trials) and candidate ({checked['candidate']['trials']} trials) matrices passed independent report rechecking. Measurement completion does not mean that every logical call was acknowledged.", '',
            'This is a standalone Redis memory reference (`save ""`, `appendonly no`, zero replicas) alongside three WAL-backed KV9 voters with unchanged quorum semantics. It is not an equal-durability comparison.', '',
            f"The paired protocol uses {protocol['keys']} hot keys, 23-byte keys, {protocol['value_bytes']}-byte values, {protocol['repetitions']} repetitions, {protocol['measure_ms']}-ms measurement windows, two client runtime threads, and logical concurrency {protocol['concurrency']}. Client CPUs: {placement['client_cpus']}; server CPUs: {placement['server_cpus']}. Host and filesystem inventories are retained in each matrix. Logical CPU affinity is not exclusive physical-core or host isolation. Every trial retains its full latency histograms, CPU samples, outcomes, and server snapshots.", '',
@@ -140,6 +145,17 @@ def main():
         raft,engine=data['raft_wal_record_sync'],data['engine_wal_record_sync']
         lines.append(f"| {node} | {raft['count']} | {raft['mean_ns']/1e6:.3f} | {engine['count']} | {engine['mean_ns']/1e6:.3f} |")
     lines += ['', 'In this sample, the recorded sync counts expose the durable I/O cost per acknowledged write. They are observations of this snapshot interval, not a universal fixed-count claim across elections, migrations, or future group-commit implementations.','']
+    if concurrent_stages:
+        lines += ['## Concurrent durable-write sample','',
+                  'The following first-repetition concurrency-16 snapshot deltas include initialization, warmup, measurement, drain, and final reads. Sync/acknowledgment ratios summarize the entire interval; they are not isolated measured-phase stage averages. Engine sync counts remain visible independently of Raft sync counts.', '',
+                  '| Revision | Voter | Acknowledged writes including setup/warmup | Non-acknowledged measured | Raft sync calls | Engine sync calls | Raft syncs / acknowledgment |',
+                  '|---|---|---:|---:|---:|---:|---:|']
+        for name,sample in concurrent_stages.items():
+            for node,data in sample['nodes'].items():
+                writes=sample['acknowledged_writes_including_setup_and_warmup']
+                raft,engine=data['raft_wal_record_sync'],data['engine_wal_record_sync']
+                lines.append(f"| {name} | {node} | {writes} | {sample['unsuccessful_measured']} | {raft['count']} | {engine['count']} | {raft['count']/writes:.3f} |")
+        lines.append('')
     lines += ['', '## Retained evidence', '']
     for name,path in paths.items():
         build=read(path/'kv9-build.json')
