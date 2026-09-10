@@ -286,6 +286,8 @@ async fn warmup_failure_preserves_attempts_and_does_not_start_measurement() {
                 "profile": "debug", "rustc": "test fixture executable",
             })).unwrap()).unwrap();
             let configuration = WorkloadConfig {
+                #[cfg(feature = "rpc-experiment")]
+                rpc_transport: crate::rpc_experiment::TransportKind::TonicUnary,
                 version: 1,
                 client: config(&[server.address]),
                 mode,
@@ -409,6 +411,8 @@ async fn workload_stop_drains_an_applied_write_until_its_terminal_response() {
         "profile": "debug", "rustc": "test fixture executable",
     })).unwrap()).unwrap();
     let configuration = WorkloadConfig {
+        #[cfg(feature = "rpc-experiment")]
+        rpc_transport: crate::rpc_experiment::TransportKind::TonicUnary,
         version: 1,
         client: config(&[server.address, unavailable.local_addr().unwrap()]),
         mode: Mode::Correctness,
@@ -742,6 +746,8 @@ async fn persistent_response_loss_history_fixture() {
     assert!(output.is_dir());
     let server = Server::new().await;
     let configuration = WorkloadConfig {
+        #[cfg(feature = "rpc-experiment")]
+        rpc_transport: crate::rpc_experiment::TransportKind::TonicUnary,
         version: 1,
         client: config(&[server.address]),
         mode: Mode::Correctness,

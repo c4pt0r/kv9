@@ -64,7 +64,11 @@ def strict_json(data):
 
 
 def config_check(c):
-    keys(c, "version client mode run_id keyspace_name seed workers keys value_bytes mix warmup_operations max_operations measure_ms interval_ms history_bytes".split())
+    fields = "version client mode run_id keyspace_name seed workers keys value_bytes mix warmup_operations max_operations measure_ms interval_ms history_bytes".split()
+    if "rpc_transport" in c:
+        fields.append("rpc_transport")
+        require(c["rpc_transport"] in ("tonic_unary", "tarpc_tcp"), "unsupported experimental RPC transport")
+    keys(c, fields)
     require(c["version"] == 1 and c["mode"] in ("correctness", "performance"), "unsupported workload configuration")
     for name in ("run_id", "keyspace_name"):
         require(isinstance(c[name], str) and re.fullmatch(r"[A-Za-z0-9_-]{1,64}", c[name]), "invalid workload name")
@@ -384,6 +388,16 @@ def validate(directory, build_directory, expected_revision=None, seconds=30):
             inventory["binary_sha256"] == b["binary_sha256"], "source inventory build mismatch")
     require(sha(json.dumps(inventory["sources"], sort_keys=True, separators=(",", ":")).encode()) ==
             inventory["source_tree_sha256"] == b["source_tree_sha256"], "source inventory hash mismatch")
+    if "rpc_transport" in c:
+        command = inventory["command"]
+        require("--features" in command and command[command.index("--features") + 1:] and
+                command[command.index("--features") + 1] == "rpc-experiment",
+                "experimental RPC configuration requires its explicit build feature")
+        records = [strict_json(line) for line in bounded(build_directory / "cargo.jsonl", 16 * 1024 * 1024).splitlines()]
+        artifacts = [item for item in records if item.get("reason") == "compiler-artifact" and
+                     item.get("target", {}).get("name") == "kv9-workload" and item.get("executable")]
+        require(len(artifacts) == 1 and "rpc-experiment" in artifacts[0]["features"],
+                "workload Cargo artifact does not attest the RPC experiment feature")
     if expected_revision:
         require(b["revision"] == expected_revision and b["dirty"] is False, "run is not from the required clean revision")
     require(r["workload_model"] == "closed_loop", "unsupported measurement model")

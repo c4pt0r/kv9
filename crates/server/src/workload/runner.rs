@@ -511,7 +511,14 @@ pub async fn run(
     if file_digest(&executable, MAX_BINARY_BYTES)? != build.binary_sha256 {
         return Err("build manifest does not match this executable");
     }
+    #[cfg(not(feature = "rpc-experiment"))]
     let client = PersistentRawClient::new(config.client.clone(), token)?;
+    #[cfg(feature = "rpc-experiment")]
+    let client = PersistentRawClient::new_with_transport(
+        config.client.clone(),
+        token,
+        config.rpc_transport,
+    )?;
     let generator = Generator::new(config.clone())?;
     fs::create_dir(&options.output).map_err(|_| "workload output directory must be new")?;
     let config_bytes =

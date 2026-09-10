@@ -32,6 +32,9 @@ pub struct Mix {
 #[serde(deny_unknown_fields)]
 pub struct WorkloadConfig {
     pub version: u32,
+    #[cfg(feature = "rpc-experiment")]
+    #[serde(default)]
+    pub rpc_transport: crate::rpc_experiment::TransportKind,
     pub client: ClientConfig,
     pub mode: Mode,
     pub run_id: String,
@@ -170,6 +173,8 @@ impl WorkloadConfig {
 pub(crate) fn example() -> WorkloadConfig {
     WorkloadConfig {
         version: 1,
+        #[cfg(feature = "rpc-experiment")]
+        rpc_transport: crate::rpc_experiment::TransportKind::TonicUnary,
         client: ClientConfig {
             version: 1,
             peers: vec![crate::client::Peer {

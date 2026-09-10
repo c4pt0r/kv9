@@ -184,6 +184,8 @@ pub struct CallReport {
 struct Inner {
     config: ClientConfig,
     clients: Vec<Kv9Client<Channel>>,
+    #[cfg(feature = "rpc-experiment")]
+    experimental: Option<Vec<crate::rpc_experiment::ExperimentClient>>,
     authorization: MetadataValue<Ascii>,
     capacity: Arc<Semaphore>,
     preferred: AtomicUsize,
@@ -230,9 +232,38 @@ impl PersistentRawClient {
             capacity: Arc::new(Semaphore::new(config.max_in_flight)),
             config,
             clients,
+            #[cfg(feature = "rpc-experiment")]
+            experimental: None,
             authorization,
             preferred: AtomicUsize::new(0),
         })))
+    }
+
+    /// Experiment-only transport selection; retry and outcome classification stay shared.
+    #[cfg(feature = "rpc-experiment")]
+    pub fn new_with_transport(
+        config: ClientConfig,
+        token: &str,
+        transport: crate::rpc_experiment::TransportKind,
+    ) -> Result<Self, &'static str> {
+        let mut client = Self::new(config, token)?;
+        if transport == crate::rpc_experiment::TransportKind::TarpcTcp {
+            let inner = Arc::get_mut(&mut client.0).ok_or("new client unexpectedly shared")?;
+            inner.experimental = Some(
+                inner
+                    .config
+                    .peers
+                    .iter()
+                    .map(|peer| {
+                        crate::rpc_experiment::ExperimentClient::new(
+                            peer.address,
+                            inner.config.max_in_flight,
+                        )
+                    })
+                    .collect(),
+            );
+        }
+        Ok(client)
     }
 
     /// One invocation, one immutable payload, one absolute monotonic deadline.
@@ -345,13 +376,51 @@ impl PersistentRawClient {
         request
     }
 
+    async fn raw_get(
+        &self,
+        peer: usize,
+        request: Request<proto::RawGetRequest>,
+        _deadline: Instant,
+    ) -> Result<tonic::Response<proto::RawGetResponse>, Status> {
+        #[cfg(feature = "rpc-experiment")]
+        if let Some(clients) = &self.0.experimental {
+            return clients[peer].raw_get(request, _deadline).await;
+        }
+        self.0.clients[peer].clone().raw_get(request).await
+    }
+
+    async fn raw_put(
+        &self,
+        peer: usize,
+        request: Request<proto::RawPutRequest>,
+        _deadline: Instant,
+    ) -> Result<tonic::Response<proto::RawWriteResponse>, Status> {
+        #[cfg(feature = "rpc-experiment")]
+        if let Some(clients) = &self.0.experimental {
+            return clients[peer].raw_put(request, _deadline).await;
+        }
+        self.0.clients[peer].clone().raw_put(request).await
+    }
+
+    async fn raw_delete(
+        &self,
+        peer: usize,
+        request: Request<proto::RawDeleteRequest>,
+        _deadline: Instant,
+    ) -> Result<tonic::Response<proto::RawWriteResponse>, Status> {
+        #[cfg(feature = "rpc-experiment")]
+        if let Some(clients) = &self.0.experimental {
+            return clients[peer].raw_delete(request, _deadline).await;
+        }
+        self.0.clients[peer].clone().raw_delete(request).await
+    }
+
     async fn dispatch(
         &self,
         peer: usize,
         operation: &RawOperation,
         deadline: Instant,
     ) -> Result<Value, Reason> {
-        let mut client = self.0.clients[peer].clone();
         let context = Some(proto::RequestContext {
             keyspace_id: self.0.config.keyspace_id,
             region_epoch: Some(proto::RegionEpoch {
@@ -361,14 +430,18 @@ impl PersistentRawClient {
         });
         match operation {
             RawOperation::Get { key } => {
-                let response = client
-                    .raw_get(self.request(
-                        proto::RawGetRequest {
-                            context,
-                            key: key.clone(),
-                        },
+                let response = self
+                    .raw_get(
+                        peer,
+                        self.request(
+                            proto::RawGetRequest {
+                                context,
+                                key: key.clone(),
+                            },
+                            deadline,
+                        ),
                         deadline,
-                    ))
+                    )
                     .await
                     .map_err(|status| classify_status(&status, true))?;
                 if has_control(response.metadata()) {
@@ -387,28 +460,36 @@ impl PersistentRawClient {
                 }
             }
             RawOperation::Put { key, value } => {
-                let response = client
-                    .raw_put(self.request(
-                        proto::RawPutRequest {
-                            context,
-                            key: key.clone(),
-                            value: value.clone(),
-                        },
+                let response = self
+                    .raw_put(
+                        peer,
+                        self.request(
+                            proto::RawPutRequest {
+                                context,
+                                key: key.clone(),
+                                value: value.clone(),
+                            },
+                            deadline,
+                        ),
                         deadline,
-                    ))
+                    )
                     .await
                     .map_err(|status| classify_status(&status, false))?;
                 applied(response)
             }
             RawOperation::Delete { key } => {
-                let response = client
-                    .raw_delete(self.request(
-                        proto::RawDeleteRequest {
-                            context,
-                            key: key.clone(),
-                        },
+                let response = self
+                    .raw_delete(
+                        peer,
+                        self.request(
+                            proto::RawDeleteRequest {
+                                context,
+                                key: key.clone(),
+                            },
+                            deadline,
+                        ),
                         deadline,
-                    ))
+                    )
                     .await
                     .map_err(|status| classify_status(&status, false))?;
                 applied(response)
