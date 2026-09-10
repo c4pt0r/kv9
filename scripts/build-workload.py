@@ -49,6 +49,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--release", action="store_true")
+    parser.add_argument("--binary", choices=("kv9-workload", "kv9-batch-workload"), default="kv9-workload")
     parser.add_argument("--rpc-experiment", action="store_true",
                         help="explicitly compile the opt-in RPC transport experiment")
     args = parser.parse_args()
@@ -57,7 +58,7 @@ def main():
         raise RuntimeError("build artifacts must be outside the source tree")
     output.mkdir(parents=True, exist_ok=False)
     before = snapshot()
-    command = ["cargo", "build", "--locked", "-p", "kv9-server", "--bin", "kv9-workload", "--message-format=json-render-diagnostics"]
+    command = ["cargo", "build", "--locked", "-p", "kv9-server", "--bin", args.binary, "--message-format=json-render-diagnostics"]
     if args.release:
         command.append("--release")
     if args.rpc_experiment:
@@ -78,14 +79,14 @@ def main():
     with (output / "cargo.jsonl").open() as stream:
         for line in stream:
             item = json.loads(line)
-            if item.get("reason") == "compiler-artifact" and item.get("target", {}).get("name") == "kv9-workload" and item.get("executable"):
+            if item.get("reason") == "compiler-artifact" and item.get("target", {}).get("name") == args.binary and item.get("executable"):
                 executables.add(item["executable"])
     if len(executables) != 1:
         raise RuntimeError("build did not identify exactly one workload executable")
     binary = Path(executables.pop())
     if not 0 < binary.stat().st_size <= MAX_BINARY:
         raise RuntimeError("workload executable exceeds its size bound")
-    retained = output / "kv9-workload"
+    retained = output / args.binary
     shutil.copy2(binary, retained)
     with retained.open("rb") as stream:
         binary_sha = hashlib.file_digest(stream, "sha256").hexdigest()

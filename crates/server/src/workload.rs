@@ -9,5 +9,5 @@ mod runner;
 pub use config::{Mix, Mode, WorkloadConfig};
 pub use generator::Generator;
 pub use metrics::{Metrics, MetricsSnapshot};
-pub use recorder::{HistorySummary, Recorder, Ticket};
+pub use recorder::{HistorySummary, Recorder, Ticket, PHASES};
 pub use runner::{run, RunOptions, RunReport};

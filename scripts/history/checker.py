@@ -2,7 +2,8 @@
 """Independent interval-history checker for Raw KV and catalog uniqueness.
 
 No kv9 implementation is imported. Search returns a witness, exhaustive failure,
-or inconclusive. Snapshot-selected range deletion is checked as a multi-step
+or inconclusive. Version 2 adds atomic ordered batch reads/writes without
+changing version-1 operation semantics. Snapshot-selected range deletion is checked as a multi-step
 operation, separately from the atomic point/scan and catalog operations.
 """
 from __future__ import annotations
@@ -15,6 +16,12 @@ from dataclasses import dataclass
 import json
 from pathlib import Path
 import time
+
+
+READ_KINDS = {"get", "scan", "batch_get"}
+MAX_BATCH_ITEMS = 256
+MAX_KEY_BYTES = 4096
+MAX_VALUE_BYTES = 65_536
 
 
 class Malformed(ValueError):
@@ -60,8 +67,8 @@ class History:
         require(bool(records), "empty history")
         header, *events = records
         require(isinstance(header, dict), "header must be an object")
-        require(header.get("type") == "header" and type(header.get("version")) is int and header["version"] == 1,
-                "expected history version 1 header")
+        require(header.get("type") == "header" and type(header.get("version")) is int and header["version"] in {1, 2},
+                "expected history version 1 or 2 header")
         chunk = header.get("range_chunk_size")
         require(integer(chunk, 1), "range_chunk_size must be positive")
         initial = header.get("initial", {})
@@ -92,7 +99,7 @@ class History:
                 require(oid not in calls, "duplicate invocation")
                 require(isinstance(event.get("client"), str) and event["client"], "missing client")
                 require(isinstance(event.get("phase", "unspecified"), str) and event.get("phase", "unspecified"), "invalid phase")
-                cls.validate_args(event.get("op"), event.get("args"))
+                cls.validate_args(event.get("op"), event.get("args"), header["version"])
                 calls[oid] = event
                 if "keyspace" in event["args"]:
                     observed_ids.add(event["args"]["keyspace"])
@@ -101,6 +108,9 @@ class History:
                 require(isinstance(event.get("observation", {}), dict), "observation must be an object")
                 require(not event.get("observation", {}).get("malformed"), "recorder observed a malformed response")
                 cls.validate_result(calls[oid]["op"], event.get("outcome"), event.get("result"))
+                if calls[oid]["op"] == "batch_get" and event["outcome"] == "ok":
+                    require(len(event["result"]["values"]) == len(calls[oid]["args"]["keys"]),
+                            "batch read result cardinality differs from its request")
                 returns[oid] = event
                 if calls[oid]["op"] == "create_keyspace" and event["outcome"] == "ok":
                     observed_ids.add(event["result"]["id"])
@@ -117,7 +127,7 @@ class History:
         return cls(header, events, ops, freeze(kv, catalog), tuple(sorted(observed_ids)))
 
     @staticmethod
-    def validate_args(kind, args):
+    def validate_args(kind, args, version=1):
         require(isinstance(kind, str), "operation must be a string")
         require(isinstance(args, dict), "arguments must be an object")
         if kind == "create_keyspace":
@@ -129,6 +139,8 @@ class History:
             "delete": {"keyspace", "key"}, "scan": {"keyspace", "start", "end", "limit"},
             "delete_range": {"keyspace", "start", "end"},
         }
+        if version == 2:
+            expected.update(batch_get={"keyspace", "keys"}, batch_put={"keyspace", "pairs"})
         require(kind in expected and set(args) == expected[kind], "unsupported operation/arguments")
         require(integer(args["keyspace"], 1) and args["keyspace"] < 1 << 24, "invalid keyspace id")
         for name in ("key", "value", "start", "end"):
@@ -136,6 +148,18 @@ class History:
                 hex_bytes(args[name])
         if kind == "scan":
             require(integer(args["limit"]), "invalid scan limit")
+        if kind in {"batch_get", "batch_put"}:
+            items = args["keys"] if kind == "batch_get" else args["pairs"]
+            require(isinstance(items, list) and 1 <= len(items) <= MAX_BATCH_ITEMS,
+                    "batch item count exceeds its bound")
+            for item in items:
+                if kind == "batch_get":
+                    key = item
+                else:
+                    require(isinstance(item, list) and len(item) == 2, "invalid batch pair")
+                    key, value = item
+                    require(len(hex_bytes(value)) <= 2 * MAX_VALUE_BYTES, "batch value exceeds its bound")
+                require(len(hex_bytes(key)) <= 2 * MAX_KEY_BYTES, "batch key exceeds its bound")
 
     @staticmethod
     def validate_result(kind, outcome, result):
@@ -148,12 +172,18 @@ class History:
             require(not result or (kind == "delete_range" and set(result) == {"committed_chunks"}
                                    and integer(result["committed_chunks"])), "invalid unknown result")
             return
-        if kind in {"put", "delete"}:
+        if kind in {"put", "delete", "batch_put"}:
             require(not result, "write result must be empty (receipts belong in observation fields)")
         elif kind == "get":
             require(set(result) == {"value"}, "invalid get result")
             if result["value"] is not None:
                 hex_bytes(result["value"])
+        elif kind == "batch_get":
+            require(set(result) == {"values"} and isinstance(result["values"], list), "invalid batch get result")
+            require(1 <= len(result["values"]) <= MAX_BATCH_ITEMS, "batch result item count exceeds its bound")
+            for value in result["values"]:
+                if value is not None:
+                    require(len(hex_bytes(value)) <= 2 * MAX_VALUE_BYTES, "batch result value exceeds its bound")
         elif kind == "scan":
             require(set(result) == {"rows"} and isinstance(result["rows"], list), "invalid scan result")
             for row in result["rows"]:
@@ -183,7 +213,7 @@ def transitions(history, index, state, progress):
         return
     kv, catalog = map(dict, state)
     args = op.args
-    if op.outcome == "refused" or (op.outcome == "unknown" and op.kind in {"get", "scan"}):
+    if op.outcome == "refused" or (op.outcome == "unknown" and op.kind in READ_KINDS):
         yield state, "done", {"phase": "omit"}
         return
     if op.kind == "create_keyspace":
@@ -202,6 +232,14 @@ def transitions(history, index, state, progress):
         return
     if op.kind == "put":
         kv[kid, args["key"]] = args["value"]
+    elif op.kind == "batch_put":
+        # One transition is the entire ordered fold. No per-pair intermediate
+        # state can be observed, including for an unknown write.
+        for key, value in args["pairs"]:
+            kv[kid, key] = value
+    elif op.kind == "batch_get":
+        if [kv.get((kid, key)) for key in args["keys"]] != op.result["values"]:
+            return
     elif op.kind == "delete":
         kv.pop((kid, args["key"]), None)
     elif op.kind == "get":
@@ -301,6 +339,8 @@ def observation_distance(history, index, state):
         return 1 << 30
     if op.kind == 'get':
         return int(kv.get((kid, args['key'])) != op.result['value'])
+    if op.kind == 'batch_get':
+        return sum(kv.get((kid, key)) != value for key, value in zip(args['keys'], op.result['values']))
     if op.kind == 'scan':
         rows = [(key, value) for (space, key), value in sorted(kv.items())
                 if space == kid and in_range(key, args)][:args['limit']]
@@ -329,11 +369,15 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
                 continue
             if op.kind in {"put", "delete"} and args["key"] == key:
                 break
+            if op.kind == "batch_put" and any(pair[0] == key for pair in args["pairs"]):
+                break
             if op.kind == "delete_range" and in_range(key, args):
                 break
             if op.outcome == "ok":
                 if op.kind == "get" and args["key"] == key:
                     return True, op.result["value"]
+                if op.kind == "batch_get" and key in args["keys"]:
+                    return True, op.result["values"][args["keys"].index(key)]
                 if op.kind == "scan":
                     for observed_key, value in op.result["rows"]:
                         if observed_key == key:
@@ -375,7 +419,7 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
         eligible = [i for i, op in enumerate(history.operations)
                     if op.invocation < event["seq"]
                     and (op.outcome == "unknown" or op.response is None or op.response >= event["seq"])
-                    and not (op.outcome == "unknown" and op.kind in {"get", "scan"})
+                    and not (op.outcome == "unknown" and op.kind in READ_KINDS)
                     and progress.get(i) != "done"]
         pending = history.operations[wanted]
         # An unresolved write may need to explain an overlapping read before
@@ -384,7 +428,7 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
         # already been invoked; unknown/refused reads supply no observations.
         targets = [wanted] + [i for i in eligible if i != wanted
                               and history.operations[i].outcome == "ok"
-                              and history.operations[i].kind in {"get", "scan"}]
+                              and history.operations[i].kind in READ_KINDS]
         observed, value = False, None
         if guided_unknown and pending.kind in {"put", "delete"}:
             competing = [history.operations[i] for i in eligible
@@ -401,7 +445,7 @@ def search(history, max_states=200000, seconds=10.0, unknown_limit=None, guided_
         # remain in the unrestricted search; every positive witness is replayed.
         def priority(i):
             op = history.operations[i]
-            prefer_observed = (guided_unknown and op.outcome == "ok" and op.kind in {"get", "scan"}
+            prefer_observed = (guided_unknown and op.outcome == "ok" and op.kind in READ_KINDS
                                and op.invocation < event["seq"] and op.response >= event["seq"]
                                and observation_distance(history, i, state) == 0)
             # Try overlapping confirmed writes before old unknown effects.
@@ -564,11 +608,11 @@ def main():
         result["coverage"] = coverage(history)
         if args.acceptance and result["verdict"] == "valid":
             successes = result["coverage"]["successful"]
-            if not any(successes.get(k) for k in ("put", "delete", "delete_range")) or not any(successes.get(k) for k in ("get", "scan")) or any(not successes.get(k) for k in args.require):
+            if not any(successes.get(k) for k in ("put", "delete", "delete_range", "batch_put")) or not any(successes.get(k) for k in ("get", "scan", "batch_get")) or any(not successes.get(k) for k in args.require):
                 result.update(verdict="inconclusive", reason="insufficient_successful_coverage")
             for phase in args.require_phase:
                 counts = result['coverage']['successful_by_phase'].get(phase, {})
-                if not counts.get('put') or not (counts.get('get') or counts.get('scan')):
+                if not (counts.get('put') or counts.get('batch_put')) or not any(counts.get(kind) for kind in READ_KINDS):
                     result.update(verdict='inconclusive', reason='insufficient_fault_phase_coverage')
         if result["verdict"] == "invalid":
             prefix = minimize_prefix(history)
