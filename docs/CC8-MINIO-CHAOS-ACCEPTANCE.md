@@ -155,3 +155,18 @@ Original data, complete histories, process logs and scene snapshots remain on
 disk. Cleanup affected only the invocation's owned resources. This exact cc8
 result does not turn older f2, b4a or later b3/fe/Ready fault evidence into a
 result for another runtime.
+
+The complete local archive is
+`target/correctness-evidence/2026-09-09-cc8bc87-minio-chaos.tar.gz`: 2,743
+entries, 198,460,517 compressed bytes, SHA-256
+`5f0903c7e22eaa7b2b1f963463257d7839ae30144206d6f8d31b55789bfeea48`.
+A separate verifier compared every decompressed byte with its original and
+manifest hash: 2,742 regular files totaling 836,321,827 bytes, plus the embedded
+manifest. Adjacent `.manifest.json` and `.verification.json` files retain the
+result; manifest SHA-256 is
+`d939bc1d2b7edaeaeb1e67d55072e5194d7e7840f04b01d936cb8a2983645271`.
+The archive includes the report before this archive-reference paragraph, exact
+tracked source, all retained executables, image observations, raw MinIO and
+Chaos files, the full independent copy, auditors and their outputs. Root's
+separate local promotion archive is referenced by its verified identity rather
+than duplicated. Original evidence and unrelated cluster resources were retained.
