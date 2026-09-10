@@ -134,8 +134,13 @@ unchanged-protocol comparison so CPU and latency effects can be attributed.
 The first indexed-receipt implementation is pushed as `73ddb0d`. It passes 611
 local tests/doctests, three implementation-control triples, the default-build
 three-process failover/restart fixture and a separately identified
-`partition-testing` typed read-refusal fixture. Its own full paired measurement
-is running; no speedup or complete acceptance is claimed yet. The
+`partition-testing` typed read-refusal fixture. Its completed, independently
+checked [60-trial comparison](../scripts/redis-reference/results/892b2a1-73ddb0d.md)
+does not establish an end-to-end gain: c64 GET is 79,067/s versus 84,810/s for
+Ready, and results vary across concurrency levels while Redis also drifts lower.
+The candidate remains an experiment and is not selected for runtime promotion.
+Continue the performance mainline from Ready; profile before further lookup
+changes. The
 [representation argument](https://github.com/c4pt0r/kv9/blob/73ddb0db123d5ee5cecfbe95bdb476e30f6380bc/docs/READ-RECEIPT-INDEX.md)
 preserves FIFO retention and first-match duplicate behavior for arbitrary finite
 histories. Its new process checks do not replace actual Chaos Mesh.
