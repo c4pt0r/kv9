@@ -165,3 +165,31 @@ directory and exited before compilation or node startup; the corrected
 invocation and both logs are retained. These checks do not close the scheduling
 proof, implementation fault controls, exact-candidate Chaos acceptance or paired
 performance measurements.
+
+## Implementation controls for the current candidate
+
+`python3 scripts/check-raft-wakeup-controls.py --output FRESH_DIRECTORY` copies
+the Rust source into an isolated tree and runs baseline/mutant/restored checks
+against exact selected tests. Seven controls cover omitted completion
+publication, notifying only one waiter, forgetting a previously observed
+generation, generation wraparound, traffic-accelerated ticks, traffic-postponed
+ticks and omitted retained-inbox notification. Every mutant must compile, run
+exactly one test and fail the intended named assertion. The manifest records
+each phase before accepting it, including source hashes, commands and exit codes.
+All seven triples passed. An initial last-case mutant needed an explicit
+`Option` type after removing its only inference source; the rejected compilation
+and the corrected full run are both retained. Compilation failure did not count
+as detecting a protocol fault.
+
+The existing six latency observation controls also pass against the new
+event-driven implementation. The idle control now parks the actual driver until
+the test releases it, and requires the observation to include that real interval.
+It no longer relies on a fixed configured sleep. This preserves the observation
+contract without reintroducing polling. These controls are a bounded subset of
+the remaining implementation refinement gate, not a substitute for the pending
+publication-order/check-park/fatal protocol proof and its complete fault matrix.
+
+The combined runtime candidate also passed actual MinIO E2E with three replicas,
+leader failover, remote checkpoint publication, physical WAL prefix reclamation,
+live-tail recovery and deletes. This is process/MinIO evidence for b4a74b2; it is
+not the outstanding actual Chaos Mesh acceptance for that revision.
