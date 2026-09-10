@@ -49,9 +49,11 @@ observed in these gates.
 
 ## Remaining promotion gates
 
-The default-feature process fixture and its v2 negative controls must run on
-clean retained standalone server/client binaries. Its leader-loss/restart
-histories are point-operation evidence, not atomic batch fault coverage.
+The default-feature process fixture and its fifteen v2/legacy negative controls
+have now passed on clean retained standalone server/client binaries; see
+[the independently audited process checkpoint](STREAMING-RPC-PROCESS-ACCEPTANCE.md).
+Its leader-loss/restart histories are point-operation evidence, not atomic
+batch fault coverage.
 The local Chaos Mesh environment has been checked read-only and is available;
 a fresh candidate-bound build/image/observer overlay must precede the original
 21-window point matrix. Historical namespaces and failed attempts remain intact.

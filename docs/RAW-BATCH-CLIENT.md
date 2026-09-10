@@ -6,9 +6,11 @@ on the node's ordinary public/Raft endpoint. Explicit `TonicUnary` remains
 available; `TarpcTcp` requires the `rpc-experiment` feature and its reference
 listener. There is no extra production port or centralized proxy.
 
-This document describes the integration candidate. Promotion to main still
-requires its own process and Chaos Mesh acceptance; the earlier point-RPC
-benchmark and fault results are not batch measurements or batch fault evidence.
+This document describes the integration candidate. Its normal-port
+[point process acceptance](STREAMING-RPC-PROCESS-ACCEPTANCE.md) passed. Promotion
+to main still requires the fresh Chaos Mesh and batch-specific acceptance;
+earlier point-RPC benchmarks/fault results are not batch measurements or batch
+fault evidence.
 
 ## API and outcomes
 
