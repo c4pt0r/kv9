@@ -512,7 +512,7 @@ mod tests {
             }
         }
         assert_eq!(driver.status().role, Role::Leader);
-        driver.spawn(TICK);
+        driver.spawn(TICK).unwrap();
         let seam = ManifestSeam::mint(driver.mint_seam_handle().unwrap());
         (driver, seam)
     }

@@ -253,6 +253,8 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     /// components separately is forbidden (torn pair = e2ecc5a again).
     driver_applied: Mutex<Option<DriverAppliedPosition>>,
     stop: AtomicBool,
+    pump_started: AtomicBool,
+    pump_gate: Mutex<()>,
     metrics: DriverMetrics,
 }
 
@@ -267,6 +269,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         sm: MemStateMachine<E>,
     ) -> Result<Arc<NodeDriver<S, E>>> {
         let drain = crate::DrainToken::mint(&peer)?;
+        transport.set_work_signal(peer.work_signal.clone());
         Ok(Arc::new(NodeDriver {
             peer,
             drain,
@@ -298,6 +301,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             // consumers keep waiting instead of trusting a fabricated 0).
             driver_applied: Mutex::new(None),
             stop: AtomicBool::new(false),
+            pump_started: AtomicBool::new(false),
+            pump_gate: Mutex::new(()),
             metrics: DriverMetrics::default(),
         }))
     }
@@ -343,6 +348,11 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     /// the driver poisons itself (pump stops, `status().fatal` set) and the
     /// failed entry never enters the success-correlation ring.
     pub fn step(&self) -> Result<()> {
+        let _owner = self.pump_gate.lock().expect("pump gate poisoned");
+        self.step_observed()
+    }
+
+    fn step_observed(&self) -> Result<()> {
         self.metrics.pump_service.observe(
             || self.step_inner(),
             |result| {
@@ -524,6 +534,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     pub fn pause_apply(&self, paused: bool) {
         self.apply_paused
             .store(paused, std::sync::atomic::Ordering::Relaxed);
+        self.peer.work_signal.notify();
     }
 
     /// The single publication point for the unified watermark. Monotonic
@@ -547,6 +558,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         let msg = format!("fatal at committed entry (term {term}, index {index}): {cause}");
         *self.fatal.lock().expect("fatal poisoned") = Some(msg.clone());
         self.stop.store(true, Ordering::Relaxed);
+        self.peer.work_signal.stop();
         Error::Raft(msg)
     }
 
@@ -556,6 +568,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         let mut fatal = self.fatal.lock().expect("fatal poisoned");
         let msg = fatal.get_or_insert_with(|| cause.to_string()).clone();
         self.stop.store(true, Ordering::Relaxed);
+        self.peer.work_signal.stop();
         Error::Raft(msg)
     }
 
@@ -631,8 +644,9 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
 
     /// Tick + step (the driver loop body).
     pub fn tick_and_step(&self) -> Result<()> {
+        let _owner = self.pump_gate.lock().expect("pump gate poisoned");
         self.peer.tick_once();
-        self.step()
+        self.step_observed()
     }
 
     /// Propose a command on this node (must currently be leader).
@@ -969,14 +983,31 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
 
     pub fn stop(&self) {
         self.stop.store(true, Ordering::Relaxed);
+        self.peer.work_signal.stop();
     }
 
-    /// Background pump at `tick_every` cadence until [`Self::stop`].
-    pub fn spawn(self: &Arc<Self>, tick_every: Duration) -> std::thread::JoinHandle<()> {
+    /// One event-driven owner. Tick deadlines are independent of work arrival;
+    /// repeated spawn or an invalid interval is refused before creating a thread.
+    pub fn spawn(self: &Arc<Self>, tick_every: Duration) -> Result<std::thread::JoinHandle<()>> {
+        if tick_every.is_zero() || tick_every > Duration::from_secs(60) {
+            return Err(Error::Config(
+                "Raft tick interval must be within (0, 60s]".into(),
+            ));
+        }
+        if self
+            .pump_started
+            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+            .is_err()
+        {
+            return Err(Error::Raft(
+                "background pump already owns this driver".into(),
+            ));
+        }
         let driver = Arc::clone(self);
-        std::thread::spawn(move || {
+        Ok(std::thread::spawn(move || {
             let mut previous_iteration = None;
-            while !driver.stop.load(Ordering::Relaxed) {
+            let mut ticks = crate::work::TickDeadline::new(Instant::now(), tick_every);
+            while !driver.stop.load(Ordering::Relaxed) && driver.peer.work_signal.begin_turn() {
                 let iteration = Instant::now();
                 if let Some(previous) = previous_iteration {
                     driver
@@ -985,14 +1016,26 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                         .record(iteration.duration_since(previous), Outcome::Success);
                 }
                 previous_iteration = Some(iteration);
-                if driver.tick_and_step().is_err() {
-                    break; // poisoned: fatal is recorded, status carries it
+                let result = {
+                    let _owner = driver.pump_gate.lock().expect("pump gate poisoned");
+                    if ticks.due(Instant::now()) {
+                        driver.peer.tick_once();
+                    }
+                    driver.step_observed()
+                };
+                if result.is_err() {
+                    break;
+                }
+                // Applying a bounded Ready can expose its successor without
+                // another producer notification. Drain it on the next turn.
+                if driver.peer.has_pending_ready() {
+                    driver.peer.work_signal.notify();
                 }
                 let idle = driver.metrics.pump_idle_wait.start();
-                std::thread::sleep(tick_every);
+                driver.peer.work_signal.wait_until(ticks.next());
                 idle.finish(Outcome::Success);
             }
-        })
+        }))
     }
 }
 
@@ -1522,12 +1565,13 @@ mod tests {
     }
 
     #[test]
-    fn background_pump_records_returned_sleeps_and_no_first_spacing_sample() {
+    fn background_pump_records_returned_waits_and_no_first_spacing_sample() {
         let driver = single_node_driver();
         let initial =
             driver.metrics().pump_service.snapshot().outcomes[Outcome::Success as usize].count;
         let interval = Duration::from_millis(2);
-        let task = driver.spawn(interval);
+        let started = Instant::now();
+        let task = driver.spawn(interval).unwrap();
         let deadline = Instant::now() + Duration::from_secs(5);
         while driver.metrics().pump_idle_wait.snapshot().outcomes[Outcome::Success as usize].count
             < 3
@@ -1547,9 +1591,10 @@ mod tests {
             "background pump did not make observed progress"
         );
         assert_eq!(sleeps.count, iterations);
+        assert!(sleeps.sum_ns > 0, "actual waits were not observed");
         assert!(
-            sleeps.min_ns.unwrap() >= interval.as_nanos() as u64,
-            "idle observation did not include the actual configured sleep"
+            sleeps.sum_ns <= started.elapsed().as_nanos() as u64,
+            "idle observation fabricated more wait time than elapsed"
         );
         assert_eq!(
             spacing.outcomes[Outcome::Success as usize].count,
@@ -1567,7 +1612,7 @@ mod tests {
             .peer()
             .propose_traced(vec![0xff, 0xee, 0xdd])
             .unwrap();
-        let task = driver.spawn(Duration::from_millis(2));
+        let task = driver.spawn(Duration::from_millis(2)).unwrap();
         let deadline = Instant::now() + Duration::from_secs(5);
         while driver.status().fatal.is_none() && Instant::now() < deadline {
             std::thread::sleep(Duration::from_millis(1));
@@ -1616,6 +1661,74 @@ mod tests {
         }
         assert_eq!(driver.status().role, Role::Leader);
         driver
+    }
+
+    #[test]
+    fn parked_owner_serves_a_read_before_its_next_tick_and_refuses_a_second_owner() {
+        let driver = single_node_driver();
+        let parked = driver.peer.work_signal.observe_next_park();
+        let task = driver.spawn(Duration::from_secs(60)).unwrap();
+        assert!(driver.spawn(Duration::from_millis(1)).is_err());
+        parked.recv_timeout(Duration::from_secs(5)).unwrap();
+        // The observer fires under the predicate lock immediately before
+        // Condvar::wait releases it. This submission must survive either side
+        // of the check/park boundary; a timer-driven owner misses the deadline.
+        let result = driver.read_barrier(Duration::from_secs(2));
+        driver.stop();
+        task.join().unwrap();
+        assert!(
+            result.is_ok(),
+            "parked owner failed to process local work: {result:?}"
+        );
+    }
+
+    #[test]
+    fn transport_and_campaign_wake_every_voter_without_election_tick_polling() {
+        let hub = InProcHub::new();
+        let voters = [NodeId(1), NodeId(2), NodeId(3)];
+        let drivers: Vec<_> = voters
+            .iter()
+            .map(|id| {
+                NodeDriver::new(
+                    Arc::new(RaftPeer::new(*id, RegionId(1), &voters).unwrap()),
+                    Arc::new(hub.endpoint(*id)),
+                    MemStateMachine::new(),
+                )
+                .unwrap()
+            })
+            .collect();
+        let parked: Vec<_> = drivers
+            .iter()
+            .map(|d| d.peer.work_signal.observe_next_park())
+            .collect();
+        let tasks: Vec<_> = drivers
+            .iter()
+            .map(|d| d.spawn(Duration::from_secs(60)).unwrap())
+            .collect();
+        for observer in parked {
+            observer.recv_timeout(Duration::from_secs(5)).unwrap();
+        }
+        drivers[0].peer().campaign().unwrap();
+        let deadline = Instant::now() + Duration::from_secs(2);
+        while drivers[0].status().role != Role::Leader && Instant::now() < deadline {
+            std::thread::yield_now();
+        }
+        let elected = drivers[0].status().role == Role::Leader;
+        let read = drivers[0].read_barrier(Duration::from_secs(2));
+        for driver in &drivers {
+            driver.stop();
+        }
+        for task in tasks {
+            task.join().unwrap();
+        }
+        assert!(
+            elected,
+            "campaign or inbound work remained asleep until a tick"
+        );
+        assert!(
+            read.is_ok(),
+            "quorum read failed without timer polling: {read:?}"
+        );
     }
 
     /// Negative 1 (Tess's review): an UNDECODABLE committed entry is fatal —
@@ -2461,7 +2574,7 @@ mod tests {
     #[test]
     fn read_barrier_on_a_healthy_leader_covers_committed_writes() {
         let driver = single_node_driver();
-        let _pump = driver.spawn(Duration::from_millis(2));
+        let _pump = driver.spawn(Duration::from_millis(2)).unwrap();
         let at = driver
             .propose(&Command::Put {
                 cf: 0,
@@ -2718,7 +2831,7 @@ mod tests {
         }
         // From here the peers go silent: d2/d3 never step again - every
         // Safe-read heartbeat d1 sends dies unacknowledged.
-        let _pump = d1.spawn(Duration::from_millis(2));
+        let _pump = d1.spawn(Duration::from_millis(2)).unwrap();
         let err = d1
             .read_barrier(Duration::from_millis(400))
             .expect_err("an isolated leader must not confirm a barrier");
@@ -2752,7 +2865,7 @@ mod tests {
     #[test]
     fn a_read_barrier_waits_for_apply_not_just_confirmation() {
         let driver = single_node_driver();
-        let _pump = driver.spawn(Duration::from_millis(2));
+        let _pump = driver.spawn(Duration::from_millis(2)).unwrap();
         driver.pause_apply(true);
         let at = driver
             .propose(&Command::Put {

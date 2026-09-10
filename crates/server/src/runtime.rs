@@ -2846,7 +2846,7 @@ impl NodeRuntime {
             if defer_owner {
                 None
             } else {
-                Some(driver.spawn(TICK))
+                Some(driver.spawn(TICK)?)
             }
         } else {
             None
@@ -3470,7 +3470,7 @@ impl NodeRuntime {
                     // an owner for a previously unauthorized dynamic member.
                     self.discovery.authorize_raft();
                     if self.driver_thread.is_none() {
-                        self.driver_thread = Some(self.driver.spawn(TICK));
+                        self.driver_thread = Some(self.driver.spawn(TICK)?);
                     }
                 }
                 // Recorded in the observation (typed) and the next run-loop
@@ -7272,8 +7272,14 @@ mod tests {
                     tokio::net::TcpListener::from_std(listener).unwrap(),
                 )
             };
-            let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
-            receivers.push(rx);
+            let receiver = GrpcTransport::new(
+                member,
+                None,
+                runtime.grpc_runtime.handle().clone(),
+                root.digest(),
+            );
+            let tx = receiver.inbox_sender();
+            receivers.push(receiver);
             let discovery = Arc::new(RuntimeDiscovery::new(
                 member,
                 false,
@@ -7328,8 +7334,9 @@ mod tests {
         loop {
             send(b"before-snapshot");
             if receivers[0]
-                .try_recv()
-                .is_ok_and(|message| message.context.as_ref() == b"before-snapshot")
+                .drain()
+                .into_iter()
+                .any(|message| message.context.as_ref() == b"before-snapshot")
             {
                 break;
             }
@@ -7392,12 +7399,13 @@ mod tests {
         let mut old_deliveries = 0;
         loop {
             send(b"after-snapshot");
-            while let Ok(message) = receivers[0].try_recv() {
+            for message in receivers[0].drain() {
                 old_deliveries += usize::from(message.context.as_ref() == b"after-snapshot");
             }
             if receivers[1]
-                .try_recv()
-                .is_ok_and(|message| message.context.as_ref() == b"after-snapshot")
+                .drain()
+                .into_iter()
+                .any(|message| message.context.as_ref() == b"after-snapshot")
             {
                 break;
             }
@@ -8209,7 +8217,7 @@ mod tests {
         };
 
         // Peers silent from here; only d1 pumps (real-time thread).
-        let _pump = d1.spawn(Duration::from_millis(2));
+        let _pump = d1.spawn(Duration::from_millis(2)).unwrap();
 
         // PHASE 1, pinned: still the self-believed leader at call entry.
         assert_eq!(d1.status().role, Role::Leader, "phase pin: not yet deposed");
