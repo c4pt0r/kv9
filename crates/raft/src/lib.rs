@@ -10,6 +10,7 @@
 //! The replicated payloads are [`Command`]s (metadata mutations). The production
 //! Phase-1 adapter is tikv/raft-rs (`RawNode`/`Ready`) behind the same pull interface.
 
+mod async_read;
 pub mod command;
 pub mod driver;
 pub mod grpc;
@@ -20,6 +21,7 @@ pub mod storage;
 pub mod testing;
 pub mod transport;
 pub mod work;
+pub use async_read::AsyncReadSnapshot;
 
 pub use command::{
     cf_code, cf_from_code, Command, FencedInner, KvOp, ManifestChangePayload, RegionFence,

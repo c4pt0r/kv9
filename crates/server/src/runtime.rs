@@ -2011,6 +2011,15 @@ impl RuntimeBackend {
         span: KeySpan<'_>,
     ) -> Result<Box<dyn ReadView + '_>> {
         let barrier = self.driver.read_barrier(READ_BARRIER_DEADLINE)?;
+        self.read_view_after_barrier(barrier, ctx, span)
+    }
+
+    fn read_view_after_barrier(
+        &self,
+        barrier: ReadBarrier,
+        ctx: &RequestContext,
+        span: KeySpan<'_>,
+    ) -> Result<Box<dyn ReadView + '_>> {
         let view = self.established_view(barrier)?;
         let store = &self.node.meta_raft.store;
         let txn = store.begin_at(view);
@@ -2090,6 +2099,33 @@ const RAW_APPLY_DEADLINE: Duration = Duration::from_secs(10);
 const READ_BARRIER_DEADLINE: Duration = Duration::from_secs(2);
 
 impl RawApi for RuntimeBackend {
+    fn prepare_raw_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        key: UserKey,
+    ) -> crate::api::RawReadPreparation<Option<Value>> {
+        // The published endpoint predicate is false through bootstrap/recovery.
+        // Its cold path retains the original synchronous lifecycle/error order.
+        if !self.endpoint_ready.load(Ordering::Acquire) {
+            return Box::pin(async move {
+                Ok(Box::new(move || self.raw_get(&ctx, &key))
+                    as crate::api::RawReadJob<Option<Value>>)
+            });
+        }
+        Box::pin(async move {
+            let established = self.driver.read_barrier_async(READ_BARRIER_DEADLINE).await;
+            Ok(Box::new(move || {
+                // Recheck lifecycle in the blocking job, then consume exactly
+                // the prepared credential for one context-checked engine view.
+                self.ensure_serving()?;
+                let view =
+                    self.read_view_after_barrier(established?, &ctx, KeySpan::Point(&key))?;
+                let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
+                RawExecutor.get(&read, ctx.keyspace, &key)
+            }) as crate::api::RawReadJob<Option<Value>>)
+        })
+    }
+
     fn raw_get(&self, ctx: &RequestContext, key: &[u8]) -> Result<Option<Value>> {
         self.ensure_serving()?;
         let view = self.established_read(ctx, KeySpan::Point(key))?;
@@ -3657,6 +3693,9 @@ impl NodeRuntime {
             raft.fatal.as_deref().unwrap_or(""),
         );
         body.push_str(&self.public_admission.snapshot().status_lines());
+        let reads = self.driver.async_read_snapshot();
+        body.push_str(&format!("raft_async_read_limit={}\nraft_async_read_queued={}\nraft_async_read_active={}\nraft_async_read_in_flight={}\nraft_async_read_peak={}\nraft_async_read_stopped={}\n",
+            reads.limit, reads.queued, reads.active, reads.in_flight, reads.peak, reads.stopped));
         body.push_str(&format!(
             "raft_receive_authorized={}\nraft_owner_started={}\nlisten_addr={}\n",
             self.discovery.raft_receive_allowed(),
@@ -7990,7 +8029,20 @@ mod tests {
     ///    the credential — serves `v1` here and reds at the named assert.
     #[test]
     fn an_established_read_serves_the_committed_but_unapplied_write() {
-        let (rts, root, _addrs, base) = serving_trio("established-read");
+        established_read_observes_committed_apply(false);
+    }
+
+    #[test]
+    fn an_async_prepared_read_serves_the_committed_but_unapplied_write() {
+        established_read_observes_committed_apply(true);
+    }
+
+    fn established_read_observes_committed_apply(prepared: bool) {
+        let (rts, root, _addrs, base) = serving_trio(if prepared {
+            "async-established-read"
+        } else {
+            "established-read"
+        });
         let leader = cluster_leader(&rts).expect("a serving trio has a leader");
         let backend = backend_view(&rts[leader], &root);
         let created = backend
@@ -8042,7 +8094,19 @@ mod tests {
             let mints_before = driver.read_barriers_minted();
             let get_backend = backend_view(&rts[leader], &root);
             let get_ctx = ctx.clone();
-            let get = scope.spawn(move || get_backend.raw_get(&get_ctx, b"k"));
+            let get = scope.spawn(move || {
+                if prepared {
+                    let runtime = tokio::runtime::Builder::new_current_thread()
+                        .enable_time()
+                        .build()
+                        .unwrap();
+                    let job = runtime
+                        .block_on(Arc::new(get_backend).prepare_raw_get(get_ctx, b"k".to_vec()))?;
+                    job()
+                } else {
+                    get_backend.raw_get(&get_ctx, b"k")
+                }
+            });
 
             // NAMED PRECONDITION 2: the read has minted its barrier while
             // the freeze still holds — v2 becomes applied strictly INSIDE
@@ -8089,7 +8153,109 @@ mod tests {
                  its barrier — a production snapshot taken before the barrier \
                  (or bypassing the credential) serves v1 and reds exactly here"
             );
+            if prepared {
+                assert_eq!(
+                    driver.async_read_snapshot().peak,
+                    1,
+                    "prepared read fell back to the synchronous barrier"
+                );
+                assert_eq!(driver.async_read_snapshot().in_flight, 0);
+            }
         });
+        drop(rts);
+        let _ = fs::remove_dir_all(&base);
+    }
+
+    #[test]
+    fn an_async_prepared_read_checks_the_epoch_when_its_engine_job_runs() {
+        use kv9_meta::codec::{memcmp_uint, ColumnValue};
+        use kv9_meta::schema::{ColumnId, REGIONS_DESC};
+
+        let (rts, root, _addrs, base) = serving_trio("async-read-epoch");
+        let leader = cluster_leader(&rts).expect("a serving trio has a leader");
+        let backend = Arc::new(backend_view(&rts[leader], &root));
+        let executor = tokio::runtime::Builder::new_current_thread()
+            .enable_time()
+            .build()
+            .unwrap();
+        for (column, name) in [(5, "async-conf-epoch"), (6, "async-version-epoch")] {
+            let created = backend
+                .create_keyspace(
+                    "acceptance",
+                    name,
+                    TenantId::DEFAULT,
+                    ApiType::Raw,
+                    TxnGroupId(0),
+                )
+                .unwrap();
+            let location = backend
+                .get_region("acceptance", created.keyspace, b"k")
+                .unwrap();
+            let ctx = RequestContext {
+                keyspace: created.keyspace,
+                region_epoch: location.epoch,
+                origin: crate::api::RequestOrigin::from_transport("acceptance"),
+            };
+            backend
+                .raw_put(&ctx, b"k".to_vec(), b"before".to_vec())
+                .unwrap();
+            let prepared = executor
+                .block_on(backend.clone().prepare_raw_get(ctx.clone(), b"k".to_vec()))
+                .unwrap();
+            assert!(
+                backend.driver.async_read_snapshot().peak > 0,
+                "epoch test must use asynchronous preparation"
+            );
+
+            // Preparation has finished, but the blocking engine job has not
+            // started. Commit a catalog epoch change through this real leader.
+            // A job that captured a pre-barrier/preparation snapshot, or gates
+            // only before preparation, accepts the obsolete context here.
+            let region = Tables::new(&backend.node.meta_raft.store)
+                .region_for_key(ctx.keyspace, b"k")
+                .unwrap()
+                .unwrap();
+            let mut next_ctx = ctx.clone();
+            let next = if column == 5 {
+                next_ctx.region_epoch.conf_ver += 1;
+                next_ctx.region_epoch.conf_ver
+            } else {
+                next_ctx.region_epoch.version += 1;
+                next_ctx.region_epoch.version
+            };
+            let term = backend.prepare_catalog().unwrap();
+            let mut change = backend.node.meta_raft.store.begin().unwrap();
+            change
+                .update(
+                    &REGIONS_DESC,
+                    &[memcmp_uint(region.id.0)],
+                    vec![(ColumnId(column), ColumnValue::Uint(next))],
+                )
+                .unwrap();
+            backend
+                .commit_catalog(&Command::from_batch(&change.into_batch()), term)
+                .unwrap();
+            backend
+                .raw_put(&next_ctx, b"k".to_vec(), b"after".to_vec())
+                .unwrap();
+
+            let result = prepared();
+            assert!(
+                matches!(result, Err(Error::StaleEpoch { region: id }) if id == region.id),
+                "prepared job served data under an obsolete epoch: {result:?}"
+            );
+            let current = executor
+                .block_on(backend.clone().prepare_raw_get(next_ctx, b"k".to_vec()))
+                .unwrap()()
+            .unwrap();
+            assert_eq!(
+                current.as_deref(),
+                Some(b"after".as_slice()),
+                "current context must observe the post-change value"
+            );
+        }
+        assert_eq!(backend.driver.async_read_snapshot().in_flight, 0);
+        drop(backend);
         drop(rts);
         let _ = fs::remove_dir_all(&base);
     }
