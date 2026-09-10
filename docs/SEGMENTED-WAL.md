@@ -9,9 +9,11 @@ checksummed stream/sequence/predecessor headers, atomic data/position frames,
 streaming recovery, active-tail repair, immutable closed descriptors and
 fail-stop append errors. `SegmentedWal` now adds durable topology selection,
 rotation, checkpoint publication and whole closed-segment reclamation.
-`WalEngine` still uses its existing single-file layout until engine/migration
-integration completes; no runtime capacity or checkpoint-latency improvement
-is claimed from these storage interfaces alone.
+`WalEngine` now recovers and writes that layout, and the production runtime
+migrates each verified legacy catalog before starting its Raft peer. Normal
+checkpoint adoption publishes the anchor and unlinks covered closed files
+instead of copying the surviving tail. Throughput, capacity and latency results
+remain unmeasured for this integration.
 
 Daily mainline implementation proceeds alongside the existing fault-environment
 closeout. Module regressions run locally as code changes. Deductive protocol
@@ -159,3 +161,58 @@ The checkpoint unit fixture explicitly simulates the caller's committed-object
 premise; it is not real MinIO or Raft certification. Full modeled file/directory
 sync cuts, particularly failure after topology rename, and actual Chaos Mesh
 acceptance remain in the integrated S01 gate.
+
+## Engine and runtime integration
+
+`WalEngine::open_with_uploader` recognizes the selected version-3 topology and
+streams recovered batches directly into the visible index under construction.
+Its `EngineReplay` result contains aggregate replayed/covered record counts and
+discarded tail bytes, avoiding a second retained collection of all replayed
+batches. Legacy v1/v2 opening remains available for offline upgrades. Engine
+opening refuses complete legacy checksum/magic corruption instead of repairing
+it as a torn tail; the old format still lacks an independent length checksum.
+Missing or shorter-than-format roots beside an existing segment directory fail
+closed instead of creating an empty legacy database.
+
+The production runtime reads the selected checkpoint through
+`WalEngine::checkpoint_reference`, certifies its exact encoded manifest against
+the local committed Raft history, and then opens/restores the engine. It verifies
+legacy marker authority and the recovered exact applied term before calling
+`enable_segmentation`, all under the retained exclusive store guard and before
+peer startup or Serving. The version-3 prefix rejects older single-file writers.
+This local format transition adds no database service or singleton dependency.
+
+Offline migration streams each valid legacy record into an independently named
+segment stream through `catalog.migration`; both staging and final root resolve
+to `catalog.segments/<stream-id>/`. The original `catalog.wal` remains selected
+while copied segments rotate and synchronize. The final rename plus parent
+fsync publishes the complete new layout. A failed transition fences the current
+engine's writes, applied-position reports and new freezes until reopen. A crash
+before final publication recovers the old layout; a visible complete new topology
+is stabilized and recovered on reopen. Unreferenced streams from interrupted
+migration are not elected or replayed; their garbage collection is still pending.
+
+A migrated checkpoint is embedded with its exact position as the first segment's
+predecessor, including the case of an empty surviving legacy tail. Any legacy
+`catalog.checkpoint` sidecar becomes obsolete after this transition; subsequent
+anchors live only in the selected topology. Recovery requires real MinIO restore
+for that selected anchor before segment repair. Legacy unpositioned records are
+preserved, not assigned invented positions, and continue to pin reclamation.
+Large marker upgrades that retain an unpositioned prefix therefore still need
+an explicit full-checkpoint migration authority before that prefix can be freed.
+
+The integrated acceptance batch must still exercise runtime migration and remote
+recovery, sustained actual segment rotation/reclamation, post-rename directory
+sync ambiguity, and actual Chaos Mesh histories. The single-file segment proof
+is a separate, narrower obligation from topology, migration and reclamation
+proofs. This implementation increment does not close #15 or C01/C04.
+
+Local integration validation: 577 workspace tests pass, 23 external-environment
+cases remain ignored in that ordinary run, and workspace/all-target Clippy with
+warnings denied passes. Four explicitly selected engine tests pass against an
+isolated real MinIO container, including remote-object failure, straddling active
+frames and empty-checkpoint-tail migration. The three-process raw KV fixture
+passes leader death, new-leader reads/writes, deletes and old-node restart, with
+version-3 topology and segment files observed on all three data directories.
+Those process tests are local fault/restart evidence, not actual Chaos Mesh
+acceptance or measured S01 performance results.

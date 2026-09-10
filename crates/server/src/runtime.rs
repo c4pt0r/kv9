@@ -2566,11 +2566,9 @@ impl NodeRuntime {
             root.cluster_id.to_string(),
             &storage,
         )?;
-        let checkpoint_path = data_dir.join("catalog.checkpoint");
-        if checkpoint_path.exists() {
-            let bytes = std::fs::read(&checkpoint_path)
-                .map_err(|e| Error::Engine(format!("read checkpoint: {e}")))?;
-            let checkpoint = kv9_engine::checkpoint::CheckpointManifest::decode(&bytes)?;
+        let catalog_path = data_dir.join("catalog.wal");
+        if let Some(checkpoint) = WalEngine::checkpoint_reference(&catalog_path)? {
+            let bytes = checkpoint.encode()?;
             if checkpoint.scope.cluster != root.cluster_id.to_string()
                 || checkpoint.scope.region != META_REGION_0.0
                 || !storage.has_committed_checkpoint(&bytes)?
@@ -2581,7 +2579,7 @@ impl NodeRuntime {
             }
         }
         let (engine, replay) = WalEngine::open_with_uploader(
-            data_dir.join("catalog.wal"),
+            &catalog_path,
             remote.as_ref().map(|config| config.uploader.as_ref()),
         )?;
         // Upgrade the old in-band index exactly once, using the durable Raft log
@@ -2608,6 +2606,10 @@ impl NodeRuntime {
                 ));
             }
         }
+        // The store guard excludes other writers. Publish the segmented layout
+        // only after all recovered progress has committed Raft authority, before
+        // starting the peer or exposing Serving.
+        engine.enable_segmentation()?;
         let peer = Arc::new(RaftPeer::with_storage(id, META_REGION_0, storage)?);
         if replay.discarded_tail_bytes > 0 {
             eprintln!(
