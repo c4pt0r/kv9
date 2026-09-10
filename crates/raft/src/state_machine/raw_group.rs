@@ -232,7 +232,8 @@ mod tests {
         assert_eq!(store.writes.lock().unwrap().len(), 1);
         assert_eq!(
             store.get(ColumnFamily::Default, &key()).unwrap(),
-            Some(b"new".to_vec())
+            Some(b"new".to_vec()),
+            "Raw group changed mutation order"
         );
         assert_eq!(
             store.applied_position().unwrap(),
@@ -259,7 +260,8 @@ mod tests {
             .unwrap();
         assert_eq!(
             receipts[1].outcome,
-            ApplyOutcome::FenceRejected(RegionId(1))
+            ApplyOutcome::FenceRejected(RegionId(1)),
+            "stale Raw group member lost its verdict"
         );
         assert_eq!(
             store.get(ColumnFamily::Default, &key()).unwrap(),
@@ -286,9 +288,11 @@ mod tests {
             let store = Arc::new(ProbeStore::default());
             let mut sm = machine(&store);
             store.failure.store(failure, Ordering::SeqCst);
-            assert!(sm
-                .apply_raw_group(&[(at(1), put(b"a")), (at(2), put(b"b"))])
-                .is_err());
+            assert!(
+                sm.apply_raw_group(&[(at(1), put(b"a")), (at(2), put(b"b"))])
+                    .is_err(),
+                "failed Raw group returned receipts"
+            );
             assert_eq!(
                 sm.applied_index(),
                 LogIndex(0),
@@ -345,7 +349,10 @@ mod tests {
         }
         assert_eq!(store.writes.lock().unwrap().len(), 0);
         sm.set_fence_adjudicator(Arc::new(Arbitrary));
-        assert!(!sm.can_group_raw(&fenced(1, b"raw")));
+        assert!(
+            !sm.can_group_raw(&fenced(1, b"raw")),
+            "arbitrary adjudicator opted into grouped apply"
+        );
         assert!(sm.apply_raw_group(&[(at(1), fenced(1, b"raw"))]).is_err());
     }
 
@@ -419,6 +426,40 @@ mod tests {
             Some(b"fresh".to_vec())
         );
         assert_eq!(d.driver_applied().unwrap().index, proposals[4].index.0);
+    }
+
+    #[test]
+    fn real_driver_system_mutation_inside_fenced_write_remains_an_epoch_barrier() {
+        let store = Arc::new(ProbeStore::default());
+        let d = driver(&store);
+        let mut metadata = fenced(0, b"unused");
+        if let Command::Fenced {
+            inner: FencedInner::Write { ops },
+            ..
+        } = &mut metadata
+        {
+            *ops = vec![KvOp::Put {
+                cf: 0,
+                key: EPOCH.to_vec(),
+                value: vec![1],
+            }];
+        }
+        let commands = [fenced(0, b"before"), metadata, fenced(0, b"must-not-write")];
+        let proposals: Vec<_> = commands.iter().map(|cmd| d.propose(cmd).unwrap()).collect();
+        for _ in 0..10 {
+            d.step().unwrap();
+        }
+        assert!(
+            matches!(
+                d.wait_applied(proposals[2], Duration::ZERO).unwrap(),
+                ApplyWaitOutcome::FenceRejected { .. }
+            ),
+            "physical System mutation was hidden from the next epoch verdict"
+        );
+        assert_eq!(
+            store.get(ColumnFamily::Default, &key()).unwrap(),
+            Some(b"before".to_vec())
+        );
     }
 
     #[test]
