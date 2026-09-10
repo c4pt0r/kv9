@@ -322,6 +322,11 @@ def report_check(r, c, b):
     equal(r['timing_eligible'], r['stop_reason'] == 'duration' and b['profile'] == 'release' and not b['dirty'], 'timing eligibility differs')
     keys(r['metrics'], PHASES)
     metrics = {name: metrics_check(r['metrics'][name], c, name) for name in PHASES}
+    return cohort_check(r, c, metrics, offered)
+
+
+def cohort_check(r, c, metrics, offered, call_latency='sdk_call'):
+    """Shared schedule, stage and population arithmetic; no transport claims."""
     chunks = (c['keys'] + c['batch_size']) // c['batch_size']
     equal(metrics['initialization']['calls'], [chunks, chunks], 'initialization calls missing')
     equal(metrics['verification']['calls'], [chunks, 0], 'verification calls missing')
@@ -391,7 +396,7 @@ def report_check(r, c, b):
         for op in r['metrics'][phase]['statistics']:
             for pop in op['populations']:
                 whole_sum += pop['whole_call']['raw']['sum_ns']
-                for name in ('whole_call', 'sdk_call', 'scheduled_to_completion'):
+                for name in ('whole_call', call_latency, 'scheduled_to_completion'):
                     h = pop[name]['raw']
                     require(not h['count'] or h['max_ns'] <= (last if phase == 'measurement' else span), 'latency sample exceeds containing stage')
         # Whole calls are sequential within a worker. Scheduled-to-completion
@@ -408,7 +413,7 @@ def report_check(r, c, b):
             'offered_slots': offered, 'dropped_slots': dropped, 'process_start_ticks': ticks}
 
 
-def build_check(directory, retained, expected_revision=None):
+def build_check(directory, retained, expected_revision=None, reference=False):
     raw = bounded(directory / 'build.json', 65_536)
     b = strict_json(raw)
     keys(b, 'version revision dirty source_tree_sha256 binary_sha256 profile rustc'.split())
@@ -419,7 +424,8 @@ def build_check(directory, retained, expected_revision=None):
     for name, length in [('revision', 40), ('source_tree_sha256', 64), ('binary_sha256', 64)]:
         require(type(b[name]) is str and re.fullmatch(f'[0-9a-f]{{{length}}}', b[name]), 'invalid build hash')
     require(raw == bounded(retained / 'build.json', 65_536), 'retained build manifest differs')
-    binary = retained / 'kv9-batch-benchmark'
+    binary_name = 'kv9-redis-batch-reference' if reference else 'kv9-batch-benchmark'
+    binary = retained / binary_name
     require(0 < binary.stat().st_size <= 512 * 1024 * 1024, 'invalid executable size')
     with binary.open('rb') as stream:
         require(hashlib.file_digest(stream, 'sha256').hexdigest() == b['binary_sha256'], 'retained executable differs')
@@ -441,21 +447,27 @@ def build_check(directory, retained, expected_revision=None):
     require(sum(row.get('reason') == 'build-finished' and row.get('success') is True for row in records) == 1 and
             not any(row.get('reason') == 'build-finished' and row.get('success') is not True for row in records), 'Cargo did not complete successfully')
     selected = {}
-    for name in ('kv9-batch-benchmark', 'kv9_server', 'kv9_engine', 'kv9_raft'):
+    for name in ([binary_name] if reference else [binary_name, 'kv9_server', 'kv9_engine', 'kv9_raft']):
         rows = [row for row in records if row.get('reason') == 'compiler-artifact' and row.get('target', {}).get('name') == name]
         require(len(rows) == 1, 'missing or ambiguous Cargo artifact')
         row = rows[0]
-        require(row.get('features') in ([], ['rpc-experiment']), 'unexpected Cargo features')
+        require(row.get('features') in ([[]] if reference else [[], ['rpc-experiment']]), 'unexpected Cargo features')
         if name in ('kv9_engine', 'kv9_raft'):
             equal(row['features'], [], 'engine or Raft feature contamination')
         profile = row.get('profile')
         require(type(profile) is dict and profile.get('test') is False, 'test executable in workload build')
         require(profile.get('opt_level') == ('3' if b['profile'] == 'release' else '0'), 'Cargo optimization profile differs')
         selected[name] = row
-    artifact = selected['kv9-batch-benchmark']
-    equal(artifact['features'], selected['kv9_server']['features'], 'client/server feature graphs differ')
+    artifact = selected[binary_name]
+    if not reference:
+        equal(artifact['features'], selected['kv9_server']['features'], 'client/server feature graphs differ')
+    else:
+        for source in ('scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs',
+                       'crates/server/src/bin/kv9-batch-benchmark/common.rs'):
+            require(type(sources.get(source)) is str, 'Redis reference source missing')
     require(type(artifact.get('executable')) is str and artifact['executable'] and artifact['target'].get('kind') == ['bin'], 'workload artifact is not executable')
-    expected = ['cargo', 'build', '--locked', '-p', 'kv9-server', '--bin', 'kv9-batch-benchmark', '--message-format=json-render-diagnostics']
+    selection = ['--manifest-path', 'scripts/redis-reference/Cargo.toml'] if reference else ['-p', 'kv9-server']
+    expected = ['cargo', 'build', '--locked', *selection, '--bin', binary_name, '--message-format=json-render-diagnostics']
     if b['profile'] == 'release':
         expected.append('--release')
     if artifact['features']:

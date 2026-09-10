@@ -49,7 +49,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--release", action="store_true")
-    parser.add_argument("--binary", choices=("kv9-workload", "kv9-batch-workload", "kv9-batch-benchmark"), default="kv9-workload")
+    parser.add_argument("--binary", choices=("kv9-workload", "kv9-batch-workload", "kv9-batch-benchmark", "kv9-redis-batch-reference"), default="kv9-workload")
     parser.add_argument("--rpc-experiment", action="store_true",
                         help="explicitly compile the opt-in RPC transport experiment")
     args = parser.parse_args()
@@ -58,7 +58,12 @@ def main():
         raise RuntimeError("build artifacts must be outside the source tree")
     output.mkdir(parents=True, exist_ok=False)
     before = snapshot()
-    command = ["cargo", "build", "--locked", "-p", "kv9-server", "--bin", args.binary, "--message-format=json-render-diagnostics"]
+    if args.binary == "kv9-redis-batch-reference":
+        if args.rpc_experiment:
+            raise RuntimeError("Redis reference has no RPC experiment feature")
+        command = ["cargo", "build", "--locked", "--manifest-path", "scripts/redis-reference/Cargo.toml", "--bin", args.binary, "--message-format=json-render-diagnostics"]
+    else:
+        command = ["cargo", "build", "--locked", "-p", "kv9-server", "--bin", args.binary, "--message-format=json-render-diagnostics"]
     if args.release:
         command.append("--release")
     if args.rpc_experiment:
