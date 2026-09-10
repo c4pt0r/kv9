@@ -253,11 +253,12 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     /// components separately is forbidden (torn pair = e2ecc5a again).
     driver_applied: Mutex<Option<DriverAppliedPosition>>,
     async_reads: crate::async_read::AsyncReads,
+    async_applies: crate::async_apply::AsyncApplies,
     stop: AtomicBool,
     pump_started: AtomicBool,
     pump_gate: Mutex<()>,
     completion: crate::work::CompletionSignal,
-    metrics: DriverMetrics,
+    metrics: Arc<DriverMetrics>,
 }
 
 impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> {
@@ -274,6 +275,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         transport.set_work_signal(peer.work_signal.clone());
         Ok(Arc::new(NodeDriver {
             async_reads: crate::async_read::AsyncReads::new(peer.work_signal.clone()),
+            async_applies: crate::async_apply::AsyncApplies::new(peer.work_signal.clone()),
             peer,
             drain,
             transport,
@@ -307,7 +309,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             pump_started: AtomicBool::new(false),
             pump_gate: Mutex::new(()),
             completion: crate::work::CompletionSignal::default(),
-            metrics: DriverMetrics::default(),
+            metrics: Arc::default(),
         }))
     }
 
@@ -375,6 +377,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             }
         }
         if result.is_ok() {
+            self.async_applies
+                .service(|at, waited| self.inspect_applied(at, waited));
             self.async_reads
                 .complete(self.driver_applied().map(|at| at.index));
             // A pump can commit this leader's election no-op after this turn's
@@ -384,6 +388,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 self.peer.work_signal.notify();
             }
         } else {
+            self.async_applies.close();
             self.async_reads.close();
         }
         result
@@ -639,6 +644,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     /// Record a fatal apply-path failure and stop the pump (the poison path:
     /// skipping a committed entry would silently diverge this replica).
     fn poison(&self, term: u64, index: u64, cause: &Error) -> Error {
+        self.async_applies.close();
         self.async_reads.close();
         let msg = format!("fatal at committed entry (term {term}, index {index}): {cause}");
         *self.fatal.lock().expect("fatal poisoned") = Some(msg.clone());
@@ -651,6 +657,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     /// Preserve the failure without unwinding through peer/driver mutexes.
     /// The runtime can still read status and exit through its normal fatal path.
     fn poison_persistence(&self, cause: &Error) -> Error {
+        self.async_applies.close();
         self.async_reads.close();
         let mut fatal = self.fatal.lock().expect("fatal poisoned");
         let msg = fatal.get_or_insert_with(|| cause.to_string()).clone();
@@ -747,6 +754,33 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .observe(|| self.peer.propose_traced(cmd.encode()), classify_proposal)
     }
 
+    /// Synchronous submission with a bounded asynchronous exact-apply wait.
+    /// Reserve before proposing; a queue refusal therefore has no proposal
+    /// side effect. Submission itself may block on persistence and belongs on
+    /// the blocking boundary. The absolute logical deadline is never reset.
+    pub fn propose_with_async_wait(
+        &self,
+        command: &Command,
+        deadline: Instant,
+    ) -> Result<(ProposedAt, AsyncApplyWait)> {
+        let reservation = self.async_applies.reserve(deadline)?;
+        let at = self.propose(command)?;
+        let started = Instant::now();
+        let ticket = reservation.register(at)?;
+        Ok((
+            at,
+            AsyncApplyWait {
+                ticket,
+                metrics: self.metrics.clone(),
+                started,
+            },
+        ))
+    }
+
+    pub fn async_apply_snapshot(&self) -> crate::AsyncApplySnapshot {
+        self.async_applies.snapshot()
+    }
+
     /// Catalog plans are valid only in the term whose ordered barrier they read.
     pub fn propose_in_term(&self, cmd: &Command, term: u64) -> Result<ProposedAt> {
         self.metrics.proposal_submission.observe(
@@ -802,79 +836,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         let start = Instant::now();
         loop {
             let observed = self.completion.observe().map_err(ApplyWaitError::Failed)?;
-            if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
-                return Err(ApplyWaitError::Failed(Error::Raft(format!(
-                    "driver is poisoned: {f}"
-                ))));
-            }
-            // Snapshot the unified watermark BEFORE the ring lock (never
-            // nested inside it — the pump publishes under these locks in its
-            // own order). A stale-low read only delays a Replaced verdict by
-            // one recheck; monotonicity makes a stale read safe, never
-            // wrong.
-            let wm_passed = self
-                .driver_applied()
-                .is_some_and(|wm| wm.index >= at.index.0);
-            {
-                let applied = self.applied.lock().expect("applied poisoned");
-                if let Some(entry) = applied.iter().find(|e| e.index == at.index.0) {
-                    return if entry.term == at.term {
-                        // The receipt is the RING's recorded values — position
-                        // AND verdict as the apply loop stored them, never the
-                        // proposal echoed back. A fence-rejected entry applied
-                        // successfully (watermark advanced, nothing written)
-                        // and its verdict must reach the proposer — dropping
-                        // it here reported a rejected write as a success (the
-                        // silent-lost-write blocker).
-                        let at_pos = kv9_common::AppliedPosition {
-                            term: entry.term,
-                            index: entry.index,
-                        };
-                        // Exhaustive over the exclusive outcome — no
-                        // wildcard, no impossible state to trust away.
-                        match entry.outcome {
-                            crate::ApplyOutcome::Manifest(verdict) => {
-                                Ok(ApplyWaitOutcome::Manifest {
-                                    at: at_pos,
-                                    verdict,
-                                })
-                            }
-                            crate::ApplyOutcome::FenceRejected(region) => {
-                                Ok(ApplyWaitOutcome::FenceRejected { at: at_pos, region })
-                            }
-                            crate::ApplyOutcome::Plain => Ok(ApplyWaitOutcome::Applied(at_pos)),
-                        }
-                    } else {
-                        // The position applied here, but as ANOTHER leader's
-                        // command.
-                        Ok(ApplyWaitOutcome::Replaced)
-                    };
-                }
-                // Ring-eviction honesty (review round, Cindy): the ring is
-                // bounded, so an index below its oldest retained entry — with
-                // the ring at capacity — may have applied and been evicted:
-                // indistinguishable from never-applied. When we cannot
-                // distinguish, say so. A fabricated Replaced invites the
-                // caller to retry a possibly-SUCCEEDED non-idempotent write;
-                // Unconfirmed keeps the unknown unknown.
-                if applied.len() == APPLIED_RING
-                    && applied.first().is_some_and(|e| at.index.0 < e.index)
-                {
-                    return Err(ApplyWaitError::Unconfirmed {
-                        index: at.index.0,
-                        waited: start.elapsed(),
-                    });
-                }
-                // The position was passed without this index entering the
-                // command ring. Two watermarks can prove that:
-                //  - the state-machine watermark (some LATER command applied);
-                //  - the unified driver watermark (ANY later entry applied —
-                //    the only arm that fires when the replacing entry is the
-                //    new leader's barrier and no further command traffic
-                //    arrives; exactly the CI scene: driver=3, sm=2, wait=3).
-                if self.sm.lock().expect("sm poisoned").applied_index() >= at.index || wm_passed {
-                    return Ok(ApplyWaitOutcome::Replaced);
-                }
+            if let Some(result) = self.inspect_applied(at, start.elapsed()) {
+                return result;
             }
             if start.elapsed() > deadline {
                 return Err(ApplyWaitError::Unconfirmed {
@@ -886,6 +849,88 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 .wait(observed, deadline.saturating_sub(start.elapsed()))
                 .map_err(ApplyWaitError::Failed)?;
         }
+    }
+
+    // Both synchronous and asynchronous waiters use the exact same receipt,
+    // eviction and replacement discriminator. Called off async executor threads.
+    fn inspect_applied(
+        &self,
+        at: ProposedAt,
+        waited: Duration,
+    ) -> Option<std::result::Result<ApplyWaitOutcome, ApplyWaitError>> {
+        if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
+            return Some(Err(ApplyWaitError::Failed(Error::Raft(format!(
+                "driver is poisoned: {f}"
+            )))));
+        }
+        // Snapshot the unified watermark BEFORE the ring lock (never
+        // nested inside it — the pump publishes under these locks in its
+        // own order). A stale-low read only delays a Replaced verdict by
+        // one recheck; monotonicity makes a stale read safe, never
+        // wrong.
+        let wm_passed = self
+            .driver_applied()
+            .is_some_and(|wm| wm.index >= at.index.0);
+        {
+            let applied = self.applied.lock().expect("applied poisoned");
+            if let Some(entry) = applied.iter().find(|e| e.index == at.index.0) {
+                return Some(if entry.term == at.term {
+                    // The receipt is the RING's recorded values — position
+                    // AND verdict as the apply loop stored them, never the
+                    // proposal echoed back. A fence-rejected entry applied
+                    // successfully (watermark advanced, nothing written)
+                    // and its verdict must reach the proposer — dropping
+                    // it here reported a rejected write as a success (the
+                    // silent-lost-write blocker).
+                    let at_pos = kv9_common::AppliedPosition {
+                        term: entry.term,
+                        index: entry.index,
+                    };
+                    // Exhaustive over the exclusive outcome — no
+                    // wildcard, no impossible state to trust away.
+                    match entry.outcome {
+                        crate::ApplyOutcome::Manifest(verdict) => Ok(ApplyWaitOutcome::Manifest {
+                            at: at_pos,
+                            verdict,
+                        }),
+                        crate::ApplyOutcome::FenceRejected(region) => {
+                            Ok(ApplyWaitOutcome::FenceRejected { at: at_pos, region })
+                        }
+                        crate::ApplyOutcome::Plain => Ok(ApplyWaitOutcome::Applied(at_pos)),
+                    }
+                } else {
+                    // The position applied here, but as ANOTHER leader's
+                    // command.
+                    Ok(ApplyWaitOutcome::Replaced)
+                });
+            }
+            // Ring-eviction honesty (review round, Cindy): the ring is
+            // bounded, so an index below its oldest retained entry — with
+            // the ring at capacity — may have applied and been evicted:
+            // indistinguishable from never-applied. When we cannot
+            // distinguish, say so. A fabricated Replaced invites the
+            // caller to retry a possibly-SUCCEEDED non-idempotent write;
+            // Unconfirmed keeps the unknown unknown.
+            if applied.len() == APPLIED_RING
+                && applied.first().is_some_and(|e| at.index.0 < e.index)
+            {
+                return Some(Err(ApplyWaitError::Unconfirmed {
+                    index: at.index.0,
+                    waited,
+                }));
+            }
+            // The position was passed without this index entering the
+            // command ring. Two watermarks can prove that:
+            //  - the state-machine watermark (some LATER command applied);
+            //  - the unified driver watermark (ANY later entry applied —
+            //    the only arm that fires when the replacing entry is the
+            //    new leader's barrier and no further command traffic
+            //    arrives; exactly the CI scene: driver=3, sm=2, wait=3).
+            if self.sm.lock().expect("sm poisoned").applied_index() >= at.index || wm_passed {
+                return Some(Ok(ApplyWaitOutcome::Replaced));
+            }
+        }
+        None
     }
 
     /// Establish a quorum-confirmed read barrier (task #28 step 3): the
@@ -1118,6 +1163,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     }
 
     pub fn stop(&self) {
+        self.async_applies.close();
         self.async_reads.close();
         self.stop.store(true, Ordering::Relaxed);
         self.peer.work_signal.stop();
@@ -1211,8 +1257,25 @@ fn classify_read(result: &std::result::Result<ReadBarrier, ReadIndexError>) -> O
     }
 }
 
-/// The typed outcome of [`NodeDriver::wait_applied`] (task #30): what became
-/// of the proposal's position, judged on applied state, never on elapsed time.
+/// One reserved proposal's asynchronous wait, tied to its driver's producer.
+/// Dropping this handle does not cancel the proposal in the Raft log.
+pub struct AsyncApplyWait {
+    ticket: crate::async_apply::ApplyTicket,
+    metrics: Arc<DriverMetrics>,
+    started: Instant,
+}
+
+impl AsyncApplyWait {
+    pub async fn wait(self) -> std::result::Result<ApplyWaitOutcome, ApplyWaitError> {
+        let result = self.ticket.wait().await;
+        self.metrics
+            .application_wait
+            .record(self.started.elapsed(), classify_apply_wait(&result));
+        result
+    }
+}
+
+/// The exact effect observed at a proposed term/index.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ApplyWaitOutcome {
     /// The exact position APPLIED on this node — built by the driver from the
@@ -1808,6 +1871,205 @@ mod tests {
             result.is_pending(),
             "read completed before its required evidence"
         );
+    }
+
+    #[tokio::test]
+    async fn async_apply_requires_application_and_preserves_the_exact_receipt() {
+        let driver = single_node_driver();
+        driver.pause_apply(true);
+        let (at, wait) = driver
+            .propose_with_async_wait(
+                &Command::Put {
+                    cf: 0,
+                    key: b"async".to_vec(),
+                    value: b"applied".to_vec(),
+                },
+                Instant::now() + Duration::from_secs(5),
+            )
+            .unwrap();
+        driver.tick_and_step().unwrap();
+        assert!(driver.status().raft_committed >= at.index.0);
+        assert!(driver.status().applied_index < at.index.0);
+        let mut waiting = Box::pin(wait.wait());
+        let observed = std::future::poll_fn(|cx| {
+            std::task::Poll::Ready(std::future::Future::poll(waiting.as_mut(), cx))
+        })
+        .await;
+        assert!(
+            observed.is_pending(),
+            "commit alone was fabricated as an applied write receipt"
+        );
+        driver.pause_apply(false);
+        driver.step().unwrap();
+        assert_eq!(
+            waiting.await.unwrap(),
+            ApplyWaitOutcome::Applied(kv9_common::AppliedPosition {
+                term: at.term,
+                index: at.index.0
+            })
+        );
+        assert_eq!(
+            driver.get(ColumnFamily::Default, b"async").unwrap(),
+            Some(b"applied".to_vec())
+        );
+        assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn async_apply_registration_after_publication_wakes_an_idle_owner() {
+        let driver = single_node_driver();
+        let reserved = driver
+            .async_applies
+            .reserve(Instant::now() + Duration::from_secs(5))
+            .unwrap();
+        let at = driver
+            .propose(&Command::Put {
+                cf: 0,
+                key: b"late".to_vec(),
+                value: b"receipt".to_vec(),
+            })
+            .unwrap();
+        driver.step().unwrap();
+        assert!(driver.status().applied_index >= at.index.0);
+        let parked = driver.peer.work_signal.observe_next_park();
+        let pump = driver.spawn(Duration::from_secs(30)).unwrap();
+        parked.recv_timeout(Duration::from_secs(2)).unwrap();
+        let ticket = reserved.register(at).unwrap();
+        let result = tokio::time::timeout(Duration::from_secs(1), ticket.wait()).await;
+        driver.stop();
+        pump.join().unwrap();
+        assert!(
+            matches!(result, Ok(Ok(ApplyWaitOutcome::Applied(position))) if position.term == at.term && position.index == at.index.0),
+            "registration after apply lost the completion wakeup: {result:?}"
+        );
+        assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn async_apply_preserves_term_fence_manifest_and_fatal_outcomes() {
+        let region = kv9_common::RegionId(3);
+        let manifest = crate::ManifestVerdict::AlreadyApplied {
+            region,
+            generation: 8,
+        };
+        let position = kv9_common::AppliedPosition { term: 7, index: 19 };
+        for (recorded_term, recorded, expected) in [
+            (8, crate::ApplyOutcome::Plain, ApplyWaitOutcome::Replaced),
+            (
+                7,
+                crate::ApplyOutcome::FenceRejected(region),
+                ApplyWaitOutcome::FenceRejected {
+                    at: position,
+                    region,
+                },
+            ),
+            (
+                7,
+                crate::ApplyOutcome::Manifest(manifest),
+                ApplyWaitOutcome::Manifest {
+                    at: position,
+                    verdict: manifest,
+                },
+            ),
+        ] {
+            let driver = single_node_driver();
+            let ticket = driver
+                .async_applies
+                .reserve(Instant::now() + Duration::from_secs(5))
+                .unwrap()
+                .register(ProposedAt {
+                    term: 7,
+                    index: crate::LogIndex(19),
+                })
+                .unwrap();
+            push_ring(
+                &mut driver.applied.lock().unwrap(),
+                19,
+                recorded_term,
+                recorded,
+            );
+            driver.step().unwrap();
+            assert_eq!(
+                ticket.wait().await.unwrap(),
+                expected,
+                "asynchronous waiter changed its exact receipt verdict"
+            );
+            assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+        }
+        let driver = single_node_driver();
+        driver.pause_apply(true);
+        let (_, waiting) = driver
+            .propose_with_async_wait(&Command::Noop, Instant::now() + Duration::from_secs(5))
+            .unwrap();
+        driver.poison_persistence(&Error::Raft("controlled persistence failure".into()));
+        assert!(
+            matches!(waiting.wait().await, Err(ApplyWaitError::Failed(_))),
+            "fatal persistence failure fabricated an apply receipt"
+        );
+        assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+        assert!(driver.async_apply_snapshot().stopped);
+    }
+
+    #[tokio::test]
+    async fn async_apply_eviction_is_unknown_even_when_the_watermark_passed() {
+        let driver = single_node_driver();
+        let at = ProposedAt {
+            term: 7,
+            index: crate::LogIndex(19),
+        };
+        let ticket = driver
+            .async_applies
+            .reserve(Instant::now() + Duration::from_secs(5))
+            .unwrap()
+            .register(at)
+            .unwrap();
+        {
+            let mut ring = driver.applied.lock().unwrap();
+            for index in 20..20 + APPLIED_RING as u64 {
+                push_ring(&mut ring, index, 7, crate::ApplyOutcome::Plain);
+            }
+        }
+        *driver.driver_applied.lock().unwrap() = Some(DriverAppliedPosition {
+            term: 7,
+            index: 20 + APPLIED_RING as u64,
+        });
+        driver.step().unwrap();
+        let result = ticket.wait().await;
+        assert!(
+            matches!(result, Err(ApplyWaitError::Unconfirmed { index: 19, .. })),
+            "evicted receipt became a safely retryable replacement: {result:?}"
+        );
+        assert_eq!(driver.async_apply_snapshot().in_flight, 0);
+    }
+
+    #[test]
+    fn async_apply_capacity_is_reserved_before_any_proposal() {
+        let driver = single_node_driver();
+        let deadline = Instant::now() + Duration::from_secs(5);
+        let held: Vec<_> = (0..128)
+            .map(|_| driver.async_applies.reserve(deadline).unwrap())
+            .collect();
+        let submissions = || {
+            driver
+                .metrics()
+                .proposal_submission
+                .snapshot()
+                .outcomes
+                .iter()
+                .map(|o| o.count)
+                .sum::<u64>()
+        };
+        let before = submissions();
+        assert!(driver
+            .propose_with_async_wait(&Command::Noop, deadline)
+            .is_err());
+        assert_eq!(
+            submissions(),
+            before,
+            "capacity refusal already submitted a command"
+        );
+        drop(held);
+        assert_eq!(driver.async_apply_snapshot().in_flight, 0);
     }
 
     #[tokio::test]

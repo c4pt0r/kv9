@@ -14,6 +14,121 @@ fn bounded(count: usize, bytes: usize) -> Kv9Grpc {
     .unwrap()
 }
 
+#[test]
+fn cancelled_prepared_write_keeps_capacity_across_queue_and_async_wait() {
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .max_blocking_threads(1)
+        .build()
+        .unwrap();
+    runtime.block_on(async {
+        let service = bounded(1, 10);
+        let (blocked_tx, blocked_rx) = tokio::sync::oneshot::channel();
+        let (release_worker, release_rx) = std::sync::mpsc::channel();
+        let worker = tokio::task::spawn_blocking(move || {
+            blocked_tx.send(()).unwrap();
+            release_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+        });
+        blocked_rx.await.unwrap();
+        let held = service
+            .admission()
+            .reserve(WorkClass::RawWrite, 10)
+            .unwrap();
+        let (prepared_tx, prepared_rx) = tokio::sync::oneshot::channel();
+        let (finish_tx, finish_rx) = tokio::sync::oneshot::channel();
+        let backend = service.backend.clone();
+        let mut rpc = Box::pin(backend.prepared_write(
+            held,
+            Box::new(move || {
+                prepared_tx.send(()).unwrap();
+                Ok(Box::pin(async move {
+                    finish_rx.await.unwrap();
+                    Ok(AppliedPosition { term: 7, index: 23 })
+                }))
+            }),
+        ));
+        std::future::poll_fn(|cx| {
+            use std::future::Future;
+            assert!(rpc.as_mut().poll(cx).is_pending());
+            std::task::Poll::Ready(())
+        })
+        .await;
+        drop(rpc); // RPC cancellation while the only blocking worker is busy.
+        tokio::task::yield_now().await;
+        assert_eq!(
+            service.admission().snapshot().in_flight,
+            1,
+            "queued write cancellation released its capacity"
+        );
+        assert!(service.admission().reserve(WorkClass::RawRead, 1).is_err());
+        release_worker.send(()).unwrap();
+        worker.await.unwrap();
+        tokio::time::timeout(Duration::from_secs(2), prepared_rx)
+            .await
+            .unwrap()
+            .unwrap();
+        // The write is still waiting, but the only blocking worker is free.
+        let probe = tokio::task::spawn_blocking(|| 42);
+        assert_eq!(
+            tokio::time::timeout(Duration::from_secs(1), probe)
+                .await
+                .unwrap()
+                .unwrap(),
+            42
+        );
+        let state = service.admission().snapshot();
+        assert_eq!(
+            (state.in_flight, state.running, state.encoded_bytes),
+            (1, 1, 10),
+            "async write wait lost its public reservation"
+        );
+        assert_eq!(
+            state.classes[1].completed, 0,
+            "write completed without its internal result"
+        );
+        finish_tx.send(()).unwrap();
+        tokio::time::timeout(Duration::from_secs(2), async {
+            while service.admission().snapshot().in_flight != 0 {
+                tokio::task::yield_now().await;
+            }
+        })
+        .await
+        .unwrap();
+        let state = service.admission().snapshot();
+        assert_eq!(state.classes[1].completed, 1);
+        assert_eq!(
+            (state.in_flight, state.running, state.encoded_bytes),
+            (0, 0, 0)
+        );
+    });
+}
+
+#[tokio::test]
+async fn prepared_write_panic_releases_budget_in_both_phases() {
+    let service = bounded(1, 10);
+    let preparation: crate::api::RawWritePreparation =
+        Box::new(|| panic!("controlled preparation panic"));
+    let completion: crate::api::RawWritePreparation =
+        Box::new(|| Ok(Box::pin(async { panic!("controlled completion panic") })));
+    for job in [preparation, completion] {
+        let held = service
+            .admission()
+            .reserve(WorkClass::RawWrite, 10)
+            .unwrap();
+        assert_eq!(
+            service
+                .backend
+                .prepared_write(held, job)
+                .await
+                .unwrap_err()
+                .code(),
+            Code::Internal
+        );
+        assert_eq!(service.admission().snapshot().in_flight, 0);
+    }
+    assert_eq!(service.admission().snapshot().classes[1].backend_aborted, 2);
+}
+
 #[tokio::test]
 async fn admission_covers_every_public_handler_before_preparation() {
     let service = bounded(1, 4096);

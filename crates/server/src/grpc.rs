@@ -8,7 +8,8 @@
 use std::{collections::HashMap, sync::Arc};
 
 use kv9_common::{
-    ApiType, Error, KeyspaceId, NodeId, RegionId, TenantId, TimeStamp, TimelineId, TxnGroupId,
+    ApiType, AppliedPosition, Error, KeyspaceId, NodeId, RegionId, TenantId, TimeStamp, TimelineId,
+    TxnGroupId,
 };
 use kv9_region::RegionEpoch;
 use kv9_txn::{QualifiedKey, TimelineGeneration, TxnDescriptor, TxnId, TxnStatus};
@@ -148,6 +149,35 @@ struct BlockingBackend {
 }
 
 impl BlockingBackend {
+    async fn prepared_write(
+        &self,
+        mut reservation: Reservation,
+        preparation: crate::api::RawWritePreparation,
+    ) -> Result<AppliedPosition, Status> {
+        // Dropping the RPC's JoinHandle detaches this task. It owns the SAME
+        // reservation until preparation and the internal logical wait finish.
+        // The blocking closure owns it while queued/running, so cancelling the
+        // outer RPC cannot release capacity around a potentially live proposal.
+        tokio::spawn(async move {
+            let (prepared, reservation) = tokio::task::spawn_blocking(move || {
+                reservation.start();
+                (preparation(), reservation)
+            })
+            .await
+            .map_err(|error| {
+                Status::internal(format!("blocking write preparation failed: {error}"))
+            })?;
+            let result = match prepared {
+                Ok(completion) => completion.await,
+                Err(error) => Err(error),
+            };
+            reservation.finish(result.is_err());
+            result.map_err(error_status)
+        })
+        .await
+        .map_err(|error| Status::internal(format!("write completion task failed: {error}")))?
+    }
+
     async fn prepared_read<T: Send + 'static>(
         &self,
         mut reservation: Reservation,
@@ -1108,9 +1138,16 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let context = request_context(request.context, &auth)?;
         let applied = self
             .backend
-            .call(reservation, move |backend| {
-                backend.raw_put(&context, request.key, request.value)
-            })
+            .prepared_write(
+                reservation,
+                self.backend.inner.clone().prepare_raw_write(
+                    context,
+                    crate::api::RawWrite::Put {
+                        key: request.key,
+                        value: request.value,
+                    },
+                ),
+            )
             .await?;
         Ok(Response::new(applied_response(applied)))
     }
@@ -1130,9 +1167,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             .collect();
         let applied = self
             .backend
-            .call(reservation, move |backend| {
-                backend.raw_batch_put(&context, &pairs)
-            })
+            .prepared_write(
+                reservation,
+                self.backend
+                    .inner
+                    .clone()
+                    .prepare_raw_write(context, crate::api::RawWrite::BatchPut(pairs)),
+            )
             .await?;
         Ok(Response::new(applied_response(applied)))
     }
@@ -1146,9 +1187,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         let request = request.into_inner();
         let context = request_context(request.context, &auth)?;
         self.backend
-            .call(reservation, move |backend| {
-                backend.raw_delete(&context, &request.key)
-            })
+            .prepared_write(
+                reservation,
+                self.backend
+                    .inner
+                    .clone()
+                    .prepare_raw_write(context, crate::api::RawWrite::Delete { key: request.key }),
+            )
             .await
             .map(applied_response)
             .map(Response::new)

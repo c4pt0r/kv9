@@ -101,6 +101,23 @@ pub trait TxnApi {
 
 /// The raw API for `raw` keyspaces (DESIGN §11 Raw surface).
 pub trait RawApi: Send + Sync + 'static {
+    /// Prepare a write on the blocking boundary, then await its completion
+    /// without retaining a blocking worker. The public boundary owns the
+    /// admission reservation across both phases, including RPC cancellation.
+    fn prepare_raw_write(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        operation: RawWrite,
+    ) -> RawWritePreparation {
+        Box::new(move || {
+            let at = match operation {
+                RawWrite::Put { key, value } => self.raw_put(&ctx, key, value),
+                RawWrite::BatchPut(pairs) => self.raw_batch_put(&ctx, &pairs),
+                RawWrite::Delete { key } => self.raw_delete(&ctx, &key),
+            }?;
+            Ok(Box::pin(async move { Ok(at) }))
+        })
+    }
     /// Prepare a point read without blocking an async worker. The default
     /// defers all work to the blocking boundary. Implementations may complete
     /// a memory-only read after its quorum credential, using only try-locks;
@@ -148,6 +165,17 @@ pub enum RawReadJob<T> {
     Completed(T),
     Blocking(Box<dyn FnOnce() -> Result<T> + Send>),
 }
+
+/// Owned operations that preserve the existing point/batch RawKV wire APIs.
+pub enum RawWrite {
+    Put { key: UserKey, value: Value },
+    BatchPut(Vec<(UserKey, Value)>),
+    Delete { key: UserKey },
+}
+
+pub type RawWriteCompletion =
+    std::pin::Pin<Box<dyn std::future::Future<Output = Result<AppliedPosition>> + Send>>;
+pub type RawWritePreparation = Box<dyn FnOnce() -> Result<RawWriteCompletion> + Send>;
 
 impl<T> RawReadJob<T> {
     /// Execute from a synchronous caller. Async callers must dispatch the
