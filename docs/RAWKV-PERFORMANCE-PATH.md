@@ -575,11 +575,35 @@ default-feature release build has SHA-256
 its 417 recorded source files still match, and the separately identified Ready
 benchmark client remains unchanged. This build is preparation for measurement.
 
-There is no FIFO throughput result or exact-FIFO Chaos acceptance yet. Measure
-its benefit in a separate `a00e39f` / FIFO / `a00e39f` bracket; the earlier 18.4%
-PUT improvement belongs only to async-write waiting. Inherited checked protocol
-composition remains open. Main runtime promotion and the original roadmap
-checklist remain unchanged; no hosted workflow was dispatched.
+The completed [async-write / FIFO / async-write bracket](../scripts/redis-reference/results/a00e39f-c7313ec-c64-tmpfs-diagnostic.md)
+does not establish a FIFO performance benefit. Successful operations/s in the
+unchanged c64 volatile tmpfs diagnostic are:
+
+| Operation | Async write before | Receipt FIFO | Async write after | Change vs pooled baseline |
+| --- | ---: | ---: | ---: | ---: |
+| GET | 136,331.3 | 135,889.9 | 137,110.5 | -0.61% |
+| PUT | 78,917.2 | 78,113.5 | 78,397.0 | -0.69% |
+| Mixed | 93,163.8 | 92,086.6 | 92,746.4 | -0.93% |
+
+Both candidate PUT repetitions are below all four surrounding baseline
+repetitions; GET/mixed ranges overlap. Client p99 buckets remain unchanged.
+All 5,537,388 KV9 and 26,975,936 Redis measured operations succeeded, all 36
+cohorts and six unchanged checks passed, and all 63 owned executing lifetimes
+exited. Existing read/group/inline/public checks and async-apply occupancy,
+monotonic lifetime peak and boundary drain checks pass across all three
+matrices. The complete inventory contains 1,728 files / 2,587,602,557 bytes,
+all reopened and verified, SHA-256
+`65cb50a13283aeaadaf55d9a1974d016499793e871cd218f475732379f2238af`.
+
+Retain FIFO as an isolated representation experiment. Continue the performance
+mainline from `a00e39f`; the earlier 18.4% PUT improvement belongs only to its
+async-write comparison. The next step is a fresh CPU call-stack profile of the
+current GET and PUT paths before choosing another implementation change.
+Earlier profiles describe earlier runtimes; lower representation complexity
+alone is insufficient evidence of an end-to-end gain. Exact-FIFO Chaos and
+inherited checked protocol composition remain open. Main runtime promotion and
+the original roadmap checklist remain unchanged; no hosted workflow was
+dispatched.
 
 ### 5. Reconcile improvements before extending capacity
 
