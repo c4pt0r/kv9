@@ -241,6 +241,26 @@ SHA-256 is `8dad4a64cabb7b5db649f2716faecb2b9ed0f8e37364f6ef465475de0d96467a`.
 It retains source, default executable, tests, control inputs/logs, process stores,
 and failed early attempts. It contains no new Chaos Mesh acceptance.
 
+The exact `1ad259e` candidate subsequently passed one
+[actual NetworkChaos isolation/recovery scenario](ASYNC-READ-NETWORKCHAOS.md).
+Positive effect probes showed the old leader isolated from both remaining
+voters while the majority remained connected. The majority acknowledged v2,
+the same live former leader returned typed NotLeader, and recovery returned v2.
+All 244 public operation records were independently checked, including 26
+conservatively unknown outcomes. This is post-deposition, single-host evidence;
+full fault coverage and protocol composition remain open.
+
+The next implementation is [sealed read groups](https://github.com/c4pt0r/kv9/blob/2cbbe26a3d4273c6d265fa40c8b56c548b1a59ec/docs/READ-GROUPS.md),
+pushed as `2cbbe26` from `1ad259e`. It seals at most 64 already invoked readers
+before one quorum request, retaining individual deadlines/reservations and an
+independent group identity when its representative cancels. A three-voter Raft
+test observes one heartbeat per follower for three grouped readers and requires
+a fresh confirmation for a later reader. The local gate passes 627 tests and
+doctests, 11 compiled control triples, warnings-denied Clippy, and the default
+three-process failover/restart fixture. A fresh unchanged-client bracket must
+establish its performance; neither `1ad259e`'s throughput nor its Chaos evidence
+is automatically evidence for this later runtime. Master runtime is unchanged.
+
 ### 5. Reconcile improvements before extending capacity
 
 Publish throughput, successful-operation latency, refusal/unknown counts,
