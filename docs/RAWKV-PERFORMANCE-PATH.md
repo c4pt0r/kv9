@@ -13,7 +13,14 @@ Main now includes the accepted scheduling/completion/socket lineage through
 this integration. The later append, Raw and Ready grouping implementations
 remain candidates, and their measurements below are identified separately.
 
-The selected performance development baseline is the `892b2a1` Ready candidate. At 64
+The latest measured memory-path candidate is sealed read groups `2cbbe26`, built
+on asynchronous read preparation `1ad259e`. In its fresh c64 tmpfs bracket,
+GET reaches 120,359/s, PUT 67,202/s and mixed 79,767/s. GET is approximately
+24% of its contemporaneous standalone Redis reference. This is a modest local
+gain, not attainment of the Redis-class target or runtime promotion. The full
+comparison and remaining correctness gates appear under increment 4 below.
+
+The earlier performance development baseline was the `892b2a1` Ready candidate. At 64
 outstanding calls, pooled GET throughput is 84,810/s and PUT throughput is 836/s;
 the corresponding standalone Redis memory reference is 500,842/s and 491,739/s.
 The two kv9 PUT repetitions are 854/s and 818/s. The previous fe candidate pooled
@@ -257,9 +264,46 @@ independent group identity when its representative cancels. A three-voter Raft
 test observes one heartbeat per follower for three grouped readers and requires
 a fresh confirmation for a later reader. The local gate passes 627 tests and
 doctests, 11 compiled control triples, warnings-denied Clippy, and the default
-three-process failover/restart fixture. A fresh unchanged-client bracket must
-establish its performance; neither `1ad259e`'s throughput nor its Chaos evidence
-is automatically evidence for this later runtime. Master runtime is unchanged.
+three-process failover/restart fixture. Its completed fresh
+[unchanged-client bracket](../scripts/redis-reference/results/1ad259e-2cbbe26-c64-tmpfs-diagnostic.md)
+passes all 36 cohorts and six independent outcome/tmpfs checks. Pooled successful
+operations/s across each matrix's two repetitions are:
+
+| Workload | Async before | Sealed groups | Async after |
+|---|---:|---:|---:|
+| GET | 112,020.0 | 120,358.6 | 112,983.8 |
+| PUT | 66,776.4 | 67,202.1 | 67,366.0 |
+| Mixed | 75,655.2 | 79,766.8 | 76,276.3 |
+
+Relative to the mean of the two surrounding baseline rates, this is about 7%
+higher GET and 5% higher mixed throughput, with no meaningful PUT gain.
+All measured operations succeeded. The GET p99 histogram bucket remains
+0.524288-1.048575 ms and the PUT/mixed bucket remains 1.048576-2.097151 ms;
+the comparison does not establish a tail-latency improvement. GET voter CPU is
+3.095/3.190 cores in the candidate repetitions, versus 3.168/3.236 before and
+3.141/3.217 after. The paired Redis p99 bucket is 0.131072-0.262143 ms.
+
+GET group membership averages 2.329/2.545 requests per admitted group, and mixed
+averages 3.137/3.146. These counter deltas include setup, warmup, measurement and
+verification; they are not measurement-window-only batching statistics. The
+maximum admitted group is a process-lifetime peak of 64. All async groups,
+members and public reservations drain, and all 63 owned process lifetimes exit.
+Reducing logical heartbeat broadcasts therefore yields a measured but small
+end-to-end gain. The next memory-path work should reduce per-request execution
+and RPC cost while retaining the same quorum/apply/view and admission contracts.
+Do not infer another speedup from the earlier Ready profile without measuring
+the changed path. Every prepared GET still dispatches one blocking engine job.
+
+The local correctness archive is
+`target/correctness-evidence/2026-09-09-2cbbe26-read-groups-local-first.tar.gz`
+(59,083,888 bytes; 827 entries), SHA-256
+`bae2d5a4410c8bf0b9c4f2f740bc205ad92075d13a082e26b7375f82fb5ede87`.
+All archived members were read back and hash-verified, and original inputs
+remained unchanged. It includes both the rejected first control attempt and
+the accepted second attempt. Performance artifacts are inventoried separately.
+Machine-checked group composition and exact-candidate actual Chaos Mesh remain
+open; `1ad259e`'s fault evidence does not establish this later runtime's gate.
+Master runtime is unchanged. tmpfs results remain volatile-storage diagnostics.
 
 ### 5. Reconcile improvements before extending capacity
 
