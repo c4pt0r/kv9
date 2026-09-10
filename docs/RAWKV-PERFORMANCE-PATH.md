@@ -432,6 +432,44 @@ Candidate-specific actual Chaos Mesh and inherited checked composition remain
 open. Prioritize exact resident fault acceptance while those larger read gains
 are being evaluated; neither experiment has been promoted into the main runtime.
 
+
+The next write-wait implementation is now published as
+[`a00e39f`](https://github.com/c4pt0r/kv9/commit/a00e39f9f8da7bb381df19afd2eed63e8a1f1b75),
+starting from resident `11cae97`. Point PUT, batch PUT and point DELETE retain
+blocking validation/submission, then release the worker while awaiting the exact
+apply result from the existing Raft owner. A bounded 128-reservation registry
+counts submission, queue and extracted handoff ownership. The same receipt
+inspection and settlement functions serve synchronous and asynchronous callers.
+Only a known-not-applied replacement retries the same command with the original
+absolute deadline. A private task retains the public reservation across normal
+RPC cancellation until the logical result/deadline; the proposal can still apply
+after an unknown timeout. This is not a hard interruption of blocked storage.
+The [conditional refinement proof and implementation contract](https://github.com/c4pt0r/kv9/blob/a00e39f9f8da7bb381df19afd2eed63e8a1f1b75/docs/ASYNC-WRITE-WAIT.md)
+state the exact ownership, evidence, progress assumptions and remaining gates.
+
+Local validation passes 643 workspace tests/doctests (23 ignored), all-target
+Clippy with warnings denied, seven compiled semantic controls with all 21
+baseline/mutant/restored phases, and the unchanged default three-process
+failover/delete/original-directory restart fixture. All four observed executing
+process lifetimes match default binary SHA-256
+`72f72c49bf16307f1b9c91a99db7ef41555e847f752e9da78e51623a168c8628`
+and exited. Tests discriminate committed-but-unapplied success, missing
+registration wakeups, evicted receipts, proposal-before-admission, early public
+reservation release, unknown retries and extended retry deadlines.
+
+The retained archive is
+`target/correctness-evidence/2026-09-10-a00e39f-async-write-wait-local-first.tar.gz`
+(2,369,910 bytes; 509 entries), SHA-256
+`b621a5d34d1198daae843eff8fc1c536ba08d9b76278d43a26467529aa237ab5`.
+Every archive member and original input was read back. This is local
+implementation acceptance only: no new performance number or speedup is claimed.
+The new task/oneshot/mutex work and bounded per-owner ring scans may offset the
+saved worker wakeups; use a fresh unchanged before/candidate/after comparison.
+Resident-read actual Chaos validation and inherited checked protocol composition
+continue separately. Their results cannot be relabeled as exact asynchronous
+write acceptance. The main runtime and original roadmap checklist are unchanged;
+no hosted workflow was dispatched.
+
 ### 5. Reconcile improvements before extending capacity
 
 Publish throughput, successful-operation latency, refusal/unknown counts,
