@@ -119,6 +119,7 @@ pub struct RaftPeer<S: PersistentRaftStorage = MemStorage> {
     node: NodeId,
     region: RegionId,
     inner: Mutex<PeerInner<S>>,
+    pub(crate) work_signal: Arc<crate::work::WorkSignal>,
     /// Whether THE [`DrainToken`] for this peer has been minted (task #5).
     /// Set once, never cleared: the drain capability is issued at most once
     /// per peer for the life of the process.
@@ -252,6 +253,9 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             // forbids. A raft-rs default change must not be able to change
             // our read semantics silently.
             read_only_option: ReadOnlyOption::Safe,
+            // Bound work exposed by one Ready. A single legal large entry may
+            // exceed this target; transport admission has a separate bound.
+            max_committed_size_per_ready: 1024 * 1024,
             ..Default::default()
         };
         cfg.validate().map_err(raft_err)?;
@@ -262,6 +266,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             node,
             region,
             drain_minted: std::sync::atomic::AtomicBool::new(false),
+            work_signal: Arc::new(crate::work::WorkSignal::default()),
             inner: Mutex::new(PeerInner {
                 raw,
                 ready: Vec::new(),
@@ -311,6 +316,8 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             return Ok(false);
         }
         g.raw.read_index(rctx);
+        drop(g);
+        self.work_signal.notify();
         Ok(true)
     }
 
@@ -348,6 +355,8 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         let term = g.raw.raft.term;
         g.raw.propose(Vec::new(), data).map_err(raft_err)?;
         let index = g.raw.raft.raft_log.last_index();
+        drop(g);
+        self.work_signal.notify();
         Ok(ProposedAt {
             term,
             index: LogIndex(index),
@@ -495,6 +504,8 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             .propose_conf_change(Vec::new(), cc)
             .map_err(raft_err)?;
         let index = g.raw.raft.raft_log.last_index();
+        drop(g);
+        self.work_signal.notify();
         Ok(ProposedAt {
             term,
             index: LogIndex(index),
@@ -620,6 +631,11 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         Ok(std::mem::take(&mut self.lock().outbox))
     }
 
+    pub(crate) fn has_pending_ready(&self) -> bool {
+        let g = self.lock();
+        g.alive && g.fatal.is_none() && g.raw.has_ready()
+    }
+
     /// Testing-only election seam: ask THIS peer (it must currently be the
     /// leader) to hand leadership to `transferee` (raft-rs MsgTransferLeader
     /// → MsgTimeoutNow; the transferee campaigns immediately, exempt from
@@ -631,6 +647,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     #[cfg(any(test, feature = "testing"))]
     pub fn transfer_leader_for_tests(&self, transferee: NodeId) {
         self.lock().raw.transfer_leader(transferee.0);
+        self.work_signal.notify();
     }
 }
 
@@ -659,7 +676,10 @@ impl<S: PersistentRaftStorage> RaftGroup for RaftPeer<S> {
     fn campaign(&self) -> Result<()> {
         let mut g = self.lock();
         g.check_fatal()?;
-        g.raw.campaign().map_err(raft_err)
+        let result = g.raw.campaign().map_err(raft_err);
+        drop(g);
+        self.work_signal.notify();
+        result
     }
 }
 
