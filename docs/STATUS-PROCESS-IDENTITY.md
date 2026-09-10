@@ -116,9 +116,11 @@ pinned executed binary, local logs and process records are archived in
 `a2dbc87d04cb5444677190cf2d3257e049c722bb27336deab95e629300e05749`.
 Every archive member and original file was rehashed during readback.
 
-These local results establish integration of the diagnostic fix. The stronger
-exact-source Chaos observer acceptance remains outstanding, including fresh
-counter observations during the active delay fault. Earlier failed observations
-remain failures; no earlier binary is relabeled with this evidence. This patch
-does not promote the async-write runtime to main or complete #13. No hosted CI
-was dispatched.
+These local results establish integration of the diagnostic fix. The subsequent
+[exact-source Chaos Mesh acceptance](ASYNC-WRITE-CHAOS-ACCEPTANCE.md) passed all
+21 fault windows, independent complete-history/effect checks, writer-bound
+counter observations during active delay, bounded async apply and final drain.
+It accepted 1,268 status samples across 32 observed process lifetimes. Earlier
+failed observations remain failures; no earlier binary is relabeled with this
+evidence. The diagnostic fix and this scoped acceptance do not complete #13.
+No hosted CI was dispatched.
