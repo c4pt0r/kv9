@@ -301,9 +301,17 @@ The local correctness archive is
 All archived members were read back and hash-verified, and original inputs
 remained unchanged. It includes both the rejected first control attempt and
 the accepted second attempt. Performance artifacts are inventoried separately.
-Machine-checked group composition and exact-candidate actual Chaos Mesh remain
-open; `1ad259e`'s fault evidence does not establish this later runtime's gate.
-Master runtime is unchanged. tmpfs results remain volatile-storage diagnostics.
+Machine-checked group composition and full candidate fault coverage remain
+open. The exact `2cbbe26` runtime subsequently passed one
+[actual NetworkChaos isolation/recovery scenario with multi-member groups](READ-GROUP-NETWORKCHAOS.md).
+Inside the installed partition, the majority admitted 241 members through
+120 groups, with a maximum group of 17. The same live old leader refused a
+point read after the majority acknowledged a new value; healing restored fresh
+reads and drained ledgers. A 246-operation persistent history and 355-operation
+CLI history were independently checked with their distinct clock scopes.
+This one-host, post-deposition case does not establish full fault coverage or
+apply to the later resident-read candidate. Master runtime is unchanged;
+tmpfs performance results remain volatile-storage diagnostics.
 
 The next implementation candidate is
 [resident point-read execution](https://github.com/c4pt0r/kv9/blob/11cae977f15df0912c2a35561480d45447bae660/docs/RESIDENT-READ.md),
