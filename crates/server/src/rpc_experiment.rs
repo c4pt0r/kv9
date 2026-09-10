@@ -32,6 +32,7 @@ const FRAME_LIMIT: usize = crate::client::MAX_MESSAGE_BYTES + 8192;
 const CONNECTION_LIMIT: usize = 8;
 const CHANNEL_LIMIT: usize = crate::client::MAX_IN_FLIGHT;
 
+pub(crate) mod stream;
 #[cfg(test)]
 mod tests;
 
@@ -41,6 +42,7 @@ pub enum TransportKind {
     #[default]
     TonicUnary,
     TarpcTcp,
+    TonicStream,
 }
 
 #[derive(Serialize, Deserialize)]

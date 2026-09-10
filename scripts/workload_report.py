@@ -67,7 +67,7 @@ def config_check(c):
     fields = "version client mode run_id keyspace_name seed workers keys value_bytes mix warmup_operations max_operations measure_ms interval_ms history_bytes".split()
     if "rpc_transport" in c:
         fields.append("rpc_transport")
-        require(c["rpc_transport"] in ("tonic_unary", "tarpc_tcp"), "unsupported experimental RPC transport")
+        require(c["rpc_transport"] in ("tonic_unary", "tarpc_tcp", "tonic_stream"), "unsupported experimental RPC transport")
     keys(c, fields)
     require(c["version"] == 1 and c["mode"] in ("correctness", "performance"), "unsupported workload configuration")
     for name in ("run_id", "keyspace_name"):

@@ -21,7 +21,7 @@ tokio-stream.workspace = true
 tonic.workspace = true
 tonic-prost.workspace = true
 tarpc = { version = "=0.38.0", optional = true, features = ["tokio1", "serde-transport-bincode", "tcp"] }
-tokio-util = { version = "0.7", optional = true, features = ["codec"] }
+tokio-util = { version = "0.7", optional = true, features = ["codec", "rt"] }
 futures_util = { workspace = true, optional = true }
 
 [build-dependencies]

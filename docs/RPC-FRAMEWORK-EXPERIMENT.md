@@ -1,17 +1,22 @@
 # Public RPC framework experiment
 
-Tracking: #9, #13 and #20. Compare unary tonic/HTTP2 with tarpc 0.38/TCP for
-client-visible RawKV. This opt-in prototype is based on selected runtime
-`23bc58b`; it is not a production transport choice or an accepted speedup.
-Streaming gRPC remains a separate planned control. Raft consistency is mandatory.
+Tracking: #9, #13 and #20. Compare unary tonic/HTTP2, tarpc 0.38/TCP and a
+[bounded streaming-gRPC control](RPC-STREAM-CONTROL.md) for client-visible RawKV.
+These opt-in prototypes are based on selected runtime `23bc58b`; neither alternate
+transport is a production selection. The exact b49 unary/tarpc
+[local diagnostic](https://github.com/c4pt0r/kv9/blob/aa56fac/scripts/redis-reference/results/b49a2f6-rpc-framework-c64-tmpfs-diagnostic.md)
+records +48.07% GET, +26.31% PUT and +32.98% mixed throughput, with its explicit
+volatile single-host scope. Streaming measurements remain open. Raft consistency
+is mandatory.
 
 ## Experimental boundary
 
 Compile the explicit `rpc-experiment` feature. Normal builds contain no alternate
 listener. Each voter requires a nonzero loopback `KV9_RPC_EXPERIMENT_ADDR` to
-enable tarpc. Administrative and inter-voter Raft traffic keep the existing
-gRPC endpoints. The workload configuration records `rpc_transport` as either
-`tonic_unary` or `tarpc_tcp`; both comparison arms use the same feature-enabled
+enable tarpc. Streaming uses its separate `KV9_GRPC_STREAM_EXPERIMENT_ADDR`.
+Administrative and inter-voter Raft traffic keep the existing gRPC endpoints.
+The workload configuration records `rpc_transport` as `tonic_unary`, `tarpc_tcp`
+or `tonic_stream`; comparison arms use the same feature-enabled
 server/client artifacts. Reports bind the transport setting to Cargo feature
 records and retained executable/source hashes.
 
@@ -120,7 +125,7 @@ No Redis-class result is claimed. Finish that performance target before dynamic
 multi-Raft and automatic range splits. DPDK remains conditional on measured
 network cost; a loopback RPC comparison does not establish a NIC bottleneck.
 
-## Local validation, 2026-09-10
+## Original b49 local validation, 2026-09-10
 
 The opt-in workspace run passed 653 tests/doctests, zero failed and 23 ignored.
 Two subsequent regressions extended the focused adapter suite to ten passing
@@ -181,7 +186,9 @@ Evidence paths:
 - `/tmp/kv9-rpc-framework-report-controls/result.json`: six rejected
   transport/schema/feature corruptions against the accepted report validator.
 
-The experiment remains separate from main. Repeated release measurements,
-streaming gRPC control and exact experimental Chaos acceptance remain open;
-earlier default-runtime Chaos evidence is not reused as feature acceptance.
-No hosted workflow was dispatched.
+The experiment remains separate from main. The subsequent exact-b49 repeated
+release measurements are linked above; they do not establish the newer streaming
+candidate's performance. Streaming correctness/measurement evidence and exact
+experimental Chaos acceptance have their own gates. Earlier default-runtime
+Chaos evidence is not reused as feature acceptance. No hosted workflow was
+dispatched.
