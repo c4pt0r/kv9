@@ -44,6 +44,22 @@ use crate::{CommittedEntry, EntryKind, LogIndex, RaftGroup, Role};
 pub trait PersistentRaftStorage: raft::Storage + Send + Sync + 'static {
     fn append(&self, entries: &[Entry]) -> Result<()>;
     fn set_hardstate(&self, hs: &HardState) -> Result<()>;
+
+    /// Persist one original Ready before any of its work is published. The
+    /// default preserves the separate synchronous operations; durable stores
+    /// may synchronize the ordered entry frames and HardState together.
+    /// Failure can retain an unacknowledged prefix and is terminal to the peer.
+    fn persist_ready(&self, entries: &[Entry], hs: Option<&HardState>) -> Result<()> {
+        if !entries.is_empty() {
+            self.append(entries)
+                .map_err(|cause| Error::Raft(format!("during append: {cause}")))?;
+        }
+        if let Some(hs) = hs {
+            self.set_hardstate(hs)
+                .map_err(|cause| Error::Raft(format!("during hardstate: {cause}")))?;
+        }
+        Ok(())
+    }
     /// Durably record a post-conf-change `ConfState` **paired with the log
     /// index it took effect at** (task #24). The pair must be one crash-safe
     /// record: ConfState without its index cannot gate replay, and a restart
@@ -422,14 +438,9 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         // 1. Persist raft-log entries and hardstate (the safety point: durable
         //    BEFORE any message leaves this node — a vote must never outrun its
         //    own persistence).
-        if !ready.entries().is_empty() {
-            if let Err(cause) = g.raw.store().append(ready.entries()) {
-                return Err(g.fail_storage("append", cause));
-            }
-        }
-        if let Some(hs) = ready.hs() {
-            if let Err(cause) = g.raw.store().set_hardstate(hs) {
-                return Err(g.fail_storage("hardstate", cause));
+        if !ready.entries().is_empty() || ready.hs().is_some() {
+            if let Err(cause) = g.raw.store().persist_ready(ready.entries(), ready.hs()) {
+                return Err(g.fail_storage("ready", cause));
             }
         }
         // 2. Collect messages locally; publish only after LightReady persistence.
