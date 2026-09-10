@@ -53,6 +53,11 @@ impl WriteBatch {
         &self.mutations
     }
 
+    /// Consume the batch without copying its keys or values. Order is unchanged.
+    pub fn into_mutations(self) -> Vec<Mutation> {
+        self.mutations
+    }
+
     /// Move another batch's mutations after this batch, preserving their order.
     pub fn append(&mut self, other: WriteBatch) {
         self.mutations.extend(other.mutations);
