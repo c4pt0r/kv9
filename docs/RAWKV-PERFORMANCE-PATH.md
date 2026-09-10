@@ -7,7 +7,13 @@ implementation while keeping each measured mode's guarantees explicit.
 
 ## Current evidence
 
-The latest completed paired measurement is the `892b2a1` Ready candidate. At 64
+Main now includes the accepted scheduling/completion/socket lineage through
+`a9510e2`, whose runtime/build inputs match candidate `cc8bc87`. Its
+[composition and local/fault acceptance](RAFT-SCHEDULING-ACCEPTANCE.md) cover
+this integration. The later append, Raw and Ready grouping implementations
+remain candidates, and their measurements below are identified separately.
+
+The selected performance development baseline is the `892b2a1` Ready candidate. At 64
 outstanding calls, pooled GET throughput is 84,810/s and PUT throughput is 836/s;
 the corresponding standalone Redis memory reference is 500,842/s and 491,739/s.
 The two kv9 PUT repetitions are 854/s and 818/s. The previous fe candidate pooled

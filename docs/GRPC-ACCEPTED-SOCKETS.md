@@ -4,6 +4,10 @@ Tracking: #41 and #9. This increment configures `TCP_NODELAY` on the sockets
 accepted by the runtime's already-owned listener. The same listener serves
 public requests, Raft streams and discovery. It is never released and rebound.
 
+The sections below retain the implementation-time findings and initial checks.
+The completed exact-candidate proof composition, MinIO/Chaos acceptance and
+main integration are recorded in [runtime acceptance](RAFT-SCHEDULING-ACCEPTANCE.md).
+
 ## Finding and change
 
 The runtime previously supplied a plain `TcpListenerStream` to tonic's
