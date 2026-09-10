@@ -93,4 +93,17 @@ build pass. All nine new Raw grouping tests pass, including both real WAL
 layouts. The first selected-test compile attempt missed a trait import and the
 driver helper's Arc return type; that failed attempt is retained and not counted
 as a protocol failure. The corrected selected run and complete workspace run
-pass. Exact-candidate process, benchmark, proof and Chaos acceptance are pending.
+pass. The exact fe650ed default-build three-process fixture subsequently passes
+failover, deletes and restart through term 2/index 14. Benchmark, proof and
+exact-candidate MinIO/Chaos acceptance remain pending.
+
+The separate test/control increment adds a real-driver regression in which a
+Fenced write physically mutates a System epoch key. The following stale Raw
+write must still be rejected: the wire tag cannot hide a metadata barrier.
+`scripts/check-raw-group-controls.py` runs six isolated baseline/mutant/restored
+triples over copied, hashed sources. All baseline/restored cases pass; all
+compiling mutants fail at their intended semantic assertions: ignored group
+write error, live watermark before durability, System keys admitted into a Raw
+group, stale verdict accepted, reversed mutation order, and default opt-in for
+arbitrary adjudicators. All ten selected Raw grouping tests pass. These are
+implementation controls, not a replacement for protocol proof or actual faults.
