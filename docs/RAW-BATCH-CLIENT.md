@@ -110,6 +110,13 @@ and exact-receipt guarantees remain premises. The existing
 and receipt properties at its explicitly named source boundary. It is not a
 new machine-checked proof of this Rust adapter or the later whole runtime.
 
+The new [native batch TLA+/TLAPS proof](NATIVE-BATCH-PROOF.md) establishes
+parameterized ordered write composition, positional atomic read observation,
+exact abstract receipt binding and safe retry refinement under those explicit
+lower-layer premises. All 479 obligations, including freshly checked imports,
+passed the local controlled gate. The abstract proof and its source mapping
+do not verify every adapter codec, stream-ownership or runtime obligation.
+
 The new controlled unary and real-HTTP/2 adapter tests cover ordered results,
 duplicates, count and exact byte boundaries, malformed vectors, shared deadlines,
 unknown-write non-replay and whole-batch reservation lifetime. The existing
