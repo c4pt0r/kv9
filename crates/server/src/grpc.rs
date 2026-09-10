@@ -1,9 +1,9 @@
 //! Public gRPC transport for the synchronous kv9 API surface.
 //!
 //! The transport deliberately owns only a `BlockingBackend` (private by design). Every call into the
-//! synchronous engine is therefore made through [`tokio::task::spawn_blocking`].
-//! Point reads may first await an explicitly asynchronous quorum preparation;
-//! its returned engine job crosses the same blocking boundary with its reservation.
+//! potentially blocking engine is made through [`tokio::task::spawn_blocking`].
+//! Point reads may finish on a memory-only view after asynchronous quorum
+//! preparation. Unfinished jobs cross the blocking boundary with their reservation.
 
 use std::{collections::HashMap, sync::Arc};
 
@@ -162,6 +162,17 @@ impl BlockingBackend {
             Err(error) => {
                 reservation.finish(true);
                 return Err(error_status(error));
+            }
+        };
+        let job = match job {
+            crate::api::RawReadJob::Completed(value) => {
+                self.admission.record_prepared_read(true);
+                reservation.finish(false);
+                return Ok(value);
+            }
+            crate::api::RawReadJob::Blocking(job) => {
+                self.admission.record_prepared_read(false);
+                job
             }
         };
         tokio::task::spawn_blocking(move || {
@@ -1623,6 +1634,7 @@ mod tests {
     #[derive(Default)]
     struct FakeBackend {
         raw_preparation_gate: Option<RawPreparationGate>,
+        raw_completed: bool,
         membership_hint: Option<NodeId>,
         raw_gate: Option<(
             tokio::sync::mpsc::UnboundedSender<()>,
@@ -1655,8 +1667,14 @@ mod tests {
                     gate.entered.send(()).unwrap();
                     release.await.expect("test must release held preparation");
                 }
-                Ok(Box::new(move || self.raw_get(&ctx, &key))
-                    as crate::api::RawReadJob<Option<Value>>)
+                if self.raw_completed {
+                    return self
+                        .raw_get(&ctx, &key)
+                        .map(crate::api::RawReadJob::Completed);
+                }
+                Ok(crate::api::RawReadJob::Blocking(Box::new(move || {
+                    self.raw_get(&ctx, &key)
+                })))
             })
         }
 

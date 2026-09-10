@@ -851,6 +851,19 @@ impl RuntimeBackend {
             .expect("meta poisoned")
             .bootstrap
             .state();
+        self.check_serving_state(state)
+    }
+
+    fn try_ensure_serving(&self) -> Option<Result<()>> {
+        let state = match self.node.meta.try_lock() {
+            Ok(meta) => meta.bootstrap.state(),
+            Err(std::sync::TryLockError::WouldBlock) => return None,
+            Err(std::sync::TryLockError::Poisoned(_)) => panic!("meta poisoned"),
+        };
+        Some(self.check_serving_state(state))
+    }
+
+    fn check_serving_state(&self, state: BootstrapState) -> Result<()> {
         if matches!(state, BootstrapState::Serving { .. })
             && self.endpoint_ready.load(Ordering::Acquire)
         {
@@ -2021,6 +2034,15 @@ impl RuntimeBackend {
         span: KeySpan<'_>,
     ) -> Result<Box<dyn ReadView + '_>> {
         let view = self.established_view(barrier)?;
+        self.check_read_view(view, ctx, span)
+    }
+
+    fn check_read_view<'a>(
+        &'a self,
+        view: Box<dyn ReadView + 'a>,
+        ctx: &RequestContext,
+        span: KeySpan<'_>,
+    ) -> Result<Box<dyn ReadView + 'a>> {
         let store = &self.node.meta_raft.store;
         let txn = store.begin_at(view);
         // Reads drop the minted fence: it is the WRITE-authorisation half of
@@ -2031,9 +2053,9 @@ impl RuntimeBackend {
         Ok(txn.into_view())
     }
 
-    /// Exchange a read barrier for exactly ONE engine snapshot — the only
-    /// read-path snapshot constructor, and the only place in the server
-    /// crate that takes an engine snapshot at all.
+    /// Exchange a read barrier for exactly ONE blocking engine snapshot.
+    /// `try_established_resident_view` is the second, nonblocking constructor;
+    /// it returns the unconsumed credential when no view was captured.
     ///
     /// Inventory invariant (re-runnable; classify every hit — an
     /// unclassifiable one is a signal that must be explained, not absorbed):
@@ -2043,7 +2065,9 @@ impl RuntimeBackend {
     /// in the committed-but-unapplied cell). Classify admission-ledger and
     /// latency-histogram snapshots separately: they construct no engine view.
     /// Other hits are doc/comment text. The invariant is the two ENGINE
-    /// counts, never the raw method-name total. `Engine::snapshot()` is a
+    /// counts, never the raw method-name total. Additionally inventory the one
+    /// production `.try_resident_snapshot()` call in the resident constructor.
+    /// `Engine::snapshot()` is a
     /// public API and the type system cannot forbid a future second call
     /// site; what IS mechanically held is (a) `ReadBarrier` is neither
     /// Clone nor Copy (compile-time probe in kv9-raft), so one barrier
@@ -2055,6 +2079,67 @@ impl RuntimeBackend {
         // Consumed: the credential cannot be presented twice.
         let _ = barrier;
         self.node.meta_raft.store.engine().snapshot()
+    }
+
+    /// A contended try creates no snapshot and returns the unconsumed barrier
+    /// for the blocking path. Success consumes it for exactly one owned view.
+    fn try_established_resident_view(
+        &self,
+        barrier: ReadBarrier,
+    ) -> std::result::Result<Box<dyn ReadView>, ReadBarrier> {
+        match self.node.meta_raft.store.engine().try_resident_snapshot() {
+            Some(view) => {
+                let _ = barrier;
+                Ok(view)
+            }
+            None => Err(barrier),
+        }
+    }
+
+    fn prepared_get_from_view(
+        &self,
+        view: Box<dyn ReadView + '_>,
+        ctx: &RequestContext,
+        key: &[u8],
+    ) -> Result<Option<Value>> {
+        let view = self.check_read_view(view, ctx, KeySpan::Point(key))?;
+        // The consumed quorum credential established authority. LeaderRead's
+        // hint is used only when is_leader is false, so no driver/status locks
+        // are needed here to compute an unused hint.
+        let read = LeaderRead::new(view.as_ref(), true, None)?;
+        RawExecutor.get(&read, ctx.keyspace, key)
+    }
+
+    fn blocking_prepared_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        key: UserKey,
+        established: std::result::Result<ReadBarrier, kv9_raft::driver::ReadIndexError>,
+    ) -> crate::api::RawReadJob<Option<Value>> {
+        crate::api::RawReadJob::Blocking(Box::new(move || {
+            self.ensure_serving()?;
+            let view = self.established_view(established?)?;
+            self.prepared_get_from_view(view, &ctx, &key)
+        }))
+    }
+
+    fn finish_prepared_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        key: UserKey,
+        established: std::result::Result<ReadBarrier, kv9_raft::driver::ReadIndexError>,
+    ) -> Result<crate::api::RawReadJob<Option<Value>>> {
+        let Some(serving) = self.try_ensure_serving() else {
+            return Ok(self.blocking_prepared_get(ctx, key, established));
+        };
+        serving?; // Preserve lifecycle-before-barrier-error ordering.
+        let barrier = established?;
+        let view = match self.try_established_resident_view(barrier) {
+            Ok(view) => view,
+            Err(barrier) => return Ok(self.blocking_prepared_get(ctx, key, Ok(barrier))),
+        };
+        let value = self.prepared_get_from_view(view, &ctx, &key)?;
+        Ok(crate::api::RawReadJob::Completed(value))
     }
 
     /// Replicate one planned batch and wait for its exact position to apply.
@@ -2108,21 +2193,14 @@ impl RawApi for RuntimeBackend {
         // Its cold path retains the original synchronous lifecycle/error order.
         if !self.endpoint_ready.load(Ordering::Acquire) {
             return Box::pin(async move {
-                Ok(Box::new(move || self.raw_get(&ctx, &key))
-                    as crate::api::RawReadJob<Option<Value>>)
+                Ok(crate::api::RawReadJob::Blocking(Box::new(move || {
+                    self.raw_get(&ctx, &key)
+                })))
             });
         }
         Box::pin(async move {
             let established = self.driver.read_barrier_async(READ_BARRIER_DEADLINE).await;
-            Ok(Box::new(move || {
-                // Recheck lifecycle in the blocking job, then consume exactly
-                // the prepared credential for one context-checked engine view.
-                self.ensure_serving()?;
-                let view =
-                    self.read_view_after_barrier(established?, &ctx, KeySpan::Point(&key))?;
-                let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
-                RawExecutor.get(&read, ctx.keyspace, &key)
-            }) as crate::api::RawReadJob<Option<Value>>)
+            self.finish_prepared_get(ctx, key, established)
         })
     }
 
@@ -8104,7 +8182,7 @@ mod tests {
                         .unwrap();
                     let job = runtime
                         .block_on(Arc::new(get_backend).prepare_raw_get(get_ctx, b"k".to_vec()))?;
-                    job()
+                    job.run()
                 } else {
                     get_backend.raw_get(&get_ctx, b"k")
                 }
@@ -8169,7 +8247,16 @@ mod tests {
     }
 
     #[test]
-    fn an_async_prepared_read_checks_the_epoch_when_its_engine_job_runs() {
+    fn a_contended_prepared_read_checks_the_epoch_when_its_engine_job_runs() {
+        prepared_read_epoch_case(true);
+    }
+
+    #[test]
+    fn a_resident_prepared_read_finishes_on_one_authorized_version() {
+        prepared_read_epoch_case(false);
+    }
+
+    fn prepared_read_epoch_case(force_blocking: bool) {
         use kv9_meta::codec::{memcmp_uint, ColumnValue};
         use kv9_meta::schema::{ColumnId, REGIONS_DESC};
 
@@ -8201,18 +8288,43 @@ mod tests {
             backend
                 .raw_put(&ctx, b"k".to_vec(), b"before".to_vec())
                 .unwrap();
-            let prepared = executor
-                .block_on(backend.clone().prepare_raw_get(ctx.clone(), b"k".to_vec()))
+            let barrier =
+                executor.block_on(backend.driver.read_barrier_async(READ_BARRIER_DEADLINE));
+            // Hold the lifecycle lock after quorum completion to deterministically
+            // select the real contention fallback without blocking the Raft owner.
+            let held = force_blocking.then(|| backend.node.meta.lock().unwrap());
+            let mut prepared = backend
+                .clone()
+                .finish_prepared_get(ctx.clone(), b"k".to_vec(), barrier)
                 .unwrap();
+            drop(held);
+            if force_blocking {
+                assert!(
+                    matches!(prepared, crate::api::RawReadJob::Blocking(_)),
+                    "a contended lifecycle check must defer the engine job"
+                );
+            } else {
+                // Background lifecycle publication may briefly contend. Repeat
+                // only reads until the actual inline branch is observed.
+                let until = std::time::Instant::now() + Duration::from_secs(5);
+                while matches!(prepared, crate::api::RawReadJob::Blocking(_)) {
+                    assert!(
+                        std::time::Instant::now() < until,
+                        "quiescent resident read never completed without a blocking job"
+                    );
+                    prepared = executor
+                        .block_on(backend.clone().prepare_raw_get(ctx.clone(), b"k".to_vec()))
+                        .unwrap();
+                }
+            }
             assert!(
                 backend.driver.async_read_snapshot().peak > 0,
                 "epoch test must use asynchronous preparation"
             );
 
-            // Preparation has finished, but the blocking engine job has not
-            // started. Commit a catalog epoch change through this real leader.
-            // A job that captured a pre-barrier/preparation snapshot, or gates
-            // only before preparation, accepts the obsolete context here.
+            // A blocking job has not read the engine. Completed already read
+            // the old authorized version. Commit an epoch change before consuming
+            // either return value; each must reflect its own execution cut.
             let region = Tables::new(&backend.node.meta_raft.store)
                 .region_for_key(ctx.keyspace, b"k")
                 .unwrap()
@@ -8241,15 +8353,31 @@ mod tests {
                 .raw_put(&next_ctx, b"k".to_vec(), b"after".to_vec())
                 .unwrap();
 
-            let result = prepared();
+            let result = prepared.run();
+            if force_blocking {
+                assert!(
+                    matches!(result, Err(Error::StaleEpoch { region: id }) if id == region.id),
+                    "prepared job served data under an obsolete epoch: {result:?}"
+                );
+            } else {
+                assert_eq!(
+                    result.unwrap().as_deref(),
+                    Some(b"before".as_slice()),
+                    "completed resident read was reevaluated on a later version"
+                );
+            }
+            let stale = executor
+                .block_on(backend.clone().prepare_raw_get(ctx.clone(), b"k".to_vec()))
+                .and_then(crate::api::RawReadJob::run);
             assert!(
-                matches!(result, Err(Error::StaleEpoch { region: id }) if id == region.id),
-                "prepared job served data under an obsolete epoch: {result:?}"
+                matches!(stale, Err(Error::StaleEpoch { region: id }) if id == region.id),
+                "a fresh prepared read accepted the obsolete epoch: {stale:?}"
             );
             let current = executor
                 .block_on(backend.clone().prepare_raw_get(next_ctx, b"k".to_vec()))
-                .unwrap()()
-            .unwrap();
+                .unwrap()
+                .run()
+                .unwrap();
             assert_eq!(
                 current.as_deref(),
                 Some(b"after".as_slice()),
