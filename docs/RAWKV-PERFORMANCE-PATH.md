@@ -370,12 +370,41 @@ Performance evidence is inventoried separately. Exact-candidate fault evidence
 and machine-checked composition remain open; master runtime is unchanged.
 
 The next performance priority is the write path: it remains around 66,000/s
-against a roughly 492,000/s Redis memory reference in this bracket. Capture an
-exact-current PUT CPU profile before selecting completion, dispatch or protocol
-changes. Source inspection shows synchronous completion waiting on a shared
-notification and repeated exact-receipt lookup; neither is yet established as
-the dominant write bottleneck. Keep the original durable acknowledgement,
-fence verdict and unknown-outcome semantics while measuring the next change.
+against a roughly 492,000/s Redis memory reference in this bracket. The exact
+resident [PUT CPU profile](../scripts/redis-reference/results/11cae97-put-cpu-profile.md)
+is now complete: 5,203 usable measurement samples and 427,101 successful PUTs.
+Allocation/copy leaves account for 23.91% and RPC/framing/buffer leaves for
+18.60%. Actual partial stacks identify command-buffer growth and completion /
+blocking-worker wakeups. Most recovered allocation stacks have no KV9 caller;
+these broad populations cannot be assigned wholesale to serialization or used
+to predict a speedup. This instrumented tmpfs recording overlaps the separate
+proof gate and is not throughput acceptance.
+
+The first write allocation candidate is
+[`fb25950`](https://github.com/c4pt0r/kv9/commit/fb2595030f7cc6d7e12a81afa13a027545bc9afe).
+It moves an already owned RawKV batch into the same fenced command without
+copying key/value buffers, and reserves the command/WAL payload capacity before
+running unchanged encoding loops. Its
+[representation argument](https://github.com/c4pt0r/kv9/blob/fb2595030f7cc6d7e12a81afa13a027545bc9afe/docs/WRITE-SERIALIZATION.md)
+proves ordered-effect and encoded-byte equality under successful allocation;
+it does not replace the inherited core-protocol proof gates. Proposal retries,
+unknown outcomes, apply receipts, storage syncs and public admission ownership
+remain unchanged.
+
+Local validation passes 631 workspace tests/doctests (23 ignored), all-target
+Clippy with warnings denied, and the exact default-binary three-process
+failover/delete/restart fixture. All four observed process lifetimes executed
+the recorded binary and exited. The retained correctness archive is
+`target/correctness-evidence/2026-09-10-fb25950-write-serialization-local-first.tar.gz`
+(56,064,677 bytes; 465 entries), SHA-256
+`9d031a07bc31092cfdac5f62d792607e28538f194995c57c20c9c9d611867cc2`;
+all members and original inputs were independently read back. The release
+executable has SHA-256
+`e187af09941fab74098aa138ddeb0cfd87899cd0926088618ace2687825b30be`
+and default features. Fresh parent / candidate / parent GET, PUT and mixed
+measurement, candidate-specific actual Chaos Mesh and inherited checked
+composition remain pending. No performance gain or runtime promotion is
+claimed from these local checks.
 
 ### 5. Reconcile improvements before extending capacity
 
