@@ -8,7 +8,8 @@ final added observer parser rejected GNU `date`'s fractional-comma timestamp.
 The original failure remains preserved. A corrected, separately bound read-only
 adapter accepted the same artifacts; no workload, fault or runtime was rerun.
 
-Dedicated client-link, connection-reset and quorum-loss acceptance remain open.
+The separate [dedicated client-link, reset and quorum-loss fixture](NATIVE-BATCH-LINK-ACCEPTANCE.md)
+has since passed its eleven windows and complete histories on the same runtime.
 This checkpoint does not promote the candidate to main or establish batch
 throughput, latency, Redis parity or production readiness.
 
@@ -137,9 +138,11 @@ engine, read-authority and receipt premises. Neither this history acceptance
 nor that proof establishes whole-Rust adapter refinement.
 
 The [client-link preflight](NATIVE-BATCH-LINK-PREFLIGHT.md) identifies effective
-Service VIP selectors and a same-process socket reset. Full native client-link
-delay/partial-loss/partition/reset and actual quorum-loss/recovery acceptance
-remain required. Batch performance also needs paired Redis MGET/MSET runs,
+Service VIP selectors and a same-process socket reset. The subsequent
+[dedicated acceptance](NATIVE-BATCH-LINK-ACCEPTANCE.md) covers client-link
+delay/partial-loss/partition/reset and actual quorum-loss/recovery. Inter-voter
+partial loss, storage stalls and full adapter refinement remain open.
+Batch performance also needs paired Redis MGET/MSET runs,
 explicit RPC and item counts, offered load, all outcomes, and whole-batch
 mean/p50/p95/p99 latency. Issue #50 remains open, and the original issue #9
 roadmap checklist is unchanged.

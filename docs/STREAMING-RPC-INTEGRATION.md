@@ -71,8 +71,12 @@ The [original 21-window matrix with native atomic histories](NATIVE-BATCH-CHAOS-
 now has independently accepted evidence on exact `5cc9861`. Its original
 fixture exit remains 1 due to a final timestamp parser failure; a separately
 checked read-only adapter accepted the unchanged run without repeating faults.
-Scoped cleanup completed with historical namespaces preserved. Dedicated
-native client-link/reset and quorum-loss acceptance remain required.
+Scoped cleanup completed with historical namespaces preserved. The separate
+[dedicated link/quorum fixture](NATIVE-BATCH-LINK-ACCEPTANCE.md) passed all eleven
+windows and its complete 2,146-call history on the same exact runtime. This adds
+client delay/partial-loss/partition, a separately labeled non-Chaos reset, and
+actual quorum-loss/recovery. Inter-voter partial loss and storage stalls remain
+separate acceptance work.
 Batch throughput and mean/p50/p95/p99 must be measured
 with explicit batch sizes, RPC and input-item counts, and all failure populations.
 The previous `40e813f` performance numbers remain evidence for that frozen

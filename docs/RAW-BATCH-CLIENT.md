@@ -129,8 +129,11 @@ Service VIP fault selectors and a same-process socket reset. The complete
 native [21-window Chaos Mesh matrix](NATIVE-BATCH-CHAOS-ACCEPTANCE.md) now has
 accepted atomic histories and actual voter/storage/endpoint effects. Its
 original final observer parser failed; a separately checked read-only timestamp
-correction accepted the unchanged retained run. Dedicated client-link and
-quorum-loss acceptance remain outstanding.
+correction accepted the unchanged retained run. The separate
+[11-window link/quorum acceptance](NATIVE-BATCH-LINK-ACCEPTANCE.md) also passed
+complete histories, actual client-link delay/partial-loss/partition, same-process
+socket reset and quorum-loss/recovery. Inter-voter partial loss, storage stalls
+and remaining adapter-proof obligations are still open.
 
 ## Performance reporting contract
 
