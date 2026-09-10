@@ -3696,6 +3696,8 @@ impl NodeRuntime {
         let reads = self.driver.async_read_snapshot();
         body.push_str(&format!("raft_async_read_limit={}\nraft_async_read_queued={}\nraft_async_read_active={}\nraft_async_read_in_flight={}\nraft_async_read_peak={}\nraft_async_read_stopped={}\n",
             reads.limit, reads.queued, reads.active, reads.in_flight, reads.peak, reads.stopped));
+        body.push_str(&format!("raft_async_read_active_groups={}\nraft_async_read_inspected={}\nraft_async_read_group_attempts={}\nraft_async_read_admitted_groups={}\nraft_async_read_admitted_members={}\nraft_async_read_max_admitted_group={}\n",
+            reads.active_groups, reads.inspected, reads.group_attempts, reads.admitted_groups, reads.admitted_members, reads.max_admitted_group));
         body.push_str(&format!(
             "raft_receive_authorized={}\nraft_owner_started={}\nlisten_addr={}\n",
             self.discovery.raft_receive_allowed(),

@@ -1811,6 +1811,133 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn sealed_read_groups_use_one_heartbeat_per_follower_and_fence_late_reads() {
+        use raft::prelude::{Message, MessageType};
+
+        struct RecordingTransport {
+            inner: Arc<dyn RaftTransport>,
+            sent: Arc<Mutex<Vec<Message>>>,
+        }
+        impl RaftTransport for RecordingTransport {
+            fn send(&self, to: NodeId, message: Message) {
+                self.sent.lock().unwrap().push(message.clone());
+                self.inner.send(to, message);
+            }
+            fn drain(&self) -> Vec<Message> {
+                self.inner.drain()
+            }
+        }
+        let hub = InProcHub::new();
+        let ids = [NodeId(1), NodeId(2), NodeId(3)];
+        let sent = Arc::new(Mutex::new(Vec::new()));
+        let drivers: Vec<_> = ids
+            .iter()
+            .map(|&id| {
+                let endpoint: Arc<dyn RaftTransport> = Arc::new(hub.endpoint(id));
+                let transport: Arc<dyn RaftTransport> = if id == ids[0] {
+                    Arc::new(RecordingTransport {
+                        inner: endpoint,
+                        sent: sent.clone(),
+                    })
+                } else {
+                    endpoint
+                };
+                NodeDriver::new(
+                    Arc::new(RaftPeer::new(id, RegionId(1), &ids).unwrap()),
+                    transport,
+                    MemStateMachine::new(),
+                )
+                .unwrap()
+            })
+            .collect();
+        drivers[0].peer().campaign().unwrap();
+        for _ in 0..16 {
+            for driver in &drivers {
+                driver.step().unwrap();
+            }
+        }
+        assert_eq!(drivers[0].status().role, Role::Leader);
+        assert!(
+            drivers
+                .iter()
+                .all(|driver| driver.driver_applied().is_some_and(|at| at.index == 1)),
+            "fixture must establish the election commit on all voters"
+        );
+        sent.lock().unwrap().clear();
+
+        let mut readers: Vec<_> = (0..3)
+            .map(|_| Box::pin(drivers[0].read_barrier_async(Duration::from_secs(5))))
+            .collect();
+        for read in &mut readers {
+            assert_read_pending(read.as_mut()).await;
+        }
+        drivers[0].step().unwrap();
+        let contexts: Vec<_> = sent
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|m| m.get_msg_type() == MessageType::MsgHeartbeat && !m.context.is_empty())
+            .map(|m| (m.to, m.context.clone()))
+            .collect();
+        assert_eq!(
+            contexts.len(),
+            2,
+            "sealed group emitted per-reader heartbeat broadcasts"
+        );
+        assert_eq!(contexts[0].1, contexts[1].1);
+        assert_eq!(
+            contexts
+                .iter()
+                .map(|(to, _)| *to)
+                .collect::<std::collections::BTreeSet<_>>(),
+            [2, 3].into_iter().collect()
+        );
+        for read in &mut readers {
+            assert_read_pending(read.as_mut()).await;
+        }
+
+        let mut late = Box::pin(drivers[0].read_barrier_async(Duration::from_secs(5)));
+        assert_read_pending(late.as_mut()).await;
+        // This voter sees only the earlier group's heartbeat. Its real ack
+        // forms a majority with the leader but cannot confirm the later group.
+        drivers[1].step().unwrap();
+        drivers[0].step().unwrap();
+        for read in readers {
+            assert_eq!(read.await.unwrap().index(), 1);
+        }
+        assert_read_pending(late.as_mut()).await;
+        let contexts: Vec<_> = sent
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|m| m.get_msg_type() == MessageType::MsgHeartbeat && !m.context.is_empty())
+            .map(|m| m.context.clone())
+            .collect();
+        assert_eq!(
+            contexts.len(),
+            4,
+            "two sealed groups must emit two distinct quorum broadcasts"
+        );
+        assert_ne!(
+            contexts[0], contexts[2],
+            "late group reused an old quorum context"
+        );
+        drivers[1].step().unwrap();
+        drivers[0].step().unwrap();
+        assert_eq!(late.await.unwrap().index(), 1);
+        let snapshot = drivers[0].async_read_snapshot();
+        assert_eq!(
+            (
+                snapshot.admitted_groups,
+                snapshot.admitted_members,
+                snapshot.max_admitted_group
+            ),
+            (2, 4, 3)
+        );
+        assert_eq!(snapshot.in_flight, 0);
+    }
+
+    #[tokio::test]
     async fn async_read_waits_for_unified_apply_and_keeps_its_exact_context() {
         let driver = single_node_driver();
         driver.pause_apply(true);

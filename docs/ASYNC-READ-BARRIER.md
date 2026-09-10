@@ -1,5 +1,10 @@
 # Asynchronous point-read preparation
 
+This document records the original `1ad259e` preparation contract and evidence.
+The current branch extends its per-request quorum submission with
+[sealed read groups](READ-GROUPS.md); that document defines changed membership,
+claimed ownership, counters, and the additional proof/validation gates.
+
 Tracking: #20 and #9. This candidate starts from Ready group synchronization
 `892b2a178450309859113c942f1738c070130eb5`. The separate proposal-queue
 experiment is excluded: its measured tmpfs write throughput regressed. The
