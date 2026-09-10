@@ -991,38 +991,127 @@ fn propose_and_wait_loop(
     loop {
         let proposed = propose()?;
         let remaining = deadline.saturating_sub(start.elapsed());
-        match wait(proposed, remaining) {
-            Ok(ApplyWaitOutcome::Applied(at)) => return Ok(at),
-            // A fence rejection is a VERDICT, not a transient: the expected
-            // epoch is authoritatively stale and will not come back, so this
-            // maps to the typed StaleEpoch immediately and is NEVER retried
-            // here (retrying re-proposes the same stale expectation; the
-            // client must re-route/re-validate). Only Replaced re-proposes.
-            Ok(ApplyWaitOutcome::FenceRejected { region, .. }) => {
-                return Err(Error::StaleEpoch { region })
-            }
-            // This path proposes catalog/user writes, never manifest changes:
-            // a manifest verdict here means receipt correlation broke (typed,
-            // not absorbed into success or retry).
-            Ok(ApplyWaitOutcome::Manifest { at, .. }) => {
-                return Err(Error::Raft(format!(
-                    "non-manifest proposal received a manifest verdict at term {} index {}",
-                    at.term, at.index
-                )))
-            }
-            Ok(ApplyWaitOutcome::Replaced) => {
-                if start.elapsed() >= deadline {
-                    return Err(Error::Raft(format!(
-                        "proposal at term {} index {} was replaced and the retry \
-                         budget is exhausted",
-                        proposed.term, proposed.index.0
-                    )));
-                }
-                continue;
-            }
-            Err(e @ ApplyWaitError::Unconfirmed { .. }) => return Err(e.into()),
-            Err(ApplyWaitError::Failed(e)) => return Err(e),
+        if let Some(applied) = settle_proposal(
+            proposed,
+            wait(proposed, remaining),
+            start.elapsed() >= deadline,
+        )? {
+            return Ok(applied);
         }
+    }
+}
+
+// The synchronous and asynchronous paths share every receipt/retry decision.
+fn settle_proposal(
+    proposed: ProposedAt,
+    outcome: std::result::Result<ApplyWaitOutcome, ApplyWaitError>,
+    retry_exhausted: bool,
+) -> Result<Option<AppliedPosition>> {
+    match outcome {
+        Ok(ApplyWaitOutcome::Applied(at)) => Ok(Some(at)),
+        // A fence rejection is a VERDICT, not a transient: the expected
+        // epoch is authoritatively stale and will not come back, so this
+        // maps to the typed StaleEpoch immediately and is NEVER retried
+        // here (retrying re-proposes the same stale expectation; the
+        // client must re-route/re-validate). Only Replaced re-proposes.
+        Ok(ApplyWaitOutcome::FenceRejected { region, .. }) => Err(Error::StaleEpoch { region }),
+        // This path proposes catalog/user writes, never manifest changes:
+        // a manifest verdict here means receipt correlation broke (typed,
+        // not absorbed into success or retry).
+        Ok(ApplyWaitOutcome::Manifest { at, .. }) => Err(Error::Raft(format!(
+            "non-manifest proposal received a manifest verdict at term {} index {}",
+            at.term, at.index
+        ))),
+        Ok(ApplyWaitOutcome::Replaced) => {
+            if retry_exhausted {
+                return Err(Error::Raft(format!(
+                    "proposal at term {} index {} was replaced and the retry \
+                         budget is exhausted",
+                    proposed.term, proposed.index.0
+                )));
+            }
+            Ok(None)
+        }
+        Err(e @ ApplyWaitError::Unconfirmed { .. }) => Err(e.into()),
+        Err(ApplyWaitError::Failed(e)) => Err(e),
+    }
+}
+
+async fn finish_async_proposal<S, E>(
+    driver: Arc<NodeDriver<S, E>>,
+    command: Arc<Command>,
+    pending: (ProposedAt, kv9_raft::driver::AsyncApplyWait),
+    deadline: Instant,
+) -> (Result<AppliedPosition>, kv9_common::metrics::Outcome)
+where
+    S: kv9_raft::rawnode::PersistentRaftStorage,
+    E: kv9_engine::ReplicatedEngine + 'static,
+{
+    finish_async_proposal_loop(
+        command,
+        pending,
+        deadline,
+        |wait| wait.wait(),
+        move |same_command, same_deadline| {
+            let proposer = driver.clone();
+            async move {
+                tokio::task::spawn_blocking(move || {
+                    proposer.propose_with_async_wait(&same_command, same_deadline)
+                })
+                .await
+                .map_err(|error| {
+                    Error::Raft(format!(
+                        "asynchronous write submission worker failed: {error}"
+                    ))
+                })?
+            }
+        },
+    )
+    .await
+}
+
+// The production loop owns the original command and deadline. Its effect
+// parameters allow exact receipt, retry identity and deadline controls without
+// timing-dependent leader elections. Real-driver tests exercise its producer.
+async fn finish_async_proposal_loop<W, WaitFuture, ProposeFuture>(
+    command: Arc<Command>,
+    mut pending: (ProposedAt, W),
+    deadline: Instant,
+    mut wait: impl FnMut(W) -> WaitFuture,
+    mut propose: impl FnMut(Arc<Command>, Instant) -> ProposeFuture,
+) -> (Result<AppliedPosition>, kv9_common::metrics::Outcome)
+where
+    WaitFuture: std::future::Future<Output = std::result::Result<ApplyWaitOutcome, ApplyWaitError>>,
+    ProposeFuture: std::future::Future<Output = Result<(ProposedAt, W)>>,
+{
+    use kv9_common::metrics::Outcome;
+    loop {
+        let (proposed, waiter) = pending;
+        let outcome = wait(waiter).await;
+        let category = match &outcome {
+            Ok(ApplyWaitOutcome::Applied(_)) => Outcome::Success,
+            Ok(ApplyWaitOutcome::Replaced) => Outcome::Replaced,
+            Ok(ApplyWaitOutcome::FenceRejected { .. }) => Outcome::Rejected,
+            Ok(ApplyWaitOutcome::Manifest { .. }) => Outcome::Error,
+            Err(ApplyWaitError::Unconfirmed { .. }) => Outcome::Unconfirmed,
+            Err(ApplyWaitError::Failed(_)) => Outcome::Error,
+        };
+        match settle_proposal(proposed, outcome, Instant::now() >= deadline) {
+            Ok(Some(applied)) => return (Ok(applied), category),
+            Err(error) => return (Err(error), category),
+            Ok(None) => {}
+        }
+        pending = match propose(command.clone(), deadline).await {
+            Ok(next) => next,
+            Err(error) => {
+                let category = if matches!(error, Error::NotLeader { .. }) {
+                    Outcome::Rejected
+                } else {
+                    Outcome::Error
+                };
+                return (Err(error), category);
+            }
+        };
     }
 }
 
@@ -2184,6 +2273,84 @@ const RAW_APPLY_DEADLINE: Duration = Duration::from_secs(10);
 const READ_BARRIER_DEADLINE: Duration = Duration::from_secs(2);
 
 impl RawApi for RuntimeBackend {
+    fn prepare_raw_write(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        operation: crate::api::RawWrite,
+    ) -> crate::api::RawWritePreparation {
+        Box::new(move || {
+            self.ensure_serving()?;
+            let (fence, batch) = match operation {
+                crate::api::RawWrite::Put { key, value } => {
+                    let fence = self.validated_context(&ctx, KeySpan::Point(&key))?;
+                    let batch = RawExecutor.plan_put(
+                        ctx.keyspace,
+                        &key,
+                        value,
+                        RawWriteOptions::default(),
+                    )?;
+                    (fence, batch)
+                }
+                crate::api::RawWrite::BatchPut(pairs) => {
+                    let fence = self.validated_context(
+                        &ctx,
+                        KeySpan::Batch(pairs.iter().map(|(key, _)| key.as_slice()).collect()),
+                    )?;
+                    let batch = RawExecutor.plan_batch_put(
+                        ctx.keyspace,
+                        &pairs,
+                        RawWriteOptions::default(),
+                    )?;
+                    (fence, batch)
+                }
+                crate::api::RawWrite::Delete { key } => {
+                    let fence = self.validated_context(&ctx, KeySpan::Point(&key))?;
+                    let batch = RawExecutor.plan_delete(ctx.keyspace, &key)?;
+                    (fence, batch)
+                }
+            };
+            if batch.is_empty() {
+                return Ok(
+                    Box::pin(async { Ok(AppliedPosition { term: 0, index: 0 }) })
+                        as crate::api::RawWriteCompletion,
+                );
+            }
+            // Keep one command and one fence across the exact same replacement
+            // policy as commit_batch. Submission stays on this blocking worker.
+            let command = Arc::new(Command::fenced_write_from_batch(
+                fence.into_region_fence(),
+                &batch,
+            ));
+            let started = Instant::now();
+            let deadline = started + RAW_APPLY_DEADLINE;
+            let first = self.driver.propose_with_async_wait(&command, deadline);
+            let first = match first {
+                Ok(value) => value,
+                Err(error) => {
+                    let outcome = if matches!(error, Error::NotLeader { .. }) {
+                        kv9_common::metrics::Outcome::Rejected
+                    } else {
+                        kv9_common::metrics::Outcome::Error
+                    };
+                    self.driver
+                        .metrics()
+                        .logical_proposal_wait
+                        .record(started.elapsed(), outcome);
+                    return Err(error);
+                }
+            };
+            Ok(Box::pin(async move {
+                let (result, outcome) =
+                    finish_async_proposal(self.driver.clone(), command, first, deadline).await;
+                self.driver
+                    .metrics()
+                    .logical_proposal_wait
+                    .record(started.elapsed(), outcome);
+                result
+            }) as crate::api::RawWriteCompletion)
+        })
+    }
+
     fn prepare_raw_get(
         self: Arc<Self>,
         ctx: RequestContext,
@@ -3771,6 +3938,9 @@ impl NodeRuntime {
             raft.fatal.as_deref().unwrap_or(""),
         );
         body.push_str(&self.public_admission.snapshot().status_lines());
+        let applies = self.driver.async_apply_snapshot();
+        body.push_str(&format!("raft_async_apply_limit={}\nraft_async_apply_queued={}\nraft_async_apply_in_flight={}\nraft_async_apply_peak={}\nraft_async_apply_stopped={}\n",
+            applies.limit, applies.queued, applies.in_flight, applies.peak, applies.stopped));
         let reads = self.driver.async_read_snapshot();
         body.push_str(&format!("raft_async_read_limit={}\nraft_async_read_queued={}\nraft_async_read_active={}\nraft_async_read_in_flight={}\nraft_async_read_peak={}\nraft_async_read_stopped={}\n",
             reads.limit, reads.queued, reads.active, reads.in_flight, reads.peak, reads.stopped));
@@ -4042,6 +4212,131 @@ mod tests {
         ProposedAt {
             term,
             index: kv9_raft::LogIndex(index),
+        }
+    }
+
+    #[tokio::test]
+    async fn async_replacement_reuses_one_command_and_deadline_and_returns_the_receipt() {
+        use kv9_common::metrics::Outcome;
+        let original = Arc::new(Command::Put {
+            cf: 0,
+            key: b"same-key".to_vec(),
+            value: b"same-value".to_vec(),
+        });
+        let deadline = Instant::now() + Duration::from_secs(5);
+        let receipt = AppliedPosition { term: 9, index: 27 };
+        let mut attempts = 0;
+        let (result, category) = finish_async_proposal_loop(
+            original.clone(),
+            (at(1, 5), Ok(ApplyWaitOutcome::Replaced)),
+            deadline,
+            std::future::ready,
+            |command, remaining_deadline| {
+                attempts += 1;
+                assert!(
+                    Arc::ptr_eq(&command, &original),
+                    "replacement changed the original command"
+                );
+                assert_eq!(
+                    remaining_deadline, deadline,
+                    "replacement reset the original deadline"
+                );
+                std::future::ready(Ok((
+                    at(2, 6),
+                    Ok(if attempts == 1 {
+                        ApplyWaitOutcome::Replaced
+                    } else {
+                        ApplyWaitOutcome::Applied(receipt)
+                    }),
+                )))
+            },
+        )
+        .await;
+        assert_eq!(attempts, 2, "known replacements were not retried");
+        assert_eq!(
+            result.unwrap(),
+            receipt,
+            "asynchronous completion echoed the proposal instead of its receipt"
+        );
+        assert_eq!(category, Outcome::Success);
+    }
+
+    #[tokio::test]
+    async fn async_terminal_outcomes_and_expired_replacements_are_never_retried() {
+        use kv9_common::metrics::Outcome;
+        let position = AppliedPosition { term: 1, index: 5 };
+        let cases = [
+            (
+                Err(ApplyWaitError::Unconfirmed {
+                    index: 5,
+                    waited: Duration::ZERO,
+                }),
+                false,
+                Outcome::Unconfirmed,
+                "unconfirmed",
+            ),
+            (
+                Err(ApplyWaitError::Failed(Error::Raft("poisoned".into()))),
+                false,
+                Outcome::Error,
+                "poisoned",
+            ),
+            (
+                Ok(ApplyWaitOutcome::FenceRejected {
+                    at: position,
+                    region: RegionId(3),
+                }),
+                false,
+                Outcome::Rejected,
+                "epoch",
+            ),
+            (
+                Ok(ApplyWaitOutcome::Manifest {
+                    at: position,
+                    verdict: kv9_raft::ManifestVerdict::AlreadyApplied {
+                        region: RegionId(3),
+                        generation: 8,
+                    },
+                }),
+                false,
+                Outcome::Error,
+                "non-manifest proposal",
+            ),
+            (
+                Ok(ApplyWaitOutcome::Replaced),
+                true,
+                Outcome::Replaced,
+                "budget is exhausted",
+            ),
+        ];
+        for (outcome, expired, expected_category, expected_error) in cases {
+            let deadline = Instant::now()
+                + if expired {
+                    Duration::ZERO
+                } else {
+                    Duration::from_secs(5)
+                };
+            let mut proposals = 0;
+            let (result, category) = finish_async_proposal_loop(
+                Arc::new(Command::Noop),
+                (at(1, 5), outcome),
+                deadline,
+                std::future::ready,
+                |_, _| {
+                    proposals += 1;
+                    std::future::ready(Err(Error::Raft(
+                        "FUSE: forbidden asynchronous retry".into(),
+                    )))
+                },
+            )
+            .await;
+            assert_eq!(proposals, 0, "terminal asynchronous outcome was retried");
+            assert_eq!(category, expected_category);
+            let error = result.unwrap_err().to_string();
+            assert!(
+                error.contains(expected_error),
+                "lost terminal outcome: {error}"
+            );
         }
     }
 
@@ -9031,6 +9326,80 @@ mod fence_firing_tests {
 
         drop(runtime);
         let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn prepared_point_and_batch_writes_preserve_apply_fences_and_effects() {
+        for accepted in [true, false] {
+            let seen = Arc::new(StdMutex::new(Vec::new()));
+            let (mut runtime, dir) = serving_runtime(seen.clone(), accepted);
+            drive_to_serving(&mut runtime);
+            let backend = Arc::new(backend_of(&runtime));
+            let (_, ctx, region) = keyspace_and_ctx(&runtime, &backend, b"k");
+            seen.lock().unwrap().clear();
+            let executor = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .max_blocking_threads(1)
+                .build()
+                .unwrap();
+            for operation in [
+                crate::api::RawWrite::Put {
+                    key: b"k".to_vec(),
+                    value: b"v1".to_vec(),
+                },
+                crate::api::RawWrite::BatchPut(vec![
+                    (b"k".to_vec(), b"v2".to_vec()),
+                    (b"b".to_vec(), b"v3".to_vec()),
+                ]),
+                crate::api::RawWrite::Delete { key: b"k".to_vec() },
+            ] {
+                let preparation = backend.clone().prepare_raw_write(ctx.clone(), operation);
+                let result = executor.block_on(async {
+                    let completion = tokio::task::spawn_blocking(preparation).await.unwrap()?;
+                    completion.await
+                });
+                if accepted {
+                    assert!(result.is_ok(), "accepted prepared write failed: {result:?}");
+                    let at = result.unwrap();
+                    assert!(at.term > 0 && at.index > 0);
+                } else {
+                    assert!(
+                        matches!(result, Err(Error::StaleEpoch { region: got }) if got == region.id),
+                        "prepared write hid an ordered fence rejection: {result:?}"
+                    );
+                }
+            }
+            let fences = seen.lock().unwrap().clone();
+            assert_eq!(
+                fences.len(),
+                3,
+                "prepared writes bypassed or retried the fence gate"
+            );
+            for fence in fences {
+                assert_eq!(
+                    fence,
+                    RegionFence {
+                        region_id: region.id.0,
+                        conf_ver: region.epoch_conf,
+                        version: region.epoch_ver
+                    }
+                );
+            }
+            assert_eq!(backend.raw_get(&ctx, b"k").unwrap(), None);
+            assert_eq!(
+                backend.raw_get(&ctx, b"b").unwrap(),
+                accepted.then(|| b"v3".to_vec())
+            );
+            assert_eq!(backend.driver.async_apply_snapshot().in_flight, 0);
+            assert!(
+                backend.driver.async_apply_snapshot().peak > 0,
+                "prepared writes did not use async apply waits"
+            );
+            drop(executor);
+            drop(backend);
+            drop(runtime);
+            fs::remove_dir_all(dir).unwrap();
+        }
     }
 
     /// **Exactly what this proves, and no more (@Tess): under a static catalog, a delete range
