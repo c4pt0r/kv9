@@ -140,3 +140,36 @@ The Raft Ready group-sync candidate's disk performance evidence is in
 [results/fe650ed-892b2a1.md](results/fe650ed-892b2a1.md). It preserves both
 repetitions and whole-trial Raft/engine sync counts. Volatile storage diagnostics
 are separate from this durable matrix and its acceptance gates.
+
+## Volatile tmpfs diagnostic
+
+A separate bounded wrapper can distinguish storage waiting from protocol/CPU
+cost without changing the production binary or disabling its sync calls. This
+is **diagnostic-only volatile storage with no disk durability or power-loss
+guarantee**. Never combine its numbers with the durable paired report or
+production acceptance. It requires at least 32 GiB free in `/dev/shm`, retains
+all original artifacts, and checks an 8 GiB free-space floor between trials.
+
+```sh
+python3 scripts/tmpfs-redis-diagnostic.py \
+  --build /tmp/kv9-reference-db-build \
+  --redis-client /tmp/kv9-reference-client-target/release/kv9-redis-reference \
+  --expected-revision FULL_COMMIT_SHA \
+  --output /tmp/kv9-tmpfs-diagnostic-attempt-1
+
+python3 scripts/check-tmpfs-redis-diagnostic.py \
+  --build /tmp/kv9-reference-db-build \
+  --matrix /tmp/kv9-tmpfs-diagnostic-attempt-1 \
+  --expected-revision FULL_COMMIT_SHA \
+  --output /tmp/kv9-tmpfs-diagnostic-check-1.json
+```
+
+The fixed diagnostic is 24 trials: concurrency 1/64, all three mixes, two
+3-second repetitions, KV9 and standalone Redis. It observes every running
+voter's actual tmpfs mount and executable identity. After stopping children,
+it copies and verifies original data hashes before removing only its owned
+tmpfs directory. Retention failures preserve scratch for diagnosis. A focused
+auditor rechecks complete reports and storage/copy evidence, including four
+invalid-evidence controls, without modifying the shared durable validators.
+The retained [Ready diagnostic](results/892b2a1-tmpfs-diagnostic.md) reports
+repetition spread, CPU observations and the limits of the storage comparison.
