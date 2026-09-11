@@ -1,6 +1,6 @@
 use super::{
     common::Histogram,
-    model::ReadApi,
+    model::{ReadApi, WriteApi},
     wire::{Call, Failure},
 };
 use serde::Serialize;
@@ -111,6 +111,9 @@ impl Metrics {
         self.report_for_read_api(ReadApi::Mget)
     }
     pub fn report_for_read_api(&self, read_api: ReadApi) -> Value {
+        self.report_for_apis(read_api, WriteApi::Mset)
+    }
+    pub fn report_for_apis(&self, read_api: ReadApi, write_api: WriteApi) -> Value {
         fn h(h: &Histogram) -> Value {
             json!({"raw":h,"mean_ns":if h.valid && h.count>0{Some(h.sum_ns as f64/h.count as f64)}else{None},"p50":h.quantile(50),"p95":h.quantile(95),"p99":h.quantile(99)})
         }
@@ -118,7 +121,11 @@ impl Metrics {
             ReadApi::Mget => "mget",
             ReadApi::Get => "get",
         };
-        json!({"operations":[read_operation,"mset"],"outcomes":["success","unknown_write","read_failure"],
+        let write_operation = match write_api {
+            WriteApi::Mset => "mset",
+            WriteApi::Set => "set",
+        };
+        json!({"operations":[read_operation,write_operation],"outcomes":["success","unknown_write","read_failure"],
             "reasons":["success","deadline","io","server_error","protocol","data_integrity"],"histogram_subdivisions":64,"valid":self.valid(),
             "statistics":self.operations.iter().map(|o|json!({"populations":o.populations.iter().map(|p|json!({
                 "calls":p.calls,"input_items":p.input_items,"completed_before_cutoff":p.completed_before_cutoff,"whole_call":h(&p.whole_call),"client_call":h(&p.client_call),"scheduled_to_completion":h(&p.scheduled_to_completion)})).collect::<Vec<_>>(),
@@ -171,5 +178,46 @@ mod tests {
             json!(["get", "mset"])
         );
         assert_eq!(metrics.report()["operations"], json!(["mget", "mset"]));
+    }
+
+    #[test]
+    fn failed_set_is_one_unknown_write_and_legacy_labels_stay_unchanged() {
+        let call = Call {
+            result: Err(Failure::Deadline),
+            elapsed_ns: 100,
+            connection_attempts: 1,
+            connection_failures: 0,
+            command_attempts: 1,
+        };
+        let mut metrics = Metrics::default();
+        metrics.record(Sample {
+            call: &call,
+            read: false,
+            items: 1,
+            whole_call_ns: 120,
+            before_cutoff: false,
+            scheduled_ns: Some(150),
+            lateness_ns: Some(30),
+            valid: true,
+        });
+        let write = &metrics.operations[1];
+        assert_eq!(metrics.calls(), 1);
+        assert_eq!(write.populations[0].calls, 0);
+        assert_eq!(write.populations[1].calls, 1);
+        assert_eq!(write.populations[1].input_items, 1);
+        assert_eq!(write.populations[1].whole_call.sum_ns, 120);
+        assert_eq!(write.populations[1].scheduled_to_completion.sum_ns, 150);
+        assert_eq!(write.populations[2].calls, 0);
+        assert_eq!(write.command_attempts, 1);
+        assert_eq!(write.reasons, [0, 1, 0, 0, 0, 0]);
+        assert_eq!(
+            metrics.report_for_apis(ReadApi::Get, WriteApi::Set)["operations"],
+            json!(["get", "set"])
+        );
+        assert_eq!(metrics.report()["operations"], json!(["mget", "mset"]));
+        assert_eq!(
+            metrics.report_for_read_api(ReadApi::Get)["operations"],
+            json!(["get", "mset"])
+        );
     }
 }

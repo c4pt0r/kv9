@@ -52,3 +52,7 @@ mean and p50/p95/p99 intervals, exact error populations and preserved failed
 attempts. Throughput alone does not establish Redis parity. This source change
 contains no new measurement result; candidate-specific correctness and clean
 build/fixture validation remain prerequisites for timing acceptance.
+
+Version 3 adds explicit point/batch writes and mixed point traffic; see
+[the point-write measurement contract](POINT-WRITE-MEASUREMENT.md). Existing
+version 1/2 configurations and historical results keep their original meaning.

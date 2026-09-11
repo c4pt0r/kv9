@@ -1,4 +1,4 @@
-//! Bounded RESP2 batch/point-read reference. Single-instance Redis, no Raft claims.
+//! Bounded RESP2 batch/point reference. Single-instance Redis, no Raft claims.
 #[path = "../batch/artifact.rs"]
 mod artifact;
 #[path = "../../../../crates/server/src/bin/kv9-batch-benchmark/common.rs"]
@@ -49,13 +49,12 @@ async fn traffic(
     }
     let read = c.is_read(nonce);
     let first = c.first_key(nonce);
-    let mut op = Operation::new(
+    let op = Operation::for_traffic(
         c,
         read,
         (0..c.batch_size).map(|i| (first + i) % c.keys),
         nonce,
     );
-    op.read_api = c.effective_read_api();
     let call = wire::call(conn, c, &op).await;
     let valid = match &call.result {
         Ok(Reply::Applied) => !read,
@@ -530,7 +529,7 @@ async fn execute() -> Result<(), String> {
         .map(|op| op.populations[0].input_items)
         .sum();
     let report = json!({"version":config.version,
-        "workload_model":if config.effective_read_api()==ReadApi::Get {"bounded_redis_point_get_diagnostic"}else{"bounded_redis_batch_performance"},
+        "workload_model":config.workload_model(),
         "full_history_recorded":false,
         "independently_checked":false,"complete":outcome.is_ok(),"failure":outcome.as_ref().err(),
         "configuration":config,"config_sha256":digest(&config_bytes),"build":build,"build_sha256":digest(&build_bytes),
@@ -544,8 +543,8 @@ async fn execute() -> Result<(), String> {
         "successful_input_items_per_second":if seconds>0.0 {Some(successful_items as f64/seconds)} else {None},
         "timing_eligible":outcome.is_ok() && result.stop_reason==Some("duration") && build.profile=="release" && !build.dirty,
         "proc_stat_before":result.proc_before,"proc_stat_after":result.proc_after,"workers":result.workers,
-        "metrics":{"initialization":result.initialization.report(),"warmup":result.warmup.report_for_read_api(config.effective_read_api()),
-            "measurement":result.measurement.report_for_read_api(config.effective_read_api()),"verification":result.verification.report()}});
+        "metrics":{"initialization":result.initialization.report(),"warmup":result.warmup.report_for_apis(config.effective_read_api(), config.effective_write_api()),
+            "measurement":result.measurement.report_for_apis(config.effective_read_api(), config.effective_write_api()),"verification":result.verification.report()}});
     write_json(&output.join("report.json"), &report)?;
     outcome?;
     println!("PASS: Redis batch reference drained; independent artifact validation is required");
@@ -567,6 +566,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use model::WriteApi;
     use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
     #[test]
@@ -648,6 +648,97 @@ mod tests {
                 })
                 .await
                 .expect("bounded owned GET traffic did not finish");
+            });
+    }
+
+    #[test]
+    fn mixed_v3_traffic_uses_set_then_get_on_one_connection() {
+        tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap()
+            .block_on(async {
+                tokio::time::timeout(Duration::from_secs(5), async {
+                    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+                    let mut c: Config =
+                        serde_json::from_value(model::tests::config_json()).unwrap();
+                    c.version = 3;
+                    c.read_api = Some(ReadApi::Get);
+                    c.write_api = Some(WriteApi::Set);
+                    c.keys = 1;
+                    c.read_percent = 50;
+                    c.address = listener.local_addr().unwrap();
+                    c.validate().unwrap();
+                    let write_nonce = (1..=1000).find(|&n| !c.is_read(n)).unwrap();
+                    let read_nonce = (1..=1000).find(|&n| c.is_read(n)).unwrap();
+                    let key = c.key(0);
+                    let value = c.value(0, write_nonce);
+                    let mut set_frame =
+                        format!("*3\r\n$3\r\nSET\r\n${}\r\n", key.len()).into_bytes();
+                    set_frame.extend_from_slice(&key);
+                    set_frame.extend_from_slice(format!("\r\n${}\r\n", value.len()).as_bytes());
+                    set_frame.extend_from_slice(&value);
+                    set_frame.extend_from_slice(b"\r\n");
+                    let mut get_frame =
+                        format!("*2\r\n$3\r\nGET\r\n${}\r\n", key.len()).into_bytes();
+                    get_frame.extend_from_slice(&key);
+                    get_frame.extend_from_slice(b"\r\n");
+                    let peer = tokio::spawn(async move {
+                        let (mut stream, _) = listener.accept().await.unwrap();
+                        for (index, expected) in [set_frame, get_frame].iter().enumerate() {
+                            let mut received = vec![0; expected.len()];
+                            stream.read_exact(&mut received).await.unwrap();
+                            assert_eq!(
+                                &received, expected,
+                                "mixed traffic selected the wrong RESP command"
+                            );
+                            if index == 0 {
+                                stream.write_all(b"+OK\r\n").await.unwrap();
+                            } else {
+                                let mut response = format!("${}\r\n", value.len()).into_bytes();
+                                response.extend_from_slice(&value);
+                                response.extend_from_slice(b"\r\n");
+                                stream.write_all(&response).await.unwrap();
+                            }
+                        }
+                    });
+                    let mut connection = None;
+                    let mut metrics = Metrics::default();
+                    let issued = AtomicU64::new(0);
+                    for nonce in [write_nonce, read_nonce] {
+                        let (success, valid, _) = traffic(
+                            &c,
+                            &mut connection,
+                            nonce,
+                            Timing {
+                                epoch: Instant::now(),
+                                cutoff: None,
+                                scheduled: None,
+                            },
+                            &mut metrics,
+                            Some(&issued),
+                        )
+                        .await
+                        .unwrap();
+                        assert!(success && valid);
+                    }
+                    assert_eq!(issued.load(Ordering::Relaxed), 2);
+                    assert_eq!(metrics.operations[0].populations[0].calls, 1);
+                    assert_eq!(metrics.operations[1].populations[0].calls, 1);
+                    assert_eq!(metrics.operations[0].command_attempts, 1);
+                    assert_eq!(metrics.operations[1].command_attempts, 1);
+                    assert_eq!(metrics.operations[0].connection_attempts, 0);
+                    assert_eq!(metrics.operations[1].connection_attempts, 1);
+                    assert_eq!(
+                        metrics.report_for_apis(c.effective_read_api(), c.effective_write_api())
+                            ["operations"],
+                        json!(["get", "set"])
+                    );
+                    assert!(metrics.valid());
+                    peer.await.unwrap();
+                })
+                .await
+                .expect("bounded mixed GET/SET traffic did not finish");
             });
     }
 }

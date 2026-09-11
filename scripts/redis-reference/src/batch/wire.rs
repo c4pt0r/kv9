@@ -1,5 +1,5 @@
-//! Bounded RESP2 GET/MGET/MSET exchange; no command replay or pipelining.
-use super::model::{Config, ReadApi, MAX_WIRE};
+//! Bounded RESP2 GET/SET/MGET/MSET exchange; no command replay or pipelining.
+use super::model::{Config, ReadApi, WriteApi, MAX_WIRE};
 use std::time::{Duration, Instant};
 use tokio::{
     io::{AsyncRead, AsyncReadExt, AsyncWriteExt, BufReader},
@@ -42,6 +42,7 @@ pub enum Reply {
 pub struct Operation {
     pub read: bool,
     pub read_api: ReadApi,
+    pub write_api: WriteApi,
     pub keys: Vec<Vec<u8>>,
     pub values: Vec<Vec<u8>>,
 }
@@ -55,13 +56,29 @@ impl Operation {
                 values.push(c.value(i, nonce));
             }
         }
-        // Setup always uses MGET/MSET, regardless of the measured read API.
+        // Setup always uses MGET/MSET, regardless of the measured APIs.
         Self {
             read,
             read_api: ReadApi::Mget,
+            write_api: WriteApi::Mset,
             keys,
             values,
         }
+    }
+
+    pub fn for_traffic(
+        c: &Config,
+        read: bool,
+        indices: impl Iterator<Item = usize>,
+        nonce: u64,
+    ) -> Self {
+        let mut operation = Self::new(c, read, indices, nonce);
+        if read {
+            operation.read_api = c.effective_read_api();
+        } else {
+            operation.write_api = c.effective_write_api();
+        }
+        operation
     }
 }
 pub fn encode(op: &Operation) -> Result<Vec<u8>, Failure> {
@@ -70,6 +87,7 @@ pub fn encode(op: &Operation) -> Result<Vec<u8>, Failure> {
         || (!op.read && op.keys.len() != op.values.len())
         || (op.read && !op.values.is_empty())
         || (op.read_api == ReadApi::Get && (!op.read || op.keys.len() != 1))
+        || (op.write_api == WriteApi::Set && (op.read || op.keys.len() != 1))
     {
         return Err(Failure::Protocol);
     }
@@ -84,10 +102,11 @@ pub fn encode(op: &Operation) -> Result<Vec<u8>, Failure> {
         out.extend_from_slice(b"\r\n");
         Ok(())
     }
-    let command = match (op.read, op.read_api) {
-        (true, ReadApi::Get) => b"GET".as_slice(),
-        (true, ReadApi::Mget) => b"MGET",
-        (false, _) => b"MSET",
+    let command = match (op.read, op.read_api, op.write_api) {
+        (true, ReadApi::Get, _) => b"GET".as_slice(),
+        (true, ReadApi::Mget, _) => b"MGET",
+        (false, _, WriteApi::Set) => b"SET",
+        (false, _, WriteApi::Mset) => b"MSET",
     };
     bulk(&mut bytes, command)?;
     for (i, k) in op.keys.iter().enumerate() {
@@ -241,7 +260,7 @@ pub async fn call(conn: &mut Option<Connection>, c: &Config, op: &Operation) -> 
         }
     };
     // Discard framing state after any failure. Only the next NEW logical call
-    // may reconnect; this call is never sent again, even after a lost MSET reply.
+    // may reconnect; this call is never sent again, even after a lost SET/MSET reply.
     if result.is_err() {
         *conn = None;
     }
@@ -270,6 +289,7 @@ mod tests {
             let op = Operation {
                 read: false,
                 read_api: ReadApi::Mget,
+                write_api: WriteApi::Mset,
                 keys: vec![b"a".to_vec(), b"a".to_vec()],
                 values: vec![b"\0\r\n".to_vec(), b"x".to_vec()],
             };
@@ -327,6 +347,7 @@ mod tests {
         assert!(encode(&Operation {
             read: false,
             read_api: ReadApi::Mget,
+            write_api: WriteApi::Mset,
             keys: vec![vec![0; MAX_WIRE]],
             values: vec![vec![1; 16]]
         })
@@ -334,6 +355,7 @@ mod tests {
         assert!(encode(&Operation {
             read: false,
             read_api: ReadApi::Mget,
+            write_api: WriteApi::Mset,
             keys: vec![vec![1]],
             values: vec![]
         })
@@ -344,9 +366,139 @@ mod tests {
         Operation {
             read: true,
             read_api: ReadApi::Get,
+            write_api: WriteApi::Mset,
             keys: vec![key.to_vec()],
             values: vec![],
         }
+    }
+
+    fn set(key: &[u8], value: &[u8]) -> Operation {
+        Operation {
+            read: false,
+            read_api: ReadApi::Mget,
+            write_api: WriteApi::Set,
+            keys: vec![key.to_vec()],
+            values: vec![value.to_vec()],
+        }
+    }
+
+    #[test]
+    fn set_emits_three_arguments_and_legacy_setup_stays_mset() {
+        run(async {
+            assert_eq!(
+                encode(&set(b"a\0\r\n", b"v\0\r\n")).unwrap(),
+                b"*3\r\n$3\r\nSET\r\n$4\r\na\0\r\n\r\n$4\r\nv\0\r\n\r\n"
+            );
+            let mut value = super::super::model::tests::config_json();
+            value["version"] = serde_json::json!(3);
+            value["read_api"] = serde_json::json!("get");
+            value["write_api"] = serde_json::json!("set");
+            value["read_percent"] = serde_json::json!(50);
+            let c: Config = serde_json::from_value(value).unwrap();
+            let sizes = c.validate().unwrap();
+            let setup = Operation::new(&c, false, [0].into_iter(), 0);
+            assert_eq!(setup.write_api, WriteApi::Mset);
+            assert_eq!(encode(&setup).unwrap().len(), sizes.mset_request_bytes);
+            let traffic = Operation::for_traffic(&c, false, [0].into_iter(), 7);
+            assert_eq!(traffic.read_api, ReadApi::Mget);
+            assert_eq!(traffic.write_api, WriteApi::Set);
+            assert_eq!(
+                encode(&traffic).unwrap().len(),
+                sizes.set_request_bytes.unwrap()
+            );
+            assert_eq!(sizes.set_response_bytes, Some(b"+OK\r\n".len()));
+            assert!(matches!(
+                decode(
+                    &mut &b"+OK\r\n"[..],
+                    false,
+                    traffic.read_api,
+                    1,
+                    c.value_bytes
+                )
+                .await,
+                Ok(Reply::Applied)
+            ));
+            for bytes in [
+                b"+QUEUED\r\n".as_slice(),
+                b":1\r\n",
+                b"$-1\r\n",
+                b"+OK\n",
+                b"+ok\r\n",
+            ] {
+                assert!(matches!(
+                    decode(&mut &bytes[..], false, traffic.read_api, 1, c.value_bytes).await,
+                    Err(Failure::Protocol)
+                ));
+            }
+            assert!(matches!(
+                decode(
+                    &mut &b"-ERR failed\r\n"[..],
+                    false,
+                    traffic.read_api,
+                    1,
+                    c.value_bytes
+                )
+                .await,
+                Err(Failure::ServerError)
+            ));
+            let mut multiple = set(b"a", b"v");
+            multiple.keys.push(b"b".to_vec());
+            multiple.values.push(b"w".to_vec());
+            assert!(encode(&multiple).is_err());
+            let mut wrong_kind = set(b"a", b"v");
+            wrong_kind.read = true;
+            wrong_kind.values.clear();
+            assert!(encode(&wrong_kind).is_err());
+        });
+    }
+
+    #[test]
+    fn consumed_set_with_lost_reply_is_unknown_and_only_new_call_reconnects() {
+        run(async {
+            tokio::time::timeout(Duration::from_secs(5), async {
+                let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+                let mut c: Config =
+                    serde_json::from_value(super::super::model::tests::config_json()).unwrap();
+                c.version = 3;
+                c.read_api = Some(ReadApi::Get);
+                c.write_api = Some(WriteApi::Set);
+                c.read_percent = 0;
+                c.address = listener.local_addr().unwrap();
+                c.validate().unwrap();
+                let first = Operation::for_traffic(&c, false, [0].into_iter(), 1);
+                let second = Operation::for_traffic(&c, false, [0].into_iter(), 2);
+                let expected = [encode(&first).unwrap(), encode(&second).unwrap()];
+                let peer = tokio::spawn(async move {
+                    for (index, request) in expected.iter().enumerate() {
+                        let (mut stream, _) = listener.accept().await.unwrap();
+                        let mut actual = vec![0; request.len()];
+                        stream.read_exact(&mut actual).await.unwrap();
+                        assert_eq!(&actual, request, "uncertain SET was replayed");
+                        assert!(actual.starts_with(b"*3\r\n$3\r\nSET\r\n"));
+                        if index == 1 {
+                            stream.write_all(b"+OK\r\n").await.unwrap();
+                        }
+                    }
+                });
+                let mut connection = None;
+                let failed = call(&mut connection, &c, &first).await;
+                assert!(matches!(failed.result, Err(Failure::Io)));
+                assert_eq!(
+                    (failed.connection_attempts, failed.command_attempts),
+                    (1, 1)
+                );
+                assert!(connection.is_none());
+                let succeeded = call(&mut connection, &c, &second).await;
+                assert!(matches!(succeeded.result, Ok(Reply::Applied)));
+                assert_eq!(
+                    (succeeded.connection_attempts, succeeded.command_attempts),
+                    (1, 1)
+                );
+                peer.await.unwrap();
+            })
+            .await
+            .expect("bounded SET peer did not finish");
+        });
     }
 
     #[test]

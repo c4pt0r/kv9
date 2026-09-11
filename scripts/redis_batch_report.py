@@ -14,14 +14,20 @@ WORKLOAD_FIELDS = 'run_id seed workers keys batch_size value_bytes read_percent 
 
 def config_check(c):
     require(type(c) is dict, 'Redis configuration must be an object')
-    version = uint(c.get('version'), 1, 2)
+    version = uint(c.get('version'), 1, 3)
     keys(c, ['version', 'address', 'deadline_ms', *WORKLOAD_FIELDS,
-             *(['read_api'] if version == 2 else [])])
-    if version == 2:
+             *(['read_api'] if version >= 2 else []),
+             *(['write_api'] if version == 3 else [])])
+    if version >= 2:
         require(c['read_api'] in ('mget', 'get'), 'invalid Redis read API')
         if c['read_api'] == 'get':
-            require(c['batch_size'] == 1 and c['read_percent'] == 100,
-                    'Redis GET requires batch size one and read-only traffic')
+            require(c['batch_size'] == 1, 'Redis GET requires batch size one')
+            if version == 2:
+                require(c['read_percent'] == 100, 'version 2 Redis GET requires read-only traffic')
+    if version == 3:
+        require(c['write_api'] in ('mset', 'set'), 'invalid Redis write API')
+        if c['write_api'] == 'set':
+            require(c['batch_size'] == 1, 'Redis SET requires batch size one')
     uint(c['deadline_ms'], 1, 30_000)
     address = c['address']
     require(type(address) is str and len(address) <= 128, 'invalid Redis address')
@@ -57,7 +63,10 @@ def config_check(c):
     if c.get('read_api') == 'get':
         size.update(get_request_bytes=array(2)+bulk(3)+bulk(len(c['run_id'])+17),
                     get_response_bytes=bulk(c['value_bytes']))
-    require(max(size[k] for k in ('mget_request_bytes', 'mset_request_bytes', 'mget_response_bytes')) <= 1_048_576,
+    if c.get('write_api') == 'set':
+        size.update(set_request_bytes=array(3)+bulk(3)+bulk(len(c['run_id'])+17)+bulk(c['value_bytes']),
+                    set_response_bytes=len(b'+OK\r\n'))
+    require(max(size[k] for k in size if k.endswith(('_request_bytes', '_response_bytes'))) <= 1_048_576,
             'encoded Redis batch exceeds bound')
     require(size['maximum_input_payload_bytes_in_flight'] <= 64*1024*1024, 'pending input exceeds bound')
     return offered, size
@@ -65,8 +74,11 @@ def config_check(c):
 
 def metrics_check(m, c, phase):
     keys(m, ['operations', 'outcomes', 'reasons', 'histogram_subdivisions', 'valid', 'statistics'])
-    point = c.get('read_api') == 'get' and phase in ('warmup', 'measurement')
-    equal(m['operations'], ['get' if point else 'mget', 'mset'], 'operation vocabulary differs')
+    traffic = phase in ('warmup', 'measurement')
+    point = c.get('read_api') == 'get' and traffic
+    point_write = c.get('write_api') == 'set' and traffic
+    equal(m['operations'], ['get' if point else 'mget', 'set' if point_write else 'mset'],
+          'operation vocabulary differs')
     equal(m['outcomes'], ['success', 'unknown_write', 'read_failure'], 'outcome vocabulary differs')
     equal(m['reasons'], ['success', 'deadline', 'io', 'server_error', 'protocol', 'data_integrity'], 'reason vocabulary differs')
     uint(m['histogram_subdivisions'], 64, 64)
@@ -115,7 +127,8 @@ def metrics_check(m, c, phase):
         attempted = uint(op['command_attempts'], 0, calls)
         require(attempted + failed == calls and attempted >= reasons[0] + reasons[3], 'command/connection accounting differs')
         late = histogram_check(op['dispatch_lateness'])
-        require(not (point and kind == 1) or calls == 0, 'point GET stage contains writes')
+        require(not (c['version'] == 2 and point and kind == 1) or calls == 0,
+                'version 2 point GET stage contains writes')
         require(late['count'] == (calls if fixed else 0), 'dispatch lateness population differs')
         require(scheduled_sum == (whole_sum+late['sum_ns'] if fixed else 0), 'scheduled time omits delayed dispatch')
         if fixed:
@@ -127,9 +140,10 @@ def metrics_check(m, c, phase):
 
 def report_check(r, c, b):
     keys(r, [*REPORT_FIELDS, 'protocol', 'preconnected_workers'])
-    uint(r['version'], 1, 2)
+    uint(r['version'], 1, 3)
     equal(r['version'], c['version'], 'report and configuration versions differ')
-    model = ('bounded_redis_point_get_diagnostic' if c.get('read_api') == 'get'
+    model = ('bounded_redis_api_performance' if c['version'] == 3
+             else 'bounded_redis_point_get_diagnostic' if c.get('read_api') == 'get'
              else 'bounded_redis_batch_performance')
     require(r['workload_model'] == model and r['protocol'] == 'resp2', 'wrong reference protocol/model')
     require(r['complete'] is True and r['failure'] is None, 'measurement incomplete')
@@ -180,12 +194,18 @@ def paired_configuration(redis, native):
     native_api = native.get('read_api', 'batch_get')
     require((redis_api, native_api) in (('mget', 'batch_get'), ('get', 'point_get')),
             'paired read APIs differ')
+    redis_write_api = redis.get('write_api', 'mset')
+    native_write_api = native.get('write_api', 'batch_put')
+    require((redis_write_api, native_write_api) in (('mset', 'batch_put'), ('set', 'point_put')),
+            'paired write APIs differ')
     for field in WORKLOAD_FIELDS:
         equal(redis[field], native[field], 'paired workload differs: '+field)
     equal(redis['deadline_ms'], native['client']['deadline_ms'], 'paired deadlines differ')
     result = {field: redis[field] for field in WORKLOAD_FIELDS}
-    if redis['version'] == 2 or native['version'] == 2:
+    if redis['version'] >= 2 or native['version'] >= 2:
         result['read_api_pair'] = {'redis': redis_api, 'native': native_api}
+    if redis['version'] == 3 or native['version'] == 3:
+        result['write_api_pair'] = {'redis': redis_write_api, 'native': native_write_api}
     return result
 
 
