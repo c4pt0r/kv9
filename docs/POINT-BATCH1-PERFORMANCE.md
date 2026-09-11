@@ -1,5 +1,9 @@
 # Matched point GET and BatchGet(1) performance
 
+The subsequent [borrowed-context comparison](BORROWED-BATCH-GET-PERFORMANCE.md)
+records the next candidate and adds an actual Redis GET control. The results
+below retain the original async-batch revision and MGET(1) reference.
+
 The async native batch-read change raises BatchGet(1) throughput from
 109,097–112,477 to 176,734–177,385 successful calls/s in this matched diagnostic.
 The paired gains are 62.0% and 57.7%; whole-call mean latency falls from
