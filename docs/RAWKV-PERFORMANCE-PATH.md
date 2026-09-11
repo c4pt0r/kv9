@@ -115,14 +115,22 @@ validation passes 224 Raft tests, nine source-control triples and the 352-call
 process E2E. The accepted control remains `5ee897a`; this candidate does not
 advance to broad workspace/Chaos acceptance.
 
-Next investigate the remaining producer-to-watchdog wake in that candidate.
-An empty-to-nonempty send currently wakes both the body and its supervisor.
-Bounded idle checks may remove that notification edge while retaining the
-same three-second backlog deadline; require the clock/queue ordering argument,
-real enqueue-to-expiry coverage and another matched c1/c64 screen. This is an
-unmeasured mechanism hypothesis, not attribution of the observed regression.
-Keep request-body lifetime, route-generation, wakeup and stalled-stream
-contracts explicit. Check both c1 turnaround and c64 throughput/mean/p99. Treat the
+The [idle watchdog follow-on](PEER-IDLE-WATCHDOG-SCREENING.md) also rejects
+`f62c08e`: seven of eight throughput/mean pairs regress, despite better p99 in
+all eight. c64 GET changes -0.618% / -2.915% and BatchGet(1) -3.189% / -3.457%.
+All 27,821,713 measured calls succeed and the first independent audit passes.
+Source gates pass 228 Raft tests, 14 source-control triples and independently
+checked 379-call process E2E. Accepted `5ee897a` remains unchanged.
+
+Return to that accepted source for the next group-admission experiment. Its
+retained c64 endpoint counters show only about 2.03 GET members or 2.01
+BatchGet(1) members per admitted ReadIndex group, including setup/warmup and
+verification. Investigate bounded unconfirmed-group concurrency to improve
+natural grouping, retaining immediate idle admission, sealed membership,
+fresh quorum confirmation and applied-index checks. Do not attach late reads
+to an earlier group. Require explicit non-spinning wakeup, cancellation,
+deadline and role-change progress before screening; no benefit is established.
+Check both c1 turnaround and c64 throughput/mean/p99. Treat the
 admission bound as a separate controlled variable before inferring saturation.
 Keep Raft confirmation requirements unchanged. Neither profile nor the fixed-
 admission curve establishes an intrinsic ceiling. Keep sustained traffic, writes/mixed,
