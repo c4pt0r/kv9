@@ -93,3 +93,9 @@ scripts/redis-reference/indexed-receipt-screen-v1/preparation/matched-driver.py.
 scripts/redis-reference/indexed-receipt-screen-v1/preparation/statistics-derive.py.diff -whitespace
 scripts/redis-reference/indexed-receipt-screen-v1/preparation/test_driver.py.diff -whitespace
 scripts/redis-reference/indexed-receipt-screen-v1/preparation/test_screen_contract.py.diff -whitespace
+
+# Original perf/disassembly and failed-proof logs retain their exact bytes.
+scripts/redis-reference/crc-active-prefix-cpu-v1/runtime/batch_put/permission.stderr -whitespace
+scripts/redis-reference/crc-active-prefix-cpu-v1/runtime/point_put/permission.stderr -whitespace
+scripts/redis-reference/crc-active-prefix-cpu-v1/write-record-disassembly-first.txt -whitespace
+scripts/redis-reference/indexed-receipt-proof-v1/formal/first-failure/tlaps.log -whitespace
