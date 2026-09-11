@@ -29,30 +29,33 @@ def main():
         raise ValueError("build artifacts must be outside the source tree")
     out.mkdir(parents=True, exist_ok=False)
     before = builder.snapshot()
-    command = ["cargo", "build", "--locked", "--bin", "kv9", "--features", "rpc-experiment",
-               "--message-format=json-render-diagnostics", *(["--release"] if args.release else [])]
-    with (out / "cargo.jsonl").open("w") as stdout, (out / "build.log").open("w") as stderr:
-        subprocess.run(command, cwd=ROOT, stdout=stdout, stderr=stderr, timeout=900, check=True)
-    records = [json.loads(line) for line in (out / "cargo.jsonl").read_text().splitlines()]
-    artifacts = [r for r in records if r.get("reason") == "compiler-artifact" and
-                 r.get("target", {}).get("name") == "kv9" and r.get("executable")]
-    if len(artifacts) != 1 or artifacts[0]["features"] != ["rpc-experiment"]:
-        raise ValueError("missing or incorrect experimental server artifact")
-    source = Path(artifacts[0]["executable"])
-    if not 0 < source.stat().st_size <= builder.MAX_BINARY:
-        raise ValueError("invalid executable size")
-    shutil.copy2(source, out / "kv9")
-    subprocess.run(["python3", str(ROOT / "scripts/build-workload.py"), "--output", str(out / "workload"),
-                    "--rpc-experiment", *(["--release"] if args.release else [])], cwd=ROOT, check=True)
-    if builder.snapshot() != before:
-        raise ValueError("source changed during RPC experiment build")
-    workload = json.loads((out / "workload/build.json").read_text())
-    manifest = dict(version=1, **before, profile=workload["profile"], command=command,
-                    source_tree_sha256=workload["source_tree_sha256"], binary_sha256=digest(out / "kv9"),
-                    workload_build_sha256=digest(out / "workload/build.json"),
-                    features=["rpc-experiment"], rustc=workload["rustc"])
-    (out / "build.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
-    print("PASS: retained same-source RPC experiment server and workload")
+    with builder.cache.BuildCache(ROOT, out, args.release, before) as session:
+        command = ["cargo", "build", "--locked", "--bin", "kv9", "--features", "rpc-experiment",
+                   "--message-format=json-render-diagnostics", *(["--release"] if args.release else [])]
+        with (out / "cargo.jsonl").open("w") as stdout, (out / "build.log").open("w") as stderr:
+            session.run(command, stdout=stdout, stderr=stderr)
+        session.check_artifacts(out / "cargo.jsonl")
+        records = [json.loads(line) for line in (out / "cargo.jsonl").read_text().splitlines()]
+        artifacts = [r for r in records if r.get("reason") == "compiler-artifact" and
+                     r.get("target", {}).get("name") == "kv9" and r.get("executable")]
+        if len(artifacts) != 1 or artifacts[0]["features"] != ["rpc-experiment"]:
+            raise ValueError("missing or incorrect experimental server artifact")
+        source = Path(artifacts[0]["executable"])
+        if not 0 < source.stat().st_size <= builder.MAX_BINARY:
+            raise ValueError("invalid executable size")
+        shutil.copy2(source, out / "kv9")
+        builder.build_component(out/'workload', session, release=args.release, rpc_experiment=True)
+        if builder.snapshot() != before:
+            raise ValueError("source changed during RPC experiment build")
+        workload = json.loads((out / "workload/build.json").read_text())
+        manifest = dict(version=1, **before, profile=workload["profile"], command=command,
+                        source_tree_sha256=workload["source_tree_sha256"], binary_sha256=digest(out / "kv9"),
+                        workload_build_sha256=digest(out / "workload/build.json"),
+                        features=["rpc-experiment"], rustc=workload["rustc"])
+        (out / "build.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+        if builder.snapshot() != before:
+            raise ValueError('source changed during RPC build retention')
+        print("PASS: retained same-source RPC experiment server and workload")
 
 
 if __name__ == "__main__":
