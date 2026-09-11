@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "parent_recording_session": 94390,
+  "parent_exit_code": 0,
+  "owned_containers": 3,
+  "original_cpu_masks_restored": true,
+  "namespace_ids_preserved": true,
+  "invocation_bound": true
+}

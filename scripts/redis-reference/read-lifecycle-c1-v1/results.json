@@ -1,0 +1,599 @@
+{
+  "accepted": true,
+  "checks": {
+    "exact_phase_sum_conservation": true,
+    "fresh_drains": 6,
+    "identical_success_populations": true,
+    "metric_documents": 12,
+    "metric_inventory": 31,
+    "no_invalid_trace_errors": true,
+    "stable_process_lifetimes": 6
+  },
+  "cohorts": [
+    {
+      "api": "point_get",
+      "nodes": [
+        {
+          "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+          "exporter_created_unix_ns": "1789113115208247494",
+          "node_id": "1",
+          "phases": [
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "queue",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "quorum",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "apply",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "notification",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "total",
+              "sum_ns_delta": 0
+            }
+          ],
+          "pid": "715471",
+          "samples": 0,
+          "start_ticks": "140182762"
+        },
+        {
+          "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+          "exporter_created_unix_ns": "1789113115222589957",
+          "node_id": "2",
+          "phases": [
+            {
+              "after_count": 2141,
+              "before_count": 0,
+              "count_delta": 2141,
+              "phase": "queue",
+              "sum_ns_delta": 3153592
+            },
+            {
+              "after_count": 2141,
+              "before_count": 0,
+              "count_delta": 2141,
+              "phase": "quorum",
+              "sum_ns_delta": 44955394
+            },
+            {
+              "after_count": 2141,
+              "before_count": 0,
+              "count_delta": 2141,
+              "phase": "apply",
+              "sum_ns_delta": 610891
+            },
+            {
+              "after_count": 2141,
+              "before_count": 0,
+              "count_delta": 2141,
+              "phase": "notification",
+              "sum_ns_delta": 3624119
+            },
+            {
+              "after_count": 2141,
+              "before_count": 0,
+              "count_delta": 2141,
+              "phase": "total",
+              "sum_ns_delta": 52343996
+            }
+          ],
+          "pid": "715476",
+          "samples": 2141,
+          "start_ticks": "140182764"
+        },
+        {
+          "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+          "exporter_created_unix_ns": "1789113115236787339",
+          "node_id": "3",
+          "phases": [
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "queue",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "quorum",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "apply",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "notification",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "total",
+              "sum_ns_delta": 0
+            }
+          ],
+          "pid": "715481",
+          "samples": 0,
+          "start_ticks": "140182765"
+        }
+      ],
+      "phases": [
+        {
+          "count_delta": 2141,
+          "mean_ns": 1472.9528257823447,
+          "phase": "queue",
+          "share_percent": 6.024744461618864,
+          "sum_ns_delta": 3153592
+        },
+        {
+          "count_delta": 2141,
+          "mean_ns": 20997.3815973844,
+          "phase": "quorum",
+          "share_percent": 85.8845281892502,
+          "sum_ns_delta": 44955394
+        },
+        {
+          "count_delta": 2141,
+          "mean_ns": 285.32975245212515,
+          "phase": "apply",
+          "share_percent": 1.1670698584036268,
+          "sum_ns_delta": 610891
+        },
+        {
+          "count_delta": 2141,
+          "mean_ns": 1692.7225595516113,
+          "phase": "notification",
+          "share_percent": 6.923657490727304,
+          "sum_ns_delta": 3624119
+        },
+        {
+          "count_delta": 2141,
+          "mean_ns": 24448.38673517048,
+          "phase": "total",
+          "share_percent": 100.0,
+          "sum_ns_delta": 52343996
+        }
+      ],
+      "samples": 2141,
+      "snapshot_coverage": [
+        {
+          "after_capture_ns": 1789113128282509419,
+          "after_drain_completed_ns": 1789113127321422753,
+          "before_capture_ns": 1789113118225325708,
+          "before_drain_completed_ns": 1789113117261523802,
+          "client_exit_ns": 1789113124123134023,
+          "client_started_observed_ns": 1789113118297954764,
+          "node_id": "1"
+        },
+        {
+          "after_capture_ns": 1789113128301309166,
+          "after_drain_completed_ns": 1789113127321422753,
+          "before_capture_ns": 1789113118245516482,
+          "before_drain_completed_ns": 1789113117261523802,
+          "client_exit_ns": 1789113124123134023,
+          "client_started_observed_ns": 1789113118297954764,
+          "node_id": "2"
+        },
+        {
+          "after_capture_ns": 1789113128308556439,
+          "after_drain_completed_ns": 1789113127321422753,
+          "before_capture_ns": 1789113118253384284,
+          "before_drain_completed_ns": 1789113117261523802,
+          "client_exit_ns": 1789113124123134023,
+          "client_started_observed_ns": 1789113118297954764,
+          "node_id": "3"
+        }
+      ],
+      "workers": 1
+    },
+    {
+      "api": "batch_get",
+      "nodes": [
+        {
+          "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+          "exporter_created_unix_ns": "1789113128397815483",
+          "node_id": "1",
+          "phases": [
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "queue",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "quorum",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "apply",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "notification",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "total",
+              "sum_ns_delta": 0
+            }
+          ],
+          "pid": "720340",
+          "samples": 0,
+          "start_ticks": "140184081"
+        },
+        {
+          "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+          "exporter_created_unix_ns": "1789113128414127274",
+          "node_id": "2",
+          "phases": [
+            {
+              "after_count": 2108,
+              "before_count": 0,
+              "count_delta": 2108,
+              "phase": "queue",
+              "sum_ns_delta": 3509533
+            },
+            {
+              "after_count": 2108,
+              "before_count": 0,
+              "count_delta": 2108,
+              "phase": "quorum",
+              "sum_ns_delta": 45055830
+            },
+            {
+              "after_count": 2108,
+              "before_count": 0,
+              "count_delta": 2108,
+              "phase": "apply",
+              "sum_ns_delta": 610576
+            },
+            {
+              "after_count": 2108,
+              "before_count": 0,
+              "count_delta": 2108,
+              "phase": "notification",
+              "sum_ns_delta": 3623364
+            },
+            {
+              "after_count": 2108,
+              "before_count": 0,
+              "count_delta": 2108,
+              "phase": "total",
+              "sum_ns_delta": 52799303
+            }
+          ],
+          "pid": "720345",
+          "samples": 2108,
+          "start_ticks": "140184083"
+        },
+        {
+          "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+          "exporter_created_unix_ns": "1789113128431259557",
+          "node_id": "3",
+          "phases": [
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "queue",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "quorum",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "apply",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "notification",
+              "sum_ns_delta": 0
+            },
+            {
+              "after_count": 0,
+              "before_count": 0,
+              "count_delta": 0,
+              "phase": "total",
+              "sum_ns_delta": 0
+            }
+          ],
+          "pid": "720350",
+          "samples": 0,
+          "start_ticks": "140184084"
+        }
+      ],
+      "phases": [
+        {
+          "count_delta": 2108,
+          "mean_ns": 1664.8638519924098,
+          "phase": "queue",
+          "share_percent": 6.6469305475490845,
+          "sum_ns_delta": 3509533
+        },
+        {
+          "count_delta": 2108,
+          "mean_ns": 21373.73339658444,
+          "phase": "quorum",
+          "share_percent": 85.3341378389029,
+          "sum_ns_delta": 45055830
+        },
+        {
+          "count_delta": 2108,
+          "mean_ns": 289.6470588235294,
+          "phase": "apply",
+          "share_percent": 1.1564092048715113,
+          "sum_ns_delta": 610576
+        },
+        {
+          "count_delta": 2108,
+          "mean_ns": 1718.863377609108,
+          "phase": "notification",
+          "share_percent": 6.862522408676494,
+          "sum_ns_delta": 3623364
+        },
+        {
+          "count_delta": 2108,
+          "mean_ns": 25047.107685009487,
+          "phase": "total",
+          "share_percent": 100.0,
+          "sum_ns_delta": 52799303
+        }
+      ],
+      "samples": 2108,
+      "snapshot_coverage": [
+        {
+          "after_capture_ns": 1789113141476144572,
+          "after_drain_completed_ns": 1789113140498813720,
+          "before_capture_ns": 1789113131417042964,
+          "before_drain_completed_ns": 1789113130461764652,
+          "client_exit_ns": 1789113137299343755,
+          "client_started_observed_ns": 1789113131480501929,
+          "node_id": "1"
+        },
+        {
+          "after_capture_ns": 1789113141491228971,
+          "after_drain_completed_ns": 1789113140498813720,
+          "before_capture_ns": 1789113131435600919,
+          "before_drain_completed_ns": 1789113130461764652,
+          "client_exit_ns": 1789113137299343755,
+          "client_started_observed_ns": 1789113131480501929,
+          "node_id": "2"
+        },
+        {
+          "after_capture_ns": 1789113141503209103,
+          "after_drain_completed_ns": 1789113140498813720,
+          "before_capture_ns": 1789113131447198347,
+          "before_drain_completed_ns": 1789113130461764652,
+          "client_exit_ns": 1789113137299343755,
+          "client_started_observed_ns": 1789113131480501929,
+          "node_id": "3"
+        }
+      ],
+      "workers": 1
+    }
+  ],
+  "cpu_profiling": false,
+  "inputs": {
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/after-metrics.json": {
+      "bytes": 1108625,
+      "sha256": "8add1b5e0df86c1a252502f09f6a3dc50b0d270b30ad3d466bd1b248340bec7b"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/after-resources.json": {
+      "bytes": 1764,
+      "sha256": "745bc9705912153ef6560b536c12675589e4141c664f3c69a507e9781de58b78"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/after-status.json": {
+      "bytes": 12822,
+      "sha256": "8d9b1d766dd049355cc5a909cc145d4da43a725ff432dabafb602eee49fe3048"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/before-fresh-drain.json": {
+      "bytes": 40558,
+      "sha256": "7bbe10cb3266f28e97687219c1cac9d7a1a8983159d177cada112388d391ee00"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/before-metrics.json": {
+      "bytes": 1104897,
+      "sha256": "0af57cb27d50ed527990de974d893cfd0e249b0c8772f70a38aedd5e9d8c12e4"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/before-resources.json": {
+      "bytes": 1739,
+      "sha256": "0835393df96aeada6c601591970ee337ba3368453e256d5e0b934ab599a70c68"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/before-status.json": {
+      "bytes": 12749,
+      "sha256": "4396c52cb2409182e5c1656440f7b4c6c9aeed9d5a692c1b7a2b21faf300eaee"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/client-exit.json": {
+      "bytes": 64,
+      "sha256": "2ac6d16e2cf2e06ee56c79ac339f6792fbdb78cb7f87e4385ea267a5fb96e5d5"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/client-identity.json": {
+      "bytes": 908,
+      "sha256": "91c6fa7407257b0015500c647315d0a4e2699b620b128a2a7d7aa20c8d026be0"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/fixture-result.json": {
+      "bytes": 20317,
+      "sha256": "7e1613a802f3c772d51ac648f04ee600375f63ca80c4f446efe687ab92fc1348"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/post-client-fresh-drain.json": {
+      "bytes": 40781,
+      "sha256": "85b7266c757e100844767ff69be45e18366edef7dffaaf2908b354b1b45c74e2"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/post-readback-fresh-drain.json": {
+      "bytes": 40784,
+      "sha256": "df087cfedac9684079a0a5620018ff83f470743dd564be9e2d4649f9e315e173"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/requested-config.json": {
+      "bytes": 783,
+      "sha256": "958692df7f6f212ab1c6a25de531ab39faba1b6bf1c8dd776f0dd3f14fcfb9ac"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/batch_get/run/report.json": {
+      "bytes": 1431960,
+      "sha256": "a5e05b4a2c1df7543bbbaabe48f491fc9bd7cf6ae18147050232ffaaca49f668"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/build-bindings.json": {
+      "bytes": 131636,
+      "sha256": "f45144a00d5ccbb4ef5f5465a1867dfbe67997a1460cddcd76144d9e265e868b"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/after-metrics.json": {
+      "bytes": 1108569,
+      "sha256": "8ce4807274cbe52fa7631f387e6594a94e4a2410e379c652d1d85b89102fc017"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/after-resources.json": {
+      "bytes": 1764,
+      "sha256": "f23d4c58d9510559bc2304c315af2613017153fa4f1ee40beddc0be8f4413eba"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/after-status.json": {
+      "bytes": 12825,
+      "sha256": "54cd8409b98d74a154c624dcac56b58f5e2b1e694efe1500e616ad7ebab5702b"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/before-fresh-drain.json": {
+      "bytes": 40558,
+      "sha256": "ef9c6c5c1659470052ecfa11a0bbe0256977787bd85791cefb8906dd1dc64369"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/before-metrics.json": {
+      "bytes": 1104832,
+      "sha256": "a4d2fc82e3c80e355fdf0097f0a87986446ea7cd00b5a4886b23bee27d98556c"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/before-resources.json": {
+      "bytes": 1739,
+      "sha256": "0c4d7b8fbb86d73504b60229a86d754c9cdf55889b89e2ff8a789126c2853b3c"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/before-status.json": {
+      "bytes": 12749,
+      "sha256": "3559648abbc45443d520284b087f8334b8190454e14a84892c8a59a00c66fb78"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/client-exit.json": {
+      "bytes": 64,
+      "sha256": "6d1871e1ad04c46d12c4d77187084a42861f575f2cf10263d0bbd6adee29c48a"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/client-identity.json": {
+      "bytes": 912,
+      "sha256": "9918975ff1298f165cbbb59733f3af01517b6ead0e2e203a3c73a7e133a59003"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/fixture-result.json": {
+      "bytes": 20311,
+      "sha256": "0944e16d31f6e4ce4140a4d70394c83648af5df38a15ddbdb3df96f619e5a7b4"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/post-client-fresh-drain.json": {
+      "bytes": 40790,
+      "sha256": "45e1e9414690793ef21238fda431a154e85bcccdd1b837a5a04224dde3203fcf"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/post-readback-fresh-drain.json": {
+      "bytes": 40793,
+      "sha256": "fe8824e4728032eda98e3e7f036960fb58cc1f8c0c469bac440a2ab28e28413d"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/requested-config.json": {
+      "bytes": 783,
+      "sha256": "2b2d34c058abe97280b6f0501a84271c0cc42fe71a16f399e3eedff557604841"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/point_get/run/report.json": {
+      "bytes": 1431984,
+      "sha256": "c840f4642ddc69dbf83b6d6f649b905d496282b2f419a48c9f349168b6773c6b"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/protocol.json": {
+      "bytes": 3160,
+      "sha256": "8cca99969fc1b0d07a7c65e30b5913a0e11a81942901a68bad8cdcf23c1ab88b"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/readback-summary.json": {
+      "bytes": 1867,
+      "sha256": "6b2bc28e6cf9b327235416f3104d334089e7f320aefca239b8c7b5d07136b52e"
+    },
+    "/tmp/kv9-read-c1-profile-run-first/summary.json": {
+      "bytes": 441,
+      "sha256": "bd91032c8bc685e0ee6adb774a3f3c603e4c335287634c00c3788db4649a3024"
+    },
+    "/tmp/kv9-rpc-pair-read-profile/crates/raft/src/async_read.rs": {
+      "bytes": 33447,
+      "sha256": "5f7c3619f309d76520dce5c4dcd8939d8c2688e68759f3be47b35defacf4db6f"
+    },
+    "/tmp/kv9-rpc-pair-read-profile/crates/raft/src/driver.rs": {
+      "bytes": 154091,
+      "sha256": "c02babce70c68bdbbedb4657e5d9611dcdd01297a0324ecffe68acc292f68cc6"
+    },
+    "/tmp/kv9-rpc-pair-read-profile/crates/raft/src/lib.rs": {
+      "bytes": 11915,
+      "sha256": "07bb4bcb7cb3f0ad53e638cc04ba6071197aa0f074272b49fb65b4355ea25fda"
+    },
+    "/tmp/kv9-rpc-pair-read-profile/crates/raft/src/read_profile.rs": {
+      "bytes": 4036,
+      "sha256": "cc2b626d6ff1642283fe2c769af7ca1cc434b19ce484ae9c0f288e529f6bf652"
+    },
+    "/tmp/kv9-rpc-pair-read-profile/crates/server/src/observability.rs": {
+      "bytes": 17246,
+      "sha256": "cfb474bf9699068ee4b66f60338fd6697506f0860e2cf75e9707c4b340cf1de9"
+    },
+    "/tmp/kv9-rpc-pair-read-profile/crates/server/src/runtime.rs": {
+      "bytes": 409257,
+      "sha256": "a33a8b8935f1dc3215fd5bd24711af78f355eafbc9b2ef4e75b464c77cecdb45"
+    },
+    "/tmp/kv9-rpc-pair-read-profile/scripts/check-latency-metrics.py": {
+      "bytes": 9533,
+      "sha256": "97d294d8b432dbda85073f2dae80f01308a640b686eb35e02689562c0c405cd7"
+    }
+  },
+  "parent_confirmed_exit_code": 0,
+  "parent_confirmed_session": 94390,
+  "protocol_id": "kv9-read-lifecycle-c1-v1",
+  "reader_sha256": "886e78076056d1ec3fdb8b7c0f4c62cec167e5bcbcd25e6b6944f7757079842f",
+  "run": "/tmp/kv9-read-c1-profile-run-first",
+  "scope": "Sampled successful lifecycle envelope; no throughput acceptance.",
+  "server_sha256": "08e8103b5230933bf65b4b605fe864803f766a1b3cf3776d7bb796bf4e3611e1",
+  "source": "/tmp/kv9-rpc-pair-read-profile",
+  "source_revision": "d3dcea0355dd6c4ec23f0833708f6dc978412093",
+  "workers": 1
+}

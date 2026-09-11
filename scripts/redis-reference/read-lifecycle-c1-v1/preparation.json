@@ -1,0 +1,25 @@
+{
+  "complete": true,
+  "runtime_executed": false,
+  "protocol_id": "kv9-read-lifecycle-c1-v1",
+  "instrumented": true,
+  "cpu_profiling": false,
+  "throughput_acceptance": false,
+  "workers": 1,
+  "measure_ms": 5000,
+  "profiles": [
+    "point_get",
+    "batch_get"
+  ],
+  "source_revision": "d3dcea0355dd6c4ec23f0833708f6dc978412093",
+  "client_revision": "03c1c776a5dd7d1cc67491ab253e02ce51665bf8",
+  "server_manifest_sha256": "0d724224a936d3195c877d9c28c069f9460c63ee3bf7d8c04a7deb30f0c68c26",
+  "server_sha256": "08e8103b5230933bf65b4b605fe864803f766a1b3cf3776d7bb796bf4e3611e1",
+  "helpers": {
+    "profile.py": "e6cbd12d0c96a214ad25246157f26677a4d636203f2926b3cc02a12aacd8b9d3",
+    "isolate-and-run.py": "b7f33a7394374ee246d754b499221d1f863fb93c17a0a92e0a0c1c2b89ae15d9",
+    "readback.py": "413fd96724d3598596a417a8fa2db9945ea19ef2b5833760df5b8127bf76caec"
+  },
+  "reviewed_cleanup_error_predicate_preserved": true,
+  "scope": "Reuse existing read-lifecycle instrumentation without a CPU profiler. c64 had concurrent perf and cannot serve as a causal concurrency-only comparison. No sample threshold was reduced and no runtime has executed."
+}

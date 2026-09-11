@@ -137,6 +137,12 @@ it occurred before the auditor file or runtime existed.
 
 ## Next development step
 
+The following mapping step is now completed by the
+[c1 lifecycle-only recording](LOW-CONCURRENCY-READ-LIFECYCLE.md): confirmation
+accounts for 20.997 us of the 24.448-us sampled GET barrier. The next candidate
+is removal of the peer transport's intermediate batch queue, subject to the
+ownership, cancellation, boundedness and stall-recovery contracts in that report.
+
 Prioritize the GET execution/confirmation path with the accepted source as
 control. Use the c1 and c64 points together: c1 exposes request turnaround,
 while c64 checks useful overlap and throughput. Map registration, owner wake,
