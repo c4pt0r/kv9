@@ -90,10 +90,11 @@ That diagnostic predates event8 and two workers. Its 82/38-us stage means
 and CPU percentages are hypotheses for the current source, not its measured
 cost decomposition. No NIC/kernel ceiling or DPDK benefit is established.
 
-Next, repeat the existing bounded lifecycle trace on an exact two-worker-derived
-diagnostic under the same CPU placement and outcome/drain controls. Use the
-result to narrow either peer receive/owner dispatch/confirmation observation
-or completion delivery/receiver scheduling. Change one measured handoff while
+The [refreshed two-worker trace](RPC-PAIR-READ-LIFECYCLE.md) now passes its
+original CPU/fixture checks and independent lifecycle readback. Confirmation
+remains about 67 us and notification about 41 us in that sampled barrier.
+Next test global-queue polling on this two-worker control as a separate
+completion-scheduling interaction experiment. Change one mechanism while
 retaining persistent peer streaming, exact group identity, fresh quorum,
 successful-pump and applied-index fences. Do not infer gains by adding earlier
 percentages or extending these short runs to sustained capacity.
