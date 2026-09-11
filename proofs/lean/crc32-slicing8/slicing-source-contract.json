@@ -1,0 +1,41 @@
+{
+  "bitwise": {
+    "pub(crate) fn crc32(": "pub(crate) fn crc32(bytes: &[u8]) -> u32 {\n    crc32_parts(&[bytes])\n}",
+    "pub(crate) fn crc32_parts(": "pub(crate) fn crc32_parts(parts: &[&[u8]]) -> u32 {\n    let mut crc: u32 = 0xFFFF_FFFF;\n    for &b in parts.iter().flat_map(|part| part.iter()) {\n        crc ^= u32::from(b);\n        for _ in 0..8 {\n            let mask = (crc & 1).wrapping_neg();\n            crc = (crc >> 1) ^ (0xEDB8_8320 & mask);\n        }\n    }\n    !crc\n}"
+  },
+  "bitwise_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "byte": {
+    "const CRC32_TABLE:": "const CRC32_TABLE: [u32; 256] = {\n    let mut table = [0; 256];\n    let mut byte = 0;\n    while byte < table.len() {\n        let mut crc = byte as u32;\n        let mut bit = 0;\n        while bit < 8 {\n            let mask = (crc & 1).wrapping_neg();\n            crc = (crc >> 1) ^ (0xEDB8_8320 & mask);\n            bit += 1;\n        }\n        table[byte] = crc;\n        byte += 1;\n    }\n    table\n};",
+    "pub(crate) fn crc32(": "pub(crate) fn crc32(bytes: &[u8]) -> u32 {\n    crc32_parts(&[bytes])\n}",
+    "pub(crate) fn crc32_parts(": "pub(crate) fn crc32_parts(parts: &[&[u8]]) -> u32 {\n    let mut crc: u32 = 0xFFFF_FFFF;\n    for part in parts {\n        for &byte in *part {\n            crc = (crc >> 8) ^ CRC32_TABLE[((crc ^ u32::from(byte)) & 0xff) as usize];\n        }\n    }\n    !crc\n}"
+  },
+  "byte_inputs": {
+    "CRC32.lean": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01",
+    "RustTable.lean.in": "e56b58af76b33ab3c1a5c09ad684a286cc465c48ff882cc59b4bb02293171c9e",
+    "check-crc32-proof.py": "810a28389aeb9db21f2cef845d3be87e6e924486c3116087e3ac61e389c8ea6d",
+    "source-contract.json": "16c49fd8655a04f6a40ce756a02b4de3d0789557fabd9077b04f184b41ae6423"
+  },
+  "byte_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "byte_wal_sha256": "3651e5136ee6117819b27d38f5c788029ae0ec5941bf47ab16565b736c711478",
+  "candidate": {
+    "const CRC32_SLICING:": "const CRC32_SLICING: [[u32; 256]; 8] = {\n    let mut tables = [[0; 256]; 8];\n    tables[0] = CRC32_TABLE;\n    let mut slice = 1;\n    while slice < tables.len() {\n        let mut byte = 0;\n        while byte < 256 {\n            let prior = tables[slice - 1][byte];\n            tables[slice][byte] = (prior >> 8) ^ CRC32_TABLE[(prior & 0xff) as usize];\n            byte += 1;\n        }\n        slice += 1;\n    }\n    tables\n};",
+    "const CRC32_TABLE:": "const CRC32_TABLE: [u32; 256] = {\n    let mut table = [0; 256];\n    let mut byte = 0;\n    while byte < table.len() {\n        let mut crc = byte as u32;\n        let mut bit = 0;\n        while bit < 8 {\n            let mask = (crc & 1).wrapping_neg();\n            crc = (crc >> 1) ^ (0xEDB8_8320 & mask);\n            bit += 1;\n        }\n        table[byte] = crc;\n        byte += 1;\n    }\n    table\n};",
+    "pub(crate) fn crc32(": "pub(crate) fn crc32(bytes: &[u8]) -> u32 {\n    crc32_parts(&[bytes])\n}",
+    "pub(crate) fn crc32_parts(": "pub(crate) fn crc32_parts(parts: &[&[u8]]) -> u32 {\n    let mut crc: u32 = 0xFFFF_FFFF;\n    for part in parts {\n        let mut chunks = part.chunks_exact(8);\n        for chunk in &mut chunks {\n            let low = crc ^ u32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]);\n            crc = CRC32_SLICING[7][(low & 0xff) as usize]\n                ^ CRC32_SLICING[6][((low >> 8) & 0xff) as usize]\n                ^ CRC32_SLICING[5][((low >> 16) & 0xff) as usize]\n                ^ CRC32_SLICING[4][(low >> 24) as usize]\n                ^ CRC32_SLICING[3][usize::from(chunk[4])]\n                ^ CRC32_SLICING[2][usize::from(chunk[5])]\n                ^ CRC32_SLICING[1][usize::from(chunk[6])]\n                ^ CRC32_SLICING[0][usize::from(chunk[7])];\n        }\n        for &byte in chunks.remainder() {\n            crc = (crc >> 8) ^ CRC32_TABLE[((crc ^ u32::from(byte)) & 0xff) as usize];\n        }\n    }\n    !crc\n}"
+  },
+  "candidate_wal_sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a",
+  "mapping": {
+    "boundary": "Manually reviewed Rust-to-model mapping and Rust standard-library/compiler semantics; not a machine-checked Rust/iterator/compiler/WAL/IO refinement",
+    "fragments": "outer parts loop carries the same accumulator without reset; compiledSlicingParts; arbitrary empty parts admitted",
+    "from_le_bytes": "packed b0 b1 b2 b3; first byte occupies least significant eight bits",
+    "full_blocks": "chunks_exact(8) supplies consecutive, non-overlapping blocks in order; compiledSlicingFold consumes eight elements",
+    "index": "masked shift extracts byteAt low position; low>>24 already lies in 0..255",
+    "initial_final": "one initial 0xffffffff, one final bitwise complement, singleton wrapper unchanged",
+    "table_generation": "standalone rustc evaluates exact two const declarations; each of 256+2048 concrete entries checked by Lean kernel reduction",
+    "tail": "remainder supplies exactly the trailing 0..7 elements once, using compiledFold/actual CRC32_TABLE",
+    "u32": "BitVec 32 logical shifts, XOR, OR and wrapping arithmetic; byte conversion zero-extends"
+  },
+  "protocol": "kv9-crc32-slicing8-universal-v1",
+  "source": "crates/engine/src/wal.rs",
+  "version": 1
+}
