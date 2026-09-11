@@ -1,5 +1,9 @@
 # ReadIndex admission against the actual pending queue
 
+This document records the one-context parent. The current experimental branch
+uses the [two-context local admission window](READ-INDEX-WINDOW.md); the parent
+qualification and performance observations below do not qualify that change.
+
 This worktree reapplies the isolated read-credit change from `57ff6851` to the
 selected byte-table CRC source `ca0002c7`. The earlier implementation and its
 historical validation below used parent `5ee897a`. Those earlier recordings
