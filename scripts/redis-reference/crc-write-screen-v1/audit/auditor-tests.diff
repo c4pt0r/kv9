@@ -1,0 +1,145 @@
+--- /tmp/kv9-v3-workload-comparison-preparation/test_audit_contract.py
++++ /tmp/kv9-crc-write-audit-preparation/test_audit_contract.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Pure independent v3 auditor contracts; never execute a fixture or auditor main."""
++"""Pure independent CRC write auditor contracts; never execute a fixture or auditor main."""
+ import ast
+ import copy
+ import json
+@@ -22,6 +22,7 @@
+ 
+ WORKLOAD_ROWS = [('point-r000',1,0),('point-r050',1,50),('point-r100',1,100),
+                  ('batch64-r000',64,0),('batch64-r050',64,50),('batch64-r100',64,100)]
++MATRIX_WORKLOAD_ROWS = [('point-r000',1,0),('batch64-r000',64,0)]
+ 
+ 
+ def config(repeat,workers,workload,server):
+@@ -46,8 +47,8 @@
+     # Independently enumerate both physical orders. Do not call auditor or driver
+     # descriptor functions to manufacture their own expected inputs.
+     for repeat in (0,1):
+-        for workers in ((1,64) if repeat==0 else (64,1)):
+-            workloads=WORKLOAD_ROWS if repeat==0 else list(reversed(WORKLOAD_ROWS))
++        for workers in (64,):
++            workloads=MATRIX_WORKLOAD_ROWS if repeat==0 else list(reversed(MATRIX_WORKLOAD_ROWS))
+             for workload,batch,reads in workloads:
+                 for role in (('old','new','redis') if repeat==0 else ('redis','new','old')):
+                     server=None if role=='redis' else role
+@@ -57,9 +58,9 @@
+                     rows.append(dict(repeat=repeat,arm=f'{role}-{workload}',server_role=server,
+                         workload=workload,read_api=c['read_api'],write_api=c['write_api'],
+                         mix={0:'write',50:'mixed',100:'read'}[reads],target='kv9' if server else 'redis-memory',shared=shared))
+-    return dict(version=2,protocol_id='kv9-v3-workloads-c1-c64-v1',concurrency_points=[1,64],
++    return dict(version=2,protocol_id='kv9-crc-write-c64-v1',concurrency_points=[64],
+                 smoke=False,fixed_rates=None,attempts=[{} for _ in rows],cohort_inventory=rows,
+-                workload_cells=[[name.split('-r')[0],batch,reads] for name,batch,reads in WORKLOAD_ROWS],
++                workload_cells=[[name.split('-r')[0],batch,reads] for name,batch,reads in MATRIX_WORKLOAD_ROWS],
+                 storage_guards={'preflight':{'tmpfs':32*1024**3,'retention':96*1024**3},
+                                 'runtime':{'tmpfs':16*1024**3,'retention':64*1024**3}})
+ 
+@@ -121,26 +122,31 @@
+         compile(SOURCE.read_text(),str(SOURCE),'exec')
+         self.assertEqual(set(audit)&{'ROOT','OUT','args','result'},set())
+ 
+-    def test_exact_72_entire_reverse_order_and_run_ids(self):
++    def test_exact_12_entire_reverse_order_and_run_ids(self):
+         m=matrix();audit['validate_matrix_protocol'](m)
+         expected=[(d['repeat'],d['shared']['workers'],d['workload'],d['server_role']) for d in m['cohort_inventory']]
+         self.assertEqual(audit['expected_cohorts'](),expected)
+-        self.assertEqual(len(expected),72)
++        self.assertEqual(len(expected),12)
+         self.assertEqual([(d['repeat'],d['arm'],d['shared']['run_id']) for d in
+-                          [m['cohort_inventory'][i] for i in (0,18,36,54,71)]],
+-                         [(0,'old-point-r000','p00001'),(0,'old-point-r000','p00064'),
+-                          (1,'redis-batch64-r100','p10064'),(1,'redis-batch64-r100','p10001'),
+-                          (1,'old-point-r000','p10001')])
++                          [m['cohort_inventory'][i] for i in (0,3,6,9,11)]],
++                         [(0,'old-point-r000','p00064'),(0,'old-batch64-r000','p00064'),
++                          (1,'redis-batch64-r000','p10064'),(1,'redis-point-r000','p10064'),
++                          (1,'old-point-r000','p10064')])
+ 
+     def test_reject_partial_reverse_missing_duplicate_and_old_schedule(self):
+         bads=[]
+-        m=matrix();m['cohort_inventory'][36:]=m['cohort_inventory'][54:]+m['cohort_inventory'][36:54];bads.append(m)
+-        m=matrix();m['cohort_inventory'][18:36]=copy.deepcopy(m['cohort_inventory'][:18]);bads.append(m)
+-        m=matrix();m['cohort_inventory']=m['cohort_inventory'][:36];m['attempts']=[{}]*36;bads.append(m)
+-        m=matrix();m['cohort_inventory'][36:]=copy.deepcopy(m['cohort_inventory'][:36]);bads.append(m)
+-        m=matrix();m['attempts']=[{}]*48;bads.append(m)
++        m=matrix();m['cohort_inventory'][6:]=m['cohort_inventory'][9:]+m['cohort_inventory'][6:9];bads.append(m)
++        m=matrix();m['cohort_inventory'][3:6]=copy.deepcopy(m['cohort_inventory'][:3]);bads.append(m)
++        m=matrix();m['cohort_inventory']=m['cohort_inventory'][:6];m['attempts']=[{}]*6;bads.append(m)
++        m=matrix();m['cohort_inventory'][6:]=copy.deepcopy(m['cohort_inventory'][:6]);bads.append(m)
++        m=matrix();m['attempts']=[{}]*72;bads.append(m)
+         for m in bads:
+             with self.assertRaisesRegex(ValueError,'inventory/order'):audit['validate_matrix_protocol'](m)
++        for workload,batch,reads in [('point-r050',1,50),('batch64-r100',64,100)]:
++            m=matrix();m['workload_cells']=[[workload.split('-r')[0],batch,reads]]
++            with self.assertRaisesRegex(ValueError,'workload cells'):audit['validate_matrix_protocol'](m)
++        m=matrix();m['concurrency_points']=[1,64]
++        with self.assertRaisesRegex(ValueError,'protocol scope'):audit['validate_matrix_protocol'](m)
+ 
+     def test_reject_smoke_protocol_scope_and_wrong_timed_duration(self):
+         for field,value in [('smoke',True),('version',1),('version',True),('protocol_id','other'),
+@@ -160,34 +166,34 @@
+ 
+     def test_all_native_redis_v3_configs(self):
+         for repeat in (0,1):
+-            for workers in (1,64):
+-                for workload,_,_ in WORKLOAD_ROWS:
++            for workers in (64,):
++                for workload,_,_ in MATRIX_WORKLOAD_ROWS:
+                     for server in ('old','new',None):
+                         audit['validate_requested_config'](config(repeat,workers,workload,server),repeat,workers,workload,server)
+ 
+     def test_reject_changed_limits_and_v2_or_null_selector(self):
+-        for field,value in [('max_in_flight',64),('max_in_flight',True),('max_attempts',1),
++        for field,value in [('max_in_flight',1),('max_in_flight',True),('max_attempts',1),
+                             ('deadline_ms',3000),('retry_backoff_ms',0),('epoch_version',2)]:
+-            c=config(0,1,'point-r000','old');c['client'][field]=value
+-            with self.assertRaisesRegex(ValueError,'exact request config'):audit['validate_requested_config'](c,0,1,'point-r000','old')
++            c=config(0,64,'point-r000','old');c['client'][field]=value
++            with self.assertRaisesRegex(ValueError,'exact request config'):audit['validate_requested_config'](c,0,64,'point-r000','old')
+         for field,value in [('version',2),('write_api',None),('read_api','mget'),('write_api','mset'),
+-                            ('workers',64),('measure_ms',2000),('max_calls',100000),('read_percent',100),
+-                            ('run_id','p00064'),('value_bytes',64),('unexpected',1)]:
+-            c=config(0,1,'point-r000',None);c[field]=value
+-            with self.assertRaisesRegex(ValueError,'exact request config'):audit['validate_requested_config'](c,0,1,'point-r000',None)
++                            ('workers',1),('measure_ms',2000),('max_calls',100000),('read_percent',100),
++                            ('run_id','p00001'),('value_bytes',64),('unexpected',1)]:
++            c=config(0,64,'point-r000',None);c[field]=value
++            with self.assertRaisesRegex(ValueError,'exact request config'):audit['validate_requested_config'](c,0,64,'point-r000',None)
+         for repeat in (-1,2,True):
+-            with self.assertRaisesRegex(ValueError,'invalid repeat/concurrency'):audit['shared_config'](repeat,1,'point-r000')
++            with self.assertRaisesRegex(ValueError,'invalid repeat/concurrency'):audit['shared_config'](repeat,64,'point-r000')
+ 
+     def test_pairing_never_crosses_workload_concurrency_repeat(self):
+         cases=[dict(repeat=r,concurrency=c,workload=w,arm=role+'-'+w,marker=(r,c,w,role))
+-               for r in (0,1) for c in (1,64) for w,_,_ in WORKLOAD_ROWS for role in ('old','new')]
++               for r in (0,1) for c in (64,) for w,_,_ in WORKLOAD_ROWS for role in ('old','new')]
+         for r in (0,1):
+-            for c in (1,64):
++            for c in (64,):
+                 for w,_,_ in WORKLOAD_ROWS:
+                     old,new=audit['paired_cases'](cases,r,c,w)
+                     self.assertEqual((old['marker'],new['marker']),((r,c,w,'old'),(r,c,w,'new')))
+-        with self.assertRaisesRegex(ValueError,'missing/duplicate'):audit['paired_cases'](cases[1:],0,1,'point-r000')
+-        with self.assertRaisesRegex(ValueError,'missing/duplicate'):audit['paired_cases'](cases+[cases[0]],0,1,'point-r000')
++        with self.assertRaisesRegex(ValueError,'missing/duplicate'):audit['paired_cases'](cases[1:],0,64,'point-r000')
++        with self.assertRaisesRegex(ValueError,'missing/duplicate'):audit['paired_cases'](cases+[cases[0]],0,64,'point-r000')
+ 
+     def test_phase_api_labels_and_mixed_population(self):
+         for workload,_,_ in WORKLOAD_ROWS:
+@@ -272,8 +278,10 @@
+     def test_exact_source_and_client_role_pins(self):
+         self.assertEqual(audit['PINS']['old'],('5ee897a2f58c57bdf17ea1757c96224adf0f0dbb',
+             '0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711'))
+-        self.assertEqual(audit['PINS']['new'],('57ff6851e40ed63c837189d6eb0a11190704725a',
+-            '6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30'))
++        self.assertEqual(audit['PINS']['new'],('ca0002c7f8e9ee6f595efcc9f4151085ccce87cb',
++            'b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13'))
++        self.assertEqual(audit['SERVER_MANIFESTS']['new'],
++            '8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8')
+         self.assertEqual(audit['CLIENT_REV'],audit['REDIS_REV'])
+         self.assertEqual(audit['CLIENT_REV'],'0be806d9671e2c50701a64aa7889c8859b7648ba')
+         self.assertEqual(set(audit['ROLE_PATHS']),{'old','new','client','redis'})

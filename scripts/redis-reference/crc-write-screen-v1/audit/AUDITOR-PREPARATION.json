@@ -1,0 +1,99 @@
+{
+  "ready": true,
+  "frozen": true,
+  "prepared_unix_ns": 1789137544481044217,
+  "actual_audit_executed": false,
+  "runtime_release_required": true,
+  "protocol_id": "kv9-crc-write-c64-v1",
+  "candidate_pins": {
+    "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+    "server_sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+    "manifest_sha256": "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8",
+    "source_files": 590,
+    "clean": true
+  },
+  "contracts": {
+    "argv": [
+      "/usr/bin/python3",
+      "/tmp/kv9-crc-write-audit-preparation/test_audit_contract.py"
+    ],
+    "started_unix_ns": 1789137453803253662,
+    "cpu_affinity": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "script_sha256": "220db66c247a5bd59f03a716f208fa859988b53393d540a5ac3ef400c02d30c8",
+    "auditor_sha256": "5622e0ad147d287948c9c1d350fce036f3dd34f228ef2c37f42fef65653920b3",
+    "pid": 2306784,
+    "exit_code": 0,
+    "completed_unix_ns": 1789137453866984491,
+    "tests_passed": 15,
+    "terminal_tool_chunk": "10cc01"
+  },
+  "descriptor_readback": {
+    "timed": 12,
+    "smoke": 6,
+    "independently_enumerated_descriptors_equal_driver_and_protocol": true
+  },
+  "counts": {
+    "cohorts": 12,
+    "lifetimes": 40,
+    "drains": 24,
+    "writer_bindings": 24,
+    "endpoint_envelopes_inventory_only": 48
+  },
+  "source_delta": "Protocol/path/pins and derived counts only; every function body is byte-identical to predecessor except validate_matrix_protocol required scope/count/message. Explicit wrapper arguments pin new candidate path; wrapper bytes unchanged.",
+  "changed_function_bodies": [
+    "validate_matrix_protocol"
+  ],
+  "scope": "Two forward/reverse10-second c64 write-only point1/batch64 old5ee/newca0002c/Redis diagnostic. Same outcomes, histograms, mutable dataset bounds, storage/resource, source/lifetime, drain, retention and exact outer restoration predicates. No success-only filtering, exact issued nonce ledger, full-history, durability parity, significance or promotion claim.",
+  "argv_template_after_root_terminal_release": [
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-write-audit-preparation/audit.py",
+    "--run",
+    "<ROOT_TERMINAL_COHORTS_DIRECTORY>",
+    "--output",
+    "/tmp/kv9-crc-write-audit-preparation/results-first",
+    "--expected-driver-sha256",
+    "6d28afd51d28fe36b0ca3993a024f044cd918d99e0b8fcb17aaffc78b1c82ac8",
+    "--root-session",
+    "<ROOT_TERMINAL_SESSION>",
+    "--root-exit-code",
+    "0",
+    "--successful-arms",
+    "12"
+  ],
+  "preserved_provisional_directory": "/tmp/kv9-crc-write-audit-preparation/provisional-first",
+  "files": {
+    "/tmp/kv9-crc-write-audit-preparation/audit.py": "5622e0ad147d287948c9c1d350fce036f3dd34f228ef2c37f42fef65653920b3",
+    "/tmp/kv9-crc-write-audit-preparation/test_audit_contract.py": "220db66c247a5bd59f03a716f208fa859988b53393d540a5ac3ef400c02d30c8",
+    "/tmp/kv9-crc-write-audit-preparation/audit-contract-final.log": "db982907373ff71890cbb7f666590a51f23ad52374ebb44d10cd278ad5455c1a",
+    "/tmp/kv9-crc-write-audit-preparation/audit-contract-final.json": "4700d06a965d5bfb4bf8e3f18e350e4229288ed9ad153fb2e9a780215bd3c3d6",
+    "/tmp/kv9-crc-write-audit-preparation/auditor.diff": "c3bf35ff598ac6c6738c1e1ae3049966d02a1559a90a4544ab2604e55bc7ee29",
+    "/tmp/kv9-crc-write-audit-preparation/auditor-tests.diff": "9126fd6bc2045688770c2d8344da69140df2b8e6c8a5cda19f9ed5f034bfe73e",
+    "/tmp/kv9-crc-write-screen-preparation/matched-driver.py": "6d28afd51d28fe36b0ca3993a024f044cd918d99e0b8fcb17aaffc78b1c82ac8",
+    "/tmp/kv9-crc-write-screen-preparation/protocol.json": "f2340f075474c907a8527c7431991f64c4145c26c29fd76e140fc6f54b8ed1c4",
+    "/tmp/kv9-crc-write-root-preparation/driver-arguments.json": "ba0968f92c52e648742fd223020e9d0cc01da4091866a1799acb7fe12081128d",
+    "/tmp/kv9-crc-write-root-preparation/isolate-and-run.py": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "/tmp/kv9-v3-workload-comparison-preparation/audit.py": "7c6e35ff255a2f55a398b032d768f6e47297962388e9b868ce86dc55050d4c1f",
+    "/tmp/kv9-v3-workload-comparison-preparation/test_audit_contract.py": "6ad08c961b92ad4501f6a40c07c35e4bd33aac46693d9a442b4c0f313549104e"
+  }
+}

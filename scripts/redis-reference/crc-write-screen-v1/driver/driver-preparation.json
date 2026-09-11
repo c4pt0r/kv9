@@ -1,0 +1,47 @@
+{
+  "base_driver": "/tmp/kv9-v3-workload-comparison-preparation/matched-driver.py",
+  "base_driver_sha256": "e1b839d357658db56b2cf4235e1de7089453e61853ada07015e28d165f1966de",
+  "build_launched": false,
+  "candidate_build": "/tmp/kv9-wal-crc32-release-first",
+  "candidate_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "candidate_source": "/tmp/kv9-wal-crc32-table",
+  "files": {
+    "driver-preparation.diff": "222bbe420b60dbaebf54064f519e6127cfb661bc8079ed5b99166ad23b28ccfc",
+    "final-pins.diff": "a20ca4646c0c5c4772b3912e4ce0c6d771cd4becfae4eecbf221d51a178f7993",
+    "matched-driver.py": "6d28afd51d28fe36b0ca3993a024f044cd918d99e0b8fcb17aaffc78b1c82ac8",
+    "protocol.json": "f2340f075474c907a8527c7431991f64c4145c26c29fd76e140fc6f54b8ed1c4",
+    "test_driver.py": "98234cbc3ac4d412241dad10efafe955ec10c89e81ed9445cba7001bc9ce86b5"
+  },
+  "offline_contracts": {
+    "count": 8,
+    "log_sha256": "f4219c57d831a52cc9171f8344b20cb1392ad28ca4dd047087fab3f410601985",
+    "result": "/tmp/kv9-crc-write-screen-preparation/driver-contracts-final-first.json",
+    "sha256": "9c56b192cd5273868f0202cc5288d5ee8b108168cd2400345e3618268fa64be2"
+  },
+  "redis_default_executable_checked_sha256": "1b2950213684d355e0e49fe6702c7bfb9d40b78f0da9ce289fc0e8f2a295e540",
+  "retained_pending_draft": {
+    "driver-preparation.diff": "84501c70dcd16c2a154129ab6bbe9cb67074d3768547f93a4a59553e0d5b6acc",
+    "driver-preparation.json": "25bf7d317d2295b36a3a147e3a20baed138d130c75e8d27502f4b5c20dbc0372",
+    "matched-driver.py": "43a5868c847865858d2d6819d75bccb6b4e5cd6b2299898a5c243962d9ebe553",
+    "protocol.json": "7a58d543cbffcf4514b5ce5d03e342fd478d8c68b57440333327996ee22602d7",
+    "test_driver.py": "98234cbc3ac4d412241dad10efafe955ec10c89e81ed9445cba7001bc9ce86b5"
+  },
+  "root_owned_launch_inputs_not_yet_present": [
+    "isolate-and-run.py",
+    "driver-arguments.json"
+  ],
+  "runtime_input_readback": {
+    "path": "/tmp/kv9-crc-write-screen-preparation/runtime-input-readback-first.json",
+    "sha256": "e6aad3e78a03d99347e630984218992f5818b639593a0d13d32a7772227a6047",
+    "source_counts": {
+      "client": 581,
+      "new": 590,
+      "old": 584,
+      "redis": 581
+    }
+  },
+  "runtime_launched": false,
+  "source_file_count": 590,
+  "status": "driver/protocol ready and frozen; eight contracts and actual role input readback passed; root owns remaining wrapper/arguments/auditor and all execution",
+  "unchanged_source_or_runtime_work": true
+}

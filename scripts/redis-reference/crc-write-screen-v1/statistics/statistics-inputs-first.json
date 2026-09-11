@@ -1,0 +1,104 @@
+{
+  "audit_sha256": "fb11e1a4f113bad9ac48070f4ef462f72a03284250c47f4cdd65a8dcadf953ab",
+  "core_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+  "files": {
+    "/tmp/kv9-crc-write-timing-first/cohorts/000-old-point-r000-p00064/resource-coverage.json": {
+      "bytes": 4021,
+      "sha256": "61f6ef943d1a5ce2bb3b3c2feb5db90c7a81e016bf0945ecf31395059370d47e"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/000-old-point-r000-p00064/run/report.json": {
+      "bytes": 1445054,
+      "sha256": "9ec973adbdc33d58a8abcc849cf7f9ff76e73eabdcbe5f59e3678d2a81573e02"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/001-new-point-r000-p00064/resource-coverage.json": {
+      "bytes": 4206,
+      "sha256": "b3a11e87739d94e8c6ade9cb3e0ef75b8baf70fd3b305e250fcc452717f31c08"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/001-new-point-r000-p00064/run/report.json": {
+      "bytes": 1445170,
+      "sha256": "cda9afabd7b894ddf0c737d9079a185652b71af16de0bfadf1fc4ca1a3284cac"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/002-redis-point-r000-p00064/resource-coverage.json": {
+      "bytes": 851,
+      "sha256": "d0b4b77089b4aefe795517913415026d50cc3ca7380bdbf51ba94e01727004f0"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/002-redis-point-r000-p00064/run/report.json": {
+      "bytes": 927861,
+      "sha256": "304e2be600dc7ad6fee1bb5eb3361be1668eada007cea1854bfd28198ccec772"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/003-old-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 4188,
+      "sha256": "a4f5481c92fc9037792b646f1cdc067f6a8898d3bdaf0628562962a983c11686"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/003-old-batch64-r000-p00064/run/report.json": {
+      "bytes": 1443785,
+      "sha256": "cedee7f0674c44f7ba5ec3e94cf7237de6c810a007849d66b5e31e069cb7fc7b"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/004-new-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 3282,
+      "sha256": "aae3978f703d9f656815940c4dea74b20f5716855d580687f9c4c01093d66dbd"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/004-new-batch64-r000-p00064/run/report.json": {
+      "bytes": 1443908,
+      "sha256": "e1bd9627afc1101265359e476f55089d699176fcb609a313130e3c33a592a902"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/005-redis-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 854,
+      "sha256": "c8e6fc9457d9938e682f8ac6f3b843519308368309a99f2463f4752949b1b082"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/005-redis-batch64-r000-p00064/run/report.json": {
+      "bytes": 927991,
+      "sha256": "bff25feb1d347b04c80b3336fac6c80653d6238ec2f41789919dec4b88a91840"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/006-redis-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 855,
+      "sha256": "27823e4dd9cbef8751d4044d0c7aef37877b99914b0a5470a01828aacd6de34e"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/006-redis-batch64-r000-p10064/run/report.json": {
+      "bytes": 928005,
+      "sha256": "7f927f5f8f1dc390c9e19e8b2e091f4515fd9558a0842649f8b648ddfc8796f6"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/007-new-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 2780,
+      "sha256": "4ae36dad44a7d779cbb6b9da8cbe6196c2238808ec3f11b3819535064ed1535f"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/007-new-batch64-r000-p10064/run/report.json": {
+      "bytes": 1444028,
+      "sha256": "d26c619d5f6e74e35cf42c067557e7936c2673c4677c89bea2381dfe83432f1b"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/008-old-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 4024,
+      "sha256": "9b50e9c960d918eaa5006bf981e9bff141cde242d8f3a34fbc825559b61bb635"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/008-old-batch64-r000-p10064/run/report.json": {
+      "bytes": 1443779,
+      "sha256": "2242336a4865ea7ee1c91d7984d39a32907e1de5d993afc79da8c28b991d696d"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/009-redis-point-r000-p10064/resource-coverage.json": {
+      "bytes": 852,
+      "sha256": "464a0025e608c0aa2dd9dfc6c737303428389282ce43b67eefd335723dd3e5f1"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/009-redis-point-r000-p10064/run/report.json": {
+      "bytes": 927851,
+      "sha256": "abceaeebd21aa5905b541c2946b39eac86499b22236b309c51eb6f938ce5a97e"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/010-new-point-r000-p10064/resource-coverage.json": {
+      "bytes": 4363,
+      "sha256": "7b4463937b25a323347472b0e5168fc50a3773dcb773e62d4bf06733f54e6653"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/010-new-point-r000-p10064/run/report.json": {
+      "bytes": 1445183,
+      "sha256": "905d47e2834855267a7ba474216e69015319efb3737fa22fe1da45506fce1c09"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/011-old-point-r000-p10064/resource-coverage.json": {
+      "bytes": 3874,
+      "sha256": "e8f9e5595e49965a3ed517e01e0a298396a32bc3d1519a3b61471900797ffe30"
+    },
+    "/tmp/kv9-crc-write-timing-first/cohorts/011-old-point-r000-p10064/run/report.json": {
+      "bytes": 1445130,
+      "sha256": "27f2d97e3b702d94799f492d4a03c445f691faf641e5020b57494f1d93589e63"
+    }
+  },
+  "gate_sha256": "0b12dfed15e4ab596c89dace21c7878b3d1f45d932a339ece3705918c515afda",
+  "reader_sha256": "1bad817cc3767834b510296f4373e90e65e41b11d07a748e06dae24925461598"
+}

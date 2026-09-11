@@ -1,0 +1,7 @@
+{
+  "original": "/tmp/kv9-read-group-credit-process-preparation/runner.py",
+  "original_sha256": "8b3993c0a2a4d2e7b2f8f721a41b5a6c2886f559ade835e8f4f7aa6eeb49cc67",
+  "runner_sha256": "1d27b82d3ac1e1b6eee17968cd143b669d0f90adad6166fa86e3199c748b2677",
+  "change": "Source path only; existing fixture placement and assertions unchanged.",
+  "runtime_started": false
+}

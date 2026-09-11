@@ -1,0 +1,10 @@
+{
+  "prepared_unix_ns": 1789138174088794565,
+  "analysis_executed": false,
+  "requires": "accepted independent audit and terminal audit gate after timing session 63194",
+  "files": {
+    "core.py": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+    "derive.py": "1bad817cc3767834b510296f4373e90e65e41b11d07a748e06dae24925461598",
+    "preparation.json": "eb25a7b734ccb073ce2c654ad3f155e9168d5d5f5c667ff767c6a897c835cb92"
+  }
+}

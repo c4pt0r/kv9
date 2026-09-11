@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-write-screen-preparation/test_driver.py",
+    "-v"
+  ],
+  "pid": 2309232,
+  "exit_code": 0,
+  "started_unix_ns": 1789137470328068798,
+  "ended_unix_ns": 1789137470658874821,
+  "affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "log_sha256": "f4219c57d831a52cc9171f8344b20cb1392ad28ca4dd047087fab3f410601985",
+  "sources": {
+    "matched-driver.py": "6d28afd51d28fe36b0ca3993a024f044cd918d99e0b8fcb17aaffc78b1c82ac8",
+    "protocol.json": "f2340f075474c907a8527c7431991f64c4145c26c29fd76e140fc6f54b8ed1c4",
+    "test_driver.py": "98234cbc3ac4d412241dad10efafe955ec10c89e81ed9445cba7001bc9ce86b5"
+  },
+  "scope": "same eight offline contracts; no server, client workload, build or fixture launch"
+}

@@ -108,6 +108,11 @@ broader read/mixed checks and exact-source process/Chaos Mesh acceptance before
 general promotion. The owned-buffer and persistent-map hypotheses remain
 separate follow-ons. No GitHub CI is dispatched.
 
+The [completed first write screen](CRC-WRITE-SCREENING.md) now measures
+**+4.476% point PUT and +38.486% BatchPut(64) pooled throughput**, with improved
+mean/p99 in both repeats. Independent accounting and exact-source process
+recovery pass; broader workloads and Chaos Mesh acceptance remain open.
+
 The original recordings, source bindings, exact decoder and instruction
 attribution remain under `/tmp/kv9-write-apply-profile-first`. Large raw WAL
 and perf data are retained locally. The write-stage endpoint means from the

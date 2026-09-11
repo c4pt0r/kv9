@@ -1,0 +1,14 @@
+PASS: matched cohort 000-old-point-r000-p00064
+PASS: matched cohort 001-new-point-r000-p00064
+PASS: matched cohort 002-redis-point-r000-p00064
+PASS: matched cohort 003-old-batch64-r000-p00064
+PASS: matched cohort 004-new-batch64-r000-p00064
+PASS: matched cohort 005-redis-batch64-r000-p00064
+PASS: matched cohort 006-redis-batch64-r000-p10064
+PASS: matched cohort 007-new-batch64-r000-p10064
+PASS: matched cohort 008-old-batch64-r000-p10064
+PASS: matched cohort 009-redis-point-r000-p10064
+PASS: matched cohort 010-new-point-r000-p10064
+PASS: matched cohort 011-old-point-r000-p10064
+PASS: all matched cohorts complete; independent final audit remains required
+{"complete": true, "restoration_complete": true, "exclusive_host": false, "child_exit_code": 0, "child_cleanup_errors": [], "deferred_cleanup_signals": []}

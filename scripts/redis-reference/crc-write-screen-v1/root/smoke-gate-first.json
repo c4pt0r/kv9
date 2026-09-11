@@ -1,0 +1,317 @@
+{
+  "complete": true,
+  "smoke_session": 94621,
+  "smoke_exit_code": 0,
+  "terminal_tool_chunk": "d080dc",
+  "checked_unix_ns": 1789137980185573304,
+  "matrix_sha256": "77cf642167c68532168467790bd4a87cd3eba00dee760f767ed65170e3604daa",
+  "measured_calls": 1506767,
+  "all_measured_success_single_attempt": true,
+  "cases": [
+    {
+      "index": 0,
+      "directory": "/tmp/kv9-crc-write-smoke-first/000-old-point-r000-p00064",
+      "report_sha256": "572d051fed40fd79941ce68b1737726899e21a361aa4b8d50ed70e46bab8a3dc",
+      "measured_calls": 266332,
+      "phases": {
+        "initialization": {
+          "outcomes": {
+            "success": 8194,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 8195,
+          "extra_attempts": 1
+        },
+        "measurement": {
+          "outcomes": {
+            "success": 266332,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 266332,
+          "extra_attempts": 0
+        },
+        "verification": {
+          "outcomes": {
+            "success": 4097,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 4097,
+          "extra_attempts": 0
+        },
+        "warmup": {
+          "outcomes": {
+            "success": 128,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 128,
+          "extra_attempts": 0
+        }
+      },
+      "complete": true
+    },
+    {
+      "index": 1,
+      "directory": "/tmp/kv9-crc-write-smoke-first/001-new-point-r000-p00064",
+      "report_sha256": "c60975272608974ac35aa329f01c2fd502ea893ed574e233e70e154c5a5be1f1",
+      "measured_calls": 281774,
+      "phases": {
+        "initialization": {
+          "outcomes": {
+            "success": 8194,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 8195,
+          "extra_attempts": 1
+        },
+        "measurement": {
+          "outcomes": {
+            "success": 281774,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 281774,
+          "extra_attempts": 0
+        },
+        "verification": {
+          "outcomes": {
+            "success": 4097,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 4097,
+          "extra_attempts": 0
+        },
+        "warmup": {
+          "outcomes": {
+            "success": 128,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 128,
+          "extra_attempts": 0
+        }
+      },
+      "complete": true
+    },
+    {
+      "index": 2,
+      "directory": "/tmp/kv9-crc-write-smoke-first/002-redis-point-r000-p00064",
+      "report_sha256": "5dad3a9bc0ffab9dea48c20d32ef8d7175c29615f75ea8baa213e63d3b990731",
+      "measured_calls": 737365,
+      "phases": {
+        "initialization": {
+          "outcomes": {
+            "success": 8194,
+            "unknown_write": 0,
+            "read_failure": 0
+          },
+          "attempts": 8194,
+          "extra_attempts": 0
+        },
+        "measurement": {
+          "outcomes": {
+            "success": 737365,
+            "unknown_write": 0,
+            "read_failure": 0
+          },
+          "attempts": 737365,
+          "extra_attempts": 0
+        },
+        "verification": {
+          "outcomes": {
+            "success": 4097,
+            "unknown_write": 0,
+            "read_failure": 0
+          },
+          "attempts": 4097,
+          "extra_attempts": 0
+        },
+        "warmup": {
+          "outcomes": {
+            "success": 128,
+            "unknown_write": 0,
+            "read_failure": 0
+          },
+          "attempts": 128,
+          "extra_attempts": 0
+        }
+      },
+      "complete": true
+    },
+    {
+      "index": 3,
+      "directory": "/tmp/kv9-crc-write-smoke-first/003-old-batch64-r000-p00064",
+      "report_sha256": "ead0056a4a5d15054328961c02636a2a0bdd610cbc4113a80fd69b8fef6ad344",
+      "measured_calls": 23920,
+      "phases": {
+        "initialization": {
+          "outcomes": {
+            "success": 130,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 131,
+          "extra_attempts": 1
+        },
+        "measurement": {
+          "outcomes": {
+            "success": 23920,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 23920,
+          "extra_attempts": 0
+        },
+        "verification": {
+          "outcomes": {
+            "success": 65,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 65,
+          "extra_attempts": 0
+        },
+        "warmup": {
+          "outcomes": {
+            "success": 128,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 128,
+          "extra_attempts": 0
+        }
+      },
+      "complete": true
+    },
+    {
+      "index": 4,
+      "directory": "/tmp/kv9-crc-write-smoke-first/004-new-batch64-r000-p00064",
+      "report_sha256": "8018b987108ea919e133d9da84b9c32b3c791f794cd5c122d980775accb84e1b",
+      "measured_calls": 36491,
+      "phases": {
+        "initialization": {
+          "outcomes": {
+            "success": 130,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 131,
+          "extra_attempts": 1
+        },
+        "measurement": {
+          "outcomes": {
+            "success": 36491,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 36491,
+          "extra_attempts": 0
+        },
+        "verification": {
+          "outcomes": {
+            "success": 65,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 65,
+          "extra_attempts": 0
+        },
+        "warmup": {
+          "outcomes": {
+            "success": 128,
+            "refused": 0,
+            "unknown_write": 0,
+            "read_failure": 0,
+            "client_rejected": 0
+          },
+          "attempts": 128,
+          "extra_attempts": 0
+        }
+      },
+      "complete": true
+    },
+    {
+      "index": 5,
+      "directory": "/tmp/kv9-crc-write-smoke-first/005-redis-batch64-r000-p00064",
+      "report_sha256": "ad609f3b14c8c0ad3a993f1b6f39b0f0bb20e68504b8f1713844351357518075",
+      "measured_calls": 160885,
+      "phases": {
+        "initialization": {
+          "outcomes": {
+            "success": 130,
+            "unknown_write": 0,
+            "read_failure": 0
+          },
+          "attempts": 130,
+          "extra_attempts": 0
+        },
+        "measurement": {
+          "outcomes": {
+            "success": 160885,
+            "unknown_write": 0,
+            "read_failure": 0
+          },
+          "attempts": 160885,
+          "extra_attempts": 0
+        },
+        "verification": {
+          "outcomes": {
+            "success": 65,
+            "unknown_write": 0,
+            "read_failure": 0
+          },
+          "attempts": 65,
+          "extra_attempts": 0
+        },
+        "warmup": {
+          "outcomes": {
+            "success": 128,
+            "unknown_write": 0,
+            "read_failure": 0
+          },
+          "attempts": 128,
+          "extra_attempts": 0
+        }
+      },
+      "complete": true
+    }
+  ],
+  "launch_inputs_unchanged": true,
+  "timing_started": false,
+  "scope": "Correctness smoke; no performance comparison acceptance or full-history claim"
+}

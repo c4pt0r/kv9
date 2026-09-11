@@ -1,0 +1,13 @@
+PASS: retained diagnostic cohort 0 old-point-r000 c64
+PASS: retained diagnostic cohort 1 new-point-r000 c64
+PASS: retained diagnostic cohort 2 redis-point-r000 c64
+PASS: retained diagnostic cohort 3 old-batch64-r000 c64
+PASS: retained diagnostic cohort 4 new-batch64-r000 c64
+PASS: retained diagnostic cohort 5 redis-batch64-r000 c64
+PASS: retained diagnostic cohort 6 redis-batch64-r000 c64
+PASS: retained diagnostic cohort 7 new-batch64-r000 c64
+PASS: retained diagnostic cohort 8 old-batch64-r000 c64
+PASS: retained diagnostic cohort 9 redis-point-r000 c64
+PASS: retained diagnostic cohort 10 new-point-r000 c64
+PASS: retained diagnostic cohort 11 old-point-r000 c64
+PASS: twelve CRC write c64 matched cohorts and exact outer restoration accepted

@@ -1,0 +1,1236 @@
+{
+  "attempts": [
+    {
+      "guided_unknown": false,
+      "prepare_ranges": false,
+      "states": 194,
+      "unknown_effect_limit": 0,
+      "verdict": "valid"
+    }
+  ],
+  "coverage": {
+    "kinds": {
+      "batch_get": 66,
+      "batch_put": 64,
+      "delete": 18,
+      "get": 19,
+      "put": 17
+    },
+    "operations": 184,
+    "outcomes": {
+      "ok": 169,
+      "unknown": 15
+    },
+    "successful": {
+      "batch_get": 61,
+      "batch_put": 58,
+      "delete": 17,
+      "get": 17,
+      "put": 16
+    },
+    "successful_by_phase": {
+      "initialization": {
+        "batch_get": 1,
+        "batch_put": 1
+      },
+      "measure": {
+        "batch_get": 59,
+        "batch_put": 57,
+        "delete": 17,
+        "get": 17,
+        "put": 16
+      },
+      "verify": {
+        "batch_get": 1
+      }
+    }
+  },
+  "elapsed_seconds": 0.01350398687645793,
+  "states": 194,
+  "verdict": "valid",
+  "witness": [
+    {
+      "before_event": 1,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 0
+    },
+    {
+      "before_event": 3,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 1
+    },
+    {
+      "before_event": 8,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 2
+    },
+    {
+      "before_event": 9,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 3
+    },
+    {
+      "before_event": 10,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 4
+    },
+    {
+      "before_event": 14,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 5
+    },
+    {
+      "before_event": 16,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 7
+    },
+    {
+      "before_event": 17,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 8
+    },
+    {
+      "before_event": 18,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 6
+    },
+    {
+      "before_event": 22,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 9
+    },
+    {
+      "before_event": 22,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 10
+    },
+    {
+      "before_event": 24,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 11
+    },
+    {
+      "before_event": 27,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 12
+    },
+    {
+      "before_event": 29,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 15
+    },
+    {
+      "before_event": 30,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 14
+    },
+    {
+      "before_event": 31,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 13
+    },
+    {
+      "before_event": 36,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 16
+    },
+    {
+      "before_event": 37,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 19
+    },
+    {
+      "before_event": 38,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 18
+    },
+    {
+      "before_event": 39,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 17
+    },
+    {
+      "before_event": 44,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 20
+    },
+    {
+      "before_event": 46,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 23
+    },
+    {
+      "before_event": 47,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 21
+    },
+    {
+      "before_event": 47,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 22
+    },
+    {
+      "before_event": 49,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 24
+    },
+    {
+      "before_event": 53,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 25
+    },
+    {
+      "before_event": 55,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 26
+    },
+    {
+      "before_event": 57,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 27
+    },
+    {
+      "before_event": 58,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 28
+    },
+    {
+      "before_event": 60,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 30
+    },
+    {
+      "before_event": 61,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 29
+    },
+    {
+      "before_event": 64,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 32
+    },
+    {
+      "before_event": 67,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 31
+    },
+    {
+      "before_event": 70,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 34
+    },
+    {
+      "before_event": 71,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 33
+    },
+    {
+      "before_event": 72,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 35
+    },
+    {
+      "before_event": 73,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 36
+    },
+    {
+      "before_event": 78,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 37
+    },
+    {
+      "before_event": 79,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 38
+    },
+    {
+      "before_event": 80,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 40
+    },
+    {
+      "before_event": 81,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 39
+    },
+    {
+      "before_event": 83,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 41
+    },
+    {
+      "before_event": 88,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 44
+    },
+    {
+      "before_event": 89,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 43
+    },
+    {
+      "before_event": 122,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 59
+    },
+    {
+      "before_event": 124,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 60
+    },
+    {
+      "before_event": 126,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 63
+    },
+    {
+      "before_event": 127,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 61
+    },
+    {
+      "before_event": 127,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 64
+    },
+    {
+      "before_event": 129,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 62
+    },
+    {
+      "before_event": 131,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 65
+    },
+    {
+      "before_event": 135,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 66
+    },
+    {
+      "before_event": 136,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 67
+    },
+    {
+      "before_event": 138,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 68
+    },
+    {
+      "before_event": 142,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 70
+    },
+    {
+      "before_event": 143,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 69
+    },
+    {
+      "before_event": 144,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 71
+    },
+    {
+      "before_event": 144,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 72
+    },
+    {
+      "before_event": 150,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 74
+    },
+    {
+      "before_event": 150,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 73
+    },
+    {
+      "before_event": 154,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 75
+    },
+    {
+      "before_event": 155,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 78
+    },
+    {
+      "before_event": 156,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 76
+    },
+    {
+      "before_event": 157,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 77
+    },
+    {
+      "before_event": 162,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 79
+    },
+    {
+      "before_event": 164,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 81
+    },
+    {
+      "before_event": 165,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 82
+    },
+    {
+      "before_event": 166,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 80
+    },
+    {
+      "before_event": 168,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 83
+    },
+    {
+      "before_event": 171,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 84
+    },
+    {
+      "before_event": 173,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 85
+    },
+    {
+      "before_event": 176,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 86
+    },
+    {
+      "before_event": 177,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 87
+    },
+    {
+      "before_event": 179,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 89
+    },
+    {
+      "before_event": 180,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 88
+    },
+    {
+      "before_event": 184,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 90
+    },
+    {
+      "before_event": 185,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 91
+    },
+    {
+      "before_event": 188,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 93
+    },
+    {
+      "before_event": 189,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 92
+    },
+    {
+      "before_event": 192,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 94
+    },
+    {
+      "before_event": 193,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 95
+    },
+    {
+      "before_event": 196,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 97
+    },
+    {
+      "before_event": 197,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 96
+    },
+    {
+      "before_event": 200,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 98
+    },
+    {
+      "before_event": 201,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 99
+    },
+    {
+      "before_event": 204,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 101
+    },
+    {
+      "before_event": 205,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 102
+    },
+    {
+      "before_event": 205,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 103
+    },
+    {
+      "before_event": 205,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 100
+    },
+    {
+      "before_event": 209,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 104
+    },
+    {
+      "before_event": 214,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 105
+    },
+    {
+      "before_event": 215,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 106
+    },
+    {
+      "before_event": 216,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 107
+    },
+    {
+      "before_event": 219,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 108
+    },
+    {
+      "before_event": 222,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 109
+    },
+    {
+      "before_event": 222,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 110
+    },
+    {
+      "before_event": 224,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 111
+    },
+    {
+      "before_event": 227,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 112
+    },
+    {
+      "before_event": 229,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 115
+    },
+    {
+      "before_event": 230,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 114
+    },
+    {
+      "before_event": 231,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 113
+    },
+    {
+      "before_event": 236,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 116
+    },
+    {
+      "before_event": 238,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 118
+    },
+    {
+      "before_event": 238,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 119
+    },
+    {
+      "before_event": 240,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 117
+    },
+    {
+      "before_event": 244,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 120
+    },
+    {
+      "before_event": 246,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 122
+    },
+    {
+      "before_event": 247,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 123
+    },
+    {
+      "before_event": 248,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 121
+    },
+    {
+      "before_event": 250,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 124
+    },
+    {
+      "before_event": 250,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 125
+    },
+    {
+      "before_event": 256,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 126
+    },
+    {
+      "before_event": 257,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 127
+    },
+    {
+      "before_event": 258,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 129
+    },
+    {
+      "before_event": 259,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 128
+    },
+    {
+      "before_event": 261,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 130
+    },
+    {
+      "before_event": 266,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 131
+    },
+    {
+      "before_event": 267,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 132
+    },
+    {
+      "before_event": 267,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 133
+    },
+    {
+      "before_event": 269,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 134
+    },
+    {
+      "before_event": 274,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 135
+    },
+    {
+      "before_event": 275,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 136
+    },
+    {
+      "before_event": 275,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 137
+    },
+    {
+      "before_event": 280,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 138
+    },
+    {
+      "before_event": 281,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 139
+    },
+    {
+      "before_event": 282,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 140
+    },
+    {
+      "before_event": 283,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 141
+    },
+    {
+      "before_event": 288,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 142
+    },
+    {
+      "before_event": 289,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 145
+    },
+    {
+      "before_event": 290,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 143
+    },
+    {
+      "before_event": 290,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 144
+    },
+    {
+      "before_event": 296,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 146
+    },
+    {
+      "before_event": 298,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 148
+    },
+    {
+      "before_event": 298,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 149
+    },
+    {
+      "before_event": 298,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 147
+    },
+    {
+      "before_event": 301,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 150
+    },
+    {
+      "before_event": 305,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 152
+    },
+    {
+      "before_event": 306,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 151
+    },
+    {
+      "before_event": 310,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 153
+    },
+    {
+      "before_event": 312,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 155
+    },
+    {
+      "before_event": 312,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 154
+    },
+    {
+      "before_event": 314,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 156
+    },
+    {
+      "before_event": 318,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 157
+    },
+    {
+      "before_event": 320,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 160
+    },
+    {
+      "before_event": 321,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 158
+    },
+    {
+      "before_event": 321,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 159
+    },
+    {
+      "before_event": 326,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 161
+    },
+    {
+      "before_event": 328,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 163
+    },
+    {
+      "before_event": 328,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 164
+    },
+    {
+      "before_event": 328,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 162
+    },
+    {
+      "before_event": 331,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 165
+    },
+    {
+      "before_event": 335,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 167
+    },
+    {
+      "before_event": 336,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 166
+    },
+    {
+      "before_event": 338,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 168
+    },
+    {
+      "before_event": 341,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 169
+    },
+    {
+      "before_event": 343,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 170
+    },
+    {
+      "before_event": 345,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 171
+    },
+    {
+      "before_event": 347,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 172
+    },
+    {
+      "before_event": 349,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 173
+    },
+    {
+      "before_event": 352,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 174
+    },
+    {
+      "before_event": 353,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 175
+    },
+    {
+      "before_event": 354,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 177
+    },
+    {
+      "before_event": 355,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 176
+    },
+    {
+      "before_event": 357,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 178
+    },
+    {
+      "before_event": 361,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 180
+    },
+    {
+      "before_event": 363,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 181
+    },
+    {
+      "before_event": 364,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 179
+    },
+    {
+      "before_event": 365,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 182
+    },
+    {
+      "before_event": 367,
+      "detail": {
+        "phase": "atomic"
+      },
+      "id": 183
+    }
+  ]
+}

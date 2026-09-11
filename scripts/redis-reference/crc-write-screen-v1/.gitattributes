@@ -1,0 +1,5 @@
+# Preserve original generated output bytes and whitespace.
+audit/auditor-tests.diff -text whitespace=-blank-at-eol
+audit/auditor.diff -text whitespace=-blank-at-eol
+driver/driver-preparation.diff -text whitespace=-blank-at-eol
+driver/final-pins.diff -text whitespace=-blank-at-eol

@@ -1,0 +1,6 @@
+{
+  "tool_chunk": "fcebf4",
+  "exit_code": 1,
+  "failure": "Overbroad prelaunch process check found the unrelated pre-existing Redis service PID 2363 on 127.0.0.1:6379. No benchmark or container change occurred. Shared-host protocol permits unrelated services; preserve identity without modifying it.",
+  "runtime_started": false
+}

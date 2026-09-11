@@ -1,0 +1,510 @@
+{
+  "accepted": true,
+  "audit_script_sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+  "build": "/tmp/kv9-crc-recovery-release-first",
+  "cases": [
+    {
+      "client_pid": 2467675,
+      "fresh_drained_voters": 3,
+      "history_sha256": "2d2c1b08e5af40d72822682be1f8f45b4847c874d47bfd035ee714d87a6b7ef2",
+      "native_checker_states": 194,
+      "operations": 184,
+      "outcomes": {
+        "ok": 169,
+        "unknown": 15
+      },
+      "point_batch_overlap_count": 122,
+      "point_batch_overlap_examples": [
+        [
+          7,
+          5
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          11,
+          9
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          11,
+          12
+        ],
+        [
+          18,
+          16
+        ],
+        [
+          18,
+          17
+        ],
+        [
+          22,
+          20
+        ],
+        [
+          22,
+          21
+        ],
+        [
+          22,
+          23
+        ],
+        [
+          22,
+          24
+        ],
+        [
+          26,
+          25
+        ],
+        [
+          26,
+          27
+        ],
+        [
+          26,
+          28
+        ]
+      ],
+      "raw_checker_states": 194,
+      "traffic_successes": {
+        "batch_get": 59,
+        "batch_put": 57,
+        "delete": 17,
+        "get": 17,
+        "put": 16
+      },
+      "transport": "tonic_stream",
+      "windows": [
+        {
+          "counts": {
+            "batch_get": 14,
+            "batch_put": 15,
+            "delete": 5,
+            "get": 3,
+            "put": 4
+          },
+          "label": "voter-lost",
+          "operation_ids": {
+            "batch_get": [
+              62,
+              65,
+              66,
+              69,
+              73,
+              76,
+              77,
+              79,
+              84,
+              87,
+              88,
+              91,
+              95,
+              99
+            ],
+            "batch_put": [
+              60,
+              64,
+              61,
+              68,
+              72,
+              71,
+              75,
+              82,
+              80,
+              83,
+              86,
+              90,
+              94,
+              97,
+              98
+            ],
+            "delete": [
+              59,
+              70,
+              81,
+              92,
+              96
+            ],
+            "get": [
+              67,
+              78,
+              93
+            ],
+            "put": [
+              63,
+              74,
+              85,
+              89
+            ]
+          }
+        },
+        {
+          "counts": {
+            "batch_get": 13,
+            "batch_put": 11,
+            "delete": 3,
+            "get": 4,
+            "put": 3
+          },
+          "label": "voter-restarted",
+          "operation_ids": {
+            "batch_get": [
+              147,
+              150,
+              151,
+              154,
+              158,
+              162,
+              165,
+              166,
+              169,
+              173,
+              177,
+              176,
+              180
+            ],
+            "batch_put": [
+              146,
+              149,
+              153,
+              157,
+              160,
+              161,
+              164,
+              168,
+              171,
+              172,
+              175
+            ],
+            "delete": [
+              155,
+              159,
+              170
+            ],
+            "get": [
+              152,
+              156,
+              167,
+              178
+            ],
+            "put": [
+              148,
+              163,
+              174
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "client_pid": 2468443,
+      "fresh_drained_voters": 3,
+      "history_sha256": "cb89c4888607932d7d482cc6bfc75611fe8427e9019c824aa7f8b9744984c1b6",
+      "native_checker_states": 175,
+      "operations": 184,
+      "outcomes": {
+        "ok": 166,
+        "unknown": 18
+      },
+      "point_batch_overlap_count": 133,
+      "point_batch_overlap_examples": [
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          7,
+          10
+        ],
+        [
+          11,
+          12
+        ],
+        [
+          11,
+          13
+        ],
+        [
+          11,
+          14
+        ],
+        [
+          18,
+          16
+        ],
+        [
+          18,
+          17
+        ],
+        [
+          18,
+          20
+        ],
+        [
+          18,
+          21
+        ],
+        [
+          22,
+          20
+        ],
+        [
+          22,
+          21
+        ],
+        [
+          22,
+          23
+        ],
+        [
+          22,
+          24
+        ],
+        [
+          22,
+          25
+        ],
+        [
+          26,
+          23
+        ]
+      ],
+      "raw_checker_states": 175,
+      "traffic_successes": {
+        "batch_get": 58,
+        "batch_put": 57,
+        "delete": 15,
+        "get": 17,
+        "put": 16
+      },
+      "transport": "tonic_unary",
+      "windows": [
+        {
+          "counts": {
+            "batch_get": 13,
+            "batch_put": 12,
+            "delete": 4,
+            "get": 3,
+            "put": 4
+          },
+          "label": "voter-lost",
+          "operation_ids": {
+            "batch_get": [
+              62,
+              65,
+              66,
+              69,
+              73,
+              77,
+              76,
+              80,
+              84,
+              88,
+              87,
+              91,
+              95
+            ],
+            "batch_put": [
+              61,
+              64,
+              68,
+              72,
+              71,
+              75,
+              79,
+              82,
+              83,
+              86,
+              90,
+              94
+            ],
+            "delete": [
+              70,
+              81,
+              92,
+              96
+            ],
+            "get": [
+              67,
+              78,
+              93
+            ],
+            "put": [
+              63,
+              74,
+              85,
+              89
+            ]
+          }
+        },
+        {
+          "counts": {
+            "batch_get": 12,
+            "batch_put": 10,
+            "delete": 4,
+            "get": 4,
+            "put": 3
+          },
+          "label": "voter-restarted",
+          "operation_ids": {
+            "batch_get": [
+              150,
+              151,
+              154,
+              158,
+              162,
+              165,
+              166,
+              169,
+              173,
+              176,
+              177,
+              180
+            ],
+            "batch_put": [
+              149,
+              153,
+              157,
+              160,
+              161,
+              164,
+              168,
+              171,
+              172,
+              175
+            ],
+            "delete": [
+              155,
+              159,
+              170,
+              181
+            ],
+            "get": [
+              152,
+              156,
+              167,
+              178
+            ],
+            "put": [
+              148,
+              163,
+              174
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "client_lifetimes": 2,
+  "client_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/kv9-wal-crc32-table",
+      "ended_unix_ns": 1789138749669332843,
+      "exit_code": 0,
+      "name": "source-head",
+      "started_unix_ns": 1789138749668215250
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "cwd": "/tmp/kv9-wal-crc32-table",
+      "ended_unix_ns": 1789138749672010707,
+      "exit_code": 0,
+      "name": "source-status",
+      "started_unix_ns": 1789138749669396151
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/history/checker.py",
+        "/tmp/kv9-crc-process-e2e-first/batch-tonic-stream/history.jsonl",
+        "--output",
+        "/tmp/kv9-crc-process-independent-first/results-first/batch-tonic-stream-history-checked.json",
+        "--acceptance",
+        "--require",
+        "get",
+        "put",
+        "delete",
+        "batch_get",
+        "batch_put",
+        "--max-states",
+        "400000",
+        "--seconds",
+        "60"
+      ],
+      "cwd": "/tmp/kv9-wal-crc32-table",
+      "ended_unix_ns": 1789138749822862130,
+      "exit_code": 0,
+      "name": "batch-tonic-stream-raw-history",
+      "started_unix_ns": 1789138749777415560
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/history/checker.py",
+        "/tmp/kv9-crc-process-e2e-first/batch-tonic-unary/history.jsonl",
+        "--output",
+        "/tmp/kv9-crc-process-independent-first/results-first/batch-tonic-unary-history-checked.json",
+        "--acceptance",
+        "--require",
+        "get",
+        "put",
+        "delete",
+        "batch_get",
+        "batch_put",
+        "--max-states",
+        "400000",
+        "--seconds",
+        "60"
+      ],
+      "cwd": "/tmp/kv9-wal-crc32-table",
+      "ended_unix_ns": 1789138749896099479,
+      "exit_code": 0,
+      "name": "batch-tonic-unary-raw-history",
+      "started_unix_ns": 1789138749857026444
+    }
+  ],
+  "complete": true,
+  "ended_unix_ns": 1789138749928669417,
+  "original_inputs_unchanged": true,
+  "owned_lifetimes_exited": true,
+  "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "run": "/tmp/kv9-crc-process-e2e-first",
+  "scope": "Independent readback of one frozen default-feature native atomic batch process fixture, stream default plus explicit unary on normal endpoints; two complete atomic histories and source-bound SIGKILL/restart intervals. One local host, ordinary WAL, no benchmark or actual Chaos Mesh/native-batch Chaos acceptance. Interval timestamps and listener/proc records are retained observations from the source-bound fixture, not an external continuous observer.",
+  "server_lifetimes": 5,
+  "server_sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+  "source": "/tmp/kv9-wal-crc32-table",
+  "source_files": 590,
+  "source_tree_sha256": "dcddcc156206c5d9cb68172c56e3ef1c35ec19100264af7872b96be27faf726a",
+  "source_unchanged": true,
+  "started_unix_ns": 1789138749667381729
+}

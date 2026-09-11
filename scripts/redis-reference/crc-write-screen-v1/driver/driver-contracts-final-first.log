@@ -1,0 +1,13 @@
+test_failed_write_outcomes_preserved_and_health_separate (__main__.Protocol.test_failed_write_outcomes_preserved_and_health_separate) ... ok
+test_independent_12_order_and_exact_6_smoke (__main__.Protocol.test_independent_12_order_and_exact_6_smoke) ... ok
+test_missing_or_malformed_candidate_pins_fail_before_artifact_access (__main__.Protocol.test_missing_or_malformed_candidate_pins_fail_before_artifact_access) ... ok
+test_protocol_matches_frozen_schedule_and_explicit_pin_readiness (__main__.Protocol.test_protocol_matches_frozen_schedule_and_explicit_pin_readiness) ... ok
+test_real_validators_and_each_role_pair_same_config (__main__.Protocol.test_real_validators_and_each_role_pair_same_config) ... ok
+test_storage_boundaries_and_unavailable_evidence (__main__.Protocol.test_storage_boundaries_and_unavailable_evidence) ... ok
+test_unmodified_lifecycle_functions_and_scan (__main__.Protocol.test_unmodified_lifecycle_functions_and_scan) ... ok
+test_write_dataset_membership_sentinel_and_nonce_controls (__main__.Protocol.test_write_dataset_membership_sentinel_and_nonce_controls) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.251s
+
+OK

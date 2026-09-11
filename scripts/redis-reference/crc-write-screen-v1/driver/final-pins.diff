@@ -1,0 +1,21 @@
+--- /tmp/kv9-crc-write-screen-preparation/pending-pins-first/matched-driver.py
++++ /tmp/kv9-crc-write-screen-preparation/matched-driver.py
+@@ -26,15 +26,15 @@
+ sys.dont_write_bytecode = True
+ 
+ OLD_REVISION = "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb"
+-NEW_REVISION = None  # Required exact candidate commit; populated only after clean release.
++NEW_REVISION = "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb"
+ REDIS_REVISION = "0be806d9671e2c50701a64aa7889c8859b7648ba"
+ SERVER_PINS = {
+     "old": dict(revision=OLD_REVISION,
+                 binary_sha256="0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+                 manifest_sha256="1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417"),
+     "new": dict(revision=NEW_REVISION,
+-                binary_sha256=None,  # Required actual candidate binary hash.
+-                manifest_sha256=None),  # Required actual candidate build.json hash.
++                binary_sha256="b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
++                manifest_sha256="8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8"),
+ }
+ REDIS_CLIENT_SHA = "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af"
+ CLIENT_PINS = {

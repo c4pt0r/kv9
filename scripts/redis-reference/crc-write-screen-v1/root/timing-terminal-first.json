@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-write-root-preparation/isolate-and-run.py",
+    "--driver",
+    "/tmp/kv9-crc-write-screen-preparation/matched-driver.py",
+    "--output",
+    "/tmp/kv9-crc-write-timing-first",
+    "--driver-arguments-file",
+    "/tmp/kv9-crc-write-root-preparation/driver-arguments.json"
+  ],
+  "started_unix_ns": 1789138001176917908,
+  "root_freeze_sha256": "a8ef486fb0eaff86fff4a6007c85911cb392d911282f94b08c1f74be417b7fe9",
+  "smoke_gate_sha256": "2be6754e449548ee14688f5dcc29964dad09d90215d92838ef3b698526f9c86e",
+  "smoke_terminal_exit_code": 0,
+  "pid": 2385684,
+  "exit_code": 0,
+  "completed_unix_ns": 1789138246363689108
+}

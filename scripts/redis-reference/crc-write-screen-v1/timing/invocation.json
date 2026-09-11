@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-write-screen-preparation/matched-driver.py",
+    "--output",
+    "/tmp/kv9-crc-write-timing-first/cohorts",
+    "--isolation-snapshot",
+    "/tmp/kv9-crc-write-timing-first/isolation.json",
+    "--client-source",
+    "/tmp/kv9-point-write-measurement-v3",
+    "--client-build",
+    "/tmp/kv9-point-write-v3-release-first/native",
+    "--expected-client-revision",
+    "0be806d9671e2c50701a64aa7889c8859b7648ba",
+    "--old-server-source",
+    "/tmp/kv9-rpc-worker-pair",
+    "--old-server-build",
+    "/tmp/kv9-rpc-pair-release-first",
+    "--new-server-source",
+    "/tmp/kv9-wal-crc32-table",
+    "--new-server-build",
+    "/tmp/kv9-wal-crc32-release-first",
+    "--redis-client-source",
+    "/tmp/kv9-point-write-measurement-v3",
+    "--redis-client-build",
+    "/tmp/kv9-point-write-v3-release-first/redis",
+    "--storage",
+    "tmpfs"
+  ],
+  "driver_arguments_sha256": "ba0968f92c52e648742fd223020e9d0cc01da4091866a1799acb7fe12081128d",
+  "wrapper_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+}

@@ -1,0 +1,103 @@
+--- /tmp/kv9-v3-workload-comparison-preparation/matched-driver.py
++++ /tmp/kv9-crc-write-screen-preparation/matched-driver.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Matched v3 point and native batch64 read/write/mixed diagnostic.
++"""Matched CRC write screen: c64 point PUT and native BatchPut(64).
+ 
+ Root runs smoke/reviews isolation before any diagnostic timing. Default runtime
+ keeps quorum and WAL/sync behavior; tmpfs mode has no power-loss durability.
+@@ -26,15 +26,15 @@
+ sys.dont_write_bytecode = True
+ 
+ OLD_REVISION = "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb"
+-NEW_REVISION = "57ff6851e40ed63c837189d6eb0a11190704725a"
++NEW_REVISION = "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb"
+ REDIS_REVISION = "0be806d9671e2c50701a64aa7889c8859b7648ba"
+ SERVER_PINS = {
+     "old": dict(revision=OLD_REVISION,
+                 binary_sha256="0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+                 manifest_sha256="1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417"),
+     "new": dict(revision=NEW_REVISION,
+-                binary_sha256="6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
+-                manifest_sha256="7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd"),
++                binary_sha256="b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
++                manifest_sha256="8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8"),
+ }
+ REDIS_CLIENT_SHA = "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af"
+ CLIENT_PINS = {
+@@ -43,9 +43,9 @@
+     "redis": dict(binary_sha256=REDIS_CLIENT_SHA,
+                   manifest_sha256="10f9ce2a754a2ef43a6439856c1d5fb00c5a1e5004173e52897a3ea19d6124f0"),
+ }
+-PROTOCOL_ID = "kv9-v3-workloads-c1-c64-v1"
++PROTOCOL_ID = "kv9-crc-write-c64-v1"
+ WORKLOAD_CELLS = [(name, batch, reads) for name, batch in (("point", 1), ("batch64", 64))
+-                  for reads in (0, 50, 100)]
++                  for reads in (0,)]
+ SPACE_GUARDS = {
+     "preflight": {"tmpfs": 32 * 1024**3, "retention": 96 * 1024**3},
+     "runtime": {"tmpfs": 16 * 1024**3, "retention": 64 * 1024**3},
+@@ -179,8 +179,19 @@
+     return selected
+ 
+ 
++def require_candidate_pins():
++    require(isinstance(NEW_REVISION, str) and re.fullmatch(r"[0-9a-f]{40}", NEW_REVISION) is not None,
++            "candidate revision pin is required before any run")
++    pin = SERVER_PINS["new"]
++    require(pin["revision"] == NEW_REVISION, "candidate revision pins disagree")
++    for field in ("binary_sha256", "manifest_sha256"):
++        require(isinstance(pin[field], str) and re.fullmatch(r"[0-9a-f]{64}", pin[field]) is not None,
++                "candidate " + field + " pin is required before any run")
++
++
+ def verify_inputs(args):
+     """Separate original role attestations; never fabricate a mixed-revision build."""
++    require_candidate_pins()
+     roles = {}
+     require(args.expected_client_revision == REDIS_REVISION, "native client must use the frozen v3 revision")
+     for name, source, build in (("old", args.old_server_source, args.old_server_build),
+@@ -236,7 +247,7 @@
+ 
+ 
+ def make_plan(smoke):
+-    first = [(concurrency, name, batch, reads, role) for concurrency in (1, 64)
++    first = [(concurrency, name, batch, reads, role) for concurrency in (64,)
+              for name, batch, reads in WORKLOAD_CELLS for role in ("old", "new", "redis")]
+     rows = []
+     for repeat in range(1 if smoke else 2):
+@@ -255,7 +266,7 @@
+             rows.append(dict(repeat=repeat, arm=f"{role}-{workload}", server_role=server, workload=workload,
+                              read_api=read_api, write_api=write_api, mix={0:"write",50:"mixed",100:"read"}[reads],
+                              target="kv9" if server else "redis-memory", shared=shared))
+-    require(len(rows) == (36 if smoke else 72), "matched v3 c1/c64 cohort inventory differs")
++    require(len(rows) == (6 if smoke else 12), "matched CRC c64 write cohort inventory differs")
+     return rows
+ 
+ 
+@@ -699,8 +710,8 @@
+     parser.add_argument("--expected-client-revision", required=True)
+     parser.add_argument("--old-server-source", type=Path, default=Path("/tmp/kv9-rpc-worker-pair"))
+     parser.add_argument("--old-server-build", type=Path, default=Path("/tmp/kv9-rpc-pair-release-first"))
+-    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-read-group-credit"))
+-    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-read-group-credit-release-first"))
++    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-wal-crc32-table"))
++    parser.add_argument("--new-server-build", type=Path, required=True)
+     parser.add_argument("--redis-client-source", type=Path, default=Path("/tmp/kv9-point-write-measurement-v3"))
+     parser.add_argument("--redis-client-build", type=Path, default=Path("/tmp/kv9-point-write-v3-release-first/redis"))
+     parser.add_argument("--output", type=Path, required=True)
+@@ -765,10 +776,10 @@
+     rows = make_plan(args.smoke)
+     args.output.mkdir(parents=True)
+     plan = dict(version=2, protocol_id=PROTOCOL_ID, workload_cells=WORKLOAD_CELLS, storage_guards=SPACE_GUARDS,
+-                concurrency_points=[1, 64], complete=False, client_revision=args.expected_client_revision,
++                concurrency_points=[64], complete=False, client_revision=args.expected_client_revision,
+                 smoke=args.smoke, placement=placement(args.smoke), role_bindings=roles, client_cargo=cargo,
+-                scope="36-cohort v3 c1/c64 correctness smoke only; no timing acceptance" if args.smoke else
+-                      "72-cohort shared-host v3 point/batch64 read/write/mixed diagnostic; no exclusive host or equivalent durability",
++                scope="6-cohort CRC c64 write correctness smoke only; no timing acceptance" if args.smoke else
++                      "12-cohort shared-host CRC point/batch64 write diagnostic; no exclusive host or equivalent durability",
+                 storage=args.storage, kv9_durability=tmpfs.VOLATILE if args.storage == "tmpfs" else "Normal disk WAL and quorum; no Redis durability equivalence",
+                 redis_durability="Standalone memory; save/AOF disabled; no replicas", comparable_durability=False,
+                 isolation_snapshot=isolation, isolation_snapshot_sha256=digest(args.isolation_snapshot) if args.isolation_snapshot else None,

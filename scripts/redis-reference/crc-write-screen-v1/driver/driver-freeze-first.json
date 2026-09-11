@@ -1,0 +1,44 @@
+{
+  "complete": true,
+  "files": {
+    "/tmp/kv9-crc-write-screen-preparation/driver-contracts-final-first.json": {
+      "bytes": 881,
+      "sha256": "9c56b192cd5273868f0202cc5288d5ee8b108168cd2400345e3618268fa64be2"
+    },
+    "/tmp/kv9-crc-write-screen-preparation/driver-contracts-final-first.log": {
+      "bytes": 1192,
+      "sha256": "f4219c57d831a52cc9171f8344b20cb1392ad28ca4dd047087fab3f410601985"
+    },
+    "/tmp/kv9-crc-write-screen-preparation/driver-preparation.diff": {
+      "bytes": 6445,
+      "sha256": "222bbe420b60dbaebf54064f519e6127cfb661bc8079ed5b99166ad23b28ccfc"
+    },
+    "/tmp/kv9-crc-write-screen-preparation/driver-preparation.json": {
+      "bytes": 2462,
+      "sha256": "8d18214e8a007018607fea521735d0c941252d2a9ffeaf72d9d30472c56e3c5e"
+    },
+    "/tmp/kv9-crc-write-screen-preparation/final-pins.diff": {
+      "bytes": 1236,
+      "sha256": "a20ca4646c0c5c4772b3912e4ce0c6d771cd4becfae4eecbf221d51a178f7993"
+    },
+    "/tmp/kv9-crc-write-screen-preparation/matched-driver.py": {
+      "bytes": 52446,
+      "sha256": "6d28afd51d28fe36b0ca3993a024f044cd918d99e0b8fcb17aaffc78b1c82ac8"
+    },
+    "/tmp/kv9-crc-write-screen-preparation/protocol.json": {
+      "bytes": 15483,
+      "sha256": "f2340f075474c907a8527c7431991f64c4145c26c29fd76e140fc6f54b8ed1c4"
+    },
+    "/tmp/kv9-crc-write-screen-preparation/runtime-input-readback-first.json": {
+      "bytes": 285757,
+      "sha256": "e6aad3e78a03d99347e630984218992f5818b639593a0d13d32a7772227a6047"
+    },
+    "/tmp/kv9-crc-write-screen-preparation/test_driver.py": {
+      "bytes": 11616,
+      "sha256": "98234cbc3ac4d412241dad10efafe955ec10c89e81ed9445cba7001bc9ce86b5"
+    }
+  },
+  "frozen_unix_ns": 1789137540122531979,
+  "runtime_or_build_launched": false,
+  "scope": "owned driver/protocol/tests and read-only role bindings; root-owned isolation wrapper/arguments and independent auditor remain separately frozen by their owners"
+}

@@ -1,0 +1,20 @@
+test_all_native_redis_v3_configs (__main__.AuditContract.test_all_native_redis_v3_configs) ... ok
+test_combined_histogram_weights_counts_and_empty_operation (__main__.AuditContract.test_combined_histogram_weights_counts_and_empty_operation) ... ok
+test_exact_12_entire_reverse_order_and_run_ids (__main__.AuditContract.test_exact_12_entire_reverse_order_and_run_ids) ... ok
+test_exact_source_and_client_role_pins (__main__.AuditContract.test_exact_source_and_client_role_pins) ... ok
+test_measurement_does_not_invent_exact_issued_nonce_mix (__main__.AuditContract.test_measurement_does_not_invent_exact_issued_nonce_mix) ... ok
+test_mutable_dataset_budget_write_key_and_sentinel (__main__.AuditContract.test_mutable_dataset_budget_write_key_and_sentinel) ... ok
+test_operation_rates_and_failure_population_are_preserved (__main__.AuditContract.test_operation_rates_and_failure_population_are_preserved) ... ok
+test_pairing_never_crosses_workload_concurrency_repeat (__main__.AuditContract.test_pairing_never_crosses_workload_concurrency_repeat) ... ok
+test_phase_api_labels_and_mixed_population (__main__.AuditContract.test_phase_api_labels_and_mixed_population) ... ok
+test_reject_changed_limits_and_v2_or_null_selector (__main__.AuditContract.test_reject_changed_limits_and_v2_or_null_selector) ... ok
+test_reject_partial_reverse_missing_duplicate_and_old_schedule (__main__.AuditContract.test_reject_partial_reverse_missing_duplicate_and_old_schedule) ... ok
+test_reject_relabelled_write_selector_and_workload (__main__.AuditContract.test_reject_relabelled_write_selector_and_workload) ... ok
+test_reject_smoke_protocol_scope_and_wrong_timed_duration (__main__.AuditContract.test_reject_smoke_protocol_scope_and_wrong_timed_duration) ... ok
+test_storage_threshold_arithmetic_identity_and_scope (__main__.AuditContract.test_storage_threshold_arithmetic_identity_and_scope) ... ok
+test_syntax_without_runtime_import (__main__.AuditContract.test_syntax_without_runtime_import) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.015s
+
+OK

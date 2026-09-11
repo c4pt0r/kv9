@@ -1,0 +1,6 @@
+{
+  "tool_chunk": "e31d31",
+  "exit_code": 1,
+  "failure": "Ancillary reader used the native attempts field for a Redis validator summary, which exports command_attempts. Corrected using the existing report schema; no test or frozen validator was changed or rerun.",
+  "timing_started": false
+}

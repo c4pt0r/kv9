@@ -1,0 +1,310 @@
+{
+  "accepted": true,
+  "audit_session": 94817,
+  "audit_pid": 2433019,
+  "audit_exit_code": 0,
+  "terminal_tool_chunk": "a2947d",
+  "runtime_session": 63194,
+  "runtime_exit_code": 0,
+  "runtime_terminal_tool_chunk": "4239fd",
+  "all_owned_commands_terminal": true,
+  "totals_measurement_only": {
+    "calls": 17094412,
+    "issued": 17094412,
+    "attempts": 17094412,
+    "input_items": 165788461,
+    "dropped_slots": 0,
+    "outcomes": {
+      "success": 17094412,
+      "refused": 0,
+      "unknown_write": 0,
+      "read_failure": 0,
+      "client_rejected": 0
+    },
+    "reasons": {
+      "success": 17094412,
+      "not_leader": 0,
+      "admission_count": 0,
+      "admission_bytes": 0,
+      "admission_oversize": 0,
+      "read_quorum_unconfirmed": 0,
+      "read_apply_unconfirmed": 0,
+      "rpc_status": 0,
+      "protocol": 0,
+      "deadline": 0,
+      "client_capacity": 0,
+      "client_input": 0,
+      "io": 0,
+      "server_error": 0,
+      "data_integrity": 0
+    },
+    "attempt_reasons": {
+      "success": 5329598,
+      "not_leader": 0,
+      "admission_count": 0,
+      "admission_bytes": 0,
+      "admission_oversize": 0,
+      "read_quorum_unconfirmed": 0,
+      "read_apply_unconfirmed": 0,
+      "rpc_status": 0,
+      "protocol": 0,
+      "deadline": 0,
+      "client_capacity": 0,
+      "client_input": 0
+    }
+  },
+  "environment": {
+    "successful_arms": 12,
+    "owned_lifetimes_exited": 40,
+    "role_source_file_checks": 2336,
+    "resource_samples": 2304,
+    "qualifying_drains": 24,
+    "voter_writer_listener_bindings": 24,
+    "retained_files": 1291,
+    "retained_bytes": 35338645112,
+    "outer_restoration": {
+      "accepted": true,
+      "configured_and_effective_before_after": "0-31",
+      "isolated": "6-15,22-31",
+      "owned_containers": 3,
+      "namespace_maps_preserved": true,
+      "original_summary_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8"
+    }
+  },
+  "per_cohort": [
+    {
+      "repeat": 0,
+      "arm": "old-point-r000",
+      "calls": 1190338,
+      "qps": 119028.50704034892,
+      "keys_per_second": 119028.50704034892,
+      "mean_us": 537.5593791469313,
+      "p95_us": {
+        "lower_us": 729.088,
+        "upper_us": 737.279
+      },
+      "p99_us": {
+        "lower_us": 851.968,
+        "upper_us": 860.159
+      }
+    },
+    {
+      "repeat": 0,
+      "arm": "new-point-r000",
+      "calls": 1248087,
+      "qps": 124804.45064558397,
+      "keys_per_second": 124804.45064558397,
+      "mean_us": 512.6710037080749,
+      "p95_us": {
+        "lower_us": 696.32,
+        "upper_us": 704.511
+      },
+      "p99_us": {
+        "lower_us": 819.2,
+        "upper_us": 827.391
+      }
+    },
+    {
+      "repeat": 0,
+      "arm": "redis-point-r000",
+      "calls": 4933266,
+      "qps": 493313.7166189768,
+      "keys_per_second": 493313.7166189768,
+      "mean_us": 129.58285882091093,
+      "p95_us": {
+        "lower_us": 163.84,
+        "upper_us": 165.887
+      },
+      "p99_us": {
+        "lower_us": 233.472,
+        "upper_us": 235.519
+      }
+    },
+    {
+      "repeat": 0,
+      "arm": "old-batch64-r000",
+      "calls": 97567,
+      "qps": 9751.327379413056,
+      "keys_per_second": 624084.9522824356,
+      "mean_us": 6561.523028052518,
+      "p95_us": {
+        "lower_us": 9043.968,
+        "upper_us": 9175.039
+      },
+      "p99_us": {
+        "lower_us": 12058.624,
+        "upper_us": 12189.695
+      }
+    },
+    {
+      "repeat": 0,
+      "arm": "new-batch64-r000",
+      "calls": 136820,
+      "qps": 13677.929047552127,
+      "keys_per_second": 875387.4590433361,
+      "mean_us": 4677.739494591434,
+      "p95_us": {
+        "lower_us": 6619.136,
+        "upper_us": 6684.671
+      },
+      "p99_us": {
+        "lower_us": 8323.072,
+        "upper_us": 8388.607
+      }
+    },
+    {
+      "repeat": 0,
+      "arm": "redis-batch64-r000",
+      "calls": 948868,
+      "qps": 94884.02457586234,
+      "keys_per_second": 6072577.572855189,
+      "mean_us": 669.7686026149054,
+      "p95_us": {
+        "lower_us": 958.464,
+        "upper_us": 966.655
+      },
+      "p99_us": {
+        "lower_us": 1007.616,
+        "upper_us": 1015.807
+      }
+    },
+    {
+      "repeat": 1,
+      "arm": "redis-batch64-r000",
+      "calls": 943957,
+      "qps": 94393.0574380391,
+      "keys_per_second": 6041155.676034503,
+      "mean_us": 673.2143605111249,
+      "p95_us": {
+        "lower_us": 958.464,
+        "upper_us": 966.655
+      },
+      "p99_us": {
+        "lower_us": 1015.808,
+        "upper_us": 1023.999
+      }
+    },
+    {
+      "repeat": 1,
+      "arm": "new-batch64-r000",
+      "calls": 134572,
+      "qps": 13452.737260240796,
+      "keys_per_second": 860975.1846554109,
+      "mean_us": 4756.255907120351,
+      "p95_us": {
+        "lower_us": 6815.744,
+        "upper_us": 6881.279
+      },
+      "p99_us": {
+        "lower_us": 9830.4,
+        "upper_us": 9961.471
+      }
+    },
+    {
+      "repeat": 1,
+      "arm": "old-batch64-r000",
+      "calls": 98439,
+      "qps": 9839.554061826151,
+      "keys_per_second": 629731.4599568737,
+      "mean_us": 6502.425613039548,
+      "p95_us": {
+        "lower_us": 9043.968,
+        "upper_us": 9175.039
+      },
+      "p99_us": {
+        "lower_us": 11272.192,
+        "upper_us": 11403.263
+      }
+    },
+    {
+      "repeat": 1,
+      "arm": "redis-point-r000",
+      "calls": 4938723,
+      "qps": 493857.7995448329,
+      "keys_per_second": 493857.7995448329,
+      "mean_us": 129.43875676100888,
+      "p95_us": {
+        "lower_us": 163.84,
+        "upper_us": 165.887
+      },
+      "p99_us": {
+        "lower_us": 235.52,
+        "upper_us": 237.567
+      }
+    },
+    {
+      "repeat": 1,
+      "arm": "new-point-r000",
+      "calls": 1236231,
+      "qps": 123616.97184932264,
+      "keys_per_second": 123616.97184932264,
+      "mean_us": 517.5867651692928,
+      "p95_us": {
+        "lower_us": 712.704,
+        "upper_us": 720.895
+      },
+      "p99_us": {
+        "lower_us": 835.584,
+        "upper_us": 843.775
+      }
+    },
+    {
+      "repeat": 1,
+      "arm": "old-point-r000",
+      "calls": 1187544,
+      "qps": 118749.21948217564,
+      "keys_per_second": 118749.21948217564,
+      "mean_us": 538.8191522512008,
+      "p95_us": {
+        "lower_us": 737.28,
+        "upper_us": 745.471
+      },
+      "p99_us": {
+        "lower_us": 860.16,
+        "upper_us": 868.351
+      }
+    }
+  ],
+  "native_pairs": [
+    {
+      "repeat": 0,
+      "workload": "point-r000",
+      "completed_qps_change_percent": 4.852571664430849,
+      "mean_change_percent": -4.629883954095004
+    },
+    {
+      "repeat": 0,
+      "workload": "batch64-r000",
+      "completed_qps_change_percent": 40.267355564626904,
+      "mean_change_percent": -28.709546936089893
+    },
+    {
+      "repeat": 1,
+      "workload": "point-r000",
+      "completed_qps_change_percent": 4.0991868311838875,
+      "mean_change_percent": -3.94054053075108
+    },
+    {
+      "repeat": 1,
+      "workload": "batch64-r000",
+      "completed_qps_change_percent": 36.72100560362248,
+      "mean_change_percent": -26.854128133623533
+    }
+  ],
+  "scope": "Two-repeat 10-second point/batch64 write-only c64 shared-host tmpfs diagnostic; no sustained-capacity, equal-durability, exact issued nonce ledger or full-history claim",
+  "performance_promotion": false,
+  "files": {
+    "/tmp/kv9-crc-write-audit-preparation/results-first/audit.json": "fb11e1a4f113bad9ac48070f4ef462f72a03284250c47f4cdd65a8dcadf953ab",
+    "/tmp/kv9-crc-write-audit-preparation/results-first/input-inventory.json": "1d54f8954e9a31e0befaaab9720ec7d71661b86af6cd8c67392609e15a5ec293",
+    "/tmp/kv9-crc-write-audit-preparation/audit-first.log": "fd5de894bd8619b39f35c417917fa72794bd549265c2cf26cd9aa318995179a2",
+    "/tmp/kv9-crc-write-audit-preparation/audit-invocation-first.json": "54c8667cd3ce3d0f8c35faa95e37682db684ae7110261aed11f0afb1b5d66798",
+    "/tmp/kv9-crc-write-audit-preparation/audit-terminal-first.json": "e24d21a702d2c3441397a92ae1dc7ccce124f6f15ecafab4ce9c69b7f1018682",
+    "/tmp/kv9-crc-write-audit-preparation/audit.py": "5622e0ad147d287948c9c1d350fce036f3dd34f228ef2c37f42fef65653920b3",
+    "/tmp/kv9-crc-write-audit-preparation/AUDITOR-PREPARATION.json": "2c763da85131f9ce66aeeefb1f07cee3bd694301ff90de0566a57101609f61fc"
+  },
+  "closeout_revision": {
+    "original_path": "/tmp/kv9-crc-write-audit-preparation/audit-closeout-first.json",
+    "original_sha256": "a1db6fe5c5241f9f3b7ecdf4dbb71893422bcf749dddbeec8d7fed9bd0c5393c",
+    "correction": "Per-cohort p95_us/p99_us child key labels changed from lower_ns/upper_ns to lower_us/upper_us. Values were already microseconds and remain unchanged; original first closeout retained. Audit and all source data unchanged."
+  }
+}

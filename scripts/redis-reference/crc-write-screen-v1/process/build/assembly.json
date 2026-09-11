@@ -1,0 +1,48 @@
+{
+  "aggregate_manifest_sha256": "769f0b474d219ae7fa42ceb4e0bb0502dbd906f150ea1f70fe1f0889df13de8e",
+  "assembled_unix_ns": 1789138531121290849,
+  "complete": true,
+  "copied_files": {
+    "kv9": {
+      "sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "source": "/tmp/kv9-wal-crc32-release-first/kv9"
+    },
+    "kv9-build.log": {
+      "sha256": "a40887742893607194a3d1ed8996c749ea7311b16060f40933fef35bb162bd30",
+      "source": "/tmp/kv9-wal-crc32-release-first/kv9-build.log"
+    },
+    "kv9-cargo.jsonl": {
+      "sha256": "48a1a4bbe6ab51f49fc3fdcb1c10b7ba394d5a29cd71538f842408b9bb6a5099",
+      "source": "/tmp/kv9-wal-crc32-release-first/kv9-cargo.jsonl"
+    },
+    "server-original-build.json": {
+      "sha256": "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8",
+      "source": "/tmp/kv9-wal-crc32-release-first/build.json"
+    },
+    "workload/build.json": {
+      "sha256": "c7366b044531a168fbb5254310472f4a67ca046843e444613d66b579f0181bfd",
+      "source": "/tmp/kv9-crc-correctness-workload-release-first/build.json"
+    },
+    "workload/build.log": {
+      "sha256": "aa1b2c63c958c65da2ca1b1329b5f4c0abe3dc3f1db5e23ebb4c14581a756ff0",
+      "source": "/tmp/kv9-crc-correctness-workload-release-first/build.log"
+    },
+    "workload/cargo.jsonl": {
+      "sha256": "e19de7e57f0243956b93afac5bfb2f9e957dfc02f1b48043f2837b86446ff1e1",
+      "source": "/tmp/kv9-crc-correctness-workload-release-first/cargo.jsonl"
+    },
+    "workload/kv9-batch-workload": {
+      "sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+      "source": "/tmp/kv9-crc-correctness-workload-release-first/kv9-batch-workload"
+    },
+    "workload/sources.json": {
+      "sha256": "bca6daf6437f60bf7b452d322f8009a5c7b2b3973b2a48b7657c7af627d62897",
+      "source": "/tmp/kv9-crc-correctness-workload-release-first/sources.json"
+    }
+  },
+  "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "scope": "New aggregate binding of separately built identical-source artifacts. The server binary and original Cargo evidence are exact copies; the timed server manifest is preserved and unchanged. No combined server build is claimed.",
+  "server_original_manifest_sha256": "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8",
+  "source_files": 590,
+  "workload_original_manifest_sha256": "c7366b044531a168fbb5254310472f4a67ca046843e444613d66b579f0181bfd"
+}
