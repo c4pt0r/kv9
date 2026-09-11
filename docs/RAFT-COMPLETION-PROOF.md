@@ -47,6 +47,15 @@ Queue operations and encoded-byte sums must be representable in the Rust types.
 The proof's arbitrary natural-number weights are not a proof of allocation or
 integer-overflow behavior outside those premises.
 
+The [direct peer body candidate](DIRECT-PEER-BODY.md) replaces the historical
+`receive_for_destination`/coalescer call boundary with locked prefix inspection
+inside `Body::poll_next`. Leading stale entries now also consume the same
+128-entry inspection budget. The historical source mappings below remain
+versioned evidence; they do not mechanically verify the new per-RPC token,
+receiver waker or independent watchdog. The candidate documents those additional
+obligations separately while preserving exact route filtering, FIFO output and
+the soft byte target.
+
 ## Completion safety and progress
 
 `RaftCompletion.tla` separates observable publication, generation notification,
