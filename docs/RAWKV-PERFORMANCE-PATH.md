@@ -58,6 +58,16 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
+The subsequent [typed authenticated dispatch screening](TYPED-POINT-DISPATCH-SCREENING.md)
+is **not selected** as the next performance version. Single GET improves only
+0.966% / 0.019% versus its same-run f2 control; BatchGet(1) gains 1.867% / 2.521%.
+All 6,452,825 measured calls and the independent audit passed, but this does not
+establish the desired meaningful step. Preserve the isolated experiment and
+stop before a full fault campaign. The next allocation hypothesis is repeated
+authorization metadata construction with per-frame authentication retained.
+This comparison used the system allocator and does not replace the separate
+jemalloc result below.
+
 The latest [Linux allocator experiment](JEMALLOC-SERVER-PERFORMANCE.md)
 reaches **304,863–305,903 single GET calls/s**, a paired 4.47–6.24% improvement
 over the same-run parallel-stream control. Mean latency is 209.1–209.8 us,
@@ -80,6 +90,14 @@ No hardware ceiling or benefit from kernel bypass is established. Preserve
 per-request authentication, bounded ownership and normal Raft barriers.
 Writes/mixed workloads require their own fresh comparison before claiming
 Redis-class RawKV performance or advancing to automatic splits.
+
+The separate [first follower WAL sync-stall qualification](STORAGE-STALL-FIRST-QUALIFICATION.md)
+records actual Chaos Mesh FSYNC delay on exact f2: 43 fresh sync samples average
+501.087 ms and all 655 complete-history operations succeed. The original
+harness still exited 1 on supervisor FIFO archive extraction; independent safe
+retention, history/effect readback and scoped cleanup passed afterward. The
+archive repair is separate, and this one-follower result does not close the
+broader fault/storage package or accept newer runtime sources.
 
 ### Parallel stream scheduling baseline
 
