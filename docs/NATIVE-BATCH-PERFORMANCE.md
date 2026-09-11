@@ -11,10 +11,11 @@ with 33.030–35.127 ms p99. These are not Redis parity or point-API results.
 All 144 cohorts contain 28,760,002 successful calls in total, with no refused,
 unknown-write, read-failure or client-rejected calls. The original reports,
 including every outcome population, remain retained. No cohort hit its cap.
-The next optimization target is the batch read handler, which still uses the
-synchronous established-read path at this source revision. Point GET already
-has asynchronous quorum/resident preparation; a matching point/batch-1 control
-is still required before attributing the entire historical performance gap.
+At this source revision the batch read handler still uses the synchronous
+established-read path, while point GET already has asynchronous quorum/resident
+preparation. A later [matched point/batch-1 comparison](POINT-BATCH1-PERFORMANCE.md)
+measures the async batch fix at `af4c4e3`; the larger-batch and write results
+below retain this original revision and must not be attributed to that fix.
 
 The independent readback accepted all 144 original inner cohorts. The original outer wrapper exited **1** because Docker did not restore an empty configured cpuset; `restoration_complete=false` remains unchanged. A separate repair restored effective CPUs 0–31 using an explicit `0-31` setting. Original empty-string configuration was **not** restored. Container identities and historical namespace UIDs were preserved.
 
