@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-inbox-drain-comparison-preparation/audit.py",
+    "--run",
+    "/tmp/kv9-inbox-drain-matched-diagnostic-attempt1/cohorts",
+    "--output",
+    "/tmp/kv9-inbox-drain-comparison-preparation/results-first",
+    "--expected-driver-sha256",
+    "8bc23a943190246af963289598fdeaf689897c26ef2fa1174f4e36f3923c4f71",
+    "--root-session",
+    "98766",
+    "--root-exit-code",
+    "0",
+    "--successful-arms",
+    "48"
+  ],
+  "auditor_sha256": "ce69cd12abc7bcd56f9c388f98965641b52f5893aee45093ec8484ca8d75e9c4",
+  "driver_sha256": "8bc23a943190246af963289598fdeaf689897c26ef2fa1174f4e36f3923c4f71",
+  "preparation_sha256": "3b087e4a4fb57316e0c6f0378688724fa0789e0d2409202137191cf27b85615f",
+  "protocol_sha256": "071005a9488c93dea7e46d837c2ede2af0d4b9a0f0dd4b5e0f9f8b4262e85d23",
+  "root_session": 98766,
+  "root_exit_code": 0,
+  "started_ns": 1789127964130901003
+}

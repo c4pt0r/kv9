@@ -159,13 +159,25 @@ change on architectural intuition alone. Neither the profile nor fixed public
 admission curve establishes an intrinsic ceiling. Redis parity and automatic
 splits remain open.
 
-The [next inbox allocation candidate](https://github.com/c4pt0r/kv9/blob/c3131800b665f6f160a11c804f542237e77ab83a/docs/RAFT-INBOX-DRAIN.md)
-is implemented and pushed at `c3131800`. Production transport transfers the
-inbox's owned vector directly, preserving queue and consensus semantics. Its
-218-test Raft gate, format/Clippy and default release pass. Independently checked
-364-call process E2E passes all four progress windows, six fresh drains and
-seven exited lifetimes. Matched performance and candidate-specific Chaos
-remain open; no speedup is inferred from the removed allocation.
+The [inbox-vector screen](RAFT-INBOX-DRAIN-SCREENING.md) completes 48 cohorts
+and its unchanged independent audit: **117,886,444 calls, all successful**.
+Candidate `c3131800` has pooled c64 GET +0.422% and BatchGet(1) +0.006%, with
+seven of sixteen individual QPS pairs regressing and mixed p99. It does not
+establish a consistent useful throughput-and-latency benefit and is not
+selected for the next performance increment or a broader fault campaign.
+Its source gate and 364-call process E2E remain valid, separate correctness
+evidence. Keep every observation; `5ee897a` remains the general baseline.
+
+The [next isolated candidate](https://github.com/c4pt0r/kv9/blob/1b70dba62e492cd8e10dd20f643fee74d39abc57/docs/WORK-SIGNAL-COALESCING.md)
+is implemented at `1b70dba6`, based on `57ff6851`, and coalesces physical
+WorkSignal notifications on the pending bit's false-to-true transition. It
+preserves the same state mutex and single-owner work protocol, with a local
+argument for publication/drain/parking races and an actual-delivery concurrency
+test. All 219 Raft tests/doctests and formatting/Clippy pass. A controlled lost
+pending turn fails that test and exact source restoration passes. The default
+release and independently checked 351-call process E2E pass all four progress
+windows, six fresh drains and seven exited lifetimes. This targets redundant
+synchronization work; performance and candidate-specific Chaos remain open.
 
 ### Earlier experiments
 

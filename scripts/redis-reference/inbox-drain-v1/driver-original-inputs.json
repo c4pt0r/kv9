@@ -1,0 +1,51 @@
+{
+  "predecessor": "/tmp/kv9-read-group-credit-comparison-preparation",
+  "sha256": {
+    "matched-driver.py": "68c1bd5a78f4a24c4e05cb32dc080b8e87165ad04b2453b97b2be08e984290cc",
+    "test_driver_contract.py": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a",
+    "isolate-and-run.py": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "driver-arguments.json": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+    "protocol.json": "50e80ba9d1c35436852d9f103f7ae7e0214d49bf4b24eb4988c93c5fbd9330b0"
+  },
+  "substitution_map": {
+    "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb": "57ff6851e40ed63c837189d6eb0a11190704725a",
+    "57ff6851e40ed63c837189d6eb0a11190704725a": "c3131800b665f6f160a11c804f542237e77ab83a",
+    "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711": "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
+    "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30": "26a185509cccf6436c5f02a5ab4476efca551166d1d4ef43ea2c200cc5a9e513",
+    "1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417": "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd",
+    "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd": "fae8fd537f53b0a4e9cd09673230a33c97519e4a1e0311f20e1a74c4340e1a20",
+    "/tmp/kv9-rpc-worker-pair": "/tmp/kv9-read-group-credit",
+    "/tmp/kv9-rpc-pair-release-first": "/tmp/kv9-read-group-credit-release-first",
+    "/tmp/kv9-read-group-credit": "/tmp/kv9-raft-inbox-drain-reuse",
+    "/tmp/kv9-read-group-credit-release-first": "/tmp/kv9-inbox-drain-release-first",
+    "kv9-read-group-credit-c1-c64-v1": "kv9-inbox-drain-c1-c64-v1"
+  },
+  "unchanged_function_bodies": [
+    "require",
+    "digest",
+    "read",
+    "save",
+    "module",
+    "placement",
+    "affinity",
+    "background_inventory",
+    "host_sample",
+    "source_binding",
+    "cargo_server",
+    "verify_inputs",
+    "verify_client_cargo",
+    "configs",
+    "readonly_dataset",
+    "fresh_drain",
+    "native_readback",
+    "summary_from_report",
+    "observe_client",
+    "allocator_provenance",
+    "native_trial",
+    "redis_trial"
+  ],
+  "changed_function_bodies": [
+    "make_plan",
+    "main"
+  ]
+}

@@ -1,0 +1,8 @@
+[
+  "--client-source",
+  "/tmp/kv9-point-batch1-measurement",
+  "--client-build",
+  "/tmp/kv9-point-batch1-client-release-first",
+  "--expected-client-revision",
+  "03c1c776a5dd7d1cc67491ab253e02ce51665bf8"
+]

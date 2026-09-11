@@ -1,0 +1,77 @@
+[
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/tmp/kv9-work-signal-coalescing",
+    "ended_unix_ns": 1789128731738317904,
+    "exit_code": 0,
+    "name": "source-head",
+    "started_unix_ns": 1789128731737053908
+  },
+  {
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "cwd": "/tmp/kv9-work-signal-coalescing",
+    "ended_unix_ns": 1789128731741194158,
+    "exit_code": 0,
+    "name": "source-status",
+    "started_unix_ns": 1789128731738426427
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/history/checker.py",
+      "/tmp/kv9-work-signal-coalescing-process-e2e-first/batch-tonic-stream/history.jsonl",
+      "--output",
+      "/tmp/kv9-work-signal-coalescing-process-independent-first/results-first/batch-tonic-stream-history-checked.json",
+      "--acceptance",
+      "--require",
+      "get",
+      "put",
+      "delete",
+      "batch_get",
+      "batch_put",
+      "--max-states",
+      "400000",
+      "--seconds",
+      "60"
+    ],
+    "cwd": "/tmp/kv9-work-signal-coalescing",
+    "ended_unix_ns": 1789128731890317036,
+    "exit_code": 0,
+    "name": "batch-tonic-stream-raw-history",
+    "started_unix_ns": 1789128731846655728
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/history/checker.py",
+      "/tmp/kv9-work-signal-coalescing-process-e2e-first/batch-tonic-unary/history.jsonl",
+      "--output",
+      "/tmp/kv9-work-signal-coalescing-process-independent-first/results-first/batch-tonic-unary-history-checked.json",
+      "--acceptance",
+      "--require",
+      "get",
+      "put",
+      "delete",
+      "batch_get",
+      "batch_put",
+      "--max-states",
+      "400000",
+      "--seconds",
+      "60"
+    ],
+    "cwd": "/tmp/kv9-work-signal-coalescing",
+    "ended_unix_ns": 1789128731965749556,
+    "exit_code": 0,
+    "name": "batch-tonic-unary-raw-history",
+    "started_unix_ns": 1789128731923227430
+  }
+]

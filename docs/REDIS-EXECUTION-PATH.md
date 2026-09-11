@@ -131,7 +131,10 @@ be subtracted from the uninstrumented 38-us client latency as an exact budget.
    mixed traffic, sustained load and large batches still need separate checks.
    The [inbox-vector candidate](https://github.com/c4pt0r/kv9/blob/c3131800b665f6f160a11c804f542237e77ab83a/docs/RAFT-INBOX-DRAIN.md)
    removes a redundant production vector allocation and message move. Local
-   source gates and process E2E pass; its end-to-end speedup remains unmeasured.
+   source gates and process E2E pass, but the [completed matched screen](RAFT-INBOX-DRAIN-SCREENING.md)
+   shows only small pooled gains and mixed throughput/p99 directions. It is
+   not selected as the next performance increment. This is evidence against
+   assuming fewer allocations automatically yield a useful end-to-end gain.
 4. Evaluate kernel bypass only after a real NIC experiment identifies the
    kernel/network path as the limiting cost. Redis's measured reference uses
    ordinary sockets. The current loopback profile neither proves a NIC limit

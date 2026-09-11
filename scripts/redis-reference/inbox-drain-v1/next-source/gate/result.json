@@ -1,0 +1,53 @@
+{
+  "source": "/tmp/kv9-work-signal-coalescing",
+  "parent": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "started_unix_ns": 1789128253218844147,
+  "commands": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "pid": 950281,
+      "exit_code": 0
+    },
+    {
+      "name": "tests",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft"
+      ],
+      "pid": 950308,
+      "exit_code": 0
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "pid": 954754,
+      "exit_code": 0
+    }
+  ],
+  "complete": true,
+  "source_unchanged": true,
+  "ended_unix_ns": 1789128271224085008,
+  "tests_passed": 219,
+  "tests_failed": 0,
+  "tests_ignored": 0
+}

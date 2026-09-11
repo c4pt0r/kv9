@@ -7,3 +7,11 @@ scripts/redis-reference/read-credit-followup-v1/chaos-preparation/preparation.di
 scripts/redis-reference/read-credit-followup-v1/inbox/process-preparation/runner.diff -whitespace
 # Preserve the original test log's terminal blank line.
 scripts/redis-reference/read-credit-followup-v1/inbox/source-gate/tests.log -whitespace
+# Preserve exact inbox-screen and notification-candidate evidence.
+scripts/redis-reference/inbox-drain-v1/auditor-tests.diff -whitespace
+scripts/redis-reference/inbox-drain-v1/auditor.diff -whitespace
+scripts/redis-reference/inbox-drain-v1/matched-driver.py.diff -whitespace
+scripts/redis-reference/inbox-drain-v1/test_driver_contract.py.diff -whitespace
+scripts/redis-reference/inbox-drain-v1/next-source/gate/tests.log -whitespace
+scripts/redis-reference/inbox-drain-v1/next-source/control/restored.log -whitespace
+scripts/redis-reference/inbox-drain-v1/next-source/process-preparation/runner.diff -whitespace

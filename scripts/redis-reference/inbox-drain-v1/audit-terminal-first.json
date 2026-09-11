@@ -1,0 +1,13 @@
+{
+  "session_id": 4119,
+  "exit_code": 0,
+  "root_session_id": 98766,
+  "root_exit_code": 0,
+  "all_owned_commands_terminal": true,
+  "audit_sha256": "448528041ee2ccc42476b5faefa8279d42babc362b14c9a89441371dc839eafc",
+  "audit_log_sha256": "7c32535b7c0997901ae62af345bd63afe446d1965aac4ceabc89b08cd65a375b",
+  "invocation_sha256": "b9f5ea1383c9f7710fdf1fe3190489e9a3d25b12e5f63d1611e1c62611029a7f",
+  "statistics_sha256": "fa86ce3cda76fe858e6717a52fba632ac0fc7ccdd4a26faff519fc1709b861cd",
+  "readout_sha256": "477a5874e0e6a805c8e43268e63bd14f0b211d6e4b9304e859ffc1aaaf929035",
+  "written_ns": 1789128106544934085
+}

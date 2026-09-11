@@ -1,0 +1,17 @@
+test_all_native_and_redis_exact_configs (__main__.AuditContract.test_all_native_and_redis_exact_configs) ... ok
+test_exact_48_order_and_run_ids (__main__.AuditContract.test_exact_48_order_and_run_ids) ... ok
+test_exact_candidate_and_control_pins_are_distinct (__main__.AuditContract.test_exact_candidate_and_control_pins_are_distinct) ... ok
+test_pairing_never_crosses_concurrency_or_repeat (__main__.AuditContract.test_pairing_never_crosses_concurrency_or_repeat) ... ok
+test_reject_native_c1_max_in_flight64_and_changed_limits (__main__.AuditContract.test_reject_native_c1_max_in_flight64_and_changed_limits) ... ok
+test_reject_old_two_repeat_five_second_study_and_changed_duration (__main__.AuditContract.test_reject_old_two_repeat_five_second_study_and_changed_duration) ... ok
+test_reject_relabelled_api_and_bool_worker (__main__.AuditContract.test_reject_relabelled_api_and_bool_worker) ... ok
+test_reject_reversing_only_arms_and_duplicate_concurrency (__main__.AuditContract.test_reject_reversing_only_arms_and_duplicate_concurrency) ... ok
+test_reject_shared_changes_and_redis_get_mget_substitution (__main__.AuditContract.test_reject_shared_changes_and_redis_get_mget_substitution) ... ok
+test_reject_smoke_missing_arm_and_protocol_substitution (__main__.AuditContract.test_reject_smoke_missing_arm_and_protocol_substitution) ... ok
+test_reject_wrong_full_repeat_direction_missing_and_duplicate_repeats (__main__.AuditContract.test_reject_wrong_full_repeat_direction_missing_and_duplicate_repeats) ... ok
+test_syntax_and_no_runtime_import_for_controls (__main__.AuditContract.test_syntax_and_no_runtime_import_for_controls) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.011s
+
+OK

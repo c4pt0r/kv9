@@ -1,0 +1,17 @@
+{
+  "command": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-inbox-drain-comparison-preparation/test_driver_contract.py"
+  ],
+  "exit_code": 0,
+  "tool_chunk_id": "984a49",
+  "tests": 6,
+  "log_sha256": "30102c30fdda4667a9971147ebfe771e177fc204196659bba5555b13b519a62b",
+  "test_sha256": "0895dfa61e979007146676d885d5738e47843004bf18c84bc1a1fbf2233e6c03"
+}

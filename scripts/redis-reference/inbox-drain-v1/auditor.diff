@@ -1,0 +1,161 @@
+--- /tmp/kv9-read-group-credit-comparison-preparation/audit.py
++++ /tmp/kv9-inbox-drain-comparison-preparation/audit.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Independent matched c1/c64 twenty-four-cohort diagnostic readback; no workload execution."""
++"""Independent four-repeat c1/c64 forty-eight-cohort diagnostic readback; no workload execution."""
+ import argparse
+ import base64
+ from concurrent.futures import ThreadPoolExecutor
+@@ -20,7 +20,7 @@
+ parser.add_argument('--expected-driver-sha256', required=True)
+ parser.add_argument('--root-session', type=int, required=True)
+ parser.add_argument('--root-exit-code', type=int, choices=(0,), required=True)
+-parser.add_argument('--successful-arms', type=int, choices=(24,), required=True)
++parser.add_argument('--successful-arms', type=int, choices=(48,), required=True)
+ args = parser.parse_args()
+ ROOT = args.run.resolve()
+ OUT = args.output.resolve()
+@@ -29,30 +29,30 @@
+ OUT.mkdir()
+ SOURCE = Path('/tmp/kv9-point-batch1-measurement')
+ CLIENT_REV = '03c1c776a5dd7d1cc67491ab253e02ce51665bf8'
+-OLD_REV = '5ee897a2f58c57bdf17ea1757c96224adf0f0dbb'
+-NEW_REV = '57ff6851e40ed63c837189d6eb0a11190704725a'
++OLD_REV = '57ff6851e40ed63c837189d6eb0a11190704725a'
++NEW_REV = 'c3131800b665f6f160a11c804f542237e77ab83a'
+ REDIS_REV = 'b8ec38f660786412705f350d96ab086f0e7f6c60'
+ REDIS_SOURCE = Path('/tmp/kv9-redis-point-get-reference')
+ PINS = {
+- 'old': (OLD_REV, '0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711'),
+- 'new': (NEW_REV, '6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30'),
++ 'old': (OLD_REV, '6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30'),
++ 'new': (NEW_REV, '26a185509cccf6436c5f02a5ab4476efca551166d1d4ef43ea2c200cc5a9e513'),
+  'client': (CLIENT_REV, '22ca0883ca2900fab0b457d87ebc6bc50662d7145af0846304f02b5841a6d30b'),
+  'redis': (REDIS_REV, '61349111171ded5cb7fff9085c7886381788e5f4c7a407e91a5dda618d124892'),
+ }
+-PROTOCOL_ID = 'kv9-read-group-credit-c1-c64-v1'
++PROTOCOL_ID = 'kv9-inbox-drain-c1-c64-v1'
+ CONCURRENCIES = (1, 64)
+ ARMS = (('old-point','old','point_get'), ('old-batch1','old','batch_get'),
+         ('new-point','new','point_get'), ('new-batch1','new','batch_get'),
+         ('redis-mget1',None,'mget'), ('redis-get1',None,'get'))
+ ROLE_PATHS = {
+- 'old': ('/tmp/kv9-rpc-worker-pair', '/tmp/kv9-rpc-pair-release-first', 'kv9'),
+- 'new': ('/tmp/kv9-read-group-credit', '/tmp/kv9-read-group-credit-release-first', 'kv9'),
++ 'old': ('/tmp/kv9-read-group-credit', '/tmp/kv9-read-group-credit-release-first', 'kv9'),
++ 'new': ('/tmp/kv9-raft-inbox-drain-reuse', '/tmp/kv9-inbox-drain-release-first', 'kv9'),
+  'client': ('/tmp/kv9-point-batch1-measurement', '/tmp/kv9-point-batch1-client-release-first', 'kv9-batch-benchmark'),
+  'redis': ('/tmp/kv9-redis-point-get-reference', '/tmp/kv9-redis-point-get-reference-release-first', 'kv9-redis-batch-reference'),
+ }
+ SERVER_MANIFESTS = {
+- 'old': '1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417',
+- 'new': '7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd',
++ 'old': '7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd',
++ 'new': 'fae8fd537f53b0a4e9cd09673230a33c97519e4a1e0311f20e1a74c4340e1a20',
+ }
+ records = {}
+ def require(value, message):
+@@ -75,14 +75,15 @@
+ 
+ def expected_cohorts():
+     forward = [(concurrency,*arm) for concurrency in CONCURRENCIES for arm in ARMS]
+-    return [(0,*row) for row in forward] + [(1,*row) for row in reversed(forward)]
++    return [(repeat,*row) for repeat in (0,1,2,3)
++            for row in (forward if repeat in (0,3) else reversed(forward))]
+ 
+ def shared_config(repeat, concurrency):
+-    require(type(repeat) is int and repeat in (0,1) and
++    require(type(repeat) is int and repeat in (0,1,2,3) and
+             type(concurrency) is int and concurrency in CONCURRENCIES, 'invalid repeat/concurrency')
+     return dict(run_id=f'p{repeat}{concurrency:04d}',seed=71,workers=concurrency,keys=4096,
+                 batch_size=1,value_bytes=128,read_percent=100,warmup_calls=128,
+-                measure_ms=5000,max_calls=10_000_000,load={'kind':'closed_loop'})
++                measure_ms=10000,max_calls=10_000_000,load={'kind':'closed_loop'})
+ 
+ def expected_descriptor(repeat, concurrency, arm, server, api):
+     return dict(repeat=repeat,arm=arm,server_role=server,read_api=api,mix='read',
+@@ -94,8 +95,8 @@
+             same_json(matrix['concurrency_points'],list(CONCURRENCIES)), 'c1/c64 protocol scope differs')
+     require(matrix['smoke'] is False and matrix['fixed_rates'] is None, 'smoke/fixed-rate is not timed protocol')
+     expected=[expected_descriptor(*row) for row in expected_cohorts()]
+-    require(len(matrix['attempts'])==24 and same_json(matrix['cohort_inventory'],expected),
+-            'twenty-four-cohort inventory/order differs')
++    require(len(matrix['attempts'])==48 and same_json(matrix['cohort_inventory'],expected),
++            'forty-eight-cohort inventory/order differs')
+ 
+ def validate_requested_config(config, repeat, concurrency, server, api):
+     expected=shared_config(repeat,concurrency)
+@@ -175,7 +176,7 @@
+ 
+ 
+ result = dict(complete=False, matched_diagnostic_accepted=False, cases=[],
+-              scope='Short shared-host tmpfs diagnostic; no sustained-capacity or equal-durability claim',
++              scope='Four-repeat 10-second c1/c64 shared-host tmpfs diagnostic; no sustained-capacity or equal-durability claim',
+               parent_confirmed_session=args.root_session, parent_confirmed_exit_code=args.root_exit_code,
+               expected_successful_arms=args.successful_arms, protocol_id=PROTOCOL_ID,
+               concurrency_points=list(CONCURRENCIES), started_unix_ns=time.time_ns())
+@@ -185,7 +186,7 @@
+     require(matrix['smoke'] is False and matrix['storage']=='tmpfs' and matrix['client_revision']==CLIENT_REV,
+             'wrong fixture or source scope')
+     require(matrix['complete'] is (args.root_exit_code==0), 'original fixture verdict differs from parent terminal confirmation')
+-    require(args.successful_arms==24 and args.root_exit_code==0, 'expected complete diagnostic scope differs')
++    require(args.successful_arms==48 and args.root_exit_code==0, 'expected complete diagnostic scope differs')
+     require(sha(ROOT/'driver.py')==args.expected_driver_sha256, 'executed driver snapshot differs')
+     require(matrix['placement']==dict(client_cpus=[0,1],server_cpus=[2,3,4,5],
+                                      separated=True,exclusive_host=False), 'diagnostic CPU scope differs')
+@@ -200,7 +201,7 @@
+             isolation['driver_sha256']==args.expected_driver_sha256,'outer isolation scope differs')
+     require(matrix['isolation_snapshot']==isolation and sha(outer/'isolation.json')==matrix['isolation_snapshot_sha256'] and
+             sha(ROOT/'isolation-snapshot.json')==sha(outer/'isolation.json'),'inner/outer snapshot binding differs')
+-    expected_argv=['/usr/bin/python3','/tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py',
++    expected_argv=['/usr/bin/python3','/tmp/kv9-inbox-drain-comparison-preparation/matched-driver.py',
+                    '--output',str(ROOT),'--isolation-snapshot',str(outer/'isolation.json'),
+                    '--client-source','/tmp/kv9-point-batch1-measurement',
+                    '--client-build','/tmp/kv9-point-batch1-client-release-first','--expected-client-revision',CLIENT_REV]
+@@ -276,7 +277,7 @@
+         require(sha(ROOT/'retained-inputs/helpers'/f'{number:02d}-{Path(path).name}')==h,'executed helper snapshot differs')
+         if Path(path).is_relative_to(SOURCE) or Path(path).is_relative_to(REDIS_SOURCE):
+             require(sha(path)==h,'validator/helper source changed')
+-    require(matrix['helper_hashes'][str(Path('/tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py'))]==args.expected_driver_sha256,
++    require(matrix['helper_hashes'][str(Path('/tmp/kv9-inbox-drain-comparison-preparation/matched-driver.py'))]==args.expected_driver_sha256,
+             'driver is not the retained helper identity')
+     sys.path.insert(0,str(SOURCE/'scripts'))
+     import batch_benchmark_report as native
+@@ -476,7 +477,7 @@
+              server_memory=memory,
+              short_diagnostic_only=True))
+         print('PASS: retained diagnostic cohort '+str(ordinal)+' '+arm+' c'+str(concurrency),flush=True)
+-    for repeat in (0,1):
++    for repeat in (0,1,2,3):
+         for concurrency in CONCURRENCIES:
+             for arm,server,api in ARMS:
+                 if server is not None:
+@@ -484,7 +485,7 @@
+                     redis.paired_configuration(configs[(repeat,concurrency,reference)],configs[(repeat,concurrency,arm)])
+     memory_pairs = []
+     performance_pairs = []
+-    for repeat in (0,1):
++    for repeat in (0,1,2,3):
+         for concurrency in CONCURRENCIES:
+             for api, suffix in (('point_get','point'),('batch_get','batch1')):
+                 old,new = paired_cases(result['cases'],repeat,concurrency,suffix)
+@@ -508,10 +509,10 @@
+                     mean_change_percent=(new['whole_call_latency']['mean_ns']/old['whole_call_latency']['mean_ns']-1)*100,
+                     old_whole_call_latency=old['whole_call_latency'],new_whole_call_latency=new['whole_call_latency']))
+     result['performance_comparison'] = performance_pairs
+-    require(len(result['cases'])==24 and len(lifetimes)==80 and drains==48 and writer_bindings==48,
++    require(len(result['cases'])==48 and len(lifetimes)==160 and drains==96 and writer_bindings==96,
+             'full cohort/lifetime/drain/listener counts differ')
+     result['memory_comparison'] = memory_pairs
+-    result.update(complete=True,matched_diagnostic_accepted=args.successful_arms==24,
++    result.update(complete=True,matched_diagnostic_accepted=args.successful_arms==48,
+                   successful_arms=args.successful_arms,owned_lifetimes_exited=len(lifetimes),
+                   role_source_file_checks=source_files,resource_samples=resource_count,qualifying_drains=drains,
+                   voter_writer_listener_bindings=writer_bindings,retained_files=retained_files,retained_bytes=retained_bytes)
+@@ -520,4 +521,4 @@
+     raise
+ finally:
+     result['ended_unix_ns']=time.time_ns();save('audit.json',result);save('input-inventory.json',records)
+-print('PASS: twenty-four c1/c64 matched cohorts and exact outer restoration accepted',flush=True)
++print('PASS: forty-eight c1/c64 matched cohorts and exact outer restoration accepted',flush=True)

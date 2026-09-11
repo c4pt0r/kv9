@@ -1,0 +1,17 @@
+{
+  "revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "clean": true,
+  "source": "/tmp/kv9-read-group-credit",
+  "review_only": true,
+  "files": {
+    "crates/raft/src/work.rs": "766fe563ceba1f2e398ce14704b9fc232be3b4fa52b0301783036f95f089164a",
+    "crates/raft/src/driver.rs": "dcd8bea84fc0b315f21a2fb74f05bf390a7cec387582c64c0d64f7229f3145c5",
+    "crates/raft/src/rawnode.rs": "97c0046a635bd6f09c0f8deb8371ad6e808996ce69bd6df62efc4e946f759eef",
+    "crates/raft/src/async_read.rs": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+    "crates/raft/src/async_apply.rs": "73a18d0e02fab720e7138a5b7ac15799742b1018b7226454f0e24b94a2ccc6f5",
+    "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58",
+    "crates/raft/src/grpc.rs": "9083374c5ac34abac7ed8eb5967b1c5fdb693b397e6f6570131e9691e422ac25",
+    "crates/raft/src/driver/read_credit_tests.rs": "a1ceb8b977f1c30d3f7cd44fad3dc2e044a4a77fb6cb03f131fd7eb20b089dcb",
+    "scripts/check-async-read-controls.py": "4edf65bd257936b96016bdec4e4df7b0be0cc69ed49b9b1d6f4b3b15f7491870"
+  }
+}

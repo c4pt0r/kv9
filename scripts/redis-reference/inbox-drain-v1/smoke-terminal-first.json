@@ -1,0 +1,10 @@
+{
+  "root_session": 92541,
+  "exit_code": 0,
+  "complete": true,
+  "successful_correctness_cells": 12,
+  "timing_accepted": false,
+  "matrix_sha256": "e0b4270f4af90701cc69980187cbb218c3bcb67e29afc9e20ca290c73bd2f74d",
+  "output": "/tmp/kv9-inbox-drain-comparison-smoke-first",
+  "cleanup_complete": true
+}

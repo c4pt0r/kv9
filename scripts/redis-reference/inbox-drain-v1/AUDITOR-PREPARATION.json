@@ -1,0 +1,254 @@
+{
+  "all_owned_commands_terminal": true,
+  "audit_argv_after_root_terminal_release": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-inbox-drain-comparison-preparation/audit.py",
+    "--run",
+    "/tmp/kv9-inbox-drain-matched-diagnostic-attempt1/cohorts",
+    "--output",
+    "/tmp/kv9-inbox-drain-comparison-preparation/results-first",
+    "--expected-driver-sha256",
+    "8bc23a943190246af963289598fdeaf689897c26ef2fa1174f4e36f3923c4f71",
+    "--root-session",
+    "ROOT_TERMINAL_TIMING_SESSION",
+    "--root-exit-code",
+    "0",
+    "--successful-arms",
+    "48"
+  ],
+  "auditor_diff_sha256": "5248c8cba5cf79f39bf1a412e3e0849ab6ac10e7a4a4b2e06835762f00f8c909",
+  "auditor_sha256": "ce69cd12abc7bcd56f9c388f98965641b52f5893aee45093ec8484ca8d75e9c4",
+  "completed_ns": 1789127056440564106,
+  "contract_result": {
+    "command": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "python3",
+      "/tmp/kv9-inbox-drain-comparison-preparation/test_audit_contract.py"
+    ],
+    "exit_code": 0,
+    "log": "/tmp/kv9-inbox-drain-comparison-preparation/audit-contract-first.log",
+    "log_sha256": "a50d0a2ea720812a5e065b62d198e3980063562c46ad4e5e9ccba492defb1489",
+    "tests": 12
+  },
+  "contracts_pending": false,
+  "driver_hash_pending": false,
+  "driver_sha256": "8bc23a943190246af963289598fdeaf689897c26ef2fa1174f4e36f3923c4f71",
+  "expected_run": "/tmp/kv9-inbox-drain-matched-diagnostic-attempt1/cohorts",
+  "initial_metadata_correction": "Fixed the list of unchanged function names after a temporary local variable was reused while generating diffs; no executable or contract change.",
+  "initial_metadata_sha256": "afa4005b16c16c3f29cc81b5eacfd29e46ff111421145ec6fb24629e6fce5a82",
+  "parent_auditor_path": "/tmp/kv9-read-group-credit-comparison-preparation/audit.py",
+  "parent_auditor_sha256": "85a9a48ba745b6a5c16d947e8c455c3fe0aa1aa52b026b0abcdf057e67ab9035",
+  "parent_test_path": "/tmp/kv9-read-group-credit-comparison-preparation/test_audit_contract.py",
+  "parent_test_sha256": "a3b0231f40abd31c773a86230e9568ef4794172be6d1b4f04a7e84a5eb658027",
+  "pins": {
+    "new": {
+      "binary_sha256": "26a185509cccf6436c5f02a5ab4476efca551166d1d4ef43ea2c200cc5a9e513",
+      "build_path": "/tmp/kv9-inbox-drain-release-first",
+      "manifest_sha256": "fae8fd537f53b0a4e9cd09673230a33c97519e4a1e0311f20e1a74c4340e1a20",
+      "revision": "c3131800b665f6f160a11c804f542237e77ab83a",
+      "source_count": 595
+    },
+    "old": {
+      "binary_sha256": "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
+      "build_path": "/tmp/kv9-read-group-credit-release-first",
+      "manifest_sha256": "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd",
+      "revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+      "source_count": 594
+    }
+  },
+  "protocol_sha256": "071005a9488c93dea7e46d837c2ede2af0d4b9a0f0dd4b5e0f9f8b4262e85d23",
+  "ready_for_root_review": true,
+  "runtime_executed": false,
+  "scope": "48 timed c1/c64 cohorts, four F/R/R/F passes over the full 12-cell list, 10000 ms each, 160 lifetimes, 96 qualifying drains/writer bindings. The 12-cell 5000-ms correctness smoke is separately retained and rejected by this timing auditor. All non-scope acceptance and fixed client predicates unchanged. No threshold change.",
+  "scope_edits": [
+    {
+      "after": "Independent four-repeat c1/c64 forty-eight-cohort diagnostic readback; no workload execution.",
+      "before": "Independent matched c1/c64 twenty-four-cohort diagnostic readback; no workload execution.",
+      "occurrences": 1,
+      "reason": "Describe the new timing scope."
+    },
+    {
+      "after": "OLD_REV = '57ff6851e40ed63c837189d6eb0a11190704725a'",
+      "before": "OLD_REV = '5ee897a2f58c57bdf17ea1757c96224adf0f0dbb'",
+      "occurrences": 1,
+      "reason": "Use the candidate parent as control."
+    },
+    {
+      "after": "NEW_REV = 'c3131800b665f6f160a11c804f542237e77ab83a'",
+      "before": "NEW_REV = '57ff6851e40ed63c837189d6eb0a11190704725a'",
+      "occurrences": 1,
+      "reason": "Pin the new candidate."
+    },
+    {
+      "after": " 'old': (OLD_REV, '6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30'),",
+      "before": " 'old': (OLD_REV, '0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711'),",
+      "occurrences": 1,
+      "reason": "Bind the exact parent executable."
+    },
+    {
+      "after": " 'new': (NEW_REV, '26a185509cccf6436c5f02a5ab4476efca551166d1d4ef43ea2c200cc5a9e513'),",
+      "before": " 'new': (NEW_REV, '6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30'),",
+      "occurrences": 1,
+      "reason": "Bind the exact candidate executable."
+    },
+    {
+      "after": "PROTOCOL_ID = 'kv9-inbox-drain-c1-c64-v1'",
+      "before": "PROTOCOL_ID = 'kv9-read-group-credit-c1-c64-v1'",
+      "occurrences": 1,
+      "reason": "Distinct declared study identity."
+    },
+    {
+      "after": " 'old': ('/tmp/kv9-read-group-credit', '/tmp/kv9-read-group-credit-release-first', 'kv9'),",
+      "before": " 'old': ('/tmp/kv9-rpc-worker-pair', '/tmp/kv9-rpc-pair-release-first', 'kv9'),",
+      "occurrences": 1,
+      "reason": "Parent source/build paths."
+    },
+    {
+      "after": " 'new': ('/tmp/kv9-raft-inbox-drain-reuse', '/tmp/kv9-inbox-drain-release-first', 'kv9'),",
+      "before": " 'new': ('/tmp/kv9-read-group-credit', '/tmp/kv9-read-group-credit-release-first', 'kv9'),",
+      "occurrences": 1,
+      "reason": "Candidate source/build paths."
+    },
+    {
+      "after": " 'old': '7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd',",
+      "before": " 'old': '1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417',",
+      "occurrences": 1,
+      "reason": "Parent manifest binding."
+    },
+    {
+      "after": " 'new': 'fae8fd537f53b0a4e9cd09673230a33c97519e4a1e0311f20e1a74c4340e1a20',",
+      "before": " 'new': '7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd',",
+      "occurrences": 1,
+      "reason": "Candidate manifest binding."
+    },
+    {
+      "after": "choices=(48,)",
+      "before": "choices=(24,)",
+      "occurrences": 1,
+      "reason": "Exactly 48 completed timing arms are required."
+    },
+    {
+      "after": "    return [(repeat,*row) for repeat in (0,1,2,3)\n            for row in (forward if repeat in (0,3) else reversed(forward))]",
+      "before": "    return [(0,*row) for row in forward] + [(1,*row) for row in reversed(forward)]",
+      "occurrences": 1,
+      "reason": "Four repeats reverse the whole 12-cell list in repeats 1 and 2."
+    },
+    {
+      "after": "repeat in (0,1,2,3) and",
+      "before": "repeat in (0,1) and",
+      "occurrences": 1,
+      "reason": "Require four typed repeat identities."
+    },
+    {
+      "after": "measure_ms=10000,max_calls",
+      "before": "measure_ms=5000,max_calls",
+      "occurrences": 1,
+      "reason": "Exact 10-second timing windows; smoke remains rejected."
+    },
+    {
+      "after": "len(matrix['attempts'])==48",
+      "before": "len(matrix['attempts'])==24",
+      "occurrences": 1,
+      "reason": "Double the timed inventory."
+    },
+    {
+      "after": "forty-eight-cohort inventory/order differs",
+      "before": "twenty-four-cohort inventory/order differs",
+      "occurrences": 1,
+      "reason": "Scope-specific refusal text."
+    },
+    {
+      "after": "args.successful_arms==48",
+      "before": "args.successful_arms==24",
+      "occurrences": 2,
+      "reason": "Required complete verdict and success scope."
+    },
+    {
+      "after": "/tmp/kv9-inbox-drain-comparison-preparation/matched-driver.py",
+      "before": "/tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py",
+      "occurrences": 2,
+      "reason": "Bind only the new owned driver path."
+    },
+    {
+      "after": "for repeat in (0,1,2,3):",
+      "before": "for repeat in (0,1):",
+      "occurrences": 2,
+      "reason": "Compare and report every repeat."
+    },
+    {
+      "after": "len(result['cases'])==48 and len(lifetimes)==160 and drains==96 and writer_bindings==96",
+      "before": "len(result['cases'])==24 and len(lifetimes)==80 and drains==48 and writer_bindings==48",
+      "occurrences": 1,
+      "reason": "Exact doubled cohorts/lifetimes/drain/writer totals."
+    },
+    {
+      "after": "scope='Four-repeat 10-second c1/c64 shared-host tmpfs diagnostic; no sustained-capacity or equal-durability claim'",
+      "before": "scope='Short shared-host tmpfs diagnostic; no sustained-capacity or equal-durability claim'",
+      "occurrences": 1,
+      "reason": "Explicit declared measurement scope."
+    },
+    {
+      "after": "PASS: forty-eight c1/c64 matched cohorts and exact outer restoration accepted",
+      "before": "PASS: twenty-four c1/c64 matched cohorts and exact outer restoration accepted",
+      "occurrences": 1,
+      "reason": "Exact terminal scope text."
+    }
+  ],
+  "static_schedule_comparison": {
+    "accepted": true,
+    "concurrency_points": [
+      1,
+      64
+    ],
+    "driver_equals_frozen_protocol": true,
+    "driver_equals_independent_auditor": true,
+    "driver_equals_independent_test_fixture": true,
+    "method": "AST-extract only pure declaration functions; no driver/auditor startup or runtime launch.",
+    "repeats": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "smoke_descriptors": 12,
+    "smoke_equals_original_five_second_descriptors": true,
+    "smoke_ms": 5000,
+    "timing_descriptor_sha256": "3fc2156fea183897b5496d9fe8c1254fe840d9ac34e24e284510d8bc122547b8",
+    "timing_descriptors": 48,
+    "timing_ms": 10000,
+    "whole_12_cell_list_order": [
+      "forward",
+      "reverse",
+      "reverse",
+      "forward"
+    ]
+  },
+  "test_diff_sha256": "1ec1616fab7dd74bf2cbd562bd1cb7b3e02358b704f955b0a0031f23f4609605",
+  "test_sha256": "23baefd91b62c0f2e3df7ac4cb292267fcdf487ef2ca055d00eadbaf82b0cbb7",
+  "unchanged_function_bodies": [
+    "dataset_check",
+    "expected_descriptor",
+    "histogram",
+    "paired_cases",
+    "qualify",
+    "read",
+    "require",
+    "retention_file",
+    "same_json",
+    "save",
+    "sha",
+    "validate_requested_config",
+    "value"
+  ]
+}

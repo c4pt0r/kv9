@@ -1,0 +1,26 @@
+{
+  "prepared_unix_ns": 1789127165443852593,
+  "inputs": {
+    "AUDITOR-PREPARATION.initial.json": "afa4005b16c16c3f29cc81b5eacfd29e46ff111421145ec6fb24629e6fce5a82",
+    "AUDITOR-PREPARATION.json": "3b087e4a4fb57316e0c6f0378688724fa0789e0d2409202137191cf27b85615f",
+    "README.md": "e3d829b796711db4069ed17487d8203bb42722969a21520fbf8e1d4f27f9c8f4",
+    "audit-contract-first.log": "a50d0a2ea720812a5e065b62d198e3980063562c46ad4e5e9ccba492defb1489",
+    "audit.py": "ce69cd12abc7bcd56f9c388f98965641b52f5893aee45093ec8484ca8d75e9c4",
+    "auditor-tests.diff": "1ec1616fab7dd74bf2cbd562bd1cb7b3e02358b704f955b0a0031f23f4609605",
+    "auditor.diff": "5248c8cba5cf79f39bf1a412e3e0849ab6ac10e7a4a4b2e06835762f00f8c909",
+    "driver-arguments.json": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+    "driver-contract-first.json": "371f1734caa8bf895ab917ff4fe344c3e0280a97a8320234f1e668748297f797",
+    "driver-contract-first.log": "30102c30fdda4667a9971147ebfe771e177fc204196659bba5555b13b519a62b",
+    "driver-original-inputs.json": "3b08f6641cb64d2ced713075cd31878a7ff876cd896213067cf922bc1e2ddb84",
+    "freeze-first-failure.json": "3b4dcebe927a15025e77a6f9f6f47349df97aa80d280d13506b72b607c91ec89",
+    "isolate-and-run.py": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "matched-driver.py": "8bc23a943190246af963289598fdeaf689897c26ef2fa1174f4e36f3923c4f71",
+    "matched-driver.py.diff": "e89d5a0552cde4244060b7db55bdfa216ce603afe83379fe9bc830404989c388",
+    "protocol.json": "071005a9488c93dea7e46d837c2ede2af0d4b9a0f0dd4b5e0f9f8b4262e85d23",
+    "role-preflight.json": "f40a180c4c67c4a33d5878b6a4d40bb0ebc57b6a8862587f26bb53e0462cde4f",
+    "smoke-terminal-first.json": "6445db9e32042b48e63800cdc9d7caabd1a4c03acdbe8b215d720a53b50d1e33",
+    "test_audit_contract.py": "23baefd91b62c0f2e3df7ac4cb292267fcdf487ef2ca055d00eadbaf82b0cbb7",
+    "test_driver_contract.py": "0895dfa61e979007146676d885d5738e47843004bf18c84bc1a1fbf2233e6c03",
+    "test_driver_contract.py.diff": "f0f861b962838394cb0efe24b1efb27d57c2b7a9d9d678ad6d498b6d08e934ed"
+  }
+}

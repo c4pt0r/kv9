@@ -1,0 +1,32 @@
+{
+  "complete": true,
+  "baseline_package_gate": "/tmp/kv9-work-signal-coalescing-validation-first/result.json",
+  "baseline_work_sha256": "c372da470f9e14c576576144943b7926da18e1319daf74699da0d69ae65555cc",
+  "mutant_work_sha256": "dad4bae98cb07653b1afe1d455d8385c0f7cccdcbb1e4a7ad44f63e32d0de2ea",
+  "mechanism": "Deliberately clear pending on a repeated producer notification, losing the retained post-drain turn.",
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "-p",
+    "kv9-raft",
+    "--lib",
+    "work::tests::producer_burst_after_drain_is_delivered_before_the_next_tick",
+    "--",
+    "--exact"
+  ],
+  "records": [
+    {
+      "kind": "mutant",
+      "pid": 969780,
+      "exit_code": 101
+    },
+    {
+      "kind": "restored",
+      "pid": 970396,
+      "exit_code": 0
+    }
+  ],
+  "restored_source_sha256": "c372da470f9e14c576576144943b7926da18e1319daf74699da0d69ae65555cc",
+  "source_restored": true
+}

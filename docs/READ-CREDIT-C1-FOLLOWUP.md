@@ -105,8 +105,10 @@ and unary leader loss/original-directory restart. All four progress windows,
 six fresh drains and seven exited lifetimes pass. All 595 source files and
 default release/runtime bindings remain unchanged. This is one-host process
 evidence; it does not transfer `57ff6851`'s Chaos acceptance to this revision.
-The separate matched performance screen is next. All current performance
-numbers belong to `57ff6851`; no gain is claimed for `c3131800` yet.
+The separate [four-repeat matched screen](RAFT-INBOX-DRAIN-SCREENING.md)
+now completes: small pooled changes and mixed per-repeat throughput/p99 do
+not justify selecting `c3131800` as the next performance increment. The c1
+results above still belong to `57ff6851`; both experiments remain separate.
 
 Continue with measured handoff/buffer costs and sustained/write/mixed/large-batch
 checks. Whole grouped-read/Ready/Rust proof composition, the broader industrial

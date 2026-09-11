@@ -1,0 +1,136 @@
+--- /tmp/kv9-read-group-credit-comparison-preparation/test_audit_contract.py
++++ /tmp/kv9-inbox-drain-comparison-preparation/test_audit_contract.py
+@@ -30,7 +30,7 @@
+ def config(repeat, workers, server, api):
+     c = dict(run_id=f'p{repeat}{workers:04d}', seed=71, workers=workers,
+              keys=4096, batch_size=1, value_bytes=128, read_percent=100,
+-             warmup_calls=128, measure_ms=5000, max_calls=10_000_000,
++             warmup_calls=128, measure_ms=10000, max_calls=10_000_000,
+              load={'kind': 'closed_loop'})
+     if server:
+         c.update(version=2, rpc_transport='tonic_stream', read_api=api,
+@@ -47,7 +47,9 @@
+ def matrix():
+     rows = []
+     for repeat, workers, indices in [(0, 1, range(6)), (0, 64, range(6)),
+-                                     (1, 64, range(5, -1, -1)), (1, 1, range(5, -1, -1))]:
++                                     (1, 64, range(5, -1, -1)), (1, 1, range(5, -1, -1)),
++                                     (2, 64, range(5, -1, -1)), (2, 1, range(5, -1, -1)),
++                                     (3, 1, range(6)), (3, 64, range(6))]:
+         for i in indices:
+             arm, server, api = ARM_ROWS[i]
+             full = config(repeat, workers, server, api)
+@@ -55,7 +57,7 @@
+                       if k not in {'version', 'rpc_transport', 'read_api', 'client', 'address', 'deadline_ms'}}
+             rows.append(dict(repeat=repeat, arm=arm, server_role=server, read_api=api,
+                              mix='read', target='kv9' if server else 'redis-memory', shared=shared))
+-    return dict(version=2, protocol_id='kv9-read-group-credit-c1-c64-v1',
++    return dict(version=2, protocol_id='kv9-inbox-drain-c1-c64-v1',
+                 concurrency_points=[1, 64], smoke=False, fixed_rates=None,
+                 attempts=[{} for _ in rows], cohort_inventory=rows)
+ 
+@@ -65,18 +67,19 @@
+         compile(SOURCE.read_text(), str(SOURCE), 'exec')
+         self.assertEqual(set(audit) & {'ROOT', 'OUT', 'args', 'result'}, set())
+ 
+-    def test_exact_24_order_and_run_ids(self):
++    def test_exact_48_order_and_run_ids(self):
+         m = matrix()
+         audit['validate_matrix_protocol'](m)
+         expected = [(d['repeat'], d['shared']['workers'], d['arm'], d['server_role'], d['read_api'])
+                     for d in m['cohort_inventory']]
+         self.assertEqual(audit['expected_cohorts'](), expected)
+-        self.assertEqual([m['cohort_inventory'][i]['shared']['run_id'] for i in (0, 6, 12, 18)],
+-                         ['p00001', 'p00064', 'p10064', 'p10001'])
++        self.assertEqual(len(m['cohort_inventory']), 48)
++        self.assertEqual([m['cohort_inventory'][i]['shared']['run_id'] for i in (0, 6, 12, 18, 24, 30, 36, 42)],
++                         ['p00001', 'p00064', 'p10064', 'p10001', 'p20064', 'p20001', 'p30001', 'p30064'])
+ 
+     def test_reject_reversing_only_arms_and_duplicate_concurrency(self):
+         m = matrix()
+-        m['cohort_inventory'][12:] = m['cohort_inventory'][18:] + m['cohort_inventory'][12:18]
++        m['cohort_inventory'][12:24] = m['cohort_inventory'][18:24] + m['cohort_inventory'][12:18]
+         with self.assertRaisesRegex(ValueError, 'inventory/order'):
+             audit['validate_matrix_protocol'](m)
+         m = matrix()
+@@ -100,7 +103,7 @@
+                 audit['validate_matrix_protocol'](m)
+ 
+     def test_all_native_and_redis_exact_configs(self):
+-        for repeat in (0, 1):
++        for repeat in (0, 1, 2, 3):
+             for workers in (1, 64):
+                 for _, server, api in ARM_ROWS:
+                     audit['validate_requested_config'](config(repeat, workers, server, api), repeat, workers, server, api)
+@@ -125,8 +128,8 @@
+ 
+     def test_pairing_never_crosses_concurrency_or_repeat(self):
+         cases = [dict(repeat=r, concurrency=c, arm=a, marker=(r, c, a))
+-                 for r in (0, 1) for c in (1, 64) for a in ('old-point', 'new-point')]
+-        for r in (0, 1):
++                 for r in (0, 1, 2, 3) for c in (1, 64) for a in ('old-point', 'new-point')]
++        for r in (0, 1, 2, 3):
+             for c in (1, 64):
+                 old, new = audit['paired_cases'](cases, r, c, 'point')
+                 self.assertEqual((old['marker'], new['marker']), ((r, c, 'old-point'), (r, c, 'new-point')))
+@@ -136,10 +139,58 @@
+         with self.assertRaisesRegex(ValueError, 'missing/duplicate'):
+             audit['paired_cases'](cases + [cases[0]], 0, 1, 'point')
+ 
++    def test_reject_wrong_full_repeat_direction_missing_and_duplicate_repeats(self):
++        for repeat in range(4):
++            start = repeat * 12
++            m = matrix()
++            m['cohort_inventory'][start:start+12] = reversed(m['cohort_inventory'][start:start+12])
++            with self.subTest(wrong_direction=repeat):
++                with self.assertRaisesRegex(ValueError, 'inventory/order'):
++                    audit['validate_matrix_protocol'](m)
++            m = matrix()
++            del m['cohort_inventory'][start:start+12]
++            m['attempts'] = [{} for _ in m['cohort_inventory']]
++            with self.subTest(omitted_repeat=repeat):
++                with self.assertRaisesRegex(ValueError, 'inventory/order'):
++                    audit['validate_matrix_protocol'](m)
++            m = matrix()
++            replacement = ((repeat + 1) % 4) * 12
++            m['cohort_inventory'][start:start+12] = copy.deepcopy(m['cohort_inventory'][replacement:replacement+12])
++            with self.subTest(duplicated_repeat=repeat):
++                with self.assertRaisesRegex(ValueError, 'inventory/order'):
++                    audit['validate_matrix_protocol'](m)
++
++    def test_reject_old_two_repeat_five_second_study_and_changed_duration(self):
++        m = matrix()
++        m['cohort_inventory'] = m['cohort_inventory'][:24]
++        m['attempts'] = [{}] * 24
++        for descriptor in m['cohort_inventory']:
++            descriptor['shared']['measure_ms'] = 5000
++        with self.assertRaisesRegex(ValueError, 'inventory/order'):
++            audit['validate_matrix_protocol'](m)
++        for duration in (5000, 30000, True):
++            m = matrix()
++            for descriptor in m['cohort_inventory']:
++                descriptor['shared']['measure_ms'] = duration
++            with self.subTest(duration=duration):
++                with self.assertRaisesRegex(ValueError, 'inventory/order'):
++                    audit['validate_matrix_protocol'](m)
++            for server, api in [('old', 'point_get'), (None, 'get')]:
++                c = config(0, 1, server, api); c['measure_ms'] = duration
++                with self.assertRaisesRegex(ValueError, 'exact request config'):
++                    audit['validate_requested_config'](c, 0, 1, server, api)
++        for repeat in (-1, 4, True):
++            with self.assertRaisesRegex(ValueError, 'invalid repeat/concurrency'):
++                audit['shared_config'](repeat, 1)
++
+     def test_exact_candidate_and_control_pins_are_distinct(self):
+-        self.assertEqual(audit['PINS']['new'], ('57ff6851e40ed63c837189d6eb0a11190704725a',
++        self.assertEqual(audit['PINS']['new'], ('c3131800b665f6f160a11c804f542237e77ab83a',
++                         '26a185509cccf6436c5f02a5ab4476efca551166d1d4ef43ea2c200cc5a9e513'))
++        self.assertEqual(audit['SERVER_MANIFESTS']['new'],
++                         'fae8fd537f53b0a4e9cd09673230a33c97519e4a1e0311f20e1a74c4340e1a20')
++        self.assertEqual(audit['PINS']['old'], ('57ff6851e40ed63c837189d6eb0a11190704725a',
+                          '6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30'))
+-        self.assertEqual(audit['SERVER_MANIFESTS']['new'],
++        self.assertEqual(audit['SERVER_MANIFESTS']['old'],
+                          '7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd')
+         self.assertNotEqual(audit['PINS']['old'], audit['PINS']['new'])
+         self.assertEqual(set(audit['ROLE_PATHS']), {'old', 'new', 'client', 'redis'})

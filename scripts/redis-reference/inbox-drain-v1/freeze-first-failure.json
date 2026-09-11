@@ -1,0 +1,8 @@
+{
+  "tool_chunk": "54ce40",
+  "exit_code": 1,
+  "error": "KeyError: cleanup_errors",
+  "cause": "The root summary adapter assumed Redis and native smoke cleanup fields shared a name. Native uses cleanup_complete; Redis uses cleanup_errors.",
+  "runtime_or_predicate_changed": false,
+  "runtime_repeated": false
+}

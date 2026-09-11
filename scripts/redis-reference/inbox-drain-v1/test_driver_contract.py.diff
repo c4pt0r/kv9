@@ -1,0 +1,40 @@
+--- /tmp/kv9-read-group-credit-comparison-preparation/test_driver_contract.py
++++ /tmp/kv9-inbox-drain-comparison-preparation/test_driver_contract.py
+@@ -30,7 +30,7 @@
+ 
+     def test_full_matrix_accepted_by_original_client_contracts(self):
+         pairs = self.pairs()
+-        self.assertEqual(len(pairs), 24)
++        self.assertEqual(len(pairs), 48)
+         for n, r in pairs:
+             native.config_check(n)
+             redis.config_check(r)
+@@ -38,15 +38,17 @@
+             self.assertEqual(n['workers'], n['client']['max_in_flight'])
+             self.assertEqual(n['client']['max_attempts'], 6)
+             self.assertEqual(n['client']['deadline_ms'], 1500)
++            self.assertEqual(n['measure_ms'], 10000)
+ 
+     def test_fixed_width_dataset_prefix_and_whole_reversal(self):
+         rows = driver.make_plan(False)
+         first = [(r['shared']['workers'], r['arm']) for r in rows[:12]]
+-        second = [(r['shared']['workers'], r['arm']) for r in rows[12:]]
+-        self.assertEqual(second, list(reversed(first)))
+         self.assertEqual({len(r['shared']['run_id']) for r in rows}, {6})
+-        for repeat in (0, 1):
++        for repeat in (0, 1, 2, 3):
+             group = rows[repeat*12:(repeat+1)*12]
++            observed = [(r['shared']['workers'], r['arm']) for r in group]
++            self.assertEqual(observed, first if repeat in (0, 3) else list(reversed(first)))
++            self.assertEqual({r['repeat'] for r in group}, {repeat})
+             self.assertEqual(len({r['shared']['run_id'] for r in group}), 2)
+ 
+     def test_smoke_exercises_both_concurrency_boundaries(self):
+@@ -57,6 +59,7 @@
+                            'redis-mget1', 'redis-get1')])
+         for n, r in self.pairs(True):
+             redis.paired_configuration(r, n)
++            self.assertEqual(n['measure_ms'], 5000)
+ 
+     def test_mismatched_api_concurrency_or_dataset_rejected(self):
+         n, r = self.pairs()[0]

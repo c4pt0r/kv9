@@ -1,0 +1,4 @@
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-work-signal-coalescing/crates/raft)
+    Checking kv9-common v0.0.0 (/tmp/kv9-work-signal-coalescing/crates/common)
+    Checking kv9-engine v0.0.0 (/tmp/kv9-work-signal-coalescing/crates/engine)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.41s

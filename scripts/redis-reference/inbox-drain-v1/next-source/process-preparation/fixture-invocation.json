@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-work-signal-coalescing-process-preparation-first/runner.py",
+    "--build",
+    "/tmp/kv9-work-signal-coalescing-release-first",
+    "--output",
+    "/tmp/kv9-work-signal-coalescing-process-e2e-first"
+  ],
+  "started_ns": 1789128694775653458,
+  "affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "environment": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "runner_sha256": "32c0bcb4594e8ae51c3c998d0b0dc4d521e306d1d6bd43e0cfb627208ab49a5f",
+  "pid": 1015012
+}

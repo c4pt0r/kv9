@@ -1,0 +1,19 @@
+{
+  "accepted": true,
+  "revision": "1b70dba62e492cd8e10dd20f643fee74d39abc57",
+  "source": "/tmp/kv9-work-signal-coalescing",
+  "build": "/tmp/kv9-work-signal-coalescing-release-first",
+  "source_files": 595,
+  "source_tree_sha256": "1b4f115a8609f13048765aacc4fb84296eb8d4ed59942752f9c47a254f62b30a",
+  "runner_sha256": "32c0bcb4594e8ae51c3c998d0b0dc4d521e306d1d6bd43e0cfb627208ab49a5f",
+  "base_runner_sha256": "25bf83a314b9b266785893324924acaeb64a0400b359df772ff1bc4b13a442ab",
+  "auditor": "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+  "auditor_sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+  "files": {
+    "/tmp/kv9-work-signal-coalescing-release-first/build.json": "800e74e36f7de539bb38d3cfe097e356ed2ebd1e33d16d7b48435eb6f2bc93f3",
+    "/tmp/kv9-work-signal-coalescing-release-first/kv9": "ab05a16fd520d4c612b01cedea1a514411e607eb0bc645ce28fce24b3299d1ef",
+    "/tmp/kv9-work-signal-coalescing-release-first/workload/build.json": "7ee28b1d8e1edbdc9173ef250522a23f2a2b2e599a2f3c41925f9bf2edf81052",
+    "/tmp/kv9-work-signal-coalescing-release-first/workload/kv9-batch-workload": "1474e0694a79f879b044e4cba436cf1d2e7b81f278fc4d710ebb0c3e335f517a",
+    "/tmp/kv9-work-signal-coalescing/scripts/native-batch-e2e.py": "c8248ac6525235c9ccf1147b02db1cf468172f4233f8c2c80ffb2e3e2325347f"
+  }
+}
