@@ -1,0 +1,11 @@
+RETAINED: baseline
+RETAINED: vip-delay
+RETAINED: delay-healed
+RETAINED: vip-partial-loss
+RETAINED: loss-healed
+RETAINED: vip-partition
+RETAINED: partition-healed
+RETAINED: exact-tcp-reset
+RETAINED: reset-healed
+RETAINED: quorum-loss
+RETAINED: quorum-healed

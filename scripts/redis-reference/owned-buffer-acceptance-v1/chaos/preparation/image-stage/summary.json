@@ -1,0 +1,23 @@
+{
+  "accepted": true,
+  "accepted_cri_image_ids": [
+    "docker.io/library/import-2026-09-11@sha256:32866cb14166a6d91e296c642c28173e7db1d8cd827a7da3af625613e7acf660"
+  ],
+  "cri_image_id": "sha256:0fe6d14b5f0eb729b0ed7bda9484c3dc2b18c1b567db2a2075930c591c970ce6",
+  "docker_id": "sha256:0fe6d14b5f0eb729b0ed7bda9484c3dc2b18c1b567db2a2075930c591c970ce6",
+  "ended_ns": 1789142524812623258,
+  "image": "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1",
+  "namespace_created": false,
+  "payload_sha256": {
+    "/opt/kv9-batch-workload/build.json": "a20aba0750dfb48459fba02deb2160d58851afa8ac0d45e1d1a674725e8ff9ef",
+    "/usr/local/bin/kv9": "07c02871276f9c52cd19bd8213ab3288d6c51a1d7391370b5a6282f0018b03f7",
+    "/usr/local/bin/kv9-batch-workload": "600733e2d61cf862b4b4c4496778126c0dd3224b3ecd69ba40213c3d6b783607"
+  },
+  "probe_cleanup": {
+    "absent": true,
+    "id": "cbc070b7817e020e8840bb44a269368f4a600a08bac6ac1f923bfb33677f529c"
+  },
+  "probe_compatible": true,
+  "runner_pid": 3284776,
+  "scope": "Image preparation only; no database or fault execution"
+}

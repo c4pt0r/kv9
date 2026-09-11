@@ -1,0 +1,19 @@
+{
+  "complete": true,
+  "cri_manifest_ids": [
+    "docker.io/library/import-2026-09-11@sha256:32866cb14166a6d91e296c642c28173e7db1d8cd827a7da3af625613e7acf660"
+  ],
+  "frozen_files": 125,
+  "image_config": "sha256:0fe6d14b5f0eb729b0ed7bda9484c3dc2b18c1b567db2a2075930c591c970ce6",
+  "input_evidence": {
+    "/tmp/kv9-owned-batch-build-preparation/process-audit-invocation-first.json": "cc15104a24b779793da1a8ab69b8a3e1b5062eaceb08503d0a278f3fbb849ba6",
+    "/tmp/kv9-owned-batch-build-preparation/process-audit-terminal-first.json": "63e70f564fdabac2e0c0b1d09b17aa6c30230384440a7a7fc0fef39896456860",
+    "/tmp/kv9-owned-batch-build-preparation/process-terminal-first.json": "3e25afb677a76a4ccac0fa4478afaf857fd5079b382ba89208eaafbc6cdcc17f",
+    "/tmp/kv9-owned-batch-process-independent-first/results-first/audit.json": "2d9cd0dbbd3479d3a3d15ea18ff3f00d03adb86b316d0dbb52026c7130af485a",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/frozen-inputs.json": "cc683b3be0b80c543d7c5800c96b4d29d76969669d08f4f10bc60d1fab82de61",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/readiness.json": "71681c57f119e3dd8f1c23be06866353fded362dbddc2a140ece631c1e116ef4"
+  },
+  "read_only": true,
+  "source_files": 592,
+  "source_result_sha256": "f2c321df26c1e2151d2723732a719a6fb77ae0ceaaef58f2b1826273cf6a2d87"
+}

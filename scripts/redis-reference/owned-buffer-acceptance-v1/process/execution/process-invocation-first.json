@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-batch-recovery-preparation/process-runner.py",
+    "--build",
+    "/tmp/kv9-owned-batch-release-first",
+    "--output",
+    "/tmp/kv9-owned-batch-process-e2e-first"
+  ],
+  "pid": 3248082,
+  "supervisor": 3248081,
+  "started_ns": 1789142394221809978,
+  "build_sha256": "5a2d5e031f0a24a0704dd3a2d4cf4f0fc95f868d694b54d94c3fc56fb1243a21"
+}

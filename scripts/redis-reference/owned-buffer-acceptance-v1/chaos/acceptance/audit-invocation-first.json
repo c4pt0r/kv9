@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/audit.py",
+    "--artifact",
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1",
+    "--output",
+    "/tmp/kv9-owned-batch-chaos-acceptance-first/audit.json"
+  ],
+  "pid": 3579208,
+  "supervisor_pid": 3579191,
+  "cpu_allowed": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "started_ns": 1789143538340828730,
+  "script_sha256": "fad40d4285bbba53f1985f8598325833f710b5691b78a86cfd383fad61ed228a",
+  "output": "/tmp/kv9-owned-batch-chaos-acceptance-first/audit.json",
+  "log": "/tmp/kv9-owned-batch-chaos-acceptance-first/audit-first.log",
+  "environment": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  }
+}

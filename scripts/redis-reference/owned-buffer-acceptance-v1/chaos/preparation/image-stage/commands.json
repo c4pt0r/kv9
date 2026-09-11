@@ -1,0 +1,239 @@
+[
+  {
+    "argv": [
+      "kubectl",
+      "--kubeconfig",
+      "/tmp/kv9-p0-ci-chaos.kubeconfig",
+      "config",
+      "current-context"
+    ],
+    "ended_ns": 1789142522523054782,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142522498393863,
+    "stderr": "00.stderr",
+    "stdout": "00.stdout"
+  },
+  {
+    "argv": [
+      "/tmp/kv9-p0-tools/kind-linux-amd64",
+      "get",
+      "clusters"
+    ],
+    "ended_ns": 1789142522540085863,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142522523123240,
+    "stderr": "01.stderr",
+    "stdout": "01.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "inspect",
+      "kv9-chaos-ci-p0-20260908-control-plane"
+    ],
+    "ended_ns": 1789142522547850182,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142522540209154,
+    "stderr": "02.stderr",
+    "stdout": "02.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1"
+    ],
+    "ended_ns": 1789142522555255800,
+    "exit_code": 1,
+    "expected_exit": 1,
+    "started_ns": 1789142522548003760,
+    "stderr": "03.stderr",
+    "stdout": "03.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "inspect",
+      "kv9-9be0c19-image-probe-20260911-1"
+    ],
+    "ended_ns": 1789142522566970055,
+    "exit_code": 1,
+    "expected_exit": 1,
+    "started_ns": 1789142522555366327,
+    "stderr": "04.stderr",
+    "stdout": "04.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "build",
+      "--pull=false",
+      "--network=none",
+      "--iidfile",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/image-id.txt",
+      "-t",
+      "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-context"
+    ],
+    "ended_ns": 1789142523207636158,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142522567096202,
+    "stderr": "05.stderr",
+    "stdout": "05.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1"
+    ],
+    "ended_ns": 1789142523216269364,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142523207791869,
+    "stderr": "06.stderr",
+    "stdout": "06.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "ubuntu@sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254"
+    ],
+    "ended_ns": 1789142523223909230,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142523216441276,
+    "stderr": "07.stderr",
+    "stdout": "07.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "create",
+      "--name",
+      "kv9-9be0c19-image-probe-20260911-1",
+      "--label",
+      "kv9-owned-purpose=9be0c19-chaos-image-preparation",
+      "--cpuset-cpus",
+      "6-15,22-31",
+      "--entrypoint",
+      "/bin/bash",
+      "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1",
+      "-c",
+      "set -e; sha256sum /usr/local/bin/kv9 /usr/local/bin/kv9-batch-workload /opt/kv9-batch-workload/build.json; stat -c \"%a %n\" /usr/local/bin/kv9 /usr/local/bin/kv9-batch-workload /opt/kv9-batch-workload/build.json; for tool in bash sh sleep timeout taskset sha256sum stat ls touch cat; do command -v \"$tool\"; done; /usr/local/bin/kv9 --help >/dev/null; set +e; native_output=$(/usr/local/bin/kv9-batch-workload 2>&1); native_exit=$?; set -e; test \"$native_exit\" = 1; test \"$native_output\" = \"FAIL: --config required\"; printf \"%s\\n\" \"$native_output\"; taskset -pc $$"
+    ],
+    "ended_ns": 1789142523302252161,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142523224146494,
+    "stderr": "08.stderr",
+    "stdout": "08.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "start",
+      "--attach",
+      "cbc070b7817e020e8840bb44a269368f4a600a08bac6ac1f923bfb33677f529c"
+    ],
+    "ended_ns": 1789142523533590434,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142523302383267,
+    "stderr": "09.stderr",
+    "stdout": "09.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "inspect",
+      "cbc070b7817e020e8840bb44a269368f4a600a08bac6ac1f923bfb33677f529c"
+    ],
+    "ended_ns": 1789142523542297419,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142523533781212,
+    "stderr": "10.stderr",
+    "stdout": "10.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "rm",
+      "cbc070b7817e020e8840bb44a269368f4a600a08bac6ac1f923bfb33677f529c"
+    ],
+    "ended_ns": 1789142523560943705,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142523542494197,
+    "stderr": "11.stderr",
+    "stdout": "11.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "inspect",
+      "cbc070b7817e020e8840bb44a269368f4a600a08bac6ac1f923bfb33677f529c"
+    ],
+    "ended_ns": 1789142523572446284,
+    "exit_code": 1,
+    "expected_exit": 1,
+    "started_ns": 1789142523561135033,
+    "stderr": "12.stderr",
+    "stdout": "12.stdout"
+  },
+  {
+    "argv": [
+      "/tmp/kv9-p0-tools/kind-linux-amd64",
+      "load",
+      "docker-image",
+      "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1",
+      "--name",
+      "kv9-chaos-ci-p0-20260908"
+    ],
+    "ended_ns": 1789142524702289372,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142523572630339,
+    "stderr": "13.stderr",
+    "stdout": "13.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "exec",
+      "kv9-chaos-ci-p0-20260908-control-plane",
+      "crictl",
+      "inspecti",
+      "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1"
+    ],
+    "ended_ns": 1789142524749136716,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142524702534551,
+    "stderr": "14.stderr",
+    "stdout": "14.stdout"
+  },
+  {
+    "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1"
+    ],
+    "ended_ns": 1789142524757364533,
+    "exit_code": 0,
+    "expected_exit": 0,
+    "started_ns": 1789142524749389569,
+    "stderr": "15.stderr",
+    "stdout": "15.stdout"
+  }
+]

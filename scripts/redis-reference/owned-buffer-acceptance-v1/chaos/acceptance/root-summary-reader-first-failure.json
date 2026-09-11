@@ -1,0 +1,8 @@
+{
+  "exit_code": 1,
+  "tool_chunk": "ad667f",
+  "error": "TypeError: root summary reader applied len() to integer windows count.",
+  "scope": "Ancillary pre-audit readback; no independent validator or runtime launched.",
+  "correction": "Compare the original integer windows field directly with 11.",
+  "created_ns": 1789143538319145061
+}

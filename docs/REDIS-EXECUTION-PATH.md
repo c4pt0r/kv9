@@ -252,7 +252,8 @@ The next bounded candidate consumes already-owned mutation buffers at final
 index insertion. It has passed 712 local workspace tests (23 ignored) and
 Clippy. Source `9be0c19` is committed and passes its own independently audited
 process recovery: 367 calls, 331 OK and 36 unknown, with complete histories.
-Actual Chaos acceptance and performance measurement remain separate gates.
+Its own [actual Chaos acceptance](OWNED-BUFFER-ACCEPTANCE.md) also passes;
+performance measurement remains the next separate gate.
 This removes an identified duplicate copy while retaining ordered mutations
 and persistent snapshots. The completed [CRC workload matrix](CRC-WORKLOAD-PERFORMANCE.md)
 selects the comparison baseline, with its small batch-read regression retained.

@@ -1,0 +1,32 @@
+{
+  "1": {
+    "pod": "voter-1",
+    "pod_ip": "10.244.0.84",
+    "pod_uid": "5f75f579-a050-419b-bbba-2ae654effdfe",
+    "port": 20160,
+    "service": "voter-1",
+    "slice_uid": "f4c1e176-9bca-489e-9e74-415346b93252",
+    "uid": "a8f85616-b58f-4ce2-b48f-ac9dee6c3d78",
+    "vip": "10.96.183.51"
+  },
+  "2": {
+    "pod": "voter-2",
+    "pod_ip": "10.244.0.85",
+    "pod_uid": "bbf2e120-5fda-4735-a6ba-c85b9cfdaabc",
+    "port": 20160,
+    "service": "voter-2",
+    "slice_uid": "f14f6391-ba9c-4c3c-8143-d5fdc28f91e8",
+    "uid": "98bdd067-f578-43d1-8830-0f1a5bc747d8",
+    "vip": "10.96.161.123"
+  },
+  "3": {
+    "pod": "voter-3",
+    "pod_ip": "10.244.0.86",
+    "pod_uid": "122cf271-e6c1-470a-99f0-30cf196c8496",
+    "port": 20160,
+    "service": "voter-3",
+    "slice_uid": "641323c5-a4f9-4c5f-b450-0ba9ae8cbdf8",
+    "uid": "c9ebee63-da7f-4c10-924e-a881a4f655f4",
+    "vip": "10.96.35.189"
+  }
+}

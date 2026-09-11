@@ -1,0 +1,8 @@
+{
+  "collision": "chaos/run/native-config.json was already assigned to the root native-config.json; proposed retained/config.json mapped to the same destination",
+  "correction": "Retained workload config/report/build now use chaos/run/workload/ paths, preserving both source records",
+  "failure": "AssertionError at duplicate destination check while selecting retained workload config",
+  "first_attempt_products": "Empty new preparation directory; exception retained in tool output",
+  "runtime_or_acceptance_changed": false,
+  "scope": "Publication inventory construction only; no copying, runtime, validator or git action"
+}

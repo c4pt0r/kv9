@@ -1,0 +1,20 @@
+{
+  "accepted": true,
+  "cleanup": {
+    "complete": true,
+    "namespace_absent": true,
+    "namespace_uid": "463e9e91-10f0-44a3-a218-da4625f2a014",
+    "preserved": {
+      "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+      "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+      "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+      "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+      "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+      "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+      "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+      "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+    }
+  },
+  "source_revision": "9be0c1963515ff974426faadef80482b847b13a5",
+  "windows": 11
+}

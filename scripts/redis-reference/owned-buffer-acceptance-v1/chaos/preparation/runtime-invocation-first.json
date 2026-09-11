@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/run.py",
+    "--plan",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/plan.json",
+    "--release",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/launch-release.json",
+    "--artifact",
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1"
+  ],
+  "artifact": "/tmp/kv9-native-link-acceptance-9be0c19-attempt1",
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "frozen_inputs_sha256": "cc683b3be0b80c543d7c5800c96b4d29d76969669d08f4f10bc60d1fab82de61",
+  "pid": 3396407,
+  "plan_sha256": "3037de7251c45595e9c2bf52a30c9f1b42ad369d292faa7bf35ae2262b2e2cd0",
+  "release_sha256": "cb6f924ae9fc5e7efd0919c3f0437a1e88933cf487514dced01649c18d3188e5",
+  "runner_sha256": "8ee5aeb39ef8abbaddf5dcd41a1581ab7473b5a0979cec25a9ca1bc6a38675b1",
+  "safe_environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONOPTIMIZE": "0"
+  },
+  "started_ns": 1789143093405916233
+}

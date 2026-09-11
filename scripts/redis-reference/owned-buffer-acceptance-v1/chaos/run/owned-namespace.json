@@ -1,0 +1,25 @@
+{
+  "apiVersion": "v1",
+  "kind": "Namespace",
+  "metadata": {
+    "annotations": {
+      "chaos-mesh.org/inject": "enabled"
+    },
+    "creationTimestamp": "2026-09-11T16:11:34Z",
+    "labels": {
+      "kubernetes.io/metadata.name": "kv9-native-link-acceptance-9be0c19-20260911-1",
+      "native-link-owner": "native-link-9be0c19-20260911-1"
+    },
+    "name": "kv9-native-link-acceptance-9be0c19-20260911-1",
+    "resourceVersion": "548716",
+    "uid": "463e9e91-10f0-44a3-a218-da4625f2a014"
+  },
+  "spec": {
+    "finalizers": [
+      "kubernetes"
+    ]
+  },
+  "status": {
+    "phase": "Active"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "in_flight": 0,
+  "issued": 176,
+  "peak_in_flight": 4,
+  "successes": [
+    {
+      "calls": 1,
+      "operation": "batch_get",
+      "phase": "initialization"
+    },
+    {
+      "calls": 1,
+      "operation": "batch_put",
+      "phase": "initialization"
+    },
+    {
+      "calls": 55,
+      "operation": "batch_get",
+      "phase": "measure"
+    },
+    {
+      "calls": 55,
+      "operation": "batch_put",
+      "phase": "measure"
+    },
+    {
+      "calls": 14,
+      "operation": "delete",
+      "phase": "measure"
+    },
+    {
+      "calls": 16,
+      "operation": "get",
+      "phase": "measure"
+    },
+    {
+      "calls": 16,
+      "operation": "put",
+      "phase": "measure"
+    }
+  ],
+  "terminal": 176
+}

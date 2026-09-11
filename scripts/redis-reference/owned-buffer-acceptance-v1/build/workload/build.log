@@ -1,0 +1,7 @@
+   Compiling kv9-engine v0.0.0 (/tmp/kv9-owned-apply-batch/crates/engine)
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-owned-apply-batch/crates/raft)
+   Compiling kv9-region v0.0.0 (/tmp/kv9-owned-apply-batch/crates/region)
+   Compiling kv9-meta v0.0.0 (/tmp/kv9-owned-apply-batch/crates/meta)
+   Compiling kv9-txn v0.0.0 (/tmp/kv9-owned-apply-batch/crates/txn)
+   Compiling kv9-server v0.0.0 (/tmp/kv9-owned-apply-batch/crates/server)
+    Finished `release` profile [optimized] target(s) in 10.76s

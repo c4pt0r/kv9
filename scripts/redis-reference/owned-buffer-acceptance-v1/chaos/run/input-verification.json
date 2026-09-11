@@ -1,0 +1,178 @@
+{
+  "accepted": true,
+  "cargo_features": {
+    "/tmp/kv9-owned-batch-release-first/kv9-cargo.jsonl": {
+      "artifacts": {
+        "kv9": {
+          "executable": "/home/dongxu/kv9/target/release/kv9",
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-owned-apply-batch#kv9@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_engine": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-owned-apply-batch/crates/engine#kv9-engine@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_raft": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-owned-apply-batch/crates/raft#kv9-raft@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_server": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-owned-apply-batch/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        }
+      },
+      "sha256": "9a45c3155bea13b5c1a7b3bf7f2caddcc854074e9a6c59069c67054516725591"
+    },
+    "/tmp/kv9-owned-batch-release-first/workload/cargo.jsonl": {
+      "artifacts": {
+        "kv9-batch-workload": {
+          "executable": "/home/dongxu/kv9/target/release/kv9-batch-workload",
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-owned-apply-batch/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_engine": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-owned-apply-batch/crates/engine#kv9-engine@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_raft": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-owned-apply-batch/crates/raft#kv9-raft@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_server": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-owned-apply-batch/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        }
+      },
+      "sha256": "cecfac153ed2e59d63ff167ff335cc76c8860e8a282db84f92034ca509ae555f"
+    }
+  },
+  "image_binding": {
+    "accepted": true,
+    "accepted_cri_image_ids": [
+      "docker.io/library/import-2026-09-11@sha256:32866cb14166a6d91e296c642c28173e7db1d8cd827a7da3af625613e7acf660"
+    ],
+    "cri_image_id": "sha256:0fe6d14b5f0eb729b0ed7bda9484c3dc2b18c1b567db2a2075930c591c970ce6",
+    "docker_id": "sha256:0fe6d14b5f0eb729b0ed7bda9484c3dc2b18c1b567db2a2075930c591c970ce6",
+    "evidence_files": {
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/00.stdout": "f16eb520b9bb601a56ec695dd818035a750e83ac802f1d5537d6a7e00733e208",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/01.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/01.stdout": "eead3f81e9f47b24e566a358feb71f41db34b2486c1225e96562a411c79b420f",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/02.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/02.stdout": "ddbf853fb3cab2915090a4d99ce96c2a08d33a4c94cfb7c25be29a4b21352447",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/03.stderr": "c295e2177d243058a54b03f6920072fb5661dbfbbd6df254d5b93471b8099f62",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/03.stdout": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/04.stderr": "3c6ab7b50d124cb9ca0b77a2c9cb49ed60362595ae37ac6198e5915e2f09c3e6",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/04.stdout": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/05.stderr": "4e1c034a920cd1506c53b6277c3d0011867a4ac903abdcce94dd750710e49cce",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/05.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/06.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/06.stdout": "b86dfbcde3182580c2bebdfc7af9182b6784d4eaf1e4320b59a306dd512c1bc3",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/07.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/07.stdout": "d4270adf2a9d599e5b5291a05b64e5a29cad9db26334a91af921b662b8296825",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/08.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/08.stdout": "e7bdc900f3b8461c1f9635707e6a9b50723df601eec54cf055a4e976ae0f5354",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/09.stderr": "890178d11d76270c3f812531838dff2574f1eeaf1865692f4a1298cdebe812f6",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/09.stdout": "cba4a494076260b0ec0485d9d16ffc7dc8572b5ff25f53a32410e1e6ce0b7a99",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/10.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/10.stdout": "b98e23c32b291b67dd2458f56bd0a362cb80e1015d3df4b0d4da4cc1488c1e94",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/11.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/11.stdout": "e7bdc900f3b8461c1f9635707e6a9b50723df601eec54cf055a4e976ae0f5354",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/12.stderr": "e32122d03731294ff61b92353c8fcb2ef64337b7e0a85746a2b8a29fa33de861",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/12.stdout": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/13.stderr": "e6b81905ab11171d612c0d1b11b0985e5b4dd0ffd7b36a2bb8b627dedc0b39ca",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/13.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/14.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/14.stdout": "f3a64887f69c8e2d8b7d08b8ccc7b73d284f046efa9e10b824570d9809524396",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/15.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/15.stdout": "b86dfbcde3182580c2bebdfc7af9182b6784d4eaf1e4320b59a306dd512c1bc3",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/commands.json": "a96e1f4543cdeab9feea347f736465db569692ff2e5a27ccae61a27e14ed4b20",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/image-id.txt": "49870d0515c22aec42f0a399f71700e65614ffe07e667ab92853203948259a41",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/source-after.json": "69fd773b834e9d8dd6e65014ee52ac9f702007dbc38f8ca980b601f106e2a059",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/source-before.json": "69fd773b834e9d8dd6e65014ee52ac9f702007dbc38f8ca980b601f106e2a059",
+      "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-stage/summary.json": "d14d658cfc0321becb57e324d9aba8f08601feb2431f2ef8da88ff0a2f320a5d"
+    },
+    "image": "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1",
+    "payload_sha256": {
+      "/opt/kv9-batch-workload/build.json": "a20aba0750dfb48459fba02deb2160d58851afa8ac0d45e1d1a674725e8ff9ef",
+      "/usr/local/bin/kv9": "07c02871276f9c52cd19bd8213ab3288d6c51a1d7391370b5a6282f0018b03f7",
+      "/usr/local/bin/kv9-batch-workload": "600733e2d61cf862b4b4c4496778126c0dd3224b3ecd69ba40213c3d6b783607"
+    },
+    "revision": "9be0c1963515ff974426faadef80482b847b13a5",
+    "source_plan_sha256": "e6eb74454f5ca5ae5a7e3a8e538e341009585d8f7a512427b8b7d89b4316fd2e"
+  },
+  "image_required": true,
+  "native_client_sha256": "600733e2d61cf862b4b4c4496778126c0dd3224b3ecd69ba40213c3d6b783607",
+  "native_manifest_sha256": "a20aba0750dfb48459fba02deb2160d58851afa8ac0d45e1d1a674725e8ff9ef",
+  "revision": "9be0c1963515ff974426faadef80482b847b13a5",
+  "scope": "Exact retained release source/build binding only; running PID and image identity remain independently checked by the fixture",
+  "server": {
+    "path": "/tmp/kv9-owned-batch-release-first/kv9",
+    "sha256": "07c02871276f9c52cd19bd8213ab3288d6c51a1d7391370b5a6282f0018b03f7"
+  },
+  "source_files": 592,
+  "source_plan_sha256": "e6eb74454f5ca5ae5a7e3a8e538e341009585d8f7a512427b8b7d89b4316fd2e",
+  "source_tree_sha256": "ff23597ea569b54377bbaec94452a8c87ad4c48d983ea71db6237217d3abf851"
+}

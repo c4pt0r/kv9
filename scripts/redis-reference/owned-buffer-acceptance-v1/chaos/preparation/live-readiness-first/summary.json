@@ -1,0 +1,55 @@
+{
+  "ambient_dependencies_verified": {
+    "/lib/x86_64-linux-gnu/libc.so.6": "fa430b8f298f817a266046af84a77533185ad6fc4406c7d3787b5a0a0c207826",
+    "/lib/x86_64-linux-gnu/libmnl.so.0": "a47e610f22152918a5099937f452894cd1aa80d33d41a645156e35d7fd0678a9",
+    "/lib64/ld-linux-x86-64.so.2": "438c546d8e8cc48496bf3a95f753051afd9db66a629a74e31a9ded71586b56e0"
+  },
+  "chaos_pods_ready": 3,
+  "commands": 16,
+  "complete": true,
+  "ended_unix_ns": 1789142500701259906,
+  "existing_network_faults": [],
+  "existing_pod_faults": [
+    {
+      "name": "store-loss-kill",
+      "namespace": "kv9-chaos-1788967535-626870",
+      "spec": {
+        "action": "pod-kill",
+        "mode": "one",
+        "selector": {
+          "namespaces": [
+            "kv9-chaos-1788967535-626870"
+          ],
+          "pods": {
+            "kv9-chaos-1788967535-626870": [
+              "kv9-n2-59745f6554-djt6j"
+            ]
+          }
+        }
+      },
+      "uid": "c3ededa7-0746-4864-bd95-4425ceb3d663"
+    }
+  ],
+  "historical_fault_target_absent": true,
+  "namespace_absent": true,
+  "namespace_created": false,
+  "node_container": {
+    "cpuset": "0-31",
+    "id": "ae9b27a77d14f295e35e112b31f5dce62ed6fd2d86a90e7b2a69b52798e17582",
+    "image": "sha256:caf23176b804ea639d96b2266829fdff42ca8f064bd9d32c00ad913b23ced7d9",
+    "started_at": "2026-09-08T20:54:19.052823428Z"
+  },
+  "node_owned_paths_absent": true,
+  "observer_bundle_verified": true,
+  "preserved_namespaces": {
+    "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+    "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+    "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+    "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+    "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+    "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+    "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+    "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+  },
+  "read_only": true
+}

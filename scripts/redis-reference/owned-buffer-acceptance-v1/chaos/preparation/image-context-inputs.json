@@ -1,0 +1,6 @@
+{
+  "image-context/Dockerfile": "82aca74cd444874deb3cf26594f5fa935073ead1d25d59758b942970ac6e3613",
+  "image-context/build.json": "a20aba0750dfb48459fba02deb2160d58851afa8ac0d45e1d1a674725e8ff9ef",
+  "image-context/kv9": "07c02871276f9c52cd19bd8213ab3288d6c51a1d7391370b5a6282f0018b03f7",
+  "image-context/kv9-batch-workload": "600733e2d61cf862b4b4c4496778126c0dd3224b3ecd69ba40213c3d6b783607"
+}

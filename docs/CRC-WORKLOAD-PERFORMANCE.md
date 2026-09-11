@@ -133,10 +133,12 @@ The next isolated candidate, `9be0c1963515ff974426faadef80482b847b13a5`, moves
 already-owned mutation buffers into the resident index. It passes 712 workspace
 tests (23 ignored), Clippy and its own independently audited process recovery:
 367 complete-history calls, 331 OK and 36 unknown. Unknown outcomes remain in
-both streaming/unary histories. Its actual Chaos fixture is the next gate;
-there is no measured performance gain for this source yet.
+both streaming/unary histories. Its own
+[actual Chaos fixture now also passes](OWNED-BUFFER-ACCEPTANCE.md), retaining
+2,047 complete-history calls and 154 verified netem leaf drops. There is no
+measured performance gain for this source yet.
 
-After that gate, compare owned-buffer performance against this CRC baseline.
+Next compare owned-buffer performance against this CRC baseline.
 Read-path scheduling and ownership transfers remain a separate measured
 optimization. Retain the existing dual-WAL architecture decision in
 `docs/SEGMENTED-WAL.md`: removing the engine WAL requires its own recovery,

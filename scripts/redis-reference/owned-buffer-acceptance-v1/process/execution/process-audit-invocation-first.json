@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-batch-recovery-preparation/process-audit.py",
+    "--source",
+    "/tmp/kv9-owned-apply-batch",
+    "--build",
+    "/tmp/kv9-owned-batch-release-first",
+    "--run",
+    "/tmp/kv9-owned-batch-process-e2e-first",
+    "--output",
+    "/tmp/kv9-owned-batch-process-independent-first/results-first",
+    "--revision",
+    "9be0c1963515ff974426faadef80482b847b13a5"
+  ],
+  "pid": 3292603,
+  "supervisor": 3292586,
+  "started_ns": 1789142534413495310
+}

@@ -1,0 +1,200 @@
+{
+  "accepted_cri_image_ids": [],
+  "additional_final_acceptance": {
+    "helper": "/tmp/kv9-owned-batch-recovery-preparation/chaos/leaf_readback.py",
+    "helper_pending": false,
+    "helper_sha256": "8c523197d4874a780c954e6a0ee90c623253e975cbdec18f6b38598664378902",
+    "positive_requirement": "Same selected netns lifetime, same netem handle/parent/configuration header, strictly positive leaf-only drop delta from raw command bytes",
+    "required": true,
+    "required_output": "acceptance-leaf-readback.json",
+    "scope": "Exact netem leaf before/after raw command readback and positive delta; inherited workload/history/effects/cleanup acceptance remains mandatory"
+  },
+  "artifact": "/tmp/kv9-native-link-acceptance-9be0c19-attempt1",
+  "batch_read_observation_scope": "Already captured same-lifetime status snapshots only; monotonic separate batch inline/blocking counters and positive inline delta across the complete fixture envelope. No attribution to a particular response or fault window.",
+  "config_template": {
+    "batch_size": 8,
+    "client": {
+      "deadline_ms": 1500,
+      "epoch_conf_ver": 1,
+      "epoch_version": 1,
+      "max_attempts": 6,
+      "max_in_flight": 4,
+      "retry_backoff_ms": 10,
+      "version": 1
+    },
+    "history_bytes": 268435456,
+    "interval_ms": 500,
+    "keys": 4,
+    "max_calls": 6000,
+    "measure_ms": 600000,
+    "mix": [
+      10,
+      10,
+      10,
+      35,
+      35
+    ],
+    "rpc_transport": "tonic_stream",
+    "seed": 40,
+    "value_bytes": 128,
+    "version": 1,
+    "workers": 4
+  },
+  "drain_seconds": 25,
+  "fault_duration": "90s",
+  "fault_seconds": 20,
+  "host_cpus": "6-15,22-31",
+  "image": "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1",
+  "image_binding": "/tmp/kv9-owned-batch-recovery-preparation/chaos/image-binding.json",
+  "image_binding_sha256": null,
+  "image_ready": false,
+  "kind": "/tmp/kv9-p0-tools/kind-linux-amd64",
+  "kind_cluster": "kv9-chaos-ci-p0-20260908",
+  "kubeconfig": "/tmp/kv9-p0-ci-chaos.kubeconfig",
+  "launch_authorized": false,
+  "limitations": [
+    "Pending release, source/build verification, live readiness, image preparation, process acceptance and a new exact-plan one-use release. No runtime acceptance or current cluster readiness is claimed.",
+    "One shared Kind host; timing is packet-effect evidence, not throughput or cross-host acceptance. Node /tmp data is volatile tmpfs, not disk or power-loss evidence.",
+    "Original history/effect/drain criteria and workload are unchanged. This separate 11-window scope does not replace the full 21-window matrix or proof/refinement gates.",
+    "Full client partition and quorum loss have no native availability expectation. Negative windows require no newly successful contained operation plus completed BatchGet/BatchPut unknown/refused outcomes.",
+    "Every UnknownWrite remains in the complete atomic history without replay. Configured partial loss is 30%, correlation zero; exact observed packet frequency is not prescribed.",
+    "The same-process exact-tuple SOCK_DESTROY reset is explicitly non-Chaos. All other listed injected client-link/quorum faults use actual Chaos Mesh.",
+    "The 64 MiB public byte default comes from exact source; no limit overrides are set in the planned Pods. Effective limits are checked against the actual Pod specification and status.",
+    "Inherited qdisc effect check sums parent and child counters only as an old positive-effect predicate. New final acceptance additionally requires a separately bound positive delta from the same exact netem leaf; reported dropped packets use only that leaf, never the legacy doubled sum."
+  ],
+  "namespace": "kv9-native-link-acceptance-9be0c19-20260911-1",
+  "namespace_label": "native-link-9be0c19-20260911-1",
+  "native_build_directory": "/tmp/kv9-owned-batch-release-first/workload",
+  "native_client_build": {
+    "binary_sha256": "600733e2d61cf862b4b4c4496778126c0dd3224b3ecd69ba40213c3d6b783607",
+    "dirty": false,
+    "profile": "release",
+    "revision": "9be0c1963515ff974426faadef80482b847b13a5",
+    "rustc": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8\n",
+    "source_tree_sha256": "ff23597ea569b54377bbaec94452a8c87ad4c48d983ea71db6237217d3abf851",
+    "version": 1
+  },
+  "native_contract_revision": "9be0c1963515ff974426faadef80482b847b13a5",
+  "negative_seconds": 12,
+  "node": "kv9-chaos-ci-p0-20260908-control-plane",
+  "node_root": "/tmp/kv9-native-link-acceptance-9be0c19-20260911-1",
+  "observer_tools": {
+    "archive": "observer-tools.tar",
+    "node_root": "/opt/kv9-native-link-acceptance-9be0c19-20260911-1-observer",
+    "sha256": "02811415fa11b8d4d4bd318211307d4051cb9227ced438930f0e8560f194b7e1",
+    "source_directory": "/tmp/kv9-native-link-observer-tools-debian13-v1",
+    "source_manifest": "observer-tools-manifest.json"
+  },
+  "partial_loss_seconds": 30,
+  "pod_cpus": "6-15,22-31",
+  "pod_limit_overrides": {},
+  "preparation_only": true,
+  "preserve_namespaces": {
+    "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+    "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+    "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+    "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+    "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+    "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+    "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+    "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+  },
+  "probe_timeout_ms": 750,
+  "production_binary": {
+    "path": "/tmp/kv9-owned-batch-release-first/kv9",
+    "sha256": "07c02871276f9c52cd19bd8213ab3288d6c51a1d7391370b5a6282f0018b03f7"
+  },
+  "progress_seconds": 12,
+  "quiesce_seconds": 4,
+  "revision": "9be0c1963515ff974426faadef80482b847b13a5",
+  "run_max_seconds": 540,
+  "runtime_revision": "9be0c1963515ff974426faadef80482b847b13a5",
+  "scope": "Separate native batch client-link, reset and quorum-loss correctness acceptance; not prior preflight or 21-window substitution",
+  "server_build_sequence": "/tmp/kv9-owned-batch-release-first/build.json",
+  "source_default_limits": {
+    "public_rpc_limit_encoded_bytes": 67108864,
+    "public_rpc_limit_requests": 64,
+    "raft_async_apply_limit": 128,
+    "raft_async_read_limit": 128,
+    "sources": [
+      {
+        "path": "/tmp/kv9-owned-apply-batch/crates/server/src/admission.rs",
+        "sha256": "edf1065f6e9b08551f3a9ce11559011f47c9131d6110e1fc99a7a7971853e356"
+      },
+      {
+        "path": "/tmp/kv9-owned-apply-batch/crates/raft/src/async_read.rs",
+        "sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f"
+      },
+      {
+        "path": "/tmp/kv9-owned-apply-batch/crates/raft/src/async_apply.rs",
+        "sha256": "73a18d0e02fab720e7138a5b7ac15799742b1018b7226454f0e24b94a2ccc6f5"
+      }
+    ]
+  },
+  "source_plan": "/tmp/kv9-owned-batch-recovery-preparation/chaos/source-build-binding.json",
+  "source_plan_sha256": "e6eb74454f5ca5ae5a7e3a8e538e341009585d8f7a512427b8b7d89b4316fd2e",
+  "version": 1,
+  "windows": [
+    {
+      "expect": "progress",
+      "name": "baseline",
+      "phase": "baseline"
+    },
+    {
+      "action": "delay",
+      "expect": "progress",
+      "name": "vip-delay",
+      "phase": "client-link-delay"
+    },
+    {
+      "expect": "progress",
+      "name": "delay-healed",
+      "phase": "healing"
+    },
+    {
+      "action": "loss",
+      "expect": "progress",
+      "name": "vip-partial-loss",
+      "phase": "client-link-loss"
+    },
+    {
+      "expect": "progress",
+      "name": "loss-healed",
+      "phase": "healing"
+    },
+    {
+      "action": "partition",
+      "expect": "no-new-success",
+      "name": "vip-partition",
+      "phase": "client-link-partition"
+    },
+    {
+      "expect": "progress",
+      "name": "partition-healed",
+      "phase": "healing"
+    },
+    {
+      "action": "non-Chaos SOCK_DESTROY",
+      "expect": "progress",
+      "name": "exact-tcp-reset",
+      "phase": "client-stream-drop"
+    },
+    {
+      "expect": "progress",
+      "name": "reset-healed",
+      "phase": "healing"
+    },
+    {
+      "action": "three directed voter partitions",
+      "expect": "no-new-success",
+      "name": "quorum-loss",
+      "phase": "quorum-loss"
+    },
+    {
+      "expect": "progress",
+      "name": "quorum-healed",
+      "phase": "healing"
+    }
+  ],
+  "worktree": "/tmp/kv9-owned-apply-batch"
+}

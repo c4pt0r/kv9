@@ -1,0 +1,48 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/verify_inputs.py",
+    "--plan",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/plan.json",
+    "--output",
+    "/tmp/kv9-owned-batch-chaos-acceptance-first/source-final.json"
+  ],
+  "pid": 3579401,
+  "supervisor_pid": 3579191,
+  "cpu_allowed": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "started_ns": 1789143539905401078,
+  "script_sha256": "5a348155d3819e0a5a697c0086e023fb7e6a03e6697fe7635313ec34b4044ee8",
+  "output": "/tmp/kv9-owned-batch-chaos-acceptance-first/source-final.json",
+  "log": "/tmp/kv9-owned-batch-chaos-acceptance-first/source-first.log",
+  "environment": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 0,
+  "reaped": true,
+  "pid_absent": true,
+  "completed_ns": 1789143539962961079,
+  "log_sha256": "58ab0da2c73ab173e5a413432c751aab934e03314b8d7f65c7b8fa768b1e48d7",
+  "output_sha256": "f2c321df26c1e2151d2723732a719a6fb77ae0ceaaef58f2b1826273cf6a2d87"
+}

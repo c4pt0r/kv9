@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "env",
+    "CARGO_TARGET_DIR=/home/dongxu/kv9/target",
+    "CARGO_BUILD_JOBS=8",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "scripts/build-native-batch.py",
+    "--output",
+    "/tmp/kv9-owned-batch-release-first",
+    "--release"
+  ],
+  "cwd": "/tmp/kv9-owned-apply-batch",
+  "pid": 3212271,
+  "supervisor": 3212268,
+  "started_ns": 1789142224336489980,
+  "revision": "9be0c1963515ff974426faadef80482b847b13a5"
+}

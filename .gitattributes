@@ -53,3 +53,20 @@ scripts/redis-reference/crc-broad-v1/preparation/test_audit_contract.py.diff -wh
 scripts/redis-reference/crc-broad-v1/preparation/test_driver.py.diff -whitespace
 scripts/redis-reference/crc-broad-v1/root/smoke-first.log -whitespace
 scripts/redis-reference/crc-broad-v1/root/timing-first.log -whitespace
+
+# Preserve original owned-buffer acceptance logs and helper diffs.
+scripts/redis-reference/owned-buffer-acceptance-v1/build/kv9-build.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/build/workload/build.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/chaos/acceptance/audit-first.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/chaos/acceptance/leaf-first.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/chaos/acceptance/source-first.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/chaos/preparation/image-preparation-first.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/chaos/preparation/preparation.diff -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/chaos/preparation/runtime-first.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/process/execution/build-first.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/process/execution/process-audit-first.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/process/execution/process-first.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/process/run/batch-tonic-stream.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/process/run/batch-tonic-unary.log -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/chaos/run/commands/command-1151.stdout -whitespace
+scripts/redis-reference/owned-buffer-acceptance-v1/chaos/run/commands/command-1335.stdout -whitespace

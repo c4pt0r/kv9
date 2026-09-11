@@ -1,0 +1,11 @@
+{
+  "exit_code": 0,
+  "image_stage_summary_sha256": "d14d658cfc0321becb57e324d9aba8f08601feb2431f2ef8da88ff0a2f320a5d",
+  "log_sha256": "42938c632f2e03daf4421678f3bcb5f931836d6312154a68603e8980bad9d62e",
+  "pid": 3284776,
+  "process_absent": true,
+  "recorded_unix_ns": 1789142594335377369,
+  "scope": "Image preparation, executable compatibility, probe cleanup and Kind/CRI binding only",
+  "session_id": 53257,
+  "terminal_tool_chunk": "319fd6"
+}

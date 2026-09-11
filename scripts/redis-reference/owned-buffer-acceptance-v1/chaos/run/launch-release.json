@@ -1,0 +1,29 @@
+{
+  "artifact": "/tmp/kv9-native-link-acceptance-9be0c19-attempt1",
+  "authorization_basis": "Existing user/root authorization, latest root NEW_TASK: complete the prepared 9be eleven-window runtime once; process E2E and independent audit passed; CRC timing and audit terminal, no timing active.",
+  "authorized": true,
+  "authorized_by": "root via explicit delegated one-use release creation",
+  "created_unix_ns": 1789143093405848636,
+  "input_evidence": {
+    "/tmp/kv9-owned-batch-build-preparation/process-audit-invocation-first.json": "cc15104a24b779793da1a8ab69b8a3e1b5062eaceb08503d0a278f3fbb849ba6",
+    "/tmp/kv9-owned-batch-build-preparation/process-audit-terminal-first.json": "63e70f564fdabac2e0c0b1d09b17aa6c30230384440a7a7fc0fef39896456860",
+    "/tmp/kv9-owned-batch-build-preparation/process-terminal-first.json": "3e25afb677a76a4ccac0fa4478afaf857fd5079b382ba89208eaafbc6cdcc17f",
+    "/tmp/kv9-owned-batch-process-independent-first/results-first/audit.json": "2d9cd0dbbd3479d3a3d15ea18ff3f00d03adb86b316d0dbb52026c7130af485a",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/frozen-inputs.json": "cc683b3be0b80c543d7c5800c96b4d29d76969669d08f4f10bc60d1fab82de61",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/readiness.json": "71681c57f119e3dd8f1c23be06866353fded362dbddc2a140ece631c1e116ef4"
+  },
+  "namespace": "kv9-native-link-acceptance-9be0c19-20260911-1",
+  "no_timing_overlap": true,
+  "other_matrix_terminal": true,
+  "plan_sha256": "3037de7251c45595e9c2bf52a30c9f1b42ad369d292faa7bf35ae2262b2e2cd0",
+  "preflight_sha256": "c5abf833eaec685bf3a0714430e1ff4bb491a3bd541e853f9bc51cba838ac023",
+  "process_audit_exit_code": 0,
+  "process_audit_terminal_tool_chunk": "4b9a2d",
+  "process_exit_code": 0,
+  "process_session": 55048,
+  "process_terminal_tool_chunk": "c224ec",
+  "timing_audit_exit_code": 0,
+  "timing_audit_session": 18362,
+  "timing_exit_code": 0,
+  "timing_session": 94043
+}

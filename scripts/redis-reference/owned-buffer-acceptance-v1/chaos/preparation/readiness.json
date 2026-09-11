@@ -1,0 +1,36 @@
+{
+  "complete_image_preparation": true,
+  "copied_helper_count": 25,
+  "cri_manifest_ids": [
+    "docker.io/library/import-2026-09-11@sha256:32866cb14166a6d91e296c642c28173e7db1d8cd827a7da3af625613e7acf660"
+  ],
+  "docker_config_id": "sha256:0fe6d14b5f0eb729b0ed7bda9484c3dc2b18c1b567db2a2075930c591c970ce6",
+  "historical_namespace_count": 8,
+  "image": "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1",
+  "image_binding_sha256": "f55eca5e0c891da2680071df6c6b96e2857852f1041e1814801f765babb29ad7",
+  "image_context_sha256": "7053e7b5e00ee4027e269a0912d48ab19ab769e7edd170966aa03950ff06be57",
+  "image_exit_code": 0,
+  "image_pid": 3284776,
+  "image_ready_source_sha256": "f2c321df26c1e2151d2723732a719a6fb77ae0ceaaef58f2b1826273cf6a2d87",
+  "image_session": 53257,
+  "image_terminal_sha256": "a11e845b78acd3e132f51b9b4bd15d5b46eeac93fd14ae1566175526fc964a5f",
+  "launch_authorized": false,
+  "no_candidate_namespace_or_owned_paths": true,
+  "plan_pending_sha256": "85eddef73815f1437921dc99c9cf6ebe2812c96388ba255940c79f4924f094dc",
+  "plan_sha256": "3037de7251c45595e9c2bf52a30c9f1b42ad369d292faa7bf35ae2262b2e2cd0",
+  "post_image_readiness_sha256": "7713293aa13610bdc59b68bfe544cc2d4e0e22703461604ca6c25bb17e704af1",
+  "probe_cleanup": {
+    "absent": true,
+    "id": "cbc070b7817e020e8840bb44a269368f4a600a08bac6ac1f923bfb33677f529c"
+  },
+  "read_only_readiness_sha256": "17eecc79cd5c61bdfc95197637960fcfa98a124ce7b32e12296804413800b817",
+  "recorded_unix_ns": 1789142650000812498,
+  "remaining": "Root process acceptance and exact one-use fault release, then original 11-window runtime/full audit/leaf/source readback",
+  "runtime_launched": false,
+  "source_binding_sha256": "e6eb74454f5ca5ae5a7e3a8e538e341009585d8f7a512427b8b7d89b4316fd2e",
+  "source_default_features_verified": true,
+  "source_files": 592,
+  "source_revision": "9be0c1963515ff974426faadef80482b847b13a5",
+  "source_tree_sha256": "ff23597ea569b54377bbaec94452a8c87ad4c48d983ea71db6237217d3abf851",
+  "unchanged_helper_count": 23
+}

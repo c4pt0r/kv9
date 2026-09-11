@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "client": {
+    "version": 1,
+    "peers": [
+      {
+        "node_id": 1,
+        "address": "10.96.183.51:20160"
+      },
+      {
+        "node_id": 2,
+        "address": "10.96.161.123:20160"
+      },
+      {
+        "node_id": 3,
+        "address": "10.96.35.189:20160"
+      }
+    ],
+    "keyspace_id": 100,
+    "epoch_conf_ver": 1,
+    "epoch_version": 1,
+    "max_in_flight": 4,
+    "max_attempts": 6,
+    "deadline_ms": 1500,
+    "retry_backoff_ms": 10
+  },
+  "rpc_transport": "tonic_stream",
+  "run_id": "native-link-1789143096-3396407",
+  "keyspace_name": "native-link-1789143096-3396407",
+  "workers": 4,
+  "seed": 40,
+  "keys": 4,
+  "batch_size": 8,
+  "value_bytes": 128,
+  "mix": [
+    10,
+    10,
+    10,
+    35,
+    35
+  ],
+  "max_calls": 6000,
+  "history_bytes": 268435456,
+  "measure_ms": 600000,
+  "interval_ms": 500
+}

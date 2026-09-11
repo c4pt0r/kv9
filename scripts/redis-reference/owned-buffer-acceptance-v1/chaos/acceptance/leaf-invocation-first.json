@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/leaf_readback.py",
+    "--artifact",
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1",
+    "--output",
+    "/tmp/kv9-owned-batch-chaos-acceptance-first/leaf.json"
+  ],
+  "pid": 3579400,
+  "supervisor_pid": 3579191,
+  "cpu_allowed": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "started_ns": 1789143539875474518,
+  "script_sha256": "8c523197d4874a780c954e6a0ee90c623253e975cbdec18f6b38598664378902",
+  "output": "/tmp/kv9-owned-batch-chaos-acceptance-first/leaf.json",
+  "log": "/tmp/kv9-owned-batch-chaos-acceptance-first/leaf-first.log",
+  "environment": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  }
+}

@@ -1,0 +1,487 @@
+{
+  "build_scope": "Original scripts/build-native-batch.py standalone workload then default server build; no retrospective assembly",
+  "chaos": {
+    "all_three_checks_accepted": true,
+    "batch_counter_envelope": {
+      "per_voter_delta": {
+        "1": {
+          "public_raw_batch_get_blocking_submitted": 0,
+          "public_raw_batch_get_completed_inline": 0
+        },
+        "2": {
+          "public_raw_batch_get_blocking_submitted": 5,
+          "public_raw_batch_get_completed_inline": 607
+        },
+        "3": {
+          "public_raw_batch_get_blocking_submitted": 0,
+          "public_raw_batch_get_completed_inline": 0
+        }
+      },
+      "scope": "Full fixture status envelope, including setup and verification; no attribution to individual responses or fault windows",
+      "total_delta": {
+        "public_raw_batch_get_blocking_submitted": 5,
+        "public_raw_batch_get_completed_inline": 607
+      },
+      "writers": {
+        "1": [
+          "5f75f579-a050-419b-bbba-2ae654effdfe",
+          1,
+          143180729,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "2": [
+          "bbf2e120-5fda-4735-a6ba-c85b9cfdaabc",
+          1,
+          143180733,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ],
+        "3": [
+          "122cf271-e6c1-470a-99f0-30cf196c8496",
+          1,
+          143180744,
+          "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+        ]
+      }
+    },
+    "checks_exit_code": 0,
+    "checks_session": 95613,
+    "checks_tool_receipt": "2d6db8",
+    "cleanup": {
+      "complete": true,
+      "namespace_absent": true,
+      "namespace_uid": "463e9e91-10f0-44a3-a218-da4625f2a014",
+      "preserved": {
+        "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+        "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+        "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+        "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+        "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+        "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+        "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+        "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+      }
+    },
+    "client_exit": {
+      "exit_code": 0,
+      "observed_ns": 1789143402885777900,
+      "pod_process_absent": true,
+      "process_pid": 32
+    },
+    "drain_contract": "Two qualifying serial fresh empty Serving/nonfatal/running-registry observations per replica after client exit, independently accepted",
+    "exit_code": 0,
+    "fresh_status_samples": 6,
+    "history_search_attempts": [
+      {
+        "guided_unknown": false,
+        "prepare_ranges": false,
+        "states": 2328,
+        "unknown_effect_limit": 0,
+        "verdict": "inconclusive"
+      },
+      {
+        "guided_unknown": true,
+        "prepare_ranges": false,
+        "states": 2746,
+        "unknown_effect_limit": null,
+        "verdict": "valid"
+      }
+    ],
+    "history_verdict": "valid",
+    "independent_retained_file_count": 50,
+    "leaf": {
+      "accepted": true,
+      "after": {
+        "dropped": 154,
+        "handle": "5:",
+        "parent": "1:4"
+      },
+      "artifact": "/tmp/kv9-native-link-acceptance-9be0c19-attempt1",
+      "before": {
+        "dropped": 0,
+        "handle": "5:",
+        "parent": "1:4"
+      },
+      "identity": [
+        "f641820c-53d4-4733-8f1a-d236bd11e4bc",
+        "3d91f2f880dda14aaed9fdd3d8da7401738452471a791097947ea00a97272c50",
+        1888858,
+        "143180744"
+      ],
+      "inputs": {
+        "commands/commands.json": "877e4995703049350f0d05e55931c73dc6d1dba7d6102b30d5e166170995820f",
+        "executed-plan.json": "3037de7251c45595e9c2bf52a30c9f1b42ad369d292faa7bf35ae2262b2e2cd0",
+        "packet-effects.json": "1e7d2884a231cc0967fe558a01821a121db2383804ecc1dd00d6c2d38d04b47b",
+        "summary.json": "101a07a3c2db62990bd0f4c37aa46473678a508d5201d4d62becb831f409eab6"
+      },
+      "netem_leaf_drop_delta": 154,
+      "raw": [
+        {
+          "command": 1151,
+          "ended_ns": 1789143171277111631,
+          "path": "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/commands/command-1151.stdout",
+          "sha256": "733e1089b31f9dd4fb8e962d64ba8baa9755fdcf296bc555d201f01b94973894",
+          "started_ns": 1789143171261209695
+        },
+        {
+          "command": 1335,
+          "ended_ns": 1789143206624339285,
+          "path": "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/commands/command-1335.stdout",
+          "sha256": "23e7b1716748bec4ca1c0f830d9a84c1ce6b6fda753f11d6487d17b9ba5a38f8",
+          "started_ns": 1789143206609341812
+        }
+      ],
+      "revision": "9be0c1963515ff974426faadef80482b847b13a5",
+      "scope": "Additional exact same-netem-leaf positive delta only; unchanged full history/effect/lifecycle audit is separately mandatory"
+    },
+    "operations": 2047,
+    "outcomes": {
+      "ok": 1740,
+      "refused": 220,
+      "unknown": 87
+    },
+    "owned_container_lifetimes": 5,
+    "selected_cleanup_command_indices": [
+      4120,
+      4131,
+      4133
+    ],
+    "session": 1870,
+    "tool_receipt": "17675a",
+    "window_count": 11,
+    "window_scope": "Fully contained calls; counts do not sum to full history",
+    "windows": {
+      "baseline": {
+        "ok": 132,
+        "refused": 0,
+        "unknown": 0
+      },
+      "delay-healed": {
+        "ok": 136,
+        "refused": 0,
+        "unknown": 0
+      },
+      "exact-tcp-reset": {
+        "ok": 148,
+        "refused": 0,
+        "unknown": 0
+      },
+      "loss-healed": {
+        "ok": 136,
+        "refused": 0,
+        "unknown": 0
+      },
+      "partition-healed": {
+        "ok": 144,
+        "refused": 0,
+        "unknown": 0
+      },
+      "quorum-healed": {
+        "ok": 156,
+        "refused": 0,
+        "unknown": 0
+      },
+      "quorum-loss": {
+        "ok": 0,
+        "refused": 136,
+        "unknown": 0
+      },
+      "reset-healed": {
+        "ok": 148,
+        "refused": 0,
+        "unknown": 0
+      },
+      "vip-delay": {
+        "ok": 132,
+        "refused": 0,
+        "unknown": 0
+      },
+      "vip-partial-loss": {
+        "ok": 158,
+        "refused": 0,
+        "unknown": 21
+      },
+      "vip-partition": {
+        "ok": 0,
+        "refused": 0,
+        "unknown": 38
+      }
+    }
+  },
+  "process": {
+    "audit_exit_code": 0,
+    "audit_tool_receipt": "4b9a2d",
+    "cases": [
+      {
+        "fresh_drained_voters": 3,
+        "history_sha256": "9c6f4bf4f0673bd6a9ca55cf09699ec3af93e13749a8cf30f38f5280fb13a21a",
+        "operations": 190,
+        "outcomes": {
+          "ok": 172,
+          "unknown": 18
+        },
+        "transport": "tonic_stream",
+        "windows": [
+          {
+            "counts": {
+              "batch_get": 14,
+              "batch_put": 15,
+              "delete": 4,
+              "get": 3,
+              "put": 5
+            },
+            "label": "voter-lost",
+            "operation_ids": {
+              "batch_get": [
+                62,
+                66,
+                65,
+                69,
+                73,
+                76,
+                77,
+                80,
+                84,
+                87,
+                88,
+                91,
+                95,
+                99
+              ],
+              "batch_put": [
+                61,
+                64,
+                68,
+                71,
+                72,
+                75,
+                79,
+                82,
+                83,
+                86,
+                90,
+                94,
+                97,
+                98,
+                101
+              ],
+              "delete": [
+                70,
+                81,
+                92,
+                96
+              ],
+              "get": [
+                67,
+                78,
+                93
+              ],
+              "put": [
+                63,
+                74,
+                85,
+                89,
+                100
+              ]
+            }
+          },
+          {
+            "counts": {
+              "batch_get": 12,
+              "batch_put": 12,
+              "delete": 3,
+              "get": 2,
+              "put": 3
+            },
+            "label": "voter-restarted",
+            "operation_ids": {
+              "batch_get": [
+                158,
+                162,
+                165,
+                166,
+                169,
+                173,
+                176,
+                177,
+                180,
+                184,
+                187,
+                188
+              ],
+              "batch_put": [
+                157,
+                160,
+                161,
+                164,
+                168,
+                171,
+                172,
+                175,
+                179,
+                182,
+                183,
+                186
+              ],
+              "delete": [
+                159,
+                170,
+                181
+              ],
+              "get": [
+                167,
+                178
+              ],
+              "put": [
+                163,
+                174,
+                185
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "fresh_drained_voters": 3,
+        "history_sha256": "76302d966e38c0c47e02f0a79f102621adb52bd16a9557f49f1160cbccd3b60e",
+        "operations": 177,
+        "outcomes": {
+          "ok": 159,
+          "unknown": 18
+        },
+        "transport": "tonic_unary",
+        "windows": [
+          {
+            "counts": {
+              "batch_get": 12,
+              "batch_put": 12,
+              "delete": 2,
+              "get": 2,
+              "put": 4
+            },
+            "label": "voter-lost",
+            "operation_ids": {
+              "batch_get": [
+                62,
+                65,
+                66,
+                69,
+                73,
+                77,
+                76,
+                80,
+                84,
+                87,
+                88,
+                91
+              ],
+              "batch_put": [
+                60,
+                61,
+                64,
+                68,
+                71,
+                72,
+                75,
+                79,
+                83,
+                82,
+                86,
+                90
+              ],
+              "delete": [
+                70,
+                81
+              ],
+              "get": [
+                67,
+                78
+              ],
+              "put": [
+                63,
+                74,
+                85,
+                89
+              ]
+            }
+          },
+          {
+            "counts": {
+              "batch_get": 10,
+              "batch_put": 10,
+              "delete": 3,
+              "get": 3,
+              "put": 2
+            },
+            "label": "voter-restarted",
+            "operation_ids": {
+              "batch_get": [
+                147,
+                150,
+                151,
+                154,
+                158,
+                162,
+                165,
+                166,
+                169,
+                173
+              ],
+              "batch_put": [
+                146,
+                149,
+                153,
+                157,
+                160,
+                161,
+                164,
+                168,
+                171,
+                172
+              ],
+              "delete": [
+                155,
+                159,
+                170
+              ],
+              "get": [
+                152,
+                156,
+                167
+              ],
+              "put": [
+                148,
+                163
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "client_lifetimes": 2,
+    "exit_code": 0,
+    "operations": 367,
+    "outcomes": {
+      "ok": 331,
+      "refused": 0,
+      "unknown": 36
+    },
+    "owned_lifetimes_exited": true,
+    "server_lifetimes": 5,
+    "session": 55048,
+    "tool_receipt": "c224ec"
+  },
+  "retained_failures": {
+    "ancillary_root_reader": "/tmp/kv9-owned-batch-chaos-acceptance-first/root-summary-reader-first-failure.json",
+    "original_history_searches": "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/native-history-check.json",
+    "publication_inventory_collision": "/tmp/kv9-owned-batch-acceptance-publication-preparation/selection-construction-first-failure.json"
+  },
+  "revision": "9be0c1963515ff974426faadef80482b847b13a5",
+  "scope": "Publication readout only, no validator/process/fault rerun. One-host volatile-tmpfs correctness, no throughput/cross-host/power-loss claim; exact-tuple reset non-Chaos. Full21/inter-voter partial loss/storage stall/full Rust refinement remain separate.",
+  "server_manifest_sha256": "5a2d5e031f0a24a0704dd3a2d4cf4f0fc95f868d694b54d94c3fc56fb1243a21",
+  "server_sha256": "07c02871276f9c52cd19bd8213ab3288d6c51a1d7391370b5a6282f0018b03f7",
+  "source_files": 592,
+  "source_tree_sha256": "ff23597ea569b54377bbaec94452a8c87ad4c48d983ea71db6237217d3abf851",
+  "status": "ACCEPTED_SOURCE_BOUND_CORRECTNESS_READOUT",
+  "workload_manifest_sha256": "a20aba0750dfb48459fba02deb2160d58851afa8ac0d45e1d1a674725e8ff9ef",
+  "workload_sha256": "600733e2d61cf862b4b4c4496778126c0dd3224b3ecd69ba40213c3d6b783607"
+}

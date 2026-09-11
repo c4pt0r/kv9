@@ -1,0 +1,198 @@
+{
+  "artifact": "/tmp/kv9-native-link-acceptance-9be0c19-attempt1",
+  "cleanup": {
+    "complete": true,
+    "namespace_absent": true,
+    "namespace_uid": "463e9e91-10f0-44a3-a218-da4625f2a014",
+    "preserved": {
+      "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+      "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+      "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+      "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+      "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+      "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+      "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+      "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+    }
+  },
+  "client_exit": {
+    "exit_code": 0,
+    "observed_ns": 1789143402885777900,
+    "pod_process_absent": true,
+    "process_pid": 32
+  },
+  "contained_window_outcomes": {
+    "baseline": {
+      "ok": 132,
+      "refused": 0,
+      "unknown": 0
+    },
+    "delay-healed": {
+      "ok": 136,
+      "refused": 0,
+      "unknown": 0
+    },
+    "exact-tcp-reset": {
+      "ok": 148,
+      "refused": 0,
+      "unknown": 0
+    },
+    "loss-healed": {
+      "ok": 136,
+      "refused": 0,
+      "unknown": 0
+    },
+    "partition-healed": {
+      "ok": 144,
+      "refused": 0,
+      "unknown": 0
+    },
+    "quorum-healed": {
+      "ok": 156,
+      "refused": 0,
+      "unknown": 0
+    },
+    "quorum-loss": {
+      "ok": 0,
+      "refused": 136,
+      "unknown": 0
+    },
+    "reset-healed": {
+      "ok": 148,
+      "refused": 0,
+      "unknown": 0
+    },
+    "vip-delay": {
+      "ok": 132,
+      "refused": 0,
+      "unknown": 0
+    },
+    "vip-partial-loss": {
+      "ok": 158,
+      "refused": 0,
+      "unknown": 21
+    },
+    "vip-partition": {
+      "ok": 0,
+      "refused": 0,
+      "unknown": 38
+    }
+  },
+  "evidence": {
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/cleanup.json": "768cf03437bd9f650c1f31524cd0e2ce4a380d7f1cbc3fd53a25e1d6af70b733",
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/client-exit.json": "29c22a2ece728eaf6010389cf8a98a87927dd3b9328c6447c9744a04854c1e34",
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/fresh-drain.json": "955294bada0a9e675d49815bbee4465b1808bbf7ea6ab19e493685d619566e10",
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/native-history-check.json": "0177b9045e0a25d2911e2cd5302f0cd548a7471a1d7fba7828cda9d12248065b",
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/owned-node-lifetimes.json": "1b5e74b1db4ceacf38367ccb72051f5a73c16043cb89925146f102268dca552e",
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/retained-inventory.json": "31f7b1257458a4f26289e7af67a2f09ff96642e603cea411cc6317a2e506003f",
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/summary.json": "101a07a3c2db62990bd0f4c37aa46473678a508d5201d4d62becb831f409eab6",
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/window-outcomes.json": "51de774b144e97b91088963f09d98cef25c7e9a2fcb5a6f26b0213c642087667",
+    "/tmp/kv9-native-link-acceptance-9be0c19-attempt1/windows.json": "77f0d13482388479d468b5704a63057cdd09e1acceee09a88cccee7a33f70149"
+  },
+  "exit_code": 0,
+  "independent_final_checks_executed": false,
+  "invocation_sha256": "6e715c16a1db50537d5327bf89e6b1c0668304622435c58d3ac06de8a0f95466",
+  "owned_container_lifetimes": 5,
+  "pid": 3396407,
+  "process_absent": true,
+  "recorded_unix_ns": 1789143487570692404,
+  "release_sha256": "cb6f924ae9fc5e7efd0919c3f0437a1e88933cf487514dced01649c18d3188e5",
+  "runner_reported_history": {
+    "attempts": [
+      {
+        "guided_unknown": false,
+        "prepare_ranges": false,
+        "states": 2328,
+        "unknown_effect_limit": 0,
+        "verdict": "inconclusive"
+      },
+      {
+        "guided_unknown": true,
+        "prepare_ranges": false,
+        "states": 2746,
+        "unknown_effect_limit": null,
+        "verdict": "valid"
+      }
+    ],
+    "coverage": {
+      "kinds": {
+        "batch_get": 718,
+        "batch_put": 716,
+        "delete": 204,
+        "get": 205,
+        "put": 204
+      },
+      "operations": 2047,
+      "outcomes": {
+        "ok": 1740,
+        "refused": 220,
+        "unknown": 87
+      },
+      "successful": {
+        "batch_get": 608,
+        "batch_put": 610,
+        "delete": 175,
+        "get": 175,
+        "put": 172
+      },
+      "successful_by_phase": {
+        "baseline": {
+          "batch_get": 61,
+          "batch_put": 60,
+          "delete": 17,
+          "get": 18,
+          "put": 16
+        },
+        "client-link-delay": {
+          "batch_get": 56,
+          "batch_put": 55,
+          "delete": 16,
+          "get": 16,
+          "put": 17
+        },
+        "client-link-loss": {
+          "batch_get": 70,
+          "batch_put": 70,
+          "delete": 20,
+          "get": 22,
+          "put": 20
+        },
+        "client-link-partition": {
+          "batch_get": 2,
+          "batch_put": 2,
+          "delete": 1,
+          "get": 1
+        },
+        "client-stream-drop": {
+          "batch_get": 77,
+          "batch_put": 79,
+          "delete": 23,
+          "get": 22,
+          "put": 23
+        },
+        "healing": {
+          "batch_get": 340,
+          "batch_put": 343,
+          "delete": 98,
+          "get": 96,
+          "put": 96
+        },
+        "initialization": {
+          "batch_get": 1,
+          "batch_put": 1
+        },
+        "verify": {
+          "batch_get": 1
+        }
+      }
+    },
+    "verdict": "valid"
+  },
+  "runner_summary_accepted": true,
+  "runtime_log_sha256": "549da76de002a3f06e40c534e626ad53d0215238e186156b134d22a0067d898d",
+  "scope": "Original runtime terminal and cleanup capture only. Full independent audit, exact leaf readback and final source check remain separate. No throughput/power-loss/cross-host claim.",
+  "session_id": 1870,
+  "source_revision": "9be0c1963515ff974426faadef80482b847b13a5",
+  "terminal_tool_chunk": "17675a",
+  "windows": 11
+}

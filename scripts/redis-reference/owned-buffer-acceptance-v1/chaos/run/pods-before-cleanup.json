@@ -1,0 +1,479 @@
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "creationTimestamp": "2026-09-11T16:11:34Z",
+        "generation": 1,
+        "labels": {
+          "app": "control-client"
+        },
+        "name": "control-client",
+        "namespace": "kv9-native-link-acceptance-9be0c19-20260911-1",
+        "resourceVersion": "548771",
+        "uid": "3080fddb-d6e7-435c-aa1b-587f4b631c4c"
+      },
+      "spec": {
+        "containers": [
+          {
+            "command": [
+              "/bin/bash",
+              "-c",
+              "exec taskset -c 6-15,22-31 sleep 1800"
+            ],
+            "env": [
+              {
+                "name": "KV9_BOOTSTRAP_TOKEN",
+                "value": "owned-native-link-bootstrap"
+              },
+              {
+                "name": "KV9_CLUSTER_TOKEN",
+                "value": "owned-native-link-cluster"
+              },
+              {
+                "name": "KV9_CLIENT_TOKENS",
+                "value": "admin=owned-native-link-client"
+              },
+              {
+                "name": "KV9_CLIENT_TOKEN",
+                "value": "owned-native-link-client"
+              }
+            ],
+            "image": "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1",
+            "imagePullPolicy": "Never",
+            "name": "fixture",
+            "resources": {},
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/data",
+                "name": "data"
+              },
+              {
+                "mountPath": "/tmp",
+                "name": "data"
+              },
+              {
+                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                "name": "kube-api-access-mv456",
+                "readOnly": true
+              }
+            ]
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "enableServiceLinks": true,
+        "nodeName": "kv9-chaos-ci-p0-20260908-control-plane",
+        "preemptionPolicy": "PreemptLowerPriority",
+        "priority": 0,
+        "restartPolicy": "Never",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "terminationGracePeriodSeconds": 3,
+        "tolerations": [
+          {
+            "effect": "NoExecute",
+            "key": "node.kubernetes.io/not-ready",
+            "operator": "Exists",
+            "tolerationSeconds": 300
+          },
+          {
+            "effect": "NoExecute",
+            "key": "node.kubernetes.io/unreachable",
+            "operator": "Exists",
+            "tolerationSeconds": 300
+          }
+        ],
+        "volumes": [
+          {
+            "hostPath": {
+              "path": "/tmp/kv9-native-link-acceptance-9be0c19-20260911-1/data-control",
+              "type": "Directory"
+            },
+            "name": "data"
+          },
+          {
+            "name": "kube-api-access-mv456",
+            "projected": {
+              "defaultMode": 420,
+              "sources": [
+                {
+                  "serviceAccountToken": {
+                    "expirationSeconds": 3607,
+                    "path": "token"
+                  }
+                },
+                {
+                  "configMap": {
+                    "items": [
+                      {
+                        "key": "ca.crt",
+                        "path": "ca.crt"
+                      }
+                    ],
+                    "name": "kube-root-ca.crt"
+                  }
+                },
+                {
+                  "downwardAPI": {
+                    "items": [
+                      {
+                        "fieldRef": {
+                          "apiVersion": "v1",
+                          "fieldPath": "metadata.namespace"
+                        },
+                        "path": "namespace"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "status": {
+        "conditions": [
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-09-11T16:11:35Z",
+            "observedGeneration": 1,
+            "status": "True",
+            "type": "PodReadyToStartContainers"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-09-11T16:11:34Z",
+            "observedGeneration": 1,
+            "status": "True",
+            "type": "Initialized"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-09-11T16:11:35Z",
+            "observedGeneration": 1,
+            "status": "True",
+            "type": "Ready"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-09-11T16:11:35Z",
+            "observedGeneration": 1,
+            "status": "True",
+            "type": "ContainersReady"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-09-11T16:11:34Z",
+            "observedGeneration": 1,
+            "status": "True",
+            "type": "PodScheduled"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "containerID": "containerd://1f8526ccc12255b28cfe7a25ac9680613789d480da92ed6ed675c650063dbe62",
+            "image": "docker.io/library/kv9-chaos:native-batch-9be0c19-release-20260911-attempt1",
+            "imageID": "docker.io/library/import-2026-09-11@sha256:32866cb14166a6d91e296c642c28173e7db1d8cd827a7da3af625613e7acf660",
+            "lastState": {},
+            "name": "fixture",
+            "ready": true,
+            "resources": {},
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-09-11T16:11:35Z"
+              }
+            },
+            "user": {
+              "linux": {
+                "gid": 0,
+                "supplementalGroups": [
+                  0
+                ],
+                "uid": 0
+              }
+            },
+            "volumeMounts": [
+              {
+                "mountPath": "/data",
+                "name": "data"
+              },
+              {
+                "mountPath": "/tmp",
+                "name": "data"
+              },
+              {
+                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                "name": "kube-api-access-mv456",
+                "readOnly": true,
+                "recursiveReadOnly": "Disabled"
+              }
+            ]
+          }
+        ],
+        "hostIP": "172.21.0.3",
+        "hostIPs": [
+          {
+            "ip": "172.21.0.3"
+          }
+        ],
+        "observedGeneration": 1,
+        "phase": "Running",
+        "podIP": "10.244.0.88",
+        "podIPs": [
+          {
+            "ip": "10.244.0.88"
+          }
+        ],
+        "qosClass": "BestEffort",
+        "startTime": "2026-09-11T16:11:34Z"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "creationTimestamp": "2026-09-11T16:11:34Z",
+        "generation": 1,
+        "labels": {
+          "app": "kv9-native-batch-client"
+        },
+        "name": "kv9-native-batch-client",
+        "namespace": "kv9-native-link-acceptance-9be0c19-20260911-1",
+        "resourceVersion": "548770",
+        "uid": "f641820c-53d4-4733-8f1a-d236bd11e4bc"
+      },
+      "spec": {
+        "containers": [
+          {
+            "command": [
+              "/bin/bash",
+              "-c",
+              "exec taskset -c 6-15,22-31 sleep 1800"
+            ],
+            "env": [
+              {
+                "name": "KV9_BOOTSTRAP_TOKEN",
+                "value": "owned-native-link-bootstrap"
+              },
+              {
+                "name": "KV9_CLUSTER_TOKEN",
+                "value": "owned-native-link-cluster"
+              },
+              {
+                "name": "KV9_CLIENT_TOKENS",
+                "value": "admin=owned-native-link-client"
+              },
+              {
+                "name": "KV9_CLIENT_TOKEN",
+                "value": "owned-native-link-client"
+              }
+            ],
+            "image": "kv9-chaos:native-batch-9be0c19-release-20260911-attempt1",
+            "imagePullPolicy": "Never",
+            "name": "fixture",
+            "resources": {},
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/data",
+                "name": "data"
+              },
+              {
+                "mountPath": "/tmp",
+                "name": "data"
+              },
+              {
+                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                "name": "kube-api-access-26d7s",
+                "readOnly": true
+              }
+            ]
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "enableServiceLinks": true,
+        "nodeName": "kv9-chaos-ci-p0-20260908-control-plane",
+        "preemptionPolicy": "PreemptLowerPriority",
+        "priority": 0,
+        "restartPolicy": "Never",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "terminationGracePeriodSeconds": 3,
+        "tolerations": [
+          {
+            "effect": "NoExecute",
+            "key": "node.kubernetes.io/not-ready",
+            "operator": "Exists",
+            "tolerationSeconds": 300
+          },
+          {
+            "effect": "NoExecute",
+            "key": "node.kubernetes.io/unreachable",
+            "operator": "Exists",
+            "tolerationSeconds": 300
+          }
+        ],
+        "volumes": [
+          {
+            "hostPath": {
+              "path": "/tmp/kv9-native-link-acceptance-9be0c19-20260911-1/data-native",
+              "type": "Directory"
+            },
+            "name": "data"
+          },
+          {
+            "name": "kube-api-access-26d7s",
+            "projected": {
+              "defaultMode": 420,
+              "sources": [
+                {
+                  "serviceAccountToken": {
+                    "expirationSeconds": 3607,
+                    "path": "token"
+                  }
+                },
+                {
+                  "configMap": {
+                    "items": [
+                      {
+                        "key": "ca.crt",
+                        "path": "ca.crt"
+                      }
+                    ],
+                    "name": "kube-root-ca.crt"
+                  }
+                },
+                {
+                  "downwardAPI": {
+                    "items": [
+                      {
+                        "fieldRef": {
+                          "apiVersion": "v1",
+                          "fieldPath": "metadata.namespace"
+                        },
+                        "path": "namespace"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "status": {
+        "conditions": [
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-09-11T16:11:35Z",
+            "observedGeneration": 1,
+            "status": "True",
+            "type": "PodReadyToStartContainers"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-09-11T16:11:34Z",
+            "observedGeneration": 1,
+            "status": "True",
+            "type": "Initialized"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-09-11T16:11:35Z",
+            "observedGeneration": 1,
+            "status": "True",
+            "type": "Ready"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-09-11T16:11:35Z",
+            "observedGeneration": 1,
+            "status": "True",
+            "type": "ContainersReady"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-09-11T16:11:34Z",
+            "observedGeneration": 1,
+            "status": "True",
+            "type": "PodScheduled"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "containerID": "containerd://3d91f2f880dda14aaed9fdd3d8da7401738452471a791097947ea00a97272c50",
+            "image": "docker.io/library/kv9-chaos:native-batch-9be0c19-release-20260911-attempt1",
+            "imageID": "docker.io/library/import-2026-09-11@sha256:32866cb14166a6d91e296c642c28173e7db1d8cd827a7da3af625613e7acf660",
+            "lastState": {},
+            "name": "fixture",
+            "ready": true,
+            "resources": {},
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2026-09-11T16:11:35Z"
+              }
+            },
+            "user": {
+              "linux": {
+                "gid": 0,
+                "supplementalGroups": [
+                  0
+                ],
+                "uid": 0
+              }
+            },
+            "volumeMounts": [
+              {
+                "mountPath": "/data",
+                "name": "data"
+              },
+              {
+                "mountPath": "/tmp",
+                "name": "data"
+              },
+              {
+                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                "name": "kube-api-access-26d7s",
+                "readOnly": true,
+                "recursiveReadOnly": "Disabled"
+              }
+            ]
+          }
+        ],
+        "hostIP": "172.21.0.3",
+        "hostIPs": [
+          {
+            "ip": "172.21.0.3"
+          }
+        ],
+        "observedGeneration": 1,
+        "phase": "Running",
+        "podIP": "10.244.0.87",
+        "podIPs": [
+          {
+            "ip": "10.244.0.87"
+          }
+        ],
+        "qosClass": "BestEffort",
+        "startTime": "2026-09-11T16:11:34Z"
+      }
+    }
+  ],
+  "kind": "List",
+  "metadata": {
+    "resourceVersion": ""
+  }
+}

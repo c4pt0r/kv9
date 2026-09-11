@@ -1,0 +1,202 @@
+{
+  "data-1/catalog.segments/3e69b624ce3b0e042141d2b1f2329f5c/00000000000000000001.wal": {
+    "bytes": 1004278,
+    "sha256": "59881b0cdd4a685a72aba22223424bf38ccd8afb4e4b4891e56f3f55552211c5"
+  },
+  "data-1/catalog.wal": {
+    "bytes": 117,
+    "sha256": "8712a9154c812831ec84456ca0b661101e87516d78d78473988d8cfd1bf7e655"
+  },
+  "data-1/kv9-initialized": {
+    "bytes": 12,
+    "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+  },
+  "data-1/kv9-root-descriptor": {
+    "bytes": 179,
+    "sha256": "9770d73bd10c8414d50a10dae0c0c7c44a3f4ceb2b0a01d758ab232f7bb4a607"
+  },
+  "data-1/kv9-serving-endpoint": {
+    "bytes": 238,
+    "sha256": "d5850c94546130129ebdd99139b2d014e090d1c3388ccf4e9384312f2e85336f"
+  },
+  "data-1/kv9-store-identity": {
+    "bytes": 80,
+    "sha256": "30fbf67b9a48a094c9ad5b7c7f4a2544c82c1df91625f049b9a5d825f7f536d2"
+  },
+  "data-1/kv9-store-lifecycle": {
+    "bytes": 97,
+    "sha256": "ba61b937ca6671ed661b4b9741d38d7ff0b08ec99fa021ff13b99bafb7c9e94a"
+  },
+  "data-1/kv9-store-lock": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "data-1/metrics.json": {
+    "bytes": 62433,
+    "sha256": "5f2ec2783fc23a3e17ae1e474ec28c98df5f852ddde700377bc2ec567549e527"
+  },
+  "data-1/raft/raft.log": {
+    "bytes": 1032207,
+    "sha256": "f5cfbe1356ae023c2ece4c972d2daa06648c93aee5f926e3d18c35ed8760ba25"
+  },
+  "data-1/root.bin": {
+    "bytes": 179,
+    "sha256": "9770d73bd10c8414d50a10dae0c0c7c44a3f4ceb2b0a01d758ab232f7bb4a607"
+  },
+  "data-1/start": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "data-1/status": {
+    "bytes": 3465,
+    "sha256": "a143b0cb200addc8b5e87ed0b8d0a9599d5a06fe8f9b64adcac5e6299b3d0ee6"
+  },
+  "data-2/catalog.segments/fc16c83e95141c89fa1a7c48f828c6a5/00000000000000000001.wal": {
+    "bytes": 1004318,
+    "sha256": "c097a836ef487d9ae4aa48c2a5eda05f5df6e95e25c0891391ed01d00061c044"
+  },
+  "data-2/catalog.wal": {
+    "bytes": 117,
+    "sha256": "625719b1292f56fecdf45f207a0c1a3c94795d0c4dc461b45ad57efd1b609111"
+  },
+  "data-2/kv9-initialized": {
+    "bytes": 12,
+    "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+  },
+  "data-2/kv9-root-descriptor": {
+    "bytes": 179,
+    "sha256": "9770d73bd10c8414d50a10dae0c0c7c44a3f4ceb2b0a01d758ab232f7bb4a607"
+  },
+  "data-2/kv9-serving-endpoint": {
+    "bytes": 239,
+    "sha256": "d1e923b44b72a117bcf9599fc49aff42960e6fcf01bb316842c6cbfb4bde5735"
+  },
+  "data-2/kv9-store-identity": {
+    "bytes": 80,
+    "sha256": "288014728fb61bdaa56c5e57aafa4c3eec37b4ed32e89e46f7d8a30820dc546d"
+  },
+  "data-2/kv9-store-lifecycle": {
+    "bytes": 97,
+    "sha256": "ed236f782229e68cf5835b6d550990987836906680d38968a08087305e1cb6c9"
+  },
+  "data-2/kv9-store-lock": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "data-2/metrics.json": {
+    "bytes": 63942,
+    "sha256": "a4d1b2768e2e2aabeaaa9321086033be5176c158aaebbf0403ab545e01e9b9ef"
+  },
+  "data-2/raft/raft.log": {
+    "bytes": 1032222,
+    "sha256": "ec7289e1c0f64e448d3d78df67afa76ff9417928e0c4215c25986fb8d109a91d"
+  },
+  "data-2/root.bin": {
+    "bytes": 179,
+    "sha256": "9770d73bd10c8414d50a10dae0c0c7c44a3f4ceb2b0a01d758ab232f7bb4a607"
+  },
+  "data-2/start": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "data-2/status": {
+    "bytes": 3484,
+    "sha256": "446974448552daf4af5587f44ed62906d681193361418c938cbd730546fc5701"
+  },
+  "data-3/catalog.segments/e548282fcb07c758857d615fbc5ea6cf/00000000000000000001.wal": {
+    "bytes": 1003958,
+    "sha256": "02791fff526f8b91b31a50eca8c274ae4913229b206535b6034a6a2397d38c09"
+  },
+  "data-3/catalog.wal": {
+    "bytes": 117,
+    "sha256": "e67fb64b50df574ef3a6e084d4a6d80732f9c1e51d255cc2f20579cc610000c1"
+  },
+  "data-3/kv9-initialized": {
+    "bytes": 12,
+    "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+  },
+  "data-3/kv9-root-descriptor": {
+    "bytes": 179,
+    "sha256": "9770d73bd10c8414d50a10dae0c0c7c44a3f4ceb2b0a01d758ab232f7bb4a607"
+  },
+  "data-3/kv9-serving-endpoint": {
+    "bytes": 238,
+    "sha256": "5c36eb7470926b93b4cb93bf54c5b423e612911a56781bff243389df06816084"
+  },
+  "data-3/kv9-store-identity": {
+    "bytes": 80,
+    "sha256": "d7c5a03d7369496486148d915479095a4e021f6887021d8344778a6388dd5fbe"
+  },
+  "data-3/kv9-store-lifecycle": {
+    "bytes": 97,
+    "sha256": "2fce89de97a809252bea1a4090f54c7e1efed5265b3c46d08f2ee33ce3e7d9c5"
+  },
+  "data-3/kv9-store-lock": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "data-3/metrics.json": {
+    "bytes": 62445,
+    "sha256": "f6980a4de17367d947ac3180d8c4775e6344aa0ea10afe278e8c99723ae2aadf"
+  },
+  "data-3/raft/raft.log": {
+    "bytes": 1032065,
+    "sha256": "acb7453ea1c438b64b48a925656be52a4ca3b5a6f4a5a1ef18350497c97292c1"
+  },
+  "data-3/root.bin": {
+    "bytes": 179,
+    "sha256": "9770d73bd10c8414d50a10dae0c0c7c44a3f4ceb2b0a01d758ab232f7bb4a607"
+  },
+  "data-3/start": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "data-3/status": {
+    "bytes": 3477,
+    "sha256": "bc0792241197f7716b67c77a27dd17ae9c67ad666e115f9d5f277fdacfcad430"
+  },
+  "data-control/root.bin": {
+    "bytes": 179,
+    "sha256": "9770d73bd10c8414d50a10dae0c0c7c44a3f4ceb2b0a01d758ab232f7bb4a607"
+  },
+  "data-native/input.json": {
+    "bytes": 664,
+    "sha256": "81fac00ee14e464cac40f95fa96b21ad842c2686e55150a7710aca20c5dd0f69"
+  },
+  "data-native/workload.exit": {
+    "bytes": 2,
+    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+  },
+  "data-native/workload.phase": {
+    "bytes": 8,
+    "sha256": "4d42576f8a2a79698e147bef3de88bc2868d1268df0d6babdadce224c5a86747"
+  },
+  "data-native/workload.stop": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "data-native/workload/build.json": {
+    "bytes": 487,
+    "sha256": "a20aba0750dfb48459fba02deb2160d58851afa8ac0d45e1d1a674725e8ff9ef"
+  },
+  "data-native/workload/config.json": {
+    "bytes": 856,
+    "sha256": "94ade7ff6067b37d11c87d81bb6958336216bdcfd1afd59a6093f24ac01329c5"
+  },
+  "data-native/workload/history.jsonl": {
+    "bytes": 5041272,
+    "sha256": "decadfccf05b19fb7a047dbba3c66eb06a06c1bdd6b37fb8e344d9dea5ce89d2"
+  },
+  "data-native/workload/progress.json": {
+    "bytes": 3539,
+    "sha256": "a14438e38f0ea1b17a6a57c8501d0c6a7e17ab32220d7facfaaf7965ed338070"
+  },
+  "data-native/workload/ready.json": {
+    "bytes": 66,
+    "sha256": "6082416e02ba3019a770957e6eb9d2764ca6e5734b7f1edcf2ce62ad2be1fb6a"
+  },
+  "data-native/workload/report.json": {
+    "bytes": 935351,
+    "sha256": "bae9c476c2e9ec6f2b3567a0af5ffb19a6df026b613f060add1d7623d95aa0e8"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "accepted_offline_staging": true,
+  "ambient_dependencies": {
+    "/lib/x86_64-linux-gnu/libc.so.6": "fa430b8f298f817a266046af84a77533185ad6fc4406c7d3787b5a0a0c207826",
+    "/lib/x86_64-linux-gnu/libmnl.so.0": "a47e610f22152918a5099937f452894cd1aa80d33d41a645156e35d7fd0678a9",
+    "/lib64/ld-linux-x86-64.so.2": "438c546d8e8cc48496bf3a95f753051afd9db66a629a74e31a9ded71586b56e0"
+  },
+  "architecture": "amd64",
+  "completed_ns": 1789075646119559279,
+  "download_records": "/tmp/kv9-native-link-observer-tools-debian13-v1/downloads.json",
+  "files": {
+    "__archive__": {
+      "bytes": 245760,
+      "sha256": "02811415fa11b8d4d4bd318211307d4051cb9227ced438930f0e8560f194b7e1"
+    },
+    "ipset": {
+      "bytes": 14416,
+      "mode": 493,
+      "package_source": "/tmp/kv9-native-link-observer-tools-debian13-v1/root/usr/sbin/ipset",
+      "sha256": "7cf9fb51b1abf2d15c2f33f3d60f2b86f7e743b15a048916fe44e18ae1269037"
+    },
+    "libipset.so.13": {
+      "bytes": 225184,
+      "mode": 420,
+      "package_source": "/tmp/kv9-native-link-observer-tools-debian13-v1/root/usr/lib/x86_64-linux-gnu/libipset.so.13.4.0",
+      "sha256": "0d60f626775cfabb09d6a2855fb228c921fabd6f93ad860fa11b8818fd11e5dd"
+    }
+  },
+  "no_cluster_tool_staging_yet": true,
+  "node_os": "Debian GNU/Linux 13 (trixie)",
+  "source": "Debian trixie signed InRelease -> Packages.xz -> exact package SHA256",
+  "source_hashes": {
+    "InRelease": "98b25b5cd185c59d34aa6e4c3e9b5b8f01bbe9d104fe2dcfbcd30dc0a14a59ed",
+    "Packages.xz": "3ab4e811cf4f3e5a335d382c58cc19d85f1abe7a4ef4689160ca1f637fa0e9b3",
+    "debian-archive-keyring.gpg": "506b815cbb32d9b6066b4a2aa524071e071761e7e7f68c3ac74f3061ba852017",
+    "downloads.json": "d58cdd2112807aa2e2e40ca03a6bf3d6a05bab093139d9fd648000272295b425",
+    "gpgv.stderr": "050f36a3e926328975c04243b1ff9c0e39f4114b0bb99496c61486cffa816b73",
+    "gpgv.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ipset.dynamic.txt": "a1e256d7877bd3336728b46644d933a49b4f8b2e95d05d44341441c9d799cb4d",
+    "ipset_7.22-1+b1_amd64.deb": "ff51432ed28090b4e7ffe26618c4cc5d63f73d247fc016e71d777304a14d6bd5",
+    "libipset.so.13.dynamic.txt": "d9ccd1f9ba914d3e47d9c0b062c414496b48d3b76681f71bfa7a4c9ba78954fd",
+    "libipset13t64_7.22-1+b1_amd64.deb": "e1787d904412131228411ead317c4c5bdfeadb32c90bc349d9d387c42520fe0f",
+    "node-dependencies-command.json": "c0509e38a3ffabfa398a2f719109f6f54718d95c3735b531c26368081cb90803",
+    "node-dependencies.sha256": "ffde792438912d794cb705ba7809b1e094cef87dfa7499807b23ffd389cfd727",
+    "observer-tools.tar": "02811415fa11b8d4d4bd318211307d4051cb9227ced438930f0e8560f194b7e1",
+    "selected-packages.json": "d41f901fd684addfdceb7542218abca864fbbb4a5e15d81470dc670a7b7f6f60",
+    "stage.py": "8d3d289cf1bdcad2c1e2fa1e9bccdcf47d6a14e3fa21ccdcae7eb6ecb18850f9",
+    "staging-attempt1.log": "1e31720b9830eb628494a13fd043fa03d3f5ef60b6afe849d9bb9a8b4c23e62b"
+  },
+  "version": "7.22-1+b1"
+}

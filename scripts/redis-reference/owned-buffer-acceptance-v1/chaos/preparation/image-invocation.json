@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-batch-recovery-preparation/chaos/prepare_image.py"
+  ],
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONOPTIMIZE": "0"
+  },
+  "helper_sha256": "fe6d5c0d21cb76c13e98dad0b5a9cf240648c880f4158a09abbe799628914fcf",
+  "image_context_sha256": "7053e7b5e00ee4027e269a0912d48ab19ab769e7edd170966aa03950ff06be57",
+  "pid": 3284776,
+  "plan_sha256": "6a2bb963dcab2ecc484b646e290aee84c85a4b49fc7299fc27498b7ada8cd5c0",
+  "scope": "One parent-authorized image build/probe/cleanup/import only; no fixture or faults",
+  "source_binding_sha256": "e6eb74454f5ca5ae5a7e3a8e538e341009585d8f7a512427b8b7d89b4316fd2e",
+  "started_unix_ns": 1789142522416586343
+}

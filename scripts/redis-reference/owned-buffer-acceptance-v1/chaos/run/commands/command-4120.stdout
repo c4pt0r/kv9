@@ -1,0 +1,187 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {
+                "creationTimestamp": "2026-09-08T20:54:49Z",
+                "labels": {
+                    "kubernetes.io/metadata.name": "chaos-mesh",
+                    "name": "chaos-mesh"
+                },
+                "name": "chaos-mesh",
+                "resourceVersion": "572",
+                "uid": "10165ce0-6d25-4c22-8f36-1e5083434ced"
+            },
+            "spec": {
+                "finalizers": [
+                    "kubernetes"
+                ]
+            },
+            "status": {
+                "phase": "Active"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {
+                "creationTimestamp": "2026-09-08T20:54:23Z",
+                "labels": {
+                    "kubernetes.io/metadata.name": "default"
+                },
+                "name": "default",
+                "resourceVersion": "25",
+                "uid": "ef9282ce-08cb-4362-b933-edd43ec0e44e"
+            },
+            "spec": {
+                "finalizers": [
+                    "kubernetes"
+                ]
+            },
+            "status": {
+                "phase": "Active"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {
+                "creationTimestamp": "2026-09-08T20:54:23Z",
+                "labels": {
+                    "kubernetes.io/metadata.name": "kube-node-lease"
+                },
+                "name": "kube-node-lease",
+                "resourceVersion": "31",
+                "uid": "e0bc942a-0ee9-4485-a880-abf28ff26671"
+            },
+            "spec": {
+                "finalizers": [
+                    "kubernetes"
+                ]
+            },
+            "status": {
+                "phase": "Active"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {
+                "creationTimestamp": "2026-09-08T20:54:23Z",
+                "labels": {
+                    "kubernetes.io/metadata.name": "kube-public"
+                },
+                "name": "kube-public",
+                "resourceVersion": "14",
+                "uid": "dca2e055-1478-4562-8a3c-1f1f60cadfb8"
+            },
+            "spec": {
+                "finalizers": [
+                    "kubernetes"
+                ]
+            },
+            "status": {
+                "phase": "Active"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {
+                "creationTimestamp": "2026-09-08T20:54:23Z",
+                "labels": {
+                    "kubernetes.io/metadata.name": "kube-system"
+                },
+                "name": "kube-system",
+                "resourceVersion": "11",
+                "uid": "905986f0-a2df-4651-adab-5a363093cc78"
+            },
+            "spec": {
+                "finalizers": [
+                    "kubernetes"
+                ]
+            },
+            "status": {
+                "phase": "Active"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/inject": "enabled"
+                },
+                "creationTimestamp": "2026-09-09T14:29:39Z",
+                "labels": {
+                    "kubernetes.io/metadata.name": "kv9-chaos-1788964167-3930517"
+                },
+                "name": "kv9-chaos-1788964167-3930517",
+                "resourceVersion": "141472",
+                "uid": "f7ac3bbd-584c-423e-90c5-630dc18338aa"
+            },
+            "spec": {
+                "finalizers": [
+                    "kubernetes"
+                ]
+            },
+            "status": {
+                "phase": "Active"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/inject": "enabled"
+                },
+                "creationTimestamp": "2026-09-09T15:25:54Z",
+                "labels": {
+                    "kubernetes.io/metadata.name": "kv9-chaos-1788967535-626870"
+                },
+                "name": "kv9-chaos-1788967535-626870",
+                "resourceVersion": "150040",
+                "uid": "ea5cc740-2cd7-45f0-9b6b-b558600a9425"
+            },
+            "spec": {
+                "finalizers": [
+                    "kubernetes"
+                ]
+            },
+            "status": {
+                "phase": "Active"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Namespace",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"annotations\":{},\"name\":\"local-path-storage\"}}\n"
+                },
+                "creationTimestamp": "2026-09-08T20:54:27Z",
+                "labels": {
+                    "kubernetes.io/metadata.name": "local-path-storage"
+                },
+                "name": "local-path-storage",
+                "resourceVersion": "294",
+                "uid": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+            },
+            "spec": {
+                "finalizers": [
+                    "kubernetes"
+                ]
+            },
+            "status": {
+                "phase": "Active"
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}
