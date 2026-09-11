@@ -1,0 +1,584 @@
+{
+  "audit_sha256": "0a76823f050b84c5b81188d859cae35e8535c72fd72b172d8da81a24583b90b9",
+  "core_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+  "files": {
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/000-old-point-r000-p00001/resource-coverage.json": {
+      "bytes": 1687,
+      "sha256": "0af546a8680dc57c751fedee99e5ca30fa0eac7f799444018968ad9d5f16b1f1"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/000-old-point-r000-p00001/run/report.json": {
+      "bytes": 1432073,
+      "sha256": "84469a6486981777b350b7d5eb19be5de24073e82f18c45805a93b2d592631e9"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/001-new-point-r000-p00001/resource-coverage.json": {
+      "bytes": 1689,
+      "sha256": "306bf21ba8bd5b3ff82973128bdee3bf44ec5542597de97174d99ef18fa251ab"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/001-new-point-r000-p00001/run/report.json": {
+      "bytes": 1432052,
+      "sha256": "720ebc6e9efb562cdf3da40be50bf8a04b2965bae6b4b5a7b506b9dc6d85d26b"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/002-redis-point-r000-p00001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "7989f3d89578a722c84cbaee47e2f1cd42b2b8885acdfef35ddacd428f9a27a0"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/002-redis-point-r000-p00001/run/report.json": {
+      "bytes": 915339,
+      "sha256": "94ba59086df59ee5c2b204ca94fa4cc40d45c56b4f0f06b91cc009117ee1f2c9"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/003-old-point-r050-p00001/resource-coverage.json": {
+      "bytes": 1688,
+      "sha256": "d5ad0a89566873eda94e9d5aa3511dbbd453fcd89d56ef479bb987f7dfc57137"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/003-old-point-r050-p00001/run/report.json": {
+      "bytes": 1940417,
+      "sha256": "c6b06159adc23f14e8e96e07e3080856df6909cb311bdfc0d6e18f4fddecb54f"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/004-new-point-r050-p00001/resource-coverage.json": {
+      "bytes": 1691,
+      "sha256": "37afc4374aa85ae0fa42a440a3e28941562a019d4ae3a474098249516d321859"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/004-new-point-r050-p00001/run/report.json": {
+      "bytes": 1940407,
+      "sha256": "8e85d6e423059fb5e7fa155af3fe2c7223d73d390f25bf550be2d22e48c98eea"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/005-redis-point-r050-p00001/resource-coverage.json": {
+      "bytes": 836,
+      "sha256": "6a8a6af99186612a1754ea14239b91c4531f23d3ac5f2e76a974af1a530b5b80"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/005-redis-point-r050-p00001/run/report.json": {
+      "bytes": 1264274,
+      "sha256": "362805cb9e705672e1b6cb35b55d4358f96c896a968d6dc675da896b6c9e2d85"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/006-old-point-r100-p00001/resource-coverage.json": {
+      "bytes": 1675,
+      "sha256": "abeba86cbeaec6314b0373cfbad10c4d73c848ead44802b106b7c040d4b3cd6b"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/006-old-point-r100-p00001/run/report.json": {
+      "bytes": 1432060,
+      "sha256": "c0efb89b29d54d813888505294ce5a27ba71b059a7d739350c633ddab32ada81"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/007-new-point-r100-p00001/resource-coverage.json": {
+      "bytes": 1671,
+      "sha256": "b0e48e9f8877420462ff57688e6ddc84263c2f399d2b25f95ed21312b5c8c9ad"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/007-new-point-r100-p00001/run/report.json": {
+      "bytes": 1431975,
+      "sha256": "f928d4ecf939470da2b33d10843df748ca6b666ae0dec146acd2a1a97ceac4bd"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/008-redis-point-r100-p00001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "46ce72b251db154f76bed6aad4f84f6a0c99bf40732bda4b69100dbe3cab9ffb"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/008-redis-point-r100-p00001/run/report.json": {
+      "bytes": 915351,
+      "sha256": "2893f8313519dc8364cb8e6b561df9122aa82f46ba8d3dec333cfbeda2797260"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/009-old-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 1683,
+      "sha256": "dea077e99d37c9d7d31bb35ac53a20c1a43bb0e105c55d6886c3990284e84882"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/009-old-batch64-r000-p00001/run/report.json": {
+      "bytes": 1431367,
+      "sha256": "b5b23a0d91dd3c9b721882a03ca8ea42aa2e00e0ce670630dbe10531fd0b8e3c"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/010-new-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 1690,
+      "sha256": "f5717a354185ac8170cb7ef0c44edcfc90e360a13ca05958ab6f52895128fe6d"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/010-new-batch64-r000-p00001/run/report.json": {
+      "bytes": 1431363,
+      "sha256": "83efcff3ff979cc52658b48e708328f4dbf8ede2ccbdae7e1b2a6dba9d6e1428"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/011-redis-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 841,
+      "sha256": "da4379af87baea9ba5f8ea71bc3cfb061bbdc97060de6e5782519add1c942128"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/011-redis-batch64-r000-p00001/run/report.json": {
+      "bytes": 914987,
+      "sha256": "f480053c9d0ffa23d9a4d31eab87b90636bf0ff6a60b94cadac63eb61c07e4c9"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/012-old-batch64-r050-p00001/resource-coverage.json": {
+      "bytes": 1691,
+      "sha256": "c4b13cc1f21d6449129cd0b5dbe42425ba7b7e91c378be6e04851e5077d14150"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/012-old-batch64-r050-p00001/run/report.json": {
+      "bytes": 1939569,
+      "sha256": "b6e11dc0a3b1a800e69478be1bc68965d093b342b1da1313baf86ea9257824df"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/013-new-batch64-r050-p00001/resource-coverage.json": {
+      "bytes": 1688,
+      "sha256": "b97c5ef18b94189792a8f4976e54d846bd2e36390cf1ff3b71e704b5d4c74c52"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/013-new-batch64-r050-p00001/run/report.json": {
+      "bytes": 1939539,
+      "sha256": "a3b00e8d6bd991ac653757bf1cb270fa1b5f90e3eb2b1bc0756949730283a92c"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/014-redis-batch64-r050-p00001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "b0cd6c13961802136a403269681d96d625e39b113cf4eb5c8eb96de14573bf96"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/014-redis-batch64-r050-p00001/run/report.json": {
+      "bytes": 1263779,
+      "sha256": "fb9cba58d1d276114829fe1ce2237fd5869be576776ace2b6de503057890ab0e"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/015-old-batch64-r100-p00001/resource-coverage.json": {
+      "bytes": 1655,
+      "sha256": "bf6ea027823217680cd646a456392cf6ce086bf89b35b69c7c4056fa9a18de7a"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/015-old-batch64-r100-p00001/run/report.json": {
+      "bytes": 1431387,
+      "sha256": "2eda6ddee3773dd32233f24424a65f0f83dd30c07e2e8ff76414a11cac750e3a"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/016-new-batch64-r100-p00001/resource-coverage.json": {
+      "bytes": 1673,
+      "sha256": "cc65f7c5fb32816e8e644a3961fe52183483a97b223668ad5e4ba890a9d6c5c7"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/016-new-batch64-r100-p00001/run/report.json": {
+      "bytes": 1431397,
+      "sha256": "7984ef748c4075340c6404e65f3727e339b4c3140f075916a07fcbdaa6cbe279"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/017-redis-batch64-r100-p00001/resource-coverage.json": {
+      "bytes": 842,
+      "sha256": "925225b391cfb0b303698b221600e71f8a39c0f9129ba936f75e37dd45f1d415"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/017-redis-batch64-r100-p00001/run/report.json": {
+      "bytes": 914946,
+      "sha256": "ada3dc8c4ad890edb93502b307be9eecdf406fb125efafed10135c892f8acaea"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/018-old-point-r000-p00064/resource-coverage.json": {
+      "bytes": 3366,
+      "sha256": "4ce3f7315ad369c12d98d2c4651ff1721dc879e02aea33885925225dec54fb8b"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/018-old-point-r000-p00064/run/report.json": {
+      "bytes": 1445096,
+      "sha256": "4554801be4e646c9f2c639f56c12be541f7152c110f468b9455df1aacd76851d"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/019-new-point-r000-p00064/resource-coverage.json": {
+      "bytes": 4028,
+      "sha256": "26d90b12a9553f57bc9a03ed878427114886fa42509fdb3d06f0d9f15ffeb68a"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/019-new-point-r000-p00064/run/report.json": {
+      "bytes": 1445207,
+      "sha256": "444fe6b3c3b541a2d561cb1f4f35a98476de9a163dbcd418fdc0d5c457712de5"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/020-redis-point-r000-p00064/resource-coverage.json": {
+      "bytes": 854,
+      "sha256": "46cc939d91185e3f186b9312b175104f7c67c15beaecc9d71f85aa0f2e3eba03"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/020-redis-point-r000-p00064/run/report.json": {
+      "bytes": 927729,
+      "sha256": "51699c3876cbbf24e63c9cff5e1ec2cf8a270fccbaab93fa76ba6c0fa8152e75"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/021-old-point-r050-p00064/resource-coverage.json": {
+      "bytes": 2826,
+      "sha256": "d9d686b8a2f070ba0975e91ba72b55845cddedec7fb6d6b38a9e334335c65493"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/021-old-point-r050-p00064/run/report.json": {
+      "bytes": 1954383,
+      "sha256": "0a2d5fa93cf6671a2324e5504f9261248ca98bd7d96d017cc5ed43fd0c1b6212"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/022-new-point-r050-p00064/resource-coverage.json": {
+      "bytes": 2623,
+      "sha256": "a6f5acde0e9505e5f3d25c1049dadb69727ce93766a3c2750155ef5a95d3e7c6"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/022-new-point-r050-p00064/run/report.json": {
+      "bytes": 1954481,
+      "sha256": "70d32faf7976dbdaa353b1993f17b1ea4d22e8fbb66f3fd906595c00ff8c318b"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/023-redis-point-r050-p00064/resource-coverage.json": {
+      "bytes": 855,
+      "sha256": "e00e2de581bd753fff768f834ed57c1f9b0f6b23a932b085524d54f9ff13f319"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/023-redis-point-r050-p00064/run/report.json": {
+      "bytes": 1277010,
+      "sha256": "1c7819376a1aab1d227596867358192f9257ed3a76cefe7ede49db3c9618f8ab"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/024-old-point-r100-p00064/resource-coverage.json": {
+      "bytes": 1667,
+      "sha256": "0a25553feac0d0b0af00fb043e8aed9661885c6ea181131a04ebbf7c7e043569"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/024-old-point-r100-p00064/run/report.json": {
+      "bytes": 1445380,
+      "sha256": "b7fda9e0bda477ac931fb8c8d16f423f94dd2f7a6e47555df658a1f636890593"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/025-new-point-r100-p00064/resource-coverage.json": {
+      "bytes": 1691,
+      "sha256": "2dec571c91a111bb59946c7aa1dd244b45b15c4bde39c597bffabe9372390e24"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/025-new-point-r100-p00064/run/report.json": {
+      "bytes": 1445417,
+      "sha256": "8c14696b5f5cf4be3145f690d669ab03a8936ff6002cf5ee23e03a58eaf5ab61"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/026-redis-point-r100-p00064/resource-coverage.json": {
+      "bytes": 852,
+      "sha256": "351900a983da1d6f18acc4d870c0cd906572b849bf71b5934c8ed25bcaf77198"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/026-redis-point-r100-p00064/run/report.json": {
+      "bytes": 927779,
+      "sha256": "b2d7073362179b93b61617253b5758dedfd1700728a9af1e160e6e08077319ce"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/027-old-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 3575,
+      "sha256": "9edba047017cc59133f455143c83928bf72c8199301c9784610ef7c5ac19ae1b"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/027-old-batch64-r000-p00064/run/report.json": {
+      "bytes": 1443819,
+      "sha256": "ca6c0895265bd1977e89c90ca95896766234d8ddf3b07865ee657e1e6c5d29a5"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/028-new-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 3287,
+      "sha256": "519a954a7efe4d4de96ac2204c44cc4de920fa3f69359dcaa3505f3036c1c3f9"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/028-new-batch64-r000-p00064/run/report.json": {
+      "bytes": 1443907,
+      "sha256": "2480c3f2eb975e7c191509c666ce7fe6ce8137e0cbb59f4a70eec9164bd6e6b3"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/029-redis-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 855,
+      "sha256": "b2cabbe41f8ec9a71ff436edaa6a296050eb290749610780a2a44ac074143860"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/029-redis-batch64-r000-p00064/run/report.json": {
+      "bytes": 928103,
+      "sha256": "4ab35e49b084db3fb3cb13bfe6b79c6aa26d750bf392b4d06fdd319688d20cca"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/030-old-batch64-r050-p00064/resource-coverage.json": {
+      "bytes": 2456,
+      "sha256": "e2fabd91e63059fe323bea708abdf64bf793cdf17b797bb1ddbbb9b883bf4c1f"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/030-old-batch64-r050-p00064/run/report.json": {
+      "bytes": 1952686,
+      "sha256": "c9859ba253e6649b0043b69b0a88c5da3f67b8378668783bae9a1259b0646198"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/031-new-batch64-r050-p00064/resource-coverage.json": {
+      "bytes": 2756,
+      "sha256": "3e46526395eb9b7ae61ea426aa8e614d786bd0aa8d769233590301751b2c12fa"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/031-new-batch64-r050-p00064/run/report.json": {
+      "bytes": 1952824,
+      "sha256": "4b83c8bd2f81e4f38559fb1ff49c63306946a17ce48469e92a3a78c3a4881e6a"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/032-redis-batch64-r050-p00064/resource-coverage.json": {
+      "bytes": 842,
+      "sha256": "971ae6432d9abcecba13facb9887b16d4ac75bc827b17b5a7b8513178f635e79"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/032-redis-batch64-r050-p00064/run/report.json": {
+      "bytes": 1277675,
+      "sha256": "687890f092a5d5fd7cc5b8ac7afb00e243e4d79f9515c24f4611b338c967fea3"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/033-old-batch64-r100-p00064/resource-coverage.json": {
+      "bytes": 1681,
+      "sha256": "b4cd26a9670d191b8c600446bdd3bb4b7814679bf74f358a21486f97a864b61d"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/033-old-batch64-r100-p00064/run/report.json": {
+      "bytes": 1444359,
+      "sha256": "78dfdda5d68a0cc75667f18586fef9821cb1d0ad1b29af67ecb8dacd61195fc0"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/034-new-batch64-r100-p00064/resource-coverage.json": {
+      "bytes": 1678,
+      "sha256": "3c943448b249a80511173e12ce97cd714478b0195a371908775cd595a659889e"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/034-new-batch64-r100-p00064/run/report.json": {
+      "bytes": 1444396,
+      "sha256": "2d702f973207226778204ba77f34b14bb68dcf868935485c1f57197af82ca970"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/035-redis-batch64-r100-p00064/resource-coverage.json": {
+      "bytes": 854,
+      "sha256": "a87fb413690372b319cc340b07b61a8fa21ce406df8d76b497381c67aae4746a"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/035-redis-batch64-r100-p00064/run/report.json": {
+      "bytes": 928078,
+      "sha256": "d599675a520e0b591a6f2362df333f238471cef303410e620fdb4a9edb1faefb"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/036-redis-batch64-r100-p10064/resource-coverage.json": {
+      "bytes": 851,
+      "sha256": "083efbb92fd8906a44a4a9cd0b75ed79875c0c37e4696e54ab1018e3bd286b03"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/036-redis-batch64-r100-p10064/run/report.json": {
+      "bytes": 928072,
+      "sha256": "02ab14c67c93418b8da2bf89e02e8ca229711a5487b25b2ba3779225f6c5e092"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/037-new-batch64-r100-p10064/resource-coverage.json": {
+      "bytes": 1668,
+      "sha256": "242ff78bf494bc97be95bcc72e4e83a6d7d99d6d4154fdea96e2ba75f962b230"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/037-new-batch64-r100-p10064/run/report.json": {
+      "bytes": 1444373,
+      "sha256": "f498ff753fd50ade3c794a3f545317086f60689afddc80ab3b1ecd63cd397ec7"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/038-old-batch64-r100-p10064/resource-coverage.json": {
+      "bytes": 1675,
+      "sha256": "000f9529400c3a1049ddb467990c842b5a29c0e961dce6dffbe1f51d075729ce"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/038-old-batch64-r100-p10064/run/report.json": {
+      "bytes": 1444334,
+      "sha256": "73b0ec82e12d77581a6f532748ca26cf352f4382e9d14ae81587a0bb30c9e64e"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/039-redis-batch64-r050-p10064/resource-coverage.json": {
+      "bytes": 855,
+      "sha256": "323e32ab3035b8d79bcf9511e0936408a34afe0ca317ff356868b2da59bf732f"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/039-redis-batch64-r050-p10064/run/report.json": {
+      "bytes": 1277665,
+      "sha256": "7b15a10a7a6c8c4c206a0b2f88d35ac6a49e0abee3b7f8eff1cc2a1834e24a45"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/040-new-batch64-r050-p10064/resource-coverage.json": {
+      "bytes": 2510,
+      "sha256": "764173017f82c396b1c6d68112a33d8d32e04ed70ccefd654b52ea25ba1b65c9"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/040-new-batch64-r050-p10064/run/report.json": {
+      "bytes": 1952990,
+      "sha256": "54487bc851693f60d6ddece329b489a87425ee21756dab70b37655b52c4aab22"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/041-old-batch64-r050-p10064/resource-coverage.json": {
+      "bytes": 2711,
+      "sha256": "30bdfa63fd96f6225001df9609e7fb65bf5b2b6cf1d2592aaf9ea5876b43153f"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/041-old-batch64-r050-p10064/run/report.json": {
+      "bytes": 1952819,
+      "sha256": "c8e46f935b294425738ff3edb714dfcc9b6563f432710f16fcb03848a18761f9"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/042-redis-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 852,
+      "sha256": "043c3e29a7bd03bd08378437d1f5ef97bfadfcfcd616ec963bf59090410cfe31"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/042-redis-batch64-r000-p10064/run/report.json": {
+      "bytes": 928106,
+      "sha256": "9ff0b237beb9727908a2b6d6827c2edcdb8a244a322286ee70c3a062e2135c73"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/043-new-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 4229,
+      "sha256": "b2c7728bee1aafd585bfb0ad8e50b877093dfd7d0837f00ee5b411a110cbf38d"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/043-new-batch64-r000-p10064/run/report.json": {
+      "bytes": 1443955,
+      "sha256": "a9e80b2fb1e2d084882daa01838c7f0eb8a8dde04badbde414c7f9651aa9d80a"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/044-old-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 3449,
+      "sha256": "63221095af15c9f9c2d1eccc2665a450477a334f3af465c8d912934d58b2b6bc"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/044-old-batch64-r000-p10064/run/report.json": {
+      "bytes": 1443814,
+      "sha256": "8d5d8064a2becfbd310e19bba16fe3e5952c251e56ee227bf0b6c2c90666d169"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/045-redis-point-r100-p10064/resource-coverage.json": {
+      "bytes": 854,
+      "sha256": "650171422cc9b18b77c63a4fcbb4c8dc304e125e6627d659fe629cacff68eaa2"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/045-redis-point-r100-p10064/run/report.json": {
+      "bytes": 927870,
+      "sha256": "eec37ec9c2ed312b44da71fbb926eafe357d5f0dfc0d05457380be1b866a5734"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/046-new-point-r100-p10064/resource-coverage.json": {
+      "bytes": 1665,
+      "sha256": "02911554b2ce4e7382115d3d7bcc4a98869c08928b0528dc07d16aafdd938bd7"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/046-new-point-r100-p10064/run/report.json": {
+      "bytes": 1445362,
+      "sha256": "14591692bd20d85f35797cbcfcf444a6dec7317bec0aa246fe1708d757037eb0"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/047-old-point-r100-p10064/resource-coverage.json": {
+      "bytes": 1666,
+      "sha256": "fb9d8e291a99457682f62f905d4b42ca4a7016fadf84d9c80746c5a90567c391"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/047-old-point-r100-p10064/run/report.json": {
+      "bytes": 1445348,
+      "sha256": "fd21ff422a90e98c4d06f92bd46697f2a5c0cf4eafac09d12bd7ebd2bc68386e"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/048-redis-point-r050-p10064/resource-coverage.json": {
+      "bytes": 853,
+      "sha256": "0d9dd87c2913fa3ec60614560000823405d53f49a9425b3724211fa2521068e5"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/048-redis-point-r050-p10064/run/report.json": {
+      "bytes": 1277238,
+      "sha256": "6091faf3a87d1750c358349fe55b7cab1546e6d053fd3ca13a278440c2f45f86"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/049-new-point-r050-p10064/resource-coverage.json": {
+      "bytes": 2172,
+      "sha256": "a6892d0c463c4f23b8584a57d86421f9aa3bdbf3fc317df6ae86169ee2f36d57"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/049-new-point-r050-p10064/run/report.json": {
+      "bytes": 1954405,
+      "sha256": "9c40a7ff01905e30648a5c7725b7e0d242fda12b638e39f8e8761556eb90acb2"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/050-old-point-r050-p10064/resource-coverage.json": {
+      "bytes": 2711,
+      "sha256": "472f03722e8bb7616c5de34e93aab1b14c8cb63bbd0a9161eb842925343e78f9"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/050-old-point-r050-p10064/run/report.json": {
+      "bytes": 1954352,
+      "sha256": "01307d6a76e759cdf7601def7980fabfce0d97420f6ccb88e124f8e83895b799"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/051-redis-point-r000-p10064/resource-coverage.json": {
+      "bytes": 853,
+      "sha256": "e8ba74f8c0ba94390bf37bb6af18fca89383533a4d73e07cbd3dafb9465a4770"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/051-redis-point-r000-p10064/run/report.json": {
+      "bytes": 927767,
+      "sha256": "9f3d76d946a312fb83e8360ac759e43a5c8468e62942821c672990b3521232f2"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/052-new-point-r000-p10064/resource-coverage.json": {
+      "bytes": 3312,
+      "sha256": "5ea2c1e3a209c7d577a35048a940940dc0419bc53dd10693dc5ad67cc8919664"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/052-new-point-r000-p10064/run/report.json": {
+      "bytes": 1445164,
+      "sha256": "86aae2394d06ab6d97556f81f2e98dd37042d2507715fda7353208ac58e14691"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/053-old-point-r000-p10064/resource-coverage.json": {
+      "bytes": 3408,
+      "sha256": "16506c24f28c974adee637c5f1b2b30c4a741ef04d8fd66613f5893c3cd7e089"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/053-old-point-r000-p10064/run/report.json": {
+      "bytes": 1445168,
+      "sha256": "e50d6f70dfa22905ab05978f65e0bd52d6b948e84b2380322d54dc93d91dcebf"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/054-redis-batch64-r100-p10001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "a7b86375400e7b7cac2fdaf608ca0cd23e23ef2c0cd3b1c505fbac218ee362c2"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/054-redis-batch64-r100-p10001/run/report.json": {
+      "bytes": 914915,
+      "sha256": "53490a28fb6866741e1d663757c97e796c0d922fa97ad411e2fceb0f51d02604"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/055-new-batch64-r100-p10001/resource-coverage.json": {
+      "bytes": 1650,
+      "sha256": "47cde90b191ec668d500b04e646091febcfcc8e5dda1e2c40419bcc73a280b9b"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/055-new-batch64-r100-p10001/run/report.json": {
+      "bytes": 1431400,
+      "sha256": "f1a4025092b7bd6c0320608b7be740f1c915e30b3c59d8bfe1be8f68293eec17"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/056-old-batch64-r100-p10001/resource-coverage.json": {
+      "bytes": 1679,
+      "sha256": "3e9e5384d59fb51ce051cd0d1daa6d56fabe2b74ac52893a38b444ec6f30397a"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/056-old-batch64-r100-p10001/run/report.json": {
+      "bytes": 1431417,
+      "sha256": "a5708d261f44d99eca4e99a402f2875178f6f917cf59647e012c78ae563508ed"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/057-redis-batch64-r050-p10001/resource-coverage.json": {
+      "bytes": 840,
+      "sha256": "bc64afbceda2baa5cd285499addf1e6fa4d5529702191cf8ae84f528f0165043"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/057-redis-batch64-r050-p10001/run/report.json": {
+      "bytes": 1263850,
+      "sha256": "f954ae54eddc0ee88365865f519435184f065f9983ed0c62d737f7fa60054fb0"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/058-new-batch64-r050-p10001/resource-coverage.json": {
+      "bytes": 1686,
+      "sha256": "03787b604bd6d76f471825e62382b7c1c3b58fa6ae7fe5779ce8f567827e2d31"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/058-new-batch64-r050-p10001/run/report.json": {
+      "bytes": 1939553,
+      "sha256": "5671298e70040e9610120bc21ac7c75ffc869993c973b99cbbaeaca98e39b724"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/059-old-batch64-r050-p10001/resource-coverage.json": {
+      "bytes": 1687,
+      "sha256": "2aacf3fce1b6b7b0c9ff5656fd042b8792dffe5df0ab52a05c0ceac9ef8af331"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/059-old-batch64-r050-p10001/run/report.json": {
+      "bytes": 1939563,
+      "sha256": "cb76a8172bd9e07f61fc779e6c6f72c47d0ad9ebac4016f6fbc38c724444c77b"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/060-redis-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "e35367a08a06f1b56813342543c3cf0d8bda16935fc3aef41f4a571d919738d2"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/060-redis-batch64-r000-p10001/run/report.json": {
+      "bytes": 915012,
+      "sha256": "079c26fa4bf008439389b549587f2447f1b0c732619996cbad1347e721e09e1e"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/061-new-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 1687,
+      "sha256": "9b73ae389182fb1e6579ce8c72c127ff668a6c70c6a3d6df28fa4d9086333fb9"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/061-new-batch64-r000-p10001/run/report.json": {
+      "bytes": 1431373,
+      "sha256": "d80471948fb964be948ddcfa4312a12a76793da1b3e014659e2cac9d8510671f"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/062-old-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 1692,
+      "sha256": "ab4ff9fad2b9f8cf01d419d946f8212d13bafa5a5f890e9aab7b1bb3de67a44c"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/062-old-batch64-r000-p10001/run/report.json": {
+      "bytes": 1431358,
+      "sha256": "6067e66d62817be500d0341c7fae54dd405d81ff2a7ee70d0b5acaa915741d1b"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/063-redis-point-r100-p10001/resource-coverage.json": {
+      "bytes": 834,
+      "sha256": "6d2912cd68efe4b2f08e30b87277545104d48872a99e5a921ea2a332e634bb3c"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/063-redis-point-r100-p10001/run/report.json": {
+      "bytes": 915384,
+      "sha256": "44558101fddd2d64df0045966a100fe6911bbb338686a1d9f30a02151a883eb0"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/064-new-point-r100-p10001/resource-coverage.json": {
+      "bytes": 1672,
+      "sha256": "5b7d84c72fe9ffb0707e6ee99fea4c1edb0c46fa97ff8665b2439e1e828fc2a1"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/064-new-point-r100-p10001/run/report.json": {
+      "bytes": 1432065,
+      "sha256": "16e498dc8e4ca8e062cabd4860c0def1fcb9e6ba71128f8f5b661a122e33c736"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/065-old-point-r100-p10001/resource-coverage.json": {
+      "bytes": 1670,
+      "sha256": "ecb24c54e931e8dda0935db4fc50bb008d94f734f2abef7adb8a9eea903bf6c7"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/065-old-point-r100-p10001/run/report.json": {
+      "bytes": 1432046,
+      "sha256": "6c536eb0e99473c84b0476fbc33a477f9ee548dae370be148a7d7d74f539a23a"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/066-redis-point-r050-p10001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "4761d510ea0722ff9a17d26bbdbead9eb92cb320ac470ea44470d028a83f9f84"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/066-redis-point-r050-p10001/run/report.json": {
+      "bytes": 1264236,
+      "sha256": "9f0dd3b27a3093acb076e24dad7f5d980d650fce2c0e911d389bf4dfd8c8c49f"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/067-new-point-r050-p10001/resource-coverage.json": {
+      "bytes": 1685,
+      "sha256": "59fbd89c55bd52f393d046f6d22324e356444a82303593fec98a32341c0ffa39"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/067-new-point-r050-p10001/run/report.json": {
+      "bytes": 1940466,
+      "sha256": "8c67b35bc1eb5c4afa2fa6cc8f53129e553bef70d839e123526d97ea42c49b99"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/068-old-point-r050-p10001/resource-coverage.json": {
+      "bytes": 1682,
+      "sha256": "5d8652f4e118c6290db3d19e1bb4f64cf3ef1053b356ce25455819eef6d5b9bd"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/068-old-point-r050-p10001/run/report.json": {
+      "bytes": 1940436,
+      "sha256": "26ffac1f746138ee354255530b5e915eb1110d322ee47a3a6203ad07dfc406b3"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/069-redis-point-r000-p10001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "5bb84b58353d5ffb3a3d55b56aec591f901129dc6fe6d21bf2ae80c57de217a6"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/069-redis-point-r000-p10001/run/report.json": {
+      "bytes": 915352,
+      "sha256": "eb5b8652dce762d857e078141a1a4ad89b038f5972b37ec935e66a37399d4656"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/070-new-point-r000-p10001/resource-coverage.json": {
+      "bytes": 1682,
+      "sha256": "8a074f8a8e8a56576aa2e826a1c2a325f8e3f1869860eacfcaf1a268b25e03e9"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/070-new-point-r000-p10001/run/report.json": {
+      "bytes": 1432080,
+      "sha256": "7664608235567b97a188a939e7d5a0f88fe262c4053f5eab468e658075476af8"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/071-old-point-r000-p10001/resource-coverage.json": {
+      "bytes": 1681,
+      "sha256": "386c8e6de8cecc557466aa89bc7e099480953f000ef340261c1c1a8b44b1f51d"
+    },
+    "/tmp/kv9-crc-broad-workloads-timing-first/cohorts/071-old-point-r000-p10001/run/report.json": {
+      "bytes": 1432134,
+      "sha256": "679b05bc83e6f7b5b05fa2f8c8e21082488f1b65fb5e1b97e81a15de1f5bbc74"
+    }
+  },
+  "gate_sha256": "5ff5a3fbaade1450c04aec0c2b14cff32fb95dd67ff76ba6a7469796a72ba2ee",
+  "reader_sha256": "028b1af892d5febba6df6157b9e32fb0594f7be7c17dc1f0a755844e7bdcdb5b"
+}

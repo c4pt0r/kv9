@@ -1,0 +1,39 @@
+--- /tmp/kv9-v3-workload-comparison-preparation/protocol.json
++++ /tmp/kv9-crc-broad-workloads-preparation/protocol.json
+@@ -1,7 +1,7 @@
+ {
+   "account_validity_is_separate_from_all_success_promotion": true,
+   "admission_limits_unchanged": true,
+-  "candidate_revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
++  "candidate_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+   "client_pins": {
+     "client": {
+       "binary_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+@@ -21,7 +21,7 @@
+   "configured_max_attempts": 6,
+   "control_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+   "decision_scope": "Separately predeclared v3 point1/batch64 read0/50/100 c1/c64, two full forward/reverse repetitions. Preserve all logical-call/item/outcome/attempt populations. Report per-read, per-write and merged whole-call histograms; never average percentiles or divide batch latency by keys. Accounting may be valid while healthy single-attempt/all-success suitability fails. No equal-durability or sustained-capacity claim.",
+-  "driver_sha256": "e1b839d357658db56b2cf4235e1de7089453e61853ada07015e28d165f1966de",
++  "driver_sha256": "64c4df98a1191c6bd1605783dc6a206571cd5a590951296f5fc56e39aba654ca",
+   "durability": "Three-voter volatile WAL with normal sync calls; standalone memory Redis, save and AOF off",
+   "effective_server_limits": {
+     "async_read_requests": 128,
+@@ -31,14 +31,14 @@
+   "final_dataset_scope": "Full paginated dataset plus sentinel, exact deterministic bytes, configured nonce budget and deterministic write-key membership. Exact issued nonce set and concurrent write order cannot be inferred from aggregate reports; no full-history/linearizability claim.",
+   "general_baseline_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+   "healthy_success_comparison_requires_one_actual_attempt": true,
+-  "protocol_id": "kv9-v3-workloads-c1-c64-v1",
++  "protocol_id": "kv9-crc-broad-workloads-c1-c64-v1",
+   "redis_client_revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+   "redis_client_sha256": "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af",
+   "server_pins": {
+     "new": {
+-      "binary_sha256": "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
+-      "manifest_sha256": "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd",
+-      "revision": "57ff6851e40ed63c837189d6eb0a11190704725a"
++      "binary_sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
++      "manifest_sha256": "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8",
++      "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb"
+     },
+     "old": {
+       "binary_sha256": "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",

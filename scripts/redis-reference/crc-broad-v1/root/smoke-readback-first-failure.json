@@ -1,0 +1,10 @@
+{
+  "exit_code": 1,
+  "tool_chunk": "5ce9af",
+  "error": "KeyError: cleanup_complete: the ancillary reader assumed the native summary field on a Redis row",
+  "script_sha256": "c39b32c5065c76ecbaf06b91d5788f311a1cf34b5d659a8ca595e4bab7eedb49",
+  "runtime_smoke_exit_code": 0,
+  "timing_started": false,
+  "frozen_driver_or_auditor_changed": false,
+  "resolution": "Read each existing role-specific cleanup schema; retain first reader and failure. No fixture rerun."
+}

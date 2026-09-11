@@ -1,0 +1,118 @@
+{
+  "/tmp/kv9-crc-broad-workloads-preparation/AUDITOR-PREPARATION.json": {
+    "bytes": 7387,
+    "sha256": "66e09cc3e48b0abb1b7ec9a04e5643819d66697215ca05890fdb4a9989f48c5f"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/README.md": {
+    "bytes": 7044,
+    "sha256": "d6351babf20df6968d4a18d5ef478161f6a981afc804d9edf817edb4dad0ae4e"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/README.md.diff": {
+    "bytes": 5252,
+    "sha256": "beab3d3093238f0da1a20feb4126a9bcf53e3f28a7d2c15b34270253286a977f"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/actual-descriptors-first.json": {
+    "bytes": 62785,
+    "sha256": "2076722f7e08c2732794f19090e82f350b226bde7523b16296c58fc2273cf8a2"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/ancestry-first.json": {
+    "bytes": 6979,
+    "sha256": "7f6ddff8357d0897d138b9ed543b9c15d848ecc2044bbcfb479ff1a8b3ff28a7"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/audit-contract-first-invocation.json": {
+    "bytes": 674,
+    "sha256": "b82ce8f2eb90baec697b1a0c6e4159fd1fda2c002e8ad604d1640bfe4060b55f"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/audit-contract-first-terminal.json": {
+    "bytes": 837,
+    "sha256": "a5a3f9585a204a0739a91cc7d5799172bc5e6082e500806a9412d0abff53a7a7"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/audit-contract-first.log": {
+    "bytes": 2083,
+    "sha256": "5ab750e5a2787a87cd4ccbcfe206ead1b13d860c01ae55e5d86521919de8fb13"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/audit.py": {
+    "bytes": 49229,
+    "sha256": "2b1168c1fe2b0ca240b60822be238f71549528140f717b73bb840ad4fa7b2b4d"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/audit.py.diff": {
+    "bytes": 5028,
+    "sha256": "25a62fd76c0b4939d246d44c23eaab915530692fb070427b8a201a566d5fceb8"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/commands.json": {
+    "bytes": 2155,
+    "sha256": "46f5097c92a27a176e5c376994e8b9c1c4640f5a97ca2f5ac3c7c11f5903912a"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/driver-arguments.json": {
+    "bytes": 615,
+    "sha256": "ba0968f92c52e648742fd223020e9d0cc01da4091866a1799acb7fe12081128d"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/driver-arguments.json.diff": {
+    "bytes": 516,
+    "sha256": "1b00a7815c9659d379c6200fe50fb4e4f0e279256aef8e0c9fae0f5ef86bb811"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/driver-contract-first-invocation.json": {
+    "bytes": 667,
+    "sha256": "3e343ebad8a8ea6920df742d0e7aad2c2072cb77c0241f14854f61161037aec5"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/driver-contract-first-terminal.json": {
+    "bytes": 830,
+    "sha256": "119bcdc8210544471b009a741231c85fe1f18f49f793ffe08caa3cb9341257e8"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/driver-contract-first.log": {
+    "bytes": 105,
+    "sha256": "ce8b2ad572acbaf3e462aeebe71beae3537465a36438036176755ffebff0e85a"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/input-layout.json": {
+    "bytes": 2595,
+    "sha256": "1498aafb8f656f10bd8680286ee09856f6c5762c160f48bd24dd3c2b32f69e40"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/isolate-and-run.py": {
+    "bytes": 12873,
+    "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/isolate-and-run.py.diff": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/matched-driver.py": {
+    "bytes": 51940,
+    "sha256": "64c4df98a1191c6bd1605783dc6a206571cd5a590951296f5fc56e39aba654ca"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/matched-driver.py.diff": {
+    "bytes": 2678,
+    "sha256": "bff972997bd43f9f5e367ccc64f17c5453afcfdc950af358f74d55d102f1c06c"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/protocol.json": {
+    "bytes": 67215,
+    "sha256": "89eeef2a7c45da90ffb6e061e84f08801dbd98e4341640e2c79108802cf7b2a0"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/protocol.json.diff": {
+    "bytes": 2787,
+    "sha256": "5cd129d2c1cb4e57087e27fc1548b8055f50490fa75ada7d8f14680b1c8925ab"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/role-readback-first.json": {
+    "bytes": 283154,
+    "sha256": "d255500b414335885bf71a890296fc150558ea4350db33af0e50cb2884acb8ff"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/static-readback-first.json": {
+    "bytes": 1155,
+    "sha256": "e39d8a9f4cf0ae25c853f8577446be23a26152401bad4f487b69aa0873092425"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/test_audit_contract.py": {
+    "bytes": 17662,
+    "sha256": "4847ae9ae258286bdcfb568ef691086dc55fdd45d909a63f421d44d9ef061c12"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/test_audit_contract.py.diff": {
+    "bytes": 1802,
+    "sha256": "49979235c468069cace55604bc4913979e4672fc7c96627dfaac7553b7172f94"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/test_driver.py": {
+    "bytes": 9907,
+    "sha256": "7353d49d176286305f14bbf59e37035dc63d10208beb4e6e2608b70f0c3faf0e"
+  },
+  "/tmp/kv9-crc-broad-workloads-preparation/test_driver.py.diff": {
+    "bytes": 1570,
+    "sha256": "7addaba00606112191e1ad5456f4e09b5dc466cfd11eb779a98b8ac7c7a68b2a"
+  }
+}

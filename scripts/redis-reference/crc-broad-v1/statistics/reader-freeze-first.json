@@ -1,0 +1,11 @@
+{
+  "prepared_ns": 1789140617270636852,
+  "analysis_executed": false,
+  "parent": "/tmp/kv9-crc-write-statistics-preparation/derive.py",
+  "arithmetic_helpers_unchanged": true,
+  "files": {
+    "core.py": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+    "derive.py": "028b1af892d5febba6df6157b9e32fb0594f7be7c17dc1f0a755844e7bdcdb5b"
+  },
+  "requires": "Root timing terminal success and frozen independent audit success before derivation; no new runtime or acceptance predicate."
+}

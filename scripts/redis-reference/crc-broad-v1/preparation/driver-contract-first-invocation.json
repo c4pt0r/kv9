@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-broad-workloads-preparation/test_driver.py"
+  ],
+  "cwd": "/tmp/kv9-crc-broad-workloads-preparation",
+  "started_ns": 1789138833661158958,
+  "supervisor_pid": 2508758,
+  "cpus": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "environment": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "script_sha256": "7353d49d176286305f14bbf59e37035dc63d10208beb4e6e2608b70f0c3faf0e",
+  "log": "/tmp/kv9-crc-broad-workloads-preparation/driver-contract-first.log",
+  "pid": 2508759
+}

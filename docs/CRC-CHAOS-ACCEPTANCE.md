@@ -4,8 +4,9 @@ The exact CRC candidate `ca0002c7f8e9ee6f595efcc9f4151085ccce87cb` passes
 the eleven-window native workload fixture, followed by its unchanged independent
 history/lifecycle auditor, same-netem-leaf loss check and final source verifier.
 Runtime and all three checks exit zero. These results complement the completed
-[write screen and process recovery](CRC-WRITE-SCREENING.md). Broader c1/c64
-read/mixed/write performance acceptance remains pending.
+[write screen and process recovery](CRC-WRITE-SCREENING.md). The subsequent
+[full c1/c64 workload matrix](CRC-WORKLOAD-PERFORMANCE.md) supports baseline
+selection with an explicit small batch-read throughput/p99 tradeoff.
 
 ## History and actual fault effects
 
@@ -69,5 +70,5 @@ retain detailed provenance.
 This is one-host, volatile-tmpfs client-link/quorum correctness acceptance. It
 does not establish disk/power-loss durability, inter-voter partial-loss or
 storage-stall coverage, replace the full 21-window suite, or measure performance.
-General/default promotion and Redis parity remain open. Tests ran locally;
+Redis parity and full industrial fault coverage remain open. Tests ran locally;
 no GitHub workflow was dispatched.

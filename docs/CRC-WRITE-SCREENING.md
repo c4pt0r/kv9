@@ -4,8 +4,10 @@ Candidate `ca0002c7` passes the first isolated c64 write screen. Against the
 same-recording `5ee897a` control, pooled point PUT throughput increases
 **4.476%**, and BatchPut(64) throughput increases **38.486%**. Mean and p99
 improve in both original repetitions. This is a useful write increment to
-continue through recovery and broader workload acceptance; it is not general
-promotion or Redis parity.
+continue through recovery and broader workload acceptance. This document
+retains that original narrow result; the subsequent
+[full workload matrix](CRC-WORKLOAD-PERFORMANCE.md) records baseline selection
+and the small batch-read tradeoff. Redis parity remains open.
 
 The [CPU profile](WRITE-APPLY-CPU-PROFILE.md) identified the old engine CRC loop
 as 7.807% of point-write and 41.903% of batch-write selected CPU samples.
@@ -127,7 +129,8 @@ bind this distinction and the actual histories.
 The exact-source [eleven-window Chaos Mesh fixture](CRC-CHAOS-ACCEPTANCE.md)
 now passes, including the complete 2,068-call history, 158 verified new netem
 leaf drops, fresh drains and owned cleanup. The broader c1/c64 read/mixed/write
-matrix remains next. General/default promotion remains open.
+[matrix now passes](CRC-WORKLOAD-PERFORMANCE.md) and supports baseline selection
+with an explicitly retained small batch-read throughput/p99 regression.
 Owned-buffer movement and index changes remain subsequent
 experiments, with independent measurements and correctness obligations.
 

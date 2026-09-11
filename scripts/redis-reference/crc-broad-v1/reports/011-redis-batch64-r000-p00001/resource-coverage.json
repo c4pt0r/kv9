@@ -1,0 +1,33 @@
+{
+  "samples": 196,
+  "first_gap_ns": 44065591,
+  "last_gap_ns": 3295611,
+  "actual_start_unix_ns": 1789141087070024785,
+  "actual_end_unix_ns": 1789141097070038418,
+  "cpu": {
+    "client": {
+      "cpu_cores": 0.6128980955090734,
+      "sample_seconds": 9.952714888,
+      "max_thread_cpu_cores": 0.6128980955090734,
+      "thread_cpu_cores": {
+        "2965671": 0.0,
+        "2965670": 0.6128980955090734,
+        "2965669": 0.0
+      },
+      "peak_rss_bytes": 4124672
+    },
+    "redis": {
+      "cpu_cores": 0.42199488201572755,
+      "sample_seconds": 9.952727341,
+      "max_thread_cpu_cores": 0.42199488201572755,
+      "thread_cpu_cores": {
+        "2965527": 0.42199488201572755,
+        "2965531": 0.0,
+        "2965530": 0.0,
+        "2965528": 0.0,
+        "2965529": 0.0
+      },
+      "peak_rss_bytes": 14700544
+    }
+  }
+}

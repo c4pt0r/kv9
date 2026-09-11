@@ -1,0 +1,13 @@
+{
+  "actual_terminal_observed": true,
+  "auditor_pid": 3218783,
+  "both_pids_absent": true,
+  "exit_code": 0,
+  "invocation_sha256": "97d27a3d5b854d435e57ffdfbae18cde10aee93742bcd1d47fd6611ec965e17c",
+  "log_sha256": "b81add11d784568f976a4da5989bd3d4dccfea0ea3b7af97e98b1ce781e7ca0b",
+  "recorded_ns": 1789142372802397365,
+  "session": 18362,
+  "supervisor_pid": 3218782,
+  "terminal_record_sha256": "a0a5c5219b9b847e20a3735b369bb6374bce186a70869ce6ebb3108d07c28701",
+  "tool_chunk": "6c1626"
+}

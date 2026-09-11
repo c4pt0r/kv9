@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-broad-workloads-preparation/test_audit_contract.py"
+  ],
+  "cwd": "/tmp/kv9-crc-broad-workloads-preparation",
+  "started_ns": 1789138834095161295,
+  "supervisor_pid": 2508758,
+  "cpus": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "environment": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "script_sha256": "4847ae9ae258286bdcfb568ef691086dc55fdd45d909a63f421d44d9ef061c12",
+  "log": "/tmp/kv9-crc-broad-workloads-preparation/audit-contract-first.log",
+  "pid": 2508920,
+  "exit_code": 0,
+  "completed_ns": 1789138834149841339,
+  "log_sha256": "5ab750e5a2787a87cd4ccbcfe206ead1b13d860c01ae55e5d86521919de8fb13",
+  "pid_absent": true
+}

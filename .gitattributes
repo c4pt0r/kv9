@@ -38,3 +38,18 @@ scripts/redis-reference/crc-chaos-v1/acceptance/source-first.log -whitespace
 scripts/redis-reference/crc-chaos-v1/run/commands/command-1152.stdout -whitespace
 scripts/redis-reference/crc-chaos-v1/run/commands/command-1336.stdout -whitespace
 scripts/redis-reference/crc-chaos-v1/preparation/preparation.diff -whitespace
+
+# Preserve original CRC workload evidence bytes.
+scripts/redis-reference/crc-broad-v1/independent/audit-first.log -whitespace
+scripts/redis-reference/crc-broad-v1/preparation/README.md.diff -whitespace
+scripts/redis-reference/crc-broad-v1/preparation/audit-contract-first.log -whitespace
+scripts/redis-reference/crc-broad-v1/preparation/audit.py.diff -whitespace
+scripts/redis-reference/crc-broad-v1/preparation/driver-arguments.json.diff -whitespace
+scripts/redis-reference/crc-broad-v1/preparation/driver-contract-first.log -whitespace
+scripts/redis-reference/crc-broad-v1/preparation/isolate-and-run.py.diff -whitespace
+scripts/redis-reference/crc-broad-v1/preparation/matched-driver.py.diff -whitespace
+scripts/redis-reference/crc-broad-v1/preparation/protocol.json.diff -whitespace
+scripts/redis-reference/crc-broad-v1/preparation/test_audit_contract.py.diff -whitespace
+scripts/redis-reference/crc-broad-v1/preparation/test_driver.py.diff -whitespace
+scripts/redis-reference/crc-broad-v1/root/smoke-first.log -whitespace
+scripts/redis-reference/crc-broad-v1/root/timing-first.log -whitespace

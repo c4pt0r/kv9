@@ -1,0 +1,34 @@
+{
+  "created_ns": 1789140898076843390,
+  "smoke_session": 94821,
+  "smoke_exit_code": 0,
+  "smoke_gate_sha256": "90a1449d30012360eb425fd955b175fd2829e363a019af17000ddc3b5772a9c3",
+  "root_inputs": {
+    "check-smoke.py": "c39b32c5065c76ecbaf06b91d5788f311a1cf34b5d659a8ca595e4bab7eedb49",
+    "smoke-gate-first.json": "90a1449d30012360eb425fd955b175fd2829e363a019af17000ddc3b5772a9c3",
+    "smoke-first.log": "719756659420f089ac869a44a3dd58dae83bcfb2deadf6ac9b81fb03910b480b",
+    "check-smoke-second.py": "45e63b6621edb3573f7360971f04918ee4a2ba30e251e209d43e7494b1ed68bc",
+    "smoke-terminal-first.json": "b37aeef8da4c4c892214d8a6d3b7a20d94076fb1b761ac0a4eba9a18d27e7517",
+    "smoke-invocation-first.json": "17eccd5458aa609a82cbbad12fbb3e254f42dab4599fb37c9f3e7cb4239d697b",
+    "pre-timing-processes-first.txt": "efeadd4ed3fd47304622c4013086203687d14a1cc5914950fee86609e4f1f14a",
+    "smoke-readback-first-failure.json": "ad5b77902c5d001ac63a500feda9dab8e6c9f7a4ac5dffd870d2b4e06a23f0e0",
+    "launch-freeze-first.json": "323eef67d00c9cc18ca3d0af2b1a589b4f5ec6e6ddca2c80e0367eb08e8b9784"
+  },
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-broad-workloads-preparation/isolate-and-run.py",
+    "--driver",
+    "/tmp/kv9-crc-broad-workloads-preparation/matched-driver.py",
+    "--output",
+    "/tmp/kv9-crc-broad-workloads-timing-first",
+    "--driver-arguments-file",
+    "/tmp/kv9-crc-broad-workloads-preparation/driver-arguments.json"
+  ],
+  "shared_host": true
+}

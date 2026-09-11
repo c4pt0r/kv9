@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-broad-workloads-preparation/isolate-and-run.py",
+    "--driver",
+    "/tmp/kv9-crc-broad-workloads-preparation/matched-driver.py",
+    "--output",
+    "/tmp/kv9-crc-broad-workloads-timing-first",
+    "--driver-arguments-file",
+    "/tmp/kv9-crc-broad-workloads-preparation/driver-arguments.json"
+  ],
+  "pid": 2935481,
+  "exit_code": 0,
+  "started_ns": 1789140898077785792,
+  "ended_ns": 1789142157998782334,
+  "reaped": true
+}

@@ -1,0 +1,14 @@
+--- /tmp/kv9-v3-workload-comparison-preparation/driver-arguments.json
++++ /tmp/kv9-crc-broad-workloads-preparation/driver-arguments.json
+@@ -10,9 +10,9 @@
+   "--old-server-build",
+   "/tmp/kv9-rpc-pair-release-first",
+   "--new-server-source",
+-  "/tmp/kv9-read-group-credit",
++  "/tmp/kv9-wal-crc32-table",
+   "--new-server-build",
+-  "/tmp/kv9-read-group-credit-release-first",
++  "/tmp/kv9-wal-crc32-release-first",
+   "--redis-client-source",
+   "/tmp/kv9-point-write-measurement-v3",
+   "--redis-client-build",

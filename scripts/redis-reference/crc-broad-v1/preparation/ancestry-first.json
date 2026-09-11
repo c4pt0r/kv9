@@ -1,0 +1,166 @@
+{
+  "additional_derived_hash_changes": [
+    "audit.py explicit driver-arguments SHA",
+    "protocol.json driver SHA"
+  ],
+  "contracts_pending": true,
+  "files": {
+    "audit.py": {
+      "diff_sha256": "25a62fd76c0b4939d246d44c23eaab915530692fb070427b8a201a566d5fceb8",
+      "parent_sha256": "7c6e35ff255a2f55a398b032d768f6e47297962388e9b868ce86dc55050d4c1f",
+      "sha256": "2b1168c1fe2b0ca240b60822be238f71549528140f717b73bb840ad4fa7b2b4d"
+    },
+    "driver-arguments.json": {
+      "diff_sha256": "1b00a7815c9659d379c6200fe50fb4e4f0e279256aef8e0c9fae0f5ef86bb811",
+      "parent_sha256": "ecf364a3d10671c1c5749d6e45b6f7b4ec751a9f63c557c393adb697ba1393b1",
+      "sha256": "ba0968f92c52e648742fd223020e9d0cc01da4091866a1799acb7fe12081128d"
+    },
+    "isolate-and-run.py": {
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "parent_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "matched-driver.py": {
+      "diff_sha256": "bff972997bd43f9f5e367ccc64f17c5453afcfdc950af358f74d55d102f1c06c",
+      "parent_sha256": "e1b839d357658db56b2cf4235e1de7089453e61853ada07015e28d165f1966de",
+      "sha256": "64c4df98a1191c6bd1605783dc6a206571cd5a590951296f5fc56e39aba654ca"
+    },
+    "protocol.json": {
+      "diff_sha256": "5cd129d2c1cb4e57087e27fc1548b8055f50490fa75ada7d8f14680b1c8925ab",
+      "parent_sha256": "d6dc8cc488cc5c65f8ab30f19ecc62bb8cf028bd609f3a477080999e3e961b5b",
+      "sha256": "89eeef2a7c45da90ffb6e061e84f08801dbd98e4341640e2c79108802cf7b2a0"
+    },
+    "test_audit_contract.py": {
+      "diff_sha256": "49979235c468069cace55604bc4913979e4672fc7c96627dfaac7553b7172f94",
+      "parent_sha256": "6ad08c961b92ad4501f6a40c07c35e4bd33aac46693d9a442b4c0f313549104e",
+      "sha256": "4847ae9ae258286bdcfb568ef691086dc55fdd45d909a63f421d44d9ef061c12"
+    },
+    "test_driver.py": {
+      "diff_sha256": "7addaba00606112191e1ad5456f4e09b5dc466cfd11eb779a98b8ac7c7a68b2a",
+      "parent_sha256": "f6382ef1233eb110a698eb5315538286459ade78581457064f1d87066d80f404",
+      "sha256": "7353d49d176286305f14bbf59e37035dc63d10208beb4e6e2608b70f0c3faf0e"
+    }
+  },
+  "function_comparison": {
+    "audit.py": {
+      "changed_functions": [],
+      "functions": 20
+    },
+    "matched-driver.py": {
+      "changed_functions": [
+        "main"
+      ],
+      "functions": 27
+    }
+  },
+  "new_preparation": "/tmp/kv9-crc-broad-workloads-preparation",
+  "predecessor": "/tmp/kv9-v3-workload-comparison-preparation",
+  "preparation_only": true,
+  "prepared_ns": 1789138814129698639,
+  "runtime_executed": false,
+  "source_pin": {
+    "binary_sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+    "build": "/tmp/kv9-wal-crc32-release-first",
+    "clean": true,
+    "manifest_sha256": "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8",
+    "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+    "source": "/tmp/kv9-wal-crc32-table",
+    "source_files": 590
+  },
+  "substitution_counts": {
+    "audit.py": {
+      "/tmp/kv9-read-group-credit": 2,
+      "/tmp/kv9-read-group-credit-release-first": 2,
+      "/tmp/kv9-v3-workload-comparison-preparation": 2,
+      "57ff6851e40ed63c837189d6eb0a11190704725a": 1,
+      "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30": 1,
+      "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd": 1,
+      "kv9-v3-workloads-c1-c64-v1": 1
+    },
+    "driver-arguments.json": {
+      "/tmp/kv9-read-group-credit": 1,
+      "/tmp/kv9-read-group-credit-release-first": 1,
+      "/tmp/kv9-v3-workload-comparison-preparation": 0,
+      "57ff6851e40ed63c837189d6eb0a11190704725a": 0,
+      "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30": 0,
+      "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd": 0,
+      "kv9-v3-workloads-c1-c64-v1": 0
+    },
+    "isolate-and-run.py": {
+      "/tmp/kv9-read-group-credit": 0,
+      "/tmp/kv9-read-group-credit-release-first": 0,
+      "/tmp/kv9-v3-workload-comparison-preparation": 0,
+      "57ff6851e40ed63c837189d6eb0a11190704725a": 0,
+      "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30": 0,
+      "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd": 0,
+      "kv9-v3-workloads-c1-c64-v1": 0
+    },
+    "matched-driver.py": {
+      "/tmp/kv9-read-group-credit": 1,
+      "/tmp/kv9-read-group-credit-release-first": 1,
+      "/tmp/kv9-v3-workload-comparison-preparation": 0,
+      "57ff6851e40ed63c837189d6eb0a11190704725a": 1,
+      "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30": 1,
+      "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd": 1,
+      "kv9-v3-workloads-c1-c64-v1": 1
+    },
+    "protocol.json": {
+      "/tmp/kv9-read-group-credit": 0,
+      "/tmp/kv9-read-group-credit-release-first": 0,
+      "/tmp/kv9-v3-workload-comparison-preparation": 0,
+      "57ff6851e40ed63c837189d6eb0a11190704725a": 2,
+      "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30": 1,
+      "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd": 1,
+      "kv9-v3-workloads-c1-c64-v1": 1
+    },
+    "test_audit_contract.py": {
+      "/tmp/kv9-read-group-credit": 0,
+      "/tmp/kv9-read-group-credit-release-first": 0,
+      "/tmp/kv9-v3-workload-comparison-preparation": 0,
+      "57ff6851e40ed63c837189d6eb0a11190704725a": 1,
+      "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30": 1,
+      "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd": 0,
+      "kv9-v3-workloads-c1-c64-v1": 1
+    },
+    "test_driver.py": {
+      "/tmp/kv9-read-group-credit": 1,
+      "/tmp/kv9-read-group-credit-release-first": 1,
+      "/tmp/kv9-v3-workload-comparison-preparation": 0,
+      "57ff6851e40ed63c837189d6eb0a11190704725a": 0,
+      "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30": 0,
+      "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd": 0,
+      "kv9-v3-workloads-c1-c64-v1": 1
+    }
+  },
+  "substitutions": [
+    [
+      "57ff6851e40ed63c837189d6eb0a11190704725a",
+      "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb"
+    ],
+    [
+      "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
+      "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13"
+    ],
+    [
+      "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd",
+      "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8"
+    ],
+    [
+      "/tmp/kv9-read-group-credit-release-first",
+      "/tmp/kv9-wal-crc32-release-first"
+    ],
+    [
+      "/tmp/kv9-read-group-credit",
+      "/tmp/kv9-wal-crc32-table"
+    ],
+    [
+      "/tmp/kv9-v3-workload-comparison-preparation",
+      "/tmp/kv9-crc-broad-workloads-preparation"
+    ],
+    [
+      "kv9-v3-workloads-c1-c64-v1",
+      "kv9-crc-broad-workloads-c1-c64-v1"
+    ]
+  ],
+  "wrapper_byte_identical": true
+}
