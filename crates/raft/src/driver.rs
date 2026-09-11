@@ -23,6 +23,9 @@ use crate::transport::RaftTransport;
 use crate::ReadyConsume;
 use crate::{Command, EntryKind, MemStateMachine, Role, StateMachine};
 
+mod applied_ring;
+use applied_ring::AppliedRing;
+
 /// Queryable node state (the server's `status` surface, agreed seam with the
 /// acceptance harness: success is judged on these fields, not on log text).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -203,7 +206,7 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     /// advanced, nothing written) and enters WITH its rejection verdict, so
     /// the receipt reaches the proposer instead of dying at this boundary
     /// (the silent-lost-write blocker Ren's layer-3 test caught).
-    applied: Mutex<Vec<RingEntry>>,
+    applied: Mutex<AppliedRing>,
     /// Conf-change receipts by exact (index, term) — the correlation store for
     /// [`Self::wait_conf_applied`]. Conf entries NEVER enter the command ring:
     /// `applied_index`/`applied_term` must remain a same-entry pair.
@@ -280,7 +283,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             drain,
             transport,
             sm: Mutex::new(sm),
-            applied: Mutex::new(Vec::new()),
+            applied: Mutex::new(AppliedRing::default()),
             conf_receipts: Mutex::new(Vec::new()),
             read_receipts: Mutex::new(Vec::new()),
             read_incarnation: {
@@ -873,7 +876,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             .is_some_and(|wm| wm.index >= at.index.0);
         {
             let applied = self.applied.lock().expect("applied poisoned");
-            if let Some(entry) = applied.iter().find(|e| e.index == at.index.0) {
+            if let Some(entry) = applied.find_index(at.index.0) {
                 return Some(if entry.term == at.term {
                     // The receipt is the RING's recorded values — position
                     // AND verdict as the apply loop stored them, never the
@@ -1652,16 +1655,12 @@ pub struct ConfChangeReceipt {
     pub learners: Vec<u64>,
 }
 
-fn push_ring(applied: &mut Vec<RingEntry>, index: u64, term: u64, outcome: crate::ApplyOutcome) {
+fn push_ring(applied: &mut AppliedRing, index: u64, term: u64, outcome: crate::ApplyOutcome) {
     applied.push(RingEntry {
         index,
         term,
         outcome,
     });
-    let len = applied.len();
-    if len > APPLIED_RING {
-        applied.drain(..len - APPLIED_RING);
-    }
 }
 
 fn single_change(node: NodeId, kind: ConfChangeType) -> ConfChangeV2 {
