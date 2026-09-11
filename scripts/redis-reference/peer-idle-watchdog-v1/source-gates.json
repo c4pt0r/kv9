@@ -1,0 +1,36 @@
+{
+  "source_hashes": {
+    "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+    "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+    "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+    "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58",
+    "scripts/check-route-controls.py": "2dc93978f4a291694958c8ae9c1c3d59ea315c6003d439e247e15a1e89f6da4e"
+  },
+  "raft_test": {
+    "session": 58483,
+    "exit_code": 0,
+    "pass_counts": [
+      197,
+      1,
+      13,
+      5,
+      12
+    ],
+    "total_passed": 228,
+    "log_sha256": "9cef07a9a57e9eb5c3a8c54424f4558fce8f1cce7e4c1771d2ff96cab1ff8368"
+  },
+  "clippy": {
+    "session": 26451,
+    "exit_code": 0,
+    "log_sha256": "e3b319f6aa66970246b14a1b08f4b5c01ff73ef1b7e4c3f6b80d9a7eaf21bcf5"
+  },
+  "source_controls": {
+    "session": 74063,
+    "exit_code": 0,
+    "triples": 14,
+    "compiled_executions": 42,
+    "manifest_sha256": "4fe438eec1dabf10ee51be45529d3191f2d1984b6c5e27397775dc6b66a1861c",
+    "log_sha256": "84e9b264a5fdb6cd293446672bee5347103a43bc0043ead954f5fa7476bae641",
+    "output": "/tmp/kv9-peer-idle-watchdog-route-controls-first"
+  }
+}

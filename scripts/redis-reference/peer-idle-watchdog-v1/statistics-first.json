@@ -1,0 +1,512 @@
+{
+  "accepted": true,
+  "all_commands_terminal": true,
+  "audit_exit_code": 0,
+  "audit_session": 77755,
+  "audit_sha256": "b23a9ae4ac1e639f834d3e7fb999e55ff9c0bdb6673763d141c6c30ebb84f343",
+  "bindings": {
+    "outer_restoration": {
+      "accepted": true,
+      "configured_and_effective_before_after": "0-31",
+      "isolated": "6-15,22-31",
+      "namespace_maps_preserved": true,
+      "original_summary_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "owned_containers": 3
+    },
+    "owned_lifetimes_exited": 80,
+    "qualifying_drains": 48,
+    "resource_samples": 2344,
+    "retained_bytes": 88755271,
+    "retained_files": 528,
+    "role_source_file_checks": 2331,
+    "voter_writer_listener_bindings": 48
+  },
+  "counts": 27821713,
+  "dropped_slots": 0,
+  "outcomes": {
+    "client_rejected": 0,
+    "read_failure": 0,
+    "refused": 0,
+    "success": 27821713,
+    "unknown_write": 0
+  },
+  "pairs": [
+    {
+      "api": "point_get",
+      "candidate": {
+        "calls": 130180,
+        "mean_us": 38.27623048855431,
+        "ordinal": 2,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 130180,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          57.856,
+          58.367
+        ],
+        "qps": 26035.8667171911
+      },
+      "concurrency": 1,
+      "mean_change_percent": 0.8283298767447489,
+      "old": {
+        "calls": 131288,
+        "mean_us": 37.96178170891475,
+        "ordinal": 0,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 131288,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          59.392,
+          59.903
+        ],
+        "qps": 26257.16417308619
+      },
+      "qps_change_percent": -0.8428079073440786,
+      "repeat": 0
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "calls": 127207,
+        "mean_us": 39.17311090584638,
+        "ordinal": 3,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 127207,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          58.88,
+          59.391
+        ],
+        "qps": 25441.333364059654
+      },
+      "concurrency": 1,
+      "mean_change_percent": 2.403000967954827,
+      "old": {
+        "calls": 130254,
+        "mean_us": 38.25387003854008,
+        "ordinal": 1,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 130254,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          59.392,
+          59.903
+        ],
+        "qps": 26050.74877901775
+      },
+      "qps_change_percent": -2.3393393415583663,
+      "repeat": 0
+    },
+    {
+      "api": "point_get",
+      "candidate": {
+        "calls": 1662653,
+        "mean_us": 192.33543872052678,
+        "ordinal": 8,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1662653,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          344.064,
+          348.159
+        ],
+        "qps": 332523.0650938496
+      },
+      "concurrency": 64,
+      "mean_change_percent": 0.6224411297547805,
+      "old": {
+        "calls": 1672988,
+        "mean_us": 191.14566945608698,
+        "ordinal": 6,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1672988,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          368.64,
+          372.735
+        ],
+        "qps": 334590.3542451246
+      },
+      "qps_change_percent": -0.6178567687460834,
+      "repeat": 0
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "calls": 1632853,
+        "mean_us": 195.8157251387602,
+        "ordinal": 9,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1632853,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          352.256,
+          356.351
+        ],
+        "qps": 326561.289149836
+      },
+      "concurrency": 64,
+      "mean_change_percent": 3.2960254212483164,
+      "old": {
+        "calls": 1686656,
+        "mean_us": 189.56753112252883,
+        "ordinal": 7,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1686656,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          364.544,
+          368.639
+        ],
+        "qps": 337318.67495281657
+      },
+      "qps_change_percent": -3.1890869381854703,
+      "repeat": 0
+    },
+    {
+      "api": "point_get",
+      "candidate": {
+        "calls": 131261,
+        "mean_us": 37.96975890020646,
+        "ordinal": 21,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 131261,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          56.832,
+          57.343
+        ],
+        "qps": 26252.11133611917
+      },
+      "concurrency": 1,
+      "mean_change_percent": -0.17407423754576268,
+      "old": {
+        "calls": 130997,
+        "mean_us": 38.03596972449751,
+        "ordinal": 23,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 130997,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          60.416,
+          60.927
+        ],
+        "qps": 26199.278749737947
+      },
+      "qps_change_percent": 0.20165664439046882,
+      "repeat": 1
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "calls": 130011,
+        "mean_us": 38.3353910899847,
+        "ordinal": 20,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 130011,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          57.344,
+          57.855
+        ],
+        "qps": 26002.054809726353
+      },
+      "concurrency": 1,
+      "mean_change_percent": 0.8551804275654495,
+      "old": {
+        "calls": 131129,
+        "mean_us": 38.01033415186572,
+        "ordinal": 22,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 131129,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          60.416,
+          60.927
+        ],
+        "qps": 26225.659419975247
+      },
+      "qps_change_percent": -0.8526176851003431,
+      "repeat": 1
+    },
+    {
+      "api": "point_get",
+      "candidate": {
+        "calls": 1660779,
+        "mean_us": 192.55461323029735,
+        "ordinal": 15,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1660779,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          348.16,
+          352.255
+        ],
+        "qps": 332147.22787791345
+      },
+      "concurrency": 64,
+      "mean_change_percent": 3.0053543531778137,
+      "old": {
+        "calls": 1710670,
+        "mean_us": 186.93650872757456,
+        "ordinal": 17,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1710670,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          356.352,
+          360.447
+        ],
+        "qps": 342121.02950752934
+      },
+      "qps_change_percent": -2.91528458334549,
+      "repeat": 1
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "calls": 1632789,
+        "mean_us": 195.82371035020446,
+        "ordinal": 14,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1632789,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          352.256,
+          356.351
+        ],
+        "qps": 326548.3732668702
+      },
+      "concurrency": 64,
+      "mean_change_percent": 3.5833154617051166,
+      "old": {
+        "calls": 1691272,
+        "mean_us": 189.04947141086708,
+        "ordinal": 16,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1691272,
+          "unknown_write": 0
+        },
+        "p99_us": [
+          368.64,
+          372.735
+        ],
+        "qps": 338242.1280344075
+      },
+      "qps_change_percent": -3.4572141665179412,
+      "repeat": 1
+    }
+  ],
+  "redis_references": [
+    {
+      "api": "mget",
+      "calls": 841521,
+      "concurrency": 1,
+      "mean_us": 5.86142688180093,
+      "ordinal": 4,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 841521,
+        "unknown_write": 0
+      },
+      "p99_us": [
+        8.448,
+        8.575
+      ],
+      "qps": 168304.122512782,
+      "repeat": 0
+    },
+    {
+      "api": "get",
+      "calls": 853163,
+      "concurrency": 1,
+      "mean_us": 5.7848469893795205,
+      "ordinal": 5,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 853163,
+        "unknown_write": 0
+      },
+      "p99_us": [
+        8.064,
+        8.127
+      ],
+      "qps": 170632.4554060573,
+      "repeat": 0
+    },
+    {
+      "api": "mget",
+      "calls": 2476503,
+      "concurrency": 64,
+      "mean_us": 129.0984637817923,
+      "ordinal": 10,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 2476503,
+        "unknown_write": 0
+      },
+      "p99_us": [
+        231.424,
+        233.471
+      ],
+      "qps": 495280.8445348417,
+      "repeat": 0
+    },
+    {
+      "api": "get",
+      "calls": 2546727,
+      "concurrency": 64,
+      "mean_us": 125.5462879071844,
+      "ordinal": 11,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 2546727,
+        "unknown_write": 0
+      },
+      "p99_us": [
+        231.424,
+        233.471
+      ],
+      "qps": 509322.4631721935,
+      "repeat": 0
+    },
+    {
+      "api": "get",
+      "calls": 2532006,
+      "concurrency": 64,
+      "mean_us": 126.27660505464837,
+      "ordinal": 12,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 2532006,
+        "unknown_write": 0
+      },
+      "p99_us": [
+        233.472,
+        235.519
+      ],
+      "qps": 506378.43383326894,
+      "repeat": 1
+    },
+    {
+      "api": "mget",
+      "calls": 2485036,
+      "concurrency": 64,
+      "mean_us": 128.6527664037865,
+      "ordinal": 13,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 2485036,
+        "unknown_write": 0
+      },
+      "p99_us": [
+        231.424,
+        233.471
+      ],
+      "qps": 496986.00145969656,
+      "repeat": 1
+    },
+    {
+      "api": "get",
+      "calls": 853773,
+      "concurrency": 1,
+      "mean_us": 5.780305115059858,
+      "ordinal": 18,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 853773,
+        "unknown_write": 0
+      },
+      "p99_us": [
+        8.064,
+        8.127
+      ],
+      "qps": 170754.59149642134,
+      "repeat": 1
+    },
+    {
+      "api": "mget",
+      "calls": 839997,
+      "concurrency": 1,
+      "mean_us": 5.870956052223996,
+      "ordinal": 19,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 839997,
+        "unknown_write": 0
+      },
+      "p99_us": [
+        8.32,
+        8.447
+      ],
+      "qps": 167999.32735709083,
+      "repeat": 1
+    }
+  ],
+  "scope": "Separate same-concurrency/repetition pairs against accepted5ee; not a causal comparison against6707. Whole-call mean and p99 histogram bucket bounds, never averaged percentiles. Five-second shared-host tmpfs quorum-WAL vs memoryRedis diagnostic, not sustained capacity/equal durability. Acceptance validates evidence; candidate selection is separate.",
+  "timing_exit_code": 0,
+  "timing_session": 3097
+}

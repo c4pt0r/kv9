@@ -1,0 +1,534 @@
+{
+  "scope": "Cumulative endpoint deltas from before setup/client work to fresh post-client quiescence, including warmup and verification. Not timed-call-only counts or latency attribution. Same recording and pins accepted by the matched audit. No new runtime or source instrumentation.",
+  "matched_audit_sha256": "b23a9ae4ac1e639f834d3e7fb999e55ff9c0bdb6673763d141c6c30ebb84f343",
+  "rows": [
+    {
+      "repeat": 0,
+      "concurrency": 1,
+      "arm": "old-point",
+      "measured_calls": 131288,
+      "admitted_groups": 139610,
+      "admitted_members": 139610,
+      "members_per_group": 1.0,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 139610,
+          "admitted_members_delta": 139610,
+          "max_group_after": 1
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/000-old-point-p00001/before-status.json": "fac6e46ad0a4d16b6ec6dabcd58820149ed23787818a12629b8dd021cecc85b6",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/000-old-point-p00001/post-client-fresh-drain.json": "97e1e363d69b425b9e90574856a9f8147f3f581233b078e23d1038d1de04cc42"
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 1,
+      "arm": "old-batch1",
+      "measured_calls": 130254,
+      "admitted_groups": 138576,
+      "admitted_members": 138576,
+      "members_per_group": 1.0,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 138576,
+          "admitted_members_delta": 138576,
+          "max_group_after": 1
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/001-old-batch1-p00001/before-status.json": "2ba188d0a515ca99e17d1d29da79f945dcd83459a2c3924b04ad035449857b43",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/001-old-batch1-p00001/post-client-fresh-drain.json": "9a42d475135e928bafa74d2c427135dcff1acb96a83301d532525a56c59e49ff"
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 1,
+      "arm": "new-point",
+      "measured_calls": 130180,
+      "admitted_groups": 138502,
+      "admitted_members": 138502,
+      "members_per_group": 1.0,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 138502,
+          "admitted_members_delta": 138502,
+          "max_group_after": 1
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/002-new-point-p00001/before-status.json": "4442f57e56d72d93ef66c85d7f6bc2e07a1fe91deac6fd34580836f0335b67c0",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/002-new-point-p00001/post-client-fresh-drain.json": "760873475f1b2f307c05cfc6158ce12442e54af04a036010c0badd42c54f242e"
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 1,
+      "arm": "new-batch1",
+      "measured_calls": 127207,
+      "admitted_groups": 135529,
+      "admitted_members": 135529,
+      "members_per_group": 1.0,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 135529,
+          "admitted_members_delta": 135529,
+          "max_group_after": 1
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/003-new-batch1-p00001/before-status.json": "e728c04e772a124652aba15ee82aaea3f9459039cce3e64e8feee45ee542aca2",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/003-new-batch1-p00001/post-client-fresh-drain.json": "ddc224f75c269c122624575091a05b89f3679f11ec6e93da890b5198d70250fe"
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 64,
+      "arm": "old-point",
+      "measured_calls": 1672988,
+      "admitted_groups": 826907,
+      "admitted_members": 1681310,
+      "members_per_group": 2.033251623217605,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 826907,
+          "admitted_members_delta": 1681310,
+          "max_group_after": 64
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/006-old-point-p00064/before-status.json": "b99671e47984e9bf573d9721b2a78f07d0a41a443fc9f14f0f47c0f8e1b1705e",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/006-old-point-p00064/post-client-fresh-drain.json": "07027525daecc0437ae9fd69212c4529d302227265df16a8699d247562b5d056"
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 64,
+      "arm": "old-batch1",
+      "measured_calls": 1686656,
+      "admitted_groups": 842977,
+      "admitted_members": 1694978,
+      "members_per_group": 2.0107049184022814,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 842977,
+          "admitted_members_delta": 1694978,
+          "max_group_after": 64
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/007-old-batch1-p00064/before-status.json": "3a385ceb01ec94f157261b31134df74a124d0805d65d9b849f2787806fe68a20",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/007-old-batch1-p00064/post-client-fresh-drain.json": "bb931494932e5e410608b1b25033126804cadbfadeac1b01ebec44c12b026eff"
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 64,
+      "arm": "new-point",
+      "measured_calls": 1662653,
+      "admitted_groups": 810183,
+      "admitted_members": 1670975,
+      "members_per_group": 2.0624661341943735,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 810183,
+          "admitted_members_delta": 1670975,
+          "max_group_after": 64
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/008-new-point-p00064/before-status.json": "71945c477b0689c259f641ea4238b24ab6464e7720f70f7afcc7a74a31676fc8",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/008-new-point-p00064/post-client-fresh-drain.json": "4cb8ddc35c8bcceadb1d62f75514beae48d948700826f03ef58bb2b6a2514b92"
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 64,
+      "arm": "new-batch1",
+      "measured_calls": 1632853,
+      "admitted_groups": 806788,
+      "admitted_members": 1641175,
+      "members_per_group": 2.0342084909542533,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 806788,
+          "admitted_members_delta": 1641175,
+          "max_group_after": 64
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/009-new-batch1-p00064/before-status.json": "c8ea66b16bce0203161aa0c83c042b8e32acb18b4c0de14a5a15909fd4ee1048",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/009-new-batch1-p00064/post-client-fresh-drain.json": "9abef58ac600a2abc7ab44c016c45af6d51ddbb76b58ebc0990755e41ee12ba9"
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 64,
+      "arm": "new-batch1",
+      "measured_calls": 1632789,
+      "admitted_groups": 806046,
+      "admitted_members": 1641111,
+      "members_per_group": 2.0360016673986348,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 806046,
+          "admitted_members_delta": 1641111,
+          "max_group_after": 64
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/014-new-batch1-p10064/before-status.json": "63bf47e407aa79cc3cb88dcdcbb69c784a096dae06ee9af34916fd7d772905bf",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/014-new-batch1-p10064/post-client-fresh-drain.json": "5dc71445f12c503303972c55ed9c417208ee40e3a98418b6a9a20a6782bea620"
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 64,
+      "arm": "new-point",
+      "measured_calls": 1660779,
+      "admitted_groups": 810935,
+      "admitted_members": 1669101,
+      "members_per_group": 2.0582426458347465,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 810935,
+          "admitted_members_delta": 1669101,
+          "max_group_after": 64
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/015-new-point-p10064/before-status.json": "cbfa82cd3a2cce89af300aea950cd3f77c6387a9611129f9aac458f16d38b9ed",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/015-new-point-p10064/post-client-fresh-drain.json": "f2791c09cb633ff6d710259fc690596a3157164322f12994e984feaafba2e37d"
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 64,
+      "arm": "old-batch1",
+      "measured_calls": 1691272,
+      "admitted_groups": 844919,
+      "admitted_members": 1699594,
+      "members_per_group": 2.011546668970635,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 844919,
+          "admitted_members_delta": 1699594,
+          "max_group_after": 64
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/016-old-batch1-p10064/before-status.json": "d2494b1914d4abb4798eabd097946183cc82b8f2572c9a6bc5cad192331162f4",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/016-old-batch1-p10064/post-client-fresh-drain.json": "a4118da314617f0a3017ee50b36bb0a9c09989f02d85f92a0316ce9f0c8feace"
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 64,
+      "arm": "old-point",
+      "measured_calls": 1710670,
+      "admitted_groups": 845237,
+      "admitted_members": 1718992,
+      "members_per_group": 2.033739649352785,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 845237,
+          "admitted_members_delta": 1718992,
+          "max_group_after": 64
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/017-old-point-p10064/before-status.json": "4bc8911888422cee552db50784640485c0c650deb7293a4c9ac67ee4c65e6555",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/017-old-point-p10064/post-client-fresh-drain.json": "f95cc0382ea56bac22629b43152c7cdd376ed7edea513fea4f0204ecc225d773"
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "arm": "new-batch1",
+      "measured_calls": 130011,
+      "admitted_groups": 138333,
+      "admitted_members": 138333,
+      "members_per_group": 1.0,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 138333,
+          "admitted_members_delta": 138333,
+          "max_group_after": 1
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/020-new-batch1-p10001/before-status.json": "cee57a36da3c008dc34ff63dfe36cbca781f4ac1955c33e5480048a6858a1293",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/020-new-batch1-p10001/post-client-fresh-drain.json": "2259a884031437dcb3bc3e4ccc7ba80eeeaafac40262e90923e103d271b71f1f"
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "arm": "new-point",
+      "measured_calls": 131261,
+      "admitted_groups": 139583,
+      "admitted_members": 139583,
+      "members_per_group": 1.0,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 139583,
+          "admitted_members_delta": 139583,
+          "max_group_after": 1
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/021-new-point-p10001/before-status.json": "00ab1b024559b5b8cdc422f2be129536bbf4b5ee11fdab084446b4c5f2b328d0",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/021-new-point-p10001/post-client-fresh-drain.json": "ce1e4710aaf0ef84b11be5d7f689a6a8ff6327c841e4277980a174167d4a845b"
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "arm": "old-batch1",
+      "measured_calls": 131129,
+      "admitted_groups": 139451,
+      "admitted_members": 139451,
+      "members_per_group": 1.0,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 139451,
+          "admitted_members_delta": 139451,
+          "max_group_after": 1
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/022-old-batch1-p10001/before-status.json": "8ed2c17c061944539830c220cd81a5e2e02432bbc4ecffa04fdf684b9ea4c89f",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/022-old-batch1-p10001/post-client-fresh-drain.json": "2418c48c6c6e78bd5e15a5a67ecc936422e2f0522926e149b87c1c5a2cef0300"
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "arm": "old-point",
+      "measured_calls": 130997,
+      "admitted_groups": 139319,
+      "admitted_members": 139319,
+      "members_per_group": 1.0,
+      "nodes": [
+        {
+          "node": "1",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        },
+        {
+          "node": "2",
+          "admitted_groups_delta": 139319,
+          "admitted_members_delta": 139319,
+          "max_group_after": 1
+        },
+        {
+          "node": "3",
+          "admitted_groups_delta": 0,
+          "admitted_members_delta": 0,
+          "max_group_after": 0
+        }
+      ],
+      "inputs": {
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/023-old-point-p10001/before-status.json": "ae1302a507b7bcfe5dd7f8166f234aa2383fd5400cd1eeeb53d20a0f52cadca3",
+        "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/023-old-point-p10001/post-client-fresh-drain.json": "e834fa5bd84a5a8f714340ef64fd003d51481465c16e7525e8932f3b204717fa"
+      }
+    }
+  ]
+}

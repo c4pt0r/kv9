@@ -1,0 +1,15 @@
+{
+  "candidate_revision": "f62c08ed9dc59bf56336a64a24c76c2b775f634e",
+  "candidate_selected": false,
+  "accepted_control_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "matched_diagnostic_accepted": true,
+  "audit_sha256": "b23a9ae4ac1e639f834d3e7fb999e55ff9c0bdb6673763d141c6c30ebb84f343",
+  "reason": "Seven of eight throughput and mean-latency pairs regress; c64 GET and BatchGet(1) regress in both repetitions. All eight p99 buckets improve, but the throughput/latency screen does not justify selection.",
+  "qps_regressions": 7,
+  "mean_regressions": 7,
+  "p99_bucket_improvements": 8,
+  "broad_workspace_acceptance_run": false,
+  "candidate_chaos_mesh_acceptance_run": false,
+  "causal_comparison_against_6707": false,
+  "next_hypothesis": "Bound unconfirmed ReadIndex group admission to improve natural batching on accepted5ee, preserving fresh sealed membership and cancellation/deadline/notification progress. Not implemented or accepted."
+}

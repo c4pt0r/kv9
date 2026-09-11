@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-peer-idle-watchdog-comparison-preparation/audit.py",
+    "--run",
+    "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts",
+    "--output",
+    "/tmp/kv9-peer-idle-watchdog-comparison-preparation/results-first",
+    "--expected-driver-sha256",
+    "ebaa51b3598706748ab3bcfa979f39f17ee6f120eb74a6df5d97e13a5a108ef1",
+    "--root-session",
+    "3097",
+    "--root-exit-code",
+    "0",
+    "--successful-arms",
+    "24"
+  ],
+  "auditor_sha256": "6fade55411d5ac02d57fef87801fbff96f57cb74d8a4ddce394ddab5cf9fcc52",
+  "driver_sha256": "ebaa51b3598706748ab3bcfa979f39f17ee6f120eb74a6df5d97e13a5a108ef1",
+  "protocol_sha256": "1fbc214d31b75860755a20e99fd6c2e9c1ff4314bc3f9fd97892fc9cc3c58ac3",
+  "root_runtime_session": 3097,
+  "root_runtime_exit_code": 0,
+  "prepared_ns": 1789118727358317209,
+  "scope": "First unchanged frozen read-only 24-cohort matched audit after explicit terminal timing release. No runtime or test rerun; selection is separate from audit correctness."
+}

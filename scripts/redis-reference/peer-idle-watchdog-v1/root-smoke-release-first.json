@@ -1,0 +1,39 @@
+{
+  "recorded_unix_ns": 1789118201952621812,
+  "frozen_helpers": {
+    "audit.py": "6fade55411d5ac02d57fef87801fbff96f57cb74d8a4ddce394ddab5cf9fcc52",
+    "driver-arguments.json": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+    "isolate-and-run.py": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "matched-driver.py": "ebaa51b3598706748ab3bcfa979f39f17ee6f120eb74a6df5d97e13a5a108ef1",
+    "test_audit_contract.py": "065d009942f51882831702d68183afdbf2ed2edc5a526dbdeeda2ecd50c0f743",
+    "test_driver_contract.py": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a",
+    "protocol.json": "1fbc214d31b75860755a20e99fd6c2e9c1ff4314bc3f9fd97892fc9cc3c58ac3"
+  },
+  "all_24_prepared_files_match": true,
+  "readiness_sha256": "e4d421d1d6160cfc1b61b6a1cc7165243bc529390385e7c9ac8b7361d03172b4",
+  "process_root_session": 49852,
+  "process_root_exit_code": 0,
+  "process_audit_sha256": "5225482714e9c7d909bb3b954d3ee3b50b8db3491e73bffeecd80f35a8e06092",
+  "source_gate_result_sha256": "eb83fc8c200ba96952b419bcf520bc67c2973dffcb567b8e92fb96bd89806e95",
+  "source_review_sha256": "97ababe8400ea0ee5e82756720cf8f7e9ad9d8594f948eb1b5373827a8de1e03",
+  "smoke_argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-peer-idle-watchdog-comparison-preparation/matched-driver.py",
+    "--client-source",
+    "/tmp/kv9-point-batch1-measurement",
+    "--client-build",
+    "/tmp/kv9-point-batch1-client-release-first",
+    "--expected-client-revision",
+    "03c1c776a5dd7d1cc67491ab253e02ce51665bf8",
+    "--output",
+    "/tmp/kv9-peer-idle-watchdog-comparison-smoke-first",
+    "--smoke"
+  ],
+  "timing_acceptance": false
+}

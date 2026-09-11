@@ -1,0 +1,4517 @@
+{
+  "complete": true,
+  "matched_diagnostic_accepted": true,
+  "cases": [
+    {
+      "ordinal": 0,
+      "repeat": 0,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "old-point",
+      "complete": true,
+      "api": "point_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/000-old-point-p00001",
+      "calls": 131288,
+      "issued": 131288,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 131288,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000082992,
+      "successful_calls_per_second": 26257.16417308619,
+      "successful_items_per_second": 26257.16417308619,
+      "completed_before_cutoff": 131287,
+      "attempts": 131288,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 131288,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 131288,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "736a0cc40b7e4140da557299795131db57542c3348540823e664ea869d966934",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 131288,
+        "sum_ns": 4983926397,
+        "mean_ns": 37961.78170891475,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44032,
+          "upper_ns": 44543
+        },
+        "p99": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 131288,
+        "sum_ns": 4983926397,
+        "mean_ns": 37961.78170891475,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44032,
+          "upper_ns": 44543
+        },
+        "p99": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2601675,
+          "start_ticks": 140713602,
+          "samples": 98,
+          "rss_first_bytes": 16613376,
+          "rss_last_bytes": 15872000,
+          "rss_min_bytes": 15749120,
+          "rss_max_bytes": 16695296,
+          "rss_mean_bytes": 16207955.591836736,
+          "hwm_first_bytes": 16613376,
+          "hwm_last_bytes": 16011264,
+          "hwm_max_bytes": 16695296,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2601680,
+          "start_ticks": 140713604,
+          "samples": 98,
+          "rss_first_bytes": 17731584,
+          "rss_last_bytes": 17154048,
+          "rss_min_bytes": 17154048,
+          "rss_max_bytes": 17940480,
+          "rss_mean_bytes": 17558339.91836735,
+          "hwm_first_bytes": 17731584,
+          "hwm_last_bytes": 17354752,
+          "hwm_max_bytes": 17940480,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2601685,
+          "start_ticks": 140713605,
+          "samples": 98,
+          "rss_first_bytes": 16564224,
+          "rss_last_bytes": 15622144,
+          "rss_min_bytes": 15536128,
+          "rss_max_bytes": 16617472,
+          "rss_mean_bytes": 16061042.93877551,
+          "hwm_first_bytes": 16564224,
+          "hwm_last_bytes": 15671296,
+          "hwm_max_bytes": 16617472,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 1,
+      "repeat": 0,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "old-batch1",
+      "complete": true,
+      "api": "batch_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/001-old-batch1-p00001",
+      "calls": 130254,
+      "issued": 130254,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 130254,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000009831,
+      "successful_calls_per_second": 26050.74877901775,
+      "successful_items_per_second": 26050.74877901775,
+      "completed_before_cutoff": 130253,
+      "attempts": 130254,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 130254,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 130254,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "aee0c94a8f94f3f88f20e84fa666c1b59c8dcdf267c1897a995d97ac4260989d",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 130254,
+        "sum_ns": 4982719588,
+        "mean_ns": 38253.87003854008,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 45568,
+          "upper_ns": 46079
+        },
+        "p99": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 130254,
+        "sum_ns": 4982719588,
+        "mean_ns": 38253.87003854008,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 45568,
+          "upper_ns": 46079
+        },
+        "p99": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2606554,
+          "start_ticks": 140714923,
+          "samples": 98,
+          "rss_first_bytes": 16674816,
+          "rss_last_bytes": 15982592,
+          "rss_min_bytes": 15982592,
+          "rss_max_bytes": 16752640,
+          "rss_mean_bytes": 16362809.469387755,
+          "hwm_first_bytes": 16674816,
+          "hwm_last_bytes": 16203776,
+          "hwm_max_bytes": 16752640,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2606559,
+          "start_ticks": 140714924,
+          "samples": 98,
+          "rss_first_bytes": 17723392,
+          "rss_last_bytes": 17526784,
+          "rss_min_bytes": 17498112,
+          "rss_max_bytes": 17936384,
+          "rss_mean_bytes": 17613928.48979592,
+          "hwm_first_bytes": 17723392,
+          "hwm_last_bytes": 17526784,
+          "hwm_max_bytes": 17936384,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2606564,
+          "start_ticks": 140714926,
+          "samples": 98,
+          "rss_first_bytes": 16695296,
+          "rss_last_bytes": 16330752,
+          "rss_min_bytes": 16297984,
+          "rss_max_bytes": 16789504,
+          "rss_mean_bytes": 16400384.0,
+          "hwm_first_bytes": 16695296,
+          "hwm_last_bytes": 16330752,
+          "hwm_max_bytes": 16789504,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 2,
+      "repeat": 0,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "new-point",
+      "complete": true,
+      "api": "point_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/002-new-point-p00001",
+      "calls": 130180,
+      "issued": 130180,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 130180,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000025596,
+      "successful_calls_per_second": 26035.8667171911,
+      "successful_items_per_second": 26035.8667171911,
+      "completed_before_cutoff": 130179,
+      "attempts": 130180,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 130180,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 130180,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "a9b518a34f3e14dc4a82872d9a1897ed8dc9baeaf6453ae9d91e23a862139b27",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 130180,
+        "sum_ns": 4982799685,
+        "mean_ns": 38276.23048855431,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 43520,
+          "upper_ns": 44031
+        },
+        "p99": {
+          "lower_ns": 57856,
+          "upper_ns": 58367
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 130180,
+        "sum_ns": 4982799685,
+        "mean_ns": 38276.23048855431,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 43520,
+          "upper_ns": 44031
+        },
+        "p99": {
+          "lower_ns": 57856,
+          "upper_ns": 58367
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2611382,
+          "start_ticks": 140716243,
+          "samples": 98,
+          "rss_first_bytes": 16531456,
+          "rss_last_bytes": 15880192,
+          "rss_min_bytes": 15859712,
+          "rss_max_bytes": 16678912,
+          "rss_mean_bytes": 16175062.204081632,
+          "hwm_first_bytes": 16531456,
+          "hwm_last_bytes": 15880192,
+          "hwm_max_bytes": 16678912,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2611387,
+          "start_ticks": 140716245,
+          "samples": 98,
+          "rss_first_bytes": 17391616,
+          "rss_last_bytes": 17006592,
+          "rss_min_bytes": 16990208,
+          "rss_max_bytes": 17608704,
+          "rss_mean_bytes": 17320312.163265307,
+          "hwm_first_bytes": 17391616,
+          "hwm_last_bytes": 17022976,
+          "hwm_max_bytes": 17608704,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2611582,
+          "start_ticks": 140716247,
+          "samples": 98,
+          "rss_first_bytes": 16355328,
+          "rss_last_bytes": 15810560,
+          "rss_min_bytes": 15777792,
+          "rss_max_bytes": 16572416,
+          "rss_mean_bytes": 16212803.918367347,
+          "hwm_first_bytes": 16355328,
+          "hwm_last_bytes": 15880192,
+          "hwm_max_bytes": 16572416,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 3,
+      "repeat": 0,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "new-batch1",
+      "complete": true,
+      "api": "batch_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/003-new-batch1-p00001",
+      "calls": 127207,
+      "issued": 127207,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 127207,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000013096,
+      "successful_calls_per_second": 25441.333364059654,
+      "successful_items_per_second": 25441.333364059654,
+      "completed_before_cutoff": 127206,
+      "attempts": 127207,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 127207,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 127207,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "997d2f7de63b90248abc77e1258bd3a6669756c99c5c3b3a34a6ca9d5dd0473c",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 127207,
+        "sum_ns": 4983093919,
+        "mean_ns": 39173.11090584638,
+        "p50": {
+          "lower_ns": 37888,
+          "upper_ns": 38399
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 58880,
+          "upper_ns": 59391
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 127207,
+        "sum_ns": 4983093919,
+        "mean_ns": 39173.11090584638,
+        "p50": {
+          "lower_ns": 37888,
+          "upper_ns": 38399
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 58880,
+          "upper_ns": 59391
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2616606,
+          "start_ticks": 140717564,
+          "samples": 98,
+          "rss_first_bytes": 16801792,
+          "rss_last_bytes": 16588800,
+          "rss_min_bytes": 16588800,
+          "rss_max_bytes": 16990208,
+          "rss_mean_bytes": 16780016.326530613,
+          "hwm_first_bytes": 16801792,
+          "hwm_last_bytes": 16588800,
+          "hwm_max_bytes": 16990208,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2616611,
+          "start_ticks": 140717566,
+          "samples": 98,
+          "rss_first_bytes": 17670144,
+          "rss_last_bytes": 17235968,
+          "rss_min_bytes": 17215488,
+          "rss_max_bytes": 17915904,
+          "rss_mean_bytes": 17576939.102040816,
+          "hwm_first_bytes": 17670144,
+          "hwm_last_bytes": 17317888,
+          "hwm_max_bytes": 17915904,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2616616,
+          "start_ticks": 140717567,
+          "samples": 98,
+          "rss_first_bytes": 16732160,
+          "rss_last_bytes": 16470016,
+          "rss_min_bytes": 16379904,
+          "rss_max_bytes": 16809984,
+          "rss_mean_bytes": 16493087.346938776,
+          "hwm_first_bytes": 16732160,
+          "hwm_last_bytes": 16470016,
+          "hwm_max_bytes": 16809984,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 4,
+      "repeat": 0,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "redis-mget1",
+      "complete": true,
+      "api": "mget",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/004-redis-mget1-p00001",
+      "calls": 841521,
+      "issued": 841521,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 841521,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000002302,
+      "successful_calls_per_second": 168304.122512782,
+      "successful_items_per_second": 168304.122512782,
+      "completed_before_cutoff": 841520,
+      "attempts": 841521,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "attempt_reasons": null,
+      "terminal_rpc_codes": null,
+      "reasons": {
+        "success": 841521,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "report_sha256": "fb2aca0ebc21b5016034f02f58aa1a4a4d2bf448a1f9e8b950f81727b0b4a8cc",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 841521,
+        "sum_ns": 4932513811,
+        "mean_ns": 5861.42688180093,
+        "p50": {
+          "lower_ns": 5696,
+          "upper_ns": 5759
+        },
+        "p95": {
+          "lower_ns": 6144,
+          "upper_ns": 6207
+        },
+        "p99": {
+          "lower_ns": 8448,
+          "upper_ns": 8575
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 841521,
+        "sum_ns": 4932513811,
+        "mean_ns": 5861.42688180093,
+        "p50": {
+          "lower_ns": 5696,
+          "upper_ns": 5759
+        },
+        "p95": {
+          "lower_ns": 6144,
+          "upper_ns": 6207
+        },
+        "p99": {
+          "lower_ns": 8448,
+          "upper_ns": 8575
+        }
+      },
+      "server_memory": {
+        "redis": {
+          "pid": 2621434,
+          "start_ticks": 140718882,
+          "samples": 98,
+          "rss_first_bytes": 14594048,
+          "rss_last_bytes": 14598144,
+          "rss_min_bytes": 14594048,
+          "rss_max_bytes": 14598144,
+          "rss_mean_bytes": 14597684.24489796,
+          "hwm_first_bytes": 14594048,
+          "hwm_last_bytes": 14598144,
+          "hwm_max_bytes": 14598144,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 5,
+      "repeat": 0,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "redis-get1",
+      "complete": true,
+      "api": "get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/005-redis-get1-p00001",
+      "calls": 853163,
+      "issued": 853163,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 853163,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000004237,
+      "successful_calls_per_second": 170632.4554060573,
+      "successful_items_per_second": 170632.4554060573,
+      "completed_before_cutoff": 853162,
+      "attempts": 853163,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "attempt_reasons": null,
+      "terminal_rpc_codes": null,
+      "reasons": {
+        "success": 853163,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "report_sha256": "406779f01e9b5e4e1b6b362cbb681154f09c67d2219b9e9b4a11c6e5357bd99f",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 853163,
+        "sum_ns": 4935417412,
+        "mean_ns": 5784.846989379521,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6016,
+          "upper_ns": 6079
+        },
+        "p99": {
+          "lower_ns": 8064,
+          "upper_ns": 8127
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 853163,
+        "sum_ns": 4935417412,
+        "mean_ns": 5784.846989379521,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6016,
+          "upper_ns": 6079
+        },
+        "p99": {
+          "lower_ns": 8064,
+          "upper_ns": 8127
+        }
+      },
+      "server_memory": {
+        "redis": {
+          "pid": 2623144,
+          "start_ticks": 140719416,
+          "samples": 98,
+          "rss_first_bytes": 14692352,
+          "rss_last_bytes": 14692352,
+          "rss_min_bytes": 14692352,
+          "rss_max_bytes": 14692352,
+          "rss_mean_bytes": 14692352.0,
+          "hwm_first_bytes": 14692352,
+          "hwm_last_bytes": 14692352,
+          "hwm_max_bytes": 14692352,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 6,
+      "repeat": 0,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "old-point",
+      "complete": true,
+      "api": "point_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/006-old-point-p00064",
+      "calls": 1672988,
+      "issued": 1672988,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1672988,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000108278,
+      "successful_calls_per_second": 334590.3542451246,
+      "successful_items_per_second": 334590.3542451246,
+      "completed_before_cutoff": 1672924,
+      "attempts": 1672988,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 1672988,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 1672988,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "67c7c4775d303601018f3f2eeaf4473573527e125271886391079e3f9084bfd8",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 1672988,
+        "sum_ns": 319784411252,
+        "mean_ns": 191145.66945608697,
+        "p50": {
+          "lower_ns": 178176,
+          "upper_ns": 180223
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 368640,
+          "upper_ns": 372735
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1672988,
+        "sum_ns": 319784411252,
+        "mean_ns": 191145.66945608697,
+        "p50": {
+          "lower_ns": 178176,
+          "upper_ns": 180223
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 368640,
+          "upper_ns": 372735
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2625205,
+          "start_ticks": 140719953,
+          "samples": 97,
+          "rss_first_bytes": 16826368,
+          "rss_last_bytes": 17203200,
+          "rss_min_bytes": 16826368,
+          "rss_max_bytes": 17453056,
+          "rss_mean_bytes": 17256954.721649483,
+          "hwm_first_bytes": 16826368,
+          "hwm_last_bytes": 17203200,
+          "hwm_max_bytes": 17453056,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2625210,
+          "start_ticks": 140719955,
+          "samples": 97,
+          "rss_first_bytes": 18731008,
+          "rss_last_bytes": 18866176,
+          "rss_min_bytes": 18731008,
+          "rss_max_bytes": 19865600,
+          "rss_mean_bytes": 19518157.855670102,
+          "hwm_first_bytes": 18731008,
+          "hwm_last_bytes": 19181568,
+          "hwm_max_bytes": 19865600,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2625215,
+          "start_ticks": 140719956,
+          "samples": 97,
+          "rss_first_bytes": 16965632,
+          "rss_last_bytes": 17436672,
+          "rss_min_bytes": 16965632,
+          "rss_max_bytes": 17670144,
+          "rss_mean_bytes": 17463486.020618558,
+          "hwm_first_bytes": 16965632,
+          "hwm_last_bytes": 17436672,
+          "hwm_max_bytes": 17670144,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 7,
+      "repeat": 0,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "old-batch1",
+      "complete": true,
+      "api": "batch_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/007-old-batch1-p00064",
+      "calls": 1686656,
+      "issued": 1686656,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1686656,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000185656,
+      "successful_calls_per_second": 337318.67495281657,
+      "successful_items_per_second": 337318.67495281657,
+      "completed_before_cutoff": 1686592,
+      "attempts": 1686656,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 1686656,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 1686656,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "7b10885ecc90eb9e6b64c938ce124db7efdc30cd834810f82cc948fc0d709428",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 1686656,
+        "sum_ns": 319735213773,
+        "mean_ns": 189567.53112252883,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 364544,
+          "upper_ns": 368639
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1686656,
+        "sum_ns": 319735213773,
+        "mean_ns": 189567.53112252883,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 364544,
+          "upper_ns": 368639
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2630097,
+          "start_ticks": 140721278,
+          "samples": 97,
+          "rss_first_bytes": 16719872,
+          "rss_last_bytes": 17285120,
+          "rss_min_bytes": 16719872,
+          "rss_max_bytes": 17637376,
+          "rss_mean_bytes": 17397738.88659794,
+          "hwm_first_bytes": 16719872,
+          "hwm_last_bytes": 17285120,
+          "hwm_max_bytes": 17637376,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2630102,
+          "start_ticks": 140721279,
+          "samples": 97,
+          "rss_first_bytes": 18616320,
+          "rss_last_bytes": 19824640,
+          "rss_min_bytes": 18616320,
+          "rss_max_bytes": 19881984,
+          "rss_mean_bytes": 19661644.536082473,
+          "hwm_first_bytes": 18616320,
+          "hwm_last_bytes": 19824640,
+          "hwm_max_bytes": 19881984,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2630107,
+          "start_ticks": 140721281,
+          "samples": 97,
+          "rss_first_bytes": 16576512,
+          "rss_last_bytes": 17264640,
+          "rss_min_bytes": 16576512,
+          "rss_max_bytes": 17395712,
+          "rss_mean_bytes": 17258305.979381442,
+          "hwm_first_bytes": 16576512,
+          "hwm_last_bytes": 17264640,
+          "hwm_max_bytes": 17395712,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 8,
+      "repeat": 0,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "new-point",
+      "complete": true,
+      "api": "point_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/008-new-point-p00064",
+      "calls": 1662653,
+      "issued": 1662653,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1662653,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000113299,
+      "successful_calls_per_second": 332523.0650938496,
+      "successful_items_per_second": 332523.0650938496,
+      "completed_before_cutoff": 1662589,
+      "attempts": 1662653,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 1662653,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 1662653,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "833da8e0772ebdc698202ee550169bd8275b312161e0a345ba03397bd74bacd4",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 1662653,
+        "sum_ns": 319787094195,
+        "mean_ns": 192335.43872052678,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 344064,
+          "upper_ns": 348159
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1662653,
+        "sum_ns": 319787094195,
+        "mean_ns": 192335.43872052678,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 344064,
+          "upper_ns": 348159
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2634979,
+          "start_ticks": 140722601,
+          "samples": 98,
+          "rss_first_bytes": 16666624,
+          "rss_last_bytes": 16703488,
+          "rss_min_bytes": 16605184,
+          "rss_max_bytes": 17436672,
+          "rss_mean_bytes": 17222969.469387755,
+          "hwm_first_bytes": 16666624,
+          "hwm_last_bytes": 16756736,
+          "hwm_max_bytes": 17436672,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2634984,
+          "start_ticks": 140722603,
+          "samples": 98,
+          "rss_first_bytes": 18198528,
+          "rss_last_bytes": 19865600,
+          "rss_min_bytes": 18198528,
+          "rss_max_bytes": 19955712,
+          "rss_mean_bytes": 19673673.14285714,
+          "hwm_first_bytes": 18198528,
+          "hwm_last_bytes": 19865600,
+          "hwm_max_bytes": 19955712,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2634989,
+          "start_ticks": 140722604,
+          "samples": 98,
+          "rss_first_bytes": 16572416,
+          "rss_last_bytes": 17334272,
+          "rss_min_bytes": 16572416,
+          "rss_max_bytes": 17584128,
+          "rss_mean_bytes": 17425428.897959184,
+          "hwm_first_bytes": 16572416,
+          "hwm_last_bytes": 17334272,
+          "hwm_max_bytes": 17584128,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 9,
+      "repeat": 0,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "new-batch1",
+      "complete": true,
+      "api": "batch_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/009-new-batch1-p00064",
+      "calls": 1632853,
+      "issued": 1632853,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1632853,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000142559,
+      "successful_calls_per_second": 326561.289149836,
+      "successful_items_per_second": 326561.289149836,
+      "completed_before_cutoff": 1632789,
+      "attempts": 1632853,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 1632853,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 1632853,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "c2aacadd79dc6477d5f61fefdf7f4b20c7931b597d26a01dff940072e041ef85",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 1632853,
+        "sum_ns": 319738294240,
+        "mean_ns": 195815.7251387602,
+        "p50": {
+          "lower_ns": 184320,
+          "upper_ns": 186367
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1632853,
+        "sum_ns": 319738294240,
+        "mean_ns": 195815.7251387602,
+        "p50": {
+          "lower_ns": 184320,
+          "upper_ns": 186367
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2639865,
+          "start_ticks": 140723924,
+          "samples": 98,
+          "rss_first_bytes": 16461824,
+          "rss_last_bytes": 16699392,
+          "rss_min_bytes": 16461824,
+          "rss_max_bytes": 17149952,
+          "rss_mean_bytes": 16848018.285714287,
+          "hwm_first_bytes": 16461824,
+          "hwm_last_bytes": 16699392,
+          "hwm_max_bytes": 17149952,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2639870,
+          "start_ticks": 140723926,
+          "samples": 98,
+          "rss_first_bytes": 18292736,
+          "rss_last_bytes": 19574784,
+          "rss_min_bytes": 18292736,
+          "rss_max_bytes": 20029440,
+          "rss_mean_bytes": 19752124.08163265,
+          "hwm_first_bytes": 18292736,
+          "hwm_last_bytes": 19574784,
+          "hwm_max_bytes": 20029440,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2639875,
+          "start_ticks": 140723927,
+          "samples": 98,
+          "rss_first_bytes": 16687104,
+          "rss_last_bytes": 17244160,
+          "rss_min_bytes": 16687104,
+          "rss_max_bytes": 17633280,
+          "rss_mean_bytes": 17426306.612244897,
+          "hwm_first_bytes": 16687104,
+          "hwm_last_bytes": 17244160,
+          "hwm_max_bytes": 17633280,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 10,
+      "repeat": 0,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "redis-mget1",
+      "complete": true,
+      "api": "mget",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/010-redis-mget1-p00064",
+      "calls": 2476503,
+      "issued": 2476503,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2476503,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000199437,
+      "successful_calls_per_second": 495280.8445348417,
+      "successful_items_per_second": 495280.8445348417,
+      "completed_before_cutoff": 2476439,
+      "attempts": 2476503,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "attempt_reasons": null,
+      "terminal_rpc_codes": null,
+      "reasons": {
+        "success": 2476503,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "report_sha256": "2065630aa8f511f0b98d0d2d6fa0c691f30c4de97dfbdc7de7ae9441874c6d2c",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 2476503,
+        "sum_ns": 319712732851,
+        "mean_ns": 129098.4637817923,
+        "p50": {
+          "lower_ns": 119808,
+          "upper_ns": 120831
+        },
+        "p95": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2476503,
+        "sum_ns": 319712732851,
+        "mean_ns": 129098.4637817923,
+        "p50": {
+          "lower_ns": 119808,
+          "upper_ns": 120831
+        },
+        "p95": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      },
+      "server_memory": {
+        "redis": {
+          "pid": 2644726,
+          "start_ticks": 140725243,
+          "samples": 98,
+          "rss_first_bytes": 15343616,
+          "rss_last_bytes": 15384576,
+          "rss_min_bytes": 15343616,
+          "rss_max_bytes": 15384576,
+          "rss_mean_bytes": 15370783.346938776,
+          "hwm_first_bytes": 15343616,
+          "hwm_last_bytes": 15384576,
+          "hwm_max_bytes": 15384576,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 11,
+      "repeat": 0,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "redis-get1",
+      "complete": true,
+      "api": "get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/011-redis-get1-p00064",
+      "calls": 2546727,
+      "issued": 2546727,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2546727,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000225170,
+      "successful_calls_per_second": 509322.4631721935,
+      "successful_items_per_second": 509322.4631721935,
+      "completed_before_cutoff": 2546663,
+      "attempts": 2546727,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "attempt_reasons": null,
+      "terminal_rpc_codes": null,
+      "reasons": {
+        "success": 2546727,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "report_sha256": "7d98d3d034a73cd5a2e2f1369c97d696d65893db5f3958db6a475c5ff3d28ab4",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 2546727,
+        "sum_ns": 319732121163,
+        "mean_ns": 125546.28790718439,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 161792,
+          "upper_ns": 163839
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2546727,
+        "sum_ns": 319732121163,
+        "mean_ns": 125546.28790718439,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 161792,
+          "upper_ns": 163839
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      },
+      "server_memory": {
+        "redis": {
+          "pid": 2646797,
+          "start_ticks": 140725777,
+          "samples": 98,
+          "rss_first_bytes": 15282176,
+          "rss_last_bytes": 15319040,
+          "rss_min_bytes": 15282176,
+          "rss_max_bytes": 15319040,
+          "rss_mean_bytes": 15308173.06122449,
+          "hwm_first_bytes": 15282176,
+          "hwm_last_bytes": 15319040,
+          "hwm_max_bytes": 15319040,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 12,
+      "repeat": 1,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "redis-get1",
+      "complete": true,
+      "api": "get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/012-redis-get1-p10064",
+      "calls": 2532006,
+      "issued": 2532006,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2532006,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000224794,
+      "successful_calls_per_second": 506378.43383326894,
+      "successful_items_per_second": 506378.43383326894,
+      "completed_before_cutoff": 2531942,
+      "attempts": 2532006,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "attempt_reasons": null,
+      "terminal_rpc_codes": null,
+      "reasons": {
+        "success": 2532006,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "report_sha256": "48c26954a9d25434f8b1d90483f95c3bf32eca19a1ef152cf7eda1e587abb0b5",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 2532006,
+        "sum_ns": 319733121658,
+        "mean_ns": 126276.60505464837,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 163840,
+          "upper_ns": 165887
+        },
+        "p99": {
+          "lower_ns": 233472,
+          "upper_ns": 235519
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2532006,
+        "sum_ns": 319733121658,
+        "mean_ns": 126276.60505464837,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 163840,
+          "upper_ns": 165887
+        },
+        "p99": {
+          "lower_ns": 233472,
+          "upper_ns": 235519
+        }
+      },
+      "server_memory": {
+        "redis": {
+          "pid": 2648508,
+          "start_ticks": 140726311,
+          "samples": 98,
+          "rss_first_bytes": 15405056,
+          "rss_last_bytes": 15441920,
+          "rss_min_bytes": 15405056,
+          "rss_max_bytes": 15441920,
+          "rss_mean_bytes": 15431805.387755102,
+          "hwm_first_bytes": 15405056,
+          "hwm_last_bytes": 15441920,
+          "hwm_max_bytes": 15441920,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 13,
+      "repeat": 1,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "redis-mget1",
+      "complete": true,
+      "api": "mget",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/013-redis-mget1-p10064",
+      "calls": 2485036,
+      "issued": 2485036,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2485036,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000213271,
+      "successful_calls_per_second": 496986.00145969656,
+      "successful_items_per_second": 496986.00145969656,
+      "completed_before_cutoff": 2484972,
+      "attempts": 2485036,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "attempt_reasons": null,
+      "terminal_rpc_codes": null,
+      "reasons": {
+        "success": 2485036,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "report_sha256": "bedf325fde0bf8f031d3eb192edebaec8e96cb437ad1f349c580b27753f36082",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 2485036,
+        "sum_ns": 319706756013,
+        "mean_ns": 128652.7664037865,
+        "p50": {
+          "lower_ns": 119808,
+          "upper_ns": 120831
+        },
+        "p95": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2485036,
+        "sum_ns": 319706756013,
+        "mean_ns": 128652.7664037865,
+        "p50": {
+          "lower_ns": 119808,
+          "upper_ns": 120831
+        },
+        "p95": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      },
+      "server_memory": {
+        "redis": {
+          "pid": 2650247,
+          "start_ticks": 140726834,
+          "samples": 98,
+          "rss_first_bytes": 15310848,
+          "rss_last_bytes": 15347712,
+          "rss_min_bytes": 15310848,
+          "rss_max_bytes": 15347712,
+          "rss_mean_bytes": 15337346.612244898,
+          "hwm_first_bytes": 15310848,
+          "hwm_last_bytes": 15347712,
+          "hwm_max_bytes": 15347712,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 14,
+      "repeat": 1,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "new-batch1",
+      "complete": true,
+      "api": "batch_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/014-new-batch1-p10064",
+      "calls": 1632789,
+      "issued": 1632789,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1632789,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000144339,
+      "successful_calls_per_second": 326548.3732668702,
+      "successful_items_per_second": 326548.3732668702,
+      "completed_before_cutoff": 1632725,
+      "attempts": 1632789,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 1632789,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 1632789,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "288b20a49fe92e49cba71a97a588b2a6935976ee8be87dd4f68845bb8557404c",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 1632789,
+        "sum_ns": 319738800199,
+        "mean_ns": 195823.71035020446,
+        "p50": {
+          "lower_ns": 184320,
+          "upper_ns": 186367
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1632789,
+        "sum_ns": 319738800199,
+        "mean_ns": 195823.71035020446,
+        "p50": {
+          "lower_ns": 184320,
+          "upper_ns": 186367
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2652552,
+          "start_ticks": 140727372,
+          "samples": 97,
+          "rss_first_bytes": 16703488,
+          "rss_last_bytes": 17305600,
+          "rss_min_bytes": 16703488,
+          "rss_max_bytes": 17465344,
+          "rss_mean_bytes": 17277181.36082474,
+          "hwm_first_bytes": 16703488,
+          "hwm_last_bytes": 17305600,
+          "hwm_max_bytes": 17465344,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2652557,
+          "start_ticks": 140727373,
+          "samples": 97,
+          "rss_first_bytes": 18759680,
+          "rss_last_bytes": 19136512,
+          "rss_min_bytes": 18759680,
+          "rss_max_bytes": 19406848,
+          "rss_mean_bytes": 19247357.36082474,
+          "hwm_first_bytes": 18759680,
+          "hwm_last_bytes": 19136512,
+          "hwm_max_bytes": 19406848,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2652562,
+          "start_ticks": 140727375,
+          "samples": 97,
+          "rss_first_bytes": 16928768,
+          "rss_last_bytes": 17346560,
+          "rss_min_bytes": 16928768,
+          "rss_max_bytes": 17375232,
+          "rss_mean_bytes": 17289680.49484536,
+          "hwm_first_bytes": 16928768,
+          "hwm_last_bytes": 17346560,
+          "hwm_max_bytes": 17375232,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 15,
+      "repeat": 1,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "new-point",
+      "complete": true,
+      "api": "point_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/015-new-point-p10064",
+      "calls": 1660779,
+      "issued": 1660779,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1660779,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000129041,
+      "successful_calls_per_second": 332147.22787791345,
+      "successful_items_per_second": 332147.22787791345,
+      "completed_before_cutoff": 1660715,
+      "attempts": 1660779,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 1660779,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 1660779,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "ea0e7012bbdf45c783b85e51fb9d4ce47e256730425dec8e880460bdc72630b4",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 1660779,
+        "sum_ns": 319790658006,
+        "mean_ns": 192554.61323029734,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 348160,
+          "upper_ns": 352255
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1660779,
+        "sum_ns": 319790658006,
+        "mean_ns": 192554.61323029734,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 348160,
+          "upper_ns": 352255
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2657409,
+          "start_ticks": 140728695,
+          "samples": 97,
+          "rss_first_bytes": 16711680,
+          "rss_last_bytes": 16814080,
+          "rss_min_bytes": 16711680,
+          "rss_max_bytes": 17117184,
+          "rss_mean_bytes": 16919773.69072165,
+          "hwm_first_bytes": 16711680,
+          "hwm_last_bytes": 16814080,
+          "hwm_max_bytes": 17117184,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2657414,
+          "start_ticks": 140728696,
+          "samples": 97,
+          "rss_first_bytes": 18620416,
+          "rss_last_bytes": 18927616,
+          "rss_min_bytes": 18620416,
+          "rss_max_bytes": 19787776,
+          "rss_mean_bytes": 19533824.0,
+          "hwm_first_bytes": 18620416,
+          "hwm_last_bytes": 18927616,
+          "hwm_max_bytes": 19787776,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2657419,
+          "start_ticks": 140728698,
+          "samples": 97,
+          "rss_first_bytes": 16580608,
+          "rss_last_bytes": 16789504,
+          "rss_min_bytes": 16580608,
+          "rss_max_bytes": 17313792,
+          "rss_mean_bytes": 16983282.80412371,
+          "hwm_first_bytes": 16580608,
+          "hwm_last_bytes": 16789504,
+          "hwm_max_bytes": 17313792,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 16,
+      "repeat": 1,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "old-batch1",
+      "complete": true,
+      "api": "batch_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/016-old-batch1-p10064",
+      "calls": 1691272,
+      "issued": 1691272,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1691272,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000181408,
+      "successful_calls_per_second": 338242.1280344075,
+      "successful_items_per_second": 338242.1280344075,
+      "completed_before_cutoff": 1691208,
+      "attempts": 1691272,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 1691272,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 1691272,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "7e724596d0a03f7e4372ba893d3ec53ce3d21e124518d5abf81504cf82909dba",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 1691272,
+        "sum_ns": 319734077612,
+        "mean_ns": 189049.4714108671,
+        "p50": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 368640,
+          "upper_ns": 372735
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1691272,
+        "sum_ns": 319734077612,
+        "mean_ns": 189049.4714108671,
+        "p50": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 368640,
+          "upper_ns": 372735
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2662296,
+          "start_ticks": 140730019,
+          "samples": 97,
+          "rss_first_bytes": 16707584,
+          "rss_last_bytes": 17473536,
+          "rss_min_bytes": 16707584,
+          "rss_max_bytes": 17707008,
+          "rss_mean_bytes": 17482656.98969072,
+          "hwm_first_bytes": 16707584,
+          "hwm_last_bytes": 17473536,
+          "hwm_max_bytes": 17707008,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2662301,
+          "start_ticks": 140730020,
+          "samples": 97,
+          "rss_first_bytes": 18587648,
+          "rss_last_bytes": 19619840,
+          "rss_min_bytes": 18587648,
+          "rss_max_bytes": 19722240,
+          "rss_mean_bytes": 19492272.82474227,
+          "hwm_first_bytes": 18587648,
+          "hwm_last_bytes": 19619840,
+          "hwm_max_bytes": 19722240,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2662306,
+          "start_ticks": 140730022,
+          "samples": 97,
+          "rss_first_bytes": 16785408,
+          "rss_last_bytes": 17469440,
+          "rss_min_bytes": 16785408,
+          "rss_max_bytes": 17637376,
+          "rss_mean_bytes": 17465217.31958763,
+          "hwm_first_bytes": 16785408,
+          "hwm_last_bytes": 17469440,
+          "hwm_max_bytes": 17637376,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 17,
+      "repeat": 1,
+      "concurrency": 64,
+      "workers": 64,
+      "arm": "old-point",
+      "complete": true,
+      "api": "point_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/017-old-point-p10064",
+      "calls": 1710670,
+      "issued": 1710670,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1710670,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000189560,
+      "successful_calls_per_second": 342121.02950752934,
+      "successful_items_per_second": 342121.02950752934,
+      "completed_before_cutoff": 1710606,
+      "attempts": 1710670,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 1710670,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 1710670,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "39fb363851d6f9dcf5a8d2eb6861233e862a1589cbd360a2f4b50d81158bc151",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 1710670,
+        "sum_ns": 319786677385,
+        "mean_ns": 186936.50872757458,
+        "p50": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 356352,
+          "upper_ns": 360447
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1710670,
+        "sum_ns": 319786677385,
+        "mean_ns": 186936.50872757458,
+        "p50": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 356352,
+          "upper_ns": 360447
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2667168,
+          "start_ticks": 140731344,
+          "samples": 97,
+          "rss_first_bytes": 16932864,
+          "rss_last_bytes": 17043456,
+          "rss_min_bytes": 16588800,
+          "rss_max_bytes": 17473536,
+          "rss_mean_bytes": 17170347.54639175,
+          "hwm_first_bytes": 16932864,
+          "hwm_last_bytes": 17043456,
+          "hwm_max_bytes": 17473536,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2667354,
+          "start_ticks": 140731346,
+          "samples": 97,
+          "rss_first_bytes": 18513920,
+          "rss_last_bytes": 19222528,
+          "rss_min_bytes": 18513920,
+          "rss_max_bytes": 19566592,
+          "rss_mean_bytes": 19329995.216494847,
+          "hwm_first_bytes": 18513920,
+          "hwm_last_bytes": 19222528,
+          "hwm_max_bytes": 19566592,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2667518,
+          "start_ticks": 140731348,
+          "samples": 97,
+          "rss_first_bytes": 17055744,
+          "rss_last_bytes": 17104896,
+          "rss_min_bytes": 17047552,
+          "rss_max_bytes": 17633280,
+          "rss_mean_bytes": 17388786.80412371,
+          "hwm_first_bytes": 17055744,
+          "hwm_last_bytes": 17104896,
+          "hwm_max_bytes": 17633280,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 18,
+      "repeat": 1,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "redis-get1",
+      "complete": true,
+      "api": "get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/018-redis-get1-p10001",
+      "calls": 853773,
+      "issued": 853773,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 853773,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000000249,
+      "successful_calls_per_second": 170754.59149642134,
+      "successful_items_per_second": 170754.59149642134,
+      "completed_before_cutoff": 853772,
+      "attempts": 853773,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "attempt_reasons": null,
+      "terminal_rpc_codes": null,
+      "reasons": {
+        "success": 853773,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "report_sha256": "be0b51622bcbc04d62c00146b3db303f61b8662b027a8bdfcab784bbebc3b332",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 853773,
+        "sum_ns": 4935068439,
+        "mean_ns": 5780.305115059858,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6144,
+          "upper_ns": 6207
+        },
+        "p99": {
+          "lower_ns": 8064,
+          "upper_ns": 8127
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 853773,
+        "sum_ns": 4935068439,
+        "mean_ns": 5780.305115059858,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6144,
+          "upper_ns": 6207
+        },
+        "p99": {
+          "lower_ns": 8064,
+          "upper_ns": 8127
+        }
+      },
+      "server_memory": {
+        "redis": {
+          "pid": 2672361,
+          "start_ticks": 140732664,
+          "samples": 98,
+          "rss_first_bytes": 14798848,
+          "rss_last_bytes": 14802944,
+          "rss_min_bytes": 14798848,
+          "rss_max_bytes": 14802944,
+          "rss_mean_bytes": 14801564.734693877,
+          "hwm_first_bytes": 14798848,
+          "hwm_last_bytes": 14802944,
+          "hwm_max_bytes": 14802944,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 19,
+      "repeat": 1,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "redis-mget1",
+      "complete": true,
+      "api": "mget",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/019-redis-mget1-p10001",
+      "calls": 839997,
+      "issued": 839997,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 839997,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000002162,
+      "successful_calls_per_second": 167999.32735709083,
+      "successful_items_per_second": 167999.32735709083,
+      "completed_before_cutoff": 839996,
+      "attempts": 839997,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "attempt_reasons": null,
+      "terminal_rpc_codes": null,
+      "reasons": {
+        "success": 839997,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "report_sha256": "0392c2d6dde5a8c2049edf584eb2c60f815100fcd14acd00ed6527124faa4d28",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 839997,
+        "sum_ns": 4931585471,
+        "mean_ns": 5870.956052223996,
+        "p50": {
+          "lower_ns": 5696,
+          "upper_ns": 5759
+        },
+        "p95": {
+          "lower_ns": 6144,
+          "upper_ns": 6207
+        },
+        "p99": {
+          "lower_ns": 8320,
+          "upper_ns": 8447
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 839997,
+        "sum_ns": 4931585471,
+        "mean_ns": 5870.956052223996,
+        "p50": {
+          "lower_ns": 5696,
+          "upper_ns": 5759
+        },
+        "p95": {
+          "lower_ns": 6144,
+          "upper_ns": 6207
+        },
+        "p99": {
+          "lower_ns": 8320,
+          "upper_ns": 8447
+        }
+      },
+      "server_memory": {
+        "redis": {
+          "pid": 2674184,
+          "start_ticks": 140733199,
+          "samples": 98,
+          "rss_first_bytes": 14839808,
+          "rss_last_bytes": 14843904,
+          "rss_min_bytes": 14839808,
+          "rss_max_bytes": 14843904,
+          "rss_mean_bytes": 14843611.42857143,
+          "hwm_first_bytes": 14839808,
+          "hwm_last_bytes": 14843904,
+          "hwm_max_bytes": 14843904,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 20,
+      "repeat": 1,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "new-batch1",
+      "complete": true,
+      "api": "batch_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/020-new-batch1-p10001",
+      "calls": 130011,
+      "issued": 130011,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 130011,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000027919,
+      "successful_calls_per_second": 26002.054809726353,
+      "successful_items_per_second": 26002.054809726353,
+      "completed_before_cutoff": 130010,
+      "attempts": 130011,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 130011,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 130011,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "8ace13388002143f50d01247feab989864eccbb10cbf8b0d1343e4f23c4a7941",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 130011,
+        "sum_ns": 4984022531,
+        "mean_ns": 38335.391089984696,
+        "p50": {
+          "lower_ns": 37376,
+          "upper_ns": 37887
+        },
+        "p95": {
+          "lower_ns": 43520,
+          "upper_ns": 44031
+        },
+        "p99": {
+          "lower_ns": 57344,
+          "upper_ns": 57855
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 130011,
+        "sum_ns": 4984022531,
+        "mean_ns": 38335.391089984696,
+        "p50": {
+          "lower_ns": 37376,
+          "upper_ns": 37887
+        },
+        "p95": {
+          "lower_ns": 43520,
+          "upper_ns": 44031
+        },
+        "p99": {
+          "lower_ns": 57344,
+          "upper_ns": 57855
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2675898,
+          "start_ticks": 140733738,
+          "samples": 98,
+          "rss_first_bytes": 16318464,
+          "rss_last_bytes": 16154624,
+          "rss_min_bytes": 16023552,
+          "rss_max_bytes": 16453632,
+          "rss_mean_bytes": 16153328.326530613,
+          "hwm_first_bytes": 16318464,
+          "hwm_last_bytes": 16154624,
+          "hwm_max_bytes": 16453632,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2675903,
+          "start_ticks": 140733739,
+          "samples": 98,
+          "rss_first_bytes": 17408000,
+          "rss_last_bytes": 17211392,
+          "rss_min_bytes": 17178624,
+          "rss_max_bytes": 17604608,
+          "rss_mean_bytes": 17300166.530612245,
+          "hwm_first_bytes": 17408000,
+          "hwm_last_bytes": 17211392,
+          "hwm_max_bytes": 17604608,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2675908,
+          "start_ticks": 140733741,
+          "samples": 98,
+          "rss_first_bytes": 16506880,
+          "rss_last_bytes": 16310272,
+          "rss_min_bytes": 16203776,
+          "rss_max_bytes": 16625664,
+          "rss_mean_bytes": 16324691.591836736,
+          "hwm_first_bytes": 16506880,
+          "hwm_last_bytes": 16310272,
+          "hwm_max_bytes": 16625664,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 21,
+      "repeat": 1,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "new-point",
+      "complete": true,
+      "api": "point_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/021-new-point-p10001",
+      "calls": 131261,
+      "issued": 131261,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 131261,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000016887,
+      "successful_calls_per_second": 26252.11133611917,
+      "successful_items_per_second": 26252.11133611917,
+      "completed_before_cutoff": 131260,
+      "attempts": 131261,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 131261,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 131261,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "7c72238f1a36f61fb3aeb9f69f88e1abd70edb704865e791d05a041450090c99",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 131261,
+        "sum_ns": 4983948523,
+        "mean_ns": 37969.758900206456,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 43008,
+          "upper_ns": 43519
+        },
+        "p99": {
+          "lower_ns": 56832,
+          "upper_ns": 57343
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 131261,
+        "sum_ns": 4983948523,
+        "mean_ns": 37969.758900206456,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 43008,
+          "upper_ns": 43519
+        },
+        "p99": {
+          "lower_ns": 56832,
+          "upper_ns": 57343
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2681129,
+          "start_ticks": 140735060,
+          "samples": 97,
+          "rss_first_bytes": 16707584,
+          "rss_last_bytes": 16388096,
+          "rss_min_bytes": 16367616,
+          "rss_max_bytes": 16846848,
+          "rss_mean_bytes": 16454265.402061855,
+          "hwm_first_bytes": 16707584,
+          "hwm_last_bytes": 16388096,
+          "hwm_max_bytes": 16846848,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2681134,
+          "start_ticks": 140735062,
+          "samples": 97,
+          "rss_first_bytes": 17543168,
+          "rss_last_bytes": 16474112,
+          "rss_min_bytes": 16470016,
+          "rss_max_bytes": 17702912,
+          "rss_mean_bytes": 17211729.81443299,
+          "hwm_first_bytes": 17543168,
+          "hwm_last_bytes": 16936960,
+          "hwm_max_bytes": 17702912,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2681139,
+          "start_ticks": 140735064,
+          "samples": 97,
+          "rss_first_bytes": 16543744,
+          "rss_last_bytes": 16310272,
+          "rss_min_bytes": 16289792,
+          "rss_max_bytes": 16650240,
+          "rss_mean_bytes": 16362464.329896906,
+          "hwm_first_bytes": 16543744,
+          "hwm_last_bytes": 16310272,
+          "hwm_max_bytes": 16650240,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 22,
+      "repeat": 1,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "old-batch1",
+      "complete": true,
+      "api": "batch_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/022-old-batch1-p10001",
+      "calls": 131129,
+      "issued": 131129,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 131129,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000026802,
+      "successful_calls_per_second": 26225.659419975247,
+      "successful_items_per_second": 26225.659419975247,
+      "completed_before_cutoff": 131128,
+      "attempts": 131129,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 131129,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 131129,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "3439678eb4799297b2b653bae4afaec6c5a0d1955c81a1d3c1304b67eae58b4f",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 131129,
+        "sum_ns": 4984257107,
+        "mean_ns": 38010.33415186572,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 131129,
+        "sum_ns": 4984257107,
+        "mean_ns": 38010.33415186572,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2685982,
+          "start_ticks": 140736381,
+          "samples": 98,
+          "rss_first_bytes": 16703488,
+          "rss_last_bytes": 16502784,
+          "rss_min_bytes": 16388096,
+          "rss_max_bytes": 16814080,
+          "rss_mean_bytes": 16529993.142857144,
+          "hwm_first_bytes": 16703488,
+          "hwm_last_bytes": 16502784,
+          "hwm_max_bytes": 16814080,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2685987,
+          "start_ticks": 140736383,
+          "samples": 98,
+          "rss_first_bytes": 17522688,
+          "rss_last_bytes": 17121280,
+          "rss_min_bytes": 17100800,
+          "rss_max_bytes": 17747968,
+          "rss_mean_bytes": 17297951.346938774,
+          "hwm_first_bytes": 17522688,
+          "hwm_last_bytes": 17121280,
+          "hwm_max_bytes": 17747968,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2685992,
+          "start_ticks": 140736385,
+          "samples": 98,
+          "rss_first_bytes": 16523264,
+          "rss_last_bytes": 16146432,
+          "rss_min_bytes": 16146432,
+          "rss_max_bytes": 16609280,
+          "rss_mean_bytes": 16262666.448979592,
+          "hwm_first_bytes": 16523264,
+          "hwm_last_bytes": 16146432,
+          "hwm_max_bytes": 16609280,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    },
+    {
+      "ordinal": 23,
+      "repeat": 1,
+      "concurrency": 1,
+      "workers": 1,
+      "arm": "old-point",
+      "complete": true,
+      "api": "point_get",
+      "directory": "/tmp/kv9-peer-idle-watchdog-matched-diagnostic-attempt1/cohorts/023-old-point-p10001",
+      "calls": 130997,
+      "issued": 130997,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 130997,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000023140,
+      "successful_calls_per_second": 26199.278749737947,
+      "successful_items_per_second": 26199.278749737947,
+      "completed_before_cutoff": 130996,
+      "attempts": 130997,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "attempt_reasons": {
+        "success": 130997,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "reasons": {
+        "success": 130997,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "report_sha256": "be9d6713993903aeffead1890baeecd2a2f08e91e76c9686d5150ba88484b564",
+      "final_keys": 4097,
+      "all_nonce_zero": true,
+      "whole_call_latency": {
+        "count": 130997,
+        "sum_ns": 4982597926,
+        "mean_ns": 38035.96972449751,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 130997,
+        "sum_ns": 4982597926,
+        "mean_ns": 38035.96972449751,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      },
+      "server_memory": {
+        "voter-1": {
+          "pid": 2690820,
+          "start_ticks": 140737702,
+          "samples": 97,
+          "rss_first_bytes": 16699392,
+          "rss_last_bytes": 16384000,
+          "rss_min_bytes": 16318464,
+          "rss_max_bytes": 16809984,
+          "rss_mean_bytes": 16449789.360824741,
+          "hwm_first_bytes": 16699392,
+          "hwm_last_bytes": 16384000,
+          "hwm_max_bytes": 16809984,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-2": {
+          "pid": 2690825,
+          "start_ticks": 140737704,
+          "samples": 97,
+          "rss_first_bytes": 17711104,
+          "rss_last_bytes": 17391616,
+          "rss_min_bytes": 17391616,
+          "rss_max_bytes": 17874944,
+          "rss_mean_bytes": 17552584.57731959,
+          "hwm_first_bytes": 17711104,
+          "hwm_last_bytes": 17391616,
+          "hwm_max_bytes": 17874944,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        },
+        "voter-3": {
+          "pid": 2690830,
+          "start_ticks": 140737706,
+          "samples": 97,
+          "rss_first_bytes": 16330752,
+          "rss_last_bytes": 15347712,
+          "rss_min_bytes": 15347712,
+          "rss_max_bytes": 16359424,
+          "rss_mean_bytes": 15922461.030927835,
+          "hwm_first_bytes": 16330752,
+          "hwm_last_bytes": 15437824,
+          "hwm_max_bytes": 16359424,
+          "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+        }
+      },
+      "short_diagnostic_only": true
+    }
+  ],
+  "scope": "Short shared-host tmpfs diagnostic; no sustained-capacity or equal-durability claim",
+  "parent_confirmed_session": 3097,
+  "parent_confirmed_exit_code": 0,
+  "expected_successful_arms": 24,
+  "protocol_id": "kv9-peer-idle-watchdog-c1-c64-v1",
+  "concurrency_points": [
+    1,
+    64
+  ],
+  "started_unix_ns": 1789118727458898199,
+  "outer_restoration": {
+    "accepted": true,
+    "configured_and_effective_before_after": "0-31",
+    "isolated": "6-15,22-31",
+    "owned_containers": 3,
+    "namespace_maps_preserved": true,
+    "original_summary_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8"
+  },
+  "performance_comparison": [
+    {
+      "repeat": 0,
+      "concurrency": 1,
+      "api": "point_get",
+      "old_ordinal": 0,
+      "new_ordinal": 2,
+      "successful_qps_change_percent": -0.8428079073440786,
+      "mean_change_percent": 0.8283298767447489,
+      "old_whole_call_latency": {
+        "count": 131288,
+        "sum_ns": 4983926397,
+        "mean_ns": 37961.78170891475,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44032,
+          "upper_ns": 44543
+        },
+        "p99": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 130180,
+        "sum_ns": 4982799685,
+        "mean_ns": 38276.23048855431,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 43520,
+          "upper_ns": 44031
+        },
+        "p99": {
+          "lower_ns": 57856,
+          "upper_ns": 58367
+        }
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 1,
+      "api": "batch_get",
+      "old_ordinal": 1,
+      "new_ordinal": 3,
+      "successful_qps_change_percent": -2.3393393415583663,
+      "mean_change_percent": 2.403000967954827,
+      "old_whole_call_latency": {
+        "count": 130254,
+        "sum_ns": 4982719588,
+        "mean_ns": 38253.87003854008,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 45568,
+          "upper_ns": 46079
+        },
+        "p99": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 127207,
+        "sum_ns": 4983093919,
+        "mean_ns": 39173.11090584638,
+        "p50": {
+          "lower_ns": 37888,
+          "upper_ns": 38399
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 58880,
+          "upper_ns": 59391
+        }
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 64,
+      "api": "point_get",
+      "old_ordinal": 6,
+      "new_ordinal": 8,
+      "successful_qps_change_percent": -0.6178567687460834,
+      "mean_change_percent": 0.6224411297547805,
+      "old_whole_call_latency": {
+        "count": 1672988,
+        "sum_ns": 319784411252,
+        "mean_ns": 191145.66945608697,
+        "p50": {
+          "lower_ns": 178176,
+          "upper_ns": 180223
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 368640,
+          "upper_ns": 372735
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 1662653,
+        "sum_ns": 319787094195,
+        "mean_ns": 192335.43872052678,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 344064,
+          "upper_ns": 348159
+        }
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 64,
+      "api": "batch_get",
+      "old_ordinal": 7,
+      "new_ordinal": 9,
+      "successful_qps_change_percent": -3.1890869381854703,
+      "mean_change_percent": 3.2960254212483164,
+      "old_whole_call_latency": {
+        "count": 1686656,
+        "sum_ns": 319735213773,
+        "mean_ns": 189567.53112252883,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 364544,
+          "upper_ns": 368639
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 1632853,
+        "sum_ns": 319738294240,
+        "mean_ns": 195815.7251387602,
+        "p50": {
+          "lower_ns": 184320,
+          "upper_ns": 186367
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "api": "point_get",
+      "old_ordinal": 23,
+      "new_ordinal": 21,
+      "successful_qps_change_percent": 0.20165664439046882,
+      "mean_change_percent": -0.17407423754576268,
+      "old_whole_call_latency": {
+        "count": 130997,
+        "sum_ns": 4982597926,
+        "mean_ns": 38035.96972449751,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 131261,
+        "sum_ns": 4983948523,
+        "mean_ns": 37969.758900206456,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 43008,
+          "upper_ns": 43519
+        },
+        "p99": {
+          "lower_ns": 56832,
+          "upper_ns": 57343
+        }
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "api": "batch_get",
+      "old_ordinal": 22,
+      "new_ordinal": 20,
+      "successful_qps_change_percent": -0.8526176851003431,
+      "mean_change_percent": 0.8551804275654495,
+      "old_whole_call_latency": {
+        "count": 131129,
+        "sum_ns": 4984257107,
+        "mean_ns": 38010.33415186572,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 130011,
+        "sum_ns": 4984022531,
+        "mean_ns": 38335.391089984696,
+        "p50": {
+          "lower_ns": 37376,
+          "upper_ns": 37887
+        },
+        "p95": {
+          "lower_ns": 43520,
+          "upper_ns": 44031
+        },
+        "p99": {
+          "lower_ns": 57344,
+          "upper_ns": 57855
+        }
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 64,
+      "api": "point_get",
+      "old_ordinal": 17,
+      "new_ordinal": 15,
+      "successful_qps_change_percent": -2.91528458334549,
+      "mean_change_percent": 3.0053543531778137,
+      "old_whole_call_latency": {
+        "count": 1710670,
+        "sum_ns": 319786677385,
+        "mean_ns": 186936.50872757458,
+        "p50": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 356352,
+          "upper_ns": 360447
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 1660779,
+        "sum_ns": 319790658006,
+        "mean_ns": 192554.61323029734,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 348160,
+          "upper_ns": 352255
+        }
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 64,
+      "api": "batch_get",
+      "old_ordinal": 16,
+      "new_ordinal": 14,
+      "successful_qps_change_percent": -3.4572141665179412,
+      "mean_change_percent": 3.5833154617051166,
+      "old_whole_call_latency": {
+        "count": 1691272,
+        "sum_ns": 319734077612,
+        "mean_ns": 189049.4714108671,
+        "p50": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 368640,
+          "upper_ns": 372735
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 1632789,
+        "sum_ns": 319738800199,
+        "mean_ns": 195823.71035020446,
+        "p50": {
+          "lower_ns": 184320,
+          "upper_ns": 186367
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      }
+    }
+  ],
+  "memory_comparison": [
+    {
+      "repeat": 0,
+      "concurrency": 1,
+      "api": "point_get",
+      "aggregate_voters": {
+        "old": {
+          "sampled_mean_rss_bytes": 49827338.448979594,
+          "summed_hwm_bytes": 51253248
+        },
+        "new": {
+          "sampled_mean_rss_bytes": 49708178.28571428,
+          "summed_hwm_bytes": 50860032
+        }
+      },
+      "aggregate_mean_rss_delta_bytes": -119160.16326531023,
+      "aggregate_hwm_delta_bytes": -393216,
+      "per_voter": {
+        "voter-1": {
+          "old": {
+            "pid": 2601675,
+            "start_ticks": 140713602,
+            "samples": 98,
+            "rss_first_bytes": 16613376,
+            "rss_last_bytes": 15872000,
+            "rss_min_bytes": 15749120,
+            "rss_max_bytes": 16695296,
+            "rss_mean_bytes": 16207955.591836736,
+            "hwm_first_bytes": 16613376,
+            "hwm_last_bytes": 16011264,
+            "hwm_max_bytes": 16695296,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2611382,
+            "start_ticks": 140716243,
+            "samples": 98,
+            "rss_first_bytes": 16531456,
+            "rss_last_bytes": 15880192,
+            "rss_min_bytes": 15859712,
+            "rss_max_bytes": 16678912,
+            "rss_mean_bytes": 16175062.204081632,
+            "hwm_first_bytes": 16531456,
+            "hwm_last_bytes": 15880192,
+            "hwm_max_bytes": 16678912,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -32893.38775510341,
+          "sampled_hwm_delta_bytes": -16384
+        },
+        "voter-2": {
+          "old": {
+            "pid": 2601680,
+            "start_ticks": 140713604,
+            "samples": 98,
+            "rss_first_bytes": 17731584,
+            "rss_last_bytes": 17154048,
+            "rss_min_bytes": 17154048,
+            "rss_max_bytes": 17940480,
+            "rss_mean_bytes": 17558339.91836735,
+            "hwm_first_bytes": 17731584,
+            "hwm_last_bytes": 17354752,
+            "hwm_max_bytes": 17940480,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2611387,
+            "start_ticks": 140716245,
+            "samples": 98,
+            "rss_first_bytes": 17391616,
+            "rss_last_bytes": 17006592,
+            "rss_min_bytes": 16990208,
+            "rss_max_bytes": 17608704,
+            "rss_mean_bytes": 17320312.163265307,
+            "hwm_first_bytes": 17391616,
+            "hwm_last_bytes": 17022976,
+            "hwm_max_bytes": 17608704,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -238027.7551020421,
+          "sampled_hwm_delta_bytes": -331776
+        },
+        "voter-3": {
+          "old": {
+            "pid": 2601685,
+            "start_ticks": 140713605,
+            "samples": 98,
+            "rss_first_bytes": 16564224,
+            "rss_last_bytes": 15622144,
+            "rss_min_bytes": 15536128,
+            "rss_max_bytes": 16617472,
+            "rss_mean_bytes": 16061042.93877551,
+            "hwm_first_bytes": 16564224,
+            "hwm_last_bytes": 15671296,
+            "hwm_max_bytes": 16617472,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2611582,
+            "start_ticks": 140716247,
+            "samples": 98,
+            "rss_first_bytes": 16355328,
+            "rss_last_bytes": 15810560,
+            "rss_min_bytes": 15777792,
+            "rss_max_bytes": 16572416,
+            "rss_mean_bytes": 16212803.918367347,
+            "hwm_first_bytes": 16355328,
+            "hwm_last_bytes": 15880192,
+            "hwm_max_bytes": 16572416,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": 151760.97959183715,
+          "sampled_hwm_delta_bytes": -45056
+        }
+      },
+      "scope": "Within one concurrency/repetition; voter numbers need not match leader roles; HWM includes setup and summed high waters need not coincide"
+    },
+    {
+      "repeat": 0,
+      "concurrency": 1,
+      "api": "batch_get",
+      "aggregate_voters": {
+        "old": {
+          "sampled_mean_rss_bytes": 50377121.95918368,
+          "summed_hwm_bytes": 51478528
+        },
+        "new": {
+          "sampled_mean_rss_bytes": 50850042.77551021,
+          "summed_hwm_bytes": 51716096
+        }
+      },
+      "aggregate_mean_rss_delta_bytes": 472920.8163265288,
+      "aggregate_hwm_delta_bytes": 237568,
+      "per_voter": {
+        "voter-1": {
+          "old": {
+            "pid": 2606554,
+            "start_ticks": 140714923,
+            "samples": 98,
+            "rss_first_bytes": 16674816,
+            "rss_last_bytes": 15982592,
+            "rss_min_bytes": 15982592,
+            "rss_max_bytes": 16752640,
+            "rss_mean_bytes": 16362809.469387755,
+            "hwm_first_bytes": 16674816,
+            "hwm_last_bytes": 16203776,
+            "hwm_max_bytes": 16752640,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2616606,
+            "start_ticks": 140717564,
+            "samples": 98,
+            "rss_first_bytes": 16801792,
+            "rss_last_bytes": 16588800,
+            "rss_min_bytes": 16588800,
+            "rss_max_bytes": 16990208,
+            "rss_mean_bytes": 16780016.326530613,
+            "hwm_first_bytes": 16801792,
+            "hwm_last_bytes": 16588800,
+            "hwm_max_bytes": 16990208,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": 417206.8571428582,
+          "sampled_hwm_delta_bytes": 237568
+        },
+        "voter-2": {
+          "old": {
+            "pid": 2606559,
+            "start_ticks": 140714924,
+            "samples": 98,
+            "rss_first_bytes": 17723392,
+            "rss_last_bytes": 17526784,
+            "rss_min_bytes": 17498112,
+            "rss_max_bytes": 17936384,
+            "rss_mean_bytes": 17613928.48979592,
+            "hwm_first_bytes": 17723392,
+            "hwm_last_bytes": 17526784,
+            "hwm_max_bytes": 17936384,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2616611,
+            "start_ticks": 140717566,
+            "samples": 98,
+            "rss_first_bytes": 17670144,
+            "rss_last_bytes": 17235968,
+            "rss_min_bytes": 17215488,
+            "rss_max_bytes": 17915904,
+            "rss_mean_bytes": 17576939.102040816,
+            "hwm_first_bytes": 17670144,
+            "hwm_last_bytes": 17317888,
+            "hwm_max_bytes": 17915904,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -36989.38775510341,
+          "sampled_hwm_delta_bytes": -20480
+        },
+        "voter-3": {
+          "old": {
+            "pid": 2606564,
+            "start_ticks": 140714926,
+            "samples": 98,
+            "rss_first_bytes": 16695296,
+            "rss_last_bytes": 16330752,
+            "rss_min_bytes": 16297984,
+            "rss_max_bytes": 16789504,
+            "rss_mean_bytes": 16400384.0,
+            "hwm_first_bytes": 16695296,
+            "hwm_last_bytes": 16330752,
+            "hwm_max_bytes": 16789504,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2616616,
+            "start_ticks": 140717567,
+            "samples": 98,
+            "rss_first_bytes": 16732160,
+            "rss_last_bytes": 16470016,
+            "rss_min_bytes": 16379904,
+            "rss_max_bytes": 16809984,
+            "rss_mean_bytes": 16493087.346938776,
+            "hwm_first_bytes": 16732160,
+            "hwm_last_bytes": 16470016,
+            "hwm_max_bytes": 16809984,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": 92703.34693877585,
+          "sampled_hwm_delta_bytes": 20480
+        }
+      },
+      "scope": "Within one concurrency/repetition; voter numbers need not match leader roles; HWM includes setup and summed high waters need not coincide"
+    },
+    {
+      "repeat": 0,
+      "concurrency": 64,
+      "api": "point_get",
+      "aggregate_voters": {
+        "old": {
+          "sampled_mean_rss_bytes": 54238598.59793814,
+          "summed_hwm_bytes": 54988800
+        },
+        "new": {
+          "sampled_mean_rss_bytes": 54322071.51020408,
+          "summed_hwm_bytes": 54976512
+        }
+      },
+      "aggregate_mean_rss_delta_bytes": 83472.91226593405,
+      "aggregate_hwm_delta_bytes": -12288,
+      "per_voter": {
+        "voter-1": {
+          "old": {
+            "pid": 2625205,
+            "start_ticks": 140719953,
+            "samples": 97,
+            "rss_first_bytes": 16826368,
+            "rss_last_bytes": 17203200,
+            "rss_min_bytes": 16826368,
+            "rss_max_bytes": 17453056,
+            "rss_mean_bytes": 17256954.721649483,
+            "hwm_first_bytes": 16826368,
+            "hwm_last_bytes": 17203200,
+            "hwm_max_bytes": 17453056,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2634979,
+            "start_ticks": 140722601,
+            "samples": 98,
+            "rss_first_bytes": 16666624,
+            "rss_last_bytes": 16703488,
+            "rss_min_bytes": 16605184,
+            "rss_max_bytes": 17436672,
+            "rss_mean_bytes": 17222969.469387755,
+            "hwm_first_bytes": 16666624,
+            "hwm_last_bytes": 16756736,
+            "hwm_max_bytes": 17436672,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -33985.25226172805,
+          "sampled_hwm_delta_bytes": -16384
+        },
+        "voter-2": {
+          "old": {
+            "pid": 2625210,
+            "start_ticks": 140719955,
+            "samples": 97,
+            "rss_first_bytes": 18731008,
+            "rss_last_bytes": 18866176,
+            "rss_min_bytes": 18731008,
+            "rss_max_bytes": 19865600,
+            "rss_mean_bytes": 19518157.855670102,
+            "hwm_first_bytes": 18731008,
+            "hwm_last_bytes": 19181568,
+            "hwm_max_bytes": 19865600,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2634984,
+            "start_ticks": 140722603,
+            "samples": 98,
+            "rss_first_bytes": 18198528,
+            "rss_last_bytes": 19865600,
+            "rss_min_bytes": 18198528,
+            "rss_max_bytes": 19955712,
+            "rss_mean_bytes": 19673673.14285714,
+            "hwm_first_bytes": 18198528,
+            "hwm_last_bytes": 19865600,
+            "hwm_max_bytes": 19955712,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": 155515.28718703985,
+          "sampled_hwm_delta_bytes": 90112
+        },
+        "voter-3": {
+          "old": {
+            "pid": 2625215,
+            "start_ticks": 140719956,
+            "samples": 97,
+            "rss_first_bytes": 16965632,
+            "rss_last_bytes": 17436672,
+            "rss_min_bytes": 16965632,
+            "rss_max_bytes": 17670144,
+            "rss_mean_bytes": 17463486.020618558,
+            "hwm_first_bytes": 16965632,
+            "hwm_last_bytes": 17436672,
+            "hwm_max_bytes": 17670144,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2634989,
+            "start_ticks": 140722604,
+            "samples": 98,
+            "rss_first_bytes": 16572416,
+            "rss_last_bytes": 17334272,
+            "rss_min_bytes": 16572416,
+            "rss_max_bytes": 17584128,
+            "rss_mean_bytes": 17425428.897959184,
+            "hwm_first_bytes": 16572416,
+            "hwm_last_bytes": 17334272,
+            "hwm_max_bytes": 17584128,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -38057.12265937403,
+          "sampled_hwm_delta_bytes": -86016
+        }
+      },
+      "scope": "Within one concurrency/repetition; voter numbers need not match leader roles; HWM includes setup and summed high waters need not coincide"
+    },
+    {
+      "repeat": 0,
+      "concurrency": 64,
+      "api": "batch_get",
+      "aggregate_voters": {
+        "old": {
+          "sampled_mean_rss_bytes": 54317689.40206185,
+          "summed_hwm_bytes": 54915072
+        },
+        "new": {
+          "sampled_mean_rss_bytes": 54026448.97959183,
+          "summed_hwm_bytes": 54812672
+        }
+      },
+      "aggregate_mean_rss_delta_bytes": -291240.42247001827,
+      "aggregate_hwm_delta_bytes": -102400,
+      "per_voter": {
+        "voter-1": {
+          "old": {
+            "pid": 2630097,
+            "start_ticks": 140721278,
+            "samples": 97,
+            "rss_first_bytes": 16719872,
+            "rss_last_bytes": 17285120,
+            "rss_min_bytes": 16719872,
+            "rss_max_bytes": 17637376,
+            "rss_mean_bytes": 17397738.88659794,
+            "hwm_first_bytes": 16719872,
+            "hwm_last_bytes": 17285120,
+            "hwm_max_bytes": 17637376,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2639865,
+            "start_ticks": 140723924,
+            "samples": 98,
+            "rss_first_bytes": 16461824,
+            "rss_last_bytes": 16699392,
+            "rss_min_bytes": 16461824,
+            "rss_max_bytes": 17149952,
+            "rss_mean_bytes": 16848018.285714287,
+            "hwm_first_bytes": 16461824,
+            "hwm_last_bytes": 16699392,
+            "hwm_max_bytes": 17149952,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -549720.6008836515,
+          "sampled_hwm_delta_bytes": -487424
+        },
+        "voter-2": {
+          "old": {
+            "pid": 2630102,
+            "start_ticks": 140721279,
+            "samples": 97,
+            "rss_first_bytes": 18616320,
+            "rss_last_bytes": 19824640,
+            "rss_min_bytes": 18616320,
+            "rss_max_bytes": 19881984,
+            "rss_mean_bytes": 19661644.536082473,
+            "hwm_first_bytes": 18616320,
+            "hwm_last_bytes": 19824640,
+            "hwm_max_bytes": 19881984,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2639870,
+            "start_ticks": 140723926,
+            "samples": 98,
+            "rss_first_bytes": 18292736,
+            "rss_last_bytes": 19574784,
+            "rss_min_bytes": 18292736,
+            "rss_max_bytes": 20029440,
+            "rss_mean_bytes": 19752124.08163265,
+            "hwm_first_bytes": 18292736,
+            "hwm_last_bytes": 19574784,
+            "hwm_max_bytes": 20029440,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": 90479.54555017874,
+          "sampled_hwm_delta_bytes": 147456
+        },
+        "voter-3": {
+          "old": {
+            "pid": 2630107,
+            "start_ticks": 140721281,
+            "samples": 97,
+            "rss_first_bytes": 16576512,
+            "rss_last_bytes": 17264640,
+            "rss_min_bytes": 16576512,
+            "rss_max_bytes": 17395712,
+            "rss_mean_bytes": 17258305.979381442,
+            "hwm_first_bytes": 16576512,
+            "hwm_last_bytes": 17264640,
+            "hwm_max_bytes": 17395712,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2639875,
+            "start_ticks": 140723927,
+            "samples": 98,
+            "rss_first_bytes": 16687104,
+            "rss_last_bytes": 17244160,
+            "rss_min_bytes": 16687104,
+            "rss_max_bytes": 17633280,
+            "rss_mean_bytes": 17426306.612244897,
+            "hwm_first_bytes": 16687104,
+            "hwm_last_bytes": 17244160,
+            "hwm_max_bytes": 17633280,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": 168000.63286345452,
+          "sampled_hwm_delta_bytes": 237568
+        }
+      },
+      "scope": "Within one concurrency/repetition; voter numbers need not match leader roles; HWM includes setup and summed high waters need not coincide"
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "api": "point_get",
+      "aggregate_voters": {
+        "old": {
+          "sampled_mean_rss_bytes": 49924834.96907216,
+          "summed_hwm_bytes": 51044352
+        },
+        "new": {
+          "sampled_mean_rss_bytes": 50028459.546391755,
+          "summed_hwm_bytes": 51200000
+        }
+      },
+      "aggregate_mean_rss_delta_bytes": 103624.57731959224,
+      "aggregate_hwm_delta_bytes": 155648,
+      "per_voter": {
+        "voter-1": {
+          "old": {
+            "pid": 2690820,
+            "start_ticks": 140737702,
+            "samples": 97,
+            "rss_first_bytes": 16699392,
+            "rss_last_bytes": 16384000,
+            "rss_min_bytes": 16318464,
+            "rss_max_bytes": 16809984,
+            "rss_mean_bytes": 16449789.360824741,
+            "hwm_first_bytes": 16699392,
+            "hwm_last_bytes": 16384000,
+            "hwm_max_bytes": 16809984,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2681129,
+            "start_ticks": 140735060,
+            "samples": 97,
+            "rss_first_bytes": 16707584,
+            "rss_last_bytes": 16388096,
+            "rss_min_bytes": 16367616,
+            "rss_max_bytes": 16846848,
+            "rss_mean_bytes": 16454265.402061855,
+            "hwm_first_bytes": 16707584,
+            "hwm_last_bytes": 16388096,
+            "hwm_max_bytes": 16846848,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": 4476.041237113997,
+          "sampled_hwm_delta_bytes": 36864
+        },
+        "voter-2": {
+          "old": {
+            "pid": 2690825,
+            "start_ticks": 140737704,
+            "samples": 97,
+            "rss_first_bytes": 17711104,
+            "rss_last_bytes": 17391616,
+            "rss_min_bytes": 17391616,
+            "rss_max_bytes": 17874944,
+            "rss_mean_bytes": 17552584.57731959,
+            "hwm_first_bytes": 17711104,
+            "hwm_last_bytes": 17391616,
+            "hwm_max_bytes": 17874944,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2681134,
+            "start_ticks": 140735062,
+            "samples": 97,
+            "rss_first_bytes": 17543168,
+            "rss_last_bytes": 16474112,
+            "rss_min_bytes": 16470016,
+            "rss_max_bytes": 17702912,
+            "rss_mean_bytes": 17211729.81443299,
+            "hwm_first_bytes": 17543168,
+            "hwm_last_bytes": 16936960,
+            "hwm_max_bytes": 17702912,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -340854.7628865987,
+          "sampled_hwm_delta_bytes": -172032
+        },
+        "voter-3": {
+          "old": {
+            "pid": 2690830,
+            "start_ticks": 140737706,
+            "samples": 97,
+            "rss_first_bytes": 16330752,
+            "rss_last_bytes": 15347712,
+            "rss_min_bytes": 15347712,
+            "rss_max_bytes": 16359424,
+            "rss_mean_bytes": 15922461.030927835,
+            "hwm_first_bytes": 16330752,
+            "hwm_last_bytes": 15437824,
+            "hwm_max_bytes": 16359424,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2681139,
+            "start_ticks": 140735064,
+            "samples": 97,
+            "rss_first_bytes": 16543744,
+            "rss_last_bytes": 16310272,
+            "rss_min_bytes": 16289792,
+            "rss_max_bytes": 16650240,
+            "rss_mean_bytes": 16362464.329896906,
+            "hwm_first_bytes": 16543744,
+            "hwm_last_bytes": 16310272,
+            "hwm_max_bytes": 16650240,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": 440003.29896907136,
+          "sampled_hwm_delta_bytes": 290816
+        }
+      },
+      "scope": "Within one concurrency/repetition; voter numbers need not match leader roles; HWM includes setup and summed high waters need not coincide"
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "api": "batch_get",
+      "aggregate_voters": {
+        "old": {
+          "sampled_mean_rss_bytes": 50090610.93877551,
+          "summed_hwm_bytes": 51171328
+        },
+        "new": {
+          "sampled_mean_rss_bytes": 49778186.448979594,
+          "summed_hwm_bytes": 50683904
+        }
+      },
+      "aggregate_mean_rss_delta_bytes": -312424.4897959158,
+      "aggregate_hwm_delta_bytes": -487424,
+      "per_voter": {
+        "voter-1": {
+          "old": {
+            "pid": 2685982,
+            "start_ticks": 140736381,
+            "samples": 98,
+            "rss_first_bytes": 16703488,
+            "rss_last_bytes": 16502784,
+            "rss_min_bytes": 16388096,
+            "rss_max_bytes": 16814080,
+            "rss_mean_bytes": 16529993.142857144,
+            "hwm_first_bytes": 16703488,
+            "hwm_last_bytes": 16502784,
+            "hwm_max_bytes": 16814080,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2675898,
+            "start_ticks": 140733738,
+            "samples": 98,
+            "rss_first_bytes": 16318464,
+            "rss_last_bytes": 16154624,
+            "rss_min_bytes": 16023552,
+            "rss_max_bytes": 16453632,
+            "rss_mean_bytes": 16153328.326530613,
+            "hwm_first_bytes": 16318464,
+            "hwm_last_bytes": 16154624,
+            "hwm_max_bytes": 16453632,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -376664.81632653065,
+          "sampled_hwm_delta_bytes": -360448
+        },
+        "voter-2": {
+          "old": {
+            "pid": 2685987,
+            "start_ticks": 140736383,
+            "samples": 98,
+            "rss_first_bytes": 17522688,
+            "rss_last_bytes": 17121280,
+            "rss_min_bytes": 17100800,
+            "rss_max_bytes": 17747968,
+            "rss_mean_bytes": 17297951.346938774,
+            "hwm_first_bytes": 17522688,
+            "hwm_last_bytes": 17121280,
+            "hwm_max_bytes": 17747968,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2675903,
+            "start_ticks": 140733739,
+            "samples": 98,
+            "rss_first_bytes": 17408000,
+            "rss_last_bytes": 17211392,
+            "rss_min_bytes": 17178624,
+            "rss_max_bytes": 17604608,
+            "rss_mean_bytes": 17300166.530612245,
+            "hwm_first_bytes": 17408000,
+            "hwm_last_bytes": 17211392,
+            "hwm_max_bytes": 17604608,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": 2215.1836734712124,
+          "sampled_hwm_delta_bytes": -143360
+        },
+        "voter-3": {
+          "old": {
+            "pid": 2685992,
+            "start_ticks": 140736385,
+            "samples": 98,
+            "rss_first_bytes": 16523264,
+            "rss_last_bytes": 16146432,
+            "rss_min_bytes": 16146432,
+            "rss_max_bytes": 16609280,
+            "rss_mean_bytes": 16262666.448979592,
+            "hwm_first_bytes": 16523264,
+            "hwm_last_bytes": 16146432,
+            "hwm_max_bytes": 16609280,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2675908,
+            "start_ticks": 140733741,
+            "samples": 98,
+            "rss_first_bytes": 16506880,
+            "rss_last_bytes": 16310272,
+            "rss_min_bytes": 16203776,
+            "rss_max_bytes": 16625664,
+            "rss_mean_bytes": 16324691.591836736,
+            "hwm_first_bytes": 16506880,
+            "hwm_last_bytes": 16310272,
+            "hwm_max_bytes": 16625664,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": 62025.142857143655,
+          "sampled_hwm_delta_bytes": 16384
+        }
+      },
+      "scope": "Within one concurrency/repetition; voter numbers need not match leader roles; HWM includes setup and summed high waters need not coincide"
+    },
+    {
+      "repeat": 1,
+      "concurrency": 64,
+      "api": "point_get",
+      "aggregate_voters": {
+        "old": {
+          "sampled_mean_rss_bytes": 53889129.56701031,
+          "summed_hwm_bytes": 54673408
+        },
+        "new": {
+          "sampled_mean_rss_bytes": 53436880.49484536,
+          "summed_hwm_bytes": 54218752
+        }
+      },
+      "aggregate_mean_rss_delta_bytes": -452249.07216495275,
+      "aggregate_hwm_delta_bytes": -454656,
+      "per_voter": {
+        "voter-1": {
+          "old": {
+            "pid": 2667168,
+            "start_ticks": 140731344,
+            "samples": 97,
+            "rss_first_bytes": 16932864,
+            "rss_last_bytes": 17043456,
+            "rss_min_bytes": 16588800,
+            "rss_max_bytes": 17473536,
+            "rss_mean_bytes": 17170347.54639175,
+            "hwm_first_bytes": 16932864,
+            "hwm_last_bytes": 17043456,
+            "hwm_max_bytes": 17473536,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2657409,
+            "start_ticks": 140728695,
+            "samples": 97,
+            "rss_first_bytes": 16711680,
+            "rss_last_bytes": 16814080,
+            "rss_min_bytes": 16711680,
+            "rss_max_bytes": 17117184,
+            "rss_mean_bytes": 16919773.69072165,
+            "hwm_first_bytes": 16711680,
+            "hwm_last_bytes": 16814080,
+            "hwm_max_bytes": 17117184,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -250573.85567010194,
+          "sampled_hwm_delta_bytes": -356352
+        },
+        "voter-2": {
+          "old": {
+            "pid": 2667354,
+            "start_ticks": 140731346,
+            "samples": 97,
+            "rss_first_bytes": 18513920,
+            "rss_last_bytes": 19222528,
+            "rss_min_bytes": 18513920,
+            "rss_max_bytes": 19566592,
+            "rss_mean_bytes": 19329995.216494847,
+            "hwm_first_bytes": 18513920,
+            "hwm_last_bytes": 19222528,
+            "hwm_max_bytes": 19566592,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2657414,
+            "start_ticks": 140728696,
+            "samples": 97,
+            "rss_first_bytes": 18620416,
+            "rss_last_bytes": 18927616,
+            "rss_min_bytes": 18620416,
+            "rss_max_bytes": 19787776,
+            "rss_mean_bytes": 19533824.0,
+            "hwm_first_bytes": 18620416,
+            "hwm_last_bytes": 18927616,
+            "hwm_max_bytes": 19787776,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": 203828.7835051529,
+          "sampled_hwm_delta_bytes": 221184
+        },
+        "voter-3": {
+          "old": {
+            "pid": 2667518,
+            "start_ticks": 140731348,
+            "samples": 97,
+            "rss_first_bytes": 17055744,
+            "rss_last_bytes": 17104896,
+            "rss_min_bytes": 17047552,
+            "rss_max_bytes": 17633280,
+            "rss_mean_bytes": 17388786.80412371,
+            "hwm_first_bytes": 17055744,
+            "hwm_last_bytes": 17104896,
+            "hwm_max_bytes": 17633280,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2657419,
+            "start_ticks": 140728698,
+            "samples": 97,
+            "rss_first_bytes": 16580608,
+            "rss_last_bytes": 16789504,
+            "rss_min_bytes": 16580608,
+            "rss_max_bytes": 17313792,
+            "rss_mean_bytes": 16983282.80412371,
+            "hwm_first_bytes": 16580608,
+            "hwm_last_bytes": 16789504,
+            "hwm_max_bytes": 17313792,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -405504.0,
+          "sampled_hwm_delta_bytes": -319488
+        }
+      },
+      "scope": "Within one concurrency/repetition; voter numbers need not match leader roles; HWM includes setup and summed high waters need not coincide"
+    },
+    {
+      "repeat": 1,
+      "concurrency": 64,
+      "api": "batch_get",
+      "aggregate_voters": {
+        "old": {
+          "sampled_mean_rss_bytes": 54440147.13402062,
+          "summed_hwm_bytes": 55066624
+        },
+        "new": {
+          "sampled_mean_rss_bytes": 53814219.21649484,
+          "summed_hwm_bytes": 54247424
+        }
+      },
+      "aggregate_mean_rss_delta_bytes": -625927.9175257757,
+      "aggregate_hwm_delta_bytes": -819200,
+      "per_voter": {
+        "voter-1": {
+          "old": {
+            "pid": 2662296,
+            "start_ticks": 140730019,
+            "samples": 97,
+            "rss_first_bytes": 16707584,
+            "rss_last_bytes": 17473536,
+            "rss_min_bytes": 16707584,
+            "rss_max_bytes": 17707008,
+            "rss_mean_bytes": 17482656.98969072,
+            "hwm_first_bytes": 16707584,
+            "hwm_last_bytes": 17473536,
+            "hwm_max_bytes": 17707008,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2652552,
+            "start_ticks": 140727372,
+            "samples": 97,
+            "rss_first_bytes": 16703488,
+            "rss_last_bytes": 17305600,
+            "rss_min_bytes": 16703488,
+            "rss_max_bytes": 17465344,
+            "rss_mean_bytes": 17277181.36082474,
+            "hwm_first_bytes": 16703488,
+            "hwm_last_bytes": 17305600,
+            "hwm_max_bytes": 17465344,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -205475.6288659796,
+          "sampled_hwm_delta_bytes": -241664
+        },
+        "voter-2": {
+          "old": {
+            "pid": 2662301,
+            "start_ticks": 140730020,
+            "samples": 97,
+            "rss_first_bytes": 18587648,
+            "rss_last_bytes": 19619840,
+            "rss_min_bytes": 18587648,
+            "rss_max_bytes": 19722240,
+            "rss_mean_bytes": 19492272.82474227,
+            "hwm_first_bytes": 18587648,
+            "hwm_last_bytes": 19619840,
+            "hwm_max_bytes": 19722240,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2652557,
+            "start_ticks": 140727373,
+            "samples": 97,
+            "rss_first_bytes": 18759680,
+            "rss_last_bytes": 19136512,
+            "rss_min_bytes": 18759680,
+            "rss_max_bytes": 19406848,
+            "rss_mean_bytes": 19247357.36082474,
+            "hwm_first_bytes": 18759680,
+            "hwm_last_bytes": 19136512,
+            "hwm_max_bytes": 19406848,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -244915.46391752735,
+          "sampled_hwm_delta_bytes": -315392
+        },
+        "voter-3": {
+          "old": {
+            "pid": 2662306,
+            "start_ticks": 140730022,
+            "samples": 97,
+            "rss_first_bytes": 16785408,
+            "rss_last_bytes": 17469440,
+            "rss_min_bytes": 16785408,
+            "rss_max_bytes": 17637376,
+            "rss_mean_bytes": 17465217.31958763,
+            "hwm_first_bytes": 16785408,
+            "hwm_last_bytes": 17469440,
+            "hwm_max_bytes": 17637376,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "new": {
+            "pid": 2652562,
+            "start_ticks": 140727375,
+            "samples": 97,
+            "rss_first_bytes": 16928768,
+            "rss_last_bytes": 17346560,
+            "rss_min_bytes": 16928768,
+            "rss_max_bytes": 17375232,
+            "rss_mean_bytes": 17289680.49484536,
+            "hwm_first_bytes": 16928768,
+            "hwm_last_bytes": 17346560,
+            "hwm_max_bytes": 17375232,
+            "scope": "Sampled RSS during measurement; HWM is process-lifetime high water including setup, not interval-only peak"
+          },
+          "sampled_mean_rss_delta_bytes": -175536.82474226877,
+          "sampled_hwm_delta_bytes": -262144
+        }
+      },
+      "scope": "Within one concurrency/repetition; voter numbers need not match leader roles; HWM includes setup and summed high waters need not coincide"
+    }
+  ],
+  "successful_arms": 24,
+  "owned_lifetimes_exited": 80,
+  "role_source_file_checks": 2331,
+  "resource_samples": 2344,
+  "qualifying_drains": 48,
+  "voter_writer_listener_bindings": 48,
+  "retained_files": 528,
+  "retained_bytes": 88755271,
+  "ended_unix_ns": 1789118729474216503
+}

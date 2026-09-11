@@ -1,0 +1,92 @@
+{
+  "accepted_fixture_control_revision": "6707bcccf15ea788ff231f4263f43a9f73fa63dd",
+  "audit_argv_pending_revision": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+    "--source",
+    "/tmp/kv9-peer-idle-watchdog",
+    "--build",
+    "/tmp/kv9-peer-idle-watchdog-release-first",
+    "--run",
+    "/tmp/kv9-peer-idle-watchdog-process-e2e-first",
+    "--output",
+    "/tmp/kv9-peer-idle-watchdog-process-independent-first/results-first",
+    "--revision",
+    "ROOT_FROZEN_CANDIDATE_REVISION_REQUIRED"
+  ],
+  "audit_executed": false,
+  "auditor": "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+  "auditor_sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+  "candidate_head_at_preparation": "6707bcccf15ea788ff231f4263f43a9f73fa63dd",
+  "candidate_status_at_preparation": [
+    " M crates/raft/src/grpc/direct_body.rs"
+  ],
+  "final_source_readiness": false,
+  "helpers": {
+    "batch_workload_report.py": {
+      "accepted_control_path": "/tmp/kv9-direct-peer-body/scripts/batch_workload_report.py",
+      "candidate_path": "/tmp/kv9-peer-idle-watchdog/scripts/batch_workload_report.py",
+      "sha256": "573e3783e321bde0fd8c5ccba857b9f8522c48d3ddb3f491ec7e07d9f02d3107"
+    },
+    "benchmark.py": {
+      "accepted_control_path": "/tmp/kv9-direct-peer-body/scripts/benchmark.py",
+      "candidate_path": "/tmp/kv9-peer-idle-watchdog/scripts/benchmark.py",
+      "sha256": "c2cfda6ed964f1f86a776b1ffe32f3f94a05637bff6ff0f2be36842cbe493a36"
+    },
+    "history/checker.py": {
+      "accepted_control_path": "/tmp/kv9-direct-peer-body/scripts/history/checker.py",
+      "candidate_path": "/tmp/kv9-peer-idle-watchdog/scripts/history/checker.py",
+      "sha256": "b8a43a58d321868d7cbb3d6038eab1f6190cc1600c29246b2f91c09f946da9bc"
+    },
+    "native-batch-e2e.py": {
+      "accepted_control_path": "/tmp/kv9-direct-peer-body/scripts/native-batch-e2e.py",
+      "candidate_path": "/tmp/kv9-peer-idle-watchdog/scripts/native-batch-e2e.py",
+      "sha256": "c8248ac6525235c9ccf1147b02db1cf468172f4233f8c2c80ffb2e3e2325347f"
+    },
+    "root_provision.py": {
+      "accepted_control_path": "/tmp/kv9-direct-peer-body/scripts/root_provision.py",
+      "candidate_path": "/tmp/kv9-peer-idle-watchdog/scripts/root_provision.py",
+      "sha256": "7ef9438fa206828fc15bb4cc1f85c77df701517e3a0f95db8a1cc742c4582572"
+    },
+    "wal_layout.py": {
+      "accepted_control_path": "/tmp/kv9-direct-peer-body/scripts/wal_layout.py",
+      "candidate_path": "/tmp/kv9-peer-idle-watchdog/scripts/wal_layout.py",
+      "sha256": "5ac7709ecd288dd1792164e450ed632dcacd9bdacb92a880bfb9305c1b2bd61d"
+    },
+    "workload_report.py": {
+      "accepted_control_path": "/tmp/kv9-direct-peer-body/scripts/workload_report.py",
+      "candidate_path": "/tmp/kv9-peer-idle-watchdog/scripts/workload_report.py",
+      "sha256": "7b4b7abd1257c3bed790c7c5c3b5eaae021b6633b3cc261140050354fbcede78"
+    }
+  },
+  "holds": "No Cargo, tests, runtime, Docker, fault, timing or audit execution. Root owns build and first runtime; independent audit awaits explicit terminal release.",
+  "preparation_complete": true,
+  "prior_wrapper": "/tmp/kv9-direct-peer-body-process-preparation/runner.py",
+  "prior_wrapper_sha256": "284b162a7dd4afa8bbb3a9ae2fd71c7a97b909f6931e173dadcfe96442467f75",
+  "revision_note": "Candidate production source is not frozen. The observed base HEAD and helper hashes are preparation evidence only. Root must supply the clean frozen candidate revision, exact build identity and terminal first-runtime session/exit before audit.",
+  "revision_pending": true,
+  "runtime_argv_for_root": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-peer-idle-watchdog-process-preparation/runner.py",
+    "--build",
+    "/tmp/kv9-peer-idle-watchdog-release-first",
+    "--output",
+    "/tmp/kv9-peer-idle-watchdog-process-e2e-first"
+  ],
+  "runtime_executed": false,
+  "scope": "Unchanged local three-voter ordinary WAL correctness: default streaming and explicit unary, full atomic batch/point histories, contained leader-loss/original-directory restart windows, source/default-feature/executable/lifetime bindings, serial fresh export advances and final healthy empty drain. Unknown writes may have earlier safe refusals; no replay after uncertainty. No performance, Chaos Mesh, cross-host or power-loss claim.",
+  "wrapper": "/tmp/kv9-peer-idle-watchdog-process-preparation/runner.py",
+  "wrapper_sha256": "f38199147b9b5890cca272b9d4ff2daa07589383729dacba5a9ac241c5132dbb"
+}

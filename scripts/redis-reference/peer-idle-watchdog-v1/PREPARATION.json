@@ -1,0 +1,108 @@
+{
+  "ancestry": {
+    "audit.py": {
+      "byte_unchanged": false,
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/audit.py",
+      "predecessor_sha256": "2c182758cdcb0668d133e9efc1adc06d3b610048917d23832607294543739d62",
+      "prepared_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/audit.py",
+      "prepared_sha256": "a3115754ce288291d984a893b2d407c59912b06118464e5539a77ed6f65ad984"
+    },
+    "driver-arguments.json": {
+      "byte_unchanged": true,
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/driver-arguments.json",
+      "predecessor_sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+      "prepared_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/driver-arguments.json",
+      "prepared_sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df"
+    },
+    "isolate-and-run.py": {
+      "byte_unchanged": true,
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/isolate-and-run.py",
+      "predecessor_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "prepared_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/isolate-and-run.py",
+      "prepared_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "matched-driver.py": {
+      "byte_unchanged": false,
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/matched-driver.py",
+      "predecessor_sha256": "7be1ffee291a28c7500f6e1ad58f5f6dea34befcf69eff2d48c56db86796425a",
+      "prepared_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/matched-driver.py",
+      "prepared_sha256": "040ad1e50310aa035f45ef49b6c8aca18396d6861e7308d07de188070029455b"
+    },
+    "test_audit_contract.py": {
+      "byte_unchanged": false,
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/test_audit_contract.py",
+      "predecessor_sha256": "5090400ddb9759795d415ae4b6e7da31a5518d39f9d79b518038c8996445452a",
+      "prepared_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/test_audit_contract.py",
+      "prepared_sha256": "1c5820fc5550ac98c751745cd31f8278a602a108301d66a62c1605ad1fe371c5"
+    },
+    "test_driver_contract.py": {
+      "byte_unchanged": true,
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/test_driver_contract.py",
+      "predecessor_sha256": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a",
+      "prepared_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/test_driver_contract.py",
+      "prepared_sha256": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a"
+    }
+  },
+  "attribution": "Candidate selection against accepted5ee control; not causal attribution against6707.",
+  "candidate_build": "/tmp/kv9-peer-idle-watchdog-release-first",
+  "candidate_pins_pending": true,
+  "candidate_source": "/tmp/kv9-peer-idle-watchdog",
+  "control_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "diff_sha256": "9ae4dcb682cd2aaecbafb98165340c6bc62ab342009eef0fa1363259b7ffb789",
+  "execution": "No contract tests, audit, runtime, workload, isolation, Docker, build or timing execution. Syntax parsed without importing or executing copied modules.",
+  "holds": "Wait for explicit root candidate commit/build pins, then separately reviewed execution release.",
+  "inherited_candidate_pins_do_not_accept": {
+    "candidate_manifest_sha256": "029b7653ff227d4f4e15ef1de1236da2b6a824ca7e3cf0ab27ee3ac54640ee9b",
+    "candidate_revision": "6707bcccf15ea788ff231f4263f43a9f73fa63dd",
+    "candidate_server_sha256": "1c4ceb3b95ecca2ad900f65641c73ad097a13afbeba5304b8b8ac63358ff3a63"
+  },
+  "pending_pin_locations": {
+    "candidate_manifest_sha256": [
+      {
+        "file": "matched-driver.py",
+        "line": 37
+      },
+      {
+        "file": "audit.py",
+        "line": 55
+      },
+      {
+        "file": "test_audit_contract.py",
+        "line": 143
+      }
+    ],
+    "candidate_revision": [
+      {
+        "file": "matched-driver.py",
+        "line": 29
+      },
+      {
+        "file": "audit.py",
+        "line": 33
+      },
+      {
+        "file": "test_audit_contract.py",
+        "line": 140
+      }
+    ],
+    "candidate_server_sha256": [
+      {
+        "file": "matched-driver.py",
+        "line": 36
+      },
+      {
+        "file": "audit.py",
+        "line": 38
+      },
+      {
+        "file": "test_audit_contract.py",
+        "line": 141
+      }
+    ]
+  },
+  "preparation_complete": false,
+  "preserved_design": "Exactly24 cohorts: concurrency1 and64; six old/new point/BatchGet(1)/RedisGET/MGET arms; two reversed repeats; unchanged5000ms windows,4096keys,128B values,128warmup calls,10Mcap,1500ms deadline, read-only closed-loop load and all validators.",
+  "protocol_id": "kv9-peer-idle-watchdog-c1-c64-v1",
+  "ready_to_execute": false,
+  "reason": "Only candidate paths and protocol identity are adapted. Inherited6707 revision/server/manifest pins intentionally remain and must be replaced after root freezes the new source/build."
+}

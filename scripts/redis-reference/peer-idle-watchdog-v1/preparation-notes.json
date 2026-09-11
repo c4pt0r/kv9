@@ -1,0 +1,19 @@
+{
+  "root_smoke_readback_preparation": [
+    {
+      "initial_inspection_exit_code": 1,
+      "error": "KeyError: 'complete' at Redis cleanup inspection",
+      "reason": "The inline exploratory readback incorrectly applied the native cleanup schema to the Redis cleanup file. The executed driver already validates the two distinct schemas.",
+      "correction": "Inspect native complete/absent and Redis errors/pid_absent_after_reap explicitly, requiring expected child counts and exit codes.",
+      "raw_or_frozen_helper_modified": false,
+      "fixture_rerun": false
+    }
+  ],
+  "group_counter_readback_preparation": {
+    "initial_inspection_exit_code": 1,
+    "error": "TypeError subtracting status counter strings",
+    "correction": "Parse only unsigned decimal strings or nonnegative integer counters, explicitly rejecting booleans and other types.",
+    "raw_or_frozen_helper_modified": false,
+    "fixture_rerun": false
+  }
+}

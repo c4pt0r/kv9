@@ -1,0 +1,18 @@
+{
+  "smoke_session": 86110,
+  "exit_code": 0,
+  "complete": true,
+  "cohorts": 12,
+  "measured_calls": 10657726,
+  "outcomes": {
+    "success": 10657726,
+    "refused": 0,
+    "unknown_write": 0,
+    "read_failure": 0,
+    "client_rejected": 0
+  },
+  "owned_lifetimes_exited": 40,
+  "helpers_unchanged": true,
+  "timing_acceptance": false,
+  "matrix_sha256": "1c3807bd51381dd794df8de41209c52bf3d6a585ad888b178759daa34472277d"
+}

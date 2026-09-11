@@ -1,0 +1,15 @@
+{
+  "all_owned_commands_terminal": true,
+  "audit_log_sha256": "11df0a847793d047286c631c1b1ff8b33d887c42d8c14c75cc62a45c88ee451b",
+  "audit_session": 77755,
+  "audit_sha256": "b23a9ae4ac1e639f834d3e7fb999e55ff9c0bdb6673763d141c6c30ebb84f343",
+  "exit_code": 0,
+  "frozen_preparation_inputs_unchanged": 24,
+  "input_inventory_sha256": "05f8e868c81b8e1de8fd92a62c39e0f5c2f3c13be85a90d1f9c5eaa2f8cbfa1f",
+  "invocation_sha256": "8edada3873a7891e9fd3eb53cd840c0eb081b028417507acbcbcfc0b9e326981",
+  "recorded_ns": 1789118803229920717,
+  "root_timing_exit_code": 0,
+  "root_timing_session": 3097,
+  "statistics_markdown_sha256": "a3a180af661a85b93800322077d26f2f08c001215fb9e431f0c4c0ae8bacba9e",
+  "statistics_sha256": "8b0a359c5d566e1f2c2f00176fee3c516ac4dc1f613e885c881a1da9de03229a"
+}

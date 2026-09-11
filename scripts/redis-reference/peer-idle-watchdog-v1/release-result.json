@@ -1,0 +1,9 @@
+{
+  "revision": "f62c08ed9dc59bf56336a64a24c76c2b775f634e",
+  "server_sha256": "c050cdf9b109816c28a186a3e954e4fe32a6488288f1f2398c68f83bd6d4609b",
+  "manifest_sha256": "a0a3258c5dcaf4eeb1bb9c35f4e07b32f42d1fbc7d2253e76b442ec9dc3e83e1",
+  "source_count": 588,
+  "session": 42168,
+  "exit_code": 0,
+  "workload_sha256": "644cade5f639f2795ee1287a4ee4d03d1b66081e8c5f6dc05bfe6367ea1a2e3a"
+}

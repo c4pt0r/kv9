@@ -1,0 +1,75 @@
+{
+  "ancestry": {
+    "audit.py": {
+      "comparison": "Exact original bytes after allowlisted candidate path/protocol/revision/server/manifest substitutions only",
+      "final_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/audit.py",
+      "final_sha256": "6fade55411d5ac02d57fef87801fbff96f57cb74d8a4ddce394ddab5cf9fcc52",
+      "pre_pin_sha256": "a3115754ce288291d984a893b2d407c59912b06118464e5539a77ed6f65ad984",
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/audit.py",
+      "predecessor_sha256": "2c182758cdcb0668d133e9efc1adc06d3b610048917d23832607294543739d62"
+    },
+    "driver-arguments.json": {
+      "comparison": "Exact original bytes after allowlisted candidate path/protocol/revision/server/manifest substitutions only",
+      "final_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/driver-arguments.json",
+      "final_sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+      "pre_pin_sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/driver-arguments.json",
+      "predecessor_sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df"
+    },
+    "isolate-and-run.py": {
+      "comparison": "Exact original bytes after allowlisted candidate path/protocol/revision/server/manifest substitutions only",
+      "final_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/isolate-and-run.py",
+      "final_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "pre_pin_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/isolate-and-run.py",
+      "predecessor_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "matched-driver.py": {
+      "comparison": "Exact original bytes after allowlisted candidate path/protocol/revision/server/manifest substitutions only",
+      "final_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/matched-driver.py",
+      "final_sha256": "ebaa51b3598706748ab3bcfa979f39f17ee6f120eb74a6df5d97e13a5a108ef1",
+      "pre_pin_sha256": "040ad1e50310aa035f45ef49b6c8aca18396d6861e7308d07de188070029455b",
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/matched-driver.py",
+      "predecessor_sha256": "7be1ffee291a28c7500f6e1ad58f5f6dea34befcf69eff2d48c56db86796425a"
+    },
+    "test_audit_contract.py": {
+      "comparison": "Exact original bytes after allowlisted candidate path/protocol/revision/server/manifest substitutions only",
+      "final_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/test_audit_contract.py",
+      "final_sha256": "065d009942f51882831702d68183afdbf2ed2edc5a526dbdeeda2ecd50c0f743",
+      "pre_pin_sha256": "1c5820fc5550ac98c751745cd31f8278a602a108301d66a62c1605ad1fe371c5",
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/test_audit_contract.py",
+      "predecessor_sha256": "5090400ddb9759795d415ae4b6e7da31a5518d39f9d79b518038c8996445452a"
+    },
+    "test_driver_contract.py": {
+      "comparison": "Exact original bytes after allowlisted candidate path/protocol/revision/server/manifest substitutions only",
+      "final_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/test_driver_contract.py",
+      "final_sha256": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a",
+      "pre_pin_sha256": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a",
+      "predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/test_driver_contract.py",
+      "predecessor_sha256": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a"
+    }
+  },
+  "contract_tests_pending": true,
+  "final_diff_sha256": "b842620a629ba136ce846ff4304c814174f2a22484c5843ebc272912fc7faba3",
+  "initial_preparation_sha256": "43d9bd56c2bb202318a92e1d9dabae82fb5d93e36bcf3fb00b8eba825c8e7298",
+  "pins": {
+    "exit_code": 0,
+    "manifest_sha256": "a0a3258c5dcaf4eeb1bb9c35f4e07b32f42d1fbc7d2253e76b442ec9dc3e83e1",
+    "revision": "f62c08ed9dc59bf56336a64a24c76c2b775f634e",
+    "server_sha256": "c050cdf9b109816c28a186a3e954e4fe32a6488288f1f2398c68f83bd6d4609b",
+    "session": 42168,
+    "source_count": 588,
+    "workload_sha256": "644cade5f639f2795ee1287a4ee4d03d1b66081e8c5f6dc05bfe6367ea1a2e3a"
+  },
+  "preserved_preparation": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/before-final-pins",
+  "protocol_predecessor_path": "/tmp/kv9-direct-peer-body-comparison-preparation/protocol.json",
+  "protocol_predecessor_sha256": "097997872966f78d2145c1fd5a38fdc599c5177b3807e5ae932b9e3aecd84fe7",
+  "protocol_sha256": "1fbc214d31b75860755a20e99fd6c2e9c1ff4314bc3f9fd97892fc9cc3c58ac3",
+  "release_result": "/tmp/kv9-peer-idle-watchdog-validation-first/release-result.json",
+  "release_result_sha256": "124ef287e9e8ced998c906a856b634293d994ffbccf5b1d9bf4b95048257b1c2",
+  "scope": "Exact pin/path/protocol-only derivative; all 24 cohorts, clients, accepted5ee control and validators unchanged. This is selection against5ee, not causal attribution against6707.",
+  "source_clean": true,
+  "source_files": 588,
+  "source_manifest_sha256": "a0a3258c5dcaf4eeb1bb9c35f4e07b32f42d1fbc7d2253e76b442ec9dc3e83e1",
+  "source_server_sha256": "c050cdf9b109816c28a186a3e954e4fe32a6488288f1f2398c68f83bd6d4609b"
+}

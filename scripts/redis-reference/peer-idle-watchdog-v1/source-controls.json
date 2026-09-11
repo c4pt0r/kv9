@@ -1,0 +1,1018 @@
+{
+  "sources": {
+    "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+    "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+    "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+    "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+  },
+  "controls": [
+    {
+      "name": "missing-route-notification",
+      "path": "crates/raft/src/grpc.rs",
+      "test": "grpc::tests::registered_address_change_replaces_live_peer_stream",
+      "expected_failure": "new configured endpoint received no traffic",
+      "mutant_sha256": "e8d12107a8faec52091a4636e9983cff837f061040eb124ceae92d86a6032997",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::tests::registered_address_change_replaces_live_peer_stream",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::tests::registered_address_change_replaces_live_peer_stream",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "e8d12107a8faec52091a4636e9983cff837f061040eb124ceae92d86a6032997",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::tests::registered_address_change_replaces_live_peer_stream",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "address-reuse-admits-old-generation",
+      "path": "crates/raft/src/grpc/direct_body.rs",
+      "test": "grpc::direct_body::tests::route_generation_filter_rejects_old_queue_entries_even_after_address_reuse",
+      "expected_failure": "assertion `left == right` failed",
+      "mutant_sha256": "e5e94a9bc361fa0fb278f4d475eef25c834058c40f9c05145cd227aef75fbf4f",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::route_generation_filter_rejects_old_queue_entries_even_after_address_reuse",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::route_generation_filter_rejects_old_queue_entries_even_after_address_reuse",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "e5e94a9bc361fa0fb278f4d475eef25c834058c40f9c05145cd227aef75fbf4f",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::route_generation_filter_rejects_old_queue_entries_even_after_address_reuse",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "replace-live-worker-on-every-send",
+      "path": "crates/raft/src/grpc.rs",
+      "test": "grpc::tests::route_updates_keep_one_owned_worker_and_same_address_is_idempotent",
+      "expected_failure": "route update spawned another worker",
+      "mutant_sha256": "fa96f6171e7c79319ec2a6aabba04dbff9238ac07b4a430c68c2137cdfc7aef1",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::tests::route_updates_keep_one_owned_worker_and_same_address_is_idempotent",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::tests::route_updates_keep_one_owned_worker_and_same_address_is_idempotent",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "fa96f6171e7c79319ec2a6aabba04dbff9238ac07b4a430c68c2137cdfc7aef1",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::tests::route_updates_keep_one_owned_worker_and_same_address_is_idempotent",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "tcp-drop-retains-listener",
+      "path": "crates/raft/src/transport.rs",
+      "test": "transport::tests::dropping_tcp_transport_closes_its_listener",
+      "expected_failure": "dropped TCP transport retained its listener",
+      "mutant_sha256": "eca7eb9facbb3b55b4ef42ed8e82d302ce22a94de7fa44974a67a52426c3c793",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "transport::tests::dropping_tcp_transport_closes_its_listener",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "transport::tests::dropping_tcp_transport_closes_its_listener",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "eca7eb9facbb3b55b4ef42ed8e82d302ce22a94de7fa44974a67a52426c3c793"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "transport::tests::dropping_tcp_transport_closes_its_listener",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "tcp-retains-old-connection",
+      "path": "crates/raft/src/transport.rs",
+      "test": "transport::tests::tcp_address_update_moves_delivery_and_shutdown_drops_connections",
+      "expected_failure": "new endpoint received no post-update message",
+      "mutant_sha256": "7dcba1b515ed3bc760e910df2c19d7a6476d254f550f3c82f81751c13dbb2627",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "transport::tests::tcp_address_update_moves_delivery_and_shutdown_drops_connections",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "transport::tests::tcp_address_update_moves_delivery_and_shutdown_drops_connections",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "7dcba1b515ed3bc760e910df2c19d7a6476d254f550f3c82f81751c13dbb2627"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "transport::tests::tcp_address_update_moves_delivery_and_shutdown_drops_connections",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "stale-body-polls-replacement-queue",
+      "path": "crates/raft/src/grpc/direct_body.rs",
+      "test": "grpc::direct_body::tests::same_route_reconnect_fences_retained_body_and_its_drop",
+      "expected_failure": "assertion failed: matches!(poll_body(&mut old_body, &intruder_waker), Poll::Ready(None))",
+      "mutant_sha256": "6a57ced9f86f4d984525c486e27c7ed402332931425da5120900338943c17102",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::same_route_reconnect_fences_retained_body_and_its_drop",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::same_route_reconnect_fences_retained_body_and_its_drop",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "6a57ced9f86f4d984525c486e27c7ed402332931425da5120900338943c17102",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::same_route_reconnect_fences_retained_body_and_its_drop",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "stale-drop-invalidates-replacement",
+      "path": "crates/raft/src/grpc/direct_body.rs",
+      "test": "grpc::direct_body::tests::same_route_reconnect_fences_retained_body_and_its_drop",
+      "expected_failure": "assertion failed: owns(&rx.0.state.lock().unwrap(), &new_session.token)",
+      "mutant_sha256": "4013d43de2559249155f14c5bed13ef9498c7740d58dfa52bc3d07a59ceb9c7c",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::same_route_reconnect_fences_retained_body_and_its_drop",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::same_route_reconnect_fences_retained_body_and_its_drop",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "4013d43de2559249155f14c5bed13ef9498c7740d58dfa52bc3d07a59ceb9c7c",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::same_route_reconnect_fences_retained_body_and_its_drop",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "enqueue-postpones-stall-deadline",
+      "path": "crates/raft/src/grpc/direct_body.rs",
+      "test": "grpc::direct_body::tests::sends_stale_inspection_and_notifications_do_not_reset_stall_age",
+      "expected_failure": "stale traffic reset the backlog age",
+      "mutant_sha256": "c785530e059b47fef58d8f19a0cbecf2f4adde7c10e7e0d9e78e3c60548afcf6",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::sends_stale_inspection_and_notifications_do_not_reset_stall_age",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::sends_stale_inspection_and_notifications_do_not_reset_stall_age",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "c785530e059b47fef58d8f19a0cbecf2f4adde7c10e7e0d9e78e3c60548afcf6",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::sends_stale_inspection_and_notifications_do_not_reset_stall_age",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ready-body-restores-cooperative-budget",
+      "path": "crates/raft/src/grpc/direct_body.rs",
+      "test": "grpc::direct_body::tests::ready_batches_exhaust_task_budget_without_dequeueing_on_pending",
+      "expected_failure": "repeated Ready batches bypassed Tokio's cooperative budget",
+      "mutant_sha256": "aaefe08d02196fce94a1cfaffd2f87b1d26562b98846c559f3816e3eee43d2dc",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::ready_batches_exhaust_task_budget_without_dequeueing_on_pending",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::ready_batches_exhaust_task_budget_without_dequeueing_on_pending",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "aaefe08d02196fce94a1cfaffd2f87b1d26562b98846c559f3816e3eee43d2dc",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::ready_batches_exhaust_task_budget_without_dequeueing_on_pending",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "producer-notifies-idle-watchdog",
+      "path": "crates/raft/src/grpc/direct_body.rs",
+      "test": "grpc::direct_body::tests::producer_wakes_body_but_not_idle_watchdog_across_empty_transitions",
+      "expected_failure": "producer woke the independent idle watchdog",
+      "mutant_sha256": "7d1c084e2e37526b5217c03b14ba96c094cecacb4daca812e7c18fff2778c96a",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::producer_wakes_body_but_not_idle_watchdog_across_empty_transitions",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::producer_wakes_body_but_not_idle_watchdog_across_empty_transitions",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "7d1c084e2e37526b5217c03b14ba96c094cecacb4daca812e7c18fff2778c96a",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::producer_wakes_body_but_not_idle_watchdog_across_empty_transitions",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "idle-watchdog-has-no-timer",
+      "path": "crates/raft/src/grpc/direct_body.rs",
+      "test": "grpc::direct_body::tests::real_unpolled_backlog_after_idle_arming_expires_without_producer_notify",
+      "expected_failure": "real unpolled backlog missed its unchanged progress deadline",
+      "mutant_sha256": "74151ac59fa82d77bfe5d9ba957d680c5c58c11a699e8d792989d820d615e4dd",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::real_unpolled_backlog_after_idle_arming_expires_without_producer_notify",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::real_unpolled_backlog_after_idle_arming_expires_without_producer_notify",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "74151ac59fa82d77bfe5d9ba957d680c5c58c11a699e8d792989d820d615e4dd",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::real_unpolled_backlog_after_idle_arming_expires_without_producer_notify",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "idle-timer-declares-empty-queue-stalled",
+      "path": "crates/raft/src/grpc/direct_body.rs",
+      "test": "grpc::direct_body::tests::persistent_idle_watchdog_checks_twice_despite_repeated_polls_without_reconnect",
+      "expected_failure": "healthy persistent idle watchdog requested reconnect",
+      "mutant_sha256": "6838b4d7e7ff1d1ccc37d987b9d5e3055dae23f562a445c27c56d7e44c2f52b1",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::persistent_idle_watchdog_checks_twice_despite_repeated_polls_without_reconnect",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::persistent_idle_watchdog_checks_twice_despite_repeated_polls_without_reconnect",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "6838b4d7e7ff1d1ccc37d987b9d5e3055dae23f562a445c27c56d7e44c2f52b1",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::persistent_idle_watchdog_checks_twice_despite_repeated_polls_without_reconnect",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "sender-close-omits-watchdog-notification",
+      "path": "crates/raft/src/grpc/direct_body.rs",
+      "test": "grpc::direct_body::tests::idle_sender_receiver_and_body_closure_notify_without_waiting_for_timer",
+      "expected_failure": "lifecycle closure lost its prompt watchdog notification: sender",
+      "mutant_sha256": "0ae44f8ab20fedb310b91b93f7fab2e8b744fb5651a943ef87fa347db1ef1c25",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::idle_sender_receiver_and_body_closure_notify_without_waiting_for_timer",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::idle_sender_receiver_and_body_closure_notify_without_waiting_for_timer",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "0ae44f8ab20fedb310b91b93f7fab2e8b744fb5651a943ef87fa347db1ef1c25",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::idle_sender_receiver_and_body_closure_notify_without_waiting_for_timer",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    },
+    {
+      "name": "old-timer-ignores-current-backlog-progress",
+      "path": "crates/raft/src/grpc/direct_body.rs",
+      "test": "grpc::direct_body::tests::valid_batch_progress_resets_armed_budget_and_empty_queue_clears_it",
+      "expected_failure": "an already-armed old deadline ignored real dequeue progress",
+      "mutant_sha256": "3f24515bab675e02884d2f96204e4c655344dbd03bbc6311a486edff4aae675e",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::valid_batch_progress_resets_armed_budget_and_empty_queue_clears_it",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::valid_batch_progress_resets_armed_budget_and_empty_queue_clears_it",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 101,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "3f24515bab675e02884d2f96204e4c655344dbd03bbc6311a486edff4aae675e",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "grpc::direct_body::tests::valid_batch_progress_resets_armed_budget_and_empty_queue_clears_it",
+            "--",
+            "--exact"
+          ],
+          "exit_code": 0,
+          "sources": {
+            "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+            "crates/raft/src/grpc/direct_body.rs": "1c758a1b0e41ec5de11f06e919b50f962e2072fb463cc50e12523dfa0fefb0fa",
+            "crates/raft/src/grpc/direct_body/tests.rs": "e21f879f5b62737b4c331644d8e56a0a14a14c3a009b84ab204b944701133389",
+            "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,9 @@
 # Direct peer body: rejected at both c1 and c64
 
+Follow-up: the [bounded idle-watchdog candidate](PEER-IDLE-WATCHDOG-SCREENING.md)
+completed its matched screen and was also rejected for insufficient throughput
+and mean latency, despite better p99. Accepted control `5ee897a` is unchanged.
+
 Reject candidate `6707bcccf15ea788ff231f4263f43a9f73fa63dd` as the next
 performance increment. **All eight matched throughput comparisons regress and
 all eight mean latencies increase.** GET throughput changes by -4.093% / -3.760%

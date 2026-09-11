@@ -1,0 +1,11 @@
+test_fixed_width_dataset_prefix_and_whole_reversal (__main__.DriverContract.test_fixed_width_dataset_prefix_and_whole_reversal) ... ok
+test_full_matrix_accepted_by_original_client_contracts (__main__.DriverContract.test_full_matrix_accepted_by_original_client_contracts) ... ok
+test_mismatched_api_concurrency_or_dataset_rejected (__main__.DriverContract.test_mismatched_api_concurrency_or_dataset_rejected) ... ok
+test_native_capacity_excess_is_rejected (__main__.DriverContract.test_native_capacity_excess_is_rejected) ... ok
+test_point_get_cannot_silently_become_batch_work (__main__.DriverContract.test_point_get_cannot_silently_become_batch_work) ... ok
+test_smoke_exercises_both_concurrency_boundaries (__main__.DriverContract.test_smoke_exercises_both_concurrency_boundaries) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.002s
+
+OK

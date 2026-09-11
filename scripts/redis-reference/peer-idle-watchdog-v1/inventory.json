@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "candidate_revision": "f62c08ed9dc59bf56336a64a24c76c2b775f634e",
+  "accepted_control_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "retained": [
+    {
+      "path": "matched-driver.py",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/matched-driver.py",
+      "bytes": 45081,
+      "sha256": "ebaa51b3598706748ab3bcfa979f39f17ee6f120eb74a6df5d97e13a5a108ef1"
+    },
+    {
+      "path": "audit.py",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/audit.py",
+      "bytes": 39355,
+      "sha256": "6fade55411d5ac02d57fef87801fbff96f57cb74d8a4ddce394ddab5cf9fcc52"
+    },
+    {
+      "path": "isolate-and-run.py",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/isolate-and-run.py",
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    {
+      "path": "driver-arguments.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/driver-arguments.json",
+      "bytes": 209,
+      "sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df"
+    },
+    {
+      "path": "protocol.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/protocol.json",
+      "bytes": 20750,
+      "sha256": "1fbc214d31b75860755a20e99fd6c2e9c1ff4314bc3f9fd97892fc9cc3c58ac3"
+    },
+    {
+      "path": "test_driver_contract.py",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/test_driver_contract.py",
+      "bytes": 3451,
+      "sha256": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a"
+    },
+    {
+      "path": "test_audit_contract.py",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/test_audit_contract.py",
+      "bytes": 8281,
+      "sha256": "065d009942f51882831702d68183afdbf2ed2edc5a526dbdeeda2ecd50c0f743"
+    },
+    {
+      "path": "driver-contract-first.log",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/driver-contract-first.log",
+      "bytes": 888,
+      "sha256": "8b7b6ff0ed3b47595d2aafae0eff0940b889553240c04b14ac2aa61b137e90b7"
+    },
+    {
+      "path": "audit-contract-first.log",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/audit-contract-first.log",
+      "bytes": 1403,
+      "sha256": "77275779495b436d33e6cfd66028c36852e6f55f173473ab84f5a765ef6e76a3"
+    },
+    {
+      "path": "PREPARATION.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/PREPARATION.json",
+      "bytes": 5090,
+      "sha256": "43d9bd56c2bb202318a92e1d9dabae82fb5d93e36bcf3fb00b8eba825c8e7298"
+    },
+    {
+      "path": "READINESS.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/READINESS.json",
+      "bytes": 3599,
+      "sha256": "e4d421d1d6160cfc1b61b6a1cc7165243bc529390385e7c9ac8b7361d03172b4"
+    },
+    {
+      "path": "final-pin-binding.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/final-pin-binding.json",
+      "bytes": 5455,
+      "sha256": "741eb9065aaa15edae9deed6de76a79a42718050950e7e3c62e22db882093f06"
+    },
+    {
+      "path": "final-preparation.diff",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/final-preparation.diff",
+      "bytes": 8487,
+      "sha256": "b842620a629ba136ce846ff4304c814174f2a22484c5843ebc272912fc7faba3"
+    },
+    {
+      "path": "frozen-inputs.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/frozen-inputs.json",
+      "bytes": 2361,
+      "sha256": "b69c586c8df20e141adc4de13a9bae2e09308c75a0599ae580ad6e4bfa7c2a2b"
+    },
+    {
+      "path": "root-smoke-release-first.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/root-smoke-release-first.json",
+      "bytes": 1767,
+      "sha256": "4fa5bfa16b7b19f44b648e773a72e1421494ab1496c77c2b3428ed58f8d7dc6d"
+    },
+    {
+      "path": "source-review.md",
+      "source": "/tmp/kv9-peer-idle-watchdog-source-review.md",
+      "bytes": 12343,
+      "sha256": "97ababe8400ea0ee5e82756720cf8f7e9ad9d8594f948eb1b5373827a8de1e03"
+    },
+    {
+      "path": "source-gates.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-validation-first/result.json",
+      "bytes": 1324,
+      "sha256": "eb83fc8c200ba96952b419bcf520bc67c2973dffcb567b8e92fb96bd89806e95"
+    },
+    {
+      "path": "source-controls.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-route-controls-first/manifest.json",
+      "bytes": 43272,
+      "sha256": "4fe438eec1dabf10ee51be45529d3191f2d1984b6c5e27397775dc6b66a1861c"
+    },
+    {
+      "path": "release-result.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-validation-first/release-result.json",
+      "bytes": 387,
+      "sha256": "124ef287e9e8ced998c906a856b634293d994ffbccf5b1d9bf4b95048257b1c2"
+    },
+    {
+      "path": "process-audit.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-process-independent-first/results-first/audit.json",
+      "bytes": 10554,
+      "sha256": "5225482714e9c7d909bb3b954d3ee3b50b8db3491e73bffeecd80f35a8e06092"
+    },
+    {
+      "path": "process-runner.py",
+      "source": "/tmp/kv9-peer-idle-watchdog-process-preparation/runner.py",
+      "bytes": 716,
+      "sha256": "f38199147b9b5890cca272b9d4ff2daa07589383729dacba5a9ac241c5132dbb"
+    },
+    {
+      "path": "process-preparation.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-process-preparation/PREPARATION.json",
+      "bytes": 4711,
+      "sha256": "3d29fe9f500f680b287ad7cebeb8d80ca7c14ae2f23e1dbc1b39edd68983fab6"
+    },
+    {
+      "path": "process-root-terminal.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-process-preparation/root-terminal-first.json",
+      "bytes": 201,
+      "sha256": "f6babab17a650e5bca5c572cf8150a04e63171f475a8dd2f661d615cc18579e4"
+    },
+    {
+      "path": "smoke-readback-first.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/smoke-readback-first.json",
+      "bytes": 428,
+      "sha256": "ad9b8fc7fbf28c499c75f3e0b5dadbe2c1e16967c99457e11d9b3b61f218e5e4"
+    },
+    {
+      "path": "root-timing-release-first.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/root-timing-release-first.json",
+      "bytes": 1363,
+      "sha256": "bf4d2430d844a2387e86f787be62c0f745c9437a021e5a3e9578d3fe1cf5df90"
+    },
+    {
+      "path": "preparation-notes.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/preparation-notes.json",
+      "bytes": 938,
+      "sha256": "6ab75c6c0474cf1e649f9e0f7a2e80af4699513612031ad287fbb54a1daa55f3"
+    },
+    {
+      "path": "root-statistics-pre-audit.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/root-statistics-pre-audit.json",
+      "bytes": 11412,
+      "sha256": "59121f777aff7fb40c1a258c38808d7f2b1bbc8604e3f67cef781bff1d84bf58"
+    },
+    {
+      "path": "statistics-first.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/statistics-first.json",
+      "bytes": 11929,
+      "sha256": "8b0a359c5d566e1f2c2f00176fee3c516ac4dc1f613e885c881a1da9de03229a"
+    },
+    {
+      "path": "statistics-first.md",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/statistics-first.md",
+      "bytes": 2140,
+      "sha256": "a3a180af661a85b93800322077d26f2f08c001215fb9e431f0c4c0ae8bacba9e"
+    },
+    {
+      "path": "audit-invocation-first.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/audit-invocation-first.json",
+      "bytes": 1138,
+      "sha256": "8edada3873a7891e9fd3eb53cd840c0eb081b028417507acbcbcfc0b9e326981"
+    },
+    {
+      "path": "audit-terminal-first.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/audit-terminal-first.json",
+      "bytes": 784,
+      "sha256": "107fc46374eb0273793c259b4b23bc4ce327c1b01af045a7670caf6a511596f6"
+    },
+    {
+      "path": "selection.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/selection.json",
+      "bytes": 961,
+      "sha256": "e24ef07ad219ed094cb5089a9c320341ce9bf3582ccae67d09be106ad497ec76"
+    },
+    {
+      "path": "READOUT.md",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/READOUT.md",
+      "bytes": 2694,
+      "sha256": "39aadd9938cb9d4f3b41d1b3787a0bca3a3cdcfebd7d0cf51378e4457122a468"
+    },
+    {
+      "path": "read-group-amortization.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/read-group-amortization.json",
+      "bytes": 18261,
+      "sha256": "fb3f6c86e48be1433394a33c5bf365b7a583a29a8b97a494b1e117d27f1aaab1"
+    },
+    {
+      "path": "audit-result.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/results-first/audit.json",
+      "bytes": 137818,
+      "sha256": "b23a9ae4ac1e639f834d3e7fb999e55ff9c0bdb6673763d141c6c30ebb84f343"
+    },
+    {
+      "path": "input-inventory.json",
+      "source": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/results-first/input-inventory.json",
+      "bytes": 264898,
+      "sha256": "05f8e868c81b8e1de8fd92a62c39e0f5c2f3c13be85a90d1f9c5eaa2f8cbfa1f"
+    },
+    {
+      "path": "read-group-admission-next-review.md",
+      "source": "/tmp/kv9-read-group-admission-next-review.md",
+      "bytes": 8186,
+      "sha256": "e71ad861d1f04ef8fe664a8ca2847d4e21d552a9cac1e9fef3b8aeed728af1ea"
+    }
+  ],
+  "retained_files": 37,
+  "retained_bytes": 695508,
+  "scope": "Exact retained copies. README.md is newly authored; this inventory and README are excluded from the copy inventory. Large raw logs/data remain at recorded original paths."
+}
