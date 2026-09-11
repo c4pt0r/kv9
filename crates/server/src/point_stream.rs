@@ -5,9 +5,7 @@ use crate::grpc::{proto, Authenticator, Kv9Grpc};
 use crate::point_wire::{
     Handler, WireMetadata, WireReply, WireRequest, CHANNEL_LIMIT, CONNECTION_LIMIT, FRAME_LIMIT,
 };
-use futures_util::Stream;
-#[cfg(any(test, feature = "rpc-experiment"))]
-use futures_util::StreamExt;
+use futures_util::{stream::FuturesUnordered, Stream, StreamExt};
 use prost::Message;
 #[cfg(any(test, feature = "rpc-experiment"))]
 use std::io;
@@ -140,6 +138,73 @@ impl Drop for Replies {
     }
 }
 
+const HANDLER_WORKERS: usize = 2;
+
+struct HandlerJob {
+    frame: wire::PointRequest,
+    deadline: Instant,
+    reserved: mpsc::OwnedPermit<Result<wire::PointResponse, Status>>,
+    // Queued requests also keep the stream alive through actual cancellation.
+    _stream_permit: Arc<OwnedSemaphorePermit>,
+}
+
+async fn handle_job(handler: Handler, job: HandlerJob) {
+    let reply = match timeout_at(
+        job.deadline,
+        handler.dispatch(
+            job.frame.operation as u8,
+            WireRequest {
+                authorization: job.frame.authorization,
+                payload: job.frame.payload,
+            },
+        ),
+    )
+    .await
+    {
+        Ok(reply) => reply,
+        Err(_) => WireReply::error(Status::deadline_exceeded("point deadline")),
+    };
+    let response = wire::PointResponse {
+        id: job.frame.id,
+        reply: Some(reply.into()),
+    };
+    if response.encoded_len() > FRAME_LIMIT {
+        job.reserved
+            .send(Err(Status::data_loss("point response exceeds frame limit")));
+    } else {
+        job.reserved.send(Ok(response));
+    }
+}
+
+async fn handler_worker(
+    handler: Handler,
+    mut incoming: mpsc::Receiver<HandlerJob>,
+    stream_permit: Arc<OwnedSemaphorePermit>,
+) {
+    // Abort is cooperative: retain this grant while queued/active futures are
+    // actually destroyed, including a handler with a slow destructor.
+    let _stream_permit = stream_permit;
+    let mut jobs = FuturesUnordered::new();
+    let mut input_closed = false;
+    loop {
+        if input_closed && jobs.is_empty() {
+            break;
+        }
+        tokio::select! {
+            _ = jobs.next(), if !jobs.is_empty() => {},
+            received = incoming.recv(), if !input_closed && jobs.len() < CHANNEL_LIMIT => {
+                match received {
+                    Some(job) => jobs.push(handle_job(handler.clone(), job)),
+                    None => input_closed = true,
+                }
+            }
+        }
+        // Ready child futures can keep this task runnable without a socket or
+        // timer wait. Preserve cancellation and sibling scheduling progress.
+        tokio::task::consume_budget().await;
+    }
+}
+
 #[tonic::async_trait]
 impl wire::point_stream_server::PointStream for Service {
     type ExchangeStream = Replies;
@@ -162,31 +227,47 @@ impl wire::point_stream_server::PointStream for Service {
         let shutdown = self.shutdown.clone();
         let stream_permit = permit.clone();
         let task = tokio::spawn(async move {
-            let mut jobs = JoinSet::new();
+            let mut workers = JoinSet::new();
+            let mut inputs = Vec::with_capacity(HANDLER_WORKERS);
+            for _ in 0..HANDLER_WORKERS {
+                let (send, receive) = mpsc::channel(CHANNEL_LIMIT);
+                inputs.push(send);
+                workers.spawn(handler_worker(
+                    handler.clone(),
+                    receive,
+                    stream_permit.clone(),
+                ));
+            }
+            let mut next_worker = 0;
             let mut last_id = 0;
             let mut input_closed = false;
             loop {
-                if input_closed && jobs.is_empty() {
+                if input_closed && workers.is_empty() {
                     break;
                 }
                 tokio::select! {
                     _ = shutdown.cancelled() => break,
                     _ = outgoing.closed() => break,
-                    joined = jobs.join_next(), if !jobs.is_empty() => {
-                        // A panicking handler invalidates this generation as
-                        // before. Dropping the set aborts all remaining jobs.
-                        if !matches!(joined, Some(Ok(()))) { break; }
+                    joined = workers.join_next(), if !workers.is_empty() => {
+                        // A worker may finish normally only after clean EOF.
+                        // A panic invalidates the generation and aborts its sibling.
+                        if !input_closed || !matches!(joined, Some(Ok(()))) { break; }
                     },
                     received = async {
                         // The reservation travels with the handler until its
-                        // reply is queued. Running + buffered replies <= limit.
+                        // reply is queued. Queued + active + buffered <= limit.
                         let reserved = outgoing.clone().reserve_owned().await.ok()?;
                         Some((reserved, incoming.message().await))
-                    }, if !input_closed && jobs.len() < CHANNEL_LIMIT => {
+                    }, if !input_closed => {
                         let Some((reserved, received)) = received else { break; };
                         let frame = match received {
                             Ok(Some(frame)) => frame,
-                            Ok(None) => { input_closed = true; continue; },
+                            Ok(None) => {
+                                input_closed = true;
+                                // Workers drain their inbox and active requests.
+                                inputs.clear();
+                                continue;
+                            },
                             Err(_) => {
                                 reserved.send(Err(Status::unavailable("point stream input failed")));
                                 break;
@@ -201,30 +282,19 @@ impl wire::point_stream_server::PointStream for Service {
                         // Checked bounded duration; transit does not extend the
                         // client's independent absolute monotonic deadline.
                         let deadline = Instant::now() + Duration::from_micros(frame.remaining_micros);
-                        let handler = handler.clone();
-                        let handler_permit = stream_permit.clone();
-                        jobs.spawn(async move {
-                            // Abort is cooperative. Keep this stream slot until
-                            // the handler is actually dropped, even if the
-                            // response stream and its owner have already gone.
-                            let _stream_permit = handler_permit;
-                            let reply = match timeout_at(deadline, handler.dispatch( frame.operation as u8,
-                                WireRequest { authorization: frame.authorization, payload: frame.payload }
-                            )).await {
-                                Ok(reply) => reply,
-                                Err(_) => WireReply::error(Status::deadline_exceeded("point deadline")),
-                            };
-                            let response = wire::PointResponse { id: frame.id, reply: Some(reply.into()) };
-                            if response.encoded_len() > FRAME_LIMIT {
-                                reserved.send(Err(Status::data_loss("point response exceeds frame limit")));
-                            } else {
-                                reserved.send(Ok(response));
-                            }
-                        });
+                        let job = HandlerJob {
+                            frame, deadline, reserved, _stream_permit: stream_permit.clone(),
+                        };
+                        // Every queued job owns a response reservation. Holding
+                        // this job's reservation leaves at most limit - 1 queued
+                        // jobs elsewhere, so a limit-sized inbox cannot be full.
+                        // Never await an inbox while supervising worker failure.
+                        if inputs[next_worker].try_send(job).is_err() { break; }
+                        next_worker = (next_worker + 1) % HANDLER_WORKERS;
                     }
                 }
             }
-            // Dropping jobs aborts observation. Existing owned write completion
+            // Dropping workers aborts observation. Existing owned write completion
             // retains its admission reservation until the exact apply settles.
         });
         Ok(Response::new(Replies {

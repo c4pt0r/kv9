@@ -389,15 +389,19 @@ async fn held_write_interruption(use_deadline: bool, batch: bool) {
 }
 
 async fn one_slot_server(api: Kv9Grpc) -> (StreamServer, SocketAddr, Arc<Semaphore>) {
+    one_slot_server_with_auth(api, authenticator()).await
+}
+
+async fn one_slot_server_with_auth(
+    api: Kv9Grpc,
+    authenticator: Arc<dyn Authenticator>,
+) -> (StreamServer, SocketAddr, Arc<Semaphore>) {
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let address = listener.local_addr().unwrap();
     let permits = Arc::new(Semaphore::new(1));
     let shutdown = CancellationToken::new();
     let service = Service {
-        handler: Handler {
-            api,
-            authenticator: authenticator(),
-        },
+        handler: Handler { api, authenticator },
         streams: permits.clone(),
         shutdown: shutdown.clone(),
     };
@@ -421,6 +425,208 @@ impl Drop for ReadCleanupRelease {
             let _ = sender.send(());
         }
     }
+}
+
+struct BlockingFrameAuth {
+    inner: Arc<dyn Authenticator>,
+    entered: mpsc::UnboundedSender<()>,
+    release: Mutex<Option<std::sync::mpsc::Receiver<()>>>,
+    revocable: std::sync::atomic::AtomicBool,
+}
+
+impl Authenticator for BlockingFrameAuth {
+    fn authenticate(
+        &self,
+        metadata: &tonic::metadata::MetadataMap,
+    ) -> Result<crate::grpc::AuthContext, Status> {
+        let token = metadata.get("authorization").and_then(|v| v.to_str().ok());
+        if token == Some("Bearer blocked") {
+            let release = self
+                .release
+                .lock()
+                .unwrap()
+                .take()
+                .expect("one blocked frame");
+            self.entered.send(()).unwrap();
+            release
+                .recv_timeout(Duration::from_secs(5))
+                .expect("release blocked authentication");
+        }
+        if token == Some("Bearer revocable")
+            && !self.revocable.load(std::sync::atomic::Ordering::SeqCst)
+        {
+            return Err(Status::unauthenticated("test credential revoked"));
+        }
+        self.inner.authenticate(metadata)
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 3)]
+async fn blocked_worker_allows_sibling_progress_and_queued_frames_reauthenticate() {
+    let (entered, mut blocked) = mpsc::unbounded_channel();
+    let (release, receiver) = std::sync::mpsc::channel();
+    let release = ReadCleanupRelease(Some(release));
+    let auth = Arc::new(BlockingFrameAuth {
+        inner: Arc::new(
+            crate::grpc::TokenAuthenticator::new([
+                ("secret", "alice"),
+                ("blocked", "alice"),
+                ("revocable", "alice"),
+            ])
+            .unwrap(),
+        ),
+        entered,
+        release: Mutex::new(Some(receiver)),
+        revocable: std::sync::atomic::AtomicBool::new(true),
+    });
+    let backend = Arc::new(Backend::default());
+    let (server, address, permits) =
+        one_slot_server_with_auth(Kv9Grpc::new(backend.clone()), auth.clone()).await;
+    let mut client = wire_client(address).await;
+    let (send, receive) = mpsc::channel(4);
+    let mut replies = bounded(client.exchange(request(ReceiverStream::new(receive))))
+        .await
+        .unwrap()
+        .into_inner();
+    let mut first = frame(1, 0, get(b"blocked").encode_to_vec());
+    first.authorization = "Bearer blocked".into();
+    send.send(first).await.unwrap();
+    bounded(blocked.recv()).await.unwrap();
+    for id in 2..=4 {
+        let mut next = frame(id, 0, get(b"sibling").encode_to_vec());
+        if id == 3 {
+            next.authorization = "Bearer revocable".into();
+        }
+        send.send(next).await.unwrap();
+    }
+    let mut ids = std::collections::BTreeSet::new();
+    for _ in 0..2 {
+        let reply = bounded(replies.message()).await.unwrap().unwrap();
+        assert_eq!(reply.reply.unwrap().code, 0);
+        ids.insert(reply.id);
+    }
+    // Reply 4 proves the owner passed frame 3 while worker zero is blocked.
+    assert_eq!(ids, [2, 4].into_iter().collect());
+    assert_eq!(backend.calls.lock().unwrap().len(), 2);
+    auth.revocable
+        .store(false, std::sync::atomic::Ordering::SeqCst);
+    // Close request input with one blocked active handler and its queued job.
+    // EOF must drain them rather than turn into cancellation or an early reply EOF.
+    drop(send);
+    let premature = tokio::time::timeout(Duration::from_millis(100), replies.message()).await;
+    drop(release);
+    assert!(
+        premature.is_err(),
+        "EOF canceled a held handler or lost its queued frame"
+    );
+    let mut results = std::collections::BTreeMap::new();
+    for _ in 0..2 {
+        let reply = bounded(replies.message()).await.unwrap().unwrap();
+        results.insert(reply.id, reply.reply.unwrap().code);
+    }
+    assert_eq!(
+        results,
+        [(1, 0), (3, Code::Unauthenticated as i32)]
+            .into_iter()
+            .collect()
+    );
+    assert_eq!(backend.calls.lock().unwrap().len(), 3);
+    assert!(bounded(replies.message()).await.unwrap().is_none());
+    eventually(|| permits.available_permits() == 1).await;
+    stop(server).await;
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn queued_job_keeps_original_deadline_and_drops_expired_read_waiter() {
+    let (entered, mut reads) = mpsc::unbounded_channel();
+    let backend = Arc::new(Backend {
+        read_gates: [(
+            b"expired".to_vec(),
+            Arc::new(ReadGate {
+                entered,
+                dropping: None,
+            }),
+        )]
+        .into_iter()
+        .collect(),
+        ..Backend::default()
+    });
+    let api = Kv9Grpc::new(backend.clone());
+    let admission = api.admission();
+    let slots = Arc::new(Semaphore::new(1));
+    let grant = Arc::new(slots.clone().try_acquire_owned().unwrap());
+    let (send, receive) = mpsc::channel(CHANNEL_LIMIT);
+    let (responses, mut replies) = mpsc::channel(CHANNEL_LIMIT);
+    let mut request = frame(1, 0, get(b"expired").encode_to_vec());
+    request.remaining_micros = 30_000_000;
+    // Queue before starting the worker: the original deadline has passed,
+    // while incorrectly renewing the frame budget would grant 30 more seconds.
+    send.try_send(HandlerJob {
+        frame: request,
+        deadline: Instant::now() - Duration::from_secs(1),
+        reserved: responses.reserve_owned().await.unwrap(),
+        _stream_permit: grant.clone(),
+    })
+    .unwrap_or_else(|_| panic!("worker inbox must have capacity"));
+    let worker = tokio::spawn(handler_worker(
+        Handler {
+            api,
+            authenticator: authenticator(),
+        },
+        receive,
+        grant,
+    ));
+    drop(send);
+    let reply = bounded(replies.recv()).await.unwrap().unwrap();
+    assert_eq!(reply.id, 1);
+    assert_eq!(reply.reply.unwrap().code, Code::DeadlineExceeded as i32);
+    bounded(worker).await.unwrap();
+    // Timeout may poll the inner future once. Any resulting preparation waiter
+    // must be canceled, and an expired observation must not detach an engine job.
+    while let Ok(mut release) = reads.try_recv() {
+        bounded(release.closed()).await;
+    }
+    assert!(backend.calls.lock().unwrap().is_empty());
+    assert_eq!(admission.snapshot().in_flight, 0);
+    assert_eq!(admission.snapshot().encoded_bytes, 0);
+    assert_eq!(slots.available_permits(), 1);
+}
+
+#[tokio::test]
+async fn abort_before_worker_poll_releases_all_queued_reservations() {
+    let backend = Arc::new(Backend::default());
+    let slots = Arc::new(Semaphore::new(1));
+    let grant = Arc::new(slots.clone().try_acquire_owned().unwrap());
+    let (send, receive) = mpsc::channel(CHANNEL_LIMIT);
+    let (responses, mut replies) = mpsc::channel(CHANNEL_LIMIT);
+    for id in 1..=CHANNEL_LIMIT {
+        send.try_send(HandlerJob {
+            frame: frame(id as u64, 0, get(b"never-polled").encode_to_vec()),
+            deadline: deadline(),
+            reserved: responses.clone().try_reserve_owned().unwrap(),
+            _stream_permit: grant.clone(),
+        })
+        .unwrap_or_else(|_| panic!("bounded inbox must have room for its reserved job"));
+    }
+    assert_eq!(responses.capacity(), 0);
+    let worker = tokio::spawn(handler_worker(
+        Handler {
+            api: Kv9Grpc::new(backend.clone()),
+            authenticator: authenticator(),
+        },
+        receive,
+        grant,
+    ));
+    // This current-thread test has not yielded since spawning the worker.
+    // Cancellation must also clean up a future that never entered its body.
+    worker.abort();
+    assert!(bounded(worker).await.unwrap_err().is_cancelled());
+    assert!(send.is_closed());
+    assert_eq!(responses.capacity(), CHANNEL_LIMIT);
+    assert_eq!(slots.available_permits(), 1);
+    assert!(backend.calls.lock().unwrap().is_empty());
+    drop((send, responses));
+    assert!(replies.recv().await.is_none());
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 3)]
@@ -1047,6 +1253,9 @@ async fn completed_but_unconsumed_replies_keep_pending_work_bounded() {
         "completed replies escaped the pending-work budget"
     );
     assert_eq!(permits.available_permits(), 0);
+    // Clean input EOF must drain both handler inboxes and active sets, including
+    // frames that are still behind the full response reservation budget.
+    drop(send);
     release.cancel();
     let mut ids = std::collections::BTreeSet::new();
     for _ in 0..total {
@@ -1056,7 +1265,8 @@ async fn completed_but_unconsumed_replies_keep_pending_work_bounded() {
     }
     assert_eq!(ids, (1..=total as u64).collect());
     assert_eq!(backend.calls.lock().unwrap().len(), total);
-    drop((send, responses));
+    assert!(bounded(responses.message()).await.unwrap().is_none());
+    drop(responses);
     eventually(|| permits.available_permits() == 1).await;
     assert_eq!(admission.snapshot().encoded_bytes, 0);
     task.abort();
