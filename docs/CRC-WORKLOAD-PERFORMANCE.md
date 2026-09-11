@@ -138,12 +138,15 @@ both streaming/unary histories. Its own
 2,047 complete-history calls and 154 verified netem leaf drops. Its subsequent
 [72-cohort performance comparison](OWNED-BUFFER-PERFORMANCE.md) rejects the
 candidate: small write/mixed gains are accompanied by read and tail regressions.
-That report includes the latest repeated measurements of this unchanged CRC
-baseline. The numbers above remain the original CRC selection recording.
+That report includes repeated read/mixed/write measurements of this unchanged
+CRC baseline. The numbers above remain the original CRC selection recording.
 
-The next isolated candidate consumes buffers during proposal construction;
-its local source checks pass but its release/recovery/performance gates remain
-pending. It starts from CRC, without the rejected owned-apply change.
+The separate proposal-buffer candidate starts from CRC without the rejected
+owned-apply change. Its source checks, original release and process recovery
+pass, but its [completed write-only screen](OWNED-PROPOSAL-PERFORMANCE.md)
+rejects promotion. The latest same-recording baseline has 123,527 PUT/s and
+862,759 BatchPut(64) keys/s at c64; Redis has 494,238 SET/s and 6,120,871 batch
+keys/s. No new read/mixed or candidate Chaos acceptance is claimed.
 Read-path scheduling and ownership transfers remain a separate measured
 optimization. Retain the existing dual-WAL architecture decision in
 `docs/SEGMENTED-WAL.md`: removing the engine WAL requires its own recovery,

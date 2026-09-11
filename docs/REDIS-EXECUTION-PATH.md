@@ -5,6 +5,12 @@ with one I/O thread, standalone memory operation, persistence disabled and
 no client pipelining. This analysis does not claim equivalent durability or
 fault semantics. KV9 retains three-voter Raft and linearizable reads.
 
+The latest [write-only screen](OWNED-PROPOSAL-PERFORMANCE.md) retains CRC:
+123,527 PUT/s and 862,759 BatchPut(64) keys/s at c64, versus Redis 494,238 SET/s
+and 6,120,871 batch keys/s. Both copy-removal candidates below are now rejected
+for performance. Historical read results retain their original recording
+scopes; no new read measurement accompanies that write screen.
+
 ## What the reference actually does
 
 Redis's [GET implementation](https://github.com/redis/redis/blob/7.0.15/src/t_string.c#L300-L316)
@@ -260,10 +266,14 @@ persistent snapshots therefore does not establish an overall improvement.
 The completed [CRC workload matrix](CRC-WORKLOAD-PERFORMANCE.md) selects the
 unchanged baseline, with its small batch-read regression retained.
 
-The next separate proposal-buffer candidate starts from CRC and consumes
-buffers during planning and fenced-command construction. Its local source
-checks pass; exact-source release, recovery/Chaos and performance acceptance
-remain required. It does not include the rejected final-insertion change.
+The separate proposal-buffer candidate starts from CRC and consumes buffers
+during planning and fenced-command construction. Its source checks, original
+release and process recovery pass, but the write-only screen rejects promotion:
+c64 point writes lose 0.734% throughput and batch writes lose 9.449%, with
+batch p99 rising from 9.306-9.437 ms to 25.428-25.690 ms. No candidate Chaos
+runtime was launched. It excludes the rejected final-insertion change.
+Copy removal alone therefore supplies no accepted gain in either experiment;
+the large tail change still needs causal attribution.
 
 For a structural experiment, map each range replica's mutable protocol state
 to one execution owner and map multiple owners onto a bounded set of workers.

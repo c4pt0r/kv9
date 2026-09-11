@@ -78,3 +78,12 @@ scripts/redis-reference/owned-buffer-broad-v1/statistics/derive.py.diff -whitesp
 scripts/redis-reference/owned-proposal-source-v1/raft-focused.log -whitespace
 scripts/redis-reference/owned-proposal-source-v1/txn-focused.log -whitespace
 scripts/redis-reference/owned-proposal-source-v1/workspace.log -whitespace
+
+# Preserve exact original proposal-screen and indexed-receipt evidence.
+scripts/redis-reference/indexed-receipt-source-v1/corrected-validation/focused.log -whitespace
+scripts/redis-reference/indexed-receipt-source-v1/corrected-validation/workspace.log -whitespace
+scripts/redis-reference/owned-proposal-screen-v1/preparation/audit.py.diff -whitespace
+scripts/redis-reference/owned-proposal-screen-v1/preparation/matched-driver.py.diff -whitespace
+scripts/redis-reference/owned-proposal-screen-v1/preparation/statistics-derive.py.diff -whitespace
+scripts/redis-reference/owned-proposal-screen-v1/preparation/test_audit_contract.py.diff -whitespace
+scripts/redis-reference/owned-proposal-screen-v1/preparation/test_driver.py.diff -whitespace

@@ -1,5 +1,10 @@
 # Owned-apply performance: reject the candidate, retain the CRC baseline
 
+The later [proposal-buffer write screen](OWNED-PROPOSAL-PERFORMANCE.md) now
+provides newer write measurements and rejects that separate candidate too.
+The read/mixed measurements below remain the latest accepted complete-matrix
+results; they were not rerun in the later write-only screen.
+
 The complete first 72-cohort recording does **not** support promoting
 `9be0c1963515ff974426faadef80482b847b13a5`. Keep the selected development source
 `ca0002c7f8e9ee6f595efcc9f4151085ccce87cb` on master, with tonic streaming gRPC.
@@ -146,9 +151,11 @@ starts from CRC and consumes buffers during batch planning and fenced-command
 construction. Its first local checks pass three focused regressions and
 712 workspace tests (23 ignored), Clippy and formatting. The
 [source-check records](../scripts/redis-reference/owned-proposal-source-v1/index.json)
-retain original invocations, logs, exits and source hashes. Its own release,
-process/Chaos and matched performance gates remain pending. It is committed
-on a candidate branch and is not a selected performance improvement.
+retain original invocations, logs, exits and source hashes. Its own original
+release and process recovery subsequently pass (347 calls, 321 OK / 26 unknown).
+The later write-only screen rejects it for promotion: c64 batch-write
+throughput falls 9.449% with substantially worse tails. No candidate Chaos
+runtime was launched. The baseline remains selected.
 
 Read-path execution ownership and actual Raft tick-service measurement remain
 separate work. Do not infer delivered ticks from pump iterations or status
