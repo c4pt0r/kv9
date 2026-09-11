@@ -58,13 +58,29 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
+The latest [authorization-metadata screening](STREAM-AUTHORIZATION-METADATA-SCREENING.md)
+retains an isolated candidate for broader validation: single GET gains
+4.425% / 3.641% against the same-run f2 control, with improved mean and p99.
+All 6,460,852 measured calls and the separate reader pass. The candidate uses
+the system allocator and has not been combined with jemalloc; exact-source
+Chaos and broader acceptance remain pending. It does not supersede the best
+retained jemalloc performance or establish Redis parity.
+
+The [read-barrier waiting diagnostic](READ-BARRIER-WAIT-DIAGNOSTIC.md) changes
+next-step priority: existing jemalloc endpoint counters show about 127 us mean
+read establishment inside about 128–129 us backend time. These counters include
+warmup/verification and cannot precisely decompose the measured 209-us whole
+call. Profile registration-to-submission, quorum/apply progress and notification
+before another structural change; low Raft CPU does not exclude substantial
+elapsed waiting. Normal Raft read and write semantics remain mandatory.
+
 The subsequent [typed authenticated dispatch screening](TYPED-POINT-DISPATCH-SCREENING.md)
 is **not selected** as the next performance version. Single GET improves only
 0.966% / 0.019% versus its same-run f2 control; BatchGet(1) gains 1.867% / 2.521%.
 All 6,452,825 measured calls and the independent audit passed, but this does not
 establish the desired meaningful step. Preserve the isolated experiment and
-stop before a full fault campaign. The next allocation hypothesis is repeated
-authorization metadata construction with per-frame authentication retained.
+stop before a full fault campaign. That allocation hypothesis is now measured separately above, with per-frame
+authentication retained.
 This comparison used the system allocator and does not replace the separate
 jemalloc result below.
 
