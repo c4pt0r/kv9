@@ -1,0 +1,72 @@
+{
+  "complete": true,
+  "measured_client_cpus": [
+    0,
+    1
+  ],
+  "measured_server_cpus": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "background_cpus": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "exclusive_host": false,
+  "limitation": "Unrelated host services and BuildKit remain unconstrained; shared-host diagnostic only.",
+  "containers": {
+    "kv9-chaos-ci-p0-20260908-control-plane": {
+      "name": "kv9-chaos-ci-p0-20260908-control-plane",
+      "id": "ae9b27a77d14f295e35e112b31f5dce62ed6fd2d86a90e7b2a69b52798e17582",
+      "pid": 2649663,
+      "start_ticks": 118957151,
+      "started": "2026-09-08T20:54:19.052823428Z",
+      "configured_cpus": "6-15,22-31",
+      "cgroup": "/sys/fs/cgroup/system.slice/docker-ae9b27a77d14f295e35e112b31f5dce62ed6fd2d86a90e7b2a69b52798e17582.scope/init.scope",
+      "effective_cpus": "6-15,22-31"
+    },
+    "kv9-chaos-control-plane": {
+      "name": "kv9-chaos-control-plane",
+      "id": "d31317fe14d1d3344caa91ed45b4246e5e949d99b25cec5e28d9c6695fa43e8c",
+      "pid": 3682792,
+      "start_ticks": 34008203,
+      "started": "2026-08-30T00:56:08.893481509Z",
+      "configured_cpus": "6-15,22-31",
+      "cgroup": "/sys/fs/cgroup/system.slice/docker-d31317fe14d1d3344caa91ed45b4246e5e949d99b25cec5e28d9c6695fa43e8c.scope/init.scope",
+      "effective_cpus": "6-15,22-31"
+    },
+    "kv9-minio-dev": {
+      "name": "kv9-minio-dev",
+      "id": "4b05c35453b87a409e7dd8a4dc935c782e282eb42cf14dd8c1ea6771efc0e042",
+      "pid": 75606,
+      "start_ticks": 111527514,
+      "started": "2026-09-08T00:16:02.689413529Z",
+      "configured_cpus": "6-15,22-31",
+      "cgroup": "/sys/fs/cgroup/system.slice/docker-4b05c35453b87a409e7dd8a4dc935c782e282eb42cf14dd8c1ea6771efc0e042.scope",
+      "effective_cpus": "6-15,22-31"
+    }
+  },
+  "before_path": "/tmp/kv9-owned-batch-broad-workloads-timing-first/before.json",
+  "historical_one_shot_fault_preserved": true,
+  "driver_sha256": "ec2203614200eabfb3aa4f423b66cd511c36fc664854fb767bf82e8293527e77"
+}

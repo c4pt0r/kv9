@@ -1,0 +1,11 @@
+{
+  "analysis_executed": false,
+  "arithmetic_helpers_unchanged": true,
+  "files": {
+    "core.py": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+    "derive.py": "66dc2c8959926f879a823c99cb41d49ac443a2ac117abed32af8e6e3c2cc209f"
+  },
+  "parent": "/tmp/kv9-crc-broad-statistics-preparation/derive.py",
+  "prepared_ns": 1789143593647809807,
+  "requires": "Actual root timing terminal and accepted unchanged independent audit before derivation; no new acceptance predicate."
+}

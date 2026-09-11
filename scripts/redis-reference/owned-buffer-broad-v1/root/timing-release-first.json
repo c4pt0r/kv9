@@ -1,0 +1,21 @@
+{
+  "created_ns": 1789144124038454557,
+  "smoke_session": 42602,
+  "smoke_exit_code": 0,
+  "smoke_terminal_tool_chunk": "8f29e5",
+  "smoke_gate_tool_chunk": "a5b7a8",
+  "smoke_gate_sha256": "02521418f6347904879b841882a147d5977c4297456edc791bf3695822a8010c",
+  "launch_freeze_sha256": "77b263a0be5d14fd9b02dfae92d7a2137977fb03453e10290794d0bd24148390",
+  "root_process_snapshot_sha256": "d580d8c93e210b5d88063f489600b1d23f84b9fc335f37b314558f2bfde3c670",
+  "free_bytes": {
+    "tmpfs": 66274996224,
+    "retention": 374043066368
+  },
+  "candidate_correctness_accepted": true,
+  "chaos_runtime_terminal": true,
+  "chaos_independent_checks_terminal": true,
+  "root_publication_terminal": true,
+  "both_delegated_agents_completed": true,
+  "no_owned_build_test_profile_fault_or_audit_overlap": true,
+  "scope": "Other shared-host services remain unconstrained; this release covers owned project work."
+}

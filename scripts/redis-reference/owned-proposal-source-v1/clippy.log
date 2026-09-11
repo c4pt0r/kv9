@@ -1,0 +1,9 @@
+    Checking kv9-common v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/common)
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/raft)
+   Compiling kv9-server v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/server)
+    Checking kv9-engine v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/engine)
+    Checking kv9-region v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/region)
+    Checking kv9-meta v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/meta)
+    Checking kv9-txn v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/txn)
+    Checking kv9 v0.0.0 (/tmp/kv9-owned-proposal-buffers)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.50s

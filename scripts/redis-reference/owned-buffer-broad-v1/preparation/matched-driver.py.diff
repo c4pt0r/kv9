@@ -1,0 +1,48 @@
+--- /tmp/kv9-crc-broad-workloads-preparation/matched-driver.py
++++ /tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py
+@@ -25,16 +25,16 @@
+     raise RuntimeError("this retained runner requires PYTHONOPTIMIZE=0")
+ sys.dont_write_bytecode = True
+ 
+-OLD_REVISION = "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb"
+-NEW_REVISION = "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb"
++OLD_REVISION = "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb"
++NEW_REVISION = "9be0c1963515ff974426faadef80482b847b13a5"
+ REDIS_REVISION = "0be806d9671e2c50701a64aa7889c8859b7648ba"
+ SERVER_PINS = {
+     "old": dict(revision=OLD_REVISION,
+-                binary_sha256="0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+-                manifest_sha256="1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417"),
+-    "new": dict(revision=NEW_REVISION,
+                 binary_sha256="b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+                 manifest_sha256="8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8"),
++    "new": dict(revision=NEW_REVISION,
++                binary_sha256="07c02871276f9c52cd19bd8213ab3288d6c51a1d7391370b5a6282f0018b03f7",
++                manifest_sha256="5a2d5e031f0a24a0704dd3a2d4cf4f0fc95f868d694b54d94c3fc56fb1243a21"),
+ }
+ REDIS_CLIENT_SHA = "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af"
+ CLIENT_PINS = {
+@@ -43,7 +43,7 @@
+     "redis": dict(binary_sha256=REDIS_CLIENT_SHA,
+                   manifest_sha256="10f9ce2a754a2ef43a6439856c1d5fb00c5a1e5004173e52897a3ea19d6124f0"),
+ }
+-PROTOCOL_ID = "kv9-crc-broad-workloads-c1-c64-v1"
++PROTOCOL_ID = "kv9-owned-batch-broad-workloads-c1-c64-v1"
+ WORKLOAD_CELLS = [(name, batch, reads) for name, batch in (("point", 1), ("batch64", 64))
+                   for reads in (0, 50, 100)]
+ SPACE_GUARDS = {
+@@ -697,10 +697,10 @@
+     parser.add_argument("--client-build", type=Path, required=True,
+                         help="standalone build-workload output containing build.json and kv9-batch-benchmark")
+     parser.add_argument("--expected-client-revision", required=True)
+-    parser.add_argument("--old-server-source", type=Path, default=Path("/tmp/kv9-rpc-worker-pair"))
+-    parser.add_argument("--old-server-build", type=Path, default=Path("/tmp/kv9-rpc-pair-release-first"))
+-    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-wal-crc32-table"))
+-    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-wal-crc32-release-first"))
++    parser.add_argument("--old-server-source", type=Path, default=Path("/tmp/kv9-wal-crc32-table"))
++    parser.add_argument("--old-server-build", type=Path, default=Path("/tmp/kv9-wal-crc32-release-first"))
++    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-owned-apply-batch"))
++    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-owned-batch-release-first"))
+     parser.add_argument("--redis-client-source", type=Path, default=Path("/tmp/kv9-point-write-measurement-v3"))
+     parser.add_argument("--redis-client-build", type=Path, default=Path("/tmp/kv9-point-write-v3-release-first/redis"))
+     parser.add_argument("--output", type=Path, required=True)

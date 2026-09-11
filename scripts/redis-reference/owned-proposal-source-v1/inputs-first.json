@@ -1,0 +1,14 @@
+{
+  "base": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "source_clean": false,
+  "files": {
+    "crates/engine/src/write_batch.rs": "d4a427bd30218eb4cf9bd182daecf947c45932def7396f9a5402cd65b41bc897",
+    "crates/raft/src/command.rs": "7a121864e38fc837c3bf3632b42e2f62d50f99a93c909d6cde70aa9e485f27a1",
+    "crates/txn/src/raw.rs": "f5bb0036b1c87ee95b03be31b00e4387798674d07c0277144383d99f61ae6ef3",
+    "crates/server/src/runtime.rs": "f951a3465911615878a4199d185f1710619e8b98eda2c79ee2b38e6efa8fd9b2",
+    "docs/OWNED-PROPOSAL-BUFFERS.md": "606719b3452c18f47a75d4f47e5dc4f3b86d9fa4fa19e1975437f6acee5f44dc"
+  },
+  "started_ns": 1789145499032340607,
+  "timing_session10967_exit_code": 0,
+  "timing_terminal_tool_chunk": "d6132d"
+}

@@ -70,3 +70,11 @@ scripts/redis-reference/owned-buffer-acceptance-v1/process/run/batch-tonic-strea
 scripts/redis-reference/owned-buffer-acceptance-v1/process/run/batch-tonic-unary.log -whitespace
 scripts/redis-reference/owned-buffer-acceptance-v1/chaos/run/commands/command-1151.stdout -whitespace
 scripts/redis-reference/owned-buffer-acceptance-v1/chaos/run/commands/command-1335.stdout -whitespace
+scripts/redis-reference/owned-buffer-broad-v1/preparation/README.md.diff -whitespace
+scripts/redis-reference/owned-buffer-broad-v1/preparation/matched-driver.py.diff -whitespace
+scripts/redis-reference/owned-buffer-broad-v1/preparation/test_audit_contract.py.diff -whitespace
+scripts/redis-reference/owned-buffer-broad-v1/preparation/test_driver.py.diff -whitespace
+scripts/redis-reference/owned-buffer-broad-v1/statistics/derive.py.diff -whitespace
+scripts/redis-reference/owned-proposal-source-v1/raft-focused.log -whitespace
+scripts/redis-reference/owned-proposal-source-v1/txn-focused.log -whitespace
+scripts/redis-reference/owned-proposal-source-v1/workspace.log -whitespace

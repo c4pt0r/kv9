@@ -4,7 +4,9 @@ Candidate `9be0c1963515ff974426faadef80482b847b13a5` passes its own process
 recovery and eleven-window Chaos fixture, including the independent history,
 packet-effect and final source checks. The candidate is pushed to
 `codex/owned-apply-batch`; the selected production baseline remains `ca0002c7`.
-Performance is unmeasured. Correctness acceptance does not establish a speedup.
+The subsequent [full workload comparison](OWNED-BUFFER-PERFORMANCE.md) rejects
+the candidate for performance regressions. These scoped correctness results
+remain accepted; they do not establish a speedup.
 
 The [source change and equivalence argument](https://github.com/c4pt0r/kv9/blob/9be0c1963515ff974426faadef80482b847b13a5/docs/OWNED-MEM-BATCH.md)
 consume already-owned mutation buffers at final resident-index insertion.
@@ -105,13 +107,14 @@ metadata correction changes no runtime, report or acceptance predicate.
 
 ## Performance gate
 
-The next comparison uses CRC `ca0002c7` as control and this exact `9be0c19`
-release as candidate, with unchanged native/Redis clients. It retains 36
-two-second smoke cells and 72 ten-second timed cohorts: c1/c64, point/batch64,
-read/mixed/write, forward/reverse repetitions. Whole-call mean/p95/p99, calls/s,
-keys/s, all outcomes, original deadlines and resource budgets remain explicit.
-No speedup is inferred from the removed clones.
+The completed comparison uses CRC `ca0002c7` as control and this exact
+`9be0c19` release as candidate, with unchanged native/Redis clients. All 36
+smoke cells and 72 timed cohorts pass their checks, retaining 80,198,970
+successful measured calls and all c1/c64 point/batch read/mixed/write results.
+At c64, batch writes gain only 0.73% and batch mixed 1.98%, while batch reads
+lose 2.59%; c1 batch workloads and some loaded tails also regress.
 
-The [CRC baseline report](CRC-WORKLOAD-PERFORMANCE.md) remains the current
-performance result. All testing for this phase is local; no hosted workflow
+The [full performance report](OWNED-BUFFER-PERFORMANCE.md) records rejection
+of this candidate and the latest same-recording CRC/Redis results. CRC remains
+selected on master. All testing for this phase is local; no hosted workflow
 is dispatched.

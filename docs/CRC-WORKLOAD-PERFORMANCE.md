@@ -135,10 +135,15 @@ tests (23 ignored), Clippy and its own independently audited process recovery:
 367 complete-history calls, 331 OK and 36 unknown. Unknown outcomes remain in
 both streaming/unary histories. Its own
 [actual Chaos fixture now also passes](OWNED-BUFFER-ACCEPTANCE.md), retaining
-2,047 complete-history calls and 154 verified netem leaf drops. There is no
-measured performance gain for this source yet.
+2,047 complete-history calls and 154 verified netem leaf drops. Its subsequent
+[72-cohort performance comparison](OWNED-BUFFER-PERFORMANCE.md) rejects the
+candidate: small write/mixed gains are accompanied by read and tail regressions.
+That report includes the latest repeated measurements of this unchanged CRC
+baseline. The numbers above remain the original CRC selection recording.
 
-Next compare owned-buffer performance against this CRC baseline.
+The next isolated candidate consumes buffers during proposal construction;
+its local source checks pass but its release/recovery/performance gates remain
+pending. It starts from CRC, without the rejected owned-apply change.
 Read-path scheduling and ownership transfers remain a separate measured
 optimization. Retain the existing dual-WAL architecture decision in
 `docs/SEGMENTED-WAL.md`: removing the engine WAL requires its own recovery,

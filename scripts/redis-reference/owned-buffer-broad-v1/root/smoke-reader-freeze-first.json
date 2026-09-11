@@ -1,0 +1,8 @@
+{
+  "source": "/tmp/kv9-crc-broad-root-preparation/check-smoke-second.py",
+  "source_sha256": "45e63b6621edb3573f7360971f04918ee4a2ba30e251e209d43e7494b1ed68bc",
+  "reader": "/tmp/kv9-owned-batch-broad-root-preparation/check-smoke-first.py",
+  "reader_sha256": "dd37eb541ecea0dc10fc37b36e69112311585f31f1821c3e7306d3c76518642a",
+  "created_ns": 1789143813368797914,
+  "changes": "Original corrected CRC reader; only paths and actual smoke session change. No accounting or cleanup predicate changes."
+}

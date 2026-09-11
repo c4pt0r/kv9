@@ -1,0 +1,1956 @@
+{
+  "scope": "Exact decoded copies of the independently accepted owned-apply versus CRC workload recording. Candidate 9be0c19 is rejected for performance; CRC ca0002c7 remains selected. Original client reports are gzip compressed with zero timestamps and both hashes/lengths retained. Large WALs and the host-wide process listing remain local; this is a compact publication, not a self-contained runtime archive. Historical outputs are unchanged.",
+  "baseline_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "candidate_revision": "9be0c1963515ff974426faadef80482b847b13a5",
+  "candidate_performance_selected": false,
+  "copies": 216,
+  "compressed_reports": 72,
+  "decoded_bytes": 110860851,
+  "stored_bytes": 9878233,
+  "files": [
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/000-old-point-r000-p00001/run/report.json",
+      "path": "reports/000-old-point-r000-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1432055,
+      "decoded_sha256": "1a2385ea4aef7547d170f8fd7ed2ff2e0598ea69d877d8f7f89d38c5e4485bb2",
+      "stored_bytes": 14840,
+      "stored_sha256": "6d430698ec2b031eaeda793ffa2f3473182c2cd5a5233e57503862fd065b9063"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/000-old-point-r000-p00001/resource-coverage.json",
+      "path": "reports/000-old-point-r000-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1688,
+      "decoded_sha256": "d7a2d245d2d145cf11a4cb5d669ba7d3576f1d51f1761394f3c499d12d5ca109",
+      "stored_bytes": 1688,
+      "stored_sha256": "d7a2d245d2d145cf11a4cb5d669ba7d3576f1d51f1761394f3c499d12d5ca109"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/001-new-point-r000-p00001/run/report.json",
+      "path": "reports/001-new-point-r000-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1432072,
+      "decoded_sha256": "8abbaab85ee48baca93d190ca986feb972585a63559959fd1a3ae18265da8ee3",
+      "stored_bytes": 14875,
+      "stored_sha256": "82e89c33cb31d8a92a4873a45a0cc80a49b69aff1191df0d7e0f36d5aac76229"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/001-new-point-r000-p00001/resource-coverage.json",
+      "path": "reports/001-new-point-r000-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1687,
+      "decoded_sha256": "7b057e0d8c8c64939a39845ed57c8d66a91813e4574c08bd9e1049a1c75f2806",
+      "stored_bytes": 1687,
+      "stored_sha256": "7b057e0d8c8c64939a39845ed57c8d66a91813e4574c08bd9e1049a1c75f2806"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/002-redis-point-r000-p00001/run/report.json",
+      "path": "reports/002-redis-point-r000-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 915311,
+      "decoded_sha256": "a299d54077077768b343f34d07e427c59649ae6e1d3da371a2d7504dcd16b4f4",
+      "stored_bytes": 9923,
+      "stored_sha256": "2d4801baec6947aaf27d5b3bb533a4ff7baebb80a4af42b1e85162eaf8ceae33"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/002-redis-point-r000-p00001/resource-coverage.json",
+      "path": "reports/002-redis-point-r000-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 838,
+      "decoded_sha256": "a08a4d7819054abf1a7e80b5b661bd3af7644a33811188662bf1fc89fd1c8e80",
+      "stored_bytes": 838,
+      "stored_sha256": "a08a4d7819054abf1a7e80b5b661bd3af7644a33811188662bf1fc89fd1c8e80"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/003-old-point-r050-p00001/run/report.json",
+      "path": "reports/003-old-point-r050-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1940391,
+      "decoded_sha256": "dca308af17b86d2ac7eda4d9cb0d95b2f914faeb02ebfc4c7fc08227e5a75ef1",
+      "stored_bytes": 18744,
+      "stored_sha256": "a73aaeb3d05ad14d7cf24862c51974662494c58d9792bd807f1c776e8329a07a"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/003-old-point-r050-p00001/resource-coverage.json",
+      "path": "reports/003-old-point-r050-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1681,
+      "decoded_sha256": "867bdcf5a1e6d4221cf11c613ae11159693dd3dad0b11df4be362ce36c4bf897",
+      "stored_bytes": 1681,
+      "stored_sha256": "867bdcf5a1e6d4221cf11c613ae11159693dd3dad0b11df4be362ce36c4bf897"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/004-new-point-r050-p00001/run/report.json",
+      "path": "reports/004-new-point-r050-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1940378,
+      "decoded_sha256": "b1b21e07c56038f14c4d3941b0242436d35e588333a46fa1c3b8b76e0f30a8e1",
+      "stored_bytes": 18734,
+      "stored_sha256": "df1ac560eb759a143018545d04b2b8a353f9becd94f88466db3dcbb76475f393"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/004-new-point-r050-p00001/resource-coverage.json",
+      "path": "reports/004-new-point-r050-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1689,
+      "decoded_sha256": "95d5b4bfdc20478973764f417c5ed34f0735a868e73880678df8d1b2f4427f0a",
+      "stored_bytes": 1689,
+      "stored_sha256": "95d5b4bfdc20478973764f417c5ed34f0735a868e73880678df8d1b2f4427f0a"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/005-redis-point-r050-p00001/run/report.json",
+      "path": "reports/005-redis-point-r050-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1264182,
+      "decoded_sha256": "10dc7eb1899d64a737411e7c3a2edf62155f96747fc4099b4e884b0664889ff4",
+      "stored_bytes": 12829,
+      "stored_sha256": "ca0133dbe8ecaec64ef51bc50d1a60aa9b070688b2a011050a086899ad4244cf"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/005-redis-point-r050-p00001/resource-coverage.json",
+      "path": "reports/005-redis-point-r050-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 838,
+      "decoded_sha256": "25da90e30b108df555a85bab19bd1d32c1cc1dc10ec9dde187522241e0bf0f28",
+      "stored_bytes": 838,
+      "stored_sha256": "25da90e30b108df555a85bab19bd1d32c1cc1dc10ec9dde187522241e0bf0f28"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/006-old-point-r100-p00001/run/report.json",
+      "path": "reports/006-old-point-r100-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1432058,
+      "decoded_sha256": "063fd4cdb4aeb98f3ee6431c27ce49eff35db7b30986386edf429647ce604eba",
+      "stored_bytes": 14773,
+      "stored_sha256": "59e24532a3203027dee7fb10c0bcdf6ee95310b7413d49c54b6aade1795ffa2e"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/006-old-point-r100-p00001/resource-coverage.json",
+      "path": "reports/006-old-point-r100-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1669,
+      "decoded_sha256": "c50aee86f34b727001a93125de1a7573dd173dfac696108be21e1e5e93bb4e2f",
+      "stored_bytes": 1669,
+      "stored_sha256": "c50aee86f34b727001a93125de1a7573dd173dfac696108be21e1e5e93bb4e2f"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/007-new-point-r100-p00001/run/report.json",
+      "path": "reports/007-new-point-r100-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1432002,
+      "decoded_sha256": "ab23a4437a0f163b6df7bea051c789a00f59a944bc3caa735508d8dd7b672f8d",
+      "stored_bytes": 14634,
+      "stored_sha256": "42daa8311331dc70aaa85d0b9d3c0085c8fdd183db14569722731d65c04e6cb2"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/007-new-point-r100-p00001/resource-coverage.json",
+      "path": "reports/007-new-point-r100-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1667,
+      "decoded_sha256": "dcc8d33cf392ee9cee855a4ae13725fe5133c3245bb40c8a506f2cbf50e13b04",
+      "stored_bytes": 1667,
+      "stored_sha256": "dcc8d33cf392ee9cee855a4ae13725fe5133c3245bb40c8a506f2cbf50e13b04"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/008-redis-point-r100-p00001/run/report.json",
+      "path": "reports/008-redis-point-r100-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 915357,
+      "decoded_sha256": "fbe34939a291984d7f66d13c15399fb3dbfdcaa14e6d74fe79be0121b0289be2",
+      "stored_bytes": 9867,
+      "stored_sha256": "f04bc984a89c2272971dbabb034506bd2a2105bbd32d3a21e75696673b13845e"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/008-redis-point-r100-p00001/resource-coverage.json",
+      "path": "reports/008-redis-point-r100-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 839,
+      "decoded_sha256": "1e811856e2a3af1ee6b3ddf03447dbf1925c8472aa6a4df8c5cb30f48d572d81",
+      "stored_bytes": 839,
+      "stored_sha256": "1e811856e2a3af1ee6b3ddf03447dbf1925c8472aa6a4df8c5cb30f48d572d81"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/009-old-batch64-r000-p00001/run/report.json",
+      "path": "reports/009-old-batch64-r000-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1431373,
+      "decoded_sha256": "82e7e48fbdbc8b186a22f04e3c5e0661f9c81fa799841e1f1d80d44dd306abb4",
+      "stored_bytes": 13121,
+      "stored_sha256": "34a235c430241e0b2e64fe33371f6d2bd34842c3135d24d1dc02287cce7eeee2"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/009-old-batch64-r000-p00001/resource-coverage.json",
+      "path": "reports/009-old-batch64-r000-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1692,
+      "decoded_sha256": "d03626474a54f3dc330b0979bdde4568a28fccd59066c80c3f7c92d3854d6049",
+      "stored_bytes": 1692,
+      "stored_sha256": "d03626474a54f3dc330b0979bdde4568a28fccd59066c80c3f7c92d3854d6049"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/010-new-batch64-r000-p00001/run/report.json",
+      "path": "reports/010-new-batch64-r000-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1431341,
+      "decoded_sha256": "4282dabd5d0cd36cd1ebcdd9ca8aa7cbcdf194f9a97d86a0c188d8cb19c3d103",
+      "stored_bytes": 13106,
+      "stored_sha256": "71ff6411e8b7ff5b13e4fe1103426b59a86152626139c54ff234069f1f4d34b1"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/010-new-batch64-r000-p00001/resource-coverage.json",
+      "path": "reports/010-new-batch64-r000-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1689,
+      "decoded_sha256": "bce1075db5a77fe1207fde0dcb6abf194977e5b35697ee6643da22811aa6c22f",
+      "stored_bytes": 1689,
+      "stored_sha256": "bce1075db5a77fe1207fde0dcb6abf194977e5b35697ee6643da22811aa6c22f"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/011-redis-batch64-r000-p00001/run/report.json",
+      "path": "reports/011-redis-batch64-r000-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 914996,
+      "decoded_sha256": "a211c14706103cc9fdd2085a5113f5d98daf85e47963b8ec643c4c086c238626",
+      "stored_bytes": 9241,
+      "stored_sha256": "d63d1aaff2d4eed0fe81de78c96a307955f9f36c27541ab209f0be0d852b92aa"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/011-redis-batch64-r000-p00001/resource-coverage.json",
+      "path": "reports/011-redis-batch64-r000-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 841,
+      "decoded_sha256": "df0733b62390c33aca24d32122d1f8e26d036f41ceaf59122e8a5106e32f049f",
+      "stored_bytes": 841,
+      "stored_sha256": "df0733b62390c33aca24d32122d1f8e26d036f41ceaf59122e8a5106e32f049f"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/012-old-batch64-r050-p00001/run/report.json",
+      "path": "reports/012-old-batch64-r050-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1939541,
+      "decoded_sha256": "dc36f734757b3d84b7c0081943c3d52feb21590acbb8ff20e5394b2494abe388",
+      "stored_bytes": 16811,
+      "stored_sha256": "96df978e427862b92453add97d9392fc57c63ae2d4e1ba3fa5f79c5462d9b778"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/012-old-batch64-r050-p00001/resource-coverage.json",
+      "path": "reports/012-old-batch64-r050-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1692,
+      "decoded_sha256": "8c0a7db285e08c80512c128f1d9c06ff1c2571285966d031e07b2ed6fa26ae13",
+      "stored_bytes": 1692,
+      "stored_sha256": "8c0a7db285e08c80512c128f1d9c06ff1c2571285966d031e07b2ed6fa26ae13"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/013-new-batch64-r050-p00001/run/report.json",
+      "path": "reports/013-new-batch64-r050-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1939508,
+      "decoded_sha256": "af13cdc613101a229ad8acd5c66c9c617757135b612c9777faca132f888cfc28",
+      "stored_bytes": 16793,
+      "stored_sha256": "1b048ea2cf12c2c689b427afd1a4809d6fb1890263dc466c72c0df241f7e2051"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/013-new-batch64-r050-p00001/resource-coverage.json",
+      "path": "reports/013-new-batch64-r050-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1690,
+      "decoded_sha256": "f658a51d994506f7f819ac4dc142d0f27b93e63bcd8f0700c096cffe6606bd63",
+      "stored_bytes": 1690,
+      "stored_sha256": "f658a51d994506f7f819ac4dc142d0f27b93e63bcd8f0700c096cffe6606bd63"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/014-redis-batch64-r050-p00001/run/report.json",
+      "path": "reports/014-redis-batch64-r050-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1263795,
+      "decoded_sha256": "37a2b6c540392dc7ceec7c223474222331c66f3007e65389cd4aa7548513a316",
+      "stored_bytes": 11949,
+      "stored_sha256": "16d475071b3798e71ce54285fbd0fa2c8942a731dd5d0f246a2937410a82b82c"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/014-redis-batch64-r050-p00001/resource-coverage.json",
+      "path": "reports/014-redis-batch64-r050-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 841,
+      "decoded_sha256": "18ac2124e2f560637898e29b7de2e18a29df549beca6e038afbd55d85b073faf",
+      "stored_bytes": 841,
+      "stored_sha256": "18ac2124e2f560637898e29b7de2e18a29df549beca6e038afbd55d85b073faf"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/015-old-batch64-r100-p00001/run/report.json",
+      "path": "reports/015-old-batch64-r100-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1431383,
+      "decoded_sha256": "ffc04f8cf8d2bd70384eb1856703bbd78cb740474b002287d292c40c05d0aaef",
+      "stored_bytes": 13178,
+      "stored_sha256": "3f564d386d4de9951226f7449b8f5c99811534b645e56fcfbf3d1721155dbf9a"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/015-old-batch64-r100-p00001/resource-coverage.json",
+      "path": "reports/015-old-batch64-r100-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1648,
+      "decoded_sha256": "8209a94d2097f94dce34fa3780c9b66b3772e190b8d06572ffa083737887cecd",
+      "stored_bytes": 1648,
+      "stored_sha256": "8209a94d2097f94dce34fa3780c9b66b3772e190b8d06572ffa083737887cecd"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/016-new-batch64-r100-p00001/run/report.json",
+      "path": "reports/016-new-batch64-r100-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1431402,
+      "decoded_sha256": "863f0b43b55ea618fb804dec92ed19185cd9473643fbf51d1cbcd7d913aa4ee8",
+      "stored_bytes": 13199,
+      "stored_sha256": "bace1d03c538c2dbbcdf8a642bdedbadb321074f994cbf7e48e59f19de2577fc"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/016-new-batch64-r100-p00001/resource-coverage.json",
+      "path": "reports/016-new-batch64-r100-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1656,
+      "decoded_sha256": "a495f1570f7c3312e29a383a814c1a9c3af7e5202137c89b8da2230753f8c7ca",
+      "stored_bytes": 1656,
+      "stored_sha256": "a495f1570f7c3312e29a383a814c1a9c3af7e5202137c89b8da2230753f8c7ca"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/017-redis-batch64-r100-p00001/run/report.json",
+      "path": "reports/017-redis-batch64-r100-p00001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 914946,
+      "decoded_sha256": "31f1a72aff467036b1e5f2b629f7be511fc617b3a4bae95ed7ab727455b43b24",
+      "stored_bytes": 9258,
+      "stored_sha256": "5b9c08d777f07788565f0ac31f394c2fc4530813f80f26c709e52a805644aa83"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/017-redis-batch64-r100-p00001/resource-coverage.json",
+      "path": "reports/017-redis-batch64-r100-p00001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 841,
+      "decoded_sha256": "719ce270cc7678c96ef556724afbd7130741adeb416377cee89c79b83c596942",
+      "stored_bytes": 841,
+      "stored_sha256": "719ce270cc7678c96ef556724afbd7130741adeb416377cee89c79b83c596942"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/018-old-point-r000-p00064/run/report.json",
+      "path": "reports/018-old-point-r000-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1445139,
+      "decoded_sha256": "7b0cc127c6ee54093d2202f055f4b8b85c8a6b48872ebf6f074ca287e0231ece",
+      "stored_bytes": 17754,
+      "stored_sha256": "68b9fe0c694511a191cc808dd997343fb7ec1c5ebf381aeb215979deeda8514c"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/018-old-point-r000-p00064/resource-coverage.json",
+      "path": "reports/018-old-point-r000-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 3818,
+      "decoded_sha256": "9794965646e532bd69728fd263b54b979edf2ed2742ec056e129c8af40d0eead",
+      "stored_bytes": 3818,
+      "stored_sha256": "9794965646e532bd69728fd263b54b979edf2ed2742ec056e129c8af40d0eead"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/019-new-point-r000-p00064/run/report.json",
+      "path": "reports/019-new-point-r000-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1445114,
+      "decoded_sha256": "90bdaf220de443121b563d3feb0df39aba823f465f1d4e2324f3400aaf5d4d43",
+      "stored_bytes": 17587,
+      "stored_sha256": "c3ec9c2be3d714b46a3b16a6712cd1df86f53b3dea9387ce30d8d54872a9876a"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/019-new-point-r000-p00064/resource-coverage.json",
+      "path": "reports/019-new-point-r000-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 3813,
+      "decoded_sha256": "5f04052d2e77c7c7cbfa82b6a5ca92d0567cc91c5fcd16c145f4da520283ca19",
+      "stored_bytes": 3813,
+      "stored_sha256": "5f04052d2e77c7c7cbfa82b6a5ca92d0567cc91c5fcd16c145f4da520283ca19"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/020-redis-point-r000-p00064/run/report.json",
+      "path": "reports/020-redis-point-r000-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 927668,
+      "decoded_sha256": "a55803ec4862a1f2d2bb180fa098a3badf5ef169c6a67288efc645fb0ad20ccd",
+      "stored_bytes": 11944,
+      "stored_sha256": "f99106d5d50f526d571d083c4af6723f547fca7ba6dd87aa0e93f0d8512fbd95"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/020-redis-point-r000-p00064/resource-coverage.json",
+      "path": "reports/020-redis-point-r000-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 853,
+      "decoded_sha256": "4a167564c81ef684005ec34b01c03d0d948b914c1371afb314ec287fb4c4352c",
+      "stored_bytes": 853,
+      "stored_sha256": "4a167564c81ef684005ec34b01c03d0d948b914c1371afb314ec287fb4c4352c"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/021-old-point-r050-p00064/run/report.json",
+      "path": "reports/021-old-point-r050-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1954368,
+      "decoded_sha256": "ce5708ba3106b10408bff0b46f44eaefe7062fffb53b07faf76a7d2b1a672be9",
+      "stored_bytes": 23517,
+      "stored_sha256": "f31eac27263207763e86a5892253831cc7c30bf0eab0eccadfa73693f9040751"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/021-old-point-r050-p00064/resource-coverage.json",
+      "path": "reports/021-old-point-r050-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 2572,
+      "decoded_sha256": "889ee19f6594b4a7cae3f67e3afae8ee22c4ce77f879ecca5becce92a22e2df1",
+      "stored_bytes": 2572,
+      "stored_sha256": "889ee19f6594b4a7cae3f67e3afae8ee22c4ce77f879ecca5becce92a22e2df1"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/022-new-point-r050-p00064/run/report.json",
+      "path": "reports/022-new-point-r050-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1954439,
+      "decoded_sha256": "91ead1adbc845c8592368bc22c86c5f90f103db36ce093527cdb1bb71cbc4999",
+      "stored_bytes": 23734,
+      "stored_sha256": "234c4a6a3ef4fda293c2a965739733b259bef87d34e0ac9c1add07644adb8090"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/022-new-point-r050-p00064/resource-coverage.json",
+      "path": "reports/022-new-point-r050-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 2732,
+      "decoded_sha256": "d3d3e5bedd3c50afa056b697d3b774b2afc5e3b638272fa6a7505233a53f43d3",
+      "stored_bytes": 2732,
+      "stored_sha256": "d3d3e5bedd3c50afa056b697d3b774b2afc5e3b638272fa6a7505233a53f43d3"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/023-redis-point-r050-p00064/run/report.json",
+      "path": "reports/023-redis-point-r050-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1276970,
+      "decoded_sha256": "923abd1769a16a0ae625602f857d565fc0f4879ae4ee1d99e6574bc3da81e609",
+      "stored_bytes": 15869,
+      "stored_sha256": "3335d6edf39512f60444a1cdf8d671bd29fbbdc95f0f18597999d706f9566f20"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/023-redis-point-r050-p00064/resource-coverage.json",
+      "path": "reports/023-redis-point-r050-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 852,
+      "decoded_sha256": "dcf4fce190f1033579530e6c30998818b200580f6744202d8a15390397b03f20",
+      "stored_bytes": 852,
+      "stored_sha256": "dcf4fce190f1033579530e6c30998818b200580f6744202d8a15390397b03f20"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/024-old-point-r100-p00064/run/report.json",
+      "path": "reports/024-old-point-r100-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1445346,
+      "decoded_sha256": "036ea4c91815d2c299c1b257aadeeae1ddbce7f0ea8c5b14755b0cc7f0602f30",
+      "stored_bytes": 17821,
+      "stored_sha256": "a3e0b28ea7341e4454a463ab30e4f003ed810663e77c33916f5f43d6e5a0ac56"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/024-old-point-r100-p00064/resource-coverage.json",
+      "path": "reports/024-old-point-r100-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1680,
+      "decoded_sha256": "be1f360fe0c03c385c1e49432c7ab42e3e78ec9f4a2c3368b5a74e940e6b5e42",
+      "stored_bytes": 1680,
+      "stored_sha256": "be1f360fe0c03c385c1e49432c7ab42e3e78ec9f4a2c3368b5a74e940e6b5e42"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/025-new-point-r100-p00064/run/report.json",
+      "path": "reports/025-new-point-r100-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1445380,
+      "decoded_sha256": "aaff61df512f45e82e13c39465a156a603ca08a3643f58e76278111a1e373f59",
+      "stored_bytes": 17916,
+      "stored_sha256": "e6e76779c1d8c3da2e1d1d4326ffa45c51d858814dc0ab4ee195e9f14b6b69ce"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/025-new-point-r100-p00064/resource-coverage.json",
+      "path": "reports/025-new-point-r100-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1663,
+      "decoded_sha256": "4e37fb9f44222c02a03a5adc22dc3acd1c96bf324a2c7ecbadf94786dd20600f",
+      "stored_bytes": 1663,
+      "stored_sha256": "4e37fb9f44222c02a03a5adc22dc3acd1c96bf324a2c7ecbadf94786dd20600f"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/026-redis-point-r100-p00064/run/report.json",
+      "path": "reports/026-redis-point-r100-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 927691,
+      "decoded_sha256": "643be065b0f37174f59c56dbc85ec6db175d5423ebc344018c436a39e7227aaf",
+      "stored_bytes": 12084,
+      "stored_sha256": "12bb60a6606a29bd71877e8d42c984a823ba4bb7e1d4a1853e0ead937b800358"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/026-redis-point-r100-p00064/resource-coverage.json",
+      "path": "reports/026-redis-point-r100-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 854,
+      "decoded_sha256": "51906bd4dc0a21eac8f19a5ff0b8a3ba50655ebbbceecad74263207a4882f8e3",
+      "stored_bytes": 854,
+      "stored_sha256": "51906bd4dc0a21eac8f19a5ff0b8a3ba50655ebbbceecad74263207a4882f8e3"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/027-old-batch64-r000-p00064/run/report.json",
+      "path": "reports/027-old-batch64-r000-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1443959,
+      "decoded_sha256": "581a0735d98e462475fbfbc323611205e98af0ce296ed1eb66d0a9993538c044",
+      "stored_bytes": 15502,
+      "stored_sha256": "d0ee663cb0353cfc1b1eda39ac0dfb48c49a41ffc3f848e1f3c351911d10a1de"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/027-old-batch64-r000-p00064/resource-coverage.json",
+      "path": "reports/027-old-batch64-r000-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 4274,
+      "decoded_sha256": "f558ed2d37b7946e35fc2730770469688a09bd483bdb8bc42dda2a1b11bda97c",
+      "stored_bytes": 4274,
+      "stored_sha256": "f558ed2d37b7946e35fc2730770469688a09bd483bdb8bc42dda2a1b11bda97c"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/028-new-batch64-r000-p00064/run/report.json",
+      "path": "reports/028-new-batch64-r000-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1443945,
+      "decoded_sha256": "8d4db48627a91720c1e05c9bac5d5a74118506cf28a052aa54850802240a46c0",
+      "stored_bytes": 15481,
+      "stored_sha256": "509fb01035fd4cb50f8559adf86ecacc88e406a06d19a28593df33b034598a4e"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/028-new-batch64-r000-p00064/resource-coverage.json",
+      "path": "reports/028-new-batch64-r000-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 4027,
+      "decoded_sha256": "0a27eb0477201c0f980a7c986a82d8068b00c6ad26ff2f1d2a493db9043736ee",
+      "stored_bytes": 4027,
+      "stored_sha256": "0a27eb0477201c0f980a7c986a82d8068b00c6ad26ff2f1d2a493db9043736ee"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/029-redis-batch64-r000-p00064/run/report.json",
+      "path": "reports/029-redis-batch64-r000-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 927921,
+      "decoded_sha256": "b882c041530f2895d5f0b55991631fc1a6e55c9254751029ae187e8ded1c3bd2",
+      "stored_bytes": 12013,
+      "stored_sha256": "7bdeba49b1c195b750cd25f1476a8acb9050b2a5f7011c696318f3f3effe226f"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/029-redis-batch64-r000-p00064/resource-coverage.json",
+      "path": "reports/029-redis-batch64-r000-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 850,
+      "decoded_sha256": "96967959aa88df31789b3d45459d29b659372bdbd9f1a2781043efb30aae5072",
+      "stored_bytes": 850,
+      "stored_sha256": "96967959aa88df31789b3d45459d29b659372bdbd9f1a2781043efb30aae5072"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/030-old-batch64-r050-p00064/run/report.json",
+      "path": "reports/030-old-batch64-r050-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1953007,
+      "decoded_sha256": "b9a3c05ee9ab26ce5aa4e9460f05217b69b3be8ff2addaa68c8796e9a82f18dc",
+      "stored_bytes": 20416,
+      "stored_sha256": "f29a7b03bbcb82e34492fcd8cf04a3664a7a9fa289a4585d35232b334e372f3e"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/030-old-batch64-r050-p00064/resource-coverage.json",
+      "path": "reports/030-old-batch64-r050-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 2870,
+      "decoded_sha256": "b2d047ca3c376701bae2b5f72be19f9966f67eb56f4e5f82a221804c3114bbb2",
+      "stored_bytes": 2870,
+      "stored_sha256": "b2d047ca3c376701bae2b5f72be19f9966f67eb56f4e5f82a221804c3114bbb2"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/031-new-batch64-r050-p00064/run/report.json",
+      "path": "reports/031-new-batch64-r050-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1952873,
+      "decoded_sha256": "6b7829792016650e803fff4cefb519566905c3c795b11d3835ceb8fb3d809c3e",
+      "stored_bytes": 20341,
+      "stored_sha256": "82e48ba677178f52ab444e6657dd1845c464681dfe269b9ed51287001d03c561"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/031-new-batch64-r050-p00064/resource-coverage.json",
+      "path": "reports/031-new-batch64-r050-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 2661,
+      "decoded_sha256": "e7335cc364f162c31a308a0cc6ce972fa0f6b17917c9fced445d5e96c9848723",
+      "stored_bytes": 2661,
+      "stored_sha256": "e7335cc364f162c31a308a0cc6ce972fa0f6b17917c9fced445d5e96c9848723"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/032-redis-batch64-r050-p00064/run/report.json",
+      "path": "reports/032-redis-batch64-r050-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1277640,
+      "decoded_sha256": "1e1c8cdd4e928d078a05e14c7501267ab3fd4334141cf65d2a52d34c05532d18",
+      "stored_bytes": 16173,
+      "stored_sha256": "c61592059bef903230efea25be5fd6db8704b6b3627ba0a5e28b100df06861bc"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/032-redis-batch64-r050-p00064/resource-coverage.json",
+      "path": "reports/032-redis-batch64-r050-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 854,
+      "decoded_sha256": "88093f9473864e3207eafcdd33c45d9d2dfadcb5076f57cbe2d81033e4076752",
+      "stored_bytes": 854,
+      "stored_sha256": "88093f9473864e3207eafcdd33c45d9d2dfadcb5076f57cbe2d81033e4076752"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/033-old-batch64-r100-p00064/run/report.json",
+      "path": "reports/033-old-batch64-r100-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1444373,
+      "decoded_sha256": "48b505c9b6607872f8ef3e5fc3f0d3b853bc91ac120dc6f3f231faf22b90e388",
+      "stored_bytes": 16163,
+      "stored_sha256": "4635be55bf39773daa0abbf2752afa6cefdfe640ccf521636350cf30cda0a749"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/033-old-batch64-r100-p00064/resource-coverage.json",
+      "path": "reports/033-old-batch64-r100-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1670,
+      "decoded_sha256": "78703b6e182c85032186e26c8ea81d15e8e79faea7de65b742f02465ac212765",
+      "stored_bytes": 1670,
+      "stored_sha256": "78703b6e182c85032186e26c8ea81d15e8e79faea7de65b742f02465ac212765"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/034-new-batch64-r100-p00064/run/report.json",
+      "path": "reports/034-new-batch64-r100-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1444396,
+      "decoded_sha256": "74e37976fa645bdd745ce1e56ed94c21c03fd074e5abfb86f37599202631dde6",
+      "stored_bytes": 16168,
+      "stored_sha256": "2031b5a4e14a13865e714c91a773f0daa54f525e1217ef87a3c9d3e59deaca1b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/034-new-batch64-r100-p00064/resource-coverage.json",
+      "path": "reports/034-new-batch64-r100-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1671,
+      "decoded_sha256": "88a496ce6d509d9586c619e3317d7cd7aa54c98f4ef785f96e3f60c51e03683b",
+      "stored_bytes": 1671,
+      "stored_sha256": "88a496ce6d509d9586c619e3317d7cd7aa54c98f4ef785f96e3f60c51e03683b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/035-redis-batch64-r100-p00064/run/report.json",
+      "path": "reports/035-redis-batch64-r100-p00064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 928067,
+      "decoded_sha256": "7757eb10906e971330676b53a2ac8dcdef8bb4f38ba1317df3331388c756abe8",
+      "stored_bytes": 12181,
+      "stored_sha256": "225bac09a6a6283c4eccc3582f6d14d235ddd5b69267748e89537c4de2daf097"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/035-redis-batch64-r100-p00064/resource-coverage.json",
+      "path": "reports/035-redis-batch64-r100-p00064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 854,
+      "decoded_sha256": "c8c001e660d5754a461df7b2308a58a6952b50c813f021554f1d77d73c8cce7b",
+      "stored_bytes": 854,
+      "stored_sha256": "c8c001e660d5754a461df7b2308a58a6952b50c813f021554f1d77d73c8cce7b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/036-redis-batch64-r100-p10064/run/report.json",
+      "path": "reports/036-redis-batch64-r100-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 928080,
+      "decoded_sha256": "8a77fe8d71f6f58ef42a68f6a814ac18811bed78c3e27e25c318ef8c1c5ca439",
+      "stored_bytes": 12206,
+      "stored_sha256": "9aea75df33e3e98e649d110b23201e15d6288401b7a182264e6d5a5726e33763"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/036-redis-batch64-r100-p10064/resource-coverage.json",
+      "path": "reports/036-redis-batch64-r100-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 852,
+      "decoded_sha256": "dbbeb67818ec76e7bb96f4584f7b33dde82a027a142be2dfddd5d07de16959c3",
+      "stored_bytes": 852,
+      "stored_sha256": "dbbeb67818ec76e7bb96f4584f7b33dde82a027a142be2dfddd5d07de16959c3"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/037-new-batch64-r100-p10064/run/report.json",
+      "path": "reports/037-new-batch64-r100-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1444392,
+      "decoded_sha256": "981e103f3431e9aea39d5c58b340b29c06736b87fe963fd5a68883034f08868c",
+      "stored_bytes": 16130,
+      "stored_sha256": "4425cea0be62c91aaaafc2a9f3cd0da3d09e9aebc0a7bac42ccc98d2d476e69b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/037-new-batch64-r100-p10064/resource-coverage.json",
+      "path": "reports/037-new-batch64-r100-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1674,
+      "decoded_sha256": "78f04adc3c83f292ff2e01b44305b13c319819ca85bcd32d6f73e5a7a6976eab",
+      "stored_bytes": 1674,
+      "stored_sha256": "78f04adc3c83f292ff2e01b44305b13c319819ca85bcd32d6f73e5a7a6976eab"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/038-old-batch64-r100-p10064/run/report.json",
+      "path": "reports/038-old-batch64-r100-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1444396,
+      "decoded_sha256": "d493e15c38004147e9bf3bf3503bb5f0522f8eac7b96a25b092cb70b9dd32e08",
+      "stored_bytes": 16218,
+      "stored_sha256": "888698c97d57b9ec20cc7b098d879ec0856959067315b2341b957461b91b94fe"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/038-old-batch64-r100-p10064/resource-coverage.json",
+      "path": "reports/038-old-batch64-r100-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1674,
+      "decoded_sha256": "b09e09bf7d441184c33dbda69e49634de00eb55351b8ec4cae1811f16967f323",
+      "stored_bytes": 1674,
+      "stored_sha256": "b09e09bf7d441184c33dbda69e49634de00eb55351b8ec4cae1811f16967f323"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/039-redis-batch64-r050-p10064/run/report.json",
+      "path": "reports/039-redis-batch64-r050-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1277673,
+      "decoded_sha256": "0ebaf9dd278f71522e953846a58814bd1ee19547b1571702ae6224f4693604e4",
+      "stored_bytes": 16222,
+      "stored_sha256": "71f87203aaca354b0dde38097190025230f729406a98c6c0e6b6bef46c66c9b4"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/039-redis-batch64-r050-p10064/resource-coverage.json",
+      "path": "reports/039-redis-batch64-r050-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 855,
+      "decoded_sha256": "c02d2181fec77ccd3b50049059fb8cd50a01f8f4ca2116cfbba94def6d3e3c58",
+      "stored_bytes": 855,
+      "stored_sha256": "c02d2181fec77ccd3b50049059fb8cd50a01f8f4ca2116cfbba94def6d3e3c58"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/040-new-batch64-r050-p10064/run/report.json",
+      "path": "reports/040-new-batch64-r050-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1952966,
+      "decoded_sha256": "3be856acf307c5fd15c941974573494afbee9153d797b6ee65dc8b45a1cca3d8",
+      "stored_bytes": 20562,
+      "stored_sha256": "e18562db0388ca4a4d7ae9292425736dbc3402a289fc6f8ad4eab3da7559b4dd"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/040-new-batch64-r050-p10064/resource-coverage.json",
+      "path": "reports/040-new-batch64-r050-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 2673,
+      "decoded_sha256": "1d6c450a0030de0f8cd50cab893022a7fcc7f4d3fa00a3bb4742ae1c5d2a8a3e",
+      "stored_bytes": 2673,
+      "stored_sha256": "1d6c450a0030de0f8cd50cab893022a7fcc7f4d3fa00a3bb4742ae1c5d2a8a3e"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/041-old-batch64-r050-p10064/run/report.json",
+      "path": "reports/041-old-batch64-r050-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1952974,
+      "decoded_sha256": "ceba30b2276f896cd4e5970ddc1c36f2898c966fb9dab8f913ec412afb46190c",
+      "stored_bytes": 20512,
+      "stored_sha256": "990501f8b79262bd861ea61c4e3f176e5df4bf7165bc03c2ee754a2df64e7757"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/041-old-batch64-r050-p10064/resource-coverage.json",
+      "path": "reports/041-old-batch64-r050-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 2833,
+      "decoded_sha256": "ec5ebf492043efcf1d86d0a583dce1ac77d2b2838a22e59692f5ee147ebdafd4",
+      "stored_bytes": 2833,
+      "stored_sha256": "ec5ebf492043efcf1d86d0a583dce1ac77d2b2838a22e59692f5ee147ebdafd4"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/042-redis-batch64-r000-p10064/run/report.json",
+      "path": "reports/042-redis-batch64-r000-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 928118,
+      "decoded_sha256": "efbbacd51926937f7d63db20c000c4b3a993bb1594bf165ec89be34b990bb31d",
+      "stored_bytes": 12204,
+      "stored_sha256": "88e09214cfb8185f459ed989585fd230f25d4a14c21bcb32e97cee719808c693"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/042-redis-batch64-r000-p10064/resource-coverage.json",
+      "path": "reports/042-redis-batch64-r000-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 855,
+      "decoded_sha256": "8ba84f8833586bf1ef89c9d5b11e0da73fe1f12d4107f1fc7e430bc6e59c47dd",
+      "stored_bytes": 855,
+      "stored_sha256": "8ba84f8833586bf1ef89c9d5b11e0da73fe1f12d4107f1fc7e430bc6e59c47dd"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/043-new-batch64-r000-p10064/run/report.json",
+      "path": "reports/043-new-batch64-r000-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1443984,
+      "decoded_sha256": "0cb147493f8603f5f45e0a3b0f35ea1838bcbfef327ea34ca222f22f57e18a21",
+      "stored_bytes": 15677,
+      "stored_sha256": "4e1d15be36fb04f75fe4abb52127ca23b0b43c974bd2f7a0bf341dd8bfeea423"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/043-new-batch64-r000-p10064/resource-coverage.json",
+      "path": "reports/043-new-batch64-r000-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 3760,
+      "decoded_sha256": "28ad9a8a0729abba0d1ca08aa69618e7c8916d4c39713a30fc61154834cda527",
+      "stored_bytes": 3760,
+      "stored_sha256": "28ad9a8a0729abba0d1ca08aa69618e7c8916d4c39713a30fc61154834cda527"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/044-old-batch64-r000-p10064/run/report.json",
+      "path": "reports/044-old-batch64-r000-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1443924,
+      "decoded_sha256": "e3f319f0e1fce4e4df2f4f715bd1336aff7598819bc35263dbf92d36874d3b1a",
+      "stored_bytes": 15668,
+      "stored_sha256": "e3715a263f8ae8a79458da0ab4c2285d9c768f991c9ca8a0e859bc77352f52a6"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/044-old-batch64-r000-p10064/resource-coverage.json",
+      "path": "reports/044-old-batch64-r000-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 3799,
+      "decoded_sha256": "8bad3015f6966939c60d7178b9fbe02f4ce63150863a60a482d52e264fb260e1",
+      "stored_bytes": 3799,
+      "stored_sha256": "8bad3015f6966939c60d7178b9fbe02f4ce63150863a60a482d52e264fb260e1"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/045-redis-point-r100-p10064/run/report.json",
+      "path": "reports/045-redis-point-r100-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 927696,
+      "decoded_sha256": "9994219e1ffabe4e00fd819f28a3f8240d1b43f92e7431539508e732fa12789c",
+      "stored_bytes": 12132,
+      "stored_sha256": "ae857ef4cde54ec0b894ac0746a3a1b30df6dec7e1c0c7e3670f1889174477f7"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/045-redis-point-r100-p10064/resource-coverage.json",
+      "path": "reports/045-redis-point-r100-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 853,
+      "decoded_sha256": "9d78bf69fde424f69819165044ab5d8e73a46e075b22c9880ecc680b2f9a22c1",
+      "stored_bytes": 853,
+      "stored_sha256": "9d78bf69fde424f69819165044ab5d8e73a46e075b22c9880ecc680b2f9a22c1"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/046-new-point-r100-p10064/run/report.json",
+      "path": "reports/046-new-point-r100-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1445363,
+      "decoded_sha256": "bfa78556fa662172d5c81b8fa4a4c2a50ce18c3900ab0f08cfa8131dfec87d90",
+      "stored_bytes": 18039,
+      "stored_sha256": "39a1af786db4e40c8bb7afad2aa10589bc83ca95878810a7befbe626fd38a2a7"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/046-new-point-r100-p10064/resource-coverage.json",
+      "path": "reports/046-new-point-r100-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1666,
+      "decoded_sha256": "9bc4ebf0b59f99cdbf4248716d138829e27d613513c17389104b4a981ae9209b",
+      "stored_bytes": 1666,
+      "stored_sha256": "9bc4ebf0b59f99cdbf4248716d138829e27d613513c17389104b4a981ae9209b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/047-old-point-r100-p10064/run/report.json",
+      "path": "reports/047-old-point-r100-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1445318,
+      "decoded_sha256": "ac6cacccf3c1d4b9323efd3e180972efa3b2cfd543fe5697209ea1aeda029cf7",
+      "stored_bytes": 17799,
+      "stored_sha256": "893250f96570301a09e7213d51423499ce83ae5a9a15e0f919a5727b9c49852f"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/047-old-point-r100-p10064/resource-coverage.json",
+      "path": "reports/047-old-point-r100-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1688,
+      "decoded_sha256": "cff5f201bef2d6b5fec9cdd1cb1b0e67772c2f362610f5061e83b7a57e18c4e5",
+      "stored_bytes": 1688,
+      "stored_sha256": "cff5f201bef2d6b5fec9cdd1cb1b0e67772c2f362610f5061e83b7a57e18c4e5"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/048-redis-point-r050-p10064/run/report.json",
+      "path": "reports/048-redis-point-r050-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1277180,
+      "decoded_sha256": "8c413ebfd2157fac47b43c0ecb099e53ee632bdfdb40b15794ab8e46955c8cec",
+      "stored_bytes": 16233,
+      "stored_sha256": "1e4a73276818fd7818a7208776cebfe692926e56e13cdf7ddd9e1d50da5e252e"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/048-redis-point-r050-p10064/resource-coverage.json",
+      "path": "reports/048-redis-point-r050-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 853,
+      "decoded_sha256": "e17e9c800f69867e5ff33fac7b6d46ff793d185faef80b0a2a4badc9e730bb02",
+      "stored_bytes": 853,
+      "stored_sha256": "e17e9c800f69867e5ff33fac7b6d46ff793d185faef80b0a2a4badc9e730bb02"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/049-new-point-r050-p10064/run/report.json",
+      "path": "reports/049-new-point-r050-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1954392,
+      "decoded_sha256": "90a7f4d609401af83b5bffd7940d8c0435c642010cbabc6283772bb762db9951",
+      "stored_bytes": 23688,
+      "stored_sha256": "2aeda42a6be27cdcb9fd06f61a852ef0d7dfe9e2975458ff659e22237c89f3ef"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/049-new-point-r050-p10064/resource-coverage.json",
+      "path": "reports/049-new-point-r050-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 2908,
+      "decoded_sha256": "0f76175084454789ae38ac35cf78e6978fc35c01f2f13765a61f9c50b08c214c",
+      "stored_bytes": 2908,
+      "stored_sha256": "0f76175084454789ae38ac35cf78e6978fc35c01f2f13765a61f9c50b08c214c"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/050-old-point-r050-p10064/run/report.json",
+      "path": "reports/050-old-point-r050-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1954427,
+      "decoded_sha256": "8e0aefb471a08ad56b5fca47a179a348138e1ef839f9ba8222b1775ee0907856",
+      "stored_bytes": 23495,
+      "stored_sha256": "5f7e367d68182b4092fd490c1a7f874240ebfae4cdabfdcfd8067c90c8f72eea"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/050-old-point-r050-p10064/resource-coverage.json",
+      "path": "reports/050-old-point-r050-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 2910,
+      "decoded_sha256": "e0534ed1072f58efd62042b3e9cce2702a6d5b20e7f5b01c0d970ae673c1a1a5",
+      "stored_bytes": 2910,
+      "stored_sha256": "e0534ed1072f58efd62042b3e9cce2702a6d5b20e7f5b01c0d970ae673c1a1a5"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/051-redis-point-r000-p10064/run/report.json",
+      "path": "reports/051-redis-point-r000-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 927725,
+      "decoded_sha256": "87f82dcaab85e7459d7e2b482c445f9147e048012d385d43a282ca2139ba1fe4",
+      "stored_bytes": 12038,
+      "stored_sha256": "7a32f7d3fa70fd549c9a8cb5c56753965e6e8f1fd8d5d256df77699c9a4f07ee"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/051-redis-point-r000-p10064/resource-coverage.json",
+      "path": "reports/051-redis-point-r000-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 851,
+      "decoded_sha256": "5ec72de387693a129375443269fbca2874decf520980c819f13fe0ae35f3ae52",
+      "stored_bytes": 851,
+      "stored_sha256": "5ec72de387693a129375443269fbca2874decf520980c819f13fe0ae35f3ae52"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/052-new-point-r000-p10064/run/report.json",
+      "path": "reports/052-new-point-r000-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1445141,
+      "decoded_sha256": "0ea2b4b84ac21b709128e856b97e736b76b0e09e1c366fec510703c8aada1412",
+      "stored_bytes": 17608,
+      "stored_sha256": "7dbec7e1c8188b3c18c31f55eb28e7d6b8812ded656f9224c1240e9702272d10"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/052-new-point-r000-p10064/resource-coverage.json",
+      "path": "reports/052-new-point-r000-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 4391,
+      "decoded_sha256": "2fb0ac9535a8c2bf36bc1c8102d0607b328af940a45bcf39a728dfc864b8f660",
+      "stored_bytes": 4391,
+      "stored_sha256": "2fb0ac9535a8c2bf36bc1c8102d0607b328af940a45bcf39a728dfc864b8f660"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/053-old-point-r000-p10064/run/report.json",
+      "path": "reports/053-old-point-r000-p10064/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1445141,
+      "decoded_sha256": "228055e80233a38bfb6816f095cfae01a158b193a9361920efb0c9871b615ef6",
+      "stored_bytes": 17789,
+      "stored_sha256": "c7657f1a73a24a6767e6bfe0107568dfad41fe1e8ac553e61584702ac09d1d9b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/053-old-point-r000-p10064/resource-coverage.json",
+      "path": "reports/053-old-point-r000-p10064/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 3895,
+      "decoded_sha256": "94b3fdfea15cc3d463552f95132b1a27866c7eab7bec4ae5e6231fdb8c56f783",
+      "stored_bytes": 3895,
+      "stored_sha256": "94b3fdfea15cc3d463552f95132b1a27866c7eab7bec4ae5e6231fdb8c56f783"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/054-redis-batch64-r100-p10001/run/report.json",
+      "path": "reports/054-redis-batch64-r100-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 914933,
+      "decoded_sha256": "29e41e4128f1d3d11d64cfdfb32bc69fa5b17b47593c77f35104c506388682d0",
+      "stored_bytes": 9295,
+      "stored_sha256": "24f4a5ce3ff361070059bdb01b9d1a5f766e5d049eb876a481b2e72501420607"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/054-redis-batch64-r100-p10001/resource-coverage.json",
+      "path": "reports/054-redis-batch64-r100-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 841,
+      "decoded_sha256": "22866caf1969d247027e51ed98388aaa4f5e26741e21e064e0cbfda0f85d7ced",
+      "stored_bytes": 841,
+      "stored_sha256": "22866caf1969d247027e51ed98388aaa4f5e26741e21e064e0cbfda0f85d7ced"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/055-new-batch64-r100-p10001/run/report.json",
+      "path": "reports/055-new-batch64-r100-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1431395,
+      "decoded_sha256": "4383956892ac114569557e7b4bd8a953737768626516dcec3856fbcbe5e2809a",
+      "stored_bytes": 13246,
+      "stored_sha256": "5fdeedd56f8cc359ca8fb22c74a00408ff5f8eb03cd904c87fc1457840e139a3"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/055-new-batch64-r100-p10001/resource-coverage.json",
+      "path": "reports/055-new-batch64-r100-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1657,
+      "decoded_sha256": "e770305a7bb048e6893757d43c67fd763bdc27fa0ca9a1afc3f2ab96f0f7d21a",
+      "stored_bytes": 1657,
+      "stored_sha256": "e770305a7bb048e6893757d43c67fd763bdc27fa0ca9a1afc3f2ab96f0f7d21a"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/056-old-batch64-r100-p10001/run/report.json",
+      "path": "reports/056-old-batch64-r100-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1431404,
+      "decoded_sha256": "63c6103d2976c410168742cd7bf5a51557590ac1b5ae3bf760717298c456b760",
+      "stored_bytes": 13178,
+      "stored_sha256": "ccc0e8d5f68e33cc9eb5d9a0e98d4bafc1edbed6a7ae811af590d8cdefc8ce1f"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/056-old-batch64-r100-p10001/resource-coverage.json",
+      "path": "reports/056-old-batch64-r100-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1649,
+      "decoded_sha256": "8ea4ec66b1cd036571e3e1599905b6826485a2fbab58aed690768f7c74dfcfab",
+      "stored_bytes": 1649,
+      "stored_sha256": "8ea4ec66b1cd036571e3e1599905b6826485a2fbab58aed690768f7c74dfcfab"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/057-redis-batch64-r050-p10001/run/report.json",
+      "path": "reports/057-redis-batch64-r050-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1263763,
+      "decoded_sha256": "45cbf8bde07350792dad4c884467823e48931da150b096d27caca64ecb52d30c",
+      "stored_bytes": 11963,
+      "stored_sha256": "a08d1075342ff55f6975a578d91bf99b3216e984bd3b98c5357b5ff07f0e00d0"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/057-redis-batch64-r050-p10001/resource-coverage.json",
+      "path": "reports/057-redis-batch64-r050-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 841,
+      "decoded_sha256": "6c25fdab9fbe6f77b88287d12637ad59dcd0c2ac7da298b06c751f1efa673073",
+      "stored_bytes": 841,
+      "stored_sha256": "6c25fdab9fbe6f77b88287d12637ad59dcd0c2ac7da298b06c751f1efa673073"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/058-new-batch64-r050-p10001/run/report.json",
+      "path": "reports/058-new-batch64-r050-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1939520,
+      "decoded_sha256": "b0258dbab8504510bcb8b72d3b4903d94b1551ce7eac7b4119e17fb24c9fffd5",
+      "stored_bytes": 16781,
+      "stored_sha256": "15c85c3dcb3954eeb89d2d5da1b991771d0b8c4abc487c037bbeaf1ace3dafc6"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/058-new-batch64-r050-p10001/resource-coverage.json",
+      "path": "reports/058-new-batch64-r050-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1688,
+      "decoded_sha256": "d1c6d2ef242b67b29adc8cafdbe701ab418d32154a105833c219ca04ddc48038",
+      "stored_bytes": 1688,
+      "stored_sha256": "d1c6d2ef242b67b29adc8cafdbe701ab418d32154a105833c219ca04ddc48038"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/059-old-batch64-r050-p10001/run/report.json",
+      "path": "reports/059-old-batch64-r050-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1939539,
+      "decoded_sha256": "157d8170d1e4811eeeb8956300e19b110dd05318f14a6c13842d053381aa042a",
+      "stored_bytes": 16818,
+      "stored_sha256": "7818e7a1dab7c018d96e6f10ce7e2f698a72a2f77fe0c947f3b487a6edeae234"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/059-old-batch64-r050-p10001/resource-coverage.json",
+      "path": "reports/059-old-batch64-r050-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1690,
+      "decoded_sha256": "a907400dc535fe10b910f3e3cb8435f265b435b6aa608da768629fd7d4899a2a",
+      "stored_bytes": 1690,
+      "stored_sha256": "a907400dc535fe10b910f3e3cb8435f265b435b6aa608da768629fd7d4899a2a"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/060-redis-batch64-r000-p10001/run/report.json",
+      "path": "reports/060-redis-batch64-r000-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 914975,
+      "decoded_sha256": "6779abe7f1601648c89b967df4c49350381699d4197b784ec16532ef030076e0",
+      "stored_bytes": 9285,
+      "stored_sha256": "6b27f4c836f5079b92a2a84a32fbd4ea54d3189a5343c2ba69e2f3bf7bf2ce81"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/060-redis-batch64-r000-p10001/resource-coverage.json",
+      "path": "reports/060-redis-batch64-r000-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 838,
+      "decoded_sha256": "b1eb89c829d28cab97c6e9d2388a0a58b723c1e33058bee2ffc11223e8911c9e",
+      "stored_bytes": 838,
+      "stored_sha256": "b1eb89c829d28cab97c6e9d2388a0a58b723c1e33058bee2ffc11223e8911c9e"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/061-new-batch64-r000-p10001/run/report.json",
+      "path": "reports/061-new-batch64-r000-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1431354,
+      "decoded_sha256": "392c717edbe892d18028d879721e5865363c5d84f8ce068c5c4d93c48db10ac2",
+      "stored_bytes": 13154,
+      "stored_sha256": "3f1baab983e74185588d7e8cde1bda2e2f0c971555ca6196f32c335fb8ef3ce1"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/061-new-batch64-r000-p10001/resource-coverage.json",
+      "path": "reports/061-new-batch64-r000-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1693,
+      "decoded_sha256": "2c9201f593a78c39f342b42382fe6f6c25dabd1e4987f80fc2689d0ca70fda51",
+      "stored_bytes": 1693,
+      "stored_sha256": "2c9201f593a78c39f342b42382fe6f6c25dabd1e4987f80fc2689d0ca70fda51"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/062-old-batch64-r000-p10001/run/report.json",
+      "path": "reports/062-old-batch64-r000-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1431369,
+      "decoded_sha256": "6241ffffe9312963400f66cfc3b4728041d377b18623117bf37ece397fe554d7",
+      "stored_bytes": 13137,
+      "stored_sha256": "095aa1bb91516d8a7b4c88ba2f611957d5cec379d982e66eb5255e9cf16e3494"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/062-old-batch64-r000-p10001/resource-coverage.json",
+      "path": "reports/062-old-batch64-r000-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1686,
+      "decoded_sha256": "5899349ee687ff151a3e12037ecbb28955f6721dfeb587654d05f9799d201a20",
+      "stored_bytes": 1686,
+      "stored_sha256": "5899349ee687ff151a3e12037ecbb28955f6721dfeb587654d05f9799d201a20"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/063-redis-point-r100-p10001/run/report.json",
+      "path": "reports/063-redis-point-r100-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 915306,
+      "decoded_sha256": "0c76fad0e32071b10cd3a105970c42822d187b0a89d654e2a95139629905567e",
+      "stored_bytes": 9942,
+      "stored_sha256": "07692c64b663bfdd027c336fe48042c26f31fc79a95eb8572e63085928a66b29"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/063-redis-point-r100-p10001/resource-coverage.json",
+      "path": "reports/063-redis-point-r100-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 833,
+      "decoded_sha256": "54c614625c0daffa176f18b1a928b06568bb7a5d61b9312334aabff3eca6e52d",
+      "stored_bytes": 833,
+      "stored_sha256": "54c614625c0daffa176f18b1a928b06568bb7a5d61b9312334aabff3eca6e52d"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/064-new-point-r100-p10001/run/report.json",
+      "path": "reports/064-new-point-r100-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1431992,
+      "decoded_sha256": "5d6c84034d13bd6aa2153c2a730aa0ee14ae21309d8ec35c8ba13bd251d1049a",
+      "stored_bytes": 14763,
+      "stored_sha256": "80ad08a7044903a59ee69ba7bc5233b7f5fec33c8d9f9913845fc3752e48bb70"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/064-new-point-r100-p10001/resource-coverage.json",
+      "path": "reports/064-new-point-r100-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1670,
+      "decoded_sha256": "d51c76c3428d3934bba8a40fe9a043ce2f0167afa7e9772f3a0ace63f486ceb2",
+      "stored_bytes": 1670,
+      "stored_sha256": "d51c76c3428d3934bba8a40fe9a043ce2f0167afa7e9772f3a0ace63f486ceb2"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/065-old-point-r100-p10001/run/report.json",
+      "path": "reports/065-old-point-r100-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1431962,
+      "decoded_sha256": "3b60b25f77e334390650f2b5c70097182719f21849fd61b416e0f7bca80bb15a",
+      "stored_bytes": 14562,
+      "stored_sha256": "415c70c9a73a1927b0c72342ea48182502c3bc1fac602696ce900c5c2fcf0c99"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/065-old-point-r100-p10001/resource-coverage.json",
+      "path": "reports/065-old-point-r100-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1672,
+      "decoded_sha256": "a04e8af1ceda71bc918e89b1f3c8aa995d3c4c1c7d5ba74cc4598f085ef18e29",
+      "stored_bytes": 1672,
+      "stored_sha256": "a04e8af1ceda71bc918e89b1f3c8aa995d3c4c1c7d5ba74cc4598f085ef18e29"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/066-redis-point-r050-p10001/run/report.json",
+      "path": "reports/066-redis-point-r050-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1264315,
+      "decoded_sha256": "11625e4aef588fcab1e4becf75c25f9d08aa6d0516f88cd760d42381454c8ff1",
+      "stored_bytes": 12902,
+      "stored_sha256": "659e82dc5628b46914e50226c507b5050ff8c116f8a74989594eb9b1ec5f76ed"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/066-redis-point-r050-p10001/resource-coverage.json",
+      "path": "reports/066-redis-point-r050-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 839,
+      "decoded_sha256": "8f1d3612d69c3f3049cad2235e5ede10061e03fcef3c5cc513e983f6d8abfbdd",
+      "stored_bytes": 839,
+      "stored_sha256": "8f1d3612d69c3f3049cad2235e5ede10061e03fcef3c5cc513e983f6d8abfbdd"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/067-new-point-r050-p10001/run/report.json",
+      "path": "reports/067-new-point-r050-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1940375,
+      "decoded_sha256": "ac178e724ad68c8a09ab040f8b321657152443fd72ae882b5eeb5805be4daa00",
+      "stored_bytes": 18813,
+      "stored_sha256": "33bdea6346af0eba0e24def7a29583e0b8d6de9177b306d964249a2e5af1a079"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/067-new-point-r050-p10001/resource-coverage.json",
+      "path": "reports/067-new-point-r050-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1682,
+      "decoded_sha256": "f138deba28deb5b9fe52a6a5e2388af7f707bb6d3529ac3dd847a214904e536b",
+      "stored_bytes": 1682,
+      "stored_sha256": "f138deba28deb5b9fe52a6a5e2388af7f707bb6d3529ac3dd847a214904e536b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/068-old-point-r050-p10001/run/report.json",
+      "path": "reports/068-old-point-r050-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1940403,
+      "decoded_sha256": "560c7c9cdfa4f86b2d334b9e51cac231a10e931684c29c3ebc9da783233cdba6",
+      "stored_bytes": 18727,
+      "stored_sha256": "74815a184c0d96c329192fc414bf1aca6935972a31fc25640b0890c51c55c9d0"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/068-old-point-r050-p10001/resource-coverage.json",
+      "path": "reports/068-old-point-r050-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1686,
+      "decoded_sha256": "c3c64eb05c86e0d61b3732e6a71ad5e22929da6b9d261cdab33b0d9b559f8418",
+      "stored_bytes": 1686,
+      "stored_sha256": "c3c64eb05c86e0d61b3732e6a71ad5e22929da6b9d261cdab33b0d9b559f8418"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/069-redis-point-r000-p10001/run/report.json",
+      "path": "reports/069-redis-point-r000-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 915335,
+      "decoded_sha256": "390cc3258d16dc77c9dccd3bfd207c4206e1b454948d0e128c44fec96c70b707",
+      "stored_bytes": 9820,
+      "stored_sha256": "b0dc122b87253f679f3b92a63fae35e0d528973bd10c86bea93c18623b483268"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/069-redis-point-r000-p10001/resource-coverage.json",
+      "path": "reports/069-redis-point-r000-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 838,
+      "decoded_sha256": "b12435fbbcad89d8bfc3f6abbc481d00d3613373135e37fa51f86f4f4b20e244",
+      "stored_bytes": 838,
+      "stored_sha256": "b12435fbbcad89d8bfc3f6abbc481d00d3613373135e37fa51f86f4f4b20e244"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/070-new-point-r000-p10001/run/report.json",
+      "path": "reports/070-new-point-r000-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1432034,
+      "decoded_sha256": "3582e0bcf0d22d0e66ec23ed4fe2d3cb3cd18479349591237fb50f22d8bfe8c0",
+      "stored_bytes": 14711,
+      "stored_sha256": "4c5305e7d32f4b92752ccaeb824a78098e633e10463023bac6f3558731da6781"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/070-new-point-r000-p10001/resource-coverage.json",
+      "path": "reports/070-new-point-r000-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1686,
+      "decoded_sha256": "c9b1e0f6d825c14697ee1d0818dfb1fd2f4c13efb31545c55d98e0875a0ecfed",
+      "stored_bytes": 1686,
+      "stored_sha256": "c9b1e0f6d825c14697ee1d0818dfb1fd2f4c13efb31545c55d98e0875a0ecfed"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/071-old-point-r000-p10001/run/report.json",
+      "path": "reports/071-old-point-r000-p10001/report.json.gz",
+      "encoding": "gzip",
+      "decoded_bytes": 1432065,
+      "decoded_sha256": "a16d65ebfda2b2c0b0f8324adf01dc4f3f706d56d68a4fd4f800227b29aa3b3c",
+      "stored_bytes": 14842,
+      "stored_sha256": "a17a8cfaa9d28a55cc5d12e57945129e30cbe98fa5320c81d2bd562364916788"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/071-old-point-r000-p10001/resource-coverage.json",
+      "path": "reports/071-old-point-r000-p10001/resource-coverage.json",
+      "encoding": "identity",
+      "decoded_bytes": 1680,
+      "decoded_sha256": "75831731056d39a310b445fcdce7b482ef51dae5759080e556d7cc014af77197",
+      "stored_bytes": 1680,
+      "stored_sha256": "75831731056d39a310b445fcdce7b482ef51dae5759080e556d7cc014af77197"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/AUDITOR-PREPARATION.json",
+      "path": "preparation/AUDITOR-PREPARATION.json",
+      "encoding": "identity",
+      "decoded_bytes": 9063,
+      "decoded_sha256": "c447c00483f85d6f045d1556a99bc35b5f31cd14ec04dccec903a1ec2f7cccc4",
+      "stored_bytes": 9063,
+      "stored_sha256": "c447c00483f85d6f045d1556a99bc35b5f31cd14ec04dccec903a1ec2f7cccc4"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/READINESS.json",
+      "path": "preparation/READINESS.json",
+      "encoding": "identity",
+      "decoded_bytes": 8696,
+      "decoded_sha256": "6cad1281d8694241fc6c5b82828a7c7c70a828ea8fa542f76d9c0842ca19a2ca",
+      "stored_bytes": 8696,
+      "stored_sha256": "6cad1281d8694241fc6c5b82828a7c7c70a828ea8fa542f76d9c0842ca19a2ca"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/README.md",
+      "path": "preparation/README.md",
+      "encoding": "identity",
+      "decoded_bytes": 6839,
+      "decoded_sha256": "20880152bdff709641c324e296e29cb03242fd179041d66a17063f01f60eb6d7",
+      "stored_bytes": 6839,
+      "stored_sha256": "20880152bdff709641c324e296e29cb03242fd179041d66a17063f01f60eb6d7"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/README.md.diff",
+      "path": "preparation/README.md.diff",
+      "encoding": "identity",
+      "decoded_bytes": 14125,
+      "decoded_sha256": "b52a91dbce7003dcb41ccd1acb2316517093f8316d9f7078652472b57a3335b5",
+      "stored_bytes": 14125,
+      "stored_sha256": "b52a91dbce7003dcb41ccd1acb2316517093f8316d9f7078652472b57a3335b5"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/actual-descriptors-first.json",
+      "path": "preparation/actual-descriptors-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 62785,
+      "decoded_sha256": "2076722f7e08c2732794f19090e82f350b226bde7523b16296c58fc2273cf8a2",
+      "stored_bytes": 62785,
+      "stored_sha256": "2076722f7e08c2732794f19090e82f350b226bde7523b16296c58fc2273cf8a2"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/ancestry-first.json",
+      "path": "preparation/ancestry-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 5891,
+      "decoded_sha256": "6fae34d1103b211bf2a3ae55875833b94614cae29c2551a8135fdc52550425b5",
+      "stored_bytes": 5891,
+      "stored_sha256": "6fae34d1103b211bf2a3ae55875833b94614cae29c2551a8135fdc52550425b5"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/audit-contract-first-invocation.json",
+      "path": "preparation/audit-contract-first-invocation.json",
+      "encoding": "identity",
+      "decoded_bytes": 698,
+      "decoded_sha256": "6c4dd220fa47e2718b8d41d2f86c932c95510953772bf044e6bb2ec0ab9a11cf",
+      "stored_bytes": 698,
+      "stored_sha256": "6c4dd220fa47e2718b8d41d2f86c932c95510953772bf044e6bb2ec0ab9a11cf"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/audit-contract-first-terminal.json",
+      "path": "preparation/audit-contract-first-terminal.json",
+      "encoding": "identity",
+      "decoded_bytes": 861,
+      "decoded_sha256": "fe904b25038b0a83b7077f3c77d3f46e3a59cf7d400253d32eccb2f88ee7077b",
+      "stored_bytes": 861,
+      "stored_sha256": "fe904b25038b0a83b7077f3c77d3f46e3a59cf7d400253d32eccb2f88ee7077b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/audit-contract-first.log",
+      "path": "preparation/audit-contract-first.log",
+      "encoding": "identity",
+      "decoded_bytes": 2083,
+      "decoded_sha256": "5ab750e5a2787a87cd4ccbcfe206ead1b13d860c01ae55e5d86521919de8fb13",
+      "stored_bytes": 2083,
+      "stored_sha256": "5ab750e5a2787a87cd4ccbcfe206ead1b13d860c01ae55e5d86521919de8fb13"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/audit.py",
+      "path": "preparation/audit.py",
+      "encoding": "identity",
+      "decoded_bytes": 49263,
+      "decoded_sha256": "b5dc45f08183093f33a44d789de09eb5ed22778f86cd6d550b1f30d4d3502f74",
+      "stored_bytes": 49263,
+      "stored_sha256": "b5dc45f08183093f33a44d789de09eb5ed22778f86cd6d550b1f30d4d3502f74"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/audit.py.diff",
+      "path": "preparation/audit.py.diff",
+      "encoding": "identity",
+      "decoded_bytes": 5507,
+      "decoded_sha256": "e686812820e03381493a30b184a4a95aaf8b14dae6dc07a03ff373272dbef23a",
+      "stored_bytes": 5507,
+      "stored_sha256": "e686812820e03381493a30b184a4a95aaf8b14dae6dc07a03ff373272dbef23a"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/commands.json",
+      "path": "preparation/commands.json",
+      "encoding": "identity",
+      "decoded_bytes": 2540,
+      "decoded_sha256": "4cd561e9a1e89cac81e4496ba98523643d884974d80eb1b91365c33ef3abccb8",
+      "stored_bytes": 2540,
+      "stored_sha256": "4cd561e9a1e89cac81e4496ba98523643d884974d80eb1b91365c33ef3abccb8"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-arguments.json",
+      "path": "preparation/driver-arguments.json",
+      "encoding": "identity",
+      "decoded_bytes": 620,
+      "decoded_sha256": "6f1497dadeba0726d1c54e78d9bb8a47cc5db1fe3f2855f0504e0ec91aa8511b",
+      "stored_bytes": 620,
+      "stored_sha256": "6f1497dadeba0726d1c54e78d9bb8a47cc5db1fe3f2855f0504e0ec91aa8511b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-arguments.json.diff",
+      "path": "preparation/driver-arguments.json.diff",
+      "encoding": "identity",
+      "decoded_bytes": 722,
+      "decoded_sha256": "e09d7f64c4dd254e359156a7f3854e77e8a323a92dda47ebf22c725a7e146d67",
+      "stored_bytes": 722,
+      "stored_sha256": "e09d7f64c4dd254e359156a7f3854e77e8a323a92dda47ebf22c725a7e146d67"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-contract-first-invocation.json",
+      "path": "preparation/driver-contract-first-invocation.json",
+      "encoding": "identity",
+      "decoded_bytes": 691,
+      "decoded_sha256": "dfb1236c059745b24f0fd4a7c2bf4ca9a8912ef176a03166823b6f83a6ace0f6",
+      "stored_bytes": 691,
+      "stored_sha256": "dfb1236c059745b24f0fd4a7c2bf4ca9a8912ef176a03166823b6f83a6ace0f6"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-contract-first-terminal.json",
+      "path": "preparation/driver-contract-first-terminal.json",
+      "encoding": "identity",
+      "decoded_bytes": 854,
+      "decoded_sha256": "56385bbfb9fe54901156b412d95f6aabb9b1d66de7ce59b5e2db6bc1f419b083",
+      "stored_bytes": 854,
+      "stored_sha256": "56385bbfb9fe54901156b412d95f6aabb9b1d66de7ce59b5e2db6bc1f419b083"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-contract-first.log",
+      "path": "preparation/driver-contract-first.log",
+      "encoding": "identity",
+      "decoded_bytes": 105,
+      "decoded_sha256": "795d872cd929a9c778595fe5bb0368176418a847ce99e47b854ceef902d89d85",
+      "stored_bytes": 105,
+      "stored_sha256": "795d872cd929a9c778595fe5bb0368176418a847ce99e47b854ceef902d89d85"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/freeze-metadata-first-failure.json",
+      "path": "preparation/freeze-metadata-first-failure.json",
+      "encoding": "identity",
+      "decoded_bytes": 564,
+      "decoded_sha256": "bcd245e0a46a3b3ec84bb9bc2aa5551affb3bcc9fa251242d4a158558abfa54b",
+      "stored_bytes": 564,
+      "stored_sha256": "bcd245e0a46a3b3ec84bb9bc2aa5551affb3bcc9fa251242d4a158558abfa54b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/input-layout.json",
+      "path": "preparation/input-layout.json",
+      "encoding": "identity",
+      "decoded_bytes": 2644,
+      "decoded_sha256": "b3e1afaad8bd91f3cc13bcb727c61461f72822fc9b64c8398f45959f13a07378",
+      "stored_bytes": 2644,
+      "stored_sha256": "b3e1afaad8bd91f3cc13bcb727c61461f72822fc9b64c8398f45959f13a07378"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/input-layout.json.diff",
+      "path": "preparation/input-layout.json.diff",
+      "encoding": "identity",
+      "decoded_bytes": 1831,
+      "decoded_sha256": "d6a119d393249de4333a863fc8ec0442d15b9ad96b114714fca09bf9d55af29a",
+      "stored_bytes": 1831,
+      "stored_sha256": "d6a119d393249de4333a863fc8ec0442d15b9ad96b114714fca09bf9d55af29a"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/inventory.json",
+      "path": "preparation/inventory.json",
+      "encoding": "identity",
+      "decoded_bytes": 6633,
+      "decoded_sha256": "b13b118ab2cda4b498ded5f25a6bebb4c39d5ff61cf86ab5275eb9e7cf2cdafc",
+      "stored_bytes": 6633,
+      "stored_sha256": "b13b118ab2cda4b498ded5f25a6bebb4c39d5ff61cf86ab5275eb9e7cf2cdafc"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/isolate-and-run.py",
+      "path": "preparation/isolate-and-run.py",
+      "encoding": "identity",
+      "decoded_bytes": 12873,
+      "decoded_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "stored_bytes": 12873,
+      "stored_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/isolate-and-run.py.diff",
+      "path": "preparation/isolate-and-run.py.diff",
+      "encoding": "identity",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py",
+      "path": "preparation/matched-driver.py",
+      "encoding": "identity",
+      "decoded_bytes": 51953,
+      "decoded_sha256": "ec2203614200eabfb3aa4f423b66cd511c36fc664854fb767bf82e8293527e77",
+      "stored_bytes": 51953,
+      "stored_sha256": "ec2203614200eabfb3aa4f423b66cd511c36fc664854fb767bf82e8293527e77"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py.diff",
+      "path": "preparation/matched-driver.py.diff",
+      "encoding": "identity",
+      "decoded_bytes": 3257,
+      "decoded_sha256": "d071bb3cbda61305720ce1b29480b872b26b8cbb63d625ec6d86c183eabdd164",
+      "stored_bytes": 3257,
+      "stored_sha256": "d071bb3cbda61305720ce1b29480b872b26b8cbb63d625ec6d86c183eabdd164"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/protocol.json",
+      "path": "preparation/protocol.json",
+      "encoding": "identity",
+      "decoded_bytes": 67223,
+      "decoded_sha256": "f9331b5f3259c1fbb0459df790e2487f528feb4f27e571a0fe330ae2153bc94e",
+      "stored_bytes": 67223,
+      "stored_sha256": "f9331b5f3259c1fbb0459df790e2487f528feb4f27e571a0fe330ae2153bc94e"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/protocol.json.diff",
+      "path": "preparation/protocol.json.diff",
+      "encoding": "identity",
+      "decoded_bytes": 3212,
+      "decoded_sha256": "589cdc3b6d58b385bd4b575e8a5bea6e91162235067545eb260139ef3c7ff395",
+      "stored_bytes": 3212,
+      "stored_sha256": "589cdc3b6d58b385bd4b575e8a5bea6e91162235067545eb260139ef3c7ff395"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/role-readback-first.json",
+      "path": "preparation/role-readback-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 284080,
+      "decoded_sha256": "aaceb337005cd56c3d20b57d9f9b7c12b86b3a55230f9a64b1536d3d1b5cdecc",
+      "stored_bytes": 284080,
+      "stored_sha256": "aaceb337005cd56c3d20b57d9f9b7c12b86b3a55230f9a64b1536d3d1b5cdecc"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/static-readback-first.json",
+      "path": "preparation/static-readback-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 1155,
+      "decoded_sha256": "5d34980a7d0f4afc4fd2483c974a7a7a263831adf14907516b321fea2aad2deb",
+      "stored_bytes": 1155,
+      "stored_sha256": "5d34980a7d0f4afc4fd2483c974a7a7a263831adf14907516b321fea2aad2deb"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/test_audit_contract.py",
+      "path": "preparation/test_audit_contract.py",
+      "encoding": "identity",
+      "decoded_bytes": 17670,
+      "decoded_sha256": "c8d8df4818758e0bb6e79facf9b02ce23b90675dec1ee792a4d2dd562e494bfc",
+      "stored_bytes": 17670,
+      "stored_sha256": "c8d8df4818758e0bb6e79facf9b02ce23b90675dec1ee792a4d2dd562e494bfc"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/test_audit_contract.py.diff",
+      "path": "preparation/test_audit_contract.py.diff",
+      "encoding": "identity",
+      "decoded_bytes": 2020,
+      "decoded_sha256": "0d3b5dd6fba8214d789ddae746e9c10a08168eb06b7eeda8bdbade61a78c2c86",
+      "stored_bytes": 2020,
+      "stored_sha256": "0d3b5dd6fba8214d789ddae746e9c10a08168eb06b7eeda8bdbade61a78c2c86"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/test_driver.py",
+      "path": "preparation/test_driver.py",
+      "encoding": "identity",
+      "decoded_bytes": 9920,
+      "decoded_sha256": "2dd6fc1671733f27156189eaf62a25dbf69653b41061b82621ef2edbc837dd05",
+      "stored_bytes": 9920,
+      "stored_sha256": "2dd6fc1671733f27156189eaf62a25dbf69653b41061b82621ef2edbc837dd05"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/test_driver.py.diff",
+      "path": "preparation/test_driver.py.diff",
+      "encoding": "identity",
+      "decoded_bytes": 1758,
+      "decoded_sha256": "923018e185c55ac8f112e9f7b23202086e7f646743f3c6b94845effc1a3e4ef1",
+      "stored_bytes": 1758,
+      "stored_sha256": "923018e185c55ac8f112e9f7b23202086e7f646743f3c6b94845effc1a3e4ef1"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/audit-terminal-first.json",
+      "path": "root/audit-terminal-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 535,
+      "decoded_sha256": "b04d9d251b428325b1002f0fc66d6e5a8c79d36677f2974b92cf588a5f8d0568",
+      "stored_bytes": 535,
+      "stored_sha256": "b04d9d251b428325b1002f0fc66d6e5a8c79d36677f2974b92cf588a5f8d0568"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/check-smoke-first.diff",
+      "path": "root/check-smoke-first.diff",
+      "encoding": "identity",
+      "decoded_bytes": 2624,
+      "decoded_sha256": "83ee7d1dc6923f76551877cd6071a1e4e2a80ff99f469fc45bed999cdfe7cd68",
+      "stored_bytes": 2624,
+      "stored_sha256": "83ee7d1dc6923f76551877cd6071a1e4e2a80ff99f469fc45bed999cdfe7cd68"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/check-smoke-first.py",
+      "path": "root/check-smoke-first.py",
+      "encoding": "identity",
+      "decoded_bytes": 2515,
+      "decoded_sha256": "dd37eb541ecea0dc10fc37b36e69112311585f31f1821c3e7306d3c76518642a",
+      "stored_bytes": 2515,
+      "stored_sha256": "dd37eb541ecea0dc10fc37b36e69112311585f31f1821c3e7306d3c76518642a"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/launch-freeze-first.json",
+      "path": "root/launch-freeze-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 8956,
+      "decoded_sha256": "77b263a0be5d14fd9b02dfae92d7a2137977fb03453e10290794d0bd24148390",
+      "stored_bytes": 8956,
+      "stored_sha256": "77b263a0be5d14fd9b02dfae92d7a2137977fb03453e10290794d0bd24148390"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/smoke-first.log",
+      "path": "root/smoke-first.log",
+      "encoding": "identity",
+      "decoded_bytes": 1829,
+      "decoded_sha256": "719756659420f089ac869a44a3dd58dae83bcfb2deadf6ac9b81fb03910b480b",
+      "stored_bytes": 1829,
+      "stored_sha256": "719756659420f089ac869a44a3dd58dae83bcfb2deadf6ac9b81fb03910b480b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/smoke-gate-first.json",
+      "path": "root/smoke-gate-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 590304,
+      "decoded_sha256": "02521418f6347904879b841882a147d5977c4297456edc791bf3695822a8010c",
+      "stored_bytes": 590304,
+      "stored_sha256": "02521418f6347904879b841882a147d5977c4297456edc791bf3695822a8010c"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/smoke-invocation-first.json",
+      "path": "root/smoke-invocation-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 1052,
+      "decoded_sha256": "7df00817ba85d416f6155933bea4a2b5610ba3836f18d8a565b04d4b7078783f",
+      "stored_bytes": 1052,
+      "stored_sha256": "7df00817ba85d416f6155933bea4a2b5610ba3836f18d8a565b04d4b7078783f"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/smoke-reader-freeze-first.json",
+      "path": "root/smoke-reader-freeze-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 502,
+      "decoded_sha256": "2f37593d290666c5401c5ba44929f46b80cf9b7ac747261d0bf1371e876eab6d",
+      "stored_bytes": 502,
+      "stored_sha256": "2f37593d290666c5401c5ba44929f46b80cf9b7ac747261d0bf1371e876eab6d"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/smoke-terminal-first.json",
+      "path": "root/smoke-terminal-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 202,
+      "decoded_sha256": "195aa8386314e513e5b1a6e6388dc6cddee0e7d522750ac6dc5cc5ed765e2ad3",
+      "stored_bytes": 202,
+      "stored_sha256": "195aa8386314e513e5b1a6e6388dc6cddee0e7d522750ac6dc5cc5ed765e2ad3"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/statistics-first.log",
+      "path": "root/statistics-first.log",
+      "encoding": "identity",
+      "decoded_bytes": 871,
+      "decoded_sha256": "8f187ae82a0e3d56595fe6d77c2b4f795714c6dd35b6fb1119b63012132b685d",
+      "stored_bytes": 871,
+      "stored_sha256": "8f187ae82a0e3d56595fe6d77c2b4f795714c6dd35b6fb1119b63012132b685d"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/statistics-terminal-first.json",
+      "path": "root/statistics-terminal-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 372,
+      "decoded_sha256": "abe72501604ada4a8a28757fc6ea0833cf1796cc355679319b14f3449c9b5959",
+      "stored_bytes": 372,
+      "stored_sha256": "abe72501604ada4a8a28757fc6ea0833cf1796cc355679319b14f3449c9b5959"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/timing-first.log",
+      "path": "root/timing-first.log",
+      "encoding": "identity",
+      "decoded_bytes": 3737,
+      "decoded_sha256": "948d156c0bec71b32aa23a56f472ac01b6387d2c4a76c57b351108630f21db83",
+      "stored_bytes": 3737,
+      "stored_sha256": "948d156c0bec71b32aa23a56f472ac01b6387d2c4a76c57b351108630f21db83"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/timing-invocation-first.json",
+      "path": "root/timing-invocation-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 581,
+      "decoded_sha256": "0a75c796956009851ce630e68fd2425046ac3b39cccf4b841f1b3b2e3933c1df",
+      "stored_bytes": 581,
+      "stored_sha256": "0a75c796956009851ce630e68fd2425046ac3b39cccf4b841f1b3b2e3933c1df"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/timing-release-first.json",
+      "path": "root/timing-release-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 900,
+      "decoded_sha256": "f7fcf88fae036bf87b79c362caeff8fe9c6bcc6704b0593a7f9b06b2d3c8dbd5",
+      "stored_bytes": 900,
+      "stored_sha256": "f7fcf88fae036bf87b79c362caeff8fe9c6bcc6704b0593a7f9b06b2d3c8dbd5"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-root-preparation/timing-terminal-first.json",
+      "path": "root/timing-terminal-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 202,
+      "decoded_sha256": "baa49a1c3ab83dff7d0260b0c886ce9b0b904695c881e830930ca07192b5b266",
+      "stored_bytes": 202,
+      "stored_sha256": "baa49a1c3ab83dff7d0260b0c886ce9b0b904695c881e830930ca07192b5b266"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-independent-first/audit-first.log",
+      "path": "independent/audit-first.log",
+      "encoding": "identity",
+      "decoded_bytes": 4115,
+      "decoded_sha256": "b81add11d784568f976a4da5989bd3d4dccfea0ea3b7af97e98b1ce781e7ca0b",
+      "stored_bytes": 4115,
+      "stored_sha256": "b81add11d784568f976a4da5989bd3d4dccfea0ea3b7af97e98b1ce781e7ca0b"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-independent-first/audit-invocation-first.json",
+      "path": "independent/audit-invocation-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 1516,
+      "decoded_sha256": "06af6f24f0338befe269214b40cb214f42fe7e3e4a114d72304b3b718d8c7789",
+      "stored_bytes": 1516,
+      "stored_sha256": "06af6f24f0338befe269214b40cb214f42fe7e3e4a114d72304b3b718d8c7789"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-independent-first/audit-terminal-first.json",
+      "path": "independent/audit-terminal-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 1357,
+      "decoded_sha256": "fe67b0404175d4f9fa79bf8d946f7b12dff18ffa2735639ff4118ab0d541fa65",
+      "stored_bytes": 1357,
+      "stored_sha256": "fe67b0404175d4f9fa79bf8d946f7b12dff18ffa2735639ff4118ab0d541fa65"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-independent-first/compact-counts-first.json",
+      "path": "independent/compact-counts-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 1954,
+      "decoded_sha256": "23360c01430d636040a9c10ddbab0337cc86538048e119756046e477c38918f6",
+      "stored_bytes": 1954,
+      "stored_sha256": "23360c01430d636040a9c10ddbab0337cc86538048e119756046e477c38918f6"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/READOUT.md",
+      "path": "statistics/READOUT.md",
+      "encoding": "identity",
+      "decoded_bytes": 8487,
+      "decoded_sha256": "5150912b20128b49885799695ab0731b8de5e4b2332352a1fa12ee6bc9190499",
+      "stored_bytes": 8487,
+      "stored_sha256": "5150912b20128b49885799695ab0731b8de5e4b2332352a1fa12ee6bc9190499"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/core.py",
+      "path": "statistics/core.py",
+      "encoding": "identity",
+      "decoded_bytes": 6438,
+      "decoded_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+      "stored_bytes": 6438,
+      "stored_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/core.py.diff",
+      "path": "statistics/core.py.diff",
+      "encoding": "identity",
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/derive.py",
+      "path": "statistics/derive.py",
+      "encoding": "identity",
+      "decoded_bytes": 8212,
+      "decoded_sha256": "66dc2c8959926f879a823c99cb41d49ac443a2ac117abed32af8e6e3c2cc209f",
+      "stored_bytes": 8212,
+      "stored_sha256": "66dc2c8959926f879a823c99cb41d49ac443a2ac117abed32af8e6e3c2cc209f"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/derive.py.diff",
+      "path": "statistics/derive.py.diff",
+      "encoding": "identity",
+      "decoded_bytes": 2237,
+      "decoded_sha256": "26b944b0c2da47dd6f22965bf204f495e2892c982e20686c9332c32f1886dab4",
+      "stored_bytes": 2237,
+      "stored_sha256": "26b944b0c2da47dd6f22965bf204f495e2892c982e20686c9332c32f1886dab4"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/reader-freeze-first.json",
+      "path": "statistics/reader-freeze-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 497,
+      "decoded_sha256": "6914682f9510ab413711505cab9bec22b9168a940a84b828dbb70d318e19aa87",
+      "stored_bytes": 497,
+      "stored_sha256": "6914682f9510ab413711505cab9bec22b9168a940a84b828dbb70d318e19aa87"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/statistics-first.json",
+      "path": "statistics/statistics-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 1986334,
+      "decoded_sha256": "dcf456b6232fed05c72e088f65232ad59b30bbb72ecb3a258e967e14a678b011",
+      "stored_bytes": 1986334,
+      "stored_sha256": "dcf456b6232fed05c72e088f65232ad59b30bbb72ecb3a258e967e14a678b011"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/statistics-inputs-first.json",
+      "path": "statistics/statistics-inputs-first.json",
+      "encoding": "identity",
+      "decoded_bytes": 32963,
+      "decoded_sha256": "d76510dfb506928f7062534fe62bf284b0c600dde10b95107e06b5a9c8e1d10e",
+      "stored_bytes": 32963,
+      "stored_sha256": "d76510dfb506928f7062534fe62bf284b0c600dde10b95107e06b5a9c8e1d10e"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/results-first/audit.json",
+      "path": "audit/audit.json",
+      "encoding": "identity",
+      "decoded_bytes": 1585466,
+      "decoded_sha256": "bda9fd5997bc7aaa47fcac6a968d7f2f1a7b306a00608a67165121972a8130f6",
+      "stored_bytes": 1585466,
+      "stored_sha256": "bda9fd5997bc7aaa47fcac6a968d7f2f1a7b306a00608a67165121972a8130f6"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/results-first/input-inventory.json",
+      "path": "audit/input-inventory.json",
+      "encoding": "identity",
+      "decoded_bytes": 1702216,
+      "decoded_sha256": "42e38b11c389c960c8e6512a0863693c2fe0ddc567be125e1dcfb5b5556e3e0d",
+      "stored_bytes": 1702216,
+      "stored_sha256": "42e38b11c389c960c8e6512a0863693c2fe0ddc567be125e1dcfb5b5556e3e0d"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/after.json",
+      "path": "outer/after.json",
+      "encoding": "identity",
+      "decoded_bytes": 41299,
+      "decoded_sha256": "62a40d50875eceb0c3826e68cd3e90f26777eb45017c3662e6dc0c8cc1e35044",
+      "stored_bytes": 41299,
+      "stored_sha256": "62a40d50875eceb0c3826e68cd3e90f26777eb45017c3662e6dc0c8cc1e35044"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/before.json",
+      "path": "outer/before.json",
+      "encoding": "identity",
+      "decoded_bytes": 41671,
+      "decoded_sha256": "9e29415c07209eca500275e33c306fc1a3f35c653fb59f3e02d016edeb74a506",
+      "stored_bytes": 41671,
+      "stored_sha256": "9e29415c07209eca500275e33c306fc1a3f35c653fb59f3e02d016edeb74a506"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/invocation.json",
+      "path": "outer/invocation.json",
+      "encoding": "identity",
+      "decoded_bytes": 1140,
+      "decoded_sha256": "bd3e5065692ce814ce452816158b47874f8d06d181e7b08054e27fb71868ff53",
+      "stored_bytes": 1140,
+      "stored_sha256": "bd3e5065692ce814ce452816158b47874f8d06d181e7b08054e27fb71868ff53"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/isolation.json",
+      "path": "outer/isolation.json",
+      "encoding": "identity",
+      "decoded_bytes": 2114,
+      "decoded_sha256": "2ca73cc6f5b55aef1727c083afc79cabe26e7ba08bb50248ae9ade830432b63c",
+      "stored_bytes": 2114,
+      "stored_sha256": "2ca73cc6f5b55aef1727c083afc79cabe26e7ba08bb50248ae9ade830432b63c"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/kv9-chaos-ci-p0-20260908-control-plane-isolated.json",
+      "path": "outer/kv9-chaos-ci-p0-20260908-control-plane-isolated.json",
+      "encoding": "identity",
+      "decoded_bytes": 845,
+      "decoded_sha256": "5d0c3fbc0674f0eccef49e2a0bb6799105456de40c30de20cc37b8ac9a304ab2",
+      "stored_bytes": 845,
+      "stored_sha256": "5d0c3fbc0674f0eccef49e2a0bb6799105456de40c30de20cc37b8ac9a304ab2"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/kv9-chaos-control-plane-isolated.json",
+      "path": "outer/kv9-chaos-control-plane-isolated.json",
+      "encoding": "identity",
+      "decoded_bytes": 829,
+      "decoded_sha256": "0ddcdd65f983a80b7d79aa19744661bdae14192413225fec6f28a4b6c7eda893",
+      "stored_bytes": 829,
+      "stored_sha256": "0ddcdd65f983a80b7d79aa19744661bdae14192413225fec6f28a4b6c7eda893"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/kv9-minio-dev-isolated.json",
+      "path": "outer/kv9-minio-dev-isolated.json",
+      "encoding": "identity",
+      "decoded_bytes": 11065,
+      "decoded_sha256": "d7d46d27112af015f0ba8df9296a82eeea443e622df4433ef75c53fd109d9baa",
+      "stored_bytes": 11065,
+      "stored_sha256": "d7d46d27112af015f0ba8df9296a82eeea443e622df4433ef75c53fd109d9baa"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/summary.json",
+      "path": "outer/summary.json",
+      "encoding": "identity",
+      "decoded_bytes": 170,
+      "decoded_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "stored_bytes": 170,
+      "stored_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/matrix.json",
+      "path": "run/matrix.json",
+      "encoding": "identity",
+      "decoded_bytes": 1955265,
+      "decoded_sha256": "1b7fee13351b1fdbcce75bed3f86361b706895fbf60b4ccd939cd51101b698f0",
+      "stored_bytes": 1955265,
+      "stored_sha256": "1b7fee13351b1fdbcce75bed3f86361b706895fbf60b4ccd939cd51101b698f0"
+    },
+    {
+      "source": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts/isolation-snapshot.json",
+      "path": "run/isolation-snapshot.json",
+      "encoding": "identity",
+      "decoded_bytes": 2114,
+      "decoded_sha256": "2ca73cc6f5b55aef1727c083afc79cabe26e7ba08bb50248ae9ade830432b63c",
+      "stored_bytes": 2114,
+      "stored_sha256": "2ca73cc6f5b55aef1727c083afc79cabe26e7ba08bb50248ae9ade830432b63c"
+    }
+  ]
+}

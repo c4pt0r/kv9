@@ -1,0 +1,66 @@
+{
+  "cohort_files": [
+    "summary.json",
+    "cleanup.json",
+    "requested-config.json",
+    "run/report.json",
+    "client-exit.json",
+    "resource-samples.json",
+    "resource-coverage.json",
+    "host-resource-samples.json",
+    "storage-preflight.json",
+    "storage-resource-samples.json",
+    "sample-calls.json"
+  ],
+  "dataset_scope": "Exact deterministic bytes and sentinel, configured nonce bound and deterministic write-key membership; no exact issued nonce ledger or complete linearizability history.",
+  "endpoint_semantics": "Endpoint files are bound, not semantically accepted here. Independent endpoint-stage reader validates populations and overlapping intervals separately.",
+  "endpoint_snapshot_files": 288,
+  "fresh_native_drains": 144,
+  "input_inventory_format": "Original absolute path -> {bytes, sha256}, including matrix.json, native endpoint files and every original input read by the unchanged audit; no detached endpoint hash list.",
+  "input_layout_changes_from_predecessor": "Only owned root/preparation paths and CRC control and owned-buffer candidate role pins; runtime/audit schemas and semantic predicates unchanged.",
+  "managed_process_lifetimes": 240,
+  "measurement_scope": "Both repeats; per-workload/concurrency/role and per-operation plus merged raw histograms; retain all outcomes/attempts. Pooled QPS=sum calls/sum elapsed; pooled mean=sum latency/count; pooled quantiles from merged counts, never averaged.",
+  "native_cohorts": 48,
+  "native_endpoint_files": [
+    "before-metrics.json",
+    "before-status.json",
+    "before-resources.json",
+    "after-metrics.json",
+    "after-status.json",
+    "after-resources.json"
+  ],
+  "native_retained_files": [
+    "listener-before.json",
+    "listener-after.json",
+    "fixture/tmpfs-voters.json",
+    "<before|after>-fresh-drain.json",
+    "<before|after>-allocator-provenance.json",
+    "fixture/tmpfs-retention.json",
+    "fixture/data/"
+  ],
+  "native_writer_bindings": 144,
+  "outer_files": [
+    "summary.json",
+    "before.json",
+    "after.json",
+    "isolation.json",
+    "invocation.json",
+    "<exact-owned-container>-isolated.json"
+  ],
+  "outer_root": "/tmp/kv9-owned-batch-broad-workloads-timing-first",
+  "output": "/tmp/kv9-owned-batch-broad-workloads-preparation/results-first",
+  "redis_cohorts": 24,
+  "redis_retained_files": [
+    "redis-listener.json",
+    "<before|after>-redis-config.json",
+    "final-dataset.json"
+  ],
+  "run": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts",
+  "run_files": [
+    "matrix.json",
+    "driver.py",
+    "isolation-snapshot.json",
+    "retained-inputs/"
+  ],
+  "timed_cohorts": 72
+}

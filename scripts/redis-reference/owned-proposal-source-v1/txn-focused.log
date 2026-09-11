@@ -1,0 +1,14 @@
+   Compiling kv9-common v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/common)
+   Compiling kv9-engine v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/engine)
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/raft)
+   Compiling kv9-region v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/region)
+   Compiling kv9-txn v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/txn)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.69s
+     Running unittests src/lib.rs (/home/dongxu/kv9/target/debug/deps/kv9_txn-401930434c9c8f79)
+
+running 2 tests
+test raw::tests::owned_batch_planning_preserves_refusal_order_and_empty_batch_behavior ... ok
+test raw::tests::owned_batch_plans_preserve_duplicate_order_empty_values_and_tenant_keys ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 17 filtered out; finished in 0.00s
+

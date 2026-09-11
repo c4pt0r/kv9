@@ -1,0 +1,12 @@
+{
+  "terminal": true,
+  "exit_code": 0,
+  "timing_session": 10967,
+  "audit_session": 47800,
+  "audit_tool_chunk": "0e337d",
+  "audit_terminal_record": "/tmp/kv9-owned-batch-broad-independent-first/audit-terminal-first.json",
+  "audit_terminal_sha256": "fe67b0404175d4f9fa79bf8d946f7b12dff18ffa2735639ff4118ab0d541fa65",
+  "audit_sha256": "bda9fd5997bc7aaa47fcac6a968d7f2f1a7b306a00608a67165121972a8130f6",
+  "inventory_sha256": "42e38b11c389c960c8e6512a0863693c2fe0ddc567be125e1dcfb5b5556e3e0d",
+  "created_ns": 1789145650239615580
+}

@@ -1,0 +1,31 @@
+{
+  "accepted": true,
+  "auditor_sha256": "b5dc45f08183093f33a44d789de09eb5ed22778f86cd6d550b1f30d4d3502f74",
+  "completed_ns": 1789145613535265307,
+  "driver_sha256": "ec2203614200eabfb3aa4f423b66cd511c36fc664854fb767bf82e8293527e77",
+  "exit_code": 0,
+  "invocation_sha256": "06af6f24f0338befe269214b40cb214f42fe7e3e4a114d72304b3b718d8c7789",
+  "log_sha256": "b81add11d784568f976a4da5989bd3d4dccfea0ea3b7af97e98b1ce781e7ca0b",
+  "outputs": {
+    "/tmp/kv9-owned-batch-broad-independent-first/compact-counts-first.json": {
+      "bytes": 1954,
+      "sha256": "23360c01430d636040a9c10ddbab0337cc86538048e119756046e477c38918f6"
+    },
+    "/tmp/kv9-owned-batch-broad-workloads-preparation/results-first/audit.json": {
+      "bytes": 1585466,
+      "sha256": "bda9fd5997bc7aaa47fcac6a968d7f2f1a7b306a00608a67165121972a8130f6"
+    },
+    "/tmp/kv9-owned-batch-broad-workloads-preparation/results-first/input-inventory.json": {
+      "bytes": 1702216,
+      "sha256": "42e38b11c389c960c8e6512a0863693c2fe0ddc567be125e1dcfb5b5556e3e0d"
+    }
+  },
+  "pid": 3870810,
+  "pid_absent": true,
+  "root_timing_exit_code": 0,
+  "root_timing_session": 10967,
+  "root_timing_tool_receipt": "d6132d",
+  "scope": "One unchanged frozen audit invocation only; all helpers terminal, no statistics or runtime rerun",
+  "session_id": 47800,
+  "terminal_tool_receipt": "0e337d"
+}

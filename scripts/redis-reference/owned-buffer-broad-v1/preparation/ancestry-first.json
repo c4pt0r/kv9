@@ -1,0 +1,104 @@
+{
+  "additional_derived_changes": [
+    "auditor explicit argument-file SHA",
+    "protocol driver SHA",
+    "statistics descriptive title only"
+  ],
+  "all_workloads_limits_and_predicates_unchanged": true,
+  "contracts_pending": true,
+  "files": {
+    "audit.py": {
+      "diff_sha256": "e686812820e03381493a30b184a4a95aaf8b14dae6dc07a03ff373272dbef23a",
+      "parent": "/tmp/kv9-crc-broad-workloads-preparation/audit.py",
+      "parent_sha256": "2b1168c1fe2b0ca240b60822be238f71549528140f717b73bb840ad4fa7b2b4d",
+      "sha256": "b5dc45f08183093f33a44d789de09eb5ed22778f86cd6d550b1f30d4d3502f74"
+    },
+    "driver-arguments.json": {
+      "diff_sha256": "e09d7f64c4dd254e359156a7f3854e77e8a323a92dda47ebf22c725a7e146d67",
+      "parent": "/tmp/kv9-crc-broad-workloads-preparation/driver-arguments.json",
+      "parent_sha256": "ba0968f92c52e648742fd223020e9d0cc01da4091866a1799acb7fe12081128d",
+      "sha256": "6f1497dadeba0726d1c54e78d9bb8a47cc5db1fe3f2855f0504e0ec91aa8511b"
+    },
+    "input-layout.json": {
+      "diff_sha256": "d6a119d393249de4333a863fc8ec0442d15b9ad96b114714fca09bf9d55af29a",
+      "parent": "/tmp/kv9-crc-broad-workloads-preparation/input-layout.json",
+      "parent_sha256": "1498aafb8f656f10bd8680286ee09856f6c5762c160f48bd24dd3c2b32f69e40",
+      "sha256": "b3e1afaad8bd91f3cc13bcb727c61461f72822fc9b64c8398f45959f13a07378"
+    },
+    "isolate-and-run.py": {
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "parent": "/tmp/kv9-crc-broad-workloads-preparation/isolate-and-run.py",
+      "parent_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "matched-driver.py": {
+      "diff_sha256": "d071bb3cbda61305720ce1b29480b872b26b8cbb63d625ec6d86c183eabdd164",
+      "parent": "/tmp/kv9-crc-broad-workloads-preparation/matched-driver.py",
+      "parent_sha256": "64c4df98a1191c6bd1605783dc6a206571cd5a590951296f5fc56e39aba654ca",
+      "sha256": "ec2203614200eabfb3aa4f423b66cd511c36fc664854fb767bf82e8293527e77"
+    },
+    "protocol.json": {
+      "diff_sha256": "589cdc3b6d58b385bd4b575e8a5bea6e91162235067545eb260139ef3c7ff395",
+      "parent": "/tmp/kv9-crc-broad-workloads-preparation/protocol.json",
+      "parent_sha256": "89eeef2a7c45da90ffb6e061e84f08801dbd98e4341640e2c79108802cf7b2a0",
+      "sha256": "f9331b5f3259c1fbb0459df790e2487f528feb4f27e571a0fe330ae2153bc94e"
+    },
+    "statistics/core.py": {
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "parent": "/tmp/kv9-crc-broad-statistics-preparation/core.py",
+      "parent_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+      "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    },
+    "statistics/derive.py": {
+      "diff_sha256": "26b944b0c2da47dd6f22965bf204f495e2892c982e20686c9332c32f1886dab4",
+      "parent": "/tmp/kv9-crc-broad-statistics-preparation/derive.py",
+      "parent_sha256": "028b1af892d5febba6df6157b9e32fb0594f7be7c17dc1f0a755844e7bdcdb5b",
+      "sha256": "66dc2c8959926f879a823c99cb41d49ac443a2ac117abed32af8e6e3c2cc209f"
+    },
+    "test_audit_contract.py": {
+      "diff_sha256": "0d3b5dd6fba8214d789ddae746e9c10a08168eb06b7eeda8bdbade61a78c2c86",
+      "parent": "/tmp/kv9-crc-broad-workloads-preparation/test_audit_contract.py",
+      "parent_sha256": "4847ae9ae258286bdcfb568ef691086dc55fdd45d909a63f421d44d9ef061c12",
+      "sha256": "c8d8df4818758e0bb6e79facf9b02ce23b90675dec1ee792a4d2dd562e494bfc"
+    },
+    "test_driver.py": {
+      "diff_sha256": "923018e185c55ac8f112e9f7b23202086e7f646743f3c6b94845effc1a3e4ef1",
+      "parent": "/tmp/kv9-crc-broad-workloads-preparation/test_driver.py",
+      "parent_sha256": "7353d49d176286305f14bbf59e37035dc63d10208beb4e6e2608b70f0c3faf0e",
+      "sha256": "2dd6fc1671733f27156189eaf62a25dbf69653b41061b82621ef2edbc837dd05"
+    }
+  },
+  "function_comparison": {
+    "audit.py": {
+      "changed_functions": [],
+      "function_count": 20
+    },
+    "matched-driver.py": {
+      "changed_functions": [
+        "main"
+      ],
+      "function_count": 27
+    }
+  },
+  "preparation_only": true,
+  "prepared_ns": 1789143378843736871,
+  "simultaneous_substitutions": {
+    "/tmp/kv9-crc-broad-root-preparation": "/tmp/kv9-owned-batch-broad-root-preparation",
+    "/tmp/kv9-crc-broad-workloads-preparation": "/tmp/kv9-owned-batch-broad-workloads-preparation",
+    "/tmp/kv9-crc-broad-workloads-smoke-first": "/tmp/kv9-owned-batch-broad-workloads-smoke-first",
+    "/tmp/kv9-crc-broad-workloads-timing-first": "/tmp/kv9-owned-batch-broad-workloads-timing-first",
+    "/tmp/kv9-rpc-pair-release-first": "/tmp/kv9-wal-crc32-release-first",
+    "/tmp/kv9-rpc-worker-pair": "/tmp/kv9-wal-crc32-table",
+    "/tmp/kv9-wal-crc32-release-first": "/tmp/kv9-owned-batch-release-first",
+    "/tmp/kv9-wal-crc32-table": "/tmp/kv9-owned-apply-batch",
+    "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+    "1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417": "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8",
+    "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+    "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8": "5a2d5e031f0a24a0704dd3a2d4cf4f0fc95f868d694b54d94c3fc56fb1243a21",
+    "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13": "07c02871276f9c52cd19bd8213ab3288d6c51a1d7391370b5a6282f0018b03f7",
+    "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb": "9be0c1963515ff974426faadef80482b847b13a5",
+    "kv9-crc-broad-workloads-c1-c64-v1": "kv9-owned-batch-broad-workloads-c1-c64-v1"
+  },
+  "statistics_arithmetic_byte_identical": true,
+  "wrapper_byte_identical": true
+}

@@ -1,0 +1,146 @@
+{
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/AUDITOR-PREPARATION.json": {
+    "bytes": 9063,
+    "sha256": "c447c00483f85d6f045d1556a99bc35b5f31cd14ec04dccec903a1ec2f7cccc4"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/README.md": {
+    "bytes": 6839,
+    "sha256": "20880152bdff709641c324e296e29cb03242fd179041d66a17063f01f60eb6d7"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/README.md.diff": {
+    "bytes": 14125,
+    "sha256": "b52a91dbce7003dcb41ccd1acb2316517093f8316d9f7078652472b57a3335b5"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/actual-descriptors-first.json": {
+    "bytes": 62785,
+    "sha256": "2076722f7e08c2732794f19090e82f350b226bde7523b16296c58fc2273cf8a2"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/ancestry-first.json": {
+    "bytes": 5891,
+    "sha256": "6fae34d1103b211bf2a3ae55875833b94614cae29c2551a8135fdc52550425b5"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/audit-contract-first-invocation.json": {
+    "bytes": 698,
+    "sha256": "6c4dd220fa47e2718b8d41d2f86c932c95510953772bf044e6bb2ec0ab9a11cf"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/audit-contract-first-terminal.json": {
+    "bytes": 861,
+    "sha256": "fe904b25038b0a83b7077f3c77d3f46e3a59cf7d400253d32eccb2f88ee7077b"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/audit-contract-first.log": {
+    "bytes": 2083,
+    "sha256": "5ab750e5a2787a87cd4ccbcfe206ead1b13d860c01ae55e5d86521919de8fb13"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/audit.py": {
+    "bytes": 49263,
+    "sha256": "b5dc45f08183093f33a44d789de09eb5ed22778f86cd6d550b1f30d4d3502f74"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/audit.py.diff": {
+    "bytes": 5507,
+    "sha256": "e686812820e03381493a30b184a4a95aaf8b14dae6dc07a03ff373272dbef23a"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/commands.json": {
+    "bytes": 2540,
+    "sha256": "4cd561e9a1e89cac81e4496ba98523643d884974d80eb1b91365c33ef3abccb8"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-arguments.json": {
+    "bytes": 620,
+    "sha256": "6f1497dadeba0726d1c54e78d9bb8a47cc5db1fe3f2855f0504e0ec91aa8511b"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-arguments.json.diff": {
+    "bytes": 722,
+    "sha256": "e09d7f64c4dd254e359156a7f3854e77e8a323a92dda47ebf22c725a7e146d67"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-contract-first-invocation.json": {
+    "bytes": 691,
+    "sha256": "dfb1236c059745b24f0fd4a7c2bf4ca9a8912ef176a03166823b6f83a6ace0f6"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-contract-first-terminal.json": {
+    "bytes": 854,
+    "sha256": "56385bbfb9fe54901156b412d95f6aabb9b1d66de7ce59b5e2db6bc1f419b083"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-contract-first.log": {
+    "bytes": 105,
+    "sha256": "795d872cd929a9c778595fe5bb0368176418a847ce99e47b854ceef902d89d85"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/freeze-metadata-first-failure.json": {
+    "bytes": 564,
+    "sha256": "bcd245e0a46a3b3ec84bb9bc2aa5551affb3bcc9fa251242d4a158558abfa54b"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/input-layout.json": {
+    "bytes": 2644,
+    "sha256": "b3e1afaad8bd91f3cc13bcb727c61461f72822fc9b64c8398f45959f13a07378"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/input-layout.json.diff": {
+    "bytes": 1831,
+    "sha256": "d6a119d393249de4333a863fc8ec0442d15b9ad96b114714fca09bf9d55af29a"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/isolate-and-run.py": {
+    "bytes": 12873,
+    "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/isolate-and-run.py.diff": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py": {
+    "bytes": 51953,
+    "sha256": "ec2203614200eabfb3aa4f423b66cd511c36fc664854fb767bf82e8293527e77"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py.diff": {
+    "bytes": 3257,
+    "sha256": "d071bb3cbda61305720ce1b29480b872b26b8cbb63d625ec6d86c183eabdd164"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/protocol.json": {
+    "bytes": 67223,
+    "sha256": "f9331b5f3259c1fbb0459df790e2487f528feb4f27e571a0fe330ae2153bc94e"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/protocol.json.diff": {
+    "bytes": 3212,
+    "sha256": "589cdc3b6d58b385bd4b575e8a5bea6e91162235067545eb260139ef3c7ff395"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/role-readback-first.json": {
+    "bytes": 284080,
+    "sha256": "aaceb337005cd56c3d20b57d9f9b7c12b86b3a55230f9a64b1536d3d1b5cdecc"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/static-readback-first.json": {
+    "bytes": 1155,
+    "sha256": "5d34980a7d0f4afc4fd2483c974a7a7a263831adf14907516b321fea2aad2deb"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/core.py": {
+    "bytes": 6438,
+    "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/core.py.diff": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/derive.py": {
+    "bytes": 8212,
+    "sha256": "66dc2c8959926f879a823c99cb41d49ac443a2ac117abed32af8e6e3c2cc209f"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/derive.py.diff": {
+    "bytes": 2237,
+    "sha256": "26b944b0c2da47dd6f22965bf204f495e2892c982e20686c9332c32f1886dab4"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/reader-freeze-first.json": {
+    "bytes": 497,
+    "sha256": "6914682f9510ab413711505cab9bec22b9168a940a84b828dbb70d318e19aa87"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/test_audit_contract.py": {
+    "bytes": 17670,
+    "sha256": "c8d8df4818758e0bb6e79facf9b02ce23b90675dec1ee792a4d2dd562e494bfc"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/test_audit_contract.py.diff": {
+    "bytes": 2020,
+    "sha256": "0d3b5dd6fba8214d789ddae746e9c10a08168eb06b7eeda8bdbade61a78c2c86"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/test_driver.py": {
+    "bytes": 9920,
+    "sha256": "2dd6fc1671733f27156189eaf62a25dbf69653b41061b82621ef2edbc837dd05"
+  },
+  "/tmp/kv9-owned-batch-broad-workloads-preparation/test_driver.py.diff": {
+    "bytes": 1758,
+    "sha256": "923018e185c55ac8f112e9f7b23202086e7f646743f3c6b94845effc1a3e4ef1"
+  }
+}

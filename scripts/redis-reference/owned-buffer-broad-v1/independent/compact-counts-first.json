@@ -1,0 +1,54 @@
+{
+  "accepted": true,
+  "additional_limits": [
+    "Latency and operations retain whole-call units; batch latency is not divided by key count",
+    "Sampled RSS and process-lifetime HWM retain their original distinct scopes",
+    "Mutable deterministic final scans do not prove an exact issued nonce ledger or full operation-history linearizability",
+    "Endpoint snapshots are hash-bound only; stage semantics require their separate validator",
+    "Root runs the frozen statistics reader separately; this task did not execute statistics or rerun timing"
+  ],
+  "all_success_single_attempt": true,
+  "cohorts": 72,
+  "input_inventory_files": 6753,
+  "measurement_attempts": 80198970,
+  "measurement_calls": 80198970,
+  "measurement_calls_by_operation": {
+    "batch_get": 2326747,
+    "batch_put": 1306796,
+    "get": 39039187,
+    "mget": 3938986,
+    "mset": 4045291,
+    "put": 9461529,
+    "set": 20080434
+  },
+  "measurement_calls_by_role": {
+    "new": 15850992,
+    "old": 15901031,
+    "redis": 48446947
+  },
+  "measurement_input_items": 812121630,
+  "measurement_outcomes": {
+    "client_rejected": 0,
+    "read_failure": 0,
+    "refused": 0,
+    "success": 80198970,
+    "unknown_write": 0
+  },
+  "outer_restoration": {
+    "accepted": true,
+    "configured_and_effective_before_after": "0-31",
+    "isolated": "6-15,22-31",
+    "namespace_maps_preserved": true,
+    "original_summary_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+    "owned_containers": 3
+  },
+  "owned_lifetimes_exited": 240,
+  "performance_promotion": false,
+  "qualifying_drains": 144,
+  "resource_samples": 13989,
+  "retained_bytes": 94449175837,
+  "retained_files": 4320,
+  "role_source_file_checks": 2344,
+  "scope": "Two-repeat 10-second v3 point/batch64 read/write c1/c64 shared-host tmpfs diagnostic; no sustained-capacity, equal-durability, exact issued nonce ledger or full-history claim",
+  "voter_writer_listener_bindings": 144
+}

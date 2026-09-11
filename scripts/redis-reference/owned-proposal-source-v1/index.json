@@ -1,0 +1,110 @@
+{
+  "scope": "Exact original local source-check records; no release, process recovery, Chaos or performance claim. The four edited Rust files were unchanged through the first focused and workspace/Clippy/format invocations. The status document was updated after checks.",
+  "revision": "71c9d996e1dcc0897da14be1886e669f0c3ea773",
+  "copies": 17,
+  "bytes": 77128,
+  "files": [
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/clippy-invocation.json",
+      "path": "clippy-invocation.json",
+      "bytes": 356,
+      "sha256": "f1cac96d768f9e37e288568759311d5d5e40b627dc2e17e09c8ee648662c73d1"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/clippy-terminal.json",
+      "path": "clippy-terminal.json",
+      "bytes": 431,
+      "sha256": "7a756f5ca76866b88301ca052f47a1cbc29c453a44b9d829fa30444ebcf480a7"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/clippy.log",
+      "path": "clippy.log",
+      "bytes": 669,
+      "sha256": "cdb7cae746b7989e01bb5c51f1e82a336062f5ce63a5e5c1f5bb4929ddc692d3"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/format-invocation.json",
+      "path": "format-invocation.json",
+      "bytes": 315,
+      "sha256": "cd5a30e8b7deebb4fbbda503a5f039bca8b86d6e7975eca4a284714a757fc9ec"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/format-terminal.json",
+      "path": "format-terminal.json",
+      "bytes": 390,
+      "sha256": "10f59ee96679a7b4b910e9111ec805dacf673fb5337ec2c4b9292b3b403d4712"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/format.log",
+      "path": "format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/inputs-first.json",
+      "path": "inputs-first.json",
+      "bytes": 733,
+      "sha256": "7e8e67710efa48771c4ada383ec90e86ceed8b6bcdbaa31e0510ed5a4d8acd66"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/raft-focused-invocation.json",
+      "path": "raft-focused-invocation.json",
+      "bytes": 330,
+      "sha256": "e3e3de3f70abae8b7652fe5a7b3604bee0bdaae5f42b48f5b6cbe5fb5c07431c"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/raft-focused-terminal.json",
+      "path": "raft-focused-terminal.json",
+      "bytes": 405,
+      "sha256": "9aaf81f1611107b03651d79adfe46a4925a65a3759ac62a5c0cf72d3f147e03f"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/raft-focused.log",
+      "path": "raft-focused.log",
+      "bytes": 1265,
+      "sha256": "9f22c425fea48a12d3c31a5a549f8ff77caa7e774f00854980c1d1f999467cc6"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/source-gate-first.json",
+      "path": "source-gate-first.json",
+      "bytes": 2990,
+      "sha256": "d005e6959ebb93f2f124332d5e02af84f7ff2d7a29ea29033cff8f87f2a17d62"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/txn-focused-invocation.json",
+      "path": "txn-focused-invocation.json",
+      "bytes": 323,
+      "sha256": "9633781dc68cea47abdccfbd5ffd19b3f395ad47c6257ce26de2339da924d5da"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/txn-focused-terminal.json",
+      "path": "txn-focused-terminal.json",
+      "bytes": 398,
+      "sha256": "346a532c9bb3ca32464515007cefa153460d52c31efba876175a02f860a37301"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/txn-focused.log",
+      "path": "txn-focused.log",
+      "bytes": 858,
+      "sha256": "9470adbaab9ab17903147cbd4d0981424c275ec037e8226fe4179da61efa26bf"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/workspace-invocation.json",
+      "path": "workspace-invocation.json",
+      "bytes": 297,
+      "sha256": "b60fdce6752a5eb4a3dce4005599e1508eb26172570b5a1a76339d71155ea415"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/workspace-terminal.json",
+      "path": "workspace-terminal.json",
+      "bytes": 372,
+      "sha256": "fa549d3b176ee9bc322ac232d2305be4fce97214d28ed41303cf4cb814b97b12"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-validation-first/workspace.log",
+      "path": "workspace.log",
+      "bytes": 66996,
+      "sha256": "4846245e1a89d9ce7edea7e205d42087bd1de34fee80e2daa3a964fe4f3b858b"
+    }
+  ]
+}

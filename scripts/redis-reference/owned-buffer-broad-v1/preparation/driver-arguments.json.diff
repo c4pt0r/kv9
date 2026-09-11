@@ -1,0 +1,20 @@
+--- /tmp/kv9-crc-broad-workloads-preparation/driver-arguments.json
++++ /tmp/kv9-owned-batch-broad-workloads-preparation/driver-arguments.json
+@@ -6,13 +6,13 @@
+   "--expected-client-revision",
+   "0be806d9671e2c50701a64aa7889c8859b7648ba",
+   "--old-server-source",
+-  "/tmp/kv9-rpc-worker-pair",
++  "/tmp/kv9-wal-crc32-table",
+   "--old-server-build",
+-  "/tmp/kv9-rpc-pair-release-first",
++  "/tmp/kv9-wal-crc32-release-first",
+   "--new-server-source",
+-  "/tmp/kv9-wal-crc32-table",
++  "/tmp/kv9-owned-apply-batch",
+   "--new-server-build",
+-  "/tmp/kv9-wal-crc32-release-first",
++  "/tmp/kv9-owned-batch-release-first",
+   "--redis-client-source",
+   "/tmp/kv9-point-write-measurement-v3",
+   "--redis-client-build",

@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-batch-broad-workloads-preparation/test_driver.py"
+  ],
+  "cwd": "/tmp/kv9-owned-batch-broad-workloads-preparation",
+  "started_ns": 1789143398269476384,
+  "supervisor_pid": 3552359,
+  "cpus": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "environment": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "script_sha256": "2dd6fc1671733f27156189eaf62a25dbf69653b41061b82621ef2edbc837dd05",
+  "log": "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-contract-first.log",
+  "pid": 3552376,
+  "exit_code": 0,
+  "completed_ns": 1789143398676314373,
+  "log_sha256": "795d872cd929a9c778595fe5bb0368176418a847ce99e47b854ceef902d89d85",
+  "pid_absent": true
+}

@@ -1,0 +1,8 @@
+{
+  "action": "final preparation metadata write",
+  "exit_code": 1,
+  "failure": "KeyError: 'worktree' while reporting the existing source-binding record",
+  "next_action": "Use the actual retained source path field in a separate metadata write; do not rerun contracts or runtime.",
+  "scope": "Only the new ancillary metadata writer assumed the wrong source path key; frozen driver, auditor, statistics and both successful contract groups were unchanged. commands.json and README.md were already written and remain retained.",
+  "terminal_tool_chunk": "52d4a2"
+}

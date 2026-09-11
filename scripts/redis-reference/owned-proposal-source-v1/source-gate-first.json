@@ -1,0 +1,67 @@
+{
+  "accepted": true,
+  "base": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "source_sha256": {
+    "crates/engine/src/write_batch.rs": "d4a427bd30218eb4cf9bd182daecf947c45932def7396f9a5402cd65b41bc897",
+    "crates/raft/src/command.rs": "7a121864e38fc837c3bf3632b42e2f62d50f99a93c909d6cde70aa9e485f27a1",
+    "crates/txn/src/raw.rs": "f5bb0036b1c87ee95b03be31b00e4387798674d07c0277144383d99f61ae6ef3",
+    "crates/server/src/runtime.rs": "f951a3465911615878a4199d185f1710619e8b98eda2c79ee2b38e6efa8fd9b2"
+  },
+  "source_unchanged_since_pretest_freeze": true,
+  "counts": {
+    "raft-focused": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 199
+    },
+    "txn-focused": {
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 17
+    },
+    "workspace": {
+      "passed": 712,
+      "failed": 0,
+      "ignored": 23,
+      "measured": 0,
+      "filtered": 0
+    }
+  },
+  "focused_tool_terminal": {
+    "session": 54659,
+    "chunk": "96168c",
+    "exit_code": 0
+  },
+  "workspace_clippy_format_tool_terminal": {
+    "session": 98438,
+    "chunk": "93fe96",
+    "exit_code": 0
+  },
+  "documentation_updated_after_checks": true,
+  "final_document_sha256": "a3f5b68fdbac7978c5675045626af5554f5137f5fb437eac1d4b6d2549e67c8a",
+  "files": {
+    "clippy-invocation.json": "f1cac96d768f9e37e288568759311d5d5e40b627dc2e17e09c8ee648662c73d1",
+    "clippy-terminal.json": "7a756f5ca76866b88301ca052f47a1cbc29c453a44b9d829fa30444ebcf480a7",
+    "clippy.log": "cdb7cae746b7989e01bb5c51f1e82a336062f5ce63a5e5c1f5bb4929ddc692d3",
+    "format-invocation.json": "cd5a30e8b7deebb4fbbda503a5f039bca8b86d6e7975eca4a284714a757fc9ec",
+    "format-terminal.json": "10f59ee96679a7b4b910e9111ec805dacf673fb5337ec2c4b9292b3b403d4712",
+    "format.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "inputs-first.json": "7e8e67710efa48771c4ada383ec90e86ceed8b6bcdbaa31e0510ed5a4d8acd66",
+    "raft-focused-invocation.json": "e3e3de3f70abae8b7652fe5a7b3604bee0bdaae5f42b48f5b6cbe5fb5c07431c",
+    "raft-focused-terminal.json": "9aaf81f1611107b03651d79adfe46a4925a65a3759ac62a5c0cf72d3f147e03f",
+    "raft-focused.log": "9f22c425fea48a12d3c31a5a549f8ff77caa7e774f00854980c1d1f999467cc6",
+    "txn-focused-invocation.json": "9633781dc68cea47abdccfbd5ffd19b3f395ad47c6257ce26de2339da924d5da",
+    "txn-focused-terminal.json": "346a532c9bb3ca32464515007cefa153460d52c31efba876175a02f860a37301",
+    "txn-focused.log": "9470adbaab9ab17903147cbd4d0981424c275ec037e8226fe4179da61efa26bf",
+    "workspace-invocation.json": "b60fdce6752a5eb4a3dce4005599e1508eb26172570b5a1a76339d71155ea415",
+    "workspace-terminal.json": "fa549d3b176ee9bc322ac232d2305be4fce97214d28ed41303cf4cb814b97b12",
+    "workspace.log": "4846245e1a89d9ce7edea7e205d42087bd1de34fee80e2daa3a964fe4f3b858b"
+  },
+  "created_ns": 1789146067355084028,
+  "release_recovery_chaos_performance": "pending",
+  "mainline_promotion": false
+}
