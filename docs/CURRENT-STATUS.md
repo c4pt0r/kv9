@@ -20,77 +20,84 @@ remain open. An abstract proof or one-host fault run does not close these gates.
 
 ## Latest completed uninstrumented performance
 
-The latest **24-cohort point read/mixed screen** uses two forward/reverse
+The latest **24-cohort owner-local ReadIndex pump screen** uses two forward/reverse
 repetitions, ten seconds each, fixed v3 clients, 4,096 keys and 128-byte values,
 closed-loop load, shared-host loopback and fixed CPU placement. KV9 uses three
 voters with normal quorum/sync calls on **tmpfs WAL**. Redis is standalone with
 persistence disabled and no pipelining. Write durability is not equivalent.
 
-| GET metric | Selected CRC | Two-context experiment | Redis |
+| GET metric | Selected CRC | Owner-local pump experiment | Redis |
 | --- | ---: | ---: | ---: |
-| c1 calls/s | 26,638 | 26,381 | 174,164 |
-| c1 mean us | 37.424 | 37.785 | 5.665 |
-| c64 calls/s | 345,323 | 367,127 | 511,325 |
-| c64 mean us | 185.210 | 174.199 | 125.051 |
-| c64 p99 histogram interval us | 352.256–356.351 | 311.296–315.391 | 229.376–231.423 |
+| c1 calls/s | 26,518 | 26,641 | 174,419 |
+| c1 mean us | 37.590 | 37.425 | 5.656 |
+| c1 p99 histogram interval us | 50.176–50.687 | 49.664–50.175 | 7.232–7.295 |
+| c64 calls/s | 345,145 | 348,190 | 514,041 |
+| c64 mean us | 185.303 | 183.681 | 124.394 |
+| c64 p99 histogram interval us | 352.256–356.351 | 352.256–356.351 | 229.376–231.423 |
 
-The two-context experiment improves c64 GET throughput **6.314%**, but c1
-throughput falls **0.962%** and mixed c64 GET mean worsens **3.008%**
-(383.676 -> 395.217 us), with worse GET p99 in both repetitions. Keep CRC
-selected. The candidate still has a **1.393x** Redis throughput gap at c64
-and **6.670x** Redis mean latency at c1. All **50,152,139 measured calls**
-succeed in one attempt; 80 owned lifetimes exit and exact restoration passes.
+The experiment improves c1 GET throughput **0.462%** and c64 GET **0.882%**
+pooled. Paired c64 changes are +1.216% / +0.549%; its p99 stays in the same
+bucket in both repetitions. Mixed c64 throughput falls **0.243%**, while GET
+mean rises **384.041 -> 384.781 us (+0.193%)** and PUT mean rises 0.298%.
+Combined mixed p99 moves to a higher bucket in both repetitions; mixed GET
+p99 itself stays in the same bucket. These are small screening observations,
+not evidence of statistical significance or a sustained capacity improvement.
+**Keep CRC selected; do not promote this candidate.**
 
-The [complete screen and all repetitions](https://github.com/c4pt0r/kv9/blob/119a49cc2f5f35c7f68b8d2301a71e563a36140c/docs/READ-WINDOW-SCREEN.md)
-are published. No batch or write-only performance was measured in this screen.
-The previous [72-cohort one-context matrix](https://github.com/c4pt0r/kv9/blob/aeee652135bc52e4527ef4fffd540ec184adc362/docs/READ-CREDIT-CRC-PERFORMANCE.md)
-remains the latest broad workload comparison: its candidate reaches 2,296,816
-BatchGet(64) keys/s versus Redis 5,954,693. It also remains experimental. Do not
-compare candidate speeds across these two different runs as a causal effect.
+The candidate remains **1.476x** behind Redis throughput at c64 and its c1 mean
+latency is **6.616x** Redis. All **49,860,741 measured calls** succeed in one
+attempt; 80 owned lifetimes exit, 48 fresh drains/bindings and exact restoration
+pass. Both complete repetitions, separate mixed GET/PUT results and retained
+source/proof/recovery evidence are in the
+[full report](https://github.com/c4pt0r/kv9/blob/99d94fb2789d8dc5886e8d1471a658be9f600e27/docs/OWNER-READ-PUMP-SCREEN.md).
 
-## Current experiment
+The [previous two-context screen](https://github.com/c4pt0r/kv9/blob/119a49cc2f5f35c7f68b8d2301a71e563a36140c/docs/READ-WINDOW-SCREEN.md)
+reaches 367,127 c64 GET/s but is also held because c1 and mixed reads regress.
+These are separate runs, not a causal comparison between candidate speeds.
+No batch or write-only performance was measured in either short screen. The
+[72-cohort one-context matrix](https://github.com/c4pt0r/kv9/blob/aeee652135bc52e4527ef4fffd540ec184adc362/docs/READ-CREDIT-CRC-PERFORMANCE.md)
+remains the latest broad comparison; its candidate reaches 2,296,816
+BatchGet(64) keys/s versus Redis 5,954,693 and also remains experimental.
 
-The [fresh instrumented lifecycle report](https://github.com/c4pt0r/kv9/blob/aeee652135bc52e4527ef4fffd540ec184adc362/docs/READ-LIFECYCLE-CRC-CREDIT.md)
-finds mixed-read queue mean rising from **19.893 to 82.557 us** under the
-one-context cap, exceeding savings after admission. Its four cohorts contain
-1,986,314 successful measured calls, with independently checked metric deltas.
-It is a diagnostic, not a new uninstrumented performance result.
+## Current experiment and correctness evidence
 
-[Two-context candidate 5654ea59](https://github.com/c4pt0r/kv9/commit/5654ea593fe561c5fd8d800cf498f716eb5bca23)
-allows two local ReadIndex contexts to overlap. Fresh Safe ReadIndex, sealed
-group identities, cancellation/deadline ownership and pump/apply/view fences
-remain required. Local checks pass:
+[Candidate 3bfb63b](https://github.com/c4pt0r/kv9/commit/3bfb63bcb48e07325ab212d3e1e9d4eacb961b59)
+binds internal sealed-read admission to an immediate pump of the same peer.
+External synchronous submissions still notify. It removes an extra owner turn
+in the isolated regression test while retaining fresh Safe ReadIndex, sealed
+identities, cancellation/deadline ownership and full pump/apply/view fences.
 
-- 718 workspace tests/doctests, with 23 ignored; formatting and warnings-denied Clippy.
-- 14 compiled semantic-control triples; all 42 selected test units freshly compiled.
-- Counted-window formal gate: 29 cases, nine theorems and 23 baseline obligations.
-- Prior admission formal gate: 37 cases, 28 theorems and 265 baseline obligations.
-- Exact-source ordinary three-voter recovery: stream and unary histories with
-  372 operations, 347 successes and 25 unknown outcomes, both independently valid.
-  Leader loss, surviving-quorum progress, restart, fresh drains and owned cleanup
-  pass. This is SIGKILL/restart evidence, not actual Chaos Mesh or power loss.
+- 714 workspace tests/doctests pass, with 23 ignored; formatting and
+  warnings-denied all-target Clippy pass. All 601 tested source files match
+  the clean committed tree; release compilation invalidates project artifacts
+  and freshly compiles all 11 first-observed project units.
+- Five real owner/quorum/apply regressions and three compiled semantic-control
+  triples pass. An initial broad omit-pump mutation failed during fixture setup;
+  that attempt is retained, and a narrower admission-only mutation reaches the
+  intended assertion. Failed compilation or setup is not counted as that control.
+- The local TLA+/TLAPS gate passes 21 cases, seven named theorems and 20 baseline
+  obligations for sequencing and retained notifications in one transaction.
+  It includes typed failure and abort; a pump invocation is not a quorum
+  certificate. Complete Rust/Raft composition and scheduler liveness remain open.
+- Exact-source ordinary stream/unary recovery checks 365 operations, 337 successes
+  and 28 unknown outcomes across leader loss and original-directory restart.
+  Both complete histories independently validate; all five server and two client
+  lifetimes exit. This is SIGKILL/restart evidence, not actual Chaos Mesh or power loss.
 
-The parameterized bound is conditional on guarded queue-increasing transitions.
-Authenticated remote MsgReadIndex currently bypasses local admission; a universal
-ingress bound is separate work. The counter and admission proofs do not establish
-whole Rust/Raft refinement or per-caller fairness.
-
-The candidate's original release is built and retained with 11 first-observed
-project units freshly compiled. Recovery audit:
-`/tmp/kv9-read-window-runtime-preparation-first/process-results-first/audit.json`.
-The point-read/mixed screen now completes and rejects promotion because of read
-regressions. The full batch and exact-source Chaos Mesh promotion campaign is
-not pursued for this candidate. [Published recovery histories](https://github.com/c4pt0r/kv9/blob/62d5be870ae6b41a765543f501324d2d0410d316/docs/READ-LIFECYCLE-CRC-CREDIT.md)
-retain its separate correctness result; it does not override performance.
+The matched screen is complete and does not justify full batch/Chaos promotion
+for this candidate. The [earlier lifecycle diagnostic](https://github.com/c4pt0r/kv9/blob/aeee652135bc52e4527ef4fffd540ec184adc362/docs/READ-LIFECYCLE-CRC-CREDIT.md)
+remains scoped evidence for the admission-window tradeoff. Remote admission
+bounds, broader implementation proofs and actual Chaos Mesh remain required.
 
 ## Next development steps
 
-1. **Confirmation-path costs:** stop widening the read window without a new
-   measured reason. Profile one processing or task-handoff mechanism on the
-   current source, retaining independent quorum authorization and sealed groups.
-   Prior rejected transport/wake experiments remain evidence; repeat one only
-   with a new causal hypothesis. Tonic streaming remains selected. DPDK requires
-   actual cross-host/NIC evidence.
+1. **Profile the selected read path:** measure c1 turnaround and c64 mixed
+   traffic, separating CPU work from time blocked on RPC, owner and completion
+   handoffs. Run profiling outside uninstrumented timing with matching source,
+   clients and workloads. The redundant-turn experiment gives less than 1%
+   pooled pure-read benefit; choose the next change from measured costs instead
+   of another broad wake rewrite or admission-window adjustment. Tonic streaming
+   remains selected. DPDK requires actual cross-host/NIC evidence.
 2. **Short qualification loop:** run focused correctness and ordinary recovery,
    then matched c1/c64 GET and mixed screening. Report GET separately from PUT,
    both repetitions and raw tail histograms. For a promising candidate, run the

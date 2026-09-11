@@ -8,6 +8,11 @@ active product milestone, followed by dynamic multi-Raft and automatic splits.
 The dependency index and proof/fault/availability gates below still apply;
 partial experimental results do not complete their broader work packages.
 
+The owner-local pump screen is complete and remains unselected: pure GET gains
+are below 1% pooled, with no mixed-traffic improvement. Next profile the selected
+c1 read turnaround and c64 mixed path, then change one measured processing or
+handoff cost. Preserve the full acceptance route for a useful candidate.
+
 <!-- kv9-roadmap-20260908:epic -->
 This is the execution tracker for evolving kv9 from its basic distributed Raw KV baseline into an industrial-grade distributed database. Priorities are consistency, recoverability, bounded resources, measured throughput and scalable ownership. Complex private-network TLS configuration is P4 work.
 
