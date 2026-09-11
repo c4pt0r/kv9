@@ -2,7 +2,7 @@
 
 Retained endpoint counters for the two jemalloc single-GET cohorts give mean successful read-establishment durations of **127.253 us** and **126.706 us**. The enclosing public read backend timer is **128.878 us** and **128.340 us**. The admission-to-preparation timer is about **0.084–0.085 us**.
 
-The counters cover 465,690 and 467,255 successful leader reads respectively, including warmup/verification outside the measured throughput interval. They cannot be used as an exact decomposition of the 209-us measured end-to-end latency. The read-establishment timer is nested within the backend timer; these means must not be added. This is an offline diagnostic, not a new timing run.
+The counters cover 465,690 and 467,255 successful leader reads respectively, including warmup/verification outside the measured throughput interval. The read-establishment metric is shared by synchronous and asynchronous barriers, and this population includes setup/verification BatchGet and other RawRead calls; it is not exclusively measured GET traffic. They cannot be used as an exact decomposition of the 209-us measured end-to-end latency. The read-establishment timer is nested within the backend timer; these means must not be added. This is an offline diagnostic, not a new timing run.
 
 In crates/raft/src/driver.rs, read_barrier_async starts this timer before minting/registering a context and stops it after ReadTicket::wait resolves. It includes registration, owner scheduling, quorum/apply progress and completion notification. It does not isolate network latency or quorum wait alone. Low sampled Raft CPU therefore does not show that this path is cheap in elapsed time.
 
