@@ -58,10 +58,25 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
-### Latest checkpoint: read admission overlap
+### Latest checkpoint: two-context screen remains experimental
 
-The [full CRC/read-credit comparison](READ-CREDIT-CRC-PERFORMANCE.md) is the
-latest accepted uninstrumented recording. C64 GET reaches 372,211 calls/s
+The [24-cohort point read/mixed screen](READ-WINDOW-SCREEN.md) completes on
+candidate `5654ea59`, after source gates and exact-source ordinary recovery.
+C64 GET reaches 367,127 calls/s versus CRC 345,323 and Redis 511,325, with lower
+mean and p99 in both repetitions. However, c1 GET throughput falls 0.962%
+pooled and mixed c64 GET mean rises 3.008%, with worse p99 in both repetitions.
+Keep CRC selected and stop the candidate's full-batch/promotion campaign.
+
+The next bounded read experiment should reduce confirmation-path processing or
+handoffs, retaining fresh ReadIndex, sealed identities and apply/view fences.
+Do not continue widening admission windows without a new measured reason.
+Qualify a new candidate with c1/c64 pure and mixed reads, then the full workload
+matrix and actual Chaos Mesh if it is promising. The Redis milestone is open.
+
+### Earlier checkpoint: read admission overlap
+
+The [full CRC/read-credit comparison](READ-CREDIT-CRC-PERFORMANCE.md) remains the
+latest complete 72-cohort matrix. C64 GET reaches 372,211 calls/s
 versus CRC 344,473 and Redis 513,378; c1 mean remains 37.55 us versus Redis
 5.67 us. The one-context candidate remains experimental because c64 mixed
 GET mean worsens 4.548% and its p99 worsens in both repetitions.
