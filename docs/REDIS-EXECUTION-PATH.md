@@ -73,18 +73,22 @@ that a loopback, volatile-WAL comparison cannot quantify.
 
 ## What the existing measurements say
 
-The most recent completed comparison before the pending-read-credit screen
-is the [idle-watchdog experiment](PEER-IDLE-WATCHDOG-SCREENING.md). Its unchanged
-accepted `5ee897a` controls and same-run Redis GET reference report:
+The latest completed [wake-coalescing screen](WORK-SIGNAL-SCREENING.md) retains
+four repetitions of its read-credit parent `57ff6851` and same-recording Redis
+GET controls. The parent is an experimental read path, not a general promotion:
 
 | Concurrency | KV9 GET/s | Redis GET/s | KV9 mean us | Redis mean us |
 | --- | ---: | ---: | ---: | ---: |
-| 1 | 26,199-26,257 | 170,632-170,755 | 37.962-38.036 | 5.780-5.785 |
-| 64 | 334,590-342,121 | 506,378-509,322 | 186.937-191.146 | 125.546-126.277 |
+| 1 | 26,536.505 | 172,609.493 | 37.555366 | 5.717858 |
+| 64 | 374,812.531 | 512,144.140 | 170.629087 | 124.854313 |
 
-Each range contains both repetitions; it is not a confidence interval. The c1
-turnaround gap is approximately 6.6x, whereas the c64 throughput gap is
-approximately 1.5x. Closed-loop concurrency overlaps waiting across calls;
+QPS is pooled across all four repetitions; mean latency is weighted by calls.
+The c1 turnaround gap is approximately 6.6x, whereas the c64 throughput gap is
+approximately 1.37x. The unselected wake-coalescing candidate reaches 377,805
+GET/s at c64 but slightly worsens c1 mean; its full tail results remain in the
+screen. The general `5ee897a` baseline's earlier measurements remain in the
+[idle-watchdog experiment](PEER-IDLE-WATCHDOG-SCREENING.md).
+Closed-loop concurrency overlaps waiting across calls;
 higher throughput does not demonstrate that an individual request path has
 become short. QPS and mean latency are related in this workload and are not
 independent causal evidence.
@@ -135,6 +139,10 @@ be subtracted from the uninstrumented 38-us client latency as an exact budget.
    shows only small pooled gains and mixed throughput/p99 directions. It is
    not selected as the next performance increment. This is evidence against
    assuming fewer allocations automatically yield a useful end-to-end gain.
+   The subsequent [wake-coalescing screen](WORK-SIGNAL-SCREENING.md) improves
+   c64 GET by 0.798% but regresses c1 GET mean and several p99 pairs. It also
+   remains unselected. Refresh actual point-write/mixed and larger-batch
+   behavior before continuing isolated read-only micro-optimizations.
 4. Evaluate kernel bypass only after a real NIC experiment identifies the
    kernel/network path as the limiting cost. Redis's measured reference uses
    ordinary sockets. The current loopback profile neither proves a NIC limit
@@ -142,5 +150,15 @@ be subtracted from the uninstrumented 38-us client latency as an exact budget.
 
 The practical target is fewer instructions, allocations and ownership
 transfers per successful operation while preserving the distributed protocol.
+Measure low-concurrency request turnaround separately from high-concurrency
+amortization: a larger group can improve throughput while leaving isolated GET
+latency unchanged. An ownership transfer can incur queueing, wakeup and cache
+movement even when its queue is lock-free. This is an architectural hypothesis
+to test with stage measurements, not an attribution of every remaining
+microsecond. The current write path also dispatches blocking preparation before
+asynchronous completion; the new point-write/mixed clients allow measuring
+that path explicitly before changing it. A per-shard owner should eventually
+allow parallel independent ranges while keeping each range's critical path
+short; that architecture still requires proof and measured validation.
 Redis-class read/write throughput and latency, complete proof composition,
 Chaos Mesh acceptance and automatic splitting remain open requirements.
