@@ -31,6 +31,11 @@ use kv9_common::{Error, NodeId, RegionId, Result};
 
 use crate::{CommittedEntry, EntryKind, LogIndex, RaftGroup, Role};
 
+// Let queued reads accumulate behind the outstanding quorum confirmation.
+// Use raft-rs's actual pending queue: canceling a caller does not retract a
+// protocol request, and confirmation can free capacity before local apply.
+const MAX_PENDING_READ_INDEX: usize = 1;
+
 /// A raft-rs [`raft::Storage`] that can also **persist** what the Ready loop
 /// hands it: log entries and the HardState (term + vote + commit).
 ///
@@ -312,8 +317,9 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// request (the driver mints it from its boot incarnation + a counter);
     /// the confirmation returns through [`Self::take_read_states`] correlated
     /// by that exact context. Returns `false` when this leader has not yet
-    /// committed an entry from its current term: raft-rs 0.7 silently drops
-    /// such a request. The caller retains the context and retries admission
+    /// committed an entry from its current term (raft-rs 0.7 silently drops
+    /// such a request), or its pending quorum-read capacity is full. Neither
+    /// case submits the request. The caller retains the context and retries
     /// within its original deadline. `true` means submitted, not confirmed.
     pub fn read_index(&self, rctx: Vec<u8>) -> Result<bool> {
         let mut g = self.lock();
@@ -331,6 +337,9 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         if !g.raw.raft.commit_to_current_term() {
             return Ok(false);
         }
+        if g.raw.raft.pending_read_count() >= MAX_PENDING_READ_INDEX {
+            return Ok(false);
+        }
         g.raw.read_index(rctx);
         drop(g);
         self.work_signal.notify();
@@ -340,7 +349,15 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// Owner-side wake decision only; admission still rechecks under its lock.
     pub(crate) fn read_admission_can_progress(&self) -> bool {
         let g = self.lock();
-        g.raw.raft.state != StateRole::Leader || g.raw.raft.commit_to_current_term()
+        // Followers must still run admission to return a typed refusal.
+        g.raw.raft.state != StateRole::Leader
+            || (g.raw.raft.commit_to_current_term()
+                && g.raw.raft.pending_read_count() < MAX_PENDING_READ_INDEX)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn pending_read_count(&self) -> usize {
+        self.lock().raw.raft.pending_read_count()
     }
 
     /// Drain quorum-confirmed read states captured by the Ready loop.

@@ -23,6 +23,10 @@ use crate::transport::RaftTransport;
 use crate::ReadyConsume;
 use crate::{Command, EntryKind, MemStateMachine, Role, StateMachine};
 
+#[cfg(test)]
+#[path = "driver/read_credit_tests.rs"]
+mod read_credit_tests;
+
 /// Queryable node state (the server's `status` surface, agreed seam with the
 /// acceptance harness: success is judged on these fields, not on log text).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -2134,6 +2138,12 @@ mod tests {
             assert_read_pending(read.as_mut()).await;
         }
         drivers[0].step().unwrap();
+        let admitted = drivers[0].async_read_snapshot();
+        assert_eq!(
+            (admitted.admitted_groups, admitted.admitted_members),
+            (1, 3),
+            "sealed group did not retain all submitted members"
+        );
         let contexts: Vec<_> = sent
             .lock()
             .unwrap()
