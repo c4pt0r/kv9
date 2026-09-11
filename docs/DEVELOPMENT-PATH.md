@@ -1,6 +1,12 @@
 # Detailed development path
 
-Updated: 2026-09-08. GitHub tracker: [#9](https://github.com/c4pt0r/kv9/issues/9).
+Updated: 2026-09-11. GitHub tracker: [#9](https://github.com/c4pt0r/kv9/issues/9).
+
+See [CURRENT-STATUS.md](CURRENT-STATUS.md) for the current performance baseline,
+published experiments and next executable steps. Read performance remains the
+active product milestone, followed by dynamic multi-Raft and automatic splits.
+The dependency index and proof/fault/availability gates below still apply;
+partial experimental results do not complete their broader work packages.
 
 <!-- kv9-roadmap-20260908:epic -->
 This is the execution tracker for evolving kv9 from its basic distributed Raw KV baseline into an industrial-grade distributed database. Priorities are consistency, recoverability, bounded resources, measured throughput and scalable ownership. Complex private-network TLS configuration is P4 work.
@@ -38,7 +44,7 @@ Each issue remains open until its applicable proof, fault and availability oblig
 
 C00 integrates the baseline; C01/C02/C03/C04 can start independently afterward. Complete the fault model, history checker, measurements and retention contract before accepting P1 capacity or performance claims.
 
-- [ ] [#10](https://github.com/c4pt0r/kv9/issues/10) **C00** - Integrate the takeover fixes and establish a reproducible acceptance baseline
+- [x] [#10](https://github.com/c4pt0r/kv9/issues/10) **C00** - Integrate the takeover fixes and establish a reproducible acceptance baseline
 - [ ] [#11](https://github.com/c4pt0r/kv9/issues/11) **C01** - Build deterministic fault injection and a persistence recovery matrix
 - [ ] [#12](https://github.com/c4pt0r/kv9/issues/12) **C02** - Record and check linearizable Raw KV and metadata histories
 - [ ] [#13](https://github.com/c4pt0r/kv9/issues/13) **C03** - Establish observability and reproducible single-group performance baselines
