@@ -1,0 +1,27 @@
+{
+  "observed_ns": 1789154844927393203,
+  "filesystems": {
+    "tmpfs": {
+      "path": "/dev/shm",
+      "device": 29,
+      "available_bytes": 66274996224,
+      "total_bytes": 66276073472
+    },
+    "retention": {
+      "path": "/tmp",
+      "device": 66306,
+      "available_bytes": 217105838080,
+      "total_bytes": 1966736678912
+    }
+  },
+  "previous_72_cohort_audit": "/tmp/kv9-owned-batch-broad-workloads-preparation/results-first/audit.json",
+  "previous_audit_sha256": "bda9fd5997bc7aaa47fcac6a968d7f2f1a7b306a00608a67165121972a8130f6",
+  "previous_retained_bytes": 94449175837,
+  "previous_retained_files": 4320,
+  "scope": "One read-only capacity sample and previous accepted retention total; candidate growth is unknown. Neither is a hard future space bound. No old data removed. All original guards remain unchanged.",
+  "preflight_retention_gib": 96,
+  "runtime_retention_gib": 64,
+  "preflight_tmpfs_gib": 32,
+  "runtime_tmpfs_gib": 16,
+  "current_sample_meets_preflight": true
+}

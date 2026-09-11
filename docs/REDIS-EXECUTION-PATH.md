@@ -5,7 +5,16 @@ with one I/O thread, standalone memory operation, persistence disabled and
 no client pipelining. This analysis does not claim equivalent durability or
 fault semantics. KV9 retains three-voter Raft and linearizable reads.
 
-The latest [write-only screen](INDEXED-RECEIPT-PERFORMANCE.md) retains CRC:
+The latest [read-credit-on-CRC comparison](READ-CREDIT-CRC-PERFORMANCE.md)
+records 372,211 GET/s at c64, up 8.052% against the same-run CRC control,
+versus Redis's 513,378/s. Candidate mean is 171.820 us and p99 is
+294.912–299.007 us. C1 GET mean remains 37.549 us versus Redis's 5.673 us.
+Mixed-load tails regress in both repetitions, so read credit remains
+experimental and CRC remains the selected runtime behavior. The 72-cohort
+recording and corrected independent audit pass; all original outcomes,
+repetitions and the first auditor pin failure remain retained.
+
+The preceding [write-only screen](INDEXED-RECEIPT-PERFORMANCE.md) retains CRC:
 123,846 PUT/s and 863,705 BatchPut(64) keys/s at c64, versus Redis 494,304 SET/s
 and 6,051,110 batch keys/s. The indexed-receipt candidate improves point PUT
 to 128,566/s (+3.812%) but has mixed batch results (pooled -1.064%), so it
@@ -87,9 +96,9 @@ time against amortization, so both mean and tail latency remain selection
 criteria. Cross-host network latency and storage durability will impose limits
 that a loopback, volatile-WAL comparison cannot quantify.
 
-## The latest read/write comparison
+## The preceding read/write comparison
 
-The [completed v3 workload refresh](V3-WORKLOAD-PERFORMANCE.md) covers 72
+The earlier [v3 workload refresh](V3-WORKLOAD-PERFORMANCE.md) covers 72
 cohorts, including actual point writes and 64-key batches. At c64, `57ff6851`
 has 373,909 GET/s versus Redis 512,191/s, but only 117,729 PUT/s versus Redis
 493,396 SET/s. BatchPut(64) reaches 628,102 keys/s versus Redis 6,066,081 MSET

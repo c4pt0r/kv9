@@ -1,0 +1,22 @@
+--- /tmp/kv9-read-credit-crc-performance-preparation/pending-first/matched-driver.py
++++ /tmp/kv9-read-credit-crc-performance-preparation/matched-driver.py
+@@ -33,8 +33,8 @@
+                 binary_sha256="b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+                 manifest_sha256="8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8"),
+     "new": dict(revision=NEW_REVISION,
+-                binary_sha256="PENDING_CANDIDATE_BINARY_SHA256",
+-                manifest_sha256="PENDING_CANDIDATE_MANIFEST_SHA256"),
++                binary_sha256="5464adee210f7cebbce7cd57d6e01bfe5a1ace42936edad24f57e63ff9cfbdd7",
++                manifest_sha256="164b7999386b042ad2df814fea44fe93724ae15396e9f0cae0356a926fc3d1de"),
+ }
+ REDIS_CLIENT_SHA = "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af"
+ CLIENT_PINS = {
+@@ -700,7 +700,7 @@
+     parser.add_argument("--old-server-source", type=Path, default=Path("/tmp/kv9-wal-crc32-table"))
+     parser.add_argument("--old-server-build", type=Path, default=Path("/tmp/kv9-wal-crc32-release-first"))
+     parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-read-credit-crc"))
+-    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-read-credit-crc-release-first"))
++    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-read-credit-crc-release-rebuilt-first"))
+     parser.add_argument("--redis-client-source", type=Path, default=Path("/tmp/kv9-point-write-measurement-v3"))
+     parser.add_argument("--redis-client-build", type=Path, default=Path("/tmp/kv9-point-write-v3-release-first/redis"))
+     parser.add_argument("--output", type=Path, required=True)

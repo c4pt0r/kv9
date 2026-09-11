@@ -1,0 +1,30 @@
+--- /tmp/kv9-owned-batch-broad-workloads-preparation/input-layout.json
++++ /tmp/kv9-read-credit-crc-performance-preparation/input-layout.json
+@@ -17,7 +17,7 @@
+   "endpoint_snapshot_files": 288,
+   "fresh_native_drains": 144,
+   "input_inventory_format": "Original absolute path -> {bytes, sha256}, including matrix.json, native endpoint files and every original input read by the unchanged audit; no detached endpoint hash list.",
+-  "input_layout_changes_from_predecessor": "Only owned root/preparation paths and CRC control and owned-buffer candidate role pins; runtime/audit schemas and semantic predicates unchanged.",
++  "input_layout_changes_from_predecessor": "Only owned root/preparation paths and CRC control and read-credit-on-CRC candidate role pins; runtime/audit schemas and semantic predicates unchanged.",
+   "managed_process_lifetimes": 240,
+   "measurement_scope": "Both repeats; per-workload/concurrency/role and per-operation plus merged raw histograms; retain all outcomes/attempts. Pooled QPS=sum calls/sum elapsed; pooled mean=sum latency/count; pooled quantiles from merged counts, never averaged.",
+   "native_cohorts": 48,
+@@ -47,15 +47,15 @@
+     "invocation.json",
+     "<exact-owned-container>-isolated.json"
+   ],
+-  "outer_root": "/tmp/kv9-owned-batch-broad-workloads-timing-first",
+-  "output": "/tmp/kv9-owned-batch-broad-workloads-preparation/results-first",
++  "outer_root": "/tmp/kv9-read-credit-crc-performance-timing-first",
++  "output": "/tmp/kv9-read-credit-crc-performance-preparation/results-first",
+   "redis_cohorts": 24,
+   "redis_retained_files": [
+     "redis-listener.json",
+     "<before|after>-redis-config.json",
+     "final-dataset.json"
+   ],
+-  "run": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts",
++  "run": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts",
+   "run_files": [
+     "matrix.json",
+     "driver.py",

@@ -1,0 +1,22 @@
+--- /tmp/kv9-read-credit-crc-performance-preparation/pending-first/protocol.json
++++ /tmp/kv9-read-credit-crc-performance-preparation/protocol.json
+@@ -21,7 +21,7 @@
+   "configured_max_attempts": 6,
+   "control_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+   "decision_scope": "Separately predeclared v3 point1/batch64 read0/50/100 c1/c64, two full forward/reverse repetitions. Preserve all logical-call/item/outcome/attempt populations. Report per-read, per-write and merged whole-call histograms; never average percentiles or divide batch latency by keys. Accounting may be valid while healthy single-attempt/all-success suitability fails. No equal-durability or sustained-capacity claim.",
+-  "driver_sha256": "3f9f8dc35f2109258f6ba74f2bfb09926d9cf079c5cfcf2b8366574fa3471bd5",
++  "driver_sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+   "durability": "Three-voter volatile WAL with normal sync calls; standalone memory Redis, save and AOF off",
+   "effective_server_limits": {
+     "async_read_requests": 128,
+@@ -36,8 +36,8 @@
+   "redis_client_sha256": "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af",
+   "server_pins": {
+     "new": {
+-      "binary_sha256": "PENDING_CANDIDATE_BINARY_SHA256",
+-      "manifest_sha256": "PENDING_CANDIDATE_MANIFEST_SHA256",
++      "binary_sha256": "5464adee210f7cebbce7cd57d6e01bfe5a1ace42936edad24f57e63ff9cfbdd7",
++      "manifest_sha256": "164b7999386b042ad2df814fea44fe93724ae15396e9f0cae0356a926fc3d1de",
+       "revision": "de37c71009e8199859b931e0037818f490e8d3f6"
+     },
+     "old": {

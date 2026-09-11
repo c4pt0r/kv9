@@ -1,0 +1,11 @@
+--- /tmp/kv9-read-credit-crc-performance-preparation/audit.py
++++ /tmp/kv9-read-credit-crc-performance-audit-repair-first/audit.py
+@@ -310,7 +310,7 @@
+                    '--redis-client-build','/tmp/kv9-point-write-v3-release-first/redis','--storage','tmpfs']
+     require(invocation['argv']==expected_argv and invocation['wrapper_sha256']==
+             'e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb' and
+-            invocation['driver_arguments_sha256']=='6f1497dadeba0726d1c54e78d9bb8a47cc5db1fe3f2855f0504e0ec91aa8511b',
++            invocation['driver_arguments_sha256']=='163b9cb4f137dee027e361f6060f15fe86af9fb6bc8cc887e0ce11020a424a83',
+             'reviewed wrapper or explicit client arguments differ')
+     expected_containers={
+       'kv9-chaos-ci-p0-20260908-control-plane':'ae9b27a77d14f295e35e112b31f5dce62ed6fd2d86a90e7b2a69b52798e17582',

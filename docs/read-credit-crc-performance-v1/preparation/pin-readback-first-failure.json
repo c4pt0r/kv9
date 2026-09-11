@@ -1,0 +1,11 @@
+{
+  "phase": "ancillary pin metadata readback",
+  "exit_code": 1,
+  "tool_receipt": "a7e09b",
+  "exception": "FileNotFoundError: /tmp/kv9-read-credit-crc-release-rebuilt-first/kv9-batch-workload",
+  "cause": "The correctness workload is in the original helper workload/ subdirectory; first metadata writer assumed root layout. Measurement server/client paths and source predicates were already correct.",
+  "preserved_script": "/tmp/kv9-read-credit-crc-performance-preparation/finalize-pins-first.py",
+  "script_sha256": "03babb5994fcdbd7ad1a7c18e4a0c2ddcb9efabe76771abde684b1270ca6f610",
+  "runtime_test_or_build_executed": false,
+  "correction": "Read actual workload/kv9-batch-workload. Do not rerun pin mutations or any runtime."
+}

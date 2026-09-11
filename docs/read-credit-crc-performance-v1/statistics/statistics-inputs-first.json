@@ -1,0 +1,584 @@
+{
+  "audit_sha256": "9cbe251521365c6f288c844c3926935878b1f24e22241fe22109e6eea89b70fd",
+  "core_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+  "files": {
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/000-old-point-r000-p00001/resource-coverage.json": {
+      "bytes": 1687,
+      "sha256": "4ca2ca2c5d1c600f00cf36dd3c765e086289ae630bc3f37cd3a0d6da2fe40e18"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/000-old-point-r000-p00001/run/report.json": {
+      "bytes": 1432064,
+      "sha256": "7bf80af9d9f841c7245e7a199967c1f78bd9bcc1dcec85d309d634d1b9af238a"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/001-new-point-r000-p00001/resource-coverage.json": {
+      "bytes": 1685,
+      "sha256": "d373cce4ba6a97c90d380a01bc8dab96305d3e63984672f24495d26a7054ad74"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/001-new-point-r000-p00001/run/report.json": {
+      "bytes": 1432013,
+      "sha256": "1d98464f95d1fd71790ec98e483bd3fef2c38f2d3019ff98eb78245b2af57bea"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/002-redis-point-r000-p00001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "9ca4fc1b270dfb3126c77af3b8616d3d80dde9c56cd1ed1cbd4a49e6d9934b28"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/002-redis-point-r000-p00001/run/report.json": {
+      "bytes": 915287,
+      "sha256": "fde160ede37829dd0e367dd7bc233620709ba4da23b3b51c8aef8aa7e41d1e61"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/003-old-point-r050-p00001/resource-coverage.json": {
+      "bytes": 1684,
+      "sha256": "15989152ffc9b27e2a22f09b9d790e935f9c65fe92c66011d4ae64eb69813d91"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/003-old-point-r050-p00001/run/report.json": {
+      "bytes": 1940351,
+      "sha256": "25e975160a8a4f2b22c732e08dd0cb74cad73e27f7bf82b3bf581d994c27d5a9"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/004-new-point-r050-p00001/resource-coverage.json": {
+      "bytes": 1679,
+      "sha256": "6bdf81a43869589d2f31b3e91217c30d3b32d99b8bb33cf86610addf0b65f408"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/004-new-point-r050-p00001/run/report.json": {
+      "bytes": 1940323,
+      "sha256": "77e3bd5ce90008609c7181a6751455812e2847cac5387b76fb437ddfa943d13e"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/005-redis-point-r050-p00001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "f8cdbd92264fc31f97fe1f5427b79d1e6676deb5092a16c09c63f811125f7f3d"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/005-redis-point-r050-p00001/run/report.json": {
+      "bytes": 1264155,
+      "sha256": "b44f2be267c432f860d2f0239f76745aa544042d876055dde69903e638b801f1"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/006-old-point-r100-p00001/resource-coverage.json": {
+      "bytes": 1673,
+      "sha256": "9b2b0de23d20e0fe765e5af7e1d363bd5639e548ea2af49902028f8a0ca09743"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/006-old-point-r100-p00001/run/report.json": {
+      "bytes": 1431955,
+      "sha256": "7f06bf7dce7146ab419177811eccef57ce4c5bb6ee9eee421f27925254a50073"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/007-new-point-r100-p00001/resource-coverage.json": {
+      "bytes": 1662,
+      "sha256": "da3e14bb060a56ce30f0cddcb2bc67f7a73aa403ddf2593bdda6b43d2e3ac5e6"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/007-new-point-r100-p00001/run/report.json": {
+      "bytes": 1431954,
+      "sha256": "9848459eaba427bf10fd47e9b0e850e3645e5ead1372127af05515c8cfbc925d"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/008-redis-point-r100-p00001/resource-coverage.json": {
+      "bytes": 836,
+      "sha256": "015f4ed37a9e64f97a37ee04b03b98c2ee87c8017a8d8f425cc1aba9bc286388"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/008-redis-point-r100-p00001/run/report.json": {
+      "bytes": 915302,
+      "sha256": "6eab40eacacad872d1cb382ec39b34661b6cd569085cd07bfdab626f4a80415c"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/009-old-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 1690,
+      "sha256": "b70691a2fe20ee71695fa79336abb15f766a50cfe9b88578e9b687eabb7f732d"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/009-old-batch64-r000-p00001/run/report.json": {
+      "bytes": 1431336,
+      "sha256": "cebdf063c9c5378171142c9657fc60a510b3e7e74029e73cab588224e58918b2"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/010-new-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 1686,
+      "sha256": "5c6f5fc638af15b110f5377e1b9e6191420ae83de28a8a75ded92dfd3573dc1f"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/010-new-batch64-r000-p00001/run/report.json": {
+      "bytes": 1431347,
+      "sha256": "2e5b299437dd31bac012a5068bc69def136265e5890c8167aac5646728b9a1ee"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/011-redis-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 837,
+      "sha256": "03f8cf4ec36216d10056b0059fc84d7df8d013ac15db8d71c49f0edff6911fcb"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/011-redis-batch64-r000-p00001/run/report.json": {
+      "bytes": 914959,
+      "sha256": "9fa8e0562a6a912da2c39f7161a532bc6096f54b3afaa72ef161a49705bde898"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/012-old-batch64-r050-p00001/resource-coverage.json": {
+      "bytes": 1686,
+      "sha256": "c122e961151751f58b89867fc9610a4079fff1f38ec7f2c3ed221f93dc0197c2"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/012-old-batch64-r050-p00001/run/report.json": {
+      "bytes": 1939494,
+      "sha256": "f8c8cf82865d6fc29b4aefe584f7e1013a62318eb5c54d5be55a4f498c5f998b"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/013-new-batch64-r050-p00001/resource-coverage.json": {
+      "bytes": 1692,
+      "sha256": "05091ba93198934c0a7ccbef25c044e52f7d8bf8a68b8edec0eaad03170d38d0"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/013-new-batch64-r050-p00001/run/report.json": {
+      "bytes": 1939500,
+      "sha256": "b8486143c9ab4c9f08df5a9277c29cf2a3576e6abdfc4dfe3d06a3be521d166a"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/014-redis-batch64-r050-p00001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "0d4541311224fa029cdce2c2b2f7cd217522384a36fcdd8efb74bcae31167a6e"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/014-redis-batch64-r050-p00001/run/report.json": {
+      "bytes": 1263768,
+      "sha256": "af752783856b7e65427f3b66a9d07fb3addc0163ea3c0de9bf8897b109d701d2"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/015-old-batch64-r100-p00001/resource-coverage.json": {
+      "bytes": 1673,
+      "sha256": "2b82647e73d119996eceb757fca9dc3397f30e63ba7806d5210779fe61153f48"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/015-old-batch64-r100-p00001/run/report.json": {
+      "bytes": 1431368,
+      "sha256": "c8af9d9a0fd1c37005961187bbcb1b854ddd2a5f9c273c4d6e0c9a741a665d83"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/016-new-batch64-r100-p00001/resource-coverage.json": {
+      "bytes": 1643,
+      "sha256": "d2b137f30675257c3cd737ff8922360da445b575803f8c85c15b523d61eb585a"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/016-new-batch64-r100-p00001/run/report.json": {
+      "bytes": 1431350,
+      "sha256": "d3c73d22dbd9b88b8e529b7d5958c534b13caceeac44682cb0895f67776be706"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/017-redis-batch64-r100-p00001/resource-coverage.json": {
+      "bytes": 841,
+      "sha256": "a4e95dcadfe13dcb722c9ab8e1979ddb87c24688c819be7375fb4399927b224c"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/017-redis-batch64-r100-p00001/run/report.json": {
+      "bytes": 914923,
+      "sha256": "8345f9c9ebad047ad948cbe178e686a72431175874a3beaf4131fa4fa51e1212"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/018-old-point-r000-p00064/resource-coverage.json": {
+      "bytes": 3564,
+      "sha256": "a850f13181038a45a27ebe368019894263612fefb72bb3e7a4c7fd364cba7165"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/018-old-point-r000-p00064/run/report.json": {
+      "bytes": 1445092,
+      "sha256": "d5c770195d3c9a7f18af63b083055a4d8d3afb4a3ae8a89628acaec8b6e07002"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/019-new-point-r000-p00064/resource-coverage.json": {
+      "bytes": 4106,
+      "sha256": "c3a019038986db6eb7df093f24498870267f8b4f72812dfd91e6309971478c94"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/019-new-point-r000-p00064/run/report.json": {
+      "bytes": 1445142,
+      "sha256": "d07068785e21e9c53bb8e29a4de29b3422c542ae596eae0bf1cdf2a4367af2fb"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/020-redis-point-r000-p00064/resource-coverage.json": {
+      "bytes": 851,
+      "sha256": "ee85bf62f94c8b9fd3aa46bc2c1efbaab5ef5e6494c6fb999b1d6b8b8df8b166"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/020-redis-point-r000-p00064/run/report.json": {
+      "bytes": 927678,
+      "sha256": "a4db019a3018beb338992b2a758151b4812d0305ceeaae97afba9bf952d7105e"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/021-old-point-r050-p00064/resource-coverage.json": {
+      "bytes": 2750,
+      "sha256": "54b8bf8a2179cd7b67b8615144ec66c242f525a154d9f4a05ce258718a718381"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/021-old-point-r050-p00064/run/report.json": {
+      "bytes": 1954329,
+      "sha256": "42020dc7f83efcf99ab64cac9db8a14144d8401827dd4765250848376aab7574"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/022-new-point-r050-p00064/resource-coverage.json": {
+      "bytes": 2847,
+      "sha256": "50094c7d7c6c89a30eff5bdbf45e13f30b6296925b2fa3834e48a68a1b574657"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/022-new-point-r050-p00064/run/report.json": {
+      "bytes": 1954370,
+      "sha256": "105fdedf20930cfbaf17ade1aeaaa9f129cd60b478f09f30c66a4237f3a73580"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/023-redis-point-r050-p00064/resource-coverage.json": {
+      "bytes": 855,
+      "sha256": "4dc1f456b023b5a504f1fcf7a69556b9555e71320ed0cdef27d5f4b66ac09759"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/023-redis-point-r050-p00064/run/report.json": {
+      "bytes": 1276923,
+      "sha256": "7a73b434455ab45ef171372268870e33214b85d45d4b595dde9f8d8cc6d11d14"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/024-old-point-r100-p00064/resource-coverage.json": {
+      "bytes": 1661,
+      "sha256": "3d824959afab31e9f27b5f3524941d923f720606a24dbd783a93c1f939c023e6"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/024-old-point-r100-p00064/run/report.json": {
+      "bytes": 1445336,
+      "sha256": "eb2bfd72b0a07638f537e9faee450396df9704b47d3bbc8d8b5c36cf0f906fdb"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/025-new-point-r100-p00064/resource-coverage.json": {
+      "bytes": 1679,
+      "sha256": "35f667bf45c1b3572a28df76e5e6f4d13885b7436283d04f1945f4159e654b62"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/025-new-point-r100-p00064/run/report.json": {
+      "bytes": 1445219,
+      "sha256": "d424227d7fa0fb65a2b55ac8058698c4050f8ea21e885d384d4c9750d7a033c3"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/026-redis-point-r100-p00064/resource-coverage.json": {
+      "bytes": 853,
+      "sha256": "34c53db6e7529e2ac6044de07a6180e567875b981defb001e5d7b09625a6997e"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/026-redis-point-r100-p00064/run/report.json": {
+      "bytes": 927624,
+      "sha256": "a2c6e41ba1fc402cbe47355d7808f561621bf023e9c73234a538d6c4eb8ed192"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/027-old-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 3291,
+      "sha256": "77fa3394e08918ceb8b3ad611080bc70163e27f57c214c6e5fe9db89ac7c3b6c"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/027-old-batch64-r000-p00064/run/report.json": {
+      "bytes": 1443955,
+      "sha256": "3ac7df4773337d4a1bec26c05c160238c16680d80749c31da9fb936069450cd9"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/028-new-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 4128,
+      "sha256": "90537ba93c6456234f72021da0a0c3b39905732e91e0384ca9e119e43937a2c7"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/028-new-batch64-r000-p00064/run/report.json": {
+      "bytes": 1443951,
+      "sha256": "7b62afc8e25fd6283fd7e2be6cb9cfaaddccc1bde7a808f6ac82ac9a450c4c17"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/029-redis-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 854,
+      "sha256": "3bd0210e7153c40b76c6cd1e7fd07626f7343ee0083deaa5b221d3fb36e2accd"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/029-redis-batch64-r000-p00064/run/report.json": {
+      "bytes": 927995,
+      "sha256": "5b8dbc0dd9dc0416a3b5a96c01d58454e508c464e9bccc776d18d837986ff3d0"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/030-old-batch64-r050-p00064/resource-coverage.json": {
+      "bytes": 2792,
+      "sha256": "261f9a049f123c3c0ad3e5c94c1f827fc0f8b7b4711981eb191a7aca59775dfc"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/030-old-batch64-r050-p00064/run/report.json": {
+      "bytes": 1952852,
+      "sha256": "5da42a166c6b2b63ef364800d8118b6d7f86abef8d40f5661859973fc8a24972"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/031-new-batch64-r050-p00064/resource-coverage.json": {
+      "bytes": 2428,
+      "sha256": "ecf93c902ea0f2eb503f77484c42b8efa8b7b1ebd5a0af508bdea4f99d26ae18"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/031-new-batch64-r050-p00064/run/report.json": {
+      "bytes": 1952816,
+      "sha256": "6a4cf2d1d2e5c44b72d68746ebd60ec12f0a6934b29d3595d6580afbec152016"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/032-redis-batch64-r050-p00064/resource-coverage.json": {
+      "bytes": 851,
+      "sha256": "048cde32701f4b0ed5cd9848caf556f233f3f6aba9b9dded6601684fe71075b9"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/032-redis-batch64-r050-p00064/run/report.json": {
+      "bytes": 1277720,
+      "sha256": "3116844399f456bebeb9f2911048bb924ef285bbbd7d665b6beeb758207164a6"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/033-old-batch64-r100-p00064/resource-coverage.json": {
+      "bytes": 1674,
+      "sha256": "c71051dffdc0f248f4fbcb830bb1d00fb1c8412db7a8917e1e50d08571333f95"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/033-old-batch64-r100-p00064/run/report.json": {
+      "bytes": 1444352,
+      "sha256": "b09a55aa90241a811ce24f5a8ce62630a40d39a4b9c4c6184f0c5963bba18f7a"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/034-new-batch64-r100-p00064/resource-coverage.json": {
+      "bytes": 1673,
+      "sha256": "be5fd224645fc750866826ee7ae7a72aff77c96e3723b64fff604068a16a2053"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/034-new-batch64-r100-p00064/run/report.json": {
+      "bytes": 1444405,
+      "sha256": "f9bb8e149e29470f4a01a7f83b96669db696798b2a3b1e8016e6470756bd0d09"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/035-redis-batch64-r100-p00064/resource-coverage.json": {
+      "bytes": 854,
+      "sha256": "edd5e5dd392631a5c19d8aa815a51fbb68cb590f17aad39c3e544fabf5b7b51c"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/035-redis-batch64-r100-p00064/run/report.json": {
+      "bytes": 928053,
+      "sha256": "22a0ef7b95583998b662660a4714239b4f092c925849cdd3a86f52413635592a"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/036-redis-batch64-r100-p10064/resource-coverage.json": {
+      "bytes": 854,
+      "sha256": "793403947440e023a57ba12d747c09a7f8ee6cd2b2f723bb5526e4cd27f32528"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/036-redis-batch64-r100-p10064/run/report.json": {
+      "bytes": 928072,
+      "sha256": "0ff9750060926e2df1e0472730c62c321e963c63cb423138c5adbdba3d0fb2c8"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/037-new-batch64-r100-p10064/resource-coverage.json": {
+      "bytes": 1676,
+      "sha256": "437c59420ef0df23cec91eea9892bd655ce55e58b441214f347b3a9aa19b4745"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/037-new-batch64-r100-p10064/run/report.json": {
+      "bytes": 1444340,
+      "sha256": "94dff02af02e09582d57c5561687c67a24efa40511c78fee5e51d21e31423f50"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/038-old-batch64-r100-p10064/resource-coverage.json": {
+      "bytes": 1675,
+      "sha256": "55baa91683f3e60fb4645c5b9962d421307bff64beeac29c8561ac004a9697d4"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/038-old-batch64-r100-p10064/run/report.json": {
+      "bytes": 1444397,
+      "sha256": "90b94982f3e6bd50b468d3afe8f32f7be3c8e2e2f7871696c6a8878eda3da5f4"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/039-redis-batch64-r050-p10064/resource-coverage.json": {
+      "bytes": 852,
+      "sha256": "6fe60e7de546487e81005f318f3b2d86da5536c95c7499653a736df51c9e7901"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/039-redis-batch64-r050-p10064/run/report.json": {
+      "bytes": 1277716,
+      "sha256": "78121909a2bb19908ddea8225c4d237cb37278be95c0a3413f56131f30d864e4"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/040-new-batch64-r050-p10064/resource-coverage.json": {
+      "bytes": 2798,
+      "sha256": "2c066eedffd997a9c25fd5bae4f1d1976b0037d7fd36253db4468ea992e729bc"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/040-new-batch64-r050-p10064/run/report.json": {
+      "bytes": 1952957,
+      "sha256": "ce60285127e9e18075ad056a7078a784c799dbc587147eed4774efb0ff2e8da7"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/041-old-batch64-r050-p10064/resource-coverage.json": {
+      "bytes": 2628,
+      "sha256": "5a664d895d454530b9c1cb7dbcdf062dcb6856700134c16738959a1ad9424319"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/041-old-batch64-r050-p10064/run/report.json": {
+      "bytes": 1952883,
+      "sha256": "c192d5b638b1480587fcc9273bdaa77a8814bfec53739fc2b2e2a156de0840fc"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/042-redis-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 855,
+      "sha256": "46c51f79abbd3c72185e8a360d63fcfce77befc96850d32cf0fab6a6ab8247f5"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/042-redis-batch64-r000-p10064/run/report.json": {
+      "bytes": 928012,
+      "sha256": "cae37f1e27d22af6855df1b2393f54f7584c712d193c0bc9ff2d482deab21ebf"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/043-new-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 3657,
+      "sha256": "278233b32c1d25eef2af19bf7b1b2672184f1d7373445c594abea2829228296d"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/043-new-batch64-r000-p10064/run/report.json": {
+      "bytes": 1443999,
+      "sha256": "b1e6bb8b88053cef4ddae4130f28a206a4808714bf49545b3d60712a9ed79def"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/044-old-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 3270,
+      "sha256": "1a85213009306f330074e846e62b04f69c1360bff97178175b602c33c086c670"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/044-old-batch64-r000-p10064/run/report.json": {
+      "bytes": 1443893,
+      "sha256": "7f44eec38839d1fb06c95bde3ff128705cfb4afc3e93ceb54fd100bdf0e3a162"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/045-redis-point-r100-p10064/resource-coverage.json": {
+      "bytes": 854,
+      "sha256": "3184f5466c87d0715bb31cc527bdc7b5459fe39f26bb7963cce8bc55850b0159"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/045-redis-point-r100-p10064/run/report.json": {
+      "bytes": 927651,
+      "sha256": "2c0180226cc7c075da0f9464f754413e6b762d9dd460eaa713e35fcefde011f0"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/046-new-point-r100-p10064/resource-coverage.json": {
+      "bytes": 1685,
+      "sha256": "8df9951e8d063b2d01ef152693200c2221b04bbdb6ef8736a140089cb5cb67db"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/046-new-point-r100-p10064/run/report.json": {
+      "bytes": 1445297,
+      "sha256": "fe23283cc455bbe359271c711fca6cd99dfaa8475f89192d50bdd826b9812c32"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/047-old-point-r100-p10064/resource-coverage.json": {
+      "bytes": 1680,
+      "sha256": "a28137bdc0e22efbc8dfb6be661bb11ab632a1d9751ca93ce19b474ef1aa11d6"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/047-old-point-r100-p10064/run/report.json": {
+      "bytes": 1445329,
+      "sha256": "63d29b466cf96eb7d7add03db5bbb68d79c6d6843a91caa97e5ba752e5fb2a64"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/048-redis-point-r050-p10064/resource-coverage.json": {
+      "bytes": 847,
+      "sha256": "68fbea8d5564b9c3dcbc3940e69b126217aeb29f930ce792e31f25e2c8ae9701"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/048-redis-point-r050-p10064/run/report.json": {
+      "bytes": 1277093,
+      "sha256": "0d782842e37cc5a96116e1d566a57d94270a23e1ace4f6a5aeff76ebdd4aa888"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/049-new-point-r050-p10064/resource-coverage.json": {
+      "bytes": 2622,
+      "sha256": "743d16e254017de46c03cfe9d020f541f99d13644c349c873f7b3acce04d10c3"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/049-new-point-r050-p10064/run/report.json": {
+      "bytes": 1954384,
+      "sha256": "1163694ee98b8ac75c170713e54f8e484f73b2cd5287db05fd047d4785f91b90"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/050-old-point-r050-p10064/resource-coverage.json": {
+      "bytes": 2393,
+      "sha256": "0d9388aee6dc58810930d62e87f18f8effc5b0c6d5bc7f158e7843eb3058c8da"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/050-old-point-r050-p10064/run/report.json": {
+      "bytes": 1954393,
+      "sha256": "b8f915d4489af75800919bd5501d07601ae8f3052739ec2a56501774b393908b"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/051-redis-point-r000-p10064/resource-coverage.json": {
+      "bytes": 851,
+      "sha256": "d60cca6b2b5e4ac28ee6eb0655fdd60642da9b14e22314a2f10132066937bf74"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/051-redis-point-r000-p10064/run/report.json": {
+      "bytes": 927627,
+      "sha256": "9d67c24c89f9a57ff8370252af24fe5d13f19435ad9c36439b0aef917042910a"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/052-new-point-r000-p10064/resource-coverage.json": {
+      "bytes": 3856,
+      "sha256": "6c7c02dfe78690640d1ef57826468766df275a0e5995db1cb7fedb8150303345"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/052-new-point-r000-p10064/run/report.json": {
+      "bytes": 1445065,
+      "sha256": "7e6210a8ad3bb7a55004a4e68fac5d2b97d1e939153c8220053fd7d80df28c2d"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/053-old-point-r000-p10064/resource-coverage.json": {
+      "bytes": 3616,
+      "sha256": "52bf995acc9bf7e27bcd24ccc2ccdad4fba6b9fbd48dcdc205ac9a720f5d229f"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/053-old-point-r000-p10064/run/report.json": {
+      "bytes": 1445079,
+      "sha256": "6747cd2a28f33488646011a414e69ce4c1fa92c31be1e290187c43e1fcfe4cf1"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/054-redis-batch64-r100-p10001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "c6296341dec72c344875d213feecc43fc7d72f76507b982e8e5f1d7abe1aade5"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/054-redis-batch64-r100-p10001/run/report.json": {
+      "bytes": 914891,
+      "sha256": "112f2b02e07ffe525f5789df7aaed282d77df89551d4edc345d03ef2c716dd18"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/055-new-batch64-r100-p10001/resource-coverage.json": {
+      "bytes": 1674,
+      "sha256": "e691882d3b8016dae6a02c97153142c2784e3dc370e65b91087f6ed381ceb9c5"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/055-new-batch64-r100-p10001/run/report.json": {
+      "bytes": 1431364,
+      "sha256": "c4b5e4d8eee7ab883c643410c00d4d42b7be027fa44215462eb4745799ef347f"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/056-old-batch64-r100-p10001/resource-coverage.json": {
+      "bytes": 1648,
+      "sha256": "fb3ed063290489146ad844fb5267a3cb0c741b5e96135416d4905952d9979470"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/056-old-batch64-r100-p10001/run/report.json": {
+      "bytes": 1431353,
+      "sha256": "b517e3906a5371519be8e9f1c75161931a5f3c6827ea57987b8289313a231639"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/057-redis-batch64-r050-p10001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "3ad30644ca69e2c2f40ab7b1a21d3bcb77ccccb14fb7e0322f02650bcae99cad"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/057-redis-batch64-r050-p10001/run/report.json": {
+      "bytes": 1263771,
+      "sha256": "42a5f424d48752f105da1ae7fe76fb7ba03a30eac8bd3998f1ea4872c09ebcda"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/058-new-batch64-r050-p10001/resource-coverage.json": {
+      "bytes": 1679,
+      "sha256": "3fd18e3facd180e4582c9f757ba8d3b0787a003f47fb62d7713784fbe6002b86"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/058-new-batch64-r050-p10001/run/report.json": {
+      "bytes": 1939501,
+      "sha256": "c7c579288c8365fa2bddf1b3bbb6cfb81ae66dcdee27aefd69d39b02078a8e42"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/059-old-batch64-r050-p10001/resource-coverage.json": {
+      "bytes": 1687,
+      "sha256": "1aa6c086f203145253e748f0b4d9dfcbaaef338c2bafb7ae25b90db93c284d2f"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/059-old-batch64-r050-p10001/run/report.json": {
+      "bytes": 1939520,
+      "sha256": "a1d5de69faf42da662aef887c73b117ec049ee27c148488f73b73c499d6226cb"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/060-redis-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "e61751d7b5c99da799ecf77f2b62266c70de03d5c08053038d6b496b5995cae7"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/060-redis-batch64-r000-p10001/run/report.json": {
+      "bytes": 914946,
+      "sha256": "add9efcd2535bfca03ecaad0f556060bdcf26dc5580034fec8bb74e70dee544d"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/061-new-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 1690,
+      "sha256": "613fb7f520d11e57bf6bbf9b623db9c632db2366f31d8be05a27285ff0fbac1a"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/061-new-batch64-r000-p10001/run/report.json": {
+      "bytes": 1431340,
+      "sha256": "cb1c00707c22154aa142adc5618136ad167de466623ba1010d7d2d3eaca01c68"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/062-old-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 1683,
+      "sha256": "fa7d3b3c6c883fabe69a6f448ce22ca2af9e441539f68b5f961af871a5770b73"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/062-old-batch64-r000-p10001/run/report.json": {
+      "bytes": 1431344,
+      "sha256": "1c6931efa2d935dc3feea9d27d2e90a2ab21a5ccc4dda9e90e76413b417e58a2"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/063-redis-point-r100-p10001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "22cf482c48ac95f610e2d4d381e71bb5762b23cf1b3352c6ffae624d2849697e"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/063-redis-point-r100-p10001/run/report.json": {
+      "bytes": 915287,
+      "sha256": "2848edec72e89f0ac66fc3c99a9bffabeb52f8d8e9c7b5b145bdf54fbd22c29d"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/064-new-point-r100-p10001/resource-coverage.json": {
+      "bytes": 1672,
+      "sha256": "75a979bf959a84b03cd31976b2aeb9a5d31c8a2d7a95a774c6d6a13e69049eb1"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/064-new-point-r100-p10001/run/report.json": {
+      "bytes": 1431930,
+      "sha256": "db79302fd9234cdeda62916d98129afea4b6d3a84f4480be9b92a9f62e8ea7c9"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/065-old-point-r100-p10001/resource-coverage.json": {
+      "bytes": 1636,
+      "sha256": "b16df78e58cec5573067470e87ab81ae47880518157df1718c40a02068d8890d"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/065-old-point-r100-p10001/run/report.json": {
+      "bytes": 1431968,
+      "sha256": "430fde01491de5ac84d5e390adc2db0e3f595d04a55580891e7bbe662b4837e6"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/066-redis-point-r050-p10001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "430b879347f86ba4bdbe4e0305c39a0a67c71ed7c52c8f0b8d452c5de3c83325"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/066-redis-point-r050-p10001/run/report.json": {
+      "bytes": 1264251,
+      "sha256": "0603a154ffff1cf3f7ebc9c5d75a7644bc871c029df7338381f52ce08dcd8ecd"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/067-new-point-r050-p10001/resource-coverage.json": {
+      "bytes": 1684,
+      "sha256": "023b482a73b48147a45a815c02aa77ef4627425f316c610e82ee6806f493ca90"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/067-new-point-r050-p10001/run/report.json": {
+      "bytes": 1940331,
+      "sha256": "68c20cd0214b795e1bd0b6b42582b24f4b4bc127a49dbbaf6257c5d15093e539"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/068-old-point-r050-p10001/resource-coverage.json": {
+      "bytes": 1678,
+      "sha256": "02625e06d51dc906414c96c2c2ca3f2865a54b8709ead5186bd6958d0b393185"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/068-old-point-r050-p10001/run/report.json": {
+      "bytes": 1940330,
+      "sha256": "48b9a42af939632db912cc823f13cb221836ffd496d1361dbf21cab59aa4b082"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/069-redis-point-r000-p10001/resource-coverage.json": {
+      "bytes": 837,
+      "sha256": "60e124e7b769fcad264e9f353c89ab42d789826310fe34cd6ada8ed787a42637"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/069-redis-point-r000-p10001/run/report.json": {
+      "bytes": 915269,
+      "sha256": "7b99b5db39bcfd9be34d2847fd861608d94a5d4d82520addd3bd40184d8b9a96"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/070-new-point-r000-p10001/resource-coverage.json": {
+      "bytes": 1684,
+      "sha256": "e1fe582b5a42bfd86b3c466fa28a190faebb6c62d924988979d83f95bc242599"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/070-new-point-r000-p10001/run/report.json": {
+      "bytes": 1432031,
+      "sha256": "1e52d741ee2b264f3c91f3333f078c7e150e524c1f480c33a30282c642d48e27"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/071-old-point-r000-p10001/resource-coverage.json": {
+      "bytes": 1682,
+      "sha256": "1644b78bd0357f972231083bd4e698020baea387b37df7cd4184ed23886c770f"
+    },
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/071-old-point-r000-p10001/run/report.json": {
+      "bytes": 1432020,
+      "sha256": "7eac213da8bde3240fd3ee527dede915ec5eaf408f4d5b9342ae368485e181f2"
+    }
+  },
+  "gate_sha256": "3fa1845b2ab2fc28b000c0fc3d33ae338d07625e601fd076baed91d0dc21d1e4",
+  "reader_sha256": "87d3ee6dea78d04baf50c129f3ef9ad4273aa5fdbb7f55d689dc744c30046886"
+}

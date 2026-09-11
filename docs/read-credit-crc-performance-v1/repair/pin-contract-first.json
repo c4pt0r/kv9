@@ -1,0 +1,13 @@
+{
+  "complete": true,
+  "old_auditor_rejected": "6f1497dadeba0726d1c54e78d9bb8a47cc5db1fe3f2855f0504e0ec91aa8511b",
+  "corrected_auditor_pin": "163b9cb4f137dee027e361f6060f15fe86af9fb6bc8cc887e0ce11020a424a83",
+  "pre_run_readiness_and_inventory_and_actual_argument_bytes_match": true,
+  "altered_recorded_hash_rejected": true,
+  "original_auditor_sha256": "8b8a21667713d7b2b9aef71b64cf6b3502b52e3bfa3b964ff54e9b3b4f659a39",
+  "corrected_auditor_sha256": "9a549e1fb45f703e5bde12914211b46240f70d3b9df0b4185c60711fb8ebeb94",
+  "original_failed_audit": "/tmp/kv9-read-credit-crc-performance-preparation/results-first",
+  "first_failure_root_receipt": "6e4ab7",
+  "runtime_not_repeated": true,
+  "observed_ns": 1789158139660705323
+}

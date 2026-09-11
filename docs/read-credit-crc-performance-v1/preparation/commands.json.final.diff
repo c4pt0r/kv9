@@ -1,0 +1,20 @@
+--- /tmp/kv9-read-credit-crc-performance-preparation/pending-first/commands.json
++++ /tmp/kv9-read-credit-crc-performance-preparation/commands.json
+@@ -14,7 +14,7 @@
+     "--output",
+     "/tmp/kv9-read-credit-crc-performance-preparation/results-first",
+     "--expected-driver-sha256",
+-    "3f9f8dc35f2109258f6ba74f2bfb09926d9cf079c5cfcf2b8366574fa3471bd5",
++    "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+     "--root-session",
+     "ROOT_TERMINAL_TIMING_SESSION",
+     "--root-exit-code",
+@@ -49,7 +49,7 @@
+     "--new-server-source",
+     "/tmp/kv9-read-credit-crc",
+     "--new-server-build",
+-    "/tmp/kv9-read-credit-crc-release-first",
++    "/tmp/kv9-read-credit-crc-release-rebuilt-first",
+     "--redis-client-source",
+     "/tmp/kv9-point-write-measurement-v3",
+     "--redis-client-build",

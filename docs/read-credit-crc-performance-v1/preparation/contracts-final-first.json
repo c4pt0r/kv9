@@ -1,0 +1,80 @@
+{
+  "accepted": true,
+  "driver_tests": 7,
+  "audit_tests": 15,
+  "actual_role_binding_included": true,
+  "records": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/kv9-read-credit-crc-performance-preparation/test_driver.py"
+      ],
+      "cwd": "/tmp/kv9-read-credit-crc-performance-preparation",
+      "started_ns": 1789155291094098492,
+      "cpu_affinity": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "pid": 2066157,
+      "exit_code": 0,
+      "terminal": true,
+      "ended_ns": 1789155291511623810,
+      "log_sha256": "6b388384b74852bb78d2f94d776344c924053af6622e1508781ba44a567507e5",
+      "pid_absent": true
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/kv9-read-credit-crc-performance-preparation/test_audit_contract.py"
+      ],
+      "cwd": "/tmp/kv9-read-credit-crc-performance-preparation",
+      "started_ns": 1789155291512173199,
+      "cpu_affinity": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "pid": 2066166,
+      "exit_code": 0,
+      "terminal": true,
+      "ended_ns": 1789155291566975468,
+      "log_sha256": "5ab750e5a2787a87cd4ccbcfe206ead1b13d860c01ae55e5d86521919de8fb13",
+      "pid_absent": true
+    }
+  ]
+}

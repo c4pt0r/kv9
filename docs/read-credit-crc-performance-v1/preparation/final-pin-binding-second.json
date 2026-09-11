@@ -1,0 +1,87 @@
+{
+  "accepted_pin_substitution": true,
+  "runtime_executed": false,
+  "source_revision": "de37c71009e8199859b931e0037818f490e8d3f6",
+  "source_files": 600,
+  "source_tree_sha256": "59924d6dfcc38dd3640866b424659cfc8319e886cf8d32745841faca4384e0bb",
+  "replacements": {
+    "PENDING_CANDIDATE_BINARY_SHA256": "5464adee210f7cebbce7cd57d6e01bfe5a1ace42936edad24f57e63ff9cfbdd7",
+    "PENDING_CANDIDATE_MANIFEST_SHA256": "164b7999386b042ad2df814fea44fe93724ae15396e9f0cae0356a926fc3d1de",
+    "/tmp/kv9-read-credit-crc-release-first": "/tmp/kv9-read-credit-crc-release-rebuilt-first"
+  },
+  "root_readback": {
+    "path": "/tmp/kv9-read-credit-crc-root-first/release-rebuilt-readback.json",
+    "sha256": "ecc8832e25a0b6c76bd5854659920d1bc2492dec3060fc7dcb2ca668de6a6cd7"
+  },
+  "rejected_release_remains_retained": "/tmp/kv9-read-credit-crc-release-first",
+  "files": [
+    {
+      "name": "matched-driver.py",
+      "pending_sha256": "3f9f8dc35f2109258f6ba74f2bfb09926d9cf079c5cfcf2b8366574fa3471bd5",
+      "parent_sha256": "ec2203614200eabfb3aa4f423b66cd511c36fc664854fb767bf82e8293527e77",
+      "final_sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195"
+    },
+    {
+      "name": "audit.py",
+      "pending_sha256": "10fd79dd0aedcff61331647f1d9e0ed362fb2300934e9fdc540e3e74ee9eef36",
+      "parent_sha256": "b5dc45f08183093f33a44d789de09eb5ed22778f86cd6d550b1f30d4d3502f74",
+      "final_sha256": "8b8a21667713d7b2b9aef71b64cf6b3502b52e3bfa3b964ff54e9b3b4f659a39"
+    },
+    {
+      "name": "isolate-and-run.py",
+      "pending_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "parent_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "final_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    {
+      "name": "driver-arguments.json",
+      "pending_sha256": "5864270d35d0fe597cc47491887c38b2c67fa264f9fb7db7f336e2666d619a47",
+      "parent_sha256": "6f1497dadeba0726d1c54e78d9bb8a47cc5db1fe3f2855f0504e0ec91aa8511b",
+      "final_sha256": "163b9cb4f137dee027e361f6060f15fe86af9fb6bc8cc887e0ce11020a424a83"
+    },
+    {
+      "name": "protocol.json",
+      "pending_sha256": "8d4f757f3a98972647effe015ffd316f49926f0de71bb91f6122f7c2bd0d1dd7",
+      "parent_sha256": "f9331b5f3259c1fbb0459df790e2487f528feb4f27e571a0fe330ae2153bc94e",
+      "final_sha256": "5372db30f81ea237462fec0502a78a121d1ff066df9371c0a5a0bfc75cbd1b0e"
+    },
+    {
+      "name": "commands.json",
+      "pending_sha256": "0af4c436a22b9caf417adcaf4c4817768aedb18fdd58beabbb183112b06fdff9",
+      "parent_sha256": "4cd561e9a1e89cac81e4496ba98523643d884974d80eb1b91365c33ef3abccb8",
+      "final_sha256": "eba719b460dc55cd1cc585b6ef746aa68a96f6675bec909da83d05cf79ddaff8"
+    },
+    {
+      "name": "input-layout.json",
+      "pending_sha256": "a02c3ebae05f83e7f98cb62799704d9227664ceac569f50315c92f44ac92b3ac",
+      "parent_sha256": "b3e1afaad8bd91f3cc13bcb727c61461f72822fc9b64c8398f45959f13a07378",
+      "final_sha256": "a02c3ebae05f83e7f98cb62799704d9227664ceac569f50315c92f44ac92b3ac"
+    },
+    {
+      "name": "test_driver.py",
+      "pending_sha256": "eba65a2088194d3e021f8b4c87cfd589f50b4c3ff5bcba39a04161d3a2a518f4",
+      "parent_sha256": "2dd6fc1671733f27156189eaf62a25dbf69653b41061b82621ef2edbc837dd05",
+      "final_sha256": "b7ab1b6632bfca298d512721a39a4ff38bb09dc06594062123812e4f751845db"
+    },
+    {
+      "name": "test_audit_contract.py",
+      "pending_sha256": "1e7f4acff7f74a96308fd184b1c0ce38d501649a8f38b083c177d61e609b17c3",
+      "parent_sha256": "c8d8df4818758e0bb6e79facf9b02ce23b90675dec1ee792a4d2dd562e494bfc",
+      "final_sha256": "3bab39902e2787994961a3e78aaf5a4024444ee23ace0a0558a1179ffbd06a0a"
+    },
+    {
+      "name": "statistics/core.py",
+      "pending_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+      "parent_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+      "final_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    },
+    {
+      "name": "statistics/derive.py",
+      "pending_sha256": "0fb08bcc867042c4f41e1fe3be6d73d0da20b43e37fb160f3ec19a23320e7774",
+      "parent_sha256": "66dc2c8959926f879a823c99cb41d49ac443a2ac117abed32af8e6e3c2cc209f",
+      "final_sha256": "0fb08bcc867042c4f41e1fe3be6d73d0da20b43e37fb160f3ec19a23320e7774"
+    }
+  ],
+  "created_ns": 1789155291009104319,
+  "ancillary_first_failure": "/tmp/kv9-read-credit-crc-performance-preparation/pin-readback-first-failure.json"
+}

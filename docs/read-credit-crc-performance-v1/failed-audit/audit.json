@@ -1,0 +1,17 @@
+{
+  "complete": false,
+  "matched_diagnostic_accepted": false,
+  "cases": [],
+  "scope": "Two-repeat 10-second v3 point/batch64 read/write c1/c64 shared-host tmpfs diagnostic; no sustained-capacity, equal-durability, exact issued nonce ledger or full-history claim",
+  "parent_confirmed_session": 34148,
+  "parent_confirmed_exit_code": 0,
+  "expected_successful_arms": 72,
+  "protocol_id": "kv9-read-credit-crc-broad-workloads-c1-c64-v1",
+  "concurrency_points": [
+    1,
+    64
+  ],
+  "started_unix_ns": 1789157957796616969,
+  "failure": "ValueError('reviewed wrapper or explicit client arguments differ')",
+  "ended_unix_ns": 1789157957806026418
+}

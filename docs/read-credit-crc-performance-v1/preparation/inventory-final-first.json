@@ -1,0 +1,166 @@
+{
+  "/tmp/kv9-read-credit-crc-performance-preparation/audit.py": {
+    "bytes": 49287,
+    "sha256": "8b8a21667713d7b2b9aef71b64cf6b3502b52e3bfa3b964ff54e9b3b4f659a39"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/audit.py.diff": {
+    "bytes": 4576,
+    "sha256": "dad7f7426583283725965705d234461105b8d8e64bffc0b5e5c5ea5c94be230b"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/audit.py.final.diff": {
+    "bytes": 2259,
+    "sha256": "75a709188cbb2fd65867a2db5900ef7802a5363ea7401a65c1079b973b25142c"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/commands.json": {
+    "bytes": 2550,
+    "sha256": "eba719b460dc55cd1cc585b6ef746aa68a96f6675bec909da83d05cf79ddaff8"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/commands.json.diff": {
+    "bytes": 2763,
+    "sha256": "edd2e444111b8e60d94a65f236d04f92f22efcea3f42516a43902b3067f64689"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/commands.json.final.diff": {
+    "bytes": 829,
+    "sha256": "56aef977fc01ccc2445b5223855d0e0dfed096dae760cb31774c45538afdb830"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/contracts-final-first.json": {
+    "bytes": 1600,
+    "sha256": "30c90335295cbed415883b8fb7cb8a0c898f1eab2a1fe4539fdfc468c2417a90"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/driver-arguments.json": {
+    "bytes": 630,
+    "sha256": "163b9cb4f137dee027e361f6060f15fe86af9fb6bc8cc887e0ce11020a424a83"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/driver-arguments.json.diff": {
+    "bytes": 538,
+    "sha256": "93e9b91473787e629d992e3f7e7325a88510aeaeed3b42bc3cd65725974e6426"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/driver-arguments.json.final.diff": {
+    "bytes": 459,
+    "sha256": "8e505c6d2a45ab7c3284b6cc1debf76f3892f2b5882f94739102d6cc17f0a7d2"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/external-inputs-first.json": {
+    "bytes": 3609,
+    "sha256": "fbed9bbc9c2ba59e2a9b733c7b35ab03ca5ce48df79296354331d3ad159c7e0d"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/final-pin-binding-second.json": {
+    "bytes": 4535,
+    "sha256": "4af004ee3732b32be493464506f84a7e6d09f169f7f906606e4341e446f8b044"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/input-layout.json": {
+    "bytes": 2650,
+    "sha256": "a02c3ebae05f83e7f98cb62799704d9227664ceac569f50315c92f44ac92b3ac"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/input-layout.json.diff": {
+    "bytes": 1894,
+    "sha256": "1654902bb4da37c2fa7e311f0bd60742baea3c2ba0c889d140b8017a980c619b"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/input-layout.json.final.diff": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/isolate-and-run.py": {
+    "bytes": 12873,
+    "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/isolate-and-run.py.diff": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/isolate-and-run.py.final.diff": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/matched-driver.py": {
+    "bytes": 51967,
+    "sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/matched-driver.py.diff": {
+    "bytes": 2727,
+    "sha256": "6875aeda20288600c17ba34b44df5311f909610ac731948cb2fc8ea6443268ff"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/matched-driver.py.final.diff": {
+    "bytes": 1724,
+    "sha256": "d25ef1aee58d1979d2849a510ecfaea627b999abc9c5c7d55650e49e6efb9f78"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/pin-readback-first-failure.json": {
+    "bytes": 736,
+    "sha256": "75a4497764e7b6ce23ee02a7a542f5582601ea715573687f0dfdde03fd070f5c"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/protocol.json": {
+    "bytes": 67227,
+    "sha256": "5372db30f81ea237462fec0502a78a121d1ff066df9371c0a5a0bfc75cbd1b0e"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/protocol.json.diff": {
+    "bytes": 2827,
+    "sha256": "47ca9af27377f77ad9864038c8df2c887f161b52f9220e68022fe138ee810934"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/protocol.json.final.diff": {
+    "bytes": 1593,
+    "sha256": "016773d8997b45c29f8abfecb170eb98cfa611b8505af63facf34cafc4ba1902"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/roles-final-first.json": {
+    "bytes": 279161,
+    "sha256": "01dcc540eb6f2cf29857cf373069855d82b96077bb5cceee87bf080ddb35b15f"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/root-release-rebuilt-readback.json": {
+    "bytes": 8545,
+    "sha256": "ecc8832e25a0b6c76bd5854659920d1bc2492dec3060fc7dcb2ca668de6a6cd7"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/space-readiness-final-first.json": {
+    "bytes": 522,
+    "sha256": "8bd87104c1ac2bebcbc5fb8bc7aa5adf585657293c64510743463d52a9db54e6"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/space-readiness-first.json": {
+    "bytes": 998,
+    "sha256": "3037ce7fd8bf9a6d467727621aacd353e5c68c3ca49c827b89a96c44cf00307a"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/statistics/core.py": {
+    "bytes": 6438,
+    "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/statistics/core.py.diff": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/statistics/core.py.final.diff": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/statistics/derive.py": {
+    "bytes": 8238,
+    "sha256": "0fb08bcc867042c4f41e1fe3be6d73d0da20b43e37fb160f3ec19a23320e7774"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/statistics/derive.py.diff": {
+    "bytes": 2323,
+    "sha256": "a9e4fe42bbdda0bf7546b314f61fb65b98306a62897b0fe840a26a26a794842f"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/statistics/derive.py.final.diff": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/test_audit_contract.py": {
+    "bytes": 17674,
+    "sha256": "3bab39902e2787994961a3e78aaf5a4024444ee23ace0a0558a1179ffbd06a0a"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/test_audit_contract.py.diff": {
+    "bytes": 1842,
+    "sha256": "ba064651b297c365a21b1040b92bfb336f9164e05fa7df351a996efa28421ac2"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/test_audit_contract.py.final.diff": {
+    "bytes": 822,
+    "sha256": "1b1c5badaca90fd64cc6714a8369f10235b1b4bcceb7e54a23a5d7c274e54394"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/test_driver.py": {
+    "bytes": 9934,
+    "sha256": "b7ab1b6632bfca298d512721a39a4ff38bb09dc06594062123812e4f751845db"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/test_driver.py.diff": {
+    "bytes": 1620,
+    "sha256": "280d9adfd2059dd114ee6897d9ccb5bd792cc0f58dd0481ed745c4a614b36fb7"
+  },
+  "/tmp/kv9-read-credit-crc-performance-preparation/test_driver.py.final.diff": {
+    "bytes": 955,
+    "sha256": "843ef2abd3bbf43e59547aafacb06ca52b3a19fdd1995624a603940a41f3d6ff"
+  }
+}

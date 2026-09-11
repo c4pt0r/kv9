@@ -1,0 +1,367 @@
+{
+  "accepted_for_smoke": true,
+  "observed_ns": 1789155840514897668,
+  "frozen_inputs": {
+    "inventory-final-first.json": {
+      "files": 41,
+      "sha256": "1f6310497e13c57c786024f409dc1ab54f4398bedf0701b5c16da4a71f283190"
+    },
+    "external-inputs-first.json": {
+      "files": 21,
+      "sha256": "fbed9bbc9c2ba59e2a9b733c7b35ab03ca5ce48df79296354331d3ad159c7e0d"
+    }
+  },
+  "readiness_sha256": "4ed00836956c34d14fb9c076d90231dee48cf85efb231396e43a5d6ee0806c02",
+  "space": {
+    "/tmp": {
+      "total": 1966736678912,
+      "used": 1649402826752,
+      "free": 217353601024
+    },
+    "/dev/shm": {
+      "total": 66276073472,
+      "used": 1077248,
+      "free": 66274996224
+    }
+  },
+  "owned_containers": {
+    "kv9-chaos-ci-p0-20260908-control-plane": {
+      "name": "kv9-chaos-ci-p0-20260908-control-plane",
+      "id": "ae9b27a77d14f295e35e112b31f5dce62ed6fd2d86a90e7b2a69b52798e17582",
+      "pid": 2649663,
+      "start_ticks": 118957151,
+      "started": "2026-09-08T20:54:19.052823428Z",
+      "configured_cpus": "0-31",
+      "cgroup": "/sys/fs/cgroup/system.slice/docker-ae9b27a77d14f295e35e112b31f5dce62ed6fd2d86a90e7b2a69b52798e17582.scope/init.scope",
+      "effective_cpus": "0-31"
+    },
+    "kv9-chaos-control-plane": {
+      "name": "kv9-chaos-control-plane",
+      "id": "d31317fe14d1d3344caa91ed45b4246e5e949d99b25cec5e28d9c6695fa43e8c",
+      "pid": 3682792,
+      "start_ticks": 34008203,
+      "started": "2026-08-30T00:56:08.893481509Z",
+      "configured_cpus": "0-31",
+      "cgroup": "/sys/fs/cgroup/system.slice/docker-d31317fe14d1d3344caa91ed45b4246e5e949d99b25cec5e28d9c6695fa43e8c.scope/init.scope",
+      "effective_cpus": "0-31"
+    },
+    "kv9-minio-dev": {
+      "name": "kv9-minio-dev",
+      "id": "4b05c35453b87a409e7dd8a4dc935c782e282eb42cf14dd8c1ea6771efc0e042",
+      "pid": 75606,
+      "start_ticks": 111527514,
+      "started": "2026-09-08T00:16:02.689413529Z",
+      "configured_cpus": "0-31",
+      "cgroup": "/sys/fs/cgroup/system.slice/docker-4b05c35453b87a409e7dd8a4dc935c782e282eb42cf14dd8c1ea6771efc0e042.scope",
+      "effective_cpus": "0-31"
+    }
+  },
+  "clusters": {
+    "kv9-chaos-ci-p0-20260908-control-plane": {
+      "namespaces": {
+        "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+        "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+        "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+        "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+        "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+        "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+        "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+        "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+      },
+      "faults": [
+        {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "PodChaos",
+          "metadata": {
+            "annotations": {
+              "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"chaos-mesh.org/v1alpha1\",\"kind\":\"PodChaos\",\"metadata\":{\"annotations\":{},\"name\":\"store-loss-kill\",\"namespace\":\"kv9-chaos-1788967535-626870\"},\"spec\":{\"action\":\"pod-kill\",\"mode\":\"one\",\"selector\":{\"namespaces\":[\"kv9-chaos-1788967535-626870\"],\"pods\":{\"kv9-chaos-1788967535-626870\":[\"kv9-n2-59745f6554-djt6j\"]}}}}\n"
+            },
+            "creationTimestamp": "2026-09-09T15:30:37Z",
+            "finalizers": [
+              "chaos-mesh/records"
+            ],
+            "generation": 5,
+            "name": "store-loss-kill",
+            "namespace": "kv9-chaos-1788967535-626870",
+            "resourceVersion": "152064",
+            "uid": "c3ededa7-0746-4864-bd95-4425ceb3d663"
+          },
+          "spec": {
+            "action": "pod-kill",
+            "mode": "one",
+            "selector": {
+              "namespaces": [
+                "kv9-chaos-1788967535-626870"
+              ],
+              "pods": {
+                "kv9-chaos-1788967535-626870": [
+                  "kv9-n2-59745f6554-djt6j"
+                ]
+              }
+            }
+          },
+          "status": {
+            "conditions": [
+              {
+                "status": "True",
+                "type": "AllInjected"
+              },
+              {
+                "status": "False",
+                "type": "AllRecovered"
+              },
+              {
+                "status": "False",
+                "type": "Paused"
+              },
+              {
+                "status": "True",
+                "type": "Selected"
+              }
+            ],
+            "experiment": {
+              "containerRecords": [
+                {
+                  "events": [
+                    {
+                      "operation": "Apply",
+                      "timestamp": "2026-09-09T15:30:37Z",
+                      "type": "Succeeded"
+                    }
+                  ],
+                  "id": "kv9-chaos-1788967535-626870/kv9-n2-59745f6554-djt6j",
+                  "injectedCount": 1,
+                  "phase": "Injected",
+                  "recoveredCount": 0,
+                  "selectorKey": "."
+                }
+              ],
+              "desiredPhase": "Run"
+            }
+          }
+        }
+      ],
+      "project_running_pods": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "annotations": {
+              "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"kv9-history-client\"},\"name\":\"kv9-history-client\",\"namespace\":\"kv9-chaos-1788967535-626870\"},\"spec\":{\"containers\":[{\"command\":[\"sleep\",\"3600\"],\"image\":\"kv9-chaos:log-loss-db420ae\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"client\"}]}}\n"
+            },
+            "creationTimestamp": "2026-09-09T15:26:49Z",
+            "generation": 1,
+            "labels": {
+              "app": "kv9-history-client"
+            },
+            "name": "kv9-history-client",
+            "namespace": "kv9-chaos-1788967535-626870",
+            "resourceVersion": "570312",
+            "uid": "a1f12618-3533-411b-ae46-479bb8189a6f"
+          },
+          "spec": {
+            "containers": [
+              {
+                "command": [
+                  "sleep",
+                  "3600"
+                ],
+                "image": "kv9-chaos:log-loss-db420ae",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "client",
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-n95ch",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeName": "kv9-chaos-ci-p0-20260908-control-plane",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "name": "kube-api-access-n95ch",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-09-09T15:26:51Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-09-09T15:26:49Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-09-11T19:27:23Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-09-11T19:27:23Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-09-09T15:26:49Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "containerID": "containerd://e227298559a52d42336cccf00144621e0692098a1df7cb908824330696e167f8",
+                "image": "docker.io/library/kv9-chaos:log-loss-db420ae",
+                "imageID": "docker.io/library/import-2026-09-09@sha256:e229367f29b9eff9b1dbbdd1e9b98999a490f76bb160b1df10ae4b6e0af5818f",
+                "lastState": {
+                  "terminated": {
+                    "containerID": "containerd://b751bdfa53d4e08dae452cbbe5dc3d1cef67f8cee9fd35e6800418331e3390d8",
+                    "exitCode": 0,
+                    "finishedAt": "2026-09-11T19:27:22Z",
+                    "reason": "Completed",
+                    "startedAt": "2026-09-11T18:27:22Z"
+                  }
+                },
+                "name": "client",
+                "ready": true,
+                "resources": {},
+                "restartCount": 52,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-09-11T19:27:22Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 0,
+                    "supplementalGroups": [
+                      0
+                    ],
+                    "uid": 0
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-n95ch",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "172.21.0.3",
+            "hostIPs": [
+              {
+                "ip": "172.21.0.3"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.244.0.245",
+            "podIPs": [
+              {
+                "ip": "10.244.0.245"
+              }
+            ],
+            "qosClass": "BestEffort",
+            "startTime": "2026-09-09T15:26:49Z"
+          }
+        }
+      ]
+    },
+    "kv9-chaos-control-plane": {
+      "namespaces": {
+        "chaos-mesh": "ea6b1e87-84c1-4aae-8013-146dd3a3e427",
+        "default": "29b932c8-f567-411a-9ee2-bfa0ee6b8ca0",
+        "kube-node-lease": "c488f50a-868f-41dd-a719-420f94893e6c",
+        "kube-public": "d9304671-e86a-4e6b-897a-97da0c0ba8d9",
+        "kube-system": "5b59eb13-a772-4867-bf53-3bd3d80bf293",
+        "local-path-storage": "3f874dde-a87e-4ddb-8d78-04ad63bc07f6"
+      },
+      "faults": [],
+      "project_running_pods": []
+    }
+  },
+  "competing_project_processes": [],
+  "timing_released": false,
+  "process_recovery_audit": "/tmp/kv9-read-credit-crc-process-preparation/results-first/audit.json"
+}

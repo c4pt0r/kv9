@@ -1,0 +1,11 @@
+--- /tmp/kv9-read-credit-crc-performance-preparation/pending-first/driver-arguments.json
++++ /tmp/kv9-read-credit-crc-performance-preparation/driver-arguments.json
+@@ -12,7 +12,7 @@
+   "--new-server-source",
+   "/tmp/kv9-read-credit-crc",
+   "--new-server-build",
+-  "/tmp/kv9-read-credit-crc-release-first",
++  "/tmp/kv9-read-credit-crc-release-rebuilt-first",
+   "--redis-client-source",
+   "/tmp/kv9-point-write-measurement-v3",
+   "--redis-client-build",

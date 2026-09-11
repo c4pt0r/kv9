@@ -1,0 +1,18 @@
+{
+  "accepted_as_correctness_smoke": true,
+  "timing_accepted": false,
+  "root_session": 22359,
+  "root_exit_code": 0,
+  "root_terminal_receipt": "9e436d",
+  "cohorts": 36,
+  "successful_measurement_calls": 6645682,
+  "cleanup_child_records": 120,
+  "original_process_identities_absent": true,
+  "matrix_sha256": "6902f362b2f3c2fc11d3ae755b6ab2dde8e5570bb9a7a3ffbddef8d7b7955c46",
+  "observed_ns": 1789156297513055873,
+  "scope": "Finite smoke/driver result readback; no performance or concurrent-history claim",
+  "first_readback_failure": {
+    "tool_chunk": "d062ef",
+    "reason": "Root reader assumed native and Redis cleanup schemas matched. Actual native complete/absent and Redis errors/pid_absent_after_reap fields checked separately; no runtime repeated."
+  }
+}

@@ -1,0 +1,11 @@
+--- /tmp/kv9-read-credit-crc-performance-preparation/pending-first/test_audit_contract.py
++++ /tmp/kv9-read-credit-crc-performance-preparation/test_audit_contract.py
+@@ -273,7 +273,7 @@
+         self.assertEqual(audit['PINS']['old'],('ca0002c7f8e9ee6f595efcc9f4151085ccce87cb',
+             'b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13'))
+         self.assertEqual(audit['PINS']['new'],('de37c71009e8199859b931e0037818f490e8d3f6',
+-            'PENDING_CANDIDATE_BINARY_SHA256'))
++            '5464adee210f7cebbce7cd57d6e01bfe5a1ace42936edad24f57e63ff9cfbdd7'))
+         self.assertEqual(audit['CLIENT_REV'],audit['REDIS_REV'])
+         self.assertEqual(audit['CLIENT_REV'],'0be806d9671e2c50701a64aa7889c8859b7648ba')
+         self.assertEqual(set(audit['ROLE_PATHS']),{'old','new','client','redis'})

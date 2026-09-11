@@ -1,0 +1,86 @@
+{
+  "/tmp/kv9-point-write-measurement-v3/scripts/batch_benchmark_report.py": {
+    "bytes": 33171,
+    "sha256": "56cd11ddc7475a44ff1cf420f2086b4eefb19aa424c7270b95d4141920a40a96"
+  },
+  "/tmp/kv9-point-write-measurement-v3/scripts/benchmark.py": {
+    "bytes": 18395,
+    "sha256": "c2cfda6ed964f1f86a776b1ffe32f3f94a05637bff6ff0f2be36842cbe493a36"
+  },
+  "/tmp/kv9-point-write-measurement-v3/scripts/native-batch-e2e.py": {
+    "bytes": 21030,
+    "sha256": "c8248ac6525235c9ccf1147b02db1cf468172f4233f8c2c80ffb2e3e2325347f"
+  },
+  "/tmp/kv9-point-write-measurement-v3/scripts/redis-comparison.py": {
+    "bytes": 17303,
+    "sha256": "8f09b073ba23d58b152b7f07eb9782a3174011951e800dafec982282d993a85a"
+  },
+  "/tmp/kv9-point-write-measurement-v3/scripts/redis_batch_report.py": {
+    "bytes": 13720,
+    "sha256": "719e214ce549836400ae4a081917a424f6c78f9922b745991471691fe9314f9d"
+  },
+  "/tmp/kv9-point-write-measurement-v3/scripts/tmpfs-redis-diagnostic.py": {
+    "bytes": 7294,
+    "sha256": "167b83650e6c482239f998c01cd2065375c2e8111b2d075bc654247f3bcdae6b"
+  },
+  "/tmp/kv9-point-write-v3-release-first/native/build.json": {
+    "bytes": 487,
+    "sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c"
+  },
+  "/tmp/kv9-point-write-v3-release-first/native/cargo.jsonl": {
+    "bytes": 208922,
+    "sha256": "c68ed599b2b0185d8b8bd4ea277d04345f6b5442cdf851f59e93918a5e2a5d06"
+  },
+  "/tmp/kv9-point-write-v3-release-first/native/kv9-batch-benchmark": {
+    "bytes": 5594104,
+    "sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957"
+  },
+  "/tmp/kv9-point-write-v3-release-first/native/sources.json": {
+    "bytes": 60425,
+    "sha256": "74298441490d8ecb5c17e7004597e1ab66173cd3fda7c5ae147f2e32a6dcc65c"
+  },
+  "/tmp/kv9-point-write-v3-release-first/redis/build.json": {
+    "bytes": 487,
+    "sha256": "10f9ce2a754a2ef43a6439856c1d5fb00c5a1e5004173e52897a3ea19d6124f0"
+  },
+  "/tmp/kv9-point-write-v3-release-first/redis/cargo.jsonl": {
+    "bytes": 29085,
+    "sha256": "9cb206bff249719740cd530aba311e195064b64ecbc2692bae0d7b2e43b08ce8"
+  },
+  "/tmp/kv9-point-write-v3-release-first/redis/kv9-redis-batch-reference": {
+    "bytes": 1465528,
+    "sha256": "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af"
+  },
+  "/tmp/kv9-point-write-v3-release-first/redis/sources.json": {
+    "bytes": 60468,
+    "sha256": "458f79ff387dae09c70a41d44f42073458a5af8f9e0e83fd968085d79076e41f"
+  },
+  "/tmp/kv9-read-credit-crc-release-rebuilt-first/build.json": {
+    "bytes": 66416,
+    "sha256": "164b7999386b042ad2df814fea44fe93724ae15396e9f0cae0356a926fc3d1de"
+  },
+  "/tmp/kv9-read-credit-crc-release-rebuilt-first/kv9": {
+    "bytes": 20136576,
+    "sha256": "5464adee210f7cebbce7cd57d6e01bfe5a1ace42936edad24f57e63ff9cfbdd7"
+  },
+  "/tmp/kv9-read-credit-crc-release-rebuilt-first/kv9-cargo.jsonl": {
+    "bytes": 211578,
+    "sha256": "05e9e49cf4db3fe5ec6fe75d3f9e73972b19b67d5c99069a28d7faac5d175fb4"
+  },
+  "/tmp/kv9-redis-batch-reference-preparation/run_fixture.py": {
+    "bytes": 26410,
+    "sha256": "008c5bea0640a4a5a092feb6617798a84e9dd4889fd11bf8c6791cfe0852864a"
+  },
+  "/tmp/kv9-wal-crc32-release-first/build.json": {
+    "bytes": 65172,
+    "sha256": "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8"
+  },
+  "/tmp/kv9-wal-crc32-release-first/kv9": {
+    "bytes": 20136472,
+    "sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13"
+  },
+  "/tmp/kv9-wal-crc32-release-first/kv9-cargo.jsonl": {
+    "bytes": 211587,
+    "sha256": "48a1a4bbe6ab51f49fc3fdcb1c10b7ba394d5a29cd71538f842408b9bb6a5099"
+  }
+}

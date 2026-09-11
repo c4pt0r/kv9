@@ -1,0 +1,11 @@
+--- /tmp/kv9-read-credit-crc-performance-preparation/pending-first/test_driver.py
++++ /tmp/kv9-read-credit-crc-performance-preparation/test_driver.py
+@@ -141,7 +141,7 @@
+     def test_frozen_role_bindings_without_build_or_runtime(self):
+         args=types.SimpleNamespace(old_server_source=Path('/tmp/kv9-wal-crc32-table'),
+             old_server_build=Path('/tmp/kv9-wal-crc32-release-first'),new_server_source=Path('/tmp/kv9-read-credit-crc'),
+-            new_server_build=Path('/tmp/kv9-read-credit-crc-release-first'),client_source=SOURCE,redis_client_source=SOURCE,
++            new_server_build=Path('/tmp/kv9-read-credit-crc-release-rebuilt-first'),client_source=SOURCE,redis_client_source=SOURCE,
+             client_build=Path('/tmp/kv9-point-write-v3-release-first/native'),
+             redis_client_build=Path('/tmp/kv9-point-write-v3-release-first/redis'),
+             expected_client_revision='0be806d9671e2c50701a64aa7889c8859b7648ba')

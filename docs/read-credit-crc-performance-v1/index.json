@@ -1,0 +1,2419 @@
+{
+  "aliases": [
+    {
+      "bytes": 8493,
+      "path": "READOUT.md",
+      "sha256": "686f10d1a354b15a4a40d4fc9e2a901f1dbf286578847fb88f94c6dc91f1d715",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/READOUT.md"
+    }
+  ],
+  "baseline_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "candidate_revision": "de37c71009e8199859b931e0037818f490e8d3f6",
+  "client_revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+  "cohorts": 72,
+  "compressed_files": 81,
+  "compressed_reports": 72,
+  "copies": 259,
+  "coverage_files": 72,
+  "decoded_bytes": 111712523,
+  "excluded_binary_bindings": [
+    {
+      "bytes": 5594104,
+      "sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+      "source": "/tmp/kv9-point-write-v3-release-first/native/kv9-batch-benchmark"
+    },
+    {
+      "bytes": 1465528,
+      "sha256": "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af",
+      "source": "/tmp/kv9-point-write-v3-release-first/redis/kv9-redis-batch-reference"
+    },
+    {
+      "bytes": 20136576,
+      "sha256": "5464adee210f7cebbce7cd57d6e01bfe5a1ace42936edad24f57e63ff9cfbdd7",
+      "source": "/tmp/kv9-read-credit-crc-release-rebuilt-first/kv9"
+    },
+    {
+      "bytes": 20136472,
+      "sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "source": "/tmp/kv9-wal-crc32-release-first/kv9"
+    }
+  ],
+  "files": [
+    {
+      "decoded_bytes": 1432064,
+      "decoded_sha256": "7bf80af9d9f841c7245e7a199967c1f78bd9bcc1dcec85d309d634d1b9af238a",
+      "encoding": "gzip",
+      "path": "reports/000-old-point-r000-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/000-old-point-r000-p00001/run/report.json",
+      "stored_bytes": 14808,
+      "stored_sha256": "a7b92821b15ec31838f0ba0c7e3786dc4f25658e72610f8714ddf8064b5d0bc6"
+    },
+    {
+      "decoded_bytes": 1687,
+      "decoded_sha256": "4ca2ca2c5d1c600f00cf36dd3c765e086289ae630bc3f37cd3a0d6da2fe40e18",
+      "encoding": "identity",
+      "path": "reports/000-old-point-r000-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/000-old-point-r000-p00001/resource-coverage.json",
+      "stored_bytes": 1687,
+      "stored_sha256": "4ca2ca2c5d1c600f00cf36dd3c765e086289ae630bc3f37cd3a0d6da2fe40e18"
+    },
+    {
+      "decoded_bytes": 1432013,
+      "decoded_sha256": "1d98464f95d1fd71790ec98e483bd3fef2c38f2d3019ff98eb78245b2af57bea",
+      "encoding": "gzip",
+      "path": "reports/001-new-point-r000-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/001-new-point-r000-p00001/run/report.json",
+      "stored_bytes": 14686,
+      "stored_sha256": "852bcc3c5a20ec099fc08ec1df52c3a9c298ec4ce3c6dece5eab762fb8ff9139"
+    },
+    {
+      "decoded_bytes": 1685,
+      "decoded_sha256": "d373cce4ba6a97c90d380a01bc8dab96305d3e63984672f24495d26a7054ad74",
+      "encoding": "identity",
+      "path": "reports/001-new-point-r000-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/001-new-point-r000-p00001/resource-coverage.json",
+      "stored_bytes": 1685,
+      "stored_sha256": "d373cce4ba6a97c90d380a01bc8dab96305d3e63984672f24495d26a7054ad74"
+    },
+    {
+      "decoded_bytes": 915287,
+      "decoded_sha256": "fde160ede37829dd0e367dd7bc233620709ba4da23b3b51c8aef8aa7e41d1e61",
+      "encoding": "gzip",
+      "path": "reports/002-redis-point-r000-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/002-redis-point-r000-p00001/run/report.json",
+      "stored_bytes": 9816,
+      "stored_sha256": "9347bf26c51b33711b12f4d385283e982821d36ce5efa9251722110ff52730cf"
+    },
+    {
+      "decoded_bytes": 838,
+      "decoded_sha256": "9ca4fc1b270dfb3126c77af3b8616d3d80dde9c56cd1ed1cbd4a49e6d9934b28",
+      "encoding": "identity",
+      "path": "reports/002-redis-point-r000-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/002-redis-point-r000-p00001/resource-coverage.json",
+      "stored_bytes": 838,
+      "stored_sha256": "9ca4fc1b270dfb3126c77af3b8616d3d80dde9c56cd1ed1cbd4a49e6d9934b28"
+    },
+    {
+      "decoded_bytes": 1940351,
+      "decoded_sha256": "25e975160a8a4f2b22c732e08dd0cb74cad73e27f7bf82b3bf581d994c27d5a9",
+      "encoding": "gzip",
+      "path": "reports/003-old-point-r050-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/003-old-point-r050-p00001/run/report.json",
+      "stored_bytes": 18582,
+      "stored_sha256": "992c772d8b181be9785ea7d94473b1324e649d7a5cc44b6b62bafdfd90c839ae"
+    },
+    {
+      "decoded_bytes": 1684,
+      "decoded_sha256": "15989152ffc9b27e2a22f09b9d790e935f9c65fe92c66011d4ae64eb69813d91",
+      "encoding": "identity",
+      "path": "reports/003-old-point-r050-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/003-old-point-r050-p00001/resource-coverage.json",
+      "stored_bytes": 1684,
+      "stored_sha256": "15989152ffc9b27e2a22f09b9d790e935f9c65fe92c66011d4ae64eb69813d91"
+    },
+    {
+      "decoded_bytes": 1940323,
+      "decoded_sha256": "77e3bd5ce90008609c7181a6751455812e2847cac5387b76fb437ddfa943d13e",
+      "encoding": "gzip",
+      "path": "reports/004-new-point-r050-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/004-new-point-r050-p00001/run/report.json",
+      "stored_bytes": 18660,
+      "stored_sha256": "5ed7d70c8c8dcf9edb8d551bad26483f4a3979238cdcb98b3d641b5c7ffa383d"
+    },
+    {
+      "decoded_bytes": 1679,
+      "decoded_sha256": "6bdf81a43869589d2f31b3e91217c30d3b32d99b8bb33cf86610addf0b65f408",
+      "encoding": "identity",
+      "path": "reports/004-new-point-r050-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/004-new-point-r050-p00001/resource-coverage.json",
+      "stored_bytes": 1679,
+      "stored_sha256": "6bdf81a43869589d2f31b3e91217c30d3b32d99b8bb33cf86610addf0b65f408"
+    },
+    {
+      "decoded_bytes": 1264155,
+      "decoded_sha256": "b44f2be267c432f860d2f0239f76745aa544042d876055dde69903e638b801f1",
+      "encoding": "gzip",
+      "path": "reports/005-redis-point-r050-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/005-redis-point-r050-p00001/run/report.json",
+      "stored_bytes": 12681,
+      "stored_sha256": "a2b6e3341b7824035d31b3d21bcaeb2a589755c90ef1474a5a50c920bb8483e7"
+    },
+    {
+      "decoded_bytes": 839,
+      "decoded_sha256": "f8cdbd92264fc31f97fe1f5427b79d1e6676deb5092a16c09c63f811125f7f3d",
+      "encoding": "identity",
+      "path": "reports/005-redis-point-r050-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/005-redis-point-r050-p00001/resource-coverage.json",
+      "stored_bytes": 839,
+      "stored_sha256": "f8cdbd92264fc31f97fe1f5427b79d1e6676deb5092a16c09c63f811125f7f3d"
+    },
+    {
+      "decoded_bytes": 1431955,
+      "decoded_sha256": "7f06bf7dce7146ab419177811eccef57ce4c5bb6ee9eee421f27925254a50073",
+      "encoding": "gzip",
+      "path": "reports/006-old-point-r100-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/006-old-point-r100-p00001/run/report.json",
+      "stored_bytes": 14497,
+      "stored_sha256": "27c2f1c3ee3ebc61981a1af046953d68347697425e9cb0e200659a007f4d851b"
+    },
+    {
+      "decoded_bytes": 1673,
+      "decoded_sha256": "9b2b0de23d20e0fe765e5af7e1d363bd5639e548ea2af49902028f8a0ca09743",
+      "encoding": "identity",
+      "path": "reports/006-old-point-r100-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/006-old-point-r100-p00001/resource-coverage.json",
+      "stored_bytes": 1673,
+      "stored_sha256": "9b2b0de23d20e0fe765e5af7e1d363bd5639e548ea2af49902028f8a0ca09743"
+    },
+    {
+      "decoded_bytes": 1431954,
+      "decoded_sha256": "9848459eaba427bf10fd47e9b0e850e3645e5ead1372127af05515c8cfbc925d",
+      "encoding": "gzip",
+      "path": "reports/007-new-point-r100-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/007-new-point-r100-p00001/run/report.json",
+      "stored_bytes": 14598,
+      "stored_sha256": "3ac7de473d44efba014d812603738a5056b101a9513ccb1d469bed6c2d709c28"
+    },
+    {
+      "decoded_bytes": 1662,
+      "decoded_sha256": "da3e14bb060a56ce30f0cddcb2bc67f7a73aa403ddf2593bdda6b43d2e3ac5e6",
+      "encoding": "identity",
+      "path": "reports/007-new-point-r100-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/007-new-point-r100-p00001/resource-coverage.json",
+      "stored_bytes": 1662,
+      "stored_sha256": "da3e14bb060a56ce30f0cddcb2bc67f7a73aa403ddf2593bdda6b43d2e3ac5e6"
+    },
+    {
+      "decoded_bytes": 915302,
+      "decoded_sha256": "6eab40eacacad872d1cb382ec39b34661b6cd569085cd07bfdab626f4a80415c",
+      "encoding": "gzip",
+      "path": "reports/008-redis-point-r100-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/008-redis-point-r100-p00001/run/report.json",
+      "stored_bytes": 9867,
+      "stored_sha256": "bcfad4f239e8a9d19dc774d20d9c15193e0ac2e4c7ba79efed595981b8ce755f"
+    },
+    {
+      "decoded_bytes": 836,
+      "decoded_sha256": "015f4ed37a9e64f97a37ee04b03b98c2ee87c8017a8d8f425cc1aba9bc286388",
+      "encoding": "identity",
+      "path": "reports/008-redis-point-r100-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/008-redis-point-r100-p00001/resource-coverage.json",
+      "stored_bytes": 836,
+      "stored_sha256": "015f4ed37a9e64f97a37ee04b03b98c2ee87c8017a8d8f425cc1aba9bc286388"
+    },
+    {
+      "decoded_bytes": 1431336,
+      "decoded_sha256": "cebdf063c9c5378171142c9657fc60a510b3e7e74029e73cab588224e58918b2",
+      "encoding": "gzip",
+      "path": "reports/009-old-batch64-r000-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/009-old-batch64-r000-p00001/run/report.json",
+      "stored_bytes": 13093,
+      "stored_sha256": "e7cd6c7bd5c39c419c1b8100747039e997fb4bf087dc9e6a6d718001290399d6"
+    },
+    {
+      "decoded_bytes": 1690,
+      "decoded_sha256": "b70691a2fe20ee71695fa79336abb15f766a50cfe9b88578e9b687eabb7f732d",
+      "encoding": "identity",
+      "path": "reports/009-old-batch64-r000-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/009-old-batch64-r000-p00001/resource-coverage.json",
+      "stored_bytes": 1690,
+      "stored_sha256": "b70691a2fe20ee71695fa79336abb15f766a50cfe9b88578e9b687eabb7f732d"
+    },
+    {
+      "decoded_bytes": 1431347,
+      "decoded_sha256": "2e5b299437dd31bac012a5068bc69def136265e5890c8167aac5646728b9a1ee",
+      "encoding": "gzip",
+      "path": "reports/010-new-batch64-r000-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/010-new-batch64-r000-p00001/run/report.json",
+      "stored_bytes": 13076,
+      "stored_sha256": "3adafd176b1427a880ab9b1024a5a538c9e5bba0abb410d3300327399160fee3"
+    },
+    {
+      "decoded_bytes": 1686,
+      "decoded_sha256": "5c6f5fc638af15b110f5377e1b9e6191420ae83de28a8a75ded92dfd3573dc1f",
+      "encoding": "identity",
+      "path": "reports/010-new-batch64-r000-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/010-new-batch64-r000-p00001/resource-coverage.json",
+      "stored_bytes": 1686,
+      "stored_sha256": "5c6f5fc638af15b110f5377e1b9e6191420ae83de28a8a75ded92dfd3573dc1f"
+    },
+    {
+      "decoded_bytes": 914959,
+      "decoded_sha256": "9fa8e0562a6a912da2c39f7161a532bc6096f54b3afaa72ef161a49705bde898",
+      "encoding": "gzip",
+      "path": "reports/011-redis-batch64-r000-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/011-redis-batch64-r000-p00001/run/report.json",
+      "stored_bytes": 9199,
+      "stored_sha256": "0aca3de1b8c681d538a249f7f7834f3684d6ba41d59bd06886400d8aea1849d6"
+    },
+    {
+      "decoded_bytes": 837,
+      "decoded_sha256": "03f8cf4ec36216d10056b0059fc84d7df8d013ac15db8d71c49f0edff6911fcb",
+      "encoding": "identity",
+      "path": "reports/011-redis-batch64-r000-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/011-redis-batch64-r000-p00001/resource-coverage.json",
+      "stored_bytes": 837,
+      "stored_sha256": "03f8cf4ec36216d10056b0059fc84d7df8d013ac15db8d71c49f0edff6911fcb"
+    },
+    {
+      "decoded_bytes": 1939494,
+      "decoded_sha256": "f8c8cf82865d6fc29b4aefe584f7e1013a62318eb5c54d5be55a4f498c5f998b",
+      "encoding": "gzip",
+      "path": "reports/012-old-batch64-r050-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/012-old-batch64-r050-p00001/run/report.json",
+      "stored_bytes": 16636,
+      "stored_sha256": "9f6f4bf4b3dfec916b9503bc6027e086cbf412d69964291cd51b87a41143162a"
+    },
+    {
+      "decoded_bytes": 1686,
+      "decoded_sha256": "c122e961151751f58b89867fc9610a4079fff1f38ec7f2c3ed221f93dc0197c2",
+      "encoding": "identity",
+      "path": "reports/012-old-batch64-r050-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/012-old-batch64-r050-p00001/resource-coverage.json",
+      "stored_bytes": 1686,
+      "stored_sha256": "c122e961151751f58b89867fc9610a4079fff1f38ec7f2c3ed221f93dc0197c2"
+    },
+    {
+      "decoded_bytes": 1939500,
+      "decoded_sha256": "b8486143c9ab4c9f08df5a9277c29cf2a3576e6abdfc4dfe3d06a3be521d166a",
+      "encoding": "gzip",
+      "path": "reports/013-new-batch64-r050-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/013-new-batch64-r050-p00001/run/report.json",
+      "stored_bytes": 16746,
+      "stored_sha256": "b8b1ebe4821611473464ca9ef3fa72b29f063919a749399956c4f2a761aafaa5"
+    },
+    {
+      "decoded_bytes": 1692,
+      "decoded_sha256": "05091ba93198934c0a7ccbef25c044e52f7d8bf8a68b8edec0eaad03170d38d0",
+      "encoding": "identity",
+      "path": "reports/013-new-batch64-r050-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/013-new-batch64-r050-p00001/resource-coverage.json",
+      "stored_bytes": 1692,
+      "stored_sha256": "05091ba93198934c0a7ccbef25c044e52f7d8bf8a68b8edec0eaad03170d38d0"
+    },
+    {
+      "decoded_bytes": 1263768,
+      "decoded_sha256": "af752783856b7e65427f3b66a9d07fb3addc0163ea3c0de9bf8897b109d701d2",
+      "encoding": "gzip",
+      "path": "reports/014-redis-batch64-r050-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/014-redis-batch64-r050-p00001/run/report.json",
+      "stored_bytes": 11918,
+      "stored_sha256": "352a666d6e393568930781f97e638fa7328eb6c9547fe1d54b7937d27283f3d4"
+    },
+    {
+      "decoded_bytes": 839,
+      "decoded_sha256": "0d4541311224fa029cdce2c2b2f7cd217522384a36fcdd8efb74bcae31167a6e",
+      "encoding": "identity",
+      "path": "reports/014-redis-batch64-r050-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/014-redis-batch64-r050-p00001/resource-coverage.json",
+      "stored_bytes": 839,
+      "stored_sha256": "0d4541311224fa029cdce2c2b2f7cd217522384a36fcdd8efb74bcae31167a6e"
+    },
+    {
+      "decoded_bytes": 1431368,
+      "decoded_sha256": "c8af9d9a0fd1c37005961187bbcb1b854ddd2a5f9c273c4d6e0c9a741a665d83",
+      "encoding": "gzip",
+      "path": "reports/015-old-batch64-r100-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/015-old-batch64-r100-p00001/run/report.json",
+      "stored_bytes": 13095,
+      "stored_sha256": "ab0e66e4ac1c72382244181b4e537e42b9b3c34f1e64230b43158ca757a56719"
+    },
+    {
+      "decoded_bytes": 1673,
+      "decoded_sha256": "2b82647e73d119996eceb757fca9dc3397f30e63ba7806d5210779fe61153f48",
+      "encoding": "identity",
+      "path": "reports/015-old-batch64-r100-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/015-old-batch64-r100-p00001/resource-coverage.json",
+      "stored_bytes": 1673,
+      "stored_sha256": "2b82647e73d119996eceb757fca9dc3397f30e63ba7806d5210779fe61153f48"
+    },
+    {
+      "decoded_bytes": 1431350,
+      "decoded_sha256": "d3c73d22dbd9b88b8e529b7d5958c534b13caceeac44682cb0895f67776be706",
+      "encoding": "gzip",
+      "path": "reports/016-new-batch64-r100-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/016-new-batch64-r100-p00001/run/report.json",
+      "stored_bytes": 13056,
+      "stored_sha256": "321a8d3b04d80c22f3e3b71395b1860f11634e6b84ea9d175096e382f964b7a5"
+    },
+    {
+      "decoded_bytes": 1643,
+      "decoded_sha256": "d2b137f30675257c3cd737ff8922360da445b575803f8c85c15b523d61eb585a",
+      "encoding": "identity",
+      "path": "reports/016-new-batch64-r100-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/016-new-batch64-r100-p00001/resource-coverage.json",
+      "stored_bytes": 1643,
+      "stored_sha256": "d2b137f30675257c3cd737ff8922360da445b575803f8c85c15b523d61eb585a"
+    },
+    {
+      "decoded_bytes": 914923,
+      "decoded_sha256": "8345f9c9ebad047ad948cbe178e686a72431175874a3beaf4131fa4fa51e1212",
+      "encoding": "gzip",
+      "path": "reports/017-redis-batch64-r100-p00001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/017-redis-batch64-r100-p00001/run/report.json",
+      "stored_bytes": 9179,
+      "stored_sha256": "6c52f8a48ac094cc6e5e1dd37080f0814d7148b54f6eeddf9d9639ceee105129"
+    },
+    {
+      "decoded_bytes": 841,
+      "decoded_sha256": "a4e95dcadfe13dcb722c9ab8e1979ddb87c24688c819be7375fb4399927b224c",
+      "encoding": "identity",
+      "path": "reports/017-redis-batch64-r100-p00001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/017-redis-batch64-r100-p00001/resource-coverage.json",
+      "stored_bytes": 841,
+      "stored_sha256": "a4e95dcadfe13dcb722c9ab8e1979ddb87c24688c819be7375fb4399927b224c"
+    },
+    {
+      "decoded_bytes": 1445092,
+      "decoded_sha256": "d5c770195d3c9a7f18af63b083055a4d8d3afb4a3ae8a89628acaec8b6e07002",
+      "encoding": "gzip",
+      "path": "reports/018-old-point-r000-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/018-old-point-r000-p00064/run/report.json",
+      "stored_bytes": 17590,
+      "stored_sha256": "29dccd990b578978fcb1d6365262437246cd45283a34ed43ab786e16027a846a"
+    },
+    {
+      "decoded_bytes": 3564,
+      "decoded_sha256": "a850f13181038a45a27ebe368019894263612fefb72bb3e7a4c7fd364cba7165",
+      "encoding": "identity",
+      "path": "reports/018-old-point-r000-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/018-old-point-r000-p00064/resource-coverage.json",
+      "stored_bytes": 3564,
+      "stored_sha256": "a850f13181038a45a27ebe368019894263612fefb72bb3e7a4c7fd364cba7165"
+    },
+    {
+      "decoded_bytes": 1445142,
+      "decoded_sha256": "d07068785e21e9c53bb8e29a4de29b3422c542ae596eae0bf1cdf2a4367af2fb",
+      "encoding": "gzip",
+      "path": "reports/019-new-point-r000-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/019-new-point-r000-p00064/run/report.json",
+      "stored_bytes": 17684,
+      "stored_sha256": "cc72720d8623bf93c82d5eb0dbba488422882c842ccdf10da5dea570b7ebfee9"
+    },
+    {
+      "decoded_bytes": 4106,
+      "decoded_sha256": "c3a019038986db6eb7df093f24498870267f8b4f72812dfd91e6309971478c94",
+      "encoding": "identity",
+      "path": "reports/019-new-point-r000-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/019-new-point-r000-p00064/resource-coverage.json",
+      "stored_bytes": 4106,
+      "stored_sha256": "c3a019038986db6eb7df093f24498870267f8b4f72812dfd91e6309971478c94"
+    },
+    {
+      "decoded_bytes": 927678,
+      "decoded_sha256": "a4db019a3018beb338992b2a758151b4812d0305ceeaae97afba9bf952d7105e",
+      "encoding": "gzip",
+      "path": "reports/020-redis-point-r000-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/020-redis-point-r000-p00064/run/report.json",
+      "stored_bytes": 12046,
+      "stored_sha256": "3670b5b8ac934762baa9a6e2cd77c8876ab26e7bc712db47461a8e26065267fc"
+    },
+    {
+      "decoded_bytes": 851,
+      "decoded_sha256": "ee85bf62f94c8b9fd3aa46bc2c1efbaab5ef5e6494c6fb999b1d6b8b8df8b166",
+      "encoding": "identity",
+      "path": "reports/020-redis-point-r000-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/020-redis-point-r000-p00064/resource-coverage.json",
+      "stored_bytes": 851,
+      "stored_sha256": "ee85bf62f94c8b9fd3aa46bc2c1efbaab5ef5e6494c6fb999b1d6b8b8df8b166"
+    },
+    {
+      "decoded_bytes": 1954329,
+      "decoded_sha256": "42020dc7f83efcf99ab64cac9db8a14144d8401827dd4765250848376aab7574",
+      "encoding": "gzip",
+      "path": "reports/021-old-point-r050-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/021-old-point-r050-p00064/run/report.json",
+      "stored_bytes": 23364,
+      "stored_sha256": "052e9db2cb6f974c8b42f45b62f2cc5521407f6600bfca589525b078d3ad2d77"
+    },
+    {
+      "decoded_bytes": 2750,
+      "decoded_sha256": "54b8bf8a2179cd7b67b8615144ec66c242f525a154d9f4a05ce258718a718381",
+      "encoding": "identity",
+      "path": "reports/021-old-point-r050-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/021-old-point-r050-p00064/resource-coverage.json",
+      "stored_bytes": 2750,
+      "stored_sha256": "54b8bf8a2179cd7b67b8615144ec66c242f525a154d9f4a05ce258718a718381"
+    },
+    {
+      "decoded_bytes": 1954370,
+      "decoded_sha256": "105fdedf20930cfbaf17ade1aeaaa9f129cd60b478f09f30c66a4237f3a73580",
+      "encoding": "gzip",
+      "path": "reports/022-new-point-r050-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/022-new-point-r050-p00064/run/report.json",
+      "stored_bytes": 23497,
+      "stored_sha256": "a249060c00bbd4c7e736afe9407fce585b04d3024151befe8a9f69fd77fd02d0"
+    },
+    {
+      "decoded_bytes": 2847,
+      "decoded_sha256": "50094c7d7c6c89a30eff5bdbf45e13f30b6296925b2fa3834e48a68a1b574657",
+      "encoding": "identity",
+      "path": "reports/022-new-point-r050-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/022-new-point-r050-p00064/resource-coverage.json",
+      "stored_bytes": 2847,
+      "stored_sha256": "50094c7d7c6c89a30eff5bdbf45e13f30b6296925b2fa3834e48a68a1b574657"
+    },
+    {
+      "decoded_bytes": 1276923,
+      "decoded_sha256": "7a73b434455ab45ef171372268870e33214b85d45d4b595dde9f8d8cc6d11d14",
+      "encoding": "gzip",
+      "path": "reports/023-redis-point-r050-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/023-redis-point-r050-p00064/run/report.json",
+      "stored_bytes": 15572,
+      "stored_sha256": "539fd464dc92dfa5d6037bb9053abd8fbaaade176ba54fa41ef148710d2e78ee"
+    },
+    {
+      "decoded_bytes": 855,
+      "decoded_sha256": "4dc1f456b023b5a504f1fcf7a69556b9555e71320ed0cdef27d5f4b66ac09759",
+      "encoding": "identity",
+      "path": "reports/023-redis-point-r050-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/023-redis-point-r050-p00064/resource-coverage.json",
+      "stored_bytes": 855,
+      "stored_sha256": "4dc1f456b023b5a504f1fcf7a69556b9555e71320ed0cdef27d5f4b66ac09759"
+    },
+    {
+      "decoded_bytes": 1445336,
+      "decoded_sha256": "eb2bfd72b0a07638f537e9faee450396df9704b47d3bbc8d8b5c36cf0f906fdb",
+      "encoding": "gzip",
+      "path": "reports/024-old-point-r100-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/024-old-point-r100-p00064/run/report.json",
+      "stored_bytes": 17855,
+      "stored_sha256": "4a7ba040e6b6e1c9ef7585254ef8ff3a5fea9efad8a322e2b674ed382fed11e9"
+    },
+    {
+      "decoded_bytes": 1661,
+      "decoded_sha256": "3d824959afab31e9f27b5f3524941d923f720606a24dbd783a93c1f939c023e6",
+      "encoding": "identity",
+      "path": "reports/024-old-point-r100-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/024-old-point-r100-p00064/resource-coverage.json",
+      "stored_bytes": 1661,
+      "stored_sha256": "3d824959afab31e9f27b5f3524941d923f720606a24dbd783a93c1f939c023e6"
+    },
+    {
+      "decoded_bytes": 1445219,
+      "decoded_sha256": "d424227d7fa0fb65a2b55ac8058698c4050f8ea21e885d384d4c9750d7a033c3",
+      "encoding": "gzip",
+      "path": "reports/025-new-point-r100-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/025-new-point-r100-p00064/run/report.json",
+      "stored_bytes": 17627,
+      "stored_sha256": "daccc96f63dceaf5908eafd5e0743258abade1359b9edfeb9701974ba0049ba9"
+    },
+    {
+      "decoded_bytes": 1679,
+      "decoded_sha256": "35f667bf45c1b3572a28df76e5e6f4d13885b7436283d04f1945f4159e654b62",
+      "encoding": "identity",
+      "path": "reports/025-new-point-r100-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/025-new-point-r100-p00064/resource-coverage.json",
+      "stored_bytes": 1679,
+      "stored_sha256": "35f667bf45c1b3572a28df76e5e6f4d13885b7436283d04f1945f4159e654b62"
+    },
+    {
+      "decoded_bytes": 927624,
+      "decoded_sha256": "a2c6e41ba1fc402cbe47355d7808f561621bf023e9c73234a538d6c4eb8ed192",
+      "encoding": "gzip",
+      "path": "reports/026-redis-point-r100-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/026-redis-point-r100-p00064/run/report.json",
+      "stored_bytes": 11980,
+      "stored_sha256": "fdd426b147168fe4247cd674d967c730359a299e226a713d73304c9c6ee4f8ad"
+    },
+    {
+      "decoded_bytes": 853,
+      "decoded_sha256": "34c53db6e7529e2ac6044de07a6180e567875b981defb001e5d7b09625a6997e",
+      "encoding": "identity",
+      "path": "reports/026-redis-point-r100-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/026-redis-point-r100-p00064/resource-coverage.json",
+      "stored_bytes": 853,
+      "stored_sha256": "34c53db6e7529e2ac6044de07a6180e567875b981defb001e5d7b09625a6997e"
+    },
+    {
+      "decoded_bytes": 1443955,
+      "decoded_sha256": "3ac7df4773337d4a1bec26c05c160238c16680d80749c31da9fb936069450cd9",
+      "encoding": "gzip",
+      "path": "reports/027-old-batch64-r000-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/027-old-batch64-r000-p00064/run/report.json",
+      "stored_bytes": 15545,
+      "stored_sha256": "f3a68ff740f7a8362041630d8bea363856b6e942a57cf43a85a35d529a3ea95a"
+    },
+    {
+      "decoded_bytes": 3291,
+      "decoded_sha256": "77fa3394e08918ceb8b3ad611080bc70163e27f57c214c6e5fe9db89ac7c3b6c",
+      "encoding": "identity",
+      "path": "reports/027-old-batch64-r000-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/027-old-batch64-r000-p00064/resource-coverage.json",
+      "stored_bytes": 3291,
+      "stored_sha256": "77fa3394e08918ceb8b3ad611080bc70163e27f57c214c6e5fe9db89ac7c3b6c"
+    },
+    {
+      "decoded_bytes": 1443951,
+      "decoded_sha256": "7b62afc8e25fd6283fd7e2be6cb9cfaaddccc1bde7a808f6ac82ac9a450c4c17",
+      "encoding": "gzip",
+      "path": "reports/028-new-batch64-r000-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/028-new-batch64-r000-p00064/run/report.json",
+      "stored_bytes": 15556,
+      "stored_sha256": "89b37be66f211ad0bf9b892689d2e14a484f17ae4380c22abade4017889bfacd"
+    },
+    {
+      "decoded_bytes": 4128,
+      "decoded_sha256": "90537ba93c6456234f72021da0a0c3b39905732e91e0384ca9e119e43937a2c7",
+      "encoding": "identity",
+      "path": "reports/028-new-batch64-r000-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/028-new-batch64-r000-p00064/resource-coverage.json",
+      "stored_bytes": 4128,
+      "stored_sha256": "90537ba93c6456234f72021da0a0c3b39905732e91e0384ca9e119e43937a2c7"
+    },
+    {
+      "decoded_bytes": 927995,
+      "decoded_sha256": "5b8dbc0dd9dc0416a3b5a96c01d58454e508c464e9bccc776d18d837986ff3d0",
+      "encoding": "gzip",
+      "path": "reports/029-redis-batch64-r000-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/029-redis-batch64-r000-p00064/run/report.json",
+      "stored_bytes": 11988,
+      "stored_sha256": "716f3ac1cbed2702d80a6a2050af657c7c68be1163d47ee9187fe69c950ba2cd"
+    },
+    {
+      "decoded_bytes": 854,
+      "decoded_sha256": "3bd0210e7153c40b76c6cd1e7fd07626f7343ee0083deaa5b221d3fb36e2accd",
+      "encoding": "identity",
+      "path": "reports/029-redis-batch64-r000-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/029-redis-batch64-r000-p00064/resource-coverage.json",
+      "stored_bytes": 854,
+      "stored_sha256": "3bd0210e7153c40b76c6cd1e7fd07626f7343ee0083deaa5b221d3fb36e2accd"
+    },
+    {
+      "decoded_bytes": 1952852,
+      "decoded_sha256": "5da42a166c6b2b63ef364800d8118b6d7f86abef8d40f5661859973fc8a24972",
+      "encoding": "gzip",
+      "path": "reports/030-old-batch64-r050-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/030-old-batch64-r050-p00064/run/report.json",
+      "stored_bytes": 20300,
+      "stored_sha256": "0d2ed3745a387059274eab978811cc356748e34f60d0f7a55b35879920954d52"
+    },
+    {
+      "decoded_bytes": 2792,
+      "decoded_sha256": "261f9a049f123c3c0ad3e5c94c1f827fc0f8b7b4711981eb191a7aca59775dfc",
+      "encoding": "identity",
+      "path": "reports/030-old-batch64-r050-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/030-old-batch64-r050-p00064/resource-coverage.json",
+      "stored_bytes": 2792,
+      "stored_sha256": "261f9a049f123c3c0ad3e5c94c1f827fc0f8b7b4711981eb191a7aca59775dfc"
+    },
+    {
+      "decoded_bytes": 1952816,
+      "decoded_sha256": "6a4cf2d1d2e5c44b72d68746ebd60ec12f0a6934b29d3595d6580afbec152016",
+      "encoding": "gzip",
+      "path": "reports/031-new-batch64-r050-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/031-new-batch64-r050-p00064/run/report.json",
+      "stored_bytes": 20380,
+      "stored_sha256": "55feb85e5c10c932a736465e0267e0c78e301a011d75d158b075562ddef592ee"
+    },
+    {
+      "decoded_bytes": 2428,
+      "decoded_sha256": "ecf93c902ea0f2eb503f77484c42b8efa8b7b1ebd5a0af508bdea4f99d26ae18",
+      "encoding": "identity",
+      "path": "reports/031-new-batch64-r050-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/031-new-batch64-r050-p00064/resource-coverage.json",
+      "stored_bytes": 2428,
+      "stored_sha256": "ecf93c902ea0f2eb503f77484c42b8efa8b7b1ebd5a0af508bdea4f99d26ae18"
+    },
+    {
+      "decoded_bytes": 1277720,
+      "decoded_sha256": "3116844399f456bebeb9f2911048bb924ef285bbbd7d665b6beeb758207164a6",
+      "encoding": "gzip",
+      "path": "reports/032-redis-batch64-r050-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/032-redis-batch64-r050-p00064/run/report.json",
+      "stored_bytes": 16324,
+      "stored_sha256": "5953e1ecb627b572d1fc8c25888566ba80c1ae55bc121f0382a34d8009f16b31"
+    },
+    {
+      "decoded_bytes": 851,
+      "decoded_sha256": "048cde32701f4b0ed5cd9848caf556f233f3f6aba9b9dded6601684fe71075b9",
+      "encoding": "identity",
+      "path": "reports/032-redis-batch64-r050-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/032-redis-batch64-r050-p00064/resource-coverage.json",
+      "stored_bytes": 851,
+      "stored_sha256": "048cde32701f4b0ed5cd9848caf556f233f3f6aba9b9dded6601684fe71075b9"
+    },
+    {
+      "decoded_bytes": 1444352,
+      "decoded_sha256": "b09a55aa90241a811ce24f5a8ce62630a40d39a4b9c4c6184f0c5963bba18f7a",
+      "encoding": "gzip",
+      "path": "reports/033-old-batch64-r100-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/033-old-batch64-r100-p00064/run/report.json",
+      "stored_bytes": 16213,
+      "stored_sha256": "848b0ff77d8b04cc630963b7ff6ec031e05afb793be061d7b67c2e79ea1c8b12"
+    },
+    {
+      "decoded_bytes": 1674,
+      "decoded_sha256": "c71051dffdc0f248f4fbcb830bb1d00fb1c8412db7a8917e1e50d08571333f95",
+      "encoding": "identity",
+      "path": "reports/033-old-batch64-r100-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/033-old-batch64-r100-p00064/resource-coverage.json",
+      "stored_bytes": 1674,
+      "stored_sha256": "c71051dffdc0f248f4fbcb830bb1d00fb1c8412db7a8917e1e50d08571333f95"
+    },
+    {
+      "decoded_bytes": 1444405,
+      "decoded_sha256": "f9bb8e149e29470f4a01a7f83b96669db696798b2a3b1e8016e6470756bd0d09",
+      "encoding": "gzip",
+      "path": "reports/034-new-batch64-r100-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/034-new-batch64-r100-p00064/run/report.json",
+      "stored_bytes": 16330,
+      "stored_sha256": "95011d438231272598041a9cc5504da4eb85312990da207ed4af596d6795cf64"
+    },
+    {
+      "decoded_bytes": 1673,
+      "decoded_sha256": "be5fd224645fc750866826ee7ae7a72aff77c96e3723b64fff604068a16a2053",
+      "encoding": "identity",
+      "path": "reports/034-new-batch64-r100-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/034-new-batch64-r100-p00064/resource-coverage.json",
+      "stored_bytes": 1673,
+      "stored_sha256": "be5fd224645fc750866826ee7ae7a72aff77c96e3723b64fff604068a16a2053"
+    },
+    {
+      "decoded_bytes": 928053,
+      "decoded_sha256": "22a0ef7b95583998b662660a4714239b4f092c925849cdd3a86f52413635592a",
+      "encoding": "gzip",
+      "path": "reports/035-redis-batch64-r100-p00064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/035-redis-batch64-r100-p00064/run/report.json",
+      "stored_bytes": 12216,
+      "stored_sha256": "e31105c7b6c5037da884506efee67b216d3bbe67ea1babfb5758d5858716d1d8"
+    },
+    {
+      "decoded_bytes": 854,
+      "decoded_sha256": "edd5e5dd392631a5c19d8aa815a51fbb68cb590f17aad39c3e544fabf5b7b51c",
+      "encoding": "identity",
+      "path": "reports/035-redis-batch64-r100-p00064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/035-redis-batch64-r100-p00064/resource-coverage.json",
+      "stored_bytes": 854,
+      "stored_sha256": "edd5e5dd392631a5c19d8aa815a51fbb68cb590f17aad39c3e544fabf5b7b51c"
+    },
+    {
+      "decoded_bytes": 928072,
+      "decoded_sha256": "0ff9750060926e2df1e0472730c62c321e963c63cb423138c5adbdba3d0fb2c8",
+      "encoding": "gzip",
+      "path": "reports/036-redis-batch64-r100-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/036-redis-batch64-r100-p10064/run/report.json",
+      "stored_bytes": 12120,
+      "stored_sha256": "d61dda04045d8c1e5c58e9aeaed6a06e83afdee5bbd7372a8b25d4a94a3c614c"
+    },
+    {
+      "decoded_bytes": 854,
+      "decoded_sha256": "793403947440e023a57ba12d747c09a7f8ee6cd2b2f723bb5526e4cd27f32528",
+      "encoding": "identity",
+      "path": "reports/036-redis-batch64-r100-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/036-redis-batch64-r100-p10064/resource-coverage.json",
+      "stored_bytes": 854,
+      "stored_sha256": "793403947440e023a57ba12d747c09a7f8ee6cd2b2f723bb5526e4cd27f32528"
+    },
+    {
+      "decoded_bytes": 1444340,
+      "decoded_sha256": "94dff02af02e09582d57c5561687c67a24efa40511c78fee5e51d21e31423f50",
+      "encoding": "gzip",
+      "path": "reports/037-new-batch64-r100-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/037-new-batch64-r100-p10064/run/report.json",
+      "stored_bytes": 16131,
+      "stored_sha256": "e3b7b677e751e48ca6971ba999a56e1d3425c8c86cda65791035110ea1e17d77"
+    },
+    {
+      "decoded_bytes": 1676,
+      "decoded_sha256": "437c59420ef0df23cec91eea9892bd655ce55e58b441214f347b3a9aa19b4745",
+      "encoding": "identity",
+      "path": "reports/037-new-batch64-r100-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/037-new-batch64-r100-p10064/resource-coverage.json",
+      "stored_bytes": 1676,
+      "stored_sha256": "437c59420ef0df23cec91eea9892bd655ce55e58b441214f347b3a9aa19b4745"
+    },
+    {
+      "decoded_bytes": 1444397,
+      "decoded_sha256": "90b94982f3e6bd50b468d3afe8f32f7be3c8e2e2f7871696c6a8878eda3da5f4",
+      "encoding": "gzip",
+      "path": "reports/038-old-batch64-r100-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/038-old-batch64-r100-p10064/run/report.json",
+      "stored_bytes": 16280,
+      "stored_sha256": "8ad5d5998be70d092cffebea225cb589558fc68b94b44b99d9e1052c338fe222"
+    },
+    {
+      "decoded_bytes": 1675,
+      "decoded_sha256": "55baa91683f3e60fb4645c5b9962d421307bff64beeac29c8561ac004a9697d4",
+      "encoding": "identity",
+      "path": "reports/038-old-batch64-r100-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/038-old-batch64-r100-p10064/resource-coverage.json",
+      "stored_bytes": 1675,
+      "stored_sha256": "55baa91683f3e60fb4645c5b9962d421307bff64beeac29c8561ac004a9697d4"
+    },
+    {
+      "decoded_bytes": 1277716,
+      "decoded_sha256": "78121909a2bb19908ddea8225c4d237cb37278be95c0a3413f56131f30d864e4",
+      "encoding": "gzip",
+      "path": "reports/039-redis-batch64-r050-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/039-redis-batch64-r050-p10064/run/report.json",
+      "stored_bytes": 16275,
+      "stored_sha256": "78fa85f3499e190733428588282649a1c554cc8569953146d4e76c797711be54"
+    },
+    {
+      "decoded_bytes": 852,
+      "decoded_sha256": "6fe60e7de546487e81005f318f3b2d86da5536c95c7499653a736df51c9e7901",
+      "encoding": "identity",
+      "path": "reports/039-redis-batch64-r050-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/039-redis-batch64-r050-p10064/resource-coverage.json",
+      "stored_bytes": 852,
+      "stored_sha256": "6fe60e7de546487e81005f318f3b2d86da5536c95c7499653a736df51c9e7901"
+    },
+    {
+      "decoded_bytes": 1952957,
+      "decoded_sha256": "ce60285127e9e18075ad056a7078a784c799dbc587147eed4774efb0ff2e8da7",
+      "encoding": "gzip",
+      "path": "reports/040-new-batch64-r050-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/040-new-batch64-r050-p10064/run/report.json",
+      "stored_bytes": 20434,
+      "stored_sha256": "12c79ec770a0ac336a8a9cc62d394a22a4f1eeaffc99c63b3fc24556aec59834"
+    },
+    {
+      "decoded_bytes": 2798,
+      "decoded_sha256": "2c066eedffd997a9c25fd5bae4f1d1976b0037d7fd36253db4468ea992e729bc",
+      "encoding": "identity",
+      "path": "reports/040-new-batch64-r050-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/040-new-batch64-r050-p10064/resource-coverage.json",
+      "stored_bytes": 2798,
+      "stored_sha256": "2c066eedffd997a9c25fd5bae4f1d1976b0037d7fd36253db4468ea992e729bc"
+    },
+    {
+      "decoded_bytes": 1952883,
+      "decoded_sha256": "c192d5b638b1480587fcc9273bdaa77a8814bfec53739fc2b2e2a156de0840fc",
+      "encoding": "gzip",
+      "path": "reports/041-old-batch64-r050-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/041-old-batch64-r050-p10064/run/report.json",
+      "stored_bytes": 20411,
+      "stored_sha256": "05b45cf1ff7e8250ac4480bcf49f414153f3ae327fbcb1c318d43cf21fa567e0"
+    },
+    {
+      "decoded_bytes": 2628,
+      "decoded_sha256": "5a664d895d454530b9c1cb7dbcdf062dcb6856700134c16738959a1ad9424319",
+      "encoding": "identity",
+      "path": "reports/041-old-batch64-r050-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/041-old-batch64-r050-p10064/resource-coverage.json",
+      "stored_bytes": 2628,
+      "stored_sha256": "5a664d895d454530b9c1cb7dbcdf062dcb6856700134c16738959a1ad9424319"
+    },
+    {
+      "decoded_bytes": 928012,
+      "decoded_sha256": "cae37f1e27d22af6855df1b2393f54f7584c712d193c0bc9ff2d482deab21ebf",
+      "encoding": "gzip",
+      "path": "reports/042-redis-batch64-r000-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/042-redis-batch64-r000-p10064/run/report.json",
+      "stored_bytes": 12024,
+      "stored_sha256": "d9eb1442fe959efd5d83c6e6b3a7edc96e28f0bdf0b6349ace8ea53b4ceecaff"
+    },
+    {
+      "decoded_bytes": 855,
+      "decoded_sha256": "46c51f79abbd3c72185e8a360d63fcfce77befc96850d32cf0fab6a6ab8247f5",
+      "encoding": "identity",
+      "path": "reports/042-redis-batch64-r000-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/042-redis-batch64-r000-p10064/resource-coverage.json",
+      "stored_bytes": 855,
+      "stored_sha256": "46c51f79abbd3c72185e8a360d63fcfce77befc96850d32cf0fab6a6ab8247f5"
+    },
+    {
+      "decoded_bytes": 1443999,
+      "decoded_sha256": "b1e6bb8b88053cef4ddae4130f28a206a4808714bf49545b3d60712a9ed79def",
+      "encoding": "gzip",
+      "path": "reports/043-new-batch64-r000-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/043-new-batch64-r000-p10064/run/report.json",
+      "stored_bytes": 15609,
+      "stored_sha256": "2e9d3def632f8aae97d29844379e202d90fd4bbed76b2172be9b739cdb20f27b"
+    },
+    {
+      "decoded_bytes": 3657,
+      "decoded_sha256": "278233b32c1d25eef2af19bf7b1b2672184f1d7373445c594abea2829228296d",
+      "encoding": "identity",
+      "path": "reports/043-new-batch64-r000-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/043-new-batch64-r000-p10064/resource-coverage.json",
+      "stored_bytes": 3657,
+      "stored_sha256": "278233b32c1d25eef2af19bf7b1b2672184f1d7373445c594abea2829228296d"
+    },
+    {
+      "decoded_bytes": 1443893,
+      "decoded_sha256": "7f44eec38839d1fb06c95bde3ff128705cfb4afc3e93ceb54fd100bdf0e3a162",
+      "encoding": "gzip",
+      "path": "reports/044-old-batch64-r000-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/044-old-batch64-r000-p10064/run/report.json",
+      "stored_bytes": 15476,
+      "stored_sha256": "a589cc7e904e1503ccb94049e254779349cb4bede66ce323b3f79274198792da"
+    },
+    {
+      "decoded_bytes": 3270,
+      "decoded_sha256": "1a85213009306f330074e846e62b04f69c1360bff97178175b602c33c086c670",
+      "encoding": "identity",
+      "path": "reports/044-old-batch64-r000-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/044-old-batch64-r000-p10064/resource-coverage.json",
+      "stored_bytes": 3270,
+      "stored_sha256": "1a85213009306f330074e846e62b04f69c1360bff97178175b602c33c086c670"
+    },
+    {
+      "decoded_bytes": 927651,
+      "decoded_sha256": "2c0180226cc7c075da0f9464f754413e6b762d9dd460eaa713e35fcefde011f0",
+      "encoding": "gzip",
+      "path": "reports/045-redis-point-r100-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/045-redis-point-r100-p10064/run/report.json",
+      "stored_bytes": 12040,
+      "stored_sha256": "69feb94ee407b092f32e7067cb6fe3756508b050f493f0eb1e2c8fabd7c74bed"
+    },
+    {
+      "decoded_bytes": 854,
+      "decoded_sha256": "3184f5466c87d0715bb31cc527bdc7b5459fe39f26bb7963cce8bc55850b0159",
+      "encoding": "identity",
+      "path": "reports/045-redis-point-r100-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/045-redis-point-r100-p10064/resource-coverage.json",
+      "stored_bytes": 854,
+      "stored_sha256": "3184f5466c87d0715bb31cc527bdc7b5459fe39f26bb7963cce8bc55850b0159"
+    },
+    {
+      "decoded_bytes": 1445297,
+      "decoded_sha256": "fe23283cc455bbe359271c711fca6cd99dfaa8475f89192d50bdd826b9812c32",
+      "encoding": "gzip",
+      "path": "reports/046-new-point-r100-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/046-new-point-r100-p10064/run/report.json",
+      "stored_bytes": 17629,
+      "stored_sha256": "ece6b44ec5737689880221983fb8283bde4c2291d87373943d64c4180d10f953"
+    },
+    {
+      "decoded_bytes": 1685,
+      "decoded_sha256": "8df9951e8d063b2d01ef152693200c2221b04bbdb6ef8736a140089cb5cb67db",
+      "encoding": "identity",
+      "path": "reports/046-new-point-r100-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/046-new-point-r100-p10064/resource-coverage.json",
+      "stored_bytes": 1685,
+      "stored_sha256": "8df9951e8d063b2d01ef152693200c2221b04bbdb6ef8736a140089cb5cb67db"
+    },
+    {
+      "decoded_bytes": 1445329,
+      "decoded_sha256": "63d29b466cf96eb7d7add03db5bbb68d79c6d6843a91caa97e5ba752e5fb2a64",
+      "encoding": "gzip",
+      "path": "reports/047-old-point-r100-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/047-old-point-r100-p10064/run/report.json",
+      "stored_bytes": 17882,
+      "stored_sha256": "edd907dbff366a522236abaf178c83ee2aa199ce78a01a5f9de593430e2c72b5"
+    },
+    {
+      "decoded_bytes": 1680,
+      "decoded_sha256": "a28137bdc0e22efbc8dfb6be661bb11ab632a1d9751ca93ce19b474ef1aa11d6",
+      "encoding": "identity",
+      "path": "reports/047-old-point-r100-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/047-old-point-r100-p10064/resource-coverage.json",
+      "stored_bytes": 1680,
+      "stored_sha256": "a28137bdc0e22efbc8dfb6be661bb11ab632a1d9751ca93ce19b474ef1aa11d6"
+    },
+    {
+      "decoded_bytes": 1277093,
+      "decoded_sha256": "0d782842e37cc5a96116e1d566a57d94270a23e1ace4f6a5aeff76ebdd4aa888",
+      "encoding": "gzip",
+      "path": "reports/048-redis-point-r050-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/048-redis-point-r050-p10064/run/report.json",
+      "stored_bytes": 15878,
+      "stored_sha256": "a03fa4bc5d77b6e59deef1db43f8673e2ab72be8ed09c7f54bee6e03f9c62416"
+    },
+    {
+      "decoded_bytes": 847,
+      "decoded_sha256": "68fbea8d5564b9c3dcbc3940e69b126217aeb29f930ce792e31f25e2c8ae9701",
+      "encoding": "identity",
+      "path": "reports/048-redis-point-r050-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/048-redis-point-r050-p10064/resource-coverage.json",
+      "stored_bytes": 847,
+      "stored_sha256": "68fbea8d5564b9c3dcbc3940e69b126217aeb29f930ce792e31f25e2c8ae9701"
+    },
+    {
+      "decoded_bytes": 1954384,
+      "decoded_sha256": "1163694ee98b8ac75c170713e54f8e484f73b2cd5287db05fd047d4785f91b90",
+      "encoding": "gzip",
+      "path": "reports/049-new-point-r050-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/049-new-point-r050-p10064/run/report.json",
+      "stored_bytes": 23393,
+      "stored_sha256": "3bc21550dc112284b45ae04b75037880dc3fd2a1cd1be6dd3a1795265000ca4d"
+    },
+    {
+      "decoded_bytes": 2622,
+      "decoded_sha256": "743d16e254017de46c03cfe9d020f541f99d13644c349c873f7b3acce04d10c3",
+      "encoding": "identity",
+      "path": "reports/049-new-point-r050-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/049-new-point-r050-p10064/resource-coverage.json",
+      "stored_bytes": 2622,
+      "stored_sha256": "743d16e254017de46c03cfe9d020f541f99d13644c349c873f7b3acce04d10c3"
+    },
+    {
+      "decoded_bytes": 1954393,
+      "decoded_sha256": "b8f915d4489af75800919bd5501d07601ae8f3052739ec2a56501774b393908b",
+      "encoding": "gzip",
+      "path": "reports/050-old-point-r050-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/050-old-point-r050-p10064/run/report.json",
+      "stored_bytes": 23328,
+      "stored_sha256": "0694fb9fa5eb3fc75ba810d3c827aa9c33baab3c95285792478d59e65b8f2de3"
+    },
+    {
+      "decoded_bytes": 2393,
+      "decoded_sha256": "0d9388aee6dc58810930d62e87f18f8effc5b0c6d5bc7f158e7843eb3058c8da",
+      "encoding": "identity",
+      "path": "reports/050-old-point-r050-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/050-old-point-r050-p10064/resource-coverage.json",
+      "stored_bytes": 2393,
+      "stored_sha256": "0d9388aee6dc58810930d62e87f18f8effc5b0c6d5bc7f158e7843eb3058c8da"
+    },
+    {
+      "decoded_bytes": 927627,
+      "decoded_sha256": "9d67c24c89f9a57ff8370252af24fe5d13f19435ad9c36439b0aef917042910a",
+      "encoding": "gzip",
+      "path": "reports/051-redis-point-r000-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/051-redis-point-r000-p10064/run/report.json",
+      "stored_bytes": 11875,
+      "stored_sha256": "5ad8c7e82fadbbaf2701129c0aee6e505359367f515e351ea0ca1c194930ce24"
+    },
+    {
+      "decoded_bytes": 851,
+      "decoded_sha256": "d60cca6b2b5e4ac28ee6eb0655fdd60642da9b14e22314a2f10132066937bf74",
+      "encoding": "identity",
+      "path": "reports/051-redis-point-r000-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/051-redis-point-r000-p10064/resource-coverage.json",
+      "stored_bytes": 851,
+      "stored_sha256": "d60cca6b2b5e4ac28ee6eb0655fdd60642da9b14e22314a2f10132066937bf74"
+    },
+    {
+      "decoded_bytes": 1445065,
+      "decoded_sha256": "7e6210a8ad3bb7a55004a4e68fac5d2b97d1e939153c8220053fd7d80df28c2d",
+      "encoding": "gzip",
+      "path": "reports/052-new-point-r000-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/052-new-point-r000-p10064/run/report.json",
+      "stored_bytes": 17549,
+      "stored_sha256": "b6953a7734cb36e460373df4ec4026451238b5e5f119f96f818f4798cb30bab0"
+    },
+    {
+      "decoded_bytes": 3856,
+      "decoded_sha256": "6c7c02dfe78690640d1ef57826468766df275a0e5995db1cb7fedb8150303345",
+      "encoding": "identity",
+      "path": "reports/052-new-point-r000-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/052-new-point-r000-p10064/resource-coverage.json",
+      "stored_bytes": 3856,
+      "stored_sha256": "6c7c02dfe78690640d1ef57826468766df275a0e5995db1cb7fedb8150303345"
+    },
+    {
+      "decoded_bytes": 1445079,
+      "decoded_sha256": "6747cd2a28f33488646011a414e69ce4c1fa92c31be1e290187c43e1fcfe4cf1",
+      "encoding": "gzip",
+      "path": "reports/053-old-point-r000-p10064/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/053-old-point-r000-p10064/run/report.json",
+      "stored_bytes": 17637,
+      "stored_sha256": "b4348efc4fe57b195180fe310ec2ad237cecbe42a6a15ec46dc249ea4f363055"
+    },
+    {
+      "decoded_bytes": 3616,
+      "decoded_sha256": "52bf995acc9bf7e27bcd24ccc2ccdad4fba6b9fbd48dcdc205ac9a720f5d229f",
+      "encoding": "identity",
+      "path": "reports/053-old-point-r000-p10064/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/053-old-point-r000-p10064/resource-coverage.json",
+      "stored_bytes": 3616,
+      "stored_sha256": "52bf995acc9bf7e27bcd24ccc2ccdad4fba6b9fbd48dcdc205ac9a720f5d229f"
+    },
+    {
+      "decoded_bytes": 914891,
+      "decoded_sha256": "112f2b02e07ffe525f5789df7aaed282d77df89551d4edc345d03ef2c716dd18",
+      "encoding": "gzip",
+      "path": "reports/054-redis-batch64-r100-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/054-redis-batch64-r100-p10001/run/report.json",
+      "stored_bytes": 9182,
+      "stored_sha256": "eaed0bc4c367ddad8d229374f1e687c0620fde5c7f3c04297b264cf52bc89ea4"
+    },
+    {
+      "decoded_bytes": 839,
+      "decoded_sha256": "c6296341dec72c344875d213feecc43fc7d72f76507b982e8e5f1d7abe1aade5",
+      "encoding": "identity",
+      "path": "reports/054-redis-batch64-r100-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/054-redis-batch64-r100-p10001/resource-coverage.json",
+      "stored_bytes": 839,
+      "stored_sha256": "c6296341dec72c344875d213feecc43fc7d72f76507b982e8e5f1d7abe1aade5"
+    },
+    {
+      "decoded_bytes": 1431364,
+      "decoded_sha256": "c4b5e4d8eee7ab883c643410c00d4d42b7be027fa44215462eb4745799ef347f",
+      "encoding": "gzip",
+      "path": "reports/055-new-batch64-r100-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/055-new-batch64-r100-p10001/run/report.json",
+      "stored_bytes": 13066,
+      "stored_sha256": "3721964dd960a50853bcf404ca68db26b58ba8154b37585c1adbcf90dc26075d"
+    },
+    {
+      "decoded_bytes": 1674,
+      "decoded_sha256": "e691882d3b8016dae6a02c97153142c2784e3dc370e65b91087f6ed381ceb9c5",
+      "encoding": "identity",
+      "path": "reports/055-new-batch64-r100-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/055-new-batch64-r100-p10001/resource-coverage.json",
+      "stored_bytes": 1674,
+      "stored_sha256": "e691882d3b8016dae6a02c97153142c2784e3dc370e65b91087f6ed381ceb9c5"
+    },
+    {
+      "decoded_bytes": 1431353,
+      "decoded_sha256": "b517e3906a5371519be8e9f1c75161931a5f3c6827ea57987b8289313a231639",
+      "encoding": "gzip",
+      "path": "reports/056-old-batch64-r100-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/056-old-batch64-r100-p10001/run/report.json",
+      "stored_bytes": 13064,
+      "stored_sha256": "ea28de5b7149b2c7a61773fbd3a4e7ef9d1013f748039e1b1601a87dbb9e3733"
+    },
+    {
+      "decoded_bytes": 1648,
+      "decoded_sha256": "fb3ed063290489146ad844fb5267a3cb0c741b5e96135416d4905952d9979470",
+      "encoding": "identity",
+      "path": "reports/056-old-batch64-r100-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/056-old-batch64-r100-p10001/resource-coverage.json",
+      "stored_bytes": 1648,
+      "stored_sha256": "fb3ed063290489146ad844fb5267a3cb0c741b5e96135416d4905952d9979470"
+    },
+    {
+      "decoded_bytes": 1263771,
+      "decoded_sha256": "42a5f424d48752f105da1ae7fe76fb7ba03a30eac8bd3998f1ea4872c09ebcda",
+      "encoding": "gzip",
+      "path": "reports/057-redis-batch64-r050-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/057-redis-batch64-r050-p10001/run/report.json",
+      "stored_bytes": 11925,
+      "stored_sha256": "f7e78db2b725eebdadafdbd7bd804e1954bd5a99df195e755f47d5e1342966d2"
+    },
+    {
+      "decoded_bytes": 838,
+      "decoded_sha256": "3ad30644ca69e2c2f40ab7b1a21d3bcb77ccccb14fb7e0322f02650bcae99cad",
+      "encoding": "identity",
+      "path": "reports/057-redis-batch64-r050-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/057-redis-batch64-r050-p10001/resource-coverage.json",
+      "stored_bytes": 838,
+      "stored_sha256": "3ad30644ca69e2c2f40ab7b1a21d3bcb77ccccb14fb7e0322f02650bcae99cad"
+    },
+    {
+      "decoded_bytes": 1939501,
+      "decoded_sha256": "c7c579288c8365fa2bddf1b3bbb6cfb81ae66dcdee27aefd69d39b02078a8e42",
+      "encoding": "gzip",
+      "path": "reports/058-new-batch64-r050-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/058-new-batch64-r050-p10001/run/report.json",
+      "stored_bytes": 16681,
+      "stored_sha256": "0e298c798bf472f6d8671175baae800adeee1df92b0ea9b7675ac8ca8c48b5d7"
+    },
+    {
+      "decoded_bytes": 1679,
+      "decoded_sha256": "3fd18e3facd180e4582c9f757ba8d3b0787a003f47fb62d7713784fbe6002b86",
+      "encoding": "identity",
+      "path": "reports/058-new-batch64-r050-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/058-new-batch64-r050-p10001/resource-coverage.json",
+      "stored_bytes": 1679,
+      "stored_sha256": "3fd18e3facd180e4582c9f757ba8d3b0787a003f47fb62d7713784fbe6002b86"
+    },
+    {
+      "decoded_bytes": 1939520,
+      "decoded_sha256": "a1d5de69faf42da662aef887c73b117ec049ee27c148488f73b73c499d6226cb",
+      "encoding": "gzip",
+      "path": "reports/059-old-batch64-r050-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/059-old-batch64-r050-p10001/run/report.json",
+      "stored_bytes": 16709,
+      "stored_sha256": "45c7e427b054e8c4b30ef0247b861dca4a8ef90fe5e992a80822bd1983c77070"
+    },
+    {
+      "decoded_bytes": 1687,
+      "decoded_sha256": "1aa6c086f203145253e748f0b4d9dfcbaaef338c2bafb7ae25b90db93c284d2f",
+      "encoding": "identity",
+      "path": "reports/059-old-batch64-r050-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/059-old-batch64-r050-p10001/resource-coverage.json",
+      "stored_bytes": 1687,
+      "stored_sha256": "1aa6c086f203145253e748f0b4d9dfcbaaef338c2bafb7ae25b90db93c284d2f"
+    },
+    {
+      "decoded_bytes": 914946,
+      "decoded_sha256": "add9efcd2535bfca03ecaad0f556060bdcf26dc5580034fec8bb74e70dee544d",
+      "encoding": "gzip",
+      "path": "reports/060-redis-batch64-r000-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/060-redis-batch64-r000-p10001/run/report.json",
+      "stored_bytes": 9197,
+      "stored_sha256": "241e01fa77a63d785d34cc4dd4b935982baef7d33a9ebbccbb46e70a686af9b7"
+    },
+    {
+      "decoded_bytes": 839,
+      "decoded_sha256": "e61751d7b5c99da799ecf77f2b62266c70de03d5c08053038d6b496b5995cae7",
+      "encoding": "identity",
+      "path": "reports/060-redis-batch64-r000-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/060-redis-batch64-r000-p10001/resource-coverage.json",
+      "stored_bytes": 839,
+      "stored_sha256": "e61751d7b5c99da799ecf77f2b62266c70de03d5c08053038d6b496b5995cae7"
+    },
+    {
+      "decoded_bytes": 1431340,
+      "decoded_sha256": "cb1c00707c22154aa142adc5618136ad167de466623ba1010d7d2d3eaca01c68",
+      "encoding": "gzip",
+      "path": "reports/061-new-batch64-r000-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/061-new-batch64-r000-p10001/run/report.json",
+      "stored_bytes": 13069,
+      "stored_sha256": "77a5a95809ca9775050f8fb82b29492ff652c8914d392477626afa142763aba9"
+    },
+    {
+      "decoded_bytes": 1690,
+      "decoded_sha256": "613fb7f520d11e57bf6bbf9b623db9c632db2366f31d8be05a27285ff0fbac1a",
+      "encoding": "identity",
+      "path": "reports/061-new-batch64-r000-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/061-new-batch64-r000-p10001/resource-coverage.json",
+      "stored_bytes": 1690,
+      "stored_sha256": "613fb7f520d11e57bf6bbf9b623db9c632db2366f31d8be05a27285ff0fbac1a"
+    },
+    {
+      "decoded_bytes": 1431344,
+      "decoded_sha256": "1c6931efa2d935dc3feea9d27d2e90a2ab21a5ccc4dda9e90e76413b417e58a2",
+      "encoding": "gzip",
+      "path": "reports/062-old-batch64-r000-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/062-old-batch64-r000-p10001/run/report.json",
+      "stored_bytes": 13088,
+      "stored_sha256": "d431dd80af9a7e5433240b4ae794356368c1f6532a9f34947167345b6704aadc"
+    },
+    {
+      "decoded_bytes": 1683,
+      "decoded_sha256": "fa7d3b3c6c883fabe69a6f448ce22ca2af9e441539f68b5f961af871a5770b73",
+      "encoding": "identity",
+      "path": "reports/062-old-batch64-r000-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/062-old-batch64-r000-p10001/resource-coverage.json",
+      "stored_bytes": 1683,
+      "stored_sha256": "fa7d3b3c6c883fabe69a6f448ce22ca2af9e441539f68b5f961af871a5770b73"
+    },
+    {
+      "decoded_bytes": 915287,
+      "decoded_sha256": "2848edec72e89f0ac66fc3c99a9bffabeb52f8d8e9c7b5b145bdf54fbd22c29d",
+      "encoding": "gzip",
+      "path": "reports/063-redis-point-r100-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/063-redis-point-r100-p10001/run/report.json",
+      "stored_bytes": 9991,
+      "stored_sha256": "cc8a7bd6d5a455b7dea59877cf15077c6bd5411d1fe8c58dc823bcfab0756abd"
+    },
+    {
+      "decoded_bytes": 839,
+      "decoded_sha256": "22cf482c48ac95f610e2d4d381e71bb5762b23cf1b3352c6ffae624d2849697e",
+      "encoding": "identity",
+      "path": "reports/063-redis-point-r100-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/063-redis-point-r100-p10001/resource-coverage.json",
+      "stored_bytes": 839,
+      "stored_sha256": "22cf482c48ac95f610e2d4d381e71bb5762b23cf1b3352c6ffae624d2849697e"
+    },
+    {
+      "decoded_bytes": 1431930,
+      "decoded_sha256": "db79302fd9234cdeda62916d98129afea4b6d3a84f4480be9b92a9f62e8ea7c9",
+      "encoding": "gzip",
+      "path": "reports/064-new-point-r100-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/064-new-point-r100-p10001/run/report.json",
+      "stored_bytes": 14598,
+      "stored_sha256": "dd3e0635d0993f35dadf597f83d8e6a9e56b2028c8c0a646bd78f284469169c3"
+    },
+    {
+      "decoded_bytes": 1672,
+      "decoded_sha256": "75a979bf959a84b03cd31976b2aeb9a5d31c8a2d7a95a774c6d6a13e69049eb1",
+      "encoding": "identity",
+      "path": "reports/064-new-point-r100-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/064-new-point-r100-p10001/resource-coverage.json",
+      "stored_bytes": 1672,
+      "stored_sha256": "75a979bf959a84b03cd31976b2aeb9a5d31c8a2d7a95a774c6d6a13e69049eb1"
+    },
+    {
+      "decoded_bytes": 1431968,
+      "decoded_sha256": "430fde01491de5ac84d5e390adc2db0e3f595d04a55580891e7bbe662b4837e6",
+      "encoding": "gzip",
+      "path": "reports/065-old-point-r100-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/065-old-point-r100-p10001/run/report.json",
+      "stored_bytes": 14548,
+      "stored_sha256": "f873286879d9c9f042c2028746c871681ad363ca71c4b1ac4dc7dd96a6048cfe"
+    },
+    {
+      "decoded_bytes": 1636,
+      "decoded_sha256": "b16df78e58cec5573067470e87ab81ae47880518157df1718c40a02068d8890d",
+      "encoding": "identity",
+      "path": "reports/065-old-point-r100-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/065-old-point-r100-p10001/resource-coverage.json",
+      "stored_bytes": 1636,
+      "stored_sha256": "b16df78e58cec5573067470e87ab81ae47880518157df1718c40a02068d8890d"
+    },
+    {
+      "decoded_bytes": 1264251,
+      "decoded_sha256": "0603a154ffff1cf3f7ebc9c5d75a7644bc871c029df7338381f52ce08dcd8ecd",
+      "encoding": "gzip",
+      "path": "reports/066-redis-point-r050-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/066-redis-point-r050-p10001/run/report.json",
+      "stored_bytes": 12979,
+      "stored_sha256": "5dd397d5f1bf09ec384bec51cb24b84f245010ed14a34684d427e54193ff7ecc"
+    },
+    {
+      "decoded_bytes": 839,
+      "decoded_sha256": "430b879347f86ba4bdbe4e0305c39a0a67c71ed7c52c8f0b8d452c5de3c83325",
+      "encoding": "identity",
+      "path": "reports/066-redis-point-r050-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/066-redis-point-r050-p10001/resource-coverage.json",
+      "stored_bytes": 839,
+      "stored_sha256": "430b879347f86ba4bdbe4e0305c39a0a67c71ed7c52c8f0b8d452c5de3c83325"
+    },
+    {
+      "decoded_bytes": 1940331,
+      "decoded_sha256": "68c20cd0214b795e1bd0b6b42582b24f4b4bc127a49dbbaf6257c5d15093e539",
+      "encoding": "gzip",
+      "path": "reports/067-new-point-r050-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/067-new-point-r050-p10001/run/report.json",
+      "stored_bytes": 18558,
+      "stored_sha256": "78af753db6b1c2e67e5fb0a35c76fb4ea6ac9a5aef882ef65ff2fa01ba0a8869"
+    },
+    {
+      "decoded_bytes": 1684,
+      "decoded_sha256": "023b482a73b48147a45a815c02aa77ef4627425f316c610e82ee6806f493ca90",
+      "encoding": "identity",
+      "path": "reports/067-new-point-r050-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/067-new-point-r050-p10001/resource-coverage.json",
+      "stored_bytes": 1684,
+      "stored_sha256": "023b482a73b48147a45a815c02aa77ef4627425f316c610e82ee6806f493ca90"
+    },
+    {
+      "decoded_bytes": 1940330,
+      "decoded_sha256": "48b9a42af939632db912cc823f13cb221836ffd496d1361dbf21cab59aa4b082",
+      "encoding": "gzip",
+      "path": "reports/068-old-point-r050-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/068-old-point-r050-p10001/run/report.json",
+      "stored_bytes": 18546,
+      "stored_sha256": "9930207d84bfe7088570bd7ca012badba553461e773cfa040d6552a0f3878069"
+    },
+    {
+      "decoded_bytes": 1678,
+      "decoded_sha256": "02625e06d51dc906414c96c2c2ca3f2865a54b8709ead5186bd6958d0b393185",
+      "encoding": "identity",
+      "path": "reports/068-old-point-r050-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/068-old-point-r050-p10001/resource-coverage.json",
+      "stored_bytes": 1678,
+      "stored_sha256": "02625e06d51dc906414c96c2c2ca3f2865a54b8709ead5186bd6958d0b393185"
+    },
+    {
+      "decoded_bytes": 915269,
+      "decoded_sha256": "7b99b5db39bcfd9be34d2847fd861608d94a5d4d82520addd3bd40184d8b9a96",
+      "encoding": "gzip",
+      "path": "reports/069-redis-point-r000-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/069-redis-point-r000-p10001/run/report.json",
+      "stored_bytes": 9746,
+      "stored_sha256": "e6f51199b33a11bb3c476c6b3fc5148d19db2b88423f9542bc82055495fbafa3"
+    },
+    {
+      "decoded_bytes": 837,
+      "decoded_sha256": "60e124e7b769fcad264e9f353c89ab42d789826310fe34cd6ada8ed787a42637",
+      "encoding": "identity",
+      "path": "reports/069-redis-point-r000-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/069-redis-point-r000-p10001/resource-coverage.json",
+      "stored_bytes": 837,
+      "stored_sha256": "60e124e7b769fcad264e9f353c89ab42d789826310fe34cd6ada8ed787a42637"
+    },
+    {
+      "decoded_bytes": 1432031,
+      "decoded_sha256": "1e52d741ee2b264f3c91f3333f078c7e150e524c1f480c33a30282c642d48e27",
+      "encoding": "gzip",
+      "path": "reports/070-new-point-r000-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/070-new-point-r000-p10001/run/report.json",
+      "stored_bytes": 14718,
+      "stored_sha256": "6a67ca941e964f1d916f6c41862b8beb83fdc19fa90a69289b2da56da7e735c9"
+    },
+    {
+      "decoded_bytes": 1684,
+      "decoded_sha256": "e1fe582b5a42bfd86b3c466fa28a190faebb6c62d924988979d83f95bc242599",
+      "encoding": "identity",
+      "path": "reports/070-new-point-r000-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/070-new-point-r000-p10001/resource-coverage.json",
+      "stored_bytes": 1684,
+      "stored_sha256": "e1fe582b5a42bfd86b3c466fa28a190faebb6c62d924988979d83f95bc242599"
+    },
+    {
+      "decoded_bytes": 1432020,
+      "decoded_sha256": "7eac213da8bde3240fd3ee527dede915ec5eaf408f4d5b9342ae368485e181f2",
+      "encoding": "gzip",
+      "path": "reports/071-old-point-r000-p10001/report.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/071-old-point-r000-p10001/run/report.json",
+      "stored_bytes": 14680,
+      "stored_sha256": "85e127168ba5efd5f048b5a6ca3d2896e57cd1ed2025edb0445a194627d0f143"
+    },
+    {
+      "decoded_bytes": 1682,
+      "decoded_sha256": "1644b78bd0357f972231083bd4e698020baea387b37df7cd4184ed23886c770f",
+      "encoding": "identity",
+      "path": "reports/071-old-point-r000-p10001/resource-coverage.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/071-old-point-r000-p10001/resource-coverage.json",
+      "stored_bytes": 1682,
+      "stored_sha256": "1644b78bd0357f972231083bd4e698020baea387b37df7cd4184ed23886c770f"
+    },
+    {
+      "decoded_bytes": 49287,
+      "decoded_sha256": "8b8a21667713d7b2b9aef71b64cf6b3502b52e3bfa3b964ff54e9b3b4f659a39",
+      "encoding": "identity",
+      "path": "preparation/audit.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/audit.py",
+      "stored_bytes": 49287,
+      "stored_sha256": "8b8a21667713d7b2b9aef71b64cf6b3502b52e3bfa3b964ff54e9b3b4f659a39"
+    },
+    {
+      "decoded_bytes": 4576,
+      "decoded_sha256": "dad7f7426583283725965705d234461105b8d8e64bffc0b5e5c5ea5c94be230b",
+      "encoding": "identity",
+      "path": "preparation/audit.py.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/audit.py.diff",
+      "stored_bytes": 4576,
+      "stored_sha256": "dad7f7426583283725965705d234461105b8d8e64bffc0b5e5c5ea5c94be230b"
+    },
+    {
+      "decoded_bytes": 2259,
+      "decoded_sha256": "75a709188cbb2fd65867a2db5900ef7802a5363ea7401a65c1079b973b25142c",
+      "encoding": "identity",
+      "path": "preparation/audit.py.final.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/audit.py.final.diff",
+      "stored_bytes": 2259,
+      "stored_sha256": "75a709188cbb2fd65867a2db5900ef7802a5363ea7401a65c1079b973b25142c"
+    },
+    {
+      "decoded_bytes": 2550,
+      "decoded_sha256": "eba719b460dc55cd1cc585b6ef746aa68a96f6675bec909da83d05cf79ddaff8",
+      "encoding": "identity",
+      "path": "preparation/commands.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/commands.json",
+      "stored_bytes": 2550,
+      "stored_sha256": "eba719b460dc55cd1cc585b6ef746aa68a96f6675bec909da83d05cf79ddaff8"
+    },
+    {
+      "decoded_bytes": 2763,
+      "decoded_sha256": "edd2e444111b8e60d94a65f236d04f92f22efcea3f42516a43902b3067f64689",
+      "encoding": "identity",
+      "path": "preparation/commands.json.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/commands.json.diff",
+      "stored_bytes": 2763,
+      "stored_sha256": "edd2e444111b8e60d94a65f236d04f92f22efcea3f42516a43902b3067f64689"
+    },
+    {
+      "decoded_bytes": 829,
+      "decoded_sha256": "56aef977fc01ccc2445b5223855d0e0dfed096dae760cb31774c45538afdb830",
+      "encoding": "identity",
+      "path": "preparation/commands.json.final.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/commands.json.final.diff",
+      "stored_bytes": 829,
+      "stored_sha256": "56aef977fc01ccc2445b5223855d0e0dfed096dae760cb31774c45538afdb830"
+    },
+    {
+      "decoded_bytes": 1600,
+      "decoded_sha256": "30c90335295cbed415883b8fb7cb8a0c898f1eab2a1fe4539fdfc468c2417a90",
+      "encoding": "identity",
+      "path": "preparation/contracts-final-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/contracts-final-first.json",
+      "stored_bytes": 1600,
+      "stored_sha256": "30c90335295cbed415883b8fb7cb8a0c898f1eab2a1fe4539fdfc468c2417a90"
+    },
+    {
+      "decoded_bytes": 630,
+      "decoded_sha256": "163b9cb4f137dee027e361f6060f15fe86af9fb6bc8cc887e0ce11020a424a83",
+      "encoding": "identity",
+      "path": "preparation/driver-arguments.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/driver-arguments.json",
+      "stored_bytes": 630,
+      "stored_sha256": "163b9cb4f137dee027e361f6060f15fe86af9fb6bc8cc887e0ce11020a424a83"
+    },
+    {
+      "decoded_bytes": 538,
+      "decoded_sha256": "93e9b91473787e629d992e3f7e7325a88510aeaeed3b42bc3cd65725974e6426",
+      "encoding": "identity",
+      "path": "preparation/driver-arguments.json.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/driver-arguments.json.diff",
+      "stored_bytes": 538,
+      "stored_sha256": "93e9b91473787e629d992e3f7e7325a88510aeaeed3b42bc3cd65725974e6426"
+    },
+    {
+      "decoded_bytes": 459,
+      "decoded_sha256": "8e505c6d2a45ab7c3284b6cc1debf76f3892f2b5882f94739102d6cc17f0a7d2",
+      "encoding": "identity",
+      "path": "preparation/driver-arguments.json.final.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/driver-arguments.json.final.diff",
+      "stored_bytes": 459,
+      "stored_sha256": "8e505c6d2a45ab7c3284b6cc1debf76f3892f2b5882f94739102d6cc17f0a7d2"
+    },
+    {
+      "decoded_bytes": 3609,
+      "decoded_sha256": "fbed9bbc9c2ba59e2a9b733c7b35ab03ca5ce48df79296354331d3ad159c7e0d",
+      "encoding": "identity",
+      "path": "preparation/external-inputs-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/external-inputs-first.json",
+      "stored_bytes": 3609,
+      "stored_sha256": "fbed9bbc9c2ba59e2a9b733c7b35ab03ca5ce48df79296354331d3ad159c7e0d"
+    },
+    {
+      "decoded_bytes": 4535,
+      "decoded_sha256": "4af004ee3732b32be493464506f84a7e6d09f169f7f906606e4341e446f8b044",
+      "encoding": "identity",
+      "path": "preparation/final-pin-binding-second.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/final-pin-binding-second.json",
+      "stored_bytes": 4535,
+      "stored_sha256": "4af004ee3732b32be493464506f84a7e6d09f169f7f906606e4341e446f8b044"
+    },
+    {
+      "decoded_bytes": 2650,
+      "decoded_sha256": "a02c3ebae05f83e7f98cb62799704d9227664ceac569f50315c92f44ac92b3ac",
+      "encoding": "identity",
+      "path": "preparation/input-layout.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/input-layout.json",
+      "stored_bytes": 2650,
+      "stored_sha256": "a02c3ebae05f83e7f98cb62799704d9227664ceac569f50315c92f44ac92b3ac"
+    },
+    {
+      "decoded_bytes": 1894,
+      "decoded_sha256": "1654902bb4da37c2fa7e311f0bd60742baea3c2ba0c889d140b8017a980c619b",
+      "encoding": "identity",
+      "path": "preparation/input-layout.json.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/input-layout.json.diff",
+      "stored_bytes": 1894,
+      "stored_sha256": "1654902bb4da37c2fa7e311f0bd60742baea3c2ba0c889d140b8017a980c619b"
+    },
+    {
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity",
+      "path": "preparation/input-layout.json.final.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/input-layout.json.final.diff",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "decoded_bytes": 12873,
+      "decoded_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "encoding": "identity",
+      "path": "preparation/isolate-and-run.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/isolate-and-run.py",
+      "stored_bytes": 12873,
+      "stored_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    {
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity",
+      "path": "preparation/isolate-and-run.py.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/isolate-and-run.py.diff",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity",
+      "path": "preparation/isolate-and-run.py.final.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/isolate-and-run.py.final.diff",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "decoded_bytes": 51967,
+      "decoded_sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+      "encoding": "identity",
+      "path": "preparation/matched-driver.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/matched-driver.py",
+      "stored_bytes": 51967,
+      "stored_sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195"
+    },
+    {
+      "decoded_bytes": 2727,
+      "decoded_sha256": "6875aeda20288600c17ba34b44df5311f909610ac731948cb2fc8ea6443268ff",
+      "encoding": "identity",
+      "path": "preparation/matched-driver.py.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/matched-driver.py.diff",
+      "stored_bytes": 2727,
+      "stored_sha256": "6875aeda20288600c17ba34b44df5311f909610ac731948cb2fc8ea6443268ff"
+    },
+    {
+      "decoded_bytes": 1724,
+      "decoded_sha256": "d25ef1aee58d1979d2849a510ecfaea627b999abc9c5c7d55650e49e6efb9f78",
+      "encoding": "identity",
+      "path": "preparation/matched-driver.py.final.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/matched-driver.py.final.diff",
+      "stored_bytes": 1724,
+      "stored_sha256": "d25ef1aee58d1979d2849a510ecfaea627b999abc9c5c7d55650e49e6efb9f78"
+    },
+    {
+      "decoded_bytes": 736,
+      "decoded_sha256": "75a4497764e7b6ce23ee02a7a542f5582601ea715573687f0dfdde03fd070f5c",
+      "encoding": "identity",
+      "path": "preparation/pin-readback-first-failure.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/pin-readback-first-failure.json",
+      "stored_bytes": 736,
+      "stored_sha256": "75a4497764e7b6ce23ee02a7a542f5582601ea715573687f0dfdde03fd070f5c"
+    },
+    {
+      "decoded_bytes": 67227,
+      "decoded_sha256": "5372db30f81ea237462fec0502a78a121d1ff066df9371c0a5a0bfc75cbd1b0e",
+      "encoding": "identity",
+      "path": "preparation/protocol.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/protocol.json",
+      "stored_bytes": 67227,
+      "stored_sha256": "5372db30f81ea237462fec0502a78a121d1ff066df9371c0a5a0bfc75cbd1b0e"
+    },
+    {
+      "decoded_bytes": 2827,
+      "decoded_sha256": "47ca9af27377f77ad9864038c8df2c887f161b52f9220e68022fe138ee810934",
+      "encoding": "identity",
+      "path": "preparation/protocol.json.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/protocol.json.diff",
+      "stored_bytes": 2827,
+      "stored_sha256": "47ca9af27377f77ad9864038c8df2c887f161b52f9220e68022fe138ee810934"
+    },
+    {
+      "decoded_bytes": 1593,
+      "decoded_sha256": "016773d8997b45c29f8abfecb170eb98cfa611b8505af63facf34cafc4ba1902",
+      "encoding": "identity",
+      "path": "preparation/protocol.json.final.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/protocol.json.final.diff",
+      "stored_bytes": 1593,
+      "stored_sha256": "016773d8997b45c29f8abfecb170eb98cfa611b8505af63facf34cafc4ba1902"
+    },
+    {
+      "decoded_bytes": 279161,
+      "decoded_sha256": "01dcc540eb6f2cf29857cf373069855d82b96077bb5cceee87bf080ddb35b15f",
+      "encoding": "gzip",
+      "path": "preparation/roles-final-first.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/roles-final-first.json",
+      "stored_bytes": 117385,
+      "stored_sha256": "aa1ed252b5f41f602bd14d7518b3aa7cf7c3debcc90f46b347450e163da397c3"
+    },
+    {
+      "decoded_bytes": 8545,
+      "decoded_sha256": "ecc8832e25a0b6c76bd5854659920d1bc2492dec3060fc7dcb2ca668de6a6cd7",
+      "encoding": "identity",
+      "path": "preparation/root-release-rebuilt-readback.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/root-release-rebuilt-readback.json",
+      "stored_bytes": 8545,
+      "stored_sha256": "ecc8832e25a0b6c76bd5854659920d1bc2492dec3060fc7dcb2ca668de6a6cd7"
+    },
+    {
+      "decoded_bytes": 522,
+      "decoded_sha256": "8bd87104c1ac2bebcbc5fb8bc7aa5adf585657293c64510743463d52a9db54e6",
+      "encoding": "identity",
+      "path": "preparation/space-readiness-final-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/space-readiness-final-first.json",
+      "stored_bytes": 522,
+      "stored_sha256": "8bd87104c1ac2bebcbc5fb8bc7aa5adf585657293c64510743463d52a9db54e6"
+    },
+    {
+      "decoded_bytes": 998,
+      "decoded_sha256": "3037ce7fd8bf9a6d467727621aacd353e5c68c3ca49c827b89a96c44cf00307a",
+      "encoding": "identity",
+      "path": "preparation/space-readiness-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/space-readiness-first.json",
+      "stored_bytes": 998,
+      "stored_sha256": "3037ce7fd8bf9a6d467727621aacd353e5c68c3ca49c827b89a96c44cf00307a"
+    },
+    {
+      "decoded_bytes": 6438,
+      "decoded_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+      "encoding": "identity",
+      "path": "preparation/statistics/core.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/statistics/core.py",
+      "stored_bytes": 6438,
+      "stored_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    },
+    {
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity",
+      "path": "preparation/statistics/core.py.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/statistics/core.py.diff",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity",
+      "path": "preparation/statistics/core.py.final.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/statistics/core.py.final.diff",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "decoded_bytes": 8238,
+      "decoded_sha256": "0fb08bcc867042c4f41e1fe3be6d73d0da20b43e37fb160f3ec19a23320e7774",
+      "encoding": "identity",
+      "path": "preparation/statistics/derive.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/statistics/derive.py",
+      "stored_bytes": 8238,
+      "stored_sha256": "0fb08bcc867042c4f41e1fe3be6d73d0da20b43e37fb160f3ec19a23320e7774"
+    },
+    {
+      "decoded_bytes": 2323,
+      "decoded_sha256": "a9e4fe42bbdda0bf7546b314f61fb65b98306a62897b0fe840a26a26a794842f",
+      "encoding": "identity",
+      "path": "preparation/statistics/derive.py.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/statistics/derive.py.diff",
+      "stored_bytes": 2323,
+      "stored_sha256": "a9e4fe42bbdda0bf7546b314f61fb65b98306a62897b0fe840a26a26a794842f"
+    },
+    {
+      "decoded_bytes": 0,
+      "decoded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "identity",
+      "path": "preparation/statistics/derive.py.final.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/statistics/derive.py.final.diff",
+      "stored_bytes": 0,
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "decoded_bytes": 17674,
+      "decoded_sha256": "3bab39902e2787994961a3e78aaf5a4024444ee23ace0a0558a1179ffbd06a0a",
+      "encoding": "identity",
+      "path": "preparation/test_audit_contract.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/test_audit_contract.py",
+      "stored_bytes": 17674,
+      "stored_sha256": "3bab39902e2787994961a3e78aaf5a4024444ee23ace0a0558a1179ffbd06a0a"
+    },
+    {
+      "decoded_bytes": 1842,
+      "decoded_sha256": "ba064651b297c365a21b1040b92bfb336f9164e05fa7df351a996efa28421ac2",
+      "encoding": "identity",
+      "path": "preparation/test_audit_contract.py.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/test_audit_contract.py.diff",
+      "stored_bytes": 1842,
+      "stored_sha256": "ba064651b297c365a21b1040b92bfb336f9164e05fa7df351a996efa28421ac2"
+    },
+    {
+      "decoded_bytes": 822,
+      "decoded_sha256": "1b1c5badaca90fd64cc6714a8369f10235b1b4bcceb7e54a23a5d7c274e54394",
+      "encoding": "identity",
+      "path": "preparation/test_audit_contract.py.final.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/test_audit_contract.py.final.diff",
+      "stored_bytes": 822,
+      "stored_sha256": "1b1c5badaca90fd64cc6714a8369f10235b1b4bcceb7e54a23a5d7c274e54394"
+    },
+    {
+      "decoded_bytes": 9934,
+      "decoded_sha256": "b7ab1b6632bfca298d512721a39a4ff38bb09dc06594062123812e4f751845db",
+      "encoding": "identity",
+      "path": "preparation/test_driver.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/test_driver.py",
+      "stored_bytes": 9934,
+      "stored_sha256": "b7ab1b6632bfca298d512721a39a4ff38bb09dc06594062123812e4f751845db"
+    },
+    {
+      "decoded_bytes": 1620,
+      "decoded_sha256": "280d9adfd2059dd114ee6897d9ccb5bd792cc0f58dd0481ed745c4a614b36fb7",
+      "encoding": "identity",
+      "path": "preparation/test_driver.py.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/test_driver.py.diff",
+      "stored_bytes": 1620,
+      "stored_sha256": "280d9adfd2059dd114ee6897d9ccb5bd792cc0f58dd0481ed745c4a614b36fb7"
+    },
+    {
+      "decoded_bytes": 955,
+      "decoded_sha256": "843ef2abd3bbf43e59547aafacb06ca52b3a19fdd1995624a603940a41f3d6ff",
+      "encoding": "identity",
+      "path": "preparation/test_driver.py.final.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/test_driver.py.final.diff",
+      "stored_bytes": 955,
+      "stored_sha256": "843ef2abd3bbf43e59547aafacb06ca52b3a19fdd1995624a603940a41f3d6ff"
+    },
+    {
+      "decoded_bytes": 2566,
+      "decoded_sha256": "4ed00836956c34d14fb9c076d90231dee48cf85efb231396e43a5d6ee0806c02",
+      "encoding": "identity",
+      "path": "preparation/READINESS.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/READINESS.json",
+      "stored_bytes": 2566,
+      "stored_sha256": "4ed00836956c34d14fb9c076d90231dee48cf85efb231396e43a5d6ee0806c02"
+    },
+    {
+      "decoded_bytes": 6600,
+      "decoded_sha256": "8a32c8c2efad555c8f187fe78df985d85953bf0ffe51216c9bf5fbd4862d790c",
+      "encoding": "identity",
+      "path": "preparation/README.md",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/README.md",
+      "stored_bytes": 6600,
+      "stored_sha256": "8a32c8c2efad555c8f187fe78df985d85953bf0ffe51216c9bf5fbd4862d790c"
+    },
+    {
+      "decoded_bytes": 7570,
+      "decoded_sha256": "1f6310497e13c57c786024f409dc1ab54f4398bedf0701b5c16da4a71f283190",
+      "encoding": "identity",
+      "path": "preparation/inventory-final-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/inventory-final-first.json",
+      "stored_bytes": 7570,
+      "stored_sha256": "1f6310497e13c57c786024f409dc1ab54f4398bedf0701b5c16da4a71f283190"
+    },
+    {
+      "decoded_bytes": 3770,
+      "decoded_sha256": "03babb5994fcdbd7ad1a7c18e4a0c2ddcb9efabe76771abde684b1270ca6f610",
+      "encoding": "identity",
+      "path": "preparation/finalize-pins-first.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/finalize-pins-first.py",
+      "stored_bytes": 3770,
+      "stored_sha256": "03babb5994fcdbd7ad1a7c18e4a0c2ddcb9efabe76771abde684b1270ca6f610"
+    },
+    {
+      "decoded_bytes": 3489,
+      "decoded_sha256": "7a02bb43f03086c0ada95ce5da55dea640fdfad984dc87ef6d93ad6660d652a6",
+      "encoding": "identity",
+      "path": "preparation/complete-pin-readback-second.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/complete-pin-readback-second.py",
+      "stored_bytes": 3489,
+      "stored_sha256": "7a02bb43f03086c0ada95ce5da55dea640fdfad984dc87ef6d93ad6660d652a6"
+    },
+    {
+      "decoded_bytes": 650,
+      "decoded_sha256": "e77a054093f2bb8309e5bf3493a71efdf311adf479a48d7d7db579a390f9875c",
+      "encoding": "identity",
+      "path": "failed-audit/audit.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/results-first/audit.json",
+      "stored_bytes": 650,
+      "stored_sha256": "e77a054093f2bb8309e5bf3493a71efdf311adf479a48d7d7db579a390f9875c"
+    },
+    {
+      "decoded_bytes": 1066,
+      "decoded_sha256": "a76fd30902394e61487f42188649c435516c68496252e732534fb1480ddf7872",
+      "encoding": "identity",
+      "path": "failed-audit/input-inventory.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/results-first/input-inventory.json",
+      "stored_bytes": 1066,
+      "stored_sha256": "a76fd30902394e61487f42188649c435516c68496252e732534fb1480ddf7872"
+    },
+    {
+      "decoded_bytes": 49287,
+      "decoded_sha256": "9a549e1fb45f703e5bde12914211b46240f70d3b9df0b4185c60711fb8ebeb94",
+      "encoding": "identity",
+      "path": "repair/audit.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/audit.py",
+      "stored_bytes": 49287,
+      "stored_sha256": "9a549e1fb45f703e5bde12914211b46240f70d3b9df0b4185c60711fb8ebeb94"
+    },
+    {
+      "decoded_bytes": 879,
+      "decoded_sha256": "ec6d77a5065cccb106e87457a8cf48bfd45737e6456a1466c9610e5d6c3da9cd",
+      "encoding": "identity",
+      "path": "repair/audit.py.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/audit.py.diff",
+      "stored_bytes": 879,
+      "stored_sha256": "ec6d77a5065cccb106e87457a8cf48bfd45737e6456a1466c9610e5d6c3da9cd"
+    },
+    {
+      "decoded_bytes": 2083,
+      "decoded_sha256": "9fc1c33baac3260ee7170cb734b5c60d1ac44c58c1e197c25c59239926b808d4",
+      "encoding": "identity",
+      "path": "repair/contracts-first.log",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/contracts-first.log",
+      "stored_bytes": 2083,
+      "stored_sha256": "9fc1c33baac3260ee7170cb734b5c60d1ac44c58c1e197c25c59239926b808d4"
+    },
+    {
+      "decoded_bytes": 166,
+      "decoded_sha256": "c3a17f558862b368550621272c79b87bac583513db7795f0c8b4f790356dcbeb",
+      "encoding": "identity",
+      "path": "repair/contracts-invocation-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/contracts-invocation-first.json",
+      "stored_bytes": 166,
+      "stored_sha256": "c3a17f558862b368550621272c79b87bac583513db7795f0c8b4f790356dcbeb"
+    },
+    {
+      "decoded_bytes": 113,
+      "decoded_sha256": "289b63665d0e4e38a3d21e5c36013673baac0af5d73ac2274ee6dcba0e4822a7",
+      "encoding": "identity",
+      "path": "repair/contracts-terminal-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/contracts-terminal-first.json",
+      "stored_bytes": 113,
+      "stored_sha256": "289b63665d0e4e38a3d21e5c36013673baac0af5d73ac2274ee6dcba0e4822a7"
+    },
+    {
+      "decoded_bytes": 1898,
+      "decoded_sha256": "87a36a22456123b3d0d363287915d1906dcdd475fe878a31444b94116b87899f",
+      "encoding": "identity",
+      "path": "repair/frozen-repair-inputs-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/frozen-repair-inputs-first.json",
+      "stored_bytes": 1898,
+      "stored_sha256": "87a36a22456123b3d0d363287915d1906dcdd475fe878a31444b94116b87899f"
+    },
+    {
+      "decoded_bytes": 729,
+      "decoded_sha256": "4b7fdb21fc7eb4dc6c5bdd27b7f38c7d5036d28eab4f3c2ceb50e8440ef46010",
+      "encoding": "identity",
+      "path": "repair/pin-contract-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/pin-contract-first.json",
+      "stored_bytes": 729,
+      "stored_sha256": "4b7fdb21fc7eb4dc6c5bdd27b7f38c7d5036d28eab4f3c2ceb50e8440ef46010"
+    },
+    {
+      "decoded_bytes": 17674,
+      "decoded_sha256": "3bab39902e2787994961a3e78aaf5a4024444ee23ace0a0558a1179ffbd06a0a",
+      "encoding": "identity",
+      "path": "repair/test_audit_contract.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/test_audit_contract.py",
+      "stored_bytes": 17674,
+      "stored_sha256": "3bab39902e2787994961a3e78aaf5a4024444ee23ace0a0558a1179ffbd06a0a"
+    },
+    {
+      "decoded_bytes": 1585349,
+      "decoded_sha256": "9cbe251521365c6f288c844c3926935878b1f24e22241fe22109e6eea89b70fd",
+      "encoding": "gzip",
+      "path": "audit/audit.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/results-first/audit.json",
+      "stored_bytes": 80780,
+      "stored_sha256": "765c69c6d12e381cde70e99a8740e8b874c1528d95a10327650ef5838a0876db"
+    },
+    {
+      "decoded_bytes": 1699573,
+      "decoded_sha256": "e541a133d2f267e8db96fcffa3c115135a38deb2e2bdab495b2810b7c5aa424e",
+      "encoding": "gzip",
+      "path": "audit/input-inventory.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/results-first/input-inventory.json",
+      "stored_bytes": 301725,
+      "stored_sha256": "183d62ce19f958f243ba9b4dcc389fe3040facc7d2743448a650341c1c3a8c85"
+    },
+    {
+      "decoded_bytes": 8493,
+      "decoded_sha256": "686f10d1a354b15a4a40d4fc9e2a901f1dbf286578847fb88f94c6dc91f1d715",
+      "encoding": "identity",
+      "path": "statistics/READOUT.md",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/READOUT.md",
+      "stored_bytes": 8493,
+      "stored_sha256": "686f10d1a354b15a4a40d4fc9e2a901f1dbf286578847fb88f94c6dc91f1d715"
+    },
+    {
+      "decoded_bytes": 6438,
+      "decoded_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+      "encoding": "identity",
+      "path": "statistics/core.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/core.py",
+      "stored_bytes": 6438,
+      "stored_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    },
+    {
+      "decoded_bytes": 8246,
+      "decoded_sha256": "87d3ee6dea78d04baf50c129f3ef9ad4273aa5fdbb7f55d689dc744c30046886",
+      "encoding": "identity",
+      "path": "statistics/derive.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/derive.py",
+      "stored_bytes": 8246,
+      "stored_sha256": "87d3ee6dea78d04baf50c129f3ef9ad4273aa5fdbb7f55d689dc744c30046886"
+    },
+    {
+      "decoded_bytes": 619,
+      "decoded_sha256": "ca34dfc7cc2a980e9713ad182f3c37c7485663b653160b3d6691179ee95f18d2",
+      "encoding": "identity",
+      "path": "statistics/derive.py.diff",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/derive.py.diff",
+      "stored_bytes": 619,
+      "stored_sha256": "ca34dfc7cc2a980e9713ad182f3c37c7485663b653160b3d6691179ee95f18d2"
+    },
+    {
+      "decoded_bytes": 1986243,
+      "decoded_sha256": "a04aac29eda62c4518544c76dfa5be36357bdeed2d2dae1e92907eff1b17aea2",
+      "encoding": "gzip",
+      "path": "statistics/statistics-first.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/statistics-first.json",
+      "stored_bytes": 79547,
+      "stored_sha256": "7e6f88f7905a6fcb9c7ceaa4a41b3b40fbe50bb79f09ae7b615a362467291761"
+    },
+    {
+      "decoded_bytes": 32963,
+      "decoded_sha256": "7eceda6008690a3f9251a410eaab1c53719326720020669f934196a1bd3c1e72",
+      "encoding": "identity",
+      "path": "statistics/statistics-inputs-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/statistics-inputs-first.json",
+      "stored_bytes": 32963,
+      "stored_sha256": "7eceda6008690a3f9251a410eaab1c53719326720020669f934196a1bd3c1e72"
+    },
+    {
+      "decoded_bytes": 58,
+      "decoded_sha256": "0106ea8c7f685e86e95082bcb8a1055df5895f9ce95540407e60fad631e4807a",
+      "encoding": "identity",
+      "path": "root/audit-child-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/audit-child-first.json",
+      "stored_bytes": 58,
+      "stored_sha256": "0106ea8c7f685e86e95082bcb8a1055df5895f9ce95540407e60fad631e4807a"
+    },
+    {
+      "decoded_bytes": 58,
+      "decoded_sha256": "6a7c8914e54ceda6c89f1ae4e65947eff1c6f6486726e9c29b550a08a20de45c",
+      "encoding": "identity",
+      "path": "root/audit-child-second.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/audit-child-second.json",
+      "stored_bytes": 58,
+      "stored_sha256": "6a7c8914e54ceda6c89f1ae4e65947eff1c6f6486726e9c29b550a08a20de45c"
+    },
+    {
+      "decoded_bytes": 389,
+      "decoded_sha256": "15add03703c24ddde86b2c254980987fc65dfc6a3693d3c57ef1d1e38f696339",
+      "encoding": "identity",
+      "path": "root/audit-first.log",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/audit-first.log",
+      "stored_bytes": 389,
+      "stored_sha256": "15add03703c24ddde86b2c254980987fc65dfc6a3693d3c57ef1d1e38f696339"
+    },
+    {
+      "decoded_bytes": 722,
+      "decoded_sha256": "97c2509a91a5db0062be0b8a20f2fdb2c21bb488670f197ded17476f2134bf93",
+      "encoding": "identity",
+      "path": "root/audit-invocation-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/audit-invocation-first.json",
+      "stored_bytes": 722,
+      "stored_sha256": "97c2509a91a5db0062be0b8a20f2fdb2c21bb488670f197ded17476f2134bf93"
+    },
+    {
+      "decoded_bytes": 859,
+      "decoded_sha256": "965e81e22b31ec51bdea49fbffa2953f90d5a7eb608fe923fa17a33a2e400d3a",
+      "encoding": "identity",
+      "path": "root/audit-invocation-second.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/audit-invocation-second.json",
+      "stored_bytes": 859,
+      "stored_sha256": "965e81e22b31ec51bdea49fbffa2953f90d5a7eb608fe923fa17a33a2e400d3a"
+    },
+    {
+      "decoded_bytes": 4115,
+      "decoded_sha256": "b81add11d784568f976a4da5989bd3d4dccfea0ea3b7af97e98b1ce781e7ca0b",
+      "encoding": "identity",
+      "path": "root/audit-second.log",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/audit-second.log",
+      "stored_bytes": 4115,
+      "stored_sha256": "b81add11d784568f976a4da5989bd3d4dccfea0ea3b7af97e98b1ce781e7ca0b"
+    },
+    {
+      "decoded_bytes": 176,
+      "decoded_sha256": "8bd3d40d9b89f9dd7d3b674c2ba781e25b4762ea6452dec8c857faa916f9ea0b",
+      "encoding": "identity",
+      "path": "root/audit-terminal-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/audit-terminal-first.json",
+      "stored_bytes": 176,
+      "stored_sha256": "8bd3d40d9b89f9dd7d3b674c2ba781e25b4762ea6452dec8c857faa916f9ea0b"
+    },
+    {
+      "decoded_bytes": 176,
+      "decoded_sha256": "3fa1845b2ab2fc28b000c0fc3d33ae338d07625e601fd076baed91d0dc21d1e4",
+      "encoding": "identity",
+      "path": "root/audit-terminal-second.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/audit-terminal-second.json",
+      "stored_bytes": 176,
+      "stored_sha256": "3fa1845b2ab2fc28b000c0fc3d33ae338d07625e601fd076baed91d0dc21d1e4"
+    },
+    {
+      "decoded_bytes": 13406,
+      "decoded_sha256": "4445fbb447053fd72864a2551670cd1e6495476fbdb1a830dc8fe490b73fce2a",
+      "encoding": "identity",
+      "path": "root/readiness-root-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/readiness-root-first.json",
+      "stored_bytes": 13406,
+      "stored_sha256": "4445fbb447053fd72864a2551670cd1e6495476fbdb1a830dc8fe490b73fce2a"
+    },
+    {
+      "decoded_bytes": 115,
+      "decoded_sha256": "637f8f5104dda9bd52300463801fb58f35f67e311167762d36504720dfdda535",
+      "encoding": "identity",
+      "path": "root/smoke-child-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/smoke-child-first.json",
+      "stored_bytes": 115,
+      "stored_sha256": "637f8f5104dda9bd52300463801fb58f35f67e311167762d36504720dfdda535"
+    },
+    {
+      "decoded_bytes": 1829,
+      "decoded_sha256": "719756659420f089ac869a44a3dd58dae83bcfb2deadf6ac9b81fb03910b480b",
+      "encoding": "identity",
+      "path": "root/smoke-first.log",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/smoke-first.log",
+      "stored_bytes": 1829,
+      "stored_sha256": "719756659420f089ac869a44a3dd58dae83bcfb2deadf6ac9b81fb03910b480b"
+    },
+    {
+      "decoded_bytes": 1141,
+      "decoded_sha256": "516d687a8006d33556af76e6526c23f0352e4c7cb1459f1d0d6c49abc0211cf4",
+      "encoding": "identity",
+      "path": "root/smoke-invocation-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/smoke-invocation-first.json",
+      "stored_bytes": 1141,
+      "stored_sha256": "516d687a8006d33556af76e6526c23f0352e4c7cb1459f1d0d6c49abc0211cf4"
+    },
+    {
+      "decoded_bytes": 772,
+      "decoded_sha256": "e413b1cce781f38bcf889b27baf580848094961c1d06cfacdfd849d043ab3de0",
+      "encoding": "identity",
+      "path": "root/smoke-readback-second.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/smoke-readback-second.json",
+      "stored_bytes": 772,
+      "stored_sha256": "e413b1cce781f38bcf889b27baf580848094961c1d06cfacdfd849d043ab3de0"
+    },
+    {
+      "decoded_bytes": 129,
+      "decoded_sha256": "3ffded7d69158afa8ab746f9c2d20606ac799885e38bdb9d1ab76d021afa039e",
+      "encoding": "identity",
+      "path": "root/smoke-terminal-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/smoke-terminal-first.json",
+      "stored_bytes": 129,
+      "stored_sha256": "3ffded7d69158afa8ab746f9c2d20606ac799885e38bdb9d1ab76d021afa039e"
+    },
+    {
+      "decoded_bytes": 871,
+      "decoded_sha256": "054b78bdfbde1714c69c00d2525acd1f94a8a1bddf97e7283b2f31b688e0867e",
+      "encoding": "identity",
+      "path": "root/statistics-first.log",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/statistics-first.log",
+      "stored_bytes": 871,
+      "stored_sha256": "054b78bdfbde1714c69c00d2525acd1f94a8a1bddf97e7283b2f31b688e0867e"
+    },
+    {
+      "decoded_bytes": 193,
+      "decoded_sha256": "8575f4077a4084e96592e80d781f716fb6f75819348bce7a79d5661baad68616",
+      "encoding": "identity",
+      "path": "root/statistics-invocation-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/statistics-invocation-first.json",
+      "stored_bytes": 193,
+      "stored_sha256": "8575f4077a4084e96592e80d781f716fb6f75819348bce7a79d5661baad68616"
+    },
+    {
+      "decoded_bytes": 113,
+      "decoded_sha256": "d88cfb2595ce6ee3a4d8b15892339fbd2860e63c5de2be6628e13e3a16cce9b7",
+      "encoding": "identity",
+      "path": "root/statistics-terminal-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/statistics-terminal-first.json",
+      "stored_bytes": 113,
+      "stored_sha256": "d88cfb2595ce6ee3a4d8b15892339fbd2860e63c5de2be6628e13e3a16cce9b7"
+    },
+    {
+      "decoded_bytes": 115,
+      "decoded_sha256": "b9a691db1e6489aa290f306eebe54a2819cf34cc6c58832b5b6509a424c10d14",
+      "encoding": "identity",
+      "path": "root/timing-child-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/timing-child-first.json",
+      "stored_bytes": 115,
+      "stored_sha256": "b9a691db1e6489aa290f306eebe54a2819cf34cc6c58832b5b6509a424c10d14"
+    },
+    {
+      "decoded_bytes": 3737,
+      "decoded_sha256": "948d156c0bec71b32aa23a56f472ac01b6387d2c4a76c57b351108630f21db83",
+      "encoding": "identity",
+      "path": "root/timing-first.log",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/timing-first.log",
+      "stored_bytes": 3737,
+      "stored_sha256": "948d156c0bec71b32aa23a56f472ac01b6387d2c4a76c57b351108630f21db83"
+    },
+    {
+      "decoded_bytes": 596,
+      "decoded_sha256": "0fdd097263263e0406ce973bb877984fa54f56e81853a97a42bddfd5a3adaeb0",
+      "encoding": "identity",
+      "path": "root/timing-invocation-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/timing-invocation-first.json",
+      "stored_bytes": 596,
+      "stored_sha256": "0fdd097263263e0406ce973bb877984fa54f56e81853a97a42bddfd5a3adaeb0"
+    },
+    {
+      "decoded_bytes": 552,
+      "decoded_sha256": "b13d25ac535e0a686933143695a9db9fb112dabf6525268f5b3bcee12c4b80f2",
+      "encoding": "identity",
+      "path": "root/timing-release-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/timing-release-first.json",
+      "stored_bytes": 552,
+      "stored_sha256": "b13d25ac535e0a686933143695a9db9fb112dabf6525268f5b3bcee12c4b80f2"
+    },
+    {
+      "decoded_bytes": 129,
+      "decoded_sha256": "33ceb594f0fca90f84e54c5e690a7e45778293c7ea773c41f8356b367f8a094f",
+      "encoding": "identity",
+      "path": "root/timing-terminal-first.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-root-preparation/timing-terminal-first.json",
+      "stored_bytes": 129,
+      "stored_sha256": "33ceb594f0fca90f84e54c5e690a7e45778293c7ea773c41f8356b367f8a094f"
+    },
+    {
+      "decoded_bytes": 41081,
+      "decoded_sha256": "479fedc259c8d34318d7d571c5fa2174cad866a983206d76a3c247cebba1fc55",
+      "encoding": "identity",
+      "path": "outer/after.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/after.json",
+      "stored_bytes": 41081,
+      "stored_sha256": "479fedc259c8d34318d7d571c5fa2174cad866a983206d76a3c247cebba1fc55"
+    },
+    {
+      "decoded_bytes": 41236,
+      "decoded_sha256": "69083632f0cc8d6fe7e9749581860cacdf92a3d01ab3cf898b8cef3fbdd28eb8",
+      "encoding": "identity",
+      "path": "outer/before.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/before.json",
+      "stored_bytes": 41236,
+      "stored_sha256": "69083632f0cc8d6fe7e9749581860cacdf92a3d01ab3cf898b8cef3fbdd28eb8"
+    },
+    {
+      "decoded_bytes": 1150,
+      "decoded_sha256": "5dbc41493d380ec5b96949787bdf599dfddc97eabfbfcce469437b33b6b392d7",
+      "encoding": "identity",
+      "path": "outer/invocation.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/invocation.json",
+      "stored_bytes": 1150,
+      "stored_sha256": "5dbc41493d380ec5b96949787bdf599dfddc97eabfbfcce469437b33b6b392d7"
+    },
+    {
+      "decoded_bytes": 2114,
+      "decoded_sha256": "e865bc9af23d21259ebdeaefc275b79e565535373b4acd224e653aa191e60f03",
+      "encoding": "identity",
+      "path": "outer/isolation.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/isolation.json",
+      "stored_bytes": 2114,
+      "stored_sha256": "e865bc9af23d21259ebdeaefc275b79e565535373b4acd224e653aa191e60f03"
+    },
+    {
+      "decoded_bytes": 845,
+      "decoded_sha256": "5d0c3fbc0674f0eccef49e2a0bb6799105456de40c30de20cc37b8ac9a304ab2",
+      "encoding": "identity",
+      "path": "outer/kv9-chaos-ci-p0-20260908-control-plane-isolated.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/kv9-chaos-ci-p0-20260908-control-plane-isolated.json",
+      "stored_bytes": 845,
+      "stored_sha256": "5d0c3fbc0674f0eccef49e2a0bb6799105456de40c30de20cc37b8ac9a304ab2"
+    },
+    {
+      "decoded_bytes": 829,
+      "decoded_sha256": "0ddcdd65f983a80b7d79aa19744661bdae14192413225fec6f28a4b6c7eda893",
+      "encoding": "identity",
+      "path": "outer/kv9-chaos-control-plane-isolated.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/kv9-chaos-control-plane-isolated.json",
+      "stored_bytes": 829,
+      "stored_sha256": "0ddcdd65f983a80b7d79aa19744661bdae14192413225fec6f28a4b6c7eda893"
+    },
+    {
+      "decoded_bytes": 11065,
+      "decoded_sha256": "d7d46d27112af015f0ba8df9296a82eeea443e622df4433ef75c53fd109d9baa",
+      "encoding": "identity",
+      "path": "outer/kv9-minio-dev-isolated.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/kv9-minio-dev-isolated.json",
+      "stored_bytes": 11065,
+      "stored_sha256": "d7d46d27112af015f0ba8df9296a82eeea443e622df4433ef75c53fd109d9baa"
+    },
+    {
+      "decoded_bytes": 170,
+      "decoded_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "encoding": "identity",
+      "path": "outer/summary.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/summary.json",
+      "stored_bytes": 170,
+      "stored_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8"
+    },
+    {
+      "decoded_bytes": 51967,
+      "decoded_sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+      "encoding": "identity",
+      "path": "run/driver.py",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/driver.py",
+      "stored_bytes": 51967,
+      "stored_sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195"
+    },
+    {
+      "decoded_bytes": 332544,
+      "decoded_sha256": "b3ce5eb37f2959400c1cdb2a35599230565ff72b0403e6b1cc1cd100cf724d72",
+      "encoding": "gzip",
+      "path": "run/plan.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/plan.json",
+      "stored_bytes": 120240,
+      "stored_sha256": "762c614fdb63f99af77f36f2e55c58d6dc28ed2c52dff714fe8f2013203bb7c2"
+    },
+    {
+      "decoded_bytes": 1956245,
+      "decoded_sha256": "c05ffacf71ece04d0fed95a6354916c9135fa0b9aba1cd0243b2a32f1b37d1b4",
+      "encoding": "gzip",
+      "path": "run/matrix.json.gz",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/matrix.json",
+      "stored_bytes": 175356,
+      "stored_sha256": "22c6395f60130da6a24edecf967a3902116795e19f8fa69b37516a133b3d81d3"
+    },
+    {
+      "decoded_bytes": 2114,
+      "decoded_sha256": "e865bc9af23d21259ebdeaefc275b79e565535373b4acd224e653aa191e60f03",
+      "encoding": "identity",
+      "path": "run/isolation-snapshot.json",
+      "source": "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/isolation-snapshot.json",
+      "stored_bytes": 2114,
+      "stored_sha256": "e865bc9af23d21259ebdeaefc275b79e565535373b4acd224e653aa191e60f03"
+    },
+    {
+      "decoded_bytes": 33171,
+      "decoded_sha256": "56cd11ddc7475a44ff1cf420f2086b4eefb19aa424c7270b95d4141920a40a96",
+      "encoding": "identity",
+      "path": "external/kv9-point-write-measurement-v3/scripts/batch_benchmark_report.py",
+      "source": "/tmp/kv9-point-write-measurement-v3/scripts/batch_benchmark_report.py",
+      "stored_bytes": 33171,
+      "stored_sha256": "56cd11ddc7475a44ff1cf420f2086b4eefb19aa424c7270b95d4141920a40a96"
+    },
+    {
+      "decoded_bytes": 18395,
+      "decoded_sha256": "c2cfda6ed964f1f86a776b1ffe32f3f94a05637bff6ff0f2be36842cbe493a36",
+      "encoding": "identity",
+      "path": "external/kv9-point-write-measurement-v3/scripts/benchmark.py",
+      "source": "/tmp/kv9-point-write-measurement-v3/scripts/benchmark.py",
+      "stored_bytes": 18395,
+      "stored_sha256": "c2cfda6ed964f1f86a776b1ffe32f3f94a05637bff6ff0f2be36842cbe493a36"
+    },
+    {
+      "decoded_bytes": 21030,
+      "decoded_sha256": "c8248ac6525235c9ccf1147b02db1cf468172f4233f8c2c80ffb2e3e2325347f",
+      "encoding": "identity",
+      "path": "external/kv9-point-write-measurement-v3/scripts/native-batch-e2e.py",
+      "source": "/tmp/kv9-point-write-measurement-v3/scripts/native-batch-e2e.py",
+      "stored_bytes": 21030,
+      "stored_sha256": "c8248ac6525235c9ccf1147b02db1cf468172f4233f8c2c80ffb2e3e2325347f"
+    },
+    {
+      "decoded_bytes": 17303,
+      "decoded_sha256": "8f09b073ba23d58b152b7f07eb9782a3174011951e800dafec982282d993a85a",
+      "encoding": "identity",
+      "path": "external/kv9-point-write-measurement-v3/scripts/redis-comparison.py",
+      "source": "/tmp/kv9-point-write-measurement-v3/scripts/redis-comparison.py",
+      "stored_bytes": 17303,
+      "stored_sha256": "8f09b073ba23d58b152b7f07eb9782a3174011951e800dafec982282d993a85a"
+    },
+    {
+      "decoded_bytes": 13720,
+      "decoded_sha256": "719e214ce549836400ae4a081917a424f6c78f9922b745991471691fe9314f9d",
+      "encoding": "identity",
+      "path": "external/kv9-point-write-measurement-v3/scripts/redis_batch_report.py",
+      "source": "/tmp/kv9-point-write-measurement-v3/scripts/redis_batch_report.py",
+      "stored_bytes": 13720,
+      "stored_sha256": "719e214ce549836400ae4a081917a424f6c78f9922b745991471691fe9314f9d"
+    },
+    {
+      "decoded_bytes": 7294,
+      "decoded_sha256": "167b83650e6c482239f998c01cd2065375c2e8111b2d075bc654247f3bcdae6b",
+      "encoding": "identity",
+      "path": "external/kv9-point-write-measurement-v3/scripts/tmpfs-redis-diagnostic.py",
+      "source": "/tmp/kv9-point-write-measurement-v3/scripts/tmpfs-redis-diagnostic.py",
+      "stored_bytes": 7294,
+      "stored_sha256": "167b83650e6c482239f998c01cd2065375c2e8111b2d075bc654247f3bcdae6b"
+    },
+    {
+      "decoded_bytes": 487,
+      "decoded_sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c",
+      "encoding": "identity",
+      "path": "external/kv9-point-write-v3-release-first/native/build.json",
+      "source": "/tmp/kv9-point-write-v3-release-first/native/build.json",
+      "stored_bytes": 487,
+      "stored_sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c"
+    },
+    {
+      "decoded_bytes": 208922,
+      "decoded_sha256": "c68ed599b2b0185d8b8bd4ea277d04345f6b5442cdf851f59e93918a5e2a5d06",
+      "encoding": "gzip",
+      "path": "external/kv9-point-write-v3-release-first/native/cargo.jsonl.gz",
+      "source": "/tmp/kv9-point-write-v3-release-first/native/cargo.jsonl",
+      "stored_bytes": 15285,
+      "stored_sha256": "daff9f0c3456f09ea79e8bb3008e02f62f8eb0b18126e9356891e0a02e33023f"
+    },
+    {
+      "decoded_bytes": 60425,
+      "decoded_sha256": "74298441490d8ecb5c17e7004597e1ab66173cd3fda7c5ae147f2e32a6dcc65c",
+      "encoding": "identity",
+      "path": "external/kv9-point-write-v3-release-first/native/sources.json",
+      "source": "/tmp/kv9-point-write-v3-release-first/native/sources.json",
+      "stored_bytes": 60425,
+      "stored_sha256": "74298441490d8ecb5c17e7004597e1ab66173cd3fda7c5ae147f2e32a6dcc65c"
+    },
+    {
+      "decoded_bytes": 487,
+      "decoded_sha256": "10f9ce2a754a2ef43a6439856c1d5fb00c5a1e5004173e52897a3ea19d6124f0",
+      "encoding": "identity",
+      "path": "external/kv9-point-write-v3-release-first/redis/build.json",
+      "source": "/tmp/kv9-point-write-v3-release-first/redis/build.json",
+      "stored_bytes": 487,
+      "stored_sha256": "10f9ce2a754a2ef43a6439856c1d5fb00c5a1e5004173e52897a3ea19d6124f0"
+    },
+    {
+      "decoded_bytes": 29085,
+      "decoded_sha256": "9cb206bff249719740cd530aba311e195064b64ecbc2692bae0d7b2e43b08ce8",
+      "encoding": "identity",
+      "path": "external/kv9-point-write-v3-release-first/redis/cargo.jsonl",
+      "source": "/tmp/kv9-point-write-v3-release-first/redis/cargo.jsonl",
+      "stored_bytes": 29085,
+      "stored_sha256": "9cb206bff249719740cd530aba311e195064b64ecbc2692bae0d7b2e43b08ce8"
+    },
+    {
+      "decoded_bytes": 60468,
+      "decoded_sha256": "458f79ff387dae09c70a41d44f42073458a5af8f9e0e83fd968085d79076e41f",
+      "encoding": "identity",
+      "path": "external/kv9-point-write-v3-release-first/redis/sources.json",
+      "source": "/tmp/kv9-point-write-v3-release-first/redis/sources.json",
+      "stored_bytes": 60468,
+      "stored_sha256": "458f79ff387dae09c70a41d44f42073458a5af8f9e0e83fd968085d79076e41f"
+    },
+    {
+      "decoded_bytes": 66416,
+      "decoded_sha256": "164b7999386b042ad2df814fea44fe93724ae15396e9f0cae0356a926fc3d1de",
+      "encoding": "identity",
+      "path": "external/kv9-read-credit-crc-release-rebuilt-first/build.json",
+      "source": "/tmp/kv9-read-credit-crc-release-rebuilt-first/build.json",
+      "stored_bytes": 66416,
+      "stored_sha256": "164b7999386b042ad2df814fea44fe93724ae15396e9f0cae0356a926fc3d1de"
+    },
+    {
+      "decoded_bytes": 211578,
+      "decoded_sha256": "05e9e49cf4db3fe5ec6fe75d3f9e73972b19b67d5c99069a28d7faac5d175fb4",
+      "encoding": "gzip",
+      "path": "external/kv9-read-credit-crc-release-rebuilt-first/kv9-cargo.jsonl.gz",
+      "source": "/tmp/kv9-read-credit-crc-release-rebuilt-first/kv9-cargo.jsonl",
+      "stored_bytes": 15441,
+      "stored_sha256": "dd35bb1825357d70d2b9dfe8c3d1c13ee247e67c7206fbe164535f7a7c44aa6f"
+    },
+    {
+      "decoded_bytes": 26410,
+      "decoded_sha256": "008c5bea0640a4a5a092feb6617798a84e9dd4889fd11bf8c6791cfe0852864a",
+      "encoding": "identity",
+      "path": "external/kv9-redis-batch-reference-preparation/run_fixture.py",
+      "source": "/tmp/kv9-redis-batch-reference-preparation/run_fixture.py",
+      "stored_bytes": 26410,
+      "stored_sha256": "008c5bea0640a4a5a092feb6617798a84e9dd4889fd11bf8c6791cfe0852864a"
+    },
+    {
+      "decoded_bytes": 65172,
+      "decoded_sha256": "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8",
+      "encoding": "identity",
+      "path": "external/kv9-wal-crc32-release-first/build.json",
+      "source": "/tmp/kv9-wal-crc32-release-first/build.json",
+      "stored_bytes": 65172,
+      "stored_sha256": "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8"
+    },
+    {
+      "decoded_bytes": 211587,
+      "decoded_sha256": "48a1a4bbe6ab51f49fc3fdcb1c10b7ba394d5a29cd71538f842408b9bb6a5099",
+      "encoding": "gzip",
+      "path": "external/kv9-wal-crc32-release-first/kv9-cargo.jsonl.gz",
+      "source": "/tmp/kv9-wal-crc32-release-first/kv9-cargo.jsonl",
+      "stored_bytes": 15452,
+      "stored_sha256": "e541d0a6575c0e0d0e73b25ddf0d4add5652f0f7c2fd4ffb2c7f4fe3bb3cfd8e"
+    }
+  ],
+  "generated_files": [
+    {
+      "bytes": 8104,
+      "path": "package.py",
+      "sha256": "4e19493f36ef3c6f3bc1975cb22e81e0d1f01ac5709e4899f4e1791ddb09b3c6"
+    },
+    {
+      "bytes": 9112,
+      "path": "verify.py",
+      "sha256": "f146738890bed90129b3c92ca4fb40057d5847742c3af6a25837f6346ccdd303"
+    },
+    {
+      "bytes": 3818,
+      "path": "README.md",
+      "sha256": "e95469b7c2db3cd2f5757b40b520e89615a66f594b7d7b8dd1e8e581bcf6676b"
+    }
+  ],
+  "local_runtime_scope": {
+    "inventory_original": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/results-first/input-inventory.json",
+    "inventory_sha256": "e541a133d2f267e8db96fcffa3c115135a38deb2e2bdab495b2810b7c5aa424e",
+    "omitted": "WAL/data files, retained executables, full source trees, detailed resource/drain/process observations and host-wide dumps. These remain local; original accepted inventory hashes are included.",
+    "retained_bytes": 94130468368,
+    "retained_files": 4311
+  },
+  "protocol_id": "kv9-read-credit-crc-broad-workloads-c1-c64-v1",
+  "retained_failures": [
+    "root/audit-first.log",
+    "root/audit-terminal-first.json",
+    "failed-audit/audit.json",
+    "preparation/pin-readback-first-failure.json"
+  ],
+  "scope": "Portable reporting evidence with original byte identities and all report/statistics inputs. This is not the complete runtime archive or a standalone replay of the acceptance audit.",
+  "stored_bytes": 3176213,
+  "verification": {
+    "accepted_bindings": {
+      "audit": 153,
+      "frozen_external": 17,
+      "frozen_preparation": 41,
+      "statistics": 144
+    },
+    "all_copies_read_back": true,
+    "all_decoded_bytes_equal_original": true,
+    "all_original_bytes_unchanged_after_copy": true
+  },
+  "version": 1
+}

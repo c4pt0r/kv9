@@ -1,0 +1,9 @@
+{
+  "pid": 2363312,
+  "exit_code": 1,
+  "terminal": true,
+  "timing_session": 34148,
+  "started_ns": 1789157957765870694,
+  "ended_ns": 1789157957846333174,
+  "reaped": true
+}

@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-read-credit-crc-performance-preparation/audit.py",
+    "--run",
+    "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts",
+    "--output",
+    "/tmp/kv9-read-credit-crc-performance-preparation/results-first",
+    "--expected-driver-sha256",
+    "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+    "--root-session",
+    "34148",
+    "--root-exit-code",
+    "0",
+    "--successful-arms",
+    "72"
+  ],
+  "supervisor_pid": 2363311,
+  "started_ns": 1789157957765870694,
+  "timing_session": 34148,
+  "timing_terminal_receipt": "4fa070"
+}

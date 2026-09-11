@@ -1,0 +1,13 @@
+--- /tmp/kv9-read-credit-crc-performance-preparation/statistics/derive.py
++++ /tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/derive.py
+@@ -8,8 +8,8 @@
+ 
+ assert __debug__
+ HERE = Path(__file__).resolve().parent
+-AUDIT_DIR = Path('/tmp/kv9-read-credit-crc-performance-preparation/results-first')
+-GATE = Path('/tmp/kv9-read-credit-crc-performance-root-preparation/audit-terminal-first.json')
++AUDIT_DIR = Path('/tmp/kv9-read-credit-crc-performance-audit-repair-first/results-first')
++GATE = Path('/tmp/kv9-read-credit-crc-performance-root-preparation/audit-terminal-second.json')
+ 
+ 
+ def sha(path):

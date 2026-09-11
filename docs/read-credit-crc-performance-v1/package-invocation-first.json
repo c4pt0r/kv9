@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-native-batch-proof/docs/read-credit-crc-performance-v1/package.py"
+  ],
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "pid": 2408684,
+  "script_sha256": "4e19493f36ef3c6f3bc1975cb22e81e0d1f01ac5709e4899f4e1791ddb09b3c6",
+  "started_ns": 1789158592259768761
+}

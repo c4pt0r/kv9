@@ -1,0 +1,42 @@
+{
+  "/tmp/kv9-read-credit-crc-performance-audit-repair-first/test_audit_contract.py": {
+    "bytes": 17674,
+    "sha256": "3bab39902e2787994961a3e78aaf5a4024444ee23ace0a0558a1179ffbd06a0a"
+  },
+  "/tmp/kv9-read-credit-crc-performance-audit-repair-first/audit.py.diff": {
+    "bytes": 879,
+    "sha256": "ec6d77a5065cccb106e87457a8cf48bfd45737e6456a1466c9610e5d6c3da9cd"
+  },
+  "/tmp/kv9-read-credit-crc-performance-audit-repair-first/contracts-invocation-first.json": {
+    "bytes": 166,
+    "sha256": "c3a17f558862b368550621272c79b87bac583513db7795f0c8b4f790356dcbeb"
+  },
+  "/tmp/kv9-read-credit-crc-performance-audit-repair-first/audit.py": {
+    "bytes": 49287,
+    "sha256": "9a549e1fb45f703e5bde12914211b46240f70d3b9df0b4185c60711fb8ebeb94"
+  },
+  "/tmp/kv9-read-credit-crc-performance-audit-repair-first/contracts-first.log": {
+    "bytes": 2083,
+    "sha256": "9fc1c33baac3260ee7170cb734b5c60d1ac44c58c1e197c25c59239926b808d4"
+  },
+  "/tmp/kv9-read-credit-crc-performance-audit-repair-first/pin-contract-first.json": {
+    "bytes": 729,
+    "sha256": "4b7fdb21fc7eb4dc6c5bdd27b7f38c7d5036d28eab4f3c2ceb50e8440ef46010"
+  },
+  "/tmp/kv9-read-credit-crc-performance-audit-repair-first/contracts-terminal-first.json": {
+    "bytes": 113,
+    "sha256": "289b63665d0e4e38a3d21e5c36013673baac0af5d73ac2274ee6dcba0e4822a7"
+  },
+  "/tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/derive.py": {
+    "bytes": 8246,
+    "sha256": "87d3ee6dea78d04baf50c129f3ef9ad4273aa5fdbb7f55d689dc744c30046886"
+  },
+  "/tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/derive.py.diff": {
+    "bytes": 619,
+    "sha256": "ca34dfc7cc2a980e9713ad182f3c37c7485663b653160b3d6691179ee95f18d2"
+  },
+  "/tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/core.py": {
+    "bytes": 6438,
+    "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+  }
+}

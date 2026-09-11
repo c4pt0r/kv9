@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/tmp/kv9-read-credit-crc-performance-preparation/audit.py", line 311, in <module>
+    require(invocation['argv']==expected_argv and invocation['wrapper_sha256']==
+  File "/tmp/kv9-read-credit-crc-performance-preparation/audit.py", line 62, in require
+    raise ValueError(message)
+ValueError: reviewed wrapper or explicit client arguments differ

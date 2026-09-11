@@ -1,0 +1,45 @@
+{
+  "ready_for_root_review": true,
+  "runtime_launch_authorized": false,
+  "runtime_executed": false,
+  "actual_audit_or_statistics_executed": false,
+  "all_owned_preparation_commands_terminal": true,
+  "protocol_id": "kv9-read-credit-crc-broad-workloads-c1-c64-v1",
+  "timed_cohorts": 72,
+  "smoke_cohorts": 36,
+  "driver_tests": 7,
+  "auditor_tests": 15,
+  "actual_role_binding": true,
+  "source_file_checks": 2352,
+  "candidate_revision": "de37c71009e8199859b931e0037818f490e8d3f6",
+  "candidate_build": "/tmp/kv9-read-credit-crc-release-rebuilt-first",
+  "server_pins": {
+    "old": {
+      "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+      "binary_sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "manifest_sha256": "8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8"
+    },
+    "new": {
+      "revision": "de37c71009e8199859b931e0037818f490e8d3f6",
+      "binary_sha256": "5464adee210f7cebbce7cd57d6e01bfe5a1ace42936edad24f57e63ff9cfbdd7",
+      "manifest_sha256": "164b7999386b042ad2df814fea44fe93724ae15396e9f0cae0356a926fc3d1de"
+    }
+  },
+  "driver_sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+  "auditor_sha256": "8b8a21667713d7b2b9aef71b64cf6b3502b52e3bfa3b964ff54e9b3b4f659a39",
+  "wrapper_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+  "protocol_sha256": "5372db30f81ea237462fec0502a78a121d1ff066df9371c0a5a0bfc75cbd1b0e",
+  "arguments_sha256": "163b9cb4f137dee027e361f6060f15fe86af9fb6bc8cc887e0ce11020a424a83",
+  "statistics_core_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+  "statistics_reader_sha256": "0fb08bcc867042c4f41e1fe3be6d73d0da20b43e37fb160f3ec19a23320e7774",
+  "inventory_sha256": "1f6310497e13c57c786024f409dc1ab54f4398bedf0701b5c16da4a71f283190",
+  "frozen_preparation_files": 41,
+  "external_input_files": 21,
+  "external_inputs_sha256": "fbed9bbc9c2ba59e2a9b733c7b35ab03ca5ce48df79296354331d3ad159c7e0d",
+  "commands_sha256": "eba719b460dc55cd1cc585b6ef746aa68a96f6675bec909da83d05cf79ddaff8",
+  "first_release_rejected_and_retained": true,
+  "ancillary_first_failure_retained": "/tmp/kv9-read-credit-crc-performance-preparation/pin-readback-first-failure.json",
+  "remaining": "Root actual process recovery, review/owned-container readiness and smoke, followed by a separate terminal-gated timing release. No source/predicate/workload changes.",
+  "readme_sha256": "8a32c8c2efad555c8f187fe78df985d85953bf0ffe51216c9bf5fbd4862d790c",
+  "final_frozen_readback_passed": true
+}

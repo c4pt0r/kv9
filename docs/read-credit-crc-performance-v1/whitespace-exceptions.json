@@ -1,0 +1,49 @@
+{
+  "files": [
+    {
+      "blank_eof_lines": 0,
+      "path": "preparation/matched-driver.py.diff",
+      "sha256": "6875aeda20288600c17ba34b44df5311f909610ac731948cb2fc8ea6443268ff",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/matched-driver.py.diff",
+      "space_before_tab_lines": [],
+      "trailing_whitespace_lines": [
+        5
+      ]
+    },
+    {
+      "blank_eof_lines": 0,
+      "path": "preparation/statistics/derive.py.diff",
+      "sha256": "a9e4fe42bbdda0bf7546b314f61fb65b98306a62897b0fe840a26a26a794842f",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/statistics/derive.py.diff",
+      "space_before_tab_lines": [],
+      "trailing_whitespace_lines": [
+        11,
+        18,
+        19
+      ]
+    },
+    {
+      "blank_eof_lines": 0,
+      "path": "preparation/test_driver.py.diff",
+      "sha256": "280d9adfd2059dd114ee6897d9ccb5bd792cc0f58dd0481ed745c4a614b36fb7",
+      "source": "/tmp/kv9-read-credit-crc-performance-preparation/test_driver.py.diff",
+      "space_before_tab_lines": [],
+      "trailing_whitespace_lines": [
+        13
+      ]
+    },
+    {
+      "blank_eof_lines": 0,
+      "path": "statistics/derive.py.diff",
+      "sha256": "ca34dfc7cc2a980e9713ad182f3c37c7485663b653160b3d6691179ee95f18d2",
+      "source": "/tmp/kv9-read-credit-crc-performance-audit-repair-first/statistics/derive.py.diff",
+      "space_before_tab_lines": [],
+      "trailing_whitespace_lines": [
+        4,
+        11,
+        12
+      ]
+    }
+  ],
+  "scope": "Original copied bytes only; no whitespace was rewritten. Gzip originals remain unchanged and are not text whitespace-check targets."
+}

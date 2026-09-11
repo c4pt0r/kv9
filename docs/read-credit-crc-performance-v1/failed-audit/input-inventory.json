@@ -1,0 +1,26 @@
+{
+  "/tmp/kv9-read-credit-crc-performance-timing-first/cohorts/matrix.json": {
+    "bytes": 1956245,
+    "sha256": "c05ffacf71ece04d0fed95a6354916c9135fa0b9aba1cd0243b2a32f1b37d1b4"
+  },
+  "/tmp/kv9-read-credit-crc-performance-timing-first/summary.json": {
+    "bytes": 170,
+    "sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8"
+  },
+  "/tmp/kv9-read-credit-crc-performance-timing-first/before.json": {
+    "bytes": 41236,
+    "sha256": "69083632f0cc8d6fe7e9749581860cacdf92a3d01ab3cf898b8cef3fbdd28eb8"
+  },
+  "/tmp/kv9-read-credit-crc-performance-timing-first/after.json": {
+    "bytes": 41081,
+    "sha256": "479fedc259c8d34318d7d571c5fa2174cad866a983206d76a3c247cebba1fc55"
+  },
+  "/tmp/kv9-read-credit-crc-performance-timing-first/isolation.json": {
+    "bytes": 2114,
+    "sha256": "e865bc9af23d21259ebdeaefc275b79e565535373b4acd224e653aa191e60f03"
+  },
+  "/tmp/kv9-read-credit-crc-performance-timing-first/invocation.json": {
+    "bytes": 1150,
+    "sha256": "5dbc41493d380ec5b96949787bdf599dfddc97eabfbfcce469437b33b6b392d7"
+  }
+}

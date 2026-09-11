@@ -1,0 +1,64 @@
+--- /tmp/kv9-owned-batch-broad-workloads-preparation/audit.py
++++ /tmp/kv9-read-credit-crc-performance-preparation/audit.py
+@@ -30,29 +30,29 @@
+ SOURCE = Path('/tmp/kv9-point-write-measurement-v3')
+ CLIENT_REV = '0be806d9671e2c50701a64aa7889c8859b7648ba'
+ OLD_REV = 'ca0002c7f8e9ee6f595efcc9f4151085ccce87cb'
+-NEW_REV = '9be0c1963515ff974426faadef80482b847b13a5'
++NEW_REV = 'de37c71009e8199859b931e0037818f490e8d3f6'
+ REDIS_REV = CLIENT_REV
+ REDIS_SOURCE = SOURCE
+ PINS = {
+  'old': (OLD_REV, 'b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13'),
+- 'new': (NEW_REV, '07c02871276f9c52cd19bd8213ab3288d6c51a1d7391370b5a6282f0018b03f7'),
++ 'new': (NEW_REV, '5464adee210f7cebbce7cd57d6e01bfe5a1ace42936edad24f57e63ff9cfbdd7'),
+  'client': (CLIENT_REV, '8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957'),
+  'redis': (REDIS_REV, '5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af'),
+ }
+-PROTOCOL_ID = 'kv9-owned-batch-broad-workloads-c1-c64-v1'
++PROTOCOL_ID = 'kv9-read-credit-crc-broad-workloads-c1-c64-v1'
+ CONCURRENCIES = (1, 64)
+ WORKLOADS = (('point-r000',1,0), ('point-r050',1,50), ('point-r100',1,100),
+              ('batch64-r000',64,0), ('batch64-r050',64,50), ('batch64-r100',64,100))
+ ROLES = ('old', 'new', None)
+ ROLE_PATHS = {
+  'old': ('/tmp/kv9-wal-crc32-table', '/tmp/kv9-wal-crc32-release-first', 'kv9'),
+- 'new': ('/tmp/kv9-owned-apply-batch', '/tmp/kv9-owned-batch-release-first', 'kv9'),
++ 'new': ('/tmp/kv9-read-credit-crc', '/tmp/kv9-read-credit-crc-release-rebuilt-first', 'kv9'),
+  'client': ('/tmp/kv9-point-write-measurement-v3', '/tmp/kv9-point-write-v3-release-first/native', 'kv9-batch-benchmark'),
+  'redis': ('/tmp/kv9-point-write-measurement-v3', '/tmp/kv9-point-write-v3-release-first/redis', 'kv9-redis-batch-reference'),
+ }
+ SERVER_MANIFESTS = {
+  'old': '8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8',
+- 'new': '5a2d5e031f0a24a0704dd3a2d4cf4f0fc95f868d694b54d94c3fc56fb1243a21',
++ 'new': '164b7999386b042ad2df814fea44fe93724ae15396e9f0cae0356a926fc3d1de',
+ }
+ STORAGE_GUARDS = {'preflight': {'tmpfs':32*1024**3,'retention':96*1024**3},
+                   'runtime': {'tmpfs':16*1024**3,'retention':64*1024**3}}
+@@ -298,14 +298,14 @@
+             isolation['driver_sha256']==args.expected_driver_sha256,'outer isolation scope differs')
+     require(matrix['isolation_snapshot']==isolation and sha(outer/'isolation.json')==matrix['isolation_snapshot_sha256'] and
+             sha(ROOT/'isolation-snapshot.json')==sha(outer/'isolation.json'),'inner/outer snapshot binding differs')
+-    expected_argv=['/usr/bin/python3','/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py',
++    expected_argv=['/usr/bin/python3','/tmp/kv9-read-credit-crc-performance-preparation/matched-driver.py',
+                    '--output',str(ROOT),'--isolation-snapshot',str(outer/'isolation.json'),
+                    '--client-source','/tmp/kv9-point-write-measurement-v3',
+                    '--client-build','/tmp/kv9-point-write-v3-release-first/native','--expected-client-revision',CLIENT_REV,
+                    '--old-server-source','/tmp/kv9-wal-crc32-table',
+                    '--old-server-build','/tmp/kv9-wal-crc32-release-first',
+-                   '--new-server-source','/tmp/kv9-owned-apply-batch',
+-                   '--new-server-build','/tmp/kv9-owned-batch-release-first',
++                   '--new-server-source','/tmp/kv9-read-credit-crc',
++                   '--new-server-build','/tmp/kv9-read-credit-crc-release-rebuilt-first',
+                    '--redis-client-source','/tmp/kv9-point-write-measurement-v3',
+                    '--redis-client-build','/tmp/kv9-point-write-v3-release-first/redis','--storage','tmpfs']
+     require(invocation['argv']==expected_argv and invocation['wrapper_sha256']==
+@@ -380,7 +380,7 @@
+         require(sha(ROOT/'retained-inputs/helpers'/f'{number:02d}-{Path(path).name}')==h,'executed helper snapshot differs')
+         if Path(path).is_relative_to(SOURCE) or Path(path).is_relative_to(REDIS_SOURCE):
+             require(sha(path)==h,'validator/helper source changed')
+-    require(matrix['helper_hashes'][str(Path('/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py'))]==args.expected_driver_sha256,
++    require(matrix['helper_hashes'][str(Path('/tmp/kv9-read-credit-crc-performance-preparation/matched-driver.py'))]==args.expected_driver_sha256,
+             'driver is not the retained helper identity')
+     sys.path.insert(0,str(SOURCE/'scripts'))
+     import batch_benchmark_report as native

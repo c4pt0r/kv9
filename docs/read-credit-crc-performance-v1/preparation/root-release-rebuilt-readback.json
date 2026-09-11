@@ -1,0 +1,295 @@
+{
+  "accepted_for_runtime": true,
+  "revision": "de37c71009e8199859b931e0037818f490e8d3f6",
+  "source_files": 600,
+  "source_tree_sha256": "59924d6dfcc38dd3640866b424659cfc8319e886cf8d32745841faca4384e0bb",
+  "server_sha256": "5464adee210f7cebbce7cd57d6e01bfe5a1ace42936edad24f57e63ff9cfbdd7",
+  "workload_sha256": "6447feee2ed494a0a2315bb757dc75c18b738b7f4462803ea30a76b30e7482ad",
+  "build_manifest_sha256": "164b7999386b042ad2df814fea44fe93724ae15396e9f0cae0356a926fc3d1de",
+  "workload_manifest_sha256": "147db709762a5e9a19fff1612f84917f8613172eb7dbf3e7267608faa4bd0d75",
+  "cargo_artifacts": {
+    "workload/cargo.jsonl": [
+      {
+        "name": "kv9-batch-workload",
+        "fresh": false,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/server#kv9-server@0.0.0",
+        "executable": "/home/dongxu/kv9/target/release/kv9-batch-workload"
+      },
+      {
+        "name": "kv9_common",
+        "fresh": false,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/common#kv9-common@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_meta",
+        "fresh": false,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/meta#kv9-meta@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_engine",
+        "fresh": false,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/engine#kv9-engine@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_raft",
+        "fresh": false,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/raft#kv9-raft@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_region",
+        "fresh": false,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/region#kv9-region@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_txn",
+        "fresh": false,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/txn#kv9-txn@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_server",
+        "fresh": false,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/server#kv9-server@0.0.0",
+        "executable": null
+      }
+    ],
+    "kv9-cargo.jsonl": [
+      {
+        "name": "kv9",
+        "fresh": false,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc#kv9@0.0.0",
+        "executable": "/home/dongxu/kv9/target/release/kv9"
+      },
+      {
+        "name": "kv9_common",
+        "fresh": true,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/common#kv9-common@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_meta",
+        "fresh": true,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/meta#kv9-meta@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_engine",
+        "fresh": true,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/engine#kv9-engine@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_raft",
+        "fresh": true,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/raft#kv9-raft@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_region",
+        "fresh": true,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/region#kv9-region@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_txn",
+        "fresh": true,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/txn#kv9-txn@0.0.0",
+        "executable": null
+      },
+      {
+        "name": "kv9_server",
+        "fresh": true,
+        "features": [],
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        },
+        "package_id": "path+file:///tmp/kv9-read-credit-crc/crates/server#kv9-server@0.0.0",
+        "executable": null
+      }
+    ]
+  },
+  "first_release_retained_and_rejected": true,
+  "project_clean": {
+    "argv": [
+      "cargo",
+      "clean",
+      "--release",
+      "--package",
+      "kv9-common",
+      "--package",
+      "kv9-meta",
+      "--package",
+      "kv9-engine",
+      "--package",
+      "kv9-raft",
+      "--package",
+      "kv9-region",
+      "--package",
+      "kv9-txn",
+      "--package",
+      "kv9-server",
+      "--package",
+      "kv9"
+    ],
+    "cwd": "/tmp/kv9-read-credit-crc",
+    "started_ns": 1789154971821541675,
+    "supervisor_pid": 2020841,
+    "cargo_target": "/home/dongxu/kv9/target",
+    "scope": "Only selected first-party release cache; original copied releases/evidence preserved",
+    "child_pid": 2020851,
+    "exit_code": 0,
+    "child_reaped": true,
+    "ended_ns": 1789154971901800372
+  },
+  "rebuild_terminal": {
+    "argv": [
+      "python3",
+      "scripts/build-native-batch.py",
+      "--output",
+      "/tmp/kv9-read-credit-crc-release-rebuilt-first",
+      "--release"
+    ],
+    "cwd": "/tmp/kv9-read-credit-crc",
+    "started_ns": 1789154971902073724,
+    "supervisor_pid": 2020841,
+    "cargo_target": "/home/dongxu/kv9/target",
+    "scope": "Only selected first-party release cache; original copied releases/evidence preserved",
+    "child_pid": 2020860,
+    "exit_code": 0,
+    "child_reaped": true,
+    "ended_ns": 1789154985714764517
+  },
+  "root_rebuild_session": 5651,
+  "root_rebuild_exit_code": 0,
+  "root_rebuild_tool_chunk": "512c3d",
+  "source_clean": true
+}

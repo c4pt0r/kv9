@@ -1,0 +1,36 @@
+--- /tmp/kv9-read-credit-crc-performance-preparation/pending-first/audit.py
++++ /tmp/kv9-read-credit-crc-performance-preparation/audit.py
+@@ -35,7 +35,7 @@
+ REDIS_SOURCE = SOURCE
+ PINS = {
+  'old': (OLD_REV, 'b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13'),
+- 'new': (NEW_REV, 'PENDING_CANDIDATE_BINARY_SHA256'),
++ 'new': (NEW_REV, '5464adee210f7cebbce7cd57d6e01bfe5a1ace42936edad24f57e63ff9cfbdd7'),
+  'client': (CLIENT_REV, '8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957'),
+  'redis': (REDIS_REV, '5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af'),
+ }
+@@ -46,13 +46,13 @@
+ ROLES = ('old', 'new', None)
+ ROLE_PATHS = {
+  'old': ('/tmp/kv9-wal-crc32-table', '/tmp/kv9-wal-crc32-release-first', 'kv9'),
+- 'new': ('/tmp/kv9-read-credit-crc', '/tmp/kv9-read-credit-crc-release-first', 'kv9'),
++ 'new': ('/tmp/kv9-read-credit-crc', '/tmp/kv9-read-credit-crc-release-rebuilt-first', 'kv9'),
+  'client': ('/tmp/kv9-point-write-measurement-v3', '/tmp/kv9-point-write-v3-release-first/native', 'kv9-batch-benchmark'),
+  'redis': ('/tmp/kv9-point-write-measurement-v3', '/tmp/kv9-point-write-v3-release-first/redis', 'kv9-redis-batch-reference'),
+ }
+ SERVER_MANIFESTS = {
+  'old': '8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8',
+- 'new': 'PENDING_CANDIDATE_MANIFEST_SHA256',
++ 'new': '164b7999386b042ad2df814fea44fe93724ae15396e9f0cae0356a926fc3d1de',
+ }
+ STORAGE_GUARDS = {'preflight': {'tmpfs':32*1024**3,'retention':96*1024**3},
+                   'runtime': {'tmpfs':16*1024**3,'retention':64*1024**3}}
+@@ -305,7 +305,7 @@
+                    '--old-server-source','/tmp/kv9-wal-crc32-table',
+                    '--old-server-build','/tmp/kv9-wal-crc32-release-first',
+                    '--new-server-source','/tmp/kv9-read-credit-crc',
+-                   '--new-server-build','/tmp/kv9-read-credit-crc-release-first',
++                   '--new-server-build','/tmp/kv9-read-credit-crc-release-rebuilt-first',
+                    '--redis-client-source','/tmp/kv9-point-write-measurement-v3',
+                    '--redis-client-build','/tmp/kv9-point-write-v3-release-first/redis','--storage','tmpfs']
+     require(invocation['argv']==expected_argv and invocation['wrapper_sha256']==

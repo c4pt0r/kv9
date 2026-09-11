@@ -1,0 +1,22 @@
+{
+  "released": true,
+  "observed_ns": 1789156622402728178,
+  "free_bytes": {
+    "/tmp": 218109747200,
+    "/dev/shm": 66274996224
+  },
+  "smoke_session": 22359,
+  "smoke_terminal_receipt": "9e436d",
+  "helper_integration_terminal": {
+    "session": 63516,
+    "exit_code": 0,
+    "receipt": "ce31d6"
+  },
+  "cache_cleanup_terminal": {
+    "session": 27225,
+    "exit_code": 0,
+    "receipt": "b880b8"
+  },
+  "all_agents_idle": true,
+  "scope": "72 frozen cohorts, original guards and protocol; no builds/tests/faults/profiles/audits during timing"
+}

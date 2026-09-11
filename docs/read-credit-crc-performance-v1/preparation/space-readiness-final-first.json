@@ -1,0 +1,19 @@
+{
+  "observed_ns": 1789155381797713683,
+  "filesystems": {
+    "tmpfs": {
+      "path": "/dev/shm",
+      "device": 29,
+      "available_bytes": 66274996224,
+      "total_bytes": 66276073472
+    },
+    "retention": {
+      "path": "/tmp",
+      "device": 66306,
+      "available_bytes": 217355542528,
+      "total_bytes": 1966736678912
+    }
+  },
+  "current_sample_meets_preflight": true,
+  "scope": "Point-in-time read-only sample; root must repeat before actual launch. Prior space estimate and all guards unchanged."
+}
