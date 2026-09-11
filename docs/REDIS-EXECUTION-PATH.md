@@ -179,7 +179,8 @@ be subtracted from the uninstrumented 38-us client latency as an exact budget.
    improves 4.476% and BatchPut(64) 38.486%, with better mean/p99 in both repeats.
    The remaining same-recording Redis throughput ratios are 3.974x and 6.977x.
    The [eleven-window Chaos fixture](CRC-CHAOS-ACCEPTANCE.md) also passes;
-   broader workload acceptance remains pending.
+   the subsequent [full workload matrix](CRC-WORKLOAD-PERFORMANCE.md) supports
+   selecting CRC as the next baseline, with a small batch-read tradeoff.
 4. Evaluate kernel bypass only after a real NIC experiment identifies the
    kernel/network path as the limiting cost. Redis's measured reference uses
    ordinary sockets. The current loopback profile neither proves a NIC limit
@@ -249,10 +250,12 @@ of the remaining index updates or predict an ownership rewrite's gain.
 
 The next bounded candidate consumes already-owned mutation buffers at final
 index insertion. It has passed 712 local workspace tests (23 ignored) and
-Clippy; it remains uncommitted and unmeasured, without candidate-specific
-recovery acceptance. This removes an identified duplicate copy while retaining
-ordered mutations and persistent snapshots. The CRC workload matrix should
-finish before selecting the next baseline or comparing this follow-on.
+Clippy. Source `9be0c19` is committed and passes its own independently audited
+process recovery: 367 calls, 331 OK and 36 unknown, with complete histories.
+Actual Chaos acceptance and performance measurement remain separate gates.
+This removes an identified duplicate copy while retaining ordered mutations
+and persistent snapshots. The completed [CRC workload matrix](CRC-WORKLOAD-PERFORMANCE.md)
+selects the comparison baseline, with its small batch-read regression retained.
 
 For a structural experiment, map each range replica's mutable protocol state
 to one execution owner and map multiple owners onto a bounded set of workers.

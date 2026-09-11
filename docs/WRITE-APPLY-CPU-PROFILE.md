@@ -112,7 +112,8 @@ The [completed first write screen](CRC-WRITE-SCREENING.md) now measures
 **+4.476% point PUT and +38.486% BatchPut(64) pooled throughput**, with improved
 mean/p99 in both repeats. Independent accounting, exact-source process
 recovery and the [eleven-window Chaos fixture](CRC-CHAOS-ACCEPTANCE.md) pass;
-broader workloads remain open.
+the subsequent [full workload matrix](CRC-WORKLOAD-PERFORMANCE.md) supports
+baseline selection, retaining a small c64 batch-read throughput/p99 regression.
 
 The original recordings, source bindings, exact decoder and instruction
 attribution remain under `/tmp/kv9-write-apply-profile-first`. Large raw WAL
