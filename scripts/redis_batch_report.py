@@ -13,8 +13,15 @@ WORKLOAD_FIELDS = 'run_id seed workers keys batch_size value_bytes read_percent 
 
 
 def config_check(c):
-    keys(c, ['version', 'address', 'deadline_ms', *WORKLOAD_FIELDS])
-    uint(c['version'], 1, 1)
+    require(type(c) is dict, 'Redis configuration must be an object')
+    version = uint(c.get('version'), 1, 2)
+    keys(c, ['version', 'address', 'deadline_ms', *WORKLOAD_FIELDS,
+             *(['read_api'] if version == 2 else [])])
+    if version == 2:
+        require(c['read_api'] in ('mget', 'get'), 'invalid Redis read API')
+        if c['read_api'] == 'get':
+            require(c['batch_size'] == 1 and c['read_percent'] == 100,
+                    'Redis GET requires batch size one and read-only traffic')
     uint(c['deadline_ms'], 1, 30_000)
     address = c['address']
     require(type(address) is str and len(address) <= 128, 'invalid Redis address')
@@ -47,6 +54,9 @@ def config_check(c):
                 mget_response_bytes=array(n) + n*bulk(c['value_bytes']),
                 maximum_input_items_in_flight=c['workers']*n,
                 maximum_input_payload_bytes_in_flight=c['workers']*n*(len(c['run_id'])+17+c['value_bytes']))
+    if c.get('read_api') == 'get':
+        size.update(get_request_bytes=array(2)+bulk(3)+bulk(len(c['run_id'])+17),
+                    get_response_bytes=bulk(c['value_bytes']))
     require(max(size[k] for k in ('mget_request_bytes', 'mset_request_bytes', 'mget_response_bytes')) <= 1_048_576,
             'encoded Redis batch exceeds bound')
     require(size['maximum_input_payload_bytes_in_flight'] <= 64*1024*1024, 'pending input exceeds bound')
@@ -55,7 +65,8 @@ def config_check(c):
 
 def metrics_check(m, c, phase):
     keys(m, ['operations', 'outcomes', 'reasons', 'histogram_subdivisions', 'valid', 'statistics'])
-    equal(m['operations'], ['mget', 'mset'], 'operation vocabulary differs')
+    point = c.get('read_api') == 'get' and phase in ('warmup', 'measurement')
+    equal(m['operations'], ['get' if point else 'mget', 'mset'], 'operation vocabulary differs')
     equal(m['outcomes'], ['success', 'unknown_write', 'read_failure'], 'outcome vocabulary differs')
     equal(m['reasons'], ['success', 'deadline', 'io', 'server_error', 'protocol', 'data_integrity'], 'reason vocabulary differs')
     uint(m['histogram_subdivisions'], 64, 64)
@@ -104,6 +115,7 @@ def metrics_check(m, c, phase):
         attempted = uint(op['command_attempts'], 0, calls)
         require(attempted + failed == calls and attempted >= reasons[0] + reasons[3], 'command/connection accounting differs')
         late = histogram_check(op['dispatch_lateness'])
+        require(not (point and kind == 1) or calls == 0, 'point GET stage contains writes')
         require(late['count'] == (calls if fixed else 0), 'dispatch lateness population differs')
         require(scheduled_sum == (whole_sum+late['sum_ns'] if fixed else 0), 'scheduled time omits delayed dispatch')
         if fixed:
@@ -115,8 +127,11 @@ def metrics_check(m, c, phase):
 
 def report_check(r, c, b):
     keys(r, [*REPORT_FIELDS, 'protocol', 'preconnected_workers'])
-    uint(r['version'], 1, 1)
-    require(r['workload_model'] == 'bounded_redis_batch_performance' and r['protocol'] == 'resp2', 'wrong reference protocol/model')
+    uint(r['version'], 1, 2)
+    equal(r['version'], c['version'], 'report and configuration versions differ')
+    model = ('bounded_redis_point_get_diagnostic' if c.get('read_api') == 'get'
+             else 'bounded_redis_batch_performance')
+    require(r['workload_model'] == model and r['protocol'] == 'resp2', 'wrong reference protocol/model')
     require(r['complete'] is True and r['failure'] is None, 'measurement incomplete')
     require(r['full_history_recorded'] is False and r['independently_checked'] is False, 'aggregate client claims history acceptance')
     equal(r['configuration'], c, 'reported configuration differs')
@@ -161,10 +176,17 @@ def paired_configuration(redis, native):
     config_check(redis)
     from batch_benchmark_report import config_check as native_config_check
     native_config_check(native)
+    redis_api = redis.get('read_api', 'mget')
+    native_api = native.get('read_api', 'batch_get')
+    require((redis_api, native_api) in (('mget', 'batch_get'), ('get', 'point_get')),
+            'paired read APIs differ')
     for field in WORKLOAD_FIELDS:
         equal(redis[field], native[field], 'paired workload differs: '+field)
     equal(redis['deadline_ms'], native['client']['deadline_ms'], 'paired deadlines differ')
-    return {field: redis[field] for field in WORKLOAD_FIELDS}
+    result = {field: redis[field] for field in WORKLOAD_FIELDS}
+    if redis['version'] == 2 or native['version'] == 2:
+        result['read_api_pair'] = {'redis': redis_api, 'native': native_api}
+    return result
 
 
 def main():

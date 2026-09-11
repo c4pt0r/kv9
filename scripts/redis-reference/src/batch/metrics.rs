@@ -1,5 +1,6 @@
 use super::{
     common::Histogram,
+    model::ReadApi,
     wire::{Call, Failure},
 };
 use serde::Serialize;
@@ -107,13 +108,68 @@ impl Metrics {
         })
     }
     pub fn report(&self) -> Value {
+        self.report_for_read_api(ReadApi::Mget)
+    }
+    pub fn report_for_read_api(&self, read_api: ReadApi) -> Value {
         fn h(h: &Histogram) -> Value {
             json!({"raw":h,"mean_ns":if h.valid && h.count>0{Some(h.sum_ns as f64/h.count as f64)}else{None},"p50":h.quantile(50),"p95":h.quantile(95),"p99":h.quantile(99)})
         }
-        json!({"operations":["mget","mset"],"outcomes":["success","unknown_write","read_failure"],
+        let read_operation = match read_api {
+            ReadApi::Mget => "mget",
+            ReadApi::Get => "get",
+        };
+        json!({"operations":[read_operation,"mset"],"outcomes":["success","unknown_write","read_failure"],
             "reasons":["success","deadline","io","server_error","protocol","data_integrity"],"histogram_subdivisions":64,"valid":self.valid(),
             "statistics":self.operations.iter().map(|o|json!({"populations":o.populations.iter().map(|p|json!({
                 "calls":p.calls,"input_items":p.input_items,"completed_before_cutoff":p.completed_before_cutoff,"whole_call":h(&p.whole_call),"client_call":h(&p.client_call),"scheduled_to_completion":h(&p.scheduled_to_completion)})).collect::<Vec<_>>(),
                 "reasons":o.reasons,"dispatch_lateness":h(&o.dispatch_lateness),"connection_attempts":o.connection_attempts,"connection_failures":o.connection_failures,"command_attempts":o.command_attempts,"data_failures":o.data_failures})).collect::<Vec<_>>()})
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn failed_get_keeps_one_whole_read_failure_without_write_or_replay() {
+        let call = Call {
+            result: Err(Failure::Deadline),
+            elapsed_ns: 100,
+            connection_attempts: 1,
+            connection_failures: 0,
+            command_attempts: 1,
+        };
+        let mut metrics = Metrics::default();
+        metrics.record(Sample {
+            call: &call,
+            read: true,
+            items: 1,
+            whole_call_ns: 120,
+            before_cutoff: false,
+            scheduled_ns: Some(150),
+            lateness_ns: Some(30),
+            valid: true,
+        });
+        let read = &metrics.operations[0];
+        assert_eq!(metrics.calls(), 1);
+        assert_eq!(read.populations[0].calls, 0);
+        assert_eq!(read.populations[1].calls, 0);
+        assert_eq!(
+            (read.populations[2].calls, read.populations[2].input_items),
+            (1, 1)
+        );
+        assert_eq!(read.populations[2].whole_call.count, 1);
+        assert_eq!(read.populations[2].whole_call.sum_ns, 120);
+        assert_eq!(read.populations[2].scheduled_to_completion.sum_ns, 150);
+        assert_eq!(read.command_attempts, 1);
+        assert!(metrics.operations[1]
+            .populations
+            .iter()
+            .all(|p| p.calls == 0));
+        assert_eq!(
+            metrics.report_for_read_api(ReadApi::Get)["operations"],
+            json!(["get", "mset"])
+        );
+        assert_eq!(metrics.report()["operations"], json!(["mget", "mset"]));
     }
 }
