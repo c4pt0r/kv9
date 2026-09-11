@@ -85,8 +85,11 @@ The first independent audit passes; no broad candidate acceptance follows.
 The prior 629-derived experiment remains separately rejected. Retain the
 adaptive interval. The subsequent [two persistent stream-worker screen](STREAM-WORKER-PAIR-SCREENING.md)
 also regresses throughput and mean latency, despite improved p99 buckets.
-Retain per-request tasks and measure the accepted control's GET concurrency
-curve against Redis before selecting the next execution-handoff change.
+Retain per-request tasks. The [accepted control's GET concurrency curve](GET-CONCURRENCY-CURVE.md)
+now shows approximately 38 us mean at c1 versus Redis 5.8 us, while c128/c256
+cross the existing public admission limit and retain substantial refusals.
+Map the low-concurrency confirmation path before selecting one execution handoff;
+do not subtract these instrumented c64 stages from uninstrumented c1 latency.
 Quorum, applied-index, original deadlines and cleanup ownership remain mandatory.
 
 Each API has one instrumented five-second recording on the shared host,

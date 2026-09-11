@@ -1,0 +1,39 @@
+{
+  "protocol_id": "kv9-point-get-concurrency-v1",
+  "concurrency_points": [
+    1,
+    8,
+    32,
+    64,
+    128,
+    256
+  ],
+  "cohorts": 24,
+  "smoke_points": [
+    1,
+    256
+  ],
+  "smoke_cohorts": 4,
+  "ordering": "Ascending concurrency with KV9 then Redis, followed by the complete reverse order.",
+  "server_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "native_revision": "03c1c776a5dd7d1cc67491ab253e02ce51665bf8",
+  "redis_client_revision": "b8ec38f660786412705f350d96ab086f0e7f6c60",
+  "fixed_settings": {
+    "measure_ms": 5000,
+    "warmup_calls": 128,
+    "keys": 4096,
+    "sentinel_keys": 1,
+    "value_bytes": 128,
+    "batch_size": 1,
+    "read_percent": 100,
+    "max_calls": 10000000,
+    "deadline_ms": 1500,
+    "native_max_attempts": 6,
+    "native_retry_backoff_ms": 5,
+    "public_requests_per_voter": 64,
+    "public_encoded_bytes_per_voter": 16777216,
+    "async_read_registry_per_voter": 128
+  },
+  "interpretation": "Offered closed-loop logical-call concurrency with existing transport topology and server limits. Preserve all terminal outcome populations and retries; successful logical calls need not be single attempts. No pooling across concurrency or claim of sustained server capacity.",
+  "runtime_executed": false
+}

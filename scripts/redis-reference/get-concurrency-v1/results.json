@@ -1,0 +1,2054 @@
+{
+  "protocol_id": "kv9-point-get-concurrency-v1",
+  "complete": true,
+  "scope": "Short shared-host tmpfs diagnostic; no sustained-capacity or equal-durability claim",
+  "source_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "source_changed": false,
+  "root_timing_session": 4852,
+  "root_timing_exit_code": 0,
+  "root_audit_session": 67649,
+  "root_audit_exit_code": 0,
+  "totals": {
+    "calls": 45300391,
+    "successful_calls": 40665456,
+    "refused_calls": 4634935
+  },
+  "evidence_sha256": {
+    "/tmp/kv9-get-concurrency-preparation/results-first/audit.json": "8348cfb651b5a6a1f1c13871b7b487e6db062bf76722204c8facd4939e6bf768",
+    "/tmp/kv9-get-concurrency-preparation/results-first/input-inventory.json": "500c79cc6d212f5accfcfaca30e364add705becb24b2ece125f8dfde1db0fb34",
+    "/tmp/kv9-get-concurrency-preparation/preparation.json": "400de953b496ad76211f99d9e73ef9b02a631921d9632d46d4e825164fe3c218",
+    "/tmp/kv9-get-concurrency-preparation/smoke-readback-first.json": "54ecf93b24e1f9720dd0957cb92d421ba7e138dd2f634b4c47b680bcd930a4ef",
+    "/tmp/kv9-get-concurrency-preparation/root-timing-release-first.json": "8dfd2f3e85ca27269d2e5616b923a24e7a2814a684c26cf950e4138c08d37ba9",
+    "/tmp/kv9-get-concurrency-diagnostic-attempt1/cohorts/matrix.json": "b4d275bf8bcc4c9ff11554f77995c523b38e02d95c78f858888abc26dba2a857"
+  },
+  "cases": [
+    {
+      "ordinal": 0,
+      "repeat": 0,
+      "workers": 1,
+      "arm": "kv9-point",
+      "calls": 131079,
+      "issued": 131079,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 131079,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000024202,
+      "successful_calls_per_second": 26215.6731056559,
+      "attempts": 131079,
+      "attempt_reasons": {
+        "success": 131079,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 131079,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 131079,
+        "sum_ns": 4982623804,
+        "mean_ns": 38012.37272179373,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 131079,
+        "sum_ns": 4982623804,
+        "mean_ns": 38012.37272179373,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      },
+      "report_sha256": "dc3c355bddb4f7c20630d3c367d374c90f095f752e4b984cd894f169067ab715",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 1,
+      "repeat": 0,
+      "workers": 1,
+      "arm": "redis-get",
+      "calls": 850093,
+      "issued": 850093,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 850093,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000002457,
+      "successful_calls_per_second": 170018.516452901,
+      "attempts": 850093,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 850093,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 850093,
+        "sum_ns": 4935792533,
+        "mean_ns": 5806.179480362737,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6208,
+          "upper_ns": 6271
+        },
+        "p99": {
+          "lower_ns": 8128,
+          "upper_ns": 8191
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 850093,
+        "sum_ns": 4935792533,
+        "mean_ns": 5806.179480362737,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6208,
+          "upper_ns": 6271
+        },
+        "p99": {
+          "lower_ns": 8128,
+          "upper_ns": 8191
+        }
+      },
+      "report_sha256": "b0ef708b7d8ccaee8771adc569e391a2457898d11050820d3d2214be641d4930",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 2,
+      "repeat": 0,
+      "workers": 8,
+      "arm": "kv9-point",
+      "calls": 584428,
+      "issued": 584428,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 584428,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000040661,
+      "successful_calls_per_second": 116884.64947065357,
+      "attempts": 584428,
+      "attempt_reasons": {
+        "success": 584428,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 584428,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 584428,
+        "sum_ns": 39929831304,
+        "mean_ns": 68322.9265264498,
+        "p50": {
+          "lower_ns": 66560,
+          "upper_ns": 67583
+        },
+        "p95": {
+          "lower_ns": 90112,
+          "upper_ns": 91135
+        },
+        "p99": {
+          "lower_ns": 104448,
+          "upper_ns": 105471
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 584428,
+        "sum_ns": 39929831304,
+        "mean_ns": 68322.9265264498,
+        "p50": {
+          "lower_ns": 66560,
+          "upper_ns": 67583
+        },
+        "p95": {
+          "lower_ns": 90112,
+          "upper_ns": 91135
+        },
+        "p99": {
+          "lower_ns": 104448,
+          "upper_ns": 105471
+        }
+      },
+      "report_sha256": "f687c1929459ca83c3dc7b0b4940541cc2a883eba39479ca3313c0fecd8b90f6",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 3,
+      "repeat": 0,
+      "workers": 8,
+      "arm": "redis-get",
+      "calls": 2451089,
+      "issued": 2451089,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2451089,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000022847,
+      "successful_calls_per_second": 490215.5600090201,
+      "attempts": 2451089,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 2451089,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 2451089,
+        "sum_ns": 39746223295,
+        "mean_ns": 16215.740552464638,
+        "p50": {
+          "lower_ns": 16384,
+          "upper_ns": 16639
+        },
+        "p95": {
+          "lower_ns": 22272,
+          "upper_ns": 22527
+        },
+        "p99": {
+          "lower_ns": 24064,
+          "upper_ns": 24319
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2451089,
+        "sum_ns": 39746223295,
+        "mean_ns": 16215.740552464638,
+        "p50": {
+          "lower_ns": 16384,
+          "upper_ns": 16639
+        },
+        "p95": {
+          "lower_ns": 22272,
+          "upper_ns": 22527
+        },
+        "p99": {
+          "lower_ns": 24064,
+          "upper_ns": 24319
+        }
+      },
+      "report_sha256": "bf4a3321f76e35035bdd3611924e445dd28147949c9e297e12452d50b77cb955",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 4,
+      "repeat": 0,
+      "workers": 32,
+      "arm": "kv9-point",
+      "calls": 1351611,
+      "issued": 1351611,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1351611,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000128960,
+      "successful_calls_per_second": 270315.2280296387,
+      "attempts": 1351611,
+      "attempt_reasons": {
+        "success": 1351611,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 1351611,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 1351611,
+        "sum_ns": 159833870137,
+        "mean_ns": 118254.34251200974,
+        "p50": {
+          "lower_ns": 112640,
+          "upper_ns": 113663
+        },
+        "p95": {
+          "lower_ns": 169984,
+          "upper_ns": 172031
+        },
+        "p99": {
+          "lower_ns": 204800,
+          "upper_ns": 206847
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1351611,
+        "sum_ns": 159833870137,
+        "mean_ns": 118254.34251200974,
+        "p50": {
+          "lower_ns": 112640,
+          "upper_ns": 113663
+        },
+        "p95": {
+          "lower_ns": 169984,
+          "upper_ns": 172031
+        },
+        "p99": {
+          "lower_ns": 204800,
+          "upper_ns": 206847
+        }
+      },
+      "report_sha256": "5000070a9f39e2461d802ce88cb6d376da13859efc4db32913a3f6317cbdc324",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 5,
+      "repeat": 0,
+      "workers": 32,
+      "arm": "redis-get",
+      "calls": 2472626,
+      "issued": 2472626,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2472626,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000175629,
+      "successful_calls_per_second": 494507.8300168644,
+      "attempts": 2472626,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 2472626,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 2472626,
+        "sum_ns": 159724441036,
+        "mean_ns": 64597.08869679442,
+        "p50": {
+          "lower_ns": 59904,
+          "upper_ns": 60415
+        },
+        "p95": {
+          "lower_ns": 84992,
+          "upper_ns": 86015
+        },
+        "p99": {
+          "lower_ns": 109568,
+          "upper_ns": 110591
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2472626,
+        "sum_ns": 159724441036,
+        "mean_ns": 64597.08869679442,
+        "p50": {
+          "lower_ns": 59904,
+          "upper_ns": 60415
+        },
+        "p95": {
+          "lower_ns": 84992,
+          "upper_ns": 86015
+        },
+        "p99": {
+          "lower_ns": 109568,
+          "upper_ns": 110591
+        }
+      },
+      "report_sha256": "576fc65b883bd009fe0c5e43b1a0d8faa8e9280a09176fceaa9b478c4e098173",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 6,
+      "repeat": 0,
+      "workers": 64,
+      "arm": "kv9-point",
+      "calls": 1714948,
+      "issued": 1714948,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1714948,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000156690,
+      "successful_calls_per_second": 342978.8517287445,
+      "attempts": 1714948,
+      "attempt_reasons": {
+        "success": 1714948,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 1714948,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 1714948,
+        "sum_ns": 319785968575,
+        "mean_ns": 186469.7755121438,
+        "p50": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 356352,
+          "upper_ns": 360447
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1714948,
+        "sum_ns": 319785968575,
+        "mean_ns": 186469.7755121438,
+        "p50": {
+          "lower_ns": 174080,
+          "upper_ns": 176127
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 356352,
+          "upper_ns": 360447
+        }
+      },
+      "report_sha256": "5a9cfa5850d0e0da9561038ef0282462ed48ca18f39642317c4cb1c13f6d31f7",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 7,
+      "repeat": 0,
+      "workers": 64,
+      "arm": "redis-get",
+      "calls": 2541886,
+      "issued": 2541886,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2541886,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000166371,
+      "successful_calls_per_second": 508360.28471821424,
+      "attempts": 2541886,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 2541886,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 2541886,
+        "sum_ns": 319724636466,
+        "mean_ns": 125782.4451867629,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 167936,
+          "upper_ns": 169983
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2541886,
+        "sum_ns": 319724636466,
+        "mean_ns": 125782.4451867629,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 167936,
+          "upper_ns": 169983
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      },
+      "report_sha256": "b4ff6a308f00523b5bb649ce5d98dd637ca9fde15e85f7c156194c24d6a02b91",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 8,
+      "repeat": 0,
+      "workers": 128,
+      "arm": "kv9-point",
+      "calls": 2501508,
+      "issued": 2501508,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1729611,
+        "refused": 771897,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000220462,
+      "successful_calls_per_second": 345906.9481324802,
+      "attempts": 2501508,
+      "attempt_reasons": {
+        "success": 1729611,
+        "not_leader": 0,
+        "admission_count": 771897,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 1729611,
+        "not_leader": 0,
+        "admission_count": 771897,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 2501508,
+        "sum_ns": 639675099124,
+        "mean_ns": 255715.7918839356,
+        "p50": {
+          "lower_ns": 266240,
+          "upper_ns": 270335
+        },
+        "p95": {
+          "lower_ns": 413696,
+          "upper_ns": 417791
+        },
+        "p99": {
+          "lower_ns": 540672,
+          "upper_ns": 548863
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1729611,
+        "sum_ns": 530488736999,
+        "mean_ns": 306709.8538336077,
+        "p50": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p95": {
+          "lower_ns": 446464,
+          "upper_ns": 450559
+        },
+        "p99": {
+          "lower_ns": 565248,
+          "upper_ns": 573439
+        }
+      },
+      "report_sha256": "80586697654e1e040ba52f606bde021e811510d685c8ea9505be003769bae08c",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 9,
+      "repeat": 0,
+      "workers": 128,
+      "arm": "redis-get",
+      "calls": 2503860,
+      "issued": 2503860,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2503860,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000564961,
+      "successful_calls_per_second": 500715.4230627742,
+      "attempts": 2503860,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 2503860,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 2503860,
+        "sum_ns": 639687555523,
+        "mean_ns": 255480.5602242138,
+        "p50": {
+          "lower_ns": 239616,
+          "upper_ns": 241663
+        },
+        "p95": {
+          "lower_ns": 303104,
+          "upper_ns": 307199
+        },
+        "p99": {
+          "lower_ns": 479232,
+          "upper_ns": 483327
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2503860,
+        "sum_ns": 639687555523,
+        "mean_ns": 255480.5602242138,
+        "p50": {
+          "lower_ns": 239616,
+          "upper_ns": 241663
+        },
+        "p95": {
+          "lower_ns": 303104,
+          "upper_ns": 307199
+        },
+        "p99": {
+          "lower_ns": 479232,
+          "upper_ns": 483327
+        }
+      },
+      "report_sha256": "eef5e81f803c146d206b9965dd61cab0680736538b3589af217e3ef68a9629a9",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 10,
+      "repeat": 0,
+      "workers": 256,
+      "arm": "kv9-point",
+      "calls": 3099032,
+      "issued": 3099032,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1531032,
+        "refused": 1568000,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000410683,
+      "successful_calls_per_second": 306181.2513130334,
+      "attempts": 3099032,
+      "attempt_reasons": {
+        "success": 1531032,
+        "not_leader": 0,
+        "admission_count": 1568000,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 1531032,
+        "not_leader": 0,
+        "admission_count": 1568000,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 3099032,
+        "sum_ns": 1279272772403,
+        "mean_ns": 412797.53561854153,
+        "p50": {
+          "lower_ns": 405504,
+          "upper_ns": 409599
+        },
+        "p95": {
+          "lower_ns": 638976,
+          "upper_ns": 647167
+        },
+        "p99": {
+          "lower_ns": 819200,
+          "upper_ns": 827391
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1531032,
+        "sum_ns": 785701799809,
+        "mean_ns": 513184.4401743399,
+        "p50": {
+          "lower_ns": 491520,
+          "upper_ns": 495615
+        },
+        "p95": {
+          "lower_ns": 720896,
+          "upper_ns": 729087
+        },
+        "p99": {
+          "lower_ns": 892928,
+          "upper_ns": 901119
+        }
+      },
+      "report_sha256": "3b7b7ef28d21702cf6666435fbd323d8762c3371992370ff1b090669b630f163",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 11,
+      "repeat": 0,
+      "workers": 256,
+      "arm": "redis-get",
+      "calls": 2443949,
+      "issued": 2443949,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2443949,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000980075,
+      "successful_calls_per_second": 488694.0086438956,
+      "attempts": 2443949,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 2443949,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 2443949,
+        "sum_ns": 1279668044070,
+        "mean_ns": 523606.68903892837,
+        "p50": {
+          "lower_ns": 499712,
+          "upper_ns": 503807
+        },
+        "p95": {
+          "lower_ns": 532480,
+          "upper_ns": 540671
+        },
+        "p99": {
+          "lower_ns": 1007616,
+          "upper_ns": 1015807
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2443949,
+        "sum_ns": 1279668044070,
+        "mean_ns": 523606.68903892837,
+        "p50": {
+          "lower_ns": 499712,
+          "upper_ns": 503807
+        },
+        "p95": {
+          "lower_ns": 532480,
+          "upper_ns": 540671
+        },
+        "p99": {
+          "lower_ns": 1007616,
+          "upper_ns": 1015807
+        }
+      },
+      "report_sha256": "51439b67d6d590c48443007ef7a11773b5d1d4952c02e0bd9973ceac09cc935f",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 12,
+      "repeat": 1,
+      "workers": 256,
+      "arm": "redis-get",
+      "calls": 2483419,
+      "issued": 2483419,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2483419,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000889737,
+      "successful_calls_per_second": 496595.43213399994,
+      "attempts": 2483419,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 2483419,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 2483419,
+        "sum_ns": 1279733607660,
+        "mean_ns": 515311.19302058977,
+        "p50": {
+          "lower_ns": 491520,
+          "upper_ns": 495615
+        },
+        "p95": {
+          "lower_ns": 520192,
+          "upper_ns": 524287
+        },
+        "p99": {
+          "lower_ns": 991232,
+          "upper_ns": 999423
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2483419,
+        "sum_ns": 1279733607660,
+        "mean_ns": 515311.19302058977,
+        "p50": {
+          "lower_ns": 491520,
+          "upper_ns": 495615
+        },
+        "p95": {
+          "lower_ns": 520192,
+          "upper_ns": 524287
+        },
+        "p99": {
+          "lower_ns": 991232,
+          "upper_ns": 999423
+        }
+      },
+      "report_sha256": "fdc995645e50c62ab1bbaea8998d59ad44f69dba45e5acdf3013bb0845479324",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 13,
+      "repeat": 1,
+      "workers": 256,
+      "arm": "kv9-point",
+      "calls": 3084160,
+      "issued": 3084160,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1544416,
+        "refused": 1539744,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000448874,
+      "successful_calls_per_second": 308855.47256172186,
+      "attempts": 3084160,
+      "attempt_reasons": {
+        "success": 1544416,
+        "not_leader": 0,
+        "admission_count": 1539744,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 1544416,
+        "not_leader": 0,
+        "admission_count": 1539744,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 3084160,
+        "sum_ns": 1279300179300,
+        "mean_ns": 414796.95583238226,
+        "p50": {
+          "lower_ns": 409600,
+          "upper_ns": 413695
+        },
+        "p95": {
+          "lower_ns": 638976,
+          "upper_ns": 647167
+        },
+        "p99": {
+          "lower_ns": 819200,
+          "upper_ns": 827391
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1544416,
+        "sum_ns": 791516781658,
+        "mean_ns": 512502.31910184823,
+        "p50": {
+          "lower_ns": 491520,
+          "upper_ns": 495615
+        },
+        "p95": {
+          "lower_ns": 712704,
+          "upper_ns": 720895
+        },
+        "p99": {
+          "lower_ns": 884736,
+          "upper_ns": 892927
+        }
+      },
+      "report_sha256": "a641a7b885c890359c90aa616290940b5dcd0823e305ce14ad5575cb4bb3b3ee",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 14,
+      "repeat": 1,
+      "workers": 128,
+      "arm": "redis-get",
+      "calls": 2461645,
+      "issued": 2461645,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2461645,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000552218,
+      "successful_calls_per_second": 492274.63141751755,
+      "attempts": 2461645,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 2461645,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 2461645,
+        "sum_ns": 639704104218,
+        "mean_ns": 259868.5449031034,
+        "p50": {
+          "lower_ns": 239616,
+          "upper_ns": 241663
+        },
+        "p95": {
+          "lower_ns": 311296,
+          "upper_ns": 315391
+        },
+        "p99": {
+          "lower_ns": 483328,
+          "upper_ns": 487423
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2461645,
+        "sum_ns": 639704104218,
+        "mean_ns": 259868.5449031034,
+        "p50": {
+          "lower_ns": 239616,
+          "upper_ns": 241663
+        },
+        "p95": {
+          "lower_ns": 311296,
+          "upper_ns": 315391
+        },
+        "p99": {
+          "lower_ns": 483328,
+          "upper_ns": 487423
+        }
+      },
+      "report_sha256": "3c5855c69c76e973ccc739a44b9aee8fa05e179459eee5ff2a23ffe827aeef94",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 15,
+      "repeat": 1,
+      "workers": 128,
+      "arm": "kv9-point",
+      "calls": 2502346,
+      "issued": 2502346,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1747052,
+        "refused": 755294,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000300340,
+      "successful_calls_per_second": 349389.4128767473,
+      "attempts": 2502346,
+      "attempt_reasons": {
+        "success": 1747052,
+        "not_leader": 0,
+        "admission_count": 755294,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 1747052,
+        "not_leader": 0,
+        "admission_count": 755294,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 2502346,
+        "sum_ns": 639659509232,
+        "mean_ns": 255623.92620045348,
+        "p50": {
+          "lower_ns": 266240,
+          "upper_ns": 270335
+        },
+        "p95": {
+          "lower_ns": 413696,
+          "upper_ns": 417791
+        },
+        "p99": {
+          "lower_ns": 532480,
+          "upper_ns": 540671
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1747052,
+        "sum_ns": 532627975131,
+        "mean_ns": 304872.42230397265,
+        "p50": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p95": {
+          "lower_ns": 442368,
+          "upper_ns": 446463
+        },
+        "p99": {
+          "lower_ns": 557056,
+          "upper_ns": 565247
+        }
+      },
+      "report_sha256": "69918e54526d1f95595e0ce47d6dd594e9901f0352926f2c50e698dd5ee525cc",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 16,
+      "repeat": 1,
+      "workers": 64,
+      "arm": "redis-get",
+      "calls": 2495082,
+      "issued": 2495082,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2495082,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000235109,
+      "successful_calls_per_second": 498992.93645394064,
+      "attempts": 2495082,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 2495082,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 2495082,
+        "sum_ns": 319727779247,
+        "mean_ns": 128143.19499198825,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 167936,
+          "upper_ns": 169983
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2495082,
+        "sum_ns": 319727779247,
+        "mean_ns": 128143.19499198825,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 167936,
+          "upper_ns": 169983
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      },
+      "report_sha256": "819e2405adf0e58bb28c05d394751ea1ee41a950eca3abcbac602b6b2e196c8b",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 17,
+      "repeat": 1,
+      "workers": 64,
+      "arm": "kv9-point",
+      "calls": 1723454,
+      "issued": 1723454,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1723454,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000149295,
+      "successful_calls_per_second": 344680.5081847061,
+      "attempts": 1723454,
+      "attempt_reasons": {
+        "success": 1723454,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 1723454,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 1723454,
+        "sum_ns": 319785370815,
+        "mean_ns": 185549.11869710477,
+        "p50": {
+          "lower_ns": 172032,
+          "upper_ns": 174079
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 360448,
+          "upper_ns": 364543
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1723454,
+        "sum_ns": 319785370815,
+        "mean_ns": 185549.11869710477,
+        "p50": {
+          "lower_ns": 172032,
+          "upper_ns": 174079
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 360448,
+          "upper_ns": 364543
+        }
+      },
+      "report_sha256": "6049783af5fbdb6272a9ce3e8a8eb7d446a369347d71017c18ef8072226c1fc0",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 18,
+      "repeat": 1,
+      "workers": 32,
+      "arm": "redis-get",
+      "calls": 2540467,
+      "issued": 2540467,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2540467,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000116247,
+      "successful_calls_per_second": 508081.5874079417,
+      "attempts": 2540467,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 2540467,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 2540467,
+        "sum_ns": 159735400020,
+        "mean_ns": 62876.39241918907,
+        "p50": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        },
+        "p95": {
+          "lower_ns": 82944,
+          "upper_ns": 83967
+        },
+        "p99": {
+          "lower_ns": 109568,
+          "upper_ns": 110591
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2540467,
+        "sum_ns": 159735400020,
+        "mean_ns": 62876.39241918907,
+        "p50": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        },
+        "p95": {
+          "lower_ns": 82944,
+          "upper_ns": 83967
+        },
+        "p99": {
+          "lower_ns": 109568,
+          "upper_ns": 110591
+        }
+      },
+      "report_sha256": "bca6ba355b00dd3813c2791fe3c8bd76cfebfd6f3a5fd035bb829ffa695bf361",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 19,
+      "repeat": 1,
+      "workers": 32,
+      "arm": "kv9-point",
+      "calls": 1346914,
+      "issued": 1346914,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 1346914,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000101956,
+      "successful_calls_per_second": 269377.307073456,
+      "attempts": 1346914,
+      "attempt_reasons": {
+        "success": 1346914,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 1346914,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 1346914,
+        "sum_ns": 159833112960,
+        "mean_ns": 118666.16054180148,
+        "p50": {
+          "lower_ns": 112640,
+          "upper_ns": 113663
+        },
+        "p95": {
+          "lower_ns": 172032,
+          "upper_ns": 174079
+        },
+        "p99": {
+          "lower_ns": 206848,
+          "upper_ns": 208895
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1346914,
+        "sum_ns": 159833112960,
+        "mean_ns": 118666.16054180148,
+        "p50": {
+          "lower_ns": 112640,
+          "upper_ns": 113663
+        },
+        "p95": {
+          "lower_ns": 172032,
+          "upper_ns": 174079
+        },
+        "p99": {
+          "lower_ns": 206848,
+          "upper_ns": 208895
+        }
+      },
+      "report_sha256": "0be23c57293043f6e2be6248fd422bcec384382101579dd30a02d3fae1344bbd",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 20,
+      "repeat": 1,
+      "workers": 8,
+      "arm": "redis-get",
+      "calls": 2450473,
+      "issued": 2450473,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 2450473,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000023595,
+      "successful_calls_per_second": 490092.2872544964,
+      "attempts": 2450473,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 2450473,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 2450473,
+        "sum_ns": 39749308575,
+        "mean_ns": 16221.07592085283,
+        "p50": {
+          "lower_ns": 16384,
+          "upper_ns": 16639
+        },
+        "p95": {
+          "lower_ns": 22272,
+          "upper_ns": 22527
+        },
+        "p99": {
+          "lower_ns": 23808,
+          "upper_ns": 24063
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2450473,
+        "sum_ns": 39749308575,
+        "mean_ns": 16221.07592085283,
+        "p50": {
+          "lower_ns": 16384,
+          "upper_ns": 16639
+        },
+        "p95": {
+          "lower_ns": 22272,
+          "upper_ns": 22527
+        },
+        "p99": {
+          "lower_ns": 23808,
+          "upper_ns": 24063
+        }
+      },
+      "report_sha256": "70dcafc515f84d83928014aaf4875f4138dab26d0b0636df1804a496743d439c",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 21,
+      "repeat": 1,
+      "workers": 8,
+      "arm": "kv9-point",
+      "calls": 582487,
+      "issued": 582487,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 582487,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000013435,
+      "successful_calls_per_second": 116497.08697232732,
+      "attempts": 582487,
+      "attempt_reasons": {
+        "success": 582487,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 582487,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 582487,
+        "sum_ns": 39929647387,
+        "mean_ns": 68550.2807564804,
+        "p50": {
+          "lower_ns": 66560,
+          "upper_ns": 67583
+        },
+        "p95": {
+          "lower_ns": 90112,
+          "upper_ns": 91135
+        },
+        "p99": {
+          "lower_ns": 104448,
+          "upper_ns": 105471
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 582487,
+        "sum_ns": 39929647387,
+        "mean_ns": 68550.2807564804,
+        "p50": {
+          "lower_ns": 66560,
+          "upper_ns": 67583
+        },
+        "p95": {
+          "lower_ns": 90112,
+          "upper_ns": 91135
+        },
+        "p99": {
+          "lower_ns": 104448,
+          "upper_ns": 105471
+        }
+      },
+      "report_sha256": "668f892bc2b0a5be4be21c2ef2db07d57cdb20784d6126779d53dd7ccc54831a",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 22,
+      "repeat": 1,
+      "workers": 1,
+      "arm": "redis-get",
+      "calls": 852582,
+      "issued": 852582,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 852582,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "cohort_elapsed_ns": 5000001259,
+      "successful_calls_per_second": 170516.3570639813,
+      "attempts": 852582,
+      "attempt_reasons": null,
+      "reasons": {
+        "success": 852582,
+        "deadline": 0,
+        "io": 0,
+        "server_error": 0,
+        "protocol": 0,
+        "data_integrity": 0
+      },
+      "terminal_rpc_codes": null,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "whole_call_latency": {
+        "count": 852582,
+        "sum_ns": 4935800326,
+        "mean_ns": 5789.238250397029,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6080,
+          "upper_ns": 6143
+        },
+        "p99": {
+          "lower_ns": 8192,
+          "upper_ns": 8319
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 852582,
+        "sum_ns": 4935800326,
+        "mean_ns": 5789.238250397029,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6080,
+          "upper_ns": 6143
+        },
+        "p99": {
+          "lower_ns": 8192,
+          "upper_ns": 8319
+        }
+      },
+      "report_sha256": "9f123e950a77649d61e2cd317196cab7609a132f91a2d94e0e16d00d1fc8af94",
+      "final_keys": 4097
+    },
+    {
+      "ordinal": 23,
+      "repeat": 1,
+      "workers": 1,
+      "arm": "kv9-point",
+      "calls": 131253,
+      "issued": 131253,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 131253,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "cohort_elapsed_ns": 5000022359,
+      "successful_calls_per_second": 26250.48261309185,
+      "attempts": 131253,
+      "attempt_reasons": {
+        "success": 131253,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "reasons": {
+        "success": 131253,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      },
+      "terminal_rpc_codes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "connection_attempts": null,
+      "connection_failures": null,
+      "whole_call_latency": {
+        "count": 131253,
+        "sum_ns": 4984356726,
+        "mean_ns": 37975.183241525905,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 58880,
+          "upper_ns": 59391
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 131253,
+        "sum_ns": 4984356726,
+        "mean_ns": 37975.183241525905,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 58880,
+          "upper_ns": 59391
+        }
+      },
+      "report_sha256": "cea31c4490660667a78fcd4df9c156726e947df516c565894226ad5db365bc92",
+      "final_keys": 4097
+    }
+  ]
+}

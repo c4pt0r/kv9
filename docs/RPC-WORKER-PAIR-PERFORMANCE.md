@@ -98,9 +98,11 @@ rejects fixed interval eight: both APIs lose approximately 3% throughput and
 worsen mean latency in both repetitions. The accepted adaptive setting remains.
 The [two persistent stream-worker screen](STREAM-WORKER-PAIR-SCREENING.md) also
 regresses throughput and mean latency, despite improving all four p99 buckets.
-Retain per-request tasks. Next measure the accepted control's GET concurrency
-curve against Redis to locate low-load latency, saturation and tail growth
-before selecting the next execution-handoff change. Preserve persistent peer streaming,
+Retain per-request tasks. The [GET concurrency curve](GET-CONCURRENCY-CURVE.md)
+now passes: c1 mean latency is about 38 us versus Redis 5.8 us; c128/c256
+cross fixed public admission and produce substantial refusals. Map the low-load
+confirmation path and separate admission pressure from intrinsic capacity before
+selecting the next execution-handoff change. Preserve persistent peer streaming,
 exact group identity, fresh quorum, successful-pump and applied-index fences,
 along with original deadlines and cleanup ownership. Do not infer gains by adding
 earlier percentages or extending these short runs to sustained capacity.
