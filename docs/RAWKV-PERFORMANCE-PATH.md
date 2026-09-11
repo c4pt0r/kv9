@@ -58,6 +58,16 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
+The [fixed global queue interval screening](RPC-GLOBAL-QUEUE-SCREENING.md)
+rejects scheduler candidate `5e46a61`: GET throughput falls 1.952% / 1.213%
+versus the unchanged jemalloc control, with worse mean and p99 latency.
+BatchGet(1) also regresses. Focused checks, actual process histories, smoke
+and the independent twelve-cohort audit pass, so this is a measured negative
+experiment. Preserve it without promotion or another full fault campaign.
+Next examine peer-message processing and I/O scheduling within the observed
+confirmation interval. A fixed global queue polling interval alone has not
+improved the sampled completion-wait bottleneck.
+
 The latest [authorization-metadata screening](STREAM-AUTHORIZATION-METADATA-SCREENING.md)
 retains an isolated candidate for broader validation: single GET gains
 4.425% / 3.641% against the same-run f2 control, with improved mean and p99.
