@@ -1,0 +1,16 @@
+{
+  "engine": {
+    "passed": 145,
+    "failed": 0,
+    "ignored": 22
+  },
+  "workspace": {
+    "passed": 710,
+    "failed": 0,
+    "ignored": 23
+  },
+  "source_sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a",
+  "format_check": "passed: tool 23d98b exit 0",
+  "formal_acceptance": false,
+  "performance_acceptance": false
+}

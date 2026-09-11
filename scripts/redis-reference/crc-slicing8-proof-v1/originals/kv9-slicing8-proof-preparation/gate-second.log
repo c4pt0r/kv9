@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/kv9-slicing8-proof-preparation/check-crc32-slicing8-proof.py", line 218, in <module>
+    main()
+  File "/tmp/kv9-slicing8-proof-preparation/check-crc32-slicing8-proof.py", line 193, in main
+    b.require(candidate.count(old)==1,'source mutant anchor mismatch: '+name)
+  File "/tmp/kv9-wal-crc32-slicing8/scripts/check-crc32-proof.py", line 36, in require
+    raise Rejected(message)
+crc_byte_checker.Rejected: source mutant anchor mismatch: big-endian

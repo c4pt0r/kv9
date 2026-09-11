@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "/home/dongxu/.cargo/bin/rustc",
+    "--edition=2021",
+    "-Dwarnings",
+    "-O",
+    "table.rs",
+    "-o",
+    "table"
+  ],
+  "completed_unix_ns": 1789153005549930016,
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "cwd": "/tmp/kv9-slicing8-compiled-attempt1",
+  "exit_code": 0,
+  "pid": 1643332,
+  "started_unix_ns": 1789153005436124206
+}

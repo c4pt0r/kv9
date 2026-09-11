@@ -1,0 +1,60 @@
+{
+  "scope": "Warm-cache single-function timing only; not database throughput, latency, durability or proof acceptance",
+  "calls_included": 72,
+  "rows": [
+    {
+      "length": 1,
+      "old_ns": 1.241585,
+      "new_ns": 1.31974375,
+      "ratio": 0.9407773289322264
+    },
+    {
+      "length": 7,
+      "old_ns": 3.40645625,
+      "new_ns": 3.5837275,
+      "ratio": 0.9505343947049546
+    },
+    {
+      "length": 8,
+      "old_ns": 4.00419875,
+      "new_ns": 1.61035,
+      "ratio": 2.4865394168969477
+    },
+    {
+      "length": 16,
+      "old_ns": 10.29059125,
+      "new_ns": 2.59948625,
+      "ratio": 3.9587019358152022
+    },
+    {
+      "length": 28,
+      "old_ns": 22.20300625,
+      "new_ns": 5.8355625,
+      "ratio": 3.8047756750099073
+    },
+    {
+      "length": 64,
+      "old_ns": 73.27071125,
+      "new_ns": 12.1818425,
+      "ratio": 6.014747871678689
+    },
+    {
+      "length": 128,
+      "old_ns": 169.83687782287598,
+      "new_ns": 32.59385299682617,
+      "ratio": 5.210702700273387
+    },
+    {
+      "length": 8192,
+      "old_ns": 12373.798217773438,
+      "new_ns": 2761.3934936523438,
+      "ratio": 4.480997817303934
+    },
+    {
+      "length": 16384,
+      "old_ns": 24358.694702148438,
+      "new_ns": 5344.677429199219,
+      "ratio": 4.557561241969667
+    }
+  ]
+}

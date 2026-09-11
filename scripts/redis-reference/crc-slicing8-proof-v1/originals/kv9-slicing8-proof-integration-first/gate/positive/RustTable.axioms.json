@@ -1,0 +1,32 @@
+{
+  "Kv9.CRC32.compiled_byte_transition": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_checksum_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_fragmentation_invariant": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_list_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_parts_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_table": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_table_length": []
+}

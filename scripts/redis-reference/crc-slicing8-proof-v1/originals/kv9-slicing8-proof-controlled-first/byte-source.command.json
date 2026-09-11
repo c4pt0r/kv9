@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "git",
+    "-C",
+    "/tmp/kv9-wal-crc32-slicing8",
+    "show",
+    "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb:crates/engine/src/wal.rs"
+  ],
+  "completed_unix_ns": 1789153245498218720,
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "cwd": "/tmp/kv9-slicing8-proof-controlled-first",
+  "exit_code": 0,
+  "pid": 1718808,
+  "started_unix_ns": 1789153245494780565
+}

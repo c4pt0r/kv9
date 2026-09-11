@@ -1,0 +1,1683 @@
+{
+  "version": 1,
+  "scope": "Reproducible sources, actual tables, command/trust output and retained failures; generated native/olean binaries omitted from publication selection but full local gate inventory retained",
+  "files": [
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/RustSlicing.command.json",
+      "bytes": 509,
+      "sha256": "7b47e0a5d2c569b0f8e07057f3d11d8e969fe912de21ffd6daaf00d19d819b3f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/RustSlicing.lean",
+      "bytes": 29506,
+      "sha256": "c5ccd10a4672e48e437881f8d708f60500179c63d79f00b5c8473c7819e0e89f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/RustSlicing.stdout",
+      "bytes": 6161,
+      "sha256": "ae0a1a3bc572fbdd16224121a145098480f2de2bb2cd710e3d84c3363c2952e9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/RustTable.axioms.json",
+      "bytes": 644,
+      "sha256": "e3d65f6ee8726017527c6ef7f450538bdc9bc3fedfece1117faefef438e86434"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/RustTable.command.json",
+      "bytes": 505,
+      "sha256": "e908c846f41ff878005f88720e74be12245b4dee34a77c7aa82b0c54d5c409bf"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/RustTable.lean",
+      "bytes": 6305,
+      "sha256": "d318afb3c5f9e6beeb24c07dedfb839c044bfe7a1c288531dacd0eb1a739ecea"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/RustTable.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/RustTable.stdout",
+      "bytes": 628,
+      "sha256": "52a1f6b938065f4cdc64d82ab531fe5cec2f1da738e01ff2193fde57cc3cad74"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/Slicing8.lean",
+      "bytes": 7783,
+      "sha256": "20ae98432bba62c7dc626c7c53ba3c377cbf3880d9b1c8536e5c311bdcfa04f2"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/compiled-tables.json",
+      "bytes": 40440,
+      "sha256": "662e82988087ab702aba5b6c61948e7aa232b02c1797fb4fde98ff3994466930"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/rustc.command.json",
+      "bytes": 495,
+      "sha256": "206610c8106b8929eb5e3445d66dc5838af4bc5a88750f6aaece3f0c0c89e1f9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/table.command.json",
+      "bytes": 418,
+      "sha256": "f0071721d7db8e1cd62d618d25aa4c05479bf8d47e209866e6aaf56f66e303b9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/table.rs",
+      "bytes": 2099,
+      "sha256": "e59430c22971ca5af262b0852075b84f02b748eb4e1b5b02b23cea804945669f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt1/table.stdout",
+      "bytes": 37666,
+      "sha256": "9e15b17a3de8fd4f35b918fb5cbce011bcf5a1d35d195a3bfa7acffd9ebf605a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/RustSlicing.axioms.json",
+      "bytes": 823,
+      "sha256": "463a134b2bc600a2553699c4c5866199c9cf7ddd1b70463cd233d8f129ca6d4b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/RustSlicing.command.json",
+      "bytes": 509,
+      "sha256": "9ad1b25213e181b16611fe174c0255d3d1345a49616d6839d2fa0cf8ea3fcf37"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "a3da717e7de57231f3b32342a400f07dfcfcc238180e2ae211ea0967b77db00f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/RustSlicing.stdout",
+      "bytes": 811,
+      "sha256": "ee7f1ff6b9cc01c68048440d6a4d49970279aca59981438161d1db0c1e16d132"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/RustTable.axioms.json",
+      "bytes": 644,
+      "sha256": "e3d65f6ee8726017527c6ef7f450538bdc9bc3fedfece1117faefef438e86434"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/RustTable.command.json",
+      "bytes": 505,
+      "sha256": "dd31a6dae862723b8f94e078265cc314492e82fc4f04a3eb61c3ff8c92d6b65a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/RustTable.lean",
+      "bytes": 6305,
+      "sha256": "d318afb3c5f9e6beeb24c07dedfb839c044bfe7a1c288531dacd0eb1a739ecea"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/RustTable.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/RustTable.stdout",
+      "bytes": 628,
+      "sha256": "52a1f6b938065f4cdc64d82ab531fe5cec2f1da738e01ff2193fde57cc3cad74"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/Slicing8.lean",
+      "bytes": 7783,
+      "sha256": "20ae98432bba62c7dc626c7c53ba3c377cbf3880d9b1c8536e5c311bdcfa04f2"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/compiled-tables.json",
+      "bytes": 40440,
+      "sha256": "662e82988087ab702aba5b6c61948e7aa232b02c1797fb4fde98ff3994466930"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/development-result.json",
+      "bytes": 963,
+      "sha256": "fcfb428008f26d5b924f3e7143a927dc9229ab72ab5c245216957b3d1cb358e1"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/rustc.command.json",
+      "bytes": 495,
+      "sha256": "2f65f0ef78214dd0d770896ff893c72aeff0ebb557f5aa2678ddd81a6ab8a93c"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/table.command.json",
+      "bytes": 418,
+      "sha256": "b8309bae25e1f7d111aab84a6f9502d8bd082988486b444968de2606794ad28b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/table.rs",
+      "bytes": 2099,
+      "sha256": "e59430c22971ca5af262b0852075b84f02b748eb4e1b5b02b23cea804945669f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-compiled-attempt2/table.stdout",
+      "bytes": 37666,
+      "sha256": "9e15b17a3de8fd4f35b918fb5cbce011bcf5a1d35d195a3bfa7acffd9ebf605a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt1/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt1/Slicing8.lean",
+      "bytes": 1865,
+      "sha256": "17fbbaca33d46a5bdb0c96732f60fd6fb6cd0ffa7ed56feba138621a1cc9101d"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt1/invocation.json",
+      "bytes": 516,
+      "sha256": "dc0d8a4e0b6246df3281c74c29e05e966a19477909b824f23b6b259d4a6a4c42"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt1/lean.log",
+      "bytes": 414,
+      "sha256": "2bd122ea2a6f3cdaa7c2211c6274dc26c2620937d2f3e9724f20a317abc31a98"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt1/terminal.json",
+      "bytes": 673,
+      "sha256": "0f27427c0e676cd2008980f8e8d68a986c1c36530133444d3853de0f9b334ca0"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt2/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt2/Slicing8.lean",
+      "bytes": 1861,
+      "sha256": "64f3c85ad36c988fc9b97863a4bc7e4ad3b3a2c0951acf1ad0c774c43ff89d2e"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt2/invocation.json",
+      "bytes": 516,
+      "sha256": "4359e132171e2f67454d7354d53a2839af81f53065b0012adb6a56c3ca500046"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt2/lean.log",
+      "bytes": 362,
+      "sha256": "f5014954c5b3b6e68ae5fe4f12d651849a62b3bd79b786cd3fbb288bc05fb6a4"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt2/terminal.json",
+      "bytes": 673,
+      "sha256": "ec35d420f7aabdd49021f53171242dadb4c9a98ab1899bac3fe55a6276c7315b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt3/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt3/Slicing8.lean",
+      "bytes": 1865,
+      "sha256": "2f5440624570722d5a2a446867f87419ff803c47fe1e624c80bbe7784005d27a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt3/invocation.json",
+      "bytes": 516,
+      "sha256": "4186b6caed116d932457b47908cc6b181a7e6681064074593fda93537941c2a9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt3/lean.log",
+      "bytes": 302,
+      "sha256": "c4f5783fb097c6bf66574c6a5c10138e102e455cca5bec0b13c08a3039aa485e"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt3/terminal.json",
+      "bytes": 673,
+      "sha256": "8c5de83814949db1d81da50f5af103f34ab38fdf72a230b972a763a6830f597c"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt4/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt4/Slicing8.lean",
+      "bytes": 4980,
+      "sha256": "fe1ec061e86ae1a57fb7cb466b47ce5450730fab57b52878e51717e00091f93b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt4/invocation.json",
+      "bytes": 516,
+      "sha256": "3335e7a7c89d0aa1e600272446508efdce668a3eb873803a028b687cdf0e56ee"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt4/lean.log",
+      "bytes": 1424,
+      "sha256": "34aeb99236adb6d9a0d440b1ed12f9b6361e9612ec919e9a4740a136605c7ab1"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt4/terminal.json",
+      "bytes": 673,
+      "sha256": "e8250e12493916d094340ab67e11b19bde0f355496837b4e2a19ac1a59b85315"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt5/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt5/Slicing8.lean",
+      "bytes": 4989,
+      "sha256": "1f1a70278ee8215078d412af87e57581e5f520366df6187c9679dcca1cf77f9e"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt5/invocation.json",
+      "bytes": 516,
+      "sha256": "f1aa4fad40345036207baf93f93b17dfd12ed151ab2cfd2ceb7445fa2d7d92cc"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt5/lean.log",
+      "bytes": 1215,
+      "sha256": "8d51ca86833083fb633a8d51668fc21060a5846be3b6d0da7b7a5ea4362a7293"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt5/terminal.json",
+      "bytes": 673,
+      "sha256": "0547fe6c22af020c54bc4d8b4ca303e954f77e49696081f3e2e6144e11afdd9b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt6/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt6/Slicing8.lean",
+      "bytes": 5116,
+      "sha256": "0cc0a2b550087a3ad66d1995a50b6953a902033060b4950a7254bff9ba1a5557"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt6/invocation.json",
+      "bytes": 516,
+      "sha256": "41de8e4135b201b59f644f34c5ea1ee9fdfe0a8503f0a8cd0d0017bb91a8dde2"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt6/lean.log",
+      "bytes": 853,
+      "sha256": "441a4d02dd972a49c5992087e7f6c0978fdf9835d5008b14b4a9abef19abe68c"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt6/terminal.json",
+      "bytes": 673,
+      "sha256": "fcf7b51ee91d7c96b81c4db874e5d532dff8453600edcc466b9e4cd15e35c5fa"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt7/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt7/Slicing8.lean",
+      "bytes": 7783,
+      "sha256": "20ae98432bba62c7dc626c7c53ba3c377cbf3880d9b1c8536e5c311bdcfa04f2"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt7/invocation.json",
+      "bytes": 516,
+      "sha256": "e901f4cb19fdcbd0163aa317c874749452172c0031429b0b19b4e7c06dce21bc"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt7/lean.log",
+      "bytes": 1249,
+      "sha256": "a5a934a3d75a85f0829609a6bea9eeff49644085600315a7de78e7029ebb0511"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-attempt7/terminal.json",
+      "bytes": 673,
+      "sha256": "15b129aca4a0278de8dbc7e641c109f9bfb5856ab21426a5b6c249e6441961f8"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/bitwise-source.command.json",
+      "bytes": 515,
+      "sha256": "51c9f132cc3cd9415e12258ce39422d4ff1fe87d3d48ea583c1b19e2a43740bd"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/bitwise-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/bitwise-source.stdout",
+      "bytes": 31747,
+      "sha256": "eea567f32dc76406ebeb73fb7251fb86eb9ae9cd252231c1a46ca1b54f35ca2a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/byte-source.command.json",
+      "bytes": 515,
+      "sha256": "f307e48c0a0ac6129def522254634b2652f94febe63c11f07140ff11a0f4a0d9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/byte-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/byte-source.stdout",
+      "bytes": 34239,
+      "sha256": "3651e5136ee6117819b27d38f5c788029ae0ec5941bf47ab16565b736c711478"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/inputs/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/inputs/RustSlicing.lean.in",
+      "bytes": 4657,
+      "sha256": "464f890c5cb6eae1170052b5fb1ce470ec0fd74d24540de6ae7819ef2c25d5c5"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/inputs/RustTable.lean.in",
+      "bytes": 2383,
+      "sha256": "e56b58af76b33ab3c1a5c09ad684a286cc465c48ff882cc59b4bb02293171c9e"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/inputs/Slicing8.lean",
+      "bytes": 7783,
+      "sha256": "20ae98432bba62c7dc626c7c53ba3c377cbf3880d9b1c8536e5c311bdcfa04f2"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/inputs/check-crc32-proof.py",
+      "bytes": 12999,
+      "sha256": "810a28389aeb9db21f2cef845d3be87e6e924486c3116087e3ac61e389c8ea6d"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/inputs/check-crc32-slicing8-proof.py",
+      "bytes": 14335,
+      "sha256": "f8c75a0969e8f214bceffa6ec1a993735da62062dfd259384061fa244b68d74b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/inputs/lean-toolchain",
+      "bytes": 25,
+      "sha256": "3aac669c7a910ec2389f4e4f921b605adf6ebf2d1e0c9b9cd0be4d33f3f5db71"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/inputs/slicing-source-contract.json",
+      "bytes": 5313,
+      "sha256": "d1c5b07d1e04b9a09f4a978d18bff5fc32e3e9ba1dbb6cb0f8833af979a23988"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/inputs/source-contract.json",
+      "bytes": 1478,
+      "sha256": "16c49fd8655a04f6a40ce756a02b4de3d0789557fabd9077b04f184b41ae6423"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/inputs/wal.rs",
+      "bytes": 36699,
+      "sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/inventory.json",
+      "bytes": 3632,
+      "sha256": "b8168299618019edbd8ebe95820ba05ce2e72717e39c726b927e6af15e86e141"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/lean-version.command.json",
+      "bytes": 443,
+      "sha256": "7cc78f57e111b820c643593ae55fc4c2e186a7512e8e2b4b42b5571785a0e7e9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/lean-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/lean-version.stdout",
+      "bytes": 106,
+      "sha256": "63f3e16bf0258e2cc0ab3010eb1830723df9bb85097b7b72b0137b9be25a78e9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/result.json",
+      "bytes": 1333,
+      "sha256": "81d706c57af957c2006051acd99967d156d4249675b7389d8b62bd36ae3b3d08"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/rustc-sysroot.command.json",
+      "bytes": 441,
+      "sha256": "38aa07d6a0548dd601f9dc2b8d56e0caf069e46674d26f582be5d4f75e57f01c"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/rustc-sysroot.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/rustc-sysroot.stdout",
+      "bytes": 64,
+      "sha256": "165014992e9a86caf71eab17d9129db920166702327d37be7d5a124aa859c48f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/rustc-version.command.json",
+      "bytes": 489,
+      "sha256": "12cd9a453340d66bfd21c81ab3c73289e9c563888cef143dcc05045312c00a3c"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/rustc-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/rustc-version.stdout",
+      "bytes": 196,
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-first/source-inputs.json",
+      "bytes": 1714,
+      "sha256": "e373eac3d7a5ea2651050f69499ba28dd3165292d70307a4f3761d1058bee5af"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/bitwise-source.command.json",
+      "bytes": 516,
+      "sha256": "cbb8d17d33a277418d49bd4997bebd1fa1754900a5ba96886550f3502cb00e79"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/bitwise-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/bitwise-source.stdout",
+      "bytes": 31747,
+      "sha256": "eea567f32dc76406ebeb73fb7251fb86eb9ae9cd252231c1a46ca1b54f35ca2a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/byte-source.command.json",
+      "bytes": 516,
+      "sha256": "4380cc4c127563d337a28ec92b68017b429edb03c5e43a60d650c124059fe179"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/byte-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/byte-source.stdout",
+      "bytes": 34239,
+      "sha256": "3651e5136ee6117819b27d38f5c788029ae0ec5941bf47ab16565b736c711478"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/RustTable.command.json",
+      "bytes": 539,
+      "sha256": "216344c0ebf24cf5c8f2bf76f5a0233531efd61874ad82637927a1e0fc904521"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/RustTable.lean",
+      "bytes": 6305,
+      "sha256": "391dc02544e3c654590224111c3c9426be66011c972b011d6a0a5a8352b01179"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/RustTable.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/RustTable.stdout",
+      "bytes": 835,
+      "sha256": "bc3018066ef6f8fec610e6f7336c2bcbd16e1c7e236be9ea3669e6f8bdd5232e"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/compiled-tables.json",
+      "bytes": 40441,
+      "sha256": "44f43fc4c25943eccc03bae00efa85e393b1296d512a7d22be68aaa612c6b3fb"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/rustc.command.json",
+      "bytes": 573,
+      "sha256": "9f684a19c646ff80247bbf1b314a2f66aea83dcb54b771538906a64ece300dc8"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/table.command.json",
+      "bytes": 486,
+      "sha256": "219d1d6cc2e1c088d562f775134c80bdf5f65f89cbe5c36bac2ebe336b7adc65"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/table.rs",
+      "bytes": 2100,
+      "sha256": "94c43041dbf602fbafc0ca630827ad1f5782e027866fcb79eda5eff548c604c4"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-polynomial/table.stdout",
+      "bytes": 37666,
+      "sha256": "4c6e73bc0f551a5fb30c8caeb62c7543a751c485b7622f3b394fa3c17b679e9f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/RustSlicing.command.json",
+      "bytes": 543,
+      "sha256": "547f65f0ea8be22c96d6b658b223a0e93dfb2d481ce72369ce83badce8e81301"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "c523326aa6b553bc40713db449d2e88284cab6ce2f6a57dea1999ce52628edcd"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/RustSlicing.stdout",
+      "bytes": 1062,
+      "sha256": "eba0c7b23875588071e908092bae7d1cb83f05753fa28abe47401a243897f9b0"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/compiled-tables.json",
+      "bytes": 40436,
+      "sha256": "b281f511ca6bc1536b50221ef40605a418d8debeb4787c9c4285858d27a4e8d4"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/rustc.command.json",
+      "bytes": 573,
+      "sha256": "322360aad62f5665c103ab92e72581e6da837d8c2102c75b0c95e8c83d3de813"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/table.command.json",
+      "bytes": 486,
+      "sha256": "9cac65d71dda58c3042198da77c0fa6de257f422e03f4c2b1e30a43051d8b399"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/table.rs",
+      "bytes": 2100,
+      "sha256": "b5f25a7d8ad1f674e21082cfac8b1e6994ef03f7143dc3140c7052a3a89258df"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-compiled-recurrence/table.stdout",
+      "bytes": 37666,
+      "sha256": "7b44b0131292bf7110f472cc306b4868a1daddd3299755164a521fa1ae60303b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-proof-hole/Slicing8.command.json",
+      "bytes": 528,
+      "sha256": "29882de14a29eb776fcba9d6233bc150aa1afb8321fba1048e0fc34ddc2859c2"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-proof-hole/Slicing8.lean",
+      "bytes": 7610,
+      "sha256": "37059665532c14eed45b0481b78085781a0bd6353f0595ead539c023e18ecd9f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-proof-hole/Slicing8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-proof-hole/Slicing8.stdout",
+      "bytes": 1329,
+      "sha256": "add755de3eb83bfcd0e74a7262c1f6ba5ef8f5490c1e0c4c5f05ea7b8ad6129c"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-unapproved-axiom/Slicing8.command.json",
+      "bytes": 534,
+      "sha256": "ff001a601d91c96e8b6bba481574d06479b0f94a3118cb0e785f748d78e0f626"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-unapproved-axiom/Slicing8.lean",
+      "bytes": 7645,
+      "sha256": "43faccfd4b5018b9095098b2a1b07b4de50d0c23cd57a1a9d98f6e32e0b1e373"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-unapproved-axiom/Slicing8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-unapproved-axiom/Slicing8.stdout",
+      "bytes": 1311,
+      "sha256": "fb48f158d021d304f78d08d05e7f4c09b68dc1052b2155db5db01689632d29c0"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-wrong-block-row/RustSlicing.command.json",
+      "bytes": 539,
+      "sha256": "77d6ec69305975ff82b1711bb433666350e9a5c104790be78c0ac503b5a82d93"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-wrong-block-row/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "8df9af4f93a159ca052eb2258242cd90abfc88080274cc8d4485822b73ab51bf"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-wrong-block-row/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/control-wrong-block-row/RustSlicing.stdout",
+      "bytes": 2220,
+      "sha256": "d08476238b9da0a17c140134ad250435902e4db5a7c9ca8bfb35866215a683d9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/inputs/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/inputs/RustSlicing.lean.in",
+      "bytes": 4657,
+      "sha256": "464f890c5cb6eae1170052b5fb1ce470ec0fd74d24540de6ae7819ef2c25d5c5"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/inputs/RustTable.lean.in",
+      "bytes": 2383,
+      "sha256": "e56b58af76b33ab3c1a5c09ad684a286cc465c48ff882cc59b4bb02293171c9e"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/inputs/Slicing8.lean",
+      "bytes": 7783,
+      "sha256": "20ae98432bba62c7dc626c7c53ba3c377cbf3880d9b1c8536e5c311bdcfa04f2"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/inputs/check-crc32-proof.py",
+      "bytes": 12999,
+      "sha256": "810a28389aeb9db21f2cef845d3be87e6e924486c3116087e3ac61e389c8ea6d"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/inputs/check-crc32-slicing8-proof.py",
+      "bytes": 14353,
+      "sha256": "a8e82f4ef7af9f6ef184b6581ab305be38ba4e6efb0d83a7da9e51ef880837cd"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/inputs/lean-toolchain",
+      "bytes": 25,
+      "sha256": "3aac669c7a910ec2389f4e4f921b605adf6ebf2d1e0c9b9cd0be4d33f3f5db71"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/inputs/slicing-source-contract.json",
+      "bytes": 5313,
+      "sha256": "d1c5b07d1e04b9a09f4a978d18bff5fc32e3e9ba1dbb6cb0f8833af979a23988"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/inputs/source-contract.json",
+      "bytes": 1478,
+      "sha256": "16c49fd8655a04f6a40ce756a02b4de3d0789557fabd9077b04f184b41ae6423"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/inputs/wal.rs",
+      "bytes": 36699,
+      "sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/inventory.json",
+      "bytes": 15539,
+      "sha256": "b8f7628ad75d58ddde600319860368101457e2230ae4d91862be860a73ff9092"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/lean-version.command.json",
+      "bytes": 444,
+      "sha256": "1f262f0127b0adbf2bbd4a46ed6a598cc4dff3e63d4aa6c50604c40c79f14851"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/lean-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/lean-version.stdout",
+      "bytes": 106,
+      "sha256": "63f3e16bf0258e2cc0ab3010eb1830723df9bb85097b7b72b0137b9be25a78e9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/CRC32.axioms.json",
+      "bytes": 1208,
+      "sha256": "a9fe4884382cb45c28a386520528d7c8a357cf269d41a5c94d57416bdb1eebea"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/CRC32.command.json",
+      "bytes": 512,
+      "sha256": "a77e79c610e431420c864bf22a3bc8edf328d9f36dcfbcf3a2c17d1035aa9d6d"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/CRC32.lean",
+      "bytes": 8167,
+      "sha256": "377a5d58ad8afe38fe7ac272c04226a4a0422f6a23b8092b168fed44769d1a86"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/CRC32.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/CRC32.stdout",
+      "bytes": 1148,
+      "sha256": "b85b7618ba878c6b5c0b6f9b9fdc74fbf3260ffd276245594e71ece4de6dd090"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/RustSlicing.axioms.json",
+      "bytes": 823,
+      "sha256": "463a134b2bc600a2553699c4c5866199c9cf7ddd1b70463cd233d8f129ca6d4b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/RustSlicing.command.json",
+      "bytes": 524,
+      "sha256": "4d5b4f8b30ce3f21a1397810f564afc0f5847fa4d14d9882308598c8e9fdc429"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "a3da717e7de57231f3b32342a400f07dfcfcc238180e2ae211ea0967b77db00f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/RustSlicing.stdout",
+      "bytes": 811,
+      "sha256": "ee7f1ff6b9cc01c68048440d6a4d49970279aca59981438161d1db0c1e16d132"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/RustTable.axioms.json",
+      "bytes": 644,
+      "sha256": "e3d65f6ee8726017527c6ef7f450538bdc9bc3fedfece1117faefef438e86434"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/RustTable.command.json",
+      "bytes": 520,
+      "sha256": "6b8b4e9ecf7a82a6fc60ee7884c72fc76530d124ec121b740db4b3d70571fc0e"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/RustTable.lean",
+      "bytes": 6305,
+      "sha256": "d318afb3c5f9e6beeb24c07dedfb839c044bfe7a1c288531dacd0eb1a739ecea"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/RustTable.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/RustTable.stdout",
+      "bytes": 628,
+      "sha256": "52a1f6b938065f4cdc64d82ab531fe5cec2f1da738e01ff2193fde57cc3cad74"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/Slicing8.axioms.json",
+      "bytes": 1310,
+      "sha256": "9364a68aeb72c586a77783551fce9438fc619393c0ff992eed206730831eb6d6"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/Slicing8.command.json",
+      "bytes": 518,
+      "sha256": "114111003a388716f881e6d0c54060c481e488f68427bc880911e11b658f8990"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/Slicing8.lean",
+      "bytes": 7784,
+      "sha256": "9d4bcb3c043d56f02a53b6317ca6f60452e6925cd08905b135d0b7fb313f8bf5"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/Slicing8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/Slicing8.stdout",
+      "bytes": 1249,
+      "sha256": "a5a934a3d75a85f0829609a6bea9eeff49644085600315a7de78e7029ebb0511"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/compiled-tables.json",
+      "bytes": 40440,
+      "sha256": "662e82988087ab702aba5b6c61948e7aa232b02c1797fb4fde98ff3994466930"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/rustc.command.json",
+      "bytes": 554,
+      "sha256": "31a8bf37df3baabda732fceded3e6fd245dce3bcab273208f5cf6b74c07c2b05"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/table.command.json",
+      "bytes": 448,
+      "sha256": "22666ca60cd3ced3c054a422e24579daeee25dad0e6a4bb09370d0b1499d1129"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/table.rs",
+      "bytes": 2100,
+      "sha256": "80ff145da373cfc9d197a1c0b962b35c6f00f9aaaad7471b253d9e55dd3b5827"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/positive/table.stdout",
+      "bytes": 37666,
+      "sha256": "9e15b17a3de8fd4f35b918fb5cbce011bcf5a1d35d195a3bfa7acffd9ebf605a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/result.json",
+      "bytes": 12103,
+      "sha256": "5f3ab99732d809b797e9c6cf3b3e56e264a6abeea73b4cc57dd35be2b1ed8968"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/rustc-sysroot.command.json",
+      "bytes": 442,
+      "sha256": "4fbb5bfaa70c79685002193c2e823ba622a25fb11e840c54292099bb3667dc1f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/rustc-sysroot.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/rustc-sysroot.stdout",
+      "bytes": 64,
+      "sha256": "165014992e9a86caf71eab17d9129db920166702327d37be7d5a124aa859c48f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/rustc-version.command.json",
+      "bytes": 490,
+      "sha256": "ae84c5f0ddff25c9db7762cd92066d39cb8c30ecf346bec67d50b7c9a9c0e032"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/rustc-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/rustc-version.stdout",
+      "bytes": 196,
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-second/source-inputs.json",
+      "bytes": 1714,
+      "sha256": "1bf536360a9ffe54d36852c315bbfe17d52012d9aa849e32e324d21bd97109d0"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/bitwise-source.command.json",
+      "bytes": 515,
+      "sha256": "b9b67929d150c5a229de8ff03205e8aea3e9c924a9a219575fa7a36868f4b226"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/bitwise-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/bitwise-source.stdout",
+      "bytes": 31747,
+      "sha256": "eea567f32dc76406ebeb73fb7251fb86eb9ae9cd252231c1a46ca1b54f35ca2a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/byte-source.command.json",
+      "bytes": 515,
+      "sha256": "acff1a225c200bd2898df616f6c94bb4a66d09fc015bdecee270c44d65dca367"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/byte-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/byte-source.stdout",
+      "bytes": 34239,
+      "sha256": "3651e5136ee6117819b27d38f5c788029ae0ec5941bf47ab16565b736c711478"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/RustTable.command.json",
+      "bytes": 538,
+      "sha256": "1f271414473b81b91c7cea009e7e4aefea400752a6bc754053daf1021a19c28a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/RustTable.lean",
+      "bytes": 6305,
+      "sha256": "391dc02544e3c654590224111c3c9426be66011c972b011d6a0a5a8352b01179"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/RustTable.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/RustTable.stdout",
+      "bytes": 835,
+      "sha256": "bc3018066ef6f8fec610e6f7336c2bcbd16e1c7e236be9ea3669e6f8bdd5232e"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/compiled-tables.json",
+      "bytes": 40441,
+      "sha256": "44f43fc4c25943eccc03bae00efa85e393b1296d512a7d22be68aaa612c6b3fb"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/rustc.command.json",
+      "bytes": 572,
+      "sha256": "5ab3eeafab870ba6d107f59106f178bd2f7854376f4c2e110b365a418f2872ef"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/table.command.json",
+      "bytes": 484,
+      "sha256": "517b11455e7e8f779f72a9917af71e4d4796dba35c264367e8e08df1770b1a43"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/table.rs",
+      "bytes": 2100,
+      "sha256": "94c43041dbf602fbafc0ca630827ad1f5782e027866fcb79eda5eff548c604c4"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-polynomial/table.stdout",
+      "bytes": 37666,
+      "sha256": "4c6e73bc0f551a5fb30c8caeb62c7543a751c485b7622f3b394fa3c17b679e9f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/RustSlicing.command.json",
+      "bytes": 542,
+      "sha256": "366ef7666b2bee232ee1f3f465a94daf170d719ae72d261d830317f5d11480c8"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "c523326aa6b553bc40713db449d2e88284cab6ce2f6a57dea1999ce52628edcd"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/RustSlicing.stdout",
+      "bytes": 1062,
+      "sha256": "eba0c7b23875588071e908092bae7d1cb83f05753fa28abe47401a243897f9b0"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/compiled-tables.json",
+      "bytes": 40436,
+      "sha256": "b281f511ca6bc1536b50221ef40605a418d8debeb4787c9c4285858d27a4e8d4"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/rustc.command.json",
+      "bytes": 572,
+      "sha256": "cb3097fdf2ea27805c64c8683f62f4b966234a350d0e4257383319646eb87b7f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/table.command.json",
+      "bytes": 484,
+      "sha256": "0ea300d7188c852fc98b394bdbc8e1f1d2e989dc059d7880562f262294c8a2f7"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/table.rs",
+      "bytes": 2100,
+      "sha256": "b5f25a7d8ad1f674e21082cfac8b1e6994ef03f7143dc3140c7052a3a89258df"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-compiled-recurrence/table.stdout",
+      "bytes": 37666,
+      "sha256": "7b44b0131292bf7110f472cc306b4868a1daddd3299755164a521fa1ae60303b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-proof-hole/Slicing8.command.json",
+      "bytes": 527,
+      "sha256": "451e35a59dd8e30684463c9ac6b87264a3b70404205726fe9b462710fc59c209"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-proof-hole/Slicing8.lean",
+      "bytes": 7610,
+      "sha256": "37059665532c14eed45b0481b78085781a0bd6353f0595ead539c023e18ecd9f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-proof-hole/Slicing8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-proof-hole/Slicing8.stdout",
+      "bytes": 1329,
+      "sha256": "add755de3eb83bfcd0e74a7262c1f6ba5ef8f5490c1e0c4c5f05ea7b8ad6129c"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-source-big-endian/rejection.json",
+      "bytes": 97,
+      "sha256": "10520eb81345e48ef774ff62bab7e263b2ed401ac9caeab7c7f88f55c6a8a3ec"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-source-big-endian/wal-mutant.rs",
+      "bytes": 36699,
+      "sha256": "08d558cf7d869680aaa30d92db3d220d94c9b1739c1bf6b6a5d26ef58acc160f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-source-missing-complement/rejection.json",
+      "bytes": 97,
+      "sha256": "10520eb81345e48ef774ff62bab7e263b2ed401ac9caeab7c7f88f55c6a8a3ec"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-source-missing-complement/wal-mutant.rs",
+      "bytes": 36698,
+      "sha256": "53692761141e4aa3a7ea5bdc11a5adc0a953b8ae1be139274aecc70f853137f1"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-source-tail-shift/rejection.json",
+      "bytes": 97,
+      "sha256": "10520eb81345e48ef774ff62bab7e263b2ed401ac9caeab7c7f88f55c6a8a3ec"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-source-tail-shift/wal-mutant.rs",
+      "bytes": 36699,
+      "sha256": "e979fd0d4b3c1577bbb8067267d246177c5e428ac59735e49e273000c16b2669"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-unapproved-axiom/Slicing8.command.json",
+      "bytes": 533,
+      "sha256": "77990c83ad417fa14200e0bd64486be84b6e77c51b73a155d6f07bf5411bb25c"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-unapproved-axiom/Slicing8.lean",
+      "bytes": 7645,
+      "sha256": "43faccfd4b5018b9095098b2a1b07b4de50d0c23cd57a1a9d98f6e32e0b1e373"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-unapproved-axiom/Slicing8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-unapproved-axiom/Slicing8.stdout",
+      "bytes": 1311,
+      "sha256": "fb48f158d021d304f78d08d05e7f4c09b68dc1052b2155db5db01689632d29c0"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-wrong-block-row/RustSlicing.command.json",
+      "bytes": 538,
+      "sha256": "9b7c5ac3daf578b235d136561f426600c352495d4f79597f47459d89b4342702"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-wrong-block-row/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "8df9af4f93a159ca052eb2258242cd90abfc88080274cc8d4485822b73ab51bf"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-wrong-block-row/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/control-wrong-block-row/RustSlicing.stdout",
+      "bytes": 2220,
+      "sha256": "d08476238b9da0a17c140134ad250435902e4db5a7c9ca8bfb35866215a683d9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/inputs/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/inputs/RustSlicing.lean.in",
+      "bytes": 4657,
+      "sha256": "464f890c5cb6eae1170052b5fb1ce470ec0fd74d24540de6ae7819ef2c25d5c5"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/inputs/RustTable.lean.in",
+      "bytes": 2383,
+      "sha256": "e56b58af76b33ab3c1a5c09ad684a286cc465c48ff882cc59b4bb02293171c9e"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/inputs/Slicing8.lean",
+      "bytes": 7783,
+      "sha256": "20ae98432bba62c7dc626c7c53ba3c377cbf3880d9b1c8536e5c311bdcfa04f2"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/inputs/check-crc32-proof.py",
+      "bytes": 12999,
+      "sha256": "810a28389aeb9db21f2cef845d3be87e6e924486c3116087e3ac61e389c8ea6d"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/inputs/check-crc32-slicing8-proof.py",
+      "bytes": 14452,
+      "sha256": "a8f7eb291b1458f96eff1ffd380cd8dadf0b675c483bc83bc0c63a8def9e1a71"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/inputs/lean-toolchain",
+      "bytes": 25,
+      "sha256": "3aac669c7a910ec2389f4e4f921b605adf6ebf2d1e0c9b9cd0be4d33f3f5db71"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/inputs/slicing-source-contract.json",
+      "bytes": 5313,
+      "sha256": "d1c5b07d1e04b9a09f4a978d18bff5fc32e3e9ba1dbb6cb0f8833af979a23988"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/inputs/source-contract.json",
+      "bytes": 1478,
+      "sha256": "16c49fd8655a04f6a40ce756a02b4de3d0789557fabd9077b04f184b41ae6423"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/inputs/wal.rs",
+      "bytes": 36699,
+      "sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/inventory.json",
+      "bytes": 20993,
+      "sha256": "cec00037067c83045264ca0e60c71d44757ebc6ed0af6a81d49b78aba79e3b5d"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/lean-version.command.json",
+      "bytes": 443,
+      "sha256": "65a25b797c71690773892c00ad7c4def722ce34b5a7de6a8ba8b8ba2f9bd776f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/lean-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/lean-version.stdout",
+      "bytes": 106,
+      "sha256": "63f3e16bf0258e2cc0ab3010eb1830723df9bb85097b7b72b0137b9be25a78e9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/CRC32.axioms.json",
+      "bytes": 1208,
+      "sha256": "a9fe4884382cb45c28a386520528d7c8a357cf269d41a5c94d57416bdb1eebea"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/CRC32.command.json",
+      "bytes": 511,
+      "sha256": "54b60865efcc1eacefbed138f19aaa33db83dd243d7c5bb59ec80cbd7215345f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/CRC32.lean",
+      "bytes": 8167,
+      "sha256": "377a5d58ad8afe38fe7ac272c04226a4a0422f6a23b8092b168fed44769d1a86"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/CRC32.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/CRC32.stdout",
+      "bytes": 1148,
+      "sha256": "b85b7618ba878c6b5c0b6f9b9fdc74fbf3260ffd276245594e71ece4de6dd090"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/RustSlicing.axioms.json",
+      "bytes": 823,
+      "sha256": "463a134b2bc600a2553699c4c5866199c9cf7ddd1b70463cd233d8f129ca6d4b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/RustSlicing.command.json",
+      "bytes": 523,
+      "sha256": "d962942c00ea4c57c8f450eeb50b3ad800ba12cc5c714f4b9a7fa79c4c1b7a22"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "a3da717e7de57231f3b32342a400f07dfcfcc238180e2ae211ea0967b77db00f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/RustSlicing.stdout",
+      "bytes": 811,
+      "sha256": "ee7f1ff6b9cc01c68048440d6a4d49970279aca59981438161d1db0c1e16d132"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/RustTable.axioms.json",
+      "bytes": 644,
+      "sha256": "e3d65f6ee8726017527c6ef7f450538bdc9bc3fedfece1117faefef438e86434"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/RustTable.command.json",
+      "bytes": 519,
+      "sha256": "f50125ea975b4e449fd0fdeeb9755cdc2eb6ad64d74f6419112f2350897b1da8"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/RustTable.lean",
+      "bytes": 6305,
+      "sha256": "d318afb3c5f9e6beeb24c07dedfb839c044bfe7a1c288531dacd0eb1a739ecea"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/RustTable.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/RustTable.stdout",
+      "bytes": 628,
+      "sha256": "52a1f6b938065f4cdc64d82ab531fe5cec2f1da738e01ff2193fde57cc3cad74"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/Slicing8.axioms.json",
+      "bytes": 1310,
+      "sha256": "9364a68aeb72c586a77783551fce9438fc619393c0ff992eed206730831eb6d6"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/Slicing8.command.json",
+      "bytes": 517,
+      "sha256": "658b8a2e5c70c79da731dab8de1ba9ebf08e8865d792ad6b2f98b206f6726bc2"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/Slicing8.lean",
+      "bytes": 7784,
+      "sha256": "9d4bcb3c043d56f02a53b6317ca6f60452e6925cd08905b135d0b7fb313f8bf5"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/Slicing8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/Slicing8.stdout",
+      "bytes": 1249,
+      "sha256": "a5a934a3d75a85f0829609a6bea9eeff49644085600315a7de78e7029ebb0511"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/compiled-tables.json",
+      "bytes": 40440,
+      "sha256": "662e82988087ab702aba5b6c61948e7aa232b02c1797fb4fde98ff3994466930"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/rustc.command.json",
+      "bytes": 553,
+      "sha256": "303c7f53d3333d3809ead921dc78cbc38111883deb9c197fca7fd61ed94c2ec8"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/table.command.json",
+      "bytes": 446,
+      "sha256": "81b37e37989a2e83db47ca02e034d48df85c8a614f1d3f87033de35e21036658"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/table.rs",
+      "bytes": 2100,
+      "sha256": "80ff145da373cfc9d197a1c0b962b35c6f00f9aaaad7471b253d9e55dd3b5827"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/positive/table.stdout",
+      "bytes": 37666,
+      "sha256": "9e15b17a3de8fd4f35b918fb5cbce011bcf5a1d35d195a3bfa7acffd9ebf605a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/CRC32.axioms.json",
+      "bytes": 1208,
+      "sha256": "a9fe4884382cb45c28a386520528d7c8a357cf269d41a5c94d57416bdb1eebea"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/CRC32.command.json",
+      "bytes": 511,
+      "sha256": "8f5982cbf13e84c71415a3e1b22fe28b438960e3d837bd68df9592b41e03a6b9"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/CRC32.lean",
+      "bytes": 8167,
+      "sha256": "377a5d58ad8afe38fe7ac272c04226a4a0422f6a23b8092b168fed44769d1a86"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/CRC32.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/CRC32.stdout",
+      "bytes": 1148,
+      "sha256": "b85b7618ba878c6b5c0b6f9b9fdc74fbf3260ffd276245594e71ece4de6dd090"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/RustSlicing.axioms.json",
+      "bytes": 823,
+      "sha256": "463a134b2bc600a2553699c4c5866199c9cf7ddd1b70463cd233d8f129ca6d4b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/RustSlicing.command.json",
+      "bytes": 523,
+      "sha256": "c9333c60606b36c4b521fc40c6b5a2b9e79e4ca47ad5eae715b67399e88671c5"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "a3da717e7de57231f3b32342a400f07dfcfcc238180e2ae211ea0967b77db00f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/RustSlicing.stdout",
+      "bytes": 811,
+      "sha256": "ee7f1ff6b9cc01c68048440d6a4d49970279aca59981438161d1db0c1e16d132"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/RustTable.axioms.json",
+      "bytes": 644,
+      "sha256": "e3d65f6ee8726017527c6ef7f450538bdc9bc3fedfece1117faefef438e86434"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/RustTable.command.json",
+      "bytes": 519,
+      "sha256": "64ddab7d0c0cb457b8d415b3d0c1cd757a3daa088c3b0bc1adb8b9ab96c671d3"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/RustTable.lean",
+      "bytes": 6305,
+      "sha256": "d318afb3c5f9e6beeb24c07dedfb839c044bfe7a1c288531dacd0eb1a739ecea"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/RustTable.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/RustTable.stdout",
+      "bytes": 628,
+      "sha256": "52a1f6b938065f4cdc64d82ab531fe5cec2f1da738e01ff2193fde57cc3cad74"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/Slicing8.axioms.json",
+      "bytes": 1310,
+      "sha256": "9364a68aeb72c586a77783551fce9438fc619393c0ff992eed206730831eb6d6"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/Slicing8.command.json",
+      "bytes": 517,
+      "sha256": "ccb8cb0e022357f141ba29a88824967efb9e9b35a791f8833751d8ea46b7a91a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/Slicing8.lean",
+      "bytes": 7784,
+      "sha256": "9d4bcb3c043d56f02a53b6317ca6f60452e6925cd08905b135d0b7fb313f8bf5"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/Slicing8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/Slicing8.stdout",
+      "bytes": 1249,
+      "sha256": "a5a934a3d75a85f0829609a6bea9eeff49644085600315a7de78e7029ebb0511"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/compiled-tables.json",
+      "bytes": 40440,
+      "sha256": "662e82988087ab702aba5b6c61948e7aa232b02c1797fb4fde98ff3994466930"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/rustc.command.json",
+      "bytes": 553,
+      "sha256": "1237f9f861eae1e558690583f98a9adddcd025bdd94a2a285805dccb06fd54b5"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/table.command.json",
+      "bytes": 446,
+      "sha256": "a46b679a63931beebac95fa86b3ed4dd9097f33660ed88fa8011656c6c352ea3"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/table.rs",
+      "bytes": 2100,
+      "sha256": "80ff145da373cfc9d197a1c0b962b35c6f00f9aaaad7471b253d9e55dd3b5827"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/restored/table.stdout",
+      "bytes": 37666,
+      "sha256": "9e15b17a3de8fd4f35b918fb5cbce011bcf5a1d35d195a3bfa7acffd9ebf605a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/result.json",
+      "bytes": 12563,
+      "sha256": "ed858b572052d4e7b6d84a5f402d74d2efb8e891328167c7ac907b905da3fea6"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/rustc-sysroot.command.json",
+      "bytes": 441,
+      "sha256": "ab7931d6105c4e9e2f405f10b484812d94139e988d113012bd8b28c22d1a77e0"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/rustc-sysroot.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/rustc-sysroot.stdout",
+      "bytes": 64,
+      "sha256": "165014992e9a86caf71eab17d9129db920166702327d37be7d5a124aa859c48f"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/rustc-version.command.json",
+      "bytes": 489,
+      "sha256": "77eadff1c3618d65ba0769ca5e69aff42f3b05c38095e5e763512799d31f7c9a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/rustc-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/rustc-version.stdout",
+      "bytes": 196,
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-controlled-third/source-inputs.json",
+      "bytes": 1714,
+      "sha256": "cd658cb172217c259229e1ecdbde3172bd1cfa8c1dce2fae91bcb559f42d7dd0"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/README.md",
+      "bytes": 6121,
+      "sha256": "de308e99491d90e08ef779fba975faa05d5c86c94e3a9e1abd649bd980ade11d"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/RESULT.md",
+      "bytes": 3849,
+      "sha256": "66c9f082b373d38d4b01b29ab94b9812ff3846f4a6833275ad81013f7a106d18"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/gate-first-invocation.json",
+      "bytes": 734,
+      "sha256": "67d51c87420a6da4c98d997bbb5701c6a094d3c036f505dec23319742e1b6495"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/gate-first-terminal.json",
+      "bytes": 913,
+      "sha256": "140c44c451dd4ffb3f11ddc884b9707bcf912e00d0ccbec6f57114fabd7df301"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/gate-first.log",
+      "bytes": 532,
+      "sha256": "7511f51ecc6dc435a1dca562efa42fa6ae5d051fb197fc2027161dc99e9a7d87"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/gate-second-invocation.json",
+      "bytes": 735,
+      "sha256": "e8d1c5860fdfc7509da173baec2ec18b798cb754938bcd30ece60c22576f2131"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/gate-second-terminal.json",
+      "bytes": 914,
+      "sha256": "0c2b4c37c77f79827161be537fe00fd7ef3a5604466660787965dc9657704f7b"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/gate-second.log",
+      "bytes": 500,
+      "sha256": "8e539ce374c3cb5b009fbec5580e8df6c5eeae5d9febfd024317a807dae24006"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/gate-third-invocation.json",
+      "bytes": 734,
+      "sha256": "c989a2a5cfc018ae6a5ee3af0d48b43ef064b459a23a7da229fd2e938bd71699"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/gate-third-readback.json",
+      "bytes": 4016,
+      "sha256": "798b3d9f4d740a7067eb366be93f06d23d73d2036bc02455f687e6d7b5541eda"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/gate-third-terminal.json",
+      "bytes": 913,
+      "sha256": "61713aba81eca8aa55259241c68c41969f265d91d2e65dd7e13fa7311708e990"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/gate-third-tool-terminal.json",
+      "bytes": 757,
+      "sha256": "6c2b29d62cec52efa4220cf715967d5c08039d6e562b2214010b39d60556bdba"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/gate-third.log",
+      "bytes": 87,
+      "sha256": "756701879e0b4c43600114717eaa6d6b14aaed23d0ea133f2694d06c4f86e76a"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/integration-manifest.json",
+      "bytes": 1323,
+      "sha256": "e05f32ee73b179234204667c3803edf17e3960572e86ca3b8515850137e637f3"
+    }
+  ],
+  "file_count": 335,
+  "bytes": 1998920
+}

@@ -1,0 +1,13 @@
+{
+  "audit_sha256": "a750c3e5e7fd715d8a5dcd7293c3ee8a8d75020dda6e850c1fa218937c03743f",
+  "binary_and_wal_payloads_excluded": true,
+  "bundle_inventory_sha256": "2ea9fd5e92e51e27791cd885d72ed784ccc23544f22446e3612c99215e8277e1",
+  "complete": true,
+  "gzip_files": 7,
+  "original_files": 92,
+  "original_path_index_sha256": "4b31e1a6b810b06d9ad3b56fef1dde517d326489fc0f679f732454ad08f79a6e",
+  "originals_unchanged": true,
+  "scope": "Exact-text process/build/audit evidence selection only; original binary and WAL data remain retained.",
+  "stored_original_bytes": 633792,
+  "uncompressed_original_bytes": 2398571
+}

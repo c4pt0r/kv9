@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-slicing8-acceptance-preparation/process-runner.py",
+    "--build",
+    "/tmp/kv9-slicing8-release-first",
+    "--output",
+    "/tmp/kv9-slicing8-process-e2e-first"
+  ],
+  "cwd": "/tmp/kv9-wal-crc32-slicing8",
+  "started_ns": 1789153824317902742,
+  "supervisor_pid": 1831298,
+  "source_revision": "e5662bbce1443e6907e3d832a7b300881796340c",
+  "release_readback_sha256": "99d7b734d2c63c39552239daea9b314b282011d0c614f05e85cd3216998d83e5"
+}

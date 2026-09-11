@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "/tmp/kv9-p0-tools/lean-4.33.1-linux/bin/lean",
+    "-DwarningAsError=true",
+    "-o",
+    "RustTable.olean",
+    "RustTable.lean"
+  ],
+  "completed_unix_ns": 1789153496583387196,
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "cwd": "/tmp/kv9-slicing8-proof-integration-first/gate/control-compiled-polynomial",
+  "exit_code": 1,
+  "pid": 1772243,
+  "started_unix_ns": 1789153496269533768
+}

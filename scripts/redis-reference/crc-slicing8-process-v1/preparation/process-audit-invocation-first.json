@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+    "--source",
+    "/tmp/kv9-wal-crc32-slicing8",
+    "--build",
+    "/tmp/kv9-slicing8-release-first",
+    "--run",
+    "/tmp/kv9-slicing8-process-e2e-first",
+    "--revision",
+    "e5662bbce1443e6907e3d832a7b300881796340c",
+    "--output",
+    "/tmp/kv9-slicing8-acceptance-preparation/results-first"
+  ],
+  "input_bindings_sha256": "fc23ef56e157c72e9ae0cfafc2ff5ba7b180b8b41bdaac44be652fda9fd11ff7",
+  "pid": 1842147,
+  "root_runtime_exit_code": 0,
+  "root_runtime_session": 44594,
+  "root_runtime_terminal_tool_chunk": "5913a0",
+  "source_revision": "e5662bbce1443e6907e3d832a7b300881796340c",
+  "started_unix_ns": 1789153900550328148,
+  "supervisor_pid": 1842146
+}

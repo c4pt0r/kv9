@@ -1,0 +1,296 @@
+{
+  "accepted": true,
+  "checked_theorems": 47,
+  "compiled_base_entries": 256,
+  "compiled_slicing_entries": 2048,
+  "complete": true,
+  "completed_unix_ns": 1789153535696352042,
+  "controls": [
+    {
+      "name": "compiled-recurrence",
+      "reason": "Lean rejected RustSlicing: RustSlicing.lean:28:77: error: Tactic `decide` proved that the proposition\n  \u2200 (row : Fin 8) (byte : BitVec 8), compiledSlicing[\u2191row]![byte.toNat]! = sliceEntry (\u2191row) byte\nis false\n'Kv9.CRC32.compiled_slicing_rows' does not depend on any axioms\n'Kv9.CRC32.compiled_slicing_columns' depends on axioms: [propext]\n'Kv9.CRC32.compiled_slicing_entries' depends on axioms: [propext, sorryAx, Quot.sound]\n'Kv9.CRC32.compiled_slice_entry' depends on axioms: [propext, sorryAx, Quot.sound]\n'Kv9.CRC32.compiled_block_transition' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_slicing_list_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_slicing_parts_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_slicing_checksum_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_slicing_fragmentation_invariant' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n",
+      "rejected": true
+    },
+    {
+      "name": "compiled-polynomial",
+      "reason": "Lean rejected RustTable: RustTable.lean:272:55: error: Tactic `decide` proved that the proposition\n  \u2200 (byte : BitVec 8), compiledTable[byte.toNat]! = tableEntry byte\nis false\n'Kv9.CRC32.compiled_table_length' does not depend on any axioms\n'Kv9.CRC32.compiled_table' depends on axioms: [propext, sorryAx, Quot.sound]\n'Kv9.CRC32.compiled_byte_transition' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_list_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_parts_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_checksum_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_fragmentation_invariant' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n",
+      "rejected": true
+    },
+    {
+      "module": "RustSlicing",
+      "name": "wrong-block-row",
+      "reason": "Lean rejected RustSlicing: RustSlicing.lean:44:90: error: unsolved goals\nc : BitVec 32\nb0 b1 b2 b3 b4 b5 b6 b7 : BitVec 8\n\u22a2 sliceEntry 7 (byteAt (c ^^^ packed b0 b1 b2 b3) 0) ^^^ sliceEntry 6 (byteAt (c ^^^ packed b0 b1 b2 b3) 1) ^^^\n                sliceEntry 5 (byteAt (c ^^^ packed b0 b1 b2 b3) 2) ^^^\n              sliceEntry 4 (byteAt (c ^^^ packed b0 b1 b2 b3) 3) ^^^\n            sliceEntry 3 b4 ^^^\n          sliceEntry 2 b5 ^^^\n        sliceEntry 1 b6 ^^^\n      sliceEntry 0 b7 =\n    sliceEntry 6 (byteAt (c ^^^ packed b0 b1 b2 b3) 0) ^^^ sliceEntry 6 (byteAt (c ^^^ packed b0 b1 b2 b3) 1) ^^^\n                sliceEntry 5 (byteAt (c ^^^ packed b0 b1 b2 b3) 2) ^^^\n              sliceEntry 4 (byteAt (c ^^^ packed b0 b1 b2 b3) 3) ^^^\n            sliceEntry 3 b4 ^^^\n          sliceEntry 2 b5 ^^^\n        sliceEntry 1 b6 ^^^\n      sliceEntry 0 b7\nRustSlicing.lean:47:4: error: This simp argument is unused:\n  compiled_slice_entry 7 (by decide)\n\nHint: Omit it from the simp argument list.\n  [apply] simp only [sliceBlock, compiledSliceBlock, compiled_slice_entry 6 (by decide),\n    compiled_slice_entry 5 (by decide), compiled_slice_entry 4 (by decide), compiled_slice_entry 3 (by decide),\n    compiled_slice_entry 2 (by decide), compiled_slice_entry 1 (by decide), compiled_slice_entry 0 (by decide)]\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\n'Kv9.CRC32.compiled_slicing_rows' does not depend on any axioms\n'Kv9.CRC32.compiled_slicing_columns' depends on axioms: [propext]\n'Kv9.CRC32.compiled_slicing_entries' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.compiled_slice_entry' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.compiled_block_transition' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_slicing_list_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_slicing_parts_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_slicing_checksum_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_slicing_fragmentation_invariant' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n",
+      "rejected": true
+    },
+    {
+      "module": "Slicing8",
+      "name": "proof-hole",
+      "reason": "Lean rejected Slicing8: Slicing8.lean:109:8: error: declaration uses `sorry`\n'Kv9.CRC32.zero_xor' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.zero_zero' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.zero_peel' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Kv9.CRC32.zero_eight_decomposition' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Kv9.CRC32.packed_bytes' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.byte_at_xor' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.slice_xor' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.zero_comp' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.zero_slice' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.old_byte_linear' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.old_eight_expansion' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.block_transition' depends on axioms: [propext, sorryAx, Quot.sound]\n'Kv9.CRC32.slicing_list_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.slicing_parts_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.slicing_checksum_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.slicing_fragmentation_invariant' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n",
+      "rejected": true
+    },
+    {
+      "module": "Slicing8",
+      "name": "unapproved-axiom",
+      "reason": "untrusted axioms: Kv9.CRC32.block_transition: ['Kv9.CRC32.fake', 'Quot.sound', 'propext']",
+      "rejected": true
+    },
+    {
+      "name": "source-big-endian",
+      "reason": "source/model contract mismatch: pub(crate) fn crc32_parts(",
+      "rejected": true
+    },
+    {
+      "name": "source-tail-shift",
+      "reason": "source/model contract mismatch: pub(crate) fn crc32_parts(",
+      "rejected": true
+    },
+    {
+      "name": "source-missing-complement",
+      "reason": "source/model contract mismatch: pub(crate) fn crc32_parts(",
+      "rejected": true
+    }
+  ],
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "fresh_positive_theorem_checks": 94,
+  "historical_checker_source_rejection": "source/model contract mismatch: pub(crate) fn crc32_parts(",
+  "restored_checked_theorems": 47,
+  "runner_pid": 1767253,
+  "scope": "Universal CRC arithmetic under explicit Rust/stdlib source mapping; not whole Rust/WAL/IO correctness",
+  "started_unix_ns": 1789153473346022138,
+  "theorems": {
+    "Kv9.CRC32.bit_mask": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.bit_step_xor": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.bits_xor": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.block_transition": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.byte_at_xor": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.byte_split": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.byte_transition": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.checksum_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_block_transition": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_byte_transition": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_checksum_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_fragmentation_invariant": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_list_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_parts_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_slice_entry": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_slicing_checksum_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_slicing_columns": [
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_slicing_entries": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_slicing_fragmentation_invariant": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_slicing_list_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_slicing_parts_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_slicing_rows": [],
+    "Kv9.CRC32.compiled_table": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_table_length": [],
+    "Kv9.CRC32.fragmentation_invariant": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.high_byte_shift": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.high_mask_bit": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.high_step": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.list_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.masked_index": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.old_byte_linear": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.old_eight_expansion": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.packed_bytes": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.parts_flatten": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.singleton_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.slice_xor": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.slicing_checksum_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.slicing_fragmentation_invariant": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.slicing_list_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.slicing_parts_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.table_fold_append": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.zero_comp": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.zero_eight_decomposition": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.zero_peel": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.zero_slice": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.zero_xor": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.zero_zero": [
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "toolchain": {
+    "lean": "/tmp/kv9-p0-tools/lean-4.33.1-linux/bin/lean",
+    "lean_sha256": "e8baaa71855a616dc351028f3ad2200051b0671f423a1696a100e809302d5550",
+    "lean_version": "Lean (version 4.33.1, x86_64-unknown-linux-gnu, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)",
+    "rustc": "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+    "rustc_sha256": "103b60e1b1339968c1d74202ea1d45686037e82c4ea3e0569de24b18a1e6836a",
+    "rustc_version": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8"
+  }
+}

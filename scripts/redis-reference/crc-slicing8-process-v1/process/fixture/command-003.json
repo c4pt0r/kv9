@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/tmp/kv9-slicing8-release-first/kv9",
+    "root-create",
+    "--output",
+    "/tmp/kv9-slicing8-process-e2e-first/fixture/root.bin",
+    "--voters",
+    "1@127.0.0.1:42769,2@127.0.0.1:52183,3@127.0.0.1:43147",
+    "--store-incarnations",
+    "1=a5ef08eba5e4e66516f85c764982261a,2=a1cc9acb49e221abf78e35ce00517555,3=fe1caec114ec3564fe0b7b1569121090"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "stdout": "root_created=true cluster_id=a85bd6106dfed75deec1d14357d21623 bootstrap_generation=54064b221e29287b628a9b31ce58d7dd root_digest=ba89f1115906518c132b14b48ea69fb9e1aa47254b15fad8880da2c70ecb4d61 output=/tmp/kv9-slicing8-process-e2e-first/fixture/root.bin\nroot_voter=1@127.0.0.1:42769 store_incarnation=a5ef08eba5e4e66516f85c764982261a\nroot_voter=2@127.0.0.1:52183 store_incarnation=a1cc9acb49e221abf78e35ce00517555\nroot_voter=3@127.0.0.1:43147 store_incarnation=fe1caec114ec3564fe0b7b1569121090\n"
+}

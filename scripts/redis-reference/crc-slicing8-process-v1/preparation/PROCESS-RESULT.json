@@ -1,0 +1,102 @@
+{
+  "accepted": true,
+  "all_commands_terminal": true,
+  "audit_exit_code": 0,
+  "audit_receipt_sha256": "1575b14863dc46b9c0a0928959da06dfdfc17704da386049d3f256b3a8c99666",
+  "audit_sha256": "a750c3e5e7fd715d8a5dcd7293c3ee8a8d75020dda6e850c1fa218937c03743f",
+  "audit_terminal_tool_chunk": "e9ef13",
+  "cases": [
+    {
+      "fresh_drained_voters": 3,
+      "history_sha256": "fbc46441022e07495f31651ae586391f2bd1c8447aeedbe1dcf4f753aa02c107",
+      "native_checker_states": 506,
+      "operations": 183,
+      "outcomes": {
+        "ok": 169,
+        "unknown": 14
+      },
+      "raw_checker_states": 506,
+      "transport": "tonic_stream",
+      "windows": [
+        {
+          "contained_calls": 35,
+          "counts": {
+            "batch_get": 12,
+            "batch_put": 12,
+            "delete": 4,
+            "get": 3,
+            "put": 4
+          },
+          "label": "voter-lost"
+        },
+        {
+          "contained_calls": 32,
+          "counts": {
+            "batch_get": 12,
+            "batch_put": 10,
+            "delete": 3,
+            "get": 4,
+            "put": 3
+          },
+          "label": "voter-restarted"
+        }
+      ]
+    },
+    {
+      "fresh_drained_voters": 3,
+      "history_sha256": "e931f67b1f1c197268bec74c784b113d893ed600e1e9359c6171e47903a659dd",
+      "native_checker_states": 170,
+      "operations": 177,
+      "outcomes": {
+        "ok": 164,
+        "unknown": 13
+      },
+      "raw_checker_states": 170,
+      "transport": "tonic_unary",
+      "windows": [
+        {
+          "contained_calls": 35,
+          "counts": {
+            "batch_get": 12,
+            "batch_put": 12,
+            "delete": 4,
+            "get": 3,
+            "put": 4
+          },
+          "label": "voter-lost"
+        },
+        {
+          "contained_calls": 30,
+          "counts": {
+            "batch_get": 10,
+            "batch_put": 11,
+            "delete": 4,
+            "get": 3,
+            "put": 2
+          },
+          "label": "voter-restarted"
+        }
+      ]
+    }
+  ],
+  "cleanup_errors": [],
+  "client_lifetimes_exited": 2,
+  "fresh_drained_voter_observations": 6,
+  "original_inputs_unchanged": true,
+  "outcomes": {
+    "ok": 333,
+    "unknown": 27
+  },
+  "root_runtime_exit_code": 0,
+  "root_runtime_session": 44594,
+  "root_runtime_terminal_tool_chunk": "5913a0",
+  "scope": "Independent readback of one frozen default-feature native atomic batch process fixture, stream default plus explicit unary on normal endpoints; two complete atomic histories and source-bound SIGKILL/restart intervals. One local host, ordinary WAL, no benchmark or actual Chaos Mesh/native-batch Chaos acceptance. Interval timestamps and listener/proc records are retained observations from the source-bound fixture, not an external continuous observer. Safe pre-uncertainty routing retries are allowed; unknown outcomes are retained and uncertain writes are not replayed.",
+  "server_lifetimes_exited": 5,
+  "server_sha256": "1478689c90c191d728f646a60de9b3b5f22174c3833bd5b4baa7abbad08bf3ea",
+  "source_files": 596,
+  "source_revision": "e5662bbce1443e6907e3d832a7b300881796340c",
+  "source_tree_sha256": "cc3dc535a70439fb85349f577e2b7ccf610d87a4bc82cf9741a9ea5e40ea6036",
+  "source_unchanged": true,
+  "total_calls": 360,
+  "workload_sha256": "9f7e40de023e21b1e5b289a924e64c4ebee848a97699a184b7a0b1ace6ec8f42"
+}

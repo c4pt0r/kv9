@@ -1,0 +1,70 @@
+{
+  "independent-process-audit": {
+    "argv": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "/usr/bin/python3",
+      "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+      "--source",
+      "/tmp/kv9-wal-crc32-slicing8",
+      "--build",
+      "/tmp/kv9-slicing8-release-first",
+      "--run",
+      "/tmp/kv9-slicing8-process-e2e-first",
+      "--revision",
+      "e5662bbce1443e6907e3d832a7b300881796340c",
+      "--output",
+      "/tmp/kv9-slicing8-acceptance-preparation/results-first"
+    ],
+    "executed_here": false,
+    "launch_ready": false,
+    "requires": "Original release and exact process runtime terminal/cleanup evidence plus explicit root independent-audit release. Committed source revision is now bound.",
+    "shell": "env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 taskset -c 6-15,22-31 /usr/bin/python3 /tmp/kv9-rpc-pair-process-independent-first/audit.py --source /tmp/kv9-wal-crc32-slicing8 --build /tmp/kv9-slicing8-release-first --run /tmp/kv9-slicing8-process-e2e-first --revision e5662bbce1443e6907e3d832a7b300881796340c --output /tmp/kv9-slicing8-acceptance-preparation/results-first"
+  },
+  "original-release": {
+    "argv": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "CARGO_BUILD_JOBS=6",
+      "CARGO_TARGET_DIR=/home/dongxu/kv9/target",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "/usr/bin/python3",
+      "/tmp/kv9-wal-crc32-slicing8/scripts/build-native-batch.py",
+      "--output",
+      "/tmp/kv9-slicing8-release-first",
+      "--release"
+    ],
+    "cwd": "/tmp/kv9-wal-crc32-slicing8",
+    "executed_here": false,
+    "launch_ready": false,
+    "requires": "Clean exact committed source e5662bbce1443e6907e3d832a7b300881796340c; root shared Cargo target ownership; preserve real original release execution and fresh destination. Root original build may now be live; this preparation does not launch it.",
+    "shell": "env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 CARGO_BUILD_JOBS=6 CARGO_TARGET_DIR=/home/dongxu/kv9/target taskset -c 6-15,22-31 /usr/bin/python3 /tmp/kv9-wal-crc32-slicing8/scripts/build-native-batch.py --output /tmp/kv9-slicing8-release-first --release"
+  },
+  "process-e2e": {
+    "argv": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "/usr/bin/python3",
+      "/tmp/kv9-slicing8-acceptance-preparation/process-runner.py",
+      "--build",
+      "/tmp/kv9-slicing8-release-first",
+      "--output",
+      "/tmp/kv9-slicing8-process-e2e-first"
+    ],
+    "executed_here": false,
+    "launch_ready": false,
+    "requires": "Original release terminal and actual source/Cargo/binary hashes; explicit root runtime coordination",
+    "shell": "env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 taskset -c 6-15,22-31 /usr/bin/python3 /tmp/kv9-slicing8-acceptance-preparation/process-runner.py --build /tmp/kv9-slicing8-release-first --output /tmp/kv9-slicing8-process-e2e-first"
+  }
+}

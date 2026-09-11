@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/tmp/kv9-slicing8-release-first/kv9",
+    "init",
+    "--root",
+    "/tmp/kv9-slicing8-process-e2e-first/fixture/root.bin",
+    "--node-id",
+    "1",
+    "--data-dir",
+    "/tmp/kv9-slicing8-process-e2e-first/fixture/data/n1"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "stdout": "store_initialized=true mode=init node_id=1 cluster_id=a85bd6106dfed75deec1d14357d21623 root_digest=ba89f1115906518c132b14b48ea69fb9e1aa47254b15fad8880da2c70ecb4d61 store_incarnation=a5ef08eba5e4e66516f85c764982261a data_dir=/tmp/kv9-slicing8-process-e2e-first/fixture/data/n1\n"
+}

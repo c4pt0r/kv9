@@ -1,0 +1,165 @@
+{
+  "accepted": true,
+  "commands": [
+    {
+      "path": "bitwise-source.command.json",
+      "pid": 1745966,
+      "exit_code": 0
+    },
+    {
+      "path": "byte-source.command.json",
+      "pid": 1745965,
+      "exit_code": 0
+    },
+    {
+      "path": "control-compiled-polynomial/RustTable.command.json",
+      "pid": 1750967,
+      "exit_code": 1
+    },
+    {
+      "path": "control-compiled-polynomial/rustc.command.json",
+      "pid": 1750938,
+      "exit_code": 0
+    },
+    {
+      "path": "control-compiled-polynomial/table.command.json",
+      "pid": 1750966,
+      "exit_code": 0
+    },
+    {
+      "path": "control-compiled-recurrence/RustSlicing.command.json",
+      "pid": 1750494,
+      "exit_code": 1
+    },
+    {
+      "path": "control-compiled-recurrence/rustc.command.json",
+      "pid": 1750465,
+      "exit_code": 0
+    },
+    {
+      "path": "control-compiled-recurrence/table.command.json",
+      "pid": 1750493,
+      "exit_code": 0
+    },
+    {
+      "path": "control-proof-hole/Slicing8.command.json",
+      "pid": 1754477,
+      "exit_code": 1
+    },
+    {
+      "path": "control-unapproved-axiom/Slicing8.command.json",
+      "pid": 1754698,
+      "exit_code": 0
+    },
+    {
+      "path": "control-wrong-block-row/RustSlicing.command.json",
+      "pid": 1750982,
+      "exit_code": 1
+    },
+    {
+      "path": "lean-version.command.json",
+      "pid": 1745967,
+      "exit_code": 0
+    },
+    {
+      "path": "positive/CRC32.command.json",
+      "pid": 1746013,
+      "exit_code": 0
+    },
+    {
+      "path": "positive/RustSlicing.command.json",
+      "pid": 1746876,
+      "exit_code": 0
+    },
+    {
+      "path": "positive/RustTable.command.json",
+      "pid": 1746251,
+      "exit_code": 0
+    },
+    {
+      "path": "positive/Slicing8.command.json",
+      "pid": 1746232,
+      "exit_code": 0
+    },
+    {
+      "path": "positive/rustc.command.json",
+      "pid": 1745984,
+      "exit_code": 0
+    },
+    {
+      "path": "positive/table.command.json",
+      "pid": 1746012,
+      "exit_code": 0
+    },
+    {
+      "path": "restored/CRC32.command.json",
+      "pid": 1754744,
+      "exit_code": 0
+    },
+    {
+      "path": "restored/RustSlicing.command.json",
+      "pid": 1755636,
+      "exit_code": 0
+    },
+    {
+      "path": "restored/RustTable.command.json",
+      "pid": 1755192,
+      "exit_code": 0
+    },
+    {
+      "path": "restored/Slicing8.command.json",
+      "pid": 1754971,
+      "exit_code": 0
+    },
+    {
+      "path": "restored/rustc.command.json",
+      "pid": 1754715,
+      "exit_code": 0
+    },
+    {
+      "path": "restored/table.command.json",
+      "pid": 1754743,
+      "exit_code": 0
+    },
+    {
+      "path": "rustc-sysroot.command.json",
+      "pid": 1745970,
+      "exit_code": 0
+    },
+    {
+      "path": "rustc-version.command.json",
+      "pid": 1745982,
+      "exit_code": 0
+    }
+  ],
+  "all_26_commands_terminal": true,
+  "exact_source_hashes_unchanged": true,
+  "theorems": 47,
+  "fresh_checks": 94,
+  "controls": [
+    "compiled-recurrence",
+    "compiled-polynomial",
+    "wrong-block-row",
+    "proof-hole",
+    "unapproved-axiom",
+    "source-big-endian",
+    "source-tail-shift",
+    "source-missing-complement"
+  ],
+  "root_tool_terminal": {
+    "session_id": 57110,
+    "exit_code": 0,
+    "tool_receipt": "7165e0",
+    "runner_pid": 1745948,
+    "pid_absent": true,
+    "reaped": true,
+    "source": "actual write_stdin terminal result",
+    "recorded_unix_ns": 1789153496971536857,
+    "invocation_path": "/tmp/kv9-slicing8-proof-preparation/gate-third-invocation.json",
+    "invocation_sha256": "c989a2a5cfc018ae6a5ee3af0d48b43ef064b459a23a7da229fd2e938bd71699",
+    "terminal_path": "/tmp/kv9-slicing8-proof-preparation/gate-third-terminal.json",
+    "terminal_sha256": "61713aba81eca8aa55259241c68c41969f265d91d2e65dd7e13fa7311708e990",
+    "result_sha256": "ed858b572052d4e7b6d84a5f402d74d2efb8e891328167c7ac907b905da3fea6",
+    "inventory_sha256": "cec00037067c83045264ca0e60c71d44757ebc6ed0af6a81d49b78aba79e3b5d"
+  }
+}

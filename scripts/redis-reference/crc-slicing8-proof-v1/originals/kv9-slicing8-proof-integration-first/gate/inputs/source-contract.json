@@ -1,0 +1,13 @@
+{
+  "baseline_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "source": "crates/engine/src/wal.rs",
+  "candidate": {
+    "pub(crate) fn crc32(": "pub(crate) fn crc32(bytes: &[u8]) -> u32 {\n    crc32_parts(&[bytes])\n}",
+    "const CRC32_TABLE:": "const CRC32_TABLE: [u32; 256] = {\n    let mut table = [0; 256];\n    let mut byte = 0;\n    while byte < table.len() {\n        let mut crc = byte as u32;\n        let mut bit = 0;\n        while bit < 8 {\n            let mask = (crc & 1).wrapping_neg();\n            crc = (crc >> 1) ^ (0xEDB8_8320 & mask);\n            bit += 1;\n        }\n        table[byte] = crc;\n        byte += 1;\n    }\n    table\n};",
+    "pub(crate) fn crc32_parts(": "pub(crate) fn crc32_parts(parts: &[&[u8]]) -> u32 {\n    let mut crc: u32 = 0xFFFF_FFFF;\n    for part in parts {\n        for &byte in *part {\n            crc = (crc >> 8) ^ CRC32_TABLE[((crc ^ u32::from(byte)) & 0xff) as usize];\n        }\n    }\n    !crc\n}"
+  },
+  "baseline": {
+    "pub(crate) fn crc32(": "pub(crate) fn crc32(bytes: &[u8]) -> u32 {\n    crc32_parts(&[bytes])\n}",
+    "pub(crate) fn crc32_parts(": "pub(crate) fn crc32_parts(parts: &[&[u8]]) -> u32 {\n    let mut crc: u32 = 0xFFFF_FFFF;\n    for &b in parts.iter().flat_map(|part| part.iter()) {\n        crc ^= u32::from(b);\n        for _ in 0..8 {\n            let mask = (crc & 1).wrapping_neg();\n            crc = (crc >> 1) ^ (0xEDB8_8320 & mask);\n        }\n    }\n    !crc\n}"
+  }
+}

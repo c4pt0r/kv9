@@ -1,0 +1,318 @@
+{
+  "actual_process_session": null,
+  "actual_process_terminal": null,
+  "build_manifest_sha256": "cc51be9a4a2416ed9dec4396b07199f13a2dbfff3447d4bbd82d3d0c02725de0",
+  "cargo_artifact_identities": {
+    "server": {
+      "artifacts": {
+        "kv9": {
+          "executable": "/home/dongxu/kv9/target/release/kv9",
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/kv9"
+          ],
+          "fresh": false,
+          "manifest_path": "/tmp/kv9-wal-crc32-slicing8/Cargo.toml",
+          "package_id": "path+file:///tmp/kv9-wal-crc32-slicing8#kv9@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          },
+          "reason": "compiler-artifact",
+          "target": {
+            "crate_types": [
+              "bin"
+            ],
+            "doc": true,
+            "doctest": false,
+            "edition": "2021",
+            "kind": [
+              "bin"
+            ],
+            "name": "kv9",
+            "src_path": "/tmp/kv9-wal-crc32-slicing8/src/main.rs",
+            "test": true
+          }
+        },
+        "kv9_engine": {
+          "executable": null,
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_engine-2a0c669332e72d1f.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_engine-2a0c669332e72d1f.rmeta"
+          ],
+          "fresh": true,
+          "manifest_path": "/tmp/kv9-wal-crc32-slicing8/crates/engine/Cargo.toml",
+          "package_id": "path+file:///tmp/kv9-wal-crc32-slicing8/crates/engine#kv9-engine@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          },
+          "reason": "compiler-artifact",
+          "target": {
+            "crate_types": [
+              "lib"
+            ],
+            "doc": true,
+            "doctest": true,
+            "edition": "2021",
+            "kind": [
+              "lib"
+            ],
+            "name": "kv9_engine",
+            "src_path": "/tmp/kv9-wal-crc32-slicing8/crates/engine/src/lib.rs",
+            "test": true
+          }
+        },
+        "kv9_raft": {
+          "executable": null,
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_raft-1f93c9042270eb86.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_raft-1f93c9042270eb86.rmeta"
+          ],
+          "fresh": true,
+          "manifest_path": "/tmp/kv9-wal-crc32-slicing8/crates/raft/Cargo.toml",
+          "package_id": "path+file:///tmp/kv9-wal-crc32-slicing8/crates/raft#kv9-raft@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          },
+          "reason": "compiler-artifact",
+          "target": {
+            "crate_types": [
+              "lib"
+            ],
+            "doc": true,
+            "doctest": true,
+            "edition": "2021",
+            "kind": [
+              "lib"
+            ],
+            "name": "kv9_raft",
+            "src_path": "/tmp/kv9-wal-crc32-slicing8/crates/raft/src/lib.rs",
+            "test": true
+          }
+        },
+        "kv9_server": {
+          "executable": null,
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_server-7a66876d9577ec02.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_server-7a66876d9577ec02.rmeta"
+          ],
+          "fresh": true,
+          "manifest_path": "/tmp/kv9-wal-crc32-slicing8/crates/server/Cargo.toml",
+          "package_id": "path+file:///tmp/kv9-wal-crc32-slicing8/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          },
+          "reason": "compiler-artifact",
+          "target": {
+            "crate_types": [
+              "lib"
+            ],
+            "doc": true,
+            "doctest": true,
+            "edition": "2021",
+            "kind": [
+              "lib"
+            ],
+            "name": "kv9_server",
+            "src_path": "/tmp/kv9-wal-crc32-slicing8/crates/server/src/lib.rs",
+            "test": true
+          }
+        }
+      },
+      "cargo_sha256": "e679e8d897d0664b77f05dac9fc5b143c7eceb8750b38c6bb849dc3ce97bf6eb",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--bin",
+        "kv9",
+        "--release",
+        "--message-format=json-render-diagnostics"
+      ]
+    },
+    "workload": {
+      "artifacts": {
+        "kv9-batch-workload": {
+          "executable": "/home/dongxu/kv9/target/release/kv9-batch-workload",
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/kv9-batch-workload"
+          ],
+          "fresh": false,
+          "manifest_path": "/tmp/kv9-wal-crc32-slicing8/crates/server/Cargo.toml",
+          "package_id": "path+file:///tmp/kv9-wal-crc32-slicing8/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          },
+          "reason": "compiler-artifact",
+          "target": {
+            "crate_types": [
+              "bin"
+            ],
+            "doc": true,
+            "doctest": false,
+            "edition": "2021",
+            "kind": [
+              "bin"
+            ],
+            "name": "kv9-batch-workload",
+            "src_path": "/tmp/kv9-wal-crc32-slicing8/crates/server/src/bin/kv9-batch-workload.rs",
+            "test": true
+          }
+        },
+        "kv9_engine": {
+          "executable": null,
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_engine-2a0c669332e72d1f.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_engine-2a0c669332e72d1f.rmeta"
+          ],
+          "fresh": false,
+          "manifest_path": "/tmp/kv9-wal-crc32-slicing8/crates/engine/Cargo.toml",
+          "package_id": "path+file:///tmp/kv9-wal-crc32-slicing8/crates/engine#kv9-engine@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          },
+          "reason": "compiler-artifact",
+          "target": {
+            "crate_types": [
+              "lib"
+            ],
+            "doc": true,
+            "doctest": true,
+            "edition": "2021",
+            "kind": [
+              "lib"
+            ],
+            "name": "kv9_engine",
+            "src_path": "/tmp/kv9-wal-crc32-slicing8/crates/engine/src/lib.rs",
+            "test": true
+          }
+        },
+        "kv9_raft": {
+          "executable": null,
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_raft-1f93c9042270eb86.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_raft-1f93c9042270eb86.rmeta"
+          ],
+          "fresh": false,
+          "manifest_path": "/tmp/kv9-wal-crc32-slicing8/crates/raft/Cargo.toml",
+          "package_id": "path+file:///tmp/kv9-wal-crc32-slicing8/crates/raft#kv9-raft@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          },
+          "reason": "compiler-artifact",
+          "target": {
+            "crate_types": [
+              "lib"
+            ],
+            "doc": true,
+            "doctest": true,
+            "edition": "2021",
+            "kind": [
+              "lib"
+            ],
+            "name": "kv9_raft",
+            "src_path": "/tmp/kv9-wal-crc32-slicing8/crates/raft/src/lib.rs",
+            "test": true
+          }
+        },
+        "kv9_server": {
+          "executable": null,
+          "features": [],
+          "filenames": [
+            "/home/dongxu/kv9/target/release/deps/libkv9_server-7a66876d9577ec02.rlib",
+            "/home/dongxu/kv9/target/release/deps/libkv9_server-7a66876d9577ec02.rmeta"
+          ],
+          "fresh": false,
+          "manifest_path": "/tmp/kv9-wal-crc32-slicing8/crates/server/Cargo.toml",
+          "package_id": "path+file:///tmp/kv9-wal-crc32-slicing8/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          },
+          "reason": "compiler-artifact",
+          "target": {
+            "crate_types": [
+              "lib"
+            ],
+            "doc": true,
+            "doctest": true,
+            "edition": "2021",
+            "kind": [
+              "lib"
+            ],
+            "name": "kv9_server",
+            "src_path": "/tmp/kv9-wal-crc32-slicing8/crates/server/src/lib.rs",
+            "test": true
+          }
+        }
+      },
+      "cargo_sha256": "f22e0d3d2f4e6ef18bc01b7759fc7859c597d10ad593380702ff840b424a4aa6",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--bin",
+        "kv9-batch-workload",
+        "--message-format=json-render-diagnostics",
+        "--release"
+      ]
+    }
+  },
+  "independent_audit_released": false,
+  "original_build_session": 44220,
+  "original_build_terminal": {
+    "exit_code": 0,
+    "path": "/tmp/kv9-slicing8-root-first/release-terminal-first.json",
+    "sha256": "704185409f10f1c8069ef3065f6aeb070230129a2398b80072ba386a3d1c89f1",
+    "tool_chunk": "fe4df2"
+  },
+  "release_directory": "/tmp/kv9-slicing8-release-first",
+  "revision": "e5662bbce1443e6907e3d832a7b300881796340c",
+  "runtime_accepted": false,
+  "runtime_directory": "/tmp/kv9-slicing8-process-e2e-first",
+  "scope": "Only original root build/runtime receipts may populate these fields; no fabricated retrospective build manifest or inherited indexed candidate acceptance.",
+  "server_sha256": "1478689c90c191d728f646a60de9b3b5f22174c3833bd5b4baa7abbad08bf3ea",
+  "source_count": 596,
+  "source_tree_sha256": "cc3dc535a70439fb85349f577e2b7ccf610d87a4bc82cf9741a9ea5e40ea6036",
+  "wal_sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a",
+  "workload_manifest_sha256": "c6bb33935f3728cac0eca8ded16d497d643e0d69225ae66ab98d2bf38876700f",
+  "workload_sha256": "9f7e40de023e21b1e5b289a924e64c4ebee848a97699a184b7a0b1ace6ec8f42"
+}

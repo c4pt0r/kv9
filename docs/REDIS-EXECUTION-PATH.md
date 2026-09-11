@@ -13,6 +13,14 @@ remains experimental. Both copy-removal candidates below remain rejected for
 performance. Historical reads retain their original recording scopes; no new
 read measurement accompanies this write screen.
 
+The next [CRC slicing candidate](CRC32-SLICING-QUALIFICATION.md) passes its
+source tests and explicit universal/compiled-table proof, with runtime and
+performance qualification tracked separately. After this bounded checksum
+work, focus returns to GET throughput and single-request latency. Durable
+Raft writes retain persistence and majority replication costs; a standalone
+Redis configuration with persistence disabled does not define an equivalent
+write-performance acceptance target.
+
 ## What the reference actually does
 
 Redis's [GET implementation](https://github.com/redis/redis/blob/7.0.15/src/t_string.c#L300-L316)

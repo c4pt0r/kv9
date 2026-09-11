@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "CARGO_BUILD_JOBS=6",
+    "CARGO_TARGET_DIR=/home/dongxu/kv9/target",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-wal-crc32-slicing8/scripts/build-native-batch.py",
+    "--output",
+    "/tmp/kv9-slicing8-release-first",
+    "--release"
+  ],
+  "cwd": "/tmp/kv9-wal-crc32-slicing8",
+  "started_ns": 1789153601826135901,
+  "supervisor_pid": 1794663,
+  "source_revision": "e5662bbce1443e6907e3d832a7b300881796340c",
+  "cargo_target": "/home/dongxu/kv9/target",
+  "child_pid": 1794666
+}

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/kv9-slicing8-proof-preparation/check-crc32-slicing8-proof.py", line 218, in <module>
+    main()
+  File "/tmp/kv9-slicing8-proof-preparation/check-crc32-slicing8-proof.py", line 105, in main
+    b.require(re.findall(r'^theorem ([A-Za-z_0-9]+)',text,re.M)==b.NAMES[name],f'theorem inventory mismatch: {name}')
+  File "/tmp/kv9-wal-crc32-slicing8/scripts/check-crc32-proof.py", line 36, in require
+    raise Rejected(message)
+crc_byte_checker.Rejected: theorem inventory mismatch: CRC32

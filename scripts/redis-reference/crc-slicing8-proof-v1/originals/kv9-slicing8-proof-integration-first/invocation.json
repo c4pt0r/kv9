@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "scripts/check-crc32-slicing8-proof.py",
+    "--source-root",
+    ".",
+    "--lean",
+    "/tmp/kv9-p0-tools/lean-4.33.1-linux/bin/lean",
+    "--rustc",
+    "/home/dongxu/.cargo/bin/rustc",
+    "--output",
+    "/tmp/kv9-slicing8-proof-integration-first/gate"
+  ],
+  "cwd": "/tmp/kv9-wal-crc32-slicing8",
+  "started_ns": 1789153473325402940,
+  "supervisor_pid": 1767251,
+  "child_pid": 1767253
+}

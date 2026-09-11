@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/tmp/kv9-p0-tools/lean-4.33.1-linux/bin/lean",
+    "-DwarningAsError=true",
+    "-o",
+    "Slicing8.olean",
+    "Slicing8.lean"
+  ],
+  "cwd": "/tmp/kv9-slicing8-proof-attempt6",
+  "source_sha256": "0cc0a2b550087a3ad66d1995a50b6953a902033060b4950a7254bff9ba1a5557",
+  "started_ns": 1789152576065339208,
+  "affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "pid": 1495268,
+  "exit_code": 0,
+  "terminal": true,
+  "ended_ns": 1789152576479650661,
+  "log_sha256": "441a4d02dd972a49c5992087e7f6c0978fdf9835d5008b14b4a9abef19abe68c"
+}

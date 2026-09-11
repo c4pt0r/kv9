@@ -1,0 +1,110 @@
+{
+  "bitwise-source.command.json": {
+    "bytes": 515,
+    "sha256": "51c9f132cc3cd9415e12258ce39422d4ff1fe87d3d48ea583c1b19e2a43740bd"
+  },
+  "bitwise-source.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "bitwise-source.stdout": {
+    "bytes": 31747,
+    "sha256": "eea567f32dc76406ebeb73fb7251fb86eb9ae9cd252231c1a46ca1b54f35ca2a"
+  },
+  "byte-source.command.json": {
+    "bytes": 515,
+    "sha256": "f307e48c0a0ac6129def522254634b2652f94febe63c11f07140ff11a0f4a0d9"
+  },
+  "byte-source.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "byte-source.stdout": {
+    "bytes": 34239,
+    "sha256": "3651e5136ee6117819b27d38f5c788029ae0ec5941bf47ab16565b736c711478"
+  },
+  "inputs/CRC32.lean": {
+    "bytes": 7579,
+    "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01"
+  },
+  "inputs/RustSlicing.lean.in": {
+    "bytes": 4657,
+    "sha256": "464f890c5cb6eae1170052b5fb1ce470ec0fd74d24540de6ae7819ef2c25d5c5"
+  },
+  "inputs/RustTable.lean.in": {
+    "bytes": 2383,
+    "sha256": "e56b58af76b33ab3c1a5c09ad684a286cc465c48ff882cc59b4bb02293171c9e"
+  },
+  "inputs/Slicing8.lean": {
+    "bytes": 7783,
+    "sha256": "20ae98432bba62c7dc626c7c53ba3c377cbf3880d9b1c8536e5c311bdcfa04f2"
+  },
+  "inputs/check-crc32-proof.py": {
+    "bytes": 12999,
+    "sha256": "810a28389aeb9db21f2cef845d3be87e6e924486c3116087e3ac61e389c8ea6d"
+  },
+  "inputs/check-crc32-slicing8-proof.py": {
+    "bytes": 14335,
+    "sha256": "f8c75a0969e8f214bceffa6ec1a993735da62062dfd259384061fa244b68d74b"
+  },
+  "inputs/lean-toolchain": {
+    "bytes": 25,
+    "sha256": "3aac669c7a910ec2389f4e4f921b605adf6ebf2d1e0c9b9cd0be4d33f3f5db71"
+  },
+  "inputs/slicing-source-contract.json": {
+    "bytes": 5313,
+    "sha256": "d1c5b07d1e04b9a09f4a978d18bff5fc32e3e9ba1dbb6cb0f8833af979a23988"
+  },
+  "inputs/source-contract.json": {
+    "bytes": 1478,
+    "sha256": "16c49fd8655a04f6a40ce756a02b4de3d0789557fabd9077b04f184b41ae6423"
+  },
+  "inputs/wal.rs": {
+    "bytes": 36699,
+    "sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a"
+  },
+  "lean-version.command.json": {
+    "bytes": 443,
+    "sha256": "7cc78f57e111b820c643593ae55fc4c2e186a7512e8e2b4b42b5571785a0e7e9"
+  },
+  "lean-version.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "lean-version.stdout": {
+    "bytes": 106,
+    "sha256": "63f3e16bf0258e2cc0ab3010eb1830723df9bb85097b7b72b0137b9be25a78e9"
+  },
+  "result.json": {
+    "bytes": 1333,
+    "sha256": "81d706c57af957c2006051acd99967d156d4249675b7389d8b62bd36ae3b3d08"
+  },
+  "rustc-sysroot.command.json": {
+    "bytes": 441,
+    "sha256": "38aa07d6a0548dd601f9dc2b8d56e0caf069e46674d26f582be5d4f75e57f01c"
+  },
+  "rustc-sysroot.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "rustc-sysroot.stdout": {
+    "bytes": 64,
+    "sha256": "165014992e9a86caf71eab17d9129db920166702327d37be7d5a124aa859c48f"
+  },
+  "rustc-version.command.json": {
+    "bytes": 489,
+    "sha256": "12cd9a453340d66bfd21c81ab3c73289e9c563888cef143dcc05045312c00a3c"
+  },
+  "rustc-version.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "rustc-version.stdout": {
+    "bytes": 196,
+    "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69"
+  },
+  "source-inputs.json": {
+    "bytes": 1714,
+    "sha256": "e373eac3d7a5ea2651050f69499ba28dd3165292d70307a4f3761d1058bee5af"
+  }
+}

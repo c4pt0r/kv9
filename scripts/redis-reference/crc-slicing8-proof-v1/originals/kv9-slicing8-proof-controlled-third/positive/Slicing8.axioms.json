@@ -1,0 +1,73 @@
+{
+  "Kv9.CRC32.block_transition": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.byte_at_xor": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.old_byte_linear": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.old_eight_expansion": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.packed_bytes": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.slice_xor": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.slicing_checksum_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.slicing_fragmentation_invariant": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.slicing_list_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.slicing_parts_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.zero_comp": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.zero_eight_decomposition": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.zero_peel": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.zero_slice": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.zero_xor": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.zero_zero": [
+    "Quot.sound",
+    "propext"
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "Kv9.CRC32.bit_mask": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.bit_step_xor": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.bits_xor": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.byte_split": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.byte_transition": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.checksum_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.fragmentation_invariant": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.high_byte_shift": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.high_mask_bit": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.high_step": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.list_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.masked_index": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.parts_flatten": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.singleton_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.table_fold_append": [
+    "Quot.sound",
+    "propext"
+  ]
+}

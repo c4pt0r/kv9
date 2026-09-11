@@ -1,0 +1,82 @@
+{
+  "accepted": true,
+  "build_manifest_sha256": "cc51be9a4a2416ed9dec4396b07199f13a2dbfff3447d4bbd82d3d0c02725de0",
+  "builder_and_supervisor_absent": true,
+  "clean_source_unchanged": true,
+  "completed_unix_ns": 1789153792587494663,
+  "custom_build_artifacts_excluded_from_library_bin_profile_checks": true,
+  "executed_readback_script_sha256": "f11e41f3ae451ece3c87fe2df8543418942f14199e0c19b29e9f5a3c23cbeca2",
+  "input_bindings": {
+    "/tmp/kv9-slicing8-release-first/build.json": {
+      "bytes": 65974,
+      "sha256": "cc51be9a4a2416ed9dec4396b07199f13a2dbfff3447d4bbd82d3d0c02725de0"
+    },
+    "/tmp/kv9-slicing8-release-first/kv9": {
+      "bytes": 20149688,
+      "sha256": "1478689c90c191d728f646a60de9b3b5f22174c3833bd5b4baa7abbad08bf3ea"
+    },
+    "/tmp/kv9-slicing8-release-first/kv9-build.log": {
+      "bytes": 116,
+      "sha256": "40bc28e5d0233651eb921ad010287abaac5a77a4f58c05e1f60ea78b5146f54b"
+    },
+    "/tmp/kv9-slicing8-release-first/kv9-cargo.jsonl": {
+      "bytes": 211674,
+      "sha256": "e679e8d897d0664b77f05dac9fc5b143c7eceb8750b38c6bb849dc3ce97bf6eb"
+    },
+    "/tmp/kv9-slicing8-release-first/workload/build.json": {
+      "bytes": 487,
+      "sha256": "c6bb33935f3728cac0eca8ded16d497d643e0d69225ae66ab98d2bf38876700f"
+    },
+    "/tmp/kv9-slicing8-release-first/workload/build.log": {
+      "bytes": 574,
+      "sha256": "03f52824754a4fda05779838ac32a4b04ed60895d283b36e10ace515b980c774"
+    },
+    "/tmp/kv9-slicing8-release-first/workload/cargo.jsonl": {
+      "bytes": 208662,
+      "sha256": "f22e0d3d2f4e6ef18bc01b7759fc7859c597d10ad593380702ff840b424a4aa6"
+    },
+    "/tmp/kv9-slicing8-release-first/workload/kv9-batch-workload": {
+      "bytes": 5762016,
+      "sha256": "9f7e40de023e21b1e5b289a924e64c4ebee848a97699a184b7a0b1ace6ec8f42"
+    },
+    "/tmp/kv9-slicing8-release-first/workload/sources.json": {
+      "bytes": 61975,
+      "sha256": "1d8d7f2f497db724169db5ff881309b4860a3933fd8e03cbaf2f0b05c78a6b36"
+    },
+    "/tmp/kv9-slicing8-root-first/release-child-first.json": {
+      "bytes": 605,
+      "sha256": "8aad66a9d7e9e6c842998b3638f1fbd48177556afc911b8b48710c28067bb68c"
+    },
+    "/tmp/kv9-slicing8-root-first/release-first.log": {
+      "bytes": 163,
+      "sha256": "b68241d8c36437a79c0b03e0a0602974ad92c152269d878b55f466fa20f451b9"
+    },
+    "/tmp/kv9-slicing8-root-first/release-invocation-first.json": {
+      "bytes": 581,
+      "sha256": "62a166cd1c7426debc0f202a2c99fab14d7e0b62b3f110cd45eb8ec6f8f9e8d9"
+    },
+    "/tmp/kv9-slicing8-root-first/release-terminal-first.json": {
+      "bytes": 682,
+      "sha256": "704185409f10f1c8069ef3065f6aeb070230129a2398b80072ba386a3d1c89f1"
+    }
+  },
+  "opt_level": "3",
+  "original_build_exit_code": 0,
+  "original_build_session": 44220,
+  "original_input_bytes_unchanged": true,
+  "process_runner_sha256": "8d3ef23018ed4c2d9bb1040ca7185009ecbf5071854f8609819c813f823d2621",
+  "profile": "release",
+  "provisional_records_unchanged": true,
+  "release_pins_sha256": "c4e5e7db61a3f59025aead724c9798c38b7632ac8522801b58aab6f20c7a1e2f",
+  "revision": "e5662bbce1443e6907e3d832a7b300881796340c",
+  "root_terminal_tool_chunk": "fe4df2",
+  "scope": "Readback of the original default-feature release only; no process fixture, history audit, Chaos or performance acceptance.",
+  "server_features": [],
+  "server_sha256": "1478689c90c191d728f646a60de9b3b5f22174c3833bd5b4baa7abbad08bf3ea",
+  "source_files": 596,
+  "source_helpers_match": 9,
+  "source_tree_sha256": "cc3dc535a70439fb85349f577e2b7ccf610d87a4bc82cf9741a9ea5e40ea6036",
+  "workload_features": [],
+  "workload_manifest_sha256": "c6bb33935f3728cac0eca8ded16d497d643e0d69225ae66ab98d2bf38876700f",
+  "workload_sha256": "9f7e40de023e21b1e5b289a924e64c4ebee848a97699a184b7a0b1ace6ec8f42"
+}

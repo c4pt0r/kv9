@@ -1,0 +1,21 @@
+{
+  "all_commands_terminal": true,
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-slicing8-acceptance-preparation/release-readback-first.py"
+  ],
+  "exit_code": 0,
+  "observed_unix_ns": 1789153818718850335,
+  "pins_sha256": "c4e5e7db61a3f59025aead724c9798c38b7632ac8522801b58aab6f20c7a1e2f",
+  "provisional_inventory_and_source_pin_files_unchanged": true,
+  "readback_sha256": "99d7b734d2c63c39552239daea9b314b282011d0c614f05e85cd3216998d83e5",
+  "script_sha256": "f11e41f3ae451ece3c87fe2df8543418942f14199e0c19b29e9f5a3c23cbeca2",
+  "session_id": null,
+  "tool_chunk": "5f9256"
+}

@@ -1,0 +1,8 @@
+{
+  "cause": "Initial metadata read used runner.py, but accepted helper is process-runner.py as specified by commands.json. Correct path was then read without changing original files.",
+  "corrected_read_exit_code": 0,
+  "corrected_read_tool_chunk": "399d9f",
+  "first_read_exit_code": 1,
+  "first_read_tool_chunk": "125895",
+  "no_runtime_or_source_mutation": true
+}

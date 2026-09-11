@@ -1,0 +1,16 @@
+{
+  "command": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "cargo",
+    "test",
+    "--locked",
+    "-p",
+    "kv9-engine"
+  ],
+  "cwd": "/tmp/kv9-wal-crc32-slicing8",
+  "source_sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a",
+  "target": "/home/dongxu/kv9/target",
+  "started_ns": 1789151691669370164
+}

@@ -1,0 +1,172 @@
+{
+  "addresses": {
+    "1": "127.0.0.1:42769",
+    "2": "127.0.0.1:52183",
+    "3": "127.0.0.1:43147"
+  },
+  "complete": true,
+  "placement": {
+    "client_cpus": [
+      6,
+      7
+    ],
+    "exclusive_host": false,
+    "separated": true,
+    "server_cpus": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ]
+  },
+  "process_identities": {
+    "1": {
+      "cpu_affinity": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "executable_sha256": "1478689c90c191d728f646a60de9b3b5f22174c3833bd5b4baa7abbad08bf3ea",
+      "io": {
+        "cancelled_write_bytes": 0,
+        "rchar": 1636,
+        "read_bytes": 0,
+        "syscr": 5,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "observed_monotonic_ns": 1442536921233836,
+      "observed_unix_ns": 1789153824497954870,
+      "peak_rss_bytes": 24576,
+      "pid": 1831321,
+      "rss_bytes": 24576,
+      "start_ticks": 144253692,
+      "system_ticks": 0,
+      "user_ticks": 0
+    },
+    "2": {
+      "cpu_affinity": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "executable_sha256": "1478689c90c191d728f646a60de9b3b5f22174c3833bd5b4baa7abbad08bf3ea",
+      "io": {
+        "cancelled_write_bytes": 0,
+        "rchar": 1636,
+        "read_bytes": 0,
+        "syscr": 5,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "observed_monotonic_ns": 1442536992164733,
+      "observed_unix_ns": 1789153824568885406,
+      "peak_rss_bytes": 212992,
+      "pid": 1831323,
+      "rss_bytes": 212992,
+      "start_ticks": 144253699,
+      "system_ticks": 0,
+      "user_ticks": 0
+    },
+    "3": {
+      "cpu_affinity": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "executable_sha256": "1478689c90c191d728f646a60de9b3b5f22174c3833bd5b4baa7abbad08bf3ea",
+      "io": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3300,
+        "read_bytes": 0,
+        "syscr": 7,
+        "syscw": 0,
+        "wchar": 0,
+        "write_bytes": 0
+      },
+      "observed_monotonic_ns": 1442537066605610,
+      "observed_unix_ns": 1789153824643326393,
+      "peak_rss_bytes": 372736,
+      "pid": 1831328,
+      "rss_bytes": 372736,
+      "start_ticks": 144253706,
+      "system_ticks": 0,
+      "user_ticks": 0
+    }
+  },
+  "process_ids": {
+    "1": 1831321,
+    "2": 1831323,
+    "3": 1831328
+  },
+  "server_settings": {
+    "flush_interval_ms": 100,
+    "public_max_encoded_bytes": 16777216,
+    "public_max_requests": 64
+  },
+  "target": "wal",
+  "topology": "three voters on one host",
+  "trials": [],
+  "version": 1
+}

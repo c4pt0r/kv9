@@ -1,0 +1,77 @@
+[
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/tmp/kv9-wal-crc32-slicing8",
+    "ended_unix_ns": 1789153900577575149,
+    "exit_code": 0,
+    "name": "source-head",
+    "started_unix_ns": 1789153900576195200
+  },
+  {
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "cwd": "/tmp/kv9-wal-crc32-slicing8",
+    "ended_unix_ns": 1789153900580114666,
+    "exit_code": 0,
+    "name": "source-status",
+    "started_unix_ns": 1789153900577685716
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/history/checker.py",
+      "/tmp/kv9-slicing8-process-e2e-first/batch-tonic-stream/history.jsonl",
+      "--output",
+      "/tmp/kv9-slicing8-acceptance-preparation/results-first/batch-tonic-stream-history-checked.json",
+      "--acceptance",
+      "--require",
+      "get",
+      "put",
+      "delete",
+      "batch_get",
+      "batch_put",
+      "--max-states",
+      "400000",
+      "--seconds",
+      "60"
+    ],
+    "cwd": "/tmp/kv9-wal-crc32-slicing8",
+    "ended_unix_ns": 1789153900740167857,
+    "exit_code": 0,
+    "name": "batch-tonic-stream-raw-history",
+    "started_unix_ns": 1789153900693210972
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/history/checker.py",
+      "/tmp/kv9-slicing8-process-e2e-first/batch-tonic-unary/history.jsonl",
+      "--output",
+      "/tmp/kv9-slicing8-acceptance-preparation/results-first/batch-tonic-unary-history-checked.json",
+      "--acceptance",
+      "--require",
+      "get",
+      "put",
+      "delete",
+      "batch_get",
+      "batch_put",
+      "--max-states",
+      "400000",
+      "--seconds",
+      "60"
+    ],
+    "cwd": "/tmp/kv9-wal-crc32-slicing8",
+    "ended_unix_ns": 1789153900807821088,
+    "exit_code": 0,
+    "name": "batch-tonic-unary-raw-history",
+    "started_unix_ns": 1789153900771364982
+  }
+]

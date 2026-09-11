@@ -1,0 +1,10 @@
+RustTable.lean:272:55: error: Tactic `decide` proved that the proposition
+  ∀ (byte : BitVec 8), compiledTable[byte.toNat]! = tableEntry byte
+is false
+'Kv9.CRC32.compiled_table_length' does not depend on any axioms
+'Kv9.CRC32.compiled_table' depends on axioms: [propext, sorryAx, Quot.sound]
+'Kv9.CRC32.compiled_byte_transition' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_list_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_parts_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_checksum_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_fragmentation_invariant' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

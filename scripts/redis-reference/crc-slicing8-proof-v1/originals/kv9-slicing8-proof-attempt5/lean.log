@@ -1,0 +1,24 @@
+Slicing8.lean:59:42: error: unsolved goals
+case refine_2
+b0 b1 b2 b3 : BitVec 8
+i : Nat
+hi : i < 8
+⊢ (!decide (8 + i < 8) && b1[i] || !decide (8 + i < 16) && b2[0] || !decide (8 + i < 24) && b3[0]) = b1[i]
+
+case refine_3
+b0 b1 b2 b3 : BitVec 8
+i : Nat
+hi : i < 8
+⊢ (!decide (16 + i < 16) && b2[i] || !decide (16 + i < 24) && b3[0]) = b2[i]
+'Kv9.CRC32.zero_xor' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.zero_zero' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.zero_peel' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Kv9.CRC32.zero_eight_decomposition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Kv9.CRC32.packed_bytes' depends on axioms: [propext, sorryAx, Quot.sound]
+'Kv9.CRC32.byte_at_xor' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.slice_xor' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.zero_comp' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.zero_slice' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.old_byte_linear' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.old_eight_expansion' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.block_transition' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

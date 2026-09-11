@@ -1,0 +1,91 @@
+import Slicing8
+import RustTable
+
+set_option maxRecDepth 32768
+set_option maxHeartbeats 12000000
+
+namespace Kv9.CRC32
+
+/-- The exact 8 x 256 entries emitted by the standalone Rust const evaluator. -/
+def compiledSlicing : List (List (BitVec 32)) := [
+@SLICING@
+]
+
+theorem compiled_slicing_rows : compiledSlicing.length = 8 := by decide
+
+theorem compiled_slicing_columns : ∀ row : Fin 8,
+    (compiledSlicing[row.val]!).length = 256 := by decide
+
+/-- Finite kernel reduction, without native evaluation or additional axioms. -/
+theorem compiled_slicing_entries : ∀ row : Fin 8, ∀ byte : BitVec 8,
+    (compiledSlicing[row.val]!)[byte.toNat]! = sliceEntry row.val byte := by decide
+
+theorem compiled_slice_entry (row : Nat) (h : row < 8) (byte : BitVec 8) :
+    (compiledSlicing[row]!)[byte.toNat]! = sliceEntry row byte :=
+  compiled_slicing_entries ⟨row, h⟩ byte
+
+def compiledSliceBlock (c : BitVec 32) (b0 b1 b2 b3 b4 b5 b6 b7 : BitVec 8) : BitVec 32 :=
+  let low := c ^^^ packed b0 b1 b2 b3
+  (compiledSlicing[7]!)[(byteAt low 0).toNat]! ^^^
+  (compiledSlicing[6]!)[(byteAt low 1).toNat]! ^^^
+  (compiledSlicing[5]!)[(byteAt low 2).toNat]! ^^^
+  (compiledSlicing[4]!)[(byteAt low 3).toNat]! ^^^
+  (compiledSlicing[3]!)[b4.toNat]! ^^^ (compiledSlicing[2]!)[b5.toNat]! ^^^
+  (compiledSlicing[1]!)[b6.toNat]! ^^^ (compiledSlicing[0]!)[b7.toNat]!
+
+theorem compiled_block_transition (c : BitVec 32) (b0 b1 b2 b3 b4 b5 b6 b7 : BitVec 8) :
+    oldFold [b0,b1,b2,b3,b4,b5,b6,b7] c = compiledSliceBlock c b0 b1 b2 b3 b4 b5 b6 b7 := by
+  rw [block_transition]
+  simp only [sliceBlock, compiledSliceBlock,
+    compiled_slice_entry 7 (by decide), compiled_slice_entry 6 (by decide),
+    compiled_slice_entry 5 (by decide), compiled_slice_entry 4 (by decide),
+    compiled_slice_entry 3 (by decide), compiled_slice_entry 2 (by decide),
+    compiled_slice_entry 1 (by decide), compiled_slice_entry 0 (by decide)]
+
+def compiledSlicingFold : List (BitVec 8) → BitVec 32 → BitVec 32
+  | b0::b1::b2::b3::b4::b5::b6::b7::tail, c =>
+      compiledSlicingFold tail (compiledSliceBlock c b0 b1 b2 b3 b4 b5 b6 b7)
+  | tail, c => compiledFold tail c
+
+theorem compiled_slicing_list_equivalence : (bytes : List (BitVec 8)) → (c : BitVec 32) →
+    oldFold bytes c = compiledSlicingFold bytes c
+  | [], c => by simpa only [compiledSlicingFold] using compiled_list_equivalence [] c
+  | [b0], c => by simpa only [compiledSlicingFold] using compiled_list_equivalence [b0] c
+  | [b0,b1], c => by simpa only [compiledSlicingFold] using compiled_list_equivalence [b0,b1] c
+  | [b0,b1,b2], c => by simpa only [compiledSlicingFold] using compiled_list_equivalence [b0,b1,b2] c
+  | [b0,b1,b2,b3], c => by simpa only [compiledSlicingFold] using compiled_list_equivalence [b0,b1,b2,b3] c
+  | [b0,b1,b2,b3,b4], c => by simpa only [compiledSlicingFold] using compiled_list_equivalence [b0,b1,b2,b3,b4] c
+  | [b0,b1,b2,b3,b4,b5], c => by simpa only [compiledSlicingFold] using compiled_list_equivalence [b0,b1,b2,b3,b4,b5] c
+  | [b0,b1,b2,b3,b4,b5,b6], c => by simpa only [compiledSlicingFold] using compiled_list_equivalence [b0,b1,b2,b3,b4,b5,b6] c
+  | b0::b1::b2::b3::b4::b5::b6::b7::tail, c => by
+      change oldFold tail (oldFold [b0,b1,b2,b3,b4,b5,b6,b7] c) =
+        compiledSlicingFold tail (compiledSliceBlock c b0 b1 b2 b3 b4 b5 b6 b7)
+      rw [compiled_block_transition]
+      exact compiled_slicing_list_equivalence tail _
+
+def compiledSlicingParts (parts : List (List (BitVec 8))) (c : BitVec 32) : BitVec 32 :=
+  parts.foldl (fun state part => compiledSlicingFold part state) c
+
+theorem compiled_slicing_parts_equivalence (parts : List (List (BitVec 8))) (c : BitVec 32) :
+    oldFold parts.flatten c = compiledSlicingParts parts c := by
+  induction parts generalizing c with
+  | nil => rfl
+  | cons part parts ih =>
+    simp only [compiledSlicingParts, List.foldl_cons, List.flatten_cons, oldFold,
+      List.foldl_append] at *
+    rw [ih]
+    rw [← compiled_slicing_list_equivalence]
+    rfl
+
+def compiledSlicingChecksum (parts : List (List (BitVec 8))) : BitVec 32 :=
+  ~~~(compiledSlicingParts parts initial)
+
+theorem compiled_slicing_checksum_equivalence (parts : List (List (BitVec 8))) :
+    oldChecksum parts.flatten = compiledSlicingChecksum parts := by
+  simp only [oldChecksum, compiledSlicingChecksum, compiled_slicing_parts_equivalence]
+
+theorem compiled_slicing_fragmentation_invariant (left right : List (List (BitVec 8)))
+    (same : left.flatten = right.flatten) : compiledSlicingChecksum left = compiledSlicingChecksum right := by
+  rw [← compiled_slicing_checksum_equivalence, ← compiled_slicing_checksum_equivalence, same]
+
+end Kv9.CRC32

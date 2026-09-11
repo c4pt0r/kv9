@@ -1,0 +1,16 @@
+{
+  "session_id": 57110,
+  "exit_code": 0,
+  "tool_receipt": "7165e0",
+  "runner_pid": 1745948,
+  "pid_absent": true,
+  "reaped": true,
+  "source": "actual write_stdin terminal result",
+  "recorded_unix_ns": 1789153496971536857,
+  "invocation_path": "/tmp/kv9-slicing8-proof-preparation/gate-third-invocation.json",
+  "invocation_sha256": "c989a2a5cfc018ae6a5ee3af0d48b43ef064b459a23a7da229fd2e938bd71699",
+  "terminal_path": "/tmp/kv9-slicing8-proof-preparation/gate-third-terminal.json",
+  "terminal_sha256": "61713aba81eca8aa55259241c68c41969f265d91d2e65dd7e13fa7311708e990",
+  "result_sha256": "ed858b572052d4e7b6d84a5f402d74d2efb8e891328167c7ac907b905da3fea6",
+  "inventory_sha256": "cec00037067c83045264ca0e60c71d44757ebc6ed0af6a81d49b78aba79e3b5d"
+}

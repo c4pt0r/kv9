@@ -1,0 +1,12 @@
+RustSlicing.lean:28:77: error: Tactic `decide` proved that the proposition
+  ∀ (row : Fin 8) (byte : BitVec 8), compiledSlicing[↑row]![byte.toNat]! = sliceEntry (↑row) byte
+is false
+'Kv9.CRC32.compiled_slicing_rows' does not depend on any axioms
+'Kv9.CRC32.compiled_slicing_columns' depends on axioms: [propext]
+'Kv9.CRC32.compiled_slicing_entries' depends on axioms: [propext, sorryAx, Quot.sound]
+'Kv9.CRC32.compiled_slice_entry' depends on axioms: [propext, sorryAx, Quot.sound]
+'Kv9.CRC32.compiled_block_transition' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_slicing_list_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_slicing_parts_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_slicing_checksum_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_slicing_fragmentation_invariant' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

@@ -1,0 +1,2 @@
+PASS: retained workload executable and build provenance in /tmp/kv9-slicing8-release-first/workload
+PASS: retained native batch workload and default server builds

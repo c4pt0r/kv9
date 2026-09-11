@@ -1,0 +1,98 @@
+RustSlicing.lean:40:90: error: unsolved goals
+c : BitVec 32
+b0 b1 b2 b3 b4 b5 b6 b7 : BitVec 8
+⊢ sliceEntry 7 (byteAt (c ^^^ packed b0 b1 b2 b3) 0) ^^^ sliceEntry 6 (byteAt (c ^^^ packed b0 b1 b2 b3) 1) ^^^
+                sliceEntry 5 (byteAt (c ^^^ packed b0 b1 b2 b3) 2) ^^^
+              sliceEntry 4 (byteAt (c ^^^ packed b0 b1 b2 b3) 3) ^^^
+            sliceEntry 3 b4 ^^^
+          sliceEntry 2 b5 ^^^
+        sliceEntry 1 b6 ^^^
+      sliceEntry 0 b7 =
+    compiledSlicing[7]![(byteAt (c ^^^ packed b0 b1 b2 b3) 0).toNat]! ^^^
+                  compiledSlicing[6]![(byteAt (c ^^^ packed b0 b1 b2 b3) 1).toNat]! ^^^
+                compiledSlicing[5]![(byteAt (c ^^^ packed b0 b1 b2 b3) 2).toNat]! ^^^
+              compiledSlicing[4]![(byteAt (c ^^^ packed b0 b1 b2 b3) 3).toNat]! ^^^
+            compiledSlicing[3]![b4.toNat]! ^^^
+          compiledSlicing[2]![b5.toNat]! ^^^
+        compiledSlicing[1]![b6.toNat]! ^^^
+      compiledSlicing[0]![b7.toNat]!
+RustSlicing.lean:43:4: error: This simp argument is unused:
+  compiled_slicing_entries (7 : Fin 8)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [sliceBlock, compiledSliceBlock, compiled_slicing_entries (6 : Fin 8),
+    compiled_slicing_entries (5 : Fin 8), compiled_slicing_entries (4 : Fin 8), compiled_slicing_entries (3 : Fin 8),
+    compiled_slicing_entries (2 : Fin 8), compiled_slicing_entries (1 : Fin 8), compiled_slicing_entries (0 : Fin 8)]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RustSlicing.lean:43:42: error: This simp argument is unused:
+  compiled_slicing_entries (6 : Fin 8)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [sliceBlock, compiledSliceBlock, compiled_slicing_entries (7 : Fin 8),
+    compiled_slicing_entries (5 : Fin 8), compiled_slicing_entries (4 : Fin 8), compiled_slicing_entries (3 : Fin 8),
+    compiled_slicing_entries (2 : Fin 8), compiled_slicing_entries (1 : Fin 8), compiled_slicing_entries (0 : Fin 8)]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RustSlicing.lean:44:4: error: This simp argument is unused:
+  compiled_slicing_entries (5 : Fin 8)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [sliceBlock, compiledSliceBlock, compiled_slicing_entries (7 : Fin 8),
+    compiled_slicing_entries (6 : Fin 8), compiled_slicing_entries (4 : Fin 8), compiled_slicing_entries (3 : Fin 8),
+    compiled_slicing_entries (2 : Fin 8), compiled_slicing_entries (1 : Fin 8), compiled_slicing_entries (0 : Fin 8)]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RustSlicing.lean:44:42: error: This simp argument is unused:
+  compiled_slicing_entries (4 : Fin 8)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [sliceBlock, compiledSliceBlock, compiled_slicing_entries (7 : Fin 8),
+    compiled_slicing_entries (6 : Fin 8), compiled_slicing_entries (5 : Fin 8), compiled_slicing_entries (3 : Fin 8),
+    compiled_slicing_entries (2 : Fin 8), compiled_slicing_entries (1 : Fin 8), compiled_slicing_entries (0 : Fin 8)]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RustSlicing.lean:45:4: error: This simp argument is unused:
+  compiled_slicing_entries (3 : Fin 8)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [sliceBlock, compiledSliceBlock, compiled_slicing_entries (7 : Fin 8),
+    compiled_slicing_entries (6 : Fin 8), compiled_slicing_entries (5 : Fin 8), compiled_slicing_entries (4 : Fin 8),
+    compiled_slicing_entries (2 : Fin 8), compiled_slicing_entries (1 : Fin 8), compiled_slicing_entries (0 : Fin 8)]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RustSlicing.lean:45:42: error: This simp argument is unused:
+  compiled_slicing_entries (2 : Fin 8)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [sliceBlock, compiledSliceBlock, compiled_slicing_entries (7 : Fin 8),
+    compiled_slicing_entries (6 : Fin 8), compiled_slicing_entries (5 : Fin 8), compiled_slicing_entries (4 : Fin 8),
+    compiled_slicing_entries (3 : Fin 8), compiled_slicing_entries (1 : Fin 8), compiled_slicing_entries (0 : Fin 8)]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RustSlicing.lean:46:4: error: This simp argument is unused:
+  compiled_slicing_entries (1 : Fin 8)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [sliceBlock, compiledSliceBlock, compiled_slicing_entries (7 : Fin 8),
+    compiled_slicing_entries (6 : Fin 8), compiled_slicing_entries (5 : Fin 8), compiled_slicing_entries (4 : Fin 8),
+    compiled_slicing_entries (3 : Fin 8), compiled_slicing_entries (2 : Fin 8), compiled_slicing_entries (0 : Fin 8)]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+RustSlicing.lean:46:42: error: This simp argument is unused:
+  compiled_slicing_entries (0 : Fin 8)
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [sliceBlock, compiledSliceBlock, compiled_slicing_entries (7 : Fin 8),
+    compiled_slicing_entries (6 : Fin 8), compiled_slicing_entries (5 : Fin 8), compiled_slicing_entries (4 : Fin 8),
+    compiled_slicing_entries (3 : Fin 8), compiled_slicing_entries (2 : Fin 8), compiled_slicing_entries (1 : Fin 8)]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Kv9.CRC32.compiled_slicing_rows' does not depend on any axioms
+'Kv9.CRC32.compiled_slicing_columns' depends on axioms: [propext]
+'Kv9.CRC32.compiled_slicing_entries' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.compiled_block_transition' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_slicing_list_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_slicing_parts_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_slicing_checksum_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Kv9.CRC32.compiled_slicing_fragmentation_invariant' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

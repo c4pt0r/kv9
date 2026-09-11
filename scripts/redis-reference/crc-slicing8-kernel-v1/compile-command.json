@@ -1,0 +1,15 @@
+{
+  "command": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "rustc",
+    "--edition=2021",
+    "-Dwarnings",
+    "-O",
+    "screen.rs",
+    "-o",
+    "screen"
+  ],
+  "started_ns": 1789151934982556328
+}

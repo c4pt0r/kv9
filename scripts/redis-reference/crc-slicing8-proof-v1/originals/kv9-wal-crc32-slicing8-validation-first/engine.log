@@ -1,0 +1,206 @@
+   Compiling kv9-common v0.0.0 (/tmp/kv9-wal-crc32-slicing8/crates/common)
+   Compiling kv9-engine v0.0.0 (/tmp/kv9-wal-crc32-slicing8/crates/engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.01s
+     Running unittests src/lib.rs (/home/dongxu/kv9/target/debug/deps/kv9_engine-5ecdab62c87a788a)
+
+running 135 tests
+test mem::tests::a_fresh_engine_has_no_position_and_accepts_any_first_index ... ok
+test mem::tests::an_empty_batch_still_advances_the_position ... ok
+test mem::tests::iter_is_ascending_and_half_open ... ok
+test mem::tests::iter_rev_end_bound_is_exclusive ... ok
+test mem::tests::a_gap_in_indices_is_legal_and_term_does_not_order ... ok
+test mem::tests::a_position_that_does_not_advance_is_refused_and_writes_nothing ... ok
+test mem::tests::iter_rev_walks_past_a_callers_deleted_candidate ... ok
+test mem::tests::iter_rev_is_descending_and_half_open ... ok
+test mem::resident_tests::resident_snapshot_never_waits_for_a_writer_and_owns_its_version ... ok
+test mem::tests::plain_write_does_not_move_the_position ... ok
+test mem::tests::scan_is_bounded_and_half_open ... ok
+test mem::tests::seek_le_finds_greatest_key_not_exceeding_target ... ok
+test mem::tests::seek_le_is_per_column_family ... ok
+test mem::tests::snapshot_is_isolated_from_later_writes ... ok
+test mem::tests::the_position_is_never_reported_as_a_number_through_the_trait ... ok
+test mem::tests::write_applied_lands_the_data_and_the_position_together ... ok
+test minio::tests::debug_prints_the_endpoint_and_bucket_and_nothing_else ... ok
+test minio::tests::pushdown_is_segment_aligned ... ok
+test minio::tests::pushdown_then_filter_selects_exactly_what_the_literal_selects ... ok
+test minio::tests::keys_the_path_type_would_rename_are_refused ... ok
+test minio::tests::required_var_error_does_not_echo_the_value ... ok
+test minio::tests::required_var_names_the_variable_and_treats_empty_as_missing ... ok
+test object_store::tests::empty_key_is_rejected_at_construction ... ok
+test object_store::tests::deleted_key_may_be_reused_with_different_content ... ok
+test object_store::tests::absent_object_reads_as_none_not_error ... ok
+test object_store::tests::list_is_prefix_filtered_and_sorted ... ok
+test object_store::tests::reput_with_different_content_is_refused ... ok
+test object_store::tests::put_then_get_returns_the_bytes ... ok
+test object_store::tests::reput_of_identical_content_is_idempotent ... ok
+test object_store::tests::object_store_is_object_safe ... ok
+test minio::tests::refusing_a_renamed_key_does_not_echo_a_second_key ... ok
+test mem::tests::snapshot_is_stable_across_many_writes ... ok
+test object_store::tests::delete_is_idempotent_and_absent_delete_is_ok ... ok
+test mem::tests::many_live_snapshots_each_pin_their_own_version ... ok
+test persist::tests::durability_is_reported_honestly ... ok
+test persist::tests::a_fresh_engine_is_empty ... ok
+test mem::tests::iter_can_stop_early_without_materializing_the_range ... ok
+test minio::deadline_barrier_tests::caller_charges_elapsed_time_without_the_worker_hard_cap_masking_it ... ok
+test checkpoint::tests::an_acknowledged_but_invisible_upload_cannot_mint_prepared_ssts ... ok
+test checkpoint::tests::missing_or_corrupt_remote_sst_never_recovers_as_empty_data ... ok
+test sst::tests::a_corrupt_sst_never_answers_not_found ... ok
+test sst::tests::a_flipped_byte_anywhere_is_refused ... ok
+test sst::tests::a_footer_range_that_disagrees_with_the_entries_is_refused ... ok
+test sst::tests::a_length_field_at_the_type_edge_is_refused_by_the_limit_not_by_arithmetic ... ok
+test sst::tests::an_entry_count_beyond_the_limit_is_refused_before_allocating ... ok
+test sst::tests::an_oversized_buffer_is_refused_before_the_checksum_is_computed ... ok
+test sst::tests::an_unknown_column_family_is_refused ... ok
+test sst::tests::an_unknown_version_is_refused_rather_than_guessed ... ok
+test sst::tests::bad_magic_is_refused ... ok
+test sst::tests::boundary_shaped_writer_outputs_round_trip_through_the_parser ... ok
+test sst::tests::check_total_size_refuses_at_the_boundary ... ok
+test sst::tests::column_family_survives_the_round_trip ... ok
+test sst::tests::empty_values_survive ... ok
+test sst::tests::encoded_len_predicts_the_serialised_size_exactly ... ok
+test sst::tests::every_limit_is_tested_at_exactly_max_and_max_plus_one ... ok
+test sst::tests::extreme_header_values_are_refused_without_panicking ... ok
+test sst::tests::may_contain_is_a_filter_not_an_answer ... ok
+test sst::tests::no_buffer_of_any_short_length_panics ... ok
+test sst::tests::on_disk_count_is_its_own_dimension ... ok
+test sst::tests::on_disk_len_refuses_rather_than_truncating ... ok
+test sst::tests::out_of_order_entries_in_a_well_formed_file_are_refused ... ok
+test sst::tests::range_is_half_open ... ok
+test sst::tests::round_trip_preserves_entries_and_range ... ok
+test sst::tests::the_writer_entry_count_gate_is_reached_from_add ... ok
+test sst::tests::the_writer_field_length_gate_is_reached_from_add ... ok
+test sst::tests::the_writer_total_size_gate_is_reached_from_finish ... ok
+test sst::tests::trailing_bytes_are_refused ... ok
+test sst::tests::truncation_at_every_length_is_refused ... ok
+test sst::tests::writer_and_reader_enforce_the_same_field_limit ... ok
+test sst::tests::writer_refuses_an_empty_table ... ok
+test sst::tests::writer_refuses_duplicate_keys ... ok
+test sst::tests::writer_refuses_unsorted_input ... ok
+test testing::tests::attempts_are_counted_including_failures ... ok
+test testing::tests::reads_and_durability_pass_through ... ok
+test testing::tests::writes_fail_only_while_armed_and_leave_no_trace ... ok
+test minio::deadline_barrier_tests::worker_issues_or_refuses_from_the_same_controlled_deadline_origin ... ok
+test checkpoint::tests::frozen_cut_excludes_later_updates_and_restores_all_column_families ... ok
+test persist::tests::a_batch_is_all_or_nothing_across_restart ... ok
+test persist::tests::cross_column_family_state_survives ... ok
+test wal::positioned_tests::failed_append_poison_prevents_acknowledgements_behind_a_torn_record ... ok
+test checkpoint::tests::local_wal_reclaim_refuses_unpositioned_records ... ok
+test persist::tests::a_reserved_prefix_key_survives_replay_with_its_data ... ok
+test persist::tests::snapshots_work_on_the_durable_engine_too ... ok
+test persist::tests::data_and_watermark_are_lost_together_or_not_at_all ... ok
+test persist::tests::committed_writes_survive_a_torn_tail ... ok
+test wal::positioned_tests::real_sync_failure_is_distinct_from_record_write_failure ... ok
+test wal::tests::crc32_matches_known_vectors ... ok
+test persist::tests::data_survives_reopen ... ok
+test wal::tests::crc32_table_preserves_every_two_byte_input ... ok
+test wal::tests::garbage_file_does_not_panic ... ok
+test wal::tests::crc32_table_preserves_long_inputs_and_part_boundaries ... ok
+test wal::tests::absurd_length_is_refused ... ok
+test persist::tests::delete_range_survives_reopen ... ok
+test wal::positioned_tests::v1_and_unpositioned_v2_do_not_invent_an_applied_position ... ok
+test persist::tests::writes_after_recovery_also_survive ... ok
+test persist::tests::legacy_upgrade_preserves_large_histories_when_a_full_record_would_overflow ... ok
+test wal::tests::a_corrupted_record_is_detected_not_returned ... ok
+test wal::tests::deletes_and_multiple_column_families_survive ... ok
+test wal::positioned_tests::crc_covers_term_index_kind_and_payload ... ok
+test persist::tests::failed_layout_staging_preserves_old_root_and_fences_the_owner ... ok
+test wal::tests::unknown_version_is_rejected_rather_than_misparsed ... ok
+test checkpoint::tests::pending_flush_journal_preserves_identity_and_exclusive_ownership ... ok
+test checkpoint::tests::torn_or_corrupt_pending_state_is_never_reset_to_a_fresh_slot ... ok
+test wal::tests::append_after_recovery_is_readable ... ok
+test persist::tests::engine_refuses_complete_legacy_corruption_and_missing_segmented_roots ... ok
+test wal::tests::roundtrip_across_reopen ... ok
+test wal_segment::tests::a_rejected_append_and_failed_visitor_preserve_existing_authority ... ok
+test wal_segment::tests::actual_sync_failure_fences_an_unknown_durability_result ... ok
+test persist::tests::legacy_upgrade_rewrites_all_state_and_leaves_only_positioned_records ... ok
+test wal_segment::tests::complete_corruption_and_nonmonotonic_records_fail_without_editing_the_file ... ok
+test wal_segment::tests::identity_and_predecessor_checks_precede_replay_and_missing_files_stay_missing ... ok
+test wal_segment::tests::complete_frames_bind_data_to_position_and_stream_identity ... ok
+test wal::positioned_tests::valid_crc_out_of_order_records_refuse_the_whole_open_without_truncation ... ok
+test wal_v2::tests::a_zero_position_is_representable_and_is_not_how_absence_is_written ... ok
+test wal_v2::tests::an_unknown_kind_is_refused_rather_than_guessed ... ok
+test wal_v2::tests::record_len_accounts_for_every_framing_byte ... ok
+test wal_segment::tests::actual_write_failure_fences_append_and_seal ... ok
+test wal_segment::tests::valid_checksum_does_not_authorize_invalid_batch_or_tail_repair ... ok
+test wal_segment::tests::sealed_replay_preserves_batches_positions_gaps_and_unpositioned_pin ... ok
+test wal_stream::tests::anchor_refusal_and_changed_plan_precede_active_tail_repair ... ok
+test wal_stream::tests::contradictory_checkpoint_terms_refuse_before_publication ... ok
+test wal::tests::crc32_slicing_preserves_unaligned_inputs_and_every_short_split ... ok
+test wal_stream::tests::empty_selected_successor_retains_floor_and_foreign_retained_file_refuses ... ok
+test wal_stream::tests::malformed_topologies_and_old_writer_refuse_without_editing_files ... ok
+test wal_stream::tests::failed_checkpoint_publication_preserves_tail_and_refuses_later_writes ... ok
+test wal_stream::tests::published_anchor_survives_failed_unlink_and_housekeeping_can_retry ... ok
+test wal_stream::tests::failed_rotation_fences_writer_and_recovery_ignores_unpublished_successor ... ok
+test wal_stream::tests::checkpoint_epochs_may_advance_without_changing_stream_identity ... ok
+test wal_stream::tests::unpositioned_and_empty_segments_keep_the_predecessor_and_reclaim_ban ... ok
+test persist::tests::segmentation_preserves_legacy_data_exact_progress_and_write_observer ... ok
+test wal_stream::tests::checkpoint_reclaims_only_closed_covered_segments_and_skips_their_corruption ... ok
+test wal::tests::torn_tail_keeps_the_committed_prefix ... ok
+test wal_stream::tests::rotation_and_recovery_preserve_all_batches_and_position_gaps ... ok
+test wal::positioned_tests::positioned_data_and_exact_pair_survive_every_torn_tail_cut ... ok
+test wal_segment::tests::every_torn_active_frame_recovers_prior_ack_and_accepts_a_new_append ... ok
+
+test result: ok. 135 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.04s
+
+     Running tests/batch_atomicity.rs (/home/dongxu/kv9/target/debug/deps/batch_atomicity-26136958daef1e71)
+
+running 5 tests
+test read_view_is_stable_under_concurrent_writes ... ok
+test control_single_cf_separate_batches_do_show_mismatch ... ok
+test control_cross_cf_separate_batches_do_show_mismatch ... ok
+test read_view_never_observes_a_half_applied_cross_cf_batch ... ok
+test single_scan_never_observes_a_half_applied_batch ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s
+
+     Running tests/minio_backend.rs (/home/dongxu/kv9/target/debug/deps/minio_backend-48c0a41a52debe3f)
+
+running 19 tests
+test a_closed_port_is_an_error_not_a_silent_success ... ignored, requires a MinIO endpoint; see the module docs
+test a_full_queue_refuses_admission_instead_of_parking_the_caller ... ignored, requires a MinIO endpoint; see the module docs
+test a_job_whose_deadline_ran_out_while_queued_is_not_issued ... ignored, requires a MinIO endpoint; see the module docs
+test a_refused_endpoint_answers_from_the_worker_not_the_outer_net ... ignored, requires a MinIO endpoint; see the module docs
+test a_retrying_backend_still_answers_within_the_callers_deadline ... ignored, requires a MinIO endpoint; see the module docs
+test a_second_independent_client_sees_what_the_first_wrote ... ignored, requires a MinIO endpoint; see the module docs
+test a_silent_endpoint_times_out_and_never_reports_success ... ignored, requires a MinIO endpoint; see the module docs
+test abandoned_requests_do_not_pin_the_worker_after_their_deadline ... ignored, requires a MinIO endpoint; see the module docs
+test absent_object_reads_as_none_not_error ... ignored, requires a MinIO endpoint; see the module docs
+test concurrent_operations_share_one_worker_thread_which_is_reaped_on_drop ... ignored, requires a MinIO endpoint; see the module docs
+test connect_refuses_a_deadline_too_small_to_split ... ignored, requires a MinIO endpoint; see the module docs
+test credentials_never_appear_in_an_error_message ... ignored, requires a MinIO endpoint; see the module docs
+test delete_is_idempotent_and_absent_delete_is_ok ... ignored, requires a MinIO endpoint; see the module docs
+test list_is_a_string_prefix_and_sorted_not_a_segment_prefix ... ignored, requires a MinIO endpoint; see the module docs
+test queue_time_is_charged_to_the_callers_deadline ... ignored, requires a MinIO endpoint; see the module docs
+test reput_of_identical_content_is_idempotent ... ignored, requires a MinIO endpoint; see the module docs
+test reput_with_different_content_is_refused_by_the_real_endpoint ... ignored, requires a MinIO endpoint; see the module docs
+test the_worker_cuts_short_an_operation_that_outlives_its_budget ... ignored, requires a MinIO endpoint; see the module docs
+test the_budget_algebra_holds_at_its_boundaries ... ok
+
+test result: ok. 1 passed; 0 failed; 18 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/minio_checkpoint.rs (/home/dongxu/kv9/target/debug/deps/minio_checkpoint-82fd9525aaa9be12)
+
+running 4 tests
+test missing_or_corrupt_remote_sst_refuses_reopen_without_editing_the_wal ... ignored, requires a real MinIO server
+test pending_flush_recovers_the_same_identity_only_after_rechecking_remote_bytes ... ignored, requires a real MinIO server
+test remote_checkpoint_skips_covered_frames_and_replays_the_exact_frozen_tail ... ignored, requires a real MinIO server
+test segmentation_migrates_an_empty_checkpoint_tail_and_advances_the_selected_anchor ... ignored, requires a real MinIO server
+
+test result: ok. 0 passed; 0 failed; 4 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/object_safety.rs (/home/dongxu/kv9/target/debug/deps/object_safety-2c8a70434b3e91f3)
+
+running 2 tests
+test durability_is_visible_through_a_trait_object ... ok
+test both_engines_fit_behind_one_dyn_handle ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+   Doc-tests kv9_engine
+
+running 2 tests
+test crates/engine/src/checkpoint.rs - checkpoint::PreparedSst (line 62) - compile fail ... ok
+test crates/engine/src/checkpoint.rs - checkpoint::FrozenFlush (line 35) - compile fail ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/tmp/kv9-slicing8-compiled-attempt2/table"
+  ],
+  "completed_unix_ns": 1789153043764121974,
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "cwd": "/tmp/kv9-slicing8-compiled-attempt2",
+  "exit_code": 0,
+  "pid": 1656432,
+  "started_unix_ns": 1789153043760700010
+}

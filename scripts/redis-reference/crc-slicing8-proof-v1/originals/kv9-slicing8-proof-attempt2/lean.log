@@ -1,0 +1,5 @@
+Slicing8.lean:47:2: error: `simp` made no progress
+'Kv9.CRC32.zero_xor' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.zero_zero' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.zero_peel' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Kv9.CRC32.zero_eight_decomposition' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

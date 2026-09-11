@@ -1,0 +1,23 @@
+Slicing8.lean:62:4: error: Tactic `apply` failed: could not unify the conclusion of `@BitVec.eq_of_getLsbD_eq`
+  ?x = ?y
+with the goal
+  byteAt (packed b0 b1 b2 b3) 1 = b1 ∧ byteAt (packed b0 b1 b2 b3) 2 = b2 ∧ byteAt (packed b0 b1 b2 b3) 3 = b3
+
+Note: The full type of `@BitVec.eq_of_getLsbD_eq` is
+  ∀ {w : Nat} {x y : BitVec w}, (∀ (i : Nat), i < w → x.getLsbD i = y.getLsbD i) → x = y
+
+case right
+b0 b1 b2 b3 : BitVec 8
+⊢ byteAt (packed b0 b1 b2 b3) 1 = b1 ∧ byteAt (packed b0 b1 b2 b3) 2 = b2 ∧ byteAt (packed b0 b1 b2 b3) 3 = b3
+'Kv9.CRC32.zero_xor' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.zero_zero' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.zero_peel' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Kv9.CRC32.zero_eight_decomposition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Kv9.CRC32.packed_bytes' depends on axioms: [propext, sorryAx, Quot.sound]
+'Kv9.CRC32.byte_at_xor' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.slice_xor' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.zero_comp' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.zero_slice' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.old_byte_linear' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.old_eight_expansion' depends on axioms: [propext, Quot.sound]
+'Kv9.CRC32.block_transition' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

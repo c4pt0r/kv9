@@ -1,0 +1,9 @@
+{
+  "command": [
+    "taskset",
+    "-c",
+    "2",
+    "/tmp/kv9-slicing8-kernel-screen-first/screen"
+  ],
+  "started_ns": 1789151935101782775
+}

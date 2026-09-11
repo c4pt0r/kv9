@@ -1,0 +1,8 @@
+   Compiling kv9-common v0.0.0 (/tmp/kv9-wal-crc32-slicing8/crates/common)
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-wal-crc32-slicing8/crates/raft)
+   Compiling kv9-server v0.0.0 (/tmp/kv9-wal-crc32-slicing8/crates/server)
+   Compiling kv9-engine v0.0.0 (/tmp/kv9-wal-crc32-slicing8/crates/engine)
+   Compiling kv9-region v0.0.0 (/tmp/kv9-wal-crc32-slicing8/crates/region)
+   Compiling kv9-meta v0.0.0 (/tmp/kv9-wal-crc32-slicing8/crates/meta)
+   Compiling kv9-txn v0.0.0 (/tmp/kv9-wal-crc32-slicing8/crates/txn)
+    Finished `release` profile [optimized] target(s) in 12.92s

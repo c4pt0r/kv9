@@ -1,0 +1,19 @@
+{
+  "command": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "cargo",
+    "clippy",
+    "--locked",
+    "--workspace",
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "/tmp/kv9-wal-crc32-slicing8",
+  "target": "/home/dongxu/kv9/target",
+  "source_sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a",
+  "started_ns": 1789151805839777748
+}

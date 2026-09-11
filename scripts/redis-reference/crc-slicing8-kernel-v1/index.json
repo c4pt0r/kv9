@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "scope": "Standalone warm-cache checksum diagnostic only; no database timing or durable-Raft comparison",
+  "files": [
+    {
+      "source": "/tmp/kv9-slicing8-kernel-screen-first/compile-command.json",
+      "path": "compile-command.json",
+      "bytes": 206,
+      "sha256": "3e691a7ce9b5123d002f828546b4c719288a04908a0c560f3127b14b9d561433"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-kernel-screen-first/compile-terminal.json",
+      "path": "compile-terminal.json",
+      "bytes": 74,
+      "sha256": "fddc6d82de0241d2f076fe64d203c9cad5681392b2688a44ef5e84525c2e53a0"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-kernel-screen-first/compile.stderr",
+      "path": "compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-kernel-screen-first/compile.stdout",
+      "path": "compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-kernel-screen-first/protocol.json",
+      "path": "protocol.json",
+      "bytes": 687,
+      "sha256": "929834987dfac71ed4a929ee74ebf4765b51aad6349801f3fddc554a2fbc6eb7"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-kernel-screen-first/readout.json",
+      "path": "readout.json",
+      "bytes": 1310,
+      "sha256": "7f1b7d18312994f725ad4115305644ca9cfccfd8dcbaa3426a0acfa65faebabd"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-kernel-screen-first/run-command.json",
+      "path": "run-command.json",
+      "bytes": 145,
+      "sha256": "715d55bb4458cc2989cb281aa66de93334f5f2cdc48ab4c61d5b2d081d1e01be"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-kernel-screen-first/run-terminal.json",
+      "path": "run-terminal.json",
+      "bytes": 74,
+      "sha256": "07852e766a2187b0b88d63df39eb79f3298ce81d8d99b219695bf587546974af"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-kernel-screen-first/run.stderr",
+      "path": "run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-kernel-screen-first/run.stdout",
+      "path": "run.stdout",
+      "bytes": 2554,
+      "sha256": "ab29031073863225c26f415dec23bb2faeb01da00905b69922241dd97ea0f827"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-kernel-screen-first/screen.rs",
+      "path": "screen.rs",
+      "bytes": 3801,
+      "sha256": "aadebeea422b8f87a8fdeb99f12c035cc41aa280d68c5fd4c9178d2622921a93"
+    }
+  ],
+  "file_count": 11,
+  "bytes": 8851
+}

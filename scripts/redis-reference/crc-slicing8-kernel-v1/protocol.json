@@ -1,0 +1,24 @@
+{
+  "scope": "Instrumented standalone exact-source CRC kernel comparison only; no database/Raft/QPS or end-to-end acceptance",
+  "baseline_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "candidate_source_sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a",
+  "generated_source_sha256": "aadebeea422b8f87a8fdeb99f12c035cc41aa280d68c5fd4c9178d2622921a93",
+  "repetitions": 4,
+  "lengths": [
+    1,
+    7,
+    8,
+    16,
+    28,
+    64,
+    128,
+    8192,
+    16384
+  ],
+  "offset": 3,
+  "order": "old/new then new/old, alternating",
+  "warmup": 128,
+  "call_budget": "clamp(16777216/length,4096,200000)",
+  "cpu": 2,
+  "started_ns": 1789151934900234961
+}

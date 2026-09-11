@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+    "--edition=2021",
+    "-Dwarnings",
+    "-O",
+    "table.rs",
+    "-o",
+    "table"
+  ],
+  "completed_unix_ns": 1789153514962740108,
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "cwd": "/tmp/kv9-slicing8-proof-integration-first/gate/restored",
+  "exit_code": 0,
+  "pid": 1776078,
+  "started_unix_ns": 1789153514899070887
+}

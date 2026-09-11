@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/tmp/kv9-slicing8-release-first/kv9",
+    "client",
+    "create-keyspace",
+    "--addr",
+    "127.0.0.1:52183",
+    "--name",
+    "batch-tonic-stream",
+    "--api-type",
+    "raw"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "stdout": "keyspace_id=100\nproposed_term=1\nproposed_index=4\n"
+}

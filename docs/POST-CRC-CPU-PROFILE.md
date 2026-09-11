@@ -74,12 +74,17 @@ Publication-authoring failures are retained and do not change runtime evidence.
 
 ## Next implementation
 
-A separate local slicing-by-eight IEEE CRC prototype preserves the polynomial,
+A separate [slicing-by-eight IEEE CRC candidate](CRC32-SLICING-QUALIFICATION.md)
+preserves the polynomial,
 initial/final state, fragments and log bytes. It passes 710 workspace
 tests/doctests (23 ignored), Clippy and formatting. A warm-cache standalone
 function screen improves 8/16-KiB checksum time by approximately 4.48x/4.56x,
 but slightly worsens 1/7-byte calls. **This is not a database performance
-result.** The universal eight-byte and compiled-table proof, original release,
-recovery/Chaos and paired throughput/latency gates remain pending. The prototype
-is uncommitted and unselected; master and indexed-candidate release bindings
-remain unchanged. CI stays local.
+result.** Source `e5662bb` now passes the universal eight-byte and compiled-table
+proof: 47 distinct theorem statements, all 256 + 2,048 actual entries and eight
+rejected controls, with a fresh restored run. It remains unselected; recovery,
+exact-source Chaos and paired throughput/latency gates are independent of this
+CPU diagnostic. Master and indexed-candidate release bindings remain unchanged.
+CI stays local. After bounded checksum qualification, development returns to
+GET throughput and single-request latency; durable Raft write costs remain part
+of the required semantics.

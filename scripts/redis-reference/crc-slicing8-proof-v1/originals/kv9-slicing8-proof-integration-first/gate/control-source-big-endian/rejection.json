@@ -1,0 +1,4 @@
+{
+  "reason": "source/model contract mismatch: pub(crate) fn crc32_parts(",
+  "rejected": true
+}

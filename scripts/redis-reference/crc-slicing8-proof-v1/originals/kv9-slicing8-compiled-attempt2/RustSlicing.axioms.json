@@ -1,0 +1,39 @@
+{
+  "Kv9.CRC32.compiled_block_transition": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_slice_entry": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_slicing_checksum_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_slicing_columns": [
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_slicing_entries": [
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_slicing_fragmentation_invariant": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_slicing_list_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_slicing_parts_equivalence": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "Kv9.CRC32.compiled_slicing_rows": []
+}

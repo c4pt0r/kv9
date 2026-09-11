@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/tmp/kv9-slicing8-release-first/kv9",
+    "store-prepare",
+    "--node-id",
+    "2",
+    "--data-dir",
+    "/tmp/kv9-slicing8-process-e2e-first/fixture/data/n2"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "stdout": "store_prepared=true node_id=2 store_incarnation=a1cc9acb49e221abf78e35ce00517555\n"
+}

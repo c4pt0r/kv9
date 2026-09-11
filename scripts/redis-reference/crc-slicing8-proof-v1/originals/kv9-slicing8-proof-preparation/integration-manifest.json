@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "source_root": "/tmp/kv9-wal-crc32-slicing8",
+  "candidate_commit_state": "uncommitted prototype; exact wal hash is the qualified identity",
+  "wal_sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a",
+  "files": [
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/Slicing8.lean",
+      "destination": "proofs/lean/crc32-slicing8/Slicing8.lean",
+      "bytes": 7783,
+      "sha256": "20ae98432bba62c7dc626c7c53ba3c377cbf3880d9b1c8536e5c311bdcfa04f2"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/RustSlicing.lean.in",
+      "destination": "proofs/lean/crc32-slicing8/RustSlicing.lean.in",
+      "bytes": 4657,
+      "sha256": "464f890c5cb6eae1170052b5fb1ce470ec0fd74d24540de6ae7819ef2c25d5c5"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/slicing-source-contract.json",
+      "destination": "proofs/lean/crc32-slicing8/slicing-source-contract.json",
+      "bytes": 5313,
+      "sha256": "d1c5b07d1e04b9a09f4a978d18bff5fc32e3e9ba1dbb6cb0f8833af979a23988"
+    },
+    {
+      "source": "/tmp/kv9-slicing8-proof-preparation/check-crc32-slicing8-proof.py",
+      "destination": "scripts/check-crc32-slicing8-proof.py",
+      "bytes": 14452,
+      "sha256": "a8f7eb291b1458f96eff1ffd380cd8dadf0b675c483bc83bc0c63a8def9e1a71"
+    }
+  ]
+}
