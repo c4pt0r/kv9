@@ -99,6 +99,8 @@ retention, history/effect readback and scoped cleanup passed afterward. The
 archive repair is separate, and this one-follower result does not close the
 broader fault/storage package or accept newer runtime sources.
 
+The separately released [repaired follower stall run](STORAGE-STALL-REPAIRED-QUALIFICATION.md) now passes the complete controller and independent audit: 655 all-OK calls and 42 fresh same-FUSE-WAL sync samples averaging 501.267 ms. All three windows, six post-client drains, original archive/FIFO retention and scoped cleanup pass. It retains the same one-follower, exact-f2 and volatile-media scope.
+
 ### Parallel stream scheduling baseline
 
 The preceding [matched point-read comparison](PARALLEL-STREAM-GET-PERFORMANCE.md)

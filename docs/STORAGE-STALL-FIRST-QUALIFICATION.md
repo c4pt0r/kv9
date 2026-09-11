@@ -5,6 +5,8 @@ independent retained-evidence review. A subsequent archive-tool repair does
 not change the original exit code. The qualification uses exact f2 source;
 it does not accept the newer allocator or typed-dispatch candidate.
 
+The separately bound [repaired controller run](STORAGE-STALL-REPAIRED-QUALIFICATION.md) has now passed runtime, retained-evidence verification and cleanup. That later result does not change this first attempt.
+
 
 The original controller session **99004 exited 1**. All three runtime windows and post-client drain checks completed, but archive extraction rejected the supervisor FIFO; cleanup then failed because the regular-file inventory had not been written. Both errors, the original tar archive and partial extraction are unchanged. This report separates that failed harness result from subsequent verification of its retained evidence.
 
