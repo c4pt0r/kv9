@@ -2,6 +2,7 @@
 """Build and retain the workload executable with bounded source/build provenance."""
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -10,6 +11,9 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_BINARY = 512 * 1024 * 1024
+_cache_spec = importlib.util.spec_from_file_location('kv9_build_cache', ROOT / 'scripts/build_cache.py')
+cache = importlib.util.module_from_spec(_cache_spec)
+_cache_spec.loader.exec_module(cache)
 
 
 def canonical(value):
@@ -53,11 +57,29 @@ def main():
     parser.add_argument("--rpc-experiment", action="store_true",
                         help="explicitly compile the opt-in RPC transport experiment")
     args = parser.parse_args()
+    if args.binary == 'kv9-redis-batch-reference' and args.rpc_experiment:
+        raise RuntimeError('Redis reference has no RPC experiment feature')
     output = args.output.resolve()
     if output.is_relative_to(ROOT):
         raise RuntimeError("build artifacts must be outside the source tree")
     output.mkdir(parents=True, exist_ok=False)
     before = snapshot()
+    manifest = ROOT / 'scripts/redis-reference/Cargo.toml' if args.binary == 'kv9-redis-batch-reference' else None
+    with cache.BuildCache(ROOT, output, args.release, before, manifest) as session:
+        retain(args, output, before, session)
+
+
+def build_component(output, session, *, binary='kv9-workload', release=False, rpc_experiment=False):
+    """Build within the caller's already-held, already-invalidated transaction."""
+    session.require_lock()
+    if session.root != ROOT or session.release != release:
+        raise RuntimeError('component source/profile differs from the cache transaction')
+    output.mkdir(parents=True, exist_ok=False)
+    args = argparse.Namespace(binary=binary, release=release, rpc_experiment=rpc_experiment)
+    retain(args, output, snapshot(), session)
+
+
+def retain(args, output, before, session):
     if args.binary == "kv9-redis-batch-reference":
         if args.rpc_experiment:
             raise RuntimeError("Redis reference has no RPC experiment feature")
@@ -74,9 +96,8 @@ def main():
         "RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS", "CARGO_BUILD_TARGET", "RUSTC_WRAPPER", "RUSTC_WORKSPACE_WRAPPER"
     ) if key in os.environ}
     with (output / "cargo.jsonl").open("w") as stdout, (output / "build.log").open("w") as stderr:
-        result = subprocess.run(command, cwd=ROOT, stdout=stdout, stderr=stderr, timeout=900)
-    if result.returncode:
-        raise RuntimeError("workload build failed; see retained build.log")
+        session.run(command, stdout=stdout, stderr=stderr)
+    session.check_artifacts(output / 'cargo.jsonl')
     after = snapshot()
     if before != after:
         raise RuntimeError("source or revision changed during build")
@@ -106,6 +127,8 @@ def main():
         if len(data) > (65_536 if name == "build.json" else 2_097_152):
             raise RuntimeError("build provenance exceeds its size bound")
         (output / name).write_bytes(data)
+    if snapshot() != before:
+        raise RuntimeError('source or revision changed during executable retention')
     print(f"PASS: retained workload executable and build provenance in {output}")
 
 
