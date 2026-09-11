@@ -10,6 +10,8 @@ every tar member to its original absolute path, byte count and SHA-256.
   independent scope review, and the first failed/corrected raw proof drafts.
 - `implementation.tar.gz`: workspace and compiled-control logs, source hashes,
   cache-clean evidence, selected mutations and root orchestration scripts.
+- `process.tar.gz`: subsequent two-context ordinary recovery histories, reports,
+  original release bindings, independent checker outputs and root receipts.
 
 Run `python3 -B verify.py` from this directory (or pass its absolute path).
 The verifier reads archives without extracting them, checks every original byte
@@ -21,5 +23,6 @@ Full WAL, executable files, copied Cargo source trees and host/container
 observations remain in their original local retention directories. Full runtime
 acceptance cannot be reconstructed from this compact publication alone. Fresh
 tool execution requires the source commits and pinned tools named in the report
-and gate summaries. Two-context process recovery, performance and actual Chaos
-Mesh are not established by the parent diagnostic or source-only gates.
+and gate summaries. The separately recorded ordinary two-context recovery passes;
+performance and actual Chaos Mesh are not established by it, the parent
+diagnostic or source-only gates.

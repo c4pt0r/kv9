@@ -5034,6 +5034,277 @@
           "sha256": "8e250cba948fdc85f5a73a8189908fb59b7fdcd6ce6505b89e55ea0736430fba"
         }
       }
+    },
+    "process.tar.gz": {
+      "bytes": 148112,
+      "sha256": "83e11c39d83a306c144bbd36bfab4a6ff550235c5561a91915a869d37b31eb27",
+      "files": {
+        "kv9-read-lifecycle-root-first/window-process-audit-first.log": {
+          "original": "/tmp/kv9-read-lifecycle-root-first/window-process-audit-first.log",
+          "bytes": 2763,
+          "sha256": "a61ad4b81db1a3252d267003a0b015e2c7e8d6af13765f504ed3108da60fe64c"
+        },
+        "kv9-read-lifecycle-root-first/window-process-first.log": {
+          "original": "/tmp/kv9-read-lifecycle-root-first/window-process-first.log",
+          "bytes": 288,
+          "sha256": "721ea9c7550f9d3cad200cd50684869195f8787996b6b8faa7fa448804881ebd"
+        },
+        "kv9-read-lifecycle-root-first/window-process-root-readback.json": {
+          "original": "/tmp/kv9-read-lifecycle-root-first/window-process-root-readback.json",
+          "bytes": 985,
+          "sha256": "bab555acfd703a02b116bad21d5c1a488159ff68ddd2cc45848ac2617d1d124c"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-stream-checked.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-stream-checked.json",
+          "bytes": 22264,
+          "sha256": "b53ee89a3a7d2a212c6337fd2857f3a72b2f30d527863bca3e5ca58e4110d2e2"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-stream-config.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-stream-config.json",
+          "bytes": 787,
+          "sha256": "29dae85a9382612be9398a15af1eac2545183cd8158ab773f2cb6b315c419f23"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-stream.log": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-stream.log",
+          "bytes": 89,
+          "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-stream.stop": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-stream.stop",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-stream/build.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-stream/build.json",
+          "bytes": 487,
+          "sha256": "da031fa6bf0a6ac6ac740fe0918af7d2f71339450ee5983c510f74a2e8ba7eaf"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-stream/config.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-stream/config.json",
+          "bytes": 821,
+          "sha256": "16a92631519cce61553bd4344c3f7ccc9eaf36968c9b17c8b8da2fefe793e682"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-stream/history.jsonl": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-stream/history.jsonl",
+          "bytes": 425144,
+          "sha256": "50ac7dbfd7869b75c83ae95d480e0f2fb49695a01271695ddbf2aaf6d7b0f69e"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-stream/progress.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-stream/progress.json",
+          "bytes": 720,
+          "sha256": "5150f2718c4482d5d9d9cf9ede9a65d476e26fd31749a0b0845ff658d753251e"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-stream/ready.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-stream/ready.json",
+          "bytes": 72,
+          "sha256": "b270add074f274574a9f6e0e61f147444002ed95bd27a1c04a95c5120dfafd3e"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-stream/report.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-stream/report.json",
+          "bytes": 200656,
+          "sha256": "a690acccfad2da092b9e6d34e9f8b5738c09044b0ad5c8091667d718f016e749"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-unary-checked.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-unary-checked.json",
+          "bytes": 23172,
+          "sha256": "d26f184abe81fb08e3b2da5b685e74fc4f4523c09fa25c8ce3293ef16c656db2"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-unary-config.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-unary-config.json",
+          "bytes": 819,
+          "sha256": "98cdd4b3edb3dca9dd68785ec8084655675f2868dbdf95741497e8e6f50a9c3b"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-unary.log": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-unary.log",
+          "bytes": 89,
+          "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-unary.stop": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-unary.stop",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-unary/build.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-unary/build.json",
+          "bytes": 487,
+          "sha256": "da031fa6bf0a6ac6ac740fe0918af7d2f71339450ee5983c510f74a2e8ba7eaf"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-unary/config.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-unary/config.json",
+          "bytes": 818,
+          "sha256": "b04e7ca456eb3d9c79a33f81312b57461b7a6d1b50e52164657d728c9f3a21b6"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-unary/history.jsonl": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-unary/history.jsonl",
+          "bytes": 434930,
+          "sha256": "7f9e9d54cd39252d572bfa421f239d136399b476763f983e10aa4c5315e059ae"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-unary/progress.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-unary/progress.json",
+          "bytes": 720,
+          "sha256": "6d400563ba2e2622053ac0ff43ed6f7fa2121094d0cf201ce3cf8aba5e5d1240"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-unary/ready.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-unary/ready.json",
+          "bytes": 72,
+          "sha256": "0271a97c2ecbfa351e952e35a0f912f2ede7623b4b0baae420864943c933d5eb"
+        },
+        "kv9-read-window-process-e2e-first/batch-tonic-unary/report.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/batch-tonic-unary/report.json",
+          "bytes": 200670,
+          "sha256": "8cd5f17c4fb70d7f1d1c53ccd40b2aea1cca902f023d959e9440f3cbfcd2df13"
+        },
+        "kv9-read-window-process-e2e-first/summary.json": {
+          "original": "/tmp/kv9-read-window-process-e2e-first/summary.json",
+          "bytes": 204052,
+          "sha256": "f6fd2aeaa1337cad592334b849708b5727169d40867d9a9be575c62782082b79"
+        },
+        "kv9-read-window-release-first/build.json": {
+          "original": "/tmp/kv9-read-window-release-first/build.json",
+          "bytes": 67509,
+          "sha256": "286ad2480f8f8291a2c0a52f8791a4072b59793996484b9a9a389c48a6f02a20"
+        },
+        "kv9-read-window-release-first/cache-safety.json": {
+          "original": "/tmp/kv9-read-window-release-first/cache-safety.json",
+          "bytes": 21161,
+          "sha256": "e8bb709b1a3c020d307daf7f9427e1d9788969670052ea27b384f97668ba70e6"
+        },
+        "kv9-read-window-release-first/kv9-cargo.jsonl": {
+          "original": "/tmp/kv9-read-window-release-first/kv9-cargo.jsonl",
+          "bytes": 211802,
+          "sha256": "9d683e51e5ce77e63070da694b974a478ed02302332d9dbc7e8439b2d1c3819d"
+        },
+        "kv9-read-window-release-first/root-readback.json": {
+          "original": "/tmp/kv9-read-window-release-first/root-readback.json",
+          "bytes": 449,
+          "sha256": "4bb52e1deb7f734b5ac0975f5d22c4b14bed0180dea007013fe788c2e034c340"
+        },
+        "kv9-read-window-release-first/workload/build.json": {
+          "original": "/tmp/kv9-read-window-release-first/workload/build.json",
+          "bytes": 487,
+          "sha256": "da031fa6bf0a6ac6ac740fe0918af7d2f71339450ee5983c510f74a2e8ba7eaf"
+        },
+        "kv9-read-window-release-first/workload/cargo.jsonl": {
+          "original": "/tmp/kv9-read-window-release-first/workload/cargo.jsonl",
+          "bytes": 208790,
+          "sha256": "efb0e224a2bb54a327764e34dd95ade5187fc84c2bf2e18102baf9bdbfabfb6f"
+        },
+        "kv9-read-window-runtime-preparation-first/READINESS.json": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/READINESS.json",
+          "bytes": 1201,
+          "sha256": "00fe7ead7caad2fc455fcc8225d75e27e50b4e4dde2df30addb8ce6e59594e9f"
+        },
+        "kv9-read-window-runtime-preparation-first/README.md": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/README.md",
+          "bytes": 7111,
+          "sha256": "92a123edf4b170c609f9d7ce07c6d2919718a3cd12985c8746d63a852cc8a785"
+        },
+        "kv9-read-window-runtime-preparation-first/binding.release-pinned.json": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/binding.release-pinned.json",
+          "bytes": 2427,
+          "sha256": "28a7834a1ec4e0eefe08ff43a5c5ce0ca334ee0ec65be0aad30f1675882f7fcc"
+        },
+        "kv9-read-window-runtime-preparation-first/commands.source-release-pinned.json": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/commands.source-release-pinned.json",
+          "bytes": 6284,
+          "sha256": "fd0ebefa2c153ba8b34d48f6107f08df5f0fab2c508525fd3b5867424d0df032"
+        },
+        "kv9-read-window-runtime-preparation-first/inventory.json": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/inventory.json",
+          "bytes": 2712,
+          "sha256": "c97ad98243d9a6b0515dc7dc30c743765dbb76a8f07c624bd5b896f2c68e72fb"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/audit.json": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/audit.json",
+          "bytes": 10714,
+          "sha256": "f4e21849ae02ec93ea4dfea2b2e5e4da82b063cb8f07233d46a431d303b05373"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-stream-history-checked.json": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-stream-history-checked.json",
+          "bytes": 19430,
+          "sha256": "b627a71533060bca33153fa0a30ccd4e184ca4d7ab9db0c1ee065fcc35561b02"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-stream-raw-history.stderr": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-stream-raw-history.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-stream-raw-history.stdout": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-stream-raw-history.stdout",
+          "bytes": 633,
+          "sha256": "e8e298b834704a12afe6070b64782e76eaba55655de6a9362d2399eda790c679"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-stream-report-checked.json": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-stream-report-checked.json",
+          "bytes": 22264,
+          "sha256": "b53ee89a3a7d2a212c6337fd2857f3a72b2f30d527863bca3e5ca58e4110d2e2"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-unary-history-checked.json": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-unary-history-checked.json",
+          "bytes": 20240,
+          "sha256": "2691583d2188c806e9af5fe655a156fa015d76e616dc56524e03114a08321f52"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-unary-raw-history.stderr": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-unary-raw-history.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-unary-raw-history.stdout": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-unary-raw-history.stdout",
+          "bytes": 751,
+          "sha256": "6e95499fe6f71b24984c15143f967805c34e12432f4dad2f9b6320785fd94bfc"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-unary-report-checked.json": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/batch-tonic-unary-report-checked.json",
+          "bytes": 23172,
+          "sha256": "d26f184abe81fb08e3b2da5b685e74fc4f4523c09fa25c8ce3293ef16c656db2"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/commands.json": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/commands.json",
+          "bytes": 1927,
+          "sha256": "89f7ebad1000a625e5d0612b42e912df121ec608678010099f3e0f0dc9d9ca87"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/original-inputs.json": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/original-inputs.json",
+          "bytes": 12750,
+          "sha256": "43e9c23bcf7fe60c42de747bdb36d3c0c023f678e6fc269c9f38470340e4f2da"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/source-head.stderr": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/source-head.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/source-head.stdout": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/source-head.stdout",
+          "bytes": 41,
+          "sha256": "98d2dc648287c28ab13aa649eedc3e230da71d2e0ef7a144dcc941e60f6543c6"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/source-status.stderr": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/source-status.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "kv9-read-window-runtime-preparation-first/process-results-first/source-status.stdout": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-results-first/source-status.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "kv9-read-window-runtime-preparation-first/process-runner.diff": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-runner.diff",
+          "bytes": 538,
+          "sha256": "f74db229a1ceac1debc45af7422a271e91f26022e033e0541fff8929d37f87d2"
+        },
+        "kv9-read-window-runtime-preparation-first/process-runner.py": {
+          "original": "/tmp/kv9-read-window-runtime-preparation-first/process-runner.py",
+          "bytes": 720,
+          "sha256": "5d07268e7df2d4f67f2948a8823b21d8afe38b31824a417139d7211c03a2d841"
+        },
+        "kv9-rpc-pair-process-independent-first/audit.py": {
+          "original": "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+          "bytes": 22195,
+          "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5"
+        }
+      }
     }
   }
 }

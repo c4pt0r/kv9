@@ -79,6 +79,10 @@ def main():
     for group, count in (('formal', 29), ('admission-formal', 37)):
         gate = read('kv9-read-window-' + group + '-first/summary.json')
         require(gate['accepted'] and len(gate['records']) == count, 'formal record incomplete')
+    process = read('kv9-read-window-runtime-preparation-first/process-results-first/audit.json')
+    require(process['accepted'] and process['complete'] and process['original_inputs_unchanged']
+            and process['owned_lifetimes_exited'], 'ordinary recovery audit incomplete')
+    require(sum(c['operations'] for c in process['cases']) == 372, 'recovery history count differs')
     print(f'PASS: {len(files)} retained files, four arithmetic rows and local completion records; no runtime/proof rerun')
 
 
