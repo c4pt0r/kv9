@@ -1,5 +1,12 @@
 # Low-concurrency reads: confirmation dominates the sampled barrier
 
+Follow-up: the [direct peer body experiment](DIRECT-PEER-BODY-SCREENING.md)
+completed its c1/c64 screen and was rejected for lower throughput and worse
+mean latency in all eight pairs. The accepted control remains unchanged.
+The next hypothesis targets the remaining producer-to-watchdog notification;
+the lifecycle measurements and their interpretation below remain historical
+evidence, not attribution of that regression.
+
 At c1, the accepted-source instrumentation measures a **24.448-us GET read
 barrier**, of which **20.997 us (85.9%)** is admitted invocation to observed
 confirmation. Queue admission contributes 1.473 us, confirmation to result send

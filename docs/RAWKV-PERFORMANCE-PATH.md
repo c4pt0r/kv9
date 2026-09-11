@@ -107,9 +107,22 @@ The first recording, fixture readback and independent twelve-document analysis
 pass. All 258,976 measured calls succeed. Historical c64 also used perf, so the
 recordings do not isolate a concurrency-only effect.
 
-Next investigate removal of the peer transport's intermediate batch channel,
-with explicit request-body lifetime, route-generation, wakeup and stalled-stream
-contracts. Check both c1 turnaround and c64 throughput/mean/p99. Treat the
+The [direct peer body screen](DIRECT-PEER-BODY-SCREENING.md) rejects `6707bcc`:
+GET throughput falls **4.093% / 3.760% at c1** and **3.456% / 2.290% at c64**.
+BatchGet(1) also regresses; mean latency worsens in all eight comparisons.
+All 27,724,506 measured calls and the first independent audit pass. Source
+validation passes 224 Raft tests, nine source-control triples and the 352-call
+process E2E. The accepted control remains `5ee897a`; this candidate does not
+advance to broad workspace/Chaos acceptance.
+
+Next investigate the remaining producer-to-watchdog wake in that candidate.
+An empty-to-nonempty send currently wakes both the body and its supervisor.
+Bounded idle checks may remove that notification edge while retaining the
+same three-second backlog deadline; require the clock/queue ordering argument,
+real enqueue-to-expiry coverage and another matched c1/c64 screen. This is an
+unmeasured mechanism hypothesis, not attribution of the observed regression.
+Keep request-body lifetime, route-generation, wakeup and stalled-stream
+contracts explicit. Check both c1 turnaround and c64 throughput/mean/p99. Treat the
 admission bound as a separate controlled variable before inferring saturation.
 Keep Raft confirmation requirements unchanged. Neither profile nor the fixed-
 admission curve establishes an intrinsic ceiling. Keep sustained traffic, writes/mixed,

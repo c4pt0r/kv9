@@ -1,5 +1,11 @@
 # Single-GET concurrency curve: short-path latency and admission pressure
 
+Follow-up: the [direct peer body c1/c64 screen](DIRECT-PEER-BODY-SCREENING.md)
+rejects candidate `6707bcc`; the accepted source remains `5ee897a`. The next
+implementation hypothesis concerns its remaining producer-to-watchdog wake,
+with the same backlog deadline and a separate required correctness argument.
+The original curve below is unchanged.
+
 The accepted `5ee897a` source reaches **26,216–26,251 successful GET/s at c1**
 with **37.975–38.012 us mean latency**. Redis GET reaches 170,019–170,516/s
 and 5.789–5.806 us under the same placement and payload protocol. The
