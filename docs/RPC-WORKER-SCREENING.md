@@ -28,6 +28,27 @@ copies can occupy that worker; the initial-voter read fixture does not cover
 dynamic-member authentication. This result does not establish an optimal count
 for other workloads or CPU budgets.
 
+An offline readback of the retained GET resource observations finds that
+aggregate CPU across the three voters falls from 3.153/3.174 cores in the
+control to 1.673/1.679 cores with one worker. Meanwhile the busiest retained
+leader thread rises from 0.506/0.515 to 0.984/0.984 cores. Together with the
+throughput regression, this supports a lost-parallelism explanation for this
+candidate; lower aggregate CPU alone does not establish an improvement.
+
+The readback recomputes integer user/system ticks over approximately 4.94–4.99
+seconds inside the recorded measurement edges, with stable PID/start identity
+and leader 2 at both endpoints. Thread maxima use only threads present at both
+endpoints; new/exited threads remain listed. Thread names were not retained,
+so the hottest thread cannot be identified as purely RPC work. These are
+observations on the rejected one-worker version, not a new profiler run or
+evidence that the later two-worker version has the same limiting thread.
+The first readback's incorrect identical-thread-set assumption is retained in
+`/tmp/kv9-rpc-worker-resource-readback-first/first-attempt-note.json`.
+The corrected readback matches the original sampler's intersection rule and
+does not change the benchmark or acceptance predicates.
+Result: `/tmp/kv9-rpc-worker-resource-readback-second/result.json`, SHA-256
+`70f666c3295a2c3215ee5036c4393ab39234da54cf5433c2150a1391e66165ed`.
+
 The unchanged five-second protocol has 64 closed-loop clients, 128-byte values,
 batch size one, two reversed six-arm repetitions and fixed native03/Redis b8
 clients. All voter processes share CPUs 2–5; clients use 0–1. No build, test,

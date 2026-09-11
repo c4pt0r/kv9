@@ -136,8 +136,11 @@ Server SHA-256:
 Build manifest SHA-256:
 `7542fbd7dd33e93283ecf3c75897d504108213b351e3e23906f8ca5087d6696d`.
 
-The best retained uninstrumented comparison remains
+At the time of this diagnostic, the retained uninstrumented comparison was
 [304,863–305,903 GET/s versus Redis 507,769–508,136 GET/s](JEMALLOC-SERVER-PERFORMANCE.md),
-with approximately a 1.66x gap. This diagnostic does not replace that result,
-combine the separately validated authorization-metadata optimization, or
-promote either candidate to master.
+with approximately a 1.66x gap. Subsequent event-interval and
+[two-worker measurements](RPC-WORKER-PAIR-PERFORMANCE.md) have their own exact
+sources and acceptance records. These historical stage and CPU percentages
+must not be presented as a decomposition of those newer versions. This
+diagnostic does not combine the separately validated authorization-metadata
+optimization or promote a candidate to master.
