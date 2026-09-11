@@ -58,6 +58,12 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
+The [one-worker screen](RPC-WORKER-SCREENING.md) rejects `711631b`: GET
+throughput falls about 35%, mean latency rises about 53–54%, and both APIs'
+p99 worsens. All 20,736,623 measured calls and the independent audit pass.
+Keep event8 and test two async workers as a separate intermediate experiment;
+the one-worker result does not justify more reductions in useful parallelism.
+
 The [peer batch enqueue screen](PEER-BATCH-ENQUEUE-SCREENING.md) rejects
 `ea5f498` as the next performance increment: GET gains only 0.399% / 0.303%
 and second-repeat p99 regresses. The complete 23,025,553-call matched matrix
