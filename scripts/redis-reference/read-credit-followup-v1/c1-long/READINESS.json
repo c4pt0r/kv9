@@ -1,0 +1,13 @@
+{
+  "prepared": true,
+  "runtime_started": false,
+  "timing_prerequisite": "Wait for delegated exact-source Chaos to be terminal and its owned workloads/faults cleaned.",
+  "driver_sha256": "a626622a706901bf4ccdab4f09257b4a9c787fcc0391945e94c99e136994409f",
+  "auditor_sha256": "55ad4bf10c36e38340b4c11cedbb62ceb4de2c4b425b7cdea02e08233dddb2cb",
+  "protocol_sha256": "dbd6f6ed51337935b6cc3bdf157ed443df236665759029b72821c5b76bebc8ff",
+  "inventory_sha256": "a4243ea27a3a9e590107ac60f5544af72ff398620d8f0759b1e1643c76176899",
+  "driver_contracts_passed": 6,
+  "auditor_contracts_passed": 12,
+  "timing_output": "/tmp/kv9-read-credit-c1-long-diagnostic-attempt1",
+  "audit_output": "/tmp/kv9-read-credit-c1-long-preparation/results-first"
+}

@@ -1,3 +1,9 @@
 # Preserve exact unified-diff evidence, including blank context-line prefixes.
 scripts/redis-reference/peer-idle-watchdog-v1/final-preparation.diff -whitespace
 scripts/redis-reference/read-group-credit-v1/final-preparation.diff -whitespace
+scripts/redis-reference/read-credit-followup-v1/c1-long/matched-driver.py.diff -whitespace
+scripts/redis-reference/read-credit-followup-v1/c1-long/test_driver_contract.py.diff -whitespace
+scripts/redis-reference/read-credit-followup-v1/chaos-preparation/preparation.diff -whitespace
+scripts/redis-reference/read-credit-followup-v1/inbox/process-preparation/runner.diff -whitespace
+# Preserve the original test log's terminal blank line.
+scripts/redis-reference/read-credit-followup-v1/inbox/source-gate/tests.log -whitespace

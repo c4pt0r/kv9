@@ -111,8 +111,12 @@ be subtracted from the uninstrumented 38-us client latency as an exact budget.
    pending queue. Idle admission remains immediate; waiting reads can form a
    subsequent sealed group. Its [completed screen](READ-GROUP-CREDIT-SCREENING.md)
    now measures about 8% higher c64 throughput with better mean/p99 and roughly
-   15 members per group in full fixture envelopes. c1 point GET regresses
-   slightly, so general promotion remains open. This supports treating
+   15 members per group in full fixture envelopes. Its initial c1 point GET
+   regresses slightly. The separate [four-repeat longer follow-up](READ-CREDIT-C1-FOLLOWUP.md)
+   measures 26,447.329 GET/s and 37.680573 us mean, versus Redis's 172,509.024/s
+   and 5.721245 us. Candidate pooled throughput/mean improve slightly against
+   the control, but p99 improves in two repeats and worsens in two. Both studies
+   remain retained, and general promotion remains open. This supports treating
    amortization and isolated request latency as separate optimization targets.
 2. Shorten the confirmation path using evidence about individual handoffs.
    Record queue publication, body polling, peer receipt/owner observation and
@@ -125,6 +129,9 @@ be subtracted from the uninstrumented 38-us client latency as an exact budget.
    per-shard owner is compatible with multiple Raft groups; simply setting the
    existing runtime to one worker already failed its paired screen. Writes,
    mixed traffic, sustained load and large batches still need separate checks.
+   The [inbox-vector candidate](https://github.com/c4pt0r/kv9/blob/c3131800b665f6f160a11c804f542237e77ab83a/docs/RAFT-INBOX-DRAIN.md)
+   removes a redundant production vector allocation and message move. Local
+   source gates and process E2E pass; its end-to-end speedup remains unmeasured.
 4. Evaluate kernel bypass only after a real NIC experiment identifies the
    kernel/network path as the limiting cost. Redis's measured reference uses
    ordinary sockets. The current loopback profile neither proves a NIC limit

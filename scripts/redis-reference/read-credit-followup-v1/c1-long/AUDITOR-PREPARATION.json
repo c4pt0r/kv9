@@ -1,0 +1,167 @@
+{
+  "all_owned_commands_terminal": true,
+  "audit_argv_after_root_terminal_release": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-read-credit-c1-long-preparation/audit.py",
+    "--run",
+    "/tmp/kv9-read-credit-c1-long-diagnostic-attempt1/cohorts",
+    "--output",
+    "/tmp/kv9-read-credit-c1-long-preparation/results-first",
+    "--expected-driver-sha256",
+    "a626622a706901bf4ccdab4f09257b4a9c787fcc0391945e94c99e136994409f",
+    "--root-session",
+    "ROOT_TERMINAL_TIMING_SESSION",
+    "--root-exit-code",
+    "0",
+    "--successful-arms",
+    "24"
+  ],
+  "auditor_full_diff": "--- /tmp/kv9-read-group-credit-comparison-preparation/audit.py\n+++ /tmp/kv9-read-credit-c1-long-preparation/audit.py\n@@ -1,5 +1,5 @@\n #!/usr/bin/env python3\n-\"\"\"Independent matched c1/c64 twenty-four-cohort diagnostic readback; no workload execution.\"\"\"\n+\"\"\"Independent c1 four-repeat thirty-second diagnostic readback; no workload execution.\"\"\"\n import argparse\n import base64\n from concurrent.futures import ThreadPoolExecutor\n@@ -39,8 +39,8 @@\n  'client': (CLIENT_REV, '22ca0883ca2900fab0b457d87ebc6bc50662d7145af0846304f02b5841a6d30b'),\n  'redis': (REDIS_REV, '61349111171ded5cb7fff9085c7886381788e5f4c7a407e91a5dda618d124892'),\n }\n-PROTOCOL_ID = 'kv9-read-group-credit-c1-c64-v1'\n-CONCURRENCIES = (1, 64)\n+PROTOCOL_ID = 'kv9-read-credit-c1-long-v1'\n+CONCURRENCIES = (1,)\n ARMS = (('old-point','old','point_get'), ('old-batch1','old','batch_get'),\n         ('new-point','new','point_get'), ('new-batch1','new','batch_get'),\n         ('redis-mget1',None,'mget'), ('redis-get1',None,'get'))\n@@ -75,14 +75,15 @@\n \n def expected_cohorts():\n     forward = [(concurrency,*arm) for concurrency in CONCURRENCIES for arm in ARMS]\n-    return [(0,*row) for row in forward] + [(1,*row) for row in reversed(forward)]\n+    return [(repeat,*row) for repeat in (0,1,2,3)\n+            for row in (forward if repeat in (0,3) else reversed(forward))]\n \n def shared_config(repeat, concurrency):\n-    require(type(repeat) is int and repeat in (0,1) and\n+    require(type(repeat) is int and repeat in (0,1,2,3) and\n             type(concurrency) is int and concurrency in CONCURRENCIES, 'invalid repeat/concurrency')\n     return dict(run_id=f'p{repeat}{concurrency:04d}',seed=71,workers=concurrency,keys=4096,\n                 batch_size=1,value_bytes=128,read_percent=100,warmup_calls=128,\n-                measure_ms=5000,max_calls=10_000_000,load={'kind':'closed_loop'})\n+                measure_ms=30000,max_calls=10_000_000,load={'kind':'closed_loop'})\n \n def expected_descriptor(repeat, concurrency, arm, server, api):\n     return dict(repeat=repeat,arm=arm,server_role=server,read_api=api,mix='read',\n@@ -91,7 +92,7 @@\n def validate_matrix_protocol(matrix):\n     require(type(matrix['version']) is int and matrix['version']==2 and\n             matrix['protocol_id']==PROTOCOL_ID and\n-            same_json(matrix['concurrency_points'],list(CONCURRENCIES)), 'c1/c64 protocol scope differs')\n+            same_json(matrix['concurrency_points'],list(CONCURRENCIES)), 'c1 four-repeat protocol scope differs')\n     require(matrix['smoke'] is False and matrix['fixed_rates'] is None, 'smoke/fixed-rate is not timed protocol')\n     expected=[expected_descriptor(*row) for row in expected_cohorts()]\n     require(len(matrix['attempts'])==24 and same_json(matrix['cohort_inventory'],expected),\n@@ -175,7 +176,7 @@\n \n \n result = dict(complete=False, matched_diagnostic_accepted=False, cases=[],\n-              scope='Short shared-host tmpfs diagnostic; no sustained-capacity or equal-durability claim',\n+              scope='Predeclared c1 four-repeat 30-second shared-host tmpfs diagnostic; no sustained-capacity, equal-durability or no-regression claim',\n               parent_confirmed_session=args.root_session, parent_confirmed_exit_code=args.root_exit_code,\n               expected_successful_arms=args.successful_arms, protocol_id=PROTOCOL_ID,\n               concurrency_points=list(CONCURRENCIES), started_unix_ns=time.time_ns())\n@@ -200,7 +201,7 @@\n             isolation['driver_sha256']==args.expected_driver_sha256,'outer isolation scope differs')\n     require(matrix['isolation_snapshot']==isolation and sha(outer/'isolation.json')==matrix['isolation_snapshot_sha256'] and\n             sha(ROOT/'isolation-snapshot.json')==sha(outer/'isolation.json'),'inner/outer snapshot binding differs')\n-    expected_argv=['/usr/bin/python3','/tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py',\n+    expected_argv=['/usr/bin/python3','/tmp/kv9-read-credit-c1-long-preparation/matched-driver.py',\n                    '--output',str(ROOT),'--isolation-snapshot',str(outer/'isolation.json'),\n                    '--client-source','/tmp/kv9-point-batch1-measurement',\n                    '--client-build','/tmp/kv9-point-batch1-client-release-first','--expected-client-revision',CLIENT_REV]\n@@ -276,7 +277,7 @@\n         require(sha(ROOT/'retained-inputs/helpers'/f'{number:02d}-{Path(path).name}')==h,'executed helper snapshot differs')\n         if Path(path).is_relative_to(SOURCE) or Path(path).is_relative_to(REDIS_SOURCE):\n             require(sha(path)==h,'validator/helper source changed')\n-    require(matrix['helper_hashes'][str(Path('/tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py'))]==args.expected_driver_sha256,\n+    require(matrix['helper_hashes'][str(Path('/tmp/kv9-read-credit-c1-long-preparation/matched-driver.py'))]==args.expected_driver_sha256,\n             'driver is not the retained helper identity')\n     sys.path.insert(0,str(SOURCE/'scripts'))\n     import batch_benchmark_report as native\n@@ -476,7 +477,7 @@\n              server_memory=memory,\n              short_diagnostic_only=True))\n         print('PASS: retained diagnostic cohort '+str(ordinal)+' '+arm+' c'+str(concurrency),flush=True)\n-    for repeat in (0,1):\n+    for repeat in (0,1,2,3):\n         for concurrency in CONCURRENCIES:\n             for arm,server,api in ARMS:\n                 if server is not None:\n@@ -484,7 +485,7 @@\n                     redis.paired_configuration(configs[(repeat,concurrency,reference)],configs[(repeat,concurrency,arm)])\n     memory_pairs = []\n     performance_pairs = []\n-    for repeat in (0,1):\n+    for repeat in (0,1,2,3):\n         for concurrency in CONCURRENCIES:\n             for api, suffix in (('point_get','point'),('batch_get','batch1')):\n                 old,new = paired_cases(result['cases'],repeat,concurrency,suffix)\n@@ -520,4 +521,4 @@\n     raise\n finally:\n     result['ended_unix_ns']=time.time_ns();save('audit.json',result);save('input-inventory.json',records)\n-print('PASS: twenty-four c1/c64 matched cohorts and exact outer restoration accepted',flush=True)\n+print('PASS: twenty-four c1 four-repeat matched cohorts and exact outer restoration accepted',flush=True)\n",
+  "auditor_scope_edits": [
+    {
+      "after": "Independent c1 four-repeat thirty-second diagnostic readback; no workload execution.",
+      "before": "Independent matched c1/c64 twenty-four-cohort diagnostic readback; no workload execution.",
+      "occurrences": 1,
+      "reason": "Describe the separately predeclared c1-only study."
+    },
+    {
+      "after": "PROTOCOL_ID = 'kv9-read-credit-c1-long-v1'",
+      "before": "PROTOCOL_ID = 'kv9-read-group-credit-c1-c64-v1'",
+      "occurrences": 1,
+      "reason": "A distinct protocol preserves the previous accepted screen."
+    },
+    {
+      "after": "CONCURRENCIES = (1,)",
+      "before": "CONCURRENCIES = (1, 64)",
+      "occurrences": 1,
+      "reason": "The only admitted concurrency is one."
+    },
+    {
+      "after": "    return [(repeat,*row) for repeat in (0,1,2,3)\n            for row in (forward if repeat in (0,3) else reversed(forward))]",
+      "before": "    return [(0,*row) for row in forward] + [(1,*row) for row in reversed(forward)]",
+      "occurrences": 1,
+      "reason": "Exactly four repeats use forward/reverse/reverse/forward order."
+    },
+    {
+      "after": "repeat in (0,1,2,3) and",
+      "before": "repeat in (0,1) and",
+      "occurrences": 1,
+      "reason": "Reject absent/out-of-range repeat identities and retain integer typing."
+    },
+    {
+      "after": "measure_ms=30000,max_calls",
+      "before": "measure_ms=5000,max_calls",
+      "occurrences": 1,
+      "reason": "Every arm has the predeclared 30-second window."
+    },
+    {
+      "after": "'c1 four-repeat protocol scope differs'",
+      "before": "'c1/c64 protocol scope differs'",
+      "occurrences": 1,
+      "reason": "Label the exact new schedule refusal."
+    },
+    {
+      "after": "/tmp/kv9-read-credit-c1-long-preparation/matched-driver.py",
+      "before": "/tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py",
+      "occurrences": 2,
+      "reason": "Bind the new owned executable and wrapper invocation paths."
+    },
+    {
+      "after": "for repeat in (0,1,2,3):",
+      "before": "for repeat in (0,1):",
+      "occurrences": 2,
+      "reason": "Pair and summarize all four repeats without averaging percentile estimates."
+    },
+    {
+      "after": "scope='Predeclared c1 four-repeat 30-second shared-host tmpfs diagnostic; no sustained-capacity, equal-durability or no-regression claim'",
+      "before": "scope='Short shared-host tmpfs diagnostic; no sustained-capacity or equal-durability claim'",
+      "occurrences": 1,
+      "reason": "Keep the diagnostic limits explicit."
+    },
+    {
+      "after": "PASS: twenty-four c1 four-repeat matched cohorts and exact outer restoration accepted",
+      "before": "PASS: twenty-four c1/c64 matched cohorts and exact outer restoration accepted",
+      "occurrences": 1,
+      "reason": "Match terminal reporting to the new exact study."
+    }
+  ],
+  "auditor_sha256": "55ad4bf10c36e38340b4c11cedbb62ceb4de2c4b425b7cdea02e08233dddb2cb",
+  "completed_ns": 1789124321857401097,
+  "contract_result": {
+    "command": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "python3",
+      "/tmp/kv9-read-credit-c1-long-preparation/test_audit_contract.py"
+    ],
+    "exit_code": 0,
+    "log": "/tmp/kv9-read-credit-c1-long-preparation/audit-contract-first.log",
+    "log_sha256": "20abaf653711dda2b9ad8ca0acd08501b202647efc9772536cc0081bd3ecf38e",
+    "tests": 12
+  },
+  "driver_sha256": "a626622a706901bf4ccdab4f09257b4a9c787fcc0391945e94c99e136994409f",
+  "expected_runtime_output": "/tmp/kv9-read-credit-c1-long-diagnostic-attempt1/cohorts",
+  "final_driver_sha256_pending": false,
+  "no_runtime_or_audit_execution": true,
+  "parent_auditor_path": "/tmp/kv9-read-group-credit-comparison-preparation/audit.py",
+  "parent_auditor_sha256": "85a9a48ba745b6a5c16d947e8c455c3fe0aa1aa52b026b0abcdf057e67ab9035",
+  "parent_test_path": "/tmp/kv9-read-group-credit-comparison-preparation/test_audit_contract.py",
+  "parent_test_sha256": "a3b0231f40abd31c773a86230e9568ef4794172be6d1b4f04a7e84a5eb658027",
+  "protocol_sha256": "dbd6f6ed51337935b6cc3bdf157ed443df236665759029b72821c5b76bebc8ff",
+  "pure_contracts_pending": false,
+  "ready_for_root_review": true,
+  "root_owned_files_untouched": true,
+  "scope": "New predeclared c1-only 24-cohort study, four repeats F/R/R/F, 30-second windows; previous c1/c64 screen stays retained. Candidate/control/client pins and all non-schedule validation predicates unchanged. No significance or no-regression threshold invented. Root owns driver/protocol and will supply final driver hash.",
+  "static_schedule_comparison": {
+    "accepted": true,
+    "canonical_descriptors_sha256": "fc2a36cb626b7a9e62b619e9aa3be3c1a17e7a69946eee4a28b209b3bf564bc1",
+    "concurrency_points": [
+      1
+    ],
+    "descriptors": 24,
+    "driver_equals_frozen_protocol": true,
+    "driver_equals_independent_auditor_expectation": true,
+    "driver_equals_independent_test_fixture": true,
+    "measure_ms": 30000,
+    "method": "AST-extract only pure require/make_plan and independent schedule declarations; no driver/auditor module startup or runtime execution.",
+    "order": [
+      "forward",
+      "reverse",
+      "reverse",
+      "forward"
+    ],
+    "repeats": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "test_sha256": "3a52bb300c90c4f016f45b68238820f5b53950a1297db9500a6a6778de74930b",
+  "tests_full_diff": "--- /tmp/kv9-read-group-credit-comparison-preparation/test_audit_contract.py\n+++ /tmp/kv9-read-credit-c1-long-preparation/test_audit_contract.py\n@@ -30,7 +30,7 @@\n def config(repeat, workers, server, api):\n     c = dict(run_id=f'p{repeat}{workers:04d}', seed=71, workers=workers,\n              keys=4096, batch_size=1, value_bytes=128, read_percent=100,\n-             warmup_calls=128, measure_ms=5000, max_calls=10_000_000,\n+             warmup_calls=128, measure_ms=30000, max_calls=10_000_000,\n              load={'kind': 'closed_loop'})\n     if server:\n         c.update(version=2, rpc_transport='tonic_stream', read_api=api,\n@@ -46,8 +46,8 @@\n \n def matrix():\n     rows = []\n-    for repeat, workers, indices in [(0, 1, range(6)), (0, 64, range(6)),\n-                                     (1, 64, range(5, -1, -1)), (1, 1, range(5, -1, -1))]:\n+    for repeat, workers, indices in [(0, 1, range(6)), (1, 1, range(5, -1, -1)),\n+                                     (2, 1, range(5, -1, -1)), (3, 1, range(6))]:\n         for i in indices:\n             arm, server, api = ARM_ROWS[i]\n             full = config(repeat, workers, server, api)\n@@ -55,8 +55,8 @@\n                       if k not in {'version', 'rpc_transport', 'read_api', 'client', 'address', 'deadline_ms'}}\n             rows.append(dict(repeat=repeat, arm=arm, server_role=server, read_api=api,\n                              mix='read', target='kv9' if server else 'redis-memory', shared=shared))\n-    return dict(version=2, protocol_id='kv9-read-group-credit-c1-c64-v1',\n-                concurrency_points=[1, 64], smoke=False, fixed_rates=None,\n+    return dict(version=2, protocol_id='kv9-read-credit-c1-long-v1',\n+                concurrency_points=[1], smoke=False, fixed_rates=None,\n                 attempts=[{} for _ in rows], cohort_inventory=rows)\n \n \n@@ -72,21 +72,34 @@\n                     for d in m['cohort_inventory']]\n         self.assertEqual(audit['expected_cohorts'](), expected)\n         self.assertEqual([m['cohort_inventory'][i]['shared']['run_id'] for i in (0, 6, 12, 18)],\n-                         ['p00001', 'p00064', 'p10064', 'p10001'])\n+                         ['p00001', 'p10001', 'p20001', 'p30001'])\n \n-    def test_reject_reversing_only_arms_and_duplicate_concurrency(self):\n-        m = matrix()\n-        m['cohort_inventory'][12:] = m['cohort_inventory'][18:] + m['cohort_inventory'][12:18]\n-        with self.assertRaisesRegex(ValueError, 'inventory/order'):\n-            audit['validate_matrix_protocol'](m)\n-        m = matrix()\n-        m['cohort_inventory'][6:12] = copy.deepcopy(m['cohort_inventory'][:6])\n-        with self.assertRaisesRegex(ValueError, 'inventory/order'):\n-            audit['validate_matrix_protocol'](m)\n+    def test_reject_wrong_direction_and_omitted_or_duplicate_repeats(self):\n+        for repeat in (0, 1, 2, 3):\n+            m = matrix()\n+            start = repeat * 6\n+            m['cohort_inventory'][start:start+6] = reversed(m['cohort_inventory'][start:start+6])\n+            with self.subTest(wrong_direction=repeat):\n+                with self.assertRaisesRegex(ValueError, 'inventory/order'):\n+                    audit['validate_matrix_protocol'](m)\n+        for repeat in (0, 1, 2, 3):\n+            m = matrix()\n+            start = repeat * 6\n+            del m['cohort_inventory'][start:start+6]\n+            m['attempts'] = [{} for _ in m['cohort_inventory']]\n+            with self.subTest(omitted_repeat=repeat):\n+                with self.assertRaisesRegex(ValueError, 'inventory/order'):\n+                    audit['validate_matrix_protocol'](m)\n+            m = matrix()\n+            replacement = ((repeat + 1) % 4) * 6\n+            m['cohort_inventory'][start:start+6] = copy.deepcopy(m['cohort_inventory'][replacement:replacement+6])\n+            with self.subTest(duplicate_repeat=repeat):\n+                with self.assertRaisesRegex(ValueError, 'inventory/order'):\n+                    audit['validate_matrix_protocol'](m)\n \n     def test_reject_smoke_missing_arm_and_protocol_substitution(self):\n         for field, value in [('smoke', True), ('version', 1), ('version', True),\n-                             ('protocol_id', 'other'), ('concurrency_points', [True, 64]),\n+                             ('protocol_id', 'other'), ('concurrency_points', [True]),\n                              ('fixed_rates', [1]), ('attempts', [{}] * 12)]:\n             with self.subTest(field=field, value=value):\n                 m = matrix(); m[field] = value\n@@ -100,8 +113,8 @@\n                 audit['validate_matrix_protocol'](m)\n \n     def test_all_native_and_redis_exact_configs(self):\n-        for repeat in (0, 1):\n-            for workers in (1, 64):\n+        for repeat in (0, 1, 2, 3):\n+            for workers in (1,):\n                 for _, server, api in ARM_ROWS:\n                     audit['validate_requested_config'](config(repeat, workers, server, api), repeat, workers, server, api)\n \n@@ -125,8 +138,8 @@\n \n     def test_pairing_never_crosses_concurrency_or_repeat(self):\n         cases = [dict(repeat=r, concurrency=c, arm=a, marker=(r, c, a))\n-                 for r in (0, 1) for c in (1, 64) for a in ('old-point', 'new-point')]\n-        for r in (0, 1):\n+                 for r in (0, 1, 2, 3) for c in (1, 64) for a in ('old-point', 'new-point')]\n+        for r in (0, 1, 2, 3):\n             for c in (1, 64):\n                 old, new = audit['paired_cases'](cases, r, c, 'point')\n                 self.assertEqual((old['marker'], new['marker']), ((r, c, 'old-point'), (r, c, 'new-point')))\n@@ -135,6 +148,42 @@\n             audit['paired_cases'](missing, 0, 1, 'point')\n         with self.assertRaisesRegex(ValueError, 'missing/duplicate'):\n             audit['paired_cases'](cases + [cases[0]], 0, 1, 'point')\n+\n+    def test_reject_original_five_second_two_concurrency_study(self):\n+        # Even relabeling the old screen with the new protocol ID cannot pass.\n+        m = matrix()\n+        legacy = []\n+        for repeat, workers, indices in [(0, 1, range(6)), (0, 64, range(6)),\n+                                         (1, 64, range(5, -1, -1)), (1, 1, range(5, -1, -1))]:\n+            for index in indices:\n+                arm, server, api = ARM_ROWS[index]\n+                full = config(repeat, workers, server, api)\n+                shared = {k: v for k, v in full.items()\n+                          if k not in {'version', 'rpc_transport', 'read_api', 'client', 'address', 'deadline_ms'}}\n+                shared['measure_ms'] = 5000\n+                legacy.append(dict(repeat=repeat, arm=arm, server_role=server, read_api=api,\n+                                   mix='read', target='kv9' if server else 'redis-memory', shared=shared))\n+        m['cohort_inventory'] = legacy\n+        for points in ([1, 64], [1]):\n+            m['concurrency_points'] = points\n+            with self.subTest(points=points):\n+                with self.assertRaises(ValueError):\n+                    audit['validate_matrix_protocol'](m)\n+        m = matrix()\n+        for descriptor in m['cohort_inventory']:\n+            descriptor['shared']['measure_ms'] = 5000\n+        with self.assertRaisesRegex(ValueError, 'inventory/order'):\n+            audit['validate_matrix_protocol'](m)\n+        for server, api in [('old', 'point_get'), (None, 'get')]:\n+            c = config(0, 1, server, api); c['measure_ms'] = 5000\n+            with self.assertRaisesRegex(ValueError, 'exact request config'):\n+                audit['validate_requested_config'](c, 0, 1, server, api)\n+\n+    def test_reject_out_of_scope_repeat_or_concurrency(self):\n+        for repeat, workers in [(-1, 1), (4, 1), (True, 1), (0, 64), (0, True)]:\n+            with self.subTest(repeat=repeat, workers=workers):\n+                with self.assertRaisesRegex(ValueError, 'invalid repeat/concurrency'):\n+                    audit['shared_config'](repeat, workers)\n \n     def test_exact_candidate_and_control_pins_are_distinct(self):\n         self.assertEqual(audit['PINS']['new'], ('57ff6851e40ed63c837189d6eb0a11190704725a',\n",
+  "unchanged_predicate_functions": [
+    "dataset_check",
+    "expected_descriptor",
+    "histogram",
+    "paired_cases",
+    "qualify",
+    "read",
+    "require",
+    "retention_file",
+    "same_json",
+    "save",
+    "sha",
+    "validate_requested_config",
+    "value"
+  ]
+}

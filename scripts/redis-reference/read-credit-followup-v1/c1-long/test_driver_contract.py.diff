@@ -1,0 +1,43 @@
+--- /tmp/kv9-read-group-credit-comparison-preparation/test_driver_contract.py
++++ /tmp/kv9-read-credit-c1-long-preparation/test_driver_contract.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Check both concurrency points and APIs against unchanged client validators."""
++"""Check the declared longer c1 study against unchanged client validators."""
+ import copy
+ import importlib.util
+ from pathlib import Path
+@@ -39,20 +39,24 @@
+             self.assertEqual(n['client']['max_attempts'], 6)
+             self.assertEqual(n['client']['deadline_ms'], 1500)
+ 
+-    def test_fixed_width_dataset_prefix_and_whole_reversal(self):
++    def test_fixed_width_dataset_prefix_and_four_counterbalanced_repeats(self):
+         rows = driver.make_plan(False)
+-        first = [(r['shared']['workers'], r['arm']) for r in rows[:12]]
+-        second = [(r['shared']['workers'], r['arm']) for r in rows[12:]]
+-        self.assertEqual(second, list(reversed(first)))
++        arms = ['old-point', 'old-batch1', 'new-point', 'new-batch1',
++                'redis-mget1', 'redis-get1']
++        for repeat, expected in enumerate([arms, list(reversed(arms)), list(reversed(arms)), arms]):
++            group = rows[repeat*6:(repeat+1)*6]
++            self.assertEqual([r['arm'] for r in group], expected)
++            self.assertEqual({r['repeat'] for r in group}, {repeat})
++            self.assertEqual({r['shared']['workers'] for r in group}, {1})
++            self.assertEqual({r['shared']['measure_ms'] for r in group}, {30_000})
++            self.assertEqual({r['shared']['run_id'] for r in group}, {f'p{repeat}0001'})
+         self.assertEqual({len(r['shared']['run_id']) for r in rows}, {6})
+-        for repeat in (0, 1):
+-            group = rows[repeat*12:(repeat+1)*12]
+-            self.assertEqual(len({r['shared']['run_id'] for r in group}), 2)
++        self.assertEqual(sum(r['shared']['measure_ms'] for r in rows), 720_000)
+ 
+-    def test_smoke_exercises_both_concurrency_boundaries(self):
++    def test_optional_smoke_contains_each_c1_arm(self):
+         rows = driver.make_plan(True)
+         self.assertEqual([(r['shared']['workers'], r['arm']) for r in rows],
+-                         [(c, arm) for c in (1, 64) for arm in
++                         [(1, arm) for arm in
+                           ('old-point', 'old-batch1', 'new-point', 'new-batch1',
+                            'redis-mget1', 'redis-get1')])
+         for n, r in self.pairs(True):

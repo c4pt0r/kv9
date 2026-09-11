@@ -1,0 +1,12 @@
+{
+  "artifact": "/tmp/kv9-native-link-acceptance-57ff685-attempt1",
+  "authorization_source": "Parent /root NEW_TASK: complete exact-source Chaos acceptance using existing release; execute unchanged actual protocol once source/pins/configuration verified; no timing until terminal.",
+  "authorized": true,
+  "authorized_recorded_ns": 1789124389124181160,
+  "frozen_inputs_sha256": "f3315e6ca5b2d9811d8768c07f5573563b849d744e85d601e0932cda6894b085",
+  "namespace": "kv9-native-link-acceptance-57ff685-20260911-1",
+  "no_timing_overlap": true,
+  "other_matrix_terminal": true,
+  "plan_sha256": "166e6fbcc683e31a0a4e9bac6ce11e27a217b0934658442587ccc316d9bd2a9d",
+  "runner_sha256": "8ee5aeb39ef8abbaddf5dcd41a1581ab7473b5a0979cec25a9ca1bc6a38675b1"
+}

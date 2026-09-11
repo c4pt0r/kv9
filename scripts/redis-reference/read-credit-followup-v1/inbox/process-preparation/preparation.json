@@ -1,0 +1,19 @@
+{
+  "accepted": true,
+  "revision": "c3131800b665f6f160a11c804f542237e77ab83a",
+  "source": "/tmp/kv9-raft-inbox-drain-reuse",
+  "build": "/tmp/kv9-inbox-drain-release-first",
+  "source_files": 595,
+  "source_tree_sha256": "6db7b45708f91cba306eb70643a54db71bd9fea26a3cbc50a1a7f17c0e5da29b",
+  "runner_sha256": "25bf83a314b9b266785893324924acaeb64a0400b359df772ff1bc4b13a442ab",
+  "base_runner_sha256": "8b3993c0a2a4d2e7b2f8f721a41b5a6c2886f559ade835e8f4f7aa6eeb49cc67",
+  "auditor": "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+  "auditor_sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+  "files": {
+    "/tmp/kv9-inbox-drain-release-first/build.json": "fae8fd537f53b0a4e9cd09673230a33c97519e4a1e0311f20e1a74c4340e1a20",
+    "/tmp/kv9-inbox-drain-release-first/kv9": "26a185509cccf6436c5f02a5ab4476efca551166d1d4ef43ea2c200cc5a9e513",
+    "/tmp/kv9-inbox-drain-release-first/workload/build.json": "6ec208b88b057ebb74b3c1962c26c2a563e94c5da2733411e6b1a33a8ff8a074",
+    "/tmp/kv9-inbox-drain-release-first/workload/kv9-batch-workload": "f3a4bd9f6c80766cee104837d3dbf3d70de49f59c9bbc81b509ce55177757895",
+    "/tmp/kv9-raft-inbox-drain-reuse/scripts/native-batch-e2e.py": "c8248ac6525235c9ccf1147b02db1cf468172f4233f8c2c80ffb2e3e2325347f"
+  }
+}

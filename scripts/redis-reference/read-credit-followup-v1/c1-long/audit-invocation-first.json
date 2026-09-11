@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-read-credit-c1-long-preparation/audit.py",
+    "--run",
+    "/tmp/kv9-read-credit-c1-long-diagnostic-attempt1/cohorts",
+    "--output",
+    "/tmp/kv9-read-credit-c1-long-preparation/results-first",
+    "--expected-driver-sha256",
+    "a626622a706901bf4ccdab4f09257b4a9c787fcc0391945e94c99e136994409f",
+    "--root-session",
+    "52530",
+    "--root-exit-code",
+    "0",
+    "--successful-arms",
+    "24"
+  ],
+  "auditor_sha256": "55ad4bf10c36e38340b4c11cedbb62ceb4de2c4b425b7cdea02e08233dddb2cb",
+  "driver_sha256": "a626622a706901bf4ccdab4f09257b4a9c787fcc0391945e94c99e136994409f",
+  "preparation_sha256": "7f0b9390548ecaacd07aedd632b271025a9743d3125154b8be7e4f1349764112",
+  "protocol_sha256": "dbd6f6ed51337935b6cc3bdf157ed443df236665759029b72821c5b76bebc8ff",
+  "root_session": 52530,
+  "root_exit_code": 0,
+  "started_ns": 1789125831223757953
+}

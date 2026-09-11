@@ -1,0 +1,77 @@
+[
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/tmp/kv9-raft-inbox-drain-reuse",
+    "ended_unix_ns": 1789126315453516813,
+    "exit_code": 0,
+    "name": "source-head",
+    "started_unix_ns": 1789126315451999405
+  },
+  {
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "cwd": "/tmp/kv9-raft-inbox-drain-reuse",
+    "ended_unix_ns": 1789126315456433378,
+    "exit_code": 0,
+    "name": "source-status",
+    "started_unix_ns": 1789126315453617211
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/history/checker.py",
+      "/tmp/kv9-inbox-drain-process-e2e-first/batch-tonic-stream/history.jsonl",
+      "--output",
+      "/tmp/kv9-inbox-drain-process-independent-first/results-first/batch-tonic-stream-history-checked.json",
+      "--acceptance",
+      "--require",
+      "get",
+      "put",
+      "delete",
+      "batch_get",
+      "batch_put",
+      "--max-states",
+      "400000",
+      "--seconds",
+      "60"
+    ],
+    "cwd": "/tmp/kv9-raft-inbox-drain-reuse",
+    "ended_unix_ns": 1789126315613580455,
+    "exit_code": 0,
+    "name": "batch-tonic-stream-raw-history",
+    "started_unix_ns": 1789126315566773711
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/history/checker.py",
+      "/tmp/kv9-inbox-drain-process-e2e-first/batch-tonic-unary/history.jsonl",
+      "--output",
+      "/tmp/kv9-inbox-drain-process-independent-first/results-first/batch-tonic-unary-history-checked.json",
+      "--acceptance",
+      "--require",
+      "get",
+      "put",
+      "delete",
+      "batch_get",
+      "batch_put",
+      "--max-states",
+      "400000",
+      "--seconds",
+      "60"
+    ],
+    "cwd": "/tmp/kv9-raft-inbox-drain-reuse",
+    "ended_unix_ns": 1789126315684725680,
+    "exit_code": 0,
+    "name": "batch-tonic-unary-raw-history",
+    "started_unix_ns": 1789126315645817499
+  }
+]

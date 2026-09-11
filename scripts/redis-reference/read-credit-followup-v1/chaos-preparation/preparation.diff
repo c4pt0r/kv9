@@ -1,0 +1,40 @@
+--- /tmp/kv9-rpc-pair-chaos-preparation/verify_inputs.py
++++ /tmp/kv9-read-group-credit-chaos-preparation-first/verify_inputs.py
+@@ -22,7 +22,7 @@
+     assert sha(source_plan) == plan['source_plan_sha256'], 'source binding changed'
+     base = load(source_plan)
+     tree = Path(plan['worktree'])
+-    revision = '5ee897a2f58c57bdf17ea1757c96224adf0f0dbb'
++    revision = '57ff6851e40ed63c837189d6eb0a11190704725a'
+     assert base['revision'] == plan['revision'] == revision
+     assert base['dirty'] is False and base['profile'] == 'release'
+     assert subprocess.check_output(['git', '-C', str(tree), 'rev-parse', 'HEAD'], text=True).strip() == revision
+--- /tmp/kv9-rpc-pair-chaos-preparation/prepare_image.py
++++ /tmp/kv9-read-group-credit-chaos-preparation-first/prepare_image.py
+@@ -59,7 +59,7 @@
+         node = json.loads(run(['docker','inspect',plan['node']]))[0]
+         assert node['Config']['Labels']['io.x-k8s.kind.cluster'] == plan['kind_cluster']
+         run(['docker','image','inspect',plan['image']], expected=1)
+-        name = 'kv9-5ee897a-image-probe-20260910-1'
++        name = 'kv9-57ff685-image-probe-20260911-1'
+         run(['docker','inspect',name], expected=1)
+         run(['docker','build','--pull=false','--network=none','--iidfile',str(OUT/'image-id.txt'),'-t',plan['image'],str(HERE/'image-context')], timeout=180)
+         image = json.loads(run(['docker','image','inspect',plan['image']]))[0]
+@@ -69,7 +69,7 @@
+         assert image['Config']['Entrypoint'] == ['/usr/local/bin/kv9'] and image['Config'].get('Cmd') in ([], None)
+         payload = {'/usr/local/bin/kv9':plan['production_binary']['sha256'], '/usr/local/bin/kv9-batch-workload':plan['native_client_build']['binary_sha256'], '/opt/kv9-batch-workload/build.json':verify_inputs.sha(Path(plan['native_build_directory'])/'build.json')}
+         script = 'set -e; sha256sum /usr/local/bin/kv9 /usr/local/bin/kv9-batch-workload /opt/kv9-batch-workload/build.json; stat -c "%a %n" /usr/local/bin/kv9 /usr/local/bin/kv9-batch-workload /opt/kv9-batch-workload/build.json; for tool in bash sh sleep timeout taskset sha256sum stat ls touch cat; do command -v "$tool"; done; /usr/local/bin/kv9 --help >/dev/null; set +e; native_output=$(/usr/local/bin/kv9-batch-workload 2>&1); native_exit=$?; set -e; test "$native_exit" = 1; test "$native_output" = "FAIL: --config required"; printf "%s\\n" "$native_output"; taskset -pc $$'
+-        container = run(['docker','create','--name',name,'--label','kv9-owned-purpose=5ee897a-chaos-image-preparation','--cpuset-cpus',plan['host_cpus'],'--entrypoint','/bin/bash',plan['image'],'-c',script]).strip()
++        container = run(['docker','create','--name',name,'--label','kv9-owned-purpose=57ff685-chaos-image-preparation','--cpuset-cpus',plan['host_cpus'],'--entrypoint','/bin/bash',plan['image'],'-c',script]).strip()
+         assert len(container) == 64 and all(c in '0123456789abcdef' for c in container)
+         output = run(['docker','start','--attach',container])
+         lines = output.splitlines()
+@@ -98,7 +98,7 @@
+         if container:
+             try:
+                 probe = json.loads(run(['docker','inspect',container]))[0]
+-                assert probe['Id']==container and probe['Config']['Labels'].get('kv9-owned-purpose')=='5ee897a-chaos-image-preparation'
++                assert probe['Id']==container and probe['Config']['Labels'].get('kv9-owned-purpose')=='57ff685-chaos-image-preparation'
+                 run(['docker','rm','--force',container]);run(['docker','inspect',container],expected=1)
+                 summary['probe_cleanup']={'id':container,'absent':True}
+             except BaseException as error:summary['cleanup_failure']=str(error);summary['accepted']=False

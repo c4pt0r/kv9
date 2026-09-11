@@ -1,0 +1,52 @@
+{
+  "complete": true,
+  "accepted": true,
+  "base_revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "source_sha256": "4303ccd8d21f68113a69cb5f022fa557544c23638cd24681b0a5d5195607ead7",
+  "commands": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-inbox-drain-validation-first/format.log"
+    },
+    {
+      "name": "tests",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-inbox-drain-validation-first/tests.log"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-inbox-drain-validation-first/clippy.log"
+    }
+  ],
+  "started_unix_ns": 1789124639924648889,
+  "tests_passed": 218,
+  "tests_ignored": 0,
+  "ended_unix_ns": 1789124658543769897
+}

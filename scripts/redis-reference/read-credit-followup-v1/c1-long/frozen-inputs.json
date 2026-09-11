@@ -1,0 +1,65 @@
+{
+  "scope": "Final pre-runtime inputs; this inventory and READINESS.json excluded.",
+  "files": {
+    "AUDITOR-PREPARATION.json": {
+      "sha256": "7f0b9390548ecaacd07aedd632b271025a9743d3125154b8be7e4f1349764112",
+      "bytes": 20964
+    },
+    "README.md": {
+      "sha256": "2f675a0359152b70fb3425c6e8137b9af0b6ea9b95d6661c3671bccd108ed1fc",
+      "bytes": 3864
+    },
+    "audit-contract-first.log": {
+      "sha256": "20abaf653711dda2b9ad8ca0acd08501b202647efc9772536cc0081bd3ecf38e",
+      "bytes": 1677
+    },
+    "audit.py": {
+      "sha256": "55ad4bf10c36e38340b4c11cedbb62ceb4de2c4b425b7cdea02e08233dddb2cb",
+      "bytes": 39437
+    },
+    "driver-arguments.json": {
+      "sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+      "bytes": 209
+    },
+    "driver-contract-first.json": {
+      "sha256": "8308dd4ab518b7b97ef857b7c187b7e142e387303cae7c71d76f688a5cc079c7",
+      "bytes": 604
+    },
+    "driver-original-inputs.json": {
+      "sha256": "1813790189bac75b0df0ed5a5780c3b7770f64bdfe519f1804c56ac9b70a33d0",
+      "bytes": 783
+    },
+    "isolate-and-run.py": {
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "bytes": 12873
+    },
+    "matched-driver.py": {
+      "sha256": "a626622a706901bf4ccdab4f09257b4a9c787fcc0391945e94c99e136994409f",
+      "bytes": 45121
+    },
+    "matched-driver.py.diff": {
+      "sha256": "c0c3e0cfcf65ca7130a787b6f0fdd34e44c8f41beb8dc164e6a2a91239e14054",
+      "bytes": 3774
+    },
+    "protocol.json": {
+      "sha256": "dbd6f6ed51337935b6cc3bdf157ed443df236665759029b72821c5b76bebc8ff",
+      "bytes": 18881
+    },
+    "role-preflight.json": {
+      "sha256": "d5df1f918867f2e6a5802f25bb97668dc615284379a0d3640dfd7dd83efed06e",
+      "bytes": 282947
+    },
+    "test_audit_contract.py": {
+      "sha256": "3a52bb300c90c4f016f45b68238820f5b53950a1297db9500a6a6778de74930b",
+      "bytes": 11065
+    },
+    "test_driver_contract.py": {
+      "sha256": "c93e0914a469660cc2a019b29d6cd6004ed6e2a303017b372e6510d1da9ce56f",
+      "bytes": 3804
+    },
+    "test_driver_contract.py.diff": {
+      "sha256": "6c18d8d7dca8ff128b6eb4e704e3a1bfcef6374432502e49d19d7906aac6c19f",
+      "bytes": 2454
+    }
+  }
+}

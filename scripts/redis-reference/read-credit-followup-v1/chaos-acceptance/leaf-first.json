@@ -1,0 +1,45 @@
+{
+  "accepted": true,
+  "after": {
+    "dropped": 153,
+    "handle": "5:",
+    "parent": "1:4"
+  },
+  "artifact": "/tmp/kv9-native-link-acceptance-57ff685-attempt1",
+  "before": {
+    "dropped": 0,
+    "handle": "5:",
+    "parent": "1:4"
+  },
+  "identity": [
+    "d5a466b6-ee80-446f-84a7-7439269fb3b7",
+    "06f694d23b1c56de2ea0f86c0ec16677ce28b9f27275f7ae967552f1adfcb136",
+    1817671,
+    "141312875"
+  ],
+  "inputs": {
+    "commands/commands.json": "b733b25113f049ba506c10ec7c03bb16c91e3e32df7fb69759f61a49ac12e9c2",
+    "executed-plan.json": "166e6fbcc683e31a0a4e9bac6ce11e27a217b0934658442587ccc316d9bd2a9d",
+    "packet-effects.json": "ce97195fd30dd50eaa55a3d0d1fdd54b52957506a049d5cb0b3a784a267dd8ea",
+    "summary.json": "4d089b436ec0684c8e4d741b5389fcb2931fa29ef76074930e7ad43bc5760d25"
+  },
+  "netem_leaf_drop_delta": 153,
+  "raw": [
+    {
+      "command": 1152,
+      "ended_ns": 1789124492877468279,
+      "path": "/tmp/kv9-native-link-acceptance-57ff685-attempt1/commands/command-1152.stdout",
+      "sha256": "d62dc6bfb60fecc4b335a5f853ee3939c40abd25b04f39aac1e1a910bb6611fe",
+      "started_ns": 1789124492861887118
+    },
+    {
+      "command": 1336,
+      "ended_ns": 1789124528198569560,
+      "path": "/tmp/kv9-native-link-acceptance-57ff685-attempt1/commands/command-1336.stdout",
+      "sha256": "8c8691647b71603f08ac348f60f5fbdb5274e7daa2ff15779619648c3e3c515f",
+      "started_ns": 1789124528183700441
+    }
+  ],
+  "revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "scope": "Additional exact same-netem-leaf positive delta only; unchanged full history/effect/lifecycle audit is separately mandatory"
+}

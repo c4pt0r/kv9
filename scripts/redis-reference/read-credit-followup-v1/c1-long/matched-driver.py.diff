@@ -1,0 +1,56 @@
+--- /tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py
++++ /tmp/kv9-read-credit-c1-long-preparation/matched-driver.py
+@@ -1,8 +1,9 @@
+ #!/usr/bin/env python3
+-"""Matched old/new server point GET / BatchGet(1) / Redis MGET(1) diagnostic.
+-
+-Root runs smoke/reviews isolation before any diagnostic timing. Default runtime
+-keeps quorum and WAL/sync behavior; tmpfs mode has no power-loss durability.
++"""Predeclared longer c1 point GET / BatchGet(1) / Redis diagnostic.
++
++The pinned releases passed the preceding correctness smoke. This separate study
++uses four F/R/R/F repeats of thirty-second c1 cells; no prior result is discarded.
++Default runtime keeps quorum and WAL/sync behavior; tmpfs has no power-loss durability.
+ """
+ import argparse
+ import base64
+@@ -221,18 +222,18 @@
+     arms = (("old-point", "old", "point_get"), ("old-batch1", "old", "batch_get"),
+             ("new-point", "new", "point_get"), ("new-batch1", "new", "batch_get"),
+             ("redis-mget1", None, "mget"), ("redis-get1", None, "get"))
+-    first = [(concurrency, *arm) for concurrency in (1, 64) for arm in arms]
++    first = [(1, *arm) for arm in arms]
+     rows = []
+-    for repeat in range(1 if smoke else 2):
+-        for concurrency, arm, server, api in (first if repeat == 0 else reversed(first)):
++    for repeat in range(1 if smoke else 4):
++        for concurrency, arm, server, api in (first if repeat in (0, 3) else reversed(first)):
+             shared = dict(run_id=f"p{repeat}{concurrency:04d}", seed=71,
+                           workers=concurrency, keys=4096, batch_size=1,
+                           value_bytes=128, read_percent=100, warmup_calls=128,
+-                          measure_ms=5000, max_calls=10_000_000,
++                          measure_ms=30_000, max_calls=10_000_000,
+                           load=dict(kind="closed_loop"))
+             rows.append(dict(repeat=repeat, arm=arm, server_role=server, read_api=api,
+                              mix="read", target="kv9" if server else "redis-memory", shared=shared))
+-    require(len(rows) == (12 if smoke else 24), "matched c1/c64 cohort inventory differs")
++    require(len(rows) == (6 if smoke else 24), "longer c1 cohort inventory differs")
+     return rows
+ 
+ 
+@@ -666,11 +667,11 @@
+                 helper_hashes[str(path)] = digest(path)
+     rows = make_plan(args.smoke)
+     args.output.mkdir(parents=True)
+-    plan = dict(version=2, protocol_id="kv9-read-group-credit-c1-c64-v1",
+-                concurrency_points=[1, 64], complete=False, client_revision=args.expected_client_revision,
++    plan = dict(version=2, protocol_id="kv9-read-credit-c1-long-v1",
++                concurrency_points=[1], complete=False, client_revision=args.expected_client_revision,
+                 smoke=args.smoke, placement=placement(args.smoke), role_bindings=roles, client_cargo=cargo,
+-                scope="Twelve-cohort c1/c64 correctness smoke only; no timing acceptance" if args.smoke else
+-                      "Best-effort shared-host matched point/batch1 diagnostic; no exclusive host or equivalent durability",
++                scope="Six-cohort c1 correctness smoke only; no timing acceptance" if args.smoke else
++                      "Four F/R/R/F thirty-second c1 repeats; shared-host diagnostic, no sustained capacity or equivalent durability",
+                 storage=args.storage, kv9_durability=tmpfs.VOLATILE if args.storage == "tmpfs" else "Normal disk WAL and quorum; no Redis durability equivalence",
+                 redis_durability="Standalone memory; save/AOF disabled; no replicas", comparable_durability=False,
+                 isolation_snapshot=isolation, isolation_snapshot_sha256=digest(args.isolation_snapshot) if args.isolation_snapshot else None,

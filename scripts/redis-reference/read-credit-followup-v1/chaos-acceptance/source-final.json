@@ -1,0 +1,178 @@
+{
+  "accepted": true,
+  "cargo_features": {
+    "/tmp/kv9-read-group-credit-release-first/kv9-cargo.jsonl": {
+      "artifacts": {
+        "kv9": {
+          "executable": "/home/dongxu/kv9/target/release/kv9",
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-read-group-credit#kv9@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_engine": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-read-group-credit/crates/engine#kv9-engine@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_raft": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-read-group-credit/crates/raft#kv9-raft@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_server": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-read-group-credit/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        }
+      },
+      "sha256": "3b50856e201fe29a3eec3f61ce49f33baf5def5db8a6a0fb2682322f3c7b6a67"
+    },
+    "/tmp/kv9-read-group-credit-release-first/workload/cargo.jsonl": {
+      "artifacts": {
+        "kv9-batch-workload": {
+          "executable": "/home/dongxu/kv9/target/release/kv9-batch-workload",
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-read-group-credit/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_engine": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-read-group-credit/crates/engine#kv9-engine@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_raft": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-read-group-credit/crates/raft#kv9-raft@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_server": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-read-group-credit/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        }
+      },
+      "sha256": "9840f2959fdb126180d1ca7175b4a04d48511b57453ec21d8c6b2d91c29af3e4"
+    }
+  },
+  "image_binding": {
+    "accepted": true,
+    "accepted_cri_image_ids": [
+      "docker.io/library/import-2026-09-11@sha256:b92cab4b03a17834a64095c266e2141a89e77409c7782387dbd2e6e9b99a711b"
+    ],
+    "cri_image_id": "sha256:071961e4da06252551859005e44e6ea7728bd93fc5a72e8377613f53f9380a2e",
+    "docker_id": "sha256:071961e4da06252551859005e44e6ea7728bd93fc5a72e8377613f53f9380a2e",
+    "evidence_files": {
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/00.stdout": "f16eb520b9bb601a56ec695dd818035a750e83ac802f1d5537d6a7e00733e208",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/01.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/01.stdout": "eead3f81e9f47b24e566a358feb71f41db34b2486c1225e96562a411c79b420f",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/02.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/02.stdout": "ddbf853fb3cab2915090a4d99ce96c2a08d33a4c94cfb7c25be29a4b21352447",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/03.stderr": "7b3f2f6904a1ec232a65fc0e72554957fe5128540e2348438f9315a4abf80485",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/03.stdout": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/04.stderr": "6af16d4781b66055ea6b5fb055046cceebb6b3e940e35e9b152a974e5d046699",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/04.stdout": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/05.stderr": "6da979f747a378149bc0c24778f3d5f3e308066c1a2f0d289f25bd6efbe8a334",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/05.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/06.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/06.stdout": "1a4dd6c09ec6918b49e0d42936a63ce24d85d49850ef43ab41a498e947605004",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/07.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/07.stdout": "d4270adf2a9d599e5b5291a05b64e5a29cad9db26334a91af921b662b8296825",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/08.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/08.stdout": "a7ce04281f94309d5915d7139bc9f5ec9a5ae47ed7ca08b3a947f886a40ff990",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/09.stderr": "890178d11d76270c3f812531838dff2574f1eeaf1865692f4a1298cdebe812f6",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/09.stdout": "49b8bcf860f37fcebe71015aec0e592129554b148c4259cdf994680482042306",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/10.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/10.stdout": "4b2b1ad6257eb9d2dd9cbc33381dbaddb50edf0578a3f133ecbfd53b781ff701",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/11.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/11.stdout": "a7ce04281f94309d5915d7139bc9f5ec9a5ae47ed7ca08b3a947f886a40ff990",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/12.stderr": "28bd95f1177922c0fe299a175e14095cae2b0ca1ba03b1fd4031033109bed9d8",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/12.stdout": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/13.stderr": "7b4b0b99c6f253a4c7518c9bd86b169604b3779a16aa42fd1fb81724d74e5a4c",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/13.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/14.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/14.stdout": "348955aee4c3712e2d036d1afc36764ef9948b3f42577a44f7f0afe248c23904",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/15.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/15.stdout": "1a4dd6c09ec6918b49e0d42936a63ce24d85d49850ef43ab41a498e947605004",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/commands.json": "60909da049dc449e97445cef72c23aa231cf74138f444917b309f0f309e76091",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/image-id.txt": "6eeb4bfdc571f66446539c94eff120634ffe9d296e35bc3a0e9cbce55277b973",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/source-after.json": "09df52050f4e246649a3451bdea44c66120edc05b4aef06f13733a27d7a628d7",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/source-before.json": "09df52050f4e246649a3451bdea44c66120edc05b4aef06f13733a27d7a628d7",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/image-stage/summary.json": "e68a6f8ada7e2ce582c0054ce2f65cbbd933e70b55b92136d8e434c6fbda3a6d"
+    },
+    "image": "kv9-chaos:native-batch-57ff685-release-20260911-attempt1",
+    "payload_sha256": {
+      "/opt/kv9-batch-workload/build.json": "af24ed70203eaebf5d4a7fd5742e0844b3b0a061ca5cc104f63eefed642a004f",
+      "/usr/local/bin/kv9": "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
+      "/usr/local/bin/kv9-batch-workload": "071c51ca191875b442089c851d6c5f44d4a546b4fcc4aebc8c1be77dca6bf311"
+    },
+    "revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+    "source_plan_sha256": "7b05607e8e26598de111f833f2f4b278ee9a0608209be2f3c46708e584c7a9f8"
+  },
+  "image_required": true,
+  "native_client_sha256": "071c51ca191875b442089c851d6c5f44d4a546b4fcc4aebc8c1be77dca6bf311",
+  "native_manifest_sha256": "af24ed70203eaebf5d4a7fd5742e0844b3b0a061ca5cc104f63eefed642a004f",
+  "revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "scope": "Exact retained release source/build binding only; running PID and image identity remain independently checked by the fixture",
+  "server": {
+    "path": "/tmp/kv9-read-group-credit-release-first/kv9",
+    "sha256": "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30"
+  },
+  "source_files": 594,
+  "source_plan_sha256": "7b05607e8e26598de111f833f2f4b278ee9a0608209be2f3c46708e584c7a9f8",
+  "source_tree_sha256": "8635704e3da121313e1d7f83778e8e67ba8616b8daa51ecdc8d38178c8b15edb"
+}

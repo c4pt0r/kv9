@@ -1,0 +1,70 @@
+{
+  "accepted": true,
+  "audit_sha256": "fad40d4285bbba53f1985f8598325833f710b5691b78a86cfd383fad61ed228a",
+  "command": [
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/run.py",
+    "--plan",
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/plan.json",
+    "--release",
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/launch-release.json",
+    "--artifact",
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1"
+  ],
+  "image_terminal": {
+    "affinity": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "argv": [
+      "/usr/bin/python3",
+      "/tmp/kv9-read-group-credit-chaos-preparation-first/prepare_image.py"
+    ],
+    "ended_ns": 1789124344537982653,
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONOPTIMIZE": "0"
+    },
+    "exit_code": 0,
+    "pid": 257054,
+    "started_ns": 1789124342055068884
+  },
+  "leaf_sha256": "8c523197d4874a780c954e6a0ee90c623253e975cbdec18f6b38598664378902",
+  "namespace_absent": true,
+  "plan_sha256": "166e6fbcc683e31a0a4e9bac6ce11e27a217b0934658442587ccc316d9bd2a9d",
+  "preserved_namespaces": {
+    "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+    "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+    "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+    "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+    "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+    "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+    "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+    "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+  },
+  "runner_sha256": "8ee5aeb39ef8abbaddf5dcd41a1581ab7473b5a0979cec25a9ca1bc6a38675b1"
+}

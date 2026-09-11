@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py",
+    "sha256": "68c1bd5a78f4a24c4e05cb32dc080b8e87165ad04b2453b97b2be08e984290cc",
+    "bytes": 45078
+  },
+  {
+    "path": "/tmp/kv9-read-group-credit-comparison-preparation/isolate-and-run.py",
+    "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "bytes": 12873
+  },
+  {
+    "path": "/tmp/kv9-read-group-credit-comparison-preparation/driver-arguments.json",
+    "sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+    "bytes": 209
+  },
+  {
+    "path": "/tmp/kv9-read-group-credit-comparison-preparation/test_driver_contract.py",
+    "sha256": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a",
+    "bytes": 3451
+  }
+]

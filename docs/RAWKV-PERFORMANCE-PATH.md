@@ -133,11 +133,18 @@ audit passes. Source validation includes 714 workspace tests, 218 Raft tests,
 14 compiled control triples, 265 parameterized proof obligations and the
 independently checked 353-operation process E2E.
 
-This is not general promotion: c1 point GET throughput falls 0.083% / 0.573%,
-with worse mean/p99 in both repetitions. The short observations do not establish
-a negligible or stable c1 effect. Accepted `5ee897a` remains the general
-baseline. Resolve c1 behavior with a separately declared longer comparison
-that retains all observations, and complete exact-source Chaos Mesh acceptance.
+The initial screen's c1 point GET throughput falls 0.083% / 0.573%, with worse
+mean/p99 in both repetitions. A separate predeclared
+[four-repeat, 30-second c1 follow-up](READ-CREDIT-C1-FOLLOWUP.md) now passes all
+24 cohorts and its unchanged independent audit: **53,783,436 calls, all
+successful, one attempt each**. Pooled GET changes 26,335.687 -> 26,447.329/s
+(+0.424%) and 37.848 -> 37.681 us mean; p99 improves in two repeats and worsens
+in two. All earlier observations remain retained. This does not establish
+significance or c1 no-regression; `5ee897a` remains the general baseline.
+
+Exact-source [eleven-window local Chaos acceptance](READ-CREDIT-CHAOS-ACCEPTANCE.md)
+also passes: **2,079 calls, 1,780 OK / 224 refused / 75 unknown**, actual fault
+effects, recovery, contained negative windows and complete owned cleanup.
 Keep sustained traffic, writes/mixed, larger batches, dynamic-auth/storage
 callback progress and whole grouped-read/Ready/Rust proof composition in the
 promotion gates. The new proof establishes a single-invocation admission
@@ -151,6 +158,14 @@ Previous queue and scheduler regressions remain evidence against selecting a
 change on architectural intuition alone. Neither the profile nor fixed public
 admission curve establishes an intrinsic ceiling. Redis parity and automatic
 splits remain open.
+
+The [next inbox allocation candidate](https://github.com/c4pt0r/kv9/blob/c3131800b665f6f160a11c804f542237e77ab83a/docs/RAFT-INBOX-DRAIN.md)
+is implemented and pushed at `c3131800`. Production transport transfers the
+inbox's owned vector directly, preserving queue and consensus semantics. Its
+218-test Raft gate, format/Clippy and default release pass. Independently checked
+364-call process E2E passes all four progress windows, six fresh drains and
+seven exited lifetimes. Matched performance and candidate-specific Chaos
+remain open; no speedup is inferred from the removed allocation.
 
 ### Earlier experiments
 

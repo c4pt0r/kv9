@@ -1,0 +1,25 @@
+PASS: retained diagnostic cohort 0 old-point c1
+PASS: retained diagnostic cohort 1 old-batch1 c1
+PASS: retained diagnostic cohort 2 new-point c1
+PASS: retained diagnostic cohort 3 new-batch1 c1
+PASS: retained diagnostic cohort 4 redis-mget1 c1
+PASS: retained diagnostic cohort 5 redis-get1 c1
+PASS: retained diagnostic cohort 6 redis-get1 c1
+PASS: retained diagnostic cohort 7 redis-mget1 c1
+PASS: retained diagnostic cohort 8 new-batch1 c1
+PASS: retained diagnostic cohort 9 new-point c1
+PASS: retained diagnostic cohort 10 old-batch1 c1
+PASS: retained diagnostic cohort 11 old-point c1
+PASS: retained diagnostic cohort 12 redis-get1 c1
+PASS: retained diagnostic cohort 13 redis-mget1 c1
+PASS: retained diagnostic cohort 14 new-batch1 c1
+PASS: retained diagnostic cohort 15 new-point c1
+PASS: retained diagnostic cohort 16 old-batch1 c1
+PASS: retained diagnostic cohort 17 old-point c1
+PASS: retained diagnostic cohort 18 old-point c1
+PASS: retained diagnostic cohort 19 old-batch1 c1
+PASS: retained diagnostic cohort 20 new-point c1
+PASS: retained diagnostic cohort 21 new-batch1 c1
+PASS: retained diagnostic cohort 22 redis-mget1 c1
+PASS: retained diagnostic cohort 23 redis-get1 c1
+PASS: twenty-four c1 four-repeat matched cohorts and exact outer restoration accepted

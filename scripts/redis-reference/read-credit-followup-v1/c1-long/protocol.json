@@ -1,0 +1,788 @@
+{
+  "accepted_control_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "admission_limits_unchanged": true,
+  "candidate_revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "client_revision": "03c1c776a5dd7d1cc67491ab253e02ce51665bf8",
+  "client_sha256": "22ca0883ca2900fab0b457d87ebc6bc50662d7145af0846304f02b5841a6d30b",
+  "concurrency_points": [
+    1
+  ],
+  "decision_scope": "Report all four paired throughput, mean and p99 observations for each API and all Redis controls, alongside the prior study. No averaged percentiles, post-hoc tolerance threshold, discarded cohorts or equal-durability/sustained-capacity/no-regression claim. Broad selection must account for the observed c1 cost and c64 gains and complete source-scoped fault gates.",
+  "driver_sha256": "a626622a706901bf4ccdab4f09257b4a9c787fcc0391945e94c99e136994409f",
+  "durability": "Three-voter volatile WAL with normal sync calls; standalone memory Redis, save and AOF off",
+  "measurement_ms_per_cohort": 30000,
+  "order": [
+    "forward",
+    "reverse",
+    "reverse",
+    "forward"
+  ],
+  "overlap_rule": "No build, test, profile, fault or independent audit may overlap timing; wait for exact-source Chaos task to be terminal and its owned fixture resources cleaned.",
+  "predeclared_at_utc": "2026-09-11T10:57:25.815662+00:00",
+  "prior_audit_sha256": "227e49b64205a4c79982fdee024cd09da0a44b428d660caa45845b32d262340a",
+  "prior_smoke": {
+    "exit_code": 0,
+    "path": "/tmp/kv9-read-group-credit-comparison-smoke-first/matrix.json",
+    "root_terminal_session": 53845,
+    "scope": "Prior 12-cell c1/c64 correctness smoke on these exact releases; not timing acceptance for this new study.",
+    "sha256": "1ea7a0f80253752df711d75e617abbeb886228b2f18ccdc831005786f291545a"
+  },
+  "prior_timing": "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1",
+  "protocol_id": "kv9-read-credit-c1-long-v1",
+  "reason": "Resolve the observed small c1 point-GET regression in the already accepted 5-second c1/c64 diagnostic. This is a distinct longer-duration study; preserve that original result.",
+  "redis_client_revision": "b8ec38f660786412705f350d96ab086f0e7f6c60",
+  "redis_client_sha256": "61349111171ded5cb7fff9085c7886381788e5f4c7a407e91a5dda618d124892",
+  "repetitions": 4,
+  "runtime_smoke_rerun_required": false,
+  "server_pins": {
+    "new": {
+      "binary_sha256": "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
+      "manifest_sha256": "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd",
+      "revision": "57ff6851e40ed63c837189d6eb0a11190704725a"
+    },
+    "old": {
+      "binary_sha256": "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+      "manifest_sha256": "1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417",
+      "revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb"
+    }
+  },
+  "smoke_inventory": [
+    {
+      "arm": "old-point",
+      "mix": "read",
+      "read_api": "point_get",
+      "repeat": 0,
+      "server_role": "old",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "old-batch1",
+      "mix": "read",
+      "read_api": "batch_get",
+      "repeat": 0,
+      "server_role": "old",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "new-point",
+      "mix": "read",
+      "read_api": "point_get",
+      "repeat": 0,
+      "server_role": "new",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "new-batch1",
+      "mix": "read",
+      "read_api": "batch_get",
+      "repeat": 0,
+      "server_role": "new",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "redis-mget1",
+      "mix": "read",
+      "read_api": "mget",
+      "repeat": 0,
+      "server_role": null,
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "redis-memory"
+    },
+    {
+      "arm": "redis-get1",
+      "mix": "read",
+      "read_api": "get",
+      "repeat": 0,
+      "server_role": null,
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "redis-memory"
+    }
+  ],
+  "smoke_placement": {
+    "client_cpus": [
+      6,
+      7
+    ],
+    "exclusive_host": false,
+    "separated": true,
+    "server_cpus": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ]
+  },
+  "storage": "tmpfs",
+  "timed_inventory": [
+    {
+      "arm": "old-point",
+      "mix": "read",
+      "read_api": "point_get",
+      "repeat": 0,
+      "server_role": "old",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "old-batch1",
+      "mix": "read",
+      "read_api": "batch_get",
+      "repeat": 0,
+      "server_role": "old",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "new-point",
+      "mix": "read",
+      "read_api": "point_get",
+      "repeat": 0,
+      "server_role": "new",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "new-batch1",
+      "mix": "read",
+      "read_api": "batch_get",
+      "repeat": 0,
+      "server_role": "new",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "redis-mget1",
+      "mix": "read",
+      "read_api": "mget",
+      "repeat": 0,
+      "server_role": null,
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "redis-memory"
+    },
+    {
+      "arm": "redis-get1",
+      "mix": "read",
+      "read_api": "get",
+      "repeat": 0,
+      "server_role": null,
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p00001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "redis-memory"
+    },
+    {
+      "arm": "redis-get1",
+      "mix": "read",
+      "read_api": "get",
+      "repeat": 1,
+      "server_role": null,
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p10001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "redis-memory"
+    },
+    {
+      "arm": "redis-mget1",
+      "mix": "read",
+      "read_api": "mget",
+      "repeat": 1,
+      "server_role": null,
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p10001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "redis-memory"
+    },
+    {
+      "arm": "new-batch1",
+      "mix": "read",
+      "read_api": "batch_get",
+      "repeat": 1,
+      "server_role": "new",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p10001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "new-point",
+      "mix": "read",
+      "read_api": "point_get",
+      "repeat": 1,
+      "server_role": "new",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p10001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "old-batch1",
+      "mix": "read",
+      "read_api": "batch_get",
+      "repeat": 1,
+      "server_role": "old",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p10001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "old-point",
+      "mix": "read",
+      "read_api": "point_get",
+      "repeat": 1,
+      "server_role": "old",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p10001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "redis-get1",
+      "mix": "read",
+      "read_api": "get",
+      "repeat": 2,
+      "server_role": null,
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p20001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "redis-memory"
+    },
+    {
+      "arm": "redis-mget1",
+      "mix": "read",
+      "read_api": "mget",
+      "repeat": 2,
+      "server_role": null,
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p20001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "redis-memory"
+    },
+    {
+      "arm": "new-batch1",
+      "mix": "read",
+      "read_api": "batch_get",
+      "repeat": 2,
+      "server_role": "new",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p20001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "new-point",
+      "mix": "read",
+      "read_api": "point_get",
+      "repeat": 2,
+      "server_role": "new",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p20001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "old-batch1",
+      "mix": "read",
+      "read_api": "batch_get",
+      "repeat": 2,
+      "server_role": "old",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p20001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "old-point",
+      "mix": "read",
+      "read_api": "point_get",
+      "repeat": 2,
+      "server_role": "old",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p20001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "old-point",
+      "mix": "read",
+      "read_api": "point_get",
+      "repeat": 3,
+      "server_role": "old",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p30001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "old-batch1",
+      "mix": "read",
+      "read_api": "batch_get",
+      "repeat": 3,
+      "server_role": "old",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p30001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "new-point",
+      "mix": "read",
+      "read_api": "point_get",
+      "repeat": 3,
+      "server_role": "new",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p30001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "new-batch1",
+      "mix": "read",
+      "read_api": "batch_get",
+      "repeat": 3,
+      "server_role": "new",
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p30001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "kv9"
+    },
+    {
+      "arm": "redis-mget1",
+      "mix": "read",
+      "read_api": "mget",
+      "repeat": 3,
+      "server_role": null,
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p30001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "redis-memory"
+    },
+    {
+      "arm": "redis-get1",
+      "mix": "read",
+      "read_api": "get",
+      "repeat": 3,
+      "server_role": null,
+      "shared": {
+        "batch_size": 1,
+        "keys": 4096,
+        "load": {
+          "kind": "closed_loop"
+        },
+        "max_calls": 10000000,
+        "measure_ms": 30000,
+        "read_percent": 100,
+        "run_id": "p30001",
+        "seed": 71,
+        "value_bytes": 128,
+        "warmup_calls": 128,
+        "workers": 1
+      },
+      "target": "redis-memory"
+    }
+  ],
+  "timed_placement": {
+    "client_cpus": [
+      0,
+      1
+    ],
+    "exclusive_host": false,
+    "separated": true,
+    "server_cpus": [
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "timing_excludes_builds_tests_faults_profiles_audits": true,
+  "version": 2
+}

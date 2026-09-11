@@ -1,0 +1,221 @@
+{
+  "files": {
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/batch-counter-observations.json": {
+      "bytes": 1071,
+      "sha256": "f2533f7b320f10cc056128b24d455af55805c71e22f609b08a75a144a23f597c"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/cleanup.json": {
+      "bytes": 642,
+      "sha256": "22e527f8c3333cb411a59e6a499eab344ae800b42aee4304126fc17aadd34842"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/client-exit.json": {
+      "bytes": 110,
+      "sha256": "3a3b2b27ebd9ab58055da7f74750bc145e2650db58564d2de78c0ed294110b9d"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/commands/command-1152.stdout": {
+      "bytes": 817,
+      "sha256": "d62dc6bfb60fecc4b335a5f853ee3939c40abd25b04f39aac1e1a910bb6611fe"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/commands/command-1336.stdout": {
+      "bytes": 839,
+      "sha256": "8c8691647b71603f08ac348f60f5fbdb5274e7daa2ff15779619648c3e3c515f"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/commands/commands.json": {
+      "bytes": 2027855,
+      "sha256": "b733b25113f049ba506c10ec7c03bb16c91e3e32df7fb69759f61a49ac12e9c2"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/executed-plan.json": {
+      "bytes": 8714,
+      "sha256": "166e6fbcc683e31a0a4e9bac6ce11e27a217b0934658442587ccc316d9bd2a9d"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/fresh-drain.json": {
+      "bytes": 96084,
+      "sha256": "048c793b9c3946199e30aa86e248418d3c1ec1ed8820a06fa8bb2f14a272d906"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/initial-topology.json": {
+      "bytes": 900,
+      "sha256": "c3f9a731f23d97ed405d51286b5bc8a7e27a97c07eb4023b8f2e5850598582f8"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/input-verification.json": {
+      "bytes": 10897,
+      "sha256": "c5d9b481a2e1fbe00d3cc259fddc311faaaeef275d42c85b3dcb1d528cb15fa1"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/launch-release.json": {
+      "bytes": 748,
+      "sha256": "9635365f2d1dc60dbf4514030f927de8c63519766efb48100de0a5d2e48c11bf"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/namespace-uids-before.json": {
+      "bytes": 498,
+      "sha256": "858a233dc02aadd6b5cdf4e48ced1b3afd332dea2666700be1f11d3958af002a"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/native-config.json": {
+      "bytes": 854,
+      "sha256": "b9e8bdbbb5b366d3a7f424fe11aa1bfda5628d9a4e3a963ea4d3a1e70fb46b5e"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/native-history-check.json": {
+      "bytes": 251557,
+      "sha256": "72e558ef12da4e9b665e981b88ab314ee167ff9712348fad3b854294bb53e1d6"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/native-launch.json": {
+      "bytes": 601,
+      "sha256": "a0dab964bc3b8a2543cb11ec5dd4da5e8afcfeb1e5e5a74d2d3227351de37947"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/native-observations.json": {
+      "bytes": 15639,
+      "sha256": "1054d6b0b52c4de5fdca6c16911aa9bb2f08159245d415b842b0bcc34cde7ff9"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/observer-tools-ready.json": {
+      "bytes": 3275,
+      "sha256": "5114b74d19212f6ee4415e9d0dd8845bd29eb5a87d059ee2d07dc93c165146b1"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/owned-data.tar": {
+      "bytes": 12492800,
+      "sha256": "16f5899dba61aba0fc7deccf9a28f851f0e482b99799f68b9d5e4a07e1f659a7"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/owned-namespace.json": {
+      "bytes": 603,
+      "sha256": "a959ab216cfd337c5e0ffbc81a211f320acb0ed53559d75ec3cd64e13d801612"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/owned-node-lifetimes.json": {
+      "bytes": 1531,
+      "sha256": "d9c6d9c7cddf1d08cfd577a97d144cc4f055c1fb015e51f211efcbd0efba82f6"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/owned-node-root.json": {
+      "bytes": 99,
+      "sha256": "94dd8807edae9f222c0c8c3c1cde726ea1a55ac930ef3a572a9bd749522764e2"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/packet-effects.json": {
+      "bytes": 659083,
+      "sha256": "ce97195fd30dd50eaa55a3d0d1fdd54b52957506a049d5cb0b3a784a267dd8ea"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/pods-before-cleanup.json": {
+      "bytes": 14312,
+      "sha256": "f5354db96f0d1c250c07bdcc5ef777d6749562fc2c104defd1aa04b33ff58107"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/retained-inventory.json": {
+      "bytes": 6904,
+      "sha256": "18002a33a116cf056429e9896b0cb561f69616e8c494269df5e690d3318212af"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/retained/data-native/workload/config.json": {
+      "bytes": 853,
+      "sha256": "0941c426343a28c73c89fc0a0443994865fb2d8260102dd4a2c462ed87c9d7d4"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/retained/data-native/workload/history.jsonl": {
+      "bytes": 5117250,
+      "sha256": "27427b0c61cad62f7e174d35023834f7ae1bdce744db39fb635d582fcb6106eb"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/retained/data-native/workload/report.json": {
+      "bytes": 931860,
+      "sha256": "69cb515cb37e1ca4119126e0121acadbfeddb7db28abbcd6601f8c23cdadea1f"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/server-observations.json": {
+      "bytes": 1109457,
+      "sha256": "cc2a4ce1c21b3d79c4349d542d2bcae28c55a1f38680450241db51337d1bef58"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/summary.json": {
+      "bytes": 789,
+      "sha256": "4d089b436ec0684c8e4d741b5389fcb2931fa29ef76074930e7ad43bc5760d25"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/window-outcomes.json": {
+      "bytes": 25204,
+      "sha256": "dba70f3586990c10e914c3ef389b79990d1a0b6f3f5efbd265033baf96c7d97d"
+    },
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1/windows.json": {
+      "bytes": 147837,
+      "sha256": "ef62febfeb9f4159cd21394b6f4c0d3be06522155719cb1ad1bc36ce93076a90"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/audit-first.json": {
+      "bytes": 310462,
+      "sha256": "6f1aae6e28c9fb9e3a0b119fa31c660a8dd499b1e9839dda39fb21b378a2552e"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/audit-first.log": {
+      "bytes": 50,
+      "sha256": "fd2dc143254f56a105fd94ca9dbcbd7db716e8b7772502bb550d5e549d3d6482"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/audit-invocation.json": {
+      "bytes": 591,
+      "sha256": "94e67390e25e0ca69a88acb92c0ce9b4dafd2c6d01c453885a740391c1ee0131"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/audit-terminal.json": {
+      "bytes": 644,
+      "sha256": "3712a65d295ab9baf2a3e24858dca95f39d67e6511d807364a906365f8c09ce4"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/fixture-first.log": {
+      "bytes": 257,
+      "sha256": "549da76de002a3f06e40c534e626ad53d0215238e186156b134d22a0067d898d"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/fixture-invocation.json": {
+      "bytes": 952,
+      "sha256": "e39cfa9091d9896daa56b19d13e777218659ada3a25d849f1bd3d953454046cb"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/fixture-terminal.json": {
+      "bytes": 1005,
+      "sha256": "7fa79149eddb024127879b4823b970fbfe58b7326cac5fe5869b0aa54d766294"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/leaf-first.json": {
+      "bytes": 1634,
+      "sha256": "26877d49785df3a9c43146b166099f6f858c2acde352a23bb9ac5c5043aa4081"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/leaf-first.log": {
+      "bytes": 33,
+      "sha256": "1b5a394369f151b9e65bc7ae3739f5b77c8556c8bc77b4f912ccc21264dfa281"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/leaf-invocation.json": {
+      "bytes": 598,
+      "sha256": "561120a353ad185631916c6e7ab54705c8601aca86164c35a21f78f6b15a39bb"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/leaf-terminal.json": {
+      "bytes": 651,
+      "sha256": "b89991aa4c5637d6f19fb542794673f0a8046b0b2beda9019b79f7ba872cc401"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/result.json": {
+      "bytes": 10302,
+      "sha256": "a0681f5b92bdbb377c0105ea06f80ded9c0b660b7a872b8c9939ad71e81913b7"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/source-final.json": {
+      "bytes": 10897,
+      "sha256": "c5d9b481a2e1fbe00d3cc259fddc311faaaeef275d42c85b3dcb1d528cb15fa1"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/source-first.log": {
+      "bytes": 86,
+      "sha256": "58ab0da2c73ab173e5a413432c751aab934e03314b8d7f65c7b8fa768b1e48d7"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/source-invocation.json": {
+      "bytes": 608,
+      "sha256": "1522e648f2f627c24a30f20f18a3146d1654add8836375640010cb578e251b31"
+    },
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/source-terminal.json": {
+      "bytes": 661,
+      "sha256": "6f2797c5f1171a19e143f870cdd396692211bf299cc40b78e5de0ce3352c04f8"
+    },
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/frozen-inputs.json": {
+      "bytes": 7641,
+      "sha256": "f3315e6ca5b2d9811d8768c07f5573563b849d744e85d601e0932cda6894b085"
+    },
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/helper-lineage.json": {
+      "bytes": 5150,
+      "sha256": "f2513422d3d0edafaa25e8da7cd2ba10b2746c0bb15a079e6e446b61dd6488ae"
+    },
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/image-binding.json": {
+      "bytes": 6444,
+      "sha256": "52081a6c30f4cc800b47eee5e9e1a0671b16eb458b7e12119cddc09896b9d14c"
+    },
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/launch-release.json": {
+      "bytes": 748,
+      "sha256": "9635365f2d1dc60dbf4514030f927de8c63519766efb48100de0a5d2e48c11bf"
+    },
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/plan.json": {
+      "bytes": 8714,
+      "sha256": "166e6fbcc683e31a0a4e9bac6ce11e27a217b0934658442587ccc316d9bd2a9d"
+    },
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/preparation.diff": {
+      "bytes": 3733,
+      "sha256": "7e904228e8351e49f9d3e5bc12625f43a4430610d93060d2cf7db9516a28200c"
+    },
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/source-build-binding.json": {
+      "bytes": 66747,
+      "sha256": "7b05607e8e26598de111f833f2f4b278ee9a0608209be2f3c46708e584c7a9f8"
+    }
+  },
+  "scope": "Bounded report/manifest/archive/retained native history and selected exact-leaf raw input hashes; complete per-command bytes remain retained and were read by the unchanged audit."
+}

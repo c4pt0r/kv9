@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/verify_inputs.py",
+    "--plan",
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/plan.json",
+    "--output",
+    "/tmp/kv9-read-group-credit-chaos-acceptance-first/source-final.json"
+  ],
+  "started_ns": 1789124771546197947,
+  "affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "script_sha256": "7b6e5e503beabb78fc1c8d04136bfc3589a60afdbbca6c0ddeec4e44816decc7",
+  "pid": 439483,
+  "exit_code": 0,
+  "ended_ns": 1789124771603040562
+}

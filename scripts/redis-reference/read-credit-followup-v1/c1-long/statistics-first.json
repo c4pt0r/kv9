@@ -1,0 +1,1032 @@
+{
+  "accepted": true,
+  "all_commands_terminal": true,
+  "attempt_reasons": {
+    "admission_bytes": 0,
+    "admission_count": 0,
+    "admission_oversize": 0,
+    "client_capacity": 0,
+    "client_input": 0,
+    "deadline": 0,
+    "not_leader": 0,
+    "protocol": 0,
+    "read_apply_unconfirmed": 0,
+    "read_quorum_unconfirmed": 0,
+    "rpc_status": 0,
+    "success": 12632674
+  },
+  "attempts": 53783436,
+  "audit_exit_code": 0,
+  "audit_session": 3452,
+  "audit_sha256": "420b680b147f3a9a2bc69a7840d5550e20c45d21a848b02b04ce43a35a87f660",
+  "bindings": {
+    "outer_restoration": {
+      "accepted": true,
+      "configured_and_effective_before_after": "0-31",
+      "isolated": "6-15,22-31",
+      "namespace_maps_preserved": true,
+      "original_summary_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "owned_containers": 3
+    },
+    "owned_lifetimes_exited": 80,
+    "qualifying_drains": 48,
+    "resource_samples": 14096,
+    "retained_bytes": 88754298,
+    "retained_files": 528,
+    "role_source_file_checks": 2337,
+    "voter_writer_listener_bindings": 48
+  },
+  "client_revision": "03c1c776a5dd7d1cc67491ab253e02ce51665bf8",
+  "connection_attempts_recorded_redis_only": 0,
+  "connection_failures_recorded_redis_only": 0,
+  "control_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "counts": 53783436,
+  "dropped_slots": 0,
+  "input_inventory_sha256": "4e4966661948b0d12148371b6b079993495ccac3d88848858438398d8515a1a5",
+  "issued": 53783436,
+  "outcomes": {
+    "client_rejected": 0,
+    "read_failure": 0,
+    "refused": 0,
+    "success": 53783436,
+    "unknown_write": 0
+  },
+  "pairs": [
+    {
+      "api": "point_get",
+      "candidate": {
+        "attempts": 794624,
+        "calls": 794624,
+        "cohort_elapsed_ns": 30000012175,
+        "issued": 794624,
+        "mean_us": 37.6231942428117,
+        "ordinal": 2,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 794624,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.352,
+          36.863
+        ],
+        "p95_us": [
+          44.032,
+          44.543
+        ],
+        "p99_us": [
+          52.224,
+          52.735
+        ],
+        "qps": 26487.455917174142,
+        "report_sha256": "1873476ab679e34d44203067d973c81d9350cb8d57eeb8b6769e33feec9b688b",
+        "whole_call_count": 794624,
+        "whole_call_sum_ns": 29896293102
+      },
+      "concurrency": 1,
+      "mean_change_percent": -0.11940097202279842,
+      "old": {
+        "attempts": 793882,
+        "calls": 793882,
+        "cohort_elapsed_ns": 30000033709,
+        "issued": 793882,
+        "mean_us": 37.66817040441778,
+        "ordinal": 0,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 793882,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.352,
+          36.863
+        ],
+        "p95_us": [
+          44.032,
+          44.543
+        ],
+        "p99_us": [
+          51.712,
+          52.223
+        ],
+        "qps": 26462.70359895748,
+        "report_sha256": "54106705b471fdf7d8bfadf0951d8ce26db27f4a9d2eb4732e29104c8c15fdb4",
+        "whole_call_count": 793882,
+        "whole_call_sum_ns": 29904082457
+      },
+      "qps_change_percent": 0.0935366189025233,
+      "repeat": 0
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "attempts": 788570,
+        "calls": 788570,
+        "cohort_elapsed_ns": 30000040896,
+        "issued": 788570,
+        "mean_us": 37.916207556716586,
+        "ordinal": 3,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 788570,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          44.544,
+          45.055
+        ],
+        "p99_us": [
+          52.224,
+          52.735
+        ],
+        "qps": 26285.630834094714,
+        "report_sha256": "6eaf0a6dff15b3e28d5d0a11da8f2be501ab953be5272dd43d53e9033c1afd4e",
+        "whole_call_count": 788570,
+        "whole_call_sum_ns": 29899583793
+      },
+      "concurrency": 1,
+      "mean_change_percent": -0.007820620367449127,
+      "old": {
+        "attempts": 788467,
+        "calls": 788467,
+        "cohort_elapsed_ns": 30000018944,
+        "issued": 788467,
+        "mean_us": 37.91917307128897,
+        "ordinal": 1,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 788467,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          44.032,
+          44.543
+        ],
+        "p99_us": [
+          52.224,
+          52.735
+        ],
+        "qps": 26282.216736989536,
+        "report_sha256": "c248169280a899d16e33f09428120e9507acf1a70cf5252a5ed0658a265d0c84",
+        "whole_call_count": 788467,
+        "whole_call_sum_ns": 29898016634
+      },
+      "qps_change_percent": 0.012990141354296547,
+      "repeat": 0
+    },
+    {
+      "api": "point_get",
+      "candidate": {
+        "attempts": 791619,
+        "calls": 791619,
+        "cohort_elapsed_ns": 30000021623,
+        "issued": 791619,
+        "mean_us": 37.77337447433677,
+        "ordinal": 9,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 791619,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.352,
+          36.863
+        ],
+        "p95_us": [
+          44.032,
+          44.543
+        ],
+        "p99_us": [
+          51.712,
+          52.223
+        ],
+        "qps": 26387.280980927444,
+        "report_sha256": "34e43c1f9e9f8e7013f98cb8ea758f537e4fb20ae88788f4d0213ce9a06042f2",
+        "whole_call_count": 791619,
+        "whole_call_sum_ns": 29902120928
+      },
+      "concurrency": 1,
+      "mean_change_percent": -0.021382027295091532,
+      "old": {
+        "attempts": 791482,
+        "calls": 791482,
+        "cohort_elapsed_ns": 30000022561,
+        "issued": 791482,
+        "mean_us": 37.78145291491152,
+        "ordinal": 11,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 791482,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.352,
+          36.863
+        ],
+        "p95_us": [
+          44.032,
+          44.543
+        ],
+        "p99_us": [
+          52.224,
+          52.735
+        ],
+        "qps": 26382.71349265336,
+        "report_sha256": "11319ca3b55d22ea7f68d824434a1ccdf28ec824708dfd0778b70231d066d2a6",
+        "whole_call_count": 791482,
+        "whole_call_sum_ns": 29903339916
+      },
+      "qps_change_percent": 0.017312427985682888,
+      "repeat": 1
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "attempts": 797266,
+        "calls": 797266,
+        "cohort_elapsed_ns": 30000002052,
+        "issued": 797266,
+        "mean_us": 37.48760728916071,
+        "ordinal": 8,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 797266,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.352,
+          36.863
+        ],
+        "p95_us": [
+          42.496,
+          43.007
+        ],
+        "p99_us": [
+          50.176,
+          50.687
+        ],
+        "qps": 26575.531515566978,
+        "report_sha256": "76d72f4d829a0ff3028b65ecb35c15ec2ec40ce59e5187de09e9357ec5c71710",
+        "whole_call_count": 797266,
+        "whole_call_sum_ns": 29887594713
+      },
+      "concurrency": 1,
+      "mean_change_percent": -1.6162068238111504,
+      "old": {
+        "attempts": 784705,
+        "calls": 784705,
+        "cohort_elapsed_ns": 30000010820,
+        "issued": 784705,
+        "mean_us": 38.103437648543085,
+        "ordinal": 10,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 784705,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          45.056,
+          45.567
+        ],
+        "p99_us": [
+          53.248,
+          53.759
+        ],
+        "qps": 26156.82389943885,
+        "report_sha256": "b0d7fec0f22b569e8ef25fc1f50f9aaaf052744f5f35242a48a00fb06a89f773",
+        "whole_call_count": 784705,
+        "whole_call_sum_ns": 29899958040
+      },
+      "qps_change_percent": 1.600758630856225,
+      "repeat": 1
+    },
+    {
+      "api": "point_get",
+      "candidate": {
+        "attempts": 794898,
+        "calls": 794898,
+        "cohort_elapsed_ns": 30000018832,
+        "issued": 794898,
+        "mean_us": 37.60563345485836,
+        "ordinal": 15,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 794898,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.352,
+          36.863
+        ],
+        "p95_us": [
+          44.032,
+          44.543
+        ],
+        "p99_us": [
+          51.712,
+          52.223
+        ],
+        "qps": 26496.583367211402,
+        "report_sha256": "7cd187ab9de7a56c6d385c802a34dc5bbbb1ca91f274f776ccf804ab56e179b4",
+        "whole_call_count": 794898,
+        "whole_call_sum_ns": 29892642822
+      },
+      "concurrency": 1,
+      "mean_change_percent": -1.130016743968143,
+      "old": {
+        "attempts": 786141,
+        "calls": 786141,
+        "cohort_elapsed_ns": 30000010855,
+        "issued": 786141,
+        "mean_us": 38.03544029887769,
+        "ordinal": 17,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 786141,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          44.544,
+          45.055
+        ],
+        "p99_us": [
+          52.736,
+          53.247
+        ],
+        "qps": 26204.69051826948,
+        "report_sha256": "515d30e1089331d5f4c3d2da50526c448a89dcdaf5dfc5323e7d9737ab9760e9",
+        "whole_call_count": 786141,
+        "whole_call_sum_ns": 29901219072
+      },
+      "qps_change_percent": 1.113895425471334,
+      "repeat": 2
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "attempts": 789351,
+        "calls": 789351,
+        "cohort_elapsed_ns": 30000031105,
+        "issued": 789351,
+        "mean_us": 37.8790861201164,
+        "ordinal": 14,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 789351,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          44.032,
+          44.543
+        ],
+        "p99_us": [
+          52.224,
+          52.735
+        ],
+        "qps": 26311.672719180668,
+        "report_sha256": "7c27e42772101f4fc590b6ce6cf8797e3885bb90ee3c1c32e254573d2b122ae5",
+        "whole_call_count": 789351,
+        "whole_call_sum_ns": 29899894508
+      },
+      "concurrency": 1,
+      "mean_change_percent": -0.9729264928923564,
+      "old": {
+        "attempts": 781778,
+        "calls": 781778,
+        "cohort_elapsed_ns": 30000003951,
+        "issued": 781778,
+        "mean_us": 38.251242593165834,
+        "ordinal": 16,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 781778,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          44.544,
+          45.055
+        ],
+        "p99_us": [
+          52.736,
+          53.247
+        ],
+        "qps": 26059.2632346617,
+        "report_sha256": "1edb7c0c985aa97662f38741d50d8ad9f0ca9503f4378c25271237e984b1eb28",
+        "whole_call_count": 781778,
+        "whole_call_sum_ns": 29903979932
+      },
+      "qps_change_percent": 0.9685979309776993,
+      "repeat": 2
+    },
+    {
+      "api": "point_get",
+      "candidate": {
+        "attempts": 792540,
+        "calls": 792540,
+        "cohort_elapsed_ns": 30000004961,
+        "issued": 792540,
+        "mean_us": 37.720573258132085,
+        "ordinal": 20,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 792540,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.352,
+          36.863
+        ],
+        "p95_us": [
+          44.544,
+          45.055
+        ],
+        "p99_us": [
+          53.248,
+          53.759
+        ],
+        "qps": 26417.99563134412,
+        "report_sha256": "02a71ff3245b36a0c31742cf11c26c0e681880d1acef21173835ad9711c68bcd",
+        "whole_call_count": 792540,
+        "whole_call_sum_ns": 29895063130
+      },
+      "concurrency": 1,
+      "mean_change_percent": -0.49831935437449904,
+      "old": {
+        "attempts": 788780,
+        "calls": 788780,
+        "cohort_elapsed_ns": 30000030232,
+        "issued": 788780,
+        "mean_us": 37.90948355181419,
+        "ordinal": 18,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 788780,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          44.032,
+          44.543
+        ],
+        "p99_us": [
+          52.224,
+          52.735
+        ],
+        "qps": 26292.640170696744,
+        "report_sha256": "2e31a86131e56fa1fc1c95c954bbeeb4a10e6cae56806bd9891736695b23e07e",
+        "whole_call_count": 788780,
+        "whole_call_sum_ns": 29902242436
+      },
+      "qps_change_percent": 0.47677015253526633,
+      "repeat": 3
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "attempts": 785002,
+        "calls": 785002,
+        "cohort_elapsed_ns": 30000022069,
+        "issued": 785002,
+        "mean_us": 38.07230135082459,
+        "ordinal": 21,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 785002,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          44.544,
+          45.055
+        ],
+        "p99_us": [
+          52.736,
+          53.247
+        ],
+        "qps": 26166.71408422623,
+        "report_sha256": "a7aa055fb17265cea2d2c242ffa2bfaaccb18e09f03a1690d4788ff9347179a4",
+        "whole_call_count": 785002,
+        "whole_call_sum_ns": 29886832705
+      },
+      "concurrency": 1,
+      "mean_change_percent": -0.1793688255141257,
+      "old": {
+        "attempts": 783569,
+        "calls": 783569,
+        "cohort_elapsed_ns": 30000010698,
+        "issued": 783569,
+        "mean_us": 38.14071390139222,
+        "ordinal": 19,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 783569,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          45.056,
+          45.567
+        ],
+        "p99_us": [
+          53.248,
+          53.759
+        ],
+        "qps": 26118.957352646474,
+        "report_sha256": "982e013b85bad76d824c82451b71b83f564450652a27b3be1c91b7109bb67af1",
+        "whole_call_count": 783569,
+        "whole_call_sum_ns": 29885881051
+      },
+      "qps_change_percent": 0.18284317760073332,
+      "repeat": 3
+    }
+  ],
+  "pooled_by_arm": [
+    {
+      "api": "point_get",
+      "arm": "old-point",
+      "calls": 3160285,
+      "cohort_elapsed_ns": 120000097357,
+      "formula": "QPS = sum calls / sum cohort elapsed; mean = sum whole-call latency / sum whole-call count. No pooled or averaged percentile is reported.",
+      "pooled_mean_us": 37.848132013726605,
+      "pooled_qps": 26335.686966971032,
+      "repeats": 4,
+      "whole_call_count": 3160285,
+      "whole_call_sum_ns": 119610883881
+    },
+    {
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "calls": 3138519,
+      "cohort_elapsed_ns": 120000044413,
+      "formula": "QPS = sum calls / sum cohort elapsed; mean = sum whole-call latency / sum whole-call count. No pooled or averaged percentile is reported.",
+      "pooled_mean_us": 38.10326961761264,
+      "pooled_qps": 26154.31532006995,
+      "repeats": 4,
+      "whole_call_count": 3138519,
+      "whole_call_sum_ns": 119587835657
+    },
+    {
+      "api": "point_get",
+      "arm": "new-point",
+      "calls": 3173681,
+      "cohort_elapsed_ns": 120000057591,
+      "formula": "QPS = sum calls / sum cohort elapsed; mean = sum whole-call latency / sum whole-call count. No pooled or averaged percentile is reported.",
+      "pooled_mean_us": 37.680573435704474,
+      "pooled_qps": 26447.328973932308,
+      "repeats": 4,
+      "whole_call_count": 3173681,
+      "whole_call_sum_ns": 119586119982
+    },
+    {
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "calls": 3160189,
+      "cohort_elapsed_ns": 120000096122,
+      "formula": "QPS = sum calls / sum cohort elapsed; mean = sum whole-call latency / sum whole-call count. No pooled or averaged percentile is reported.",
+      "pooled_mean_us": 37.83758051148207,
+      "pooled_qps": 26334.88723864974,
+      "repeats": 4,
+      "whole_call_count": 3160189,
+      "whole_call_sum_ns": 119573905719
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "calls": 20449678,
+      "cohort_elapsed_ns": 120000015902,
+      "formula": "QPS = sum calls / sum cohort elapsed; mean = sum whole-call latency / sum whole-call count. No pooled or averaged percentile is reported.",
+      "pooled_mean_us": 5.788400653985847,
+      "pooled_qps": 170413.9607506433,
+      "repeats": 4,
+      "whole_call_count": 20449678,
+      "whole_call_sum_ns": 118370929509
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "calls": 20701084,
+      "cohort_elapsed_ns": 120000006719,
+      "formula": "QPS = sum calls / sum cohort elapsed; mean = sum whole-call latency / sum whole-call count. No pooled or averaged percentile is reported.",
+      "pooled_mean_us": 5.721244850559517,
+      "pooled_qps": 172509.02367426557,
+      "repeats": 4,
+      "whole_call_count": 20701084,
+      "whole_call_sum_ns": 118435970236
+    }
+  ],
+  "pooled_comparisons": [
+    {
+      "api": "point_get",
+      "candidate": {
+        "api": "point_get",
+        "arm": "new-point",
+        "calls": 3173681,
+        "cohort_elapsed_ns": 120000057591,
+        "formula": "QPS = sum calls / sum cohort elapsed; mean = sum whole-call latency / sum whole-call count. No pooled or averaged percentile is reported.",
+        "pooled_mean_us": 37.680573435704474,
+        "pooled_qps": 26447.328973932308,
+        "repeats": 4,
+        "whole_call_count": 3173681,
+        "whole_call_sum_ns": 119586119982
+      },
+      "mean_change_percent": -0.44271294012967477,
+      "old": {
+        "api": "point_get",
+        "arm": "old-point",
+        "calls": 3160285,
+        "cohort_elapsed_ns": 120000097357,
+        "formula": "QPS = sum calls / sum cohort elapsed; mean = sum whole-call latency / sum whole-call count. No pooled or averaged percentile is reported.",
+        "pooled_mean_us": 37.848132013726605,
+        "pooled_qps": 26335.686966971032,
+        "repeats": 4,
+        "whole_call_count": 3160285,
+        "whole_call_sum_ns": 119610883881
+      },
+      "qps_change_percent": 0.4239190992104902
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "api": "batch_get",
+        "arm": "new-batch1",
+        "calls": 3160189,
+        "cohort_elapsed_ns": 120000096122,
+        "formula": "QPS = sum calls / sum cohort elapsed; mean = sum whole-call latency / sum whole-call count. No pooled or averaged percentile is reported.",
+        "pooled_mean_us": 37.83758051148207,
+        "pooled_qps": 26334.88723864974,
+        "repeats": 4,
+        "whole_call_count": 3160189,
+        "whole_call_sum_ns": 119573905719
+      },
+      "mean_change_percent": -0.6972868963658785,
+      "old": {
+        "api": "batch_get",
+        "arm": "old-batch1",
+        "calls": 3138519,
+        "cohort_elapsed_ns": 120000044413,
+        "formula": "QPS = sum calls / sum cohort elapsed; mean = sum whole-call latency / sum whole-call count. No pooled or averaged percentile is reported.",
+        "pooled_mean_us": 38.10326961761264,
+        "pooled_qps": 26154.31532006995,
+        "repeats": 4,
+        "whole_call_count": 3138519,
+        "whole_call_sum_ns": 119587835657
+      },
+      "qps_change_percent": 0.6904096565709894
+    }
+  ],
+  "prior_screen_audit": "/tmp/kv9-read-group-credit-comparison-preparation/results-first/audit.json",
+  "prior_screen_audit_sha256": "227e49b64205a4c79982fdee024cd09da0a44b428d660caa45845b32d262340a",
+  "reasons": {
+    "admission_bytes": 0,
+    "admission_count": 0,
+    "admission_oversize": 0,
+    "client_capacity": 0,
+    "client_input": 0,
+    "data_integrity": 0,
+    "deadline": 0,
+    "io": 0,
+    "not_leader": 0,
+    "protocol": 0,
+    "read_apply_unconfirmed": 0,
+    "read_quorum_unconfirmed": 0,
+    "rpc_status": 0,
+    "server_error": 0,
+    "success": 53783436
+  },
+  "redis_client_revision": "b8ec38f660786412705f350d96ab086f0e7f6c60",
+  "redis_references": [
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempts": 5166471,
+      "calls": 5166471,
+      "cohort_elapsed_ns": 30000004297,
+      "concurrency": 1,
+      "issued": 5166471,
+      "mean_us": 5.731020124568588,
+      "ordinal": 5,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5166471,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.632,
+        5.695
+      ],
+      "p95_us": [
+        5.952,
+        6.015
+      ],
+      "p99_us": [
+        7.36,
+        7.423
+      ],
+      "qps": 172215.67533297476,
+      "repeat": 0,
+      "report_sha256": "c8d8adda44571c973f52983100590239d272072045bb5f1e62685afee5e91f4f",
+      "whole_call_count": 5166471,
+      "whole_call_sum_ns": 29609149274
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempts": 5105768,
+      "calls": 5105768,
+      "cohort_elapsed_ns": 30000003832,
+      "concurrency": 1,
+      "issued": 5105768,
+      "mean_us": 5.7956924082723695,
+      "ordinal": 4,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5105768,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.696,
+        5.759
+      ],
+      "p95_us": [
+        6.016,
+        6.079
+      ],
+      "p99_us": [
+        7.616,
+        7.679
+      ],
+      "qps": 170192.2449274439,
+      "repeat": 0,
+      "report_sha256": "14d020f6177df6aa350df4924fc0b2bca7e5c7353d436643e69e25b0a234ccf9",
+      "whole_call_count": 5105768,
+      "whole_call_sum_ns": 29591460836
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempts": 5175314,
+      "calls": 5175314,
+      "cohort_elapsed_ns": 30000001187,
+      "concurrency": 1,
+      "issued": 5175314,
+      "mean_us": 5.721308795562936,
+      "ordinal": 6,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5175314,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.632,
+        5.695
+      ],
+      "p95_us": [
+        5.888,
+        5.951
+      ],
+      "p99_us": [
+        7.36,
+        7.423
+      ],
+      "qps": 172510.4598410028,
+      "repeat": 1,
+      "report_sha256": "3be970012a774e2afa05a066367945a05295bac59344b3081f5bd95e513c2e5d",
+      "whole_call_count": 5175314,
+      "whole_call_sum_ns": 29609569508
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempts": 5106353,
+      "calls": 5106353,
+      "cohort_elapsed_ns": 30000004753,
+      "concurrency": 1,
+      "issued": 5106353,
+      "mean_us": 5.795695905081375,
+      "ordinal": 7,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5106353,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.696,
+        5.759
+      ],
+      "p95_us": [
+        6.016,
+        6.079
+      ],
+      "p99_us": [
+        7.488,
+        7.551
+      ],
+      "qps": 170211.73969945338,
+      "repeat": 1,
+      "report_sha256": "9c07834be1800ea513220e0f80103ede7ac940c53f2fc910d58b09443972a5b8",
+      "whole_call_count": 5106353,
+      "whole_call_sum_ns": 29594869172
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempts": 5177712,
+      "calls": 5177712,
+      "cohort_elapsed_ns": 30000001235,
+      "concurrency": 1,
+      "issued": 5177712,
+      "mean_us": 5.718578978707197,
+      "ordinal": 12,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5177712,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.632,
+        5.695
+      ],
+      "p95_us": [
+        5.952,
+        6.015
+      ],
+      "p99_us": [
+        7.424,
+        7.487
+      ],
+      "qps": 172590.39289502884,
+      "repeat": 2,
+      "report_sha256": "0d12b4dab17d5a72b6e8c5523f6633547b9eac9ff051524f0f1c054ba1431916",
+      "whole_call_count": 5177712,
+      "whole_call_sum_ns": 29609155001
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempts": 5112404,
+      "calls": 5112404,
+      "cohort_elapsed_ns": 30000003739,
+      "concurrency": 1,
+      "issued": 5112404,
+      "mean_us": 5.7882512238860615,
+      "ordinal": 13,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5112404,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.696,
+        5.759
+      ],
+      "p95_us": [
+        5.952,
+        6.015
+      ],
+      "p99_us": [
+        7.36,
+        7.423
+      ],
+      "qps": 170413.44542747093,
+      "repeat": 2,
+      "report_sha256": "e4bb067469519a45162e1cf2473275f47f8f81fff558845c9694a9d74619e96f",
+      "whole_call_count": 5112404,
+      "whole_call_sum_ns": 29591878710
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempts": 5181587,
+      "calls": 5181587,
+      "cohort_elapsed_ns": 30000000000,
+      "concurrency": 1,
+      "issued": 5181587,
+      "mean_us": 5.7140981041136625,
+      "ordinal": 23,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5181587,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.568,
+        5.631
+      ],
+      "p95_us": [
+        5.952,
+        6.015
+      ],
+      "p99_us": [
+        7.36,
+        7.423
+      ],
+      "qps": 172719.56666666668,
+      "repeat": 3,
+      "report_sha256": "536b9d32107515c1d732b4fa083fd5c11bafcfe1cdd2f33cc2c9f2b6b06d761b",
+      "whole_call_count": 5181587,
+      "whole_call_sum_ns": 29608096453
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempts": 5125153,
+      "calls": 5125153,
+      "cohort_elapsed_ns": 30000003578,
+      "concurrency": 1,
+      "issued": 5125153,
+      "mean_us": 5.774017047100838,
+      "ordinal": 22,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5125153,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.632,
+        5.695
+      ],
+      "p95_us": [
+        5.952,
+        6.015
+      ],
+      "p99_us": [
+        7.424,
+        7.487
+      ],
+      "qps": 170838.41295800527,
+      "repeat": 3,
+      "report_sha256": "9c91377fe088e54e4b7b6c5cb8478a519ddc3408953d5ce0870101a31606446a",
+      "whole_call_count": 5125153,
+      "whole_call_sum_ns": 29592720791
+    }
+  ],
+  "scope": "Separate predeclared c1-only study: four F/R/R/F repeats of six 30-second closed-loop cohorts. Pooled QPS uses total calls / total elapsed; pooled mean uses total latency / total count. Per-repeat p99 values are original histogram intervals, never averaged. Shared-host tmpfs-WAL diagnostic; no significance, sustained-capacity, equal-durability or c1 no-regression claim. Earlier successful 5-second c1/c64 results remain separately retained.",
+  "source_revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "timing_exit_code": 0,
+  "timing_session": 52530
+}

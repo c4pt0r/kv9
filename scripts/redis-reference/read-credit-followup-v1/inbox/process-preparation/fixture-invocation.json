@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-inbox-drain-process-preparation-first/runner.py",
+    "--build",
+    "/tmp/kv9-inbox-drain-release-first",
+    "--output",
+    "/tmp/kv9-inbox-drain-process-e2e-first"
+  ],
+  "started_ns": 1789126280991649963,
+  "affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "environment": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "runner_sha256": "25bf83a314b9b266785893324924acaeb64a0400b359df772ff1bc4b13a442ab",
+  "pid": 656810
+}

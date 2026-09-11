@@ -1,0 +1,18 @@
+{
+  "complete": true,
+  "command": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-read-credit-c1-long-preparation/test_driver_contract.py"
+  ],
+  "observed_exit_code": 0,
+  "tests_passed": 6,
+  "evidence": "Original root exec_command tool output chunk 80a78b; no redirected log was created and no test was rerun to manufacture a log.",
+  "driver_sha256": "a626622a706901bf4ccdab4f09257b4a9c787fcc0391945e94c99e136994409f",
+  "test_sha256": "c93e0914a469660cc2a019b29d6cd6004ed6e2a303017b372e6510d1da9ce56f"
+}

@@ -1,0 +1,474 @@
+{
+  "accepted": true,
+  "batch_counter_envelope": {
+    "per_voter_delta": {
+      "1": {
+        "public_raw_batch_get_blocking_submitted": 0,
+        "public_raw_batch_get_completed_inline": 550
+      },
+      "2": {
+        "public_raw_batch_get_blocking_submitted": 0,
+        "public_raw_batch_get_completed_inline": 79
+      },
+      "3": {
+        "public_raw_batch_get_blocking_submitted": 0,
+        "public_raw_batch_get_completed_inline": 0
+      }
+    },
+    "scope": "Full fixture status envelope, including setup and verification; no attribution to individual responses or fault windows",
+    "total_delta": {
+      "public_raw_batch_get_blocking_submitted": 0,
+      "public_raw_batch_get_completed_inline": 629
+    },
+    "writers": {
+      "1": [
+        "d5c8e9df-a96e-4c51-b884-f5843508bd8a",
+        1,
+        141312853,
+        "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+      ],
+      "2": [
+        "ba11aca3-f5e5-4532-aaaf-e48e00cc3cf7",
+        1,
+        141312861,
+        "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+      ],
+      "3": [
+        "729f8298-aa98-4962-aa31-578e2ffc5543",
+        1,
+        141312867,
+        "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+      ]
+    }
+  },
+  "cleanup": {
+    "complete": true,
+    "namespace_absent": true,
+    "namespace_uid": "a634958a-3913-47c8-af27-7a9c18edc41c",
+    "preserved": {
+      "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+      "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+      "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+      "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+      "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+      "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+      "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+      "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+    }
+  },
+  "client_exit": {
+    "exit_code": 0,
+    "observed_ns": 1789124724407051746,
+    "pod_process_absent": true,
+    "process_pid": 32
+  },
+  "commands": 4108,
+  "completed_ns": 1789124890399597707,
+  "fresh_drain_snapshots": 3,
+  "frozen_preparation_files_unchanged": 80,
+  "history": {
+    "guided_unknown_search_attempts": [
+      {
+        "guided_unknown": false,
+        "prepare_ranges": false,
+        "states": 2113,
+        "unknown_effect_limit": 0,
+        "verdict": "invalid"
+      },
+      {
+        "guided_unknown": true,
+        "prepare_ranges": false,
+        "states": 2686,
+        "unknown_effect_limit": null,
+        "verdict": "valid"
+      }
+    ],
+    "jsonl_lines_including_header": 4159,
+    "kinds": {
+      "batch_get": 730,
+      "batch_put": 727,
+      "delete": 207,
+      "get": 208,
+      "put": 207
+    },
+    "operations": 2079,
+    "outcomes": {
+      "ok": 1780,
+      "refused": 224,
+      "unknown": 75
+    }
+  },
+  "image_preparation_exit": 0,
+  "leaf_after": {
+    "dropped": 153,
+    "handle": "5:",
+    "parent": "1:4"
+  },
+  "leaf_before": {
+    "dropped": 0,
+    "handle": "5:",
+    "parent": "1:4"
+  },
+  "netem_leaf_drop_delta": 153,
+  "owned_pod_container_lifetimes": 5,
+  "predecessor_frozen_files_unchanged": 93,
+  "readback_session": 60804,
+  "required_serial_fresh_empty_advances_per_voter": 2,
+  "retained_bytes": 12437174,
+  "retained_files": 50,
+  "revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "runtime_session": 56168,
+  "scope": "One exact-source local11-window Chaos Mesh native correctness run with explicit non-Chaos exact TCP reset; no throughput, cross-host, storage-stall, inter-voter partial-loss or full formal refinement claim.",
+  "source_files": 594,
+  "source_tree_sha256": "8635704e3da121313e1d7f83778e8e67ba8616b8daa51ecdc8d38178c8b15edb",
+  "terminal_exit_codes": {
+    "audit": 0,
+    "fixture": 0,
+    "leaf": 0,
+    "source": 0
+  },
+  "voters": 3,
+  "windows": [
+    {
+      "counts": {
+        "batch_get": {
+          "ok": 47,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 46,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 13,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 12,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "expect": "progress",
+      "name": "baseline"
+    },
+    {
+      "counts": {
+        "batch_get": {
+          "ok": 47,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 46,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 12,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 13,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "expect": "progress",
+      "name": "vip-delay"
+    },
+    {
+      "counts": {
+        "batch_get": {
+          "ok": 45,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 47,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 12,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "expect": "progress",
+      "name": "delay-healed"
+    },
+    {
+      "counts": {
+        "batch_get": {
+          "ok": 67,
+          "refused": 0,
+          "unknown": 3
+        },
+        "batch_put": {
+          "ok": 64,
+          "refused": 0,
+          "unknown": 6
+        },
+        "delete": {
+          "ok": 19,
+          "refused": 0,
+          "unknown": 1
+        },
+        "get": {
+          "ok": 20,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 16,
+          "refused": 0,
+          "unknown": 4
+        }
+      },
+      "expect": "progress",
+      "name": "vip-partial-loss"
+    },
+    {
+      "counts": {
+        "batch_get": {
+          "ok": 48,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 49,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "expect": "progress",
+      "name": "loss-healed"
+    },
+    {
+      "counts": {
+        "batch_get": {
+          "ok": 0,
+          "refused": 0,
+          "unknown": 13
+        },
+        "batch_put": {
+          "ok": 0,
+          "refused": 0,
+          "unknown": 13
+        },
+        "delete": {
+          "ok": 0,
+          "refused": 0,
+          "unknown": 4
+        },
+        "get": {
+          "ok": 0,
+          "refused": 0,
+          "unknown": 3
+        },
+        "put": {
+          "ok": 0,
+          "refused": 0,
+          "unknown": 4
+        }
+      },
+      "expect": "no-new-success",
+      "name": "vip-partition"
+    },
+    {
+      "counts": {
+        "batch_get": {
+          "ok": 51,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 49,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "expect": "progress",
+      "name": "partition-healed"
+    },
+    {
+      "counts": {
+        "batch_get": {
+          "ok": 52,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 52,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "expect": "progress",
+      "name": "exact-tcp-reset"
+    },
+    {
+      "counts": {
+        "batch_get": {
+          "ok": 51,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 52,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "expect": "progress",
+      "name": "reset-healed"
+    },
+    {
+      "counts": {
+        "batch_get": {
+          "ok": 0,
+          "refused": 47,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 0,
+          "refused": 48,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 0,
+          "refused": 13,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 0,
+          "refused": 14,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 0,
+          "refused": 14,
+          "unknown": 0
+        }
+      },
+      "expect": "no-new-success",
+      "name": "quorum-loss"
+    },
+    {
+      "counts": {
+        "batch_get": {
+          "ok": 53,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 53,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 16,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "expect": "progress",
+      "name": "quorum-healed"
+    }
+  ]
+}

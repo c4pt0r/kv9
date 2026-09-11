@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/run.py",
+    "--plan",
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/plan.json",
+    "--release",
+    "/tmp/kv9-read-group-credit-chaos-preparation-first/launch-release.json",
+    "--artifact",
+    "/tmp/kv9-native-link-acceptance-57ff685-attempt1"
+  ],
+  "started_ns": 1789124414647255953,
+  "wrapper_pid": 267889,
+  "affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "env": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "runner_sha256": "8ee5aeb39ef8abbaddf5dcd41a1581ab7473b5a0979cec25a9ca1bc6a38675b1",
+  "plan_sha256": "166e6fbcc683e31a0a4e9bac6ce11e27a217b0934658442587ccc316d9bd2a9d",
+  "release_sha256": "9635365f2d1dc60dbf4514030f927de8c63519766efb48100de0a5d2e48c11bf",
+  "pid": 267890
+}

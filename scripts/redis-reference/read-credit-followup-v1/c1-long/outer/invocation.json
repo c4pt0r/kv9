@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-read-credit-c1-long-preparation/matched-driver.py",
+    "--output",
+    "/tmp/kv9-read-credit-c1-long-diagnostic-attempt1/cohorts",
+    "--isolation-snapshot",
+    "/tmp/kv9-read-credit-c1-long-diagnostic-attempt1/isolation.json",
+    "--client-source",
+    "/tmp/kv9-point-batch1-measurement",
+    "--client-build",
+    "/tmp/kv9-point-batch1-client-release-first",
+    "--expected-client-revision",
+    "03c1c776a5dd7d1cc67491ab253e02ce51665bf8"
+  ],
+  "driver_arguments_sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+  "wrapper_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+}

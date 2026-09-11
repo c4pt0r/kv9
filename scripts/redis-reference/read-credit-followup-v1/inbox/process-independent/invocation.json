@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+    "--source",
+    "/tmp/kv9-raft-inbox-drain-reuse",
+    "--build",
+    "/tmp/kv9-inbox-drain-release-first",
+    "--run",
+    "/tmp/kv9-inbox-drain-process-e2e-first",
+    "--output",
+    "/tmp/kv9-inbox-drain-process-independent-first/results-first",
+    "--revision",
+    "c3131800b665f6f160a11c804f542237e77ab83a"
+  ],
+  "started_ns": 1789126315427229607,
+  "script_sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+  "affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "environment": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "pid": 661797
+}

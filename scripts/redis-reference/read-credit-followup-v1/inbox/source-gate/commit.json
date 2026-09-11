@@ -1,0 +1,8 @@
+{
+  "revision": "c3131800b665f6f160a11c804f542237e77ab83a",
+  "parent": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "source_sha256": "4303ccd8d21f68113a69cb5f022fa557544c23638cd24681b0a5d5195607ead7",
+  "gate_sha256": "4b2b30f43a87f1fcfd42f12cc6df55ae3e8f5eb8c24c038f15faba3a5cb0de96",
+  "tests_passed": 218,
+  "scope": "Unmeasured isolated candidate; local Raft tests and Clippy only."
+}
