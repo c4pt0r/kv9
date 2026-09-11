@@ -133,6 +133,11 @@ pub struct DriverMetrics {
     pub logical_proposal_wait: Latency,
     pub application_wait: Latency,
     pub read_establishment: Latency,
+    pub read_profile_queue: Latency,
+    pub read_profile_quorum: Latency,
+    pub read_profile_apply: Latency,
+    pub read_profile_notification: Latency,
+    pub read_profile_total: Latency,
     pub command_apply: Latency,
     pub pump_service: Latency,
     pub pump_idle_wait: Latency,
@@ -146,6 +151,14 @@ impl DriverMetrics {
             NamedLatency::new("runtime_logical_proposal_wait", &self.logical_proposal_wait),
             NamedLatency::new("raft_application_wait", &self.application_wait),
             NamedLatency::new("raft_read_establishment", &self.read_establishment),
+            NamedLatency::new("raft_async_read_profile_queue", &self.read_profile_queue),
+            NamedLatency::new("raft_async_read_profile_quorum", &self.read_profile_quorum),
+            NamedLatency::new("raft_async_read_profile_apply", &self.read_profile_apply),
+            NamedLatency::new(
+                "raft_async_read_profile_notification",
+                &self.read_profile_notification,
+            ),
+            NamedLatency::new("raft_async_read_profile_total", &self.read_profile_total),
             NamedLatency::new("raft_command_apply", &self.command_apply),
             NamedLatency::new("raft_pump_service", &self.pump_service),
             NamedLatency::new("raft_pump_idle_wait", &self.pump_idle_wait),
@@ -273,8 +286,12 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     ) -> Result<Arc<NodeDriver<S, E>>> {
         let drain = crate::DrainToken::mint(&peer)?;
         transport.set_work_signal(peer.work_signal.clone());
+        let metrics = Arc::new(DriverMetrics::default());
         Ok(Arc::new(NodeDriver {
-            async_reads: crate::async_read::AsyncReads::new(peer.work_signal.clone()),
+            async_reads: crate::async_read::AsyncReads::with_metrics(
+                peer.work_signal.clone(),
+                metrics.clone(),
+            ),
             async_applies: crate::async_apply::AsyncApplies::new(peer.work_signal.clone()),
             peer,
             drain,
@@ -309,7 +326,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             pump_started: AtomicBool::new(false),
             pump_gate: Mutex::new(()),
             completion: crate::work::CompletionSignal::default(),
-            metrics: Arc::default(),
+            metrics,
         }))
     }
 

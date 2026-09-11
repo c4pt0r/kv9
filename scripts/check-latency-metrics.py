@@ -9,7 +9,10 @@ OUTCOMES = ['success', 'error', 'aborted', 'released', 'replaced', 'rejected', '
 NAMES = [f'public_{kind}_{phase}' for kind in ['raw_read', 'raw_write', 'metadata_read', 'metadata_write', 'transaction']
          for phase in ['prepare_queue', 'backend']]
 NAMES += ['raft_proposal_submission', 'runtime_logical_proposal_wait', 'raft_application_wait',
-          'raft_read_establishment', 'raft_command_apply', 'raft_pump_service',
+          'raft_read_establishment',
+          'raft_async_read_profile_queue', 'raft_async_read_profile_quorum',
+          'raft_async_read_profile_apply', 'raft_async_read_profile_notification',
+          'raft_async_read_profile_total', 'raft_command_apply', 'raft_pump_service',
           'raft_pump_idle_wait', 'raft_pump_iteration_spacing']
 NAMES += [f'{kind}_wal_{operation}' for kind in ['raft', 'engine']
           for operation in ['record_write', 'record_sync', 'recovery_sync', 'namespace_publish']]

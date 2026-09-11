@@ -9,7 +9,8 @@ use serde::Serialize;
 
 const INTERVAL: Duration = Duration::from_secs(1);
 pub(crate) const MAX_EXPORT_BYTES: usize = 512 * 1024;
-pub(crate) const METRIC_COUNT: usize = 26;
+// This diagnostic branch adds five sampled async-read lifecycle histograms.
+pub(crate) const METRIC_COUNT: usize = 31;
 
 #[derive(Serialize)]
 struct ApplyLag {
