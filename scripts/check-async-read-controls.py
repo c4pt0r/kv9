@@ -19,6 +19,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 ASYNC = 'crates/raft/src/async_read.rs'
 DRIVER = 'crates/raft/src/driver.rs'
+PEER = 'crates/raft/src/rawnode.rs'
 TESTS = 'async_read::tests::'
 CONFIRMATION = TESTS + 'exact_first_confirmation_and_apply_coverage_are_both_required'
 COVERAGE_FAILURE = 'confirmation was downgraded or apply coverage bypassed'
@@ -88,7 +89,22 @@ CASES = [
                 if !matches!(admitted, Ok(true)) { break; }
             }''')],
      'driver::tests::sealed_read_groups_use_one_heartbeat_per_follower_and_fence_late_reads',
-     'sealed group emitted per-reader heartbeat broadcasts'),
+     'sealed group did not retain all submitted members'),
+    ('bypassed-pending-read-credit', PEER, [(
+        'if g.raw.raft.pending_read_count() >= MAX_PENDING_READ_INDEX {',
+        'if false && g.raw.raft.pending_read_count() >= MAX_PENDING_READ_INDEX {')],
+     'driver::read_credit_tests::cap_one_seals_late_members_until_distinct_confirmation',
+     'read credit admitted a second unconfirmed context'),
+    ('full-read-credit-owner-spin', PEER, [(
+        '&& g.raw.raft.pending_read_count() < MAX_PENDING_READ_INDEX)',
+        '&& g.raw.raft.pending_read_count() < usize::MAX)')],
+     'driver::read_credit_tests::full_credit_owner_parks_and_confirmation_wakes_without_tick',
+     'full read credit self-woke instead of parking the real owner'),
+    ('synchronous-read-credit-bypass', PEER, [(
+        'if g.raw.raft.pending_read_count() >= MAX_PENDING_READ_INDEX {',
+        'if false && g.raw.raft.pending_read_count() >= MAX_PENDING_READ_INDEX {')],
+     'driver::read_credit_tests::synchronous_read_shares_credit_and_requires_its_own_confirmation',
+     'synchronous admission bypassed outstanding protocol credit'),
 ]
 
 
@@ -167,7 +183,7 @@ def main():
             else:
                 shutil.copy2(source, tree / name)
         manifest['source_files'] = inventory(tree)
-        originals = {name: (tree / name).read_text() for name in (ASYNC, DRIVER)}
+        originals = {name: (tree / name).read_text() for name in (ASYNC, DRIVER, PEER)}
         frozen_root = {name: digest(ROOT / name) for name in originals}
         if any(digest(tree / name) != frozen_root[name] for name in originals):
             raise RuntimeError('reviewed core changed during source snapshot')
