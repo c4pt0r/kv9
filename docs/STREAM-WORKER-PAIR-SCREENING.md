@@ -112,6 +112,12 @@ Source/release: `/tmp/kv9-stream-worker-pair`, `/tmp/kv9-stream-worker-pair-rele
 
 ## Next measurement
 
+Completed as the [24-cohort GET concurrency diagnostic](GET-CONCURRENCY-CURVE.md).
+It exposes approximately 38 us mean c1 latency versus Redis 5.8 us and substantial
+admission-count refusals at c128/c256. The original plan below is historical;
+the executed upper points stay within SDK capacity but exceed fixed server
+public admission. Use the diagnostic's current follow-up and scope.
+
 Measure a matched single-GET concurrency curve for the accepted control and
 Redis, including low concurrency, the existing c64 anchor and higher concurrency
 within the public limit. Keep per-command semantics, payload, CPU budget and

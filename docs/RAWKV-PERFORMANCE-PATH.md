@@ -5,7 +5,7 @@ memory-resident RawKV data. Data residency, durable acknowledgement, replication
 and API overhead are separate dimensions. Performance work must improve the
 implementation while keeping each measured mode's guarantees explicit.
 
-## Product sequence, updated 2026-09-10
+## Product sequence, updated 2026-09-11
 
 First bring client-visible memory RawKV throughput to Redis-class performance,
 then implement dynamic multi-Raft and automatic range partitioning/splits.
@@ -91,13 +91,20 @@ bucket improves, but mean latency worsens in all four comparisons. All 23,346,57
 measured calls and the first independent audit pass; 74 focused tests and the
 358-call process histories also pass. Retain the per-request task control.
 
-Next measure the accepted control's single-GET concurrency curve against Redis,
-including low concurrency, c64 and higher concurrency within the public limit.
-Keep command semantics, payload, CPU budget and source/client identities fixed;
-report mean/p99 with throughput to distinguish request turnaround from saturation.
-Use those results to choose the next execution-handoff or confirmation-path change.
-Keep Raft confirmation requirements unchanged. Neither profile establishes
-a fixed ceiling. Keep sustained traffic, writes/mixed,
+The [single-GET concurrency curve](GET-CONCURRENCY-CURVE.md) now passes its
+first complete 24-cohort run and independent audit. At c1, KV9 mean latency is
+37.975–38.012 us versus Redis 5.789–5.806 us, approximately a 6.5x turnaround
+gap. At c64, KV9 reaches 342,979–344,681 successful calls/s with all calls
+succeeding. Offered c128/c256 cross the fixture's unchanged public admission
+limit of 64: approximately 30% / 50% of calls are refused, and c256 successful
+throughput falls to 306,181–308,856/s. High-concurrency totals therefore do not
+establish service capacity or Redis parity. All populations remain published.
+
+Next map the low-concurrency confirmation path and choose one execution handoff
+to shorten, checking both c1 turnaround and c64 throughput/mean/p99. Treat the
+admission bound as a separate controlled variable before inferring saturation.
+Keep Raft confirmation requirements unchanged. Neither profile nor the fixed-
+admission curve establishes an intrinsic ceiling. Keep sustained traffic, writes/mixed,
 larger batches and dynamic-auth/storage callback progress in the general
 promotion gates. Redis parity and automatic splits remain open.
 
