@@ -275,6 +275,33 @@ impl Command {
         }
     }
 
+    /// Consume a planned user write, preserving the fenced wire representation.
+    ///
+    /// The proposer owns the plan through this conversion, so its key/value
+    /// buffers can move into the command retained for submission and retries.
+    /// Fence validation and ordered application still happen at their original
+    /// boundaries; constructing this command does not apply the plan.
+    pub fn fenced_write_from_owned_batch(fence: RegionFence, batch: WriteBatch) -> Command {
+        let ops = batch
+            .into_mutations()
+            .map(|mutation| match mutation {
+                Mutation::Put { cf, key, value } => KvOp::Put {
+                    cf: cf_code(cf),
+                    key,
+                    value,
+                },
+                Mutation::Delete { cf, key } => KvOp::Delete {
+                    cf: cf_code(cf),
+                    key,
+                },
+            })
+            .collect();
+        Command::Fenced {
+            fence,
+            inner: FencedInner::Write { ops },
+        }
+    }
+
     /// Harness-only decoder (task #9 round 4): production decode happens
     /// inside ordered apply. A public decoder let an external crate turn a
     /// hand-encoded tag-7 wire image into a `Command::ManifestChange` whose
@@ -808,6 +835,39 @@ mod tests {
             (7, 3, 11),
             "the decoded fence must carry the proposer's exact expected epoch"
         );
+    }
+
+    #[test]
+    fn owned_fenced_plans_preserve_the_existing_wire_bytes_and_order() {
+        let mut batches = vec![WriteBatch::new()];
+        let mut batch = WriteBatch::new();
+        for cf in ColumnFamily::ALL {
+            for key in [Vec::new(), vec![0, 255, 0], b"duplicate".to_vec()] {
+                batch.put(cf, key.clone(), vec![7; 128]);
+                batch.delete(cf, key.clone());
+                batch.put(cf, key, Vec::new());
+            }
+        }
+        batches.push(batch);
+        for batch in batches {
+            for fence in [
+                sample_fence(),
+                RegionFence {
+                    region_id: u64::MAX,
+                    conf_ver: 0,
+                    version: u64::MAX,
+                },
+            ] {
+                let borrowed = Command::fenced_write_from_batch(fence, &batch);
+                let owned = Command::fenced_write_from_owned_batch(fence, batch.clone());
+                assert_eq!(owned, borrowed);
+                assert_eq!(owned.encode(), borrowed.encode());
+                roundtrip(&owned);
+                // A consuming constructor must retain the envelope's refusal
+                // to bypass epoch adjudication through generic lowering.
+                assert!(owned.to_write_batch().is_err());
+            }
+        }
     }
 
     /// A fenced and an unfenced write with identical ops must stay distinct on the

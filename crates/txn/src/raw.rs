@@ -141,6 +141,25 @@ impl RawExecutor {
         Ok(batch)
     }
 
+    /// Plan one atomic batch from an owned request without copying its values.
+    ///
+    /// Option checks, key encoding and mutation order match `plan_batch_put`.
+    /// The caller must still validate the full request span and replicate the
+    /// returned plan; this executor owns no storage or Raft handle.
+    pub fn plan_owned_batch_put(
+        &self,
+        keyspace: KeyspaceId,
+        pairs: Vec<(UserKey, Value)>,
+        opts: RawWriteOptions,
+    ) -> Result<WriteBatch> {
+        opts.reject_unsupported()?;
+        let mut batch = WriteBatch::new();
+        for (key, value) in pairs {
+            batch.put(RAW_CF, encode_key(KeyMode::Raw, keyspace, &key)?, value);
+        }
+        Ok(batch)
+    }
+
     /// Plan a single delete.
     pub fn plan_delete(&self, keyspace: KeyspaceId, key: &[u8]) -> Result<WriteBatch> {
         let mut batch = WriteBatch::new();
@@ -799,5 +818,79 @@ mod tests {
             2,
             "both writes must ride one batch — two batches could half-apply"
         );
+    }
+
+    #[test]
+    fn owned_batch_plans_preserve_duplicate_order_empty_values_and_tenant_keys() {
+        let pairs = vec![
+            (b"a".to_vec(), b"old".to_vec()),
+            (Vec::new(), b"empty-key".to_vec()),
+            (b"a".to_vec(), b"last".to_vec()),
+            (b"b".to_vec(), Vec::new()),
+            (vec![0, 255], vec![255, 0]),
+        ];
+        let borrowed = RawExecutor
+            .plan_batch_put(KS_A, &pairs, RawWriteOptions::default())
+            .unwrap();
+        let owned = RawExecutor
+            .plan_owned_batch_put(KS_A, pairs, RawWriteOptions::default())
+            .unwrap();
+        assert_eq!(owned.len(), 5, "keep every ordered mutation in one plan");
+        for plan in [borrowed, owned] {
+            let engine = MemEngine::new();
+            apply(&engine, vec![plan]);
+            let snapshot = engine.snapshot().unwrap();
+            let read = leader(snapshot.as_ref());
+            for (key, expected) in [
+                (b"a".to_vec(), b"last".to_vec()),
+                (Vec::new(), b"empty-key".to_vec()),
+                (b"b".to_vec(), Vec::new()),
+                (vec![0, 255], vec![255, 0]),
+            ] {
+                assert_eq!(RawExecutor.get(&read, KS_A, &key).unwrap(), Some(expected));
+                assert_eq!(RawExecutor.get(&read, KS_B, &key).unwrap(), None);
+            }
+        }
+    }
+
+    #[test]
+    fn owned_batch_planning_preserves_refusal_order_and_empty_batch_behavior() {
+        let invalid = KeyspaceId(KeyspaceId::MAX + 1);
+        let pairs = || vec![(b"key".to_vec(), b"value".to_vec())];
+        assert!(matches!(
+            RawExecutor.plan_owned_batch_put(
+                invalid,
+                pairs(),
+                RawWriteOptions {
+                    ttl_secs: Some(1),
+                    causal_ts: Some(2),
+                },
+            ),
+            Err(Error::NotImplemented("raw TTL"))
+        ));
+        assert!(matches!(
+            RawExecutor.plan_owned_batch_put(
+                invalid,
+                pairs(),
+                RawWriteOptions {
+                    ttl_secs: None,
+                    causal_ts: Some(2),
+                },
+            ),
+            Err(Error::NotImplemented("raw causal timestamp"))
+        ));
+        assert!(matches!(
+            RawExecutor.plan_owned_batch_put(invalid, pairs(), RawWriteOptions::default()),
+            Err(Error::KeyspaceIdOutOfRange(_))
+        ));
+        // Encoding validates the keyspace per key in both APIs. An empty plan
+        // encodes no keys; keep that existing executor-level behavior. The
+        // runtime's context gate still precedes either planner.
+        for plan in [
+            RawExecutor.plan_batch_put(invalid, &[], RawWriteOptions::default()),
+            RawExecutor.plan_owned_batch_put(invalid, Vec::new(), RawWriteOptions::default()),
+        ] {
+            assert!(plan.unwrap().is_empty());
+        }
     }
 }
