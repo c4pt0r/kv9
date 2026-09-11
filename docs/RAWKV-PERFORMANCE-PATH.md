@@ -58,6 +58,30 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
+### Latest checkpoint: read admission overlap
+
+The [full CRC/read-credit comparison](READ-CREDIT-CRC-PERFORMANCE.md) is the
+latest accepted uninstrumented recording. C64 GET reaches 372,211 calls/s
+versus CRC 344,473 and Redis 513,378; c1 mean remains 37.55 us versus Redis
+5.67 us. The one-context candidate remains experimental because c64 mixed
+GET mean worsens 4.548% and its p99 worsens in both repetitions.
+
+The [fresh lifecycle diagnostic](READ-LIFECYCLE-CRC-CREDIT.md) now identifies
+the tradeoff: mixed-read queue mean rises from 19.893 to 82.557 us, exceeding
+the savings in later stages. A two-context candidate, `5654ea59`, passes
+718 workspace tests, 14 compiled semantic-control triples and both scoped
+formal gates. It has no accepted performance or exact-source Chaos Mesh
+result yet. Run ordinary recovery, then matched c1/c64 point/batch read and
+mixed screening; complete fault/proof mapping before selecting a useful change.
+
+Prioritize read turnaround and mixed-read tails. Durable writes retain quorum
+and persistence requirements; tmpfs WAL numbers cannot establish physical-disk
+performance. The next product milestone remains dynamic multi-Raft and automatic
+splits after the read-performance gate. The historical observations below retain
+their original source and scope; they do not override this latest decision.
+
+### Earlier experiments
+
 The [two-worker comparison](RPC-WORKER-PAIR-PERFORMANCE.md) reaches
 **344,412–344,790 GET/s**, improving **4.795% / 5.381%** over event8 under
 the same CPU budget. Mean latency falls to **185.490–185.700 us**, with
