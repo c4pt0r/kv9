@@ -1,0 +1,67 @@
+{
+  "source": "/tmp/kv9-owned-proposal-screen-preparation",
+  "pending_substitutions": {
+    "71c9d996e1dcc0897da14be1886e669f0c3ea773": "74d241161eadf2121128f6fd9101ead18e562765",
+    "/tmp/kv9-owned-proposal-buffers": "/tmp/kv9-indexed-apply-receipts",
+    "/tmp/kv9-owned-proposal-release-first": "/tmp/kv9-indexed-receipt-release-first",
+    "/tmp/kv9-owned-proposal-screen-preparation": "/tmp/kv9-indexed-receipt-screen-preparation",
+    "/tmp/kv9-owned-proposal-screen-root-preparation": "/tmp/kv9-indexed-receipt-screen-root-preparation",
+    "/tmp/kv9-owned-proposal-screen-smoke-first": "/tmp/kv9-indexed-receipt-screen-smoke-first",
+    "/tmp/kv9-owned-proposal-screen-timing-first": "/tmp/kv9-indexed-receipt-screen-timing-first",
+    "kv9-owned-proposal-write-screen-c1-c64-v1": "kv9-indexed-receipt-write-screen-c1-c64-v1",
+    "b740e3d3c7ca1ad6cac2ed901d2c8a52b128c7c6456f95407f479bb61f414033": "PENDING_ORIGINAL_CANDIDATE_BINARY_SHA256",
+    "b3cd4c20bd5033bf3651ec9c2bbee008ecdee10a81b724f40a9e513fd91448b3": "PENDING_ORIGINAL_CANDIDATE_BUILD_SHA256",
+    "first owned-proposal write-only screen": "first indexed-receipt write-only screen",
+    "# Owned-proposal write-only screen: first accepted recording": "# Indexed-receipt write-only screen: first accepted recording"
+  },
+  "original_files": {
+    "matched-driver.py": {
+      "bytes": 52002,
+      "sha256": "d18f0ed307fc1628492f3efe641e2af73abdfb76625d5f5ec88c1c7fd1fa915d"
+    },
+    "audit.py": {
+      "bytes": 49221,
+      "sha256": "6e92ab500cdd128b96dc0cfa712943973a096d61cf94bc382a1234cba7370699"
+    },
+    "test_driver.py": {
+      "bytes": 9952,
+      "sha256": "87fc46acf1da03d4a4823fd7d3d5a32ae27c1b02f50d300f4ef568003d16ffa2"
+    },
+    "test_audit_contract.py": {
+      "bytes": 17603,
+      "sha256": "4f0fd82089d0e33fa1a65af12e36e5578b5dff94e10ccff040207eda2cd3c70d"
+    },
+    "test_screen_contract.py": {
+      "bytes": 4537,
+      "sha256": "780dbc040ca958851882c6927e4a8253c73b878e92234293879263e065138198"
+    },
+    "isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "driver-arguments.json": {
+      "bytes": 628,
+      "sha256": "19eb6e0377ded7004dfc9ed8ba305a9a395a75443a93f3e2fc35ebaacc2bbfb2"
+    },
+    "protocol.json": {
+      "bytes": 25259,
+      "sha256": "a48163ec58b6ee70cb3a6ede72c008aa51ba75161ba1f1d3a2f45b35773c56c2"
+    },
+    "input-layout.json": {
+      "bytes": 2666,
+      "sha256": "c99b857f4eb630169e6b154ee1284c28bcbaf82fc783e1f4e5d7630f76d88252"
+    },
+    "commands.json": {
+      "bytes": 2488,
+      "sha256": "c2e8232ee2e1fa60b95a34e7f0b4b1745911444e53b553881d0ea242fe73bc1f"
+    },
+    "statistics/derive.py": {
+      "bytes": 8195,
+      "sha256": "6a1ea66ae6632dc17bc6a6a235a718dfc798fb782785f3d4c572334aa8fe3288"
+    },
+    "statistics/core.py": {
+      "bytes": 6438,
+      "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    }
+  }
+}

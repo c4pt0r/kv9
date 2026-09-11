@@ -1,0 +1,406 @@
+{
+  "source_revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "scope": "Exact original release and independently accepted process recovery records, both complete streaming/unary histories and original witnesses including all 31 unknowns. Candidate remains experimental; this process bundle is not a Chaos, benchmark or full-protocol refinement proof. Large binaries/WALs remain local at original manifest paths. Paths in this index preserve exact original names even where publication aliases differ.",
+  "copies": 63,
+  "bytes": 2237047,
+  "operations": 378,
+  "outcomes": {
+    "ok": 347,
+    "unknown": 31
+  },
+  "client_lifetimes": 2,
+  "server_lifetimes": 5,
+  "verification": {
+    "all_copies_equal_original_after_readback": true,
+    "original_bytes_reread_unchanged": true,
+    "accepted_original_input_bindings": 26,
+    "both_complete_history_hashes_match_accepted_result": true,
+    "all_process_result_binding_inputs_included": true
+  },
+  "publication_listing_failure": {
+    "path": "publication-listing-first-failure.json",
+    "bytes": 460,
+    "sha256": "a2f6803d695b35b250e386ca7bd78dd5152f12712ea2ea8ff1f68544051e14df",
+    "scope": "Metadata-only ancillary first failure, separately retained outside original-copy count."
+  },
+  "files": [
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/audit.json",
+      "path": "process/acceptance/audit.json",
+      "bytes": 10371,
+      "sha256": "d60f7ed19a14d1debd8a0e1c9e8739fd9abc5907780b74cb6722fa88ec74a805"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/batch-tonic-stream-history-checked.json",
+      "path": "process/acceptance/batch-tonic-stream-history-checked.json",
+      "bytes": 20086,
+      "sha256": "486dd181ebdd764fd81e7c3fd79d6b97956284df11e2bad2c7823878c71c55ca"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/batch-tonic-stream-raw-history.stderr",
+      "path": "process/acceptance/batch-tonic-stream-raw-history.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/batch-tonic-stream-raw-history.stdout",
+      "path": "process/acceptance/batch-tonic-stream-raw-history.stdout",
+      "bytes": 633,
+      "sha256": "509a7fd432aabfd6305cb9a7be7123ac827ea044ca1eb2ff17072cc0880c2670"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/batch-tonic-stream-report-checked.json",
+      "path": "process/acceptance/batch-tonic-stream-report-checked.json",
+      "bytes": 23004,
+      "sha256": "1c2444685df615451a3dede331285fe6cec894c139319f1ee37959ce46a9f923"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/batch-tonic-unary-history-checked.json",
+      "path": "process/acceptance/batch-tonic-unary-history-checked.json",
+      "bytes": 19588,
+      "sha256": "6b154df1e59c03557ac8e454571a993e68d07db933b4837991a9270a9f4e6a2a"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/batch-tonic-unary-raw-history.stderr",
+      "path": "process/acceptance/batch-tonic-unary-raw-history.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/batch-tonic-unary-raw-history.stdout",
+      "path": "process/acceptance/batch-tonic-unary-raw-history.stdout",
+      "bytes": 751,
+      "sha256": "1b6d73e6603ba65bf0c2dafab692eb006d365368a553cbbc9fb190b6f58ba1f5"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/batch-tonic-unary-report-checked.json",
+      "path": "process/acceptance/batch-tonic-unary-report-checked.json",
+      "bytes": 22436,
+      "sha256": "591fbbaf05d1b2dd579915bcb9e90ca0a85c45f1815910d9f9452e36e5b3aabb"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/commands.json",
+      "path": "process/acceptance/commands.json",
+      "bytes": 1921,
+      "sha256": "a71330008a9569c1de793d808316ef01038e1bec97d61f3ab1ebd2bce65a161b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/original-inputs.json",
+      "path": "process/acceptance/original-inputs.json",
+      "bytes": 11931,
+      "sha256": "2190bacda2b8e60c1ec1657dd60aa0feb678107ce3264d320589ef078bd6fdd1"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/source-head.stderr",
+      "path": "process/acceptance/source-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/source-head.stdout",
+      "path": "process/acceptance/source-head.stdout",
+      "bytes": 41,
+      "sha256": "aa717321713394fcf9ba4103696bd747c1937873cf3808c74c3d7e8c929b715f"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/source-status.stderr",
+      "path": "process/acceptance/source-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/source-status.stdout",
+      "path": "process/acceptance/source-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/release-first.log",
+      "path": "process/execution/build-first.log",
+      "bytes": 170,
+      "sha256": "f95af4da4d2c37e6c2971e716d01b724d00f957473b2ea41402eb4c30248e1df"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/release-invocation-first.json",
+      "path": "process/execution/invocation-first.json",
+      "bytes": 1068,
+      "sha256": "1189d1ec8fb5c270ff2fef54537872db3632b0c09b28f37028046a2a48ec3ad2"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/audit-first.log",
+      "path": "process/execution/process-audit-first.log",
+      "bytes": 2684,
+      "sha256": "568c8b09ff3bbad1895b099d63f6b29698a340faabe59f6899dd40ead8913c2d"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/audit-invocation-first.json",
+      "path": "process/execution/process-audit-invocation-first.json",
+      "bytes": 897,
+      "sha256": "4e22e93ab9f86f375178a678fa25c8855d518dacaa24ab1c595f675c4017f680"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/audit-terminal-first.json",
+      "path": "process/execution/process-audit-terminal-first.json",
+      "bytes": 275,
+      "sha256": "9e48ff4c9721b979f3a150ea9a8402aef6fd30ca094e6b36bfdd465d085e4af9"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/process-first.log",
+      "path": "process/execution/process-first.log",
+      "bytes": 288,
+      "sha256": "721ea9c7550f9d3cad200cd50684869195f8787996b6b8faa7fa448804881ebd"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/process-invocation-first.json",
+      "path": "process/execution/process-invocation-first.json",
+      "bytes": 650,
+      "sha256": "f04ce4c42413e6343adbd59c497ebb9665fa488190573d1503b3c1cfcf4c97b1"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/process-terminal-first.json",
+      "path": "process/execution/process-terminal-first.json",
+      "bytes": 468,
+      "sha256": "9caa6ad19983495acde08b331d06f3f4dde00db4f0f818158512c6a9a50d08c1"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/release-terminal-first.json",
+      "path": "process/execution/terminal-first.json",
+      "bytes": 490,
+      "sha256": "ea58b6173e8e1bd76a9f9d153358ad29d298064287caf3f594ba031b2dde6b7b"
+    },
+    {
+      "source": "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+      "path": "process/preparation/process-audit.py",
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/process-runner.py",
+      "path": "process/preparation/process-runner.py",
+      "bytes": 720,
+      "sha256": "8fc7aefcd63fd06bb2a6002dd89d85b470a31b133b2139aa77cee81f50f9d40a"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-stream-checked.json",
+      "path": "process/run/batch-tonic-stream-checked.json",
+      "bytes": 23004,
+      "sha256": "1c2444685df615451a3dede331285fe6cec894c139319f1ee37959ce46a9f923"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-stream-config.json",
+      "path": "process/run/batch-tonic-stream-config.json",
+      "bytes": 787,
+      "sha256": "ba78a0423bc84e9805323a02d832b48d88eaaa94bda8416c6c05d073aacabe34"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-stream.log",
+      "path": "process/run/batch-tonic-stream.log",
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-stream/build.json",
+      "path": "process/run/batch-tonic-stream/build.json",
+      "bytes": 487,
+      "sha256": "2ec0818b4142512d07c10e2d731ea2977884c8a8d4e9008bb519b17b5162903d"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-stream/config.json",
+      "path": "process/run/batch-tonic-stream/config.json",
+      "bytes": 821,
+      "sha256": "626fce0af2875a14a53023c11f95feebf6d670e2b94ecba88f8e15f79bc7f25d"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-stream/history.jsonl",
+      "path": "process/run/batch-tonic-stream/history.jsonl",
+      "bytes": 447030,
+      "sha256": "02cb0e07a019dc61afcbd4cc87beb694e9bccf5897ec0031a45f1b6a58f271e3"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-stream/progress.json",
+      "path": "process/run/batch-tonic-stream/progress.json",
+      "bytes": 720,
+      "sha256": "08ad1057373755fa783b7d9eff2a7a1772473a045e2fdd07128c94548acf6f21"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-stream/ready.json",
+      "path": "process/run/batch-tonic-stream/ready.json",
+      "bytes": 71,
+      "sha256": "d689659d44fcd508e078015e576859ee7abcb96733be6d342077cd80a7381849"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-stream/report.json",
+      "path": "process/run/batch-tonic-stream/report.json",
+      "bytes": 200317,
+      "sha256": "3fa0dc7a530d97bd42999be4a7efc02327b82f86e965d1d02fd6f6d2aeb73adb"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-unary-checked.json",
+      "path": "process/run/batch-tonic-unary-checked.json",
+      "bytes": 22436,
+      "sha256": "591fbbaf05d1b2dd579915bcb9e90ca0a85c45f1815910d9f9452e36e5b3aabb"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-unary-config.json",
+      "path": "process/run/batch-tonic-unary-config.json",
+      "bytes": 819,
+      "sha256": "8c3d6d129ed7829a4882a1776bdfa55f2bc9625d716972baf7d23fe75dafb853"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-unary.log",
+      "path": "process/run/batch-tonic-unary.log",
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-unary/build.json",
+      "path": "process/run/batch-tonic-unary/build.json",
+      "bytes": 487,
+      "sha256": "2ec0818b4142512d07c10e2d731ea2977884c8a8d4e9008bb519b17b5162903d"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-unary/config.json",
+      "path": "process/run/batch-tonic-unary/config.json",
+      "bytes": 818,
+      "sha256": "a6870cdbf8da7279dbebdd54503c4f1de59ead12bd10c1e46b1d029554be3d21"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-unary/history.jsonl",
+      "path": "process/run/batch-tonic-unary/history.jsonl",
+      "bytes": 423566,
+      "sha256": "86ab120121b7fcaf4cf19295dd4a44b9554cfc389f84cac675df51dcd20cd536"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-unary/progress.json",
+      "path": "process/run/batch-tonic-unary/progress.json",
+      "bytes": 720,
+      "sha256": "b78e247b8749a12a005d426b59cb94f5681b7f511dd87ed98d3ab509ad3ad70a"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-unary/ready.json",
+      "path": "process/run/batch-tonic-unary/ready.json",
+      "bytes": 71,
+      "sha256": "996593e678af517a45ce23742f397a19c08b86a81a64b5fe68af30f2dac1792a"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/batch-tonic-unary/report.json",
+      "path": "process/run/batch-tonic-unary/report.json",
+      "bytes": 200604,
+      "sha256": "8967a956dbee2d298946df08190db76800de2816b768f9c28b025abd593a9591"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-process-e2e-first/summary.json",
+      "path": "process/run/summary.json",
+      "bytes": 203726,
+      "sha256": "fc38c8a21539c0f44a3400d52832a54eda1e9bb292ffd16508c5153d6e2b8385"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-release-first/build.json",
+      "path": "release/build.json",
+      "bytes": 65503,
+      "sha256": "406c397f56e8d7f177aa540dbddbdda21ba9d0d9f159b0cb83694acfc92275f6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-release-first/kv9-cargo.jsonl",
+      "path": "release/kv9-cargo.jsonl",
+      "bytes": 211802,
+      "sha256": "e0d667b64c201ef3fef899aad2d836d21eb343b6decd7a35c79c90c4bf511e0f"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-release-first/kv9-build.log",
+      "path": "release/kv9-build.log",
+      "bytes": 120,
+      "sha256": "c5269b65a5343d45d702f2a5f5c340405ad730584e60a51e63074a93b10cfe5e"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-release-first/workload/build.json",
+      "path": "release/workload/build.json",
+      "bytes": 487,
+      "sha256": "2ec0818b4142512d07c10e2d731ea2977884c8a8d4e9008bb519b17b5162903d"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-release-first/workload/cargo.jsonl",
+      "path": "release/workload/cargo.jsonl",
+      "bytes": 208790,
+      "sha256": "d6c9c03f5272745cce295ec385b091ca950f8ec79b1518bc75e7dac88a66cf21"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-release-first/workload/build.log",
+      "path": "release/workload/build.log",
+      "bytes": 602,
+      "sha256": "6aa8f71d689a1ef1344238dedd70bf7311440b18798aea97e0f9c0b18877df1d"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-release-first/workload/sources.json",
+      "path": "release/workload/sources.json",
+      "bytes": 61528,
+      "sha256": "7413f1dc7abe8109c3c50a76ffe508d611440f9d6d4166c0427eccda15c703c8"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/release-invocation-first.json",
+      "path": "root/release-invocation-first.json",
+      "bytes": 1068,
+      "sha256": "1189d1ec8fb5c270ff2fef54537872db3632b0c09b28f37028046a2a48ec3ad2"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/release-child-first.json",
+      "path": "root/release-child-first.json",
+      "bytes": 398,
+      "sha256": "bfe70e92b5adae5251a3dc60334b38b33d0a6b7f9150ea29e9cd20f3edb2c86f"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/release-terminal-first.json",
+      "path": "root/release-terminal-first.json",
+      "bytes": 490,
+      "sha256": "ea58b6173e8e1bd76a9f9d153358ad29d298064287caf3f594ba031b2dde6b7b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/release-first.log",
+      "path": "root/release-first.log",
+      "bytes": 170,
+      "sha256": "f95af4da4d2c37e6c2971e716d01b724d00f957473b2ea41402eb4c30248e1df"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/release-readback-second.json",
+      "path": "root/release-readback-second.json",
+      "bytes": 3425,
+      "sha256": "8740b02a08477eb68c5130c8e070c8db2721a86770812d0f5c3bf74b4af92bfd"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/PROCESS-RESULT.json",
+      "path": "root/PROCESS-RESULT.json",
+      "bytes": 3702,
+      "sha256": "5588ed39cc1f83bc94aa6e4f8ff7c3f8ab2d74a85cdd39801a31db8495ff9dc2"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/process-child-first.json",
+      "path": "root/process-child-first.json",
+      "bytes": 394,
+      "sha256": "28a3dd3b1dcf9d39a543a8d2b5feab77d9ea0482c210cbaa8f1690a6f38e3260"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-root-first/release-readback-first-failure.json",
+      "path": "root/release-readback-first-failure.json",
+      "bytes": 545,
+      "sha256": "e33cd0c80da7cf739dc830c110fa841c6ba21ea9b50ffe5cb292a9a1203b98e4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/source-bindings.json",
+      "path": "process/preparation/source-bindings.json",
+      "bytes": 6552,
+      "sha256": "e3551ddd9291dfb98d8cc1d461d25792e97a95f00758d08993c1d9f936243a66"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/audit-preflight-first.json",
+      "path": "process/execution/audit-preflight-first.json",
+      "bytes": 1269,
+      "sha256": "23716d2905a944ca4a6ef2fe670c5498937f084add8ed19f18cb29858a1239d3"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-acceptance-preparation/commands.json",
+      "path": "process/preparation/commands.json",
+      "bytes": 2873,
+      "sha256": "31507c242efd514870b8b1376ce02f63caf539b0c2d977a03ca8407bc23073ce"
+    }
+  ]
+}

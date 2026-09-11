@@ -5,11 +5,13 @@ with one I/O thread, standalone memory operation, persistence disabled and
 no client pipelining. This analysis does not claim equivalent durability or
 fault semantics. KV9 retains three-voter Raft and linearizable reads.
 
-The latest [write-only screen](OWNED-PROPOSAL-PERFORMANCE.md) retains CRC:
-123,527 PUT/s and 862,759 BatchPut(64) keys/s at c64, versus Redis 494,238 SET/s
-and 6,120,871 batch keys/s. Both copy-removal candidates below are now rejected
-for performance. Historical read results retain their original recording
-scopes; no new read measurement accompanies that write screen.
+The latest [write-only screen](INDEXED-RECEIPT-PERFORMANCE.md) retains CRC:
+123,846 PUT/s and 863,705 BatchPut(64) keys/s at c64, versus Redis 494,304 SET/s
+and 6,051,110 batch keys/s. The indexed-receipt candidate improves point PUT
+to 128,566/s (+3.812%) but has mixed batch results (pooled -1.064%), so it
+remains experimental. Both copy-removal candidates below remain rejected for
+performance. Historical reads retain their original recording scopes; no new
+read measurement accompanies this write screen.
 
 ## What the reference actually does
 

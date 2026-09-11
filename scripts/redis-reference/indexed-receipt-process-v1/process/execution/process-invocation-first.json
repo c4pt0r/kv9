@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-indexed-receipt-acceptance-preparation/process-runner.py",
+    "--build",
+    "/tmp/kv9-indexed-receipt-release-first",
+    "--output",
+    "/tmp/kv9-indexed-receipt-process-e2e-first"
+  ],
+  "cwd": "/tmp/kv9-indexed-receipt-acceptance-preparation",
+  "started_ns": 1789149567156065077,
+  "release_readback_sha256": "8740b02a08477eb68c5130c8e070c8db2721a86770812d0f5c3bf74b4af92bfd",
+  "preparation_inventory_sha256": "534cad160234d4b6919082c9bf4d1fda24093025eccab34e0b1b78cdf63e0dca"
+}

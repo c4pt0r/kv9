@@ -1,0 +1,67 @@
+{
+  "independent-process-audit": {
+    "argv": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "/usr/bin/python3",
+      "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+      "--source",
+      "/tmp/kv9-indexed-apply-receipts",
+      "--build",
+      "/tmp/kv9-indexed-receipt-release-first",
+      "--run",
+      "/tmp/kv9-indexed-receipt-process-e2e-first",
+      "--revision",
+      "74d241161eadf2121128f6fd9101ead18e562765",
+      "--output",
+      "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first"
+    ],
+    "executed_here": false,
+    "requires": "Root exact process runtime session/terminal release and retained cleanup; first read-only audit only",
+    "shell": "env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 taskset -c 6-15,22-31 /usr/bin/python3 /tmp/kv9-rpc-pair-process-independent-first/audit.py --source /tmp/kv9-indexed-apply-receipts --build /tmp/kv9-indexed-receipt-release-first --run /tmp/kv9-indexed-receipt-process-e2e-first --revision 74d241161eadf2121128f6fd9101ead18e562765 --output /tmp/kv9-indexed-receipt-acceptance-preparation/results-first"
+  },
+  "original-release": {
+    "argv": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "CARGO_BUILD_JOBS=6",
+      "CARGO_TARGET_DIR=/home/dongxu/kv9/target",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "/usr/bin/python3",
+      "/tmp/kv9-indexed-apply-receipts/scripts/build-native-batch.py",
+      "--output",
+      "/tmp/kv9-indexed-receipt-release-first",
+      "--release"
+    ],
+    "cwd": "/tmp/kv9-indexed-apply-receipts",
+    "executed_here": false,
+    "requires": "Root shared Cargo ownership; clean exact source; fresh destination",
+    "shell": "env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 CARGO_BUILD_JOBS=6 CARGO_TARGET_DIR=/home/dongxu/kv9/target taskset -c 6-15,22-31 /usr/bin/python3 /tmp/kv9-indexed-apply-receipts/scripts/build-native-batch.py --output /tmp/kv9-indexed-receipt-release-first --release"
+  },
+  "process-e2e": {
+    "argv": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "/usr/bin/python3",
+      "/tmp/kv9-indexed-receipt-acceptance-preparation/process-runner.py",
+      "--build",
+      "/tmp/kv9-indexed-receipt-release-first",
+      "--output",
+      "/tmp/kv9-indexed-receipt-process-e2e-first"
+    ],
+    "executed_here": false,
+    "requires": "Original release terminal and actual source/Cargo/binary hashes; explicit root runtime coordination",
+    "shell": "env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 taskset -c 6-15,22-31 /usr/bin/python3 /tmp/kv9-indexed-receipt-acceptance-preparation/process-runner.py --build /tmp/kv9-indexed-receipt-release-first --output /tmp/kv9-indexed-receipt-process-e2e-first"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "batch_size": 8,
+  "client": {
+    "deadline_ms": 1500,
+    "epoch_conf_ver": 1,
+    "epoch_version": 1,
+    "keyspace_id": 101,
+    "max_attempts": 6,
+    "max_in_flight": 4,
+    "peers": [
+      {
+        "address": "127.0.0.1:39065",
+        "node_id": 1
+      },
+      {
+        "address": "127.0.0.1:48339",
+        "node_id": 3
+      },
+      {
+        "address": "127.0.0.1:44021",
+        "node_id": 2
+      }
+    ],
+    "retry_backoff_ms": 100,
+    "version": 1
+  },
+  "history_bytes": 134217728,
+  "interval_ms": 20,
+  "keys": 4,
+  "keyspace_name": "batch-tonic-unary",
+  "max_calls": 2000,
+  "measure_ms": 30000,
+  "mix": [
+    10,
+    10,
+    10,
+    35,
+    35
+  ],
+  "rpc_transport": "tonic_unary",
+  "run_id": "batch-tonic-unary",
+  "seed": 40,
+  "value_bytes": 128,
+  "version": 1,
+  "workers": 4
+}

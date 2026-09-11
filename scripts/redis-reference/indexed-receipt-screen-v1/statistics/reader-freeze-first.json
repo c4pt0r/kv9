@@ -1,0 +1,12 @@
+{
+  "actual_statistics_executed": false,
+  "core": "/tmp/kv9-indexed-receipt-screen-preparation/statistics/core.py",
+  "core_bytes_unchanged": true,
+  "core_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+  "reader": "/tmp/kv9-indexed-receipt-screen-preparation/statistics/derive.py",
+  "reader_sha256": "248bb345dfcfb41953d3d161b5234a87bb15b5f3ebdd0fbdb624af57f0cc69ca",
+  "source_core_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+  "source_reader": "/tmp/kv9-owned-proposal-screen-preparation/statistics/derive.py",
+  "source_reader_sha256": "6a1ea66ae6632dc17bc6a6a235a718dfc798fb782785f3d4c572334aa8fe3288",
+  "statistics_execution_permitted_only_after_actual_accepted_audit": true
+}

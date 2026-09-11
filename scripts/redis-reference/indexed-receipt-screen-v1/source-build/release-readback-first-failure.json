@@ -1,0 +1,7 @@
+{
+  "tool_receipt": "6da02e",
+  "exit_code": 1,
+  "cause": "Ancillary reader accidentally required release opt-level3 for Cargo custom-build artifacts as well as runtime libraries. Original raft/server build scripts correctly use opt-level0; their libraries and runtime binaries use3, with empty features.",
+  "inspection_receipt": "7c3f09",
+  "correction": "Check library/bin profiles separately from custom-build artifacts; require unchanged empty features for every engine/raft/server artifact. No Cargo rerun or original manifest change."
+}

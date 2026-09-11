@@ -1,0 +1,12 @@
+{
+  "exit_code": 0,
+  "terminal": true,
+  "reaped": true,
+  "pid": 810684,
+  "pid_absent": true,
+  "ended_ns": 1789150485330771545,
+  "auditor_sha256_after": "b89938038413804ba93f6412bc9c99789319afd95eecbe30e6e04136d2673cde",
+  "log_sha256": "e77aec4f60084b9379f62b00b43ece9e6de9d0499f82073d911d9dae66023e7c",
+  "root_timing_session": 49261,
+  "root_timing_exit_code": 0
+}

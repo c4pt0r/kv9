@@ -1,0 +1,38 @@
+--- /tmp/kv9-owned-proposal-screen-preparation/statistics/derive.py
++++ /tmp/kv9-indexed-receipt-screen-preparation/statistics/derive.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Derive the first owned-proposal write-only screen only after accepted auditing."""
++"""Derive the first indexed-receipt write-only screen only after accepted auditing."""
+ import hashlib
+ import json
+ from pathlib import Path
+@@ -8,8 +8,8 @@
+ 
+ assert __debug__
+ HERE = Path(__file__).resolve().parent
+-AUDIT_DIR = Path('/tmp/kv9-owned-proposal-screen-preparation/results-first')
+-GATE = Path('/tmp/kv9-owned-proposal-screen-root-preparation/audit-terminal-first.json')
++AUDIT_DIR = Path('/tmp/kv9-indexed-receipt-screen-preparation/results-first')
++GATE = Path('/tmp/kv9-indexed-receipt-screen-root-preparation/audit-terminal-first.json')
+ 
+ 
+ def sha(path):
+@@ -33,7 +33,7 @@
+ inventory = read(AUDIT_DIR / 'input-inventory.json')
+ assert audit['complete'] and audit['matched_diagnostic_accepted']
+ assert audit['parent_confirmed_session'] == gate['timing_session']
+-assert audit['protocol_id'] == 'kv9-owned-proposal-write-screen-c1-c64-v1' and len(audit['cases']) == 24
++assert audit['protocol_id'] == 'kv9-indexed-receipt-write-screen-c1-c64-v1' and len(audit['cases']) == 24
+ reports = {}
+ bound = {}
+ for case in audit['cases']:
+@@ -99,7 +99,7 @@
+     limitation='Two 10-second forward/reverse c1/c64 point PUT/BatchPut(64) write-only selection repeats on a shared host; three-voter KV9 quorum/sync with tmpfs WAL versus standalone Redis with persistence and pipelining disabled. Not full-workload acceptance. No equal-durability, sustained-capacity, significance or new Chaos claim.')
+ save('statistics-first.json', result)
+ save('statistics-inputs-first.json', dict(files=bound, audit_sha256=result['accepted_audit_sha256'], gate_sha256=sha(GATE), core_sha256=sha(HERE / 'core.py'), reader_sha256=sha(Path(__file__))))
+-lines = ['# Owned-proposal write-only screen: first accepted recording', '', result['limitation'], '',
++lines = ['# Indexed-receipt write-only screen: first accepted recording', '', result['limitation'], '',
+     '| Concurrency | Workload | Role | Calls/s | Keys/s | Mean us | p95 us | p99 us | Client cores | Server cores |',
+     '| ---: | --- | --- | ---: | ---: | ---: | --- | --- | ---: | ---: |']
+ for row in pooled:

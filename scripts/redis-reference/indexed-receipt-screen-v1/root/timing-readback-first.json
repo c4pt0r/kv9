@@ -1,0 +1,20 @@
+{
+  "accepted_runtime_only": true,
+  "frozen_inputs_unchanged": 54,
+  "cohorts": 24,
+  "outer_summary": {
+    "complete": true,
+    "restoration_complete": true,
+    "exclusive_host": false,
+    "child_exit_code": 0,
+    "child_cleanup_errors": [],
+    "deferred_cleanup_signals": []
+  },
+  "timing_tool_terminal": {
+    "session": 49261,
+    "chunk": "6c6673",
+    "exit_code": 0
+  },
+  "independent_audit": "pending",
+  "created_ns": 1789150425040344375
+}

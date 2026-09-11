@@ -1,0 +1,71 @@
+{
+  "complete": true,
+  "scope": "Finite source/config/schema/arithmetic contracts only; no runtime or actual-result auditor execution",
+  "cpu_allowed": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONOPTIMIZE": "0"
+  },
+  "tests": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/kv9-indexed-receipt-screen-preparation/test_driver.py"
+      ],
+      "started_ns": 1789149583246443891,
+      "test_source_sha256": "8d2158230cd478b4ea91894e6a36688f1d77b08ffd3334056983fcd274c83f93",
+      "pid": 555227,
+      "exit_code": 0,
+      "ended_ns": 1789149583669419061,
+      "log": "/tmp/kv9-indexed-receipt-screen-preparation/test_driver-first.log",
+      "log_sha256": "5986a87a84da2fd4169b99027dda3b541a240921661a5378d6d8b7e2c3210e9d"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/kv9-indexed-receipt-screen-preparation/test_audit_contract.py"
+      ],
+      "started_ns": 1789149583669524648,
+      "test_source_sha256": "7ce184cbeea5575569dba5ad95281c1013060a1fe998d4b1625024dbd6470677",
+      "pid": 555310,
+      "exit_code": 0,
+      "ended_ns": 1789149583717412968,
+      "log": "/tmp/kv9-indexed-receipt-screen-preparation/test_audit_contract-first.log",
+      "log_sha256": "4d628588528da75c4242c02a900ba9ef2cc54ff18d6254a8389b7110130050cf"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/kv9-indexed-receipt-screen-preparation/test_screen_contract.py"
+      ],
+      "started_ns": 1789149583717453313,
+      "test_source_sha256": "6be1b9fc3cf3491e704e7dd8d250b741dab15646d6ce8451d929d3644c0c93a5",
+      "pid": 555311,
+      "exit_code": 0,
+      "ended_ns": 1789149583795145526,
+      "log": "/tmp/kv9-indexed-receipt-screen-preparation/test_screen_contract-first.log",
+      "log_sha256": "26495547698094c82ff509fa80f6f3577a90b014d11f3ee52abc4fa3f8d44331"
+    }
+  ]
+}

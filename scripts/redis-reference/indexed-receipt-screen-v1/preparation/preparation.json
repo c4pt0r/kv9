@@ -1,0 +1,175 @@
+{
+  "actual_result_audit_started": false,
+  "additional_test_lineage_change": "test_screen_contract.py BASE now points at the immediately preceding accepted24 helper directory; test intent/guards unchanged.",
+  "base": "/tmp/kv9-owned-proposal-screen-preparation",
+  "candidate_revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "changes": {
+    "audit.py": {
+      "bytes": 49226,
+      "diff": "audit.py.diff",
+      "diff_sha256": "99ad42d4f19c2b2aeef1e3b80bd5c7245626c2aa162c29c5a4522efa5dc06790",
+      "sha256": "b89938038413804ba93f6412bc9c99789319afd95eecbe30e6e04136d2673cde",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/audit.py",
+      "source_bytes": 49221,
+      "source_sha256": "6e92ab500cdd128b96dc0cfa712943973a096d61cf94bc382a1234cba7370699",
+      "unchanged": false
+    },
+    "commands.json": {
+      "bytes": 2499,
+      "diff": "commands.json.diff",
+      "diff_sha256": "0b4416a80b0dba1c61d0544b0a92ca2e8708c0fd5608efa1e6df6d2f76c4975f",
+      "sha256": "89763d30274ee302d0de8bc3257ea7879bfccee04d0c6908cce4e2f874eac257",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/commands.json",
+      "source_bytes": 2488,
+      "source_sha256": "c2e8232ee2e1fa60b95a34e7f0b4b1745911444e53b553881d0ea242fe73bc1f",
+      "unchanged": false
+    },
+    "driver-arguments.json": {
+      "bytes": 629,
+      "diff": "driver-arguments.json.diff",
+      "diff_sha256": "afaaa167cb88702ed03bd3228ae11fe2c259d3398a169d17d409eb6e4f84efe6",
+      "sha256": "66e964b0e30ff48020ee7c2fadbbdf07873c0ef09ad1b80a022ec99945029a40",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/driver-arguments.json",
+      "source_bytes": 628,
+      "source_sha256": "19eb6e0377ded7004dfc9ed8ba305a9a395a75443a93f3e2fc35ebaacc2bbfb2",
+      "unchanged": false
+    },
+    "input-layout.json": {
+      "bytes": 2669,
+      "diff": "input-layout.json.diff",
+      "diff_sha256": "90ca3f29f27c2f555cef6edfa1889589418cc06e8afa934d84e886a09e5535da",
+      "sha256": "ce8efef1f9ca1f01cfeed8e3264b031ac4b6a3c1b3b48a4b33c8a289958e4f5b",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/input-layout.json",
+      "source_bytes": 2666,
+      "source_sha256": "c99b857f4eb630169e6b154ee1284c28bcbaf82fc783e1f4e5d7630f76d88252",
+      "unchanged": false
+    },
+    "isolate-and-run.py": {
+      "bytes": 12873,
+      "diff": "isolate-and-run.py.diff",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/isolate-and-run.py",
+      "source_bytes": 12873,
+      "source_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "unchanged": true
+    },
+    "matched-driver.py": {
+      "bytes": 52004,
+      "diff": "matched-driver.py.diff",
+      "diff_sha256": "f258e1e7a3eb6a4aa0510586fbaef18c05d83490167f3e5acba7a63b3b11ef06",
+      "sha256": "222e6293c2128749c804e9b47c5af31ccfb551defeeb670f03be83898e37f42e",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/matched-driver.py",
+      "source_bytes": 52002,
+      "source_sha256": "d18f0ed307fc1628492f3efe641e2af73abdfb76625d5f5ec88c1c7fd1fa915d",
+      "unchanged": false
+    },
+    "protocol.json": {
+      "bytes": 25260,
+      "diff": "protocol.json.diff",
+      "diff_sha256": "46c6249a56819ea75a58bc9a5529e4614ea37d14671c4bb69bf3dac5a77ad359",
+      "sha256": "2e026c4473e92e2bda9c3ed0ec74118ea30e0fcf6db9022e0e2f544da102d31c",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/protocol.json",
+      "source_bytes": 25259,
+      "source_sha256": "a48163ec58b6ee70cb3a6ede72c008aa51ba75161ba1f1d3a2f45b35773c56c2",
+      "unchanged": false
+    },
+    "statistics/core.py": {
+      "bytes": 6438,
+      "diff": "statistics-core.py.diff",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/statistics/core.py",
+      "source_bytes": 6438,
+      "source_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+      "unchanged": true
+    },
+    "statistics/derive.py": {
+      "bytes": 8200,
+      "diff": "statistics-derive.py.diff",
+      "diff_sha256": "ff188c0beed01f3ebc2c711264a9ec78ff2e2dcb8b88cfaadcc22425d2b2aaa2",
+      "sha256": "248bb345dfcfb41953d3d161b5234a87bb15b5f3ebdd0fbdb624af57f0cc69ca",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/statistics/derive.py",
+      "source_bytes": 8195,
+      "source_sha256": "6a1ea66ae6632dc17bc6a6a235a718dfc798fb782785f3d4c572334aa8fe3288",
+      "unchanged": false
+    },
+    "test_audit_contract.py": {
+      "bytes": 17604,
+      "diff": "test_audit_contract.py.diff",
+      "diff_sha256": "915e3c36e96d2cf4776aa51761f08acb4ef22c80b3994f339f5a66f89b90cbd9",
+      "sha256": "7ce184cbeea5575569dba5ad95281c1013060a1fe998d4b1625024dbd6470677",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/test_audit_contract.py",
+      "source_bytes": 17603,
+      "source_sha256": "4f0fd82089d0e33fa1a65af12e36e5578b5dff94e10ccff040207eda2cd3c70d",
+      "unchanged": false
+    },
+    "test_driver.py": {
+      "bytes": 9954,
+      "diff": "test_driver.py.diff",
+      "diff_sha256": "4eafd48caad83180c0f9034f82c1445beca8699a4d436523fe6ecd4b5db8d7a2",
+      "sha256": "8d2158230cd478b4ea91894e6a36688f1d77b08ffd3334056983fcd274c83f93",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/test_driver.py",
+      "source_bytes": 9952,
+      "source_sha256": "87fc46acf1da03d4a4823fd7d3d5a32ae27c1b02f50d300f4ef568003d16ffa2",
+      "unchanged": false
+    },
+    "test_screen_contract.py": {
+      "bytes": 4531,
+      "diff": "test_screen_contract.py.diff",
+      "diff_sha256": "3b0ca119540c2b53e5c98a3e3cc96374813e5ec9ecb3992b901eebbe6698184f",
+      "sha256": "6be1b9fc3cf3491e704e7dd8d250b741dab15646d6ce8451d929d3644c0c93a5",
+      "source": "/tmp/kv9-owned-proposal-screen-preparation/test_screen_contract.py",
+      "source_bytes": 4537,
+      "source_sha256": "780dbc040ca958851882c6927e4a8253c73b878e92234293879263e065138198",
+      "unchanged": false
+    }
+  },
+  "control_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "expected_inventory": {
+    "fresh_drain_stages": 48,
+    "native_cohorts": 16,
+    "native_endpoint_envelopes": 96,
+    "owned_lifetimes": 80,
+    "redis_cohorts": 8,
+    "smoke_cohorts": 12,
+    "timed_cohorts": 24,
+    "voter_listener_bindings": 48
+  },
+  "full_substitution_equality": true,
+  "offline_contracts": {
+    "auditor": 15,
+    "complete": true,
+    "driver": 7,
+    "record": "contracts-first.json",
+    "screen": 4,
+    "supervisor_exit": 0,
+    "tool_receipt": "ecaa3b",
+    "total": 26
+  },
+  "pending_draft_scope": "Original pending pins/drafts retained only as construction evidence; release-pins-first.json contains actual terminal release identity.",
+  "protocol_id": "kv9-indexed-receipt-write-screen-c1-c64-v1",
+  "public_limit_bytes": 16777216,
+  "public_limit_scope": "Matched benchmark fixture override; production default is64MiB.",
+  "remaining_artifact_pins": [],
+  "runtime_started": false,
+  "statistics_started": false,
+  "status": "FROZEN_HELPERS_READY_FOR_ROOT_REVIEW",
+  "storage_guards_unchanged": true,
+  "substitutions": {
+    "# Owned-proposal write-only screen: first accepted recording": "# Indexed-receipt write-only screen: first accepted recording",
+    "/tmp/kv9-owned-proposal-buffers": "/tmp/kv9-indexed-apply-receipts",
+    "/tmp/kv9-owned-proposal-release-first": "/tmp/kv9-indexed-receipt-release-first",
+    "/tmp/kv9-owned-proposal-screen-preparation": "/tmp/kv9-indexed-receipt-screen-preparation",
+    "/tmp/kv9-owned-proposal-screen-root-preparation": "/tmp/kv9-indexed-receipt-screen-root-preparation",
+    "/tmp/kv9-owned-proposal-screen-smoke-first": "/tmp/kv9-indexed-receipt-screen-smoke-first",
+    "/tmp/kv9-owned-proposal-screen-timing-first": "/tmp/kv9-indexed-receipt-screen-timing-first",
+    "19eb6e0377ded7004dfc9ed8ba305a9a395a75443a93f3e2fc35ebaacc2bbfb2": "66e964b0e30ff48020ee7c2fadbbdf07873c0ef09ad1b80a022ec99945029a40",
+    "71c9d996e1dcc0897da14be1886e669f0c3ea773": "74d241161eadf2121128f6fd9101ead18e562765",
+    "b3cd4c20bd5033bf3651ec9c2bbee008ecdee10a81b724f40a9e513fd91448b3": "406c397f56e8d7f177aa540dbddbdda21ba9d0d9f159b0cb83694acfc92275f6",
+    "b740e3d3c7ca1ad6cac2ed901d2c8a52b128c7c6456f95407f479bb61f414033": "3fc1c4c0c8f7b2c8ffead879b8228aef139aa2c443b647f38c7722a8e33668f0",
+    "d18f0ed307fc1628492f3efe641e2af73abdfb76625d5f5ec88c1c7fd1fa915d": "222e6293c2128749c804e9b47c5af31ccfb551defeeb670f03be83898e37f42e",
+    "first owned-proposal write-only screen": "first indexed-receipt write-only screen",
+    "kv9-owned-proposal-write-screen-c1-c64-v1": "kv9-indexed-receipt-write-screen-c1-c64-v1"
+  }
+}

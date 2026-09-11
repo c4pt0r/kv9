@@ -1,0 +1,198 @@
+{
+  "file_count": 48,
+  "files": {
+    "/tmp/kv9-indexed-receipt-screen-preparation/README.md": {
+      "bytes": 2718,
+      "sha256": "462614a2c949041b736e8ae427a03b95a60d407eac5d3d732220081798073866"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/audit.py": {
+      "bytes": 49226,
+      "sha256": "b89938038413804ba93f6412bc9c99789319afd95eecbe30e6e04136d2673cde"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/audit.py.diff": {
+      "bytes": 4984,
+      "sha256": "99ad42d4f19c2b2aeef1e3b80bd5c7245626c2aa162c29c5a4522efa5dc06790"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/commands.json": {
+      "bytes": 2499,
+      "sha256": "89763d30274ee302d0de8bc3257ea7879bfccee04d0c6908cce4e2f874eac257"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/commands.json.diff": {
+      "bytes": 2649,
+      "sha256": "0b4416a80b0dba1c61d0544b0a92ca2e8708c0fd5608efa1e6df6d2f76c4975f"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/contracts-first.json": {
+      "bytes": 2023,
+      "sha256": "9a1569f507df913c56061a5cf7c26dd527f023abc0fd4934f5ccc0ba8461d6f7"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/driver-arguments.json": {
+      "bytes": 629,
+      "sha256": "66e964b0e30ff48020ee7c2fadbbdf07873c0ef09ad1b80a022ec99945029a40"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/driver-arguments.json.diff": {
+      "bytes": 534,
+      "sha256": "afaaa167cb88702ed03bd3228ae11fe2c259d3398a169d17d409eb6e4f84efe6"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/input-layout.json": {
+      "bytes": 2669,
+      "sha256": "ce8efef1f9ca1f01cfeed8e3264b031ac4b6a3c1b3b48a4b33c8a289958e4f5b"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/input-layout.json.diff": {
+      "bytes": 842,
+      "sha256": "90ca3f29f27c2f555cef6edfa1889589418cc06e8afa934d84e886a09e5535da"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/matched-driver.py": {
+      "bytes": 52004,
+      "sha256": "222e6293c2128749c804e9b47c5af31ccfb551defeeb670f03be83898e37f42e"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/matched-driver.py.diff": {
+      "bytes": 2712,
+      "sha256": "f258e1e7a3eb6a4aa0510586fbaef18c05d83490167f3e5acba7a63b3b11ef06"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/audit.py": {
+      "bytes": 49177,
+      "sha256": "c0ad17a52db70fce471890f019ed8d8a376843b5cb76eea12e3ff9346a56cee5"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/commands.json": {
+      "bytes": 2499,
+      "sha256": "d39f4686cc1c987205a422ae446a3a1a60c5ced511c6a7771b3b0035c9dbdc3e"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/driver-arguments.json": {
+      "bytes": 629,
+      "sha256": "66e964b0e30ff48020ee7c2fadbbdf07873c0ef09ad1b80a022ec99945029a40"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/input-layout.json": {
+      "bytes": 2669,
+      "sha256": "ce8efef1f9ca1f01cfeed8e3264b031ac4b6a3c1b3b48a4b33c8a289958e4f5b"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/matched-driver.py": {
+      "bytes": 51955,
+      "sha256": "df0a4e43ff0d504ebfea3b5ea9c31ffcdee1173a37ff0c6a8255f1e5408c2fb8"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/pending-pins.json": {
+      "bytes": 456,
+      "sha256": "c15cc2420885fa90be44b788496c9dd9a9e46fada0e2c968e4be612441fe5974"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/protocol.json": {
+      "bytes": 25211,
+      "sha256": "f8f17e72b415e27117f648fd5c0e86bdfdb9da59bb1d644816786b0f522868b3"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/statistics/core.py": {
+      "bytes": 6438,
+      "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/statistics/derive.py": {
+      "bytes": 8200,
+      "sha256": "248bb345dfcfb41953d3d161b5234a87bb15b5f3ebdd0fbdb624af57f0cc69ca"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/substitutions-pending-first.json": {
+      "bytes": 2981,
+      "sha256": "e14a2f346984b560079701c1b188db53b03a30719c5f1af78bffb53df30e259b"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/test_audit_contract.py": {
+      "bytes": 17580,
+      "sha256": "5cfb0d1e3299dd8c4ee2c00e80ec49ccedc96ef9ab3a3a4c3369bbee499a6009"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/test_driver.py": {
+      "bytes": 9954,
+      "sha256": "8d2158230cd478b4ea91894e6a36688f1d77b08ffd3334056983fcd274c83f93"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-draft-first/test_screen_contract.py": {
+      "bytes": 4531,
+      "sha256": "6be1b9fc3cf3491e704e7dd8d250b741dab15646d6ce8451d929d3644c0c93a5"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/pending-pins.json": {
+      "bytes": 456,
+      "sha256": "c15cc2420885fa90be44b788496c9dd9a9e46fada0e2c968e4be612441fe5974"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/preparation.json": {
+      "bytes": 8928,
+      "sha256": "8e58cad06267cc12164ca4c51b96ce88e850584730531572530bcf877c0a72d5"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/protocol.json": {
+      "bytes": 25260,
+      "sha256": "2e026c4473e92e2bda9c3ed0ec74118ea30e0fcf6db9022e0e2f544da102d31c"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/protocol.json.diff": {
+      "bytes": 2898,
+      "sha256": "46c6249a56819ea75a58bc9a5529e4614ea37d14671c4bb69bf3dac5a77ad359"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/release-pins-first.json": {
+      "bytes": 1165,
+      "sha256": "f83b8ab9688f7740e1b105c62217d538518e8d7f75cd99ee507006eab1b122fc"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/statistics-core.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/statistics-derive.py.diff": {
+      "bytes": 2332,
+      "sha256": "ff188c0beed01f3ebc2c711264a9ec78ff2e2dcb8b88cfaadcc22425d2b2aaa2"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/statistics/core.py": {
+      "bytes": 6438,
+      "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/statistics/derive.py": {
+      "bytes": 8200,
+      "sha256": "248bb345dfcfb41953d3d161b5234a87bb15b5f3ebdd0fbdb624af57f0cc69ca"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/statistics/reader-freeze-first.json": {
+      "bytes": 749,
+      "sha256": "6372407a80bdf3f93f42d4b2d6969860626034401747a64ac463983ae702f0c3"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/substitutions-pending-first.json": {
+      "bytes": 2981,
+      "sha256": "e14a2f346984b560079701c1b188db53b03a30719c5f1af78bffb53df30e259b"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/test_audit_contract-first.log": {
+      "bytes": 2083,
+      "sha256": "4d628588528da75c4242c02a900ba9ef2cc54ff18d6254a8389b7110130050cf"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/test_audit_contract.py": {
+      "bytes": 17604,
+      "sha256": "7ce184cbeea5575569dba5ad95281c1013060a1fe998d4b1625024dbd6470677"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/test_audit_contract.py.diff": {
+      "bytes": 1828,
+      "sha256": "915e3c36e96d2cf4776aa51761f08acb4ef22c80b3994f339f5a66f89b90cbd9"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/test_driver-first.log": {
+      "bytes": 105,
+      "sha256": "5986a87a84da2fd4169b99027dda3b541a240921661a5378d6d8b7e2c3210e9d"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/test_driver.py": {
+      "bytes": 9954,
+      "sha256": "8d2158230cd478b4ea91894e6a36688f1d77b08ffd3334056983fcd274c83f93"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/test_driver.py.diff": {
+      "bytes": 1604,
+      "sha256": "4eafd48caad83180c0f9034f82c1445beca8699a4d436523fe6ecd4b5db8d7a2"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/test_screen_contract-first.log": {
+      "bytes": 716,
+      "sha256": "26495547698094c82ff509fa80f6f3577a90b014d11f3ee52abc4fa3f8d44331"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/test_screen_contract.py": {
+      "bytes": 4531,
+      "sha256": "6be1b9fc3cf3491e704e7dd8d250b741dab15646d6ce8451d929d3644c0c93a5"
+    },
+    "/tmp/kv9-indexed-receipt-screen-preparation/test_screen_contract.py.diff": {
+      "bytes": 371,
+      "sha256": "3b0ca119540c2b53e5c98a3e3cc96374813e5ec9ecb3992b901eebbe6698184f"
+    }
+  },
+  "scope": "Frozen preparation files including pending historical draft; excludes this self manifest."
+}

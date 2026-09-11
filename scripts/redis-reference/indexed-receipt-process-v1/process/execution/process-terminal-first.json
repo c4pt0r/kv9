@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-indexed-receipt-acceptance-preparation/process-runner.py",
+    "--build",
+    "/tmp/kv9-indexed-receipt-release-first",
+    "--output",
+    "/tmp/kv9-indexed-receipt-process-e2e-first"
+  ],
+  "pid": 550728,
+  "reaped": true,
+  "pid_absent": true,
+  "exit_code": 0,
+  "completed_ns": 1789149577504707817
+}

@@ -1,0 +1,80 @@
+{
+  "all_success_single_attempt": true,
+  "attempt_reason_scope": "Native per-attempt reason map only; Redis has no populated reason map. Total attempts/outcomes include both.",
+  "audit_sha256": "ae1f5c977afa5a3ba485fde711084b4eb0c4e9a29b2896d668166c8be8b99a7f",
+  "audit_terminal_sha256": "72070532dd944ab41704a538346392fab9bb830b2d00edcbce543973577e64f2",
+  "complete": true,
+  "input_inventory_entries": 2941,
+  "input_inventory_sha256": "5e8f174fb2123f4dab3783ec1d18e392f02f9d3c667853d1a6b097919d663707",
+  "matched_diagnostic_accepted": true,
+  "minimum_observed_available_bytes": {
+    "retention": 151531069440,
+    "tmpfs": 57536782336
+  },
+  "native_attempt_reasons": {
+    "admission_bytes": 0,
+    "admission_count": 0,
+    "admission_oversize": 0,
+    "client_capacity": 0,
+    "client_input": 0,
+    "deadline": 0,
+    "not_leader": 0,
+    "protocol": 0,
+    "read_apply_unconfirmed": 0,
+    "read_quorum_unconfirmed": 0,
+    "rpc_status": 0,
+    "success": 6469181
+  },
+  "outcomes": {
+    "client_rejected": 0,
+    "read_failure": 0,
+    "refused": 0,
+    "success": 22498455,
+    "unknown_write": 0
+  },
+  "outer_restoration": {
+    "accepted": true,
+    "configured_and_effective_before_after": "0-31",
+    "isolated": "6-15,22-31",
+    "namespace_maps_preserved": true,
+    "original_summary_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+    "owned_containers": 3
+  },
+  "owned_lifetimes_exited": 80,
+  "parent_confirmed_exit_code": 0,
+  "parent_confirmed_session": 49261,
+  "performance_promotion": false,
+  "protocol_id": "kv9-indexed-receipt-write-screen-c1-c64-v1",
+  "qualifying_drains": 48,
+  "resource_samples": 4643,
+  "retained_bytes": 54717627908,
+  "retained_files": 2124,
+  "role_source_file_checks": 2344,
+  "roles": {
+    "new": {
+      "attempts": 3282843,
+      "calls": 3282843,
+      "cohorts": 8,
+      "input_items": 26960574
+    },
+    "old": {
+      "attempts": 3186338,
+      "calls": 3186338,
+      "cohorts": 8,
+      "input_items": 26991014
+    },
+    "redis": {
+      "attempts": 16029274,
+      "calls": 16029274,
+      "cohorts": 8,
+      "input_items": 188328541
+    }
+  },
+  "scope": "Write-only c1/c64 point PUT1 and BatchPut64 screen; aggregate measurement totals. Setup/final deterministic dataset, original attempts/outcomes, identity/lifecycle/storage/retention/restoration predicates preserved. No read/mixed acceptance, full issued-nonce history/linearizability, cross-host/equal-durability or performance promotion. No statistics execution by this task.",
+  "storage_observations": 4794,
+  "successful_arms": 24,
+  "timed_measurement_attempts": 22498455,
+  "timed_measurement_calls": 22498455,
+  "timed_measurement_input_items": 242280129,
+  "voter_writer_listener_bindings": 48
+}

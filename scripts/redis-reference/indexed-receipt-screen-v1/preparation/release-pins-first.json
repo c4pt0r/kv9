@@ -1,0 +1,20 @@
+{
+  "accepted_source_build_pins": true,
+  "candidate_revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "release_directory": "/tmp/kv9-indexed-receipt-release-first",
+  "binary_sha256": "3fc1c4c0c8f7b2c8ffead879b8228aef139aa2c443b647f38c7722a8e33668f0",
+  "manifest_sha256": "406c397f56e8d7f177aa540dbddbdda21ba9d0d9f159b0cb83694acfc92275f6",
+  "workload_sha256": "ba95de1b2b2cf72be77e79ac28322023c267c416aca827a498ebdf3e8ab890a3",
+  "source_tree_sha256": "d2665b7909989967aff7b9f16fa6c0b9d08ad433ad8224546429036da9e75f38",
+  "source_files": 592,
+  "root_release_session": 21733,
+  "root_release_exit_code": 0,
+  "root_release_tool_receipt": "5bf14b",
+  "root_readback": {
+    "path": "/tmp/kv9-indexed-receipt-root-first/release-readback-second.json",
+    "bytes": 3425,
+    "sha256": "8740b02a08477eb68c5130c8e070c8db2721a86770812d0f5c3bf74b4af92bfd"
+  },
+  "ancillary_root_readback_failure": "Root first reader incorrectly required opt3 for custom-build artifacts; corrected classification allows normal opt0 build scripts, actual runtime artifacts remain opt3. Original failure retained by root, no Cargo/manifest rerun.",
+  "runtime_authorized": false
+}

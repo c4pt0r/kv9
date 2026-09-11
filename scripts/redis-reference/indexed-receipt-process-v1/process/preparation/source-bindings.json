@@ -1,0 +1,151 @@
+{
+  "auditor": {
+    "path": "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+    "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5"
+  },
+  "branch": "codex/indexed-apply-receipts",
+  "clean": true,
+  "first_source_control_failure": {
+    "cause": "Test fixture passed u64 where FenceRejected and ManifestVerdict require RegionId. Two constructors now explicitly wrap the unchanged test values; production code is unchanged.",
+    "directory": "/tmp/kv9-indexed-receipt-validation-first",
+    "exit_code": 101,
+    "terminal_sha256": "9874ae8d04eb2fc41e92650b9ffa16fefc245e93af7fae84f1206c0953a9da14",
+    "tool_receipt": "034610",
+    "tool_session": 86299
+  },
+  "helpers": {
+    "scripts/batch_workload_report.py": {
+      "identical_to_crc_parent": true,
+      "sha256": "573e3783e321bde0fd8c5ccba857b9f8522c48d3ddb3f491ec7e07d9f02d3107"
+    },
+    "scripts/benchmark.py": {
+      "identical_to_crc_parent": true,
+      "sha256": "c2cfda6ed964f1f86a776b1ffe32f3f94a05637bff6ff0f2be36842cbe493a36"
+    },
+    "scripts/build-native-batch.py": {
+      "identical_to_crc_parent": true,
+      "sha256": "8ae1c9cd13cc91f7285307e8eda0b2f67312543abfb9fd51145bb8ad4167e493"
+    },
+    "scripts/build-workload.py": {
+      "identical_to_crc_parent": true,
+      "sha256": "4fe31f7d2ebe58ab5e2bfc906093e3b1d8bb81db5ae7293b0392e32a4ce38acb"
+    },
+    "scripts/history/checker.py": {
+      "identical_to_crc_parent": true,
+      "sha256": "b8a43a58d321868d7cbb3d6038eab1f6190cc1600c29246b2f91c09f946da9bc"
+    },
+    "scripts/native-batch-e2e.py": {
+      "identical_to_crc_parent": true,
+      "sha256": "c8248ac6525235c9ccf1147b02db1cf468172f4233f8c2c80ffb2e3e2325347f"
+    },
+    "scripts/root_provision.py": {
+      "identical_to_crc_parent": true,
+      "sha256": "7ef9438fa206828fc15bb4cc1f85c77df701517e3a0f95db8a1cc742c4582572"
+    },
+    "scripts/wal_layout.py": {
+      "identical_to_crc_parent": true,
+      "sha256": "5ac7709ecd288dd1792164e450ed632dcacd9bdacb92a880bfb9305c1b2bd61d"
+    },
+    "scripts/workload_report.py": {
+      "identical_to_crc_parent": true,
+      "sha256": "7b4b7abd1257c3bed790c7c5c3b5eaae021b6633b3cc261140050354fbcede78"
+    }
+  },
+  "inputs": {
+    "/tmp/kv9-indexed-apply-receipts/crates/raft/src/driver.rs": {
+      "bytes": 153202,
+      "sha256": "6799991b0210348e6d0acbccbfec87c3fca910c68667213e0d56964f3a48ad2c"
+    },
+    "/tmp/kv9-indexed-apply-receipts/crates/raft/src/driver/applied_ring.rs": {
+      "bytes": 5095,
+      "sha256": "fb7ad04c7bb3537ba36c49b62141590d53b1ab603a5eeac2f09236a3f96e85c6"
+    },
+    "/tmp/kv9-indexed-apply-receipts/docs/INDEXED-APPLY-RECEIPTS.md": {
+      "bytes": 6856,
+      "sha256": "91c4032c39bfa74ad4debcf49506a9a3faf69fb0f0a3e99092a04e260c5a36ae"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/clippy-invocation.json": {
+      "bytes": 331,
+      "sha256": "20d8b4b471dd7203db3daf5580381bac4578675782c93a8c0c57b7444b1ca0ae"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/clippy-terminal.json": {
+      "bytes": 342,
+      "sha256": "b50d02323095ef233a026aa6ab40ec92966a07a5f5e99d962b06fc0fc7453f2e"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/clippy.log": {
+      "bytes": 669,
+      "sha256": "a9d9048bea1dd03121c6ae4e00aff1c667109087b0b3590265098feece6d153a"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/commit-gate.json": {
+      "bytes": 353,
+      "sha256": "a6eda5ac6fa4b2e5c10f371dfa5454880611d15ab52d2f28139dfb073e5a93c4"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/complete.json": {
+      "bytes": 97,
+      "sha256": "7200ad56736bc3635a93ce31901b03af5b19eeecf6998a6d295636161ce6e428"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/focused-invocation.json": {
+      "bytes": 314,
+      "sha256": "fdd127c8628b5cb9a9c28457c0ac2783d08a9ee46d6d5124afa36bb05aeceb91"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/focused-terminal.json": {
+      "bytes": 325,
+      "sha256": "70a47d304c4acde6fa5287f530884eed0167ef31024a9147a429d1dc105a1b07"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/focused.log": {
+      "bytes": 1231,
+      "sha256": "418075dc94e8951c7bddec5fae7836d41eb71be0a84d824fac54679d67e4d166"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/format-invocation.json": {
+      "bytes": 290,
+      "sha256": "d5cbec79d77a72a2353e1f4fb43e3632ec41141212057cd1bef35dbe16ab5dce"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/format-terminal.json": {
+      "bytes": 301,
+      "sha256": "69d30863597b1f2e3ecb88bf8d8c88cf2d2fb38615b0f15a70c0100889c36f67"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/format.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/inputs.json": {
+      "bytes": 881,
+      "sha256": "616e1fe286164d57db43cf697ab301795a85c2889769ced185cc8f65dcba548f"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/push-readback.json": {
+      "bytes": 180,
+      "sha256": "03990453adf53c262eb12cb86eb17f2db9d5d675509772d49b5e52164bd5e582"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/workspace-invocation.json": {
+      "bytes": 272,
+      "sha256": "d170d996ffe091b8abc756c7cc009060b478e5ce96ed15004cc06f3db7d31fb8"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/workspace-terminal.json": {
+      "bytes": 283,
+      "sha256": "55b893f00fbf5a2c16df5e208562c266e5e33a5ef6860657b54cc1c22b66ddc9"
+    },
+    "/tmp/kv9-indexed-receipt-validation-region-id/workspace.log": {
+      "bytes": 66929,
+      "sha256": "2258a05a3223b5bbb0464d69aa7b36888b751a4dcefac19a007a4f775e4743c3"
+    }
+  },
+  "parent": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "process_wrapper_predecessor": {
+    "path": "/tmp/kv9-owned-proposal-acceptance-preparation/process-runner.py",
+    "sha256": "409f0f006af33118f4f0b9849286c86f5d83d013c5fec8b257850cbd5d27b4af"
+  },
+  "revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "scope": "Static source/gate identity readback only; no tests rerun; documentation updated after gate is separately hash-bound",
+  "source_gate_recorded": {
+    "created_ns": 1789148886389384759,
+    "documentation_updated_after_checks": true,
+    "first_failure_retained": true,
+    "focused_passed": 2,
+    "hosted_workflows_dispatch_only": true,
+    "revision": "74d241161eadf2121128f6fd9101ead18e562765",
+    "source_clean": true,
+    "tested_rust_hashes_unchanged": true,
+    "tests_ignored": 23,
+    "tests_passed": 711
+  }
+}

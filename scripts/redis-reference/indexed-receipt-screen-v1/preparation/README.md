@@ -1,0 +1,13 @@
+# Indexed receipt write-only screen
+
+Frozen candidate `74d241161eadf2121128f6fd9101ead18e562765` is compared with selected CRC `ca0002c7f8e9ee6f595efcc9f4151085ccce87cb` and the same native/Redis `0be806d9671e2c50701a64aa7889c8859b7648ba` clients. `release-pins-first.json` binds the actual original default release; no artifact pins remain pending. Original pending drafts remain historical evidence.
+
+This preparation derives the accepted proposal24 helpers by exact candidate/protocol/owned-path and derived-hash substitutions. `preparation.json` records full substitution equality; adjacent diffs expose all changes. The 24 timed descriptors and 12 smoke descriptors are identical to the predecessor. The isolation wrapper and statistics core are byte-identical.
+
+The write-only screen is c1/c64 × point PUT1/BatchPut64 × CRC/candidate/Redis, repeated forward and complete reverse at10seconds. Smoke uses the forward12 at2seconds. All populations, whole-call histograms, deterministic mutable final data, deadlines, source/build identities, lifecycle/drain/cleanup, resources and storage gates remain unchanged. The16MiB public-byte limit is an established benchmark fixture override, not the64MiB production default. Retain all refusals/unknowns/errors; there is no QPS promotion assertion or read/mixed acceptance.
+
+Storage guard thresholds are unchanged: preflight tmpfs32GiB/retention96GiB; sampled runtime16/64GiB, plus inherited endpoint guards. Current free space is not a worst-case capacity proof. Final deterministic nonce bounds and write-key membership are not an exact issued-nonce ledger or full linearizability history. No sustained-capacity, cross-host or equal-durability inference is warranted.
+
+All26 offline contracts passed on the first attempt (7driver,15auditor,4screen), recorded in `contracts-first.json` with source/log hashes. No runtime, actual audit or statistics execution took place in preparation. Root release readback corrected its separate custom-build optimization-level classification without rerunning Cargo/manifests; that provenance is recorded in the release-pin record.
+
+`commands.json` contains exact root-only smoke, isolated timing, audit and statistics argv. The audit session placeholder must be replaced only with the actual root timing terminal session. The statistics gate is `/tmp/kv9-indexed-receipt-screen-root-preparation/audit-terminal-first.json` and requires actual exit0, `terminal=true`, and matching `timing_session`. All workload/build/profile/helper work must be terminal before timing. Expected full scope is24cohorts,80owned lifetimes,48drains,48voter/listenerbindings and96endpoint envelopes. Preserve any first failure and do not rerun to green.

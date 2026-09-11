@@ -1,0 +1,8 @@
+{
+  "scope": "Ancillary publication metadata listing before any copy; no runtime, validator or statistics invocation.",
+  "tool_receipt": "5daa3c",
+  "exit_code": 1,
+  "exception": "KeyError: 'decoded_bytes'",
+  "cause": "The listing assumed the screen dual-hash index schema for the older process original-copy index, which uses bytes/sha256.",
+  "correction": "Inspect and retain the actual original-copy schema; no accepted inputs or predicates changed."
+}

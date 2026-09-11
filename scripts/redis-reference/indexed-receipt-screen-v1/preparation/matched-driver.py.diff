@@ -1,0 +1,41 @@
+--- /tmp/kv9-owned-proposal-screen-preparation/matched-driver.py
++++ /tmp/kv9-indexed-receipt-screen-preparation/matched-driver.py
+@@ -26,15 +26,15 @@
+ sys.dont_write_bytecode = True
+ 
+ OLD_REVISION = "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb"
+-NEW_REVISION = "71c9d996e1dcc0897da14be1886e669f0c3ea773"
++NEW_REVISION = "74d241161eadf2121128f6fd9101ead18e562765"
+ REDIS_REVISION = "0be806d9671e2c50701a64aa7889c8859b7648ba"
+ SERVER_PINS = {
+     "old": dict(revision=OLD_REVISION,
+                 binary_sha256="b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+                 manifest_sha256="8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8"),
+     "new": dict(revision=NEW_REVISION,
+-                binary_sha256="b740e3d3c7ca1ad6cac2ed901d2c8a52b128c7c6456f95407f479bb61f414033",
+-                manifest_sha256="b3cd4c20bd5033bf3651ec9c2bbee008ecdee10a81b724f40a9e513fd91448b3"),
++                binary_sha256="3fc1c4c0c8f7b2c8ffead879b8228aef139aa2c443b647f38c7722a8e33668f0",
++                manifest_sha256="406c397f56e8d7f177aa540dbddbdda21ba9d0d9f159b0cb83694acfc92275f6"),
+ }
+ REDIS_CLIENT_SHA = "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af"
+ CLIENT_PINS = {
+@@ -43,7 +43,7 @@
+     "redis": dict(binary_sha256=REDIS_CLIENT_SHA,
+                   manifest_sha256="10f9ce2a754a2ef43a6439856c1d5fb00c5a1e5004173e52897a3ea19d6124f0"),
+ }
+-PROTOCOL_ID = "kv9-owned-proposal-write-screen-c1-c64-v1"
++PROTOCOL_ID = "kv9-indexed-receipt-write-screen-c1-c64-v1"
+ WORKLOAD_CELLS = [(name, batch, reads) for name, batch in (("point", 1), ("batch64", 64))
+                   for reads in (0,)]
+ SPACE_GUARDS = {
+@@ -699,8 +699,8 @@
+     parser.add_argument("--expected-client-revision", required=True)
+     parser.add_argument("--old-server-source", type=Path, default=Path("/tmp/kv9-wal-crc32-table"))
+     parser.add_argument("--old-server-build", type=Path, default=Path("/tmp/kv9-wal-crc32-release-first"))
+-    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-owned-proposal-buffers"))
+-    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-owned-proposal-release-first"))
++    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-indexed-apply-receipts"))
++    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-indexed-receipt-release-first"))
+     parser.add_argument("--redis-client-source", type=Path, default=Path("/tmp/kv9-point-write-measurement-v3"))
+     parser.add_argument("--redis-client-build", type=Path, default=Path("/tmp/kv9-point-write-v3-release-first/redis"))
+     parser.add_argument("--output", type=Path, required=True)

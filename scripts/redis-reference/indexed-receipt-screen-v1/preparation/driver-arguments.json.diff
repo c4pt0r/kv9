@@ -1,0 +1,14 @@
+--- /tmp/kv9-owned-proposal-screen-preparation/driver-arguments.json
++++ /tmp/kv9-indexed-receipt-screen-preparation/driver-arguments.json
+@@ -10,9 +10,9 @@
+   "--old-server-build",
+   "/tmp/kv9-wal-crc32-release-first",
+   "--new-server-source",
+-  "/tmp/kv9-owned-proposal-buffers",
++  "/tmp/kv9-indexed-apply-receipts",
+   "--new-server-build",
+-  "/tmp/kv9-owned-proposal-release-first",
++  "/tmp/kv9-indexed-receipt-release-first",
+   "--redis-client-source",
+   "/tmp/kv9-point-write-measurement-v3",
+   "--redis-client-build",

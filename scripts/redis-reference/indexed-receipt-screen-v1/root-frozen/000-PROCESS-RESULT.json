@@ -1,0 +1,102 @@
+{
+  "accepted": true,
+  "actual_tool_terminal": {
+    "exit_code": 0,
+    "note": "Completed in initial tool call; no live yielded session",
+    "session_id": null,
+    "tool_chunk": "ef0929"
+  },
+  "all_owned_commands_terminal": true,
+  "audit_path": "/tmp/kv9-indexed-receipt-acceptance-preparation/results-first/audit.json",
+  "audit_sha256": "d60f7ed19a14d1debd8a0e1c9e8739fd9abc5907780b74cb6722fa88ec74a805",
+  "auditor_pid": 574506,
+  "bindings": {
+    "/tmp/kv9-indexed-receipt-acceptance-preparation/audit-first.log": "568c8b09ff3bbad1895b099d63f6b29698a340faabe59f6899dd40ead8913c2d",
+    "/tmp/kv9-indexed-receipt-acceptance-preparation/audit-invocation-first.json": "4e22e93ab9f86f375178a678fa25c8855d518dacaa24ab1c595f675c4017f680",
+    "/tmp/kv9-indexed-receipt-acceptance-preparation/audit-preflight-first.json": "23716d2905a944ca4a6ef2fe670c5498937f084add8ed19f18cb29858a1239d3",
+    "/tmp/kv9-indexed-receipt-acceptance-preparation/audit-terminal-first.json": "9e48ff4c9721b979f3a150ea9a8402aef6fd30ca094e6b36bfdd465d085e4af9",
+    "/tmp/kv9-indexed-receipt-acceptance-preparation/commands.json": "31507c242efd514870b8b1376ce02f63caf539b0c2d977a03ca8407bc23073ce",
+    "/tmp/kv9-indexed-receipt-acceptance-preparation/process-runner.py": "8fc7aefcd63fd06bb2a6002dd89d85b470a31b133b2139aa77cee81f50f9d40a"
+  },
+  "cases": [
+    {
+      "fresh_drained_voters": 3,
+      "history_sha256": "02cb0e07a019dc61afcbd4cc87beb694e9bccf5897ec0031a45f1b6a58f271e3",
+      "operations": 194,
+      "outcomes": {
+        "ok": 177,
+        "unknown": 17
+      },
+      "transport": "tonic_stream",
+      "windows": [
+        {
+          "contained_counts": {
+            "batch_get": 12,
+            "batch_put": 11,
+            "delete": 3,
+            "get": 3,
+            "put": 4
+          },
+          "label": "voter-lost"
+        },
+        {
+          "contained_counts": {
+            "batch_get": 11,
+            "batch_put": 10,
+            "delete": 2,
+            "get": 2,
+            "put": 4
+          },
+          "label": "voter-restarted"
+        }
+      ]
+    },
+    {
+      "fresh_drained_voters": 3,
+      "history_sha256": "86ab120121b7fcaf4cf19295dd4a44b9554cfc389f84cac675df51dcd20cd536",
+      "operations": 184,
+      "outcomes": {
+        "ok": 170,
+        "unknown": 14
+      },
+      "transport": "tonic_unary",
+      "windows": [
+        {
+          "contained_counts": {
+            "batch_get": 12,
+            "batch_put": 12,
+            "delete": 3,
+            "get": 3,
+            "put": 4
+          },
+          "label": "voter-lost"
+        },
+        {
+          "contained_counts": {
+            "batch_get": 12,
+            "batch_put": 10,
+            "delete": 3,
+            "get": 4,
+            "put": 3
+          },
+          "label": "voter-restarted"
+        }
+      ]
+    }
+  ],
+  "client_lifetimes": 2,
+  "complete": true,
+  "completed_unix_ns": 1789149687235091773,
+  "operations": 378,
+  "outcomes": {
+    "ok": 347,
+    "unknown": 31
+  },
+  "pids_absent": true,
+  "preserved_source_reader_failure": "Root release-readback-first-failure.json remains retained; custom-build opt0 classification correction did not rebuild or change original manifests.",
+  "revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "scope": "Unchanged original process acceptance only: ordinary WAL, streaming/unary atomic full histories, leader loss/original-directory restart, same source/build/helper/listener/process identity, fresh drains and owned cleanup. All unknown writes remain; no replay after uncertainty. No benchmark, Chaos, power-loss or whole-Raft refinement claim.",
+  "server_lifetimes": 5,
+  "source_files": 592,
+  "supervisor_pid": 574505
+}

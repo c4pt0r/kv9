@@ -1,0 +1,11 @@
+--- /tmp/kv9-owned-proposal-screen-preparation/test_screen_contract.py
++++ /tmp/kv9-indexed-receipt-screen-preparation/test_screen_contract.py
+@@ -7,7 +7,7 @@
+ import unittest
+ 
+ HERE = Path(__file__).resolve().parent
+-BASE = Path('/tmp/kv9-owned-batch-broad-workloads-preparation')
++BASE = Path('/tmp/kv9-owned-proposal-screen-preparation')
+ 
+ 
+ def module(name, path):

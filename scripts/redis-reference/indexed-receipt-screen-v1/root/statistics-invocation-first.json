@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-indexed-receipt-screen-preparation/statistics/derive.py"
+  ],
+  "started_ns": 1789150586317259032
+}

@@ -1,0 +1,40 @@
+{
+  "released_ns": 1789149929098680013,
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-indexed-receipt-screen-preparation/isolate-and-run.py",
+    "--driver",
+    "/tmp/kv9-indexed-receipt-screen-preparation/matched-driver.py",
+    "--output",
+    "/tmp/kv9-indexed-receipt-screen-timing-first",
+    "--driver-arguments-file",
+    "/tmp/kv9-indexed-receipt-screen-preparation/driver-arguments.json"
+  ],
+  "frozen_input_count": 54,
+  "launch_freeze_sha256": "0ee738981deed42d66da5cf20e6661073a35acc5c4b1482776945e8eeeda1cb6",
+  "smoke_gate_sha256": "06806c7d55485e6fa6421c1161926847403c71b22b1dd1e978a905b28b08e27e",
+  "smoke_tool_terminal": {
+    "session": 74127,
+    "chunk": "b6a196",
+    "exit_code": 0
+  },
+  "smoke_check_tool_chunk": "52c1c2",
+  "process_tool_terminal": {
+    "session": 96137,
+    "chunk": "7f79c2",
+    "exit_code": 0
+  },
+  "process_audit_tool_terminal": {
+    "chunk": "ef0929",
+    "exit_code": 0
+  },
+  "all_build_process_audit_commands_terminal": true,
+  "agents_no_runtime_or_tests_during_timing": true,
+  "root_formal_work_static_only": true
+}

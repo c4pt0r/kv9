@@ -1,5 +1,10 @@
 # Owned-proposal write screen: retain the CRC baseline
 
+The later [indexed-receipt screen](INDEXED-RECEIPT-PERFORMANCE.md) now supplies
+the latest same-recording write numbers and exact-source process recovery.
+It keeps CRC selected and the indexed candidate experimental. The proposal
+results below retain their original recording and rejection decision.
+
 The first complete write-only screen does **not** support selecting proposal
 buffer candidate `71c9d996e1dcc0897da14be1886e669f0c3ea773`. The development
 baseline remains `ca0002c7f8e9ee6f595efcc9f4151085ccce87cb` on master, using
@@ -155,9 +160,11 @@ targets bounded apply-receipt lookup and FIFO
 eviction, with a checked ordering condition and unchanged duplicate-index
 fallback. It has a written representation-equivalence argument and passes two
 focused regressions, 711 workspace tests/doctests (23 ignored), Clippy and
-formatting after a retained test-fixture type correction. It still requires
-its own original release/recovery/performance evidence before selection. No
-speedup is claimed for that unmeasured source. Full formal composition and
+formatting after a retained test-fixture type correction. Its subsequent
+[original release, process recovery and write screen](INDEXED-RECEIPT-PERFORMANCE.md)
+are complete: c64 point throughput improves 3.812%, but mixed batch results
+leave it experimental. Broader workloads and exact-source Chaos remain open.
+Full formal composition and
 industrial Chaos/storage-fault coverage remain open. All CI in this phase is
 local; no hosted workflow was dispatched. The
 [source-check index](../scripts/redis-reference/indexed-receipt-source-v1/index.json)

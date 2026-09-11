@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "CARGO_BUILD_JOBS=6",
+    "CARGO_TARGET_DIR=/home/dongxu/kv9/target",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-indexed-apply-receipts/scripts/build-native-batch.py",
+    "--output",
+    "/tmp/kv9-indexed-receipt-release-first",
+    "--release"
+  ],
+  "cwd": "/tmp/kv9-indexed-apply-receipts",
+  "revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "source_gate_sha256": "a6eda5ac6fa4b2e5c10f371dfa5454880611d15ab52d2f28139dfb073e5a93c4",
+  "helper_sha256": {
+    "/tmp/kv9-indexed-apply-receipts/scripts/build-native-batch.py": "8ae1c9cd13cc91f7285307e8eda0b2f67312543abfb9fd51145bb8ad4167e493",
+    "/tmp/kv9-indexed-apply-receipts/scripts/build-workload.py": "4fe31f7d2ebe58ab5e2bfc906093e3b1d8bb81db5ae7293b0392e32a4ce38acb"
+  },
+  "started_ns": 1789149353354416468,
+  "parent_pid": 491173,
+  "log": "/tmp/kv9-indexed-receipt-root-first/release-first.log",
+  "shared_target_ownership": "Root only; no other Cargo or timed workload"
+}

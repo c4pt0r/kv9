@@ -1,0 +1,23 @@
+{
+  "inputs": {
+    "/tmp/kv9-indexed-receipt-acceptance-preparation/commands.json": "31507c242efd514870b8b1376ce02f63caf539b0c2d977a03ca8407bc23073ce",
+    "/tmp/kv9-indexed-receipt-acceptance-preparation/process-runner.py": "8fc7aefcd63fd06bb2a6002dd89d85b470a31b133b2139aa77cee81f50f9d40a",
+    "/tmp/kv9-indexed-receipt-root-first/process-child-first.json": "28a3dd3b1dcf9d39a543a8d2b5feab77d9ea0482c210cbaa8f1690a6f38e3260",
+    "/tmp/kv9-indexed-receipt-root-first/process-terminal-first.json": "9caa6ad19983495acde08b331d06f3f4dde00db4f0f818158512c6a9a50d08c1",
+    "/tmp/kv9-indexed-receipt-root-first/release-readback-first-failure.json": "e33cd0c80da7cf739dc830c110fa841c6ba21ea9b50ffe5cb292a9a1203b98e4",
+    "/tmp/kv9-indexed-receipt-root-first/release-readback-second.json": "8740b02a08477eb68c5130c8e070c8db2721a86770812d0f5c3bf74b4af92bfd",
+    "/tmp/kv9-rpc-pair-process-independent-first/audit.py": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5"
+  },
+  "root_release": {
+    "exit_code": 0,
+    "session": 21733,
+    "tool_receipt": "5bf14b"
+  },
+  "root_runtime": {
+    "exit_code": 0,
+    "session": 96137,
+    "tool_receipt": "7f79c2"
+  },
+  "source_files": 592,
+  "source_revision": "74d241161eadf2121128f6fd9101ead18e562765"
+}

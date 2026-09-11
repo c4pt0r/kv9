@@ -1,0 +1,137 @@
+{
+  "accepted": true,
+  "revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "source_files": 592,
+  "source_tree_sha256": "d2665b7909989967aff7b9f16fa6c0b9d08ad433ad8224546429036da9e75f38",
+  "server_sha256": "3fc1c4c0c8f7b2c8ffead879b8228aef139aa2c443b647f38c7722a8e33668f0",
+  "workload_sha256": "ba95de1b2b2cf72be77e79ac28322023c267c416aca827a498ebdf3e8ab890a3",
+  "build_manifest_sha256": "406c397f56e8d7f177aa540dbddbdda21ba9d0d9f159b0cb83694acfc92275f6",
+  "cargo": [
+    {
+      "file": "kv9-cargo.jsonl",
+      "sha256": "e0d667b64c201ef3fef899aad2d836d21eb343b6decd7a35c79c90c4bf511e0f",
+      "executable": "/home/dongxu/kv9/target/release/kv9",
+      "features": [],
+      "opt_level": "3",
+      "engine_raft_server_defaults_verified": true,
+      "source_artifacts": [
+        {
+          "crate": "engine",
+          "name": "kv9_engine",
+          "kind": [
+            "lib"
+          ],
+          "opt_level": "3",
+          "features": []
+        },
+        {
+          "crate": "raft",
+          "name": "build-script-build",
+          "kind": [
+            "custom-build"
+          ],
+          "opt_level": "0",
+          "features": []
+        },
+        {
+          "crate": "raft",
+          "name": "kv9_raft",
+          "kind": [
+            "lib"
+          ],
+          "opt_level": "3",
+          "features": []
+        },
+        {
+          "crate": "server",
+          "name": "build-script-build",
+          "kind": [
+            "custom-build"
+          ],
+          "opt_level": "0",
+          "features": []
+        },
+        {
+          "crate": "server",
+          "name": "kv9_server",
+          "kind": [
+            "lib"
+          ],
+          "opt_level": "3",
+          "features": []
+        }
+      ]
+    },
+    {
+      "file": "workload/cargo.jsonl",
+      "sha256": "d6c9c03f5272745cce295ec385b091ca950f8ec79b1518bc75e7dac88a66cf21",
+      "executable": "/home/dongxu/kv9/target/release/kv9-batch-workload",
+      "features": [],
+      "opt_level": "3",
+      "engine_raft_server_defaults_verified": true,
+      "source_artifacts": [
+        {
+          "crate": "engine",
+          "name": "kv9_engine",
+          "kind": [
+            "lib"
+          ],
+          "opt_level": "3",
+          "features": []
+        },
+        {
+          "crate": "raft",
+          "name": "build-script-build",
+          "kind": [
+            "custom-build"
+          ],
+          "opt_level": "0",
+          "features": []
+        },
+        {
+          "crate": "raft",
+          "name": "kv9_raft",
+          "kind": [
+            "lib"
+          ],
+          "opt_level": "3",
+          "features": []
+        },
+        {
+          "crate": "server",
+          "name": "build-script-build",
+          "kind": [
+            "custom-build"
+          ],
+          "opt_level": "0",
+          "features": []
+        },
+        {
+          "crate": "server",
+          "name": "kv9_server",
+          "kind": [
+            "lib"
+          ],
+          "opt_level": "3",
+          "features": []
+        },
+        {
+          "crate": "server",
+          "name": "kv9-batch-workload",
+          "kind": [
+            "bin"
+          ],
+          "opt_level": "3",
+          "features": []
+        }
+      ]
+    }
+  ],
+  "tool_terminal": {
+    "session": 21733,
+    "chunk": "5bf14b",
+    "exit_code": 0
+  },
+  "original_manifests_unchanged": true,
+  "created_ns": 1789149524589694680
+}

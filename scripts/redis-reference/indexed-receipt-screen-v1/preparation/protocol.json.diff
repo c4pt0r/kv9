@@ -1,0 +1,40 @@
+--- /tmp/kv9-owned-proposal-screen-preparation/protocol.json
++++ /tmp/kv9-indexed-receipt-screen-preparation/protocol.json
+@@ -1,7 +1,7 @@
+ {
+   "account_validity_is_separate_from_all_success_promotion": true,
+   "admission_limits_unchanged": true,
+-  "candidate_revision": "71c9d996e1dcc0897da14be1886e669f0c3ea773",
++  "candidate_revision": "74d241161eadf2121128f6fd9101ead18e562765",
+   "client_pins": {
+     "client": {
+       "binary_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+@@ -21,7 +21,7 @@
+   "configured_max_attempts": 6,
+   "control_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+   "decision_scope": "First explicitly write-only c1/c64 point PUT1 and BatchPut64 selection screen, 12 forward then whole-list reverse for24 timed cohorts; 12 smoke cohorts are correctness-only. Actual v3 APIs and all outcomes/attempts retained. Per-operation and merged whole-call histograms use original units, never average percentiles or divide batch latency by keys. Not full read/mixed/workload acceptance; no equal-durability/sustained-capacity/promotion assertion.",
+-  "driver_sha256": "d18f0ed307fc1628492f3efe641e2af73abdfb76625d5f5ec88c1c7fd1fa915d",
++  "driver_sha256": "222e6293c2128749c804e9b47c5af31ccfb551defeeb670f03be83898e37f42e",
+   "durability": "Three-voter volatile WAL with normal sync calls; standalone memory Redis, save and AOF off",
+   "effective_server_limits": {
+     "async_read_requests": 128,
+@@ -31,15 +31,15 @@
+   "final_dataset_scope": "Full paginated dataset plus sentinel, exact deterministic bytes, configured nonce budget and deterministic write-key membership. Exact issued nonce set and concurrent write order cannot be inferred from aggregate reports; no full-history/linearizability claim.",
+   "general_baseline_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+   "healthy_success_comparison_requires_one_actual_attempt": true,
+-  "protocol_id": "kv9-owned-proposal-write-screen-c1-c64-v1",
++  "protocol_id": "kv9-indexed-receipt-write-screen-c1-c64-v1",
+   "read_or_mixed_workloads_accepted": false,
+   "redis_client_revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+   "redis_client_sha256": "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af",
+   "server_pins": {
+     "new": {
+-      "binary_sha256": "b740e3d3c7ca1ad6cac2ed901d2c8a52b128c7c6456f95407f479bb61f414033",
+-      "manifest_sha256": "b3cd4c20bd5033bf3651ec9c2bbee008ecdee10a81b724f40a9e513fd91448b3",
+-      "revision": "71c9d996e1dcc0897da14be1886e669f0c3ea773"
++      "binary_sha256": "3fc1c4c0c8f7b2c8ffead879b8228aef139aa2c443b647f38c7722a8e33668f0",
++      "manifest_sha256": "406c397f56e8d7f177aa540dbddbdda21ba9d0d9f159b0cb83694acfc92275f6",
++      "revision": "74d241161eadf2121128f6fd9101ead18e562765"
+     },
+     "old": {
+       "binary_sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",

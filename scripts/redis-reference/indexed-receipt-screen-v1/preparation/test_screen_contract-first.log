@@ -1,0 +1,9 @@
+test_all_three_independent_inventories_agree_without_runtime (__main__.ScreenContract.test_all_three_independent_inventories_agree_without_runtime) ... ok
+test_lifecycle_storage_histogram_and_wrapper_bytes_are_inherited (__main__.ScreenContract.test_lifecycle_storage_histogram_and_wrapper_bytes_are_inherited) ... ok
+test_read_mixed_or_c64_only_schedule_is_rejected (__main__.ScreenContract.test_read_mixed_or_c64_only_schedule_is_rejected) ... ok
+test_statistics_keep_weighted_whole_call_histograms_and_empty_reads (__main__.ScreenContract.test_statistics_keep_weighted_whole_call_histograms_and_empty_reads) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.030s
+
+OK

@@ -1,0 +1,21 @@
+--- /tmp/kv9-owned-proposal-screen-preparation/input-layout.json
++++ /tmp/kv9-indexed-receipt-screen-preparation/input-layout.json
+@@ -47,15 +47,15 @@
+     "invocation.json",
+     "<exact-owned-container>-isolated.json"
+   ],
+-  "outer_root": "/tmp/kv9-owned-proposal-screen-timing-first",
+-  "output": "/tmp/kv9-owned-proposal-screen-preparation/results-first",
++  "outer_root": "/tmp/kv9-indexed-receipt-screen-timing-first",
++  "output": "/tmp/kv9-indexed-receipt-screen-preparation/results-first",
+   "redis_cohorts": 8,
+   "redis_retained_files": [
+     "redis-listener.json",
+     "<before|after>-redis-config.json",
+     "final-dataset.json"
+   ],
+-  "run": "/tmp/kv9-owned-proposal-screen-timing-first/cohorts",
++  "run": "/tmp/kv9-indexed-receipt-screen-timing-first/cohorts",
+   "run_files": [
+     "matrix.json",
+     "driver.py",

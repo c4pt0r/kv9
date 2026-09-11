@@ -1,0 +1,10 @@
+{
+  "candidate_revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "candidate_source": "/tmp/kv9-indexed-apply-receipts",
+  "candidate_build": "/tmp/kv9-indexed-receipt-release-first",
+  "binary_sha256": null,
+  "manifest_sha256": null,
+  "original_release_terminal": false,
+  "runtime_authorized": false,
+  "scope": "Draft pins deliberately cannot match a real release SHA256. No source/build/result identity is inferred from the prior candidate."
+}

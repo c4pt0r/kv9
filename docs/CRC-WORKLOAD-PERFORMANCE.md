@@ -1,5 +1,10 @@
 # CRC workload matrix and baseline selection
 
+The latest [indexed-receipt write screen](INDEXED-RECEIPT-PERFORMANCE.md)
+keeps this source selected: a repeatable point-write improvement in the new
+candidate coexists with mixed batch results. The full matrix below is the
+original CRC selection recording, not the newer candidate's read acceptance.
+
 The complete 72-cohort comparison supports selecting `ca0002c7` as the next
 development baseline. At concurrency 64, point PUT throughput increases
 **5.04%**, BatchPut(64) **37.78%**, and 50/50 batch read/write **33.09%** over

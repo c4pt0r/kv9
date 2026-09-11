@@ -1,0 +1,22 @@
+--- /tmp/kv9-owned-proposal-screen-preparation/test_driver.py
++++ /tmp/kv9-indexed-receipt-screen-preparation/test_driver.py
+@@ -26,7 +26,7 @@
+                     for reads in [0] for role in ['old', 'new', 'redis']]
+         plan = d.make_plan(False)
+         self.assertEqual(len(plan), 24)
+-        self.assertEqual(d.PROTOCOL_ID, 'kv9-owned-proposal-write-screen-c1-c64-v1')
++        self.assertEqual(d.PROTOCOL_ID, 'kv9-indexed-receipt-write-screen-c1-c64-v1')
+         for repeat in (0, 1):
+             for row, (c, workload, batch, reads, role) in zip(plan[repeat*12:(repeat+1)*12],
+                     expected if repeat == 0 else list(reversed(expected))):
+@@ -141,8 +141,8 @@
+ 
+     def test_frozen_role_bindings_without_build_or_runtime(self):
+         args=types.SimpleNamespace(old_server_source=Path('/tmp/kv9-wal-crc32-table'),
+-            old_server_build=Path('/tmp/kv9-wal-crc32-release-first'),new_server_source=Path('/tmp/kv9-owned-proposal-buffers'),
+-            new_server_build=Path('/tmp/kv9-owned-proposal-release-first'),client_source=SOURCE,redis_client_source=SOURCE,
++            old_server_build=Path('/tmp/kv9-wal-crc32-release-first'),new_server_source=Path('/tmp/kv9-indexed-apply-receipts'),
++            new_server_build=Path('/tmp/kv9-indexed-receipt-release-first'),client_source=SOURCE,redis_client_source=SOURCE,
+             client_build=Path('/tmp/kv9-point-write-v3-release-first/native'),
+             redis_client_build=Path('/tmp/kv9-point-write-v3-release-first/redis'),
+             expected_client_revision='0be806d9671e2c50701a64aa7889c8859b7648ba')

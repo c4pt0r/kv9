@@ -1,0 +1,22 @@
+--- /tmp/kv9-owned-proposal-screen-preparation/test_audit_contract.py
++++ /tmp/kv9-indexed-receipt-screen-preparation/test_audit_contract.py
+@@ -56,7 +56,7 @@
+                     rows.append(dict(repeat=repeat,arm=f'{role}-{workload}',server_role=server,
+                         workload=workload,read_api=c['read_api'],write_api=c['write_api'],
+                         mix={0:'write',50:'mixed',100:'read'}[reads],target='kv9' if server else 'redis-memory',shared=shared))
+-    return dict(version=2,protocol_id='kv9-owned-proposal-write-screen-c1-c64-v1',concurrency_points=[1,64],
++    return dict(version=2,protocol_id='kv9-indexed-receipt-write-screen-c1-c64-v1',concurrency_points=[1,64],
+                 smoke=False,fixed_rates=None,attempts=[{} for _ in rows],cohort_inventory=rows,
+                 workload_cells=[[name.split('-r')[0],batch,reads] for name,batch,reads in WORKLOAD_ROWS],
+                 storage_guards={'preflight':{'tmpfs':32*1024**3,'retention':96*1024**3},
+@@ -271,8 +271,8 @@
+     def test_exact_source_and_client_role_pins(self):
+         self.assertEqual(audit['PINS']['old'],('ca0002c7f8e9ee6f595efcc9f4151085ccce87cb',
+             'b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13'))
+-        self.assertEqual(audit['PINS']['new'],('71c9d996e1dcc0897da14be1886e669f0c3ea773',
+-            'b740e3d3c7ca1ad6cac2ed901d2c8a52b128c7c6456f95407f479bb61f414033'))
++        self.assertEqual(audit['PINS']['new'],('74d241161eadf2121128f6fd9101ead18e562765',
++            '3fc1c4c0c8f7b2c8ffead879b8228aef139aa2c443b647f38c7722a8e33668f0'))
+         self.assertEqual(audit['CLIENT_REV'],audit['REDIS_REV'])
+         self.assertEqual(audit['CLIENT_REV'],'0be806d9671e2c50701a64aa7889c8859b7648ba')
+         self.assertEqual(set(audit['ROLE_PATHS']),{'old','new','client','redis'})
