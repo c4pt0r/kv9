@@ -93,8 +93,19 @@ MsgReadIndex can bypass the local gate: the always-bounded counter theorem
 assumes every queue-increasing transition follows guarded local admission.
 A universal ingress bound and its fairness behavior remain open work.
 
-The candidate has no accepted performance result yet. Next: ordinary three-voter
-recovery, then matched uninstrumented c1/c64 point/batch read and mixed screening.
+The subsequent exact-source ordinary three-voter recovery also passes. Stream
+and unary histories contain 184/188 operations, 171/176 successes and 13/12
+unknown outcomes respectively. Both independent history checks are valid;
+leader loss, surviving-quorum progress, restart and fresh drains are observed.
+All five server and two client lifetimes exit. Runtime session `86371` exits 0
+(`75ae84`), followed by independent audit exit 0 (`822904`). Original source,
+release and runtime inputs remain unchanged. The bundle includes the complete
+histories and checker outputs. This is one-host SIGKILL/restart evidence, not
+actual Chaos Mesh or power loss.
+
+The candidate has no accepted performance result yet. Next: matched
+uninstrumented c1/c64 point read and mixed screening, followed by the full
+point/batch matrix if the candidate is promising.
 Evaluate GET separately from PUT in mixed traffic. Reject a throughput gain that
 reintroduces repeatable read-tail regressions. Complete exact-source Chaos Mesh
 histories and the applicable proof mapping before promotion.
