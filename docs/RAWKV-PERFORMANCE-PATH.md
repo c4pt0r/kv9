@@ -66,13 +66,19 @@ the system allocator and has not been combined with jemalloc; exact-source
 [eleven-window Chaos acceptance](STREAM-AUTHORIZATION-METADATA-ACCEPTANCE.md) now passes; broader promotion obligations remain open. It does not supersede the best
 retained jemalloc performance or establish Redis parity.
 
-The [read-barrier waiting diagnostic](READ-BARRIER-WAIT-DIAGNOSTIC.md) changes
-next-step priority: existing jemalloc endpoint counters show about 127 us mean
-read establishment inside about 128–129 us backend time. These counters include
-warmup/verification and cannot precisely decompose the measured 209-us whole
-call. Profile registration-to-submission, quorum/apply progress and notification
-before another structural change; low Raft CPU does not exclude substantial
-elapsed waiting. Normal Raft read and write semantics remain mandatory.
+The completed [sampled read lifecycle profile](READ-LIFECYCLE-WAIT-RESULTS.md)
+narrows the next bottleneck: GET's 131.316-us sampled barrier includes 82.119 us
+from successful ReadIndex admission invocation to observed confirmation, and
+37.779 us from result send to receiver observation. Both APIs pass the original
+CPU analysis and fixture readback; all 2,943,458 measured calls succeeded.
+These instrumented, whole-cohort histograms are not new capacity results or
+an exact decomposition of measured end-to-end latency. Prioritize completion
+delivery and receiver scheduling, then peer dispatch and owner wakeups, with
+matched throughput/latency screening. The confirmation interval includes local
+processing and scheduling, not only network time. No hardware ceiling or DPDK
+benefit is established. Normal Raft read and write semantics remain mandatory.
+The earlier [read-barrier counter diagnostic](READ-BARRIER-WAIT-DIAGNOSTIC.md)
+is retained as the motivation for this completed measurement.
 
 The subsequent [typed authenticated dispatch screening](TYPED-POINT-DISPATCH-SCREENING.md)
 is **not selected** as the next performance version. Single GET improves only
