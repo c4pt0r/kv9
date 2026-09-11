@@ -58,7 +58,32 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
-The latest [matched point-read comparison](PARALLEL-STREAM-GET-PERFORMANCE.md)
+The latest [Linux allocator experiment](JEMALLOC-SERVER-PERFORMANCE.md)
+reaches **304,863–305,903 single GET calls/s**, a paired 4.47–6.24% improvement
+over the same-run parallel-stream control. Mean latency is 209.1–209.8 us,
+with improved p99 buckets. Redis GET reaches 507,769–508,136 calls/s, leaving
+about **1.66x** throughput headroom to the reference. All 6,558,446 measured
+calls succeeded under the unchanged short c64, 128-byte paired protocol.
+The cost is 10.2–11.2 MiB higher aggregate mean voter RSS, or 23–26% in this
+small working set. Keep this candidate isolated pending broader memory and
+write evidence; it does not by itself justify default allocator promotion.
+The [exact-source acceptance record](JEMALLOC-SERVER-ACCEPTANCE.md) separates
+process/Chaos evidence from the conditional allocator/source argument.
+
+The refreshed [parallel-stream CPU profile](PARALLEL-STREAM-CPU-PROFILE.md)
+finds roughly 23% of sampled leaves in allocation/copy/comparison, 15% in
+scheduling/synchronization and 14% in RPC/framing/buffers. These are categories
+on the pre-allocator control, not candidate latency fractions or additive
+predicted gains. They support reducing request allocations and copies next,
+then reassessing scheduling/serialization with measured candidate profiles.
+No hardware ceiling or benefit from kernel bypass is established. Preserve
+per-request authentication, bounded ownership and normal Raft barriers.
+Writes/mixed workloads require their own fresh comparison before claiming
+Redis-class RawKV performance or advancing to automatic splits.
+
+### Parallel stream scheduling baseline
+
+The preceding [matched point-read comparison](PARALLEL-STREAM-GET-PERFORMANCE.md)
 retains bounded parallel stream scheduling at `f2c4e85` for continued
 development. Single GET reaches **287,795–288,611 calls/s**, improving
 38.15–38.93% over the same-run `850f0de` control. Mean whole-call latency falls
