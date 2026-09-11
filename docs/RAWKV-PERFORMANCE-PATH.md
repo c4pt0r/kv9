@@ -58,7 +58,25 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
-### Latest checkpoint: two-context screen remains experimental
+### Latest checkpoint: owner-local pump has too little benefit
+
+The [owner-local ReadIndex pump screen](OWNER-READ-PUMP-SCREEN.md) completes on
+`3bfb63b` with all 24 cohorts accepted and 49,860,741 measured single-attempt
+successes. C1 GET improves 0.462% and c64 GET 0.882% pooled; c64 GET p99 stays
+in the same bucket. Mixed c64 throughput falls 0.243%, GET mean rises 0.193%,
+and combined p99 is higher in both repetitions. This is not a useful overall
+improvement. Keep CRC selected and retain the experiment, source/proof gates
+and ordinary recovery evidence; no full promotion campaign is justified.
+
+The next action is a source-bound CPU/blocked-time profile of c1 turnaround
+and c64 mixed reads, separating transport, owner processing and completion
+handoffs. Profile outside uninstrumented timing, then change one measured cost.
+The isolated test confirms a redundant turn, but this screen does not establish
+that turn as a major client-visible cost. Avoid another broad wake rewrite or
+admission-window change without new measured evidence. The Redis milestone
+and the full core-proof/Chaos Mesh requirements remain open.
+
+### Previous checkpoint: two-context screen remains experimental
 
 The [24-cohort point read/mixed screen](READ-WINDOW-SCREEN.md) completes on
 candidate `5654ea59`, after source gates and exact-source ordinary recovery.
@@ -85,9 +103,9 @@ The [fresh lifecycle diagnostic](READ-LIFECYCLE-CRC-CREDIT.md) now identifies
 the tradeoff: mixed-read queue mean rises from 19.893 to 82.557 us, exceeding
 the savings in later stages. A two-context candidate, `5654ea59`, passes
 718 workspace tests, 14 compiled semantic-control triples and both scoped
-formal gates. It has no accepted performance or exact-source Chaos Mesh
-result yet. Run ordinary recovery, then matched c1/c64 point/batch read and
-mixed screening; complete fault/proof mapping before selecting a useful change.
+formal gates. Subsequent ordinary recovery and the two-context point-read/mixed
+screen are now complete, as recorded above; read regressions hold that candidate.
+No exact-source Chaos Mesh promotion result is claimed for it.
 
 Prioritize read turnaround and mixed-read tails. Durable writes retain quorum
 and persistence requirements; tmpfs WAL numbers cannot establish physical-disk
