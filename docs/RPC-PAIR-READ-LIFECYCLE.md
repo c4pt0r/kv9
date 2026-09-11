@@ -78,13 +78,15 @@ EWMA toward a 200-us heuristic, clamped to 2–127 polls and initialized at 61;
 this is not a latency bound. Workers can also drain the global queue when
 local work is absent. These facts do not prove all 41 us is global-queue delay.
 
-Next test the already studied fixed global-queue interval of eight on the
-current two-worker/event8 control. The prior 629-derived experiment regressed
-and remains rejected; this is a separate interaction test after a material
-worker-population change, motivated by the refreshed notification evidence.
-Keep the new candidate free of instrumentation and compare both throughput
-and mean/p99. Stop before broad acceptance if it regresses or provides no useful
-gain. Quorum and applied-index requirements remain mandatory.
+The resulting [two-worker global-queue screen](RPC-PAIR-GLOBAL-QUEUE-SCREENING.md)
+now rejects fixed interval eight: GET throughput falls 3.217% / 2.614%, batch
+throughput also falls, and both APIs' mean latency worsens in both repetitions.
+The first independent audit passes; no broad candidate acceptance follows.
+The prior 629-derived experiment remains separately rejected. Retain the
+adaptive interval and next investigate two persistent handler tasks per stream
+to coalesce completion wakeups without returning to a single polling owner.
+That design review is complete, but implementation and gains remain unverified.
+Quorum, applied-index, original deadlines and cleanup ownership remain mandatory.
 
 Each API has one instrumented five-second recording on the shared host,
 64 closed-loop clients and 128-byte values. Clients use CPUs 0–1, voters share
