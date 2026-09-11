@@ -1,0 +1,80 @@
+{
+  "complete": true,
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--manifest-path",
+        "scripts/redis-reference/Cargo.toml"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-point-write-v3-redis-validation-first/00.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_unix_ns": 1789130753962083997,
+      "ended_unix_ns": 1789130754027794794
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--manifest-path",
+        "scripts/redis-reference/Cargo.toml",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-point-write-v3-redis-validation-first/01.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_unix_ns": 1789130754032609371,
+      "ended_unix_ns": 1789130754097009760
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "--manifest-path",
+        "scripts/redis-reference/Cargo.toml",
+        "--bin",
+        "kv9-redis-batch-reference"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-point-write-v3-redis-validation-first/02.log",
+      "sha256": "8e7c8c73325ec5dc87d04547a689d84c0bf8d28009fcc9a3adc98f5947ac486e",
+      "started_unix_ns": 1789130754097210816,
+      "ended_unix_ns": 1789130755007009714
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_redis_batch_report.py"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-point-write-v3-redis-validation-first/03.log",
+      "sha256": "d16a4933ecacc1bd2d10aa26b7aadd1225b22840f51aefff55a4770fb8a8745b",
+      "started_unix_ns": 1789130755007193287,
+      "ended_unix_ns": 1789130755256925606
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--manifest-path",
+        "scripts/redis-reference/Cargo.toml",
+        "--bin",
+        "kv9-redis-batch-reference",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-point-write-v3-redis-validation-first/04.log",
+      "sha256": "4d4bd45931a8ecfa9defb260f52323c31175c7bc8dbaa49c3ab449c7a321fbdb",
+      "started_unix_ns": 1789130755257105702,
+      "ended_unix_ns": 1789130755584999585
+    }
+  ],
+  "scope": "Redis benchmark sources, shared deterministic native common, independent native/Redis Python validators and tests. No performance timing overlaps."
+}

@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-work-signal-comparison-preparation/audit.py",
+    "--run",
+    "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts",
+    "--output",
+    "/tmp/kv9-work-signal-comparison-preparation/results-first",
+    "--expected-driver-sha256",
+    "745a9b5dfba5be114abd2021e2f523973934101d7e80941cdd45ed9636314937",
+    "--root-session",
+    "58205",
+    "--root-exit-code",
+    "0",
+    "--successful-arms",
+    "48"
+  ],
+  "root_timing_session": 58205,
+  "root_timing_exit_code": 0,
+  "root_terminal_tool_chunk": "ad6083",
+  "started_ns": 1789130615262461343,
+  "launcher_pid": 1303757,
+  "auditor_sha256": "ccd49bc7458555af6d7a359f3191691271f71ef673c0ce84fd759fd9dc506387",
+  "driver_sha256": "745a9b5dfba5be114abd2021e2f523973934101d7e80941cdd45ed9636314937"
+}

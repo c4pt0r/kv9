@@ -1,0 +1,46 @@
+{
+  "predecessor": "/tmp/kv9-inbox-drain-comparison-preparation",
+  "sha256": {
+    "matched-driver.py": "8bc23a943190246af963289598fdeaf689897c26ef2fa1174f4e36f3923c4f71",
+    "test_driver_contract.py": "0895dfa61e979007146676d885d5738e47843004bf18c84bc1a1fbf2233e6c03",
+    "isolate-and-run.py": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "driver-arguments.json": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+    "protocol.json": "071005a9488c93dea7e46d837c2ede2af0d4b9a0f0dd4b5e0f9f8b4262e85d23"
+  },
+  "substitution_map": {
+    "c3131800b665f6f160a11c804f542237e77ab83a": "1b70dba62e492cd8e10dd20f643fee74d39abc57",
+    "26a185509cccf6436c5f02a5ab4476efca551166d1d4ef43ea2c200cc5a9e513": "ab05a16fd520d4c612b01cedea1a514411e607eb0bc645ce28fce24b3299d1ef",
+    "fae8fd537f53b0a4e9cd09673230a33c97519e4a1e0311f20e1a74c4340e1a20": "800e74e36f7de539bb38d3cfe097e356ed2ebd1e33d16d7b48435eb6f2bc93f3",
+    "/tmp/kv9-raft-inbox-drain-reuse": "/tmp/kv9-work-signal-coalescing",
+    "/tmp/kv9-inbox-drain-release-first": "/tmp/kv9-work-signal-coalescing-release-first",
+    "kv9-inbox-drain-c1-c64-v1": "kv9-work-signal-c1-c64-v1"
+  },
+  "unchanged_function_bodies": [
+    "require",
+    "digest",
+    "read",
+    "save",
+    "module",
+    "placement",
+    "affinity",
+    "background_inventory",
+    "host_sample",
+    "source_binding",
+    "cargo_server",
+    "verify_inputs",
+    "verify_client_cargo",
+    "make_plan",
+    "configs",
+    "readonly_dataset",
+    "fresh_drain",
+    "native_readback",
+    "summary_from_report",
+    "observe_client",
+    "allocator_provenance",
+    "native_trial",
+    "redis_trial"
+  ],
+  "changed_function_bodies": [
+    "main"
+  ]
+}

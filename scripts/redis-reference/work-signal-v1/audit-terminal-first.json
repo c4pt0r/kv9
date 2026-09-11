@@ -1,0 +1,86 @@
+{
+  "accepted": true,
+  "all_owned_commands_terminal": true,
+  "audit_exit_code": 0,
+  "audit_pid": 1303762,
+  "audit_session": 88927,
+  "audit_terminal_tool_chunk": "2b8b09",
+  "checks": {
+    "outer_restoration": {
+      "accepted": true,
+      "configured_and_effective_before_after": "0-31",
+      "isolated": "6-15,22-31",
+      "namespace_maps_preserved": true,
+      "original_summary_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "owned_containers": 3
+    },
+    "owned_lifetimes_exited": 160,
+    "qualifying_drains": 96,
+    "resource_samples": 9386,
+    "retained_bytes": 177511414,
+    "retained_files": 1056,
+    "role_source_file_checks": 2348,
+    "scope": "Four-repeat 10-second c1/c64 shared-host tmpfs diagnostic; no sustained-capacity or equal-durability claim",
+    "successful_arms": 48,
+    "voter_writer_listener_bindings": 96
+  },
+  "completed_ns": 1789130806795144885,
+  "hashes": {
+    "READOUT.md": "e56965c8ea73e800f68054150aeeba6134884b9897cd289482760ae0970c72c9",
+    "audit-exit-first.json": "58833466ce71c89ead16535e66db0d8b4cfa80f9984f752f41f398a1218fcff0",
+    "audit-first.log": "7c32535b7c0997901ae62af345bd63afe446d1965aac4ceabc89b08cd65a375b",
+    "audit-invocation-first.json": "3257ea69e88d983ee775795a2734c6edf636a9d90179e6156cebf485d620f564",
+    "audit-process-first.json": "5eab028501727b754e3a82fca1c0fd1941de30e109ab3830d57c56cfa223dda8",
+    "results-first/audit.json": "28a80e747f46cdc0fee27fb0b4bfa91dbb1e4d70cacb406355b7cdb370171a77",
+    "results-first/input-inventory.json": "880a03567c260389ae514836278805af5130be5252cff7cc337adcd757bcde9e",
+    "statistics-first.json": "edf3d12164eaea608607cd62fa2d1d6f0b7f237dda2f889f80f41f84a73b80c0"
+  },
+  "root_timing_exit_code": 0,
+  "root_timing_session": 58205,
+  "totals": {
+    "attempt_reasons": {
+      "admission_bytes": 0,
+      "admission_count": 0,
+      "admission_oversize": 0,
+      "client_capacity": 0,
+      "client_input": 0,
+      "deadline": 0,
+      "not_leader": 0,
+      "protocol": 0,
+      "read_apply_unconfirmed": 0,
+      "read_quorum_unconfirmed": 0,
+      "rpc_status": 0,
+      "success": 63881997
+    },
+    "attempts": 118432733,
+    "calls": 118432733,
+    "connection_attempts": 0,
+    "connection_failures": 0,
+    "dropped_slots": 0,
+    "issued": 118432733,
+    "outcomes": {
+      "client_rejected": 0,
+      "read_failure": 0,
+      "refused": 0,
+      "success": 118432733,
+      "unknown_write": 0
+    },
+    "reasons": {
+      "admission_bytes": 0,
+      "admission_count": 0,
+      "admission_oversize": 0,
+      "client_capacity": 0,
+      "client_input": 0,
+      "data_integrity": 0,
+      "deadline": 0,
+      "io": 0,
+      "not_leader": 0,
+      "protocol": 0,
+      "read_apply_unconfirmed": 0,
+      "read_quorum_unconfirmed": 0,
+      "rpc_status": 0,
+      "server_error": 0,
+      "success": 118432733
+    }
+  }
+}

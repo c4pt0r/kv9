@@ -1,0 +1,161 @@
+{
+  "case_order": "For each pair: native then Redis; 12 total",
+  "cases": [
+    {
+      "api": "point",
+      "batch_size": 1,
+      "name": "point-r000",
+      "read_percent": 0
+    },
+    {
+      "api": "point",
+      "batch_size": 1,
+      "name": "point-r050",
+      "read_percent": 50
+    },
+    {
+      "api": "point",
+      "batch_size": 1,
+      "name": "point-r100",
+      "read_percent": 100
+    },
+    {
+      "api": "batch",
+      "batch_size": 4,
+      "name": "batch-r000",
+      "read_percent": 0
+    },
+    {
+      "api": "batch",
+      "batch_size": 4,
+      "name": "batch-r050",
+      "read_percent": 50
+    },
+    {
+      "api": "batch",
+      "batch_size": 4,
+      "name": "batch-r100",
+      "read_percent": 100
+    }
+  ],
+  "cleanup": "Retain files; reap only owned subprocesses. Existing native helper ends owned server lifetimes with SIGKILL after captured fresh drains; Redis uses bounded TERM/KILL. No container, namespace or historical mutations.",
+  "clients": {
+    "native": {
+      "binary_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+      "build": "/tmp/kv9-point-write-v3-release-first/native",
+      "manifest_sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c",
+      "revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+      "source": "/tmp/kv9-point-write-measurement-v3"
+    },
+    "redis": {
+      "binary_sha256": "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af",
+      "build": "/tmp/kv9-point-write-v3-release-first/redis",
+      "manifest_sha256": "10f9ce2a754a2ef43a6439856c1d5fb00c5a1e5004173e52897a3ea19d6124f0",
+      "revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+      "source": "/tmp/kv9-point-write-measurement-v3"
+    }
+  },
+  "configuration": {
+    "deadline_ms": 1500,
+    "keys": 128,
+    "load": "closed_loop",
+    "max_attempts": 6,
+    "max_calls": 100000,
+    "max_in_flight": 4,
+    "measure_ms": 500,
+    "retry_backoff_ms": 5,
+    "rpc_transport": "tonic_stream",
+    "seed": 71,
+    "sentinel_keys": 1,
+    "value_bytes": 128,
+    "version": 3,
+    "warmup_calls": 32,
+    "workers": 4
+  },
+  "correctness_only": true,
+  "expectations": {
+    "all_phases_all_success": true,
+    "drain": "Unchanged fresh_drain: two distinct qualifying successful export advances per same voter lifetime; final replicas at one applied position",
+    "expected_managed_lifetimes": 21,
+    "full_final_dataset": true,
+    "immutable_sentinel": true,
+    "independent_aggregate_validators": true,
+    "native_drains": 18,
+    "nonce_bound": "At most warmup_calls+max_calls; positive nonces must select writes and include this key. Exact issued nonce set unavailable from aggregate reports.",
+    "nonempty_selected_measurement_apis": true,
+    "one_attempt_per_call": true
+  },
+  "limitations": [
+    "No throughput result or performance acceptance even when the client timing_eligible flag is true.",
+    "The exact duration/operation_limit stop and all client rates remain unchanged in raw reports.",
+    "No per-call history, full linearizability, cross-host, Raft protocol proof, fault acceptance or power-loss test.",
+    "Final nonce/value/key-membership checks cannot establish concurrent write order or atomicity.",
+    "Measured allocated slots can be declined at the second cutoff check; measured_issued does not identify a contiguous issued nonce prefix. Warmup mix is exact, measurement pure/positive populations are checked."
+  ],
+  "native_routing": "All three peer identities; current agreed leader first for a strict one-attempt healthy test",
+  "placement": {
+    "client_cpus": [
+      6,
+      7
+    ],
+    "exclusive_host": false,
+    "observer_cpus": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "server_cpus": [
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ]
+  },
+  "protocol_id": "kv9-point-write-v3-smoke-v1",
+  "server": {
+    "binary_sha256": "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+    "build": "/tmp/kv9-rpc-pair-release-first",
+    "manifest_sha256": "1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417",
+    "revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+    "source": "/tmp/kv9-rpc-worker-pair"
+  },
+  "server_overrides": {
+    "flush_interval_ms": 100,
+    "public_encoded_bytes": 16777216,
+    "public_requests": 64
+  },
+  "throughput_acceptance": false,
+  "topology": "One owned three-voter WAL cluster reused across six fresh keyspaces; six fresh independent Redis processes",
+  "version": 1
+}

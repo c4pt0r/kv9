@@ -1,0 +1,41 @@
+--- /tmp/kv9-inbox-drain-comparison-preparation/matched-driver.py
++++ /tmp/kv9-work-signal-comparison-preparation/matched-driver.py
+@@ -26,15 +26,15 @@
+ sys.dont_write_bytecode = True
+ 
+ OLD_REVISION = "57ff6851e40ed63c837189d6eb0a11190704725a"
+-NEW_REVISION = "c3131800b665f6f160a11c804f542237e77ab83a"
++NEW_REVISION = "1b70dba62e492cd8e10dd20f643fee74d39abc57"
+ REDIS_REVISION = "b8ec38f660786412705f350d96ab086f0e7f6c60"
+ SERVER_PINS = {
+     "old": dict(revision=OLD_REVISION,
+                 binary_sha256="6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
+                 manifest_sha256="7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd"),
+     "new": dict(revision=NEW_REVISION,
+-                binary_sha256="26a185509cccf6436c5f02a5ab4476efca551166d1d4ef43ea2c200cc5a9e513",
+-                manifest_sha256="fae8fd537f53b0a4e9cd09673230a33c97519e4a1e0311f20e1a74c4340e1a20"),
++                binary_sha256="ab05a16fd520d4c612b01cedea1a514411e607eb0bc645ce28fce24b3299d1ef",
++                manifest_sha256="800e74e36f7de539bb38d3cfe097e356ed2ebd1e33d16d7b48435eb6f2bc93f3"),
+ }
+ REDIS_CLIENT_SHA = "61349111171ded5cb7fff9085c7886381788e5f4c7a407e91a5dda618d124892"
+ SERVER_COMMAND = ["cargo", "build", "--locked", "--bin", "kv9", "--release",
+@@ -601,8 +601,8 @@
+     parser.add_argument("--expected-client-revision", required=True)
+     parser.add_argument("--old-server-source", type=Path, default=Path("/tmp/kv9-read-group-credit"))
+     parser.add_argument("--old-server-build", type=Path, default=Path("/tmp/kv9-read-group-credit-release-first"))
+-    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-raft-inbox-drain-reuse"))
+-    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-inbox-drain-release-first"))
++    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-work-signal-coalescing"))
++    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-work-signal-coalescing-release-first"))
+     parser.add_argument("--redis-client-source", type=Path, default=Path("/tmp/kv9-redis-point-get-reference"))
+     parser.add_argument("--redis-client-build", type=Path, default=Path("/tmp/kv9-redis-point-get-reference-release-first"))
+     parser.add_argument("--output", type=Path, required=True)
+@@ -666,7 +666,7 @@
+                 helper_hashes[str(path)] = digest(path)
+     rows = make_plan(args.smoke)
+     args.output.mkdir(parents=True)
+-    plan = dict(version=2, protocol_id="kv9-inbox-drain-c1-c64-v1",
++    plan = dict(version=2, protocol_id="kv9-work-signal-c1-c64-v1",
+                 concurrency_points=[1, 64], complete=False, client_revision=args.expected_client_revision,
+                 smoke=args.smoke, placement=placement(args.smoke), role_bindings=roles, client_cargo=cargo,
+                 scope="Twelve-cohort c1/c64 correctness smoke only; no timing acceptance" if args.smoke else

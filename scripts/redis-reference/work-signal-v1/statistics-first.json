@@ -1,0 +1,6338 @@
+{
+  "accepted_audit_sha256": "28a80e747f46cdc0fee27fb0b4bfa91dbb1e4d70cacb406355b7cdb370171a77",
+  "cases": [
+    {
+      "api": "point_get",
+      "arm": "old-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 266369
+      },
+      "attempts": 266369,
+      "calls": 266369,
+      "calls_per_second": 26636.85923761431,
+      "cohort_elapsed_ns": 10000015303,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/000-old-point-p00001",
+      "dropped_slots": 0,
+      "issued": 266369,
+      "latency_count": 266369,
+      "latency_sum_ns": 9964918232,
+      "mean_us": 37.410202508550164,
+      "ordinal": 0,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 266369,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.352,
+        "upper_us": 36.863
+      },
+      "p95_us": {
+        "lower_us": 43.52,
+        "upper_us": 44.031
+      },
+      "p99_us": {
+        "lower_us": 51.2,
+        "upper_us": 51.711
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 266369
+      },
+      "repeat": 0,
+      "report_sha256": "f0a17d320b4d2b376ccf372c7936f71e59288a0d7dc54eb6cbbcd7e646265c97"
+    },
+    {
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 262478
+      },
+      "attempts": 262478,
+      "calls": 262478,
+      "calls_per_second": 26247.763909324625,
+      "cohort_elapsed_ns": 10000013750,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/001-old-batch1-p00001",
+      "dropped_slots": 0,
+      "issued": 262478,
+      "latency_count": 262478,
+      "latency_sum_ns": 9963586367,
+      "mean_us": 37.95970087778785,
+      "ordinal": 1,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 262478,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.864,
+        "upper_us": 37.375
+      },
+      "p95_us": {
+        "lower_us": 44.544,
+        "upper_us": 45.055
+      },
+      "p99_us": {
+        "lower_us": 52.224,
+        "upper_us": 52.735
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 262478
+      },
+      "repeat": 0,
+      "report_sha256": "bca5da5cfd614874d53984ea67967a3476f9e1c44e4d28d58158fcd3bbec5727"
+    },
+    {
+      "api": "point_get",
+      "arm": "new-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264754
+      },
+      "attempts": 264754,
+      "calls": 264754,
+      "calls_per_second": 26475.37534348294,
+      "cohort_elapsed_ns": 10000009313,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/002-new-point-p00001",
+      "dropped_slots": 0,
+      "issued": 264754,
+      "latency_count": 264754,
+      "latency_sum_ns": 9965395065,
+      "mean_us": 37.640205870355125,
+      "ordinal": 2,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 264754,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.352,
+        "upper_us": 36.863
+      },
+      "p95_us": {
+        "lower_us": 43.52,
+        "upper_us": 44.031
+      },
+      "p99_us": {
+        "lower_us": 52.224,
+        "upper_us": 52.735
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264754
+      },
+      "repeat": 0,
+      "report_sha256": "09d51f9f3ba6caf25a2a2500231ef5d20d6544661dd2e2cbe8e503128c1a8c92"
+    },
+    {
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 263842
+      },
+      "attempts": 263842,
+      "calls": 263842,
+      "calls_per_second": 26384.165587132826,
+      "cohort_elapsed_ns": 10000013043,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/003-new-batch1-p00001",
+      "dropped_slots": 0,
+      "issued": 263842,
+      "latency_count": 263842,
+      "latency_sum_ns": 9962155209,
+      "mean_us": 37.75803400899023,
+      "ordinal": 3,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 263842,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.352,
+        "upper_us": 36.863
+      },
+      "p95_us": {
+        "lower_us": 44.544,
+        "upper_us": 45.055
+      },
+      "p99_us": {
+        "lower_us": 52.736,
+        "upper_us": 53.247
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 263842
+      },
+      "repeat": 0,
+      "report_sha256": "54eb996b4560e97c23897b0fc557ed02a40aa7c29f40baa8719430a072f76d32"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 1714606,
+      "calls": 1714606,
+      "calls_per_second": 171460.5050451723,
+      "cohort_elapsed_ns": 10000005538,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/004-redis-mget1-p00001",
+      "dropped_slots": 0,
+      "issued": 1714606,
+      "latency_count": 1714606,
+      "latency_sum_ns": 9863521138,
+      "mean_us": 5.752645877828492,
+      "ordinal": 4,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1714606,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.632,
+        "upper_us": 5.695
+      },
+      "p95_us": {
+        "lower_us": 5.952,
+        "upper_us": 6.015
+      },
+      "p99_us": {
+        "lower_us": 7.552,
+        "upper_us": 7.615
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1714606
+      },
+      "repeat": 0,
+      "report_sha256": "b2234ef1055c63927b1a26562c1ea6a8f2a64ac302c8d758bc923942d7f7e706"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 1714882,
+      "calls": 1714882,
+      "calls_per_second": 171488.1640560808,
+      "cohort_elapsed_ns": 10000002096,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/005-redis-get1-p00001",
+      "dropped_slots": 0,
+      "issued": 1714882,
+      "latency_count": 1714882,
+      "latency_sum_ns": 9869503575,
+      "mean_us": 5.755208565370678,
+      "ordinal": 5,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1714882,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.568,
+        "upper_us": 5.631
+      },
+      "p95_us": {
+        "lower_us": 6.592,
+        "upper_us": 6.655
+      },
+      "p99_us": {
+        "lower_us": 7.872,
+        "upper_us": 7.935
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1714882
+      },
+      "repeat": 0,
+      "report_sha256": "a6964040dce262aa0bef30e28a7b9c486c9488d54e9b009c2f07ee831fbf785f"
+    },
+    {
+      "api": "point_get",
+      "arm": "old-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3751795
+      },
+      "attempts": 3751795,
+      "calls": 3751795,
+      "calls_per_second": 375174.4852302432,
+      "cohort_elapsed_ns": 10000133665,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/006-old-point-p00064",
+      "dropped_slots": 0,
+      "issued": 3751795,
+      "latency_count": 3751795,
+      "latency_sum_ns": 639554214892,
+      "mean_us": 170.46619415293213,
+      "ordinal": 6,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3751795,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 165.888,
+        "upper_us": 167.935
+      },
+      "p95_us": {
+        "lower_us": 237.568,
+        "upper_us": 239.615
+      },
+      "p99_us": {
+        "lower_us": 294.912,
+        "upper_us": 299.007
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3751795
+      },
+      "repeat": 0,
+      "report_sha256": "d3195396796c6d505d5e0941ef162cc8457b143cb9ffdb9f2c60f8c0181e6e22"
+    },
+    {
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3683127
+      },
+      "attempts": 3683127,
+      "calls": 3683127,
+      "calls_per_second": 368308.64326444874,
+      "cohort_elapsed_ns": 10000110145,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/007-old-batch1-p00064",
+      "dropped_slots": 0,
+      "issued": 3683127,
+      "latency_count": 3683127,
+      "latency_sum_ns": 639427072761,
+      "mean_us": 173.6098355449052,
+      "ordinal": 7,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3683127,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p95_us": {
+        "lower_us": 243.712,
+        "upper_us": 245.759
+      },
+      "p99_us": {
+        "lower_us": 307.2,
+        "upper_us": 311.295
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3683127
+      },
+      "repeat": 0,
+      "report_sha256": "211485cbad892046ae3125ba72d879f66e61514838257749254efd346bc01ff1"
+    },
+    {
+      "api": "point_get",
+      "arm": "new-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3779833
+      },
+      "attempts": 3779833,
+      "calls": 3779833,
+      "calls_per_second": 377977.4800917503,
+      "cohort_elapsed_ns": 10000153975,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/008-new-point-p00064",
+      "dropped_slots": 0,
+      "issued": 3779833,
+      "latency_count": 3779833,
+      "latency_sum_ns": 639552738180,
+      "mean_us": 169.20132137583857,
+      "ordinal": 8,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3779833,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 163.84,
+        "upper_us": 165.887
+      },
+      "p95_us": {
+        "lower_us": 235.52,
+        "upper_us": 237.567
+      },
+      "p99_us": {
+        "lower_us": 294.912,
+        "upper_us": 299.007
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3779833
+      },
+      "repeat": 0,
+      "report_sha256": "5c8dd948e18ffb2b0ebda385ff9810cf0af24ae11638de241028d1459ccbf9ab"
+    },
+    {
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3709714
+      },
+      "attempts": 3709714,
+      "calls": 3709714,
+      "calls_per_second": 370965.837812421,
+      "cohort_elapsed_ns": 10000149938,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/009-new-batch1-p00064",
+      "dropped_slots": 0,
+      "issued": 3709714,
+      "latency_count": 3709714,
+      "latency_sum_ns": 639425488375,
+      "mean_us": 172.36517110887792,
+      "ordinal": 9,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3709714,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p95_us": {
+        "lower_us": 241.664,
+        "upper_us": 243.711
+      },
+      "p99_us": {
+        "lower_us": 303.104,
+        "upper_us": 307.199
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3709714
+      },
+      "repeat": 0,
+      "report_sha256": "784d1e37c4a96f841db72c5211180ac1dbe2cf0b8a9d805020c4628462004ad6"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 5038129,
+      "calls": 5038129,
+      "calls_per_second": 503798.414787978,
+      "cohort_elapsed_ns": 10000287520,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/010-redis-mget1-p00064",
+      "dropped_slots": 0,
+      "issued": 5038129,
+      "latency_count": 5038129,
+      "latency_sum_ns": 639441256247,
+      "mean_us": 126.92038180185541,
+      "ordinal": 10,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5038129,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 118.784,
+        "upper_us": 119.807
+      },
+      "p95_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5038129
+      },
+      "repeat": 0,
+      "report_sha256": "f4732108d3ad46c333d1802cf812927d97d5e346a52b74e3849d7c6b80b315bf"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 5134869,
+      "calls": 5134869,
+      "calls_per_second": 513472.3590276119,
+      "cohort_elapsed_ns": 10000283189,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/011-redis-get1-p00064",
+      "dropped_slots": 0,
+      "issued": 5134869,
+      "latency_count": 5134869,
+      "latency_sum_ns": 639449472559,
+      "mean_us": 124.53082494587497,
+      "ordinal": 11,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5134869,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 159.744,
+        "upper_us": 161.791
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5134869
+      },
+      "repeat": 0,
+      "report_sha256": "1a6844d570b16a0a0e54f7729abeaca029842af29eda7db7cc58a5f11e8b5954"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 5082540,
+      "calls": 5082540,
+      "calls_per_second": 508241.8633367761,
+      "cohort_elapsed_ns": 10000238797,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/012-redis-get1-p10064",
+      "dropped_slots": 0,
+      "issued": 5082540,
+      "latency_count": 5082540,
+      "latency_sum_ns": 639439117555,
+      "mean_us": 125.81093657010078,
+      "ordinal": 12,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5082540,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 163.84,
+        "upper_us": 165.887
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5082540
+      },
+      "repeat": 1,
+      "report_sha256": "e2bae9ec11358d260a15143ee2d86935adeabc4dd84ce4e121cfebb5ea616f7d"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 5105210,
+      "calls": 5105210,
+      "calls_per_second": 510509.4709093637,
+      "cohort_elapsed_ns": 10000225835,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/013-redis-mget1-p10064",
+      "dropped_slots": 0,
+      "issued": 5105210,
+      "latency_count": 5105210,
+      "latency_sum_ns": 639416536431,
+      "mean_us": 125.24784219082075,
+      "ordinal": 13,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5105210,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5105210
+      },
+      "repeat": 1,
+      "report_sha256": "5a1a81c145e332375eae4624890e1d061c2368111616b3c14563d9e7b3f3f28c"
+    },
+    {
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3700586
+      },
+      "attempts": 3700586,
+      "calls": 3700586,
+      "calls_per_second": 370052.96575856983,
+      "cohort_elapsed_ns": 10000152255,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/014-new-batch1-p10064",
+      "dropped_slots": 0,
+      "issued": 3700586,
+      "latency_count": 3700586,
+      "latency_sum_ns": 639419317170,
+      "mean_us": 172.78866567889517,
+      "ordinal": 14,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3700586,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p95_us": {
+        "lower_us": 241.664,
+        "upper_us": 243.711
+      },
+      "p99_us": {
+        "lower_us": 299.008,
+        "upper_us": 303.103
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3700586
+      },
+      "repeat": 1,
+      "report_sha256": "f20b4835f0ebaf8a7fcaae65a0535d7414d4d537b7e5ab8078df64d401c9d532"
+    },
+    {
+      "api": "point_get",
+      "arm": "new-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3785000
+      },
+      "attempts": 3785000,
+      "calls": 3785000,
+      "calls_per_second": 378494.6430896174,
+      "cohort_elapsed_ns": 10000141532,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/015-new-point-p10064",
+      "dropped_slots": 0,
+      "issued": 3785000,
+      "latency_count": 3785000,
+      "latency_sum_ns": 639542866432,
+      "mean_us": 168.96773221453105,
+      "ordinal": 15,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3785000,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 163.84,
+        "upper_us": 165.887
+      },
+      "p95_us": {
+        "lower_us": 235.52,
+        "upper_us": 237.567
+      },
+      "p99_us": {
+        "lower_us": 290.816,
+        "upper_us": 294.911
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3785000
+      },
+      "repeat": 1,
+      "report_sha256": "89d2592dbb9daa3a53e693f053c7e45988b43a66495ebde92fd59fff7bb4d83c"
+    },
+    {
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3690530
+      },
+      "attempts": 3690530,
+      "calls": 3690530,
+      "calls_per_second": 369046.7714131155,
+      "cohort_elapsed_ns": 10000168775,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/016-old-batch1-p10064",
+      "dropped_slots": 0,
+      "issued": 3690530,
+      "latency_count": 3690530,
+      "latency_sum_ns": 639422838982,
+      "mean_us": 173.2604365719829,
+      "ordinal": 16,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3690530,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p95_us": {
+        "lower_us": 243.712,
+        "upper_us": 245.759
+      },
+      "p99_us": {
+        "lower_us": 307.2,
+        "upper_us": 311.295
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3690530
+      },
+      "repeat": 1,
+      "report_sha256": "057408c48d2807618c839b25676d819a2497efcf3cdb8dedb7d8d9e560d9f2aa"
+    },
+    {
+      "api": "point_get",
+      "arm": "old-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3753832
+      },
+      "attempts": 3753832,
+      "calls": 3753832,
+      "calls_per_second": 375377.9586351014,
+      "cohort_elapsed_ns": 10000139629,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/017-old-point-p10064",
+      "dropped_slots": 0,
+      "issued": 3753832,
+      "latency_count": 3753832,
+      "latency_sum_ns": 639540885782,
+      "mean_us": 170.37014064081717,
+      "ordinal": 17,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3753832,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 165.888,
+        "upper_us": 167.935
+      },
+      "p95_us": {
+        "lower_us": 237.568,
+        "upper_us": 239.615
+      },
+      "p99_us": {
+        "lower_us": 303.104,
+        "upper_us": 307.199
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3753832
+      },
+      "repeat": 1,
+      "report_sha256": "9ad18038a99683963a40af4e8d09e02764759342e2902aefda871d8304d7e76d"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 1727557,
+      "calls": 1727557,
+      "calls_per_second": 172755.63293626328,
+      "cohort_elapsed_ns": 10000003882,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/018-redis-get1-p10001",
+      "dropped_slots": 0,
+      "issued": 1727557,
+      "latency_count": 1727557,
+      "latency_sum_ns": 9869608804,
+      "mean_us": 5.713043797686559,
+      "ordinal": 18,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1727557,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.568,
+        "upper_us": 5.631
+      },
+      "p95_us": {
+        "lower_us": 5.888,
+        "upper_us": 5.951
+      },
+      "p99_us": {
+        "lower_us": 7.552,
+        "upper_us": 7.615
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1727557
+      },
+      "repeat": 1,
+      "report_sha256": "3efe2a061c107c9530f92cbd532610a0507dd2f828b59793d5a890cee47bad86"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 1714924,
+      "calls": 1714924,
+      "calls_per_second": 171492.37556233647,
+      "cohort_elapsed_ns": 10000001425,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/019-redis-mget1-p10001",
+      "dropped_slots": 0,
+      "issued": 1714924,
+      "latency_count": 1714924,
+      "latency_sum_ns": 9863755898,
+      "mean_us": 5.751716051556804,
+      "ordinal": 19,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1714924,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.632,
+        "upper_us": 5.695
+      },
+      "p95_us": {
+        "lower_us": 5.952,
+        "upper_us": 6.015
+      },
+      "p99_us": {
+        "lower_us": 7.68,
+        "upper_us": 7.743
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1714924
+      },
+      "repeat": 1,
+      "report_sha256": "c4fbc4667948c6c223201eaf326d2de3b80dc6008421382cb00a301399f90fc3"
+    },
+    {
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 262346
+      },
+      "attempts": 262346,
+      "calls": 262346,
+      "calls_per_second": 26234.55889569312,
+      "cohort_elapsed_ns": 10000015668,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/020-new-batch1-p10001",
+      "dropped_slots": 0,
+      "issued": 262346,
+      "latency_count": 262346,
+      "latency_sum_ns": 9967499279,
+      "mean_us": 37.993715471171654,
+      "ordinal": 20,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 262346,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.864,
+        "upper_us": 37.375
+      },
+      "p95_us": {
+        "lower_us": 44.544,
+        "upper_us": 45.055
+      },
+      "p99_us": {
+        "lower_us": 53.248,
+        "upper_us": 53.759
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 262346
+      },
+      "repeat": 1,
+      "report_sha256": "d328e86d426132eaa4f96849255f49715ea78110cf72e82e8b093e8626b8a35a"
+    },
+    {
+      "api": "point_get",
+      "arm": "new-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264291
+      },
+      "attempts": 264291,
+      "calls": 264291,
+      "calls_per_second": 26429.052935142532,
+      "cohort_elapsed_ns": 10000017808,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/021-new-point-p10001",
+      "dropped_slots": 0,
+      "issued": 264291,
+      "latency_count": 264291,
+      "latency_sum_ns": 9969166527,
+      "mean_us": 37.720416234378014,
+      "ordinal": 21,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 264291,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.352,
+        "upper_us": 36.863
+      },
+      "p95_us": {
+        "lower_us": 44.032,
+        "upper_us": 44.543
+      },
+      "p99_us": {
+        "lower_us": 52.224,
+        "upper_us": 52.735
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264291
+      },
+      "repeat": 1,
+      "report_sha256": "2be2600f858850347d5e3376a848f45303053edc9800fe1ac57e53607f83d9ea"
+    },
+    {
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 262115
+      },
+      "attempts": 262115,
+      "calls": 262115,
+      "calls_per_second": 26211.45793061002,
+      "cohort_elapsed_ns": 10000016050,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/022-old-batch1-p10001",
+      "dropped_slots": 0,
+      "issued": 262115,
+      "latency_count": 262115,
+      "latency_sum_ns": 9967050543,
+      "mean_us": 38.02548706865307,
+      "ordinal": 22,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 262115,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.864,
+        "upper_us": 37.375
+      },
+      "p95_us": {
+        "lower_us": 44.544,
+        "upper_us": 45.055
+      },
+      "p99_us": {
+        "lower_us": 52.736,
+        "upper_us": 53.247
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 262115
+      },
+      "repeat": 1,
+      "report_sha256": "30c7563322879fd4f20ccabe8416e6a178571ea7b2e9f207f3f6f02e851782bf"
+    },
+    {
+      "api": "point_get",
+      "arm": "old-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 265439
+      },
+      "attempts": 265439,
+      "calls": 265439,
+      "calls_per_second": 26543.829327054416,
+      "cohort_elapsed_ns": 10000026625,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/023-old-point-p10001",
+      "dropped_slots": 0,
+      "issued": 265439,
+      "latency_count": 265439,
+      "latency_sum_ns": 9965377274,
+      "mean_us": 37.543003379307486,
+      "ordinal": 23,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 265439,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.352,
+        "upper_us": 36.863
+      },
+      "p95_us": {
+        "lower_us": 44.032,
+        "upper_us": 44.543
+      },
+      "p99_us": {
+        "lower_us": 51.712,
+        "upper_us": 52.223
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 265439
+      },
+      "repeat": 1,
+      "report_sha256": "cef946973b18b0b796fb4b2e7a5c09de59d5f2f38c47b9e35ddc2612ed73e663"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 5155254,
+      "calls": 5155254,
+      "calls_per_second": 515512.9855193853,
+      "cohort_elapsed_ns": 10000240818,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/024-redis-get1-p20064",
+      "dropped_slots": 0,
+      "issued": 5155254,
+      "latency_count": 5155254,
+      "latency_sum_ns": 639446781220,
+      "mean_us": 124.03788081440798,
+      "ordinal": 24,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5155254,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 161.792,
+        "upper_us": 163.839
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5155254
+      },
+      "repeat": 2,
+      "report_sha256": "033677786bc7d923b756e7e61816bd2b6261d1f5293157d3146a3076b5c394bc"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 5073116,
+      "calls": 5073116,
+      "calls_per_second": 507298.36691917956,
+      "cohort_elapsed_ns": 10000260854,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/025-redis-mget1-p20064",
+      "dropped_slots": 0,
+      "issued": 5073116,
+      "latency_count": 5073116,
+      "latency_sum_ns": 639414853656,
+      "mean_us": 126.03986458342368,
+      "ordinal": 25,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5073116,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 118.784,
+        "upper_us": 119.807
+      },
+      "p95_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5073116
+      },
+      "repeat": 2,
+      "report_sha256": "e6572157388eb5d6ba8e97d4c1b96ce0d917255dd0e334b399e234a1663e5174"
+    },
+    {
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3688079
+      },
+      "attempts": 3688079,
+      "calls": 3688079,
+      "calls_per_second": 368803.54277054395,
+      "cohort_elapsed_ns": 10000118145,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/026-new-batch1-p20064",
+      "dropped_slots": 0,
+      "issued": 3688079,
+      "latency_count": 3688079,
+      "latency_sum_ns": 639422438849,
+      "mean_us": 173.37547239335166,
+      "ordinal": 26,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3688079,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p95_us": {
+        "lower_us": 243.712,
+        "upper_us": 245.759
+      },
+      "p99_us": {
+        "lower_us": 311.296,
+        "upper_us": 315.391
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3688079
+      },
+      "repeat": 2,
+      "report_sha256": "12ede7ddc1a75832ce31de40227b83f1eaf21d86384a032139b049947f8132cf"
+    },
+    {
+      "api": "point_get",
+      "arm": "new-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3773578
+      },
+      "attempts": 3773578,
+      "calls": 3773578,
+      "calls_per_second": 377353.0328236657,
+      "cohort_elapsed_ns": 10000126332,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/027-new-point-p20064",
+      "dropped_slots": 0,
+      "issued": 3773578,
+      "latency_count": 3773578,
+      "latency_sum_ns": 639537894408,
+      "mean_us": 169.47785216258947,
+      "ordinal": 27,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3773578,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 163.84,
+        "upper_us": 165.887
+      },
+      "p95_us": {
+        "lower_us": 237.568,
+        "upper_us": 239.615
+      },
+      "p99_us": {
+        "lower_us": 299.008,
+        "upper_us": 303.103
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3773578
+      },
+      "repeat": 2,
+      "report_sha256": "9f8bfe40e82d37b94c3de43d225a5f5ab99c5f95e970dcf86f139e31727e9a77"
+    },
+    {
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3687829
+      },
+      "attempts": 3687829,
+      "calls": 3687829,
+      "calls_per_second": 368778.5625740584,
+      "cohort_elapsed_ns": 10000117616,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/028-old-batch1-p20064",
+      "dropped_slots": 0,
+      "issued": 3687829,
+      "latency_count": 3687829,
+      "latency_sum_ns": 639426769082,
+      "mean_us": 173.38839980975257,
+      "ordinal": 28,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3687829,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p95_us": {
+        "lower_us": 243.712,
+        "upper_us": 245.759
+      },
+      "p99_us": {
+        "lower_us": 303.104,
+        "upper_us": 307.199
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3687829
+      },
+      "repeat": 2,
+      "report_sha256": "e39405787d7e0183eb60e7cf29bb101a405e133e29cc0e22793fe79b46e7d002"
+    },
+    {
+      "api": "point_get",
+      "arm": "old-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3734902
+      },
+      "attempts": 3734902,
+      "calls": 3734902,
+      "calls_per_second": 373483.9887745247,
+      "cohort_elapsed_ns": 10000166305,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/029-old-point-p20064",
+      "dropped_slots": 0,
+      "issued": 3734902,
+      "latency_count": 3734902,
+      "latency_sum_ns": 639561040063,
+      "mean_us": 171.23904189802033,
+      "ordinal": 29,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3734902,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 165.888,
+        "upper_us": 167.935
+      },
+      "p95_us": {
+        "lower_us": 239.616,
+        "upper_us": 241.663
+      },
+      "p99_us": {
+        "lower_us": 299.008,
+        "upper_us": 303.103
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3734902
+      },
+      "repeat": 2,
+      "report_sha256": "a2ffee309d61250ca8e84cf982d57eafd10ba47a58382bc0dfd7e2272c570bc2"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 1730538,
+      "calls": 1730538,
+      "calls_per_second": 173053.76988864405,
+      "cohort_elapsed_ns": 10000001740,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/030-redis-get1-p20001",
+      "dropped_slots": 0,
+      "issued": 1730538,
+      "latency_count": 1730538,
+      "latency_sum_ns": 9869520882,
+      "mean_us": 5.703151784011678,
+      "ordinal": 30,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1730538,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.568,
+        "upper_us": 5.631
+      },
+      "p95_us": {
+        "lower_us": 5.888,
+        "upper_us": 5.951
+      },
+      "p99_us": {
+        "lower_us": 7.552,
+        "upper_us": 7.615
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1730538
+      },
+      "repeat": 2,
+      "report_sha256": "c0cd9847d702b44046a565ce04083b67aaa1a0b5cffc5c0b2348288ce05ec4e2"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 1715660,
+      "calls": 1715660,
+      "calls_per_second": 171565.9430572635,
+      "cohort_elapsed_ns": 10000003319,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/031-redis-mget1-p20001",
+      "dropped_slots": 0,
+      "issued": 1715660,
+      "latency_count": 1715660,
+      "latency_sum_ns": 9863981814,
+      "mean_us": 5.749380304955527,
+      "ordinal": 31,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1715660,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.632,
+        "upper_us": 5.695
+      },
+      "p95_us": {
+        "lower_us": 5.952,
+        "upper_us": 6.015
+      },
+      "p99_us": {
+        "lower_us": 7.424,
+        "upper_us": 7.487
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1715660
+      },
+      "repeat": 2,
+      "report_sha256": "f41558056593d905eeb67790e8e637a70012ace48fba5c18c3da8b4e4d041cd1"
+    },
+    {
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 261375
+      },
+      "attempts": 261375,
+      "calls": 261375,
+      "calls_per_second": 26137.390100115845,
+      "cohort_elapsed_ns": 10000042047,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/032-new-batch1-p20001",
+      "dropped_slots": 0,
+      "issued": 261375,
+      "latency_count": 261375,
+      "latency_sum_ns": 9966655022,
+      "mean_us": 38.13163088283118,
+      "ordinal": 32,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 261375,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.864,
+        "upper_us": 37.375
+      },
+      "p95_us": {
+        "lower_us": 44.544,
+        "upper_us": 45.055
+      },
+      "p99_us": {
+        "lower_us": 52.736,
+        "upper_us": 53.247
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 261375
+      },
+      "repeat": 2,
+      "report_sha256": "4d9ee922f9ea32564fb4159cb6118b0ec12e69343f25764f16ea59ba637cc610"
+    },
+    {
+      "api": "point_get",
+      "arm": "new-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264440
+      },
+      "attempts": 264440,
+      "calls": 264440,
+      "calls_per_second": 26443.944356652286,
+      "cohort_elapsed_ns": 10000021042,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/033-new-point-p20001",
+      "dropped_slots": 0,
+      "issued": 264440,
+      "latency_count": 264440,
+      "latency_sum_ns": 9968026180,
+      "mean_us": 37.6948501739525,
+      "ordinal": 33,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 264440,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.352,
+        "upper_us": 36.863
+      },
+      "p95_us": {
+        "lower_us": 44.032,
+        "upper_us": 44.543
+      },
+      "p99_us": {
+        "lower_us": 52.224,
+        "upper_us": 52.735
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264440
+      },
+      "repeat": 2,
+      "report_sha256": "9e5051d5b0873db1a6a9b38d16adebfcb63f6fea06fe6ae15c04765bd6d672ec"
+    },
+    {
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264176
+      },
+      "attempts": 264176,
+      "calls": 264176,
+      "calls_per_second": 26417.54983043112,
+      "cohort_elapsed_ns": 10000018991,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/034-old-batch1-p20001",
+      "dropped_slots": 0,
+      "issued": 264176,
+      "latency_count": 264176,
+      "latency_sum_ns": 9966440282,
+      "mean_us": 37.72651672369935,
+      "ordinal": 34,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 264176,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.352,
+        "upper_us": 36.863
+      },
+      "p95_us": {
+        "lower_us": 44.032,
+        "upper_us": 44.543
+      },
+      "p99_us": {
+        "lower_us": 51.712,
+        "upper_us": 52.223
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264176
+      },
+      "repeat": 2,
+      "report_sha256": "182b936e37f9390d1c973f5f897ccb2aa407a50a3676add28b3298719987a38a"
+    },
+    {
+      "api": "point_get",
+      "arm": "old-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 265153
+      },
+      "attempts": 265153,
+      "calls": 265153,
+      "calls_per_second": 26515.239306617226,
+      "cohort_elapsed_ns": 10000022890,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/035-old-point-p20001",
+      "dropped_slots": 0,
+      "issued": 265153,
+      "latency_count": 265153,
+      "latency_sum_ns": 9966344790,
+      "mean_us": 37.58714700569106,
+      "ordinal": 35,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 265153,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.352,
+        "upper_us": 36.863
+      },
+      "p95_us": {
+        "lower_us": 44.032,
+        "upper_us": 44.543
+      },
+      "p99_us": {
+        "lower_us": 52.224,
+        "upper_us": 52.735
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 265153
+      },
+      "repeat": 2,
+      "report_sha256": "ff7cb1e242b0c6b586db8efbcdb96e9abb6b1318896327b04c42e7af331a81be"
+    },
+    {
+      "api": "point_get",
+      "arm": "old-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264501
+      },
+      "attempts": 264501,
+      "calls": 264501,
+      "calls_per_second": 26450.092009427204,
+      "cohort_elapsed_ns": 10000003021,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/036-old-point-p30001",
+      "dropped_slots": 0,
+      "issued": 264501,
+      "latency_count": 264501,
+      "latency_sum_ns": 9966953826,
+      "mean_us": 37.68210262343053,
+      "ordinal": 36,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 264501,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.352,
+        "upper_us": 36.863
+      },
+      "p95_us": {
+        "lower_us": 44.032,
+        "upper_us": 44.543
+      },
+      "p99_us": {
+        "lower_us": 52.736,
+        "upper_us": 53.247
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264501
+      },
+      "repeat": 3,
+      "report_sha256": "73b9db2658be19336e355ef86666a20ac4428ea50993695f07fdc907c619aee0"
+    },
+    {
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 261970
+      },
+      "attempts": 261970,
+      "calls": 261970,
+      "calls_per_second": 26196.909070528614,
+      "cohort_elapsed_ns": 10000034710,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/037-old-batch1-p30001",
+      "dropped_slots": 0,
+      "issued": 261970,
+      "latency_count": 261970,
+      "latency_sum_ns": 9963380266,
+      "mean_us": 38.03252382333855,
+      "ordinal": 37,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 261970,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.864,
+        "upper_us": 37.375
+      },
+      "p95_us": {
+        "lower_us": 44.544,
+        "upper_us": 45.055
+      },
+      "p99_us": {
+        "lower_us": 53.248,
+        "upper_us": 53.759
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 261970
+      },
+      "repeat": 3,
+      "report_sha256": "f806160dded8ef8dcf674be1f291a10aa7519a7195b9d6e0970e5da5d1bf598c"
+    },
+    {
+      "api": "point_get",
+      "arm": "new-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264898
+      },
+      "attempts": 264898,
+      "calls": 264898,
+      "calls_per_second": 26489.79587553878,
+      "cohort_elapsed_ns": 10000001557,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/038-new-point-p30001",
+      "dropped_slots": 0,
+      "issued": 264898,
+      "latency_count": 264898,
+      "latency_sum_ns": 9967357911,
+      "mean_us": 37.62715426692538,
+      "ordinal": 38,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 264898,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.352,
+        "upper_us": 36.863
+      },
+      "p95_us": {
+        "lower_us": 44.032,
+        "upper_us": 44.543
+      },
+      "p99_us": {
+        "lower_us": 52.224,
+        "upper_us": 52.735
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 264898
+      },
+      "repeat": 3,
+      "report_sha256": "7417983fa56175b95ba4b2f6d5024e64864cf0a182e283c5de3645348c253583"
+    },
+    {
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 263078
+      },
+      "attempts": 263078,
+      "calls": 263078,
+      "calls_per_second": 26307.727001319116,
+      "cohort_elapsed_ns": 10000027748,
+      "concurrency": 1,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/039-new-batch1-p30001",
+      "dropped_slots": 0,
+      "issued": 263078,
+      "latency_count": 263078,
+      "latency_sum_ns": 9966929234,
+      "mean_us": 37.88583322816807,
+      "ordinal": 39,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 263078,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 36.352,
+        "upper_us": 36.863
+      },
+      "p95_us": {
+        "lower_us": 44.544,
+        "upper_us": 45.055
+      },
+      "p99_us": {
+        "lower_us": 52.736,
+        "upper_us": 53.247
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 263078
+      },
+      "repeat": 3,
+      "report_sha256": "f28120f38a2f4628f051a330b35a174b2025573e36085c7a17f43d5690f23150"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 1712781,
+      "calls": 1712781,
+      "calls_per_second": 171278.08544136272,
+      "cohort_elapsed_ns": 10000000850,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/040-redis-mget1-p30001",
+      "dropped_slots": 0,
+      "issued": 1712781,
+      "latency_count": 1712781,
+      "latency_sum_ns": 9862706780,
+      "mean_us": 5.758299969464864,
+      "ordinal": 40,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1712781,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.632,
+        "upper_us": 5.695
+      },
+      "p95_us": {
+        "lower_us": 5.952,
+        "upper_us": 6.015
+      },
+      "p99_us": {
+        "lower_us": 7.488,
+        "upper_us": 7.551
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1712781
+      },
+      "repeat": 3,
+      "report_sha256": "3a6c54b4ab88247bfaa02143ba28806c64a35f6aba83629b5ab4d5fa641a79a4"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 1731405,
+      "calls": 1731405,
+      "calls_per_second": 173140.40678120498,
+      "cohort_elapsed_ns": 10000005384,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/041-redis-get1-p30001",
+      "dropped_slots": 0,
+      "issued": 1731405,
+      "latency_count": 1731405,
+      "latency_sum_ns": 9869645185,
+      "mean_us": 5.700367727365925,
+      "ordinal": 41,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1731405,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.568,
+        "upper_us": 5.631
+      },
+      "p95_us": {
+        "lower_us": 5.888,
+        "upper_us": 5.951
+      },
+      "p99_us": {
+        "lower_us": 7.424,
+        "upper_us": 7.487
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1731405
+      },
+      "repeat": 3,
+      "report_sha256": "804971bd326b4975babcbb72a2af97249d125bffdeb2a1283b79b0e31d98d011"
+    },
+    {
+      "api": "point_get",
+      "arm": "old-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3752200
+      },
+      "attempts": 3752200,
+      "calls": 3752200,
+      "calls_per_second": 375213.6934457619,
+      "cohort_elapsed_ns": 10000168079,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/042-old-point-p30064",
+      "dropped_slots": 0,
+      "issued": 3752200,
+      "latency_count": 3752200,
+      "latency_sum_ns": 639539514030,
+      "mean_us": 170.443876667022,
+      "ordinal": 42,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3752200,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 165.888,
+        "upper_us": 167.935
+      },
+      "p95_us": {
+        "lower_us": 237.568,
+        "upper_us": 239.615
+      },
+      "p99_us": {
+        "lower_us": 299.008,
+        "upper_us": 303.103
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3752200
+      },
+      "repeat": 3,
+      "report_sha256": "de35634cbcd4e88e40aacf02617dc356f78f1268627808068641ace761d4c4d7"
+    },
+    {
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3697864
+      },
+      "attempts": 3697864,
+      "calls": 3697864,
+      "calls_per_second": 369780.5008916693,
+      "cohort_elapsed_ns": 10000159530,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/043-old-batch1-p30064",
+      "dropped_slots": 0,
+      "issued": 3697864,
+      "latency_count": 3697864,
+      "latency_sum_ns": 639424750588,
+      "mean_us": 172.9173248632183,
+      "ordinal": 43,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3697864,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p95_us": {
+        "lower_us": 241.664,
+        "upper_us": 243.711
+      },
+      "p99_us": {
+        "lower_us": 299.008,
+        "upper_us": 303.103
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3697864
+      },
+      "repeat": 3,
+      "report_sha256": "fea39d5245bca613da8b4443008f84e52a3b0dfb8c8830a5c591c77e0edf3d59"
+    },
+    {
+      "api": "point_get",
+      "arm": "new-point",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3773992
+      },
+      "attempts": 3773992,
+      "calls": 3773992,
+      "calls_per_second": 377393.69552425394,
+      "cohort_elapsed_ns": 10000145855,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/044-new-point-p30064",
+      "dropped_slots": 0,
+      "issued": 3773992,
+      "latency_count": 3773992,
+      "latency_sum_ns": 639534414907,
+      "mean_us": 169.4583387847669,
+      "ordinal": 44,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3773992,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 163.84,
+        "upper_us": 165.887
+      },
+      "p95_us": {
+        "lower_us": 237.568,
+        "upper_us": 239.615
+      },
+      "p99_us": {
+        "lower_us": 299.008,
+        "upper_us": 303.103
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3773992
+      },
+      "repeat": 3,
+      "report_sha256": "99fa8202f168eca22d59fa7c67ddecbaa780f40355dd8cce3ac4d6302e93b78d"
+    },
+    {
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "attempt_reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3697911
+      },
+      "attempts": 3697911,
+      "calls": 3697911,
+      "calls_per_second": 369785.1440925552,
+      "cohort_elapsed_ns": 10000161064,
+      "concurrency": 64,
+      "connection_attempts": null,
+      "connection_failures": null,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/045-new-batch1-p30064",
+      "dropped_slots": 0,
+      "issued": 3697911,
+      "latency_count": 3697911,
+      "latency_sum_ns": 639423188604,
+      "mean_us": 172.91470470868552,
+      "ordinal": 45,
+      "outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 3697911,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p95_us": {
+        "lower_us": 241.664,
+        "upper_us": 243.711
+      },
+      "p99_us": {
+        "lower_us": 303.104,
+        "upper_us": 307.199
+      },
+      "reasons": {
+        "admission_bytes": 0,
+        "admission_count": 0,
+        "admission_oversize": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "deadline": 0,
+        "not_leader": 0,
+        "protocol": 0,
+        "read_apply_unconfirmed": 0,
+        "read_quorum_unconfirmed": 0,
+        "rpc_status": 0,
+        "success": 3697911
+      },
+      "repeat": 3,
+      "report_sha256": "7251a98d07891854c31fe4cfb4b18616fdafc18ec0c64251965fedf69da73e77"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 5085650,
+      "calls": 5085650,
+      "calls_per_second": 508551.7810101355,
+      "cohort_elapsed_ns": 10000259934,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/046-redis-mget1-p30064",
+      "dropped_slots": 0,
+      "issued": 5085650,
+      "latency_count": 5085650,
+      "latency_sum_ns": 639431303127,
+      "mean_us": 125.73246352521309,
+      "ordinal": 46,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5085650,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 165.888,
+        "upper_us": 167.935
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5085650
+      },
+      "repeat": 3,
+      "report_sha256": "059463055bf5a254362948020e32785803a6cf73b86473fad840a9047268d9a4"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 5113615,
+      "calls": 5113615,
+      "calls_per_second": 511349.343589785,
+      "cohort_elapsed_ns": 10000237732,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/047-redis-get1-p30064",
+      "dropped_slots": 0,
+      "issued": 5113615,
+      "latency_count": 5113615,
+      "latency_sum_ns": 639464801317,
+      "mean_us": 125.05141691679955,
+      "ordinal": 47,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5113615,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 159.744,
+        "upper_us": 161.791
+      },
+      "p99_us": {
+        "lower_us": 231.424,
+        "upper_us": 233.471
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5113615
+      },
+      "repeat": 3,
+      "report_sha256": "fc31a49b2f4d27d93f3bfb870484b5ba72e4ca76bf90a23ea2602af2c73565f5"
+    }
+  ],
+  "checks": {
+    "outer_restoration": {
+      "accepted": true,
+      "configured_and_effective_before_after": "0-31",
+      "isolated": "6-15,22-31",
+      "namespace_maps_preserved": true,
+      "original_summary_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "owned_containers": 3
+    },
+    "owned_lifetimes_exited": 160,
+    "qualifying_drains": 96,
+    "resource_samples": 9386,
+    "retained_bytes": 177511414,
+    "retained_files": 1056,
+    "role_source_file_checks": 2348,
+    "scope": "Four-repeat 10-second c1/c64 shared-host tmpfs diagnostic; no sustained-capacity or equal-durability claim",
+    "successful_arms": 48,
+    "voter_writer_listener_bindings": 96
+  },
+  "input_inventory_sha256": "880a03567c260389ae514836278805af5130be5252cff7cc337adcd757bcde9e",
+  "method": "All cases from accepted audit only. QPS = calls * 1e9 / cohort_elapsed_ns; mean = latency_sum_ns / count. Pooled QPS and mean use summed numerators and denominators. Quantiles remain per-cohort histogram intervals, never averaged.",
+  "native_pairs": [
+    {
+      "api": "point_get",
+      "concurrency": 1,
+      "mean_change_percent": 0.6148145328868315,
+      "new": {
+        "api": "point_get",
+        "arm": "new-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264754
+        },
+        "attempts": 264754,
+        "calls": 264754,
+        "calls_per_second": 26475.37534348294,
+        "cohort_elapsed_ns": 10000009313,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/002-new-point-p00001",
+        "dropped_slots": 0,
+        "issued": 264754,
+        "latency_count": 264754,
+        "latency_sum_ns": 9965395065,
+        "mean_us": 37.640205870355125,
+        "ordinal": 2,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 264754,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.352,
+          "upper_us": 36.863
+        },
+        "p95_us": {
+          "lower_us": 43.52,
+          "upper_us": 44.031
+        },
+        "p99_us": {
+          "lower_us": 52.224,
+          "upper_us": 52.735
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264754
+        },
+        "repeat": 0,
+        "report_sha256": "09d51f9f3ba6caf25a2a2500231ef5d20d6544661dd2e2cbe8e503128c1a8c92"
+      },
+      "old": {
+        "api": "point_get",
+        "arm": "old-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 266369
+        },
+        "attempts": 266369,
+        "calls": 266369,
+        "calls_per_second": 26636.85923761431,
+        "cohort_elapsed_ns": 10000015303,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/000-old-point-p00001",
+        "dropped_slots": 0,
+        "issued": 266369,
+        "latency_count": 266369,
+        "latency_sum_ns": 9964918232,
+        "mean_us": 37.410202508550164,
+        "ordinal": 0,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 266369,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.352,
+          "upper_us": 36.863
+        },
+        "p95_us": {
+          "lower_us": 43.52,
+          "upper_us": 44.031
+        },
+        "p99_us": {
+          "lower_us": 51.2,
+          "upper_us": 51.711
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 266369
+        },
+        "repeat": 0,
+        "report_sha256": "f0a17d320b4d2b376ccf372c7936f71e59288a0d7dc54eb6cbbcd7e646265c97"
+      },
+      "qps_change_percent": -0.6062422475970219,
+      "repeat": 0
+    },
+    {
+      "api": "batch_get",
+      "concurrency": 1,
+      "mean_change_percent": -0.5312656952879968,
+      "new": {
+        "api": "batch_get",
+        "arm": "new-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 263842
+        },
+        "attempts": 263842,
+        "calls": 263842,
+        "calls_per_second": 26384.165587132826,
+        "cohort_elapsed_ns": 10000013043,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/003-new-batch1-p00001",
+        "dropped_slots": 0,
+        "issued": 263842,
+        "latency_count": 263842,
+        "latency_sum_ns": 9962155209,
+        "mean_us": 37.75803400899023,
+        "ordinal": 3,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 263842,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.352,
+          "upper_us": 36.863
+        },
+        "p95_us": {
+          "lower_us": 44.544,
+          "upper_us": 45.055
+        },
+        "p99_us": {
+          "lower_us": 52.736,
+          "upper_us": 53.247
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 263842
+        },
+        "repeat": 0,
+        "report_sha256": "54eb996b4560e97c23897b0fc557ed02a40aa7c29f40baa8719430a072f76d32"
+      },
+      "old": {
+        "api": "batch_get",
+        "arm": "old-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 262478
+        },
+        "attempts": 262478,
+        "calls": 262478,
+        "calls_per_second": 26247.763909324625,
+        "cohort_elapsed_ns": 10000013750,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/001-old-batch1-p00001",
+        "dropped_slots": 0,
+        "issued": 262478,
+        "latency_count": 262478,
+        "latency_sum_ns": 9963586367,
+        "mean_us": 37.95970087778785,
+        "ordinal": 1,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 262478,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.864,
+          "upper_us": 37.375
+        },
+        "p95_us": {
+          "lower_us": 44.544,
+          "upper_us": 45.055
+        },
+        "p99_us": {
+          "lower_us": 52.224,
+          "upper_us": 52.735
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 262478
+        },
+        "repeat": 0,
+        "report_sha256": "bca5da5cfd614874d53984ea67967a3476f9e1c44e4d28d58158fcd3bbec5727"
+      },
+      "qps_change_percent": 0.5196697070249945,
+      "repeat": 0
+    },
+    {
+      "api": "point_get",
+      "concurrency": 64,
+      "mean_change_percent": -0.7420079877883512,
+      "new": {
+        "api": "point_get",
+        "arm": "new-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3779833
+        },
+        "attempts": 3779833,
+        "calls": 3779833,
+        "calls_per_second": 377977.4800917503,
+        "cohort_elapsed_ns": 10000153975,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/008-new-point-p00064",
+        "dropped_slots": 0,
+        "issued": 3779833,
+        "latency_count": 3779833,
+        "latency_sum_ns": 639552738180,
+        "mean_us": 169.20132137583857,
+        "ordinal": 8,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3779833,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 163.84,
+          "upper_us": 165.887
+        },
+        "p95_us": {
+          "lower_us": 235.52,
+          "upper_us": 237.567
+        },
+        "p99_us": {
+          "lower_us": 294.912,
+          "upper_us": 299.007
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3779833
+        },
+        "repeat": 0,
+        "report_sha256": "5c8dd948e18ffb2b0ebda385ff9810cf0af24ae11638de241028d1459ccbf9ab"
+      },
+      "old": {
+        "api": "point_get",
+        "arm": "old-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3751795
+        },
+        "attempts": 3751795,
+        "calls": 3751795,
+        "calls_per_second": 375174.4852302432,
+        "cohort_elapsed_ns": 10000133665,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/006-old-point-p00064",
+        "dropped_slots": 0,
+        "issued": 3751795,
+        "latency_count": 3751795,
+        "latency_sum_ns": 639554214892,
+        "mean_us": 170.46619415293213,
+        "ordinal": 6,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3751795,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 165.888,
+          "upper_us": 167.935
+        },
+        "p95_us": {
+          "lower_us": 237.568,
+          "upper_us": 239.615
+        },
+        "p99_us": {
+          "lower_us": 294.912,
+          "upper_us": 299.007
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3751795
+        },
+        "repeat": 0,
+        "report_sha256": "d3195396796c6d505d5e0941ef162cc8457b143cb9ffdb9f2c60f8c0181e6e22"
+      },
+      "qps_change_percent": 0.7471176670734714,
+      "repeat": 0
+    },
+    {
+      "api": "batch_get",
+      "concurrency": 64,
+      "mean_change_percent": -0.716931982638358,
+      "new": {
+        "api": "batch_get",
+        "arm": "new-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3709714
+        },
+        "attempts": 3709714,
+        "calls": 3709714,
+        "calls_per_second": 370965.837812421,
+        "cohort_elapsed_ns": 10000149938,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/009-new-batch1-p00064",
+        "dropped_slots": 0,
+        "issued": 3709714,
+        "latency_count": 3709714,
+        "latency_sum_ns": 639425488375,
+        "mean_us": 172.36517110887792,
+        "ordinal": 9,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3709714,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 167.936,
+          "upper_us": 169.983
+        },
+        "p95_us": {
+          "lower_us": 241.664,
+          "upper_us": 243.711
+        },
+        "p99_us": {
+          "lower_us": 303.104,
+          "upper_us": 307.199
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3709714
+        },
+        "repeat": 0,
+        "report_sha256": "784d1e37c4a96f841db72c5211180ac1dbe2cf0b8a9d805020c4628462004ad6"
+      },
+      "old": {
+        "api": "batch_get",
+        "arm": "old-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3683127
+        },
+        "attempts": 3683127,
+        "calls": 3683127,
+        "calls_per_second": 368308.64326444874,
+        "cohort_elapsed_ns": 10000110145,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/007-old-batch1-p00064",
+        "dropped_slots": 0,
+        "issued": 3683127,
+        "latency_count": 3683127,
+        "latency_sum_ns": 639427072761,
+        "mean_us": 173.6098355449052,
+        "ordinal": 7,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3683127,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 167.936,
+          "upper_us": 169.983
+        },
+        "p95_us": {
+          "lower_us": 243.712,
+          "upper_us": 245.759
+        },
+        "p99_us": {
+          "lower_us": 307.2,
+          "upper_us": 311.295
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3683127
+        },
+        "repeat": 0,
+        "report_sha256": "211485cbad892046ae3125ba72d879f66e61514838257749254efd346bc01ff1"
+      },
+      "qps_change_percent": 0.7214586452331417,
+      "repeat": 0
+    },
+    {
+      "api": "point_get",
+      "concurrency": 1,
+      "mean_change_percent": 0.4725590365748822,
+      "new": {
+        "api": "point_get",
+        "arm": "new-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264291
+        },
+        "attempts": 264291,
+        "calls": 264291,
+        "calls_per_second": 26429.052935142532,
+        "cohort_elapsed_ns": 10000017808,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/021-new-point-p10001",
+        "dropped_slots": 0,
+        "issued": 264291,
+        "latency_count": 264291,
+        "latency_sum_ns": 9969166527,
+        "mean_us": 37.720416234378014,
+        "ordinal": 21,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 264291,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.352,
+          "upper_us": 36.863
+        },
+        "p95_us": {
+          "lower_us": 44.032,
+          "upper_us": 44.543
+        },
+        "p99_us": {
+          "lower_us": 52.224,
+          "upper_us": 52.735
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264291
+        },
+        "repeat": 1,
+        "report_sha256": "2be2600f858850347d5e3376a848f45303053edc9800fe1ac57e53607f83d9ea"
+      },
+      "old": {
+        "api": "point_get",
+        "arm": "old-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 265439
+        },
+        "attempts": 265439,
+        "calls": 265439,
+        "calls_per_second": 26543.829327054416,
+        "cohort_elapsed_ns": 10000026625,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/023-old-point-p10001",
+        "dropped_slots": 0,
+        "issued": 265439,
+        "latency_count": 265439,
+        "latency_sum_ns": 9965377274,
+        "mean_us": 37.543003379307486,
+        "ordinal": 23,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 265439,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.352,
+          "upper_us": 36.863
+        },
+        "p95_us": {
+          "lower_us": 44.032,
+          "upper_us": 44.543
+        },
+        "p99_us": {
+          "lower_us": 51.712,
+          "upper_us": 52.223
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 265439
+        },
+        "repeat": 1,
+        "report_sha256": "cef946973b18b0b796fb4b2e7a5c09de59d5f2f38c47b9e35ddc2612ed73e663"
+      },
+      "qps_change_percent": -0.43240329229701224,
+      "repeat": 1
+    },
+    {
+      "api": "batch_get",
+      "concurrency": 1,
+      "mean_change_percent": -0.08355342674257749,
+      "new": {
+        "api": "batch_get",
+        "arm": "new-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 262346
+        },
+        "attempts": 262346,
+        "calls": 262346,
+        "calls_per_second": 26234.55889569312,
+        "cohort_elapsed_ns": 10000015668,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/020-new-batch1-p10001",
+        "dropped_slots": 0,
+        "issued": 262346,
+        "latency_count": 262346,
+        "latency_sum_ns": 9967499279,
+        "mean_us": 37.993715471171654,
+        "ordinal": 20,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 262346,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.864,
+          "upper_us": 37.375
+        },
+        "p95_us": {
+          "lower_us": 44.544,
+          "upper_us": 45.055
+        },
+        "p99_us": {
+          "lower_us": 53.248,
+          "upper_us": 53.759
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 262346
+        },
+        "repeat": 1,
+        "report_sha256": "d328e86d426132eaa4f96849255f49715ea78110cf72e82e8b093e8626b8a35a"
+      },
+      "old": {
+        "api": "batch_get",
+        "arm": "old-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 262115
+        },
+        "attempts": 262115,
+        "calls": 262115,
+        "calls_per_second": 26211.45793061002,
+        "cohort_elapsed_ns": 10000016050,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/022-old-batch1-p10001",
+        "dropped_slots": 0,
+        "issued": 262115,
+        "latency_count": 262115,
+        "latency_sum_ns": 9967050543,
+        "mean_us": 38.02548706865307,
+        "ordinal": 22,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 262115,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.864,
+          "upper_us": 37.375
+        },
+        "p95_us": {
+          "lower_us": 44.544,
+          "upper_us": 45.055
+        },
+        "p99_us": {
+          "lower_us": 52.736,
+          "upper_us": 53.247
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 262115
+        },
+        "repeat": 1,
+        "report_sha256": "30c7563322879fd4f20ccabe8416e6a178571ea7b2e9f207f3f6f02e851782bf"
+      },
+      "qps_change_percent": 0.08813307960302552,
+      "repeat": 1
+    },
+    {
+      "api": "point_get",
+      "concurrency": 64,
+      "mean_change_percent": -0.823153881901606,
+      "new": {
+        "api": "point_get",
+        "arm": "new-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3785000
+        },
+        "attempts": 3785000,
+        "calls": 3785000,
+        "calls_per_second": 378494.6430896174,
+        "cohort_elapsed_ns": 10000141532,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/015-new-point-p10064",
+        "dropped_slots": 0,
+        "issued": 3785000,
+        "latency_count": 3785000,
+        "latency_sum_ns": 639542866432,
+        "mean_us": 168.96773221453105,
+        "ordinal": 15,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3785000,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 163.84,
+          "upper_us": 165.887
+        },
+        "p95_us": {
+          "lower_us": 235.52,
+          "upper_us": 237.567
+        },
+        "p99_us": {
+          "lower_us": 290.816,
+          "upper_us": 294.911
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3785000
+        },
+        "repeat": 1,
+        "report_sha256": "89d2592dbb9daa3a53e693f053c7e45988b43a66495ebde92fd59fff7bb4d83c"
+      },
+      "old": {
+        "api": "point_get",
+        "arm": "old-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3753832
+        },
+        "attempts": 3753832,
+        "calls": 3753832,
+        "calls_per_second": 375377.9586351014,
+        "cohort_elapsed_ns": 10000139629,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/017-old-point-p10064",
+        "dropped_slots": 0,
+        "issued": 3753832,
+        "latency_count": 3753832,
+        "latency_sum_ns": 639540885782,
+        "mean_us": 170.37014064081717,
+        "ordinal": 17,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3753832,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 165.888,
+          "upper_us": 167.935
+        },
+        "p95_us": {
+          "lower_us": 237.568,
+          "upper_us": 239.615
+        },
+        "p99_us": {
+          "lower_us": 303.104,
+          "upper_us": 307.199
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3753832
+        },
+        "repeat": 1,
+        "report_sha256": "9ad18038a99683963a40af4e8d09e02764759342e2902aefda871d8304d7e76d"
+      },
+      "qps_change_percent": 0.8302790248656322,
+      "repeat": 1
+    },
+    {
+      "api": "batch_get",
+      "concurrency": 64,
+      "mean_change_percent": -0.27229002905792,
+      "new": {
+        "api": "batch_get",
+        "arm": "new-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3700586
+        },
+        "attempts": 3700586,
+        "calls": 3700586,
+        "calls_per_second": 370052.96575856983,
+        "cohort_elapsed_ns": 10000152255,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/014-new-batch1-p10064",
+        "dropped_slots": 0,
+        "issued": 3700586,
+        "latency_count": 3700586,
+        "latency_sum_ns": 639419317170,
+        "mean_us": 172.78866567889517,
+        "ordinal": 14,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3700586,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 167.936,
+          "upper_us": 169.983
+        },
+        "p95_us": {
+          "lower_us": 241.664,
+          "upper_us": 243.711
+        },
+        "p99_us": {
+          "lower_us": 299.008,
+          "upper_us": 303.103
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3700586
+        },
+        "repeat": 1,
+        "report_sha256": "f20b4835f0ebaf8a7fcaae65a0535d7414d4d537b7e5ab8078df64d401c9d532"
+      },
+      "old": {
+        "api": "batch_get",
+        "arm": "old-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3690530
+        },
+        "attempts": 3690530,
+        "calls": 3690530,
+        "calls_per_second": 369046.7714131155,
+        "cohort_elapsed_ns": 10000168775,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/016-old-batch1-p10064",
+        "dropped_slots": 0,
+        "issued": 3690530,
+        "latency_count": 3690530,
+        "latency_sum_ns": 639422838982,
+        "mean_us": 173.2604365719829,
+        "ordinal": 16,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3690530,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 167.936,
+          "upper_us": 169.983
+        },
+        "p95_us": {
+          "lower_us": 243.712,
+          "upper_us": 245.759
+        },
+        "p99_us": {
+          "lower_us": 307.2,
+          "upper_us": 311.295
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3690530
+        },
+        "repeat": 1,
+        "report_sha256": "057408c48d2807618c839b25676d819a2497efcf3cdb8dedb7d8d9e560d9f2aa"
+      },
+      "qps_change_percent": 0.27264683595564776,
+      "repeat": 1
+    },
+    {
+      "api": "point_get",
+      "concurrency": 1,
+      "mean_change_percent": 0.28654254669857604,
+      "new": {
+        "api": "point_get",
+        "arm": "new-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264440
+        },
+        "attempts": 264440,
+        "calls": 264440,
+        "calls_per_second": 26443.944356652286,
+        "cohort_elapsed_ns": 10000021042,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/033-new-point-p20001",
+        "dropped_slots": 0,
+        "issued": 264440,
+        "latency_count": 264440,
+        "latency_sum_ns": 9968026180,
+        "mean_us": 37.6948501739525,
+        "ordinal": 33,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 264440,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.352,
+          "upper_us": 36.863
+        },
+        "p95_us": {
+          "lower_us": 44.032,
+          "upper_us": 44.543
+        },
+        "p99_us": {
+          "lower_us": 52.224,
+          "upper_us": 52.735
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264440
+        },
+        "repeat": 2,
+        "report_sha256": "9e5051d5b0873db1a6a9b38d16adebfcb63f6fea06fe6ae15c04765bd6d672ec"
+      },
+      "old": {
+        "api": "point_get",
+        "arm": "old-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 265153
+        },
+        "attempts": 265153,
+        "calls": 265153,
+        "calls_per_second": 26515.239306617226,
+        "cohort_elapsed_ns": 10000022890,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/035-old-point-p20001",
+        "dropped_slots": 0,
+        "issued": 265153,
+        "latency_count": 265153,
+        "latency_sum_ns": 9966344790,
+        "mean_us": 37.58714700569106,
+        "ordinal": 35,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 265153,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.352,
+          "upper_us": 36.863
+        },
+        "p95_us": {
+          "lower_us": 44.032,
+          "upper_us": 44.543
+        },
+        "p99_us": {
+          "lower_us": 52.224,
+          "upper_us": 52.735
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 265153
+        },
+        "repeat": 2,
+        "report_sha256": "ff7cb1e242b0c6b586db8efbcdb96e9abb6b1318896327b04c42e7af331a81be"
+      },
+      "qps_change_percent": -0.26888292102703604,
+      "repeat": 2
+    },
+    {
+      "api": "batch_get",
+      "concurrency": 1,
+      "mean_change_percent": 1.0738180842371436,
+      "new": {
+        "api": "batch_get",
+        "arm": "new-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 261375
+        },
+        "attempts": 261375,
+        "calls": 261375,
+        "calls_per_second": 26137.390100115845,
+        "cohort_elapsed_ns": 10000042047,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/032-new-batch1-p20001",
+        "dropped_slots": 0,
+        "issued": 261375,
+        "latency_count": 261375,
+        "latency_sum_ns": 9966655022,
+        "mean_us": 38.13163088283118,
+        "ordinal": 32,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 261375,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.864,
+          "upper_us": 37.375
+        },
+        "p95_us": {
+          "lower_us": 44.544,
+          "upper_us": 45.055
+        },
+        "p99_us": {
+          "lower_us": 52.736,
+          "upper_us": 53.247
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 261375
+        },
+        "repeat": 2,
+        "report_sha256": "4d9ee922f9ea32564fb4159cb6118b0ec12e69343f25764f16ea59ba637cc610"
+      },
+      "old": {
+        "api": "batch_get",
+        "arm": "old-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264176
+        },
+        "attempts": 264176,
+        "calls": 264176,
+        "calls_per_second": 26417.54983043112,
+        "cohort_elapsed_ns": 10000018991,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/034-old-batch1-p20001",
+        "dropped_slots": 0,
+        "issued": 264176,
+        "latency_count": 264176,
+        "latency_sum_ns": 9966440282,
+        "mean_us": 37.72651672369935,
+        "ordinal": 34,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 264176,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.352,
+          "upper_us": 36.863
+        },
+        "p95_us": {
+          "lower_us": 44.032,
+          "upper_us": 44.543
+        },
+        "p99_us": {
+          "lower_us": 51.712,
+          "upper_us": 52.223
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264176
+        },
+        "repeat": 2,
+        "report_sha256": "182b936e37f9390d1c973f5f897ccb2aa407a50a3676add28b3298719987a38a"
+      },
+      "qps_change_percent": -1.0605061109510983,
+      "repeat": 2
+    },
+    {
+      "api": "point_get",
+      "concurrency": 64,
+      "mean_change_percent": -1.0284977747538004,
+      "new": {
+        "api": "point_get",
+        "arm": "new-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3773578
+        },
+        "attempts": 3773578,
+        "calls": 3773578,
+        "calls_per_second": 377353.0328236657,
+        "cohort_elapsed_ns": 10000126332,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/027-new-point-p20064",
+        "dropped_slots": 0,
+        "issued": 3773578,
+        "latency_count": 3773578,
+        "latency_sum_ns": 639537894408,
+        "mean_us": 169.47785216258947,
+        "ordinal": 27,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3773578,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 163.84,
+          "upper_us": 165.887
+        },
+        "p95_us": {
+          "lower_us": 237.568,
+          "upper_us": 239.615
+        },
+        "p99_us": {
+          "lower_us": 299.008,
+          "upper_us": 303.103
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3773578
+        },
+        "repeat": 2,
+        "report_sha256": "9f8bfe40e82d37b94c3de43d225a5f5ab99c5f95e970dcf86f139e31727e9a77"
+      },
+      "old": {
+        "api": "point_get",
+        "arm": "old-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3734902
+        },
+        "attempts": 3734902,
+        "calls": 3734902,
+        "calls_per_second": 373483.9887745247,
+        "cohort_elapsed_ns": 10000166305,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/029-old-point-p20064",
+        "dropped_slots": 0,
+        "issued": 3734902,
+        "latency_count": 3734902,
+        "latency_sum_ns": 639561040063,
+        "mean_us": 171.23904189802033,
+        "ordinal": 29,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3734902,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 165.888,
+          "upper_us": 167.935
+        },
+        "p95_us": {
+          "lower_us": 239.616,
+          "upper_us": 241.663
+        },
+        "p99_us": {
+          "lower_us": 299.008,
+          "upper_us": 303.103
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3734902
+        },
+        "repeat": 2,
+        "report_sha256": "a2ffee309d61250ca8e84cf982d57eafd10ba47a58382bc0dfd7e2272c570bc2"
+      },
+      "qps_change_percent": 1.0359330427620383,
+      "repeat": 2
+    },
+    {
+      "api": "batch_get",
+      "concurrency": 64,
+      "mean_change_percent": -0.007455756218466281,
+      "new": {
+        "api": "batch_get",
+        "arm": "new-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3688079
+        },
+        "attempts": 3688079,
+        "calls": 3688079,
+        "calls_per_second": 368803.54277054395,
+        "cohort_elapsed_ns": 10000118145,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/026-new-batch1-p20064",
+        "dropped_slots": 0,
+        "issued": 3688079,
+        "latency_count": 3688079,
+        "latency_sum_ns": 639422438849,
+        "mean_us": 173.37547239335166,
+        "ordinal": 26,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3688079,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 167.936,
+          "upper_us": 169.983
+        },
+        "p95_us": {
+          "lower_us": 243.712,
+          "upper_us": 245.759
+        },
+        "p99_us": {
+          "lower_us": 311.296,
+          "upper_us": 315.391
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3688079
+        },
+        "repeat": 2,
+        "report_sha256": "12ede7ddc1a75832ce31de40227b83f1eaf21d86384a032139b049947f8132cf"
+      },
+      "old": {
+        "api": "batch_get",
+        "arm": "old-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3687829
+        },
+        "attempts": 3687829,
+        "calls": 3687829,
+        "calls_per_second": 368778.5625740584,
+        "cohort_elapsed_ns": 10000117616,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/028-old-batch1-p20064",
+        "dropped_slots": 0,
+        "issued": 3687829,
+        "latency_count": 3687829,
+        "latency_sum_ns": 639426769082,
+        "mean_us": 173.38839980975257,
+        "ordinal": 28,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3687829,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 167.936,
+          "upper_us": 169.983
+        },
+        "p95_us": {
+          "lower_us": 243.712,
+          "upper_us": 245.759
+        },
+        "p99_us": {
+          "lower_us": 303.104,
+          "upper_us": 307.199
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3687829
+        },
+        "repeat": 2,
+        "report_sha256": "e39405787d7e0183eb60e7cf29bb101a405e133e29cc0e22793fe79b46e7d002"
+      },
+      "qps_change_percent": 0.006773765891154859,
+      "repeat": 2
+    },
+    {
+      "api": "point_get",
+      "concurrency": 1,
+      "mean_change_percent": -0.14582083450668248,
+      "new": {
+        "api": "point_get",
+        "arm": "new-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264898
+        },
+        "attempts": 264898,
+        "calls": 264898,
+        "calls_per_second": 26489.79587553878,
+        "cohort_elapsed_ns": 10000001557,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/038-new-point-p30001",
+        "dropped_slots": 0,
+        "issued": 264898,
+        "latency_count": 264898,
+        "latency_sum_ns": 9967357911,
+        "mean_us": 37.62715426692538,
+        "ordinal": 38,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 264898,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.352,
+          "upper_us": 36.863
+        },
+        "p95_us": {
+          "lower_us": 44.032,
+          "upper_us": 44.543
+        },
+        "p99_us": {
+          "lower_us": 52.224,
+          "upper_us": 52.735
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264898
+        },
+        "repeat": 3,
+        "report_sha256": "7417983fa56175b95ba4b2f6d5024e64864cf0a182e283c5de3645348c253583"
+      },
+      "old": {
+        "api": "point_get",
+        "arm": "old-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264501
+        },
+        "attempts": 264501,
+        "calls": 264501,
+        "calls_per_second": 26450.092009427204,
+        "cohort_elapsed_ns": 10000003021,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/036-old-point-p30001",
+        "dropped_slots": 0,
+        "issued": 264501,
+        "latency_count": 264501,
+        "latency_sum_ns": 9966953826,
+        "mean_us": 37.68210262343053,
+        "ordinal": 36,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 264501,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.352,
+          "upper_us": 36.863
+        },
+        "p95_us": {
+          "lower_us": 44.032,
+          "upper_us": 44.543
+        },
+        "p99_us": {
+          "lower_us": 52.736,
+          "upper_us": 53.247
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 264501
+        },
+        "repeat": 3,
+        "report_sha256": "73b9db2658be19336e355ef86666a20ac4428ea50993695f07fdc907c619aee0"
+      },
+      "qps_change_percent": 0.15010861246693707,
+      "repeat": 3
+    },
+    {
+      "api": "batch_get",
+      "concurrency": 1,
+      "mean_change_percent": -0.3856977671317874,
+      "new": {
+        "api": "batch_get",
+        "arm": "new-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 263078
+        },
+        "attempts": 263078,
+        "calls": 263078,
+        "calls_per_second": 26307.727001319116,
+        "cohort_elapsed_ns": 10000027748,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/039-new-batch1-p30001",
+        "dropped_slots": 0,
+        "issued": 263078,
+        "latency_count": 263078,
+        "latency_sum_ns": 9966929234,
+        "mean_us": 37.88583322816807,
+        "ordinal": 39,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 263078,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.352,
+          "upper_us": 36.863
+        },
+        "p95_us": {
+          "lower_us": 44.544,
+          "upper_us": 45.055
+        },
+        "p99_us": {
+          "lower_us": 52.736,
+          "upper_us": 53.247
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 263078
+        },
+        "repeat": 3,
+        "report_sha256": "f28120f38a2f4628f051a330b35a174b2025573e36085c7a17f43d5690f23150"
+      },
+      "old": {
+        "api": "batch_get",
+        "arm": "old-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 261970
+        },
+        "attempts": 261970,
+        "calls": 261970,
+        "calls_per_second": 26196.909070528614,
+        "cohort_elapsed_ns": 10000034710,
+        "concurrency": 1,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/037-old-batch1-p30001",
+        "dropped_slots": 0,
+        "issued": 261970,
+        "latency_count": 261970,
+        "latency_sum_ns": 9963380266,
+        "mean_us": 38.03252382333855,
+        "ordinal": 37,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 261970,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 36.864,
+          "upper_us": 37.375
+        },
+        "p95_us": {
+          "lower_us": 44.544,
+          "upper_us": 45.055
+        },
+        "p99_us": {
+          "lower_us": 53.248,
+          "upper_us": 53.759
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 261970
+        },
+        "repeat": 3,
+        "report_sha256": "f806160dded8ef8dcf674be1f291a10aa7519a7195b9d6e0970e5da5d1bf598c"
+      },
+      "qps_change_percent": 0.4230191069188871,
+      "repeat": 3
+    },
+    {
+      "api": "point_get",
+      "concurrency": 64,
+      "mean_change_percent": -0.5782184150742165,
+      "new": {
+        "api": "point_get",
+        "arm": "new-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3773992
+        },
+        "attempts": 3773992,
+        "calls": 3773992,
+        "calls_per_second": 377393.69552425394,
+        "cohort_elapsed_ns": 10000145855,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/044-new-point-p30064",
+        "dropped_slots": 0,
+        "issued": 3773992,
+        "latency_count": 3773992,
+        "latency_sum_ns": 639534414907,
+        "mean_us": 169.4583387847669,
+        "ordinal": 44,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3773992,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 163.84,
+          "upper_us": 165.887
+        },
+        "p95_us": {
+          "lower_us": 237.568,
+          "upper_us": 239.615
+        },
+        "p99_us": {
+          "lower_us": 299.008,
+          "upper_us": 303.103
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3773992
+        },
+        "repeat": 3,
+        "report_sha256": "99fa8202f168eca22d59fa7c67ddecbaa780f40355dd8cce3ac4d6302e93b78d"
+      },
+      "old": {
+        "api": "point_get",
+        "arm": "old-point",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3752200
+        },
+        "attempts": 3752200,
+        "calls": 3752200,
+        "calls_per_second": 375213.6934457619,
+        "cohort_elapsed_ns": 10000168079,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/042-old-point-p30064",
+        "dropped_slots": 0,
+        "issued": 3752200,
+        "latency_count": 3752200,
+        "latency_sum_ns": 639539514030,
+        "mean_us": 170.443876667022,
+        "ordinal": 42,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3752200,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 165.888,
+          "upper_us": 167.935
+        },
+        "p95_us": {
+          "lower_us": 237.568,
+          "upper_us": 239.615
+        },
+        "p99_us": {
+          "lower_us": 299.008,
+          "upper_us": 303.103
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3752200
+        },
+        "repeat": 3,
+        "report_sha256": "de35634cbcd4e88e40aacf02617dc356f78f1268627808068641ace761d4c4d7"
+      },
+      "qps_change_percent": 0.5810028036215886,
+      "repeat": 3
+    },
+    {
+      "api": "batch_get",
+      "concurrency": 64,
+      "mean_change_percent": -0.0015152643234928043,
+      "new": {
+        "api": "batch_get",
+        "arm": "new-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3697911
+        },
+        "attempts": 3697911,
+        "calls": 3697911,
+        "calls_per_second": 369785.1440925552,
+        "cohort_elapsed_ns": 10000161064,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/045-new-batch1-p30064",
+        "dropped_slots": 0,
+        "issued": 3697911,
+        "latency_count": 3697911,
+        "latency_sum_ns": 639423188604,
+        "mean_us": 172.91470470868552,
+        "ordinal": 45,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3697911,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 167.936,
+          "upper_us": 169.983
+        },
+        "p95_us": {
+          "lower_us": 241.664,
+          "upper_us": 243.711
+        },
+        "p99_us": {
+          "lower_us": 303.104,
+          "upper_us": 307.199
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3697911
+        },
+        "repeat": 3,
+        "report_sha256": "7251a98d07891854c31fe4cfb4b18616fdafc18ec0c64251965fedf69da73e77"
+      },
+      "old": {
+        "api": "batch_get",
+        "arm": "old-batch1",
+        "attempt_reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3697864
+        },
+        "attempts": 3697864,
+        "calls": 3697864,
+        "calls_per_second": 369780.5008916693,
+        "cohort_elapsed_ns": 10000159530,
+        "concurrency": 64,
+        "connection_attempts": null,
+        "connection_failures": null,
+        "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/043-old-batch1-p30064",
+        "dropped_slots": 0,
+        "issued": 3697864,
+        "latency_count": 3697864,
+        "latency_sum_ns": 639424750588,
+        "mean_us": 172.9173248632183,
+        "ordinal": 43,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 3697864,
+          "unknown_write": 0
+        },
+        "p50_us": {
+          "lower_us": 167.936,
+          "upper_us": 169.983
+        },
+        "p95_us": {
+          "lower_us": 241.664,
+          "upper_us": 243.711
+        },
+        "p99_us": {
+          "lower_us": 299.008,
+          "upper_us": 303.103
+        },
+        "reasons": {
+          "admission_bytes": 0,
+          "admission_count": 0,
+          "admission_oversize": 0,
+          "client_capacity": 0,
+          "client_input": 0,
+          "deadline": 0,
+          "not_leader": 0,
+          "protocol": 0,
+          "read_apply_unconfirmed": 0,
+          "read_quorum_unconfirmed": 0,
+          "rpc_status": 0,
+          "success": 3697864
+        },
+        "repeat": 3,
+        "report_sha256": "fea39d5245bca613da8b4443008f84e52a3b0dfb8c8830a5c591c77e0edf3d59"
+      },
+      "qps_change_percent": 0.0012556640695438048,
+      "repeat": 3
+    }
+  ],
+  "pooled": [
+    {
+      "api": "point_get",
+      "arm": "old-point",
+      "calls": 1061462,
+      "calls_per_second": 26536.504994750943,
+      "cohort_elapsed_ns": 40000067839,
+      "concurrency": 1,
+      "latency_count": 1061462,
+      "latency_sum_ns": 39863594122,
+      "mean_us": 37.55536620434834,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "calls": 1050739,
+      "calls_per_second": 26268.420164016195,
+      "cohort_elapsed_ns": 40000083501,
+      "concurrency": 1,
+      "latency_count": 1050739,
+      "latency_sum_ns": 39860457458,
+      "mean_us": 37.93564097078342,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "api": "point_get",
+      "arm": "new-point",
+      "calls": 1058383,
+      "calls_per_second": 26459.542110789156,
+      "cohort_elapsed_ns": 40000049720,
+      "concurrency": 1,
+      "latency_count": 1058383,
+      "latency_sum_ns": 39869945683,
+      "mean_us": 37.670621772080615,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "calls": 1050641,
+      "calls_per_second": 26265.960316132827,
+      "cohort_elapsed_ns": 40000098506,
+      "concurrency": 1,
+      "latency_count": 1050641,
+      "latency_sum_ns": 39863238744,
+      "mean_us": 37.941826698177586,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "calls": 6857971,
+      "calls_per_second": 171449.22728568004,
+      "cohort_elapsed_ns": 40000011132,
+      "concurrency": 1,
+      "latency_count": 6857971,
+      "latency_sum_ns": 39453965630,
+      "mean_us": 5.753008525407879,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "calls": 6904382,
+      "calls_per_second": 172609.49346176043,
+      "cohort_elapsed_ns": 40000013102,
+      "concurrency": 1,
+      "latency_count": 6904382,
+      "latency_sum_ns": 39478278446,
+      "mean_us": 5.717858375449099,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "api": "point_get",
+      "arm": "old-point",
+      "calls": 14992729,
+      "calls_per_second": 374812.5308667717,
+      "cohort_elapsed_ns": 40000607678,
+      "concurrency": 64,
+      "latency_count": 14992729,
+      "latency_sum_ns": 2558195654767,
+      "mean_us": 170.62908659037325,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "calls": 14759350,
+      "calls_per_second": 368978.6205883591,
+      "cohort_elapsed_ns": 40000556066,
+      "concurrency": 64,
+      "latency_count": 14759350,
+      "latency_sum_ns": 2557701431413,
+      "mean_us": 173.2936363331041,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "api": "point_get",
+      "arm": "new-point",
+      "calls": 15112403,
+      "calls_per_second": 377804.71306328056,
+      "cohort_elapsed_ns": 40000567694,
+      "concurrency": 64,
+      "latency_count": 15112403,
+      "latency_sum_ns": 2558167913927,
+      "mean_us": 169.27605185800033,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "calls": 14796290,
+      "calls_per_second": 369901.87345777417,
+      "cohort_elapsed_ns": 40000581402,
+      "concurrency": 64,
+      "latency_count": 14796290,
+      "latency_sum_ns": 2557690432998,
+      "mean_us": 172.86025300923407,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "calls": 20302105,
+      "calls_per_second": 507539.5032893862,
+      "cohort_elapsed_ns": 40001034143,
+      "concurrency": 64,
+      "latency_count": 20302105,
+      "latency_sum_ns": 2557703949461,
+      "mean_us": 125.98220477438177,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "calls": 20486278,
+      "calls_per_second": 512144.13953378017,
+      "cohort_elapsed_ns": 40001000536,
+      "concurrency": 64,
+      "latency_count": 20486278,
+      "latency_sum_ns": 2557800172651,
+      "mean_us": 124.8543133433511,
+      "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+      "repeats": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "pooled_native_pairs": [
+    {
+      "api": "point_get",
+      "concurrency": 1,
+      "mean_change_percent": 0.3068950708805307,
+      "new": {
+        "api": "point_get",
+        "arm": "new-point",
+        "calls": 1058383,
+        "calls_per_second": 26459.542110789156,
+        "cohort_elapsed_ns": 40000049720,
+        "concurrency": 1,
+        "latency_count": 1058383,
+        "latency_sum_ns": 39869945683,
+        "mean_us": 37.670621772080615,
+        "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+        "repeats": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "old": {
+        "api": "point_get",
+        "arm": "old-point",
+        "calls": 1061462,
+        "calls_per_second": 26536.504994750943,
+        "cohort_elapsed_ns": 40000067839,
+        "concurrency": 1,
+        "latency_count": 1061462,
+        "latency_sum_ns": 39863594122,
+        "mean_us": 37.55536620434834,
+        "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+        "repeats": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "qps_change_percent": -0.2900264521534024
+    },
+    {
+      "api": "batch_get",
+      "concurrency": 1,
+      "mean_change_percent": 0.016305846522879364,
+      "new": {
+        "api": "batch_get",
+        "arm": "new-batch1",
+        "calls": 1050641,
+        "calls_per_second": 26265.960316132827,
+        "cohort_elapsed_ns": 40000098506,
+        "concurrency": 1,
+        "latency_count": 1050641,
+        "latency_sum_ns": 39863238744,
+        "mean_us": 37.941826698177586,
+        "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+        "repeats": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "old": {
+        "api": "batch_get",
+        "arm": "old-batch1",
+        "calls": 1050739,
+        "calls_per_second": 26268.420164016195,
+        "cohort_elapsed_ns": 40000083501,
+        "concurrency": 1,
+        "latency_count": 1050739,
+        "latency_sum_ns": 39860457458,
+        "mean_us": 37.93564097078342,
+        "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+        "repeats": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "qps_change_percent": -0.009364277973356039
+    },
+    {
+      "api": "point_get",
+      "concurrency": 64,
+      "mean_change_percent": -0.7929683967781709,
+      "new": {
+        "api": "point_get",
+        "arm": "new-point",
+        "calls": 15112403,
+        "calls_per_second": 377804.71306328056,
+        "cohort_elapsed_ns": 40000567694,
+        "concurrency": 64,
+        "latency_count": 15112403,
+        "latency_sum_ns": 2558167913927,
+        "mean_us": 169.27605185800033,
+        "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+        "repeats": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "old": {
+        "api": "point_get",
+        "arm": "old-point",
+        "calls": 14992729,
+        "calls_per_second": 374812.5308667717,
+        "cohort_elapsed_ns": 40000607678,
+        "concurrency": 64,
+        "latency_count": 14992729,
+        "latency_sum_ns": 2558195654767,
+        "mean_us": 170.62908659037325,
+        "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+        "repeats": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "qps_change_percent": 0.7983143438639262
+    },
+    {
+      "api": "batch_get",
+      "concurrency": 64,
+      "mean_change_percent": -0.2500861157053613,
+      "new": {
+        "api": "batch_get",
+        "arm": "new-batch1",
+        "calls": 14796290,
+        "calls_per_second": 369901.87345777417,
+        "cohort_elapsed_ns": 40000581402,
+        "concurrency": 64,
+        "latency_count": 14796290,
+        "latency_sum_ns": 2557690432998,
+        "mean_us": 172.86025300923407,
+        "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+        "repeats": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "old": {
+        "api": "batch_get",
+        "arm": "old-batch1",
+        "calls": 14759350,
+        "calls_per_second": 368978.6205883591,
+        "cohort_elapsed_ns": 40000556066,
+        "concurrency": 64,
+        "latency_count": 14759350,
+        "latency_sum_ns": 2557701431413,
+        "mean_us": 173.2936363331041,
+        "quantiles": "No pooled or averaged quantiles; retain each original histogram interval.",
+        "repeats": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "qps_change_percent": 0.2502185270092161
+    }
+  ],
+  "protocol_id": "kv9-work-signal-c1-c64-v1",
+  "redis_controls": [
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 1714606,
+      "calls": 1714606,
+      "calls_per_second": 171460.5050451723,
+      "cohort_elapsed_ns": 10000005538,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/004-redis-mget1-p00001",
+      "dropped_slots": 0,
+      "issued": 1714606,
+      "latency_count": 1714606,
+      "latency_sum_ns": 9863521138,
+      "mean_us": 5.752645877828492,
+      "ordinal": 4,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1714606,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.632,
+        "upper_us": 5.695
+      },
+      "p95_us": {
+        "lower_us": 5.952,
+        "upper_us": 6.015
+      },
+      "p99_us": {
+        "lower_us": 7.552,
+        "upper_us": 7.615
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1714606
+      },
+      "repeat": 0,
+      "report_sha256": "b2234ef1055c63927b1a26562c1ea6a8f2a64ac302c8d758bc923942d7f7e706"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 1714882,
+      "calls": 1714882,
+      "calls_per_second": 171488.1640560808,
+      "cohort_elapsed_ns": 10000002096,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/005-redis-get1-p00001",
+      "dropped_slots": 0,
+      "issued": 1714882,
+      "latency_count": 1714882,
+      "latency_sum_ns": 9869503575,
+      "mean_us": 5.755208565370678,
+      "ordinal": 5,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1714882,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.568,
+        "upper_us": 5.631
+      },
+      "p95_us": {
+        "lower_us": 6.592,
+        "upper_us": 6.655
+      },
+      "p99_us": {
+        "lower_us": 7.872,
+        "upper_us": 7.935
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1714882
+      },
+      "repeat": 0,
+      "report_sha256": "a6964040dce262aa0bef30e28a7b9c486c9488d54e9b009c2f07ee831fbf785f"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 5038129,
+      "calls": 5038129,
+      "calls_per_second": 503798.414787978,
+      "cohort_elapsed_ns": 10000287520,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/010-redis-mget1-p00064",
+      "dropped_slots": 0,
+      "issued": 5038129,
+      "latency_count": 5038129,
+      "latency_sum_ns": 639441256247,
+      "mean_us": 126.92038180185541,
+      "ordinal": 10,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5038129,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 118.784,
+        "upper_us": 119.807
+      },
+      "p95_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5038129
+      },
+      "repeat": 0,
+      "report_sha256": "f4732108d3ad46c333d1802cf812927d97d5e346a52b74e3849d7c6b80b315bf"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 5134869,
+      "calls": 5134869,
+      "calls_per_second": 513472.3590276119,
+      "cohort_elapsed_ns": 10000283189,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/011-redis-get1-p00064",
+      "dropped_slots": 0,
+      "issued": 5134869,
+      "latency_count": 5134869,
+      "latency_sum_ns": 639449472559,
+      "mean_us": 124.53082494587497,
+      "ordinal": 11,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5134869,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 159.744,
+        "upper_us": 161.791
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5134869
+      },
+      "repeat": 0,
+      "report_sha256": "1a6844d570b16a0a0e54f7729abeaca029842af29eda7db7cc58a5f11e8b5954"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 5082540,
+      "calls": 5082540,
+      "calls_per_second": 508241.8633367761,
+      "cohort_elapsed_ns": 10000238797,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/012-redis-get1-p10064",
+      "dropped_slots": 0,
+      "issued": 5082540,
+      "latency_count": 5082540,
+      "latency_sum_ns": 639439117555,
+      "mean_us": 125.81093657010078,
+      "ordinal": 12,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5082540,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 163.84,
+        "upper_us": 165.887
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5082540
+      },
+      "repeat": 1,
+      "report_sha256": "e2bae9ec11358d260a15143ee2d86935adeabc4dd84ce4e121cfebb5ea616f7d"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 5105210,
+      "calls": 5105210,
+      "calls_per_second": 510509.4709093637,
+      "cohort_elapsed_ns": 10000225835,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/013-redis-mget1-p10064",
+      "dropped_slots": 0,
+      "issued": 5105210,
+      "latency_count": 5105210,
+      "latency_sum_ns": 639416536431,
+      "mean_us": 125.24784219082075,
+      "ordinal": 13,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5105210,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5105210
+      },
+      "repeat": 1,
+      "report_sha256": "5a1a81c145e332375eae4624890e1d061c2368111616b3c14563d9e7b3f3f28c"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 1727557,
+      "calls": 1727557,
+      "calls_per_second": 172755.63293626328,
+      "cohort_elapsed_ns": 10000003882,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/018-redis-get1-p10001",
+      "dropped_slots": 0,
+      "issued": 1727557,
+      "latency_count": 1727557,
+      "latency_sum_ns": 9869608804,
+      "mean_us": 5.713043797686559,
+      "ordinal": 18,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1727557,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.568,
+        "upper_us": 5.631
+      },
+      "p95_us": {
+        "lower_us": 5.888,
+        "upper_us": 5.951
+      },
+      "p99_us": {
+        "lower_us": 7.552,
+        "upper_us": 7.615
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1727557
+      },
+      "repeat": 1,
+      "report_sha256": "3efe2a061c107c9530f92cbd532610a0507dd2f828b59793d5a890cee47bad86"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 1714924,
+      "calls": 1714924,
+      "calls_per_second": 171492.37556233647,
+      "cohort_elapsed_ns": 10000001425,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/019-redis-mget1-p10001",
+      "dropped_slots": 0,
+      "issued": 1714924,
+      "latency_count": 1714924,
+      "latency_sum_ns": 9863755898,
+      "mean_us": 5.751716051556804,
+      "ordinal": 19,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1714924,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.632,
+        "upper_us": 5.695
+      },
+      "p95_us": {
+        "lower_us": 5.952,
+        "upper_us": 6.015
+      },
+      "p99_us": {
+        "lower_us": 7.68,
+        "upper_us": 7.743
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1714924
+      },
+      "repeat": 1,
+      "report_sha256": "c4fbc4667948c6c223201eaf326d2de3b80dc6008421382cb00a301399f90fc3"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 5155254,
+      "calls": 5155254,
+      "calls_per_second": 515512.9855193853,
+      "cohort_elapsed_ns": 10000240818,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/024-redis-get1-p20064",
+      "dropped_slots": 0,
+      "issued": 5155254,
+      "latency_count": 5155254,
+      "latency_sum_ns": 639446781220,
+      "mean_us": 124.03788081440798,
+      "ordinal": 24,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5155254,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 161.792,
+        "upper_us": 163.839
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5155254
+      },
+      "repeat": 2,
+      "report_sha256": "033677786bc7d923b756e7e61816bd2b6261d1f5293157d3146a3076b5c394bc"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 5073116,
+      "calls": 5073116,
+      "calls_per_second": 507298.36691917956,
+      "cohort_elapsed_ns": 10000260854,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/025-redis-mget1-p20064",
+      "dropped_slots": 0,
+      "issued": 5073116,
+      "latency_count": 5073116,
+      "latency_sum_ns": 639414853656,
+      "mean_us": 126.03986458342368,
+      "ordinal": 25,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5073116,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 118.784,
+        "upper_us": 119.807
+      },
+      "p95_us": {
+        "lower_us": 167.936,
+        "upper_us": 169.983
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5073116
+      },
+      "repeat": 2,
+      "report_sha256": "e6572157388eb5d6ba8e97d4c1b96ce0d917255dd0e334b399e234a1663e5174"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 1730538,
+      "calls": 1730538,
+      "calls_per_second": 173053.76988864405,
+      "cohort_elapsed_ns": 10000001740,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/030-redis-get1-p20001",
+      "dropped_slots": 0,
+      "issued": 1730538,
+      "latency_count": 1730538,
+      "latency_sum_ns": 9869520882,
+      "mean_us": 5.703151784011678,
+      "ordinal": 30,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1730538,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.568,
+        "upper_us": 5.631
+      },
+      "p95_us": {
+        "lower_us": 5.888,
+        "upper_us": 5.951
+      },
+      "p99_us": {
+        "lower_us": 7.552,
+        "upper_us": 7.615
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1730538
+      },
+      "repeat": 2,
+      "report_sha256": "c0cd9847d702b44046a565ce04083b67aaa1a0b5cffc5c0b2348288ce05ec4e2"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 1715660,
+      "calls": 1715660,
+      "calls_per_second": 171565.9430572635,
+      "cohort_elapsed_ns": 10000003319,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/031-redis-mget1-p20001",
+      "dropped_slots": 0,
+      "issued": 1715660,
+      "latency_count": 1715660,
+      "latency_sum_ns": 9863981814,
+      "mean_us": 5.749380304955527,
+      "ordinal": 31,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1715660,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.632,
+        "upper_us": 5.695
+      },
+      "p95_us": {
+        "lower_us": 5.952,
+        "upper_us": 6.015
+      },
+      "p99_us": {
+        "lower_us": 7.424,
+        "upper_us": 7.487
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1715660
+      },
+      "repeat": 2,
+      "report_sha256": "f41558056593d905eeb67790e8e637a70012ace48fba5c18c3da8b4e4d041cd1"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 1712781,
+      "calls": 1712781,
+      "calls_per_second": 171278.08544136272,
+      "cohort_elapsed_ns": 10000000850,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/040-redis-mget1-p30001",
+      "dropped_slots": 0,
+      "issued": 1712781,
+      "latency_count": 1712781,
+      "latency_sum_ns": 9862706780,
+      "mean_us": 5.758299969464864,
+      "ordinal": 40,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1712781,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.632,
+        "upper_us": 5.695
+      },
+      "p95_us": {
+        "lower_us": 5.952,
+        "upper_us": 6.015
+      },
+      "p99_us": {
+        "lower_us": 7.488,
+        "upper_us": 7.551
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1712781
+      },
+      "repeat": 3,
+      "report_sha256": "3a6c54b4ab88247bfaa02143ba28806c64a35f6aba83629b5ab4d5fa641a79a4"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 1731405,
+      "calls": 1731405,
+      "calls_per_second": 173140.40678120498,
+      "cohort_elapsed_ns": 10000005384,
+      "concurrency": 1,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/041-redis-get1-p30001",
+      "dropped_slots": 0,
+      "issued": 1731405,
+      "latency_count": 1731405,
+      "latency_sum_ns": 9869645185,
+      "mean_us": 5.700367727365925,
+      "ordinal": 41,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 1731405,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 5.568,
+        "upper_us": 5.631
+      },
+      "p95_us": {
+        "lower_us": 5.888,
+        "upper_us": 5.951
+      },
+      "p99_us": {
+        "lower_us": 7.424,
+        "upper_us": 7.487
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 1731405
+      },
+      "repeat": 3,
+      "report_sha256": "804971bd326b4975babcbb72a2af97249d125bffdeb2a1283b79b0e31d98d011"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "attempt_reasons": null,
+      "attempts": 5085650,
+      "calls": 5085650,
+      "calls_per_second": 508551.7810101355,
+      "cohort_elapsed_ns": 10000259934,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/046-redis-mget1-p30064",
+      "dropped_slots": 0,
+      "issued": 5085650,
+      "latency_count": 5085650,
+      "latency_sum_ns": 639431303127,
+      "mean_us": 125.73246352521309,
+      "ordinal": 46,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5085650,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 165.888,
+        "upper_us": 167.935
+      },
+      "p99_us": {
+        "lower_us": 229.376,
+        "upper_us": 231.423
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5085650
+      },
+      "repeat": 3,
+      "report_sha256": "059463055bf5a254362948020e32785803a6cf73b86473fad840a9047268d9a4"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "attempt_reasons": null,
+      "attempts": 5113615,
+      "calls": 5113615,
+      "calls_per_second": 511349.343589785,
+      "cohort_elapsed_ns": 10000237732,
+      "concurrency": 64,
+      "connection_attempts": 0,
+      "connection_failures": 0,
+      "directory": "/tmp/kv9-work-signal-matched-diagnostic-attempt1/cohorts/047-redis-get1-p30064",
+      "dropped_slots": 0,
+      "issued": 5113615,
+      "latency_count": 5113615,
+      "latency_sum_ns": 639464801317,
+      "mean_us": 125.05141691679955,
+      "ordinal": 47,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 5113615,
+        "unknown_write": 0
+      },
+      "p50_us": {
+        "lower_us": 117.76,
+        "upper_us": 118.783
+      },
+      "p95_us": {
+        "lower_us": 159.744,
+        "upper_us": 161.791
+      },
+      "p99_us": {
+        "lower_us": 231.424,
+        "upper_us": 233.471
+      },
+      "reasons": {
+        "data_integrity": 0,
+        "deadline": 0,
+        "io": 0,
+        "protocol": 0,
+        "server_error": 0,
+        "success": 5113615
+      },
+      "repeat": 3,
+      "report_sha256": "fc31a49b2f4d27d93f3bfb870484b5ba72e4ca76bf90a23ea2602af2c73565f5"
+    }
+  ],
+  "scope": "Four-repeat 10-second c1/c64 shared-host tmpfs diagnostic; no sustained-capacity or equal-durability claim",
+  "totals": {
+    "attempt_reasons": {
+      "admission_bytes": 0,
+      "admission_count": 0,
+      "admission_oversize": 0,
+      "client_capacity": 0,
+      "client_input": 0,
+      "deadline": 0,
+      "not_leader": 0,
+      "protocol": 0,
+      "read_apply_unconfirmed": 0,
+      "read_quorum_unconfirmed": 0,
+      "rpc_status": 0,
+      "success": 63881997
+    },
+    "attempts": 118432733,
+    "calls": 118432733,
+    "connection_attempts": 0,
+    "connection_failures": 0,
+    "dropped_slots": 0,
+    "issued": 118432733,
+    "outcomes": {
+      "client_rejected": 0,
+      "read_failure": 0,
+      "refused": 0,
+      "success": 118432733,
+      "unknown_write": 0
+    },
+    "reasons": {
+      "admission_bytes": 0,
+      "admission_count": 0,
+      "admission_oversize": 0,
+      "client_capacity": 0,
+      "client_input": 0,
+      "data_integrity": 0,
+      "deadline": 0,
+      "io": 0,
+      "not_leader": 0,
+      "protocol": 0,
+      "read_apply_unconfirmed": 0,
+      "read_quorum_unconfirmed": 0,
+      "rpc_status": 0,
+      "server_error": 0,
+      "success": 118432733
+    }
+  }
+}

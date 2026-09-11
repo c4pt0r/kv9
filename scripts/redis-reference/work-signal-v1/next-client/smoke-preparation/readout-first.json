@@ -1,0 +1,322 @@
+{
+  "all_managed_pids_absent": true,
+  "cases": [
+    {
+      "all_phase_attempts": 455,
+      "all_phase_success_calls": 455,
+      "case": "point-r000",
+      "changed_keys": 49,
+      "client_timing_eligible": true,
+      "measured_items": [
+        0,
+        36
+      ],
+      "measured_successes": [
+        0,
+        36
+      ],
+      "operations": [
+        "get",
+        "put"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "duration",
+      "target": "native"
+    },
+    {
+      "all_phase_attempts": 100419,
+      "all_phase_success_calls": 100419,
+      "case": "point-r000",
+      "changed_keys": 128,
+      "client_timing_eligible": false,
+      "measured_items": [
+        0,
+        100000
+      ],
+      "measured_successes": [
+        0,
+        100000
+      ],
+      "operations": [
+        "get",
+        "set"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "operation_limit",
+      "target": "redis"
+    },
+    {
+      "all_phase_attempts": 472,
+      "all_phase_success_calls": 472,
+      "case": "point-r050",
+      "changed_keys": 29,
+      "client_timing_eligible": true,
+      "measured_items": [
+        33,
+        20
+      ],
+      "measured_successes": [
+        33,
+        20
+      ],
+      "operations": [
+        "get",
+        "put"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "duration",
+      "target": "native"
+    },
+    {
+      "all_phase_attempts": 100419,
+      "all_phase_success_calls": 100419,
+      "case": "point-r050",
+      "changed_keys": 128,
+      "client_timing_eligible": false,
+      "measured_items": [
+        50057,
+        49943
+      ],
+      "measured_successes": [
+        50057,
+        49943
+      ],
+      "operations": [
+        "get",
+        "set"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "operation_limit",
+      "target": "redis"
+    },
+    {
+      "all_phase_attempts": 35386,
+      "all_phase_success_calls": 35386,
+      "case": "point-r100",
+      "changed_keys": 0,
+      "client_timing_eligible": true,
+      "measured_items": [
+        34967,
+        0
+      ],
+      "measured_successes": [
+        34967,
+        0
+      ],
+      "operations": [
+        "get",
+        "put"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "duration",
+      "target": "native"
+    },
+    {
+      "all_phase_attempts": 100419,
+      "all_phase_success_calls": 100419,
+      "case": "point-r100",
+      "changed_keys": 0,
+      "client_timing_eligible": false,
+      "measured_items": [
+        100000,
+        0
+      ],
+      "measured_successes": [
+        100000,
+        0
+      ],
+      "operations": [
+        "get",
+        "set"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "operation_limit",
+      "target": "redis"
+    },
+    {
+      "all_phase_attempts": 163,
+      "all_phase_success_calls": 163,
+      "case": "batch-r000",
+      "changed_keys": 111,
+      "client_timing_eligible": true,
+      "measured_items": [
+        0,
+        128
+      ],
+      "measured_successes": [
+        0,
+        32
+      ],
+      "operations": [
+        "batch_get",
+        "batch_put"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "duration",
+      "target": "native"
+    },
+    {
+      "all_phase_attempts": 100131,
+      "all_phase_success_calls": 100131,
+      "case": "batch-r000",
+      "changed_keys": 128,
+      "client_timing_eligible": false,
+      "measured_items": [
+        0,
+        400000
+      ],
+      "measured_successes": [
+        0,
+        100000
+      ],
+      "operations": [
+        "mget",
+        "mset"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "operation_limit",
+      "target": "redis"
+    },
+    {
+      "all_phase_attempts": 187,
+      "all_phase_success_calls": 187,
+      "case": "batch-r050",
+      "changed_keys": 91,
+      "client_timing_eligible": true,
+      "measured_items": [
+        132,
+        92
+      ],
+      "measured_successes": [
+        33,
+        23
+      ],
+      "operations": [
+        "batch_get",
+        "batch_put"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "duration",
+      "target": "native"
+    },
+    {
+      "all_phase_attempts": 100131,
+      "all_phase_success_calls": 100131,
+      "case": "batch-r050",
+      "changed_keys": 128,
+      "client_timing_eligible": false,
+      "measured_items": [
+        200228,
+        199772
+      ],
+      "measured_successes": [
+        50057,
+        49943
+      ],
+      "operations": [
+        "mget",
+        "mset"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "operation_limit",
+      "target": "redis"
+    },
+    {
+      "all_phase_attempts": 32371,
+      "all_phase_success_calls": 32371,
+      "case": "batch-r100",
+      "changed_keys": 0,
+      "client_timing_eligible": true,
+      "measured_items": [
+        128960,
+        0
+      ],
+      "measured_successes": [
+        32240,
+        0
+      ],
+      "operations": [
+        "batch_get",
+        "batch_put"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "duration",
+      "target": "native"
+    },
+    {
+      "all_phase_attempts": 100131,
+      "all_phase_success_calls": 100131,
+      "case": "batch-r100",
+      "changed_keys": 0,
+      "client_timing_eligible": false,
+      "measured_items": [
+        400000,
+        0
+      ],
+      "measured_successes": [
+        100000,
+        0
+      ],
+      "operations": [
+        "mget",
+        "mset"
+      ],
+      "other_outcomes": 0,
+      "stop_reason": "operation_limit",
+      "target": "redis"
+    }
+  ],
+  "cleanup_complete": true,
+  "complete": true,
+  "drain_records": 18,
+  "hashes": {
+    "/tmp/kv9-point-write-v3-smoke-first/bound-inputs.json": "4516bdea13b479301862bc22447d3ae258b19573ca919c909afb5926a51400c4",
+    "/tmp/kv9-point-write-v3-smoke-first/inventory.json": "51dbc1481696e6b9f6c8f124897909a3192f451485ef661de20f3dd0b2ec1a7c",
+    "/tmp/kv9-point-write-v3-smoke-first/summary.json": "3ee64352b07697609434b73d0226b55c18c89eb8207f14e1b623d9317d17cbb7",
+    "/tmp/kv9-point-write-v3-smoke-preparation/runtime-first.log": "4ee39273f662248d78c8933a78e8ef13c65b457c183bbb64091c76dd2af5c307",
+    "/tmp/kv9-point-write-v3-smoke-preparation/terminal-first.json": "15307cfd469d149dc94a7e5ec3957995142272e18264c4dc28f5ab0da1019c97"
+  },
+  "inputs_unchanged": true,
+  "managed_lifetimes": 21,
+  "native_exit_codes": [
+    -9,
+    -9,
+    -9,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "native_lifetimes": 9,
+  "other_outcomes": 0,
+  "redis_exit_codes": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "redis_lifetimes": 12,
+  "retained_bytes": 30513735,
+  "retained_files": 313,
+  "runtime_exit_code": 0,
+  "runtime_session": 19187,
+  "source_counts": {
+    "native": 581,
+    "redis": 581,
+    "server": 584
+  },
+  "throughput_acceptance": false,
+  "total_all_phase_attempts": 670684,
+  "total_all_phase_success_calls": 670684,
+  "total_measured_success_calls": 667384
+}

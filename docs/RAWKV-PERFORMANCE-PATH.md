@@ -168,16 +168,22 @@ selected for the next performance increment or a broader fault campaign.
 Its source gate and 364-call process E2E remain valid, separate correctness
 evidence. Keep every observation; `5ee897a` remains the general baseline.
 
-The [next isolated candidate](https://github.com/c4pt0r/kv9/blob/1b70dba62e492cd8e10dd20f643fee74d39abc57/docs/WORK-SIGNAL-COALESCING.md)
-is implemented at `1b70dba6`, based on `57ff6851`, and coalesces physical
-WorkSignal notifications on the pending bit's false-to-true transition. It
-preserves the same state mutex and single-owner work protocol, with a local
-argument for publication/drain/parking races and an actual-delivery concurrency
-test. All 219 Raft tests/doctests and formatting/Clippy pass. A controlled lost
-pending turn fails that test and exact source restoration passes. The default
-release and independently checked 351-call process E2E pass all four progress
-windows, six fresh drains and seven exited lifetimes. This targets redundant
-synchronization work; performance and candidate-specific Chaos remain open.
+The [work-signal screen](WORK-SIGNAL-SCREENING.md) now completes all 48 cohorts
+and the independent audit: 118,432,733 successful calls, no errors/retries,
+160 exited lifetimes and exact restoration. Candidate `1b70dba6` changes pooled
+c64 GET by +0.798% and BatchGet(1) by +0.250%, but c1 GET falls 0.290% and mean
+latency rises 0.307%. Seven of sixteen p99 pairs worsen. Do not select it as a
+general performance increment or advance a broad candidate fault campaign.
+The source and all observations remain retained; `5ee897a` stays the baseline.
+
+Next refresh actual point writes, mixed traffic and larger batch APIs before
+another isolated pure-read micro-optimization. The
+[version 3 measurement clients](https://github.com/c4pt0r/kv9/blob/0be806d9671e2c50701a64aa7889c8859b7648ba/docs/POINT-WRITE-MEASUREMENT.md)
+add explicit GET/PUT versus GET/SET and batch API selection while preserving
+legacy v1/v2 formats. Seventy focused local tests and both Clippy/format gates
+pass. Use the same clean new clients in every arm of the next comparison;
+old-client recordings cannot act as matched controls. The current publication
+records client release/runtime validation separately from new performance data.
 
 ### Earlier experiments
 

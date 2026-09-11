@@ -1,0 +1,8 @@
+    Checking kv9-common v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/common)
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/raft)
+   Compiling kv9-server v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/server)
+    Checking kv9-engine v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/engine)
+    Checking kv9-region v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/region)
+    Checking kv9-txn v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/txn)
+    Checking kv9-meta v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/meta)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.97s

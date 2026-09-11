@@ -1,0 +1,55 @@
+--- /tmp/kv9-inbox-drain-comparison-preparation/audit.py
++++ /tmp/kv9-work-signal-comparison-preparation/audit.py
+@@ -30,29 +30,29 @@
+ SOURCE = Path('/tmp/kv9-point-batch1-measurement')
+ CLIENT_REV = '03c1c776a5dd7d1cc67491ab253e02ce51665bf8'
+ OLD_REV = '57ff6851e40ed63c837189d6eb0a11190704725a'
+-NEW_REV = 'c3131800b665f6f160a11c804f542237e77ab83a'
++NEW_REV = '1b70dba62e492cd8e10dd20f643fee74d39abc57'
+ REDIS_REV = 'b8ec38f660786412705f350d96ab086f0e7f6c60'
+ REDIS_SOURCE = Path('/tmp/kv9-redis-point-get-reference')
+ PINS = {
+  'old': (OLD_REV, '6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30'),
+- 'new': (NEW_REV, '26a185509cccf6436c5f02a5ab4476efca551166d1d4ef43ea2c200cc5a9e513'),
++ 'new': (NEW_REV, 'ab05a16fd520d4c612b01cedea1a514411e607eb0bc645ce28fce24b3299d1ef'),
+  'client': (CLIENT_REV, '22ca0883ca2900fab0b457d87ebc6bc50662d7145af0846304f02b5841a6d30b'),
+  'redis': (REDIS_REV, '61349111171ded5cb7fff9085c7886381788e5f4c7a407e91a5dda618d124892'),
+ }
+-PROTOCOL_ID = 'kv9-inbox-drain-c1-c64-v1'
++PROTOCOL_ID = 'kv9-work-signal-c1-c64-v1'
+ CONCURRENCIES = (1, 64)
+ ARMS = (('old-point','old','point_get'), ('old-batch1','old','batch_get'),
+         ('new-point','new','point_get'), ('new-batch1','new','batch_get'),
+         ('redis-mget1',None,'mget'), ('redis-get1',None,'get'))
+ ROLE_PATHS = {
+  'old': ('/tmp/kv9-read-group-credit', '/tmp/kv9-read-group-credit-release-first', 'kv9'),
+- 'new': ('/tmp/kv9-raft-inbox-drain-reuse', '/tmp/kv9-inbox-drain-release-first', 'kv9'),
++ 'new': ('/tmp/kv9-work-signal-coalescing', '/tmp/kv9-work-signal-coalescing-release-first', 'kv9'),
+  'client': ('/tmp/kv9-point-batch1-measurement', '/tmp/kv9-point-batch1-client-release-first', 'kv9-batch-benchmark'),
+  'redis': ('/tmp/kv9-redis-point-get-reference', '/tmp/kv9-redis-point-get-reference-release-first', 'kv9-redis-batch-reference'),
+ }
+ SERVER_MANIFESTS = {
+  'old': '7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd',
+- 'new': 'fae8fd537f53b0a4e9cd09673230a33c97519e4a1e0311f20e1a74c4340e1a20',
++ 'new': '800e74e36f7de539bb38d3cfe097e356ed2ebd1e33d16d7b48435eb6f2bc93f3',
+ }
+ records = {}
+ def require(value, message):
+@@ -201,7 +201,7 @@
+             isolation['driver_sha256']==args.expected_driver_sha256,'outer isolation scope differs')
+     require(matrix['isolation_snapshot']==isolation and sha(outer/'isolation.json')==matrix['isolation_snapshot_sha256'] and
+             sha(ROOT/'isolation-snapshot.json')==sha(outer/'isolation.json'),'inner/outer snapshot binding differs')
+-    expected_argv=['/usr/bin/python3','/tmp/kv9-inbox-drain-comparison-preparation/matched-driver.py',
++    expected_argv=['/usr/bin/python3','/tmp/kv9-work-signal-comparison-preparation/matched-driver.py',
+                    '--output',str(ROOT),'--isolation-snapshot',str(outer/'isolation.json'),
+                    '--client-source','/tmp/kv9-point-batch1-measurement',
+                    '--client-build','/tmp/kv9-point-batch1-client-release-first','--expected-client-revision',CLIENT_REV]
+@@ -277,7 +277,7 @@
+         require(sha(ROOT/'retained-inputs/helpers'/f'{number:02d}-{Path(path).name}')==h,'executed helper snapshot differs')
+         if Path(path).is_relative_to(SOURCE) or Path(path).is_relative_to(REDIS_SOURCE):
+             require(sha(path)==h,'validator/helper source changed')
+-    require(matrix['helper_hashes'][str(Path('/tmp/kv9-inbox-drain-comparison-preparation/matched-driver.py'))]==args.expected_driver_sha256,
++    require(matrix['helper_hashes'][str(Path('/tmp/kv9-work-signal-comparison-preparation/matched-driver.py'))]==args.expected_driver_sha256,
+             'driver is not the retained helper identity')
+     sys.path.insert(0,str(SOURCE/'scripts'))
+     import batch_benchmark_report as native

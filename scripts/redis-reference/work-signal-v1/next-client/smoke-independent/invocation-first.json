@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "python3",
+    "/tmp/kv9-point-write-v3-smoke-independent-first/audit.py",
+    "--root-session",
+    "19187",
+    "--root-exit-code",
+    "0",
+    "--runner-sha256",
+    "45e8e02ffd9c9c3229ba81ed0cc200476755b73c570dcd15d381cc64e6532c51"
+  ],
+  "auditor_sha256": "a32628d6573f99a5a30f1fd2ca43eaaaddba95a7b25fcb3615a37852190aa080",
+  "started_ns": 1789131580314803673,
+  "launcher_pid": 1441302,
+  "environment": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ]
+}

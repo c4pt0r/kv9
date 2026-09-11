@@ -1,0 +1,12 @@
+PASS native point-r000
+PASS redis point-r000
+PASS native point-r050
+PASS redis point-r050
+PASS native point-r100
+PASS redis point-r100
+PASS native batch-r000
+PASS redis batch-r000
+PASS native batch-r050
+PASS redis batch-r050
+PASS native batch-r100
+PASS redis batch-r100

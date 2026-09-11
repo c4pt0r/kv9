@@ -146,7 +146,9 @@ process E2E also pass: **351 calls, 318 OK / 33 unknown / zero refused**,
 all four leader-loss/restart progress windows, six fresh drains and seven
 exited lifetimes. All 595 source and default release/runtime bindings pass.
 This ordinary-WAL process evidence is separate from actual Chaos acceptance.
-Its performance remains unmeasured.
+Its [completed matched screen](WORK-SIGNAL-SCREENING.md) now shows a small
+c64 GET gain with c1 and p99 regressions. It is not selected as a general
+performance increment; the complete recording and decision remain retained.
 
 Continue to require quorum confirmation, successful-pump and applied-index
 fencing, original deadlines/cancellation, bounded resources and typed outcomes.

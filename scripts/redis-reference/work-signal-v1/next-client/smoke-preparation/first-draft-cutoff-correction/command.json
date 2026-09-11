@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-point-write-v3-smoke-preparation/run.py",
+    "--client-revision",
+    "0be806d9671e2c50701a64aa7889c8859b7648ba",
+    "--native-build",
+    "/tmp/kv9-point-write-v3-release-first/native",
+    "--native-manifest-sha256",
+    "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c",
+    "--native-binary-sha256",
+    "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+    "--redis-build",
+    "/tmp/kv9-point-write-v3-release-first/redis",
+    "--redis-manifest-sha256",
+    "10f9ce2a754a2ef43a6439856c1d5fb00c5a1e5004173e52897a3ea19d6124f0",
+    "--redis-binary-sha256",
+    "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af",
+    "--output",
+    "/tmp/kv9-point-write-v3-smoke-first"
+  ],
+  "environment": {
+    "PYTHONOPTIMIZE": "0",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "cpu_affinity": "6-15,22-31"
+}

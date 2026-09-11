@@ -1,0 +1,29 @@
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/raft)
+   Compiling kv9-server v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/server)
+   Compiling kv9-common v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/common)
+   Compiling kv9-engine v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/engine)
+   Compiling kv9-region v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/region)
+   Compiling kv9-txn v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/txn)
+   Compiling kv9-meta v0.0.0 (/tmp/kv9-point-write-measurement-v3/crates/meta)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.48s
+     Running unittests src/bin/kv9-batch-benchmark.rs (/home/dongxu/kv9/target/debug/deps/kv9_batch_benchmark-b43178fbb7da71ba)
+
+running 15 tests
+test common::tests::overflow_cannot_publish_a_quantile ... ok
+test tests::dataset_validation_binds_key_position_and_full_value_bytes ... ok
+test common::tests::every_bucket_boundary_round_trips_including_u64_max ... ok
+test tests::fixed_rate_slots_use_integer_boundaries_and_do_not_hide_missed_work ... ok
+test tests::point_put_dispatch_retains_key_nonce_and_uses_the_singular_wire_request ... ok
+test tests::explicit_v2_selector_and_point_get_bounds_are_required ... ok
+test tests::point_put_requires_its_operation_kind_and_a_positive_applied_receipt ... ok
+test metrics::tests::unknown_whole_batches_and_retry_attempts_keep_separate_populations ... ok
+test tests::legacy_v1_round_trip_omits_selector_and_retains_batch_behavior ... ok
+test common::tests::quantiles_cover_independently_sorted_samples_and_merge ... ok
+test tests::v3_selectors_are_required_and_point_apis_never_hide_multiple_items ... ok
+test tests::point_get_control_selects_the_same_key_and_accepts_only_its_reply_shape ... ok
+test tests::uncertain_point_put_keeps_one_whole_call_item_and_attempt_population ... ok
+test tests::v3_mixed_selectors_preserve_the_same_deterministic_inputs_and_stage_labels ... ok
+test tests::oversized_batch_and_offered_load_are_rejected_before_network_work ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

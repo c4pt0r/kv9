@@ -1,0 +1,25 @@
+--- /tmp/kv9-inbox-drain-comparison-preparation/test_audit_contract.py
++++ /tmp/kv9-work-signal-comparison-preparation/test_audit_contract.py
+@@ -57,7 +57,7 @@
+                       if k not in {'version', 'rpc_transport', 'read_api', 'client', 'address', 'deadline_ms'}}
+             rows.append(dict(repeat=repeat, arm=arm, server_role=server, read_api=api,
+                              mix='read', target='kv9' if server else 'redis-memory', shared=shared))
+-    return dict(version=2, protocol_id='kv9-inbox-drain-c1-c64-v1',
++    return dict(version=2, protocol_id='kv9-work-signal-c1-c64-v1',
+                 concurrency_points=[1, 64], smoke=False, fixed_rates=None,
+                 attempts=[{} for _ in rows], cohort_inventory=rows)
+ 
+@@ -184,10 +184,10 @@
+                 audit['shared_config'](repeat, 1)
+ 
+     def test_exact_candidate_and_control_pins_are_distinct(self):
+-        self.assertEqual(audit['PINS']['new'], ('c3131800b665f6f160a11c804f542237e77ab83a',
+-                         '26a185509cccf6436c5f02a5ab4476efca551166d1d4ef43ea2c200cc5a9e513'))
++        self.assertEqual(audit['PINS']['new'], ('1b70dba62e492cd8e10dd20f643fee74d39abc57',
++                         'ab05a16fd520d4c612b01cedea1a514411e607eb0bc645ce28fce24b3299d1ef'))
+         self.assertEqual(audit['SERVER_MANIFESTS']['new'],
+-                         'fae8fd537f53b0a4e9cd09673230a33c97519e4a1e0311f20e1a74c4340e1a20')
++                         '800e74e36f7de539bb38d3cfe097e356ed2ebd1e33d16d7b48435eb6f2bc93f3')
+         self.assertEqual(audit['PINS']['old'], ('57ff6851e40ed63c837189d6eb0a11190704725a',
+                          '6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30'))
+         self.assertEqual(audit['SERVER_MANIFESTS']['old'],

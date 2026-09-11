@@ -1,0 +1,36 @@
+{
+  "command": {
+    "argv": [
+      "/usr/bin/python3",
+      "/tmp/kv9-point-write-v3-smoke-preparation/run.py",
+      "--client-revision",
+      "0be806d9671e2c50701a64aa7889c8859b7648ba",
+      "--native-build",
+      "/tmp/kv9-point-write-v3-release-first/native",
+      "--native-manifest-sha256",
+      "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c",
+      "--native-binary-sha256",
+      "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+      "--redis-build",
+      "/tmp/kv9-point-write-v3-release-first/redis",
+      "--redis-manifest-sha256",
+      "10f9ce2a754a2ef43a6439856c1d5fb00c5a1e5004173e52897a3ea19d6124f0",
+      "--redis-binary-sha256",
+      "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af",
+      "--output",
+      "/tmp/kv9-point-write-v3-smoke-first"
+    ],
+    "environment": {
+      "PYTHONOPTIMIZE": "0",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "cpu_affinity": "6-15,22-31"
+  },
+  "pid": 1420115,
+  "launcher_pid": 1420114,
+  "launched_unix_ns": 1789131436215794333,
+  "driver_sha256": "45e8e02ffd9c9c3229ba81ed0cc200476755b73c570dcd15d381cc64e6532c51",
+  "exit_code": 0,
+  "terminal_unix_ns": 1789131504918916041,
+  "log_sha256": "4ee39273f662248d78c8933a78e8ef13c65b457c183bbb64091c76dd2af5c307"
+}

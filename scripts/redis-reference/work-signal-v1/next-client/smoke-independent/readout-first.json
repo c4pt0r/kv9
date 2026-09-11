@@ -1,0 +1,215 @@
+{
+  "accepted": true,
+  "all_phase_attempts": 670684,
+  "all_phase_calls": 670684,
+  "all_phase_input_items": 1669972,
+  "audit_exit_code": 0,
+  "audit_sha256": "e718e4376fb8147f553a6928fd59aa2f9d6d406f2f5dc5724079a746b302b4a7",
+  "cases": [
+    {
+      "attempts": 36,
+      "case": "point-r000",
+      "changed_keys": 49,
+      "input_items": 36,
+      "operations": [
+        "get",
+        "put"
+      ],
+      "read_calls": 0,
+      "report_sha256": "7d1d0c29cd1aa9267a90a3dbd10432a4fef645f19a9e68193ff2ceaf0c82eaaa",
+      "stop_reason": "duration",
+      "successful_calls": 36,
+      "target": "native",
+      "write_calls": 36
+    },
+    {
+      "attempts": 100000,
+      "case": "point-r000",
+      "changed_keys": 128,
+      "input_items": 100000,
+      "operations": [
+        "get",
+        "set"
+      ],
+      "read_calls": 0,
+      "report_sha256": "b835d1f48d2134a2213d922c80fb0eb5be5a0dc4ddbfbd6c6395f7f56db0019f",
+      "stop_reason": "operation_limit",
+      "successful_calls": 100000,
+      "target": "redis",
+      "write_calls": 100000
+    },
+    {
+      "attempts": 53,
+      "case": "point-r050",
+      "changed_keys": 29,
+      "input_items": 53,
+      "operations": [
+        "get",
+        "put"
+      ],
+      "read_calls": 33,
+      "report_sha256": "3e144869c804dcda4756807f50ebaf3dd6b02c88a67bff981aa3647505c0558f",
+      "stop_reason": "duration",
+      "successful_calls": 53,
+      "target": "native",
+      "write_calls": 20
+    },
+    {
+      "attempts": 100000,
+      "case": "point-r050",
+      "changed_keys": 128,
+      "input_items": 100000,
+      "operations": [
+        "get",
+        "set"
+      ],
+      "read_calls": 50057,
+      "report_sha256": "47613ce68c2b243a7e5a8f759858f4a3ec1acc7d72257db0b9524e5ebf0d4174",
+      "stop_reason": "operation_limit",
+      "successful_calls": 100000,
+      "target": "redis",
+      "write_calls": 49943
+    },
+    {
+      "attempts": 34967,
+      "case": "point-r100",
+      "changed_keys": 0,
+      "input_items": 34967,
+      "operations": [
+        "get",
+        "put"
+      ],
+      "read_calls": 34967,
+      "report_sha256": "4c31d61cab2bc3a9cac9b522a263b7269c7615cf4337fd4848c455a2ade2dd93",
+      "stop_reason": "duration",
+      "successful_calls": 34967,
+      "target": "native",
+      "write_calls": 0
+    },
+    {
+      "attempts": 100000,
+      "case": "point-r100",
+      "changed_keys": 0,
+      "input_items": 100000,
+      "operations": [
+        "get",
+        "set"
+      ],
+      "read_calls": 100000,
+      "report_sha256": "b6893e693f1af332a34231d9d8877cdb827227e6edf34d6beea97d3dc13cf15b",
+      "stop_reason": "operation_limit",
+      "successful_calls": 100000,
+      "target": "redis",
+      "write_calls": 0
+    },
+    {
+      "attempts": 32,
+      "case": "batch-r000",
+      "changed_keys": 111,
+      "input_items": 128,
+      "operations": [
+        "batch_get",
+        "batch_put"
+      ],
+      "read_calls": 0,
+      "report_sha256": "708176db75f446b6fe804ae197dfab60f2878f1f79adffc288d6d450276fbca5",
+      "stop_reason": "duration",
+      "successful_calls": 32,
+      "target": "native",
+      "write_calls": 32
+    },
+    {
+      "attempts": 100000,
+      "case": "batch-r000",
+      "changed_keys": 128,
+      "input_items": 400000,
+      "operations": [
+        "mget",
+        "mset"
+      ],
+      "read_calls": 0,
+      "report_sha256": "ee673b48c71020aae285934794e5409bb57546d5908861e9c0f8072bfd31fa92",
+      "stop_reason": "operation_limit",
+      "successful_calls": 100000,
+      "target": "redis",
+      "write_calls": 100000
+    },
+    {
+      "attempts": 56,
+      "case": "batch-r050",
+      "changed_keys": 91,
+      "input_items": 224,
+      "operations": [
+        "batch_get",
+        "batch_put"
+      ],
+      "read_calls": 33,
+      "report_sha256": "8c31f2282857c95168a8f24f26026cd94737b784f50c8189a478c790ffdbaa2a",
+      "stop_reason": "duration",
+      "successful_calls": 56,
+      "target": "native",
+      "write_calls": 23
+    },
+    {
+      "attempts": 100000,
+      "case": "batch-r050",
+      "changed_keys": 128,
+      "input_items": 400000,
+      "operations": [
+        "mget",
+        "mset"
+      ],
+      "read_calls": 50057,
+      "report_sha256": "bcdf29217c28d5864af958017b9b7a656d8617cab01b1de6938c36d2be1b2bd5",
+      "stop_reason": "operation_limit",
+      "successful_calls": 100000,
+      "target": "redis",
+      "write_calls": 49943
+    },
+    {
+      "attempts": 32240,
+      "case": "batch-r100",
+      "changed_keys": 0,
+      "input_items": 128960,
+      "operations": [
+        "batch_get",
+        "batch_put"
+      ],
+      "read_calls": 32240,
+      "report_sha256": "dbdb178d9fe57468d8b29701f0f1235cd958bb2ef435d20d05ccbb6fe370fd7b",
+      "stop_reason": "duration",
+      "successful_calls": 32240,
+      "target": "native",
+      "write_calls": 0
+    },
+    {
+      "attempts": 100000,
+      "case": "batch-r100",
+      "changed_keys": 0,
+      "input_items": 400000,
+      "operations": [
+        "mget",
+        "mset"
+      ],
+      "read_calls": 100000,
+      "report_sha256": "81d2da321c432356e187259d5ad18dc647c24c7e85ddd1dc664c8580d11db227",
+      "stop_reason": "operation_limit",
+      "successful_calls": 100000,
+      "target": "redis",
+      "write_calls": 0
+    }
+  ],
+  "fresh_drains": 18,
+  "measured_calls": 667384,
+  "measured_input_items": 1664368,
+  "original_runtime_failure": null,
+  "other_outcomes": 0,
+  "owned_lifetimes_exited": 21,
+  "preparation_correction": "Original prelaunch draft retained; corrected unsupported contiguous measurement-nonce/issuance assumption before first runtime.",
+  "retained_bytes": 30513735,
+  "retained_files": 313,
+  "runtime_exit_code": 0,
+  "runtime_session": 19187,
+  "scope": "Aggregate v3 API/accounting correctness and final deterministic data/sentinel, source/lifecycle/cleanup readback. No issued nonce ledger, per-call history, linearizability, Chaos, durability or performance acceptance.",
+  "voter_drain_bindings": 54
+}

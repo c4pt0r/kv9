@@ -1,0 +1,9 @@
+{
+  "finding": "Slots are allocated before the second cutoff check, so aggregate measured_issued does not identify a contiguous issued nonce prefix. The first draft incorrectly assumed this for mixed count and final nonce checks; no runtime launched.",
+  "sha256": {
+    "run.py": "600646de13018c63b659366e611c497166299469616663b13384b41df1550bcb",
+    "protocol.json": "03ff65fb8275080e5a6369e45ec2604874aec4107347817f2f4d2054006a6a2c",
+    "README.md": "79c8a74dc41dc85b5da653ab15da4a16cf561e8e48dd94a9a72d34000d763825",
+    "command.json": "d8beddb8fab322c82a3305ada36141d4693a1e2def8392c5c5d1a709a6012595"
+  }
+}

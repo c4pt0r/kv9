@@ -1,0 +1,10 @@
+{
+  "root_session": 58438,
+  "exit_code": 0,
+  "complete": true,
+  "successful_correctness_cells": 12,
+  "timing_accepted": false,
+  "matrix_sha256": "07b2b5259805e8901fe0668975ecebc92e1ae5f0c82209f30df22d7edb4436a7",
+  "output": "/tmp/kv9-work-signal-comparison-smoke-first",
+  "cleanup_complete": true
+}

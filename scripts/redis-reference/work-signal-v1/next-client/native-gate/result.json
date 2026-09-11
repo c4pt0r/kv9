@@ -1,0 +1,78 @@
+{
+  "complete": true,
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-point-write-v3-native-validation-first/00.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_unix_ns": 1789130568311738770,
+      "ended_unix_ns": 1789130568687752231
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-point-write-v3-native-validation-first/01.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "started_unix_ns": 1789130568691937369,
+      "ended_unix_ns": 1789130569040199877
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--bin",
+        "kv9-batch-benchmark"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-point-write-v3-native-validation-first/02.log",
+      "sha256": "384d1cdac5a1b94311c78a260b077b629e932f4d65e83ca14753880e7bca9bc7",
+      "started_unix_ns": 1789130569040400041,
+      "ended_unix_ns": 1789130576566591624
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_batch_benchmark_report.py"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-point-write-v3-native-validation-first/03.log",
+      "sha256": "bdf74f996d388e2da04d487aa6688f44d5c54dcaaa966e80dc3eb27eaa162aea",
+      "started_unix_ns": 1789130576566798641,
+      "ended_unix_ns": 1789130577613150671
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--bin",
+        "kv9-batch-benchmark",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-point-write-v3-native-validation-first/04.log",
+      "sha256": "d3e56e31d14fc2eb36e45ff3db7673b7a8400a211457ce9f79e2c9c04b7d82b4",
+      "started_unix_ns": 1789130577613384197,
+      "ended_unix_ns": 1789130581619474948
+    }
+  ],
+  "scope": "Native benchmark consumed Cargo/crates sources and independent native Python validator/tests; Redis files are being edited independently. No performance timing overlaps."
+}

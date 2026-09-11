@@ -1,0 +1,33 @@
+{
+  "complete": true,
+  "paired_configs": [
+    "point-r000",
+    "point-r050",
+    "point-r100",
+    "batch-r000",
+    "batch-r050",
+    "batch-r100"
+  ],
+  "rejections": [
+    "point-r000-wrong-write-pair",
+    "point-r050-wrong-write-pair",
+    "point-r100-wrong-write-pair",
+    "batch-r000-wrong-write-pair",
+    "batch-r050-wrong-write-pair",
+    "batch-r100-wrong-write-pair",
+    "batch-label",
+    "extra-attempt"
+  ],
+  "role_binary_hashes": {
+    "native": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+    "redis": "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af",
+    "server": "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711"
+  },
+  "scope": "Finite configuration, frozen build/source and selected population checks; no runtime execution",
+  "source_counts": {
+    "native": 581,
+    "redis": 581,
+    "server": 584
+  },
+  "syntax": true
+}

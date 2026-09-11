@@ -1,0 +1,23 @@
+{
+  "prepared_unix_ns": 1789129626023646946,
+  "inputs": {
+    "AUDITOR-PREPARATION.json": "2a591f45ce23eacd0b4f903c7c3215dc59f0211121877373073a8edcfb850e42",
+    "README.md": "07ed1e2024d24bffbce6f74e00381f99b510ac225ee811e4a42f308e1322bb07",
+    "audit-contract-first.log": "9809396228e761d349863ff68468b5e293ab6c6e3e095ccf9e61379f2f4354ef",
+    "audit.py": "ccd49bc7458555af6d7a359f3191691271f71ef673c0ce84fd759fd9dc506387",
+    "auditor-tests.diff": "efc16dfbdaee20edbf7a865e32d435a456bd7e32d25d4f840de299ce1896507c",
+    "auditor.diff": "7fa4551c30a937af98fa6996f70793dd0c7cd10235745ae357716a99ddf1dc9d",
+    "driver-arguments.json": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+    "driver-contract-first.json": "eed24c3c17d99ee5a207cd504c03a3ab782cb8ab83e34fdc7ea39e28984c5080",
+    "driver-contract-first.log": "30102c30fdda4667a9971147ebfe771e177fc204196659bba5555b13b519a62b",
+    "driver-original-inputs.json": "d52a0a2142f06259befb949d6a3fa94a7f7f90240d5fa97a3f068c5ef8b78535",
+    "isolate-and-run.py": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "matched-driver.py": "745a9b5dfba5be114abd2021e2f523973934101d7e80941cdd45ed9636314937",
+    "matched-driver.py.diff": "fe667807c9837f45b6f745c072ea0dbd8cd5c5425510ce970ac427a926aefdc7",
+    "protocol.json": "8c6e1abb4a72bc6636ca13a471cb486db6cb9c28593929580833a927f5f62c38",
+    "role-preflight.json": "0dd4ee4a5c69bf1b98ec68c0bda469781c3351d0ffc4b856247c9a45483d6ef3",
+    "smoke-terminal-first.json": "96f4920267d53280617cf314fd0723385d575b26e81a683f0f274a3eca957b6f",
+    "test_audit_contract.py": "5a2825ccd96f26235e51e7351543f5e859f0cfd5ee95ce3b692888511dcb47b0",
+    "test_driver_contract.py": "0895dfa61e979007146676d885d5738e47843004bf18c84bc1a1fbf2233e6c03"
+  }
+}

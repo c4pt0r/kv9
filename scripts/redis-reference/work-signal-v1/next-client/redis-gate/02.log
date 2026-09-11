@@ -1,0 +1,27 @@
+   Compiling kv9-redis-reference v0.1.0 (/tmp/kv9-point-write-measurement-v3/scripts/redis-reference)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.88s
+     Running unittests src/bin/kv9-redis-batch-reference.rs (/home/dongxu/kv9/target/debug/deps/kv9_redis_batch_reference-be85087357d9a210)
+
+running 19 tests
+test common::tests::overflow_cannot_publish_a_quantile ... ok
+test common::tests::every_bucket_boundary_round_trips_including_u64_max ... ok
+test model::tests::legacy_config_and_wire_size_schema_are_unchanged ... ok
+test model::tests::explicit_get_configuration_refuses_ambiguous_or_mixed_apis ... ok
+test model::tests::v3_requires_both_selectors_and_point_cardinality ... ok
+test common::tests::quantiles_cover_independently_sorted_samples_and_merge ... ok
+test model::tests::v3_explicit_apis_allow_point_writes_and_mixed_traffic ... ok
+test wire::tests::get_is_a_real_single_bulk_exchange_and_setup_remains_mget ... ok
+test wire::tests::oversized_and_mismatched_requests_are_bounded ... ok
+test wire::tests::resp_preserves_order_duplicates_and_binary_data ... ok
+test wire::tests::malformed_counts_lengths_and_server_errors_cannot_succeed ... ok
+test wire::tests::get_rejects_array_replies_malformed_bulk_and_invalid_cardinality ... ok
+test wire::tests::set_emits_three_arguments_and_legacy_setup_stays_mset ... ok
+test wire::tests::consumed_set_with_lost_reply_is_unknown_and_only_new_call_reconnects ... ok
+test tests::selected_traffic_sends_get_and_missing_populated_value_is_a_failure ... ok
+test wire::tests::lost_get_reply_is_not_replayed_and_only_a_new_call_reconnects ... ok
+test tests::mixed_v3_traffic_uses_set_then_get_on_one_connection ... ok
+test metrics::tests::failed_get_keeps_one_whole_read_failure_without_write_or_replay ... ok
+test metrics::tests::failed_set_is_one_unknown_write_and_legacy_labels_stay_unchanged ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

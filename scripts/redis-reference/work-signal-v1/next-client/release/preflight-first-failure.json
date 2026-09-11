@@ -1,0 +1,19 @@
+{
+  "preflight_tool_chunk": "68704c",
+  "preflight_exit_code": 1,
+  "compiler_or_client_build_started": false,
+  "cause": "The broad standalone cargo fmt command also formatted the unrelated legacy Redis executable. Its unstaged formatting made the clean-source release preflight refuse.",
+  "resolution": "Restored only that root-created formatting change byte-for-byte from HEAD; scoped Redis benchmark rustfmt --check passes. No compiled benchmark source changed, so passed tests/Clippy are retained without repetition.",
+  "changed_after_gate": [
+    "scripts/redis-reference/src/main.rs"
+  ],
+  "scoped_format_command": [
+    "rustfmt",
+    "--edition",
+    "2021",
+    "--check",
+    "scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs"
+  ],
+  "scoped_format_exit_code": 0,
+  "clean_source": true
+}

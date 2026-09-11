@@ -1,0 +1,32 @@
+{
+  "revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+  "complete": true,
+  "commands": [
+    {
+      "role": "native",
+      "argv": [
+        "python3",
+        "scripts/build-workload.py",
+        "--binary",
+        "kv9-batch-benchmark",
+        "--release",
+        "--output",
+        "/tmp/kv9-point-write-v3-release-first/native"
+      ],
+      "exit_code": 0
+    },
+    {
+      "role": "redis",
+      "argv": [
+        "python3",
+        "scripts/build-workload.py",
+        "--binary",
+        "kv9-redis-batch-reference",
+        "--release",
+        "--output",
+        "/tmp/kv9-point-write-v3-release-first/redis"
+      ],
+      "exit_code": 0
+    }
+  ]
+}
