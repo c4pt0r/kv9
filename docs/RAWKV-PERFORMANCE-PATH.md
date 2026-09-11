@@ -58,7 +58,24 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
-### Latest checkpoint: selected-source read/mixed CPU attribution
+### Latest checkpoint: indexed receipts improve mixed traffic
+
+The [indexed-receipt read/mixed screen](INDEXED-RECEIPT-READ-MIXED.md) completes
+all 24 cohorts and the first audit: 49,825,632 measured calls, all successful
+on one attempt. C64 mixed throughput improves 2.775% and GET mean improves
+2.924%, with lower GET p95/p99 in both repetitions. Pure c64 GET throughput
+falls 0.411% pooled, with higher p95/p99 in both repetitions. Keep CRC selected
+and retain `74d24116` as a mixed/write candidate; the earlier batch result
+remains inconclusive and exact-source Chaos has not run.
+
+Next isolate indexed lookup while preserving the original vector storage and
+eviction. This separates the sampled linear-search cost from the deque change;
+it does not assume the deque caused the pure-read shift. Retain the checked
+ordering fallback and exact receipt/verdict behavior, map the local proof and
+run focused correctness before pure/mixed screening. Full workload and actual
+Chaos Mesh remain required before promotion.
+
+### Previous checkpoint: selected-source read/mixed CPU attribution
 
 The [fresh read-path diagnostic](READ-PATH-CPU-PROFILE.md) passes both c1 GET
 and c64 mixed recordings: 1,241 / 3,342 selected CPU samples, zero reported
