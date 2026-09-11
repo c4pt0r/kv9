@@ -19,25 +19,29 @@ def main():
     parser.add_argument('--release', action='store_true')
     args = parser.parse_args(); out = args.output.resolve()
     if out.is_relative_to(ROOT): raise ValueError('build artifacts must be outside source')
-    out.mkdir(parents=True, exist_ok=False); before = builder.snapshot()
-    subprocess.run(['python3', str(ROOT/'scripts/build-workload.py'), '--binary', 'kv9-batch-workload', '--output', str(out/'workload'), *(['--release'] if args.release else [])], cwd=ROOT, check=True)
-    command = ['cargo', 'build', '--locked', '--bin', 'kv9', *(['--release'] if args.release else []), '--message-format=json-render-diagnostics']
-    with (out/'kv9-cargo.jsonl').open('w') as stdout, (out/'kv9-build.log').open('w') as stderr:
-        subprocess.run(command, cwd=ROOT, stdout=stdout, stderr=stderr, timeout=900, check=True)
-    if builder.snapshot() != before: raise ValueError('native build source changed')
-    records = [json.loads(line) for line in (out/'kv9-cargo.jsonl').read_text().splitlines()]
-    paths = {r['executable'] for r in records if r.get('reason') == 'compiler-artifact' and r.get('target', {}).get('name') == 'kv9' and r.get('executable')}
-    if len(paths) != 1: raise ValueError('missing or ambiguous server artifact')
-    source = Path(paths.pop())
-    if not 0 < source.stat().st_size <= builder.MAX_BINARY: raise ValueError('invalid server binary bound')
-    shutil.copy2(source, out/'kv9')
-    workload = json.loads((out/'workload/build.json').read_text())
-    manifest = dict(version=1, **before, profile='release' if args.release else 'debug',
-        binaries={'kv9':dict(sha256=builder.sha((out/'kv9').read_bytes()), command=command)},
-        workload_build_sha256=builder.sha((out/'workload/build.json').read_bytes()),
-        source_tree_sha256=workload['source_tree_sha256'], rustc=workload['rustc'])
-    (out/'build.json').write_text(json.dumps(manifest, sort_keys=True, indent=2)+'\n')
-    print('PASS: retained native batch workload and default server builds')
+    out.mkdir(parents=True, exist_ok=False)
+    before = builder.snapshot()
+    with builder.cache.BuildCache(ROOT, out, args.release, before) as session:
+        builder.build_component(out/'workload', session, binary='kv9-batch-workload', release=args.release)
+        command = ['cargo', 'build', '--locked', '--bin', 'kv9', *(['--release'] if args.release else []), '--message-format=json-render-diagnostics']
+        with (out/'kv9-cargo.jsonl').open('w') as stdout, (out/'kv9-build.log').open('w') as stderr:
+            session.run(command, stdout=stdout, stderr=stderr)
+        if builder.snapshot() != before: raise ValueError('native build source changed')
+        session.check_artifacts(out/'kv9-cargo.jsonl')
+        records = [json.loads(line) for line in (out/'kv9-cargo.jsonl').read_text().splitlines()]
+        paths = {r['executable'] for r in records if r.get('reason') == 'compiler-artifact' and r.get('target', {}).get('name') == 'kv9' and r.get('executable')}
+        if len(paths) != 1: raise ValueError('missing or ambiguous server artifact')
+        source = Path(paths.pop())
+        if not 0 < source.stat().st_size <= builder.MAX_BINARY: raise ValueError('invalid server binary bound')
+        shutil.copy2(source, out/'kv9')
+        workload = json.loads((out/'workload/build.json').read_text())
+        manifest = dict(version=1, **before, profile='release' if args.release else 'debug',
+            binaries={'kv9':dict(sha256=builder.sha((out/'kv9').read_bytes()), command=command)},
+            workload_build_sha256=builder.sha((out/'workload/build.json').read_bytes()),
+            source_tree_sha256=workload['source_tree_sha256'], rustc=workload['rustc'])
+        (out/'build.json').write_text(json.dumps(manifest, sort_keys=True, indent=2)+'\n')
+        if builder.snapshot() != before: raise ValueError('source changed during native build retention')
+        print('PASS: retained native batch workload and default server builds')
 
 
 if __name__ == '__main__': main()
