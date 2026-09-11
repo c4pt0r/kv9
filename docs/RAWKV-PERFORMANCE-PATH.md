@@ -58,6 +58,19 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
+The [I/O event interval candidate](RPC-EVENT-INTERVAL-PERFORMANCE.md) shows a
+useful gain on the unchanged jemalloc control: the five-second follow-up
+reaches 326,793–327,857 GET/s (+8.649% / +8.585%), with mean latency about
+195 us and unchanged/lower p99 buckets. Redis GET remains about 507,000/s.
+BatchGet(1) gains about 8%. The preceding short screen has second-repeat
+p99 regressions, which remain documented; there is no universal tail claim.
+Both complete matched matrices and independent audits pass. Exact-source
+[eleven-window Chaos acceptance](RPC-EVENT-INTERVAL-ACCEPTANCE.md) now passes
+2,106 calls with 177 new verified leaf drops and complete owned cleanup.
+Default/experimental workspace checks pass 707/717 tests and Clippy passes.
+Select this as the next isolated read-performance increment; master/default
+promotion, write/mixed, sustained and memory behavior remain separate gates.
+
 The [fixed global queue interval screening](RPC-GLOBAL-QUEUE-SCREENING.md)
 rejects scheduler candidate `5e46a61`: GET throughput falls 1.952% / 1.213%
 versus the unchanged jemalloc control, with worse mean and p99 latency.
