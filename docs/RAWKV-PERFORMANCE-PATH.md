@@ -58,6 +58,13 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
+The [peer batch enqueue screen](PEER-BATCH-ENQUEUE-SCREENING.md) rejects
+`ea5f498` as the next performance increment: GET gains only 0.399% / 0.303%
+and second-repeat p99 regresses. The complete 23,025,553-call matched matrix
+and independent audit pass. Retain the existing event8 control and test the
+async worker population next; no full Chaos campaign follows this rejected
+screen.
+
 The [I/O event interval candidate](RPC-EVENT-INTERVAL-PERFORMANCE.md) shows a
 useful gain on the unchanged jemalloc control: the five-second follow-up
 reaches 326,793–327,857 GET/s (+8.649% / +8.585%), with mean latency about
