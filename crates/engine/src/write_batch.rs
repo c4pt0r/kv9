@@ -53,6 +53,11 @@ impl WriteBatch {
         &self.mutations
     }
 
+    /// Consume this plan and yield its owned mutations in their original order.
+    pub fn into_mutations(self) -> std::vec::IntoIter<Mutation> {
+        self.mutations.into_iter()
+    }
+
     /// Move another batch's mutations after this batch, preserving their order.
     pub fn append(&mut self, other: WriteBatch) {
         self.mutations.extend(other.mutations);

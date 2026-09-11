@@ -2351,15 +2351,14 @@ impl RuntimeBackend {
         if batch.mutations().is_empty() {
             return Ok(AppliedPosition { term: 0, index: 0 });
         }
-        // A FENCED write, not a bare one. `fenced_write_from_batch`, not `from_batch`: the
-        // latter yields a `CatalogTxn`, and sharing the catalog's wire tag would replay user
-        // data through the catalog path and inherit its serializing lock.
+        // Consume the plan into a Fenced user-data command. Its wire tag stays
+        // distinct from CatalogTxn, preserving the original user apply path.
         //
         // The fence carries the gate's own verdict into ordered apply, which is the first
         // point at which a split that committed after the gate ran is visible. The
         // adjudicator refuses the write there rather than letting it land on a region that
         // has moved underneath it.
-        let command = Command::fenced_write_from_batch(fence.into_region_fence(), &batch);
+        let command = Command::fenced_write_from_owned_batch(fence.into_region_fence(), batch);
         // Success is judged on (term, index), never on elapsed time; a typed
         // Replaced re-proposes within the deadline (provably-never-applied is
         // the one safely retryable outcome — see `propose_and_wait`).
@@ -2402,9 +2401,9 @@ impl RawApi for RuntimeBackend {
                 }
                 crate::api::RawWrite::BatchPut(pairs) => {
                     let fence = self.validated_context(&ctx, KeySpan::BatchPairs(&pairs))?;
-                    let batch = RawExecutor.plan_batch_put(
+                    let batch = RawExecutor.plan_owned_batch_put(
                         ctx.keyspace,
-                        &pairs,
+                        pairs,
                         RawWriteOptions::default(),
                     )?;
                     (fence, batch)
@@ -2423,9 +2422,9 @@ impl RawApi for RuntimeBackend {
             }
             // Keep one command and one fence across the exact same replacement
             // policy as commit_batch. Submission stays on this blocking worker.
-            let command = Arc::new(Command::fenced_write_from_batch(
+            let command = Arc::new(Command::fenced_write_from_owned_batch(
                 fence.into_region_fence(),
-                &batch,
+                batch,
             ));
             let started = Instant::now();
             let deadline = started + RAW_APPLY_DEADLINE;
