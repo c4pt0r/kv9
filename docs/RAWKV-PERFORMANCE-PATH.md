@@ -122,20 +122,35 @@ All 27,821,713 measured calls succeed and the first independent audit passes.
 Source gates pass 228 Raft tests, 14 source-control triples and independently
 checked 379-call process E2E. Accepted `5ee897a` remains unchanged.
 
-Return to that accepted source for the next group-admission experiment. Its
-retained c64 endpoint counters show only about 2.03 GET members or 2.01
-BatchGet(1) members per admitted ReadIndex group, including setup/warmup and
-verification. Investigate bounded unconfirmed-group concurrency to improve
-natural grouping, retaining immediate idle admission, sealed membership,
-fresh quorum confirmation and applied-index checks. Do not attach late reads
-to an earlier group. Require explicit non-spinning wakeup, cancellation,
-deadline and role-change progress before screening; no benefit is established.
-Check both c1 turnaround and c64 throughput/mean/p99. Treat the
-admission bound as a separate controlled variable before inferring saturation.
-Keep Raft confirmation requirements unchanged. Neither profile nor the fixed-
-admission curve establishes an intrinsic ceiling. Keep sustained traffic, writes/mixed,
-larger batches and dynamic-auth/storage callback progress in the general
-promotion gates. Redis parity and automatic splits remain open.
+The [pending ReadIndex credit screen](READ-GROUP-CREDIT-SCREENING.md) now
+retains `57ff685` as a promising c64 candidate. The actual upstream pending
+queue bounds local submission to one unconfirmed context, allowing queued
+readers to form a later sealed group without an idle batching timer. Both c64
+GET repetitions improve by 8.031% / 8.220%, reaching **371,789-374,086 GET/s**;
+BatchGet(1) improves by 8.479% / 7.919%. Mean and p99 improve in all four c64
+pairs. All **28,847,557 measured calls succeed** and the first independent
+audit passes. Source validation includes 714 workspace tests, 218 Raft tests,
+14 compiled control triples, 265 parameterized proof obligations and the
+independently checked 353-operation process E2E.
+
+This is not general promotion: c1 point GET throughput falls 0.083% / 0.573%,
+with worse mean/p99 in both repetitions. The short observations do not establish
+a negligible or stable c1 effect. Accepted `5ee897a` remains the general
+baseline. Resolve c1 behavior with a separately declared longer comparison
+that retains all observations, and complete exact-source Chaos Mesh acceptance.
+Keep sustained traffic, writes/mixed, larger batches, dynamic-auth/storage
+callback progress and whole grouped-read/Ready/Rust proof composition in the
+promotion gates. The new proof establishes a single-invocation admission
+projection and conditional progress, not full implementation refinement.
+
+The [Redis execution analysis](REDIS-EXECUTION-PATH.md) separates quorum
+amortization from shortening individual request latency. Preserve fresh
+confirmation, sealed membership and applied-index checks while measuring
+individual transport/owner handoffs and reducing unnecessary representations.
+Previous queue and scheduler regressions remain evidence against selecting a
+change on architectural intuition alone. Neither the profile nor fixed public
+admission curve establishes an intrinsic ceiling. Redis parity and automatic
+splits remain open.
 
 ### Earlier experiments
 
