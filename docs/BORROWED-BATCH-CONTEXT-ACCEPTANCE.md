@@ -48,7 +48,9 @@ loss and partitions use actual Chaos Mesh. The exact-tuple reset is separately
 identified as non-Chaos Linux `SOCK_DESTROY`.
 
 - Actual 250 ms delay produced selected probes of 251,312–251,923 microseconds.
-- Actual 30% packet loss produced 376 netem drops and 122 TCP retransmissions.
+- Actual 30% packet loss produced 188 netem leaf drops and 122 TCP retransmissions.
+  The original reported 376 summed parent and child counters; see the
+  [reporting correction](NETEM-DROP-COUNTER-CORRECTION.md).
 - The contained client-partition interval had no successful operation of any
   kind, with 13 unknown BatchGet and 12 unknown BatchPut calls.
 - The contained quorum-loss interval had no successful operation of any kind,

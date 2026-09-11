@@ -39,7 +39,7 @@ The following counts include only calls whose complete invocation/return interva
 ## Injected effects and execution identity
 
 - Service UID/VIP/port and ready EndpointSlice/Pod UID bindings were retained and rechecked. VIP delay was actual 250 ms netem: selected TCP probes ranged 251,178–251,644 microseconds, while simultaneous unaffected probes stayed at or below 1,844 microseconds. These are effect observations, not performance measurements.
-- Genuine partial loss was 30%, correlation zero. The selected netem counter increased by 332 drops and TCP retransmissions by 112, while control-client/voter paths passed their unchanged checks.
+- Genuine partial loss was 30%, correlation zero. The selected netem leaf counter increased by 166 drops and TCP retransmissions by 112, while control-client/voter paths passed their unchanged checks. The original reported 332 summed parent and child counters; see the [reporting correction](NETEM-DROP-COUNTER-CORRECTION.md).
 - Full native client partition advanced reachable DROP counters by 66, with exact kernel target sets and failed selected VIP probes. Quorum loss advanced per-voter DROP counters by 46 / 42 / 46; only voter-to-voter edges were selected.
 - The TCP reset is **non-Chaos Linux SOCK_DESTROY**, constrained to one owned IPv4 tuple. The native client remained PID 32, start tick 137278234, boot ID `455869d6-cdc2-4933-85cb-743fb8fcb02e`. Its socket changed from inode 174530649, source port 50502, to inode 174565423, source port 58938, against the same VIP `10.96.86.249:20160`.
 - All observed native/server CPU masks were `6-15,22-31`. Source defaults of 64 public requests and 64 MiB encoded admission bytes were independently checked against actual Pod specs and statuses; no Pod limit overrides were set.
