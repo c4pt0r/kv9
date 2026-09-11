@@ -1292,6 +1292,20 @@ async fn peer_session(
                 _ = &mut rpc => break 'batching,
             };
             let batch = coalesce_queued(first, root_digest, rx, destination);
+            // Most batches fit immediately. Avoid constructing a progress
+            // timer unless this bounded stream queue actually applies pressure.
+            // A full queue returns the exact batch to the original bounded wait.
+            let batch = match batch_tx.try_send(batch) {
+                Ok(()) => {
+                    // try_send does not charge Tokio's cooperative budget.
+                    // Keep the nominal charge of the original async send so
+                    // a busy peer does not double its uninterrupted work turn.
+                    tokio::task::consume_budget().await;
+                    continue 'batching;
+                }
+                Err(mpsc::error::TrySendError::Closed(_)) => break 'batching,
+                Err(mpsc::error::TrySendError::Full(batch)) => batch,
+            };
             // Three-way select: the send may complete (normal path), the RPC
             // may resolve (server closed the stream — reconnect), or neither
             // within STREAM_PROGRESS_BUDGET (established stream stopped
