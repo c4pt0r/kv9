@@ -87,3 +87,9 @@ scripts/redis-reference/owned-proposal-screen-v1/preparation/matched-driver.py.d
 scripts/redis-reference/owned-proposal-screen-v1/preparation/statistics-derive.py.diff -whitespace
 scripts/redis-reference/owned-proposal-screen-v1/preparation/test_audit_contract.py.diff -whitespace
 scripts/redis-reference/owned-proposal-screen-v1/preparation/test_driver.py.diff -whitespace
+
+# Preserve context-only blank lines in original indexed-screen diffs.
+scripts/redis-reference/indexed-receipt-screen-v1/preparation/matched-driver.py.diff -whitespace
+scripts/redis-reference/indexed-receipt-screen-v1/preparation/statistics-derive.py.diff -whitespace
+scripts/redis-reference/indexed-receipt-screen-v1/preparation/test_driver.py.diff -whitespace
+scripts/redis-reference/indexed-receipt-screen-v1/preparation/test_screen_contract.py.diff -whitespace
