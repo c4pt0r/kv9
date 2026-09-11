@@ -67,8 +67,12 @@ to improve latency by these observations.
 Follow-up: the [first scheduler screening](RPC-GLOBAL-QUEUE-SCREENING.md)
 is complete. A fixed global queue interval of eight regresses throughput,
 mean latency and p99 in both repetitions, so that candidate is rejected.
-The original diagnostic below remains evidence for other completion and
-confirmation-path work; it does not attribute all waiting to that queue.
+The separate [I/O event interval experiment](RPC-EVENT-INTERVAL-PERFORMANCE.md)
+now improves GET by 8.649% / 8.585% in the five-second matched follow-up, with
+full local checks and exact-source eleven-window Chaos acceptance complete.
+The short screen's second-repeat p99 regression remains documented. The
+original diagnostic below remains evidence for completion and confirmation
+work; it does not attribute all waiting to either scheduler mechanism.
 
 Prioritize the completion delivery and receiver scheduling path, with a narrow
 change on a clean, uninstrumented retained control. Preserve bounded stream
