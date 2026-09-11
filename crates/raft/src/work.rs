@@ -95,7 +95,9 @@ pub struct WorkSignal {
 impl WorkSignal {
     pub fn notify(&self) {
         let mut state = self.state.lock().expect("work signal poisoned");
-        if !state.stopped {
+        // A pending turn already prevents the sole owner from parking. Only
+        // the false-to-true transition needs a physical condition-variable wake.
+        if !state.stopped && !state.pending {
             state.pending = true;
             self.changed.notify_one();
         }
@@ -330,6 +332,59 @@ mod tests {
         signal.notify();
         signal.wait_until(Instant::now() + Duration::from_secs(60));
         assert!(!signal.begin_turn());
+    }
+
+    #[test]
+    fn producer_burst_after_drain_is_delivered_before_the_next_tick() {
+        let signal = Arc::new(WorkSignal::default());
+        let inbox = RaftInbox::default();
+        inbox.set_signal(signal.clone());
+        let (drained_tx, drained_rx) = std::sync::mpsc::channel();
+        let (park_tx, park_rx) = std::sync::mpsc::channel();
+        let (done_tx, done_rx) = std::sync::mpsc::channel();
+        let owner_signal = signal.clone();
+        let owner_inbox = inbox.clone();
+        let owner = std::thread::spawn(move || {
+            assert!(owner_signal.begin_turn());
+            assert!(owner_inbox.drain().is_empty());
+            drained_tx.send(()).unwrap();
+            park_rx.recv().unwrap();
+            owner_signal.wait_until(Instant::now() + Duration::from_secs(60));
+            let delivered = owner_signal.begin_turn().then(|| {
+                let mut ids: Vec<_> = owner_inbox.drain().into_iter().map(|m| m.index).collect();
+                ids.sort_unstable();
+                ids
+            });
+            done_tx.send(delivered).unwrap();
+        });
+
+        // Hold the owner after its empty drain. Independent producers publish
+        // before it checks the parking predicate; no timer tick may rescue a
+        // lost notification. Inspect actual delivered work, not wake counts.
+        let drained = drained_rx.recv_timeout(Duration::from_secs(1));
+        let producers: Vec<_> = (0..4)
+            .map(|index| {
+                let inbox = inbox.clone();
+                std::thread::spawn(move || {
+                    inbox.send(Message {
+                        index,
+                        ..Default::default()
+                    })
+                })
+            })
+            .collect();
+        let published: Vec<_> = producers.into_iter().map(|task| task.join()).collect();
+        let released = park_tx.send(());
+        let delivered = done_rx.recv_timeout(Duration::from_secs(1));
+        // Release a faulty parked owner before reporting a failure.
+        signal.stop();
+        let joined = owner.join();
+        assert!(drained.is_ok());
+        assert!(published
+            .into_iter()
+            .all(|r| r.is_ok_and(|sent| sent.is_ok())));
+        assert!(released.is_ok() && joined.is_ok());
+        assert_eq!(delivered.unwrap(), Some(vec![0, 1, 2, 3]));
     }
 
     #[test]
