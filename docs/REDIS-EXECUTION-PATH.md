@@ -174,8 +174,11 @@ be subtracted from the uninstrumented 38-us client latency as an exact budget.
    c64 GET by 0.798% but regresses c1 GET mean and several p99 pairs. It also
    remains unselected. The completed write profile above now makes equivalent
    engine CRC computation the next isolated implementation experiment. A
-   256-entry byte-table candidate has passed source-bound equivalence proof
-   and local source tests; its throughput and latency still require screening.
+   256-entry byte-table candidate has passed source-bound equivalence proof,
+   local source tests and [write screening](CRC-WRITE-SCREENING.md): point PUT
+   improves 4.476% and BatchPut(64) 38.486%, with better mean/p99 in both repeats.
+   The remaining same-recording Redis throughput ratios are 3.974x and 6.977x.
+   Broader workload and Chaos acceptance remain separate pending gates.
 4. Evaluate kernel bypass only after a real NIC experiment identifies the
    kernel/network path as the limiting cost. Redis's measured reference uses
    ordinary sockets. The current loopback profile neither proves a NIC limit
