@@ -3120,7 +3120,12 @@ impl NodeRuntime {
         if let Some(idty) = local_identity {
             discovery.set_cluster_id(idty);
         }
-        let grpc_runtime = tokio::runtime::Runtime::new()
+        let grpc_runtime = tokio::runtime::Builder::new_multi_thread()
+            // Raft owners deliver completions from outside this executor.
+            // Revisit externally queued tasks without a long local-task run.
+            .global_queue_interval(8)
+            .enable_all()
+            .build()
             .map_err(|error| Error::Config(format!("create gRPC runtime: {error}")))?;
         let transport = GrpcTransport::new(
             id,
