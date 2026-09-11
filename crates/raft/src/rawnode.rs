@@ -316,6 +316,16 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// such a request. The caller retains the context and retries admission
     /// within its original deadline. `true` means submitted, not confirmed.
     pub fn read_index(&self, rctx: Vec<u8>) -> Result<bool> {
+        let admitted = self.admit_read_index(rctx)?;
+        if admitted {
+            self.work_signal.notify();
+        }
+        Ok(admitted)
+    }
+
+    // No notification here. Only the external notifying wrapper above and
+    // the drain token's submit-then-pump transaction may call this primitive.
+    fn admit_read_index(&self, rctx: Vec<u8>) -> Result<bool> {
         let mut g = self.lock();
         g.check_fatal()?;
         if g.raw.raft.state != StateRole::Leader {
@@ -332,8 +342,6 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             return Ok(false);
         }
         g.raw.read_index(rctx);
-        drop(g);
-        self.work_signal.notify();
         Ok(true)
     }
 
@@ -736,6 +744,20 @@ pub struct DrainToken<S: PersistentRaftStorage = MemStorage> {
 }
 
 impl<S: PersistentRaftStorage> DrainToken<S> {
+    /// Admit an owner's sealed reads immediately before processing its Ready.
+    /// The borrowed callback cannot escape this call. Every ordinary return
+    /// follows the same peer's pump, including typed persistence failure.
+    /// External notifications and pending work are never consumed here.
+    /// Caller holds the driver's pump gate; successful read completion still
+    /// requires the subsequent full driver turn and applied-index fence.
+    pub(crate) fn pump_with_read_submission(
+        &self,
+        submit: impl FnOnce(&mut dyn FnMut(Vec<u8>) -> Result<bool>),
+    ) -> Result<Vec<Message>> {
+        submit(&mut |context| self.peer.admit_read_index(context));
+        self.peer.pump()
+    }
+
     /// Mint the single drain token for `peer`. Crate-internal: an external
     /// `RaftPeer` holder must not be able to mint first — that would make it
     /// the production consumer and turn the real `NodeDriver::new` into a
