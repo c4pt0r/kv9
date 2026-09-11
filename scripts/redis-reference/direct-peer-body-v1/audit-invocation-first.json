@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-direct-peer-body-comparison-preparation/audit.py",
+    "--run",
+    "/tmp/kv9-direct-peer-body-matched-diagnostic-first/cohorts",
+    "--output",
+    "/tmp/kv9-direct-peer-body-comparison-preparation/results-first",
+    "--expected-driver-sha256",
+    "7be1ffee291a28c7500f6e1ad58f5f6dea34befcf69eff2d48c56db86796425a",
+    "--root-session",
+    "11757",
+    "--root-exit-code",
+    "0",
+    "--successful-arms",
+    "24"
+  ],
+  "auditor_sha256": "2c182758cdcb0668d133e9efc1adc06d3b610048917d23832607294543739d62",
+  "started_unix_ns": 1789116196548433784,
+  "launcher_pid": 1815513
+}

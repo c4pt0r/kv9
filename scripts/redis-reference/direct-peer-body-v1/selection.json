@@ -1,0 +1,18 @@
+{
+  "candidate": "6707bcccf15ea788ff231f4263f43a9f73fa63dd",
+  "accepted_control": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "candidate_selected": false,
+  "matched_diagnostic_accepted": true,
+  "reason": "All eight throughput comparisons regress and all eight mean latencies worsen. Seven p99 buckets improve; the first c1 GET p99 worsens.",
+  "broad_candidate_acceptance_executed": false,
+  "candidate_chaos_mesh_executed": false,
+  "timing_session": 11757,
+  "timing_exit_code": 0,
+  "audit_session": 52985,
+  "audit_exit_code": 0,
+  "audit_sha256": "fcb7c01b52cf83870449aa98e6e43517cec9600666eb364b715ccffb38735f90",
+  "statistics_sha256": "f537a4a2041bdecbde61fe52eb6ec8aa7f23129a740e56208b6838013735b2a6",
+  "measured_calls": 27724506,
+  "all_measured_calls_successful": true,
+  "next_hypothesis": "Empty-to-nonempty admission wakes both the tonic body and its independent supervisor. Test bounded idle supervision without a per-message supervisor wake; causality and benefit remain unmeasured."
+}

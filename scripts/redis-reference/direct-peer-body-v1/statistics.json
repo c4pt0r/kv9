@@ -1,0 +1,1588 @@
+{
+  "scope": "Five-second c1/c64 matched diagnostic; measured calls, integer latency source units ns",
+  "audit_sha256": "fcb7c01b52cf83870449aa98e6e43517cec9600666eb364b715ccffb38735f90",
+  "totals": {
+    "all": {
+      "calls": 27724506,
+      "issued": 27724506,
+      "attempts": 27724506,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 27724506,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      }
+    },
+    "old": {
+      "calls": 7304571,
+      "issued": 7304571,
+      "attempts": 7304571,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 7304571,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      }
+    },
+    "new": {
+      "calls": 7049750,
+      "issued": 7049750,
+      "attempts": 7049750,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 7049750,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      }
+    },
+    "redis": {
+      "calls": 13370185,
+      "issued": 13370185,
+      "attempts": 13370185,
+      "dropped_slots": 0,
+      "outcomes": {
+        "success": 13370185,
+        "unknown_write": 0,
+        "read_failure": 0
+      }
+    }
+  },
+  "cases": [
+    {
+      "ordinal": 0,
+      "repeat": 0,
+      "concurrency": 1,
+      "arm": "old-point",
+      "api": "point_get",
+      "successful_calls_per_second": 26182.8502916986,
+      "calls": 130915,
+      "outcomes": {
+        "success": 130915,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 130915,
+        "sum_ns": 4983534146,
+        "mean_ns": 38066.94531566284,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 58368,
+          "upper_ns": 58879
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 130915,
+        "sum_ns": 4983534146,
+        "mean_ns": 38066.94531566284,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 58368,
+          "upper_ns": 58879
+        }
+      }
+    },
+    {
+      "ordinal": 1,
+      "repeat": 0,
+      "concurrency": 1,
+      "arm": "old-batch1",
+      "api": "batch_get",
+      "successful_calls_per_second": 26250.765343739593,
+      "calls": 131254,
+      "outcomes": {
+        "success": 131254,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 131254,
+        "sum_ns": 4980559633,
+        "mean_ns": 37945.96456488945,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 59904,
+          "upper_ns": 60415
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 131254,
+        "sum_ns": 4980559633,
+        "mean_ns": 37945.96456488945,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 59904,
+          "upper_ns": 60415
+        }
+      }
+    },
+    {
+      "ordinal": 2,
+      "repeat": 0,
+      "concurrency": 1,
+      "arm": "new-point",
+      "api": "point_get",
+      "successful_calls_per_second": 25111.09850596206,
+      "calls": 125556,
+      "outcomes": {
+        "success": 125556,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 125556,
+        "sum_ns": 4983593589,
+        "mean_ns": 39692.19781611393,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 125556,
+        "sum_ns": 4983593589,
+        "mean_ns": 39692.19781611393,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      }
+    },
+    {
+      "ordinal": 3,
+      "repeat": 0,
+      "concurrency": 1,
+      "arm": "new-batch1",
+      "api": "batch_get",
+      "successful_calls_per_second": 24809.14614926737,
+      "calls": 124046,
+      "outcomes": {
+        "success": 124046,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 124046,
+        "sum_ns": 4982847261,
+        "mean_ns": 40169.350571562165,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 45056,
+          "upper_ns": 45567
+        },
+        "p99": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 124046,
+        "sum_ns": 4982847261,
+        "mean_ns": 40169.350571562165,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 45056,
+          "upper_ns": 45567
+        },
+        "p99": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        }
+      }
+    },
+    {
+      "ordinal": 4,
+      "repeat": 0,
+      "concurrency": 1,
+      "arm": "redis-mget1",
+      "api": "mget",
+      "successful_calls_per_second": 167647.06749175786,
+      "calls": 838236,
+      "outcomes": {
+        "success": 838236,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "whole_call_latency": {
+        "count": 838236,
+        "sum_ns": 4932845920,
+        "mean_ns": 5884.793685787773,
+        "p50": {
+          "lower_ns": 5696,
+          "upper_ns": 5759
+        },
+        "p95": {
+          "lower_ns": 6592,
+          "upper_ns": 6655
+        },
+        "p99": {
+          "lower_ns": 8576,
+          "upper_ns": 8703
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 838236,
+        "sum_ns": 4932845920,
+        "mean_ns": 5884.793685787773,
+        "p50": {
+          "lower_ns": 5696,
+          "upper_ns": 5759
+        },
+        "p95": {
+          "lower_ns": 6592,
+          "upper_ns": 6655
+        },
+        "p99": {
+          "lower_ns": 8576,
+          "upper_ns": 8703
+        }
+      }
+    },
+    {
+      "ordinal": 5,
+      "repeat": 0,
+      "concurrency": 1,
+      "arm": "redis-get1",
+      "api": "get",
+      "successful_calls_per_second": 170252.42552531432,
+      "calls": 851263,
+      "outcomes": {
+        "success": 851263,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "whole_call_latency": {
+        "count": 851263,
+        "sum_ns": 4935608513,
+        "mean_ns": 5797.983129773055,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6080,
+          "upper_ns": 6143
+        },
+        "p99": {
+          "lower_ns": 8064,
+          "upper_ns": 8127
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 851263,
+        "sum_ns": 4935608513,
+        "mean_ns": 5797.983129773055,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6080,
+          "upper_ns": 6143
+        },
+        "p99": {
+          "lower_ns": 8064,
+          "upper_ns": 8127
+        }
+      }
+    },
+    {
+      "ordinal": 6,
+      "repeat": 0,
+      "concurrency": 64,
+      "arm": "old-point",
+      "api": "point_get",
+      "successful_calls_per_second": 343685.8686129819,
+      "calls": 1718494,
+      "outcomes": {
+        "success": 1718494,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1718494,
+        "sum_ns": 319784213863,
+        "mean_ns": 186083.98624784258,
+        "p50": {
+          "lower_ns": 172032,
+          "upper_ns": 174079
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 360448,
+          "upper_ns": 364543
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1718494,
+        "sum_ns": 319784213863,
+        "mean_ns": 186083.98624784258,
+        "p50": {
+          "lower_ns": 172032,
+          "upper_ns": 174079
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 360448,
+          "upper_ns": 364543
+        }
+      }
+    },
+    {
+      "ordinal": 7,
+      "repeat": 0,
+      "concurrency": 64,
+      "arm": "old-batch1",
+      "api": "batch_get",
+      "successful_calls_per_second": 337382.4433733228,
+      "calls": 1686957,
+      "outcomes": {
+        "success": 1686957,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1686957,
+        "sum_ns": 319730014443,
+        "mean_ns": 189530.62493175582,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 364544,
+          "upper_ns": 368639
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1686957,
+        "sum_ns": 319730014443,
+        "mean_ns": 189530.62493175582,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 364544,
+          "upper_ns": 368639
+        }
+      }
+    },
+    {
+      "ordinal": 8,
+      "repeat": 0,
+      "concurrency": 64,
+      "arm": "new-point",
+      "api": "point_get",
+      "successful_calls_per_second": 331809.6003620369,
+      "calls": 1659131,
+      "outcomes": {
+        "success": 1659131,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1659131,
+        "sum_ns": 319792030569,
+        "mean_ns": 192746.70328563568,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 344064,
+          "upper_ns": 348159
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1659131,
+        "sum_ns": 319792030569,
+        "mean_ns": 192746.70328563568,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 344064,
+          "upper_ns": 348159
+        }
+      }
+    },
+    {
+      "ordinal": 9,
+      "repeat": 0,
+      "concurrency": 64,
+      "arm": "new-batch1",
+      "api": "batch_get",
+      "successful_calls_per_second": 324271.74259296304,
+      "calls": 1621432,
+      "outcomes": {
+        "success": 1621432,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1621432,
+        "sum_ns": 319746296988,
+        "mean_ns": 197199.94238919672,
+        "p50": {
+          "lower_ns": 186368,
+          "upper_ns": 188415
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 356352,
+          "upper_ns": 360447
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1621432,
+        "sum_ns": 319746296988,
+        "mean_ns": 197199.94238919672,
+        "p50": {
+          "lower_ns": 186368,
+          "upper_ns": 188415
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 356352,
+          "upper_ns": 360447
+        }
+      }
+    },
+    {
+      "ordinal": 10,
+      "repeat": 0,
+      "concurrency": 64,
+      "arm": "redis-mget1",
+      "api": "mget",
+      "successful_calls_per_second": 507986.6782751444,
+      "calls": 2540022,
+      "outcomes": {
+        "success": 2540022,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "whole_call_latency": {
+        "count": 2540022,
+        "sum_ns": 319719616098,
+        "mean_ns": 125872.77436888342,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 165888,
+          "upper_ns": 167935
+        },
+        "p99": {
+          "lower_ns": 229376,
+          "upper_ns": 231423
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2540022,
+        "sum_ns": 319719616098,
+        "mean_ns": 125872.77436888342,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 165888,
+          "upper_ns": 167935
+        },
+        "p99": {
+          "lower_ns": 229376,
+          "upper_ns": 231423
+        }
+      }
+    },
+    {
+      "ordinal": 11,
+      "repeat": 0,
+      "concurrency": 64,
+      "arm": "redis-get1",
+      "api": "get",
+      "successful_calls_per_second": 507254.5990337292,
+      "calls": 2536428,
+      "outcomes": {
+        "success": 2536428,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "whole_call_latency": {
+        "count": 2536428,
+        "sum_ns": 319728807390,
+        "mean_ns": 126054.7539255993,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 163840,
+          "upper_ns": 165887
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2536428,
+        "sum_ns": 319728807390,
+        "mean_ns": 126054.7539255993,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 163840,
+          "upper_ns": 165887
+        },
+        "p99": {
+          "lower_ns": 231424,
+          "upper_ns": 233471
+        }
+      }
+    },
+    {
+      "ordinal": 12,
+      "repeat": 1,
+      "concurrency": 64,
+      "arm": "redis-get1",
+      "api": "get",
+      "successful_calls_per_second": 502881.41258351377,
+      "calls": 2514546,
+      "outcomes": {
+        "success": 2514546,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "whole_call_latency": {
+        "count": 2514546,
+        "sum_ns": 319725511094,
+        "mean_ns": 127150.39259333494,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 165888,
+          "upper_ns": 167935
+        },
+        "p99": {
+          "lower_ns": 233472,
+          "upper_ns": 235519
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2514546,
+        "sum_ns": 319725511094,
+        "mean_ns": 127150.39259333494,
+        "p50": {
+          "lower_ns": 118784,
+          "upper_ns": 119807
+        },
+        "p95": {
+          "lower_ns": 165888,
+          "upper_ns": 167935
+        },
+        "p99": {
+          "lower_ns": 233472,
+          "upper_ns": 235519
+        }
+      }
+    },
+    {
+      "ordinal": 13,
+      "repeat": 1,
+      "concurrency": 64,
+      "arm": "redis-mget1",
+      "api": "mget",
+      "successful_calls_per_second": 478779.7534228702,
+      "calls": 2393973,
+      "outcomes": {
+        "success": 2393973,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "whole_call_latency": {
+        "count": 2393973,
+        "sum_ns": 319707063829,
+        "mean_ns": 133546.64560920277,
+        "p50": {
+          "lower_ns": 123904,
+          "upper_ns": 124927
+        },
+        "p95": {
+          "lower_ns": 180224,
+          "upper_ns": 182271
+        },
+        "p99": {
+          "lower_ns": 243712,
+          "upper_ns": 245759
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 2393973,
+        "sum_ns": 319707063829,
+        "mean_ns": 133546.64560920277,
+        "p50": {
+          "lower_ns": 123904,
+          "upper_ns": 124927
+        },
+        "p95": {
+          "lower_ns": 180224,
+          "upper_ns": 182271
+        },
+        "p99": {
+          "lower_ns": 243712,
+          "upper_ns": 245759
+        }
+      }
+    },
+    {
+      "ordinal": 14,
+      "repeat": 1,
+      "concurrency": 64,
+      "arm": "new-batch1",
+      "api": "batch_get",
+      "successful_calls_per_second": 324900.153917905,
+      "calls": 1624548,
+      "outcomes": {
+        "success": 1624548,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1624548,
+        "sum_ns": 319742717044,
+        "mean_ns": 196819.49504969997,
+        "p50": {
+          "lower_ns": 186368,
+          "upper_ns": 188415
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1624548,
+        "sum_ns": 319742717044,
+        "mean_ns": 196819.49504969997,
+        "p50": {
+          "lower_ns": 186368,
+          "upper_ns": 188415
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      }
+    },
+    {
+      "ordinal": 15,
+      "repeat": 1,
+      "concurrency": 64,
+      "arm": "new-point",
+      "api": "point_get",
+      "successful_calls_per_second": 329012.24680040195,
+      "calls": 1645109,
+      "outcomes": {
+        "success": 1645109,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1645109,
+        "sum_ns": 319796835751,
+        "mean_ns": 194392.49055898422,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 286720,
+          "upper_ns": 290815
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1645109,
+        "sum_ns": 319796835751,
+        "mean_ns": 194392.49055898422,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 286720,
+          "upper_ns": 290815
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      }
+    },
+    {
+      "ordinal": 16,
+      "repeat": 1,
+      "concurrency": 64,
+      "arm": "old-batch1",
+      "api": "batch_get",
+      "successful_calls_per_second": 339257.18924217863,
+      "calls": 1696363,
+      "outcomes": {
+        "success": 1696363,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1696363,
+        "sum_ns": 319732599331,
+        "mean_ns": 188481.23858572723,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 286720,
+          "upper_ns": 290815
+        },
+        "p99": {
+          "lower_ns": 360448,
+          "upper_ns": 364543
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1696363,
+        "sum_ns": 319732599331,
+        "mean_ns": 188481.23858572723,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 286720,
+          "upper_ns": 290815
+        },
+        "p99": {
+          "lower_ns": 360448,
+          "upper_ns": 364543
+        }
+      }
+    },
+    {
+      "ordinal": 17,
+      "repeat": 1,
+      "concurrency": 64,
+      "arm": "old-point",
+      "api": "point_get",
+      "successful_calls_per_second": 336722.56007677416,
+      "calls": 1683658,
+      "outcomes": {
+        "success": 1683658,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 1683658,
+        "sum_ns": 319788100196,
+        "mean_ns": 189936.49553294078,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 286720,
+          "upper_ns": 290815
+        },
+        "p99": {
+          "lower_ns": 364544,
+          "upper_ns": 368639
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 1683658,
+        "sum_ns": 319788100196,
+        "mean_ns": 189936.49553294078,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 286720,
+          "upper_ns": 290815
+        },
+        "p99": {
+          "lower_ns": 364544,
+          "upper_ns": 368639
+        }
+      }
+    },
+    {
+      "ordinal": 18,
+      "repeat": 1,
+      "concurrency": 1,
+      "arm": "redis-get1",
+      "api": "get",
+      "successful_calls_per_second": 170294.43811810712,
+      "calls": 851473,
+      "outcomes": {
+        "success": 851473,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "whole_call_latency": {
+        "count": 851473,
+        "sum_ns": 4935411997,
+        "mean_ns": 5796.322369587761,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6272,
+          "upper_ns": 6335
+        },
+        "p99": {
+          "lower_ns": 8448,
+          "upper_ns": 8575
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 851473,
+        "sum_ns": 4935411997,
+        "mean_ns": 5796.322369587761,
+        "p50": {
+          "lower_ns": 5632,
+          "upper_ns": 5695
+        },
+        "p95": {
+          "lower_ns": 6272,
+          "upper_ns": 6335
+        },
+        "p99": {
+          "lower_ns": 8448,
+          "upper_ns": 8575
+        }
+      }
+    },
+    {
+      "ordinal": 19,
+      "repeat": 1,
+      "concurrency": 1,
+      "arm": "redis-mget1",
+      "api": "mget",
+      "successful_calls_per_second": 168848.7338788358,
+      "calls": 844244,
+      "outcomes": {
+        "success": 844244,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "whole_call_latency": {
+        "count": 844244,
+        "sum_ns": 4933246273,
+        "mean_ns": 5843.389201463084,
+        "p50": {
+          "lower_ns": 5696,
+          "upper_ns": 5759
+        },
+        "p95": {
+          "lower_ns": 6144,
+          "upper_ns": 6207
+        },
+        "p99": {
+          "lower_ns": 8448,
+          "upper_ns": 8575
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 844244,
+        "sum_ns": 4933246273,
+        "mean_ns": 5843.389201463084,
+        "p50": {
+          "lower_ns": 5696,
+          "upper_ns": 5759
+        },
+        "p95": {
+          "lower_ns": 6144,
+          "upper_ns": 6207
+        },
+        "p99": {
+          "lower_ns": 8448,
+          "upper_ns": 8575
+        }
+      }
+    },
+    {
+      "ordinal": 20,
+      "repeat": 1,
+      "concurrency": 1,
+      "arm": "new-batch1",
+      "api": "batch_get",
+      "successful_calls_per_second": 24872.577793364508,
+      "calls": 124364,
+      "outcomes": {
+        "success": 124364,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 124364,
+        "sum_ns": 4982427322,
+        "mean_ns": 40063.2604451449,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 45056,
+          "upper_ns": 45567
+        },
+        "p99": {
+          "lower_ns": 58368,
+          "upper_ns": 58879
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 124364,
+        "sum_ns": 4982427322,
+        "mean_ns": 40063.2604451449,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 45056,
+          "upper_ns": 45567
+        },
+        "p99": {
+          "lower_ns": 58368,
+          "upper_ns": 58879
+        }
+      }
+    },
+    {
+      "ordinal": 21,
+      "repeat": 1,
+      "concurrency": 1,
+      "arm": "new-point",
+      "api": "point_get",
+      "successful_calls_per_second": 25112.686997931047,
+      "calls": 125564,
+      "outcomes": {
+        "success": 125564,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 125564,
+        "sum_ns": 4984655957,
+        "mean_ns": 39698.129694816984,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 44032,
+          "upper_ns": 44543
+        },
+        "p99": {
+          "lower_ns": 57344,
+          "upper_ns": 57855
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 125564,
+        "sum_ns": 4984655957,
+        "mean_ns": 39698.129694816984,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 44032,
+          "upper_ns": 44543
+        },
+        "p99": {
+          "lower_ns": 57344,
+          "upper_ns": 57855
+        }
+      }
+    },
+    {
+      "ordinal": 22,
+      "repeat": 1,
+      "concurrency": 1,
+      "arm": "old-batch1",
+      "api": "batch_get",
+      "successful_calls_per_second": 25291.998841626453,
+      "calls": 126460,
+      "outcomes": {
+        "success": 126460,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 126460,
+        "sum_ns": 4983031415,
+        "mean_ns": 39404.012454531075,
+        "p50": {
+          "lower_ns": 37888,
+          "upper_ns": 38399
+        },
+        "p95": {
+          "lower_ns": 47104,
+          "upper_ns": 47615
+        },
+        "p99": {
+          "lower_ns": 64000,
+          "upper_ns": 64511
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 126460,
+        "sum_ns": 4983031415,
+        "mean_ns": 39404.012454531075,
+        "p50": {
+          "lower_ns": 37888,
+          "upper_ns": 38399
+        },
+        "p95": {
+          "lower_ns": 47104,
+          "upper_ns": 47615
+        },
+        "p99": {
+          "lower_ns": 64000,
+          "upper_ns": 64511
+        }
+      }
+    },
+    {
+      "ordinal": 23,
+      "repeat": 1,
+      "concurrency": 1,
+      "arm": "old-point",
+      "api": "point_get",
+      "successful_calls_per_second": 26093.892503600444,
+      "calls": 130470,
+      "outcomes": {
+        "success": 130470,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "whole_call_latency": {
+        "count": 130470,
+        "sum_ns": 4984021485,
+        "mean_ns": 38200.517245343755,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 45056,
+          "upper_ns": 45567
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      },
+      "successful_whole_call_latency": {
+        "count": 130470,
+        "sum_ns": 4984021485,
+        "mean_ns": 38200.517245343755,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 45056,
+          "upper_ns": 45567
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "repeat": 0,
+      "concurrency": 1,
+      "api": "point_get",
+      "old_ordinal": 0,
+      "new_ordinal": 2,
+      "successful_qps_change_percent": -4.0933350410529705,
+      "mean_change_percent": 4.269458678583216,
+      "old_whole_call_latency": {
+        "count": 130915,
+        "sum_ns": 4983534146,
+        "mean_ns": 38066.94531566284,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 58368,
+          "upper_ns": 58879
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 125556,
+        "sum_ns": 4983593589,
+        "mean_ns": 39692.19781611393,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 1,
+      "api": "batch_get",
+      "old_ordinal": 1,
+      "new_ordinal": 3,
+      "successful_qps_change_percent": -5.491722529210097,
+      "mean_change_percent": 5.85934771237826,
+      "old_whole_call_latency": {
+        "count": 131254,
+        "sum_ns": 4980559633,
+        "mean_ns": 37945.96456488945,
+        "p50": {
+          "lower_ns": 36352,
+          "upper_ns": 36863
+        },
+        "p95": {
+          "lower_ns": 44544,
+          "upper_ns": 45055
+        },
+        "p99": {
+          "lower_ns": 59904,
+          "upper_ns": 60415
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 124046,
+        "sum_ns": 4982847261,
+        "mean_ns": 40169.350571562165,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 45056,
+          "upper_ns": 45567
+        },
+        "p99": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        }
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 64,
+      "api": "point_get",
+      "old_ordinal": 6,
+      "new_ordinal": 8,
+      "successful_qps_change_percent": -3.4555590833205474,
+      "mean_change_percent": 3.5804892039012604,
+      "old_whole_call_latency": {
+        "count": 1718494,
+        "sum_ns": 319784213863,
+        "mean_ns": 186083.98624784258,
+        "p50": {
+          "lower_ns": 172032,
+          "upper_ns": 174079
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 360448,
+          "upper_ns": 364543
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 1659131,
+        "sum_ns": 319792030569,
+        "mean_ns": 192746.70328563568,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 344064,
+          "upper_ns": 348159
+        }
+      }
+    },
+    {
+      "repeat": 0,
+      "concurrency": 64,
+      "api": "batch_get",
+      "old_ordinal": 7,
+      "new_ordinal": 9,
+      "successful_qps_change_percent": -3.8860056407417742,
+      "mean_change_percent": 4.046479274894166,
+      "old_whole_call_latency": {
+        "count": 1686957,
+        "sum_ns": 319730014443,
+        "mean_ns": 189530.62493175582,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 364544,
+          "upper_ns": 368639
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 1621432,
+        "sum_ns": 319746296988,
+        "mean_ns": 197199.94238919672,
+        "p50": {
+          "lower_ns": 186368,
+          "upper_ns": 188415
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 356352,
+          "upper_ns": 360447
+        }
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "api": "point_get",
+      "old_ordinal": 23,
+      "new_ordinal": 21,
+      "successful_qps_change_percent": -3.7602879889767737,
+      "mean_change_percent": 3.920398354437915,
+      "old_whole_call_latency": {
+        "count": 130470,
+        "sum_ns": 4984021485,
+        "mean_ns": 38200.517245343755,
+        "p50": {
+          "lower_ns": 36864,
+          "upper_ns": 37375
+        },
+        "p95": {
+          "lower_ns": 45056,
+          "upper_ns": 45567
+        },
+        "p99": {
+          "lower_ns": 60416,
+          "upper_ns": 60927
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 125564,
+        "sum_ns": 4984655957,
+        "mean_ns": 39698.129694816984,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 44032,
+          "upper_ns": 44543
+        },
+        "p99": {
+          "lower_ns": 57344,
+          "upper_ns": 57855
+        }
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 1,
+      "api": "batch_get",
+      "old_ordinal": 22,
+      "new_ordinal": 20,
+      "successful_qps_change_percent": -1.6583151489460324,
+      "mean_change_percent": 1.6730478688548267,
+      "old_whole_call_latency": {
+        "count": 126460,
+        "sum_ns": 4983031415,
+        "mean_ns": 39404.012454531075,
+        "p50": {
+          "lower_ns": 37888,
+          "upper_ns": 38399
+        },
+        "p95": {
+          "lower_ns": 47104,
+          "upper_ns": 47615
+        },
+        "p99": {
+          "lower_ns": 64000,
+          "upper_ns": 64511
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 124364,
+        "sum_ns": 4982427322,
+        "mean_ns": 40063.2604451449,
+        "p50": {
+          "lower_ns": 38912,
+          "upper_ns": 39423
+        },
+        "p95": {
+          "lower_ns": 45056,
+          "upper_ns": 45567
+        },
+        "p99": {
+          "lower_ns": 58368,
+          "upper_ns": 58879
+        }
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 64,
+      "api": "point_get",
+      "old_ordinal": 17,
+      "new_ordinal": 15,
+      "successful_qps_change_percent": -2.2898119076471213,
+      "mean_change_percent": 2.3460446680035885,
+      "old_whole_call_latency": {
+        "count": 1683658,
+        "sum_ns": 319788100196,
+        "mean_ns": 189936.49553294078,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 286720,
+          "upper_ns": 290815
+        },
+        "p99": {
+          "lower_ns": 364544,
+          "upper_ns": 368639
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 1645109,
+        "sum_ns": 319796835751,
+        "mean_ns": 194392.49055898422,
+        "p50": {
+          "lower_ns": 182272,
+          "upper_ns": 184319
+        },
+        "p95": {
+          "lower_ns": 286720,
+          "upper_ns": 290815
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      }
+    },
+    {
+      "repeat": 1,
+      "concurrency": 64,
+      "api": "batch_get",
+      "old_ordinal": 16,
+      "new_ordinal": 14,
+      "successful_qps_change_percent": -4.23190304569342,
+      "mean_change_percent": 4.423918543054484,
+      "old_whole_call_latency": {
+        "count": 1696363,
+        "sum_ns": 319732599331,
+        "mean_ns": 188481.23858572723,
+        "p50": {
+          "lower_ns": 176128,
+          "upper_ns": 178175
+        },
+        "p95": {
+          "lower_ns": 286720,
+          "upper_ns": 290815
+        },
+        "p99": {
+          "lower_ns": 360448,
+          "upper_ns": 364543
+        }
+      },
+      "new_whole_call_latency": {
+        "count": 1624548,
+        "sum_ns": 319742717044,
+        "mean_ns": 196819.49504969997,
+        "p50": {
+          "lower_ns": 186368,
+          "upper_ns": 188415
+        },
+        "p95": {
+          "lower_ns": 290816,
+          "upper_ns": 294911
+        },
+        "p99": {
+          "lower_ns": 352256,
+          "upper_ns": 356351
+        }
+      }
+    }
+  ]
+}

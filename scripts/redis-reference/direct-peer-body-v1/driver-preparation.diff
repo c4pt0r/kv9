@@ -1,0 +1,70 @@
+--- /tmp/kv9-stream-worker-pair-comparison-preparation/matched-driver.py
++++ /tmp/kv9-direct-peer-body-comparison-preparation/matched-driver.py
+@@ -26,15 +26,15 @@
+ sys.dont_write_bytecode = True
+ 
+ OLD_REVISION = "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb"
+-NEW_REVISION = "9b7427470402c698cc95e7c1f8f3102a0d2be34f"
++NEW_REVISION = "6707bcccf15ea788ff231f4263f43a9f73fa63dd"
+ REDIS_REVISION = "b8ec38f660786412705f350d96ab086f0e7f6c60"
+ SERVER_PINS = {
+     "old": dict(revision=OLD_REVISION,
+                 binary_sha256="0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+                 manifest_sha256="1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417"),
+     "new": dict(revision=NEW_REVISION,
+-                binary_sha256="a9bdd9d85b24a9ec1e4ae710403a0c4d2baed84fb24b890624856e95036fa17a",
+-                manifest_sha256="75c9a23f93b7eb1fe001699db0fd79589b0aa304c780b01337a696efcafb60f3"),
++                binary_sha256="1c4ceb3b95ecca2ad900f65641c73ad097a13afbeba5304b8b8ac63358ff3a63",
++                manifest_sha256="029b7653ff227d4f4e15ef1de1236da2b6a824ca7e3cf0ab27ee3ac54640ee9b"),
+ }
+ REDIS_CLIENT_SHA = "61349111171ded5cb7fff9085c7886381788e5f4c7a407e91a5dda618d124892"
+ SERVER_COMMAND = ["cargo", "build", "--locked", "--bin", "kv9", "--release",
+@@ -221,15 +221,18 @@
+     arms = (("old-point", "old", "point_get"), ("old-batch1", "old", "batch_get"),
+             ("new-point", "new", "point_get"), ("new-batch1", "new", "batch_get"),
+             ("redis-mget1", None, "mget"), ("redis-get1", None, "get"))
++    first = [(concurrency, *arm) for concurrency in (1, 64) for arm in arms]
+     rows = []
+     for repeat in range(1 if smoke else 2):
+-        shared = dict(run_id=f"p{repeat}0064", seed=71, workers=64, keys=4096, batch_size=1,
+-                      value_bytes=128, read_percent=100, warmup_calls=128, measure_ms=5000,
+-                      max_calls=10_000_000, load=dict(kind="closed_loop"))
+-        for arm, server, api in (arms if repeat == 0 else reversed(arms)):
++        for concurrency, arm, server, api in (first if repeat == 0 else reversed(first)):
++            shared = dict(run_id=f"p{repeat}{concurrency:04d}", seed=71,
++                          workers=concurrency, keys=4096, batch_size=1,
++                          value_bytes=128, read_percent=100, warmup_calls=128,
++                          measure_ms=5000, max_calls=10_000_000,
++                          load=dict(kind="closed_loop"))
+             rows.append(dict(repeat=repeat, arm=arm, server_role=server, read_api=api,
+-                             mix="read", target="kv9" if server else "redis-memory", shared=dict(shared)))
+-    require(len(rows) == (6 if smoke else 12), "matched cohort inventory differs")
++                             mix="read", target="kv9" if server else "redis-memory", shared=shared))
++    require(len(rows) == (12 if smoke else 24), "matched c1/c64 cohort inventory differs")
+     return rows
+ 
+ 
+@@ -598,8 +601,8 @@
+     parser.add_argument("--expected-client-revision", required=True)
+     parser.add_argument("--old-server-source", type=Path, default=Path("/tmp/kv9-rpc-worker-pair"))
+     parser.add_argument("--old-server-build", type=Path, default=Path("/tmp/kv9-rpc-pair-release-first"))
+-    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-stream-worker-pair"))
+-    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-stream-worker-pair-release-first"))
++    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-direct-peer-body"))
++    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-direct-peer-body-release-first"))
+     parser.add_argument("--redis-client-source", type=Path, default=Path("/tmp/kv9-redis-point-get-reference"))
+     parser.add_argument("--redis-client-build", type=Path, default=Path("/tmp/kv9-redis-point-get-reference-release-first"))
+     parser.add_argument("--output", type=Path, required=True)
+@@ -663,9 +666,10 @@
+                 helper_hashes[str(path)] = digest(path)
+     rows = make_plan(args.smoke)
+     args.output.mkdir(parents=True)
+-    plan = dict(version=1, complete=False, client_revision=args.expected_client_revision,
++    plan = dict(version=2, protocol_id="kv9-direct-peer-body-c1-c64-v1",
++                concurrency_points=[1, 64], complete=False, client_revision=args.expected_client_revision,
+                 smoke=args.smoke, placement=placement(args.smoke), role_bindings=roles, client_cargo=cargo,
+-                scope="Six-arm correctness smoke only; no timing acceptance" if args.smoke else
++                scope="Twelve-cohort c1/c64 correctness smoke only; no timing acceptance" if args.smoke else
+                       "Best-effort shared-host matched point/batch1 diagnostic; no exclusive host or equivalent durability",
+                 storage=args.storage, kv9_durability=tmpfs.VOLATILE if args.storage == "tmpfs" else "Normal disk WAL and quorum; no Redis durability equivalence",
+                 redis_durability="Standalone memory; save/AOF disabled; no replicas", comparable_durability=False,

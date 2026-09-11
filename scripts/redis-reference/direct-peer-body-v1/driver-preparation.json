@@ -1,0 +1,29 @@
+{
+  "release": {
+    "revision": "6707bcccf15ea788ff231f4263f43a9f73fa63dd",
+    "binary_sha256": "1c4ceb3b95ecca2ad900f65641c73ad097a13afbeba5304b8b8ac63358ff3a63",
+    "manifest_sha256": "029b7653ff227d4f4e15ef1de1236da2b6a824ca7e3cf0ab27ee3ac54640ee9b",
+    "sources": 587,
+    "release_exit_code": 0
+  },
+  "runtime_executed": false,
+  "protocol_id": "kv9-direct-peer-body-c1-c64-v1",
+  "version": 2,
+  "concurrency_points": [
+    1,
+    64
+  ],
+  "timed_cohorts": 24,
+  "smoke_cohorts": 12,
+  "inherited_hashes": {
+    "matched-driver.py": "85ea6f8d886d542608571073e7a27869f24ce00433dc90970d27316635d36709",
+    "isolate-and-run.py": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "driver-arguments.json": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df"
+  },
+  "new_hashes": {
+    "matched-driver.py": "7be1ffee291a28c7500f6e1ad58f5f6dea34befcf69eff2d48c56db86796425a",
+    "isolate-and-run.py": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "driver-arguments.json": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df"
+  },
+  "changes": "Candidate source/build pins; c1/c64 24-cohort inventory and explicit protocol scope. Workload, validators, lifetimes, resources, cleanup and isolation predicates unchanged."
+}

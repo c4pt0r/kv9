@@ -1,0 +1,6 @@
+{
+  "first_controls_exit_code": 1,
+  "failure": "The expected watchdog mutant assertion held a MutexGuard borrowed by assert_eq!, poisoned the queue during unwinding, and caused a destructor panic/SIGABRT. Preserve the same comparison while copying the timestamp before asserting; do not accept an abort as a valid mutant verdict.",
+  "separate_production_hardening": "Check an already-expired backlog before select so repeated ready notifications cannot postpone the expiry decision.",
+  "original_mutant_log_sha256": "bbe4f30da3c54ba78a121fea5907ccb883a4e5c2166137f5bdb20e901ebe52a4"
+}

@@ -1,0 +1,33 @@
+{
+  "recorded_unix_ns": 1789115878608360574,
+  "frozen_helpers": {
+    "matched-driver.py": "7be1ffee291a28c7500f6e1ad58f5f6dea34befcf69eff2d48c56db86796425a",
+    "audit.py": "2c182758cdcb0668d133e9efc1adc06d3b610048917d23832607294543739d62",
+    "isolate-and-run.py": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "driver-arguments.json": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+    "protocol.json": "097997872966f78d2145c1fd5a38fdc599c5177b3807e5ae932b9e3aecd84fe7",
+    "test_driver_contract.py": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a",
+    "test_audit_contract.py": "5090400ddb9759795d415ae4b6e7da31a5518d39f9d79b518038c8996445452a"
+  },
+  "smoke": {
+    "smoke_session": 25849,
+    "exit_code": 0,
+    "complete": true,
+    "cohorts": 12,
+    "measured_calls": 10605645,
+    "outcomes": {
+      "success": 10605645,
+      "refused": 0,
+      "unknown_write": 0,
+      "read_failure": 0,
+      "client_rejected": 0
+    },
+    "owned_lifetimes_exited": 40,
+    "helpers_unchanged": true,
+    "timing_acceptance": false,
+    "matrix_sha256": "2b83e996617916e37aaee3a0d96692c949971b3c763c5dc98651263a87e2bc6c"
+  },
+  "no_owned_build_test_fault_profile_or_audit_running": true,
+  "timing_output": "/tmp/kv9-direct-peer-body-matched-diagnostic-first",
+  "timed_cohorts": 24
+}

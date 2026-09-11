@@ -1,0 +1,31 @@
+{
+  "raft_tests": 224,
+  "test_groups": [
+    193,
+    1,
+    13,
+    5,
+    12
+  ],
+  "raft_test_exit_code": 0,
+  "clippy_exit_code": 0,
+  "route_controls": 9,
+  "compiled_source_control_runs": 27,
+  "route_controls_exit_code": 0,
+  "controls_manifest_sha256": "71fa9b194a7328eb2fbeb0b32d69159c4ee148164a7755e31917e20d101bb9c7",
+  "final_sources": {
+    "crates/raft/src/grpc.rs": "94678473f675a3e2f352f280511986bec4b6c370551718f7ae1523d3b498cb37",
+    "crates/raft/src/grpc/direct_body.rs": "8de391879f192afbeca9321b147bf1058301cd45b2b8d07e58791dc4bf229ef6",
+    "crates/raft/src/grpc/direct_body/tests.rs": "a23cf0eae30b4415273527d2fbd9b84c0fb606fb72196be1d6f63562176df47b",
+    "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+  },
+  "log_hashes": {
+    "raft-tests.log": "f6ab75aba59eefeaa10bf5163a714a024a0b1c9c762fbebc868a856d2cbbff96",
+    "clippy.log": "aba99a25412ba514a13b937b4e48e7ad8cd2745ea2667f61eab7ff21fd404085",
+    "route-controls-bound-tests.log": "9b023e310dab0c4646469a86f3465654aed969b88764e983c2c4cc73a086765f"
+  },
+  "process_e2e": false,
+  "chaos_mesh": false,
+  "performance_screened": false,
+  "candidate_selected": false
+}

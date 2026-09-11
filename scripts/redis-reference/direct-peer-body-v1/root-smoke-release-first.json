@@ -1,0 +1,25 @@
+{
+  "recorded_unix_ns": 1789115705821273179,
+  "frozen_helpers": {
+    "matched-driver.py": "7be1ffee291a28c7500f6e1ad58f5f6dea34befcf69eff2d48c56db86796425a",
+    "audit.py": "2c182758cdcb0668d133e9efc1adc06d3b610048917d23832607294543739d62",
+    "isolate-and-run.py": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "driver-arguments.json": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+    "protocol.json": "097997872966f78d2145c1fd5a38fdc599c5177b3807e5ae932b9e3aecd84fe7",
+    "test_driver_contract.py": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a",
+    "test_audit_contract.py": "5090400ddb9759795d415ae4b6e7da31a5518d39f9d79b518038c8996445452a"
+  },
+  "prerequisites": {
+    "raft_tests": 224,
+    "route_source_control_triples": 9,
+    "clippy_exit_code": 0,
+    "process_session": 29183,
+    "process_exit_code": 0,
+    "process_independent_audit_sha256": "db82db752129df4ff45ba437a563fdd925034a60fb7b7f08c6d69e27979ab30b",
+    "driver_contract_tests": 6,
+    "audit_contract_tests": 10,
+    "all_commands_terminal": true
+  },
+  "smoke_only": true,
+  "timing_started": false
+}

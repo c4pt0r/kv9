@@ -1,0 +1,509 @@
+{
+  "accepted": true,
+  "audit_script_sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+  "build": "/tmp/kv9-direct-peer-body-release-first",
+  "cases": [
+    {
+      "client_pid": 1495040,
+      "fresh_drained_voters": 3,
+      "history_sha256": "8b14bed331f76f29078558197ccfef640898f0a3ad55315540fa9291e5a9e9ff",
+      "native_checker_states": 180,
+      "operations": 176,
+      "outcomes": {
+        "ok": 164,
+        "unknown": 12
+      },
+      "point_batch_overlap_count": 118,
+      "point_batch_overlap_examples": [
+        [
+          7,
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          11,
+          9
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          11,
+          12
+        ],
+        [
+          11,
+          13
+        ],
+        [
+          18,
+          16
+        ],
+        [
+          18,
+          20
+        ],
+        [
+          18,
+          21
+        ],
+        [
+          22,
+          23
+        ],
+        [
+          22,
+          24
+        ],
+        [
+          22,
+          25
+        ],
+        [
+          26,
+          23
+        ],
+        [
+          26,
+          24
+        ],
+        [
+          26,
+          25
+        ]
+      ],
+      "raw_checker_states": 180,
+      "traffic_successes": {
+        "batch_get": 56,
+        "batch_put": 56,
+        "delete": 16,
+        "get": 17,
+        "put": 16
+      },
+      "transport": "tonic_stream",
+      "windows": [
+        {
+          "counts": {
+            "batch_get": 15,
+            "batch_put": 14,
+            "delete": 4,
+            "get": 4,
+            "put": 5
+          },
+          "label": "voter-lost",
+          "operation_ids": {
+            "batch_get": [
+              50,
+              51,
+              53,
+              58,
+              62,
+              66,
+              65,
+              69,
+              73,
+              77,
+              76,
+              81,
+              84,
+              87,
+              89
+            ],
+            "batch_put": [
+              49,
+              54,
+              57,
+              61,
+              60,
+              64,
+              71,
+              68,
+              72,
+              75,
+              79,
+              82,
+              83,
+              86
+            ],
+            "delete": [
+              55,
+              59,
+              70,
+              80
+            ],
+            "get": [
+              52,
+              56,
+              67,
+              78
+            ],
+            "put": [
+              48,
+              63,
+              74,
+              85,
+              88
+            ]
+          }
+        },
+        {
+          "counts": {
+            "batch_get": 12,
+            "batch_put": 12,
+            "delete": 4,
+            "get": 4,
+            "put": 2
+          },
+          "label": "voter-restarted",
+          "operation_ids": {
+            "batch_get": [
+              138,
+              140,
+              143,
+              147,
+              151,
+              150,
+              154,
+              158,
+              162,
+              166,
+              165,
+              169
+            ],
+            "batch_put": [
+              139,
+              142,
+              146,
+              145,
+              149,
+              153,
+              157,
+              160,
+              161,
+              164,
+              168,
+              171
+            ],
+            "delete": [
+              144,
+              155,
+              159,
+              170
+            ],
+            "get": [
+              141,
+              152,
+              156,
+              167
+            ],
+            "put": [
+              148,
+              163
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "client_pid": 1496807,
+      "fresh_drained_voters": 3,
+      "history_sha256": "5732387edcdf41abb100e48dd8083076415c292c65a03d7cbc622994ff9d921e",
+      "native_checker_states": 389,
+      "operations": 176,
+      "outcomes": {
+        "ok": 160,
+        "unknown": 16
+      },
+      "point_batch_overlap_count": 114,
+      "point_batch_overlap_examples": [
+        [
+          7,
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          9
+        ],
+        [
+          7,
+          10
+        ],
+        [
+          11,
+          9
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          11,
+          12
+        ],
+        [
+          11,
+          13
+        ],
+        [
+          11,
+          14
+        ],
+        [
+          18,
+          16
+        ],
+        [
+          18,
+          17
+        ],
+        [
+          18,
+          20
+        ],
+        [
+          22,
+          20
+        ],
+        [
+          22,
+          21
+        ],
+        [
+          22,
+          23
+        ],
+        [
+          22,
+          24
+        ]
+      ],
+      "raw_checker_states": 389,
+      "traffic_successes": {
+        "batch_get": 56,
+        "batch_put": 55,
+        "delete": 14,
+        "get": 16,
+        "put": 16
+      },
+      "transport": "tonic_unary",
+      "windows": [
+        {
+          "counts": {
+            "batch_get": 12,
+            "batch_put": 12,
+            "delete": 3,
+            "get": 3,
+            "put": 4
+          },
+          "label": "voter-lost",
+          "operation_ids": {
+            "batch_get": [
+              62,
+              65,
+              66,
+              69,
+              73,
+              76,
+              77,
+              79,
+              84,
+              87,
+              88,
+              91
+            ],
+            "batch_put": [
+              60,
+              61,
+              64,
+              68,
+              71,
+              72,
+              75,
+              80,
+              82,
+              83,
+              86,
+              90
+            ],
+            "delete": [
+              70,
+              81,
+              92
+            ],
+            "get": [
+              67,
+              78,
+              93
+            ],
+            "put": [
+              63,
+              74,
+              85,
+              89
+            ]
+          }
+        },
+        {
+          "counts": {
+            "batch_get": 12,
+            "batch_put": 11,
+            "delete": 4,
+            "get": 4,
+            "put": 2
+          },
+          "label": "voter-restarted",
+          "operation_ids": {
+            "batch_get": [
+              140,
+              139,
+              143,
+              147,
+              150,
+              151,
+              154,
+              158,
+              162,
+              166,
+              165,
+              169
+            ],
+            "batch_put": [
+              142,
+              145,
+              146,
+              149,
+              152,
+              157,
+              160,
+              161,
+              164,
+              168,
+              171
+            ],
+            "delete": [
+              144,
+              155,
+              159,
+              170
+            ],
+            "get": [
+              141,
+              153,
+              156,
+              167
+            ],
+            "put": [
+              148,
+              163
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "client_lifetimes": 2,
+  "client_sha256": "86fcb2ca369f08d2c328507cc9e01db0ddaab2adafacc0806fe82c93bcaf3ac2",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/kv9-direct-peer-body",
+      "ended_unix_ns": 1789115405054227707,
+      "exit_code": 0,
+      "name": "source-head",
+      "started_unix_ns": 1789115405052691124
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "cwd": "/tmp/kv9-direct-peer-body",
+      "ended_unix_ns": 1789115405057834108,
+      "exit_code": 0,
+      "name": "source-status",
+      "started_unix_ns": 1789115405054326351
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/history/checker.py",
+        "/tmp/kv9-direct-peer-body-process-e2e-first/batch-tonic-stream/history.jsonl",
+        "--output",
+        "/tmp/kv9-direct-peer-body-process-independent-first/results-first/batch-tonic-stream-history-checked.json",
+        "--acceptance",
+        "--require",
+        "get",
+        "put",
+        "delete",
+        "batch_get",
+        "batch_put",
+        "--max-states",
+        "400000",
+        "--seconds",
+        "60"
+      ],
+      "cwd": "/tmp/kv9-direct-peer-body",
+      "ended_unix_ns": 1789115405199717511,
+      "exit_code": 0,
+      "name": "batch-tonic-stream-raw-history",
+      "started_unix_ns": 1789115405161852327
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/history/checker.py",
+        "/tmp/kv9-direct-peer-body-process-e2e-first/batch-tonic-unary/history.jsonl",
+        "--output",
+        "/tmp/kv9-direct-peer-body-process-independent-first/results-first/batch-tonic-unary-history-checked.json",
+        "--acceptance",
+        "--require",
+        "get",
+        "put",
+        "delete",
+        "batch_get",
+        "batch_put",
+        "--max-states",
+        "400000",
+        "--seconds",
+        "60"
+      ],
+      "cwd": "/tmp/kv9-direct-peer-body",
+      "ended_unix_ns": 1789115405280085068,
+      "exit_code": 0,
+      "name": "batch-tonic-unary-raw-history",
+      "started_unix_ns": 1789115405236901211
+    }
+  ],
+  "complete": true,
+  "ended_unix_ns": 1789115405311719364,
+  "original_inputs_unchanged": true,
+  "owned_lifetimes_exited": true,
+  "revision": "6707bcccf15ea788ff231f4263f43a9f73fa63dd",
+  "run": "/tmp/kv9-direct-peer-body-process-e2e-first",
+  "scope": "Independent readback of one frozen default-feature native atomic batch process fixture, stream default plus explicit unary on normal endpoints; two complete atomic histories and source-bound SIGKILL/restart intervals. One local host, ordinary WAL, no benchmark or actual Chaos Mesh/native-batch Chaos acceptance. Interval timestamps and listener/proc records are retained observations from the source-bound fixture, not an external continuous observer.",
+  "server_lifetimes": 5,
+  "server_sha256": "1c4ceb3b95ecca2ad900f65641c73ad097a13afbeba5304b8b8ac63358ff3a63",
+  "source": "/tmp/kv9-direct-peer-body",
+  "source_files": 587,
+  "source_tree_sha256": "f2e509d9d6c6e78901ec0a882b6948e7e5864654d89dda036e112012b4e7d901",
+  "source_unchanged": true,
+  "started_unix_ns": 1789115405051742811
+}

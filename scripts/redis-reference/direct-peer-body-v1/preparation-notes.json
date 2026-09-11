@@ -1,0 +1,5 @@
+{
+  "root_exploratory_statistics_failure": "An inline read-only scalar extraction assumed every histogram stored3776 buckets and raised IndexError before writing a result. The successful extraction pads omitted trailing zero buckets, matching the frozen independent histogram merger. No original report, timing or auditor was changed or rerun.",
+  "auditor_construction_failure": "See audit-readiness.md; a source replacement anchor failed before audit.py existed.",
+  "source_control_failure": "See control-correction.json and candidate implementation document; abnormal mutant termination was rejected, then the test failure path was fixed without weakening the comparison."
+}
