@@ -1,11 +1,19 @@
 # kv9 development roadmap
 
-Updated: 2026-09-08. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
+Updated: 2026-09-11. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
 [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md) maps that architecture to the current implementation.
 
 The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 25 work packages,
 explicit dependencies, implementation steps and acceptance criteria. Track delivery in
 [GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
+
+The [current checkpoint](CURRENT-STATUS.md) records the latest read measurements,
+two-context experiment and verification limits. The immediate product sequence
+is memory RawKV read performance, then dynamic multi-Raft and automatic splits.
+This priority does not waive the storage, proof, fault or recovery prerequisites
+below. Preserve durable writes and fresh quorum reads; evaluate throughput and
+latency together, including mixed-read tails. CI runs locally except at releases
+or explicitly selected key milestones.
 
 The target is an industrial-grade distributed database. Prioritize consistency, recovery, measured throughput
 and scalable architecture. Complex private-network TLS configuration is not a prerequisite for the current
