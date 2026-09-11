@@ -91,13 +91,22 @@ bounds, broader implementation proofs and actual Chaos Mesh remain required.
 
 ## Next development steps
 
-1. **Profile the selected read path:** measure c1 turnaround and c64 mixed
-   traffic, separating CPU work from time blocked on RPC, owner and completion
-   handoffs. Run profiling outside uninstrumented timing with matching source,
-   clients and workloads. The redundant-turn experiment gives less than 1%
-   pooled pure-read benefit; choose the next change from measured costs instead
-   of another broad wake rewrite or admission-window adjustment. Tonic streaming
-   remains selected. DPDK requires actual cross-host/NIC evidence.
+The [fresh selected-source CPU/thread diagnostic](https://github.com/c4pt0r/kv9/blob/6fb3434c7cafcbd8d93b04f298208d5785fa292a/docs/READ-PATH-CPU-PROFILE.md)
+passes c1 GET and c64 mixed recording/analysis with 1,241 / 3,342 selected CPU
+samples and 912,580 successful measured calls. Instrumented calls are not new
+QPS evidence. Exact-binary attribution puts 4.189% of mixed CPU samples in the
+linear apply-receipt search. OS-thread intervals do not identify async-task
+or per-request quorum waits. The first recording's 128-MiB cap failure is
+retained; a fresh 512-MiB run passes unchanged sampling and validity checks.
+
+1. **Qualify indexed receipts for reads/mixed:** complete the missing c1/c64
+   GET/mixed screen for existing `74d24116`, reusing its original checked
+   source/release. It already has local source, representation-proof and
+   ordinary recovery evidence; its earlier point-write gain and inconclusive
+   batch result remain separate. Evaluate GET mean/p95/p99 and mixed throughput.
+   Keep CRC selected until full qualification. Avoid another broad wake rewrite
+   or admission-window change without evidence. Tonic streaming remains selected;
+   DPDK requires actual cross-host/NIC evidence.
 2. **Short qualification loop:** run focused correctness and ordinary recovery,
    then matched c1/c64 GET and mixed screening. Report GET separately from PUT,
    both repetitions and raw tail histograms. For a promising candidate, run the

@@ -9,8 +9,9 @@ explicit dependencies, implementation steps and acceptance criteria. Track deliv
 
 The [current checkpoint](CURRENT-STATUS.md) records the latest read measurements,
 owner-local pump experiment and verification limits. Its sub-1% pure-read gains
-and mixed regressions do not justify promotion; profile CPU work and blocked
-handoffs on the selected source before choosing the next change. The product sequence
+and mixed regressions do not justify promotion. Fresh selected-source CPU
+attribution identifies linear apply-receipt search in mixed traffic; complete
+the existing indexed candidate's missing read/mixed qualification. The product sequence
 is memory RawKV read performance, then dynamic multi-Raft and automatic splits.
 This priority does not waive the storage, proof, fault or recovery prerequisites
 below. Preserve durable writes and fresh quorum reads; evaluate throughput and
