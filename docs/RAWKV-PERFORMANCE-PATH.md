@@ -58,7 +58,24 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
-### Latest checkpoint: owner-local pump has too little benefit
+### Latest checkpoint: selected-source read/mixed CPU attribution
+
+The [fresh read-path diagnostic](READ-PATH-CPU-PROFILE.md) passes both c1 GET
+and c64 mixed recordings: 1,241 / 3,342 selected CPU samples, zero reported
+sample loss, and 912,580 successful measured calls. These instrumented calls
+are not new QPS evidence. The first 128-MiB capped attempt is retained; a new
+512-MiB attempt passes unchanged sampling and interval checks.
+
+Exact-binary attribution puts 4.189% of mixed CPU samples in the linear
+apply-receipt search loop. Complete the already tested indexed candidate
+`74d24116`'s missing c1/c64 pure-read/mixed screen using its original source and
+release. Its prior point-write benefit and inconclusive batch result remain
+separate. Compare GET mean/p95/p99 alongside throughput, with no premature
+selection or repeated broad wake/admission-window changes. Thread switch
+intervals cannot identify per-request quorum or async-task waits. Keep CRC
+selected; full workload and actual Chaos Mesh remain promotion requirements.
+
+### Previous checkpoint: owner-local pump has too little benefit
 
 The [owner-local ReadIndex pump screen](OWNER-READ-PUMP-SCREEN.md) completes on
 `3bfb63b` with all 24 cohorts accepted and 49,860,741 measured single-attempt
