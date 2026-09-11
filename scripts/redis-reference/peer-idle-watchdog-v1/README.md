@@ -15,6 +15,9 @@ unfinished pin stage remains in the raw preparation's `before-final-pins`.
 
 `inventory.json` records each retained copy's source path, byte count and
 SHA-256; this newly authored README and the inventory itself are excluded.
+The retained unified diff contains intentional blank context-line prefixes.
+Its exact-path whitespace attribute preserves those historical bytes while
+ordinary source and documentation whitespace checks remain enabled.
 These are retained execution helpers with explicit absolute-path
 source/build dependencies, not a claim that copying this directory alone creates
 a portable benchmark environment. The source revisions must be checked out and
