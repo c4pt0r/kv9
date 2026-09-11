@@ -103,3 +103,9 @@ scripts/redis-reference/indexed-receipt-proof-v1/formal/first-failure/tlaps.log 
 # Preserve exact original CRC slicing proof and validation records.
 scripts/redis-reference/crc-slicing8-proof-v1/originals/kv9-wal-crc32-slicing8-validation-first/engine.log -whitespace
 scripts/redis-reference/crc-slicing8-proof-v1/originals/kv9-wal-crc32-slicing8-validation-first/workspace.log -whitespace
+
+# Preserve exact original context lines in the read-credit performance diffs.
+docs/read-credit-crc-performance-v1/preparation/matched-driver.py.diff -whitespace
+docs/read-credit-crc-performance-v1/preparation/statistics/derive.py.diff -whitespace
+docs/read-credit-crc-performance-v1/preparation/test_driver.py.diff -whitespace
+docs/read-credit-crc-performance-v1/statistics/derive.py.diff -whitespace
