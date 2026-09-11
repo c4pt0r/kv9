@@ -1,5 +1,11 @@
 # Direct peer request body: ownership, bounds and progress
 
+The follow-on [idle-check watchdog experiment](PEER-IDLE-WATCHDOG.md) removes
+producer notification and replaces the empty watchdog wait with a bounded
+timer. Its deadline argument and validation obligations supplement this document.
+The original `6707bcc` performance screen was rejected; inherited test results
+below describe that source, not acceptance of the follow-on implementation.
+
 This candidate replaces the two-stage peer send path with one bounded envelope
 queue consumed directly by the tonic request body. The accepted control is
 `5ee897a2f58c57bdf17ea1757c96224adf0f0dbb`. This is a transport experiment;
@@ -129,12 +135,15 @@ notifications cannot postpone the expiry decision. A timer wake checks the
 current timestamp again, so an old armed deadline cannot expire work whose
 valid dequeue has reset the budget. No explicit notification is needed for a
 dequeue that moves the deadline later or empties the queue; an earlier wake
-merely rechecks and rearms or becomes idle. New work on an empty queue always
-notifies and receives a new budget. Connection establishment/backoff has its
+merely rechecks and rearms or becomes idle. New work on an empty queue receives
+a new budget. In the follow-on experiment an already-armed idle timer is due
+no later than that new deadline, so enqueue only wakes the body; lifecycle
+notifications remain. See the separate idle-check proof for the locked clock
+sample and persistent timer requirements. Connection establishment/backoff has its
 own timeout; a newly opened RPC starts its own three-second progress interval.
 
 Progress here means valid dequeue into a body batch, not remote receipt,
-application or quorum acknowledgement. An empty queue disables this watchdog
+application or quorum acknowledgement. An empty queue cannot expire as stalled,
 even if HTTP2 retains an earlier frame. Keepalive and subsequent traffic retain
 their separate recovery roles. Eventual recovery requires fair owner/I/O
 scheduling, finite local operations, a stable authorized route, eventual
@@ -152,7 +161,7 @@ assumptions. The extra per-RPC token, waker and watchdog argument above is not
 silently attributed to those older model inventories. Core consensus and
 durability proof composition remains a separate open requirement.
 
-The 16 direct-body component tests cover same-route and A/B/A retained-body
+The original 16 direct-body component tests cover same-route and A/B/A retained-body
 ownership, waker/Drop fencing, controlled invalidation cleanup, abort before
 first poll, receiver and sender closure, FIFO/count/soft-byte rules, bounded
 stale continuation, idle and unpolled watchdog behavior, old timer revalidation,
@@ -160,8 +169,10 @@ non-progress notifications and cooperative yielding. Existing real gRPC tests
 retain distinct-address migration, frozen-reader recovery, established
 blackhole recovery and connection-budget coverage.
 
-`scripts/check-route-controls.py` retains the original five route/TCP source
-controls and adds four direct-body controls. Each requires the original test
+At `6707bcc`, `scripts/check-route-controls.py` retained the original five
+route/TCP source controls and added four direct-body controls. The follow-on
+adds five idle-watchdog controls described in its separate document. Each
+requires the original test
 to pass, an isolated semantic fault to fail its named assertion, and restored
 source to pass. Zero selected tests, compilation failure, abnormal termination
 or a different assertion cannot count as an accepted fault.
@@ -176,7 +187,7 @@ failure path; the rejection predicate was not weakened. Pre-edit files and the
 separate early-expiry hardening are recorded in
 `/tmp/kv9-direct-peer-body-review-correction`.
 
-The final candidate passes all **224 kv9-raft tests** (193 library, 19
+The original `6707bcc` candidate passes all **224 kv9-raft tests** (193 library, 19
 integration and 12 documentation tests) and Clippy with warnings denied.
 The final source-control recording at
 `/tmp/kv9-direct-peer-body-route-controls-bound-tests` passes all nine triples

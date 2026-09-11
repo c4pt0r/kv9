@@ -403,32 +403,145 @@ async fn stalled_watchdog_expires_with_unpolled_body_and_retains_backlog() {
 }
 
 #[tokio::test(flavor = "current_thread")]
-async fn idle_session_does_not_expire_and_first_queued_work_wakes_watchdog() {
+async fn producer_wakes_body_but_not_idle_watchdog_across_empty_transitions() {
+    let route = destination(1);
+    let (tx, rx) = channel();
+    let (session, mut body) = rx.open(route.clone(), RootDigest::from_bytes([0; 32]));
+    let (owner_count, owner_waker) = counter();
+    let (body_count, body_waker) = counter();
+    let mut watch = Box::pin(session.stalled());
+    let armed_at = Instant::now();
+    assert!(poll_future(watch.as_mut(), &owner_waker).is_pending());
+    for id in 1..=2 {
+        assert!(poll_body(&mut body, &body_waker).is_pending());
+        let prior_body_wakes = body_count.0.load(Ordering::SeqCst);
+        tx.try_send(message(&route, id, 0)).unwrap();
+        assert!(
+            Instant::now() < armed_at + STREAM_PROGRESS_BUDGET,
+            "fixture exceeded idle wake observation window"
+        );
+        assert!(
+            body_count.0.load(Ordering::SeqCst) > prior_body_wakes,
+            "producer lost the direct body wake"
+        );
+        assert_eq!(
+            owner_count.0.load(Ordering::SeqCst),
+            0,
+            "producer woke the independent idle watchdog"
+        );
+        assert_eq!(ids(&batch(&mut body, &body_waker)), vec![id]);
+    }
+}
+
+// Both cases use real enqueue timestamps and an unpolled Body. In particular,
+// the after-idle case does not backdate P before the already-armed idle check.
+async fn assert_real_unpolled_backlog_deadline(enqueue_after_idle: bool) {
     let route = destination(1);
     let (tx, rx) = channel();
     let (session, _unpolled_body) = rx.open(route.clone(), RootDigest::from_bytes([0; 32]));
-    assert!(
-        tokio::time::timeout(
-            STREAM_PROGRESS_BUDGET + Duration::from_millis(100),
-            session.stalled()
-        )
+    let (_, waker) = counter();
+    let mut watch = Box::pin(session.stalled());
+    if enqueue_after_idle {
+        assert!(poll_future(watch.as_mut(), &waker).is_pending());
+        tokio::time::sleep(Duration::from_millis(150)).await;
+    }
+    let before_enqueue = Instant::now();
+    tx.try_send(message(&route, 1, 0)).unwrap();
+    let after_enqueue = Instant::now();
+    let pending = rx.0.state.lock().unwrap().pending_since.unwrap();
+    assert!(pending >= before_enqueue && pending <= after_enqueue);
+    let deadline = pending + STREAM_PROGRESS_BUDGET;
+    tokio::time::timeout_at(deadline + Duration::from_secs(1), watch)
         .await
-        .is_err(),
-        "healthy idle stream churned after the progress budget"
+        .expect("real unpolled backlog missed its unchanged progress deadline");
+    assert!(
+        Instant::now() >= deadline,
+        "unpolled backlog expired before its real progress deadline"
     );
+    let observed_pending = rx.0.state.lock().unwrap().pending_since;
+    assert_eq!(
+        observed_pending,
+        Some(pending),
+        "watchdog reset the real enqueue timestamp"
+    );
+    assert_eq!(
+        tx.capacity(),
+        PEER_QUEUE - 1,
+        "watchdog consumed the unpolled body's backlog"
+    );
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn real_unpolled_backlog_before_first_watchdog_poll_expires_at_enqueue_deadline() {
+    assert_real_unpolled_backlog_deadline(false).await;
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn real_unpolled_backlog_after_idle_arming_expires_without_producer_notify() {
+    assert_real_unpolled_backlog_deadline(true).await;
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn persistent_idle_watchdog_checks_twice_despite_repeated_polls_without_reconnect() {
+    let route = destination(1);
+    let (_tx, rx) = channel();
+    let (session, _unpolled_body) = rx.open(route, RootDigest::from_bytes([0; 32]));
     let (count, waker) = counter();
     let mut watch = Box::pin(session.stalled());
-    assert!(poll_future(watch.as_mut(), &waker).is_pending());
-    tx.try_send(message(&route, 1, 0)).unwrap();
+    let observe_until = Instant::now() + STREAM_PROGRESS_BUDGET * 2 + Duration::from_millis(400);
+    // Keep the SAME future alive and poll it frequently. Its fixed idle timer
+    // must still wake twice; ordinary polling cannot postpone each idle check.
+    while Instant::now() < observe_until {
+        assert!(
+            poll_future(watch.as_mut(), &waker).is_pending(),
+            "healthy persistent idle watchdog requested reconnect"
+        );
+        tokio::time::sleep(Duration::from_millis(20)).await;
+    }
     assert!(
-        count.0.load(Ordering::SeqCst) > 0,
-        "empty-to-nonempty transition lost the owner wake"
+        poll_future(watch.as_mut(), &waker).is_pending(),
+        "healthy persistent idle watchdog requested reconnect"
     );
-    rx.0.state.lock().unwrap().pending_since =
-        Some(Instant::now() - STREAM_PROGRESS_BUDGET - Duration::from_millis(1));
-    tokio::time::timeout(Duration::from_secs(1), watch)
-        .await
-        .unwrap();
+    assert!(
+        count.0.load(Ordering::SeqCst) >= 2,
+        "idle watchdog timer was absent or reset by ordinary polls"
+    );
+    let still_owned = owns(&rx.0.state.lock().unwrap(), &session.token);
+    assert!(still_owned, "idle checks invalidated the live session");
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn idle_sender_receiver_and_body_closure_notify_without_waiting_for_timer() {
+    for closing in ["sender", "receiver", "body"] {
+        let route = destination(1);
+        let (tx, rx) = channel();
+        let (session, body) = rx.open(route, RootDigest::from_bytes([0; 32]));
+        let mut tx = Some(tx);
+        let mut rx = Some(rx);
+        let mut body = Some(body);
+        let (count, waker) = counter();
+        let mut watch = Box::pin(session.stalled());
+        let armed_at = Instant::now();
+        assert!(poll_future(watch.as_mut(), &waker).is_pending());
+        match closing {
+            "sender" => drop(tx.take()),
+            "receiver" => drop(rx.take()),
+            "body" => drop(body.take()),
+            _ => unreachable!(),
+        }
+        assert!(
+            Instant::now() < armed_at + STREAM_PROGRESS_BUDGET,
+            "fixture exceeded lifecycle wake observation window"
+        );
+        assert!(
+            count.0.load(Ordering::SeqCst) > 0,
+            "lifecycle closure lost its prompt watchdog notification: {closing}"
+        );
+        assert!(
+            poll_future(watch.as_mut(), &waker).is_ready(),
+            "lifecycle closure waited for the idle timer: {closing}"
+        );
+    }
 }
 
 #[tokio::test(flavor = "current_thread")]
@@ -474,6 +587,10 @@ async fn valid_batch_progress_resets_armed_budget_and_empty_queue_clears_it() {
     let (_, waker) = counter();
     let mut watch = Box::pin(session.stalled());
     assert!(poll_future(watch.as_mut(), &waker).is_pending());
+    // The old timer is already ready, but this manually polled watchdog has
+    // not resumed. A real dequeue wins the queue lock before its recheck.
+    tokio::time::sleep_until(nearly_expired + STREAM_PROGRESS_BUDGET + Duration::from_millis(30))
+        .await;
     let before_progress = Instant::now();
     assert_eq!(batch(&mut body, &waker).msgs.len(), MAX_BATCH_MSGS);
     let after_progress = rx.0.state.lock().unwrap().pending_since.unwrap();
