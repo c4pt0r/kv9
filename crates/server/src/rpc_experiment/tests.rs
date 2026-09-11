@@ -170,10 +170,7 @@ fn malformed_reply_is_never_decoded_as_success_or_a_retryable_typed_refusal() {
 #[tokio::test]
 async fn authentication_and_request_decoding_fail_before_backend_execution() {
     let backend = Arc::new(Backend::default());
-    let handler = Handler {
-        api: Kv9Grpc::new(backend.clone()),
-        authenticator: authenticator(),
-    };
+    let handler = Handler::new(Kv9Grpc::new(backend.clone()), authenticator());
     for authorization in ["", "Bearer wrong", "Basic secret", "Bearer secret\n"] {
         assert_eq!(
             handler
