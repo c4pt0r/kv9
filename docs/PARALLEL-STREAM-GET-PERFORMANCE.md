@@ -1,5 +1,9 @@
 # Bounded parallel stream GET performance
 
+The subsequent [jemalloc experiment](JEMALLOC-SERVER-PERFORMANCE.md) records a
+further modest gain and its measured memory cost. The comparison below retains
+its original source, protocol and results.
+
 Candidate `f2c4e856d03f75ac6e4718f0aac7f4e7a1cf3d02` improves point GET from
 207,734–208,320 to **287,795–288,611 successful calls/s** in the matched
 comparison. Paired gains are **38.15% and 38.93%**. Mean whole-call latency
