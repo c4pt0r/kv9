@@ -63,7 +63,7 @@ retains an isolated candidate for broader validation: single GET gains
 4.425% / 3.641% against the same-run f2 control, with improved mean and p99.
 All 6,460,852 measured calls and the separate reader pass. The candidate uses
 the system allocator and has not been combined with jemalloc; exact-source
-Chaos and broader acceptance remain pending. It does not supersede the best
+[eleven-window Chaos acceptance](STREAM-AUTHORIZATION-METADATA-ACCEPTANCE.md) now passes; broader promotion obligations remain open. It does not supersede the best
 retained jemalloc performance or establish Redis parity.
 
 The [read-barrier waiting diagnostic](READ-BARRIER-WAIT-DIAGNOSTIC.md) changes

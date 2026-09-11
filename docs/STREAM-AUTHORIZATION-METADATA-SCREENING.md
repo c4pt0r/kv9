@@ -1,6 +1,6 @@
 # Stream authorization metadata: performance screening
 
-Keep `94d8b9fe1b59c6b441267de7dc4352207dd7079c` for broader correctness validation. Single GET improves **4.425% / 3.641%** against the same-run f2 system-allocator control, with better whole-call mean and p99 latency in both repeats. This is a useful incremental screening result, not Redis parity or production promotion. Exact-candidate Chaos acceptance is still pending.
+Keep `94d8b9fe1b59c6b441267de7dc4352207dd7079c` for broader correctness validation. Single GET improves **4.425% / 3.641%** against the same-run f2 system-allocator control, with better whole-call mean and p99 latency in both repeats. This is a useful incremental screening result, not Redis parity or production promotion. The [exact-candidate eleven-window Chaos acceptance](STREAM-AUTHORIZATION-METADATA-ACCEPTANCE.md) now passes with complete histories and positive fault effects.
 
 The candidate reaches **296,785–298,481 single GET calls/s**, with mean **214.266–215.492 us** and p99 buckets **376.832–385.023 us**. Same-run Redis GET reaches 499,825–507,619 calls/s. BatchGet(1) improves **1.104% / 2.892%** to 284,519–290,686 calls/s. These batch-one rates do not establish larger-batch performance.
 
@@ -29,7 +29,7 @@ Single-GET aggregate RSS increases by 0.779 / 0.402 MiB in the paired repeats; b
 
 ## Local screening evidence
 
-Full post-screening workspace checks now pass: **711 default and 721 experimental tests**, with **23 ignored in each configuration**; these are overlapping configurations, not distinct totals. All-target workspace experimental Clippy passes with warnings denied. Logs: `/tmp/kv9-stream-auth-metadata-workspace-first`. Exact-candidate Chaos is being prepared and has not run.
+Full post-screening workspace checks now pass: **711 default and 721 experimental tests**, with **23 ignored in each configuration**; these are overlapping configurations, not distinct totals. All-target workspace experimental Clippy passes with warnings denied. Logs: `/tmp/kv9-stream-auth-metadata-workspace-first`. Exact-candidate Chaos has now completed; its scope and evidence are linked above.
 
 - Focused checks: 37 point-related tests, 31 gRPC tests and 10 optional RPC tests pass; filters overlap. All-target server experimental Clippy passes with warnings denied. The initial new role-change test expected Unauthenticated instead of the unchanged PermissionDenied; only the test expectation was corrected, and the failed attempt remains recorded.
 - Actual default-feature stream/unary leader-kill and original-directory-restart E2E: **366 calls, 335 OK and 31 unknown**. Both complete atomic histories pass; unknown writes are not blindly replayed. All owned lifetimes and cleanup pass.
@@ -43,7 +43,7 @@ KV9 retains three Raft voters, normal read barriers and WAL sync calls on volati
 
 ## Next acceptance and bottleneck work
 
-Complete exact-source Chaos acceptance and the remaining applicable acceptance obligations before selecting this candidate. In parallel, the [read-barrier waiting diagnostic](READ-BARRIER-WAIT-DIAGNOSTIC.md) identifies a more substantial elapsed-time path to investigate. Measure registration, sealed-group submission, quorum observation, apply catch-up and completion notification separately. Preserve normal quorum confirmation and the applied-index fence. No lease, stale read or relaxed write acknowledgement is proposed.
+The exact-source link/quorum Chaos increment now passes. Retain the candidate independently while completing the remaining broader acceptance obligations before promotion. In parallel, the [read-barrier waiting diagnostic](READ-BARRIER-WAIT-DIAGNOSTIC.md) identifies a more substantial elapsed-time path to investigate. Measure registration, sealed-group submission, quorum observation, apply catch-up and completion notification separately. Preserve normal quorum confirmation and the applied-index fence. No lease, stale read or relaxed write acknowledgement is proposed.
 
 ## Retained bindings
 
