@@ -8,10 +8,11 @@ active product milestone, followed by dynamic multi-Raft and automatic splits.
 The dependency index and proof/fault/availability gates below still apply;
 partial experimental results do not complete their broader work packages.
 
-The owner-local pump screen is complete and remains unselected: pure GET gains
-are below 1% pooled, with no mixed-traffic improvement. Next profile the selected
-c1 read turnaround and c64 mixed path, then change one measured processing or
-handoff cost. Preserve the full acceptance route for a useful candidate.
+The owner-local pump screen remains unselected. Fresh c1 GET/c64 mixed CPU
+attribution now identifies the linear apply-receipt search as 4.189% of mixed
+samples. Complete the existing indexed-receipt candidate's missing read/mixed
+screen using its original checked source/release. Diagnostic samples are not
+new QPS evidence; preserve full workload/proof/Chaos acceptance for promotion.
 
 <!-- kv9-roadmap-20260908:epic -->
 This is the execution tracker for evolving kv9 from its basic distributed Raw KV baseline into an industrial-grade distributed database. Priorities are consistency, recoverability, bounded resources, measured throughput and scalable ownership. Complex private-network TLS configuration is P4 work.
