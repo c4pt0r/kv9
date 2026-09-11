@@ -64,6 +64,12 @@ to improve latency by these observations.
 
 ## Next experiment
 
+Follow-up: the [first scheduler screening](RPC-GLOBAL-QUEUE-SCREENING.md)
+is complete. A fixed global queue interval of eight regresses throughput,
+mean latency and p99 in both repetitions, so that candidate is rejected.
+The original diagnostic below remains evidence for other completion and
+confirmation-path work; it does not attribute all waiting to that queue.
+
 Prioritize the completion delivery and receiver scheduling path, with a narrow
 change on a clean, uninstrumented retained control. Preserve bounded stream
 ownership, original cancellation and deadlines, and exact read-group identity.
