@@ -86,12 +86,10 @@ impl State {
 /// In-memory engine. One persistent ordered map per column family behind a single
 /// `RwLock` (DESIGN §6.2). Suitable for the v0 skeleton and unit tests; **not durable**.
 ///
-/// Because the maps are persistent, [`Engine::snapshot`] is O(1) and costs *nothing* on
-/// the write side: a write mutates the live state in place while every open view keeps
-/// the version it was taken at, via structural sharing. The read-heavy paths that
-/// motivated this — routing lookups and catalog queries, each opening a view per
-/// transaction — therefore never pay for the snapshot, and writes never pay for having
-/// been snapshotted.
+/// Persistent maps make [`Engine::snapshot`] O(1): each view retains its map roots.
+/// Later writes preserve those versions through structural sharing and may copy shared
+/// tree nodes along an updated path. Snapshot capture avoids copying the whole dataset;
+/// it does not make subsequent writes free.
 #[derive(Debug, Default)]
 pub struct MemEngine {
     /// LOCK ORDER: this is the only lock in `crates/engine`, apart from
@@ -161,13 +159,15 @@ impl Engine for MemEngine {
         // mutations or all of them, never a prefix. Open snapshots are unaffected — the
         // maps are persistent, so they still hold the version they were cloned at.
         let mut state = self.state.write().expect("mem engine lock poisoned");
-        for m in batch.mutations() {
+        // The caller transfers the batch after any required WAL persistence. Move its
+        // owned buffers into the index; cloning them here adds no snapshot protection.
+        for m in batch.mutations {
             match m {
                 Mutation::Put { cf, key, value } => {
-                    state.cf_mut(*cf).insert_mut(key.clone(), value.clone());
+                    state.cf_mut(cf).insert_mut(key, value);
                 }
                 Mutation::Delete { cf, key } => {
-                    state.cf_mut(*cf).remove_mut(key);
+                    state.cf_mut(cf).remove_mut(&key);
                 }
             }
         }
@@ -217,9 +217,8 @@ impl Engine for MemEngine {
     }
 
     fn snapshot(&self) -> Result<Box<dyn ReadView + '_>> {
-        // O(1): the persistent maps share structure, so this neither copies now nor
-        // forces a copy on the next write. A real engine hands back an equally cheap
-        // handle (immutable SSTs + a pinned memtable) behind this same signature.
+        // O(1): share the map roots. Later updates may copy shared tree nodes while
+        // preserving this view; capturing it does not copy all keys and values.
         Ok(Box::new(MemSnapshot { state: self.read() }))
     }
 }
@@ -250,22 +249,26 @@ impl ReplicatedEngine for MemEngine {
             }
         }
 
-        for m in batch.mutations() {
-            match m {
-                Mutation::Put { cf, key, value } => {
-                    state.cf_mut(*cf).insert_mut(key.clone(), value.clone());
-                }
-                Mutation::Delete { cf, key } => {
-                    state.cf_mut(*cf).remove_mut(key);
-                }
-            }
-        }
-        if batch.mutations().iter().any(|m| {
+        // Classify before consuming the buffers. Keep the existing short-circuit
+        // predicate: any non-manifest mutation advances the revision exactly once,
+        // including an absent delete or a batch whose net data change is empty.
+        let changes_data = batch.mutations().iter().any(|m| {
             let key = match m {
                 Mutation::Put { key, .. } | Mutation::Delete { key, .. } => key,
             };
             !key.starts_with(b"\x00kv9\x00manifest_")
-        }) {
+        });
+        for m in batch.mutations {
+            match m {
+                Mutation::Put { cf, key, value } => {
+                    state.cf_mut(cf).insert_mut(key, value);
+                }
+                Mutation::Delete { cf, key } => {
+                    state.cf_mut(cf).remove_mut(&key);
+                }
+            }
+        }
+        if changes_data {
             state.data_revision = state.data_revision.saturating_add(1);
         }
         state.applied = Some(at);
