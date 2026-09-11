@@ -5,6 +5,10 @@ Historical contract for `2cbbe26`. The later
 finish after the same grouped barrier. Statements about one blocking engine job
 per GET below describe the original group candidate.
 
+The experimental [pending ReadIndex credit policy](READ-INDEX-CREDIT.md) adds
+capacity deferral to current-term-commit deferral. It preserves this historical
+sealed-membership and exact-confirmation contract.
+
 Tracking: #20 and #9. This candidate extends asynchronous preparation
 `1ad259e78c148b0b6b8d837b142a2e9521b60b3f`, whose separate tmpfs comparison
 improved GET throughput by 30.3%. That result is not a measurement of this change.
