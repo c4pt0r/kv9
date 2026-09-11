@@ -1140,14 +1140,15 @@ impl RaftTransport for GrpcTransport {
         // (this and `send`) consult the same mask, giving symmetric isolation.
         #[cfg(any(test, feature = "testing"))]
         self.partition.refresh();
-        let mut out = Vec::new();
-        for msg in self.inbox.drain() {
-            #[cfg(any(test, feature = "testing"))]
-            if self.partition.is_masked(msg.from) {
-                continue;
-            }
-            out.push(msg);
-        }
+        // The inbox already returns an owned, ordered vector. Transfer that
+        // allocation directly instead of allocating and moving every message
+        // into a second vector on the production path.
+        let out = self.inbox.drain();
+        #[cfg(any(test, feature = "testing"))]
+        let out = out
+            .into_iter()
+            .filter(|msg| !self.partition.is_masked(msg.from))
+            .collect();
         out
     }
 }
