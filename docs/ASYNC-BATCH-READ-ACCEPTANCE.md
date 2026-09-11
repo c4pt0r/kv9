@@ -9,9 +9,11 @@ conditional refinement argument are in that revision's
 [ASYNC-BATCH-READ.md](https://github.com/c4pt0r/kv9/blob/af4c4e31bdef2b1294931c27e9802bc04e6aeaf5/docs/ASYNC-BATCH-READ.md).
 
 This is a correctness checkpoint, not a performance result or main-branch
-promotion. The [previous batch baseline](NATIVE-BATCH-PERFORMANCE.md) remains the
-latest accepted measurement. Directly matched point GET versus batch-size-one
-controls and candidate-specific Chaos Mesh execution remain pending here.
+promotion. The exact candidate has also passed its
+[11-window actual Chaos Mesh acceptance](ASYNC-BATCH-READ-CHAOS.md).
+The [matched point GET / BatchGet(1) comparison](POINT-BATCH1-PERFORMANCE.md)
+records the scheduling improvement and the remaining Redis gap; the
+[previous batch matrix](NATIVE-BATCH-PERFORMANCE.md) retains its original source scope.
 
 ## Local verification
 
@@ -66,8 +68,9 @@ all bound artifacts and executed helpers retained their recorded hashes.
 | Native workload | `0b5116b72e6962a6d881269219d4451300aab7253f859de4ee11caddcd1a11f0` |
 | Process E2E summary | `59ab74a627eff037dea88c590cb401e0030a171ab4918716189e9b5fa1ba2e9b` |
 
-This run uses a shared local host and process termination. It is not actual
-Chaos Mesh, cross-host, power-loss, sustained-load, or Redis-parity evidence.
+The process E2E above uses a shared local host and process termination. Its
+separate candidate-specific actual Chaos Mesh result is linked above. Neither
+run establishes cross-host, power-loss, sustained-load, or Redis-parity acceptance.
 The earlier native Chaos acceptance and TLA+/TLAPS results retain their original
 source/model scopes. The roadmap's broader consistency, fault coverage and
 performance items remain open.
