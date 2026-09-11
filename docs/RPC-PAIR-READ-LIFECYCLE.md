@@ -88,7 +88,10 @@ also regresses throughput and mean latency, despite improved p99 buckets.
 Retain per-request tasks. The [accepted control's GET concurrency curve](GET-CONCURRENCY-CURVE.md)
 now shows approximately 38 us mean at c1 versus Redis 5.8 us, while c128/c256
 cross the existing public admission limit and retain substantial refusals.
-Map the low-concurrency confirmation path before selecting one execution handoff;
+The [c1 lifecycle mapping](LOW-CONCURRENCY-READ-LIFECYCLE.md) is now complete:
+20.997 us of its sampled 24.448-us GET barrier is in confirmation, while result
+notification contributes 1.693 us. That recording omits perf, so the difference
+does not isolate concurrency. Investigate the intermediate peer batch queue;
 do not subtract these instrumented c64 stages from uninstrumented c1 latency.
 Quorum, applied-index, original deadlines and cleanup ownership remain mandatory.
 

@@ -100,8 +100,16 @@ limit of 64: approximately 30% / 50% of calls are refused, and c256 successful
 throughput falls to 306,181–308,856/s. High-concurrency totals therefore do not
 establish service capacity or Redis parity. All populations remain published.
 
-Next map the low-concurrency confirmation path and choose one execution handoff
-to shorten, checking both c1 turnaround and c64 throughput/mean/p99. Treat the
+The [c1 lifecycle recording](LOW-CONCURRENCY-READ-LIFECYCLE.md) now measures
+a 24.448-us sampled GET barrier, including 20.997 us (85.9%) from admitted
+invocation to observed confirmation and 1.693 us for result notification.
+The first recording, fixture readback and independent twelve-document analysis
+pass. All 258,976 measured calls succeed. Historical c64 also used perf, so the
+recordings do not isolate a concurrency-only effect.
+
+Next investigate removal of the peer transport's intermediate batch channel,
+with explicit request-body lifetime, route-generation, wakeup and stalled-stream
+contracts. Check both c1 turnaround and c64 throughput/mean/p99. Treat the
 admission bound as a separate controlled variable before inferring saturation.
 Keep Raft confirmation requirements unchanged. Neither profile nor the fixed-
 admission curve establishes an intrinsic ceiling. Keep sustained traffic, writes/mixed,
