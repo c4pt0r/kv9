@@ -1913,7 +1913,9 @@ fn range_end_within_region(end: &[u8], region_end: &[u8]) -> bool {
 /// first key and hoping.
 enum KeySpan<'a> {
     Point(&'a [u8]),
-    Batch(Vec<&'a [u8]>),
+    // Borrow request storage instead of allocating a vector of key references.
+    BatchKeys(&'a [UserKey]),
+    BatchPairs(&'a [(UserKey, Value)]),
     /// Half-open `[start, end)`; an empty `end` means "to the end of the keyspace".
     Range {
         start: &'a [u8],
@@ -1932,12 +1934,17 @@ impl<'a> KeySpan<'a> {
     fn anchor(&self) -> &[u8] {
         match self {
             KeySpan::Point(key) => key,
-            KeySpan::Batch(keys) => keys.first().copied().unwrap_or(&[]),
+            KeySpan::BatchKeys(keys) => keys.first().map(Vec::as_slice).unwrap_or(&[]),
+            KeySpan::BatchPairs(pairs) => {
+                pairs.first().map(|(key, _)| key.as_slice()).unwrap_or(&[])
+            }
             KeySpan::Range { start, .. } => start,
         }
     }
 
-    /// Prove the whole span lies inside `region`.
+    /// Check the rest of a span after `check_context_in` resolved its anchor
+    /// to `region` on this exact transaction. The anchor is already authorized;
+    /// every later batch position still performs the original owner lookup.
     fn assert_within<E: kv9_engine::Engine>(
         &self,
         region: &kv9_meta::tables::Region,
@@ -1945,19 +1952,21 @@ impl<'a> KeySpan<'a> {
         tables: &Tables<'_, E>,
         keyspace: KeyspaceId,
     ) -> Result<()> {
+        let check_key = |key: &[u8]| {
+            let owner = tables
+                .region_for_key_in(txn, keyspace, key)?
+                .ok_or(Error::RegionNotFound)?;
+            if owner.id != region.id {
+                return Err(Error::RangeCrossesRegion);
+            }
+            Ok(())
+        };
         match self {
             // Already resolved by this key.
             KeySpan::Point(_) => Ok(()),
-            KeySpan::Batch(keys) => {
-                for key in keys {
-                    let owner = tables
-                        .region_for_key_in(txn, keyspace, key)?
-                        .ok_or(Error::RegionNotFound)?;
-                    if owner.id != region.id {
-                        return Err(Error::RangeCrossesRegion);
-                    }
-                }
-                Ok(())
+            KeySpan::BatchKeys(keys) => keys.iter().skip(1).try_for_each(|key| check_key(key)),
+            KeySpan::BatchPairs(pairs) => {
+                pairs.iter().skip(1).try_for_each(|(key, _)| check_key(key))
             }
             KeySpan::Range { end, .. } => {
                 if range_end_within_region(end, &region.end_key) {
@@ -2210,11 +2219,7 @@ impl RuntimeBackend {
         ctx: &RequestContext,
         keys: &[UserKey],
     ) -> Result<Vec<Option<Value>>> {
-        let view = self.check_read_view(
-            view,
-            ctx,
-            KeySpan::Batch(keys.iter().map(|key| key.as_slice()).collect()),
-        )?;
+        let view = self.check_read_view(view, ctx, KeySpan::BatchKeys(keys))?;
         let read = LeaderRead::new(view.as_ref(), true, None)?;
         RawExecutor.batch_get(&read, ctx.keyspace, keys)
     }
@@ -2308,11 +2313,8 @@ impl RuntimeBackend {
         let inline = {
             // Authorize a borrowed wrapper; retain ownership of this exact view
             // in case the values cannot be copied within the async CPU budget.
-            let authorized = self.check_read_view(
-                Box::new(view.as_ref()),
-                &ctx,
-                KeySpan::Batch(keys.iter().map(|key| key.as_slice()).collect()),
-            )?;
+            let authorized =
+                self.check_read_view(Box::new(view.as_ref()), &ctx, KeySpan::BatchKeys(&keys))?;
             let read = LeaderRead::new(authorized.as_ref(), true, None)?;
             RawExecutor.try_batch_get_resident(
                 &read,
@@ -2399,10 +2401,7 @@ impl RawApi for RuntimeBackend {
                     (fence, batch)
                 }
                 crate::api::RawWrite::BatchPut(pairs) => {
-                    let fence = self.validated_context(
-                        &ctx,
-                        KeySpan::Batch(pairs.iter().map(|(key, _)| key.as_slice()).collect()),
-                    )?;
+                    let fence = self.validated_context(&ctx, KeySpan::BatchPairs(&pairs))?;
                     let batch = RawExecutor.plan_batch_put(
                         ctx.keyspace,
                         &pairs,
@@ -2513,10 +2512,7 @@ impl RawApi for RuntimeBackend {
 
     fn raw_batch_get(&self, ctx: &RequestContext, keys: &[UserKey]) -> Result<Vec<Option<Value>>> {
         self.ensure_serving()?;
-        let view = self.established_read(
-            ctx,
-            KeySpan::Batch(keys.iter().map(|k| k.as_slice()).collect()),
-        )?;
+        let view = self.established_read(ctx, KeySpan::BatchKeys(keys))?;
         let read = LeaderRead::new(view.as_ref(), true, self.driver.status().leader_id)?;
         RawExecutor.batch_get(&read, ctx.keyspace, keys)
     }
@@ -2534,10 +2530,7 @@ impl RawApi for RuntimeBackend {
         pairs: &[(UserKey, Value)],
     ) -> Result<AppliedPosition> {
         self.ensure_serving()?;
-        let fence = self.validated_context(
-            ctx,
-            KeySpan::Batch(pairs.iter().map(|(k, _)| k.as_slice()).collect()),
-        )?;
+        let fence = self.validated_context(ctx, KeySpan::BatchPairs(pairs))?;
         // One batch ⇒ one entry ⇒ all of these land together or none do.
         let plan = RawExecutor.plan_batch_put(ctx.keyspace, pairs, RawWriteOptions::default())?;
         self.commit_batch(fence, plan)
@@ -5847,7 +5840,7 @@ mod tests {
             store,
             keyspace,
             &epoch(1, 1),
-            KeySpan::Batch(vec![b"b", b"c"]),
+            KeySpan::BatchKeys(&[b"b".to_vec(), b"c".to_vec()]),
         )
         .expect("control: keys in one region are accepted");
 
@@ -5858,12 +5851,63 @@ mod tests {
                     store,
                     keyspace,
                     &epoch(1, 1),
-                    KeySpan::Batch(vec![b"b", b"z"])
+                    KeySpan::BatchKeys(&[b"b".to_vec(), b"z".to_vec()])
                 ),
                 Err(Error::RangeCrossesRegion)
             ),
             "a batch crossing regions must be refused, not silently split"
         );
+    }
+
+    /// Borrowing a request must preserve authorization and the first observable
+    /// routing error. In particular, omitting the already-checked anchor must
+    /// never omit the next position, even if it repeats the anchor's bytes.
+    #[test]
+    fn borrowed_batches_preserve_region_coverage_and_error_order() {
+        let (node, keyspace) = two_region_keyspace();
+        let store = &node.meta_raft.store;
+        type GateCase<'a> = (&'a [&'a [u8]], u64, u64, (&'static str, u64));
+        let cases: &[GateCase<'_>] = &[
+            (&[], 1, 1, ("missing", 0)),
+            (&[b"b"], 1, 1, ("ok", 300)),
+            (&[b"b", b"b", b"c"], 1, 1, ("ok", 300)),
+            (&[b"m", b"m", b"z"], 1, 1, ("ok", 301)),
+            (&[b"b", b"m"], 1, 1, ("cross", 0)),
+            (&[b"z", b"b"], 1, 1, ("cross", 0)),
+            (&[b"b", b"b", b"z"], 1, 1, ("cross", 0)),
+            (&[b"b", b""], 1, 1, ("missing", 0)),
+            (&[b"b", b"z", b""], 1, 1, ("cross", 0)),
+            (&[b"b", b"", b"z"], 1, 1, ("missing", 0)),
+            (&[b"", b"b"], 1, 1, ("missing", 0)),
+            (&[b"b", b"z"], 2, 1, ("stale", 300)),
+            (&[b"z", b"b"], 1, 2, ("stale", 301)),
+            (&[b"", b"b"], 2, 2, ("missing", 0)),
+        ];
+        for &(input, conf, ver, expected) in cases {
+            let keys: Vec<UserKey> = input.iter().map(|key| key.to_vec()).collect();
+            let pairs: Vec<(UserKey, Value)> = keys
+                .iter()
+                .enumerate()
+                .map(|(i, key)| (key.clone(), vec![i as u8]))
+                .collect();
+            for span in [KeySpan::BatchKeys(&keys), KeySpan::BatchPairs(&pairs)] {
+                let result = match check_context(store, keyspace, &epoch(conf, ver), span) {
+                    Ok(fence) => {
+                        let fence = fence.into_region_fence();
+                        assert_eq!((fence.conf_ver, fence.version), (conf, ver));
+                        ("ok", fence.region_id)
+                    }
+                    Err(Error::RegionNotFound) => ("missing", 0),
+                    Err(Error::RangeCrossesRegion) => ("cross", 0),
+                    Err(Error::StaleEpoch { region }) => ("stale", region.0),
+                    Err(other) => panic!("unexpected batch gate error: {other:?}"),
+                };
+                assert_eq!(
+                    result, expected,
+                    "borrowed batch lost region coverage or error order for {input:?}"
+                );
+            }
+        }
     }
 
     /// Range boundaries through the real gate, including the half-open edge and the

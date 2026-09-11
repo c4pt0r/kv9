@@ -71,22 +71,25 @@ CASES = [
             let read = LeaderRead::new(view.as_ref(), true, None)?;''')],
      BATCH_BUDGET_TEST,
      'captured byte-budget fallback lost its old ordered view at slot'),
+    ('skipping-borrowed-read-tail-key', RUNTIME, [(
+        'KeySpan::BatchKeys(keys) => keys.iter().skip(1).try_for_each(|key| check_key(key)),',
+        'KeySpan::BatchKeys(keys) => keys.iter().skip(2).try_for_each(|key| check_key(key)),')],
+     'runtime::tests::borrowed_batches_preserve_region_coverage_and_error_order',
+     'borrowed batch lost region coverage or error order'),
+    ('skipping-borrowed-write-tail-key', RUNTIME, [(
+        'pairs.iter().skip(1).try_for_each(|(key, _)| check_key(key))',
+        'pairs.iter().skip(2).try_for_each(|(key, _)| check_key(key))')],
+     'runtime::tests::borrowed_batches_preserve_region_coverage_and_error_order',
+     'borrowed batch lost region coverage or error order'),
     # One defect (omitted batch context validation) at both materialization
     # branches. Covering both avoids a scheduling-dependent false green if
     # the fresh stale-epoch read happens to encounter lifecycle contention.
     ('bypassing-batch-context-gate', RUNTIME, [(
-        '''        let view = self.check_read_view(
-            view,
-            ctx,
-            KeySpan::Batch(keys.iter().map(|key| key.as_slice()).collect()),
-        )?;
+        '''        let view = self.check_read_view(view, ctx, KeySpan::BatchKeys(keys))?;
 ''',
         ''), (
-        '''            let authorized = self.check_read_view(
-                Box::new(view.as_ref()),
-                &ctx,
-                KeySpan::Batch(keys.iter().map(|key| key.as_slice()).collect()),
-            )?;''',
+        '''            let authorized =
+                self.check_read_view(Box::new(view.as_ref()), &ctx, KeySpan::BatchKeys(&keys))?;''',
         '''            let authorized: Box<dyn ReadView + '_> = Box::new(view.as_ref());''')],
      BATCH_TESTS + 'resident_batch_keeps_its_authorized_values_after_both_epoch_changes',
      'fresh batch accepted the old epoch'),
