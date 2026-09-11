@@ -1,0 +1,8 @@
+{
+  "scope": "Preparation review correction; no full matrix derivation has run.",
+  "before_sha256": "b464f7436e74e2f013ed4f3008e4fabb2bb3eb34558be64b69b0c0b8c0a3e0b0",
+  "after_sha256": "3ba281b2160ab83362b9b11f5fd5c0af479f754348c0dedfc03b959b7d9829ba",
+  "finding": "Only matrix.json was bound to independent inventory; endpoint inputs were only self-hashed.",
+  "correction": "Require hash and byte equality for every cohort input, bind endpoint PID/start/boot to accepted cleanup and drain writers, and bracket client lifetime with fresh exporter captures. Independent auditor will inventory the six existing endpoint snapshots before freezing.",
+  "arithmetic_evidence": "arithmetic-first.json applies to the unchanged delta function; it does not establish the corrected full matrix integration."
+}

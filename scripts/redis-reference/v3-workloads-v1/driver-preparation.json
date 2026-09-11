@@ -1,0 +1,35 @@
+{
+  "complete": true,
+  "configured_batch64_write_payload_upper_bytes_per_replica": 96640000000,
+  "configured_batch64_write_payload_upper_bytes_three_replicas": 289920000000,
+  "files": {
+    "driver-preparation.diff": "60b6d8b4a13a5470e7c008248d776fb35372d22c6d1d32e71a8152f9a265e2d4",
+    "driver-tests-first.log": "b95acfdefdbb6597f1e9373d48548750730c7ecfae2aff06d98ef79891347bfb",
+    "matched-driver.py": "e1b839d357658db56b2cf4235e1de7089453e61853ada07015e28d165f1966de",
+    "protocol.json": "d6dc8cc488cc5c65f8ab30f19ecc62bb8cf028bd609f3a477080999e3e961b5b",
+    "test_driver.py": "f6382ef1233eb110a698eb5315538286459ade78581457064f1d87066d80f404"
+  },
+  "observed_unix_ns": 1789132550422346326,
+  "ownership": "Driver/protocol/tests only; parent owns wrapper, arguments, execution; sibling owns audit.py.",
+  "source_template": "/tmp/kv9-work-signal-comparison-preparation/matched-driver.py",
+  "source_template_sha256": "745a9b5dfba5be114abd2021e2f523973934101d7e80941cdd45ed9636314937",
+  "space": {
+    "retention": {
+      "available_bytes": 611428605952,
+      "path": "/tmp/kv9-v3-workload-comparison-preparation",
+      "total_bytes": 1966736678912
+    },
+    "tmpfs": {
+      "available_bytes": 66274996224,
+      "path": "/dev/shm",
+      "total_bytes": 66276073472
+    }
+  },
+  "space_note": "Payload illustration excludes log/engine overhead and all other cohorts. It exceeds present tmpfs capacity; declared caps do not establish a sufficient storage bound. Retain guards and evaluate complete36-cohort2s smoke growth before any10s release.",
+  "tests": {
+    "count": 7,
+    "exit_code": 0,
+    "log": "driver-tests-first.log",
+    "runtime_launched": false
+  }
+}

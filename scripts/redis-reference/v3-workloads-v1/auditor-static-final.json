@@ -1,0 +1,19 @@
+{
+  "complete": true,
+  "compiled_final_auditor": true,
+  "driver_descriptors_equal_independent_auditor": true,
+  "timed_descriptors": 72,
+  "smoke_descriptors": 36,
+  "completed_ns": 1789132769241862887,
+  "audit_sha256": "7c6e35ff255a2f55a398b032d768f6e47297962388e9b868ce86dc55050d4c1f",
+  "driver_sha256": "e1b839d357658db56b2cf4235e1de7089453e61853ada07015e28d165f1966de",
+  "unchanged_functions": [
+    "require",
+    "sha",
+    "read",
+    "save",
+    "same_json",
+    "qualify",
+    "retention_file"
+  ]
+}

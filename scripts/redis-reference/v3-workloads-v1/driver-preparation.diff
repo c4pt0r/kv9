@@ -1,0 +1,346 @@
+--- /tmp/kv9-work-signal-comparison-preparation/matched-driver.py
++++ /tmp/kv9-v3-workload-comparison-preparation/matched-driver.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Matched old/new server point GET / BatchGet(1) / Redis MGET(1) diagnostic.
++"""Matched v3 point and native batch64 read/write/mixed diagnostic.
+ 
+ Root runs smoke/reviews isolation before any diagnostic timing. Default runtime
+ keeps quorum and WAL/sync behavior; tmpfs mode has no power-loss durability.
+@@ -25,18 +25,31 @@
+     raise RuntimeError("this retained runner requires PYTHONOPTIMIZE=0")
+ sys.dont_write_bytecode = True
+ 
+-OLD_REVISION = "57ff6851e40ed63c837189d6eb0a11190704725a"
+-NEW_REVISION = "1b70dba62e492cd8e10dd20f643fee74d39abc57"
+-REDIS_REVISION = "b8ec38f660786412705f350d96ab086f0e7f6c60"
++OLD_REVISION = "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb"
++NEW_REVISION = "57ff6851e40ed63c837189d6eb0a11190704725a"
++REDIS_REVISION = "0be806d9671e2c50701a64aa7889c8859b7648ba"
+ SERVER_PINS = {
+     "old": dict(revision=OLD_REVISION,
++                binary_sha256="0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
++                manifest_sha256="1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417"),
++    "new": dict(revision=NEW_REVISION,
+                 binary_sha256="6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
+                 manifest_sha256="7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd"),
+-    "new": dict(revision=NEW_REVISION,
+-                binary_sha256="ab05a16fd520d4c612b01cedea1a514411e607eb0bc645ce28fce24b3299d1ef",
+-                manifest_sha256="800e74e36f7de539bb38d3cfe097e356ed2ebd1e33d16d7b48435eb6f2bc93f3"),
+ }
+-REDIS_CLIENT_SHA = "61349111171ded5cb7fff9085c7886381788e5f4c7a407e91a5dda618d124892"
++REDIS_CLIENT_SHA = "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af"
++CLIENT_PINS = {
++    "client": dict(binary_sha256="8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
++                   manifest_sha256="eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c"),
++    "redis": dict(binary_sha256=REDIS_CLIENT_SHA,
++                  manifest_sha256="10f9ce2a754a2ef43a6439856c1d5fb00c5a1e5004173e52897a3ea19d6124f0"),
++}
++PROTOCOL_ID = "kv9-v3-workloads-c1-c64-v1"
++WORKLOAD_CELLS = [(name, batch, reads) for name, batch in (("point", 1), ("batch64", 64))
++                  for reads in (0, 50, 100)]
++SPACE_GUARDS = {
++    "preflight": {"tmpfs": 32 * 1024**3, "retention": 96 * 1024**3},
++    "runtime": {"tmpfs": 16 * 1024**3, "retention": 64 * 1024**3},
++}
+ SERVER_COMMAND = ["cargo", "build", "--locked", "--bin", "kv9", "--release",
+                   "--message-format=json-render-diagnostics"]
+ RESP_HELPER_SHA = "008c5bea0640a4a5a092feb6617798a84e9dd4889fd11bf8c6791cfe0852864a"
+@@ -169,6 +182,7 @@
+ def verify_inputs(args):
+     """Separate original role attestations; never fabricate a mixed-revision build."""
+     roles = {}
++    require(args.expected_client_revision == REDIS_REVISION, "native client must use the frozen v3 revision")
+     for name, source, build in (("old", args.old_server_source, args.old_server_build),
+                                 ("new", args.new_server_source, args.new_server_build)):
+         pin = SERVER_PINS[name]
+@@ -191,6 +205,8 @@
+         ("redis", args.redis_client_source, args.redis_client_build, REDIS_REVISION, "kv9-redis-batch-reference")):
+         manifest = read(build / "build.json")
+         inventory = read(build / "sources.json")
++        require(digest(build / "build.json") == CLIENT_PINS[name]["manifest_sha256"] and
++                manifest["binary_sha256"] == CLIENT_PINS[name]["binary_sha256"], "frozen v3 client pin differs")
+         require(all(inventory[k] == manifest[k] for k in
+                     ("revision", "dirty", "source_tree_sha256", "binary_sha256")), "client source/build mismatch")
+         bound = source_binding(source, dict(manifest, sources=inventory["sources"]), revision)
+@@ -203,6 +219,8 @@
+     common = "crates/server/src/bin/kv9-batch-benchmark/common.rs"
+     require(roles["client"]["source"]["sources"][common] == roles["redis"]["source"]["sources"][common],
+             "native/Redis deterministic payload or scheduling source differs")
++    require(roles["client"]["source"]["sources"][common] ==
++            "b98d4a49f9ee2199e183204b72fd52813907574a03c1cf3376cf5d281d7902fd", "fixed shared source changed")
+     require(len({r["rustc"] for r in roles.values()}) == 1, "role compiler identities differ")
+     return roles
+ 
+@@ -218,21 +236,26 @@
+ 
+ 
+ def make_plan(smoke):
+-    arms = (("old-point", "old", "point_get"), ("old-batch1", "old", "batch_get"),
+-            ("new-point", "new", "point_get"), ("new-batch1", "new", "batch_get"),
+-            ("redis-mget1", None, "mget"), ("redis-get1", None, "get"))
+-    first = [(concurrency, *arm) for concurrency in (1, 64) for arm in arms]
++    first = [(concurrency, name, batch, reads, role) for concurrency in (1, 64)
++             for name, batch, reads in WORKLOAD_CELLS for role in ("old", "new", "redis")]
+     rows = []
+-    for repeat in range(1 if smoke else 4):
+-        for concurrency, arm, server, api in (first if repeat in (0, 3) else reversed(first)):
++    for repeat in range(1 if smoke else 2):
++        for concurrency, name, batch, reads, role in (first if repeat == 0 else reversed(first)):
++            server = None if role == "redis" else role
++            read_api = ("get" if name == "point" else "mget") if server is None else (
++                "point_get" if name == "point" else "batch_get")
++            write_api = ("set" if name == "point" else "mset") if server is None else (
++                "point_put" if name == "point" else "batch_put")
++            workload = f"{name}-r{reads:03d}"
+             shared = dict(run_id=f"p{repeat}{concurrency:04d}", seed=71,
+-                          workers=concurrency, keys=4096, batch_size=1,
+-                          value_bytes=128, read_percent=100, warmup_calls=128,
+-                          measure_ms=5000 if smoke else 10000, max_calls=10_000_000,
++                          workers=concurrency, keys=4096, batch_size=batch,
++                          value_bytes=128, read_percent=reads, warmup_calls=128,
++                          measure_ms=2000 if smoke else 10000, max_calls=10_000_000,
+                           load=dict(kind="closed_loop"))
+-            rows.append(dict(repeat=repeat, arm=arm, server_role=server, read_api=api,
+-                             mix="read", target="kv9" if server else "redis-memory", shared=shared))
+-    require(len(rows) == (12 if smoke else 48), "matched c1/c64 cohort inventory differs")
++            rows.append(dict(repeat=repeat, arm=f"{role}-{workload}", server_role=server, workload=workload,
++                             read_api=read_api, write_api=write_api, mix={0:"write",50:"mixed",100:"read"}[reads],
++                             target="kv9" if server else "redis-memory", shared=shared))
++    require(len(rows) == (36 if smoke else 72), "matched v3 c1/c64 cohort inventory differs")
+     return rows
+ 
+ 
+@@ -240,21 +263,82 @@
+     shared = row["shared"]
+     native_api = row["read_api"] if row["server_role"] else ("point_get" if row["read_api"] == "get" else "batch_get")
+     redis_api = row["read_api"] if not row["server_role"] else ("get" if row["read_api"] == "point_get" else "mget")
+-    native = dict(version=2, rpc_transport="tonic_stream", read_api=native_api, **shared,
++    native_write = row["write_api"] if row["server_role"] else ("point_put" if row["write_api"] == "set" else "batch_put")
++    redis_write = row["write_api"] if not row["server_role"] else ("set" if row["write_api"] == "point_put" else "mset")
++    native = dict(version=3, rpc_transport="tonic_stream", read_api=native_api, write_api=native_write, **shared,
+                   client=dict(version=1, peers=peers, keyspace_id=keyspace, epoch_conf_ver=1, epoch_version=1,
+                               max_in_flight=shared["workers"], max_attempts=6, deadline_ms=1500, retry_backoff_ms=5))
+-    redis = dict(version=2, read_api=redis_api, address=redis_address, deadline_ms=1500, **shared)
++    redis = dict(version=3, read_api=redis_api, write_api=redis_write, address=redis_address, deadline_ms=1500, **shared)
+     return native, redis
+ 
+ 
+-def readonly_dataset(configuration, dataset, resp):
+-    require(configuration["read_percent"] == 100 and configuration["batch_size"] == 1,
+-            "matched readback used a different workload")
++def final_dataset(configuration, dataset, resp):
+     result = resp.valid_dataset(configuration, dataset)
+-    require(len(dataset) == configuration["keys"] + 1, "read-only final dataset count differs")
+-    require(all(value is not None and value[8:16] == bytes(8) for value in dataset.values()),
+-            "read-only workload changed a value nonce")
+-    return dict(result, all_values_nonce_zero=True)
++    require(len(dataset) == configuration["keys"] + 1, "final dataset count differs")
++    changed = 0
++    for index in range(configuration["keys"]):
++        value = dataset[f'{configuration["run_id"]}:{index:016x}'.encode()]
++        nonce = int.from_bytes(value[8:16], "big")
++        if nonce:
++            require(resp.mix(configuration["seed"] ^ nonce) % 100 >= configuration["read_percent"],
++                    "final value contains a read-only nonce")
++            first = resp.mix(configuration["seed"] ^ nonce ^ 0xc6275c213842315b) % configuration["keys"]
++            require((index - first) % configuration["keys"] < configuration["batch_size"],
++                    "final nonce does not write this key")
++            changed += 1
++    require(changed > 0 if configuration["read_percent"] < 100 else changed == 0,
++            "writes absent or a read-only workload changed data")
++    return dict(result, changed_keys=changed, maximum_configured_nonce=configuration["warmup_calls"]+configuration["max_calls"],
++                deterministic_write_key_membership_checked=True, exact_issued_nonce_set_checked=False,
++                full_linearizability_checked=False)
++
++
++def population_observations(report, configuration, reference):
++    """Keep validity separate from healthy, single-attempt comparison suitability."""
++    result = {}
++    for phase, metrics in report["metrics"].items():
++        counts = [sum(p["calls"] for p in op["populations"]) for op in metrics["statistics"]]
++        success = [op["populations"][0]["calls"] for op in metrics["statistics"]]
++        attempts = [op["command_attempts"] if reference else sum(h["raw"]["count"] for h in op["attempts"])
++                    for op in metrics["statistics"]]
++        if phase in ("warmup", "measurement"):
++            expected = [configuration["read_api"].removeprefix("point_"), configuration["write_api"].removeprefix("point_")]
++            require(metrics["operations"] == expected, "selected traffic API label differs")
++            if phase == "measurement":
++                require(sum(counts) == report["measured_issued"] > 0, "measured population missing")
++                require(all(counts[i] > 0 for i in range(2) if
++                        (i == 0 and configuration["read_percent"] > 0) or
++                        (i == 1 and configuration["read_percent"] < 100)), "requested operation has no measured calls")
++                if configuration["read_percent"] in (0, 100):
++                    require(counts[0 if configuration["read_percent"] == 0 else 1] == 0, "pure measurement mix differs")
++        result[phase] = dict(calls=counts, successes=success, attempts=attempts,
++                            all_success=counts == success, all_success_single_attempt=counts == success == attempts)
++    # Failures remain in the raw report and summaries, including an accounting-
++    # valid cohort that does not qualify for healthy single-attempt comparison.
++    return result
++
++
++def storage_observation(directory):
++    result = dict(started_unix_ns=time.time_ns(), filesystems={})
++    for name, path in (("tmpfs", Path("/dev/shm")), ("retention", directory)):
++        try:
++            value = os.statvfs(path)
++            device = path.stat().st_dev
++        except OSError as error:
++            # The inherited resource sampler tolerates process-exit OSErrors;
++            # missing filesystem evidence must instead stop this cohort.
++            raise ValueError("storage observation failed: " + str(error)) from error
++        result["filesystems"][name] = dict(path=str(path), device=device,
++            fragment_bytes=value.f_frsize, blocks=value.f_blocks, free_blocks=value.f_bfree,
++            available_blocks=value.f_bavail, available_bytes=value.f_bavail * value.f_frsize)
++    result["completed_unix_ns"] = time.time_ns()
++    return result
++
++
++def require_storage(observation, phase):
++    require(all(observation["filesystems"][name]["available_bytes"] >= minimum
++                for name, minimum in SPACE_GUARDS[phase].items()),
++            "storage guard intervention: retained incomplete cohort; no rerun")
+ 
+ 
+ def fresh_drain(fixture, directory, label):
+@@ -316,7 +400,7 @@
+     else:
+         raise ValueError("independent final scan exceeded its page bound")
+     require(len(dataset) == configuration["keys"] + 1, "independent final key count differs")
+-    return readonly_dataset(configuration, dataset, resp)
++    return final_dataset(configuration, dataset, resp)
+ 
+ 
+ def summary_from_report(report):
+@@ -341,19 +425,28 @@
+                 successful_calls_per_second=report["successful_batches_per_second"],
+                 successful_input_items_per_second=report["successful_input_items_per_second"],
+                 cohort_elapsed_ns=report["cohort_elapsed_ns"], operations=operations,
+-                latency_scope="whole logical point/batch1 call; never divide latency by item count")
++                latency_scope="whole logical point/batch call; never divide latency by item count")
+ 
+ 
+ def observe_client(comparison, process, servers, directory, masks, background, benchmark):
+     original = comparison.process_sample
+     host_samples = []
+     sample_calls = []
++    storage_samples = []
+     def sampled(pid):
+         item = original(pid)
+         item["thread_placement"] = affinity(pid, masks[pid])
+         sample_calls.append(item)
+         if pid == process.pid:
+             host_samples.append(host_sample(background))
++            space = storage_observation(directory)
++            storage_samples.append(space)
++            try:
++                require_storage(space, "runtime")
++            except ValueError:
++                save(directory / "storage-guard-intervention.json", dict(phase="runtime", observation=space,
++                     thresholds=SPACE_GUARDS["runtime"], timing_complete=False))
++                raise
+         return item
+     comparison.process_sample = sampled
+     try:
+@@ -364,6 +457,7 @@
+         comparison.process_sample = original
+         save(directory / "host-resource-samples.json", host_samples)
+         save(directory / "sample-calls.json", sample_calls)
++        save(directory / "storage-resource-samples.json", storage_samples)
+     save(directory / "client-exit.json", dict(exit_code=code, observed_unix_ns=time.time_ns()))
+     require(code == 0, "client incomplete/failed; original report retained")
+     report = read(directory / "run/report.json")
+@@ -447,7 +541,8 @@
+         pass
+     fixture = (Volatile if args.storage == "tmpfs" else Disk)(directory / "fixture", server_build)
+     result = dict(complete=False, server_role=row["server_role"], server_binary_sha256=server_role["binary_sha256"],
+-                  client_binary_sha256=roles["client"]["binary_sha256"], read_api=row["read_api"])
++                  client_binary_sha256=roles["client"]["binary_sha256"], read_api=row["read_api"],
++                  write_api=row["write_api"], workload=row["workload"])
+     try:
+         fixture.start()
+         mounts = {}
+@@ -482,6 +577,7 @@
+         masks[child.pid] = place["client_cpus"]
+         report = observe_client(comparison, child, {f"voter-{n}": p.pid for n, p in fixture.nodes.items()}, directory, masks, background, benchmark)
+         result["validated"] = native_validator.validate(directory / "run", args.client_build, directory / "requested-config.json", args.expected_client_revision, require_timing=not args.smoke)
++        result["population_observations"] = population_observations(report, config, False)
+         fresh_drain(fixture, directory, "post-client")
+         allocator_provenance(fixture, directory, "post-client")
+         result["readback"] = native_readback(fixture, config, directory, resp)
+@@ -531,7 +627,8 @@
+     children = PlacedChildren(directory)
+     reservation = socket.socket()
+     result = dict(complete=False, client_binary_sha256=roles["redis"]["binary_sha256"],
+-                  server_binary_sha256=args.redis_server_sha256, operation=row["read_api"], batch_size=1)
++                  server_binary_sha256=args.redis_server_sha256, operation=row["read_api"],
++                  write_operation=row["write_api"], workload=row["workload"], batch_size=row["shared"]["batch_size"])
+     try:
+         reservation.bind(("127.0.0.1", 0))
+         port = reservation.getsockname()[1]
+@@ -569,6 +666,7 @@
+         report = observe_client(comparison, child, {"redis": server.pid}, directory,
+                                 {child.pid: place["client_cpus"], server.pid: place["server_cpus"]}, background, benchmark)
+         result["validated"] = redis_validator.validate(directory / "run", args.redis_client_build, directory / "requested-config.json", REDIS_REVISION, require_timing=not args.smoke)
++        result["population_observations"] = population_observations(report, reference, True)
+         dataset = {}
+         for first in range(0, reference["keys"] + 1, 128):
+             keys = [f'{reference["run_id"]}:{i:016x}'.encode() for i in range(first, min(reference["keys"] + 1, first + 128))]
+@@ -576,7 +674,7 @@
+             require(isinstance(values, list) and len(values) == len(keys), "Redis final MGET count differs")
+             dataset.update(zip(keys, values))
+         save(directory / "final-dataset.json", {base64.b64encode(k).decode(): base64.b64encode(v).decode() if v is not None else None for k, v in dataset.items()})
+-        result["readback"] = readonly_dataset(reference, dataset, resp)
++        result["readback"] = final_dataset(reference, dataset, resp)
+         settings("after")
+         save(directory / "redis-thread-placement-after.json", affinity(server.pid, place["server_cpus"]))
+         save(directory / "host-after.json", host_sample(background))
+@@ -599,12 +697,12 @@
+     parser.add_argument("--client-build", type=Path, required=True,
+                         help="standalone build-workload output containing build.json and kv9-batch-benchmark")
+     parser.add_argument("--expected-client-revision", required=True)
+-    parser.add_argument("--old-server-source", type=Path, default=Path("/tmp/kv9-read-group-credit"))
+-    parser.add_argument("--old-server-build", type=Path, default=Path("/tmp/kv9-read-group-credit-release-first"))
+-    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-work-signal-coalescing"))
+-    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-work-signal-coalescing-release-first"))
+-    parser.add_argument("--redis-client-source", type=Path, default=Path("/tmp/kv9-redis-point-get-reference"))
+-    parser.add_argument("--redis-client-build", type=Path, default=Path("/tmp/kv9-redis-point-get-reference-release-first"))
++    parser.add_argument("--old-server-source", type=Path, default=Path("/tmp/kv9-rpc-worker-pair"))
++    parser.add_argument("--old-server-build", type=Path, default=Path("/tmp/kv9-rpc-pair-release-first"))
++    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-read-group-credit"))
++    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-read-group-credit-release-first"))
++    parser.add_argument("--redis-client-source", type=Path, default=Path("/tmp/kv9-point-write-measurement-v3"))
++    parser.add_argument("--redis-client-build", type=Path, default=Path("/tmp/kv9-point-write-v3-release-first/redis"))
+     parser.add_argument("--output", type=Path, required=True)
+     parser.add_argument("--smoke", action="store_true")
+     parser.add_argument("--storage", choices=("tmpfs", "wal"), default="tmpfs")
+@@ -666,11 +764,11 @@
+                 helper_hashes[str(path)] = digest(path)
+     rows = make_plan(args.smoke)
+     args.output.mkdir(parents=True)
+-    plan = dict(version=2, protocol_id="kv9-work-signal-c1-c64-v1",
++    plan = dict(version=2, protocol_id=PROTOCOL_ID, workload_cells=WORKLOAD_CELLS, storage_guards=SPACE_GUARDS,
+                 concurrency_points=[1, 64], complete=False, client_revision=args.expected_client_revision,
+                 smoke=args.smoke, placement=placement(args.smoke), role_bindings=roles, client_cargo=cargo,
+-                scope="Twelve-cohort c1/c64 correctness smoke only; no timing acceptance" if args.smoke else
+-                      "Best-effort shared-host matched point/batch1 diagnostic; no exclusive host or equivalent durability",
++                scope="36-cohort v3 c1/c64 correctness smoke only; no timing acceptance" if args.smoke else
++                      "72-cohort shared-host v3 point/batch64 read/write/mixed diagnostic; no exclusive host or equivalent durability",
+                 storage=args.storage, kv9_durability=tmpfs.VOLATILE if args.storage == "tmpfs" else "Normal disk WAL and quorum; no Redis durability equivalence",
+                 redis_durability="Standalone memory; save/AOF disabled; no replicas", comparable_durability=False,
+                 isolation_snapshot=isolation, isolation_snapshot_sha256=digest(args.isolation_snapshot) if args.isolation_snapshot else None,
+@@ -704,6 +802,14 @@
+             entry = dict(index=index, descriptor=row, directory=str(directory), complete=False)
+             plan["attempts"].append(entry)
+             save(args.output / "matrix.json", plan)
++            space = storage_observation(directory)
++            save(directory / "storage-preflight.json", space)
++            try:
++                require_storage(space, "preflight")
++            except ValueError:
++                save(directory / "storage-guard-intervention.json", dict(phase="preflight", observation=space,
++                     thresholds=SPACE_GUARDS["preflight"], timing_complete=False))
++                raise
+             result = (native_trial if row["target"] == "kv9" else redis_trial)(row, directory, args, modules, roles)
+             entry.update(result)
+             save(directory / "summary.json", result)

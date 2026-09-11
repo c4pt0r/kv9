@@ -1,0 +1,14 @@
+{
+  "session": 87861,
+  "exit_code": 0,
+  "tool_chunk": "2c3b5d",
+  "outer_summary": {
+    "complete": true,
+    "restoration_complete": true,
+    "exclusive_host": false,
+    "child_exit_code": 0,
+    "child_cleanup_errors": [],
+    "deferred_cleanup_signals": []
+  },
+  "original_preparation_hashes_unchanged": true
+}

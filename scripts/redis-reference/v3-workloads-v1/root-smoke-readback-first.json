@@ -1,0 +1,272 @@
+{
+  "complete": true,
+  "scope": "Root operational readback of the first36 correctness-smoke cohorts; no performance selection or full independent timing audit.",
+  "root_session": 33860,
+  "root_exit_code": 0,
+  "cohorts": 36,
+  "measured_calls": 6300230,
+  "measured_non_success": 0,
+  "exited_lifetimes": 120,
+  "retained_native_bytes": 9035875740,
+  "largest_native_cohort_bytes": 1541780438,
+  "conditional_ten_second_total_bytes": 90358757400,
+  "conditional_projection_note": "Twice the one-repeat2s retention times5 for the10s window. Includes fixed setup and ignores changed CPU placement/throughput; not a hard capacity bound.",
+  "space_available_bytes": {
+    "/dev/shm": 66274996224,
+    "/tmp": 602144432128
+  },
+  "rows": [
+    {
+      "cohort": "000-old-point-r000-p00001",
+      "server": "old",
+      "workload": "point-r000",
+      "workers": 1,
+      "retained_wal_bytes": 43682321
+    },
+    {
+      "cohort": "001-new-point-r000-p00001",
+      "server": "new",
+      "workload": "point-r000",
+      "workers": 1,
+      "retained_wal_bytes": 45517876
+    },
+    {
+      "cohort": "002-redis-point-r000-p00001",
+      "server": null,
+      "workload": "point-r000",
+      "workers": 1,
+      "retained_wal_bytes": 0
+    },
+    {
+      "cohort": "003-old-point-r050-p00001",
+      "server": "old",
+      "workload": "point-r050",
+      "workers": 1,
+      "retained_wal_bytes": 26095374
+    },
+    {
+      "cohort": "004-new-point-r050-p00001",
+      "server": "new",
+      "workload": "point-r050",
+      "workers": 1,
+      "retained_wal_bytes": 28697369
+    },
+    {
+      "cohort": "005-redis-point-r050-p00001",
+      "server": null,
+      "workload": "point-r050",
+      "workers": 1,
+      "retained_wal_bytes": 0
+    },
+    {
+      "cohort": "006-old-point-r100-p00001",
+      "server": "old",
+      "workload": "point-r100",
+      "workers": 1,
+      "retained_wal_bytes": 5547022
+    },
+    {
+      "cohort": "007-new-point-r100-p00001",
+      "server": "new",
+      "workload": "point-r100",
+      "workers": 1,
+      "retained_wal_bytes": 5547056
+    },
+    {
+      "cohort": "008-redis-point-r100-p00001",
+      "server": null,
+      "workload": "point-r100",
+      "workers": 1,
+      "retained_wal_bytes": 0
+    },
+    {
+      "cohort": "009-old-batch64-r000-p00001",
+      "server": "old",
+      "workload": "batch64-r000",
+      "workers": 1,
+      "retained_wal_bytes": 527548338
+    },
+    {
+      "cohort": "010-new-batch64-r000-p00001",
+      "server": "new",
+      "workload": "batch64-r000",
+      "workers": 1,
+      "retained_wal_bytes": 544739699
+    },
+    {
+      "cohort": "011-redis-batch64-r000-p00001",
+      "server": null,
+      "workload": "batch64-r000",
+      "workers": 1,
+      "retained_wal_bytes": 0
+    },
+    {
+      "cohort": "012-old-batch64-r050-p00001",
+      "server": "old",
+      "workload": "batch64-r050",
+      "workers": 1,
+      "retained_wal_bytes": 334939453
+    },
+    {
+      "cohort": "013-new-batch64-r050-p00001",
+      "server": "new",
+      "workload": "batch64-r050",
+      "workers": 1,
+      "retained_wal_bytes": 322077771
+    },
+    {
+      "cohort": "014-redis-batch64-r050-p00001",
+      "server": null,
+      "workload": "batch64-r050",
+      "workers": 1,
+      "retained_wal_bytes": 0
+    },
+    {
+      "cohort": "015-old-batch64-r100-p00001",
+      "server": "old",
+      "workload": "batch64-r100",
+      "workers": 1,
+      "retained_wal_bytes": 4289261
+    },
+    {
+      "cohort": "016-new-batch64-r100-p00001",
+      "server": "new",
+      "workload": "batch64-r100",
+      "workers": 1,
+      "retained_wal_bytes": 4289328
+    },
+    {
+      "cohort": "017-redis-batch64-r100-p00001",
+      "server": null,
+      "workload": "batch64-r100",
+      "workers": 1,
+      "retained_wal_bytes": 0
+    },
+    {
+      "cohort": "018-old-point-r000-p00064",
+      "server": "old",
+      "workload": "point-r000",
+      "workers": 64,
+      "retained_wal_bytes": 359286967
+    },
+    {
+      "cohort": "019-new-point-r000-p00064",
+      "server": "new",
+      "workload": "point-r000",
+      "workers": 64,
+      "retained_wal_bytes": 296951115
+    },
+    {
+      "cohort": "020-redis-point-r000-p00064",
+      "server": null,
+      "workload": "point-r000",
+      "workers": 64,
+      "retained_wal_bytes": 0
+    },
+    {
+      "cohort": "021-old-point-r050-p00064",
+      "server": "old",
+      "workload": "point-r050",
+      "workers": 64,
+      "retained_wal_bytes": 241424388
+    },
+    {
+      "cohort": "022-new-point-r050-p00064",
+      "server": "new",
+      "workload": "point-r050",
+      "workers": 64,
+      "retained_wal_bytes": 254428937
+    },
+    {
+      "cohort": "023-redis-point-r050-p00064",
+      "server": null,
+      "workload": "point-r050",
+      "workers": 64,
+      "retained_wal_bytes": 0
+    },
+    {
+      "cohort": "024-old-point-r100-p00064",
+      "server": "old",
+      "workload": "point-r100",
+      "workers": 64,
+      "retained_wal_bytes": 5547181
+    },
+    {
+      "cohort": "025-new-point-r100-p00064",
+      "server": "new",
+      "workload": "point-r100",
+      "workers": 64,
+      "retained_wal_bytes": 5547137
+    },
+    {
+      "cohort": "026-redis-point-r100-p00064",
+      "server": null,
+      "workload": "point-r100",
+      "workers": 64,
+      "retained_wal_bytes": 0
+    },
+    {
+      "cohort": "027-old-batch64-r000-p00064",
+      "server": "old",
+      "workload": "batch64-r000",
+      "workers": 64,
+      "retained_wal_bytes": 1510851074
+    },
+    {
+      "cohort": "028-new-batch64-r000-p00064",
+      "server": "new",
+      "workload": "batch64-r000",
+      "workers": 64,
+      "retained_wal_bytes": 1541780438
+    },
+    {
+      "cohort": "029-redis-batch64-r000-p00064",
+      "server": null,
+      "workload": "batch64-r000",
+      "workers": 64,
+      "retained_wal_bytes": 0
+    },
+    {
+      "cohort": "030-old-batch64-r050-p00064",
+      "server": "old",
+      "workload": "batch64-r050",
+      "workers": 64,
+      "retained_wal_bytes": 1461217032
+    },
+    {
+      "cohort": "031-new-batch64-r050-p00064",
+      "server": "new",
+      "workload": "batch64-r050",
+      "workers": 64,
+      "retained_wal_bytes": 1457291779
+    },
+    {
+      "cohort": "032-redis-batch64-r050-p00064",
+      "server": null,
+      "workload": "batch64-r050",
+      "workers": 64,
+      "retained_wal_bytes": 0
+    },
+    {
+      "cohort": "033-old-batch64-r100-p00064",
+      "server": "old",
+      "workload": "batch64-r100",
+      "workers": 64,
+      "retained_wal_bytes": 4289414
+    },
+    {
+      "cohort": "034-new-batch64-r100-p00064",
+      "server": "new",
+      "workload": "batch64-r100",
+      "workers": 64,
+      "retained_wal_bytes": 4289410
+    },
+    {
+      "cohort": "035-redis-batch64-r100-p00064",
+      "server": null,
+      "workload": "batch64-r100",
+      "workers": 64,
+      "retained_wal_bytes": 0
+    }
+  ]
+}

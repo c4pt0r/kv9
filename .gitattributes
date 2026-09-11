@@ -22,3 +22,11 @@ scripts/redis-reference/work-signal-v1/auditor.diff -whitespace
 scripts/redis-reference/work-signal-v1/matched-driver.py.diff -whitespace
 scripts/redis-reference/work-signal-v1/next-client/native-gate/02.log -whitespace
 scripts/redis-reference/work-signal-v1/next-client/redis-gate/02.log -whitespace
+
+# Preserve exact v3 workload preparation diffs.
+scripts/redis-reference/v3-workloads-v1/auditor-tests.diff -whitespace
+scripts/redis-reference/v3-workloads-v1/auditor.diff -whitespace
+scripts/redis-reference/v3-workloads-v1/driver-preparation.diff -whitespace
+# Preserve the original CSV writer's CRLF without treating CR as trailing space.
+scripts/redis-reference/v3-workloads-v1/cohorts-first.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+scripts/redis-reference/v3-workloads-v1/pooled-first.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

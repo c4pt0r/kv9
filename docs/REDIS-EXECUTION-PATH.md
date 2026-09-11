@@ -71,6 +71,33 @@ time against amortization, so both mean and tail latency remain selection
 criteria. Cross-host network latency and storage durability will impose limits
 that a loopback, volatile-WAL comparison cannot quantify.
 
+## The latest read/write comparison
+
+The [completed v3 workload refresh](V3-WORKLOAD-PERFORMANCE.md) covers 72
+cohorts, including actual point writes and 64-key batches. At c64, `57ff6851`
+has 373,909 GET/s versus Redis 512,191/s, but only 117,729 PUT/s versus Redis
+493,396 SET/s. BatchPut(64) reaches 628,102 keys/s versus Redis 6,066,081 MSET
+keys/s; whole-call means are 6.519 ms and 0.670 ms. The approximately 1.37x
+read gap therefore understates the 4.19x point-write and 9.66x batch-write gaps.
+At c1, GET means remain 37.879 us versus 5.699 us and PUT means 61.593 us versus
+5.696 us. Both repetitions and pooled tails remain in the full report.
+
+Redis's dictionary and local command owner avoid work that our persistent
+ordered index, command representation and scheduling add. The [write-path
+map](RAW-WRITE-EXECUTION-PATH.md) shows owned mutations being cloned again on
+insertion. O(1) persistent snapshot capture does not make shared-path tree
+updates free. These are concrete optimization hypotheses, not CPU attribution.
+The latest source-bound endpoint deltas show enlarged batch apply intervals
+and small sync means on tmpfs, so write/apply CPU is the next diagnostic
+priority. Required replication cannot by itself explain every current cost.
+
+The read-credit candidate remains experimental: its c64 read benefit persists,
+but the broader matrix includes mixed and c1 regressions. The historical
+read-only results below remain useful within their original scopes. Redis
+pipelining is not enabled in either comparison and cannot explain its measured
+advantage. Its batch clients also approach their two-core budget; observed
+Redis throughput is a reference result, not an intrinsic server ceiling.
+
 ## What the existing measurements say
 
 The latest completed [wake-coalescing screen](WORK-SIGNAL-SCREENING.md) retains
@@ -141,8 +168,8 @@ be subtracted from the uninstrumented 38-us client latency as an exact budget.
    assuming fewer allocations automatically yield a useful end-to-end gain.
    The subsequent [wake-coalescing screen](WORK-SIGNAL-SCREENING.md) improves
    c64 GET by 0.798% but regresses c1 GET mean and several p99 pairs. It also
-   remains unselected. Refresh actual point-write/mixed and larger-batch
-   behavior before continuing isolated read-only micro-optimizations.
+   remains unselected. The completed v3 refresh above now makes point/batch write apply the
+   next diagnostic priority before another isolated read-only micro-optimization.
 4. Evaluate kernel bypass only after a real NIC experiment identifies the
    kernel/network path as the limiting cost. Redis's measured reference uses
    ordinary sockets. The current loopback profile neither proves a NIC limit

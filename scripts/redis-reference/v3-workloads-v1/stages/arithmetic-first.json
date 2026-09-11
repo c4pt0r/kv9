@@ -1,0 +1,7 @@
+{
+  "complete": true,
+  "kind": "Read-only derivation arithmetic over all six already accepted correctness-smoke endpoint pairs",
+  "histogram_deltas": 1260,
+  "script_sha256": "b464f7436e74e2f013ed4f3008e4fabb2bb3eb34558be64b69b0c0b8c0a3e0b0",
+  "scope": "Validates metric delta arithmetic only; no new runtime, full matrix integration or performance claim."
+}

@@ -176,14 +176,26 @@ latency rises 0.307%. Seven of sixteen p99 pairs worsen. Do not select it as a
 general performance increment or advance a broad candidate fault campaign.
 The source and all observations remain retained; `5ee897a` stays the baseline.
 
-Next refresh actual point writes, mixed traffic and larger batch APIs before
-another isolated pure-read micro-optimization. The
-[version 3 measurement clients](https://github.com/c4pt0r/kv9/blob/0be806d9671e2c50701a64aa7889c8859b7648ba/docs/POINT-WRITE-MEASUREMENT.md)
-add explicit GET/PUT versus GET/SET and batch API selection while preserving
-legacy v1/v2 formats. Seventy focused local tests and both Clippy/format gates
-pass. Use the same clean new clients in every arm of the next comparison;
-old-client recordings cannot act as matched controls. The current publication
-records client release/runtime validation separately from new performance data.
+The [v3 point/batch64 workload refresh](V3-WORKLOAD-PERFORMANCE.md) now passes
+all 72 timed cohorts and its first independent audit: **79,909,933 measured
+calls, all successful and single-attempt**. At c64 the read-credit candidate
+reaches **373,909 GET/s, 117,729 PUT/s and 628,102 BatchPut keys/s**, versus Redis
+**512,191 GET/s, 493,396 SET/s and 6,066,081 MSET keys/s**. Whole-call batch PUT
+mean is **6.519 ms versus 0.670 ms**, with p99 roughly **12.32–12.45 ms versus
+1.008–1.016 ms**. The respective throughput gaps are **1.37x / 4.19x / 9.66x**.
+The read gain does not resolve writes; c64 batch mixed throughput regresses in
+one of two repeats. Retain the general baseline and all candidate observations.
+
+The source-bound endpoint analysis passes for all 48 native cohorts. Batch
+apply intervals grow while tmpfs sync means remain small; overlapping metrics
+are not an additive latency budget. Next attribute point/batch write CPU to
+command conversion, fence checks, log handling and ordered-index mutation,
+then implement the dominant avoidable work and repeat read/write/mixed checks.
+The [write-path map](RAW-WRITE-EXECUTION-PATH.md) fixes the required ordering and
+identifies redundant mutation copies and shared ordered-map update costs.
+The report retains the root's ancillary freeze-check launch error and the
+statistics reader's first empty-histogram failure; neither the original
+recording nor frozen audit was rerun or weakened.
 
 ### Earlier experiments
 

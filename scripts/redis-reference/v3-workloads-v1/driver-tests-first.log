@@ -1,0 +1,12 @@
+test_failed_outcomes_preserved_and_health_separate (__main__.Protocol.test_failed_outcomes_preserved_and_health_separate) ... ok
+test_frozen_role_bindings_without_build_or_runtime (__main__.Protocol.test_frozen_role_bindings_without_build_or_runtime) ... ok
+test_independent_72_order_and_exact_36_smoke (__main__.Protocol.test_independent_72_order_and_exact_36_smoke) ... ok
+test_real_validators_and_each_role_pair_same_config (__main__.Protocol.test_real_validators_and_each_role_pair_same_config) ... ok
+test_storage_boundaries_and_unavailable_evidence (__main__.Protocol.test_storage_boundaries_and_unavailable_evidence) ... ok
+test_unmodified_lifecycle_functions_and_scan (__main__.Protocol.test_unmodified_lifecycle_functions_and_scan) ... ok
+test_write_dataset_membership_sentinel_and_nonce_controls (__main__.Protocol.test_write_dataset_membership_sentinel_and_nonce_controls) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.352s
+
+OK

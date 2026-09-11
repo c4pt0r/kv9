@@ -1,0 +1,6 @@
+{
+  "tool_chunk": "2468c2",
+  "exit_code": 1,
+  "reason": "Assumed smoke used the timed outer-wrapper directory layout. Smoke was a direct driver invocation with matrix.json at its root. Existing copies left intact and equality-checked while completing the copy set.",
+  "mutated_runtime_or_audit": false
+}

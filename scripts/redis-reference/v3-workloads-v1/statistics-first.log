@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/kv9-v3-workload-comparison-preparation/derive-statistics-first.py", line 136, in <module>
+    assert merge_histograms(p['whole_call']['raw'] for p in op['populations'])==case['operations'][i]['whole_call_latency']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/kv9-v3-workload-comparison-preparation/derive-statistics-first.py", line 36, in merge_histograms
+    assert len(raw['buckets'])==len(buckets) and sum(raw['buckets'])==raw['count']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

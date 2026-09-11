@@ -1,0 +1,495 @@
+{
+  "complete": true,
+  "kind": "Retained root orchestration deviation",
+  "failed_tool_chunk": "23f5ec",
+  "failed_exit_code": 1,
+  "failure": "AssertionError: all smoke phases all_success_single_attempt",
+  "timing_launch_tool_chunk": "c57b44",
+  "timing_session": 87861,
+  "timing_started_despite_failed_ancillary_check": true,
+  "changed_driver_protocol_auditor_or_acceptance_predicates": false,
+  "smoke_all_36_measured_populations_successful_single_attempt": true,
+  "initialization_extra_attempts": [
+    {
+      "cohort": "000-old-point-r000-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "001-new-point-r000-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "003-old-point-r050-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "004-new-point-r050-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "006-old-point-r100-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "007-new-point-r100-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "009-old-batch64-r000-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "010-new-batch64-r000-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "012-old-batch64-r050-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "013-new-batch64-r050-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "015-old-batch64-r100-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "016-new-batch64-r100-p00001",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "018-old-point-r000-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "019-new-point-r000-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "021-old-point-r050-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "022-new-point-r050-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "024-old-point-r100-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "025-new-point-r100-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          4097,
+          4097
+        ],
+        "successes": [
+          4097,
+          4097
+        ],
+        "attempts": [
+          4098,
+          4097
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "027-old-batch64-r000-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "028-new-batch64-r000-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "030-old-batch64-r050-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "031-new-batch64-r050-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "033-old-batch64-r100-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    },
+    {
+      "cohort": "034-new-batch64-r100-p00064",
+      "phase": "initialization",
+      "observation": {
+        "calls": [
+          65,
+          65
+        ],
+        "successes": [
+          65,
+          65
+        ],
+        "attempts": [
+          66,
+          65
+        ],
+        "all_success": true,
+        "all_success_single_attempt": false
+      }
+    }
+  ],
+  "explanation": "Root incorrectly required healthy single-attempt behavior across initialization in the ancillary freeze summary, although frozen protocol records it separately and preserves failures/extra attempts. Root then incorrectly launched the already reviewed diagnostic without checking the earlier tool exit. Preserve first recording and exact chronology; no rerun or source/predicate edit. Pre-existing driver/auditor preparation records establish their hashes before timing; the final root inventory is explicitly postlaunch."
+}

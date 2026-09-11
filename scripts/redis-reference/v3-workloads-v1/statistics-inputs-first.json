@@ -1,0 +1,594 @@
+{
+  "accepted_audit": {
+    "path": "/tmp/kv9-v3-workload-comparison-preparation/results-first/audit.json",
+    "sha256": "f875cc8712ba179c38885a5c598a80757f4fd9f759bb740a8e9425dba020224e"
+  },
+  "accepted_inventory": {
+    "path": "/tmp/kv9-v3-workload-comparison-preparation/results-first/input-inventory.json",
+    "sha256": "706cb4041b19c0fe64c9f71a7fc074fe06950dbb0ed31ab0e7c71bb633823609"
+  },
+  "completed_ns": 1789134757736639729,
+  "derivation_sha256": "ebd153a0602ac457e4c8a40e73c12033a3a25c71ce29cb4a7d9edd18b551774b",
+  "reports": {
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/000-old-point-r000-p00001/resource-coverage.json": {
+      "bytes": 1687,
+      "sha256": "360e8d8e533293cd73766ced327a92a27654455d13ff7a6aec52d78cf7de6694"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/000-old-point-r000-p00001/run/report.json": {
+      "bytes": 1432098,
+      "sha256": "e2cee5ce1cfeee93a672cda163591843ffc7b5fded5fdd305fd56a381cffcb4a"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/001-new-point-r000-p00001/resource-coverage.json": {
+      "bytes": 1688,
+      "sha256": "9066f381f57d43a355c589a06e44848d218d2fe6702b6f0f57caeff0831ffeba"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/001-new-point-r000-p00001/run/report.json": {
+      "bytes": 1432097,
+      "sha256": "1ecd23e18d05e97038c198726c22adadd4d972b540aa61ef1483017b80ee2219"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/002-redis-point-r000-p00001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "b11bb3d96843e774dfc20deb3630dd73e15b2d6a70772b665381a344a03b6c16"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/002-redis-point-r000-p00001/run/report.json": {
+      "bytes": 915331,
+      "sha256": "6c67f03afb1f78fe27ecacecc1f35c869f93a30757b2cfcd7c4474a87e9a1681"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/003-old-point-r050-p00001/resource-coverage.json": {
+      "bytes": 1685,
+      "sha256": "4aacdc1e8c245c227ace7d17b2b56ff326588d6df92583bde4b6546a5cd4da4e"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/003-old-point-r050-p00001/run/report.json": {
+      "bytes": 1940384,
+      "sha256": "e9019289c3a558f926ad94741e64f7e11d26886624a98f14958647683cac3143"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/004-new-point-r050-p00001/resource-coverage.json": {
+      "bytes": 1686,
+      "sha256": "9df255c58b95d4dbf8d0688fa1dfae19bfbd3e424101cc0d9fbc3e3598620a0d"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/004-new-point-r050-p00001/run/report.json": {
+      "bytes": 1940360,
+      "sha256": "c74d907e4a587064fc384be615dd12ffd95da4fd7b9ea8ddbccc5d2861b767e3"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/005-redis-point-r050-p00001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "d7583f95ae210e2b582a295a4a809fc18e56223f01b4bd9b197c118899009fe4"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/005-redis-point-r050-p00001/run/report.json": {
+      "bytes": 1264173,
+      "sha256": "89b3c7bcb18170e5bf0461e374b2e51f9f2dec0c6d6f335420b696cd3237e275"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/006-old-point-r100-p00001/resource-coverage.json": {
+      "bytes": 1643,
+      "sha256": "03ad6e441e2fe88c059c9665d8a35b809436ae39c872465a4a78755a869fdc0d"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/006-old-point-r100-p00001/run/report.json": {
+      "bytes": 1431998,
+      "sha256": "f86ef24e621d15e7ce5243875f4c5a1e5e436ab80c6e9d2b616f596b5058c0bd"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/007-new-point-r100-p00001/resource-coverage.json": {
+      "bytes": 1669,
+      "sha256": "b06412c07fb6e56f0484f0ddd5cc54e14328e5b719b70f13d508d6ee0707e3d2"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/007-new-point-r100-p00001/run/report.json": {
+      "bytes": 1432040,
+      "sha256": "86486add6365536418db11994d7d45379a636f03aac07459b6e25208e818d420"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/008-redis-point-r100-p00001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "0869a095facd6bc9c0abfe377370df5f0e9e1edf4b218ce8aab8098a5ce7aaba"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/008-redis-point-r100-p00001/run/report.json": {
+      "bytes": 915347,
+      "sha256": "cf7167eaef91dce3b5c6195062fac4762ed9469ee06f542e6b30bdfb341ccd8f"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/009-old-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 1686,
+      "sha256": "b4a5754f998ba299a34260669da0b16831818522b4be36b1bd365aa015d4ece2"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/009-old-batch64-r000-p00001/run/report.json": {
+      "bytes": 1431356,
+      "sha256": "874296ff1b8aa1539535a7c6821e80aa7e7f2beaf5fa3ab7a4e872fc45cf6792"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/010-new-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 1691,
+      "sha256": "32c157ed2dfa4e0da6646347c7b555e9a1e534a404518c77374155e6137d545d"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/010-new-batch64-r000-p00001/run/report.json": {
+      "bytes": 1431335,
+      "sha256": "9bbb0ddd77dfb18c5f6ecd34364a63f44d2df1e7ef3ef81b8ee512c18b590c1f"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/011-redis-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "3018a9dbfda7d86dc8fcb132b1ccf62a83aa754ace75d013a9b98418e7c3a5b7"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/011-redis-batch64-r000-p00001/run/report.json": {
+      "bytes": 914989,
+      "sha256": "0615012439b235896d995f621b4a631cd15dff301fdcdef0bf61b0d1baf45cb3"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/012-old-batch64-r050-p00001/resource-coverage.json": {
+      "bytes": 1688,
+      "sha256": "a5b9ef4bda06f0d2ff06b98f92fb1573783cdfd4ab2c47b7bad2f0a3195b3614"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/012-old-batch64-r050-p00001/run/report.json": {
+      "bytes": 1939546,
+      "sha256": "cd1425bf2aee98e41734fa104167f9f1c5b726a0d5c363d3318d0d11f333cb94"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/013-new-batch64-r050-p00001/resource-coverage.json": {
+      "bytes": 1684,
+      "sha256": "cf3d3f4b552d7beb14e03b31a81b3b54f6688dfa70edb39b1aa8acfb8b340533"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/013-new-batch64-r050-p00001/run/report.json": {
+      "bytes": 1939537,
+      "sha256": "f68aa0df4347249377b38288373ee30bd5325d71cbda373c3367fe8705a0d883"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/014-redis-batch64-r050-p00001/resource-coverage.json": {
+      "bytes": 841,
+      "sha256": "492a1677f28a4d1ab1a501839487e3d8fb6d349cf2ee64e8b67cdf64090b5a3a"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/014-redis-batch64-r050-p00001/run/report.json": {
+      "bytes": 1263799,
+      "sha256": "1239d294d56f0d619f2268478c61762df2c44adc6cd0a7df9c56743757fed162"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/015-old-batch64-r100-p00001/resource-coverage.json": {
+      "bytes": 1651,
+      "sha256": "8e5e32752e771826bbcac4985e546c09f918905f6983750cc19d9c1485890402"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/015-old-batch64-r100-p00001/run/report.json": {
+      "bytes": 1431385,
+      "sha256": "169a6f2960b5de08390f4c2559e78876406afcc11b02e3c56c095746794d8348"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/016-new-batch64-r100-p00001/resource-coverage.json": {
+      "bytes": 1682,
+      "sha256": "5f6113c7abb9489f087a2a88776a8eb214d6ff6688842a3b282ff1c7f1506658"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/016-new-batch64-r100-p00001/run/report.json": {
+      "bytes": 1431379,
+      "sha256": "f4abb1a5aa8c7f2549507922ea1c48f6da63f0976beee341fbbb17c94fcb0d39"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/017-redis-batch64-r100-p00001/resource-coverage.json": {
+      "bytes": 841,
+      "sha256": "85dd58bb11e1d692f29fb57886c6ab087b8ac327ae11e5f8a2532af600f5deb3"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/017-redis-batch64-r100-p00001/run/report.json": {
+      "bytes": 914933,
+      "sha256": "6d9848677a226876ab26c49a8058b12bf8ed42a835757daa81e85bb210ebcd84"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/018-old-point-r000-p00064/resource-coverage.json": {
+      "bytes": 3942,
+      "sha256": "340d0e8919fe59e624cb382a57f1a9e4b6c976d642eef1211f6e402208e575d6"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/018-old-point-r000-p00064/run/report.json": {
+      "bytes": 1445071,
+      "sha256": "4536c1ff4a11f42c067be1ff0263697d68b471a84bb534b9acdc15b7d01837e2"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/019-new-point-r000-p00064/resource-coverage.json": {
+      "bytes": 3570,
+      "sha256": "386e558adb33d2f772cdeefbe1310beed096a9588f9dfee69b20fcc076c37f9d"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/019-new-point-r000-p00064/run/report.json": {
+      "bytes": 1445134,
+      "sha256": "66463be44f019c8a6c3c9f577721ad1af737aefeaf02b722327e3a81d850770e"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/020-redis-point-r000-p00064/resource-coverage.json": {
+      "bytes": 854,
+      "sha256": "3e61d7f6da50b9a346b8096cfbe22ee7ce6402fe37e57af43b018450af16e268"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/020-redis-point-r000-p00064/run/report.json": {
+      "bytes": 927765,
+      "sha256": "a48f9c9cc01e6b54c4ecc9470f94f9aba3e8f85d6c5a5ddb8f23a097c029b112"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/021-old-point-r050-p00064/resource-coverage.json": {
+      "bytes": 2359,
+      "sha256": "9412bb3310fdc457c661cbc94b05b6ce95f3b4f4a2a89fa47bf39b97083c6756"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/021-old-point-r050-p00064/run/report.json": {
+      "bytes": 1954327,
+      "sha256": "4a9e6837e8600b79c2cdd12d0d6ec49c2679256b68d2c382b32e4dde1ce5750f"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/022-new-point-r050-p00064/resource-coverage.json": {
+      "bytes": 2463,
+      "sha256": "4ca27756dfbe835765c6b6e13f79f44e48a4add2e2f740038ee46e58de854979"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/022-new-point-r050-p00064/run/report.json": {
+      "bytes": 1954334,
+      "sha256": "6819837ef5f22a4d1727892bbf7fcdaa08511aa6593827827e785f81937c795e"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/023-redis-point-r050-p00064/resource-coverage.json": {
+      "bytes": 855,
+      "sha256": "03d3fef1890aaff82592e9dc0b2ece7d2ac718f00409b62800cdb83ffe43c551"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/023-redis-point-r050-p00064/run/report.json": {
+      "bytes": 1276932,
+      "sha256": "db11c93f11244385f8601e86ddba29a40c3d525d158b7d0d7467c9b2fde18692"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/024-old-point-r100-p00064/resource-coverage.json": {
+      "bytes": 1661,
+      "sha256": "e21a10cd2004e2f8dd7e823c531443d1703d71d87af7010a6c0765845addd557"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/024-old-point-r100-p00064/run/report.json": {
+      "bytes": 1445294,
+      "sha256": "12e713fa6bf793d705891fb80fc40509d6a2505e1c3c2e1ca6ba9630c409d1a0"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/025-new-point-r100-p00064/resource-coverage.json": {
+      "bytes": 1670,
+      "sha256": "54e0888e5e7e1b54f189f81b1dfabde381bf9180247c2b8675ddbe9f6e129bf1"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/025-new-point-r100-p00064/run/report.json": {
+      "bytes": 1445241,
+      "sha256": "ce116749704f51dcc78bcfda30336dff4e397853ce80662835c1ecd02282a4aa"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/026-redis-point-r100-p00064/resource-coverage.json": {
+      "bytes": 854,
+      "sha256": "414de7129558791a2e5603154d7cd9d816e005a9e6741292a4867f9d1e55d2f3"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/026-redis-point-r100-p00064/run/report.json": {
+      "bytes": 927608,
+      "sha256": "7879f90a83060f533d800b0dd5a3803745cc863a56b8231b93a2c67fa86a967b"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/027-old-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 5340,
+      "sha256": "021fd456a4ebf39f3a7561b6394da4a371a44bfb6742af006166218cd422d554"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/027-old-batch64-r000-p00064/run/report.json": {
+      "bytes": 1443783,
+      "sha256": "e4d8b4bc10ec9c01cd3094ad527b9c1ce171c29b4ee5d36c2bdf21b3ef0e5095"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/028-new-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 3898,
+      "sha256": "9527532f5590b6f903bace4a437b6d461268a0e3ba8bc1a99b3c633cdf881df9"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/028-new-batch64-r000-p00064/run/report.json": {
+      "bytes": 1443839,
+      "sha256": "6c9e046b984bbfbca2961585d82f3a11dd9511a30733dbeeae09381d26bbd593"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/029-redis-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 855,
+      "sha256": "3f722d708c5fd4863a99d5ca26bc6a0f2fed813ae1d8d4bbd8fde0276f978fe7"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/029-redis-batch64-r000-p00064/run/report.json": {
+      "bytes": 928027,
+      "sha256": "b7acc2bd15d8333b354eea556d15eef30de9bd5c48727dd732d9b1409fc89afe"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/030-old-batch64-r050-p00064/resource-coverage.json": {
+      "bytes": 2914,
+      "sha256": "d059cced3e88729cc85eeed3c8d87b12097b7f40754a24f93acb285859b5a057"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/030-old-batch64-r050-p00064/run/report.json": {
+      "bytes": 1952611,
+      "sha256": "14edf3f8136f7e9061e95c518eb19ea66d985cd8275f30c70fc4b32a005ce9c1"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/031-new-batch64-r050-p00064/resource-coverage.json": {
+      "bytes": 2460,
+      "sha256": "aa53ebb7509fb7dceb2575d365b9ad82b0263b7eebf3a0d8cbbe6c1579d761ca"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/031-new-batch64-r050-p00064/run/report.json": {
+      "bytes": 1952713,
+      "sha256": "a59f607740d10746150667c53ec785a1eeb03883fa1deec59f80bc14fdf1f681"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/032-redis-batch64-r050-p00064/resource-coverage.json": {
+      "bytes": 855,
+      "sha256": "3fea2c602a9f5212bc33d102e19d4679b9dfda48ca014068fe0aca2fed263dfd"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/032-redis-batch64-r050-p00064/run/report.json": {
+      "bytes": 1277680,
+      "sha256": "29ae33ad49d3c2717cf6e919a25f0d39c2103fdb1e4ac52918e89096287718e9"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/033-old-batch64-r100-p00064/resource-coverage.json": {
+      "bytes": 1672,
+      "sha256": "368468abe6635a9c43a197306118f8513d8096b77daccb84322d55e43f011409"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/033-old-batch64-r100-p00064/run/report.json": {
+      "bytes": 1444294,
+      "sha256": "b049264e3066b1b2e1f5d41b6170c3d2fdac0b75669822859163489f84831fa6"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/034-new-batch64-r100-p00064/resource-coverage.json": {
+      "bytes": 1675,
+      "sha256": "e7747c1c3eb525b54f399ef5a5b96955d8884591abc54ca7966cdcd42bb5bb85"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/034-new-batch64-r100-p00064/run/report.json": {
+      "bytes": 1444358,
+      "sha256": "153f549071caec77d53b708297cdbaed2b84e5f5d32ca3cb729d1ad27d9f9587"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/035-redis-batch64-r100-p00064/resource-coverage.json": {
+      "bytes": 848,
+      "sha256": "b53472ad0ad4937d6861617559d1973e96ef40e7a0f2a79ab5167f2aee97c2ba"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/035-redis-batch64-r100-p00064/run/report.json": {
+      "bytes": 928072,
+      "sha256": "adbd0db6c3c5f276bef2274560e43385e36219c9cb874d70daf2d39b2391bbaa"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/036-redis-batch64-r100-p10064/resource-coverage.json": {
+      "bytes": 852,
+      "sha256": "df3b400c7559a8c8f68f159174b0ccc61ca7c9d1c0e28b89279391390e6d5490"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/036-redis-batch64-r100-p10064/run/report.json": {
+      "bytes": 928072,
+      "sha256": "5b804d4023fa1831935efc2c4d05354f25dc3b26218f7956c86a2a61ee588843"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/037-new-batch64-r100-p10064/resource-coverage.json": {
+      "bytes": 1674,
+      "sha256": "d215ffed067cdc95b9558621162c05ba4cf79fa641553bc14942baced3d5c567"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/037-new-batch64-r100-p10064/run/report.json": {
+      "bytes": 1444350,
+      "sha256": "fb252c8ee22b334e6bce76254eeb78f28e50fe84c05e17a7a48e6249dfd5eba8"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/038-old-batch64-r100-p10064/resource-coverage.json": {
+      "bytes": 1672,
+      "sha256": "df7d7a90b356599a1f7e0cbba49ef0bcd41f58bff6b8bdda959e160af2b7710c"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/038-old-batch64-r100-p10064/run/report.json": {
+      "bytes": 1444367,
+      "sha256": "38d98c2283bc45cd2f203e23b0e8c848b80f639e499921ebd7c5831203c626b5"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/039-redis-batch64-r050-p10064/resource-coverage.json": {
+      "bytes": 848,
+      "sha256": "19f5cb66d6449e9acd3dfe1099ba970bf62ccd5bb958401de3a02c86e7b19982"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/039-redis-batch64-r050-p10064/run/report.json": {
+      "bytes": 1277668,
+      "sha256": "2e69329afe21cb04c2260ae34610a8b4458c43a0f638848c6520b8c381eef527"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/040-new-batch64-r050-p10064/resource-coverage.json": {
+      "bytes": 2548,
+      "sha256": "f8896c3f9df6728cdec3e3937528014147987fd1284ca7d23f5283b779017e45"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/040-new-batch64-r050-p10064/run/report.json": {
+      "bytes": 1952676,
+      "sha256": "394ee49a53cefe9c1196499168b267d51ec8c44d85cdd328dd553d5921b6f411"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/041-old-batch64-r050-p10064/resource-coverage.json": {
+      "bytes": 2710,
+      "sha256": "1a096bf8a229c54b4d26518c1e877cc2fc823d100d4b543d054ae5907f2e042a"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/041-old-batch64-r050-p10064/run/report.json": {
+      "bytes": 1952737,
+      "sha256": "43f4a3d28a698bacb405b004b389fdb0cf9a055226f0b207e32bfc0c4836ad3b"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/042-redis-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 850,
+      "sha256": "b13fcb0bb74427641a9917204f1b58c9470fddb4994bf12bdc19dd8fd331824c"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/042-redis-batch64-r000-p10064/run/report.json": {
+      "bytes": 928076,
+      "sha256": "7f54abc012cebc88e4ec61474d9b33fee483e4153838738121d32ac302a714af"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/043-new-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 3643,
+      "sha256": "b2548af807284168560a84430df481e4588db8a378af8d7e6fca63755d6fe5ef"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/043-new-batch64-r000-p10064/run/report.json": {
+      "bytes": 1443850,
+      "sha256": "26077fc4dfab0c21d04f15aaee241df98a9db2cf84a191cb79a8d424bb380195"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/044-old-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 3738,
+      "sha256": "611c751ffcbc04cdc8848561cd464f853e7b291ba8c6a906b031eb781a97f31c"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/044-old-batch64-r000-p10064/run/report.json": {
+      "bytes": 1443832,
+      "sha256": "62f2210cac45731017aa6a612ca42cb661cc63ed577f2c22ba68a08eb57b6e3a"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/045-redis-point-r100-p10064/resource-coverage.json": {
+      "bytes": 854,
+      "sha256": "de9b9200e925fc90e641084a15a09390490e133fa85204915d99368aa234eb6d"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/045-redis-point-r100-p10064/run/report.json": {
+      "bytes": 927796,
+      "sha256": "11cdcd8098f8a1b73f97d59d2da0a5fb17106436e035a6ca62b2d353a0309495"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/046-new-point-r100-p10064/resource-coverage.json": {
+      "bytes": 1667,
+      "sha256": "378e24aaffeb3a8c25aa0a44906ccf5016ef696e7f9e20b212a0c5d4ed9fd34b"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/046-new-point-r100-p10064/run/report.json": {
+      "bytes": 1445307,
+      "sha256": "fe142a89801a95f9c513437b108db44ea5e5c7106b563adf4edfdb4386582fff"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/047-old-point-r100-p10064/resource-coverage.json": {
+      "bytes": 1666,
+      "sha256": "5813c5d1783ed29bdf69a72ed2d25a4391138cbd1a3d5fde3e484af7a5c37e11"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/047-old-point-r100-p10064/run/report.json": {
+      "bytes": 1445329,
+      "sha256": "3e91dfbb5a7185f664bf781bbee00d58b8416be07c66af6571127dd06c11ae86"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/048-redis-point-r050-p10064/resource-coverage.json": {
+      "bytes": 853,
+      "sha256": "fec3dfefcef8c55dc42c06367beb8a648aa884b4efb08557647d5c5a7ebdb4cf"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/048-redis-point-r050-p10064/run/report.json": {
+      "bytes": 1276999,
+      "sha256": "af1f7d3ccedec2cd1fe489fb0f971f635026e3dba1ac830aa547474498f9e233"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/049-new-point-r050-p10064/resource-coverage.json": {
+      "bytes": 2706,
+      "sha256": "9f9976ed96e14ec88cfbcfc634fc39fa820e870166e847775e5d2c36c7179d8f"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/049-new-point-r050-p10064/run/report.json": {
+      "bytes": 1954379,
+      "sha256": "8edcebc111ff201c2b2688601196972c0e11bbaa02891ba2acb0f77f50e9bb74"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/050-old-point-r050-p10064/resource-coverage.json": {
+      "bytes": 2788,
+      "sha256": "73afb8bdab2f4a78b268429326673c077490199e9706cecaf2633e1aadd2fd1f"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/050-old-point-r050-p10064/run/report.json": {
+      "bytes": 1954285,
+      "sha256": "25084188372790c2269567d8b02cf787111e600df87fea952b8da2507fcab70d"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/051-redis-point-r000-p10064/resource-coverage.json": {
+      "bytes": 851,
+      "sha256": "8ae463c69a46761a376df36e58d5033e0b200b640b16450041e716c4c718d2dd"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/051-redis-point-r000-p10064/run/report.json": {
+      "bytes": 927656,
+      "sha256": "87f2bdc252016dc3861cf9aec024d1a27860a0b55657a44e623bf4831100cc97"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/052-new-point-r000-p10064/resource-coverage.json": {
+      "bytes": 3900,
+      "sha256": "055f5ede2e13219199d1f95526c5fcf7c2ceb9180c4e7e14513b675573c9ed8c"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/052-new-point-r000-p10064/run/report.json": {
+      "bytes": 1445111,
+      "sha256": "5e57acc8e67d3404d643f00972dc19b21900fa15cfd06362c469addefa53e950"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/053-old-point-r000-p10064/resource-coverage.json": {
+      "bytes": 3620,
+      "sha256": "0c00b1e5c84ae2809ba03b0397ebbb79453495834b450c6ae0db59778e532052"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/053-old-point-r000-p10064/run/report.json": {
+      "bytes": 1445175,
+      "sha256": "6bdcc8ab631203c6f9aa8bf9d7ee84fb622836c3cfa669c664b9f3d84a886d45"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/054-redis-batch64-r100-p10001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "6530efb65f273e78371ec2946174419480a803f695144751398c5e5e80978eb7"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/054-redis-batch64-r100-p10001/run/report.json": {
+      "bytes": 914935,
+      "sha256": "17805c356193c04b5475f0d79cd072a69baf8f1224982702b2905f8a94a7bed0"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/055-new-batch64-r100-p10001/resource-coverage.json": {
+      "bytes": 1653,
+      "sha256": "0e7f73815c98590dd2cecc5c8695153b7172bf3bac7fbddd16fdaa015d07df7d"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/055-new-batch64-r100-p10001/run/report.json": {
+      "bytes": 1431399,
+      "sha256": "2bd59d6f699dca9638f8c0e0da5373edc074a0d7d8a9ceb7e5c2476d19addb50"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/056-old-batch64-r100-p10001/resource-coverage.json": {
+      "bytes": 1674,
+      "sha256": "0a7738bb3a0f736572c1208d85f84b2d44d1efd6ae0828f99971b5d3f899dac1"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/056-old-batch64-r100-p10001/run/report.json": {
+      "bytes": 1431396,
+      "sha256": "ecad12ca2a6a6f5cce387db545b22f987746b1d2f466dbc1dab1b4b1540c9311"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/057-redis-batch64-r050-p10001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "3b0e4053bc76f124703ee9615370489ea5270dc11327e0b00fbfe028ab25311e"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/057-redis-batch64-r050-p10001/run/report.json": {
+      "bytes": 1263784,
+      "sha256": "69e39e62eb4ce1a7954f68bcd5588667ea029b18ae40aa6e029c59f346f8d08d"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/058-new-batch64-r050-p10001/resource-coverage.json": {
+      "bytes": 1686,
+      "sha256": "168ff8a11edd3fc463f98d5f1004cb4a0b618a7a66407e4c3227e61b89d47202"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/058-new-batch64-r050-p10001/run/report.json": {
+      "bytes": 1939546,
+      "sha256": "b22c0d29b24bcf06375de026afca67168f845a37f96a1f6f5c8027ff3c60beb6"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/059-old-batch64-r050-p10001/resource-coverage.json": {
+      "bytes": 1685,
+      "sha256": "48a1b76fba71909510bfcdefd223d5459e16a88e820a38388e23ab2b9f06fafc"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/059-old-batch64-r050-p10001/run/report.json": {
+      "bytes": 1939524,
+      "sha256": "8a92859ab60d6e2c460db3f0d69a51b7aa218b45e7d0653863720f314291e1dc"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/060-redis-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 840,
+      "sha256": "d946114a1a8185f444cc1c96fdab13e44fbe5d3bef8b76243e8e663b4b836a86"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/060-redis-batch64-r000-p10001/run/report.json": {
+      "bytes": 914968,
+      "sha256": "1c964792384f4e1b87fa927321a2c5d458018ddb9e112da4c81de55e36fe110c"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/061-new-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 1692,
+      "sha256": "caf4149f94769ea4a7a02fe9f3bfac34ba24b5936f98218bc276cc0ff7f73e82"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/061-new-batch64-r000-p10001/run/report.json": {
+      "bytes": 1431345,
+      "sha256": "82908f76175f48c6891c0e6cb5f0f51920ed604c500c123427c45deb902b658a"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/062-old-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 1690,
+      "sha256": "f04053ece3e798ef361e109004367ea0587a7e73eb487a771945d493d24220d3"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/062-old-batch64-r000-p10001/run/report.json": {
+      "bytes": 1431352,
+      "sha256": "8154e1238614837220edd4378b5fa83851820911ef698bf674e6487dce0bf9ec"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/063-redis-point-r100-p10001/resource-coverage.json": {
+      "bytes": 838,
+      "sha256": "8f852c515c28c07b3953d8a58e392220d0104c144e02db78fac4faab886f1a60"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/063-redis-point-r100-p10001/run/report.json": {
+      "bytes": 915338,
+      "sha256": "c8baf5f86f94e41d17a1197682f76f059cc192ea7788a561c4fa8cffd38c7902"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/064-new-point-r100-p10001/resource-coverage.json": {
+      "bytes": 1666,
+      "sha256": "2958e5b2f126f10bac0dc4c73c688a8dc49d0403c2a2078abf881d4bee2e43be"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/064-new-point-r100-p10001/run/report.json": {
+      "bytes": 1432004,
+      "sha256": "26c50abe840c6ddb15cff39da1a7b552b5e85d3c2f3cbbead98a6d1c9027e041"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/065-old-point-r100-p10001/resource-coverage.json": {
+      "bytes": 1667,
+      "sha256": "dfb6bb8cc4d58ba254502ba9f1db84130dac0dc3e1cda0b20511b513b3c40d6d"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/065-old-point-r100-p10001/run/report.json": {
+      "bytes": 1432060,
+      "sha256": "27a05567869dc98ead8700dc45588f8021cc2283ed68ba64d1fb0c33fbf83c58"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/066-redis-point-r050-p10001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "11f73954c2da89e1419011ab11668fdf0eae2e08c3d437cdd59763323aec9a13"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/066-redis-point-r050-p10001/run/report.json": {
+      "bytes": 1264350,
+      "sha256": "c736d3bbd58cceb965705cd5c75023c34514f64784a6329bd1ee306742165931"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/067-new-point-r050-p10001/resource-coverage.json": {
+      "bytes": 1683,
+      "sha256": "dd732ad69662e2bf4c46dfffc826a57a0a7da227f1d911fdd830df145c74b818"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/067-new-point-r050-p10001/run/report.json": {
+      "bytes": 1940383,
+      "sha256": "2533e940d9cc305a843fa97c01a3b5e09ddf498dadef9370bc5546b409c6009c"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/068-old-point-r050-p10001/resource-coverage.json": {
+      "bytes": 1687,
+      "sha256": "4121c8b5d5e9c951c2b13201329ef0d0f92d49f5e74edfb0416b830510538f7a"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/068-old-point-r050-p10001/run/report.json": {
+      "bytes": 1940396,
+      "sha256": "8945a72254550dc3c19fa0d71a1dd5b3bbdb0a4880721e88fe6457dede6d3b9b"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/069-redis-point-r000-p10001/resource-coverage.json": {
+      "bytes": 839,
+      "sha256": "5626e6917f97e4976489556d4148ea6cb2cec2c81939f0da3114fcd69a07cef0"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/069-redis-point-r000-p10001/run/report.json": {
+      "bytes": 915440,
+      "sha256": "140511de34ac8fdce062f2f9bbb699d7d3c6e9783b4428aec95c6fdc21650650"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/070-new-point-r000-p10001/resource-coverage.json": {
+      "bytes": 1683,
+      "sha256": "25a217d195eff6ecd91f384da52debae8f88530c7c3a07b844f332b620296c08"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/070-new-point-r000-p10001/run/report.json": {
+      "bytes": 1432056,
+      "sha256": "1b4dd367c1372b9d83a2fbbdd20791246782cd9d88573abd87f23834e2a9f397"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/071-old-point-r000-p10001/resource-coverage.json": {
+      "bytes": 1680,
+      "sha256": "983ad4513a625d5437d800df6dc02ca53f564a5844856fe82e4ee095475d7a21"
+    },
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/071-old-point-r000-p10001/run/report.json": {
+      "bytes": 1432068,
+      "sha256": "3a35eae991b1378dd2533f357d9850d571b3a8ca3ac655e015277f5d5a79bdf7"
+    }
+  },
+  "root_orchestration_deviation": {
+    "path": "/tmp/kv9-v3-workload-comparison-preparation/root-freeze-summary-first-failure.json",
+    "sha256": "20f706d77922d9b2cb1b5b8198afd769a7dcab36b9fd34aae1162de2ca7dd3f8"
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "all_owned_commands_terminal": true,
+  "ancestry": {
+    "auditor_path": "/tmp/kv9-work-signal-comparison-preparation/audit.py",
+    "auditor_sha256": "ccd49bc7458555af6d7a359f3191691271f71ef673c0ce84fd759fd9dc506387",
+    "tests_path": "/tmp/kv9-work-signal-comparison-preparation/test_audit_contract.py",
+    "tests_sha256": "5a2825ccd96f26235e51e7351543f5e859f0cfd5ee95ce3b692888511dcb47b0"
+  },
+  "audit_argv_after_root_terminal_release": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-v3-workload-comparison-preparation/audit.py",
+    "--run",
+    "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts",
+    "--output",
+    "/tmp/kv9-v3-workload-comparison-preparation/results-first",
+    "--expected-driver-sha256",
+    "e1b839d357658db56b2cf4235e1de7089453e61853ada07015e28d165f1966de",
+    "--root-session",
+    "ROOT_TERMINAL_TIMING_SESSION",
+    "--root-exit-code",
+    "0",
+    "--successful-arms",
+    "72"
+  ],
+  "auditor_sha256": "7c6e35ff255a2f55a398b032d768f6e47297962388e9b868ce86dc55050d4c1f",
+  "completed_ns": 1789132836827982776,
+  "contracts": {
+    "command": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "python3",
+      "test_audit_contract.py"
+    ],
+    "exit_code": 0,
+    "log": "/tmp/kv9-v3-workload-comparison-preparation/audit-contract-endpoint-binding-final.log",
+    "log_sha256": "9fc1c33baac3260ee7170cb734b5c60d1ac44c58c1e197c25c59239926b808d4",
+    "prior_attempts_retained": true,
+    "terminal_tool_chunk": "29f397",
+    "tests": 15
+  },
+  "driver_sha256": "e1b839d357658db56b2cf4235e1de7089453e61853ada07015e28d165f1966de",
+  "endpoint_snapshot_scope": "288 existing before/after metric/status/resource snapshots will be bound into the unchanged absolute-path input-inventory map. Separate downstream endpoint semantic validation remains required.",
+  "files": {
+    "audit-contract-endpoint-binding-final.log": "9fc1c33baac3260ee7170cb734b5c60d1ac44c58c1e197c25c59239926b808d4",
+    "audit-contract-final.log": "9fc1c33baac3260ee7170cb734b5c60d1ac44c58c1e197c25c59239926b808d4",
+    "audit-contract-first.log": "9fc1c33baac3260ee7170cb734b5c60d1ac44c58c1e197c25c59239926b808d4",
+    "audit.py": "7c6e35ff255a2f55a398b032d768f6e47297962388e9b868ce86dc55050d4c1f",
+    "auditor-static-final.json": "be248f4e3234e6ffe3a5dfcd8e1087c4dd47031dad6d4c951bd189fc64aff02a",
+    "auditor-tests.diff": "589c2abc11110d66ade6530303de5c1f45baf9599b6c9fe809fd1c719a77fd18",
+    "auditor.diff": "7d1c91a6651248f02dc7e9634387b52c01873c536ebb3f0426213aa4fe4e803d",
+    "driver-arguments.json": "ecf364a3d10671c1c5749d6e45b6f7b4ec751a9f63c557c393adb697ba1393b1",
+    "isolate-and-run.py": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+    "matched-driver.py": "e1b839d357658db56b2cf4235e1de7089453e61853ada07015e28d165f1966de",
+    "protocol.json": "d6dc8cc488cc5c65f8ab30f19ecc62bb8cf028bd609f3a477080999e3e961b5b",
+    "test_audit_contract.py": "6ad08c961b92ad4501f6a40c07c35e4bd33aac46693d9a442b4c0f313549104e"
+  },
+  "preserved_scope": "All original source/Cargo/executable/PID/start/boot/listener/placement/resource/allocator/drain/retention/owned cleanup and exact outer restoration predicates remain. Expected counts240lifetimes,144drains/listenerbindings. Error/refusal/unknown populations retained; all-success single-attempt suitability separate from accounting/timing validity. No automatic rerun, full-history/Chaos/equal-durability/sustained-capacity claim.",
+  "protocol_id": "kv9-v3-workloads-c1-c64-v1",
+  "protocol_sha256": "d6dc8cc488cc5c65f8ab30f19ecc62bb8cf028bd609f3a477080999e3e961b5b",
+  "ready_for_root_review": true,
+  "role_pin_readback": {
+    "client": {
+      "binary_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+      "build": "/tmp/kv9-point-write-v3-release-first/native",
+      "clean": true,
+      "manifest_sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c",
+      "revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+      "source": "/tmp/kv9-point-write-measurement-v3"
+    },
+    "new": {
+      "binary_sha256": "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
+      "build": "/tmp/kv9-read-group-credit-release-first",
+      "clean": true,
+      "manifest_sha256": "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd",
+      "revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+      "source": "/tmp/kv9-read-group-credit"
+    },
+    "old": {
+      "binary_sha256": "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+      "build": "/tmp/kv9-rpc-pair-release-first",
+      "clean": true,
+      "manifest_sha256": "1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417",
+      "revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+      "source": "/tmp/kv9-rpc-worker-pair"
+    },
+    "redis": {
+      "binary_sha256": "5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af",
+      "build": "/tmp/kv9-point-write-v3-release-first/redis",
+      "clean": true,
+      "manifest_sha256": "10f9ce2a754a2ef43a6439856c1d5fb00c5a1e5004173e52897a3ea19d6124f0",
+      "revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+      "source": "/tmp/kv9-point-write-measurement-v3"
+    }
+  },
+  "runtime_or_actual_audit_executed": false,
+  "scope_changes": [
+    "New role/source/build/protocol and explicit wrapper arguments",
+    "72 descriptors: point1/batch64, 0/50/100 reads, c1/c64, old/new/Redis, 2 forward/reverse repeats",
+    "Exact v3 read/write selectors with unchanged workload/deadline/attempt policies",
+    "Independent configured-budget deterministic write-key membership; no exact issued nonce ledger",
+    "Per-operation/outcome and combined weighted raw histograms, call/key rates, empty inactive populations",
+    "Free-space preflight32/96GiB and runtime16/64GiB observations for every arm, tied to retained client callbacks",
+    "Hash inventory of six existing endpoint envelope files per native cohort; no endpoint semantic claim"
+  ],
+  "static_schedule_comparison": {
+    "accepted": true,
+    "driver_equals_independently_defined_auditor_and_protocol": true,
+    "duration_ms": 10000,
+    "order": "36 forward then full 36 reverse",
+    "smoke_descriptors": 36,
+    "smoke_duration_ms": 2000,
+    "timed_descriptors": 72
+  }
+}

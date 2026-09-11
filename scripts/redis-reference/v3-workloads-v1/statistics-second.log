@@ -1,0 +1,535 @@
+{
+  "measurement_totals": {
+    "calls": 79909933,
+    "input_items": 787052110,
+    "issued": 79909933,
+    "attempts": 79909933,
+    "dropped_slots": 0,
+    "outcomes": {
+      "success": 79909933,
+      "refused": 0,
+      "unknown_write": 0,
+      "read_failure": 0,
+      "client_rejected": 0
+    },
+    "reasons": {
+      "success": 79909933,
+      "not_leader": 0,
+      "admission_count": 0,
+      "admission_bytes": 0,
+      "admission_oversize": 0,
+      "read_quorum_unconfirmed": 0,
+      "read_apply_unconfirmed": 0,
+      "rpc_status": 0,
+      "protocol": 0,
+      "deadline": 0,
+      "client_capacity": 0,
+      "client_input": 0,
+      "io": 0,
+      "server_error": 0,
+      "data_integrity": 0
+    },
+    "attempt_reasons": {
+      "success": 31422018,
+      "not_leader": 0,
+      "admission_count": 0,
+      "admission_bytes": 0,
+      "admission_oversize": 0,
+      "read_quorum_unconfirmed": 0,
+      "read_apply_unconfirmed": 0,
+      "rpc_status": 0,
+      "protocol": 0,
+      "deadline": 0,
+      "client_capacity": 0,
+      "client_input": 0
+    }
+  },
+  "phase_totals": {
+    "initialization": {
+      "calls": 299664,
+      "input_items": 589968,
+      "attempts": 299712,
+      "extra_attempts": 48,
+      "outcomes": {
+        "success": 299664,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "reasons": {
+        "success": 299664,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "io": 0,
+        "server_error": 0,
+        "data_integrity": 0
+      },
+      "attempt_reasons": {
+        "success": 199776,
+        "not_leader": 48,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      }
+    },
+    "warmup": {
+      "calls": 9216,
+      "input_items": 299520,
+      "attempts": 9216,
+      "extra_attempts": 0,
+      "outcomes": {
+        "success": 9216,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "reasons": {
+        "success": 9216,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "io": 0,
+        "server_error": 0,
+        "data_integrity": 0
+      },
+      "attempt_reasons": {
+        "success": 6144,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      }
+    },
+    "measurement": {
+      "calls": 79909933,
+      "input_items": 787052110,
+      "attempts": 79909933,
+      "extra_attempts": 0,
+      "outcomes": {
+        "success": 79909933,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "reasons": {
+        "success": 79909933,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "io": 0,
+        "server_error": 0,
+        "data_integrity": 0
+      },
+      "attempt_reasons": {
+        "success": 31422018,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      }
+    },
+    "verification": {
+      "calls": 149832,
+      "input_items": 294984,
+      "attempts": 149832,
+      "extra_attempts": 0,
+      "outcomes": {
+        "success": 149832,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "reasons": {
+        "success": 149832,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0,
+        "io": 0,
+        "server_error": 0,
+        "data_integrity": 0
+      },
+      "attempt_reasons": {
+        "success": 99888,
+        "not_leader": 0,
+        "admission_count": 0,
+        "admission_bytes": 0,
+        "admission_oversize": 0,
+        "read_quorum_unconfirmed": 0,
+        "read_apply_unconfirmed": 0,
+        "rpc_status": 0,
+        "protocol": 0,
+        "deadline": 0,
+        "client_capacity": 0,
+        "client_input": 0
+      }
+    }
+  },
+  "checks": {
+    "successful_arms": 72,
+    "owned_lifetimes_exited": 240,
+    "role_source_file_checks": 2340,
+    "resource_samples": 13990,
+    "qualifying_drains": 144,
+    "voter_writer_listener_bindings": 144,
+    "retained_files": 3736,
+    "retained_bytes": 74627673540,
+    "outer_restoration": {
+      "accepted": true,
+      "configured_and_effective_before_after": "0-31",
+      "isolated": "6-15,22-31",
+      "owned_containers": 3,
+      "namespace_maps_preserved": true,
+      "original_summary_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8"
+    },
+    "endpoint_snapshot_files_bound": 288,
+    "minimum_available_bytes": {
+      "tmpfs": 60019949568,
+      "retention": 526960189440
+    }
+  },
+  "pooled_changes": [
+    {
+      "concurrency": 1,
+      "workload": "point-r000",
+      "completed_qps_change_percent": 0.4879268851726737,
+      "successful_qps_change_percent": 0.4879268851726737,
+      "mean_change_percent": -0.49103159020509324,
+      "old_p95": {
+        "lower_ns": 74752,
+        "upper_ns": 75775
+      },
+      "new_p95": {
+        "lower_ns": 73728,
+        "upper_ns": 74751
+      },
+      "old_p99": {
+        "lower_ns": 83968,
+        "upper_ns": 84991
+      },
+      "new_p99": {
+        "lower_ns": 82944,
+        "upper_ns": 83967
+      }
+    },
+    {
+      "concurrency": 1,
+      "workload": "point-r050",
+      "completed_qps_change_percent": -0.010114974493846685,
+      "successful_qps_change_percent": -0.010114974493846685,
+      "mean_change_percent": 0.009622082624805017,
+      "old_p95": {
+        "lower_ns": 69632,
+        "upper_ns": 70655
+      },
+      "new_p95": {
+        "lower_ns": 69632,
+        "upper_ns": 70655
+      },
+      "old_p99": {
+        "lower_ns": 78848,
+        "upper_ns": 79871
+      },
+      "new_p99": {
+        "lower_ns": 79872,
+        "upper_ns": 80895
+      }
+    },
+    {
+      "concurrency": 1,
+      "workload": "point-r100",
+      "completed_qps_change_percent": -0.1150800012014841,
+      "successful_qps_change_percent": -0.1150800012014841,
+      "mean_change_percent": 0.11170908072493102,
+      "old_p95": {
+        "lower_ns": 44544,
+        "upper_ns": 45055
+      },
+      "new_p95": {
+        "lower_ns": 44544,
+        "upper_ns": 45055
+      },
+      "old_p99": {
+        "lower_ns": 51712,
+        "upper_ns": 52223
+      },
+      "new_p99": {
+        "lower_ns": 52736,
+        "upper_ns": 53247
+      }
+    },
+    {
+      "concurrency": 1,
+      "workload": "batch64-r000",
+      "completed_qps_change_percent": -0.4520273116411011,
+      "successful_qps_change_percent": -0.4520273116411011,
+      "mean_change_percent": 0.45123257941190875,
+      "old_p95": {
+        "lower_ns": 239616,
+        "upper_ns": 241663
+      },
+      "new_p95": {
+        "lower_ns": 241664,
+        "upper_ns": 243711
+      },
+      "old_p99": {
+        "lower_ns": 278528,
+        "upper_ns": 282623
+      },
+      "new_p99": {
+        "lower_ns": 274432,
+        "upper_ns": 278527
+      }
+    },
+    {
+      "concurrency": 1,
+      "workload": "batch64-r050",
+      "completed_qps_change_percent": 0.44939865725519557,
+      "successful_qps_change_percent": 0.44939865725519557,
+      "mean_change_percent": -0.45369152238208255,
+      "old_p95": {
+        "lower_ns": 235520,
+        "upper_ns": 237567
+      },
+      "new_p95": {
+        "lower_ns": 233472,
+        "upper_ns": 235519
+      },
+      "old_p99": {
+        "lower_ns": 270336,
+        "upper_ns": 274431
+      },
+      "new_p99": {
+        "lower_ns": 266240,
+        "upper_ns": 270335
+      }
+    },
+    {
+      "concurrency": 1,
+      "workload": "batch64-r100",
+      "completed_qps_change_percent": 0.36001788523274403,
+      "successful_qps_change_percent": 0.36001788523274403,
+      "mean_change_percent": -0.3536770266579947,
+      "old_p95": {
+        "lower_ns": 117760,
+        "upper_ns": 118783
+      },
+      "new_p95": {
+        "lower_ns": 116736,
+        "upper_ns": 117759
+      },
+      "old_p99": {
+        "lower_ns": 137216,
+        "upper_ns": 139263
+      },
+      "new_p99": {
+        "lower_ns": 137216,
+        "upper_ns": 139263
+      }
+    },
+    {
+      "concurrency": 64,
+      "workload": "point-r000",
+      "completed_qps_change_percent": 0.4403626243739245,
+      "successful_qps_change_percent": 0.4403626243739245,
+      "mean_change_percent": -0.437973786795387,
+      "old_p95": {
+        "lower_ns": 745472,
+        "upper_ns": 753663
+      },
+      "new_p95": {
+        "lower_ns": 737280,
+        "upper_ns": 745471
+      },
+      "old_p99": {
+        "lower_ns": 868352,
+        "upper_ns": 876543
+      },
+      "new_p99": {
+        "lower_ns": 876544,
+        "upper_ns": 884735
+      }
+    },
+    {
+      "concurrency": 64,
+      "workload": "point-r050",
+      "completed_qps_change_percent": 1.6392103258093371,
+      "successful_qps_change_percent": 1.6392103258093371,
+      "mean_change_percent": -1.6125285770385744,
+      "old_p95": {
+        "lower_ns": 540672,
+        "upper_ns": 548863
+      },
+      "new_p95": {
+        "lower_ns": 548864,
+        "upper_ns": 557055
+      },
+      "old_p99": {
+        "lower_ns": 638976,
+        "upper_ns": 647167
+      },
+      "new_p99": {
+        "lower_ns": 647168,
+        "upper_ns": 655359
+      }
+    },
+    {
+      "concurrency": 64,
+      "workload": "point-r100",
+      "completed_qps_change_percent": 8.133425414830974,
+      "successful_qps_change_percent": 8.133425414830974,
+      "mean_change_percent": -7.52519118698165,
+      "old_p95": {
+        "lower_ns": 278528,
+        "upper_ns": 282623
+      },
+      "new_p95": {
+        "lower_ns": 237568,
+        "upper_ns": 239615
+      },
+      "old_p99": {
+        "lower_ns": 352256,
+        "upper_ns": 356351
+      },
+      "new_p99": {
+        "lower_ns": 294912,
+        "upper_ns": 299007
+      }
+    },
+    {
+      "concurrency": 64,
+      "workload": "batch64-r000",
+      "completed_qps_change_percent": 0.17545428165870458,
+      "successful_qps_change_percent": 0.17545428165870458,
+      "mean_change_percent": -0.17421294177107916,
+      "old_p95": {
+        "lower_ns": 9175040,
+        "upper_ns": 9306111
+      },
+      "new_p95": {
+        "lower_ns": 9175040,
+        "upper_ns": 9306111
+      },
+      "old_p99": {
+        "lower_ns": 12189696,
+        "upper_ns": 12320767
+      },
+      "new_p99": {
+        "lower_ns": 12320768,
+        "upper_ns": 12451839
+      }
+    },
+    {
+      "concurrency": 64,
+      "workload": "batch64-r050",
+      "completed_qps_change_percent": -0.7929544030021551,
+      "successful_qps_change_percent": -0.7929544030021551,
+      "mean_change_percent": 0.7963386502410463,
+      "old_p95": {
+        "lower_ns": 6291456,
+        "upper_ns": 6356991
+      },
+      "new_p95": {
+        "lower_ns": 6422528,
+        "upper_ns": 6488063
+      },
+      "old_p99": {
+        "lower_ns": 7798784,
+        "upper_ns": 7864319
+      },
+      "new_p99": {
+        "lower_ns": 8323072,
+        "upper_ns": 8388607
+      }
+    },
+    {
+      "concurrency": 64,
+      "workload": "batch64-r100",
+      "completed_qps_change_percent": 3.284508931249608,
+      "successful_qps_change_percent": 3.284508931249608,
+      "mean_change_percent": -3.18728069541635,
+      "old_p95": {
+        "lower_ns": 2621440,
+        "upper_ns": 2654207
+      },
+      "new_p95": {
+        "lower_ns": 2555904,
+        "upper_ns": 2588671
+      },
+      "old_p99": {
+        "lower_ns": 3047424,
+        "upper_ns": 3080191
+      },
+      "new_p99": {
+        "lower_ns": 2949120,
+        "upper_ns": 2981887
+      }
+    }
+  ],
+  "hashes": {
+    "results-first/audit.json": "f875cc8712ba179c38885a5c598a80757f4fd9f759bb740a8e9425dba020224e",
+    "results-first/input-inventory.json": "706cb4041b19c0fe64c9f71a7fc074fe06950dbb0ed31ab0e7c71bb633823609",
+    "statistics-first.json": "a612948b8f4571a09cea6dbd328b89edcb9e789cc47eef32b2babf0bf9f2023c",
+    "READOUT.md": "02ee0f561f33657c967b4160607ff995e3db85ee41b0a615c4ea54d48da25f92",
+    "cohorts-first.csv": "a8386b40fd19eb34542c245f6d5e62e61d2fdcc2805fb0e5c0dffaa3fef6ed6a",
+    "pooled-first.csv": "c331736d338efb0af660495a13e7365bf9d85e5c208e23852b0915c6cc1b8578",
+    "statistics-inputs-first.json": "053e796790ab15b36d632008347006499c1ce20aae5d41f1575172849ac6baea"
+  }
+}

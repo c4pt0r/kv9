@@ -1,0 +1,287 @@
+{
+  "AUDITOR-PREPARATION.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/AUDITOR-PREPARATION.json",
+    "bytes": 6449,
+    "sha256": "33e538f781a4c18ce37419b3ee9f514136427b3fadd6784bbc29da1aa61e98d0"
+  },
+  "DRIVER-NOTE.md": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/DRIVER-NOTE.md",
+    "bytes": 3845,
+    "sha256": "b32b2e5e438e3fc64d5177801c8fbdbaebe117a185b68dce0ee6c3d853c73835"
+  },
+  "PREPARATION.md": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/README.md",
+    "bytes": 3815,
+    "sha256": "3785cabad25cc3b62625bd6095dd6b4214dbd3504fdf40bc04a800a9840d9db6"
+  },
+  "READOUT.md": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/READOUT.md",
+    "bytes": 10220,
+    "sha256": "02ee0f561f33657c967b4160607ff995e3db85ee41b0a615c4ea54d48da25f92"
+  },
+  "audit-contract-endpoint-binding-final.log": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/audit-contract-endpoint-binding-final.log",
+    "bytes": 2083,
+    "sha256": "9fc1c33baac3260ee7170cb734b5c60d1ac44c58c1e197c25c59239926b808d4"
+  },
+  "audit-contract-final.log": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/audit-contract-final.log",
+    "bytes": 2083,
+    "sha256": "9fc1c33baac3260ee7170cb734b5c60d1ac44c58c1e197c25c59239926b808d4"
+  },
+  "audit-contract-first.log": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/audit-contract-first.log",
+    "bytes": 2083,
+    "sha256": "9fc1c33baac3260ee7170cb734b5c60d1ac44c58c1e197c25c59239926b808d4"
+  },
+  "audit-exit-first.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/audit-exit-first.json",
+    "bytes": 77,
+    "sha256": "cccd4682b5a827782afe78ab6ebfba05ea57af3b8d2be904b68cc537760822c6"
+  },
+  "audit-first.log": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/audit-first.log",
+    "bytes": 4115,
+    "sha256": "b81add11d784568f976a4da5989bd3d4dccfea0ea3b7af97e98b1ce781e7ca0b"
+  },
+  "audit-invocation-first.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/audit-invocation-first.json",
+    "bytes": 1003,
+    "sha256": "621f8ad7636a8c485a54896d2b601712594093c5c845e5a47579f42afbd17f58"
+  },
+  "audit-process-first.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/audit-process-first.json",
+    "bytes": 390,
+    "sha256": "e4432a9e54113bd8490352f88a68a59f1a542a3f5e96d08e6976a10b46d0c33a"
+  },
+  "audit-terminal-first.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/audit-terminal-first.json",
+    "bytes": 8249,
+    "sha256": "6478f1398f8c896e82a9375bbea528a9b008d415b292296b1c04d3c2a3b541ea"
+  },
+  "audit.py": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/audit.py",
+    "bytes": 49248,
+    "sha256": "7c6e35ff255a2f55a398b032d768f6e47297962388e9b868ce86dc55050d4c1f"
+  },
+  "auditor-static-final.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/auditor-static-final.json",
+    "bytes": 513,
+    "sha256": "be248f4e3234e6ffe3a5dfcd8e1087c4dd47031dad6d4c951bd189fc64aff02a"
+  },
+  "auditor-tests.diff": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/auditor-tests.diff",
+    "bytes": 29152,
+    "sha256": "589c2abc11110d66ade6530303de5c1f45baf9599b6c9fe809fd1c719a77fd18"
+  },
+  "auditor.diff": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/auditor.diff",
+    "bytes": 38325,
+    "sha256": "7d1c91a6651248f02dc7e9634387b52c01873c536ebb3f0426213aa4fe4e803d"
+  },
+  "cohorts-first.csv": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/cohorts-first.csv",
+    "bytes": 112876,
+    "sha256": "a8386b40fd19eb34542c245f6d5e62e61d2fdcc2805fb0e5c0dffaa3fef6ed6a"
+  },
+  "derive-statistics-first.py": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/derive-statistics-first.py",
+    "bytes": 20873,
+    "sha256": "0cee9128d2dabafbda3d60fca6d1eabede46e6d40a61550ef6fcbf10ea14b26a"
+  },
+  "derive-statistics-second.py": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/derive-statistics-second.py",
+    "bytes": 23481,
+    "sha256": "ebd153a0602ac457e4c8a40e73c12033a3a25c71ce29cb4a7d9edd18b551774b"
+  },
+  "driver-arguments.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/driver-arguments.json",
+    "bytes": 625,
+    "sha256": "ecf364a3d10671c1c5749d6e45b6f7b4ec751a9f63c557c393adb697ba1393b1"
+  },
+  "driver-preparation.diff": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/driver-preparation.diff",
+    "bytes": 22906,
+    "sha256": "60b6d8b4a13a5470e7c008248d776fb35372d22c6d1d32e71a8152f9a265e2d4"
+  },
+  "driver-preparation.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/driver-preparation.json",
+    "bytes": 1687,
+    "sha256": "6f894cb98f5fefcc93fb9d80162c6bf0e7794f1bf930ed1fd83f29fc7e3e4a42"
+  },
+  "driver-tests-first.log": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/driver-tests-first.log",
+    "bytes": 989,
+    "sha256": "b95acfdefdbb6597f1e9373d48548750730c7ecfae2aff06d98ef79891347bfb"
+  },
+  "isolate-and-run.py": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/isolate-and-run.py",
+    "bytes": 12873,
+    "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+  },
+  "matched-driver.py": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/matched-driver.py",
+    "bytes": 51943,
+    "sha256": "e1b839d357658db56b2cf4235e1de7089453e61853ada07015e28d165f1966de"
+  },
+  "pooled-first.csv": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/pooled-first.csv",
+    "bytes": 57704,
+    "sha256": "c331736d338efb0af660495a13e7365bf9d85e5c208e23852b0915c6cc1b8578"
+  },
+  "postlaunch-input-readback-first.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/postlaunch-input-readback-first.json",
+    "bytes": 1372,
+    "sha256": "ac8b69f590c9e0819e93d5337983362daecd4b6aea6ef02c100924e3a03e91fd"
+  },
+  "protocol.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/protocol.json",
+    "bytes": 67208,
+    "sha256": "d6dc8cc488cc5c65f8ab30f19ecc62bb8cf028bd609f3a477080999e3e961b5b"
+  },
+  "results-first/audit.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/results-first/audit.json",
+    "bytes": 1585009,
+    "sha256": "f875cc8712ba179c38885a5c598a80757f4fd9f759bb740a8e9425dba020224e"
+  },
+  "results-first/input-inventory.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/results-first/input-inventory.json",
+    "bytes": 1524845,
+    "sha256": "706cb4041b19c0fe64c9f71a7fc074fe06950dbb0ed31ab0e7c71bb633823609"
+  },
+  "root-environment-preflight.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/root-environment-preflight.json",
+    "bytes": 12900,
+    "sha256": "9678dbc7263a26e1b6f23b86f094318a6dccdf3cde1a41c0e3e5be1376b4935a"
+  },
+  "root-freeze-summary-first-failure.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/root-freeze-summary-first-failure.json",
+    "bytes": 10174,
+    "sha256": "20f706d77922d9b2cb1b5b8198afd769a7dcab36b9fd34aae1162de2ca7dd3f8"
+  },
+  "root-role-preflight.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/root-role-preflight.json",
+    "bytes": 283775,
+    "sha256": "601c9373c858bd6d27fe23173304f80a04c2ceb79b245365f3abfa77f605b1c4"
+  },
+  "root-smoke-first.log": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/root-smoke-first.log",
+    "bytes": 1829,
+    "sha256": "719756659420f089ac869a44a3dd58dae83bcfb2deadf6ac9b81fb03910b480b"
+  },
+  "root-smoke-invocation-first.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/root-smoke-invocation-first.json",
+    "bytes": 1295,
+    "sha256": "252b81a38e8ebdeda81b83169546cadd13b28b99b308d999e215e5a6965df544"
+  },
+  "root-smoke-readback-first.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/root-smoke-readback-first.json",
+    "bytes": 6890,
+    "sha256": "d1f757c7bf8dd2e999f9b1640c6d693c91aa824180c0841d308523c792a1f8dd"
+  },
+  "root-smoke-terminal-first.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/root-smoke-terminal-first.json",
+    "bytes": 1356,
+    "sha256": "f73c6bc15b9e80f1efcb4e1345280909d0e97a1d744ac6ca4e9080c5146fa8c5"
+  },
+  "root-timing-terminal-first.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/root-timing-terminal-first.json",
+    "bytes": 320,
+    "sha256": "4588363278d65b0fe4278fdea4175710080f93502bf815569deea070c764999a"
+  },
+  "statistics-first.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/statistics-first.json",
+    "bytes": 2040075,
+    "sha256": "a612948b8f4571a09cea6dbd328b89edcb9e789cc47eef32b2babf0bf9f2023c"
+  },
+  "statistics-first.log": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/statistics-first.log",
+    "bytes": 632,
+    "sha256": "f859f576405cb69c336bef0ff78f33c436e1d062cba05db41b757ab1f28d3984"
+  },
+  "statistics-inputs-first.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/statistics-inputs-first.json",
+    "bytes": 33226,
+    "sha256": "053e796790ab15b36d632008347006499c1ce20aae5d41f1575172849ac6baea"
+  },
+  "statistics-second.log": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/statistics-second.log",
+    "bytes": 13914,
+    "sha256": "f560ed4f666069e0a3aa8fcbbccecf1d404854ad4eaa461fef174b4df6c4d41c"
+  },
+  "test_audit_contract.py": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/test_audit_contract.py",
+    "bytes": 17655,
+    "sha256": "6ad08c961b92ad4501f6a40c07c35e4bd33aac46693d9a442b4c0f313549104e"
+  },
+  "test_driver.py": {
+    "source": "/tmp/kv9-v3-workload-comparison-preparation/test_driver.py",
+    "bytes": 9910,
+    "sha256": "f6382ef1233eb110a698eb5315538286459ade78581457064f1d87066d80f404"
+  },
+  "stages/arithmetic-first.json": {
+    "source": "/tmp/kv9-v3-stage-analysis-preparation/arithmetic-first.json",
+    "bytes": 362,
+    "sha256": "d90e75df10359e55a07b263c738c1fb24e897889e077d7ee13514c65f31f9df0"
+  },
+  "stages/binding-review-correction.json": {
+    "source": "/tmp/kv9-v3-stage-analysis-preparation/binding-review-correction.json",
+    "bytes": 804,
+    "sha256": "06adad2b5d053020162a9995711af7627d537abf0ae6f2ccdefe51e5bf94cbac"
+  },
+  "stages/endpoint_stages-before-binding-review.py": {
+    "source": "/tmp/kv9-v3-stage-analysis-preparation/endpoint_stages-before-binding-review.py",
+    "bytes": 7915,
+    "sha256": "b464f7436e74e2f013ed4f3008e4fabb2bb3eb34558be64b69b0c0b8c0a3e0b0"
+  },
+  "stages/endpoint_stages.py": {
+    "source": "/tmp/kv9-v3-stage-analysis-preparation/endpoint_stages.py",
+    "bytes": 9720,
+    "sha256": "3ba281b2160ab83362b9b11f5fd5c0af479f754348c0dedfc03b959b7d9829ba"
+  },
+  "stages/integration-first.json": {
+    "source": "/tmp/kv9-v3-stage-analysis-preparation/integration-first.json",
+    "bytes": 551,
+    "sha256": "97f66562b2a43c88dcb134f51c48feefdbe393dc6a74f0251a48e229b811d1c4"
+  },
+  "stages/pooled-stage-means-first.json": {
+    "source": "/tmp/kv9-v3-stage-analysis-preparation/pooled-stage-means-first.json",
+    "bytes": 212126,
+    "sha256": "584a8bdb8c13b2d8ff0f65cadd87e86c22627f43ca9e92be29562b05aa7caa36"
+  },
+  "stages/results-first.json": {
+    "source": "/tmp/kv9-v3-stage-analysis-preparation/results-first.json",
+    "bytes": 3023428,
+    "sha256": "17a7d56b126194d70f3761de575e235981ce251d5dd3bfe3bb5346e07c69725d"
+  },
+  "outer/invocation.json": {
+    "source": "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/invocation.json",
+    "bytes": 1138,
+    "sha256": "c7386d8e559ddb2ee3205b3d4bf9e617cbd968a423956700a5dcd6393108b4d3"
+  },
+  "outer/isolation.json": {
+    "source": "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/isolation.json",
+    "bytes": 2113,
+    "sha256": "41bf615c5e9c7ceaef017386d325da92510675fec3f56648171b9fe0a2249f30"
+  },
+  "outer/summary.json": {
+    "source": "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/summary.json",
+    "bytes": 170,
+    "sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8"
+  },
+  "outer/matrix.json": {
+    "source": "/tmp/kv9-v3-workload-matched-diagnostic-attempt1/cohorts/matrix.json",
+    "bytes": 1954706,
+    "sha256": "fb13afa3e872bb10510eb558115a6a1f0c28011681e46efb78d883424a245926"
+  },
+  "smoke/matrix.json": {
+    "source": "/tmp/kv9-v3-workload-comparison-smoke-first/matrix.json",
+    "bytes": 1118753,
+    "sha256": "2063c297ce63b9d89b9e1a3fc8bb8b5b413a891ef91bb389e87bf2c6e19c2aa6"
+  },
+  "publication-copy-first-failure.json": {
+    "source": "/tmp/kv9-v3-workload-publication-first/copy-first-failure.json",
+    "bytes": 307,
+    "sha256": "c403583e72f1d0ae25ac4020403c974e53da455b12e91e4180293c5d91acdf1a"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "complete": true,
+  "exit_code": 0,
+  "tool_chunk": "f893a2",
+  "native_cohorts": 48,
+  "bound_inputs": 533,
+  "script_sha256": "3ba281b2160ab83362b9b11f5fd5c0af479f754348c0dedfc03b959b7d9829ba",
+  "result_sha256": "17a7d56b126194d70f3761de575e235981ce251d5dd3bfe3bb5346e07c69725d",
+  "pooled_means_sha256": "584a8bdb8c13b2d8ff0f65cadd87e86c22627f43ca9e92be29562b05aa7caa36",
+  "scope": "First full-matrix endpoint derivation after accepted audit. Pooled means sum counts/nanoseconds across repeats and voters, not an additive stage partition."
+}
