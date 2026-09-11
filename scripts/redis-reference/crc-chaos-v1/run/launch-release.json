@@ -1,0 +1,23 @@
+{
+  "artifact": "/tmp/kv9-native-link-acceptance-ca0002c-attempt1",
+  "authorization_basis": "User-requested actual Chaos Mesh E2E; exact candidate source, completed process recovery and quiet local test window reviewed.",
+  "authorized": true,
+  "authorized_by": "root",
+  "created_unix_ns": 1789139053341649531,
+  "input_evidence": {
+    "/tmp/kv9-crc-chaos-preparation-first/frozen-inputs.json": "ca75b37fa14412d2f8d391f4fd17240b06280347736b69ffc12708de1cce2aa5",
+    "/tmp/kv9-crc-chaos-preparation-first/readiness.json": "d1553f914ad6006846c491c212afe83c11643b7e4956e32aaa982840fb77dca6",
+    "/tmp/kv9-crc-process-independent-first/results-first/audit.json": "134b935d21022df6f4ad97d5b7de56d09b5fe7f1c981c9ba96dbea82fb7dd935",
+    "/tmp/kv9-crc-write-audit-preparation/audit-terminal-first.json": "e24d21a702d2c3441397a92ae1dc7ccce124f6f15ecafab4ce9c69b7f1018682",
+    "/tmp/kv9-crc-write-root-preparation/timing-terminal-first.json": "212e63815b594d57a1414ef6d9d8a99ccf182756e3d8d3ef895a74f4ddc9f7ef"
+  },
+  "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1",
+  "no_timing_overlap": true,
+  "other_matrix_terminal": true,
+  "plan_sha256": "008632e096c49a813493f04bb912a18d5af1210771ca4d3a362eceb516ff62f4",
+  "process_audit_exit_code": 0,
+  "process_audit_terminal_tool_chunk": "cc09a7",
+  "process_exit_code": 0,
+  "process_session": 77954,
+  "process_terminal_tool_chunk": "f995af"
+}

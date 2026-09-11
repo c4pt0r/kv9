@@ -1,0 +1,6007 @@
+[
+  {
+    "control": {
+      "old_applied": {
+        "1": 25,
+        "2": 25,
+        "3": 25
+      },
+      "read_command": 254,
+      "write_command": 253
+    },
+    "end_ns": 1789139094566822759,
+    "expect": "progress",
+    "fault_after": [],
+    "fault_before": [],
+    "name": "baseline",
+    "phase": "baseline",
+    "probes": {
+      "control-client": {
+        "command": 240,
+        "rows": [
+          {
+            "latency_us": 1565,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1314,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1186,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1303,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1317,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1175,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1123,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1172,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1591,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1198,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1155,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1253,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1135,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1102,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1232,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1316,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1034,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1682,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "kv9-native-batch-client": {
+        "command": 239,
+        "rows": [
+          {
+            "latency_us": 1264,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1288,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1093,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1425,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1277,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1247,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1252,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1272,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1177,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1222,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1051,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1025,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1077,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1126,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1083,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1140,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1192,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1228,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-1": {
+        "command": 241,
+        "rows": [
+          {
+            "latency_us": 1391,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1125,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1137,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1244,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1075,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1214,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1195,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1004,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1020,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1038,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1078,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1213,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1535,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 994,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1058,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1033,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1174,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1047,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-2": {
+        "command": 242,
+        "rows": [
+          {
+            "latency_us": 1209,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1282,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1800,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1153,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1064,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1212,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1168,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 960,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1168,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1082,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1074,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1088,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1932,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1075,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1173,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1313,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1794,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1519,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-3": {
+        "command": 243,
+        "rows": [
+          {
+            "latency_us": 1585,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1382,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1126,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1336,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1320,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1490,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1097,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1114,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1220,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1728,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1069,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1172,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1246,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1146,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1142,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1145,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1171,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1156,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      }
+    },
+    "start_ns": 1789139078278976217
+  },
+  {
+    "action": "delay",
+    "control": {
+      "old_applied": {
+        "1": 120,
+        "2": 122,
+        "3": 122
+      },
+      "read_command": 610,
+      "write_command": 609
+    },
+    "end_ns": 1789139124460542408,
+    "expect": "progress",
+    "fault_after": [
+      {
+        "command": 774,
+        "ended_ns": 1789139124486757942,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "vip-delay",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "delay",
+            "delay": {
+              "correlation": "0",
+              "jitter": "0ms",
+              "latency": "250ms"
+            },
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.96.12.22",
+              "10.96.179.188",
+              "10.96.80.153"
+            ],
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9-native-batch-client"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139124460549071,
+        "uid": "d9b9fe15-1be3-4a26-bea4-bccf1b200083"
+      }
+    ],
+    "fault_before": [
+      {
+        "command": 594,
+        "ended_ns": 1789139099902877088,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "vip-delay",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "delay",
+            "delay": {
+              "correlation": "0",
+              "jitter": "0ms",
+              "latency": "250ms"
+            },
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.96.12.22",
+              "10.96.179.188",
+              "10.96.80.153"
+            ],
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9-native-batch-client"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139099878925510,
+        "uid": "d9b9fe15-1be3-4a26-bea4-bccf1b200083"
+      }
+    ],
+    "name": "vip-delay",
+    "phase": "client-link-delay",
+    "probes": {
+      "control-client": {
+        "command": 596,
+        "rows": [
+          {
+            "latency_us": 1246,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1328,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1273,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1166,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1071,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1048,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 979,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1288,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1071,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1267,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1670,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1051,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1221,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1041,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1614,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1057,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 936,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1706,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "kv9-native-batch-client": {
+        "command": 595,
+        "rows": [
+          {
+            "latency_us": 251643,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 251427,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 251688,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1793,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1492,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1152,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 251280,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 251413,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 251501,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1628,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1568,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1456,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 251622,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 251775,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 251648,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1503,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1242,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1191,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-1": {
+        "command": 597,
+        "rows": [
+          {
+            "latency_us": 1111,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1133,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1092,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1227,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1122,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1158,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1157,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1081,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1019,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1158,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1116,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1114,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1195,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1093,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1078,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1841,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1054,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1001,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-2": {
+        "command": 598,
+        "rows": [
+          {
+            "latency_us": 1401,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1263,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1230,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1290,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1264,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 981,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1065,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1188,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1583,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1028,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1088,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1153,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1295,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1337,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1123,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1215,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1148,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1150,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-3": {
+        "command": 599,
+        "rows": [
+          {
+            "latency_us": 1304,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1172,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1281,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1190,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1081,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1100,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1167,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1295,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1093,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1166,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1146,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1247,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1050,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1116,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1249,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1441,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1126,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1069,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      }
+    },
+    "start_ns": 1789139099906417454
+  },
+  {
+    "control": {
+      "old_applied": {
+        "1": 210,
+        "2": 210,
+        "3": 210
+      },
+      "read_command": 963,
+      "write_command": 962
+    },
+    "end_ns": 1789139146747502154,
+    "expect": "progress",
+    "fault_after": [],
+    "fault_before": [],
+    "name": "delay-healed",
+    "phase": "healing",
+    "probes": {
+      "control-client": {
+        "command": 949,
+        "rows": [
+          {
+            "latency_us": 1306,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1366,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1042,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1214,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1223,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1182,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1179,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1160,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1065,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1108,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1146,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1149,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1220,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1519,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1219,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1198,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1146,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1143,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "kv9-native-batch-client": {
+        "command": 948,
+        "rows": [
+          {
+            "latency_us": 1317,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1426,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1185,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1340,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1175,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1050,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1244,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1168,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1172,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 961,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1212,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1298,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1226,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1167,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1079,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1153,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1182,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1082,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-1": {
+        "command": 950,
+        "rows": [
+          {
+            "latency_us": 1474,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1343,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1150,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1138,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1199,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1147,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1238,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1162,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1158,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1092,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1182,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1226,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1681,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1233,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1210,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1137,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1102,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1081,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-2": {
+        "command": 951,
+        "rows": [
+          {
+            "latency_us": 1583,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1263,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1159,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1370,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1518,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1092,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1054,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1328,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1179,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 978,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1056,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1151,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1079,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1012,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1408,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1497,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1220,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1059,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-3": {
+        "command": 952,
+        "rows": [
+          {
+            "latency_us": 1308,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1209,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1233,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1234,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1045,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1268,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1345,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1020,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1014,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1110,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1125,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1544,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1308,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1328,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1099,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1136,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1280,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1135,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      }
+    },
+    "start_ns": 1789139129977053412
+  },
+  {
+    "action": "loss",
+    "control": {
+      "old_applied": {
+        "1": 311,
+        "2": 311,
+        "3": 311
+      },
+      "read_command": 1319,
+      "write_command": 1318
+    },
+    "end_ns": 1789139188018403930,
+    "expect": "progress",
+    "fault_after": [
+      {
+        "command": 1483,
+        "ended_ns": 1789139188044142438,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "vip-partial-loss",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "loss",
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.96.12.22",
+              "10.96.179.188",
+              "10.96.80.153"
+            ],
+            "loss": {
+              "correlation": "0",
+              "loss": "30"
+            },
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9-native-batch-client"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139188018410201,
+        "uid": "f9d73cc8-abd2-49a9-bdb5-6244f7b1b694"
+      }
+    ],
+    "fault_before": [
+      {
+        "command": 1303,
+        "ended_ns": 1789139152783600347,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "vip-partial-loss",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "loss",
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.96.12.22",
+              "10.96.179.188",
+              "10.96.80.153"
+            ],
+            "loss": {
+              "correlation": "0",
+              "loss": "30"
+            },
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9-native-batch-client"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139152759059870,
+        "uid": "f9d73cc8-abd2-49a9-bdb5-6244f7b1b694"
+      }
+    ],
+    "name": "vip-partial-loss",
+    "phase": "client-link-loss",
+    "probes": {
+      "control-client": {
+        "command": 1305,
+        "rows": [
+          {
+            "latency_us": 1450,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1354,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1370,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1351,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1045,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1456,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1076,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1051,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1149,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1128,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1243,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 994,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1759,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1000,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1139,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1047,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1667,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1058,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "kv9-native-batch-client": {
+        "command": 1304,
+        "rows": [
+          {
+            "latency_us": 750798,
+            "outcome": "failed",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1485,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 751066,
+            "outcome": "failed",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1958,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1301,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1121,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 750691,
+            "outcome": "failed",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1278,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 750845,
+            "outcome": "failed",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1666,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1295,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1200,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 750760,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 751176,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 750973,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1495,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1220,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1078,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-1": {
+        "command": 1306,
+        "rows": [
+          {
+            "latency_us": 1422,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1380,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1310,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1176,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1228,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1268,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1134,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1094,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 984,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 968,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1043,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1045,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1231,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1120,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1131,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1019,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1091,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1133,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-2": {
+        "command": 1307,
+        "rows": [
+          {
+            "latency_us": 1205,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1122,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1142,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1265,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1236,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1203,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1152,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1197,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1216,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1166,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1021,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1259,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1074,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1126,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1075,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 993,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1129,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1178,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-3": {
+        "command": 1308,
+        "rows": [
+          {
+            "latency_us": 1458,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1325,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1240,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1195,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1035,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1043,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1239,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1092,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1056,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1097,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1063,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1053,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1090,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1359,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1000,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1223,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 958,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1143,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      }
+    },
+    "start_ns": 1789139152788966941
+  },
+  {
+    "control": {
+      "old_applied": {
+        "1": 435,
+        "2": 435,
+        "3": 438
+      },
+      "read_command": 1672,
+      "write_command": 1671
+    },
+    "end_ns": 1789139211709296122,
+    "expect": "progress",
+    "fault_after": [],
+    "fault_before": [],
+    "name": "loss-healed",
+    "phase": "healing",
+    "probes": {
+      "control-client": {
+        "command": 1658,
+        "rows": [
+          {
+            "latency_us": 1201,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1127,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1089,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1258,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1340,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1186,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1206,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1156,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1029,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1157,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 987,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1062,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1338,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1100,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1194,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1187,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1316,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1183,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "kv9-native-batch-client": {
+        "command": 1657,
+        "rows": [
+          {
+            "latency_us": 1723,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1159,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1233,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1293,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1312,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1222,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1388,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1095,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1326,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1230,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1183,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1167,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1037,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1797,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1093,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1335,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1324,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1038,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-1": {
+        "command": 1659,
+        "rows": [
+          {
+            "latency_us": 1279,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1213,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1205,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1221,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1242,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1096,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1051,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1264,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1206,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 999,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1217,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1338,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1160,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1295,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1241,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1289,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1232,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1308,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-2": {
+        "command": 1660,
+        "rows": [
+          {
+            "latency_us": 1137,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1317,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1203,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1136,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1205,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1098,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1136,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1204,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1202,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1140,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1142,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1175,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1061,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1869,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1143,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1122,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1244,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1154,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-3": {
+        "command": 1661,
+        "rows": [
+          {
+            "latency_us": 1207,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1274,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1350,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1153,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1095,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1291,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1120,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1250,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1112,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1151,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1011,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 938,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1199,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1198,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1133,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1189,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1046,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1087,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      }
+    },
+    "start_ns": 1789139194166158280
+  },
+  {
+    "action": "partition",
+    "control": {
+      "old_applied": {
+        "1": 515,
+        "2": 515,
+        "3": 515
+      },
+      "read_command": 2028,
+      "write_command": 2027
+    },
+    "end_ns": 1789139240156085295,
+    "expect": "no-new-success",
+    "fault_after": [
+      {
+        "command": 2192,
+        "ended_ns": 1789139240180399977,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "vip-partition",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "partition",
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.96.12.22",
+              "10.96.179.188",
+              "10.96.80.153"
+            ],
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9-native-batch-client"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139240156090815,
+        "uid": "59fae8b0-db45-4ffc-b763-17897afead94"
+      }
+    ],
+    "fault_before": [
+      {
+        "command": 2012,
+        "ended_ns": 1789139222318165832,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "vip-partition",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "partition",
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.96.12.22",
+              "10.96.179.188",
+              "10.96.80.153"
+            ],
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9-native-batch-client"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139222288762005,
+        "uid": "59fae8b0-db45-4ffc-b763-17897afead94"
+      }
+    ],
+    "name": "vip-partition",
+    "phase": "client-link-partition",
+    "probes": {
+      "control-client": {
+        "command": 2014,
+        "rows": [
+          {
+            "latency_us": 1545,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1300,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1265,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1371,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1282,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1627,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1354,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1268,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1166,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1336,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1412,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1697,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1462,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1294,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1383,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1289,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1275,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1181,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "kv9-native-batch-client": {
+        "command": 2013,
+        "rows": [
+          {
+            "latency_us": 750825,
+            "outcome": "failed",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 750861,
+            "outcome": "failed",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 751065,
+            "outcome": "failed",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1609,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1425,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1711,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 750858,
+            "outcome": "failed",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 750984,
+            "outcome": "failed",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 750957,
+            "outcome": "failed",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1853,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1749,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1447,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 750852,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 751318,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 751225,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1784,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1457,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1203,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-1": {
+        "command": 2015,
+        "rows": [
+          {
+            "latency_us": 1580,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1544,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1499,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1560,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1324,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1119,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1301,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1216,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1274,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1222,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1395,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1890,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1238,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1208,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1246,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1185,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1290,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1353,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-2": {
+        "command": 2016,
+        "rows": [
+          {
+            "latency_us": 1433,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1304,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1358,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1352,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1407,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1245,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1438,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1385,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1476,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1586,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1294,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1432,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1296,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1310,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1295,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1221,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1278,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1234,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-3": {
+        "command": 2017,
+        "rows": [
+          {
+            "latency_us": 1563,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1545,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1499,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1424,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1147,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1580,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1276,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1096,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1344,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1242,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1283,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1298,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1428,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1258,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1419,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1220,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1248,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1206,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      }
+    },
+    "start_ns": 1789139222328818026
+  },
+  {
+    "control": {
+      "old_applied": {
+        "1": 542,
+        "2": 542,
+        "3": 542
+      },
+      "read_command": 2381,
+      "write_command": 2380
+    },
+    "end_ns": 1789139265056588957,
+    "expect": "progress",
+    "fault_after": [],
+    "fault_before": [],
+    "name": "partition-healed",
+    "phase": "healing",
+    "probes": {
+      "control-client": {
+        "command": 2367,
+        "rows": [
+          {
+            "latency_us": 1368,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1222,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1187,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1277,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1136,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1143,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1050,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1342,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1326,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1173,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1195,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1177,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1330,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1032,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1056,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1303,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1492,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 984,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "kv9-native-batch-client": {
+        "command": 2366,
+        "rows": [
+          {
+            "latency_us": 1388,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1120,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1217,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1215,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1081,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1221,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1145,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1190,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1754,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1468,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1131,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1077,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1328,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 942,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1076,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1289,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1183,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1021,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-1": {
+        "command": 2368,
+        "rows": [
+          {
+            "latency_us": 1422,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1275,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1233,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1334,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1278,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1187,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1078,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1140,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1186,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1384,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1170,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1150,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1244,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1006,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1059,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1276,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1357,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1094,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-2": {
+        "command": 2369,
+        "rows": [
+          {
+            "latency_us": 1392,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1273,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1212,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1298,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1100,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1044,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1245,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1229,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1222,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1115,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1382,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1146,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1093,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1018,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1227,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1808,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1272,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1090,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-3": {
+        "command": 2370,
+        "rows": [
+          {
+            "latency_us": 1429,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1271,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1201,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1243,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1129,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1147,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1174,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1169,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 958,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 997,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1080,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1040,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1098,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1144,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1165,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1156,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 961,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1202,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      }
+    },
+    "start_ns": 1789139247079178694
+  },
+  {
+    "action": "non-Chaos SOCK_DESTROY",
+    "control": {
+      "old_applied": {
+        "1": 662,
+        "2": 662,
+        "3": 665
+      },
+      "read_command": 2774,
+      "write_command": 2773
+    },
+    "end_ns": 1789139292901212708,
+    "expect": "progress",
+    "fault_after": [],
+    "fault_before": [],
+    "name": "exact-tcp-reset",
+    "phase": "client-stream-drop",
+    "probes": {
+      "control-client": {
+        "command": 2760,
+        "rows": [
+          {
+            "latency_us": 1340,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1146,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1092,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 971,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1301,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1135,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1020,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1092,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1259,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1073,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1238,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1200,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1635,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1139,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1098,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1161,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1103,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1034,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "kv9-native-batch-client": {
+        "command": 2759,
+        "rows": [
+          {
+            "latency_us": 1601,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1268,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1254,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1091,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1599,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1204,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1019,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 979,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1257,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1203,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1112,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1114,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1111,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1341,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1091,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1053,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 978,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1221,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-1": {
+        "command": 2761,
+        "rows": [
+          {
+            "latency_us": 1731,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1151,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1201,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1148,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1074,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1330,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1121,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1035,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1096,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1104,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 985,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1230,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1088,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1119,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1171,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1611,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1046,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1234,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-2": {
+        "command": 2762,
+        "rows": [
+          {
+            "latency_us": 1387,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1304,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1096,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1084,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1115,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1195,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1015,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 990,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1114,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1082,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1124,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1320,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1089,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1163,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1767,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1005,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1342,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1107,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-3": {
+        "command": 2763,
+        "rows": [
+          {
+            "latency_us": 1233,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1187,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1165,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1122,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1203,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1003,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1167,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1108,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1087,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1684,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1014,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1340,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1085,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1176,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1112,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1067,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1344,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1190,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      }
+    },
+    "reset": {
+      "after": {
+        "after_command": 2598,
+        "before_command": 2596,
+        "capture_command": 2597,
+        "cpu_allowed": "6-15,22-31",
+        "ended_unix_ns": 1789139267761049177,
+        "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+        "last_seq": 2405,
+        "partial_tail_bytes": 0,
+        "phase": "client-stream-drop",
+        "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+        "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+        "process_pid": 32,
+        "process_start_ticks": 142778628,
+        "socket_inodes": [
+          "211778843",
+          "211785420"
+        ],
+        "started_unix_ns": 1789139267630471613
+      },
+      "before": {
+        "after_command": 2565,
+        "before_command": 2563,
+        "capture_command": 2564,
+        "cpu_allowed": "6-15,22-31",
+        "ended_unix_ns": 1789139266002618035,
+        "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+        "last_seq": 2381,
+        "partial_tail_bytes": 0,
+        "phase": "client-stream-drop",
+        "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+        "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+        "process_pid": 32,
+        "process_start_ticks": 142778628,
+        "socket_inodes": [
+          "211778843",
+          "211784746"
+        ],
+        "started_unix_ns": 1789139265869994292
+      },
+      "command": 2585,
+      "kind": "non-Chaos Linux SOCK_DESTROY",
+      "new": {
+        "destination_ip": "10.96.12.22",
+        "destination_port": 20160,
+        "inode": "211785420",
+        "source_ip": "10.244.0.82",
+        "source_port": 54166
+      },
+      "old": {
+        "destination_ip": "10.96.12.22",
+        "destination_port": 20160,
+        "inode": "211784746",
+        "source_ip": "10.244.0.82",
+        "source_port": 58762
+      }
+    },
+    "start_ns": 1789139274378933061
+  },
+  {
+    "control": {
+      "old_applied": {
+        "1": 778,
+        "2": 778,
+        "3": 778
+      },
+      "read_command": 3125,
+      "write_command": 3124
+    },
+    "end_ns": 1789139319000863017,
+    "expect": "progress",
+    "fault_after": [],
+    "fault_before": [],
+    "name": "reset-healed",
+    "phase": "healing",
+    "probes": {
+      "control-client": {
+        "command": 3111,
+        "rows": [
+          {
+            "latency_us": 1295,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1310,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1193,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1148,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1050,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1039,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1201,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1476,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1047,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1110,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1268,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1808,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1062,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1094,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1041,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1102,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1052,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 908,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "kv9-native-batch-client": {
+        "command": 3110,
+        "rows": [
+          {
+            "latency_us": 1426,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1402,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1121,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1178,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1117,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1169,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1255,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1090,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1082,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1036,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1165,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 930,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1056,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1724,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1099,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1109,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1369,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1027,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-1": {
+        "command": 3112,
+        "rows": [
+          {
+            "latency_us": 1418,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1295,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1198,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1182,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1112,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1216,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1139,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1161,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1208,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1018,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1128,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 983,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1205,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1835,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1261,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1581,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1209,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 873,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-2": {
+        "command": 3113,
+        "rows": [
+          {
+            "latency_us": 1221,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1126,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1194,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1272,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1244,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1106,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1170,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1122,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1105,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1211,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1119,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1209,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1105,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 997,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1019,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1180,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1218,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1270,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-3": {
+        "command": 3114,
+        "rows": [
+          {
+            "latency_us": 1423,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1226,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1250,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1226,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1173,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1159,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1753,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1074,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1001,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1099,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1016,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1174,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1153,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1343,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1304,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1047,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1072,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 985,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      }
+    },
+    "start_ns": 1789139300339526461
+  },
+  {
+    "action": "three directed voter partitions",
+    "end_ns": 1789139350384109374,
+    "expect": "no-new-success",
+    "fault_after": [
+      {
+        "command": 3632,
+        "ended_ns": 1789139350408547804,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "quorum-from-1",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "partition",
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.244.0.80",
+              "10.244.0.81",
+              "10.96.179.188",
+              "10.96.80.153"
+            ],
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9",
+                "kv9-node": "1"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139350384115956,
+        "uid": "92c3b547-6eba-4b68-aea4-6e24969de4c2"
+      },
+      {
+        "command": 3633,
+        "ended_ns": 1789139350445858862,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "quorum-from-2",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "partition",
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.244.0.79",
+              "10.244.0.81",
+              "10.96.12.22",
+              "10.96.80.153"
+            ],
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9",
+                "kv9-node": "2"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139350422611671,
+        "uid": "48028a85-f0e8-4877-8b2b-79359b4d75f2"
+      },
+      {
+        "command": 3634,
+        "ended_ns": 1789139350489363930,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "quorum-from-3",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "partition",
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.244.0.79",
+              "10.244.0.80",
+              "10.96.12.22",
+              "10.96.179.188"
+            ],
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9",
+                "kv9-node": "3"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139350465142105,
+        "uid": "3d31bffc-29d4-4c54-abc2-6213b6166415"
+      }
+    ],
+    "fault_before": [
+      {
+        "command": 3470,
+        "ended_ns": 1789139331254352060,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "quorum-from-1",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "partition",
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.244.0.80",
+              "10.244.0.81",
+              "10.96.179.188",
+              "10.96.80.153"
+            ],
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9",
+                "kv9-node": "1"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139331223737963,
+        "uid": "92c3b547-6eba-4b68-aea4-6e24969de4c2"
+      },
+      {
+        "command": 3471,
+        "ended_ns": 1789139331302043623,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "quorum-from-2",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "partition",
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.244.0.79",
+              "10.244.0.81",
+              "10.96.12.22",
+              "10.96.80.153"
+            ],
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9",
+                "kv9-node": "2"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139331273002931,
+        "uid": "48028a85-f0e8-4877-8b2b-79359b4d75f2"
+      },
+      {
+        "command": 3472,
+        "ended_ns": 1789139331347131474,
+        "expected": {
+          "apiVersion": "chaos-mesh.org/v1alpha1",
+          "kind": "NetworkChaos",
+          "metadata": {
+            "annotations": {
+              "native-link-namespace-uid": "3bc58cea-caa4-4930-9823-070abf5761cc"
+            },
+            "labels": {
+              "native-link-owner": "native-link-ca0002c-20260911-1"
+            },
+            "name": "quorum-from-3",
+            "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1"
+          },
+          "spec": {
+            "action": "partition",
+            "direction": "to",
+            "duration": "90s",
+            "externalTargets": [
+              "10.244.0.79",
+              "10.244.0.80",
+              "10.96.12.22",
+              "10.96.179.188"
+            ],
+            "mode": "all",
+            "selector": {
+              "labelSelectors": {
+                "app": "kv9",
+                "kv9-node": "3"
+              },
+              "namespaces": [
+                "kv9-native-link-acceptance-ca0002c-20260911-1"
+              ]
+            }
+          }
+        },
+        "started_ns": 1789139331319005072,
+        "uid": "3d31bffc-29d4-4c54-abc2-6213b6166415"
+      }
+    ],
+    "name": "quorum-loss",
+    "phase": "quorum-loss",
+    "probes": {
+      "control-client": {
+        "command": 3474,
+        "rows": [
+          {
+            "latency_us": 1397,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1174,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1099,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1048,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1122,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 966,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1024,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1057,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1115,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1063,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1086,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 979,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1064,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1128,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1158,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1122,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1021,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1161,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "kv9-native-batch-client": {
+        "command": 3473,
+        "rows": [
+          {
+            "latency_us": 1225,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1073,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1072,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1217,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1186,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 988,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1048,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1020,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1096,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1100,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1017,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1052,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1121,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1151,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1143,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1015,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1377,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1133,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-1": {
+        "command": 3475,
+        "rows": [
+          {
+            "latency_us": 1348,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1234,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1138,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1082,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1189,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1194,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 750729,
+            "outcome": "failed",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 750960,
+            "outcome": "failed",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 751054,
+            "outcome": "failed",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 751155,
+            "outcome": "failed",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 750771,
+            "outcome": "failed",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 750712,
+            "outcome": "failed",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 750755,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 750868,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 750855,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 750956,
+            "outcome": "failed",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 751205,
+            "outcome": "failed",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 750855,
+            "outcome": "failed",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-2": {
+        "command": 3476,
+        "rows": [
+          {
+            "latency_us": 750938,
+            "outcome": "failed",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 750889,
+            "outcome": "failed",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 751156,
+            "outcome": "failed",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 751252,
+            "outcome": "failed",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 751399,
+            "outcome": "failed",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 751116,
+            "outcome": "failed",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1901,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1207,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1236,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1118,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1174,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1154,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 750745,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 750782,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 751100,
+            "outcome": "failed",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 750786,
+            "outcome": "failed",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 750786,
+            "outcome": "failed",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 750859,
+            "outcome": "failed",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-3": {
+        "command": 3477,
+        "rows": [
+          {
+            "latency_us": 750731,
+            "outcome": "failed",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 750926,
+            "outcome": "failed",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 751106,
+            "outcome": "failed",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 751114,
+            "outcome": "failed",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 751248,
+            "outcome": "failed",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 751058,
+            "outcome": "failed",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 751194,
+            "outcome": "failed",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 751091,
+            "outcome": "failed",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 751165,
+            "outcome": "failed",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 751073,
+            "outcome": "failed",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 751186,
+            "outcome": "failed",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 751185,
+            "outcome": "failed",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1695,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1485,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1271,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1053,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1573,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1213,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      }
+    },
+    "start_ns": 1789139331364334395
+  },
+  {
+    "control": {
+      "old_applied": {
+        "1": 898,
+        "2": 898,
+        "3": 898
+      },
+      "read_command": 3825,
+      "write_command": 3824
+    },
+    "end_ns": 1789139378565594667,
+    "expect": "progress",
+    "fault_after": [],
+    "fault_before": [],
+    "name": "quorum-healed",
+    "phase": "healing",
+    "probes": {
+      "control-client": {
+        "command": 3811,
+        "rows": [
+          {
+            "latency_us": 1578,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1353,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1249,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1176,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1258,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1128,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1186,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1064,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1063,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1001,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1265,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1020,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1165,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1101,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1210,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1125,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1573,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1092,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "kv9-native-batch-client": {
+        "command": 3810,
+        "rows": [
+          {
+            "latency_us": 1320,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1210,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1086,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 973,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1128,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1148,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1111,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1060,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1106,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1343,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1092,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1150,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1102,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1212,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1289,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1254,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1384,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1304,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-1": {
+        "command": 3812,
+        "rows": [
+          {
+            "latency_us": 1268,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1236,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1364,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1203,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1172,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1111,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1226,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1166,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1291,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1135,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1253,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1114,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1045,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1209,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1040,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1088,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1268,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1091,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-2": {
+        "command": 3813,
+        "rows": [
+          {
+            "latency_us": 1499,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1194,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1220,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1085,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1550,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1209,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1207,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1086,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1059,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1066,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1662,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1189,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1121,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1060,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1160,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1607,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 999,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 985,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      },
+      "voter-3": {
+        "command": 3814,
+        "rows": [
+          {
+            "latency_us": 1360,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1282,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1143,
+            "outcome": "ok",
+            "target": "10.96.12.22"
+          },
+          {
+            "latency_us": 1254,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1114,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1081,
+            "outcome": "ok",
+            "target": "10.244.0.79"
+          },
+          {
+            "latency_us": 1023,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1152,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1102,
+            "outcome": "ok",
+            "target": "10.96.179.188"
+          },
+          {
+            "latency_us": 1156,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1109,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1499,
+            "outcome": "ok",
+            "target": "10.244.0.80"
+          },
+          {
+            "latency_us": 1106,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1213,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1262,
+            "outcome": "ok",
+            "target": "10.96.80.153"
+          },
+          {
+            "latency_us": 1395,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1267,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          },
+          {
+            "latency_us": 1169,
+            "outcome": "ok",
+            "target": "10.244.0.81"
+          }
+        ]
+      }
+    },
+    "start_ns": 1789139359096662105
+  }
+]

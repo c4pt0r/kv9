@@ -1,0 +1,130 @@
+{
+  "files": {
+    "audit.py": {
+      "predecessor_sha256": "fad40d4285bbba53f1985f8598325833f710b5691b78a86cfd383fad61ed228a",
+      "sha256": "fad40d4285bbba53f1985f8598325833f710b5691b78a86cfd383fad61ed228a",
+      "unchanged": true
+    },
+    "batch_observation.py": {
+      "predecessor_sha256": "f4111aa2e9e59b1467fa171974b6c0d6e3f30994c3445a64adda74e4026eb435",
+      "sha256": "f4111aa2e9e59b1467fa171974b6c0d6e3f30994c3445a64adda74e4026eb435",
+      "unchanged": true
+    },
+    "contract.py": {
+      "predecessor_sha256": "dc30bc8f9c5f68ebc545bb5446974156a9ccd6af3d72ef785aad749be3493f71",
+      "sha256": "dc30bc8f9c5f68ebc545bb5446974156a9ccd6af3d72ef785aad749be3493f71",
+      "unchanged": true
+    },
+    "control_check.py": {
+      "predecessor_sha256": "c8e2e20a28ff24091e5ecc31a53ef2cea24a094b3a19cabbe36d7b02663706a9",
+      "sha256": "c8e2e20a28ff24091e5ecc31a53ef2cea24a094b3a19cabbe36d7b02663706a9",
+      "unchanged": true
+    },
+    "copy_preflight.py": {
+      "predecessor_sha256": "7ba7dfd6f28845143a86bb8c092bc4b1fc2d86caba568e58b56cff6091769ab9",
+      "sha256": "7ba7dfd6f28845143a86bb8c092bc4b1fc2d86caba568e58b56cff6091769ab9",
+      "unchanged": true
+    },
+    "effect_control_check.py": {
+      "predecessor_sha256": "2c9882bdeaabc061dbf82c70da053e0f86d7dd10bc012059bcf4d2fa0d26a2d5",
+      "sha256": "2c9882bdeaabc061dbf82c70da053e0f86d7dd10bc012059bcf4d2fa0d26a2d5",
+      "unchanged": true
+    },
+    "image-context/Dockerfile": {
+      "predecessor_sha256": "82aca74cd444874deb3cf26594f5fa935073ead1d25d59758b942970ac6e3613",
+      "sha256": "82aca74cd444874deb3cf26594f5fa935073ead1d25d59758b942970ac6e3613",
+      "unchanged": true
+    },
+    "leaf_controls.py": {
+      "predecessor_sha256": "ae9a2270a4ae6606004d0cf2bffbab112c2cb6cd1e67b0bfa086418ddbfa60e8",
+      "sha256": "ae9a2270a4ae6606004d0cf2bffbab112c2cb6cd1e67b0bfa086418ddbfa60e8",
+      "unchanged": true
+    },
+    "leaf_readback.py": {
+      "predecessor_sha256": "8c523197d4874a780c954e6a0ee90c623253e975cbdec18f6b38598664378902",
+      "sha256": "8c523197d4874a780c954e6a0ee90c623253e975cbdec18f6b38598664378902",
+      "unchanged": true
+    },
+    "observer-tools-manifest.json": {
+      "predecessor_sha256": "6b75b48db08d8efb5220a4a37f428cf4058966410bde92fe219d951fc0c71d08",
+      "sha256": "6b75b48db08d8efb5220a4a37f428cf4058966410bde92fe219d951fc0c71d08",
+      "unchanged": true
+    },
+    "observer-tools.tar": {
+      "predecessor_sha256": "02811415fa11b8d4d4bd318211307d4051cb9227ced438930f0e8560f194b7e1",
+      "sha256": "02811415fa11b8d4d4bd318211307d4051cb9227ced438930f0e8560f194b7e1",
+      "unchanged": true
+    },
+    "observer_tool_controls.py": {
+      "predecessor_sha256": "cb613b2272cc92cafe171f47227a40fe6ead81e66653f2a26fb91de290504b30",
+      "sha256": "cb613b2272cc92cafe171f47227a40fe6ead81e66653f2a26fb91de290504b30",
+      "unchanged": true
+    },
+    "observer_tools.py": {
+      "predecessor_sha256": "17cdeb759604ccdb65c3ab3ceb7257bf64bfb532de84e1f32075a8004198dc6a",
+      "sha256": "17cdeb759604ccdb65c3ab3ceb7257bf64bfb532de84e1f32075a8004198dc6a",
+      "unchanged": true
+    },
+    "prepare_image.py": {
+      "predecessor_sha256": "1b5c0ccdee45cf800c6b94b4472b6a993144916d2233d196a4f2e3d956e68926",
+      "sha256": "bd2d1ecb3e39b2cec29fa84c3e8e7bba2d47c38090dff203aa4176e7b8a35979",
+      "unchanged": false
+    },
+    "run.py": {
+      "predecessor_sha256": "8ee5aeb39ef8abbaddf5dcd41a1581ab7473b5a0979cec25a9ca1bc6a38675b1",
+      "sha256": "8ee5aeb39ef8abbaddf5dcd41a1581ab7473b5a0979cec25a9ca1bc6a38675b1",
+      "unchanged": true
+    },
+    "stdin_control_check.py": {
+      "predecessor_sha256": "5b69e403b552ce3b77ebb6deed368145fd370fbab22f74f5d4e156017fed5541",
+      "sha256": "5b69e403b552ce3b77ebb6deed368145fd370fbab22f74f5d4e156017fed5541",
+      "unchanged": true
+    },
+    "vendor-provenance.json": {
+      "predecessor_sha256": "52af0083aef8d80b8421a36c36725cb1a5b0056ebdbfddbdc77698f52fbcd982",
+      "sha256": "52af0083aef8d80b8421a36c36725cb1a5b0056ebdbfddbdc77698f52fbcd982",
+      "unchanged": true
+    },
+    "vendor/native_capture.py": {
+      "predecessor_sha256": "01f88ca4809be9714031fbe1f113d3114bc0cd76258813074bfe4e772363b90e",
+      "sha256": "01f88ca4809be9714031fbe1f113d3114bc0cd76258813074bfe4e772363b90e",
+      "unchanged": true
+    },
+    "vendor/native_protocol.py": {
+      "predecessor_sha256": "94521498d49875c611ea7baf8671f84f0760ca33d7021220741b7eb1b03a7f1a",
+      "sha256": "94521498d49875c611ea7baf8671f84f0760ca33d7021220741b7eb1b03a7f1a",
+      "unchanged": true
+    },
+    "vendor/observer-fields.py": {
+      "predecessor_sha256": "675b47dbf301c1b2010f22790fb6a23dd514e43e517232e033ae873b710b68b1",
+      "sha256": "675b47dbf301c1b2010f22790fb6a23dd514e43e517232e033ae873b710b68b1",
+      "unchanged": true
+    },
+    "vendor/process-probe.py": {
+      "predecessor_sha256": "0abdf2a1e1be82ad4796fc0786897d63f8fc0da65a96ef3c0fd92371cfabd32a",
+      "sha256": "0abdf2a1e1be82ad4796fc0786897d63f8fc0da65a96ef3c0fd92371cfabd32a",
+      "unchanged": true
+    },
+    "vendor/scripts/batch_workload_report.py": {
+      "predecessor_sha256": "573e3783e321bde0fd8c5ccba857b9f8522c48d3ddb3f491ec7e07d9f02d3107",
+      "sha256": "573e3783e321bde0fd8c5ccba857b9f8522c48d3ddb3f491ec7e07d9f02d3107",
+      "unchanged": true
+    },
+    "vendor/scripts/history/checker.py": {
+      "predecessor_sha256": "b8a43a58d321868d7cbb3d6038eab1f6190cc1600c29246b2f91c09f946da9bc",
+      "sha256": "b8a43a58d321868d7cbb3d6038eab1f6190cc1600c29246b2f91c09f946da9bc",
+      "unchanged": true
+    },
+    "vendor/scripts/workload_report.py": {
+      "predecessor_sha256": "7b4b7abd1257c3bed790c7c5c3b5eaae021b6633b3cc261140050354fbcede78",
+      "sha256": "7b4b7abd1257c3bed790c7c5c3b5eaae021b6633b3cc261140050354fbcede78",
+      "unchanged": true
+    },
+    "verify_inputs.py": {
+      "predecessor_sha256": "7b6e5e503beabb78fc1c8d04136bfc3589a60afdbbca6c0ddeec4e44816decc7",
+      "sha256": "d29cad0cd9afc91cce9b2fb527460ab7950c0b4ea6e33d00d7f2eb29c06ca9ce",
+      "unchanged": false
+    }
+  },
+  "predecessor": "/tmp/kv9-read-group-credit-chaos-preparation-first"
+}

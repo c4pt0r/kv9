@@ -1,0 +1,175 @@
+--- /tmp/kv9-read-group-credit-chaos-preparation-first/verify_inputs.py
++++ /tmp/kv9-crc-chaos-preparation-first/verify_inputs.py
+@@ -22,7 +22,7 @@
+     assert sha(source_plan) == plan['source_plan_sha256'], 'source binding changed'
+     base = load(source_plan)
+     tree = Path(plan['worktree'])
+-    revision = '57ff6851e40ed63c837189d6eb0a11190704725a'
++    revision = 'ca0002c7f8e9ee6f595efcc9f4151085ccce87cb'
+     assert base['revision'] == plan['revision'] == revision
+     assert base['dirty'] is False and base['profile'] == 'release'
+     assert subprocess.check_output(['git', '-C', str(tree), 'rev-parse', 'HEAD'], text=True).strip() == revision
+--- /tmp/kv9-read-group-credit-chaos-preparation-first/prepare_image.py
++++ /tmp/kv9-crc-chaos-preparation-first/prepare_image.py
+@@ -59,7 +59,7 @@
+         node = json.loads(run(['docker','inspect',plan['node']]))[0]
+         assert node['Config']['Labels']['io.x-k8s.kind.cluster'] == plan['kind_cluster']
+         run(['docker','image','inspect',plan['image']], expected=1)
+-        name = 'kv9-57ff685-image-probe-20260911-1'
++        name = 'kv9-ca0002c-image-probe-20260911-1'
+         run(['docker','inspect',name], expected=1)
+         run(['docker','build','--pull=false','--network=none','--iidfile',str(OUT/'image-id.txt'),'-t',plan['image'],str(HERE/'image-context')], timeout=180)
+         image = json.loads(run(['docker','image','inspect',plan['image']]))[0]
+@@ -69,7 +69,7 @@
+         assert image['Config']['Entrypoint'] == ['/usr/local/bin/kv9'] and image['Config'].get('Cmd') in ([], None)
+         payload = {'/usr/local/bin/kv9':plan['production_binary']['sha256'], '/usr/local/bin/kv9-batch-workload':plan['native_client_build']['binary_sha256'], '/opt/kv9-batch-workload/build.json':verify_inputs.sha(Path(plan['native_build_directory'])/'build.json')}
+         script = 'set -e; sha256sum /usr/local/bin/kv9 /usr/local/bin/kv9-batch-workload /opt/kv9-batch-workload/build.json; stat -c "%a %n" /usr/local/bin/kv9 /usr/local/bin/kv9-batch-workload /opt/kv9-batch-workload/build.json; for tool in bash sh sleep timeout taskset sha256sum stat ls touch cat; do command -v "$tool"; done; /usr/local/bin/kv9 --help >/dev/null; set +e; native_output=$(/usr/local/bin/kv9-batch-workload 2>&1); native_exit=$?; set -e; test "$native_exit" = 1; test "$native_output" = "FAIL: --config required"; printf "%s\\n" "$native_output"; taskset -pc $$'
+-        container = run(['docker','create','--name',name,'--label','kv9-owned-purpose=57ff685-chaos-image-preparation','--cpuset-cpus',plan['host_cpus'],'--entrypoint','/bin/bash',plan['image'],'-c',script]).strip()
++        container = run(['docker','create','--name',name,'--label','kv9-owned-purpose=ca0002c-chaos-image-preparation','--cpuset-cpus',plan['host_cpus'],'--entrypoint','/bin/bash',plan['image'],'-c',script]).strip()
+         assert len(container) == 64 and all(c in '0123456789abcdef' for c in container)
+         output = run(['docker','start','--attach',container])
+         lines = output.splitlines()
+@@ -98,7 +98,7 @@
+         if container:
+             try:
+                 probe = json.loads(run(['docker','inspect',container]))[0]
+-                assert probe['Id']==container and probe['Config']['Labels'].get('kv9-owned-purpose')=='57ff685-chaos-image-preparation'
++                assert probe['Id']==container and probe['Config']['Labels'].get('kv9-owned-purpose')=='ca0002c-chaos-image-preparation'
+                 run(['docker','rm','--force',container]);run(['docker','inspect',container],expected=1)
+                 summary['probe_cleanup']={'id':container,'absent':True}
+             except BaseException as error:summary['cleanup_failure']=str(error);summary['accepted']=False
+--- /tmp/kv9-read-group-credit-chaos-preparation-first/plan.json
++++ /tmp/kv9-crc-chaos-preparation-first/plan.json
+@@ -1,9 +1,9 @@
+ {
+   "accepted_cri_image_ids": [
+-    "docker.io/library/import-2026-09-11@sha256:b92cab4b03a17834a64095c266e2141a89e77409c7782387dbd2e6e9b99a711b"
++    "docker.io/library/import-2026-09-11@sha256:00713a57447c2aff09a70382c4857b1c504c0d63a80278f22230128a2cb0d1f3"
+   ],
+   "additional_final_acceptance": {
+-    "helper": "/tmp/kv9-read-group-credit-chaos-preparation-first/leaf_readback.py",
++    "helper": "/tmp/kv9-crc-chaos-preparation-first/leaf_readback.py",
+     "helper_pending": false,
+     "helper_sha256": "8c523197d4874a780c954e6a0ee90c623253e975cbdec18f6b38598664378902",
+     "positive_requirement": "Same selected netns lifetime, same netem handle/parent/configuration header, strictly positive leaf-only drop delta from raw command bytes",
+@@ -11,7 +11,7 @@
+     "required_output": "acceptance-leaf-readback.json",
+     "scope": "Exact netem leaf before/after raw command readback and positive delta; inherited workload/history/effects/cleanup acceptance remains mandatory"
+   },
+-  "artifact": "/tmp/kv9-native-link-acceptance-57ff685-attempt1",
++  "artifact": "/tmp/kv9-native-link-acceptance-ca0002c-attempt1",
+   "batch_read_observation_scope": "Already captured same-lifetime status snapshots only; monotonic separate batch inline/blocking counters and positive inline delta across the complete fixture envelope. No attribution to a particular response or fault window.",
+   "config_template": {
+     "batch_size": 8,
+@@ -46,16 +46,16 @@
+   "fault_duration": "90s",
+   "fault_seconds": 20,
+   "host_cpus": "6-15,22-31",
+-  "image": "kv9-chaos:native-batch-57ff685-release-20260911-attempt1",
+-  "image_binding": "/tmp/kv9-read-group-credit-chaos-preparation-first/image-binding.json",
+-  "image_binding_sha256": "52081a6c30f4cc800b47eee5e9e1a0671b16eb458b7e12119cddc09896b9d14c",
++  "image": "kv9-chaos:native-batch-ca0002c-release-20260911-attempt1",
++  "image_binding": "/tmp/kv9-crc-chaos-preparation-first/image-binding.json",
++  "image_binding_sha256": "4eb730d16ee21bd3bba3a6696efe8c445b78e7e41d8ab9f95e7ccfb139f931ce",
+   "image_ready": true,
+   "kind": "/tmp/kv9-p0-tools/kind-linux-amd64",
+   "kind_cluster": "kv9-chaos-ci-p0-20260908",
+   "kubeconfig": "/tmp/kv9-p0-ci-chaos.kubeconfig",
+   "launch_authorized": false,
+   "limitations": [
+-    "Parent task authorizes one exact-source run after source, image and configuration verification; a hash-bound one-use release records that authorization.",
++    "One future exact-source run remains held for root artifact/image/configuration review and a new hash-bound one-use release after timing and its audit terminate.",
+     "One shared Kind host; timing is packet-effect evidence, not throughput or cross-host acceptance. Node /tmp data is volatile tmpfs, not disk or power-loss evidence.",
+     "Original history/effect/drain criteria and workload are unchanged. This separate 11-window scope does not replace the full 21-window matrix or proof/refinement gates.",
+     "Full client partition and quorum loss have no native availability expectation. Negative windows require no newly successful contained operation plus completed BatchGet/BatchPut unknown/refused outcomes.",
+@@ -64,25 +64,25 @@
+     "The 64 MiB public byte default comes from exact source; no limit overrides are set in the planned Pods. Effective limits are checked against the actual Pod specification and status.",
+     "Inherited qdisc effect check sums parent and child counters only as an old positive-effect predicate. New final acceptance additionally requires a separately bound positive delta from the same exact netem leaf; reported dropped packets use only that leaf, never the legacy doubled sum."
+   ],
+-  "namespace": "kv9-native-link-acceptance-57ff685-20260911-1",
+-  "namespace_label": "native-link-57ff685-20260911-1",
+-  "native_build_directory": "/tmp/kv9-read-group-credit-release-first/workload",
++  "namespace": "kv9-native-link-acceptance-ca0002c-20260911-1",
++  "namespace_label": "native-link-ca0002c-20260911-1",
++  "native_build_directory": "/tmp/kv9-crc-recovery-release-first/workload",
+   "native_client_build": {
+-    "binary_sha256": "071c51ca191875b442089c851d6c5f44d4a546b4fcc4aebc8c1be77dca6bf311",
++    "binary_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+     "dirty": false,
+     "profile": "release",
+-    "revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
++    "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+     "rustc": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8\n",
+-    "source_tree_sha256": "8635704e3da121313e1d7f83778e8e67ba8616b8daa51ecdc8d38178c8b15edb",
++    "source_tree_sha256": "dcddcc156206c5d9cb68172c56e3ef1c35ec19100264af7872b96be27faf726a",
+     "version": 1
+   },
+-  "native_contract_revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
++  "native_contract_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+   "negative_seconds": 12,
+   "node": "kv9-chaos-ci-p0-20260908-control-plane",
+-  "node_root": "/tmp/kv9-native-link-acceptance-57ff685-20260911-1",
++  "node_root": "/tmp/kv9-native-link-acceptance-ca0002c-20260911-1",
+   "observer_tools": {
+     "archive": "observer-tools.tar",
+-    "node_root": "/opt/kv9-native-link-acceptance-57ff685-20260911-1-observer",
++    "node_root": "/opt/kv9-native-link-acceptance-ca0002c-20260911-1-observer",
+     "sha256": "02811415fa11b8d4d4bd318211307d4051cb9227ced438930f0e8560f194b7e1",
+     "source_directory": "/tmp/kv9-native-link-observer-tools-debian13-v1",
+     "source_manifest": "observer-tools-manifest.json"
+@@ -103,16 +103,16 @@
+   },
+   "probe_timeout_ms": 750,
+   "production_binary": {
+-    "path": "/tmp/kv9-read-group-credit-release-first/kv9",
+-    "sha256": "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30"
++    "path": "/tmp/kv9-crc-recovery-release-first/kv9",
++    "sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13"
+   },
+   "progress_seconds": 12,
+   "quiesce_seconds": 4,
+-  "revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
++  "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+   "run_max_seconds": 540,
+-  "runtime_revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
++  "runtime_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+   "scope": "Separate native batch client-link, reset and quorum-loss correctness acceptance; not prior preflight or 21-window substitution",
+-  "server_build_sequence": "/tmp/kv9-read-group-credit-release-first/build.json",
++  "server_build_sequence": "/tmp/kv9-crc-recovery-release-first/build.json",
+   "source_default_limits": {
+     "public_rpc_limit_encoded_bytes": 67108864,
+     "public_rpc_limit_requests": 64,
+@@ -120,21 +120,21 @@
+     "raft_async_read_limit": 128,
+     "sources": [
+       {
+-        "path": "/tmp/kv9-read-group-credit/crates/server/src/admission.rs",
++        "path": "/tmp/kv9-wal-crc32-table/crates/server/src/admission.rs",
+         "sha256": "edf1065f6e9b08551f3a9ce11559011f47c9131d6110e1fc99a7a7971853e356"
+       },
+       {
+-        "path": "/tmp/kv9-read-group-credit/crates/raft/src/async_read.rs",
++        "path": "/tmp/kv9-wal-crc32-table/crates/raft/src/async_read.rs",
+         "sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f"
+       },
+       {
+-        "path": "/tmp/kv9-read-group-credit/crates/raft/src/async_apply.rs",
++        "path": "/tmp/kv9-wal-crc32-table/crates/raft/src/async_apply.rs",
+         "sha256": "73a18d0e02fab720e7138a5b7ac15799742b1018b7226454f0e24b94a2ccc6f5"
+       }
+     ]
+   },
+-  "source_plan": "/tmp/kv9-read-group-credit-chaos-preparation-first/source-build-binding.json",
+-  "source_plan_sha256": "7b05607e8e26598de111f833f2f4b278ee9a0608209be2f3c46708e584c7a9f8",
++  "source_plan": "/tmp/kv9-crc-chaos-preparation-first/source-build-binding.json",
++  "source_plan_sha256": "7768248c9f3e427c227b5367ef1dd3d010829b2187b069e17072fe3cb8d59872",
+   "version": 1,
+   "windows": [
+     {
+@@ -198,5 +198,5 @@
+       "phase": "healing"
+     }
+   ],
+-  "worktree": "/tmp/kv9-read-group-credit"
++  "worktree": "/tmp/kv9-wal-crc32-table"
+ }

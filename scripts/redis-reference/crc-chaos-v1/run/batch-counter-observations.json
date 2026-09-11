@@ -1,0 +1,41 @@
+{
+  "per_voter_delta": {
+    "1": {
+      "public_raw_batch_get_blocking_submitted": 2,
+      "public_raw_batch_get_completed_inline": 618
+    },
+    "2": {
+      "public_raw_batch_get_blocking_submitted": 0,
+      "public_raw_batch_get_completed_inline": 0
+    },
+    "3": {
+      "public_raw_batch_get_blocking_submitted": 0,
+      "public_raw_batch_get_completed_inline": 0
+    }
+  },
+  "scope": "Full fixture status envelope, including setup and verification; no attribution to individual responses or fault windows",
+  "total_delta": {
+    "public_raw_batch_get_blocking_submitted": 2,
+    "public_raw_batch_get_completed_inline": 618
+  },
+  "writers": {
+    "1": [
+      "6d03e420-4ba5-4dac-ade7-d9415853a032",
+      1,
+      142778385,
+      "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+    ],
+    "2": [
+      "87d90b2f-71c1-45d2-9b52-dadd58d8010a",
+      1,
+      142778388,
+      "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+    ],
+    "3": [
+      "a5f24192-d96e-4ccc-a1fb-d56adb50f4c6",
+      1,
+      142778399,
+      "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+    ]
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "accepted": true,
+  "cargo_features": {
+    "/tmp/kv9-crc-recovery-release-first/kv9-cargo.jsonl": {
+      "artifacts": {
+        "kv9": {
+          "executable": "/home/dongxu/kv9/target/release/kv9",
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-wal-crc32-table#kv9@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_engine": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-wal-crc32-table/crates/engine#kv9-engine@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_raft": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-wal-crc32-table/crates/raft#kv9-raft@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_server": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-wal-crc32-table/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        }
+      },
+      "sha256": "48a1a4bbe6ab51f49fc3fdcb1c10b7ba394d5a29cd71538f842408b9bb6a5099"
+    },
+    "/tmp/kv9-crc-recovery-release-first/workload/cargo.jsonl": {
+      "artifacts": {
+        "kv9-batch-workload": {
+          "executable": "/home/dongxu/kv9/target/release/kv9-batch-workload",
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-wal-crc32-table/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_engine": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-wal-crc32-table/crates/engine#kv9-engine@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_raft": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-wal-crc32-table/crates/raft#kv9-raft@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        },
+        "kv9_server": {
+          "executable": null,
+          "features": [],
+          "package_id": "path+file:///tmp/kv9-wal-crc32-table/crates/server#kv9-server@0.0.0",
+          "profile": {
+            "debug_assertions": false,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": false,
+            "test": false
+          }
+        }
+      },
+      "sha256": "e19de7e57f0243956b93afac5bfb2f9e957dfc02f1b48043f2837b86446ff1e1"
+    }
+  },
+  "image_binding": {
+    "accepted": true,
+    "accepted_cri_image_ids": [
+      "docker.io/library/import-2026-09-11@sha256:00713a57447c2aff09a70382c4857b1c504c0d63a80278f22230128a2cb0d1f3"
+    ],
+    "cri_image_id": "sha256:498e667a04e7b83345dddec7ed86f2fb29f0ea0d5e6e7e0b7e112d8f4d56edc8",
+    "docker_id": "sha256:498e667a04e7b83345dddec7ed86f2fb29f0ea0d5e6e7e0b7e112d8f4d56edc8",
+    "evidence_files": {
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/00.stdout": "f16eb520b9bb601a56ec695dd818035a750e83ac802f1d5537d6a7e00733e208",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/01.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/01.stdout": "eead3f81e9f47b24e566a358feb71f41db34b2486c1225e96562a411c79b420f",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/02.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/02.stdout": "ddbf853fb3cab2915090a4d99ce96c2a08d33a4c94cfb7c25be29a4b21352447",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/03.stderr": "5b0d9580e438befcf466db2a47f73fa8767b33d297065389ae03069ff5d84184",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/03.stdout": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/04.stderr": "43f1dc5af2b0d08ec5dff816869905e021f8c601b76c428a7646b60ede8fcde0",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/04.stdout": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/05.stderr": "6b94ba6e75794fffa2c009fe36ed13b77476e69893af669e7c095231af857ace",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/05.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/06.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/06.stdout": "2938f69e323626de652cfc6ea0c675ac4b625d6d3caf04437901c01644530366",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/07.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/07.stdout": "d4270adf2a9d599e5b5291a05b64e5a29cad9db26334a91af921b662b8296825",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/08.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/08.stdout": "16b761f0dce9746a5ed1e99157651435b41aae4a8fcda5a6fddafb0a3c748af1",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/09.stderr": "890178d11d76270c3f812531838dff2574f1eeaf1865692f4a1298cdebe812f6",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/09.stdout": "c7dcb5ce8f6085e7bf105afb60c133c2a5a4cedf2b7c6c14c41689ba693e37b5",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/10.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/10.stdout": "41c1edd26d983ce7c019719bd4b3840ecde74006e19beb9e464f8c72e37079d2",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/11.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/11.stdout": "16b761f0dce9746a5ed1e99157651435b41aae4a8fcda5a6fddafb0a3c748af1",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/12.stderr": "e5a3bbaff49f68633e219f8193af88f4b5e9ffd6f46932f639e114d508eaf495",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/12.stdout": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/13.stderr": "e93a0ee688727bddda6f821e49c1a9a5afe35508237713ead4fa2d74b8de3ef1",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/13.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/14.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/14.stdout": "30960bebbfaead1680637c2a27451633cd97ec3f879cf069848189c3fbab96bf",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/15.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/15.stdout": "2938f69e323626de652cfc6ea0c675ac4b625d6d3caf04437901c01644530366",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/commands.json": "1af9c0d4e877a4faffa37a8a18f0f9b407d420317fc0b8dacf49649ef6f87372",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/image-id.txt": "be3e03c22b75fa2f948150f751cd04d4d05cd9331c4be6b0c2fa0ef71ffa7578",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/source-after.json": "5f258f2ede52e95b96d2606ebe584285a339695a7a819b5cb93adb0676a913f9",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/source-before.json": "5f258f2ede52e95b96d2606ebe584285a339695a7a819b5cb93adb0676a913f9",
+      "/tmp/kv9-crc-chaos-preparation-first/image-stage/summary.json": "2d18dc19ba29950ac89a24ebecba867e3f3943b55a4aefce682ce6193eac6ee3"
+    },
+    "image": "kv9-chaos:native-batch-ca0002c-release-20260911-attempt1",
+    "payload_sha256": {
+      "/opt/kv9-batch-workload/build.json": "c7366b044531a168fbb5254310472f4a67ca046843e444613d66b579f0181bfd",
+      "/usr/local/bin/kv9": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "/usr/local/bin/kv9-batch-workload": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c"
+    },
+    "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+    "source_plan_sha256": "7768248c9f3e427c227b5367ef1dd3d010829b2187b069e17072fe3cb8d59872"
+  },
+  "image_required": true,
+  "native_client_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+  "native_manifest_sha256": "c7366b044531a168fbb5254310472f4a67ca046843e444613d66b579f0181bfd",
+  "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "scope": "Exact retained release source/build binding only; running PID and image identity remain independently checked by the fixture",
+  "server": {
+    "path": "/tmp/kv9-crc-recovery-release-first/kv9",
+    "sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13"
+  },
+  "source_files": 590,
+  "source_plan_sha256": "7768248c9f3e427c227b5367ef1dd3d010829b2187b069e17072fe3cb8d59872",
+  "source_tree_sha256": "dcddcc156206c5d9cb68172c56e3ef1c35ec19100264af7872b96be27faf726a"
+}

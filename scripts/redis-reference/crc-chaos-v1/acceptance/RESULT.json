@@ -1,0 +1,782 @@
+{
+  "accepted": true,
+  "all_checks_exit_zero": true,
+  "all_owned_check_commands_terminal": true,
+  "artifact": "/tmp/kv9-native-link-acceptance-ca0002c-attempt1",
+  "cleanup": {
+    "historical_namespace_count": 8,
+    "namespace_final_command": 4121,
+    "no_new_cleanup_mutations": true,
+    "node_data_original_device_inode": "208:876504",
+    "node_path_absences": [
+      {
+        "command": 4134,
+        "exit_code": 1,
+        "path": "/tmp/kv9-native-link-acceptance-ca0002c-20260911-1"
+      },
+      {
+        "command": 4132,
+        "exit_code": 1,
+        "path": "/opt/kv9-native-link-acceptance-ca0002c-20260911-1-observer"
+      }
+    ],
+    "original": {
+      "complete": true,
+      "namespace_absent": true,
+      "namespace_uid": "3bc58cea-caa4-4930-9823-070abf5761cc",
+      "preserved": {
+        "chaos-mesh": "10165ce0-6d25-4c22-8f36-1e5083434ced",
+        "default": "ef9282ce-08cb-4362-b933-edd43ec0e44e",
+        "kube-node-lease": "e0bc942a-0ee9-4485-a880-abf28ff26671",
+        "kube-public": "dca2e055-1478-4562-8a3c-1f1f60cadfb8",
+        "kube-system": "905986f0-a2df-4651-adab-5a363093cc78",
+        "kv9-chaos-1788964167-3930517": "f7ac3bbd-584c-423e-90c5-630dc18338aa",
+        "kv9-chaos-1788967535-626870": "ea5cc740-2cd7-45f0-9b6b-b558600a9425",
+        "local-path-storage": "870737bc-5c6c-4675-8327-2c30d523d5a7"
+      }
+    },
+    "owned_container_lifetimes": [
+      {
+        "container_id": "1726a4ea0e805f396eb4b83b6cd10e5ed2dc4d469f243b698c5af21e880f6d84",
+        "exit_code": 1,
+        "node_pid": 1854605,
+        "node_start_ticks": 142778399,
+        "owned_lifetime_absent": true,
+        "pod": "voter-3",
+        "pod_uid": "a5f24192-d96e-4ccc-a1fb-d56adb50f4c6",
+        "terminal_command": 4069
+      },
+      {
+        "container_id": "187c4336c5b96cf0fe5030840c866fc36d1bb885c19ec6ebed1a5d313eb0ee1e",
+        "exit_code": 1,
+        "node_pid": 1854613,
+        "node_start_ticks": 142778399,
+        "owned_lifetime_absent": true,
+        "pod": "kv9-native-batch-client",
+        "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+        "terminal_command": 4065
+      },
+      {
+        "container_id": "ae1b2b18ce24d51b8d9abd02fe315c44f82938f3bafc73dbbd17bda9d8c9df14",
+        "exit_code": 1,
+        "node_pid": 1854668,
+        "node_start_ticks": 142778408,
+        "owned_lifetime_absent": true,
+        "pod": "control-client",
+        "pod_uid": "6734121a-c72b-4686-a33d-b32c4ab0775d",
+        "terminal_command": 4066
+      },
+      {
+        "container_id": "b114a24f739d7f5baa222ef3827dfdd258977a48c7f22caafda22410527d6f05",
+        "exit_code": 1,
+        "node_pid": 1854429,
+        "node_start_ticks": 142778388,
+        "owned_lifetime_absent": true,
+        "pod": "voter-2",
+        "pod_uid": "87d90b2f-71c1-45d2-9b52-dadd58d8010a",
+        "terminal_command": 4068
+      },
+      {
+        "container_id": "b1cf9a146256e7f3cb3e89cab16da73b83eb08eb58e36b015ebf18208549ae18",
+        "exit_code": 1,
+        "node_pid": 1854337,
+        "node_start_ticks": 142778385,
+        "owned_lifetime_absent": true,
+        "pod": "voter-1",
+        "pod_uid": "6d03e420-4ba5-4dac-ade7-d9415853a032",
+        "terminal_command": 4067
+      }
+    ]
+  },
+  "completed_ns": 1789139720422365126,
+  "fresh_drain": {
+    "accepted_by_unchanged_audit": true,
+    "client_exit": {
+      "exit_code": 0,
+      "observed_ns": 1789139379397213652,
+      "pod_process_absent": true,
+      "process_pid": 32
+    },
+    "completed_ns": 1789139383444806728,
+    "export_counters": [
+      {
+        "1": {
+          "after": 305,
+          "before": 305
+        },
+        "2": {
+          "after": 306,
+          "before": 306
+        },
+        "3": {
+          "after": 306,
+          "before": 306
+        }
+      },
+      {
+        "1": {
+          "after": 306,
+          "before": 306
+        },
+        "2": {
+          "after": 306,
+          "before": 306
+        },
+        "3": {
+          "after": 306,
+          "before": 306
+        }
+      },
+      {
+        "1": {
+          "after": 307,
+          "before": 307
+        },
+        "2": {
+          "after": 307,
+          "before": 307
+        },
+        "3": {
+          "after": 307,
+          "before": 307
+        }
+      },
+      {
+        "1": {
+          "after": 307,
+          "before": 307
+        },
+        "2": {
+          "after": 308,
+          "before": 307
+        },
+        "3": {
+          "after": 307,
+          "before": 307
+        }
+      },
+      {
+        "1": {
+          "after": 308,
+          "before": 308
+        },
+        "2": {
+          "after": 308,
+          "before": 308
+        },
+        "3": {
+          "after": 308,
+          "before": 308
+        }
+      },
+      {
+        "1": {
+          "after": 309,
+          "before": 309
+        },
+        "2": {
+          "after": 309,
+          "before": 309
+        },
+        "3": {
+          "after": 309,
+          "before": 309
+        }
+      }
+    ],
+    "samples": 6,
+    "scope": "Post-client-exit baseline followed by at least two serial fresh empty Serving exports for every unchanged voter lifetime; read/apply stopped=false.",
+    "started_ns": 1789139379513017604,
+    "voters": 3
+  },
+  "frozen_preparation_inputs": 119,
+  "full_history": {
+    "calls": 2068,
+    "header_records": 1,
+    "kinds": {
+      "batch_get": 726,
+      "batch_put": 723,
+      "delete": 206,
+      "get": 207,
+      "put": 206
+    },
+    "operation_events": 4136,
+    "outcomes": {
+      "ok": 1761,
+      "refused": 232,
+      "unknown": 75
+    },
+    "records": 4137,
+    "scope": "Complete recorded atomic history, including safe refusals and unknown effects; original zero-unknown-effect search rejection and successful guided witness are retained.",
+    "search_attempts": [
+      {
+        "guided_unknown": false,
+        "prepare_ranges": false,
+        "states": 2340,
+        "unknown_effect_limit": 0,
+        "verdict": "invalid"
+      },
+      {
+        "guided_unknown": true,
+        "prepare_ranges": false,
+        "states": 2953,
+        "unknown_effect_limit": null,
+        "verdict": "valid"
+      }
+    ],
+    "successful": {
+      "batch_get": 619,
+      "batch_put": 613,
+      "delete": 176,
+      "get": 178,
+      "put": 175
+    },
+    "traffic_successes": {
+      "batch_get": 617,
+      "batch_put": 612,
+      "delete": 176,
+      "get": 178,
+      "put": 175
+    },
+    "witness_verdict": "valid"
+  },
+  "independent_checks_session": 11116,
+  "independent_checks_terminal_tool_chunk": "b95065",
+  "leaf_loss": {
+    "accepted": true,
+    "after": {
+      "dropped": 158,
+      "handle": "5:",
+      "parent": "1:4"
+    },
+    "artifact": "/tmp/kv9-native-link-acceptance-ca0002c-attempt1",
+    "before": {
+      "dropped": 0,
+      "handle": "5:",
+      "parent": "1:4"
+    },
+    "identity": [
+      "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+      "187c4336c5b96cf0fe5030840c866fc36d1bb885c19ec6ebed1a5d313eb0ee1e",
+      1854613,
+      "142778399"
+    ],
+    "inputs": {
+      "commands/commands.json": "e66632e1dfdf03bd616398f2d2b944c606fee47a1f5a0f462940702dc7d3bc89",
+      "executed-plan.json": "008632e096c49a813493f04bb912a18d5af1210771ca4d3a362eceb516ff62f4",
+      "packet-effects.json": "09d8b14ff3d645182e50f3d4cbc9706b954c7fe3b61b51c61e7e4eef7f8ac3e7",
+      "summary.json": "5460a1652e57517ac79a0446f58903d4ae26e5005766b1bdfcdb49c74c1f19d0"
+    },
+    "netem_leaf_drop_delta": 158,
+    "raw": [
+      {
+        "command": 1152,
+        "ended_ns": 1789139147927286166,
+        "path": "/tmp/kv9-native-link-acceptance-ca0002c-attempt1/commands/command-1152.stdout",
+        "sha256": "85a3b0ba469b208d8727164c6491714f97b81fde8a39344e86757a7f45d653ce",
+        "started_ns": 1789139147912408562
+      },
+      {
+        "command": 1336,
+        "ended_ns": 1789139183123366926,
+        "path": "/tmp/kv9-native-link-acceptance-ca0002c-attempt1/commands/command-1336.stdout",
+        "sha256": "241804a92dc9e9abde9fdecea130231b739cb98dff3fcbdf5f0a2e81d05ec9af",
+        "started_ns": 1789139183109543145
+      }
+    ],
+    "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+    "scope": "Additional exact same-netem-leaf positive delta only; unchanged full history/effect/lifecycle audit is separately mandatory"
+  },
+  "native_writer": [
+    "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    32,
+    142778628,
+    "455869d6-cdc2-4933-85cb-743fb8fcb02e"
+  ],
+  "result_hashes": {
+    "audit.json": "e7bc08b7006a01b287f147d7b1265382fdcc505dfdaf1b5ae54117126ce1ea79",
+    "checks-terminal-first.json": "19d0c1754492e588eba2751e835039b2d6fae318e4943a1213b7e6e2ea40043d",
+    "leaf.json": "42e14438796caa1c3ee8776a9d5e12004aa5e779725795383a640950dc8aa6ea",
+    "preflight-first.json": "426ce3b9ccac8c639ed8de56d5ee1ab8f7dba112bcb2c623e283b39210e032d7",
+    "source-final.json": "a341ba445a5273ff1a836e8a26a143be35b11547cde32f8d00c4965e07de5096"
+  },
+  "retention": {
+    "all_regular_bytes_rehashed_by_unchanged_audit": true,
+    "bytes": 12382528,
+    "files": 50
+  },
+  "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "root_runtime_terminal": {
+    "exit_code": 0,
+    "provenance": "Explicit root terminal release message",
+    "root_summary_readback_chunk": "a64692",
+    "session": 41221,
+    "tool_chunk": "557f02"
+  },
+  "scope": "Exact-source one-host volatile-tmpfs native client-link/quorum correctness; 11 original windows. TCP socket destruction is a non-Chaos exact-tuple reset. No throughput, disk/power-loss durability, full 21-window replacement, inter-voter partial loss or storage-stall acceptance claim.",
+  "source": {
+    "image": "kv9-chaos:native-batch-ca0002c-release-20260911-attempt1",
+    "image_binding_sha256": "4eb730d16ee21bd3bba3a6696efe8c445b78e7e41d8ab9f95e7ccfb139f931ce",
+    "native_client_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "native_manifest_sha256": "c7366b044531a168fbb5254310472f4a67ca046843e444613d66b579f0181bfd",
+    "revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+    "scope": "Retained timed server plus separately built same-source native correctness workload; default release Cargo graphs, not a combined server build.",
+    "server": {
+      "path": "/tmp/kv9-crc-recovery-release-first/kv9",
+      "sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13"
+    },
+    "source_files": 590
+  },
+  "voter_identities": {
+    "1": {
+      "cpu_allowed": "6-15,22-31",
+      "executable_sha256_after": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "executable_sha256_before": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "pod": "voter-1",
+      "pod_uid": "6d03e420-4ba5-4dac-ade7-d9415853a032",
+      "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "process_pid": 1,
+      "process_start_ticks": 142778385
+    },
+    "2": {
+      "cpu_allowed": "6-15,22-31",
+      "executable_sha256_after": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "executable_sha256_before": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "pod": "voter-2",
+      "pod_uid": "87d90b2f-71c1-45d2-9b52-dadd58d8010a",
+      "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "process_pid": 1,
+      "process_start_ticks": 142778388
+    },
+    "3": {
+      "cpu_allowed": "6-15,22-31",
+      "executable_sha256_after": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "executable_sha256_before": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "pod": "voter-3",
+      "pod_uid": "a5f24192-d96e-4ccc-a1fb-d56adb50f4c6",
+      "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "process_pid": 1,
+      "process_start_ticks": 142778399
+    }
+  },
+  "windows": [
+    {
+      "duration_ns": 16287846542,
+      "end_ns": 1789139094566822759,
+      "name": "baseline",
+      "outcomes": {
+        "ok": 132,
+        "refused": 0,
+        "unknown": 0
+      },
+      "per_operation": {
+        "batch_get": {
+          "ok": 47,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 46,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 13,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 12,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "start_ns": 1789139078278976217
+    },
+    {
+      "duration_ns": 24554124954,
+      "end_ns": 1789139124460542408,
+      "name": "vip-delay",
+      "outcomes": {
+        "ok": 132,
+        "refused": 0,
+        "unknown": 0
+      },
+      "per_operation": {
+        "batch_get": {
+          "ok": 47,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 46,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 12,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 13,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "start_ns": 1789139099906417454
+    },
+    {
+      "duration_ns": 16770448742,
+      "end_ns": 1789139146747502154,
+      "name": "delay-healed",
+      "outcomes": {
+        "ok": 136,
+        "refused": 0,
+        "unknown": 0
+      },
+      "per_operation": {
+        "batch_get": {
+          "ok": 47,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 48,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 13,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "start_ns": 1789139129977053412
+    },
+    {
+      "duration_ns": 35229436989,
+      "end_ns": 1789139188018403930,
+      "name": "vip-partial-loss",
+      "outcomes": {
+        "ok": 194,
+        "refused": 0,
+        "unknown": 4
+      },
+      "per_operation": {
+        "batch_get": {
+          "ok": 69,
+          "refused": 0,
+          "unknown": 1
+        },
+        "batch_put": {
+          "ok": 67,
+          "refused": 0,
+          "unknown": 2
+        },
+        "delete": {
+          "ok": 20,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 20,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 18,
+          "refused": 0,
+          "unknown": 1
+        }
+      },
+      "start_ns": 1789139152788966941
+    },
+    {
+      "duration_ns": 17543137842,
+      "end_ns": 1789139211709296122,
+      "name": "loss-healed",
+      "outcomes": {
+        "ok": 140,
+        "refused": 0,
+        "unknown": 0
+      },
+      "per_operation": {
+        "batch_get": {
+          "ok": 48,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 49,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "start_ns": 1789139194166158280
+    },
+    {
+      "duration_ns": 17827267269,
+      "end_ns": 1789139240156085295,
+      "name": "vip-partition",
+      "outcomes": {
+        "ok": 0,
+        "refused": 0,
+        "unknown": 36
+      },
+      "per_operation": {
+        "batch_get": {
+          "ok": 0,
+          "refused": 0,
+          "unknown": 12
+        },
+        "batch_put": {
+          "ok": 0,
+          "refused": 0,
+          "unknown": 13
+        },
+        "delete": {
+          "ok": 0,
+          "refused": 0,
+          "unknown": 4
+        },
+        "get": {
+          "ok": 0,
+          "refused": 0,
+          "unknown": 3
+        },
+        "put": {
+          "ok": 0,
+          "refused": 0,
+          "unknown": 4
+        }
+      },
+      "start_ns": 1789139222328818026
+    },
+    {
+      "duration_ns": 17977410263,
+      "end_ns": 1789139265056588957,
+      "name": "partition-healed",
+      "outcomes": {
+        "ok": 144,
+        "refused": 0,
+        "unknown": 0
+      },
+      "per_operation": {
+        "batch_get": {
+          "ok": 51,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 50,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 13,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "start_ns": 1789139247079178694
+    },
+    {
+      "duration_ns": 18522279647,
+      "end_ns": 1789139292901212708,
+      "name": "exact-tcp-reset",
+      "outcomes": {
+        "ok": 148,
+        "refused": 0,
+        "unknown": 0
+      },
+      "per_operation": {
+        "batch_get": {
+          "ok": 52,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 52,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "start_ns": 1789139274378933061
+    },
+    {
+      "duration_ns": 18661336556,
+      "end_ns": 1789139319000863017,
+      "name": "reset-healed",
+      "outcomes": {
+        "ok": 152,
+        "refused": 0,
+        "unknown": 0
+      },
+      "per_operation": {
+        "batch_get": {
+          "ok": 54,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 53,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 14,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 16,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "start_ns": 1789139300339526461
+    },
+    {
+      "duration_ns": 19019774979,
+      "end_ns": 1789139350384109374,
+      "name": "quorum-loss",
+      "outcomes": {
+        "ok": 0,
+        "refused": 136,
+        "unknown": 0
+      },
+      "per_operation": {
+        "batch_get": {
+          "ok": 0,
+          "refused": 47,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 0,
+          "refused": 48,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 0,
+          "refused": 13,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 0,
+          "refused": 14,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 0,
+          "refused": 14,
+          "unknown": 0
+        }
+      },
+      "start_ns": 1789139331364334395
+    },
+    {
+      "duration_ns": 19468932562,
+      "end_ns": 1789139378565594667,
+      "name": "quorum-healed",
+      "outcomes": {
+        "ok": 156,
+        "refused": 0,
+        "unknown": 0
+      },
+      "per_operation": {
+        "batch_get": {
+          "ok": 54,
+          "refused": 0,
+          "unknown": 0
+        },
+        "batch_put": {
+          "ok": 55,
+          "refused": 0,
+          "unknown": 0
+        },
+        "delete": {
+          "ok": 16,
+          "refused": 0,
+          "unknown": 0
+        },
+        "get": {
+          "ok": 16,
+          "refused": 0,
+          "unknown": 0
+        },
+        "put": {
+          "ok": 15,
+          "refused": 0,
+          "unknown": 0
+        }
+      },
+      "start_ns": 1789139359096662105
+    }
+  ]
+}

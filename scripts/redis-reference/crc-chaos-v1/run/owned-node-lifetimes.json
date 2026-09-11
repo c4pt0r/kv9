@@ -1,0 +1,37 @@
+{
+  "1726a4ea0e805f396eb4b83b6cd10e5ed2dc4d469f243b698c5af21e880f6d84": {
+    "container_id": "1726a4ea0e805f396eb4b83b6cd10e5ed2dc4d469f243b698c5af21e880f6d84",
+    "node_pid": 1854605,
+    "node_start_ticks": 142778399,
+    "pod": "voter-3",
+    "pod_uid": "a5f24192-d96e-4ccc-a1fb-d56adb50f4c6"
+  },
+  "187c4336c5b96cf0fe5030840c866fc36d1bb885c19ec6ebed1a5d313eb0ee1e": {
+    "container_id": "187c4336c5b96cf0fe5030840c866fc36d1bb885c19ec6ebed1a5d313eb0ee1e",
+    "node_pid": 1854613,
+    "node_start_ticks": 142778399,
+    "pod": "kv9-native-batch-client",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe"
+  },
+  "ae1b2b18ce24d51b8d9abd02fe315c44f82938f3bafc73dbbd17bda9d8c9df14": {
+    "container_id": "ae1b2b18ce24d51b8d9abd02fe315c44f82938f3bafc73dbbd17bda9d8c9df14",
+    "node_pid": 1854668,
+    "node_start_ticks": 142778408,
+    "pod": "control-client",
+    "pod_uid": "6734121a-c72b-4686-a33d-b32c4ab0775d"
+  },
+  "b114a24f739d7f5baa222ef3827dfdd258977a48c7f22caafda22410527d6f05": {
+    "container_id": "b114a24f739d7f5baa222ef3827dfdd258977a48c7f22caafda22410527d6f05",
+    "node_pid": 1854429,
+    "node_start_ticks": 142778388,
+    "pod": "voter-2",
+    "pod_uid": "87d90b2f-71c1-45d2-9b52-dadd58d8010a"
+  },
+  "b1cf9a146256e7f3cb3e89cab16da73b83eb08eb58e36b015ebf18208549ae18": {
+    "container_id": "b1cf9a146256e7f3cb3e89cab16da73b83eb08eb58e36b015ebf18208549ae18",
+    "node_pid": 1854337,
+    "node_start_ticks": 142778385,
+    "pod": "voter-1",
+    "pod_uid": "6d03e420-4ba5-4dac-ade7-d9415853a032"
+  }
+}

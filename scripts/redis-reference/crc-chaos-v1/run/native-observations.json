@@ -1,0 +1,496 @@
+[
+  {
+    "after_command": 237,
+    "before_command": 235,
+    "capture_command": 236,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139078237458290,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 75,
+    "partial_tail_bytes": 0,
+    "phase": "baseline",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211592446"
+    ],
+    "started_unix_ns": 1789139078132265137
+  },
+  {
+    "after_command": 266,
+    "before_command": 264,
+    "capture_command": 265,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139090406872001,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 267,
+    "partial_tail_bytes": 0,
+    "phase": "baseline",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211592446"
+    ],
+    "started_unix_ns": 1789139090279076367
+  },
+  {
+    "after_command": 592,
+    "before_command": 590,
+    "capture_command": 591,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139099830315371,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 395,
+    "partial_tail_bytes": 0,
+    "phase": "client-link-delay",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211592446"
+    ],
+    "started_unix_ns": 1789139099723044373
+  },
+  {
+    "after_command": 622,
+    "before_command": 620,
+    "capture_command": 621,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139120036646137,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 611,
+    "partial_tail_bytes": 0,
+    "phase": "client-link-delay",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211592446"
+    ],
+    "started_unix_ns": 1789139119906526951
+  },
+  {
+    "after_command": 946,
+    "before_command": 944,
+    "capture_command": 945,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139129922394185,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 739,
+    "partial_tail_bytes": 0,
+    "phase": "healing",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211592446"
+    ],
+    "started_unix_ns": 1789139129810741933
+  },
+  {
+    "after_command": 975,
+    "before_command": 973,
+    "capture_command": 974,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139142112444510,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 939,
+    "partial_tail_bytes": 0,
+    "phase": "healing",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211592446"
+    ],
+    "started_unix_ns": 1789139141977143301
+  },
+  {
+    "after_command": 1301,
+    "before_command": 1299,
+    "capture_command": 1300,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139152697919806,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 1073,
+    "partial_tail_bytes": 0,
+    "phase": "client-link-loss",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211670668"
+    ],
+    "started_unix_ns": 1789139152581053781
+  },
+  {
+    "after_command": 1331,
+    "before_command": 1329,
+    "capture_command": 1330,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139182927219224,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 1399,
+    "partial_tail_bytes": 0,
+    "phase": "client-link-loss",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211663843",
+      "211685271"
+    ],
+    "started_unix_ns": 1789139182789056198
+  },
+  {
+    "after_command": 1655,
+    "before_command": 1653,
+    "capture_command": 1654,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139194097269619,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 1569,
+    "partial_tail_bytes": 0,
+    "phase": "healing",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211663843",
+      "211685271"
+    ],
+    "started_unix_ns": 1789139193977514354
+  },
+  {
+    "after_command": 1684,
+    "before_command": 1682,
+    "capture_command": 1683,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139206310948340,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 1769,
+    "partial_tail_bytes": 0,
+    "phase": "healing",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211663843",
+      "211685271"
+    ],
+    "started_unix_ns": 1789139206166249417
+  },
+  {
+    "after_command": 2010,
+    "before_command": 2008,
+    "capture_command": 2009,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139218217306508,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 1886,
+    "partial_tail_bytes": 0,
+    "phase": "client-link-partition",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211747417"
+    ],
+    "started_unix_ns": 1789139218093145583
+  },
+  {
+    "after_command": 2040,
+    "before_command": 2038,
+    "capture_command": 2039,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139234472061157,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 1961,
+    "partial_tail_bytes": 0,
+    "phase": "client-link-partition",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211755898"
+    ],
+    "started_unix_ns": 1789139234328872867
+  },
+  {
+    "after_command": 2364,
+    "before_command": 2362,
+    "capture_command": 2363,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139246997932914,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 2077,
+    "partial_tail_bytes": 0,
+    "phase": "healing",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211784746"
+    ],
+    "started_unix_ns": 1789139246870707770
+  },
+  {
+    "after_command": 2393,
+    "before_command": 2391,
+    "capture_command": 2392,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139259228009561,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 2269,
+    "partial_tail_bytes": 0,
+    "phase": "healing",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211784746"
+    ],
+    "started_unix_ns": 1789139259079271701
+  },
+  {
+    "after_command": 2565,
+    "before_command": 2563,
+    "capture_command": 2564,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139266002618035,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 2381,
+    "partial_tail_bytes": 0,
+    "phase": "client-stream-drop",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211784746"
+    ],
+    "started_unix_ns": 1789139265869994292
+  },
+  {
+    "after_command": 2589,
+    "before_command": 2587,
+    "capture_command": 2588,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139267155216963,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 2397,
+    "partial_tail_bytes": 0,
+    "phase": "client-stream-drop",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843"
+    ],
+    "started_unix_ns": 1789139267024928239
+  },
+  {
+    "after_command": 2598,
+    "before_command": 2596,
+    "capture_command": 2597,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139267761049177,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 2405,
+    "partial_tail_bytes": 0,
+    "phase": "client-stream-drop",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211785420"
+    ],
+    "started_unix_ns": 1789139267630471613
+  },
+  {
+    "after_command": 2757,
+    "before_command": 2755,
+    "capture_command": 2756,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139274291042680,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 2509,
+    "partial_tail_bytes": 0,
+    "phase": "client-stream-drop",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211785420"
+    ],
+    "started_unix_ns": 1789139274162441596
+  },
+  {
+    "after_command": 2786,
+    "before_command": 2784,
+    "capture_command": 2785,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139286532102515,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 2709,
+    "partial_tail_bytes": 0,
+    "phase": "client-stream-drop",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211785420"
+    ],
+    "started_unix_ns": 1789139286379020160
+  },
+  {
+    "after_command": 3108,
+    "before_command": 3106,
+    "capture_command": 3107,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139300250847648,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 2925,
+    "partial_tail_bytes": 0,
+    "phase": "healing",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211785420"
+    ],
+    "started_unix_ns": 1789139300120432784
+  },
+  {
+    "after_command": 3137,
+    "before_command": 3135,
+    "capture_command": 3136,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139312496101378,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 3125,
+    "partial_tail_bytes": 0,
+    "phase": "healing",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211785420"
+    ],
+    "started_unix_ns": 1789139312339617824
+  },
+  {
+    "after_command": 3468,
+    "before_command": 3466,
+    "capture_command": 3467,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139327122374432,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 3341,
+    "partial_tail_bytes": 0,
+    "phase": "quorum-loss",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211785420",
+      "211857061"
+    ],
+    "started_unix_ns": 1789139326982517544
+  },
+  {
+    "after_command": 3480,
+    "before_command": 3478,
+    "capture_command": 3479,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139343525956045,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 3581,
+    "partial_tail_bytes": 0,
+    "phase": "quorum-loss",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211785420",
+      "211857061"
+    ],
+    "started_unix_ns": 1789139343364426144
+  },
+  {
+    "after_command": 3808,
+    "before_command": 3806,
+    "capture_command": 3807,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139358985055755,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 3813,
+    "partial_tail_bytes": 0,
+    "phase": "healing",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211785420",
+      "211857061"
+    ],
+    "started_unix_ns": 1789139358848099138
+  },
+  {
+    "after_command": 3837,
+    "before_command": 3835,
+    "capture_command": 3836,
+    "cpu_allowed": "6-15,22-31",
+    "ended_unix_ns": 1789139371261648420,
+    "executable_sha256": "8358b36fe8d394460d624fdde106070b1aac87e92053912b5511a32b0b3eed6c",
+    "last_seq": 4005,
+    "partial_tail_bytes": 0,
+    "phase": "healing",
+    "pod_uid": "e0c896fe-7c23-4d1f-9b58-93adf63b8fbe",
+    "process_boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "process_pid": 32,
+    "process_start_ticks": 142778628,
+    "socket_inodes": [
+      "211778843",
+      "211785420",
+      "211857061"
+    ],
+    "started_unix_ns": 1789139371096761492
+  }
+]

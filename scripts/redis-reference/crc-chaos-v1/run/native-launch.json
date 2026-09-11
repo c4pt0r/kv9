@@ -1,0 +1,17 @@
+{
+  "command": [
+    "kubectl",
+    "--kubeconfig",
+    "/tmp/kv9-p0-ci-chaos.kubeconfig",
+    "exec",
+    "-n",
+    "kv9-native-link-acceptance-ca0002c-20260911-1",
+    "kv9-native-batch-client",
+    "--",
+    "/bin/bash",
+    "-c",
+    "set +e; taskset -c 6-15,22-31 /usr/local/bin/kv9-batch-workload --config /tmp/input.json --build-manifest /opt/kv9-batch-workload/build.json --output /tmp/workload --stop-file /tmp/workload.stop --phase-file /tmp/workload.phase; rc=$?; printf \"%s\\n\" \"$rc\" > /tmp/workload.exit; exit \"$rc\""
+  ],
+  "host_pid": 2546116,
+  "started_ns": 1789139073819874876
+}

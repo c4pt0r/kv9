@@ -124,8 +124,10 @@ The [assembly record](../scripts/redis-reference/crc-write-screen-v1/process/bui
 and [process audit](../scripts/redis-reference/crc-write-screen-v1/process/audit/audit.json)
 bind this distinction and the actual histories.
 
-Actual Chaos Mesh injection and the broader c1/c64 read/mixed/write matrix are
-next. General/default promotion remains open until these gates finish.
+The exact-source [eleven-window Chaos Mesh fixture](CRC-CHAOS-ACCEPTANCE.md)
+now passes, including the complete 2,068-call history, 158 verified new netem
+leaf drops, fresh drains and owned cleanup. The broader c1/c64 read/mixed/write
+matrix remains next. General/default promotion remains open.
 Owned-buffer movement and index changes remain subsequent
 experiments, with independent measurements and correctness obligations.
 

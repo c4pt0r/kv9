@@ -1,0 +1,50 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-chaos-preparation-first/audit.py",
+    "--artifact",
+    "/tmp/kv9-native-link-acceptance-ca0002c-attempt1",
+    "--output",
+    "/tmp/kv9-crc-chaos-acceptance-first/audit.json"
+  ],
+  "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+  "completed_ns": 1789139549184156187,
+  "cpu_allowed": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "cwd": "/tmp/kv9-crc-chaos-acceptance-first",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONOPTIMIZE": "0"
+  },
+  "exit_code": 0,
+  "log": "/tmp/kv9-crc-chaos-acceptance-first/audit-first.log",
+  "log_sha256": "fd2dc143254f56a105fd94ca9dbcbd7db716e8b7772502bb550d5e549d3d6482",
+  "output": "/tmp/kv9-crc-chaos-acceptance-first/audit.json",
+  "output_sha256": "e7bc08b7006a01b287f147d7b1265382fdcc505dfdaf1b5ae54117126ce1ea79",
+  "pid": 2730460,
+  "pid_absent": true,
+  "script_sha256": "fad40d4285bbba53f1985f8598325833f710b5691b78a86cfd383fad61ed228a",
+  "start_ticks": "142826007",
+  "started_ns": 1789139547654420171,
+  "supervisor_pid": 2730459
+}
