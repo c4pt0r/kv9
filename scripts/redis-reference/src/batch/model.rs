@@ -3,10 +3,31 @@ use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 
 pub const MAX_WIRE: usize = 1_048_576;
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum ReadApi {
+    Mget,
+    Get,
+}
+
+fn deserialize_read_api<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Option<ReadApi>, D::Error> {
+    // Legacy absence is allowed; an explicitly supplied null is not an API.
+    ReadApi::deserialize(deserializer).map(Some)
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
     pub version: u32,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_read_api"
+    )]
+    pub read_api: Option<ReadApi>,
     pub address: SocketAddr,
     pub deadline_ms: u64,
     pub run_id: String,
@@ -26,6 +47,10 @@ pub struct WireSizes {
     pub mget_request_bytes: usize,
     pub mset_request_bytes: usize,
     pub mget_response_bytes: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub get_request_bytes: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub get_response_bytes: Option<usize>,
     pub maximum_input_items_in_flight: usize,
     pub maximum_input_payload_bytes_in_flight: usize,
 }
@@ -34,7 +59,9 @@ fn bulk_size(n: usize) -> usize {
 }
 impl Config {
     pub fn validate(&self) -> Result<WireSizes, &'static str> {
-        if self.version != 1
+        if !matches!((self.version, self.read_api), (1, None) | (2, Some(_)))
+            || (self.effective_read_api() == ReadApi::Get
+                && (self.batch_size != 1 || self.read_percent != 100))
             || self.address.port() == 0
             || !(1..=30_000).contains(&self.deadline_ms)
             || self.run_id.is_empty()
@@ -70,6 +97,10 @@ impl Config {
                 + bulk_size(4)
                 + n * (bulk_size(self.run_id.len() + 17) + bulk_size(self.value_bytes)),
             mget_response_bytes: array(n) + n * bulk_size(self.value_bytes),
+            get_request_bytes: (self.effective_read_api() == ReadApi::Get)
+                .then(|| array(2) + bulk_size(3) + bulk_size(self.run_id.len() + 17)),
+            get_response_bytes: (self.effective_read_api() == ReadApi::Get)
+                .then(|| bulk_size(self.value_bytes)),
             maximum_input_items_in_flight: self.workers * n,
             maximum_input_payload_bytes_in_flight: self.workers
                 * n
@@ -81,12 +112,17 @@ impl Config {
             sizes.mget_response_bytes,
         ]
         .into_iter()
+        .chain(sizes.get_request_bytes)
+        .chain(sizes.get_response_bytes)
         .any(|n| n > MAX_WIRE)
             || sizes.maximum_input_payload_bytes_in_flight > 64 * 1024 * 1024
         {
             return Err("Redis batch exceeds encoded or pending input bounds");
         }
         Ok(sizes)
+    }
+    pub fn effective_read_api(&self) -> ReadApi {
+        self.read_api.unwrap_or(ReadApi::Mget)
     }
     pub fn key(&self, index: usize) -> Vec<u8> {
         common::key(&self.run_id, index)
@@ -112,5 +148,69 @@ impl Config {
         }
         let nonce = u64::from_be_bytes(value[8..16].try_into().unwrap());
         nonce <= maximum && value == self.value(index, nonce)
+    }
+}
+
+#[cfg(test)]
+pub(crate) mod tests {
+    use super::*;
+    use serde_json::{json, Value};
+
+    pub fn config_json() -> Value {
+        json!({"version":1,"address":"127.0.0.1:6379","deadline_ms":1000,
+            "run_id":"point","seed":71,"workers":4,"keys":64,"batch_size":1,
+            "value_bytes":128,"read_percent":100,"warmup_calls":8,"measure_ms":1000,
+            "max_calls":1000,"load":{"kind":"closed_loop"}})
+    }
+
+    #[test]
+    fn legacy_config_and_wire_size_schema_are_unchanged() {
+        let original = config_json();
+        let c: Config = serde_json::from_value(original.clone()).unwrap();
+        assert_eq!(serde_json::to_value(&c).unwrap(), original);
+        assert_eq!(c.effective_read_api(), ReadApi::Mget);
+        let sizes = serde_json::to_value(c.validate().unwrap()).unwrap();
+        assert_eq!(sizes.as_object().unwrap().len(), 5);
+        assert!(sizes.get("get_request_bytes").is_none());
+        let mut explicit = original;
+        explicit["version"] = json!(2);
+        explicit["read_api"] = json!("mget");
+        let c: Config = serde_json::from_value(explicit).unwrap();
+        assert_eq!(serde_json::to_value(c.validate().unwrap()).unwrap(), sizes);
+    }
+
+    #[test]
+    fn explicit_get_configuration_refuses_ambiguous_or_mixed_apis() {
+        let mut valid = config_json();
+        valid["version"] = json!(2);
+        valid["read_api"] = json!("get");
+        let c: Config = serde_json::from_value(valid.clone()).unwrap();
+        assert_eq!(c.effective_read_api(), ReadApi::Get);
+        assert!(c.validate().unwrap().get_request_bytes.is_some());
+        for (field, value) in [
+            ("version", json!(1)),
+            ("version", json!(3)),
+            ("version", json!(true)),
+            ("read_api", Value::Null),
+            ("read_api", json!("GET")),
+            ("read_api", json!(false)),
+            ("batch_size", json!(2)),
+            ("batch_size", json!(true)),
+            ("read_percent", json!(99)),
+        ] {
+            let mut bad = valid.clone();
+            bad[field] = value;
+            assert!(
+                serde_json::from_value::<Config>(bad)
+                    .map(|c| c.validate().is_err())
+                    .unwrap_or(true),
+                "accepted {field}"
+            );
+        }
+        valid.as_object_mut().unwrap().remove("read_api");
+        assert!(serde_json::from_value::<Config>(valid)
+            .unwrap()
+            .validate()
+            .is_err());
     }
 }
