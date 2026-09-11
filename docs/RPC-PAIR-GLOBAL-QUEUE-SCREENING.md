@@ -107,8 +107,10 @@ coalesce completion notifications while retaining two independently scheduled
 polling contexts. The [earlier single-owner design](https://github.com/c4pt0r/kv9/blob/f2c4e856d03f75ac6e4718f0aac7f4e7a1cf3d02/docs/PARALLEL-STREAM-REQUESTS.md)
 lost useful parallelism, so simply reverting it is not justified.
 
-The bounded design review is complete; implementation and performance evidence
-are still pending. Preserve the original response reservations and frame-time
+The resulting [stream-worker screen](STREAM-WORKER-PAIR-SCREENING.md) now rejects
+that implemented experiment: throughput and mean latency regress even though
+p99 improves. Its original design requirements remain recorded below. Preserve
+the original response reservations and frame-time
 deadlines across queueing, authenticate every frame, retain stream admission
 through actual cleanup, close the generation on worker panic, and preserve
 independently settling write admission without replay. Test cancellation,
