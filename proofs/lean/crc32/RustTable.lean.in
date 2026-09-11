@@ -1,0 +1,64 @@
+import CRC32
+
+set_option maxRecDepth 16384
+set_option maxHeartbeats 4000000
+
+namespace Kv9.CRC32
+
+/-- Values emitted by compiling the exact source-bound Rust const declaration. -/
+def compiledTable : List (BitVec 32) := [
+@TABLE@
+]
+
+theorem compiled_table_length : compiledTable.length = 256 := by decide
+
+/-- Kernel reduction checks every one of the 256 const-evaluated Rust entries. -/
+theorem compiled_table : ∀ byte : BitVec 8,
+    compiledTable[byte.toNat]! = tableEntry byte := by decide
+
+def compiledByte (crc : BitVec 32) (byte : BitVec 8) : BitVec 32 :=
+  (crc >>> 8) ^^^ compiledTable[(index crc byte).toNat]!
+
+theorem compiled_byte_transition (crc : BitVec 32) (byte : BitVec 8) :
+    oldByte crc byte = compiledByte crc byte := by
+  rw [byte_transition]
+  simp only [tableByte, compiledByte, compiled_table]
+
+def compiledFold (bytes : List (BitVec 8)) (crc : BitVec 32) : BitVec 32 :=
+  bytes.foldl compiledByte crc
+
+theorem compiled_list_equivalence (bytes : List (BitVec 8)) (crc : BitVec 32) :
+    oldFold bytes crc = compiledFold bytes crc := by
+  induction bytes generalizing crc with
+  | nil => rfl
+  | cons byte bytes ih =>
+    simp only [oldFold, compiledFold, List.foldl_cons] at *
+    rw [compiled_byte_transition]
+    exact ih _
+
+def compiledParts (parts : List (List (BitVec 8))) (crc : BitVec 32) : BitVec 32 :=
+  parts.foldl (fun state part => compiledFold part state) crc
+
+theorem compiled_parts_equivalence (parts : List (List (BitVec 8))) (crc : BitVec 32) :
+    oldFold parts.flatten crc = compiledParts parts crc := by
+  induction parts generalizing crc with
+  | nil => rfl
+  | cons part parts ih =>
+    simp only [compiledParts, List.foldl_cons, List.flatten_cons, oldFold,
+      List.foldl_append] at *
+    rw [ih]
+    rw [← compiled_list_equivalence]
+    rfl
+
+def compiledChecksum (parts : List (List (BitVec 8))) : BitVec 32 :=
+  ~~~(compiledParts parts initial)
+
+theorem compiled_checksum_equivalence (parts : List (List (BitVec 8))) :
+    oldChecksum parts.flatten = compiledChecksum parts := by
+  simp only [oldChecksum, compiledChecksum, compiled_parts_equivalence]
+
+theorem compiled_fragmentation_invariant (left right : List (List (BitVec 8)))
+    (same : left.flatten = right.flatten) : compiledChecksum left = compiledChecksum right := by
+  rw [← compiled_checksum_equivalence, ← compiled_checksum_equivalence, same]
+
+end Kv9.CRC32
