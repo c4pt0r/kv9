@@ -7,9 +7,9 @@ mod metrics;
 #[path = "kv9-batch-benchmark/model.rs"]
 mod model;
 
-use kv9_server::client::{CallReport, Outcome, PersistentRawClient, Reason, Value};
+use kv9_server::client::{CallReport, OperationKind, Outcome, PersistentRawClient, Reason, Value};
 use metrics::{Metrics, Sample};
-use model::{Config, Load, ReadApi};
+use model::{Config, Load, ReadApi, WriteApi};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as Json};
 use sha2::{Digest, Sha256};
@@ -136,6 +136,28 @@ fn valid_outcome(config: &Config, nonce: u64, outcome: &Outcome) -> bool {
     }
 }
 
+fn valid_report(
+    config: &Config,
+    nonce: u64,
+    expected_kind: OperationKind,
+    report: &CallReport,
+) -> bool {
+    let selected_kind = if config.is_read(nonce) {
+        match config.effective_read_api() {
+            ReadApi::BatchGet => OperationKind::BatchGet,
+            ReadApi::PointGet => OperationKind::Get,
+        }
+    } else {
+        match config.effective_write_api() {
+            WriteApi::BatchPut => OperationKind::BatchPut,
+            WriteApi::PointPut => OperationKind::Put,
+        }
+    };
+    report.operation == expected_kind
+        && report.operation == selected_kind
+        && valid_outcome(config, nonce, &report.outcome)
+}
+
 struct CallTiming {
     epoch: Instant,
     cutoff: Option<Instant>,
@@ -159,7 +181,7 @@ async fn traffic(
     let operation = config.operation(nonce);
     let expected_kind = operation.kind();
     let report = client.call(operation).await;
-    let valid = report.operation == expected_kind && valid_outcome(config, nonce, &report.outcome);
+    let valid = valid_report(config, nonce, expected_kind, &report);
     let finished = Instant::now();
     let success = matches!(report.outcome, Outcome::Success { .. });
     metrics.record(Sample {
@@ -621,10 +643,7 @@ async fn execute() -> Result<(), String> {
         .iter()
         .map(|op| op.populations[0].input_items)
         .sum();
-    let workload_model = match config.effective_read_api() {
-        ReadApi::BatchGet => "bounded_native_batch_performance",
-        ReadApi::PointGet => "bounded_native_point_get_diagnostic",
-    };
+    let workload_model = config.workload_model();
     let report = json!({"version":config.version,"workload_model":workload_model,"full_history_recorded":false,
         "independently_checked":false,"complete":outcome.is_ok(),"failure":outcome.as_ref().err(),
         "configuration":config,"config_sha256":digest(&config_bytes),"build":build,"build_sha256":digest(&build_bytes),
@@ -639,8 +658,8 @@ async fn execute() -> Result<(), String> {
         "timing_eligible":outcome.is_ok() && result.stop_reason==Some("duration") && build.profile=="release" && !build.dirty,
         "proc_stat_before":result.proc_before,"proc_stat_after":result.proc_after,"workers":result.workers,
         "metrics":{"initialization":result.initialization.report(),
-            "warmup":result.warmup.report_for_read_api(config.effective_read_api()),
-            "measurement":result.measurement.report_for_read_api(config.effective_read_api()),
+            "warmup":result.warmup.report_for_apis(config.effective_read_api(), config.effective_write_api()),
+            "measurement":result.measurement.report_for_apis(config.effective_read_api(), config.effective_write_api()),
             "verification":result.verification.report()}});
     write_json(&output.join("report.json"), &report)?;
     outcome?;
@@ -651,7 +670,7 @@ async fn execute() -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kv9_server::client::{ClientConfig, Peer, TransportKind};
+    use kv9_server::client::{Attempt, ClientConfig, Peer, RawOperation, Stop, TransportKind};
 
     fn config() -> Config {
         Config {
@@ -672,6 +691,7 @@ mod tests {
             },
             rpc_transport: TransportKind::TonicStream,
             read_api: None,
+            write_api: None,
             run_id: "batch_probe".into(),
             seed: 71,
             workers: 3,
@@ -810,6 +830,266 @@ mod tests {
         c.read_api = None;
         c.validate().unwrap();
         assert_eq!(c.effective_read_api(), ReadApi::BatchGet);
+    }
+
+    #[test]
+    fn point_put_dispatch_retains_key_nonce_and_uses_the_singular_wire_request() {
+        use prost::Message;
+        let mut c = config();
+        c.version = 3;
+        c.read_api = Some(ReadApi::PointGet);
+        c.write_api = Some(WriteApi::BatchPut);
+        c.batch_size = 1;
+        c.read_percent = 0;
+        let batch_sizes = c.validate().unwrap();
+        let nonce = 17;
+        let RawOperation::BatchPut { pairs } = c.operation(nonce) else {
+            panic!("batch selector did not produce a batch write");
+        };
+        c.write_api = Some(WriteApi::PointPut);
+        let point_sizes = c.validate().unwrap();
+        let operation = c.operation(nonce);
+        assert_eq!(operation.kind(), OperationKind::Put);
+        let RawOperation::Put { key, value } = operation else {
+            panic!("point PUT was implemented as a one-item batch");
+        };
+        assert_eq!(pairs, vec![(key.clone(), value.clone())]);
+        assert_eq!(key, c.key(c.first_key(nonce)));
+        assert_eq!(value, c.value(c.first_key(nonce), nonce));
+        let request = kv9_server::proto::RawPutRequest {
+            context: Some(kv9_server::proto::RequestContext {
+                keyspace_id: c.client.keyspace_id,
+                region_epoch: Some(kv9_server::proto::RegionEpoch {
+                    conf_ver: c.client.epoch_conf_ver,
+                    version: c.client.epoch_version,
+                }),
+            }),
+            key,
+            value,
+        };
+        assert_eq!(point_sizes.put_request_bytes, request.encoded_len());
+        assert!(point_sizes.put_request_bytes < batch_sizes.put_request_bytes);
+        assert_eq!(point_sizes.maximum_input_items_in_flight, c.workers);
+    }
+
+    #[test]
+    fn point_put_requires_its_operation_kind_and_a_positive_applied_receipt() {
+        let mut c = config();
+        c.version = 3;
+        c.read_api = Some(ReadApi::PointGet);
+        c.write_api = Some(WriteApi::PointPut);
+        c.batch_size = 1;
+        c.read_percent = 0;
+        c.validate().unwrap();
+        let nonce = 17;
+        let expected = c.operation(nonce).kind();
+        let mut report = CallReport {
+            operation: OperationKind::Put,
+            elapsed_ns: 10,
+            attempts: vec![Attempt {
+                ordinal: 1,
+                node_id: 1,
+                elapsed_ns: 5,
+                failure: None,
+            }],
+            stop: Stop::Terminal,
+            outcome: Outcome::Success {
+                value: Value::Applied { term: 1, index: 2 },
+            },
+        };
+        assert!(valid_report(&c, nonce, expected, &report));
+        report.operation = OperationKind::BatchPut;
+        assert!(
+            !valid_report(&c, nonce, expected, &report),
+            "batch reply mislabeled as point PUT"
+        );
+        assert!(
+            !valid_report(&c, nonce, OperationKind::BatchPut, &report),
+            "dispatch and reply disagreed with the configured point API"
+        );
+        report.operation = OperationKind::Put;
+        let value = c.value(c.first_key(nonce), nonce);
+        for invalid in [
+            Value::Applied { term: 0, index: 2 },
+            Value::Applied { term: 1, index: 0 },
+            Value::Get {
+                value: Some(value.clone()),
+            },
+            Value::BatchGet {
+                values: vec![Some(value)],
+            },
+        ] {
+            report.outcome = Outcome::Success { value: invalid };
+            assert!(!valid_report(&c, nonce, expected, &report));
+        }
+        report.outcome = Outcome::ReadFailure {
+            reason: Reason::Deadline,
+        };
+        assert!(!valid_report(&c, nonce, expected, &report));
+        report.outcome = Outcome::UnknownWrite {
+            reason: Reason::Deadline,
+        };
+        assert!(valid_report(&c, nonce, expected, &report));
+        report.outcome = Outcome::UnknownWrite {
+            reason: Reason::Protocol,
+        };
+        assert!(!valid_report(&c, nonce, expected, &report));
+    }
+
+    #[test]
+    fn v3_mixed_selectors_preserve_the_same_deterministic_inputs_and_stage_labels() {
+        let mut batch = config();
+        batch.batch_size = 1;
+        let mut c = batch.clone();
+        c.version = 3;
+        c.read_api = Some(ReadApi::PointGet);
+        c.write_api = Some(WriteApi::PointPut);
+        c.validate().unwrap();
+        assert_eq!(c.workload_model(), "bounded_native_api_performance");
+        let mut reads = 0;
+        let mut writes = 0;
+        for nonce in 1..=100 {
+            match (c.operation(nonce), batch.operation(nonce)) {
+                (RawOperation::Get { key }, RawOperation::BatchGet { keys }) => {
+                    assert_eq!(keys, vec![key]);
+                    reads += 1;
+                }
+                (RawOperation::Put { key, value }, RawOperation::BatchPut { pairs }) => {
+                    assert_eq!(pairs, vec![(key, value)]);
+                    writes += 1;
+                }
+                _ => panic!("selector changed deterministic operation mix"),
+            }
+        }
+        assert!(reads > 0 && writes > 0);
+        for (read_api, write_api, labels) in [
+            (ReadApi::PointGet, WriteApi::PointPut, json!(["get", "put"])),
+            (
+                ReadApi::PointGet,
+                WriteApi::BatchPut,
+                json!(["get", "batch_put"]),
+            ),
+            (
+                ReadApi::BatchGet,
+                WriteApi::PointPut,
+                json!(["batch_get", "put"]),
+            ),
+            (
+                ReadApi::BatchGet,
+                WriteApi::BatchPut,
+                json!(["batch_get", "batch_put"]),
+            ),
+        ] {
+            assert_eq!(
+                Metrics::default().report_for_apis(read_api, write_api)["operations"],
+                labels
+            );
+        }
+        assert_eq!(
+            Metrics::default().report()["operations"],
+            json!(["batch_get", "batch_put"])
+        );
+    }
+
+    #[test]
+    fn v3_selectors_are_required_and_point_apis_never_hide_multiple_items() {
+        let mut c = config();
+        c.version = 3;
+        c.read_api = Some(ReadApi::BatchGet);
+        c.write_api = Some(WriteApi::BatchPut);
+        c.validate().unwrap();
+        let encoded = serde_json::to_value(&c).unwrap();
+        for selector in ["read_api", "write_api"] {
+            let mut missing = encoded.clone();
+            missing.as_object_mut().unwrap().remove(selector);
+            assert!(serde_json::from_value::<Config>(missing)
+                .unwrap()
+                .validate()
+                .is_err());
+            for invalid in [
+                Json::Null,
+                json!("unknown"),
+                json!(false),
+                json!([]),
+                json!(1),
+            ] {
+                let mut malformed = encoded.clone();
+                malformed[selector] = invalid;
+                assert!(serde_json::from_value::<Config>(malformed).is_err());
+            }
+        }
+        for (read, write) in [
+            (ReadApi::PointGet, WriteApi::BatchPut),
+            (ReadApi::BatchGet, WriteApi::PointPut),
+            (ReadApi::PointGet, WriteApi::PointPut),
+        ] {
+            c.read_api = Some(read);
+            c.write_api = Some(write);
+            for percent in [0, 50, 100] {
+                c.read_percent = percent;
+                c.batch_size = 2;
+                assert!(
+                    c.validate().is_err(),
+                    "an inactive point selector still requires one item"
+                );
+                c.batch_size = 1;
+                c.validate().unwrap();
+            }
+        }
+        for version in [1, 2] {
+            let mut legacy = config();
+            legacy.version = version;
+            legacy.read_api = (version == 2).then_some(ReadApi::BatchGet);
+            for write in [WriteApi::BatchPut, WriteApi::PointPut] {
+                legacy.write_api = Some(write);
+                assert!(legacy.validate().is_err());
+            }
+            legacy.write_api = None;
+            legacy.validate().unwrap();
+            let encoded = serde_json::to_value(&legacy).unwrap();
+            assert!(encoded.get("write_api").is_none());
+            let decoded: Config = serde_json::from_value(encoded.clone()).unwrap();
+            assert_eq!(serde_json::to_value(&decoded).unwrap(), encoded);
+            assert_eq!(decoded.effective_write_api(), WriteApi::BatchPut);
+            assert_eq!(decoded.workload_model(), "bounded_native_batch_performance");
+        }
+    }
+
+    #[test]
+    fn uncertain_point_put_keeps_one_whole_call_item_and_attempt_population() {
+        let report = CallReport {
+            operation: OperationKind::Put,
+            elapsed_ns: 10,
+            attempts: vec![Attempt {
+                ordinal: 1,
+                node_id: 1,
+                elapsed_ns: 5,
+                failure: Some(Reason::Deadline),
+            }],
+            stop: Stop::Deadline,
+            outcome: Outcome::UnknownWrite {
+                reason: Reason::Deadline,
+            },
+        };
+        let mut metrics = Metrics::default();
+        metrics.record(Sample {
+            report: &report,
+            items: 1,
+            whole_call_ns: 12,
+            before_cutoff: false,
+            scheduled_to_completion_ns: None,
+            dispatch_lateness_ns: None,
+            data_valid: true,
+        });
+        let encoded = metrics.report_for_apis(ReadApi::PointGet, WriteApi::PointPut);
+        assert_eq!(encoded["operations"], json!(["get", "put"]));
+        let write = &encoded["statistics"][1];
+        assert_eq!(write["populations"][2]["calls"], 1);
+        assert_eq!(write["populations"][2]["input_items"], 1);
+        assert_eq!(write["populations"][2]["whole_call"]["raw"]["count"], 1);
+        assert_eq!(write["attempts"][2]["raw"]["count"], 1);
+        assert_eq!(write["attempt_reasons"][9], 1);
+        assert_eq!(metrics.data_failures(), 0);
     }
 
     #[test]

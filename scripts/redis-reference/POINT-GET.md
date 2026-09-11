@@ -47,3 +47,7 @@ replay followed by a distinct logical call, whole-call failure metrics, schema
 negative cases, and mismatched pairing rejection. These are client correctness
 checks. Matched release measurements and throughput/latency conclusions require a
 separate frozen build and controlled fixture run.
+
+For actual SET and mixed GET/SET measurement, version 3 requires both API
+selectors. See [the shared contract](../../../docs/POINT-WRITE-MEASUREMENT.md).
+Version 2 GET remains a pure-read diagnostic with its original schema.

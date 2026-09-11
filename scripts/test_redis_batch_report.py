@@ -17,10 +17,18 @@ def get_config():
     return c
 
 
-def native_config(c, read_api=None):
+def api_config():
+    c = config()
+    c.update(version=3, read_api='get', write_api='set', batch_size=1)
+    return c
+
+
+def native_config(c, read_api=None, write_api=None):
     native = {k: copy.deepcopy(v) for k, v in c.items()
-              if k not in ('address', 'deadline_ms', 'read_api')}
-    if read_api is not None:
+              if k not in ('address', 'deadline_ms', 'read_api', 'write_api')}
+    if c['version'] == 3:
+        native.update(read_api=read_api, write_api=write_api)
+    elif read_api is not None:
         native.update(version=2, read_api=read_api)
     native.update(rpc_transport='tonic_stream', client=dict(
         version=1, peers=[dict(node_id=1, address='127.0.0.1:20160')], keyspace_id=1,
@@ -48,6 +56,69 @@ def metrics():
 
 
 class Configuration(unittest.TestCase):
+    def test_v3_explicit_read_and_write_apis_and_legacy_shapes(self):
+        for read_api in ('mget', 'get'):
+            for write_api in ('mset', 'set'):
+                for read_percent in (0, 50, 100):
+                    c = api_config()
+                    c.update(read_api=read_api, write_api=write_api, read_percent=read_percent)
+                    with self.subTest(read=read_api, write=write_api, percent=read_percent):
+                        config_check(c)
+        legacy = config()
+        _, sizes = config_check(legacy)
+        v3_batch = copy.deepcopy(legacy)
+        v3_batch.update(version=3, read_api='mget', write_api='mset')
+        self.assertEqual(config_check(v3_batch)[1], sizes)
+        self.assertNotIn('write_api', legacy)
+        self.assertNotIn('write_api', get_config())
+        self.assertEqual(len(config_check(get_config())[1]), 7)
+
+    def test_v3_requires_both_selectors_and_point_cardinality(self):
+        for field in ('read_api', 'write_api'):
+            c = api_config(); del c[field]
+            with self.subTest(missing=field), self.assertRaises(ValueError): config_check(c)
+            for invalid in (None, False, [], 'unknown'):
+                c = api_config(); c[field] = invalid
+                with self.subTest(field=field, value=invalid), self.assertRaises(ValueError): config_check(c)
+        for version in (1, 2, 4):
+            c = api_config(); c['version'] = version
+            with self.subTest(version=version), self.assertRaises(ValueError): config_check(c)
+        for read, write in (('get', 'set'), ('get', 'mset'), ('mget', 'set')):
+            c = api_config(); c.update(read_api=read, write_api=write, batch_size=2)
+            with self.subTest(read=read, write=write), self.assertRaises(ValueError): config_check(c)
+        c = api_config(); c.update(read_api='mget', write_api='mset', batch_size=2)
+        config_check(c)
+
+    def test_set_sizes_are_actual_set_frames(self):
+        c = api_config()
+        _, sizes = config_check(c)
+        key = (c['run_id']+':'+format(0, '016x')).encode()
+        value = bytes(c['value_bytes'])
+        request = (b'*3\r\n$3\r\nSET\r\n$'+str(len(key)).encode()+b'\r\n'+key+
+                   b'\r\n$'+str(len(value)).encode()+b'\r\n'+value+b'\r\n')
+        self.assertEqual(sizes['set_request_bytes'], len(request))
+        self.assertEqual(sizes['set_response_bytes'], len(b'+OK\r\n'))
+        self.assertEqual(sizes['mset_request_bytes'], len(request)+1)
+        self.assertEqual(len(sizes), 9)
+
+    def test_v3_pairing_checks_both_apis_including_inactive_selectors(self):
+        for read, native_read in (('mget', 'batch_get'), ('get', 'point_get')):
+            for write, native_write in (('mset', 'batch_put'), ('set', 'point_put')):
+                for percent in (0, 50, 100):
+                    c = api_config(); c.update(read_api=read, write_api=write, read_percent=percent)
+                    native = native_config(c, native_read, native_write)
+                    pair = paired_configuration(c, native)
+                    self.assertEqual(pair['read_api_pair'], dict(redis=read, native=native_read))
+                    self.assertEqual(pair['write_api_pair'], dict(redis=write, native=native_write))
+                    wrong = copy.deepcopy(native)
+                    wrong['write_api'] = 'point_put' if native_write == 'batch_put' else 'batch_put'
+                    with self.assertRaises(ValueError): paired_configuration(c, wrong)
+                    wrong = copy.deepcopy(native)
+                    wrong['read_api'] = 'point_get' if native_read == 'batch_get' else 'batch_get'
+                    with self.assertRaises(ValueError): paired_configuration(c, wrong)
+        self.assertNotIn('write_api_pair', paired_configuration(config(), native_config(config())))
+        self.assertNotIn('write_api_pair', paired_configuration(get_config(), native_config(get_config(), 'point_get')))
+
     def test_explicit_get_sizes_and_legacy_schema(self):
         c = get_config()
         _, sizes = config_check(c)
@@ -126,6 +197,39 @@ class Configuration(unittest.TestCase):
 
 
 class Accounting(unittest.TestCase):
+    def test_mixed_v3_get_and_unknown_set_keep_one_command_each(self):
+        c = api_config(); m = metrics()
+        m['operations'] = ['get', 'set']
+        write = m['statistics'][1]
+        write['populations'][1]['input_items'] = 1
+        read = m['statistics'][0]
+        read['populations'][0].update(calls=1, input_items=1, completed_before_cutoff=1,
+                                     whole_call=exact_histogram([90]), client_call=exact_histogram([80]))
+        read['reasons'][0] = 1
+        read['command_attempts'] = 1
+        self.assertEqual(metrics_check(m, c, 'measurement'),
+                         dict(calls=[1, 1], successes=1, successful_items=1, attempts=2))
+        for change in ('replay', 'items', 'label', 'outcome'):
+            bad = copy.deepcopy(m); op = bad['statistics'][1]
+            if change == 'replay': op['command_attempts'] = 2
+            elif change == 'items': op['populations'][1]['input_items'] = 2
+            elif change == 'label': bad['operations'][1] = 'mset'
+            else: op['populations'][1], op['populations'][2] = op['populations'][2], op['populations'][1]
+            with self.subTest(change=change), self.assertRaises(ValueError): metrics_check(bad, c, 'measurement')
+
+    def test_v3_selected_labels_are_confined_to_warmup_and_measurement(self):
+        c = api_config(); empty = metrics()
+        empty['statistics'] = [copy.deepcopy(empty['statistics'][0]) for _ in range(2)]
+        for phase in ('initialization', 'verification'):
+            metrics_check(empty, c, phase)
+            for labels in (['get', 'mset'], ['mget', 'set'], ['get', 'set']):
+                bad = copy.deepcopy(empty); bad['operations'] = labels
+                with self.subTest(phase=phase, labels=labels), self.assertRaises(ValueError): metrics_check(bad, c, phase)
+        for phase in ('warmup', 'measurement'):
+            selected = copy.deepcopy(empty); selected['operations'] = ['get', 'set']
+            metrics_check(selected, c, phase)
+            with self.assertRaises(ValueError): metrics_check(empty, c, phase)
+
     def test_get_failure_has_point_labels_only_during_traffic_and_one_item(self):
         c = get_config(); m = metrics()
         m['operations'][0] = 'get'

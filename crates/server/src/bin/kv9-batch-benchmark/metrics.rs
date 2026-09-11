@@ -1,4 +1,4 @@
-use super::model::{Histogram, ReadApi};
+use super::model::{Histogram, ReadApi, WriteApi};
 use kv9_server::client::{CallReport, OperationKind, Outcome, Reason};
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -100,9 +100,9 @@ impl Metrics {
         let report = sample.report;
         let kind = match report.operation {
             OperationKind::BatchGet | OperationKind::Get => 0,
-            OperationKind::BatchPut => 1,
-            OperationKind::Put | OperationKind::Delete => {
-                panic!("point operation in batch benchmark")
+            OperationKind::BatchPut | OperationKind::Put => 1,
+            OperationKind::Delete => {
+                panic!("unsupported delete operation in benchmark")
             }
         };
         let (outcome, reason) = match &report.outcome {
@@ -218,15 +218,23 @@ impl Metrics {
     }
 
     pub fn report_for_read_api(&self, read_api: ReadApi) -> Value {
+        self.report_for_apis(read_api, WriteApi::BatchPut)
+    }
+
+    pub fn report_for_apis(&self, read_api: ReadApi, write_api: WriteApi) -> Value {
         let read_operation = match read_api {
             ReadApi::BatchGet => "batch_get",
             ReadApi::PointGet => "get",
+        };
+        let write_operation = match write_api {
+            WriteApi::BatchPut => "batch_put",
+            WriteApi::PointPut => "put",
         };
         fn histogram(h: &Histogram) -> Value {
             json!({"raw": h, "mean_ns": if h.valid && h.count > 0 { Some(h.sum_ns as f64 / h.count as f64) } else { None },
                 "p50": h.quantile(50), "p95": h.quantile(95), "p99": h.quantile(99)})
         }
-        json!({"operations": [read_operation, "batch_put"], "outcomes": OUTCOMES,
+        json!({"operations": [read_operation, write_operation], "outcomes": OUTCOMES,
             "reasons": REASONS, "attempt_outcomes": ["success", "refused", "failed_or_unknown"],
             "histogram_subdivisions": 64, "valid": self.valid(),
             "statistics": self.operations.iter().map(|op| json!({

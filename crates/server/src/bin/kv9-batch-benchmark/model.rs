@@ -8,7 +8,7 @@ pub const MAX_PENDING_INPUT_BYTES: usize = 64 * 1024 * 1024;
 
 pub use super::common::{Histogram, Load};
 
-/// Explicit workload shape. Point reads are a batch-size-one diagnostic only.
+/// Explicit workload shape. Either point API requires exactly one input item.
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum ReadApi {
@@ -16,11 +16,24 @@ pub enum ReadApi {
     PointGet,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum WriteApi {
+    BatchPut,
+    PointPut,
+}
+
 fn deserialize_read_api<'de, D: serde::Deserializer<'de>>(
     deserializer: D,
 ) -> Result<Option<ReadApi>, D::Error> {
     // Missing is the legacy default; an explicitly present null is not an API.
     ReadApi::deserialize(deserializer).map(Some)
+}
+
+fn deserialize_write_api<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Option<WriteApi>, D::Error> {
+    WriteApi::deserialize(deserializer).map(Some)
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -36,6 +49,12 @@ pub struct Config {
         deserialize_with = "deserialize_read_api"
     )]
     pub read_api: Option<ReadApi>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_write_api"
+    )]
+    pub write_api: Option<WriteApi>,
     pub run_id: String,
     pub seed: u64,
     pub workers: usize,
@@ -61,9 +80,15 @@ pub struct WireSizes {
 impl Config {
     pub fn validate(&self) -> Result<WireSizes, &'static str> {
         self.client.validate()?;
-        if !matches!((self.version, self.read_api), (1, None) | (2, Some(_)))
-            || (self.effective_read_api() == ReadApi::PointGet
-                && (self.batch_size != 1 || self.read_percent != 100))
+        if !matches!(
+            (self.version, self.read_api, self.write_api),
+            (1, None, None) | (2, Some(_), None) | (3, Some(_), Some(_))
+        ) || ((self.effective_read_api() == ReadApi::PointGet
+            || self.effective_write_api() == WriteApi::PointPut)
+            && self.batch_size != 1)
+            || (self.version == 2
+                && self.effective_read_api() == ReadApi::PointGet
+                && self.read_percent != 100)
             || self.run_id.is_empty()
             || self.run_id.len() > 64
             || !self
@@ -103,6 +128,19 @@ impl Config {
             }),
         });
         let keys: Vec<_> = (0..self.batch_size).map(|i| self.key(i)).collect();
+        // Initialization always writes batches, including in point API runs.
+        let setup_put_request_bytes = proto::RawBatchPutRequest {
+            context,
+            pairs: keys
+                .iter()
+                .enumerate()
+                .map(|(i, key)| proto::KeyValue {
+                    key: key.clone(),
+                    value: self.value(i, 0),
+                })
+                .collect(),
+        }
+        .encoded_len();
         let sizes = WireSizes {
             get_request_bytes: match self.effective_read_api() {
                 ReadApi::BatchGet => proto::RawBatchGetRequest {
@@ -116,18 +154,15 @@ impl Config {
                 }
                 .encoded_len(),
             },
-            put_request_bytes: proto::RawBatchPutRequest {
-                context,
-                pairs: keys
-                    .into_iter()
-                    .enumerate()
-                    .map(|(i, key)| proto::KeyValue {
-                        key,
-                        value: self.value(i, 0),
-                    })
-                    .collect(),
-            }
-            .encoded_len(),
+            put_request_bytes: match self.effective_write_api() {
+                WriteApi::BatchPut => setup_put_request_bytes,
+                WriteApi::PointPut => proto::RawPutRequest {
+                    context,
+                    key: keys[0].clone(),
+                    value: self.value(0, 0),
+                }
+                .encoded_len(),
+            },
             get_response_bytes: match self.effective_read_api() {
                 ReadApi::BatchGet => proto::RawBatchGetResponse {
                     values: (0..self.batch_size)
@@ -155,6 +190,7 @@ impl Config {
             sizes.get_request_bytes,
             sizes.put_request_bytes,
             sizes.get_response_bytes,
+            setup_put_request_bytes,
         ]
         .into_iter()
         .any(|bytes| bytes > MAX_MESSAGE_BYTES)
@@ -168,6 +204,22 @@ impl Config {
     /// Legacy v1 configurations omit the selector and retain batch reads.
     pub fn effective_read_api(&self) -> ReadApi {
         self.read_api.unwrap_or(ReadApi::BatchGet)
+    }
+
+    /// Legacy v1/v2 configurations retain batch writes and omit this selector.
+    pub fn effective_write_api(&self) -> WriteApi {
+        self.write_api.unwrap_or(WriteApi::BatchPut)
+    }
+
+    pub fn workload_model(&self) -> &'static str {
+        if self.version == 3 {
+            "bounded_native_api_performance"
+        } else {
+            match self.effective_read_api() {
+                ReadApi::BatchGet => "bounded_native_batch_performance",
+                ReadApi::PointGet => "bounded_native_point_get_diagnostic",
+            }
+        }
     }
 
     pub fn key(&self, index: usize) -> Vec<u8> {
@@ -197,6 +249,11 @@ impl Config {
                 keys: (0..self.batch_size)
                     .map(|i| self.key((first + i) % self.keys))
                     .collect(),
+            }
+        } else if self.effective_write_api() == WriteApi::PointPut {
+            RawOperation::Put {
+                key: self.key(first),
+                value: self.value(first, nonce),
             }
         } else {
             RawOperation::BatchPut {
