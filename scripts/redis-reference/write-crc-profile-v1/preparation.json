@@ -1,0 +1,8 @@
+{
+  "complete": true,
+  "original": "/tmp/kv9-native-batch-proof/scripts/redis-reference/read-lifecycle-c1-v1/legacy-c64-profile.py",
+  "original_sha256": "ac86eded850433faef464c604948bb29a5e251ec5c523384b2d28d988f469e7c",
+  "driver": "/tmp/kv9-v3-workload-comparison-preparation/matched-driver.py",
+  "script_sha256": "27d5a8af1b6eb1686191ea5ce539d72bff8b2fcdb4069858614405650ee5ba01",
+  "scope": "Reuse original bounded PID-scoped perf lifecycle and v3 fixture. Two write-only 5-second c64 cohorts. No production changes, throughput selection, exclusive host or background-container isolation."
+}

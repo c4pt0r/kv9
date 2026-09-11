@@ -1,0 +1,6 @@
+# Preserve exact tool output and patch bytes, including their original whitespace.
+append-crc-disassembly.txt -text whitespace=-blank-at-eol
+append-disassembly-full.txt -text whitespace=-blank-at-eol
+crc-engine-tests-first.log -text whitespace=-blank-at-eof
+crc-workspace-tests-first.log -text whitespace=-blank-at-eof
+preparation.diff -text whitespace=-blank-at-eol

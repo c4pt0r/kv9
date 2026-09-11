@@ -1,0 +1,830 @@
+{
+  "complete": true,
+  "analyzer_sha256": "c188fd8c648100dee311923bb042dcff488098592eda8230ed5929bcbe958df4",
+  "profiles": [
+    {
+      "api": "point_put",
+      "complete": true,
+      "selected_samples": 3292,
+      "recorded_samples": 3544,
+      "calls": 562638,
+      "outcomes": {
+        "success": 562638,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "categories": {
+        "other_symbols": {
+          "samples": 552,
+          "percent": 16.767922235722963
+        },
+        "rpc_framing_serialization_buffers": {
+          "samples": 441,
+          "percent": 13.396111786148237
+        },
+        "allocation_copy_compare": {
+          "samples": 439,
+          "percent": 13.335358444714458
+        },
+        "engine_storage": {
+          "samples": 348,
+          "percent": 10.571081409477522
+        },
+        "scheduler_synchronization": {
+          "samples": 310,
+          "percent": 9.416767922235723
+        },
+        "raft_consensus_driver": {
+          "samples": 270,
+          "percent": 8.201701093560146
+        },
+        "kernel_other": {
+          "samples": 241,
+          "percent": 7.320777642770352
+        },
+        "kernel_generic_spinlock": {
+          "samples": 179,
+          "percent": 5.437424058323208
+        },
+        "kernel_network": {
+          "samples": 137,
+          "percent": 4.161603888213852
+        },
+        "kernel_scheduler_futex": {
+          "samples": 114,
+          "percent": 3.462940461725395
+        },
+        "persistent_ordered_map": {
+          "samples": 93,
+          "percent": 2.8250303766707168
+        },
+        "unknown_or_unsymbolized": {
+          "samples": 80,
+          "percent": 2.4301336573511545
+        },
+        "metadata_lookup": {
+          "samples": 72,
+          "percent": 2.187120291616039
+        },
+        "command_conversion": {
+          "samples": 16,
+          "percent": 0.48602673147023084
+        }
+      },
+      "inclusive_partial_stack_counts": {
+        "metadata_lookup": {
+          "samples": 113,
+          "percent": 3.4325637910085054
+        },
+        "allocation_copy_compare": {
+          "samples": 481,
+          "percent": 14.611178614823816
+        },
+        "rpc_framing_serialization_buffers": {
+          "samples": 586,
+          "percent": 17.800729040097206
+        },
+        "scheduler_synchronization": {
+          "samples": 620,
+          "percent": 18.833535844471445
+        },
+        "raft_consensus_driver": {
+          "samples": 355,
+          "percent": 10.783718104495748
+        },
+        "persistent_ordered_map": {
+          "samples": 149,
+          "percent": 4.526123936816525
+        },
+        "command_conversion": {
+          "samples": 22,
+          "percent": 0.6682867557715675
+        },
+        "engine_storage": {
+          "samples": 385,
+          "percent": 11.69501822600243
+        },
+        "kernel": {
+          "samples": 671,
+          "percent": 20.382746051032807
+        }
+      },
+      "top_leaf_symbols": [
+        {
+          "symbol": "kv9_engine::wal_segment::WalSegment::append",
+          "samples": 260,
+          "percent": 7.897934386391252
+        },
+        {
+          "symbol": "__memcpy_avx512_unaligned_erms",
+          "samples": 235,
+          "percent": 7.138517618469016
+        },
+        {
+          "symbol": "kv9_raft::driver::NodeDriver<S,E>::inspect_applied",
+          "samples": 167,
+          "percent": 5.072904009720535
+        },
+        {
+          "symbol": "_raw_spin_unlock_irqrestore",
+          "samples": 149,
+          "percent": 4.526123936816525
+        },
+        {
+          "symbol": "[unknown]",
+          "samples": 80,
+          "percent": 2.4301336573511545
+        },
+        {
+          "symbol": "__memcmp_evex_movbe",
+          "samples": 75,
+          "percent": 2.2782503037667072
+        },
+        {
+          "symbol": "rpds::map::red_black_tree_map::Node<K,V,P>::insert::ins",
+          "samples": 64,
+          "percent": 1.9441069258809234
+        },
+        {
+          "symbol": "std::sys::sync::mutex::futex::Mutex::lock_contended",
+          "samples": 64,
+          "percent": 1.9441069258809234
+        },
+        {
+          "symbol": "finish_task_switch.isra.0",
+          "samples": 51,
+          "percent": 1.5492102065613609
+        },
+        {
+          "symbol": "kv9_raft::storage::DiskRaftStorage<F>::write_record_unsynced",
+          "samples": 50,
+          "percent": 1.5188335358444713
+        },
+        {
+          "symbol": "_rjem_malloc",
+          "samples": 41,
+          "percent": 1.2454434993924666
+        },
+        {
+          "symbol": "do_syscall_64",
+          "samples": 36,
+          "percent": 1.0935601458080195
+        },
+        {
+          "symbol": "syscall",
+          "samples": 32,
+          "percent": 0.9720534629404617
+        },
+        {
+          "symbol": "<raft_proto::protos::eraftpb::Message as protobuf::message::Message>::merge_from",
+          "samples": 28,
+          "percent": 0.850546780072904
+        },
+        {
+          "symbol": "_rjem_sdallocx",
+          "samples": 26,
+          "percent": 0.7897934386391251
+        },
+        {
+          "symbol": "<raft::storage::MemStorage as raft::storage::Storage>::first_index",
+          "samples": 25,
+          "percent": 0.7594167679222357
+        },
+        {
+          "symbol": "_rjem_je_arena_ralloc_no_move",
+          "samples": 23,
+          "percent": 0.6986634264884569
+        },
+        {
+          "symbol": "do_rallocx",
+          "samples": 20,
+          "percent": 0.6075334143377886
+        },
+        {
+          "symbol": "kv9_raft::work::RaftInbox::send",
+          "samples": 20,
+          "percent": 0.6075334143377886
+        },
+        {
+          "symbol": "kv9_raft::driver::NodeDriver<S,E>::step_inner",
+          "samples": 19,
+          "percent": 0.5771567436208992
+        },
+        {
+          "symbol": "prost::message::Message::decode",
+          "samples": 19,
+          "percent": 0.5771567436208992
+        },
+        {
+          "symbol": "kv9_meta::codec::RowValue::decode",
+          "samples": 19,
+          "percent": 0.5771567436208992
+        },
+        {
+          "symbol": "prost::encoding::varint::decode_varint",
+          "samples": 18,
+          "percent": 0.5467800729040098
+        },
+        {
+          "symbol": "<core::future::poll_fn::PollFn<F> as core::future::future::Future>::poll",
+          "samples": 17,
+          "percent": 0.5164034021871203
+        },
+        {
+          "symbol": "alloc::raw_vec::RawVecInner<A>::finish_grow",
+          "samples": 16,
+          "percent": 0.48602673147023084
+        },
+        {
+          "symbol": "_raw_spin_unlock_irq",
+          "samples": 16,
+          "percent": 0.48602673147023084
+        },
+        {
+          "symbol": "<kv9_raft::grpc::RaftGrpcService as kv9_raft::grpc::pb::kv9_raft_server::Kv9Raft>::batch_raft::{{closure}}",
+          "samples": 16,
+          "percent": 0.48602673147023084
+        },
+        {
+          "symbol": "_rjem_je_tcache_bin_flush_small",
+          "samples": 16,
+          "percent": 0.48602673147023084
+        },
+        {
+          "symbol": "kv9_common::metrics::Latency::record",
+          "samples": 15,
+          "percent": 0.4556500607533414
+        },
+        {
+          "symbol": "alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle",
+          "samples": 15,
+          "percent": 0.4556500607533414
+        },
+        {
+          "symbol": "<archery::shared_pointer::kind::arct::ArcTK as archery::shared_pointer::kind::SharedPointerKind>::make_mut::{{closure}}",
+          "samples": 15,
+          "percent": 0.4556500607533414
+        },
+        {
+          "symbol": "kv9_raft::work::WorkSignal::notify",
+          "samples": 15,
+          "percent": 0.4556500607533414
+        },
+        {
+          "symbol": "tokio::sync::mpsc::list::Tx<T>::push",
+          "samples": 14,
+          "percent": 0.425273390036452
+        },
+        {
+          "symbol": "tokio::runtime::scheduler::multi_thread::worker::Context::run",
+          "samples": 13,
+          "percent": 0.39489671931956255
+        },
+        {
+          "symbol": "_rjem_je_arena_cache_bin_fill_small",
+          "samples": 13,
+          "percent": 0.39489671931956255
+        },
+        {
+          "symbol": "bytes::bytes_mut::BytesMut::advance_unchecked",
+          "samples": 13,
+          "percent": 0.39489671931956255
+        },
+        {
+          "symbol": "<bytes::bytes_mut::BytesMut as bytes::buf::buf_mut::BufMut>::put_slice",
+          "samples": 13,
+          "percent": 0.39489671931956255
+        },
+        {
+          "symbol": "__rustc::__rust_dealloc",
+          "samples": 13,
+          "percent": 0.39489671931956255
+        },
+        {
+          "symbol": "kv9_meta::store::MetaTxn<E>::validate_row",
+          "samples": 13,
+          "percent": 0.39489671931956255
+        },
+        {
+          "symbol": "kv9_raft::driver::NodeDriver<S,E>::driver_applied",
+          "samples": 13,
+          "percent": 0.39489671931956255
+        },
+        {
+          "symbol": "rpds::map::red_black_tree_map::iter_utils::IterStack<K,V,P>::new",
+          "samples": 12,
+          "percent": 0.3645200486026732
+        },
+        {
+          "symbol": "_rjem_je_arena_ralloc",
+          "samples": 12,
+          "percent": 0.3645200486026732
+        },
+        {
+          "symbol": "triomphe::arc::Arc<T>::as_ptr",
+          "samples": 12,
+          "percent": 0.3645200486026732
+        },
+        {
+          "symbol": "tokio::runtime::scheduler::multi_thread::worker::<impl tokio::runtime::scheduler::multi_thread::handle::Handle>::push_remote_task",
+          "samples": 12,
+          "percent": 0.3645200486026732
+        },
+        {
+          "symbol": "_rjem_je_edata_heap_remove_first",
+          "samples": 12,
+          "percent": 0.3645200486026732
+        },
+        {
+          "symbol": "<raft_proto::protos::eraftpb::Message as protobuf::message::Message>::compute_size",
+          "samples": 12,
+          "percent": 0.3645200486026732
+        },
+        {
+          "symbol": "clear_page_erms",
+          "samples": 11,
+          "percent": 0.33414337788578374
+        },
+        {
+          "symbol": "nft_do_chain",
+          "samples": 11,
+          "percent": 0.33414337788578374
+        },
+        {
+          "symbol": "__rustc::__rust_alloc",
+          "samples": 10,
+          "percent": 0.3037667071688943
+        },
+        {
+          "symbol": "std::sync::nonpoison::condvar::Condvar::notify_one",
+          "samples": 10,
+          "percent": 0.3037667071688943
+        },
+        {
+          "symbol": "<kv9_raft::grpc::GrpcTransport as kv9_raft::transport::RaftTransport>::send",
+          "samples": 10,
+          "percent": 0.3037667071688943
+        },
+        {
+          "symbol": "do_user_addr_fault",
+          "samples": 10,
+          "percent": 0.3037667071688943
+        },
+        {
+          "symbol": "kv9_meta::codec::RowValue::get",
+          "samples": 10,
+          "percent": 0.3037667071688943
+        },
+        {
+          "symbol": "protobuf::coded_output_stream::CodedOutputStream::write_uint64",
+          "samples": 10,
+          "percent": 0.3037667071688943
+        },
+        {
+          "symbol": "tokio::runtime::task::core::Core<T,S>::poll",
+          "samples": 10,
+          "percent": 0.3037667071688943
+        },
+        {
+          "symbol": "<kv9_server::grpc::Kv9Grpc as kv9_server::grpc::proto::kv9_server::Kv9>::raw_put::{{closure}}",
+          "samples": 10,
+          "percent": 0.3037667071688943
+        },
+        {
+          "symbol": "protobuf::coded_input_stream::CodedInputStream::read_tag",
+          "samples": 10,
+          "percent": 0.3037667071688943
+        },
+        {
+          "symbol": "tokio::runtime::task::list::OwnedTasks<S>::bind_inner",
+          "samples": 10,
+          "percent": 0.3037667071688943
+        },
+        {
+          "symbol": "<u64 as protobuf::rt::ProtobufVarint>::len_varint",
+          "samples": 9,
+          "percent": 0.2733900364520049
+        },
+        {
+          "symbol": "protobuf::rt::tag_size",
+          "samples": 9,
+          "percent": 0.2733900364520049
+        }
+      ]
+    },
+    {
+      "api": "batch_put",
+      "complete": true,
+      "selected_samples": 3100,
+      "recorded_samples": 3159,
+      "calls": 48524,
+      "outcomes": {
+        "success": 48524,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "categories": {
+        "engine_storage": {
+          "samples": 1608,
+          "percent": 51.87096774193548
+        },
+        "allocation_copy_compare": {
+          "samples": 403,
+          "percent": 13.0
+        },
+        "other_symbols": {
+          "samples": 373,
+          "percent": 12.03225806451613
+        },
+        "persistent_ordered_map": {
+          "samples": 233,
+          "percent": 7.516129032258065
+        },
+        "kernel_other": {
+          "samples": 168,
+          "percent": 5.419354838709677
+        },
+        "metadata_lookup": {
+          "samples": 82,
+          "percent": 2.6451612903225805
+        },
+        "rpc_framing_serialization_buffers": {
+          "samples": 70,
+          "percent": 2.2580645161290325
+        },
+        "kernel_generic_spinlock": {
+          "samples": 40,
+          "percent": 1.2903225806451613
+        },
+        "scheduler_synchronization": {
+          "samples": 29,
+          "percent": 0.9354838709677419
+        },
+        "command_conversion": {
+          "samples": 28,
+          "percent": 0.9032258064516129
+        },
+        "kernel_network": {
+          "samples": 26,
+          "percent": 0.8387096774193549
+        },
+        "raft_consensus_driver": {
+          "samples": 19,
+          "percent": 0.6129032258064516
+        },
+        "kernel_scheduler_futex": {
+          "samples": 14,
+          "percent": 0.45161290322580644
+        },
+        "unknown_or_unsymbolized": {
+          "samples": 7,
+          "percent": 0.22580645161290322
+        }
+      },
+      "inclusive_partial_stack_counts": {
+        "metadata_lookup": {
+          "samples": 172,
+          "percent": 5.548387096774194
+        },
+        "allocation_copy_compare": {
+          "samples": 473,
+          "percent": 15.258064516129032
+        },
+        "rpc_framing_serialization_buffers": {
+          "samples": 174,
+          "percent": 5.612903225806452
+        },
+        "scheduler_synchronization": {
+          "samples": 65,
+          "percent": 2.096774193548387
+        },
+        "raft_consensus_driver": {
+          "samples": 30,
+          "percent": 0.967741935483871
+        },
+        "persistent_ordered_map": {
+          "samples": 319,
+          "percent": 10.290322580645162
+        },
+        "command_conversion": {
+          "samples": 41,
+          "percent": 1.3225806451612903
+        },
+        "engine_storage": {
+          "samples": 1649,
+          "percent": 53.193548387096776
+        },
+        "kernel": {
+          "samples": 248,
+          "percent": 8.0
+        }
+      },
+      "top_leaf_symbols": [
+        {
+          "symbol": "kv9_engine::wal_segment::WalSegment::append",
+          "samples": 1301,
+          "percent": 41.96774193548387
+        },
+        {
+          "symbol": "kv9_raft::storage::DiskRaftStorage<F>::write_record_unsynced",
+          "samples": 255,
+          "percent": 8.225806451612904
+        },
+        {
+          "symbol": "rpds::map::red_black_tree_map::Node<K,V,P>::insert::ins",
+          "samples": 153,
+          "percent": 4.935483870967742
+        },
+        {
+          "symbol": "__memcpy_avx512_unaligned_erms",
+          "samples": 145,
+          "percent": 4.67741935483871
+        },
+        {
+          "symbol": "__memcmp_evex_movbe",
+          "samples": 135,
+          "percent": 4.354838709677419
+        },
+        {
+          "symbol": "<archery::shared_pointer::kind::arct::ArcTK as archery::shared_pointer::kind::SharedPointerKind>::make_mut::{{closure}}",
+          "samples": 54,
+          "percent": 1.7419354838709677
+        },
+        {
+          "symbol": "_rjem_malloc",
+          "samples": 54,
+          "percent": 1.7419354838709677
+        },
+        {
+          "symbol": "triomphe::arc::Arc<T>::as_ptr",
+          "samples": 46,
+          "percent": 1.4838709677419355
+        },
+        {
+          "symbol": "_rjem_sdallocx",
+          "samples": 38,
+          "percent": 1.2258064516129032
+        },
+        {
+          "symbol": "_raw_spin_unlock_irqrestore",
+          "samples": 31,
+          "percent": 1.0
+        },
+        {
+          "symbol": "_rjem_je_tcache_bin_flush_small",
+          "samples": 26,
+          "percent": 0.8387096774193549
+        },
+        {
+          "symbol": "__rustc::__rust_dealloc",
+          "samples": 24,
+          "percent": 0.7741935483870968
+        },
+        {
+          "symbol": "kv9_engine::write_batch::WriteBatch::put",
+          "samples": 19,
+          "percent": 0.6129032258064516
+        },
+        {
+          "symbol": "kv9_meta::codec::RowValue::decode",
+          "samples": 19,
+          "percent": 0.6129032258064516
+        },
+        {
+          "symbol": "__rustc::__rust_alloc",
+          "samples": 18,
+          "percent": 0.5806451612903226
+        },
+        {
+          "symbol": "do_user_addr_fault",
+          "samples": 18,
+          "percent": 0.5806451612903226
+        },
+        {
+          "symbol": "_rjem_je_arena_ralloc",
+          "samples": 18,
+          "percent": 0.5806451612903226
+        },
+        {
+          "symbol": "kv9_raft::command::read_ops",
+          "samples": 17,
+          "percent": 0.5483870967741935
+        },
+        {
+          "symbol": "rpds::map::red_black_tree_map::iter_utils::IterStack<K,V,P>::new",
+          "samples": 17,
+          "percent": 0.5483870967741935
+        },
+        {
+          "symbol": "do_rallocx",
+          "samples": 17,
+          "percent": 0.5483870967741935
+        },
+        {
+          "symbol": "clear_page_erms",
+          "samples": 15,
+          "percent": 0.4838709677419355
+        },
+        {
+          "symbol": "alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle",
+          "samples": 15,
+          "percent": 0.4838709677419355
+        },
+        {
+          "symbol": "bytes::buf::buf_impl::Buf::copy_to_bytes",
+          "samples": 14,
+          "percent": 0.45161290322580644
+        },
+        {
+          "symbol": "_rjem_je_arena_cache_bin_fill_small",
+          "samples": 13,
+          "percent": 0.41935483870967744
+        },
+        {
+          "symbol": "__rustc::__rust_no_alloc_shim_is_unstable_v2",
+          "samples": 13,
+          "percent": 0.41935483870967744
+        },
+        {
+          "symbol": "<kv9_engine::mem::MemSnapshot as kv9_engine::ReadView>::get",
+          "samples": 13,
+          "percent": 0.41935483870967744
+        },
+        {
+          "symbol": "kv9_meta::codec::memcmp_bytes",
+          "samples": 12,
+          "percent": 0.3870967741935484
+        },
+        {
+          "symbol": "memcg1_commit_charge",
+          "samples": 11,
+          "percent": 0.3548387096774194
+        },
+        {
+          "symbol": "try_charge_memcg",
+          "samples": 10,
+          "percent": 0.3225806451612903
+        },
+        {
+          "symbol": "<kv9_engine::mem::MemEngine as kv9_engine::replicated::ReplicatedEngine>::write_applied",
+          "samples": 10,
+          "percent": 0.3225806451612903
+        },
+        {
+          "symbol": "_rjem_je_arena_ralloc_no_move",
+          "samples": 10,
+          "percent": 0.3225806451612903
+        },
+        {
+          "symbol": "kv9_meta::tables::Tables<E>::region_for_key_in",
+          "samples": 10,
+          "percent": 0.3225806451612903
+        },
+        {
+          "symbol": "kv9_raft::driver::NodeDriver<S,E>::inspect_applied",
+          "samples": 9,
+          "percent": 0.2903225806451613
+        },
+        {
+          "symbol": "alloc::raw_vec::RawVecInner<A>::finish_grow",
+          "samples": 9,
+          "percent": 0.2903225806451613
+        },
+        {
+          "symbol": "<rpds::map::red_black_tree_map::RangeIterPtr<K,V,RB,Q,P> as core::iter::traits::double_ended::DoubleEndedIterator>::next_back",
+          "samples": 9,
+          "percent": 0.2903225806451613
+        },
+        {
+          "symbol": "tcache_bin_flush_edatas_lookup.isra.0",
+          "samples": 8,
+          "percent": 0.25806451612903225
+        },
+        {
+          "symbol": "_copy_to_iter",
+          "samples": 8,
+          "percent": 0.25806451612903225
+        },
+        {
+          "symbol": "kv9_meta::store::MetaTxn<E>::validate_row",
+          "samples": 8,
+          "percent": 0.25806451612903225
+        },
+        {
+          "symbol": "kv9_meta::codec::memcmp_uint",
+          "samples": 8,
+          "percent": 0.25806451612903225
+        },
+        {
+          "symbol": "kv9_meta::codec::encode_index_key",
+          "samples": 8,
+          "percent": 0.25806451612903225
+        },
+        {
+          "symbol": "kv9_common::codec::decode_key",
+          "samples": 7,
+          "percent": 0.22580645161290322
+        },
+        {
+          "symbol": "copy_folio_from_iter_atomic",
+          "samples": 7,
+          "percent": 0.22580645161290322
+        },
+        {
+          "symbol": "kv9_txn::raw::RawExecutor::plan_batch_put",
+          "samples": 7,
+          "percent": 0.22580645161290322
+        },
+        {
+          "symbol": "kv9_meta::store::MetaTxn<E>::merged_range",
+          "samples": 7,
+          "percent": 0.22580645161290322
+        },
+        {
+          "symbol": "kv9_meta::codec::split_components",
+          "samples": 7,
+          "percent": 0.22580645161290322
+        },
+        {
+          "symbol": "<core::iter::sources::from_fn::FromFn<F> as core::iter::traits::iterator::Iterator>::next",
+          "samples": 7,
+          "percent": 0.22580645161290322
+        },
+        {
+          "symbol": "__rcu_read_lock",
+          "samples": 7,
+          "percent": 0.22580645161290322
+        },
+        {
+          "symbol": "[unknown]",
+          "samples": 7,
+          "percent": 0.22580645161290322
+        },
+        {
+          "symbol": "_raw_spin_unlock_irq",
+          "samples": 6,
+          "percent": 0.1935483870967742
+        },
+        {
+          "symbol": "lll_mutex_unlock_optimized",
+          "samples": 6,
+          "percent": 0.1935483870967742
+        },
+        {
+          "symbol": "finish_task_switch.isra.0",
+          "samples": 6,
+          "percent": 0.1935483870967742
+        },
+        {
+          "symbol": "get_mem_cgroup_from_mm",
+          "samples": 6,
+          "percent": 0.1935483870967742
+        },
+        {
+          "symbol": "_rjem_je_edata_heap_remove_first",
+          "samples": 5,
+          "percent": 0.16129032258064516
+        },
+        {
+          "symbol": "kv9_server::point_wire::Handler::request",
+          "samples": 5,
+          "percent": 0.16129032258064516
+        },
+        {
+          "symbol": "_rjem_je_edata_heap_insert",
+          "samples": 5,
+          "percent": 0.16129032258064516
+        },
+        {
+          "symbol": "syscall",
+          "samples": 5,
+          "percent": 0.16129032258064516
+        },
+        {
+          "symbol": "kv9_raft::command::Command::encode",
+          "samples": 5,
+          "percent": 0.16129032258064516
+        },
+        {
+          "symbol": "<alloc::vec::Vec<T> as alloc::vec::spec_from_iter_nested::SpecFromIterNested<T,I>>::from_iter",
+          "samples": 5,
+          "percent": 0.16129032258064516
+        },
+        {
+          "symbol": "__rcu_read_unlock",
+          "samples": 5,
+          "percent": 0.16129032258064516
+        },
+        {
+          "symbol": "<kv9_server::grpc::Kv9Grpc as kv9_server::grpc::proto::kv9_server::Kv9>::raw_batch_put::{{closure}}",
+          "samples": 5,
+          "percent": 0.16129032258064516
+        }
+      ]
+    }
+  ]
+}

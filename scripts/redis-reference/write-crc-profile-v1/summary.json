@@ -1,0 +1,20 @@
+{
+  "complete": true,
+  "instrumented": true,
+  "throughput_acceptance": false,
+  "profiles": [
+    {
+      "api": "point_put",
+      "fixture_complete": true,
+      "profile_complete": true,
+      "directory": "/tmp/kv9-write-apply-profile-first/point_put"
+    },
+    {
+      "api": "batch_put",
+      "fixture_complete": true,
+      "profile_complete": true,
+      "directory": "/tmp/kv9-write-apply-profile-first/batch_put"
+    }
+  ],
+  "ended_unix_ns": 1789135633731282189
+}

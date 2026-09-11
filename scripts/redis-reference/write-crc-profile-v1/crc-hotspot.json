@@ -1,0 +1,52 @@
+{
+  "complete": true,
+  "server_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "server_sha256": "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+  "symbol": "kv9_engine::wal_segment::WalSegment::append",
+  "symbol_address": "0x8cf690",
+  "relative_instruction_range": [
+    "0x55b",
+    "0x5eb"
+  ],
+  "range_kind": "half-open",
+  "polynomial": "0xedb88320",
+  "disassembly_command": [
+    "objdump",
+    "-d",
+    "-C",
+    "--start-address=0x8cfbd0",
+    "--stop-address=0x8cfca0",
+    "/tmp/kv9-rpc-pair-release-first/kv9"
+  ],
+  "disassembly_sha256": "bcb812151cab64b4e64eb74ddf3c28327538bfe08d2cf443833139e59f606218",
+  "profiles": [
+    {
+      "api": "point_put",
+      "total_selected": 3292,
+      "crc_loop_leaf_samples": 257,
+      "percent": 7.806804374240583,
+      "samples_sha256": "e5669a0243b2523112a6ce8485b9e60ceabefaa2c2bce34d54e71b1f4e236fd1"
+    },
+    {
+      "api": "batch_put",
+      "total_selected": 3100,
+      "crc_loop_leaf_samples": 1299,
+      "percent": 41.903225806451616,
+      "samples_sha256": "0f1e0323c0fbae0b2f692a47a2d9e746bfbadf92ccbd3f104cdae7e55bc5922b"
+    }
+  ],
+  "scope": "Exact-binary instruction attribution of leaf samples inside the inlined CRC bit-update loop. Subset of engine/append samples, not an additive category or predicted speedup.",
+  "full_symbol_disassembly": {
+    "command": [
+      "objdump",
+      "-d",
+      "-C",
+      "--start-address=0x8cf690",
+      "--stop-address=0x8cffA8",
+      "/tmp/kv9-rpc-pair-release-first/kv9"
+    ],
+    "symbol_bytes": 2328,
+    "sha256": "28f0a18fd96c3ac9f2384deab2ccd0778e0a11f2301569c300c4dc7086e359d4",
+    "path": "/tmp/kv9-write-apply-profile-first/append-disassembly-full.txt"
+  }
+}

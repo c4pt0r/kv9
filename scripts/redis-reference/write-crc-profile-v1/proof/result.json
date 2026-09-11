@@ -1,0 +1,143 @@
+{
+  "accepted": true,
+  "checked_theorems": 22,
+  "compiled_table_entries": 256,
+  "complete": true,
+  "completed_unix_ns": 1789137016373189669,
+  "controls": [
+    {
+      "name": "compiled wrong polynomial",
+      "reason": "Lean rejected RustTable: RustTable.lean:272:55: error: Tactic `decide` proved that the proposition\n  \u2200 (byte : BitVec 8), compiledTable[byte.toNat]! = tableEntry byte\nis false\n'Kv9.CRC32.compiled_table_length' does not depend on any axioms\n'Kv9.CRC32.compiled_table' depends on axioms: [propext, sorryAx, Quot.sound]\n'Kv9.CRC32.compiled_byte_transition' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_list_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_parts_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_checksum_equivalence' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n'Kv9.CRC32.compiled_fragmentation_invariant' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]\n",
+      "rejected": true
+    },
+    {
+      "name": "proof-hole",
+      "reason": "Lean rejected CRC32: CRC32.lean:110:8: error: declaration uses `sorry`\n'Kv9.CRC32.masked_index' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Kv9.CRC32.bit_mask' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.bit_step_xor' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.bits_xor' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.high_mask_bit' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.high_step' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.high_byte_shift' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.byte_split' depends on axioms: [propext, Classical.choice, Quot.sound]\n'Kv9.CRC32.byte_transition' depends on axioms: [propext, sorryAx, Quot.sound]\n'Kv9.CRC32.list_equivalence' depends on axioms: [propext, sorryAx, Quot.sound]\n'Kv9.CRC32.table_fold_append' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.parts_flatten' depends on axioms: [propext, Quot.sound]\n'Kv9.CRC32.checksum_equivalence' depends on axioms: [propext, sorryAx, Quot.sound]\n'Kv9.CRC32.singleton_equivalence' depends on axioms: [propext, sorryAx, Quot.sound]\n'Kv9.CRC32.fragmentation_invariant' depends on axioms: [propext, sorryAx, Quot.sound]\n",
+      "rejected": true
+    },
+    {
+      "name": "custom-axiom",
+      "reason": "untrusted axioms: Kv9.CRC32.byte_transition: ['Kv9.CRC32.fake', 'Quot.sound', 'propext']",
+      "rejected": true
+    },
+    {
+      "name": "unmapped shift",
+      "reason": "source/model contract mismatch: pub(crate) fn crc32_parts(",
+      "rejected": true
+    },
+    {
+      "name": "missing complement",
+      "reason": "source/model contract mismatch: pub(crate) fn crc32_parts(",
+      "rejected": true
+    }
+  ],
+  "scope": "CRC computation equivalence; not whole Rust, WAL recovery, Raft or hardware refinement",
+  "started_unix_ns": 1789137011395205216,
+  "theorems": {
+    "Kv9.CRC32.bit_mask": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.bit_step_xor": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.bits_xor": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.byte_split": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.byte_transition": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.checksum_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_byte_transition": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_checksum_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_fragmentation_invariant": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_list_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_parts_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_table": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.compiled_table_length": [],
+    "Kv9.CRC32.fragmentation_invariant": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.high_byte_shift": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.high_mask_bit": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.high_step": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.list_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.masked_index": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.parts_flatten": [
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.singleton_equivalence": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "Kv9.CRC32.table_fold_append": [
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "toolchain": {
+    "lean": "/tmp/kv9-p0-tools/lean-4.33.1-linux/bin/lean",
+    "lean_sha256": "e8baaa71855a616dc351028f3ad2200051b0671f423a1696a100e809302d5550",
+    "rustc": "/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+    "rustc_sha256": "103b60e1b1339968c1d74202ea1d45686037e82c4ea3e0569de24b18a1e6836a",
+    "rustc_version": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8",
+    "version": "Lean (version 4.33.1, x86_64-unknown-linux-gnu, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)"
+  }
+}

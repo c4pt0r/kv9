@@ -1,0 +1,53 @@
+--- /tmp/kv9-rpc-pair-read-profile-run-first/analyze.py
++++ /tmp/kv9-write-apply-profile-first/analyze.py
+@@ -6,8 +6,8 @@
+ if not __debug__: raise RuntimeError('analysis requires PYTHONOPTIMIZE=0')
+ sys.dont_write_bytecode=True
+ ROOT=Path(__file__).parent
+-SOURCE=Path('/tmp/kv9-point-batch1-measurement')
+-BUILD=Path('/tmp/kv9-point-batch1-client-release-first')
++SOURCE=Path('/tmp/kv9-point-write-measurement-v3')
++BUILD=Path('/tmp/kv9-point-write-v3-release-first/native')
+ PERF=(Path('/usr/lib/linux-tools')/os.uname().release/'perf').resolve()
+ def read(p):return json.loads(Path(p).read_text())
+ def save(p,v):Path(p).write_text(json.dumps(v,indent=2)+'\n')
+@@ -28,6 +28,8 @@
+  'rpc_framing_serialization_buffers':r'kv9_raft::grpc|kv9_server::grpc|tonic::|h2::|hyper::|http::|http_body::|prost::|protobuf::|raft_proto::|bytes::',
+  'scheduler_synchronization':r'std::sys::sync|tokio::runtime|tokio::sync|parking_lot|crossbeam|CompletionSignal|WorkSignal',
+  'raft_consensus_driver':r'kv9_raft::driver|kv9_raft::catalog_driver|kv9_raft::bridge|(?:^|[ <])raft::',
++ 'persistent_ordered_map':r'rpds::|archery::',
++ 'command_conversion':r'kv9_raft::command|lower_ops|to_write_batch',
+  'engine_storage':r'kv9_engine::|kv9_raft::storage|kv9_raft::disk|kv9_raft::wal',
+ }
+ def category(f):
+@@ -38,17 +40,18 @@
+   if re.search(r'raw_spin|queued_spin',s):return 'kernel_generic_spinlock'
+   return 'kernel_other'
+  # First match wins. Generic allocation wins over generic type names that contain a KV9 caller.
+- for name in ('allocation_copy_compare','metadata_lookup','scheduler_synchronization','rpc_framing_serialization_buffers','raft_consensus_driver','engine_storage'):
++ for name in ('allocation_copy_compare','metadata_lookup','scheduler_synchronization','rpc_framing_serialization_buffers','raft_consensus_driver','persistent_ordered_map','command_conversion','engine_storage'):
+   if re.search(patterns[name],s):return name
+  if '[unknown]'in s or s.startswith('0x'):return 'unknown_or_unsymbolized'
+  return 'other_symbols'
+ results=[]
+-for api in protocol['profiles']:
++for label in protocol['profiles']:
++ api={'point_put':'point_put','batch_put64':'batch_put'}[label]
+  d=ROOT/api;r=read(d/'run/report.json');c=read(d/'requested-config.json');record=read(d/'profile-record.json')
+  check(record['complete']and record['perf_exit_code']==0 and record['profiler_lifetimes_exited'],'recording incomplete')
+  check(sha(d/'perf.data')==record['raw_perf_sha256'] and 0<(d/'perf.data').stat().st_size<protocol['max_perf_bytes'],'raw recording identity/cap differs')
+  original=validator.validate(d/'run',BUILD,d/'requested-config.json',protocol['client_revision'],require_timing=False)
+- check(original['accepted']and r['complete']and r['stop_reason']=='duration'and c['read_api']==api and c['measure_ms']==5000,'strict report identity differs')
++ check(original['accepted']and r['complete']and r['stop_reason']=='duration'and c['write_api']==api and c['read_percent']==0 and c['batch_size']==(1 if api=='point_put' else 64) and c['measure_ms']==5000,'strict report identity differs')
+  commands={}
+  for label,args in [('perf-script',['script','-f','--ns','-F','comm,pid,tid,time,period,event,ip,sym,symoff,dso']),('perf-top',['report','-f','--stdio','--no-children','--sort','symbol','--percent-limit','0'])]:
+   cmd=['sudo','-n','env','DEBUGINFOD_URLS=',str(PERF),*args,'-i',str(d/'perf.data')]
+@@ -91,7 +94,7 @@
+   p=Path(retention['retained_data'])/name;check(p.stat().st_size==item['bytes']and sha(p)==item['sha256'],'retained data differs')
+  check(sha(d/'perf.data')==record['raw_perf_sha256'],'decoder changed raw recording')
+  count=len(selected)
+- result=dict(api=api,complete=True,instrumented=True,throughput_acceptance=False,server_revision=protocol['server_revision'],server_sha256=protocol['server_sha256'],client_revision=protocol['client_revision'],client_sha256=protocol['client_sha256'],raw_perf_sha256=record['raw_perf_sha256'],raw_perf_bytes=record['raw_perf_bytes'],recorded_samples=len(samples),selected_samples=count,lost_samples=0,recording_contains_nominal_measurement=True,measurement_unix_ns=[wall_start,wall_end],measurement_monotonic_ns=[start,end],selected_monotonic_ns=[inside_start,inside_end],excluded_edge_ns=1_000_000,wall_to_monotonic_offsets_ns=offsets,offset_spread_ns=spread,aggregate_32_bins=dict(sorted(bins.items())),period_ns=selected[0]['period_ns'],sampled_cpu_ns=sum(s['period_ns']for s in selected),categories={k:dict(samples=v,percent=100*v/count)for k,v in counts.most_common()},top_leaf_symbols=[dict(symbol=k,samples=v,percent=100*v/count)for k,v in leaves.most_common(60)],inclusive_partial_stack_counts={k:dict(samples=v,percent=100*v/count)for k,v in inclusive.items()},per_voter={node:dict(pid=v['pid'],samples=sum(s['pid']==v['pid']for s in selected),equal_bins=sorted({min(31,(s['monotonic_ns']-inside_start)*32//(inside_end-inside_start))for s in selected if s['pid']==v['pid']}))for node,v in record['voters'].items()},stack_depth_counts=dict(Counter(len(s['frames'])for s in selected)),top_multiframe_stacks=[dict(stack=k,samples=v,percent=100*v/count)for k,v in stacks.most_common(50)],calls=r['measured_completed'],outcomes=outcomes,whole_call_metrics=r['metrics']['measurement'],cohort_elapsed_ns=r['cohort_elapsed_ns'],owned_fixture_lifetimes_exited=len(cleanup['children']),profiler_lifetimes_exited=len(record['profiler_lifetimes']),retained_files=len(retention['files']),retained_bytes=sum(v['bytes']for v in retention['files'].values()),resource_coverage=read(d/'resource-coverage.json'),category_rules=patterns,exclusive_priority=['kernel','allocation_copy_compare','metadata_lookup','scheduler_synchronization','rpc_framing_serialization_buffers','raft_consensus_driver','engine_storage','unknown_or_unsymbolized','other_symbols'],limits=['One instrumented 5-second sample per API; shared host, no repeated A/B throughput or latency acceptance.','Volatile tmpfs WAL retains ordinary Raft quorum/sync calls; no disk or power-loss claim.','Only on-CPU samples: percentages are not end-to-end latency fractions.','Inclusive recovered stacks overlap and are not additive. Optimized code/async boundaries limit unwinding.','Unmeasured idle followers need not cover every interval; aggregate 32-bin coverage is checked.','No prior executable instruction offsets are reused.'])
++ result=dict(api=api,complete=True,instrumented=True,throughput_acceptance=False,server_revision=protocol['server_revision'],server_sha256=protocol['server_sha256'],client_revision=protocol['client_revision'],client_sha256=protocol['client_sha256'],raw_perf_sha256=record['raw_perf_sha256'],raw_perf_bytes=record['raw_perf_bytes'],recorded_samples=len(samples),selected_samples=count,lost_samples=0,recording_contains_nominal_measurement=True,measurement_unix_ns=[wall_start,wall_end],measurement_monotonic_ns=[start,end],selected_monotonic_ns=[inside_start,inside_end],excluded_edge_ns=1_000_000,wall_to_monotonic_offsets_ns=offsets,offset_spread_ns=spread,aggregate_32_bins=dict(sorted(bins.items())),period_ns=selected[0]['period_ns'],sampled_cpu_ns=sum(s['period_ns']for s in selected),categories={k:dict(samples=v,percent=100*v/count)for k,v in counts.most_common()},top_leaf_symbols=[dict(symbol=k,samples=v,percent=100*v/count)for k,v in leaves.most_common(60)],inclusive_partial_stack_counts={k:dict(samples=v,percent=100*v/count)for k,v in inclusive.items()},per_voter={node:dict(pid=v['pid'],samples=sum(s['pid']==v['pid']for s in selected),equal_bins=sorted({min(31,(s['monotonic_ns']-inside_start)*32//(inside_end-inside_start))for s in selected if s['pid']==v['pid']}))for node,v in record['voters'].items()},stack_depth_counts=dict(Counter(len(s['frames'])for s in selected)),top_multiframe_stacks=[dict(stack=k,samples=v,percent=100*v/count)for k,v in stacks.most_common(50)],calls=r['measured_completed'],outcomes=outcomes,whole_call_metrics=r['metrics']['measurement'],cohort_elapsed_ns=r['cohort_elapsed_ns'],owned_fixture_lifetimes_exited=len(cleanup['children']),profiler_lifetimes_exited=len(record['profiler_lifetimes']),retained_files=len(retention['files']),retained_bytes=sum(v['bytes']for v in retention['files'].values()),resource_coverage=read(d/'resource-coverage.json'),category_rules=patterns,exclusive_priority=['kernel','allocation_copy_compare','metadata_lookup','scheduler_synchronization','rpc_framing_serialization_buffers','raft_consensus_driver','persistent_ordered_map','command_conversion','engine_storage','unknown_or_unsymbolized','other_symbols'],limits=['One instrumented 5-second sample per API; shared host, no repeated A/B throughput or latency acceptance.','Volatile tmpfs WAL retains ordinary Raft quorum/sync calls; no disk or power-loss claim.','Only on-CPU samples: percentages are not end-to-end latency fractions.','Inclusive recovered stacks overlap and are not additive. Optimized code/async boundaries limit unwinding.','Unmeasured idle followers need not cover every interval; aggregate 32-bin coverage is checked.','No prior executable instruction offsets are reused.'])
+  save(d/'profile-summary.json',result);results.append({k:result[k]for k in ('api','complete','selected_samples','recorded_samples','calls','outcomes','categories','inclusive_partial_stack_counts','top_leaf_symbols')})
+  print('PASS: '+api+' '+str(count)+' selected CPU samples',flush=True)
+ save(ROOT/'analysis-summary.json',dict(complete=True,analyzer_sha256=sha(__file__),profiles=results))

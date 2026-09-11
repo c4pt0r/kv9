@@ -1,0 +1,284 @@
+{
+  "complete": true,
+  "children": [
+    {
+      "pid": 2036564,
+      "identity": {
+        "pid": 2036564,
+        "start_ticks": 142431336,
+        "user_ticks": 0,
+        "system_ticks": 0,
+        "rss_bytes": 516096,
+        "peak_rss_bytes": 516096,
+        "io": {
+          "rchar": 5700,
+          "wchar": 0,
+          "syscr": 10,
+          "syscw": 0,
+          "read_bytes": 0,
+          "write_bytes": 0,
+          "cancelled_write_bytes": 0
+        },
+        "cpu_affinity": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "observed_unix_ns": 1789135600943434798,
+        "observed_monotonic_ns": 1424313366713704,
+        "executable_sha256": "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+        "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+        "thread_placement": {
+          "pid": 2036564,
+          "expected": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "process": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "threads": {
+            "2036564": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "2036565": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "2036566": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "2036567": [
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "observed_unix_ns": 1789135600951711950
+        }
+      },
+      "exit_code": -9,
+      "absent": true
+    },
+    {
+      "pid": 2036569,
+      "identity": {
+        "pid": 2036569,
+        "start_ticks": 142431338,
+        "user_ticks": 0,
+        "system_ticks": 0,
+        "rss_bytes": 380928,
+        "peak_rss_bytes": 380928,
+        "io": {
+          "rchar": 2468,
+          "wchar": 0,
+          "syscr": 6,
+          "syscw": 0,
+          "read_bytes": 0,
+          "write_bytes": 0,
+          "cancelled_write_bytes": 0
+        },
+        "cpu_affinity": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "observed_unix_ns": 1789135600957827218,
+        "observed_monotonic_ns": 1424313381106084,
+        "executable_sha256": "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+        "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+        "thread_placement": {
+          "pid": 2036569,
+          "expected": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "process": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "threads": {
+            "2036569": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "2036570": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "2036571": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "2036572": [
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "observed_unix_ns": 1789135600965964419
+        }
+      },
+      "exit_code": -9,
+      "absent": true
+    },
+    {
+      "pid": 2036574,
+      "identity": {
+        "pid": 2036574,
+        "start_ticks": 142431339,
+        "user_ticks": 0,
+        "system_ticks": 0,
+        "rss_bytes": 495616,
+        "peak_rss_bytes": 495616,
+        "io": {
+          "rchar": 5700,
+          "wchar": 0,
+          "syscr": 10,
+          "syscw": 0,
+          "read_bytes": 0,
+          "write_bytes": 0,
+          "cancelled_write_bytes": 0
+        },
+        "cpu_affinity": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "observed_unix_ns": 1789135600972061644,
+        "observed_monotonic_ns": 1424313395340409,
+        "executable_sha256": "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+        "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+        "thread_placement": {
+          "pid": 2036574,
+          "expected": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "process": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "threads": {
+            "2036574": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "2036575": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "2036576": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "2036577": [
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "observed_unix_ns": 1789135600980365506
+        }
+      },
+      "exit_code": -9,
+      "absent": true
+    },
+    {
+      "pid": 2037156,
+      "identity": {
+        "pid": 2037156,
+        "start_ticks": 142431699,
+        "user_ticks": 0,
+        "system_ticks": 0,
+        "rss_bytes": 528384,
+        "peak_rss_bytes": 528384,
+        "io": {
+          "rchar": 5700,
+          "wchar": 0,
+          "syscr": 10,
+          "syscw": 0,
+          "read_bytes": 0,
+          "write_bytes": 0,
+          "cancelled_write_bytes": 0
+        },
+        "cpu_affinity": [
+          0,
+          1
+        ],
+        "observed_unix_ns": 1789135604574421044,
+        "observed_monotonic_ns": 1424316997700161,
+        "executable_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+        "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+        "thread_placement": {
+          "pid": 2037156,
+          "expected": [
+            0,
+            1
+          ],
+          "process": [
+            0,
+            1
+          ],
+          "threads": {
+            "2037156": [
+              0,
+              1
+            ],
+            "2037157": [
+              0,
+              1
+            ],
+            "2037158": [
+              0,
+              1
+            ]
+          },
+          "observed_unix_ns": 1789135604576889942
+        }
+      },
+      "exit_code": 0,
+      "absent": true
+    }
+  ],
+  "storage": "tmpfs"
+}

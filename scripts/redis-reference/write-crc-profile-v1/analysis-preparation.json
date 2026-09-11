@@ -1,0 +1,7 @@
+{
+  "complete": true,
+  "original": "/tmp/kv9-rpc-pair-read-profile-run-first/analyze.py",
+  "original_sha256": "067a79ea3eaee09c3a9b8346a86e42b12a5526469743c0c4498e7652df5e298d",
+  "script_sha256": "c188fd8c648100dee311923bb042dcff488098592eda8230ed5929bcbe958df4",
+  "scope": "Original profile interval/loss/identity/drain-retention analysis with v3 write selectors and explicit map/conversion leaf categories. Inclusive stacks overlap; optimized unwinding limits attribution. No QPS selection."
+}

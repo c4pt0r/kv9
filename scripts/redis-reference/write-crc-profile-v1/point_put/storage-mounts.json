@@ -1,0 +1,41 @@
+{
+  "1": {
+    "path": "/dev/shm/kv9-ready-tmpfs-sjusfk2l/n1",
+    "mount": {
+      "filesystems": [
+        {
+          "target": "/dev/shm",
+          "fstype": "tmpfs",
+          "source": "tmpfs",
+          "options": "rw,nosuid,nodev,inode64"
+        }
+      ]
+    }
+  },
+  "2": {
+    "path": "/dev/shm/kv9-ready-tmpfs-sjusfk2l/n2",
+    "mount": {
+      "filesystems": [
+        {
+          "target": "/dev/shm",
+          "fstype": "tmpfs",
+          "source": "tmpfs",
+          "options": "rw,nosuid,nodev,inode64"
+        }
+      ]
+    }
+  },
+  "3": {
+    "path": "/dev/shm/kv9-ready-tmpfs-sjusfk2l/n3",
+    "mount": {
+      "filesystems": [
+        {
+          "target": "/dev/shm",
+          "fstype": "tmpfs",
+          "source": "tmpfs",
+          "options": "rw,nosuid,nodev,inode64"
+        }
+      ]
+    }
+  }
+}

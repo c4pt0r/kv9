@@ -1,0 +1,856 @@
+{
+  "complete": true,
+  "server_role": "old",
+  "server_binary_sha256": "0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+  "client_binary_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+  "read_api": "batch_get",
+  "write_api": "batch_put",
+  "workload": "batch_put",
+  "validated": {
+    "calls": 48524,
+    "successful_calls": 48524,
+    "successful_input_items": 3105536,
+    "attempts": 48524,
+    "offered_slots": null,
+    "dropped_slots": 0,
+    "process_start_ticks": 142431699,
+    "accepted": true,
+    "version": 1,
+    "report_sha256": "b0616bcf96150c6c7d374545b4d6643f1472ba5e396f880ab85118d6b8fdfbff",
+    "revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+    "dirty": false,
+    "profile": "release",
+    "cargo_features": [],
+    "client_timing_eligible": true,
+    "full_history_independently_checked": false,
+    "environment_independently_checked": false,
+    "scope": "Aggregate client arithmetic and retained build inputs; no server, history, isolation or performance-comparison acceptance"
+  },
+  "population_observations": {
+    "initialization": {
+      "calls": [
+        65,
+        65
+      ],
+      "successes": [
+        65,
+        65
+      ],
+      "attempts": [
+        66,
+        65
+      ],
+      "all_success": true,
+      "all_success_single_attempt": false
+    },
+    "measurement": {
+      "calls": [
+        0,
+        48524
+      ],
+      "successes": [
+        0,
+        48524
+      ],
+      "attempts": [
+        0,
+        48524
+      ],
+      "all_success": true,
+      "all_success_single_attempt": true
+    },
+    "verification": {
+      "calls": [
+        65,
+        0
+      ],
+      "successes": [
+        65,
+        0
+      ],
+      "attempts": [
+        65,
+        0
+      ],
+      "all_success": true,
+      "all_success_single_attempt": true
+    },
+    "warmup": {
+      "calls": [
+        0,
+        128
+      ],
+      "successes": [
+        0,
+        128
+      ],
+      "attempts": [
+        0,
+        128
+      ],
+      "all_success": true,
+      "all_success_single_attempt": true
+    }
+  },
+  "readback": {
+    "keys": 4097,
+    "sentinel_unchanged": true,
+    "deterministic_values_valid": true,
+    "changed_keys": 4096,
+    "maximum_configured_nonce": 10000128,
+    "deterministic_write_key_membership_checked": true,
+    "exact_issued_nonce_set_checked": false,
+    "full_linearizability_checked": false
+  },
+  "summary": {
+    "calls": 48524,
+    "issued": 48524,
+    "dropped_slots": 0,
+    "outcomes": {
+      "success": 48524,
+      "refused": 0,
+      "unknown_write": 0,
+      "read_failure": 0,
+      "client_rejected": 0
+    },
+    "outcome_rates_per_second": {
+      "success": 9697.232779915765,
+      "refused": 0.0,
+      "unknown_write": 0.0,
+      "read_failure": 0.0,
+      "client_rejected": 0.0
+    },
+    "successful_calls_per_second": 9697.232779915765,
+    "successful_input_items_per_second": 620622.8979146089,
+    "cohort_elapsed_ns": 5003901742,
+    "operations": [
+      {
+        "operation": "batch_get",
+        "populations": [
+          {
+            "outcome": "success",
+            "calls": 0,
+            "input_items": 0,
+            "whole_call_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "scheduled_to_completion": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "client_or_sdk_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            }
+          },
+          {
+            "outcome": "refused",
+            "calls": 0,
+            "input_items": 0,
+            "whole_call_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "scheduled_to_completion": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "client_or_sdk_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            }
+          },
+          {
+            "outcome": "unknown_write",
+            "calls": 0,
+            "input_items": 0,
+            "whole_call_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "scheduled_to_completion": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "client_or_sdk_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            }
+          },
+          {
+            "outcome": "read_failure",
+            "calls": 0,
+            "input_items": 0,
+            "whole_call_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "scheduled_to_completion": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "client_or_sdk_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            }
+          },
+          {
+            "outcome": "client_rejected",
+            "calls": 0,
+            "input_items": 0,
+            "whole_call_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "scheduled_to_completion": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "client_or_sdk_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            }
+          }
+        ],
+        "reasons": {
+          "success": 0,
+          "not_leader": 0,
+          "admission_count": 0,
+          "admission_bytes": 0,
+          "admission_oversize": 0,
+          "read_quorum_unconfirmed": 0,
+          "read_apply_unconfirmed": 0,
+          "rpc_status": 0,
+          "protocol": 0,
+          "deadline": 0,
+          "client_capacity": 0,
+          "client_input": 0
+        },
+        "attempts": {
+          "attempt_reasons": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "attempt_rpc_codes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "attempts": [
+            {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            }
+          ],
+          "data_failures": 0,
+          "rpc_codes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "dispatch_lateness": {
+          "mean_ns": null,
+          "p50": null,
+          "p95": null,
+          "p99": null,
+          "population": {
+            "count": 0,
+            "max_ns": null,
+            "min_ns": null,
+            "sum_ns": 0,
+            "valid": true
+          }
+        }
+      },
+      {
+        "operation": "batch_put",
+        "populations": [
+          {
+            "outcome": "success",
+            "calls": 48524,
+            "input_items": 3105536,
+            "whole_call_latency": {
+              "mean_ns": 6596885.160333031,
+              "p50": {
+                "lower_ns": 6225920,
+                "upper_ns": 6291455
+              },
+              "p95": {
+                "lower_ns": 9830400,
+                "upper_ns": 9961471
+              },
+              "p99": {
+                "lower_ns": 13107200,
+                "upper_ns": 13238271
+              },
+              "population": {
+                "count": 48524,
+                "max_ns": 17475066,
+                "min_ns": 1127308,
+                "sum_ns": 320107255520,
+                "valid": true
+              }
+            },
+            "scheduled_to_completion": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "client_or_sdk_latency": {
+              "mean_ns": 6580429.36237738,
+              "p50": {
+                "lower_ns": 6160384,
+                "upper_ns": 6225919
+              },
+              "p95": {
+                "lower_ns": 9830400,
+                "upper_ns": 9961471
+              },
+              "p99": {
+                "lower_ns": 13107200,
+                "upper_ns": 13238271
+              },
+              "population": {
+                "count": 48524,
+                "max_ns": 17449589,
+                "min_ns": 1115166,
+                "sum_ns": 319308754380,
+                "valid": true
+              }
+            }
+          },
+          {
+            "outcome": "refused",
+            "calls": 0,
+            "input_items": 0,
+            "whole_call_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "scheduled_to_completion": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "client_or_sdk_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            }
+          },
+          {
+            "outcome": "unknown_write",
+            "calls": 0,
+            "input_items": 0,
+            "whole_call_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "scheduled_to_completion": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "client_or_sdk_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            }
+          },
+          {
+            "outcome": "read_failure",
+            "calls": 0,
+            "input_items": 0,
+            "whole_call_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "scheduled_to_completion": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "client_or_sdk_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            }
+          },
+          {
+            "outcome": "client_rejected",
+            "calls": 0,
+            "input_items": 0,
+            "whole_call_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "scheduled_to_completion": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            "client_or_sdk_latency": {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            }
+          }
+        ],
+        "reasons": {
+          "success": 48524,
+          "not_leader": 0,
+          "admission_count": 0,
+          "admission_bytes": 0,
+          "admission_oversize": 0,
+          "read_quorum_unconfirmed": 0,
+          "read_apply_unconfirmed": 0,
+          "rpc_status": 0,
+          "protocol": 0,
+          "deadline": 0,
+          "client_capacity": 0,
+          "client_input": 0
+        },
+        "attempts": {
+          "attempt_reasons": [
+            48524,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "attempt_rpc_codes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "attempts": [
+            {
+              "mean_ns": 6576630.554179375,
+              "p50": {
+                "lower_ns": 6160384,
+                "upper_ns": 6225919
+              },
+              "p95": {
+                "lower_ns": 9830400,
+                "upper_ns": 9961471
+              },
+              "p99": {
+                "lower_ns": 13107200,
+                "upper_ns": 13238271
+              },
+              "population": {
+                "count": 48524,
+                "max_ns": 17444059,
+                "min_ns": 1111659,
+                "sum_ns": 319124421011,
+                "valid": true
+              }
+            },
+            {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            },
+            {
+              "mean_ns": null,
+              "p50": null,
+              "p95": null,
+              "p99": null,
+              "population": {
+                "count": 0,
+                "max_ns": null,
+                "min_ns": null,
+                "sum_ns": 0,
+                "valid": true
+              }
+            }
+          ],
+          "data_failures": 0,
+          "rpc_codes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "dispatch_lateness": {
+          "mean_ns": null,
+          "p50": null,
+          "p95": null,
+          "p99": null,
+          "population": {
+            "count": 0,
+            "max_ns": null,
+            "min_ns": null,
+            "sum_ns": 0,
+            "valid": true
+          }
+        }
+      }
+    ],
+    "latency_scope": "whole logical point/batch call; never divide latency by item count"
+  },
+  "report_sha256": "b0616bcf96150c6c7d374545b4d6643f1472ba5e396f880ab85118d6b8fdfbff",
+  "workload_complete": true,
+  "cleanup_complete": true
+}

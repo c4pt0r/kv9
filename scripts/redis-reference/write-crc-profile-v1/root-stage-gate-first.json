@@ -1,0 +1,112 @@
+{
+  "complete": true,
+  "profile_recording": {
+    "session": 55509,
+    "exit_code": 0,
+    "terminal_tool_chunk": "db39e0"
+  },
+  "profile_analysis": {
+    "session": 19276,
+    "exit_code": 0,
+    "terminal_tool_chunk": "0c5416"
+  },
+  "engine_tests": {
+    "session": 8204,
+    "exit_code": 0,
+    "passed": 144,
+    "ignored": 22
+  },
+  "workspace_tests": {
+    "session": 36907,
+    "exit_code": 0,
+    "passed": 709,
+    "ignored": 23
+  },
+  "clippy": {
+    "session": 86427,
+    "exit_code": 0,
+    "warnings_denied": true
+  },
+  "format_and_diff_check": true,
+  "crc_source_sha256": "3651e5136ee6117819b27d38f5c788029ae0ec5941bf47ab16565b736c711478",
+  "artifacts": {
+    "profile.py": {
+      "bytes": 13764,
+      "sha256": "27d5a8af1b6eb1686191ea5ce539d72bff8b2fcdb4069858614405650ee5ba01"
+    },
+    "preparation.json": {
+      "bytes": 599,
+      "sha256": "1fb4297c66a4be6763263ce495fb0bcaef7f95854c4d61c379b61ce0ab370943"
+    },
+    "preparation.diff": {
+      "bytes": 6710,
+      "sha256": "abc99c72df072f0118875b8e045df52a5bf9e32d6983324d4be6e65e505f4720"
+    },
+    "protocol.json": {
+      "bytes": 3229,
+      "sha256": "29aec49051703f5df5222a24390183e0e98c6aaf8435061cc289339fe755b975"
+    },
+    "preflight.json": {
+      "bytes": 353,
+      "sha256": "049dd7ab1d180ae9ce2cdb76e3acece22bec64c6ff9859eaacac8b4caefd3238"
+    },
+    "build-bindings.json": {
+      "bytes": 131647,
+      "sha256": "9a0d9f5cbc4be686ac8106e35c744bd99e6062d5729fa79c8b4cd777acdcf4ef"
+    },
+    "summary.json": {
+      "bytes": 479,
+      "sha256": "a41d48969ff954feb100ce5b6a5b333fb4892c3c58d7092364444c6264bdf8c0"
+    },
+    "analyze.py": {
+      "bytes": 10987,
+      "sha256": "c188fd8c648100dee311923bb042dcff488098592eda8230ed5929bcbe958df4"
+    },
+    "analysis-preparation.json": {
+      "bytes": 500,
+      "sha256": "87c0501a9b0fafa9d2c68404fbfbf08f528e7dc09f7cb06466f0c11bd78c2fd4"
+    },
+    "analysis-preparation.diff": {
+      "bytes": 9473,
+      "sha256": "15dbb4a54c12bd0b70027fb549f73e15b1e12b27de1c3183c7efcb16b88a8cd7"
+    },
+    "analysis-summary.json": {
+      "bytes": 24102,
+      "sha256": "d9bd885a03e81e4f1406c9e38ad031d39bbc437a31d8bc05b1754bdc3a51bc36"
+    },
+    "crc-hotspot.json": {
+      "bytes": 1723,
+      "sha256": "81742cbe22afc2d12aa268cecba9807656e304a5abc21073791dc2d534fdd9f4"
+    },
+    "append-crc-disassembly.txt": {
+      "bytes": 3183,
+      "sha256": "bcb812151cab64b4e64eb74ddf3c28327538bfe08d2cf443833139e59f606218"
+    },
+    "append-disassembly-full.txt": {
+      "bytes": 30306,
+      "sha256": "28f0a18fd96c3ac9f2384deab2ccd0778e0a11f2301569c300c4dc7086e359d4"
+    },
+    "execution-first.log": {
+      "bytes": 378,
+      "sha256": "951b941ab970582318f31e5a1f2feca13f4bf5fdd7085095c2d8c9da52cd10e6"
+    },
+    "analysis-first.log": {
+      "bytes": 84,
+      "sha256": "21a77c950475948b9cdc752436cb994fa8899bc444e7b07394e6e4d4c0553904"
+    },
+    "crc-engine-tests-first.log": {
+      "bytes": 14940,
+      "sha256": "febaea718f33e1c29b43db3dedc501349ec4fdbe97ed2d78eed1910c005cf36f"
+    },
+    "crc-workspace-tests-first.log": {
+      "bytes": 66660,
+      "sha256": "6f5a7bf6df3dce031afe078ab3764b00fa9fe9d909d2d4d7c5fc05b98d7973bd"
+    },
+    "crc-clippy-first.log": {
+      "bytes": 613,
+      "sha256": "7b43981ad2ae4d949adb10b41a2ff49804d527ada38ba2156d71836c2a6fe130"
+    }
+  },
+  "proof_gate": "pending kernel-trust correction; theorem compilation alone is not acceptance",
+  "performance_gate": "not started"
+}

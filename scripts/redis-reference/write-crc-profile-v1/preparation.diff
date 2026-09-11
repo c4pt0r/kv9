@@ -1,0 +1,86 @@
+--- /tmp/kv9-native-batch-proof/scripts/redis-reference/read-lifecycle-c1-v1/legacy-c64-profile.py
++++ /tmp/kv9-write-apply-profile-first/profile.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Two owned sampled-read point/batch1 CPU profiles; no build, Redis, or QPS acceptance."""
++"""Two exact-baseline point PUT/batch64 PUT CPU profiles; no QPS acceptance."""
+ import argparse
+ import hashlib
+ import importlib.util
+@@ -16,14 +16,14 @@
+     raise RuntimeError("profiling requires PYTHONOPTIMIZE=0")
+ sys.dont_write_bytecode=True
+ OUT=Path(__file__).parent
+-DRIVER=Path('/tmp/kv9-rpc-pair-read-profile-run-first/matched-driver.py')
+-DRIVER_SHA='75d9b7b694849ed7f461f2f321ef12cd28c7cc1bd99ed2a7c67017624f2ec767'
+-SOURCE=Path('/tmp/kv9-point-batch1-measurement')
+-SERVER_SOURCE=Path('/tmp/kv9-rpc-pair-read-profile')
+-SERVER_BUILD=Path('/tmp/kv9-rpc-pair-read-profile-release-first')
+-CLIENT_BUILD=Path('/tmp/kv9-point-batch1-client-release-first')
+-CLIENT_REV='03c1c776a5dd7d1cc67491ab253e02ce51665bf8'
+-CLIENT_SHA='22ca0883ca2900fab0b457d87ebc6bc50662d7145af0846304f02b5841a6d30b'
++DRIVER=Path('/tmp/kv9-v3-workload-comparison-preparation/matched-driver.py')
++DRIVER_SHA='e1b839d357658db56b2cf4235e1de7089453e61853ada07015e28d165f1966de'
++SOURCE=Path('/tmp/kv9-point-write-measurement-v3')
++SERVER_SOURCE=Path('/tmp/kv9-rpc-worker-pair')
++SERVER_BUILD=Path('/tmp/kv9-rpc-pair-release-first')
++CLIENT_BUILD=Path('/tmp/kv9-point-write-v3-release-first/native')
++CLIENT_REV='0be806d9671e2c50701a64aa7889c8859b7648ba'
++CLIENT_SHA='8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957'
+ RESP=Path('/tmp/kv9-redis-batch-reference-preparation/run_fixture.py')
+ PROFILER_CPUS=list(range(6,16))+list(range(22,32))
+ PERF=(Path('/usr/lib/linux-tools')/os.uname().release/'perf').resolve()
+@@ -56,10 +56,10 @@
+ 
+ def preflight(driver):
+     server=read(SERVER_BUILD/'build.json');client=read(CLIENT_BUILD/'build.json');inventory=read(CLIENT_BUILD/'sources.json')
+-    driver.source_binding(SERVER_SOURCE,server,driver.NEW_REVISION)
++    driver.source_binding(SERVER_SOURCE,server,driver.OLD_REVISION)
+     driver.source_binding(SOURCE,dict(client,sources=inventory['sources']),CLIENT_REV)
+-    require(sha(SERVER_BUILD/'build.json')==driver.SERVER_PINS['new']['manifest_sha256'] and
+-            sha(SERVER_BUILD/'kv9')==driver.SERVER_PINS['new']['binary_sha256'],'frozen server differs')
++    require(sha(SERVER_BUILD/'build.json')==driver.SERVER_PINS['old']['manifest_sha256'] and
++            sha(SERVER_BUILD/'kv9')==driver.SERVER_PINS['old']['binary_sha256'],'frozen server differs')
+     require(sha(CLIENT_BUILD/'kv9-batch-benchmark')==CLIENT_SHA==client['binary_sha256'],'frozen shared client differs')
+     require(server['binaries']['kv9']['command']==driver.SERVER_COMMAND,'server build command differs')
+     driver.cargo_server(SERVER_BUILD/'kv9-cargo.jsonl')
+@@ -82,7 +82,7 @@
+     resp=module('retained_resp_readback',RESP)
+     _,manifest,features=native_validator.build_check(CLIENT_BUILD,CLIENT_BUILD,CLIENT_REV)
+     require(features==[] and manifest['profile']=='release','shared client is not default release')
+-    roles={'new':dict(build_directory=str(SERVER_BUILD),binary_sha256=driver.SERVER_PINS['new']['binary_sha256']),
++    roles={'old':dict(build_directory=str(SERVER_BUILD),binary_sha256=driver.SERVER_PINS['old']['binary_sha256']),
+            'client':dict(build_directory=str(CLIENT_BUILD),binary_sha256=CLIENT_SHA)}
+     args=SimpleNamespace(smoke=True,storage='tmpfs',client_build=CLIENT_BUILD,expected_client_revision=CLIENT_REV)
+     # Instrumented run: use profile CPU sets but never label it timing-eligible
+@@ -94,12 +94,12 @@
+         path=getattr(loaded,'__file__',None)
+         if path and Path(path).resolve().is_relative_to(SOURCE):
+             file=Path(path).resolve();relative=str(file.relative_to(SOURCE));require(sha(file)==frozen['client_sources']['sources'][relative],'loaded helper differs');sources[str(file)]=sha(file)
+-    protocol=dict(version=1,instrumented=True,throughput_acceptance=False,server_revision=driver.NEW_REVISION,
+-                  client_revision=CLIENT_REV,server_sha256=roles['new']['binary_sha256'],client_sha256=CLIENT_SHA,
+-                  measure_ms=5000,workers=64,keys=4096,batch_size=1,value_bytes=128,read_percent=100,warmup_calls=128,
++    protocol=dict(version=1,protocol_id='kv9-write-apply-cpu-v1',background_container_isolation=False,instrumented=True,throughput_acceptance=False,server_revision=driver.OLD_REVISION,
++                  client_revision=CLIENT_REV,server_sha256=roles['old']['binary_sha256'],client_sha256=CLIENT_SHA,
++                  measure_ms=5000,workers=64,keys=4096,batch_sizes=[1,64],value_bytes=128,read_percent=0,warmup_calls=128,
+                   max_calls=10000000,deadline_ms=1500,client_cpus=[0,1],server_cpus=[2,3,4,5],profiler_cpus=PROFILER_CPUS,
+                   event='cpu-clock',frequency_hz=199,call_graph='dwarf,16384',recording_seconds=20,max_perf_bytes=CAP,
+-                  storage=tmpfs.VOLATILE,exclusive_host=False,profiles=['point_get','batch_get'],helper_sources=sources)
++                  storage=tmpfs.VOLATILE,exclusive_host=False,profiles=['point_put','batch_put64'],helper_sources=sources)
+     save(OUT/'protocol.json',protocol);save(OUT/'build-bindings.json',frozen)
+     save(OUT/'preflight.json',dict(complete=True,perf_backend=str(PERF),perf_sha256=sha(PERF),
+          perf_version=subprocess.check_output([str(PERF),'--version'],text=True).strip(),
+@@ -174,10 +174,10 @@
+     def interrupted(signum,_):raise RuntimeError('profile interrupted by signal '+str(signum))
+     signal.signal(signal.SIGTERM,interrupted);signal.signal(signal.SIGINT,interrupted)
+     try:
+-        for api,run_id in (('point_get','prfget'),('batch_get','prfbat')):
++        for api,read_api,batch,run_id in (('point_put','point_get',1,'prfput'),('batch_put','batch_get',64,'prfbat')):
+             directory=OUT/api;directory.mkdir();active['current_directory']=directory
+-            row=dict(arm=api,server_role='new',read_api=api,target='kv9',repeat=0,mix='read',
+-                     shared=dict(run_id=run_id,seed=71,workers=64,keys=4096,batch_size=1,value_bytes=128,read_percent=100,
++            row=dict(arm=api,server_role='old',read_api=read_api,write_api=api,workload=api,target='kv9',repeat=0,mix='write',
++                     shared=dict(run_id=run_id,seed=71,workers=64,keys=4096,batch_size=batch,value_bytes=128,read_percent=0,
+                                  warmup_calls=128,measure_ms=5000,max_calls=10000000,load=dict(kind='closed_loop')))
+             save(directory/'profile-plan.json',row)
+             print('START: instrumented '+api,flush=True)

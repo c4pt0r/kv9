@@ -124,9 +124,10 @@ mutation order, snapshot isolation, batch atomicity and applied-position
 publication intact. A hash-only replacement would also change ordered-scan
 behavior; any index experiment must keep the existing engine contract.
 
-The next diagnostic should attribute batch apply CPU to command conversion,
-fence checks, log representation and ordered-index mutation before choosing
-a structural implementation change. Preserve existing group commit and the
+The [completed write CPU diagnostic](WRITE-APPLY-CPU-PROFILE.md) now attributes
+41.903% of BatchPut(64) selected CPU samples to the bitwise engine CRC loop.
+An equivalent byte-table computation is therefore the next isolated candidate;
+buffer ownership and index changes remain separate follow-ons. Preserve existing group commit and the
 commit/apply acknowledgement contract. An apparent shorter call graph is not
 proof of better latency: recent transport and scheduling screens have already
 shown that distinction.

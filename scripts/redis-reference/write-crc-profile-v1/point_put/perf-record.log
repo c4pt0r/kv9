@@ -1,0 +1,2 @@
+[ perf record: Woken up 497457 times to write data ]
+[ perf record: Captured and wrote 56.421 MB /tmp/kv9-write-apply-profile-first/point_put/perf.data (3544 samples) ]

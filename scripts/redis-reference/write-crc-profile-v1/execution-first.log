@@ -1,0 +1,7 @@
+START: instrumented point_put
+LIVE: profiler 2032360 voters 2031855,2031860,2031865
+TERMINAL: instrumented point_put complete; owned fixtures exited
+START: instrumented batch_put
+LIVE: profiler 2037154 voters 2036564,2036569,2036574
+TERMINAL: instrumented batch_put complete; owned fixtures exited
+PASS: two instrumented native fixtures complete; perf interval analysis pending

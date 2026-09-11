@@ -1,0 +1,549 @@
+
+/tmp/kv9-rpc-pair-release-first/kv9:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000008cf690 <kv9_engine::wal_segment::WalSegment::append>:
+  8cf690:	55                   	push   %rbp
+  8cf691:	41 57                	push   %r15
+  8cf693:	41 56                	push   %r14
+  8cf695:	41 55                	push   %r13
+  8cf697:	41 54                	push   %r12
+  8cf699:	53                   	push   %rbx
+  8cf69a:	48 81 ec 68 01 00 00 	sub    $0x168,%rsp
+  8cf6a1:	48 89 fb             	mov    %rdi,%rbx
+  8cf6a4:	49 bd 13 00 00 00 00 	movabs $0x8000000000000013,%r13
+  8cf6ab:	00 00 80 
+  8cf6ae:	80 be 9c 00 00 00 00 	cmpb   $0x0,0x9c(%rsi)
+  8cf6b5:	74 7a                	je     8cf731 <kv9_engine::wal_segment::WalSegment::append+0xa1>
+  8cf6b7:	48 8d 05 f2 49 8d ff 	lea    -0x72b60e(%rip),%rax        # 1a40b0 <anon.51008e4d476ade37a2499634a966f0b7.0.llvm.2170888954535001258+0x4c>
+  8cf6be:	48 89 84 24 c0 00 00 	mov    %rax,0xc0(%rsp)
+  8cf6c5:	00 
+  8cf6c6:	48 c7 84 24 c8 00 00 	movq   $0x1f,0xc8(%rsp)
+  8cf6cd:	00 1f 00 00 00 
+  8cf6d2:	48 8d 84 24 c0 00 00 	lea    0xc0(%rsp),%rax
+  8cf6d9:	00 
+  8cf6da:	48 89 44 24 60       	mov    %rax,0x60(%rsp)
+  8cf6df:	48 8d 05 fa 9c 00 00 	lea    0x9cfa(%rip),%rax        # 8d93e0 <<&T as core::fmt::Display>::fmt>
+  8cf6e6:	48 89 44 24 68       	mov    %rax,0x68(%rsp)
+  8cf6eb:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  8cf6f0:	48 8d 35 1d 09 8a ff 	lea    -0x75f6e3(%rip),%rsi        # 170014 <anon.51008e4d476ade37a2499634a966f0b7.30.llvm.2170888954535001258>
+  8cf6f7:	48 8d 54 24 60       	lea    0x60(%rsp),%rdx
+  8cf6fc:	ff 15 26 1f 5f 00    	call   *0x5f1f26(%rip)        # ec1628 <_DYNAMIC+0x2c8>
+  8cf702:	4c 89 6c 24 08       	mov    %r13,0x8(%rsp)
+  8cf707:	0f 10 44 24 18       	movups 0x18(%rsp),%xmm0
+  8cf70c:	f3 0f 6f 4c 24 28    	movdqu 0x28(%rsp),%xmm1
+  8cf712:	f3 0f 7f 4b 20       	movdqu %xmm1,0x20(%rbx)
+  8cf717:	0f 11 43 10          	movups %xmm0,0x10(%rbx)
+  8cf71b:	48 8b 44 24 08       	mov    0x8(%rsp),%rax
+  8cf720:	48 89 03             	mov    %rax,(%rbx)
+  8cf723:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+  8cf728:	48 89 43 08          	mov    %rax,0x8(%rbx)
+  8cf72c:	e9 eb 06 00 00       	jmp    8cfe1c <kv9_engine::wal_segment::WalSegment::append+0x78c>
+  8cf731:	48 8b 3e             	mov    (%rsi),%rdi
+  8cf734:	48 8b 46 48          	mov    0x48(%rsi),%rax
+  8cf738:	0f b6 29             	movzbl (%rcx),%ebp
+  8cf73b:	4c 8b 59 08          	mov    0x8(%rcx),%r11
+  8cf73f:	4c 8b 71 10          	mov    0x10(%rcx),%r14
+  8cf743:	09 c7                	or     %eax,%edi
+  8cf745:	40 20 ef             	and    %bpl,%dil
+  8cf748:	40 f6 c7 01          	test   $0x1,%dil
+  8cf74c:	74 2c                	je     8cf77a <kv9_engine::wal_segment::WalSegment::append+0xea>
+  8cf74e:	4c 8d 46 50          	lea    0x50(%rsi),%r8
+  8cf752:	4c 8d 4e 08          	lea    0x8(%rsi),%r9
+  8cf756:	4c 8d 56 58          	lea    0x58(%rsi),%r10
+  8cf75a:	48 8d 7e 10          	lea    0x10(%rsi),%rdi
+  8cf75e:	a8 01                	test   $0x1,%al
+  8cf760:	4d 0f 45 c8          	cmovne %r8,%r9
+  8cf764:	49 0f 45 fa          	cmovne %r10,%rdi
+  8cf768:	4d 3b 19             	cmp    (%r9),%r11
+  8cf76b:	0f 82 06 01 00 00    	jb     8cf877 <kv9_engine::wal_segment::WalSegment::append+0x1e7>
+  8cf771:	4c 3b 37             	cmp    (%rdi),%r14
+  8cf774:	0f 86 fd 00 00 00    	jbe    8cf877 <kv9_engine::wal_segment::WalSegment::append+0x1e7>
+  8cf77a:	4c 89 74 24 50       	mov    %r14,0x50(%rsp)
+  8cf77f:	4c 89 9c 24 08 01 00 	mov    %r11,0x108(%rsp)
+  8cf786:	00 
+  8cf787:	49 89 ce             	mov    %rcx,%r14
+  8cf78a:	48 89 74 24 48       	mov    %rsi,0x48(%rsp)
+  8cf78f:	4c 8d 7c 24 08       	lea    0x8(%rsp),%r15
+  8cf794:	4c 89 ff             	mov    %r15,%rdi
+  8cf797:	49 89 d4             	mov    %rdx,%r12
+  8cf79a:	48 89 d6             	mov    %rdx,%rsi
+  8cf79d:	e8 5e 11 00 00       	call   8d0900 <kv9_engine::wal_segment::encoded_size>
+  8cf7a2:	48 8b 44 24 08       	mov    0x8(%rsp),%rax
+  8cf7a7:	49 8d 4d 03          	lea    0x3(%r13),%rcx
+  8cf7ab:	48 39 c8             	cmp    %rcx,%rax
+  8cf7ae:	0f 85 a0 00 00 00    	jne    8cf854 <kv9_engine::wal_segment::WalSegment::append+0x1c4>
+  8cf7b4:	48 89 8c 24 38 01 00 	mov    %rcx,0x138(%rsp)
+  8cf7bb:	00 
+  8cf7bc:	48 8d bc 24 a8 00 00 	lea    0xa8(%rsp),%rdi
+  8cf7c3:	00 
+  8cf7c4:	4c 89 e6             	mov    %r12,%rsi
+  8cf7c7:	e8 d4 58 00 00       	call   8d50a0 <kv9_engine::wal::encode_batch>
+  8cf7cc:	4c 8b a4 24 b8 00 00 	mov    0xb8(%rsp),%r12
+  8cf7d3:	00 
+  8cf7d4:	4c 89 e0             	mov    %r12,%rax
+  8cf7d7:	48 c1 e8 20          	shr    $0x20,%rax
+  8cf7db:	0f 84 06 01 00 00    	je     8cf8e7 <kv9_engine::wal_segment::WalSegment::append+0x257>
+  8cf7e1:	48 8d 05 b2 48 8d ff 	lea    -0x72b74e(%rip),%rax        # 1a409a <anon.51008e4d476ade37a2499634a966f0b7.0.llvm.2170888954535001258+0x36>
+  8cf7e8:	48 89 84 24 c0 00 00 	mov    %rax,0xc0(%rsp)
+  8cf7ef:	00 
+  8cf7f0:	48 c7 84 24 c8 00 00 	movq   $0x16,0xc8(%rsp)
+  8cf7f7:	00 16 00 00 00 
+  8cf7fc:	48 8d 84 24 c0 00 00 	lea    0xc0(%rsp),%rax
+  8cf803:	00 
+  8cf804:	48 89 44 24 60       	mov    %rax,0x60(%rsp)
+  8cf809:	48 8d 05 d0 9b 00 00 	lea    0x9bd0(%rip),%rax        # 8d93e0 <<&T as core::fmt::Display>::fmt>
+  8cf810:	48 89 44 24 68       	mov    %rax,0x68(%rsp)
+  8cf815:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  8cf81a:	48 8d 35 f3 07 8a ff 	lea    -0x75f80d(%rip),%rsi        # 170014 <anon.51008e4d476ade37a2499634a966f0b7.30.llvm.2170888954535001258>
+  8cf821:	48 8d 54 24 60       	lea    0x60(%rsp),%rdx
+  8cf826:	ff 15 fc 1d 5f 00    	call   *0x5f1dfc(%rip)        # ec1628 <_DYNAMIC+0x2c8>
+  8cf82c:	8b 44 24 10          	mov    0x10(%rsp),%eax
+  8cf830:	8b 4c 24 34          	mov    0x34(%rsp),%ecx
+  8cf834:	89 4b 2c             	mov    %ecx,0x2c(%rbx)
+  8cf837:	0f 10 44 24 24       	movups 0x24(%rsp),%xmm0
+  8cf83c:	0f 11 43 1c          	movups %xmm0,0x1c(%rbx)
+  8cf840:	0f 10 44 24 14       	movups 0x14(%rsp),%xmm0
+  8cf845:	0f 11 43 0c          	movups %xmm0,0xc(%rbx)
+  8cf849:	4c 89 2b             	mov    %r13,(%rbx)
+  8cf84c:	89 43 08             	mov    %eax,0x8(%rbx)
+  8cf84f:	e9 a8 05 00 00       	jmp    8cfdfc <kv9_engine::wal_segment::WalSegment::append+0x76c>
+  8cf854:	48 8b 4c 24 10       	mov    0x10(%rsp),%rcx
+  8cf859:	0f 10 44 24 28       	movups 0x28(%rsp),%xmm0
+  8cf85e:	0f 11 43 20          	movups %xmm0,0x20(%rbx)
+  8cf862:	0f 10 44 24 18       	movups 0x18(%rsp),%xmm0
+  8cf867:	0f 11 43 10          	movups %xmm0,0x10(%rbx)
+  8cf86b:	48 89 03             	mov    %rax,(%rbx)
+  8cf86e:	48 89 4b 08          	mov    %rcx,0x8(%rbx)
+  8cf872:	e9 a5 05 00 00       	jmp    8cfe1c <kv9_engine::wal_segment::WalSegment::append+0x78c>
+  8cf877:	48 8d 05 fc 48 8d ff 	lea    -0x72b704(%rip),%rax        # 1a417a <anon.51008e4d476ade37a2499634a966f0b7.0.llvm.2170888954535001258+0x116>
+  8cf87e:	48 89 84 24 c0 00 00 	mov    %rax,0xc0(%rsp)
+  8cf885:	00 
+  8cf886:	48 c7 84 24 c8 00 00 	movq   $0x3b,0xc8(%rsp)
+  8cf88d:	00 3b 00 00 00 
+  8cf892:	48 8d 84 24 c0 00 00 	lea    0xc0(%rsp),%rax
+  8cf899:	00 
+  8cf89a:	48 89 44 24 60       	mov    %rax,0x60(%rsp)
+  8cf89f:	48 8d 05 3a 9b 00 00 	lea    0x9b3a(%rip),%rax        # 8d93e0 <<&T as core::fmt::Display>::fmt>
+  8cf8a6:	48 89 44 24 68       	mov    %rax,0x68(%rsp)
+  8cf8ab:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  8cf8b0:	48 8d 35 5d 07 8a ff 	lea    -0x75f8a3(%rip),%rsi        # 170014 <anon.51008e4d476ade37a2499634a966f0b7.30.llvm.2170888954535001258>
+  8cf8b7:	48 8d 54 24 60       	lea    0x60(%rsp),%rdx
+  8cf8bc:	ff 15 66 1d 5f 00    	call   *0x5f1d66(%rip)        # ec1628 <_DYNAMIC+0x2c8>
+  8cf8c2:	48 8b 44 24 30       	mov    0x30(%rsp),%rax
+  8cf8c7:	48 89 43 28          	mov    %rax,0x28(%rbx)
+  8cf8cb:	0f 10 44 24 10       	movups 0x10(%rsp),%xmm0
+  8cf8d0:	f3 0f 6f 4c 24 20    	movdqu 0x20(%rsp),%xmm1
+  8cf8d6:	f3 0f 7f 4b 18       	movdqu %xmm1,0x18(%rbx)
+  8cf8db:	0f 11 43 08          	movups %xmm0,0x8(%rbx)
+  8cf8df:	4c 89 2b             	mov    %r13,(%rbx)
+  8cf8e2:	e9 35 05 00 00       	jmp    8cfe1c <kv9_engine::wal_segment::WalSegment::append+0x78c>
+  8cf8e7:	49 81 fc 00 00 00 04 	cmp    $0x4000000,%r12
+  8cf8ee:	76 7a                	jbe    8cf96a <kv9_engine::wal_segment::WalSegment::append+0x2da>
+  8cf8f0:	48 8d 05 86 47 8d ff 	lea    -0x72b87a(%rip),%rax        # 1a407d <anon.51008e4d476ade37a2499634a966f0b7.0.llvm.2170888954535001258+0x19>
+  8cf8f7:	48 89 84 24 c0 00 00 	mov    %rax,0xc0(%rsp)
+  8cf8fe:	00 
+  8cf8ff:	48 c7 84 24 c8 00 00 	movq   $0x1d,0xc8(%rsp)
+  8cf906:	00 1d 00 00 00 
+  8cf90b:	48 8d 84 24 c0 00 00 	lea    0xc0(%rsp),%rax
+  8cf912:	00 
+  8cf913:	48 89 44 24 60       	mov    %rax,0x60(%rsp)
+  8cf918:	48 8d 05 c1 9a 00 00 	lea    0x9ac1(%rip),%rax        # 8d93e0 <<&T as core::fmt::Display>::fmt>
+  8cf91f:	48 89 44 24 68       	mov    %rax,0x68(%rsp)
+  8cf924:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  8cf929:	48 8d 35 e4 06 8a ff 	lea    -0x75f91c(%rip),%rsi        # 170014 <anon.51008e4d476ade37a2499634a966f0b7.30.llvm.2170888954535001258>
+  8cf930:	48 8d 54 24 60       	lea    0x60(%rsp),%rdx
+  8cf935:	ff 15 ed 1c 5f 00    	call   *0x5f1ced(%rip)        # ec1628 <_DYNAMIC+0x2c8>
+  8cf93b:	4c 89 6c 24 08       	mov    %r13,0x8(%rsp)
+  8cf940:	0f 10 44 24 18       	movups 0x18(%rsp),%xmm0
+  8cf945:	f3 0f 6f 4c 24 28    	movdqu 0x28(%rsp),%xmm1
+  8cf94b:	f3 0f 7f 4b 20       	movdqu %xmm1,0x20(%rbx)
+  8cf950:	0f 11 43 10          	movups %xmm0,0x10(%rbx)
+  8cf954:	48 8b 44 24 08       	mov    0x8(%rsp),%rax
+  8cf959:	48 89 03             	mov    %rax,(%rbx)
+  8cf95c:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+  8cf961:	48 89 43 08          	mov    %rax,0x8(%rbx)
+  8cf965:	e9 92 04 00 00       	jmp    8cfdfc <kv9_engine::wal_segment::WalSegment::append+0x76c>
+  8cf96a:	66 0f ef c0          	pxor   %xmm0,%xmm0
+  8cf96e:	f3 0f 7f 44 24 10    	movdqu %xmm0,0x10(%rsp)
+  8cf974:	48 c7 44 24 20 00 00 	movq   $0x0,0x20(%rsp)
+  8cf97b:	00 00 
+  8cf97d:	c7 44 24 08 4b 56 39 	movl   $0x5239564b,0x8(%rsp)
+  8cf984:	52 
+  8cf985:	44 89 64 24 0c       	mov    %r12d,0xc(%rsp)
+  8cf98a:	40 f6 c5 01          	test   $0x1,%bpl
+  8cf98e:	74 1c                	je     8cf9ac <kv9_engine::wal_segment::WalSegment::append+0x31c>
+  8cf990:	c6 44 24 10 01       	movb   $0x1,0x10(%rsp)
+  8cf995:	48 8b 84 24 08 01 00 	mov    0x108(%rsp),%rax
+  8cf99c:	00 
+  8cf99d:	48 89 44 24 14       	mov    %rax,0x14(%rsp)
+  8cf9a2:	48 8b 44 24 50       	mov    0x50(%rsp),%rax
+  8cf9a7:	48 89 44 24 1c       	mov    %rax,0x1c(%rsp)
+  8cf9ac:	48 8b 74 24 48       	mov    0x48(%rsp),%rsi
+  8cf9b1:	48 8d 46 48          	lea    0x48(%rsi),%rax
+  8cf9b5:	48 89 84 24 00 01 00 	mov    %rax,0x100(%rsp)
+  8cf9bc:	00 
+  8cf9bd:	4c 89 7c 24 60       	mov    %r15,0x60(%rsp)
+  8cf9c2:	48 c7 44 24 68 1c 00 	movq   $0x1c,0x68(%rsp)
+  8cf9c9:	00 00 
+  8cf9cb:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+  8cf9d0:	31 ff                	xor    %edi,%edi
+  8cf9d2:	66 0f 6f 15 c6 59 88 	movdqa -0x77a63a(%rip),%xmm2        # 1553a0 <anon.40ddeaa3bc964d0fbf4476a56e614d00.49.llvm.863960106400183691+0x50>
+  8cf9d9:	ff 
+  8cf9da:	31 c9                	xor    %ecx,%ecx
+  8cf9dc:	e9 9a 00 00 00       	jmp    8cfa7b <kv9_engine::wal_segment::WalSegment::append+0x3eb>
+  8cf9e1:	48 8b 7c 0c 50       	mov    0x50(%rsp,%rcx,1),%rdi
+  8cf9e6:	48 01 fa             	add    %rdi,%rdx
+  8cf9e9:	44 0f b6 07          	movzbl (%rdi),%r8d
+  8cf9ed:	44 31 c0             	xor    %r8d,%eax
+  8cf9f0:	41 89 c0             	mov    %eax,%r8d
+  8cf9f3:	41 83 e0 01          	and    $0x1,%r8d
+  8cf9f7:	41 f7 d8             	neg    %r8d
+  8cf9fa:	41 89 c1             	mov    %eax,%r9d
+  8cf9fd:	41 d1 e9             	shr    $1,%r9d
+  8cfa00:	41 81 e0 20 83 b8 ed 	and    $0xedb88320,%r8d
+  8cfa07:	45 31 c8             	xor    %r9d,%r8d
+  8cfa0a:	45 89 c1             	mov    %r8d,%r9d
+  8cfa0d:	41 d1 e9             	shr    $1,%r9d
+  8cfa10:	66 0f 6e c0          	movd   %eax,%xmm0
+  8cfa14:	c1 e0 1e             	shl    $0x1e,%eax
+  8cfa17:	c1 f8 1f             	sar    $0x1f,%eax
+  8cfa1a:	25 20 83 b8 ed       	and    $0xedb88320,%eax
+  8cfa1f:	44 31 c8             	xor    %r9d,%eax
+  8cfa22:	41 89 c1             	mov    %eax,%r9d
+  8cfa25:	41 c1 e9 06          	shr    $0x6,%r9d
+  8cfa29:	66 0f 70 c0 00       	pshufd $0x0,%xmm0,%xmm0
+  8cfa2e:	66 0f db c2          	pand   %xmm2,%xmm0
+  8cfa32:	66 0f 76 c2          	pcmpeqd %xmm2,%xmm0
+  8cfa36:	66 0f db 05 62 3e 88 	pand   -0x77c19e(%rip),%xmm0        # 1538a0 <anon.e1529a08628d4db79f5d8f0ac50a0233.95.llvm.277840845464579698+0x110>
+  8cfa3d:	ff 
+  8cfa3e:	41 c1 e0 1a          	shl    $0x1a,%r8d
+  8cfa42:	41 c1 f8 1f          	sar    $0x1f,%r8d
+  8cfa46:	41 81 e0 90 41 dc 76 	and    $0x76dc4190,%r8d
+  8cfa4d:	c1 e0 1a             	shl    $0x1a,%eax
+  8cfa50:	c1 f8 1f             	sar    $0x1f,%eax
+  8cfa53:	25 20 83 b8 ed       	and    $0xedb88320,%eax
+  8cfa58:	44 31 c8             	xor    %r9d,%eax
+  8cfa5b:	44 31 c0             	xor    %r8d,%eax
+  8cfa5e:	66 0f 70 c8 ee       	pshufd $0xee,%xmm0,%xmm1
+  8cfa63:	66 0f ef c8          	pxor   %xmm0,%xmm1
+  8cfa67:	66 0f 70 c1 55       	pshufd $0x55,%xmm1,%xmm0
+  8cfa6c:	66 0f ef c1          	pxor   %xmm1,%xmm0
+  8cfa70:	66 41 0f 7e c0       	movd   %xmm0,%r8d
+  8cfa75:	44 31 c0             	xor    %r8d,%eax
+  8cfa78:	48 ff c7             	inc    %rdi
+  8cfa7b:	48 85 ff             	test   %rdi,%rdi
+  8cfa7e:	74 10                	je     8cfa90 <kv9_engine::wal_segment::WalSegment::append+0x400>
+  8cfa80:	48 39 d7             	cmp    %rdx,%rdi
+  8cfa83:	0f 85 60 ff ff ff    	jne    8cf9e9 <kv9_engine::wal_segment::WalSegment::append+0x359>
+  8cfa89:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+  8cfa90:	48 83 f9 10          	cmp    $0x10,%rcx
+  8cfa94:	74 13                	je     8cfaa9 <kv9_engine::wal_segment::WalSegment::append+0x419>
+  8cfa96:	48 8b 54 0c 68       	mov    0x68(%rsp,%rcx,1),%rdx
+  8cfa9b:	48 83 c1 10          	add    $0x10,%rcx
+  8cfa9f:	48 85 d2             	test   %rdx,%rdx
+  8cfaa2:	74 ec                	je     8cfa90 <kv9_engine::wal_segment::WalSegment::append+0x400>
+  8cfaa4:	e9 38 ff ff ff       	jmp    8cf9e1 <kv9_engine::wal_segment::WalSegment::append+0x351>
+  8cfaa9:	f7 d0                	not    %eax
+  8cfaab:	89 44 24 24          	mov    %eax,0x24(%rsp)
+  8cfaaf:	0f 10 44 24 08       	movups 0x8(%rsp),%xmm0
+  8cfab4:	0f 29 84 24 40 01 00 	movaps %xmm0,0x140(%rsp)
+  8cfabb:	00 
+  8cfabc:	48 8b 44 24 18       	mov    0x18(%rsp),%rax
+  8cfac1:	48 89 84 24 50 01 00 	mov    %rax,0x150(%rsp)
+  8cfac8:	00 
+  8cfac9:	8b 44 24 20          	mov    0x20(%rsp),%eax
+  8cfacd:	89 84 24 58 01 00 00 	mov    %eax,0x158(%rsp)
+  8cfad4:	8b 44 24 24          	mov    0x24(%rsp),%eax
+  8cfad8:	89 84 24 5c 01 00 00 	mov    %eax,0x15c(%rsp)
+  8cfadf:	48 8d 7c 24 08       	lea    0x8(%rsp),%rdi
+  8cfae4:	ff 15 c6 39 5f 00    	call   *0x5f39c6(%rip)        # ec34b0 <_DYNAMIC+0x2150>
+  8cfaea:	80 7c 24 08 01       	cmpb   $0x1,0x8(%rsp)
+  8cfaef:	75 2a                	jne    8cfb1b <kv9_engine::wal_segment::WalSegment::append+0x48b>
+  8cfaf1:	0f 10 44 24 10       	movups 0x10(%rsp),%xmm0
+  8cfaf6:	f3 0f 6f 4c 24 20    	movdqu 0x20(%rsp),%xmm1
+  8cfafc:	f3 0f 6f 54 24 30    	movdqu 0x30(%rsp),%xmm2
+  8cfb02:	f3 0f 7f 94 24 87 00 	movdqu %xmm2,0x87(%rsp)
+  8cfb09:	00 00 
+  8cfb0b:	f3 0f 7f 4c 24 77    	movdqu %xmm1,0x77(%rsp)
+  8cfb11:	0f 11 44 24 67       	movups %xmm0,0x67(%rsp)
+  8cfb16:	e9 d4 02 00 00       	jmp    8cfdef <kv9_engine::wal_segment::WalSegment::append+0x75f>
+  8cfb1b:	4d 89 f0             	mov    %r14,%r8
+  8cfb1e:	0f 10 44 24 09       	movups 0x9(%rsp),%xmm0
+  8cfb23:	f3 0f 6f 4c 24 19    	movdqu 0x19(%rsp),%xmm1
+  8cfb29:	0f 10 54 24 29       	movups 0x29(%rsp),%xmm2
+  8cfb2e:	0f 10 5c 24 35       	movups 0x35(%rsp),%xmm3
+  8cfb33:	0f 11 9c 24 8c 00 00 	movups %xmm3,0x8c(%rsp)
+  8cfb3a:	00 
+  8cfb3b:	0f 29 94 24 80 00 00 	movaps %xmm2,0x80(%rsp)
+  8cfb42:	00 
+  8cfb43:	66 0f 7f 4c 24 70    	movdqa %xmm1,0x70(%rsp)
+  8cfb49:	0f 29 44 24 60       	movaps %xmm0,0x60(%rsp)
+  8cfb4e:	0f 29 84 24 c0 00 00 	movaps %xmm0,0xc0(%rsp)
+  8cfb55:	00 
+  8cfb56:	66 0f 7f 8c 24 d0 00 	movdqa %xmm1,0xd0(%rsp)
+  8cfb5d:	00 00 
+  8cfb5f:	0f 28 84 24 80 00 00 	movaps 0x80(%rsp),%xmm0
+  8cfb66:	00 
+  8cfb67:	0f 29 84 24 e0 00 00 	movaps %xmm0,0xe0(%rsp)
+  8cfb6e:	00 
+  8cfb6f:	f3 0f 6f 84 24 8c 00 	movdqu 0x8c(%rsp),%xmm0
+  8cfb76:	00 00 
+  8cfb78:	f3 0f 7f 84 24 ec 00 	movdqu %xmm0,0xec(%rsp)
+  8cfb7f:	00 00 
+  8cfb81:	48 8b 8c 24 b0 00 00 	mov    0xb0(%rsp),%rcx
+  8cfb88:	00 
+  8cfb89:	48 8d 84 24 c0 00 00 	lea    0xc0(%rsp),%rax
+  8cfb90:	00 
+  8cfb91:	48 89 44 24 08       	mov    %rax,0x8(%rsp)
+  8cfb96:	48 c7 44 24 10 38 00 	movq   $0x38,0x10(%rsp)
+  8cfb9d:	00 00 
+  8cfb9f:	48 8d 84 24 40 01 00 	lea    0x140(%rsp),%rax
+  8cfba6:	00 
+  8cfba7:	48 89 44 24 18       	mov    %rax,0x18(%rsp)
+  8cfbac:	48 c7 44 24 20 1c 00 	movq   $0x1c,0x20(%rsp)
+  8cfbb3:	00 00 
+  8cfbb5:	48 89 4c 24 28       	mov    %rcx,0x28(%rsp)
+  8cfbba:	4c 89 64 24 30       	mov    %r12,0x30(%rsp)
+  8cfbbf:	ba ff ff ff ff       	mov    $0xffffffff,%edx
+  8cfbc4:	45 31 c9             	xor    %r9d,%r9d
+  8cfbc7:	31 f6                	xor    %esi,%esi
+  8cfbc9:	48 8b 4c 24 48       	mov    0x48(%rsp),%rcx
+  8cfbce:	66 0f 6f 15 ca 57 88 	movdqa -0x77a836(%rip),%xmm2        # 1553a0 <anon.40ddeaa3bc964d0fbf4476a56e614d00.49.llvm.863960106400183691+0x50>
+  8cfbd5:	ff 
+  8cfbd6:	66 0f 6f 1d c2 3c 88 	movdqa -0x77c33e(%rip),%xmm3        # 1538a0 <anon.e1529a08628d4db79f5d8f0ac50a0233.95.llvm.277840845464579698+0x110>
+  8cfbdd:	ff 
+  8cfbde:	e9 98 00 00 00       	jmp    8cfc7b <kv9_engine::wal_segment::WalSegment::append+0x5eb>
+  8cfbe3:	4c 8b 4c 34 f8       	mov    -0x8(%rsp,%rsi,1),%r9
+  8cfbe8:	4c 01 cf             	add    %r9,%rdi
+  8cfbeb:	45 0f b6 11          	movzbl (%r9),%r10d
+  8cfbef:	44 31 d2             	xor    %r10d,%edx
+  8cfbf2:	41 89 d2             	mov    %edx,%r10d
+  8cfbf5:	41 83 e2 01          	and    $0x1,%r10d
+  8cfbf9:	41 f7 da             	neg    %r10d
+  8cfbfc:	41 89 d3             	mov    %edx,%r11d
+  8cfbff:	41 d1 eb             	shr    $1,%r11d
+  8cfc02:	41 81 e2 20 83 b8 ed 	and    $0xedb88320,%r10d
+  8cfc09:	45 31 da             	xor    %r11d,%r10d
+  8cfc0c:	45 89 d3             	mov    %r10d,%r11d
+  8cfc0f:	41 d1 eb             	shr    $1,%r11d
+  8cfc12:	66 0f 6e c2          	movd   %edx,%xmm0
+  8cfc16:	c1 e2 1e             	shl    $0x1e,%edx
+  8cfc19:	c1 fa 1f             	sar    $0x1f,%edx
+  8cfc1c:	81 e2 20 83 b8 ed    	and    $0xedb88320,%edx
+  8cfc22:	44 31 da             	xor    %r11d,%edx
+  8cfc25:	41 89 d3             	mov    %edx,%r11d
+  8cfc28:	41 c1 eb 06          	shr    $0x6,%r11d
+  8cfc2c:	66 0f 70 c0 00       	pshufd $0x0,%xmm0,%xmm0
+  8cfc31:	66 0f db c2          	pand   %xmm2,%xmm0
+  8cfc35:	66 0f 76 c2          	pcmpeqd %xmm2,%xmm0
+  8cfc39:	66 0f db c3          	pand   %xmm3,%xmm0
+  8cfc3d:	41 c1 e2 1a          	shl    $0x1a,%r10d
+  8cfc41:	41 c1 fa 1f          	sar    $0x1f,%r10d
+  8cfc45:	41 81 e2 90 41 dc 76 	and    $0x76dc4190,%r10d
+  8cfc4c:	c1 e2 1a             	shl    $0x1a,%edx
+  8cfc4f:	c1 fa 1f             	sar    $0x1f,%edx
+  8cfc52:	81 e2 20 83 b8 ed    	and    $0xedb88320,%edx
+  8cfc58:	44 31 da             	xor    %r11d,%edx
+  8cfc5b:	44 31 d2             	xor    %r10d,%edx
+  8cfc5e:	66 0f 70 c8 ee       	pshufd $0xee,%xmm0,%xmm1
+  8cfc63:	66 0f ef c8          	pxor   %xmm0,%xmm1
+  8cfc67:	66 0f 70 c1 55       	pshufd $0x55,%xmm1,%xmm0
+  8cfc6c:	66 0f ef c1          	pxor   %xmm1,%xmm0
+  8cfc70:	66 41 0f 7e c2       	movd   %xmm0,%r10d
+  8cfc75:	44 31 d2             	xor    %r10d,%edx
+  8cfc78:	49 ff c1             	inc    %r9
+  8cfc7b:	4d 85 c9             	test   %r9,%r9
+  8cfc7e:	74 10                	je     8cfc90 <kv9_engine::wal_segment::WalSegment::append+0x600>
+  8cfc80:	49 39 f9             	cmp    %rdi,%r9
+  8cfc83:	0f 85 62 ff ff ff    	jne    8cfbeb <kv9_engine::wal_segment::WalSegment::append+0x55b>
+  8cfc89:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+  8cfc90:	48 83 fe 30          	cmp    $0x30,%rsi
+  8cfc94:	74 13                	je     8cfca9 <kv9_engine::wal_segment::WalSegment::append+0x619>
+  8cfc96:	48 8b 7c 34 10       	mov    0x10(%rsp,%rsi,1),%rdi
+  8cfc9b:	48 83 c6 10          	add    $0x10,%rsi
+  8cfc9f:	48 85 ff             	test   %rdi,%rdi
+  8cfca2:	74 ec                	je     8cfc90 <kv9_engine::wal_segment::WalSegment::append+0x600>
+  8cfca4:	e9 3a ff ff ff       	jmp    8cfbe3 <kv9_engine::wal_segment::WalSegment::append+0x553>
+  8cfca9:	f7 d2                	not    %edx
+  8cfcab:	89 94 24 a4 00 00 00 	mov    %edx,0xa4(%rsp)
+  8cfcb2:	4c 8b 51 30          	mov    0x30(%rcx),%r10
+  8cfcb6:	4c 8b 49 38          	mov    0x38(%rcx),%r9
+  8cfcba:	48 8b 79 40          	mov    0x40(%rcx),%rdi
+  8cfcbe:	48 8b b4 24 00 01 00 	mov    0x100(%rsp),%rsi
+  8cfcc5:	00 
+  8cfcc6:	48 8b 56 10          	mov    0x10(%rsi),%rdx
+  8cfcca:	48 89 94 24 30 01 00 	mov    %rdx,0x130(%rsp)
+  8cfcd1:	00 
+  8cfcd2:	0f 10 06             	movups (%rsi),%xmm0
+  8cfcd5:	0f 29 84 24 20 01 00 	movaps %xmm0,0x120(%rsp)
+  8cfcdc:	00 
+  8cfcdd:	4c 8b 71 68          	mov    0x68(%rcx),%r14
+  8cfce1:	0f b6 71 70          	movzbl 0x70(%rcx),%esi
+  8cfce5:	8b 51 74             	mov    0x74(%rcx),%edx
+  8cfce8:	49 83 c4 24          	add    $0x24,%r12
+  8cfcec:	89 54 24 5b          	mov    %edx,0x5b(%rsp)
+  8cfcf0:	8b 51 71             	mov    0x71(%rcx),%edx
+  8cfcf3:	89 54 24 58          	mov    %edx,0x58(%rsp)
+  8cfcf7:	4c 03 61 60          	add    0x60(%rcx),%r12
+  8cfcfb:	0f 82 99 01 00 00    	jb     8cfe9a <kv9_engine::wal_segment::WalSegment::append+0x80a>
+  8cfd01:	49 83 fe ff          	cmp    $0xffffffffffffffff,%r14
+  8cfd05:	0f 84 e5 01 00 00    	je     8cfef0 <kv9_engine::wal_segment::WalSegment::append+0x860>
+  8cfd0b:	40 f6 c5 01          	test   $0x1,%bpl
+  8cfd0f:	74 40                	je     8cfd51 <kv9_engine::wal_segment::WalSegment::append+0x6c1>
+  8cfd11:	40 88 74 24 07       	mov    %sil,0x7(%rsp)
+  8cfd16:	41 f6 c2 01          	test   $0x1,%r10b
+  8cfd1a:	48 0f 44 7c 24 50    	cmove  0x50(%rsp),%rdi
+  8cfd20:	48 89 7c 24 50       	mov    %rdi,0x50(%rsp)
+  8cfd25:	4c 0f 44 8c 24 08 01 	cmove  0x108(%rsp),%r9
+  8cfd2c:	00 00 
+  8cfd2e:	4c 89 cd             	mov    %r9,%rbp
+  8cfd31:	49 8b 50 10          	mov    0x10(%r8),%rdx
+  8cfd35:	48 89 94 24 30 01 00 	mov    %rdx,0x130(%rsp)
+  8cfd3c:	00 
+  8cfd3d:	41 0f 10 00          	movups (%r8),%xmm0
+  8cfd41:	0f 29 84 24 20 01 00 	movaps %xmm0,0x120(%rsp)
+  8cfd48:	00 
+  8cfd49:	41 bd 01 00 00 00    	mov    $0x1,%r13d
+  8cfd4f:	eb 10                	jmp    8cfd61 <kv9_engine::wal_segment::WalSegment::append+0x6d1>
+  8cfd51:	4d 89 d5             	mov    %r10,%r13
+  8cfd54:	4c 89 cd             	mov    %r9,%rbp
+  8cfd57:	48 89 7c 24 50       	mov    %rdi,0x50(%rsp)
+  8cfd5c:	c6 44 24 07 01       	movb   $0x1,0x7(%rsp)
+  8cfd61:	48 8d 94 24 a8 00 00 	lea    0xa8(%rsp),%rdx
+  8cfd68:	00 
+  8cfd69:	48 8b b9 90 00 00 00 	mov    0x90(%rcx),%rdi
+  8cfd70:	48 83 c7 10          	add    $0x10,%rdi
+  8cfd74:	4c 8d b9 98 00 00 00 	lea    0x98(%rcx),%r15
+  8cfd7b:	4c 89 7c 24 08       	mov    %r15,0x8(%rsp)
+  8cfd80:	48 89 44 24 10       	mov    %rax,0x10(%rsp)
+  8cfd85:	48 89 54 24 18       	mov    %rdx,0x18(%rsp)
+  8cfd8a:	48 8d 84 24 a4 00 00 	lea    0xa4(%rsp),%rax
+  8cfd91:	00 
+  8cfd92:	48 89 44 24 20       	mov    %rax,0x20(%rsp)
+  8cfd97:	48 8d 74 24 08       	lea    0x8(%rsp),%rsi
+  8cfd9c:	e8 ef f0 ff ff       	call   8cee90 <kv9_common::metrics::Latency::measure>
+  8cfda1:	48 85 c0             	test   %rax,%rax
+  8cfda4:	75 1e                	jne    8cfdc4 <kv9_engine::wal_segment::WalSegment::append+0x734>
+  8cfda6:	bf e0 0f 00 00       	mov    $0xfe0,%edi
+  8cfdab:	48 8b 44 24 48       	mov    0x48(%rsp),%rax
+  8cfdb0:	48 03 b8 90 00 00 00 	add    0x90(%rax),%rdi
+  8cfdb7:	4c 89 fe             	mov    %r15,%rsi
+  8cfdba:	e8 91 ef ff ff       	call   8ced50 <kv9_common::metrics::Latency::measure>
+  8cfdbf:	48 85 c0             	test   %rax,%rax
+  8cfdc2:	74 6d                	je     8cfe31 <kv9_engine::wal_segment::WalSegment::append+0x7a1>
+  8cfdc4:	48 8b 4c 24 48       	mov    0x48(%rsp),%rcx
+  8cfdc9:	c6 81 9c 00 00 00 01 	movb   $0x1,0x9c(%rcx)
+  8cfdd0:	48 8d 7c 24 08       	lea    0x8(%rsp),%rdi
+  8cfdd5:	48 89 c6             	mov    %rax,%rsi
+  8cfdd8:	ff 15 b2 36 5f 00    	call   *0x5f36b2(%rip)        # ec3490 <_DYNAMIC+0x2130>
+  8cfdde:	0f 10 44 24 08       	movups 0x8(%rsp),%xmm0
+  8cfde3:	f3 0f 6f 4c 24 18    	movdqu 0x18(%rsp),%xmm1
+  8cfde9:	f3 0f 6f 54 24 28    	movdqu 0x28(%rsp),%xmm2
+  8cfdef:	f3 0f 7f 53 20       	movdqu %xmm2,0x20(%rbx)
+  8cfdf4:	f3 0f 7f 4b 10       	movdqu %xmm1,0x10(%rbx)
+  8cfdf9:	0f 11 03             	movups %xmm0,(%rbx)
+  8cfdfc:	48 8b b4 24 a8 00 00 	mov    0xa8(%rsp),%rsi
+  8cfe03:	00 
+  8cfe04:	48 85 f6             	test   %rsi,%rsi
+  8cfe07:	74 13                	je     8cfe1c <kv9_engine::wal_segment::WalSegment::append+0x78c>
+  8cfe09:	48 8b bc 24 b0 00 00 	mov    0xb0(%rsp),%rdi
+  8cfe10:	00 
+  8cfe11:	ba 01 00 00 00       	mov    $0x1,%edx
+  8cfe16:	ff 15 54 17 5f 00    	call   *0x5f1754(%rip)        # ec1570 <_DYNAMIC+0x210>
+  8cfe1c:	48 89 d8             	mov    %rbx,%rax
+  8cfe1f:	48 81 c4 68 01 00 00 	add    $0x168,%rsp
+  8cfe26:	5b                   	pop    %rbx
+  8cfe27:	41 5c                	pop    %r12
+  8cfe29:	41 5d                	pop    %r13
+  8cfe2b:	41 5e                	pop    %r14
+  8cfe2d:	41 5f                	pop    %r15
+  8cfe2f:	5d                   	pop    %rbp
+  8cfe30:	c3                   	ret
+  8cfe31:	48 8b 44 24 48       	mov    0x48(%rsp),%rax
+  8cfe36:	48 8d 48 71          	lea    0x71(%rax),%rcx
+  8cfe3a:	49 ff c6             	inc    %r14
+  8cfe3d:	4c 89 68 30          	mov    %r13,0x30(%rax)
+  8cfe41:	48 89 68 38          	mov    %rbp,0x38(%rax)
+  8cfe45:	48 8b 54 24 50       	mov    0x50(%rsp),%rdx
+  8cfe4a:	48 89 50 40          	mov    %rdx,0x40(%rax)
+  8cfe4e:	48 8b 94 24 30 01 00 	mov    0x130(%rsp),%rdx
+  8cfe55:	00 
+  8cfe56:	48 8b b4 24 00 01 00 	mov    0x100(%rsp),%rsi
+  8cfe5d:	00 
+  8cfe5e:	48 89 56 10          	mov    %rdx,0x10(%rsi)
+  8cfe62:	0f 28 84 24 20 01 00 	movaps 0x120(%rsp),%xmm0
+  8cfe69:	00 
+  8cfe6a:	0f 11 06             	movups %xmm0,(%rsi)
+  8cfe6d:	4c 89 60 60          	mov    %r12,0x60(%rax)
+  8cfe71:	4c 89 70 68          	mov    %r14,0x68(%rax)
+  8cfe75:	0f b6 54 24 07       	movzbl 0x7(%rsp),%edx
+  8cfe7a:	88 50 70             	mov    %dl,0x70(%rax)
+  8cfe7d:	8b 44 24 58          	mov    0x58(%rsp),%eax
+  8cfe81:	8b 54 24 5b          	mov    0x5b(%rsp),%edx
+  8cfe85:	89 51 03             	mov    %edx,0x3(%rcx)
+  8cfe88:	89 01                	mov    %eax,(%rcx)
+  8cfe8a:	48 8b 84 24 38 01 00 	mov    0x138(%rsp),%rax
+  8cfe91:	00 
+  8cfe92:	48 89 03             	mov    %rax,(%rbx)
+  8cfe95:	e9 62 ff ff ff       	jmp    8cfdfc <kv9_engine::wal_segment::WalSegment::append+0x76c>
+  8cfe9a:	48 8d 05 c6 42 8d ff 	lea    -0x72bd3a(%rip),%rax        # 1a4167 <anon.51008e4d476ade37a2499634a966f0b7.0.llvm.2170888954535001258+0x103>
+  8cfea1:	48 89 84 24 10 01 00 	mov    %rax,0x110(%rsp)
+  8cfea8:	00 
+  8cfea9:	48 c7 84 24 18 01 00 	movq   $0x13,0x118(%rsp)
+  8cfeb0:	00 13 00 00 00 
+  8cfeb5:	48 8d 84 24 10 01 00 	lea    0x110(%rsp),%rax
+  8cfebc:	00 
+  8cfebd:	48 89 84 24 c0 00 00 	mov    %rax,0xc0(%rsp)
+  8cfec4:	00 
+  8cfec5:	48 8d 05 14 95 00 00 	lea    0x9514(%rip),%rax        # 8d93e0 <<&T as core::fmt::Display>::fmt>
+  8cfecc:	48 89 84 24 c8 00 00 	mov    %rax,0xc8(%rsp)
+  8cfed3:	00 
+  8cfed4:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  8cfed9:	48 8d 35 34 01 8a ff 	lea    -0x75fecc(%rip),%rsi        # 170014 <anon.51008e4d476ade37a2499634a966f0b7.30.llvm.2170888954535001258>
+  8cfee0:	48 8d 94 24 c0 00 00 	lea    0xc0(%rsp),%rdx
+  8cfee7:	00 
+  8cfee8:	ff 15 3a 17 5f 00    	call   *0x5f173a(%rip)        # ec1628 <_DYNAMIC+0x2c8>
+  8cfeee:	eb 54                	jmp    8cff44 <kv9_engine::wal_segment::WalSegment::append+0x8b4>
+  8cfef0:	48 8d 05 5b 42 8d ff 	lea    -0x72bda5(%rip),%rax        # 1a4152 <anon.51008e4d476ade37a2499634a966f0b7.0.llvm.2170888954535001258+0xee>
+  8cfef7:	48 89 84 24 10 01 00 	mov    %rax,0x110(%rsp)
+  8cfefe:	00 
+  8cfeff:	48 c7 84 24 18 01 00 	movq   $0x15,0x118(%rsp)
+  8cff06:	00 15 00 00 00 
+  8cff0b:	48 8d 84 24 10 01 00 	lea    0x110(%rsp),%rax
+  8cff12:	00 
+  8cff13:	48 89 84 24 c0 00 00 	mov    %rax,0xc0(%rsp)
+  8cff1a:	00 
+  8cff1b:	48 8d 05 be 94 00 00 	lea    0x94be(%rip),%rax        # 8d93e0 <<&T as core::fmt::Display>::fmt>
+  8cff22:	48 89 84 24 c8 00 00 	mov    %rax,0xc8(%rsp)
+  8cff29:	00 
+  8cff2a:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+  8cff2f:	48 8d 35 de 00 8a ff 	lea    -0x75ff22(%rip),%rsi        # 170014 <anon.51008e4d476ade37a2499634a966f0b7.30.llvm.2170888954535001258>
+  8cff36:	48 8d 94 24 c0 00 00 	lea    0xc0(%rsp),%rdx
+  8cff3d:	00 
+  8cff3e:	ff 15 e4 16 5f 00    	call   *0x5f16e4(%rip)        # ec1628 <_DYNAMIC+0x2c8>
+  8cff44:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+  8cff49:	0f 10 44 24 18       	movups 0x18(%rsp),%xmm0
+  8cff4e:	0f 29 44 24 60       	movaps %xmm0,0x60(%rsp)
+  8cff53:	0f 10 44 24 28       	movups 0x28(%rsp),%xmm0
+  8cff58:	0f 29 44 24 70       	movaps %xmm0,0x70(%rsp)
+  8cff5d:	4c 89 2b             	mov    %r13,(%rbx)
+  8cff60:	48 89 43 08          	mov    %rax,0x8(%rbx)
+  8cff64:	0f 28 44 24 60       	movaps 0x60(%rsp),%xmm0
+  8cff69:	66 0f 6f 4c 24 70    	movdqa 0x70(%rsp),%xmm1
+  8cff6f:	0f 11 43 10          	movups %xmm0,0x10(%rbx)
+  8cff73:	f3 0f 7f 4b 20       	movdqu %xmm1,0x20(%rbx)
+  8cff78:	e9 7f fe ff ff       	jmp    8cfdfc <kv9_engine::wal_segment::WalSegment::append+0x76c>
+  8cff7d:	48 89 c3             	mov    %rax,%rbx
+  8cff80:	48 8b b4 24 a8 00 00 	mov    0xa8(%rsp),%rsi
+  8cff87:	00 
+  8cff88:	48 85 f6             	test   %rsi,%rsi
+  8cff8b:	74 13                	je     8cffa0 <kv9_engine::wal_segment::WalSegment::append+0x910>
+  8cff8d:	48 8b bc 24 b0 00 00 	mov    0xb0(%rsp),%rdi
+  8cff94:	00 
+  8cff95:	ba 01 00 00 00       	mov    $0x1,%edx
+  8cff9a:	ff 15 d0 15 5f 00    	call   *0x5f15d0(%rip)        # ec1570 <_DYNAMIC+0x210>
+  8cffa0:	48 89 df             	mov    %rbx,%rdi
+  8cffa3:	e8 78 ca 58 00       	call   e5ca20 <_Unwind_Resume@plt>

@@ -1,0 +1,9 @@
+    Checking kv9-common v0.0.0 (/tmp/kv9-wal-crc32-table/crates/common)
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-wal-crc32-table/crates/raft)
+   Compiling kv9-server v0.0.0 (/tmp/kv9-wal-crc32-table/crates/server)
+    Checking kv9-engine v0.0.0 (/tmp/kv9-wal-crc32-table/crates/engine)
+    Checking kv9-region v0.0.0 (/tmp/kv9-wal-crc32-table/crates/region)
+    Checking kv9-meta v0.0.0 (/tmp/kv9-wal-crc32-table/crates/meta)
+    Checking kv9-txn v0.0.0 (/tmp/kv9-wal-crc32-table/crates/txn)
+    Checking kv9 v0.0.0 (/tmp/kv9-wal-crc32-table)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.52s

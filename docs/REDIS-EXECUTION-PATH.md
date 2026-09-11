@@ -88,8 +88,12 @@ map](RAW-WRITE-EXECUTION-PATH.md) shows owned mutations being cloned again on
 insertion. O(1) persistent snapshot capture does not make shared-path tree
 updates free. These are concrete optimization hypotheses, not CPU attribution.
 The latest source-bound endpoint deltas show enlarged batch apply intervals
-and small sync means on tmpfs, so write/apply CPU is the next diagnostic
-priority. Required replication cannot by itself explain every current cost.
+and small sync means on tmpfs. The subsequent [write CPU diagnostic](WRITE-APPLY-CPU-PROFILE.md)
+now places 7.807% of point PUT and 41.903% of BatchPut(64) selected CPU samples
+inside the engine WAL's bitwise CRC loop, verified against the exact binary's
+instructions. These are CPU sample populations, not latency fractions. They
+identify checksum computation as the first batch-write target. Required
+replication cannot by itself explain every current cost.
 
 The read-credit candidate remains experimental: its c64 read benefit persists,
 but the broader matrix includes mixed and c1 regressions. The historical
@@ -168,8 +172,10 @@ be subtracted from the uninstrumented 38-us client latency as an exact budget.
    assuming fewer allocations automatically yield a useful end-to-end gain.
    The subsequent [wake-coalescing screen](WORK-SIGNAL-SCREENING.md) improves
    c64 GET by 0.798% but regresses c1 GET mean and several p99 pairs. It also
-   remains unselected. The completed v3 refresh above now makes point/batch write apply the
-   next diagnostic priority before another isolated read-only micro-optimization.
+   remains unselected. The completed write profile above now makes equivalent
+   engine CRC computation the next isolated implementation experiment. A
+   256-entry byte-table candidate has passed source-bound equivalence proof
+   and local source tests; its throughput and latency still require screening.
 4. Evaluate kernel bypass only after a real NIC experiment identifies the
    kernel/network path as the limiting cost. Redis's measured reference uses
    ordinary sockets. The current loopback profile neither proves a NIC limit
@@ -189,3 +195,35 @@ allow parallel independent ranges while keeping each range's critical path
 short; that architecture still requires proof and measured validation.
 Redis-class read/write throughput and latency, complete proof composition,
 Chaos Mesh acceptance and automatic splitting remain open requirements.
+
+## Architectural lesson for KV9
+
+The useful Redis property is the amount of work and number of ownership
+transfers per command. In its common memory path, parsing, dictionary access
+and reply construction do not require a separate scheduled task at each
+layer. Nonblocking sockets, existing connection buffers and explicit batching
+amortize I/O while keeping that path short. More asynchronous tasks can overlap
+waiting, but cannot reduce the instruction count of each state transition.
+
+For KV9, keep the distinction between required replicated work and optional
+implementation work explicit. Raft durability, quorum confirmation, fencing
+and ordered application remain obligations. Byte-at-a-time CRC, repeated owned
+buffer clones and unnecessary queue crossings are implementation choices.
+The current batch profile identifies the first of these; the read profile
+instead points to coordination and framing. An equivalent checksum is a
+bounded improvement, while a shorter read path requires its own measurements.
+
+A future design hypothesis is one execution owner per range replica, with
+bounded batched messages, reusable buffers, asynchronous persistence/network
+completion and multiple independent owners across cores. Replicas still elect
+and recover leaders through Raft; local ownership does not imply one
+service-critical process. This needs a measured prototype and preservation of
+admission, cancellation and recovery semantics. An actor or thread-per-core
+label alone provides no evidence of an improvement. Ordered scans and pinned
+snapshots also remain engine requirements, so copying Redis's hash-only point
+index would not satisfy the current API contract by itself.
+
+Use both isolated-request latency and loaded throughput/tails as acceptance
+criteria. Batching can amortize quorum and I/O work without eliminating the
+round trip of a lone linearizable request. The benchmark's ordinary-socket
+Redis already outperforms KV9; the current evidence does not prioritize DPDK.

@@ -1,0 +1,61 @@
+
+/tmp/kv9-rpc-pair-release-first/kv9:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000008cfbd0 <kv9_engine::wal_segment::WalSegment::append+0x540>:
+  8cfbd0:	6f                   	outsl  %ds:(%rsi),(%dx)
+  8cfbd1:	15 ca 57 88 ff       	adc    $0xff8857ca,%eax
+  8cfbd6:	66 0f 6f 1d c2 3c 88 	movdqa -0x77c33e(%rip),%xmm3        # 1538a0 <anon.e1529a08628d4db79f5d8f0ac50a0233.95.llvm.277840845464579698+0x110>
+  8cfbdd:	ff 
+  8cfbde:	e9 98 00 00 00       	jmp    8cfc7b <kv9_engine::wal_segment::WalSegment::append+0x5eb>
+  8cfbe3:	4c 8b 4c 34 f8       	mov    -0x8(%rsp,%rsi,1),%r9
+  8cfbe8:	4c 01 cf             	add    %r9,%rdi
+  8cfbeb:	45 0f b6 11          	movzbl (%r9),%r10d
+  8cfbef:	44 31 d2             	xor    %r10d,%edx
+  8cfbf2:	41 89 d2             	mov    %edx,%r10d
+  8cfbf5:	41 83 e2 01          	and    $0x1,%r10d
+  8cfbf9:	41 f7 da             	neg    %r10d
+  8cfbfc:	41 89 d3             	mov    %edx,%r11d
+  8cfbff:	41 d1 eb             	shr    $1,%r11d
+  8cfc02:	41 81 e2 20 83 b8 ed 	and    $0xedb88320,%r10d
+  8cfc09:	45 31 da             	xor    %r11d,%r10d
+  8cfc0c:	45 89 d3             	mov    %r10d,%r11d
+  8cfc0f:	41 d1 eb             	shr    $1,%r11d
+  8cfc12:	66 0f 6e c2          	movd   %edx,%xmm0
+  8cfc16:	c1 e2 1e             	shl    $0x1e,%edx
+  8cfc19:	c1 fa 1f             	sar    $0x1f,%edx
+  8cfc1c:	81 e2 20 83 b8 ed    	and    $0xedb88320,%edx
+  8cfc22:	44 31 da             	xor    %r11d,%edx
+  8cfc25:	41 89 d3             	mov    %edx,%r11d
+  8cfc28:	41 c1 eb 06          	shr    $0x6,%r11d
+  8cfc2c:	66 0f 70 c0 00       	pshufd $0x0,%xmm0,%xmm0
+  8cfc31:	66 0f db c2          	pand   %xmm2,%xmm0
+  8cfc35:	66 0f 76 c2          	pcmpeqd %xmm2,%xmm0
+  8cfc39:	66 0f db c3          	pand   %xmm3,%xmm0
+  8cfc3d:	41 c1 e2 1a          	shl    $0x1a,%r10d
+  8cfc41:	41 c1 fa 1f          	sar    $0x1f,%r10d
+  8cfc45:	41 81 e2 90 41 dc 76 	and    $0x76dc4190,%r10d
+  8cfc4c:	c1 e2 1a             	shl    $0x1a,%edx
+  8cfc4f:	c1 fa 1f             	sar    $0x1f,%edx
+  8cfc52:	81 e2 20 83 b8 ed    	and    $0xedb88320,%edx
+  8cfc58:	44 31 da             	xor    %r11d,%edx
+  8cfc5b:	44 31 d2             	xor    %r10d,%edx
+  8cfc5e:	66 0f 70 c8 ee       	pshufd $0xee,%xmm0,%xmm1
+  8cfc63:	66 0f ef c8          	pxor   %xmm0,%xmm1
+  8cfc67:	66 0f 70 c1 55       	pshufd $0x55,%xmm1,%xmm0
+  8cfc6c:	66 0f ef c1          	pxor   %xmm1,%xmm0
+  8cfc70:	66 41 0f 7e c2       	movd   %xmm0,%r10d
+  8cfc75:	44 31 d2             	xor    %r10d,%edx
+  8cfc78:	49 ff c1             	inc    %r9
+  8cfc7b:	4d 85 c9             	test   %r9,%r9
+  8cfc7e:	74 10                	je     8cfc90 <kv9_engine::wal_segment::WalSegment::append+0x600>
+  8cfc80:	49 39 f9             	cmp    %rdi,%r9
+  8cfc83:	0f 85 62 ff ff ff    	jne    8cfbeb <kv9_engine::wal_segment::WalSegment::append+0x55b>
+  8cfc89:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+  8cfc90:	48 83 fe 30          	cmp    $0x30,%rsi
+  8cfc94:	74 13                	je     8cfca9 <kv9_engine::wal_segment::WalSegment::append+0x619>
+  8cfc96:	48 8b 7c 34 10       	mov    0x10(%rsp,%rsi,1),%rdi
+  8cfc9b:	48 83 c6 10          	add    $0x10,%rsi
+  8cfc9f:	48                   	rex.W

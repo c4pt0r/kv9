@@ -1,0 +1,10 @@
+{
+  "complete": true,
+  "perf_backend": "/usr/lib/linux-hwe-6.17-tools-6.17.0-19/perf",
+  "perf_sha256": "a9dde21212f2b4bfa54d66f9c40b4121556367940f0f7c6f7f64c7885e07ff45",
+  "perf_version": "perf version 6.17.13",
+  "sudo_perf_version": "perf version 6.17.13",
+  "perf_event_paranoid": "4",
+  "kptr_restrict": "1",
+  "source_bindings_verified": true
+}

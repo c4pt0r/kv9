@@ -1,0 +1,35 @@
+{
+  "command": [
+    "sudo",
+    "-n",
+    "/usr/lib/linux-hwe-6.17-tools-6.17.0-19/perf",
+    "record",
+    "--no-buildid-cache",
+    "--clockid",
+    "mono",
+    "-e",
+    "cpu-clock",
+    "-F",
+    "199",
+    "--call-graph",
+    "dwarf,16384",
+    "--no-bpf-event",
+    "--max-size",
+    "128M",
+    "-m",
+    "256",
+    "-p",
+    "2031855,2031860,2031865",
+    "-o",
+    "/tmp/kv9-write-apply-profile-first/point_put/perf.data",
+    "--",
+    "sleep",
+    "20"
+  ],
+  "recorded_pid_scope": [
+    2031855,
+    2031860,
+    2031865
+  ],
+  "started_unix_ns": 1789135574914351768
+}
