@@ -248,15 +248,22 @@ execute every key mutation and checksum every covered byte. The CRC screen's
 that implementation work remains removable. It does not establish the cost
 of the remaining index updates or predict an ownership rewrite's gain.
 
-The next bounded candidate consumes already-owned mutation buffers at final
+The separately tested candidate consumes already-owned mutation buffers at final
 index insertion. It has passed 712 local workspace tests (23 ignored) and
 Clippy. Source `9be0c19` is committed and passes its own independently audited
 process recovery: 367 calls, 331 OK and 36 unknown, with complete histories.
-Its own [actual Chaos acceptance](OWNED-BUFFER-ACCEPTANCE.md) also passes;
-performance measurement remains the next separate gate.
-This removes an identified duplicate copy while retaining ordered mutations
-and persistent snapshots. The completed [CRC workload matrix](CRC-WORKLOAD-PERFORMANCE.md)
-selects the comparison baseline, with its small batch-read regression retained.
+Its own [actual Chaos acceptance](OWNED-BUFFER-ACCEPTANCE.md) also passes, but
+the completed [performance comparison](OWNED-BUFFER-PERFORMANCE.md) rejects it.
+Small batch-write/mixed gains accompany batch-read and tail regressions.
+Removing an identified duplicate copy while retaining ordered mutations and
+persistent snapshots therefore does not establish an overall improvement.
+The completed [CRC workload matrix](CRC-WORKLOAD-PERFORMANCE.md) selects the
+unchanged baseline, with its small batch-read regression retained.
+
+The next separate proposal-buffer candidate starts from CRC and consumes
+buffers during planning and fenced-command construction. Its local source
+checks pass; exact-source release, recovery/Chaos and performance acceptance
+remain required. It does not include the rejected final-insertion change.
 
 For a structural experiment, map each range replica's mutable protocol state
 to one execution owner and map multiple owners onto a bounded set of workers.
