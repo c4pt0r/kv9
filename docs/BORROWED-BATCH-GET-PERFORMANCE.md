@@ -1,5 +1,9 @@
 # Borrowed batch context and actual Redis GET performance
 
+The subsequent [parallel stream comparison](PARALLEL-STREAM-GET-PERFORMANCE.md)
+uses this candidate as its control and improves both point and batch-size-one
+reads. The numbers below remain the original borrowed-context comparison.
+
 The borrowed-context candidate raises BatchGet(1) from **174,684–176,433** to
 **199,195–200,266 successful calls/s** in this matched diagnostic. Gains paired
 within each repeat are **12.9% and 14.6%**. Mean whole-call latency falls from

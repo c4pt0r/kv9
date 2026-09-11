@@ -35,7 +35,48 @@ there must be no service-critical singleton except the object-store dependency.
 Existing snapshot, retention and storage prerequisites remain required before
 accepting scale-out. This sequence does not mark those prerequisites complete.
 
+## Performance experiment order
+
+Use a short feedback loop for each narrowly scoped optimization:
+
+1. State the measured bottleneck hypothesis and preserve a clean control.
+   Change one mechanism, retaining the consistency and admission contracts.
+2. Run focused correctness tests and a correctness smoke, then measure the
+   exact candidate and control with matched resources and clients. Mark these
+   measurements provisional until the remaining acceptance gates pass.
+3. Reject changes without a useful throughput and latency result. Preserve
+   their results; do not spend a full fault campaign trying to justify them.
+4. For a promising candidate, complete the appropriate workspace checks,
+   source-mapped proof obligations, process histories and actual Chaos Mesh
+   acceptance before selecting or promoting it. Recheck exact source and
+   artifact identity so the measured and validated implementations coincide.
+
+Never overlap timing with builds, tests, fault injection, profiling or audits.
+Test-environment preparation can proceed independently between timing windows.
+Acceptance still requires the same consistency evidence; this order moves
+performance screening earlier so a rejected experiment costs less time.
+
 ## Current evidence
+
+The latest [matched point-read comparison](PARALLEL-STREAM-GET-PERFORMANCE.md)
+retains bounded parallel stream scheduling at `f2c4e85` for continued
+development. Single GET reaches **287,795–288,611 calls/s**, improving
+38.15–38.93% over the same-run `850f0de` control. Mean whole-call latency falls
+from about 307–308 to 222 us, and both p99 buckets improve. BatchGet(1) reaches
+281,983–287,208 calls/s, improving 41.33–43.35%. Actual Redis GET reaches
+496,264–505,568 calls/s, leaving a 1.72–1.76x throughput gap.
+
+This is the same short c64, 128-byte, shared-host tmpfs protocol, with two
+opposite-order repetitions and unchanged native/Redis clients. All 5,941,631
+measured calls succeeded. The exact candidate passed local workspace checks,
+the compiled stream-slot control, process histories and actual eleven-window
+Chaos Mesh acceptance before timing. See the [acceptance record](PARALLEL-STREAM-REQUESTS-ACCEPTANCE.md)
+for proof scope and remaining fault gaps. Master/default promotion is still
+open. Larger batches, writes, sustained load and Redis parity are not updated
+by this point-read result. Continue common-path allocation/copying and
+synchronization work before dynamic multi-Raft and automatic splits.
+
+### Earlier transport selection and implementation evidence
 
 **Streaming gRPC with tonic is selected** for the next point-transport integration
 and performance work. The [same-artifact five-arm comparison](../scripts/redis-reference/results/40e813f-streaming-rpc-c64-tmpfs-diagnostic.md)
