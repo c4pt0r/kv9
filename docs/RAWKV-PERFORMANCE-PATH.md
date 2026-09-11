@@ -84,11 +84,19 @@ BatchGet(1) falls **3.142% / 2.736%**, with worse mean latency in both repeats.
 All 23,488,956 measured calls and the first independent audit pass. Retain the
 adaptive interval; this rejected candidate does not advance to broad acceptance.
 
-Next investigate two persistent handler tasks per stream to coalesce request
-completion wakeups while retaining parallel preparation. The bounded design
-review is complete; implementation and gains remain unverified. Preserve
-response/deadline/admission ownership through queueing, panic and cancellation,
-and keep Raft confirmation requirements unchanged. Neither profile establishes
+The [two persistent stream-worker experiment](STREAM-WORKER-PAIR-SCREENING.md)
+is implemented and screened as `9b74274`, then rejected: GET throughput falls
+**4.503% / 4.808%** and batch throughput falls **4.584% / 5.443%**. Every p99
+bucket improves, but mean latency worsens in all four comparisons. All 23,346,575
+measured calls and the first independent audit pass; 74 focused tests and the
+358-call process histories also pass. Retain the per-request task control.
+
+Next measure the accepted control's single-GET concurrency curve against Redis,
+including low concurrency, c64 and higher concurrency within the public limit.
+Keep command semantics, payload, CPU budget and source/client identities fixed;
+report mean/p99 with throughput to distinguish request turnaround from saturation.
+Use those results to choose the next execution-handoff or confirmation-path change.
+Keep Raft confirmation requirements unchanged. Neither profile establishes
 a fixed ceiling. Keep sustained traffic, writes/mixed,
 larger batches and dynamic-auth/storage callback progress in the general
 promotion gates. Redis parity and automatic splits remain open.

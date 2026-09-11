@@ -83,9 +83,10 @@ now rejects fixed interval eight: GET throughput falls 3.217% / 2.614%, batch
 throughput also falls, and both APIs' mean latency worsens in both repetitions.
 The first independent audit passes; no broad candidate acceptance follows.
 The prior 629-derived experiment remains separately rejected. Retain the
-adaptive interval and next investigate two persistent handler tasks per stream
-to coalesce completion wakeups without returning to a single polling owner.
-That design review is complete, but implementation and gains remain unverified.
+adaptive interval. The subsequent [two persistent stream-worker screen](STREAM-WORKER-PAIR-SCREENING.md)
+also regresses throughput and mean latency, despite improved p99 buckets.
+Retain per-request tasks and measure the accepted control's GET concurrency
+curve against Redis before selecting the next execution-handoff change.
 Quorum, applied-index, original deadlines and cleanup ownership remain mandatory.
 
 Each API has one instrumented five-second recording on the shared host,

@@ -96,9 +96,11 @@ remains about 67 us and notification about 41 us in that sampled barrier.
 The [two-worker global-queue screen](RPC-PAIR-GLOBAL-QUEUE-SCREENING.md) now
 rejects fixed interval eight: both APIs lose approximately 3% throughput and
 worsen mean latency in both repetitions. The accepted adaptive setting remains.
-Next investigate two persistent handler tasks per stream to coalesce completion
-wakeups while retaining useful parallel polling. The design review is complete;
-implementation and gains remain unverified. Preserve persistent peer streaming,
+The [two persistent stream-worker screen](STREAM-WORKER-PAIR-SCREENING.md) also
+regresses throughput and mean latency, despite improving all four p99 buckets.
+Retain per-request tasks. Next measure the accepted control's GET concurrency
+curve against Redis to locate low-load latency, saturation and tail growth
+before selecting the next execution-handoff change. Preserve persistent peer streaming,
 exact group identity, fresh quorum, successful-pump and applied-index fences,
 along with original deadlines and cleanup ownership. Do not infer gains by adding
 earlier percentages or extending these short runs to sustained capacity.
