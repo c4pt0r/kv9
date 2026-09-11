@@ -178,7 +178,8 @@ be subtracted from the uninstrumented 38-us client latency as an exact budget.
    local source tests and [write screening](CRC-WRITE-SCREENING.md): point PUT
    improves 4.476% and BatchPut(64) 38.486%, with better mean/p99 in both repeats.
    The remaining same-recording Redis throughput ratios are 3.974x and 6.977x.
-   Broader workload and Chaos acceptance remain separate pending gates.
+   The [eleven-window Chaos fixture](CRC-CHAOS-ACCEPTANCE.md) also passes;
+   broader workload acceptance remains pending.
 4. Evaluate kernel bypass only after a real NIC experiment identifies the
    kernel/network path as the limiting cost. Redis's measured reference uses
    ordinary sockets. The current loopback profile neither proves a NIC limit
@@ -197,7 +198,7 @@ that path explicitly before changing it. A per-shard owner should eventually
 allow parallel independent ranges while keeping each range's critical path
 short; that architecture still requires proof and measured validation.
 Redis-class read/write throughput and latency, complete proof composition,
-Chaos Mesh acceptance and automatic splitting remain open requirements.
+full fault coverage and automatic splitting remain open requirements.
 
 ## Architectural lesson for KV9
 
@@ -230,3 +231,42 @@ Use both isolated-request latency and loaded throughput/tails as acceptance
 criteria. Batching can amortize quorum and I/O work without eliminating the
 round trip of a lone linearizable request. The benchmark's ordinary-socket
 Redis already outperforms KV9; the current evidence does not prioritize DPDK.
+
+## Turn the architectural lesson into measurable work
+
+Track three costs separately: local CPU work per completed request, waiting for
+required network/persistence completion, and queueing under load. Concurrency
+can overlap waiting without reducing the first cost. At fixed closed-loop
+concurrency, higher QPS and lower mean latency are closely related; report
+isolated c1 latency and loaded tails as well as throughput.
+
+For a batch, distinguish fixed work per RPC or Raft group from work per key
+and per encoded byte. Larger batches amortize a request envelope, but still
+execute every key mutation and checksum every covered byte. The CRC screen's
+38.486% batch-write improvement, with unchanged Raft rules, is direct evidence
+that implementation work remains removable. It does not establish the cost
+of the remaining index updates or predict an ownership rewrite's gain.
+
+The next bounded candidate consumes already-owned mutation buffers at final
+index insertion. It has passed 712 local workspace tests (23 ignored) and
+Clippy; it remains uncommitted and unmeasured, without candidate-specific
+recovery acceptance. This removes an identified duplicate copy while retaining
+ordered mutations and persistent snapshots. The CRC workload matrix should
+finish before selecting the next baseline or comparing this follow-on.
+
+For a structural experiment, map each range replica's mutable protocol state
+to one execution owner and map multiple owners onto a bounded set of workers.
+This is not one operating-system thread per range. Measure whether local
+dispatch can remain on that owner across proposal/read admission and apply,
+with explicit asynchronous network and WAL completions. Preserve bounded
+admission through cancellation, term/epoch fencing, quorum authorization and
+apply-before-success. Batch ready work under load while admitting idle work
+promptly; no fixed batching delay is justified by throughput alone.
+
+Keep tonic streaming as the selected external RPC while testing internal
+ownership changes independently. Index replacement needs separate evidence:
+Redis's dictionary favors point operations, while KV9 must also preserve ordered
+scans and pinned snapshots. Local single-owner execution remains replicated
+through Raft and does not introduce a service-critical singleton. This design
+is a hypothesis to prototype, prove and measure, not a completed optimization
+or a promise that a cross-host quorum round trip can match a local memory read.

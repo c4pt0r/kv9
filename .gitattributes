@@ -30,3 +30,11 @@ scripts/redis-reference/v3-workloads-v1/driver-preparation.diff -whitespace
 # Preserve the original CSV writer's CRLF without treating CR as trailing space.
 scripts/redis-reference/v3-workloads-v1/cohorts-first.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 scripts/redis-reference/v3-workloads-v1/pooled-first.csv -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# Preserve original CRC Chaos evidence bytes.
+scripts/redis-reference/crc-chaos-v1/acceptance/audit-first.log -whitespace
+scripts/redis-reference/crc-chaos-v1/acceptance/leaf-first.log -whitespace
+scripts/redis-reference/crc-chaos-v1/acceptance/source-first.log -whitespace
+scripts/redis-reference/crc-chaos-v1/run/commands/command-1152.stdout -whitespace
+scripts/redis-reference/crc-chaos-v1/run/commands/command-1336.stdout -whitespace
+scripts/redis-reference/crc-chaos-v1/preparation/preparation.diff -whitespace
