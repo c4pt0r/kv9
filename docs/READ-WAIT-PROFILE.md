@@ -28,7 +28,9 @@ elapsed pipeline intervals, not isolated network latency or pure apply CPU.
 Each member publishes an admission timestamp only when its sealed invocation
 returns `Ok(true)`; deferred attempts leave no marker. The sample need not be
 the group's representative. Duplicate or member-only confirmations cannot
-overwrite the first exact-group marker. Send time is captured before the
+overwrite the first exact-group marker. Confirmation is stamped separately for
+each sampled member while walking the group, so it includes preceding member
+notification/trace work. Send time is captured before the
 channel can wake its receiver. A failed or abandoned send does not emit a
 successful sample.
 
@@ -37,7 +39,10 @@ encoding, preserving legitimate zero-duration stages. The receiver captures
 its timestamp before recording histograms. Missing, unordered or overflowed
 timestamps increment only the total metric's error population; they cannot
 change the read result or admission state. Complete successful samples record
-all five histograms, with integer sums satisfying queue + quorum + apply +
+all five histograms. Existing outer read-establishment/backend timers also
+include these histogram updates; their difference from profile_total must not
+be interpreted as uninstrumented backend overhead. The profile has integer
+sums satisfying queue + quorum + apply +
 notification = total. Recording uses existing leaf observer locks outside
 owner locks. It adds five fixed histograms to the diagnostic export inventory;
 the existing 512-KiB bound and worst-case export test remain required.
@@ -50,7 +55,7 @@ exact decomposition of the benchmark's separately bounded measurement interval.
 Failure/cancellation traffic requires separate coverage and is not inferred
 from these successful-read histograms.
 
-Focused controls cover deferral and regrouping, an unsampled representative,
+Focused controls cover deferral with unchanged group membership, an unsampled representative,
 exact first confirmation, apply coverage, send-before-receive, cancellation
 before and after send, owner close, and arithmetic conservation. Existing Raft
 tests continue to enforce the original ordering and ownership contracts.
