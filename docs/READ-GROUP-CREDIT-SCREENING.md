@@ -1,4 +1,10 @@
-# Pending ReadIndex credit: higher c64 throughput, c1 remains unresolved
+# Pending ReadIndex credit: higher c64 throughput in the initial screen
+
+Follow-up: the separate [four-repeat, 30-second c1 study](READ-CREDIT-C1-FOLLOWUP.md)
+and [exact-source eleven-window local Chaos gate](READ-CREDIT-CHAOS-ACCEPTANCE.md)
+now pass. The longer study has slightly better pooled GET throughput/mean and
+mixed p99; it does not establish c1 no-regression. The original observations
+below remain unchanged. `5ee897a` remains the general baseline.
 
 Candidate `57ff6851e40ed63c837189d6eb0a11190704725a` improves c64 GET
 throughput by **8.031% / 8.220%** and BatchGet(1) by **8.479% / 7.919%**
@@ -11,9 +17,10 @@ do not establish that the small c1 effect is negligible or statistically stable.
 The first complete 24-cohort recording and unchanged independent audit pass.
 All **28,847,557 issued logical calls succeed**, with one measured attempt each,
 zero non-success outcomes/reasons and zero dropped slots.
-Accepted control `5ee897a` remains the general baseline. Exact-source Chaos
-Mesh acceptance, the low-concurrency effect, sustained/write/mixed/large-batch
-behavior and whole-protocol proof composition remain open. Redis parity and
+Accepted control `5ee897a` remains the general baseline. At this initial screen,
+exact-source Chaos Mesh acceptance and the c1 follow-up were pending; both
+now complete as linked above. Sustained/write/mixed/large-batch behavior and
+whole-protocol proof composition remain open. Redis parity and
 automatic splitting are not established.
 
 ## Mechanism and correctness boundary
@@ -150,9 +157,9 @@ the original preparation is `/tmp/kv9-read-group-credit-comparison-preparation`.
 
 ## Next gates
 
-Retain the c64 gain while resolving the c1 effect with a separately declared
-longer comparison that retains all observations. Complete exact-source Chaos
-Mesh acceptance before selecting this source as the general baseline. Exercise
+The separate longer comparison retains all four c1 pairs and the observations
+above. Exact-source local Chaos acceptance also completes. Neither implies
+general promotion or a uniform c1 tail-latency improvement. Exercise
 sustained reads, writes/mixed and larger batches: a single outstanding read
 context may change fairness and queueing under other loads.
 
