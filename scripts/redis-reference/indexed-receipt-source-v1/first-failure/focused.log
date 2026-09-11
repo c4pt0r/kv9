@@ -1,0 +1,35 @@
+   Compiling kv9-common v0.0.0 (/tmp/kv9-indexed-apply-receipts/crates/common)
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-indexed-apply-receipts/crates/raft)
+   Compiling kv9-engine v0.0.0 (/tmp/kv9-indexed-apply-receipts/crates/engine)
+error[E0308]: mismatched types
+   --> crates/raft/src/driver/applied_ring.rs:77:57
+    |
+ 77 |                 1 => crate::ApplyOutcome::FenceRejected(term),
+    |                      ---------------------------------- ^^^^ expected `RegionId`, found `u64`
+    |                      |
+    |                      arguments to this enum variant are incorrect
+    |
+note: tuple variant defined here
+   --> crates/raft/src/state_machine.rs:310:5
+    |
+310 |     FenceRejected(kv9_common::RegionId),
+    |     ^^^^^^^^^^^^^
+help: try wrapping the expression in `kv9_common::RegionId`
+    |
+ 77 |                 1 => crate::ApplyOutcome::FenceRejected(kv9_common::RegionId(term)),
+    |                                                         +++++++++++++++++++++    +
+
+error[E0308]: mismatched types
+  --> crates/raft/src/driver/applied_ring.rs:79:29
+   |
+79 |                     region: term,
+   |                             ^^^^ expected `RegionId`, found `u64`
+   |
+help: try wrapping the expression in `kv9_common::RegionId`
+   |
+79 |                     region: kv9_common::RegionId(term),
+   |                             +++++++++++++++++++++    +
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `kv9-raft` (lib test) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

@@ -1,0 +1,200 @@
+{
+  "audit_sha256": "4a2b7b7a8b05ecf14710962012cf023399d0e3f7d3b64524a10dc5adefe6cb72",
+  "core_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+  "files": {
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/000-old-point-r000-p00001/resource-coverage.json": {
+      "bytes": 1659,
+      "sha256": "ff2df9fff774f6bb05c1356803e33f59240163dd94d9ead875731e2516c7e007"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/000-old-point-r000-p00001/run/report.json": {
+      "bytes": 1432069,
+      "sha256": "deadcac02d5a2cb97f69a3f8610cef39697e8c4fa8ffcac44efd775bf74268cf"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/001-new-point-r000-p00001/resource-coverage.json": {
+      "bytes": 1651,
+      "sha256": "d6057960e7e2b0b4ea0fea5a91f9842756f885663e171ad635de361ddd091cb4"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/001-new-point-r000-p00001/run/report.json": {
+      "bytes": 1432079,
+      "sha256": "a2d448807e089efaad1a4689445aa2af6abab46358a908836e6dbec745c93090"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/002-redis-point-r000-p00001/resource-coverage.json": {
+      "bytes": 822,
+      "sha256": "f6dac10ca53d02a2ea904ad249a9fc9c29683af7a7547612217c152b7171380e"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/002-redis-point-r000-p00001/run/report.json": {
+      "bytes": 915326,
+      "sha256": "c7ca93291c05cb12e48893480938ef641f3b52367a4702b942505e76c413c73e"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/003-old-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 1660,
+      "sha256": "ab160d92e3d43ec9baac72c759642c825ba1646b0d71526de07e673f1da6ad02"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/003-old-batch64-r000-p00001/run/report.json": {
+      "bytes": 1431338,
+      "sha256": "67983360e1e4e56cbd7a46ac499e5bc3f22045631c68139f2aab7044b2456652"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/004-new-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 1659,
+      "sha256": "689cdef4f5a82ce164c0eda77c53fde1c8b7a2f1be83ee4b34c42305d0f0a0fa"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/004-new-batch64-r000-p00001/run/report.json": {
+      "bytes": 1431365,
+      "sha256": "b463b11335563dadbcf0350d556a7a343d53edd13d03011a6bdb07d5afec73c5"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/005-redis-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 825,
+      "sha256": "f95ae3a6b3a2bd9f715cf0582d33fee88720304c2798d5ad97016c4aed3b4723"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/005-redis-batch64-r000-p00001/run/report.json": {
+      "bytes": 914990,
+      "sha256": "979222751b134c392629f25746043821ec65c30a2e57d9c83e44134962fa8894"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/006-old-point-r000-p00064/resource-coverage.json": {
+      "bytes": 3424,
+      "sha256": "12bc86be4d8394d1d0f6994a45973b53de9dbf5d7bf9cac1a34ccbfb3b497232"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/006-old-point-r000-p00064/run/report.json": {
+      "bytes": 1445126,
+      "sha256": "70020684ac3ee1cbc7200b1faed6f7bf6454747ab9c2974be5c48f114a3c75a3"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/007-new-point-r000-p00064/resource-coverage.json": {
+      "bytes": 3637,
+      "sha256": "72d3885122ad7843eb86d00b2af65cc5e6d2f2af57babf0bd9391cad3c3be9cc"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/007-new-point-r000-p00064/run/report.json": {
+      "bytes": 1445173,
+      "sha256": "f47d25a1a0a0c2e6a7da5fd154b079bd3b775b68716a66fa87fe4f83bc26ec73"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/008-redis-point-r000-p00064/resource-coverage.json": {
+      "bytes": 836,
+      "sha256": "fae8b189ec5c3e6930b72e873fe08fa441c554b2d6ff5acb6402503ef0cd6bf4"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/008-redis-point-r000-p00064/run/report.json": {
+      "bytes": 927691,
+      "sha256": "0655e080db655ebc54113040f9594aa3e32e0d634c136811c70115229b26975c"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/009-old-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 3528,
+      "sha256": "2dc63b549c242cb4db8a554cccc4b1b1fc384e3a5cab81c904094a23b7e7ef8d"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/009-old-batch64-r000-p00064/run/report.json": {
+      "bytes": 1444016,
+      "sha256": "e64e18122ca5d9e14286fe3ff7a886a8fef81ea33da79a4d003a7d835bf0a87f"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/010-new-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 3802,
+      "sha256": "89c9089cce8c025947fb13fee6f5d671dd8b7e7867c0693ec9b8f9a4cc227e9a"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/010-new-batch64-r000-p00064/run/report.json": {
+      "bytes": 1444015,
+      "sha256": "a3b81f6702cd088c68da670009ddb89a64f5e943ce89d1d814f5786bf7d05d1b"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/011-redis-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 847,
+      "sha256": "78fd2a70a7f0afc2ca72182c719c765605d64339198aaf0b6586125e503ade7b"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/011-redis-batch64-r000-p00064/run/report.json": {
+      "bytes": 928052,
+      "sha256": "8a42a12432d74b2be885d300b85a1c916e3ad349b5705b68e89dd27e72bb96a8"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/012-redis-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 847,
+      "sha256": "b54898f42908a75c16d6d0317a1dc38ad2840ee4a682ebacd87edbd79cc3efa0"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/012-redis-batch64-r000-p10064/run/report.json": {
+      "bytes": 928033,
+      "sha256": "72ca9873845eecf1ef9c60e36fb02a748762a62c457411cdfd509c06d6740973"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/013-new-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 3951,
+      "sha256": "06e04c2caa9f052cb6bc91895d96af67617cd2778ac996d70042174494293922"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/013-new-batch64-r000-p10064/run/report.json": {
+      "bytes": 1444175,
+      "sha256": "403d76e019d96959e160865d3c357de8f1cd1d2fde37cc1f6856873060253509"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/014-old-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 3482,
+      "sha256": "f4b1799ad3e6c80f97e6b3096a97be11606b21f4476dcf66b6fcb6df15d9b168"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/014-old-batch64-r000-p10064/run/report.json": {
+      "bytes": 1443909,
+      "sha256": "2fb5185a0506855488f350e74f70914ee475ba380fd0c15a11a993e8dc628dfc"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/015-redis-point-r000-p10064/resource-coverage.json": {
+      "bytes": 846,
+      "sha256": "7953f1d85e33f3de00198d729940a11d7c50741c0f55881027925c55c33f8ae3"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/015-redis-point-r000-p10064/run/report.json": {
+      "bytes": 927753,
+      "sha256": "fb70c211a47087cc280be5155664c80343478156db5532169475781830e48633"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/016-new-point-r000-p10064/resource-coverage.json": {
+      "bytes": 4228,
+      "sha256": "93682e82453381c51254ffc75fa45854105deefa96a103bdbc82b5366b462ed1"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/016-new-point-r000-p10064/run/report.json": {
+      "bytes": 1445152,
+      "sha256": "3304fcd4dc731e71963795a6795e637d3a506526efcccd55e817d8cefcf90e92"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/017-old-point-r000-p10064/resource-coverage.json": {
+      "bytes": 4357,
+      "sha256": "670f0b5515c6d922a8c6bc8b8e0c4bfb7bf06c9fc22841b1ae8f4433607a0822"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/017-old-point-r000-p10064/run/report.json": {
+      "bytes": 1445159,
+      "sha256": "384b72c4831f4936d287e5385592e8c4cafae8b1df2352564b585375ce1e31d0"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/018-redis-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 826,
+      "sha256": "0069ed2a8abaa8174d17bd56755efa237ec2893bddc066982865f360c0f12fdb"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/018-redis-batch64-r000-p10001/run/report.json": {
+      "bytes": 914998,
+      "sha256": "aa762e9c3f7bce01a7447828460eaaba55174a2409267c30640b093e19391c8e"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/019-new-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 1672,
+      "sha256": "e78244b64b761ea58749fa3dff3c33f0ee28188fff313fc3b95dc3df501d659a"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/019-new-batch64-r000-p10001/run/report.json": {
+      "bytes": 1431357,
+      "sha256": "2a40a0bab9a845f40e26675966401f0f71333162259e16a3c5df0d7b8c289b64"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/020-old-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 1675,
+      "sha256": "33f4298876a7d79642cfee34f1bb5eda8424e1417d850dd3a53927e98943f9c3"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/020-old-batch64-r000-p10001/run/report.json": {
+      "bytes": 1431367,
+      "sha256": "dcb19b4a9f0699af2da3f8f0ae2ab399a787118ab99a85393065f567cc09ae1c"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/021-redis-point-r000-p10001/resource-coverage.json": {
+      "bytes": 830,
+      "sha256": "b570be0f3be9d3c44585784ad4da1534188127879daf37c79cda77e38bc50df1"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/021-redis-point-r000-p10001/run/report.json": {
+      "bytes": 915370,
+      "sha256": "3015209ab15911142f8f1f70acf5c561757db0cf836e0a74cf0dbdd1b86d4fbe"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/022-new-point-r000-p10001/resource-coverage.json": {
+      "bytes": 1669,
+      "sha256": "b07d790216fc5d4372924e4c9d08c5277ec3349c72235b0ee01401a16f1796ea"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/022-new-point-r000-p10001/run/report.json": {
+      "bytes": 1432099,
+      "sha256": "0497ef0375256769e5e4c599f45cd1544288083a817e3802ceae5c70d59c9235"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/023-old-point-r000-p10001/resource-coverage.json": {
+      "bytes": 1670,
+      "sha256": "7368d227b498963c1b69a2adbb53f0d4d42c916ca8dc4d6adb6c879cd8e04bd4"
+    },
+    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts/023-old-point-r000-p10001/run/report.json": {
+      "bytes": 1432076,
+      "sha256": "96e0b1cfff6545e3fa38322b94582d193b6cba586919c5c0ff14e8e42246b0a0"
+    }
+  },
+  "gate_sha256": "f176f7edf9db7ca2bdfcfd89b297453955a6b54b804563672e42e6a8afcbebb0",
+  "reader_sha256": "6a1ea66ae6632dc17bc6a6a235a718dfc798fb782785f3d4c572334aa8fe3288"
+}

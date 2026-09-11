@@ -1,0 +1,17 @@
+{
+  "base": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "files": {
+    "crates/raft/src/driver.rs": "6799991b0210348e6d0acbccbfec87c3fca910c68667213e0d56964f3a48ad2c",
+    "crates/raft/src/driver/applied_ring.rs": "fb7ad04c7bb3537ba36c49b62141590d53b1ab603a5eeac2f09236a3f96e85c6",
+    "docs/INDEXED-APPLY-RECEIPTS.md": "5b1d6632e96b54a107a80e0982d6ac6f6a56c600c34efd5a47ce4feae1c8f393"
+  },
+  "first_failure": {
+    "directory": "/tmp/kv9-indexed-receipt-validation-first",
+    "tool_session": 86299,
+    "tool_receipt": "034610",
+    "exit_code": 101,
+    "cause": "Test fixture passed u64 where FenceRejected and ManifestVerdict require RegionId. Two constructors now explicitly wrap the unchanged test values; production code is unchanged.",
+    "terminal_sha256": "9874ae8d04eb2fc41e92650b9ffa16fefc245e93af7fae84f1206c0953a9da14"
+  },
+  "started_ns": 1789148670833053263
+}

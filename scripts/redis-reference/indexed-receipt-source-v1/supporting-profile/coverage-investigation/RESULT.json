@@ -1,0 +1,60 @@
+{
+  "all_owned_commands_terminal": true,
+  "batch_prefix_margin_ns": -6426334,
+  "batch_suffix_margin_ns": 13918736322,
+  "files": {
+    "REPORT.md": {
+      "bytes": 6159,
+      "sha256": "5610ea1b903a0af314844759a3266e91b70082bf7a5b98c12fe575d86ad951b5"
+    },
+    "diagnose.py": {
+      "bytes": 9323,
+      "sha256": "849c77a70dbd5d218871504f48b73133f739137da08c522b3b438b67d06753d6"
+    },
+    "diagnosis.json": {
+      "bytes": 14977,
+      "sha256": "64540eb0bec1866d82efa2611124b6023ab29de576a3795eff5303388eac323e"
+    },
+    "diagnostic-first.log": {
+      "bytes": 198,
+      "sha256": "53ecd8fdfe99b7e426b0834631d05337875155136adc747245bb896cc4bea303"
+    },
+    "input-inventory.json": {
+      "bytes": 8760,
+      "sha256": "8b55ed5161ac1c8a2eea5d82201b9c660cd6ce0efeef05ad5065014ed9487a29"
+    },
+    "invocation-first.json": {
+      "bytes": 347,
+      "sha256": "b35db453d513ea508c71b0be68cb8656e3bb65a0c7748c5cbcf788b65d2132b5"
+    },
+    "original-decode-first.log": {
+      "bytes": 485,
+      "sha256": "c08d2e83f51e5060592259967dad4411f3a2ed683fa230280d6e0bf867ac2fc3"
+    },
+    "original-decode-invocation-first.json": {
+      "bytes": 428,
+      "sha256": "1fa92c3fe6edc9784fdc816b32df12233dea746d90b3fb3c746c4dcb1413b1d1"
+    },
+    "original-decode-terminal-first.json": {
+      "bytes": 298,
+      "sha256": "079496a94385acefbff6deade0e9b9d5085f131bc7571b8530a8766af42a93ef"
+    },
+    "original-runtime-terminal-first.json": {
+      "bytes": 320,
+      "sha256": "e7a1bb0895d6abd83f1586c62bc389886abab50b95439a9b69a29fd06a7b749d"
+    },
+    "terminal-first.json": {
+      "bytes": 161,
+      "sha256": "c2a002dcb7cbe135ff9190cd879dcc78ada9abf3744932ddb181939a2ad6be09"
+    }
+  },
+  "no_original_inputs_modified": true,
+  "no_perf_or_original_decoder_execution": true,
+  "original_decoder_exit_code": 1,
+  "original_decoder_session": 27326,
+  "original_runtime_exit_code": 0,
+  "original_runtime_session": 85277,
+  "passive_diagnostic_terminal_exit_code": 0,
+  "tool_chunk": "3dff10",
+  "whole_profile_accepted": false
+}

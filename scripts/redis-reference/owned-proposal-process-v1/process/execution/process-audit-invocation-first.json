@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+    "--source",
+    "/tmp/kv9-owned-proposal-buffers",
+    "--build",
+    "/tmp/kv9-owned-proposal-release-first",
+    "--run",
+    "/tmp/kv9-owned-proposal-process-e2e-first",
+    "--revision",
+    "71c9d996e1dcc0897da14be1886e669f0c3ea773",
+    "--output",
+    "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first"
+  ],
+  "cwd": "/tmp/kv9-owned-proposal-acceptance-preparation",
+  "audit_sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+  "process_tool_terminal": {
+    "session": 5554,
+    "chunk": "899e1e",
+    "exit_code": 0
+  },
+  "started_ns": 1789146862763361046
+}

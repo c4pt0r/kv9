@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-proposal-screen-preparation/isolate-and-run.py",
+    "--driver",
+    "/tmp/kv9-owned-proposal-screen-preparation/matched-driver.py",
+    "--output",
+    "/tmp/kv9-owned-proposal-screen-timing-first",
+    "--driver-arguments-file",
+    "/tmp/kv9-owned-proposal-screen-preparation/driver-arguments.json"
+  ],
+  "pid": 55779,
+  "started_ns": 1789147615150441824
+}

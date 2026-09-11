@@ -1,0 +1,28 @@
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-indexed-apply-receipts/crates/raft)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.18s
+     Running unittests src/lib.rs (/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3)
+
+running 2 tests
+test driver::applied_ring::tests::indexed_receipts_preserve_fifo_across_wraps_gaps_and_extreme_indexes ... ok
+test driver::applied_ring::tests::duplicate_or_reordered_receipts_keep_the_original_first_match ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 180 filtered out; finished in 0.13s
+
+     Running tests/driver_lock_order.rs (/home/dongxu/kv9/target/debug/deps/driver_lock_order-6c1f03da129e1136)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/frame_bad_input.rs (/home/dongxu/kv9/target/debug/deps/frame_bad_input-8fc92e089b7ba910)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running tests/membership.rs (/home/dongxu/kv9/target/debug/deps/membership-fd22be44fc00e2e4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+

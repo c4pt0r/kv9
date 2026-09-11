@@ -1,0 +1,79 @@
+{
+  "all_success_single_attempt": true,
+  "attempt_reasons": {
+    "admission_bytes": 0,
+    "admission_count": 0,
+    "admission_oversize": 0,
+    "client_capacity": 0,
+    "client_input": 0,
+    "deadline": 0,
+    "not_leader": 0,
+    "protocol": 0,
+    "read_apply_unconfirmed": 0,
+    "read_quorum_unconfirmed": 0,
+    "rpc_status": 0,
+    "success": 6322849
+  },
+  "audit_sha256": "4a2b7b7a8b05ecf14710962012cf023399d0e3f7d3b64524a10dc5adefe6cb72",
+  "audit_terminal_sha256": "4cce4860fef68f3573de45b5bd28bee1e74f6a4f5cac7caa2ceaf2ce00e1b784",
+  "complete": true,
+  "input_inventory_entries": 2899,
+  "input_inventory_sha256": "93b65d004bbd0c2740fb93595ffd6528dad5567bb7e5f13fc62bbaae1fcadbbc",
+  "matched_diagnostic_accepted": true,
+  "minimum_observed_available_bytes": {
+    "retention": 213363326976,
+    "tmpfs": 57661788160
+  },
+  "outcomes": {
+    "client_rejected": 0,
+    "read_failure": 0,
+    "refused": 0,
+    "success": 22379974,
+    "unknown_write": 0
+  },
+  "outer_restoration": {
+    "accepted": true,
+    "configured_and_effective_before_after": "0-31",
+    "isolated": "6-15,22-31",
+    "namespace_maps_preserved": true,
+    "original_summary_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+    "owned_containers": 3
+  },
+  "owned_lifetimes_exited": 80,
+  "parent_confirmed_exit_code": 0,
+  "parent_confirmed_session": 9028,
+  "performance_promotion": false,
+  "protocol_id": "kv9-owned-proposal-write-screen-c1-c64-v1",
+  "qualifying_drains": 48,
+  "resource_samples": 4643,
+  "retained_bytes": 53076813405,
+  "retained_files": 2082,
+  "role_source_file_checks": 2343,
+  "roles": {
+    "new": {
+      "attempts": 3138036,
+      "calls": 3138036,
+      "cohorts": 8,
+      "input_items": 25327203
+    },
+    "old": {
+      "attempts": 3184813,
+      "calls": 3184813,
+      "cohorts": 8,
+      "input_items": 26991064
+    },
+    "redis": {
+      "attempts": 16057125,
+      "calls": 16057125,
+      "cohorts": 8,
+      "input_items": 189965916
+    }
+  },
+  "scope": "Write-only c1/c64 point PUT1 and BatchPut64 screen; measurement operation totals, all setup/final-data and identity/lifecycle/storage predicates inherited. No read/mixed acceptance, full issued-nonce history/linearizability proof, cross-host/equal-durability claim or performance promotion. No statistics execution by this audit task.",
+  "storage_observations": 4795,
+  "successful_arms": 24,
+  "timed_measurement_attempts": 22379974,
+  "timed_measurement_calls": 22379974,
+  "timed_measurement_input_items": 242284183,
+  "voter_writer_listener_bindings": 48
+}

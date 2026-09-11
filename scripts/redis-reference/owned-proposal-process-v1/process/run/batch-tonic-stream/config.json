@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "client": {
+    "version": 1,
+    "peers": [
+      {
+        "node_id": 1,
+        "address": "127.0.0.1:46961"
+      },
+      {
+        "node_id": 2,
+        "address": "127.0.0.1:37129"
+      },
+      {
+        "node_id": 3,
+        "address": "127.0.0.1:44823"
+      }
+    ],
+    "keyspace_id": 100,
+    "epoch_conf_ver": 1,
+    "epoch_version": 1,
+    "max_in_flight": 4,
+    "max_attempts": 6,
+    "deadline_ms": 1500,
+    "retry_backoff_ms": 100
+  },
+  "rpc_transport": "tonic_stream",
+  "run_id": "batch-tonic-stream",
+  "keyspace_name": "batch-tonic-stream",
+  "workers": 4,
+  "seed": 40,
+  "keys": 4,
+  "batch_size": 8,
+  "value_bytes": 128,
+  "mix": [
+    10,
+    10,
+    10,
+    35,
+    35
+  ],
+  "max_calls": 2000,
+  "history_bytes": 134217728,
+  "measure_ms": 30000,
+  "interval_ms": 20
+}

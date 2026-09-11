@@ -1,0 +1,489 @@
+{
+  "analysis_summary_exists": false,
+  "cause_scope": "Recorder gates only on observed perf process existence plus 250ms sleep. It does not establish a sample-bearing prefix or an acknowledged measurement barrier. Short BatchPut initialization/warmup is consistent with no prefix sample. Retained text cannot distinguish event-enable latency from lack of sufficient on-CPU activity before first sample.",
+  "finding": "BatchPut64 lacks a premeasurement sample; its first sample is 6,426,334 ns after nominal start. Tail containment passes. The original strict rejection remains in force.",
+  "original_decoder": {
+    "argv": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "/usr/bin/python3",
+      "/tmp/kv9-crc-write-profile-first/analyze.py"
+    ],
+    "completed_ns": 1789147229366561694,
+    "exit_code": 1,
+    "pid": 4164559,
+    "reaped": true
+  },
+  "original_decoder_invocation": {
+    "argv": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "/usr/bin/python3",
+      "/tmp/kv9-crc-write-profile-first/analyze.py"
+    ],
+    "decoder_sha256": "c188fd8c648100dee311923bb042dcff488098592eda8230ed5929bcbe958df4",
+    "runtime_tool_terminal": {
+      "chunk": "33aecf",
+      "exit_code": 0,
+      "session": 85277
+    },
+    "started_ns": 1789147225682150357
+  },
+  "original_decoder_rejection": "PASS: point_put 3324 selected CPU samples\nTraceback (most recent call last):\n  File \"/tmp/kv9-crc-write-profile-first/analyze.py\", line 79, in <module>\n    check(min(s['monotonic_ns']for s in samples)<start and max(s['monotonic_ns']for s in samples)>end,'recording fails to contain measurement')\n  File \"/tmp/kv9-crc-write-profile-first/analyze.py\", line 17, in check\n    if not v:raise ValueError(m)\n             ^^^^^^^^^^^^^^^^^^^\nValueError: recording fails to contain measurement\n",
+  "original_runtime": {
+    "argv": [
+      "env",
+      "PYTHONOPTIMIZE=0",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "/usr/bin/python3",
+      "/tmp/kv9-crc-write-profile-first/profile.py"
+    ],
+    "completed_ns": 1789147203777493974,
+    "exit_code": 0,
+    "pid": 4145477,
+    "pid_absent": true,
+    "reaped": true
+  },
+  "profiles": {
+    "batch_put": {
+      "after_nominal": 53,
+      "anchor_widths_ns": [
+        270,
+        1773
+      ],
+      "anchors": [
+        {
+          "monotonic_after_ns": 1435884684656188,
+          "monotonic_before_ns": 1435884684655918,
+          "realtime_ns": 1789147172261377703
+        },
+        {
+          "monotonic_after_ns": 1435905366795288,
+          "monotonic_before_ns": 1435905366793515,
+          "realtime_ns": 1789147192943516572
+        }
+      ],
+      "before_client_launch_to_measurement_ns": 56323550,
+      "before_nominal": 0,
+      "cleanup_complete_recorded": true,
+      "client_exit": {
+        "exit_code": 0,
+        "observed_unix_ns": 1789147177955962453
+      },
+      "client_stages": {
+        "drain": {
+          "end_ns": 5055294949,
+          "start_ns": 5052511244
+        },
+        "initialization": {
+          "end_ns": 27782806,
+          "start_ns": 0
+        },
+        "measurement": {
+          "end_ns": 5052511244,
+          "start_ns": 52511244
+        },
+        "verification": {
+          "end_ns": 5063673312,
+          "start_ns": 5055866469
+        },
+        "warmup": {
+          "end_ns": 52455089,
+          "start_ns": 27783788
+        }
+      },
+      "cohort_elapsed_ns": 5002783705,
+      "config_fields": {
+        "batch_size": 64,
+        "keys": 4096,
+        "max_calls": 10000000,
+        "measure_ms": 5000,
+        "read_api": "batch_get",
+        "read_percent": 0,
+        "rpc_transport": "tonic_stream",
+        "value_bytes": 128,
+        "version": 3,
+        "warmup_calls": 128,
+        "workers": 64,
+        "write_api": "batch_put"
+      },
+      "declared_pid_scope": [
+        4152401,
+        4152406,
+        4152411
+      ],
+      "decode_command_exit_codes": {
+        "perf-script": 0,
+        "perf-top": 0
+      },
+      "first_header": {
+        "header": "kv9 4152406/4152409 1435885.289285521:    5025125 cpu-clock: ",
+        "line": 1,
+        "monotonic_ns": 1435885289285521,
+        "period_ns": 5025125,
+        "pid": 4152406,
+        "tid": 4152409
+      },
+      "fixture_complete_recorded": true,
+      "fixture_scope": "Recorded fixture/resource/cleanup assertions read back only; not a new full acceptance audit or retained-data rehash",
+      "header_count": 3201,
+      "last_header": {
+        "header": "tokio-rt-worker 4152401/4152403 1435904.201595509:    5025125 cpu-clock: ",
+        "line": 18652,
+        "monotonic_ns": 1435904201595509,
+        "period_ns": 5025125,
+        "pid": 4152401,
+        "tid": 4152403
+      },
+      "lost_samples_zero_line_present": true,
+      "max_perf_bytes": 134217728,
+      "measured_calls": 65420,
+      "measured_outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 65420,
+        "unknown_write": 0
+      },
+      "measurement_monotonic_ns": [
+        1435885282859187,
+        1435890282859187
+      ],
+      "measurement_unix_ns": [
+        1789147172859581097,
+        1789147177859581097
+      ],
+      "observed_sample_pids": [
+        4152401,
+        4152406,
+        4152411
+      ],
+      "offset_spread_ns": 521,
+      "offsets_ns": [
+        1787711287576721650,
+        1787711287576722171
+      ],
+      "original_perf_sha256_claim": "829fbcd560b71fb0e4d2329d48d4ef9996d9485339253312d406173be67b6ae1",
+      "perf_command": {
+        "command": [
+          "sudo",
+          "-n",
+          "/usr/lib/linux-hwe-6.17-tools-6.17.0-19/perf",
+          "record",
+          "--no-buildid-cache",
+          "--clockid",
+          "mono",
+          "-e",
+          "cpu-clock",
+          "-F",
+          "199",
+          "--call-graph",
+          "dwarf,16384",
+          "--no-bpf-event",
+          "--max-size",
+          "128M",
+          "-m",
+          "256",
+          "-p",
+          "4152401,4152406,4152411",
+          "-o",
+          "/tmp/kv9-crc-write-profile-first/batch_put/perf.data",
+          "--",
+          "sleep",
+          "20"
+        ],
+        "recorded_pid_scope": [
+          4152401,
+          4152406,
+          4152411
+        ],
+        "started_unix_ns": 1789147172532136156
+      },
+      "perf_command_to_measurement_ns": 327444941,
+      "perf_exit_code": 0,
+      "perf_record_log": "[ perf record: Woken up 549778 times to write data ]\n[ perf record: Captured and wrote 50.948 MB /tmp/kv9-crc-write-profile-first/batch_put/perf.data (3201 samples) ]\n",
+      "perf_script_stderr": "",
+      "perf_top_stderr": "",
+      "prefix_margin_ns": -6426334,
+      "profile_summary_exists": false,
+      "profiler_observed_to_measurement_ns": 306408314,
+      "raw_perf_rehashed_or_decoded_here": false,
+      "ready_marker": {
+        "process_id": 4153061,
+        "state": "ready_for_measurement",
+        "version": 1
+      },
+      "recorded_perf_bytes": 53442940,
+      "report_complete_recorded": true,
+      "requested_matches_recorded_config": true,
+      "resource_measurement_end_unix_ns": 1789147177862364802,
+      "resource_measurement_start_unix_ns": 1789147172859581097,
+      "resource_samples_recorded": 95,
+      "retained_lifetimes": [
+        {
+          "absent_recorded": true,
+          "exit_code": -9,
+          "pid": 4152401,
+          "start_ticks": 143588159
+        },
+        {
+          "absent_recorded": true,
+          "exit_code": -9,
+          "pid": 4152406,
+          "start_ticks": 143588160
+        },
+        {
+          "absent_recorded": true,
+          "exit_code": -9,
+          "pid": 4152411,
+          "start_ticks": 143588162
+        },
+        {
+          "absent_recorded": true,
+          "exit_code": 0,
+          "pid": 4153061,
+          "start_ticks": 143588522
+        }
+      ],
+      "retained_perf_stat_bytes": 53442940,
+      "scratch_removed_recorded": true,
+      "stop_reason": "duration",
+      "strict_end_boundary_passes": true,
+      "strict_start_boundary_passes": false,
+      "suffix_margin_ns": 13918736322,
+      "tmpfs_retention_complete_recorded": true,
+      "used_offset_ns": 1787711287576721910,
+      "within_nominal": 3148
+    },
+    "point_put": {
+      "after_nominal": 95,
+      "anchor_widths_ns": [
+        301,
+        2104
+      ],
+      "anchors": [
+        {
+          "monotonic_after_ns": 1435854257953812,
+          "monotonic_before_ns": 1435854257953511,
+          "realtime_ns": 1789147141834675327
+        },
+        {
+          "monotonic_after_ns": 1435875356373293,
+          "monotonic_before_ns": 1435875356371189,
+          "realtime_ns": 1789147162933094096
+        }
+      ],
+      "before_client_launch_to_measurement_ns": 520841370,
+      "before_nominal": 165,
+      "cleanup_complete_recorded": true,
+      "client_exit": {
+        "exit_code": 0,
+        "observed_unix_ns": 1789147148194161814
+      },
+      "client_stages": {
+        "drain": {
+          "end_ns": 5517044888,
+          "start_ns": 5516771111
+        },
+        "initialization": {
+          "end_ns": 507956180,
+          "start_ns": 0
+        },
+        "measurement": {
+          "end_ns": 5516771111,
+          "start_ns": 516771111
+        },
+        "verification": {
+          "end_ns": 5715672166,
+          "start_ns": 5517491995
+        },
+        "warmup": {
+          "end_ns": 516714054,
+          "start_ns": 507956871
+        }
+      },
+      "cohort_elapsed_ns": 5000273777,
+      "config_fields": {
+        "batch_size": 1,
+        "keys": 4096,
+        "max_calls": 10000000,
+        "measure_ms": 5000,
+        "read_api": "point_get",
+        "read_percent": 0,
+        "rpc_transport": "tonic_stream",
+        "value_bytes": 128,
+        "version": 3,
+        "warmup_calls": 128,
+        "workers": 64,
+        "write_api": "point_put"
+      },
+      "declared_pid_scope": [
+        4145490,
+        4145495,
+        4145500
+      ],
+      "decode_command_exit_codes": {
+        "perf-script": 0,
+        "perf-top": 0
+      },
+      "first_header": {
+        "header": "tokio-rt-worker 4145495/4145497 1435854.859648561:    5025125 cpu-clock: ",
+        "line": 1,
+        "monotonic_ns": 1435854859648561,
+        "period_ns": 5025125,
+        "pid": 4145495,
+        "tid": 4145497
+      },
+      "fixture_complete_recorded": true,
+      "fixture_scope": "Recorded fixture/resource/cleanup assertions read back only; not a new full acceptance audit or retained-data rehash",
+      "header_count": 3585,
+      "last_header": {
+        "header": "kv9 4145495/4145495 1435874.170070325:    5025125 cpu-clock: ",
+        "line": 28178,
+        "monotonic_ns": 1435874170070325,
+        "period_ns": 5025125,
+        "pid": 4145495,
+        "tid": 4145495
+      },
+      "lost_samples_zero_line_present": true,
+      "max_perf_bytes": 134217728,
+      "measured_calls": 591242,
+      "measured_outcomes": {
+        "client_rejected": 0,
+        "read_failure": 0,
+        "refused": 0,
+        "success": 591242,
+        "unknown_write": 0
+      },
+      "measurement_monotonic_ns": [
+        1435855320369407,
+        1435860320369407
+      ],
+      "measurement_unix_ns": [
+        1789147142897091167,
+        1789147147897091167
+      ],
+      "observed_sample_pids": [
+        4145490,
+        4145495,
+        4145500
+      ],
+      "offset_spread_ns": 189,
+      "offsets_ns": [
+        1787711287576721666,
+        1787711287576721855
+      ],
+      "original_perf_sha256_claim": "cc53a1f069ad7ba5062b522e42dbab14b9979b1e53da2d331ca6ff8bedb3532a",
+      "original_profile_summary": {
+        "complete": true,
+        "recorded_samples": 3585,
+        "recording_contains_nominal_measurement": true,
+        "selected_samples": 3324
+      },
+      "perf_command": {
+        "command": [
+          "sudo",
+          "-n",
+          "/usr/lib/linux-hwe-6.17-tools-6.17.0-19/perf",
+          "record",
+          "--no-buildid-cache",
+          "--clockid",
+          "mono",
+          "-e",
+          "cpu-clock",
+          "-F",
+          "199",
+          "--call-graph",
+          "dwarf,16384",
+          "--no-bpf-event",
+          "--max-size",
+          "128M",
+          "-m",
+          "256",
+          "-p",
+          "4145490,4145495,4145500",
+          "-o",
+          "/tmp/kv9-crc-write-profile-first/point_put/perf.data",
+          "--",
+          "sleep",
+          "20"
+        ],
+        "recorded_pid_scope": [
+          4145490,
+          4145495,
+          4145500
+        ],
+        "started_unix_ns": 1789147142105403521
+      },
+      "perf_command_to_measurement_ns": 791687646,
+      "perf_exit_code": 0,
+      "perf_record_log": "[ perf record: Woken up 498124 times to write data ]\n[ perf record: Captured and wrote 57.078 MB /tmp/kv9-crc-write-profile-first/point_put/perf.data (3585 samples) ]\n",
+      "perf_script_stderr": "",
+      "perf_top_stderr": "",
+      "prefix_margin_ns": 460720846,
+      "profiler_observed_to_measurement_ns": 770940730,
+      "raw_perf_rehashed_or_decoded_here": false,
+      "ready_marker": {
+        "process_id": 4146390,
+        "state": "ready_for_measurement",
+        "version": 1
+      },
+      "recorded_perf_bytes": 59871320,
+      "report_complete_recorded": true,
+      "requested_matches_recorded_config": true,
+      "resource_measurement_end_unix_ns": 1789147147897364944,
+      "resource_measurement_start_unix_ns": 1789147142897091167,
+      "resource_samples_recorded": 95,
+      "retained_lifetimes": [
+        {
+          "absent_recorded": true,
+          "exit_code": -9,
+          "pid": 4145490,
+          "start_ticks": 143585115
+        },
+        {
+          "absent_recorded": true,
+          "exit_code": -9,
+          "pid": 4145495,
+          "start_ticks": 143585117
+        },
+        {
+          "absent_recorded": true,
+          "exit_code": -9,
+          "pid": 4145500,
+          "start_ticks": 143585119
+        },
+        {
+          "absent_recorded": true,
+          "exit_code": 0,
+          "pid": 4146390,
+          "start_ticks": 143585480
+        }
+      ],
+      "retained_perf_stat_bytes": 59871320,
+      "scratch_removed_recorded": true,
+      "stop_reason": "duration",
+      "strict_end_boundary_passes": true,
+      "strict_start_boundary_passes": true,
+      "suffix_margin_ns": 13849700918,
+      "tmpfs_retention_complete_recorded": true,
+      "used_offset_ns": 1787711287576721760,
+      "within_nominal": 3325
+    }
+  },
+  "scope": "Passive arithmetic on original retained text/JSON; no decoder, perf, runtime, validators or tests rerun",
+  "script_sha256": "849c77a70dbd5d218871504f48b73133f739137da08c522b3b438b67d06753d6",
+  "server_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "whole_profile_accepted": false
+}

@@ -1,0 +1,77 @@
+--- /tmp/kv9-owned-batch-broad-workloads-preparation/commands.json
++++ /tmp/kv9-owned-proposal-screen-preparation/commands.json
+@@ -8,19 +8,19 @@
+     "-c",
+     "6-15,22-31",
+     "/usr/bin/python3",
+-    "/tmp/kv9-owned-batch-broad-workloads-preparation/audit.py",
++    "/tmp/kv9-owned-proposal-screen-preparation/audit.py",
+     "--run",
+-    "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts",
++    "/tmp/kv9-owned-proposal-screen-timing-first/cohorts",
+     "--output",
+-    "/tmp/kv9-owned-batch-broad-workloads-preparation/results-first",
++    "/tmp/kv9-owned-proposal-screen-preparation/results-first",
+     "--expected-driver-sha256",
+-    "ec2203614200eabfb3aa4f423b66cd511c36fc664854fb767bf82e8293527e77",
++    "d18f0ed307fc1628492f3efe641e2af73abdfb76625d5f5ec88c1c7fd1fa915d",
+     "--root-session",
+     "ROOT_TERMINAL_TIMING_SESSION",
+     "--root-exit-code",
+     "0",
+     "--successful-arms",
+-    "72"
++    "24"
+   ],
+   "audit_placeholder_is_not_a_real_session": true,
+   "runtime_executed": false,
+@@ -32,9 +32,9 @@
+     "-c",
+     "6-15,22-31",
+     "/usr/bin/python3",
+-    "/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py",
++    "/tmp/kv9-owned-proposal-screen-preparation/matched-driver.py",
+     "--output",
+-    "/tmp/kv9-owned-batch-broad-workloads-smoke-first",
++    "/tmp/kv9-owned-proposal-screen-smoke-first",
+     "--smoke",
+     "--client-source",
+     "/tmp/kv9-point-write-measurement-v3",
+@@ -47,9 +47,9 @@
+     "--old-server-build",
+     "/tmp/kv9-wal-crc32-release-first",
+     "--new-server-source",
+-    "/tmp/kv9-owned-apply-batch",
++    "/tmp/kv9-owned-proposal-buffers",
+     "--new-server-build",
+-    "/tmp/kv9-owned-batch-release-first",
++    "/tmp/kv9-owned-proposal-release-first",
+     "--redis-client-source",
+     "/tmp/kv9-point-write-measurement-v3",
+     "--redis-client-build",
+@@ -65,7 +65,7 @@
+     "-c",
+     "6-15,22-31",
+     "/usr/bin/python3",
+-    "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/derive.py"
++    "/tmp/kv9-owned-proposal-screen-preparation/statistics/derive.py"
+   ],
+   "timing_root_only_after_release": [
+     "env",
+@@ -75,12 +75,12 @@
+     "-c",
+     "6-15,22-31",
+     "/usr/bin/python3",
+-    "/tmp/kv9-owned-batch-broad-workloads-preparation/isolate-and-run.py",
++    "/tmp/kv9-owned-proposal-screen-preparation/isolate-and-run.py",
+     "--driver",
+-    "/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py",
++    "/tmp/kv9-owned-proposal-screen-preparation/matched-driver.py",
+     "--output",
+-    "/tmp/kv9-owned-batch-broad-workloads-timing-first",
++    "/tmp/kv9-owned-proposal-screen-timing-first",
+     "--driver-arguments-file",
+-    "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-arguments.json"
++    "/tmp/kv9-owned-proposal-screen-preparation/driver-arguments.json"
+   ]
+ }

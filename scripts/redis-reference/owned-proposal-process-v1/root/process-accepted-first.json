@@ -1,0 +1,47 @@
+{
+  "accepted": true,
+  "source_unchanged": true,
+  "original_inputs_unchanged": true,
+  "revision": "71c9d996e1dcc0897da14be1886e669f0c3ea773",
+  "source_files": 591,
+  "client_lifetimes": 2,
+  "server_lifetimes": 5,
+  "owned_lifetimes_exited": true,
+  "calls": 347,
+  "outcomes": {
+    "ok": 321,
+    "unknown": 26
+  },
+  "cases": [
+    {
+      "transport": "tonic_stream",
+      "operations": 173,
+      "outcomes": {
+        "ok": 159,
+        "unknown": 14
+      },
+      "fresh_drained_voters": 3,
+      "point_batch_overlap_count": 116
+    },
+    {
+      "transport": "tonic_unary",
+      "operations": 174,
+      "outcomes": {
+        "ok": 162,
+        "unknown": 12
+      },
+      "fresh_drained_voters": 3,
+      "point_batch_overlap_count": 115
+    }
+  ],
+  "runtime_tool_terminal": {
+    "session": 5554,
+    "chunk": "899e1e",
+    "exit_code": 0
+  },
+  "audit_tool_terminal": {
+    "chunk": "d2dfa8",
+    "exit_code": 0
+  },
+  "scope": "Independent readback of one frozen default-feature native atomic batch process fixture, stream default plus explicit unary on normal endpoints; two complete atomic histories and source-bound SIGKILL/restart intervals. One local host, ordinary WAL, no benchmark or actual Chaos Mesh/native-batch Chaos acceptance. Interval timestamps and listener/proc records are retained observations from the source-bound fixture, not an external continuous observer."
+}

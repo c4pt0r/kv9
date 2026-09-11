@@ -1,0 +1,3 @@
+PASS: tonic_stream full atomic batch history with leader loss and original-directory restart
+PASS: tonic_unary full atomic batch history with leader loss and original-directory restart
+PASS: native atomic batches and overlapping point calls retain checked histories across leader restart

@@ -1,0 +1,34 @@
+{
+  "accepted": true,
+  "revision": "71c9d996e1dcc0897da14be1886e669f0c3ea773",
+  "source_files": 591,
+  "source_tree_sha256": "5bf626460b46eaba0a7a37915b560de36f843e6f9f65c6887459d6ef0b1eb1d0",
+  "server_sha256": "b740e3d3c7ca1ad6cac2ed901d2c8a52b128c7c6456f95407f479bb61f414033",
+  "workload_sha256": "5b3a6dd102cbb6946c67e1dfac3f73b5e401412d7aa25de7fa21f8c57da4cb55",
+  "build_manifest_sha256": "b3cd4c20bd5033bf3651ec9c2bbee008ecdee10a81b724f40a9e513fd91448b3",
+  "cargo": [
+    {
+      "file": "kv9-cargo.jsonl",
+      "sha256": "5f8ab3a9d7d68751c502304b098ec00c9534a2843b2921c9f5422428c843aebf",
+      "executable": "/home/dongxu/kv9/target/release/kv9",
+      "features": [],
+      "opt_level": "3",
+      "engine_raft_server_defaults_verified": true
+    },
+    {
+      "file": "workload/cargo.jsonl",
+      "sha256": "452528a66cec494a13c13b71cfaaa255a2c93e44610f15a328302a52b57f697b",
+      "executable": "/home/dongxu/kv9/target/release/kv9-batch-workload",
+      "features": [],
+      "opt_level": "3",
+      "engine_raft_server_defaults_verified": true
+    }
+  ],
+  "tool_terminal": {
+    "session": 84856,
+    "chunk": "1aa31d",
+    "exit_code": 0
+  },
+  "original_manifests_unchanged": true,
+  "created_ns": 1789146781929224380
+}

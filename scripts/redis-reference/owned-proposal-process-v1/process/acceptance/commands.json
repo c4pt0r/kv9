@@ -1,0 +1,77 @@
+[
+  {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/tmp/kv9-owned-proposal-buffers",
+    "ended_unix_ns": 1789146862788621561,
+    "exit_code": 0,
+    "name": "source-head",
+    "started_unix_ns": 1789146862787317680
+  },
+  {
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "cwd": "/tmp/kv9-owned-proposal-buffers",
+    "ended_unix_ns": 1789146862791307310,
+    "exit_code": 0,
+    "name": "source-status",
+    "started_unix_ns": 1789146862788675442
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/history/checker.py",
+      "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-stream/history.jsonl",
+      "--output",
+      "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/batch-tonic-stream-history-checked.json",
+      "--acceptance",
+      "--require",
+      "get",
+      "put",
+      "delete",
+      "batch_get",
+      "batch_put",
+      "--max-states",
+      "400000",
+      "--seconds",
+      "60"
+    ],
+    "cwd": "/tmp/kv9-owned-proposal-buffers",
+    "ended_unix_ns": 1789146862938680879,
+    "exit_code": 0,
+    "name": "batch-tonic-stream-raw-history",
+    "started_unix_ns": 1789146862894750357
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/history/checker.py",
+      "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-unary/history.jsonl",
+      "--output",
+      "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/batch-tonic-unary-history-checked.json",
+      "--acceptance",
+      "--require",
+      "get",
+      "put",
+      "delete",
+      "batch_get",
+      "batch_put",
+      "--max-states",
+      "400000",
+      "--seconds",
+      "60"
+    ],
+    "cwd": "/tmp/kv9-owned-proposal-buffers",
+    "ended_unix_ns": 1789146863019287930,
+    "exit_code": 0,
+    "name": "batch-tonic-unary-raw-history",
+    "started_unix_ns": 1789146862976230823
+  }
+]

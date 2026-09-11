@@ -1,0 +1,368 @@
+{
+  "source_revision": "71c9d996e1dcc0897da14be1886e669f0c3ea773",
+  "scope": "Exact original release and independently accepted process recovery records, with both complete streaming/unary histories and original witnesses including all unknowns. No candidate Chaos or performance claim. Large binaries/WALs remain local at manifest paths. Publication path aliases preserve the original source names in this index.",
+  "copies": 60,
+  "bytes": 2139518,
+  "files": [
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/audit.json",
+      "path": "process/acceptance/audit.json",
+      "bytes": 10565,
+      "sha256": "6d30acdc283f4ff5878644c7fa364ee31eda1b30e4b46a72221950037340dd0a"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/batch-tonic-stream-history-checked.json",
+      "path": "process/acceptance/batch-tonic-stream-history-checked.json",
+      "bytes": 18123,
+      "sha256": "baac7b04af2a38515896e3a669e0c0d6c63b05f754fa381dbfd0b03e0cca59eb"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/batch-tonic-stream-raw-history.stderr",
+      "path": "process/acceptance/batch-tonic-stream-raw-history.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/batch-tonic-stream-raw-history.stdout",
+      "path": "process/acceptance/batch-tonic-stream-raw-history.stdout",
+      "bytes": 633,
+      "sha256": "2c55be78f696737f15e0aa5c69fdc3a1f87114345c5cfcbd2a5d28bbb31ec5e5"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/batch-tonic-stream-report-checked.json",
+      "path": "process/acceptance/batch-tonic-stream-report-checked.json",
+      "bytes": 20789,
+      "sha256": "d2925ab410cbcf5f8dc586a4f236b8bb68b9c80602e4a7049af11a312635e00d"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/batch-tonic-unary-history-checked.json",
+      "path": "process/acceptance/batch-tonic-unary-history-checked.json",
+      "bytes": 18827,
+      "sha256": "0f01b633d6ffbd5341eaf9ed8da5b86ea3cdcc81edf11d1b6df13bf34016ae23"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/batch-tonic-unary-raw-history.stderr",
+      "path": "process/acceptance/batch-tonic-unary-raw-history.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/batch-tonic-unary-raw-history.stdout",
+      "path": "process/acceptance/batch-tonic-unary-raw-history.stdout",
+      "bytes": 751,
+      "sha256": "41c37e826d99009e3f402c9fcc9d9a5db7faa8908bb247c651327785617b2e73"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/batch-tonic-unary-report-checked.json",
+      "path": "process/acceptance/batch-tonic-unary-report-checked.json",
+      "bytes": 21577,
+      "sha256": "b3b85ae4300cf7c72864d6456d3e3dd0a9388fa10810d1f95c3116da9deb6a91"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/commands.json",
+      "path": "process/acceptance/commands.json",
+      "bytes": 1933,
+      "sha256": "05ad0e931beded95774402c773429960b9376f4bad5809a22929377be780df04"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/original-inputs.json",
+      "path": "process/acceptance/original-inputs.json",
+      "bytes": 11929,
+      "sha256": "77958c368a34c56650f35036b28276da141dae469a35d84a908705258f2806fe"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/source-head.stderr",
+      "path": "process/acceptance/source-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/source-head.stdout",
+      "path": "process/acceptance/source-head.stdout",
+      "bytes": 41,
+      "sha256": "8f032214b0d27ebf0af6a80f54272c867e3493469ff3f7cc1563d0332e6a5f0c"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/source-status.stderr",
+      "path": "process/acceptance/source-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first/source-status.stdout",
+      "path": "process/acceptance/source-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/release-first.log",
+      "path": "process/execution/build-first.log",
+      "bytes": 169,
+      "sha256": "0b954aa97efdffe719edd943d4dc5d2b973af936f388754a6d78594d43c54651"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/release-invocation-first.json",
+      "path": "process/execution/invocation-first.json",
+      "bytes": 1072,
+      "sha256": "39d7617418aa7a57893733f6ea74a35be63f14c66baa323769970f587c28a6d0"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/process-audit-first.log",
+      "path": "process/execution/process-audit-first.log",
+      "bytes": 2728,
+      "sha256": "89699b3944565aaf23a7491e750d31a7b90d6e5dea5614486d318d4b25e96ec9"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/process-audit-invocation-first.json",
+      "path": "process/execution/process-audit-invocation-first.json",
+      "bytes": 828,
+      "sha256": "10cc005dbbe46cb1304ca255d9dffd79c4c1bafc9f6ecb09736330814d90f490"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/process-audit-terminal-first.json",
+      "path": "process/execution/process-audit-terminal-first.json",
+      "bytes": 642,
+      "sha256": "349fbf9a451835033e7ad2cc10871060f9d08042208b9d7a8c4f9a9d14796827"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/process-first.log",
+      "path": "process/execution/process-first.log",
+      "bytes": 288,
+      "sha256": "721ea9c7550f9d3cad200cd50684869195f8787996b6b8faa7fa448804881ebd"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/process-invocation-first.json",
+      "path": "process/execution/process-invocation-first.json",
+      "bytes": 786,
+      "sha256": "fdb4686d60eec3bc12e09ac853417d18d1c16401feb529949a1744cc7d4acc8f"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/process-terminal-first.json",
+      "path": "process/execution/process-terminal-first.json",
+      "bytes": 466,
+      "sha256": "43bcba4ccb44a0d8303dd8894f50364b11f4798944fa2a1f045b83b8f1b155f5"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/release-terminal-first.json",
+      "path": "process/execution/terminal-first.json",
+      "bytes": 490,
+      "sha256": "d821cdcef910c3048827a02996117c715abe5c9d370e873945b84145614830ef"
+    },
+    {
+      "source": "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+      "path": "process/preparation/process-audit.py",
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-acceptance-preparation/process-runner.py",
+      "path": "process/preparation/process-runner.py",
+      "bytes": 720,
+      "sha256": "409f0f006af33118f4f0b9849286c86f5d83d013c5fec8b257850cbd5d27b4af"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-stream-checked.json",
+      "path": "process/run/batch-tonic-stream-checked.json",
+      "bytes": 20789,
+      "sha256": "d2925ab410cbcf5f8dc586a4f236b8bb68b9c80602e4a7049af11a312635e00d"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-stream-config.json",
+      "path": "process/run/batch-tonic-stream-config.json",
+      "bytes": 787,
+      "sha256": "8470b6ee4c77efe94e869fda5aebdef6493f6b07cc3b7b4da89e0931cf901b39"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-stream.log",
+      "path": "process/run/batch-tonic-stream.log",
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-stream/build.json",
+      "path": "process/run/batch-tonic-stream/build.json",
+      "bytes": 487,
+      "sha256": "cf15e77a965de31dc9eadb97ea8b9755477f2a25a0753287e46136bd7381905a"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-stream/config.json",
+      "path": "process/run/batch-tonic-stream/config.json",
+      "bytes": 821,
+      "sha256": "afee2878e5864c5a38617a5e2c25752f8d4e8395a398c52d9e3cb6b9ced9324a"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-stream/history.jsonl",
+      "path": "process/run/batch-tonic-stream/history.jsonl",
+      "bytes": 397838,
+      "sha256": "4ccce5c17e1b3dda0bd2e6f6349e45caf3beb0b5216c0d580ae38e7073508aaa"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-stream/progress.json",
+      "path": "process/run/batch-tonic-stream/progress.json",
+      "bytes": 720,
+      "sha256": "420e6c5ac3dfc31052a4ba7dea4c3839f66ef0a4154ae2b3e02c3dfecb7466ea"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-stream/ready.json",
+      "path": "process/run/batch-tonic-stream/ready.json",
+      "bytes": 72,
+      "sha256": "7d1b56b2d5bbebbcf2303fe2116ba33eb6c8bf21e5b99369c6a7497126137513"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-stream/report.json",
+      "path": "process/run/batch-tonic-stream/report.json",
+      "bytes": 200896,
+      "sha256": "09dc62cefc5d406476936e9149096bb502c53eb34c21fdca103d7876594b19a5"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-unary-checked.json",
+      "path": "process/run/batch-tonic-unary-checked.json",
+      "bytes": 21577,
+      "sha256": "b3b85ae4300cf7c72864d6456d3e3dd0a9388fa10810d1f95c3116da9deb6a91"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-unary-config.json",
+      "path": "process/run/batch-tonic-unary-config.json",
+      "bytes": 819,
+      "sha256": "49a2015ba6608f69871ec919ef1763dc2286d966a40d025f1b6f36ef93cfb6ce"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-unary.log",
+      "path": "process/run/batch-tonic-unary.log",
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-unary/build.json",
+      "path": "process/run/batch-tonic-unary/build.json",
+      "bytes": 487,
+      "sha256": "cf15e77a965de31dc9eadb97ea8b9755477f2a25a0753287e46136bd7381905a"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-unary/config.json",
+      "path": "process/run/batch-tonic-unary/config.json",
+      "bytes": 818,
+      "sha256": "97550608fb73bd1e26a8c0eeeb63d8a82b4f7c9bf909a505b9adf428ea10058d"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-unary/history.jsonl",
+      "path": "process/run/batch-tonic-unary/history.jsonl",
+      "bytes": 401101,
+      "sha256": "61974dac81227ae79e755813eb8a5f3ba8e1049262ff4f538e6aa707eb4ece67"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-unary/progress.json",
+      "path": "process/run/batch-tonic-unary/progress.json",
+      "bytes": 720,
+      "sha256": "c9df4014f565aa7ce6477a88142785bc1b92ced96d3bf949ca382d9669ed50bc"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-unary/ready.json",
+      "path": "process/run/batch-tonic-unary/ready.json",
+      "bytes": 71,
+      "sha256": "7b449bf5b8374bece715409045102ccabed1420d2bae953e83c2a62f678c72a3"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/batch-tonic-unary/report.json",
+      "path": "process/run/batch-tonic-unary/report.json",
+      "bytes": 200668,
+      "sha256": "b06669c94bed0ae470c47c80503044453b199f2f462582c914f32e7ab9656995"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-process-e2e-first/summary.json",
+      "path": "process/run/summary.json",
+      "bytes": 199867,
+      "sha256": "80a7d137e42543770afdb41d6d69e50202046f428a313a35eb17fdb726232fa6"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-release-first/build.json",
+      "path": "release/build.json",
+      "bytes": 65389,
+      "sha256": "b3cd4c20bd5033bf3651ec9c2bbee008ecdee10a81b724f40a9e513fd91448b3"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-release-first/kv9-cargo.jsonl",
+      "path": "release/kv9-cargo.jsonl",
+      "bytes": 211802,
+      "sha256": "5f8ab3a9d7d68751c502304b098ec00c9534a2843b2921c9f5422428c843aebf"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-release-first/kv9-build.log",
+      "path": "release/kv9-build.log",
+      "bytes": 120,
+      "sha256": "6a482eb5b552f1d9126310cb0097641d51ef2c1fcb0dc3b5bb45a0cae89cd748"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-release-first/workload/build.json",
+      "path": "release/workload/build.json",
+      "bytes": 487,
+      "sha256": "cf15e77a965de31dc9eadb97ea8b9755477f2a25a0753287e46136bd7381905a"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-release-first/workload/cargo.jsonl",
+      "path": "release/workload/cargo.jsonl",
+      "bytes": 208790,
+      "sha256": "452528a66cec494a13c13b71cfaaa255a2c93e44610f15a328302a52b57f697b"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-release-first/workload/build.log",
+      "path": "release/workload/build.log",
+      "bytes": 602,
+      "sha256": "ce1bd15d3883d8eef1458f3faa0a057f3b711925db911de1c90624d05514c33c"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-release-first/workload/sources.json",
+      "path": "release/workload/sources.json",
+      "bytes": 61420,
+      "sha256": "8197b711a49446c9b771da04a8d417280b81fc6ea01c5ac66b567bb2b2b3f4d8"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/release-invocation-first.json",
+      "path": "root/release-invocation-first.json",
+      "bytes": 1072,
+      "sha256": "39d7617418aa7a57893733f6ea74a35be63f14c66baa323769970f587c28a6d0"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/release-child-first.json",
+      "path": "root/release-child-first.json",
+      "bytes": 1090,
+      "sha256": "39c9f62edee3d68e47e819c25ab440e9d0179d4bb846466ae334dee7b8239788"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/release-terminal-first.json",
+      "path": "root/release-terminal-first.json",
+      "bytes": 490,
+      "sha256": "d821cdcef910c3048827a02996117c715abe5c9d370e873945b84145614830ef"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/release-first.log",
+      "path": "root/release-first.log",
+      "bytes": 169,
+      "sha256": "0b954aa97efdffe719edd943d4dc5d2b973af936f388754a6d78594d43c54651"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/release-readback-first.json",
+      "path": "root/release-readback-first.json",
+      "bytes": 1243,
+      "sha256": "50434f87e772718079be89a6a7414d99e4e12d5f5d40c144930cf4fd9ae4a8f8"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/process-accepted-first.json",
+      "path": "root/process-accepted-first.json",
+      "bytes": 1407,
+      "sha256": "0cb2c29248a19812942ff5d0683dee45ea357020e44aa13d1ae3e9f72bc7168c"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-root-first/process-child-first.json",
+      "path": "root/process-child-first.json",
+      "bytes": 804,
+      "sha256": "d0977dfcae067ff11a5a67f6165a0a482384a55a5e3d3ba7b821981be993f9cb"
+    },
+    {
+      "source": "/tmp/kv9-owned-proposal-publication-first/selection-first-failure.json",
+      "path": "preparation/selection-first-failure.json",
+      "bytes": 365,
+      "sha256": "9b67a1b2b4c0f0c5a1552135fc535403b94f1d01a4bdc94c8447312e5c3b51d9"
+    }
+  ]
+}

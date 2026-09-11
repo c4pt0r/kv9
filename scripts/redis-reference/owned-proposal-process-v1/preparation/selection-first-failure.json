@@ -1,0 +1,6 @@
+{
+  "tool_chunk": "c7e364",
+  "exit_code": 1,
+  "reason": "An inherited process publication entry references build-first.log; the current original release supervisor uses release-first.log. Partial exact copies are uncommitted. The corrected selection will use the actual original source name. No runtime or validator rerun.",
+  "created_ns": 1789148114128568758
+}

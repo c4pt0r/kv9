@@ -1,0 +1,19 @@
+{
+  "base": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "source_clean": false,
+  "files": {
+    "crates/raft/src/driver.rs": "6799991b0210348e6d0acbccbfec87c3fca910c68667213e0d56964f3a48ad2c",
+    "crates/raft/src/driver/applied_ring.rs": "34d1f53921cdf9850e00fa03fe6e5e62dedde7564e44e7f9fd45a3cb5b0c1957",
+    "docs/INDEXED-APPLY-RECEIPTS.md": "5b1d6632e96b54a107a80e0982d6ac6f6a56c600c34efd5a47ce4feae1c8f393"
+  },
+  "timing_tool_terminal": {
+    "session": 9028,
+    "chunk": "ab3e85",
+    "exit_code": 0
+  },
+  "format_tool_terminal": {
+    "chunk": "8340f2",
+    "exit_code": 0
+  },
+  "started_ns": 1789148266491318353
+}

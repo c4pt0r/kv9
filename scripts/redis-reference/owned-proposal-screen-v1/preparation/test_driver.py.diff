@@ -1,0 +1,57 @@
+--- /tmp/kv9-owned-batch-broad-workloads-preparation/test_driver.py
++++ /tmp/kv9-owned-proposal-screen-preparation/test_driver.py
+@@ -20,15 +20,15 @@
+ 
+ 
+ class Protocol(unittest.TestCase):
+-    def test_independent_72_order_and_exact_36_smoke(self):
++    def test_independent_24_order_and_exact_12_smoke(self):
+         expected = [(c, f'{kind}-r{reads:03d}', batch, reads, role)
+                     for c in [1, 64] for kind, batch in [('point', 1), ('batch64', 64)]
+-                    for reads in [0, 50, 100] for role in ['old', 'new', 'redis']]
++                    for reads in [0] for role in ['old', 'new', 'redis']]
+         plan = d.make_plan(False)
+-        self.assertEqual(len(plan), 72)
+-        self.assertEqual(d.PROTOCOL_ID, 'kv9-owned-batch-broad-workloads-c1-c64-v1')
++        self.assertEqual(len(plan), 24)
++        self.assertEqual(d.PROTOCOL_ID, 'kv9-owned-proposal-write-screen-c1-c64-v1')
+         for repeat in (0, 1):
+-            for row, (c, workload, batch, reads, role) in zip(plan[repeat*36:(repeat+1)*36],
++            for row, (c, workload, batch, reads, role) in zip(plan[repeat*12:(repeat+1)*12],
+                     expected if repeat == 0 else list(reversed(expected))):
+                 point = batch == 1
+                 self.assertEqual(row, dict(repeat=repeat, arm=role+'-'+workload,
+@@ -40,8 +40,8 @@
+                         value_bytes=128, read_percent=reads, warmup_calls=128, measure_ms=10000,
+                         max_calls=10_000_000, load={'kind':'closed_loop'})))
+         smoke = d.make_plan(True)
+-        self.assertEqual(len(smoke), 36)
+-        for row, wanted in zip(smoke, plan[:36]):
++        self.assertEqual(len(smoke), 12)
++        for row, wanted in zip(smoke, plan[:12]):
+             self.assertEqual(row['shared']['measure_ms'], 2000)
+             self.assertEqual(row | {'shared':dict(row['shared'],measure_ms=10000)}, wanted)
+ 
+@@ -92,8 +92,9 @@
+             with self.assertRaisesRegex(ValueError,'storage observation failed'):d.storage_observation(HERE)
+ 
+     def test_failed_outcomes_preserved_and_health_separate(self):
+-        row=d.make_plan(False)[3]  # new? actual mixed cell selected explicitly below
+-        row=next(r for r in d.make_plan(False) if r['server_role']=='old' and r['shared']['read_percent']==50)
++        # Retain the generic mixed-accounting corruption control outside the write-only inventory.
++        row=copy.deepcopy(next(r for r in d.make_plan(False) if r['server_role']=='old'))
++        row['shared']['read_percent']=50
+         c,_=d.configs(row,[dict(node_id=1,address='127.0.0.1:20160')],1,'127.0.0.1:6379')
+         op=lambda counts,attempts:dict(populations=[dict(calls=n) for n in counts],
+                                       attempts=[dict(raw=dict(count=n)) for n in attempts])
+@@ -140,8 +141,8 @@
+ 
+     def test_frozen_role_bindings_without_build_or_runtime(self):
+         args=types.SimpleNamespace(old_server_source=Path('/tmp/kv9-wal-crc32-table'),
+-            old_server_build=Path('/tmp/kv9-wal-crc32-release-first'),new_server_source=Path('/tmp/kv9-owned-apply-batch'),
+-            new_server_build=Path('/tmp/kv9-owned-batch-release-first'),client_source=SOURCE,redis_client_source=SOURCE,
++            old_server_build=Path('/tmp/kv9-wal-crc32-release-first'),new_server_source=Path('/tmp/kv9-owned-proposal-buffers'),
++            new_server_build=Path('/tmp/kv9-owned-proposal-release-first'),client_source=SOURCE,redis_client_source=SOURCE,
+             client_build=Path('/tmp/kv9-point-write-v3-release-first/native'),
+             redis_client_build=Path('/tmp/kv9-point-write-v3-release-first/redis'),
+             expected_client_revision='0be806d9671e2c50701a64aa7889c8859b7648ba')

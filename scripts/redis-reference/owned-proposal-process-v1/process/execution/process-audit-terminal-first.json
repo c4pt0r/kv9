@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-rpc-pair-process-independent-first/audit.py",
+    "--source",
+    "/tmp/kv9-owned-proposal-buffers",
+    "--build",
+    "/tmp/kv9-owned-proposal-release-first",
+    "--run",
+    "/tmp/kv9-owned-proposal-process-e2e-first",
+    "--revision",
+    "71c9d996e1dcc0897da14be1886e669f0c3ea773",
+    "--output",
+    "/tmp/kv9-owned-proposal-acceptance-preparation/process-results-first"
+  ],
+  "pid": 4086259,
+  "reaped": true,
+  "exit_code": 0,
+  "completed_ns": 1789146863058368681
+}

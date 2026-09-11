@@ -1,0 +1,36 @@
+{
+  "released_ns": 1789147615149916681,
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-proposal-screen-preparation/isolate-and-run.py",
+    "--driver",
+    "/tmp/kv9-owned-proposal-screen-preparation/matched-driver.py",
+    "--output",
+    "/tmp/kv9-owned-proposal-screen-timing-first",
+    "--driver-arguments-file",
+    "/tmp/kv9-owned-proposal-screen-preparation/driver-arguments.json"
+  ],
+  "frozen_input_count": 52,
+  "launch_freeze_sha256": "eb31fc407d6bdad092f541efca471e3c0c6cd0ab51dd1e48d58ec4ff0781e46a",
+  "smoke_gate_sha256": "c3e9b298550415e1a5e9f33dad2507ecc8ede10533cb22ad10b64bf4454ca50d",
+  "smoke_tool_terminal": {
+    "session": 92666,
+    "chunk": "ec5d8a",
+    "exit_code": 0
+  },
+  "smoke_check_tool_chunk": "b26448",
+  "profile_decode_terminal": {
+    "session": 27326,
+    "chunk": "f5ede2",
+    "exit_code": 1,
+    "coverage_failure_retained": true
+  },
+  "all_build_process_image_profile_commands_terminal": true,
+  "agents_no_new_commands_during_timing": true
+}

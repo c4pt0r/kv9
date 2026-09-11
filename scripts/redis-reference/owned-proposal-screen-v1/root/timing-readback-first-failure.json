@@ -1,0 +1,7 @@
+{
+  "tool_chunk": "e75e15",
+  "exit_code": 1,
+  "reason": "Ancillary root readback requested cleanup_errors; the unchanged wrapper emits child_cleanup_errors. No runtime/audit rerun; use the actual recorded schema.",
+  "actual_wrapper_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+  "created_ns": 1789148211284207518
+}

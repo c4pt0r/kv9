@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-proposal-screen-preparation/isolate-and-run.py",
+    "--driver",
+    "/tmp/kv9-owned-proposal-screen-preparation/matched-driver.py",
+    "--output",
+    "/tmp/kv9-owned-proposal-screen-timing-first",
+    "--driver-arguments-file",
+    "/tmp/kv9-owned-proposal-screen-preparation/driver-arguments.json"
+  ],
+  "cwd": "/tmp/kv9-owned-proposal-screen-preparation",
+  "started_ns": 1789147615150162601,
+  "release_sha256": "5cfc201e51f27fedf5b3b166a1dcaa87e1b0ffe753a0cddc7c947935c48e856a"
+}

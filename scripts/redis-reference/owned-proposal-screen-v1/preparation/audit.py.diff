@@ -1,0 +1,135 @@
+--- /tmp/kv9-owned-batch-broad-workloads-preparation/audit.py
++++ /tmp/kv9-owned-proposal-screen-preparation/audit.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Independent 72-cohort v3 read/write diagnostic readback; no workload execution."""
++"""Independent 24-cohort v3 write-only selection-screen readback; no workload execution."""
+ import argparse
+ import base64
+ from concurrent.futures import ThreadPoolExecutor
+@@ -20,7 +20,7 @@
+ parser.add_argument('--expected-driver-sha256', required=True)
+ parser.add_argument('--root-session', type=int, required=True)
+ parser.add_argument('--root-exit-code', type=int, choices=(0,), required=True)
+-parser.add_argument('--successful-arms', type=int, choices=(72,), required=True)
++parser.add_argument('--successful-arms', type=int, choices=(24,), required=True)
+ args = parser.parse_args()
+ ROOT = args.run.resolve()
+ OUT = args.output.resolve()
+@@ -30,29 +30,28 @@
+ SOURCE = Path('/tmp/kv9-point-write-measurement-v3')
+ CLIENT_REV = '0be806d9671e2c50701a64aa7889c8859b7648ba'
+ OLD_REV = 'ca0002c7f8e9ee6f595efcc9f4151085ccce87cb'
+-NEW_REV = '9be0c1963515ff974426faadef80482b847b13a5'
++NEW_REV = '71c9d996e1dcc0897da14be1886e669f0c3ea773'
+ REDIS_REV = CLIENT_REV
+ REDIS_SOURCE = SOURCE
+ PINS = {
+  'old': (OLD_REV, 'b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13'),
+- 'new': (NEW_REV, '07c02871276f9c52cd19bd8213ab3288d6c51a1d7391370b5a6282f0018b03f7'),
++ 'new': (NEW_REV, 'b740e3d3c7ca1ad6cac2ed901d2c8a52b128c7c6456f95407f479bb61f414033'),
+  'client': (CLIENT_REV, '8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957'),
+  'redis': (REDIS_REV, '5a8ac274b8cc6548a072f5305b04936a08cc4d1ba84d50150f675bab563049af'),
+ }
+-PROTOCOL_ID = 'kv9-owned-batch-broad-workloads-c1-c64-v1'
++PROTOCOL_ID = 'kv9-owned-proposal-write-screen-c1-c64-v1'
+ CONCURRENCIES = (1, 64)
+-WORKLOADS = (('point-r000',1,0), ('point-r050',1,50), ('point-r100',1,100),
+-             ('batch64-r000',64,0), ('batch64-r050',64,50), ('batch64-r100',64,100))
++WORKLOADS = (('point-r000',1,0), ('batch64-r000',64,0))
+ ROLES = ('old', 'new', None)
+ ROLE_PATHS = {
+  'old': ('/tmp/kv9-wal-crc32-table', '/tmp/kv9-wal-crc32-release-first', 'kv9'),
+- 'new': ('/tmp/kv9-owned-apply-batch', '/tmp/kv9-owned-batch-release-first', 'kv9'),
++ 'new': ('/tmp/kv9-owned-proposal-buffers', '/tmp/kv9-owned-proposal-release-first', 'kv9'),
+  'client': ('/tmp/kv9-point-write-measurement-v3', '/tmp/kv9-point-write-v3-release-first/native', 'kv9-batch-benchmark'),
+  'redis': ('/tmp/kv9-point-write-measurement-v3', '/tmp/kv9-point-write-v3-release-first/redis', 'kv9-redis-batch-reference'),
+ }
+ SERVER_MANIFESTS = {
+  'old': '8c2ea115afc1ec8b6c82224dc6449d1d2439f5f27b5758e45090589752d186e8',
+- 'new': '5a2d5e031f0a24a0704dd3a2d4cf4f0fc95f868d694b54d94c3fc56fb1243a21',
++ 'new': 'b3cd4c20bd5033bf3651ec9c2bbee008ecdee10a81b724f40a9e513fd91448b3',
+ }
+ STORAGE_GUARDS = {'preflight': {'tmpfs':32*1024**3,'retention':96*1024**3},
+                   'runtime': {'tmpfs':16*1024**3,'retention':64*1024**3}}
+@@ -111,8 +110,8 @@
+     require(same_json(matrix['workload_cells'],[[name.partition('-r')[0],batch,reads]
+                                               for name,batch,reads in WORKLOADS]), 'workload cells differ')
+     expected=[expected_descriptor(*row) for row in expected_cohorts()]
+-    require(len(matrix['attempts'])==72 and same_json(matrix['cohort_inventory'],expected),
+-            'seventy-two-cohort inventory/order differs')
++    require(len(matrix['attempts'])==24 and same_json(matrix['cohort_inventory'],expected),
++            'twenty-four-cohort inventory/order differs')
+ 
+ def validate_requested_config(config, repeat, concurrency, workload, server):
+     descriptor=expected_descriptor(repeat,concurrency,workload,server)
+@@ -273,7 +272,7 @@
+ 
+ 
+ result = dict(complete=False, matched_diagnostic_accepted=False, cases=[],
+-              scope='Two-repeat 10-second v3 point/batch64 read/write c1/c64 shared-host tmpfs diagnostic; no sustained-capacity, equal-durability, exact issued nonce ledger or full-history claim',
++              scope='Two-repeat 10-second v3 point PUT/BatchPut(64) c1/c64 shared-host tmpfs write-only selection screen; not full-workload acceptance; no sustained-capacity, equal-durability, exact issued nonce ledger or full-history claim',
+               parent_confirmed_session=args.root_session, parent_confirmed_exit_code=args.root_exit_code,
+               expected_successful_arms=args.successful_arms, protocol_id=PROTOCOL_ID,
+               concurrency_points=list(CONCURRENCIES), started_unix_ns=time.time_ns())
+@@ -283,7 +282,7 @@
+     require(matrix['smoke'] is False and matrix['storage']=='tmpfs' and matrix['client_revision']==CLIENT_REV,
+             'wrong fixture or source scope')
+     require(matrix['complete'] is (args.root_exit_code==0), 'original fixture verdict differs from parent terminal confirmation')
+-    require(args.successful_arms==72 and args.root_exit_code==0, 'expected complete diagnostic scope differs')
++    require(args.successful_arms==24 and args.root_exit_code==0, 'expected complete diagnostic scope differs')
+     require(sha(ROOT/'driver.py')==args.expected_driver_sha256, 'executed driver snapshot differs')
+     require(matrix['placement']==dict(client_cpus=[0,1],server_cpus=[2,3,4,5],
+                                      separated=True,exclusive_host=False), 'diagnostic CPU scope differs')
+@@ -298,19 +297,19 @@
+             isolation['driver_sha256']==args.expected_driver_sha256,'outer isolation scope differs')
+     require(matrix['isolation_snapshot']==isolation and sha(outer/'isolation.json')==matrix['isolation_snapshot_sha256'] and
+             sha(ROOT/'isolation-snapshot.json')==sha(outer/'isolation.json'),'inner/outer snapshot binding differs')
+-    expected_argv=['/usr/bin/python3','/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py',
++    expected_argv=['/usr/bin/python3','/tmp/kv9-owned-proposal-screen-preparation/matched-driver.py',
+                    '--output',str(ROOT),'--isolation-snapshot',str(outer/'isolation.json'),
+                    '--client-source','/tmp/kv9-point-write-measurement-v3',
+                    '--client-build','/tmp/kv9-point-write-v3-release-first/native','--expected-client-revision',CLIENT_REV,
+                    '--old-server-source','/tmp/kv9-wal-crc32-table',
+                    '--old-server-build','/tmp/kv9-wal-crc32-release-first',
+-                   '--new-server-source','/tmp/kv9-owned-apply-batch',
+-                   '--new-server-build','/tmp/kv9-owned-batch-release-first',
++                   '--new-server-source','/tmp/kv9-owned-proposal-buffers',
++                   '--new-server-build','/tmp/kv9-owned-proposal-release-first',
+                    '--redis-client-source','/tmp/kv9-point-write-measurement-v3',
+                    '--redis-client-build','/tmp/kv9-point-write-v3-release-first/redis','--storage','tmpfs']
+     require(invocation['argv']==expected_argv and invocation['wrapper_sha256']==
+             'e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb' and
+-            invocation['driver_arguments_sha256']=='6f1497dadeba0726d1c54e78d9bb8a47cc5db1fe3f2855f0504e0ec91aa8511b',
++            invocation['driver_arguments_sha256']=='19eb6e0377ded7004dfc9ed8ba305a9a395a75443a93f3e2fc35ebaacc2bbfb2',
+             'reviewed wrapper or explicit client arguments differ')
+     expected_containers={
+       'kv9-chaos-ci-p0-20260908-control-plane':'ae9b27a77d14f295e35e112b31f5dce62ed6fd2d86a90e7b2a69b52798e17582',
+@@ -380,7 +379,7 @@
+         require(sha(ROOT/'retained-inputs/helpers'/f'{number:02d}-{Path(path).name}')==h,'executed helper snapshot differs')
+         if Path(path).is_relative_to(SOURCE) or Path(path).is_relative_to(REDIS_SOURCE):
+             require(sha(path)==h,'validator/helper source changed')
+-    require(matrix['helper_hashes'][str(Path('/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py'))]==args.expected_driver_sha256,
++    require(matrix['helper_hashes'][str(Path('/tmp/kv9-owned-proposal-screen-preparation/matched-driver.py'))]==args.expected_driver_sha256,
+             'driver is not the retained helper identity')
+     sys.path.insert(0,str(SOURCE/'scripts'))
+     import batch_benchmark_report as native
+@@ -642,10 +641,10 @@
+                     old_operations=old['operations'],new_operations=new['operations'],
+                     all_success_single_attempt=old['all_success_single_attempt'] and new['all_success_single_attempt']))
+     result['performance_comparison'] = performance_pairs
+-    require(len(result['cases'])==72 and len(lifetimes)==240 and drains==144 and writer_bindings==144,
++    require(len(result['cases'])==24 and len(lifetimes)==80 and drains==48 and writer_bindings==48,
+             'full cohort/lifetime/drain/listener counts differ')
+     result['memory_comparison'] = memory_pairs
+-    result.update(complete=True,matched_diagnostic_accepted=args.successful_arms==72,
++    result.update(complete=True,matched_diagnostic_accepted=args.successful_arms==24,
+                   all_success_single_attempt=all(c['all_success_single_attempt'] for c in result['cases']),
+                   performance_promotion=False,
+                   successful_arms=args.successful_arms,owned_lifetimes_exited=len(lifetimes),
+@@ -656,4 +655,4 @@
+     raise
+ finally:
+     result['ended_unix_ns']=time.time_ns();save('audit.json',result);save('input-inventory.json',records)
+-print('PASS: seventy-two v3 c1/c64 matched cohorts and exact outer restoration accepted',flush=True)
++print('PASS: twenty-four write-only v3 c1/c64 matched cohorts and exact outer restoration accepted',flush=True)

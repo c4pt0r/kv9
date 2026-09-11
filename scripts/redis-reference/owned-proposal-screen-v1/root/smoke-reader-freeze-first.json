@@ -1,0 +1,15 @@
+{
+  "source_predecessor": "/tmp/kv9-owned-batch-broad-root-preparation/check-smoke-first.py",
+  "predecessor_sha256": "dd37eb541ecea0dc10fc37b36e69112311585f31f1821c3e7306d3c76518642a",
+  "reader_sha256": "8573cd95e2ce327a68ddaf94f88263c8b6046cd4b1348def1521aa8d2c0e6146",
+  "changes": {
+    "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics": "/tmp/kv9-owned-proposal-screen-preparation/statistics",
+    "/tmp/kv9-owned-batch-broad-root-preparation": "/tmp/kv9-owned-proposal-screen-root-preparation",
+    "/tmp/kv9-owned-batch-broad-workloads-smoke-first": "/tmp/kv9-owned-proposal-screen-smoke-first",
+    "len(matrix['attempts'])==36": "len(matrix['attempts'])==12",
+    "'smoke_session':42602": "'smoke_session':int(sys.argv[1])"
+  },
+  "actual_smoke_session": "Required positional argument from authoritative launch tool, unknown until launched",
+  "executed": false,
+  "created_ns": 1789147199289284278
+}

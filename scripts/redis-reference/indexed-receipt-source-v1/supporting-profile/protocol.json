@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "protocol_id": "kv9-crc-write-apply-cpu-v1",
+  "background_container_isolation": false,
+  "instrumented": true,
+  "throughput_acceptance": false,
+  "server_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "client_revision": "0be806d9671e2c50701a64aa7889c8859b7648ba",
+  "server_sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+  "client_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+  "measure_ms": 5000,
+  "workers": 64,
+  "keys": 4096,
+  "batch_sizes": [
+    1,
+    64
+  ],
+  "value_bytes": 128,
+  "read_percent": 0,
+  "warmup_calls": 128,
+  "max_calls": 10000000,
+  "deadline_ms": 1500,
+  "client_cpus": [
+    0,
+    1
+  ],
+  "server_cpus": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "profiler_cpus": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "event": "cpu-clock",
+  "frequency_hz": 199,
+  "call_graph": "dwarf,16384",
+  "recording_seconds": 20,
+  "max_perf_bytes": 134217728,
+  "storage": "Volatile tmpfs data; normal Raft quorum and sync calls, but NO disk durability or power-loss guarantee",
+  "exclusive_host": false,
+  "profiles": [
+    "point_put",
+    "batch_put64"
+  ],
+  "helper_sources": {
+    "/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py": "ec2203614200eabfb3aa4f423b66cd511c36fc664854fb767bf82e8293527e77",
+    "/tmp/kv9-crc-write-profile-first/profile.py": "2bf9911560e99c7f578407da86333e5424fda83a8b75c345175c25660e1d7125",
+    "/tmp/kv9-redis-batch-reference-preparation/run_fixture.py": "008c5bea0640a4a5a092feb6617798a84e9dd4889fd11bf8c6791cfe0852864a",
+    "/tmp/kv9-point-write-measurement-v3/scripts/root_provision.py": "7ef9438fa206828fc15bb4cc1f85c77df701517e3a0f95db8a1cc742c4582572",
+    "/tmp/kv9-point-write-measurement-v3/scripts/history/checker.py": "b8a43a58d321868d7cbb3d6038eab1f6190cc1600c29246b2f91c09f946da9bc",
+    "/tmp/kv9-point-write-measurement-v3/scripts/workload_report.py": "7b4b7abd1257c3bed790c7c5c3b5eaae021b6633b3cc261140050354fbcede78",
+    "/tmp/kv9-point-write-measurement-v3/scripts/wal_layout.py": "5ac7709ecd288dd1792164e450ed632dcacd9bdacb92a880bfb9305c1b2bd61d",
+    "/tmp/kv9-point-write-measurement-v3/scripts/benchmark.py": "c2cfda6ed964f1f86a776b1ffe32f3f94a05637bff6ff0f2be36842cbe493a36",
+    "/tmp/kv9-point-write-measurement-v3/scripts/batch_benchmark_report.py": "56cd11ddc7475a44ff1cf420f2086b4eefb19aa424c7270b95d4141920a40a96",
+    "/tmp/kv9-point-write-measurement-v3/scripts/redis_batch_report.py": "719e214ce549836400ae4a081917a424f6c78f9922b745991471691fe9314f9d",
+    "/tmp/kv9-point-write-measurement-v3/scripts/batch_workload_report.py": "573e3783e321bde0fd8c5ccba857b9f8522c48d3ddb3f491ec7e07d9f02d3107",
+    "/tmp/kv9-point-write-measurement-v3/scripts/native-batch-e2e.py": "c8248ac6525235c9ccf1147b02db1cf468172f4233f8c2c80ffb2e3e2325347f",
+    "/tmp/kv9-point-write-measurement-v3/scripts/tmpfs-redis-diagnostic.py": "167b83650e6c482239f998c01cd2065375c2e8111b2d075bc654247f3bcdae6b",
+    "/tmp/kv9-point-write-measurement-v3/scripts/redis-comparison.py": "8f09b073ba23d58b152b7f07eb9782a3174011951e800dafec982282d993a85a"
+  }
+}

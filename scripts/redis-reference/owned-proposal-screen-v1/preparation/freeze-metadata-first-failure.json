@@ -1,0 +1,7 @@
+{
+  "cause": "The metadata check indexed the audit argv at fixed index 14, which is --root-session, rather than locating the --expected-driver-sha256 option value.",
+  "correction": "Locate the option by name and compare its following value. No tested helper, protocol, validator or predicate changed.",
+  "error": "AssertionError in metadata-only script at line 12",
+  "first_failed_script_created_output_files": false,
+  "scope": "Metadata construction only, after all 26 offline contracts passed; no runtime/auditor/statistics execution"
+}

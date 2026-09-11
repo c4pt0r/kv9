@@ -1,0 +1,51 @@
+--- /tmp/kv9-owned-batch-broad-workloads-preparation/statistics/derive.py
++++ /tmp/kv9-owned-proposal-screen-preparation/statistics/derive.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Derive the complete owned-buffer workload matrix only after accepted auditing."""
++"""Derive the first owned-proposal write-only screen only after accepted auditing."""
+ import hashlib
+ import json
+ from pathlib import Path
+@@ -8,8 +8,8 @@
+ 
+ assert __debug__
+ HERE = Path(__file__).resolve().parent
+-AUDIT_DIR = Path('/tmp/kv9-owned-batch-broad-workloads-preparation/results-first')
+-GATE = Path('/tmp/kv9-owned-batch-broad-root-preparation/audit-terminal-first.json')
++AUDIT_DIR = Path('/tmp/kv9-owned-proposal-screen-preparation/results-first')
++GATE = Path('/tmp/kv9-owned-proposal-screen-root-preparation/audit-terminal-first.json')
+ 
+ 
+ def sha(path):
+@@ -33,7 +33,7 @@
+ inventory = read(AUDIT_DIR / 'input-inventory.json')
+ assert audit['complete'] and audit['matched_diagnostic_accepted']
+ assert audit['parent_confirmed_session'] == gate['timing_session']
+-assert audit['protocol_id'] == 'kv9-owned-batch-broad-workloads-c1-c64-v1' and len(audit['cases']) == 72
++assert audit['protocol_id'] == 'kv9-owned-proposal-write-screen-c1-c64-v1' and len(audit['cases']) == 24
+ reports = {}
+ bound = {}
+ for case in audit['cases']:
+@@ -63,7 +63,7 @@
+ pooled = []
+ pairs = []
+ pooled_pairs = []
+-workloads = ['point-r000', 'point-r050', 'point-r100', 'batch64-r000', 'batch64-r050', 'batch64-r100']
++workloads = ['point-r000', 'batch64-r000']
+ for concurrency in [1, 64]:
+     for workload in workloads:
+         for role in ['old', 'new', 'redis']:
+@@ -96,10 +96,10 @@
+     protocol_id=audit['protocol_id'], scope=audit['scope'], cases=cases, pooled=pooled, pairs=pairs, pooled_pairs=pooled_pairs,
+     totals=totals, phase_totals=phase_totals, checks=checks, performance_promotion=False,
+     method='Rates divide summed successful calls or keys by complete cohort elapsed time. Means use summed whole-call nanoseconds/count. Quantiles merge validated raw buckets; no percentile averaging or latency division by batch size. All outcomes and original repeats remain retained.',
+-    limitation='Two 10-second forward/reverse c1/c64 point/batch read/mixed/write repeats on a shared host; three-voter KV9 quorum/sync with tmpfs WAL versus standalone Redis with persistence and pipelining disabled. No equal-durability, sustained-capacity, significance or new Chaos claim.')
++    limitation='Two 10-second forward/reverse c1/c64 point PUT/BatchPut(64) write-only selection repeats on a shared host; three-voter KV9 quorum/sync with tmpfs WAL versus standalone Redis with persistence and pipelining disabled. Not full-workload acceptance. No equal-durability, sustained-capacity, significance or new Chaos claim.')
+ save('statistics-first.json', result)
+ save('statistics-inputs-first.json', dict(files=bound, audit_sha256=result['accepted_audit_sha256'], gate_sha256=sha(GATE), core_sha256=sha(HERE / 'core.py'), reader_sha256=sha(Path(__file__))))
+-lines = ['# Owned-buffer full workload matrix: first accepted recording', '', result['limitation'], '',
++lines = ['# Owned-proposal write-only screen: first accepted recording', '', result['limitation'], '',
+     '| Concurrency | Workload | Role | Calls/s | Keys/s | Mean us | p95 us | p99 us | Client cores | Server cores |',
+     '| ---: | --- | --- | ---: | ---: | ---: | --- | --- | ---: | ---: |']
+ for row in pooled:

@@ -1,0 +1,201 @@
+{
+  "source_revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "scope": "Exact source and local validation records for the unselected indexed apply receipt candidate. Retains first failed compilation and corrected test constructors. Supporting CPU summary accepts only the point subset; the original batch-prefix rejection and independent diagnosis remain preserved. Raw perf and full original CPU/runtime inputs remain local, so these supporting excerpts are not a self-contained profile audit or a performance benchmark. No original candidate release, process/Chaos or throughput acceptance is claimed.",
+  "copies": 32,
+  "bytes": 680617,
+  "all_exact_copies_read_back": true,
+  "files": [
+    {
+      "source": "/tmp/kv9-indexed-apply-receipts/crates/raft/src/driver.rs",
+      "path": "source/crates/raft/src/driver.rs",
+      "bytes": 153202,
+      "sha256": "6799991b0210348e6d0acbccbfec87c3fca910c68667213e0d56964f3a48ad2c"
+    },
+    {
+      "source": "/tmp/kv9-indexed-apply-receipts/crates/raft/src/driver/applied_ring.rs",
+      "path": "source/crates/raft/src/driver/applied_ring.rs",
+      "bytes": 5095,
+      "sha256": "fb7ad04c7bb3537ba36c49b62141590d53b1ab603a5eeac2f09236a3f96e85c6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-apply-receipts/docs/INDEXED-APPLY-RECEIPTS.md",
+      "path": "source/docs/INDEXED-APPLY-RECEIPTS.md",
+      "bytes": 6856,
+      "sha256": "91c4032c39bfa74ad4debcf49506a9a3faf69fb0f0a3e99092a04e260c5a36ae"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-first/focused-invocation.json",
+      "path": "first-failure/focused-invocation.json",
+      "bytes": 314,
+      "sha256": "05623de222bab03e54362c83843df038aada2d514d2eec6cab24ff92b729fc36"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-first/focused-terminal.json",
+      "path": "first-failure/focused-terminal.json",
+      "bytes": 327,
+      "sha256": "9874ae8d04eb2fc41e92650b9ffa16fefc245e93af7fae84f1206c0953a9da14"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-first/focused.log",
+      "path": "first-failure/focused.log",
+      "bytes": 1589,
+      "sha256": "ad5ace512e8a5432e51a985e97dc5441976b8b9a069689e69bdb77b9adb2a6e1"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-first/inputs-first.json",
+      "path": "first-failure/inputs-first.json",
+      "bytes": 628,
+      "sha256": "698f983b6489c8255945ad9ae46450fe6e1a87a03b76e29f15309549c001141f"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/clippy-invocation.json",
+      "path": "corrected-validation/clippy-invocation.json",
+      "bytes": 331,
+      "sha256": "20d8b4b471dd7203db3daf5580381bac4578675782c93a8c0c57b7444b1ca0ae"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/clippy-terminal.json",
+      "path": "corrected-validation/clippy-terminal.json",
+      "bytes": 342,
+      "sha256": "b50d02323095ef233a026aa6ab40ec92966a07a5f5e99d962b06fc0fc7453f2e"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/clippy.log",
+      "path": "corrected-validation/clippy.log",
+      "bytes": 669,
+      "sha256": "a9d9048bea1dd03121c6ae4e00aff1c667109087b0b3590265098feece6d153a"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/commit-gate.json",
+      "path": "corrected-validation/commit-gate.json",
+      "bytes": 353,
+      "sha256": "a6eda5ac6fa4b2e5c10f371dfa5454880611d15ab52d2f28139dfb073e5a93c4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/complete.json",
+      "path": "corrected-validation/complete.json",
+      "bytes": 97,
+      "sha256": "7200ad56736bc3635a93ce31901b03af5b19eeecf6998a6d295636161ce6e428"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/focused-invocation.json",
+      "path": "corrected-validation/focused-invocation.json",
+      "bytes": 314,
+      "sha256": "fdd127c8628b5cb9a9c28457c0ac2783d08a9ee46d6d5124afa36bb05aeceb91"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/focused-terminal.json",
+      "path": "corrected-validation/focused-terminal.json",
+      "bytes": 325,
+      "sha256": "70a47d304c4acde6fa5287f530884eed0167ef31024a9147a429d1dc105a1b07"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/focused.log",
+      "path": "corrected-validation/focused.log",
+      "bytes": 1231,
+      "sha256": "418075dc94e8951c7bddec5fae7836d41eb71be0a84d824fac54679d67e4d166"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/format-invocation.json",
+      "path": "corrected-validation/format-invocation.json",
+      "bytes": 290,
+      "sha256": "d5cbec79d77a72a2353e1f4fb43e3632ec41141212057cd1bef35dbe16ab5dce"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/format-terminal.json",
+      "path": "corrected-validation/format-terminal.json",
+      "bytes": 301,
+      "sha256": "69d30863597b1f2e3ecb88bf8d8c88cf2d2fb38615b0f15a70c0100889c36f67"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/format.log",
+      "path": "corrected-validation/format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/inputs.json",
+      "path": "corrected-validation/inputs.json",
+      "bytes": 881,
+      "sha256": "616e1fe286164d57db43cf697ab301795a85c2889769ced185cc8f65dcba548f"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/push-readback.json",
+      "path": "corrected-validation/push-readback.json",
+      "bytes": 180,
+      "sha256": "03990453adf53c262eb12cb86eb17f2db9d5d675509772d49b5e52164bd5e582"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/workspace-invocation.json",
+      "path": "corrected-validation/workspace-invocation.json",
+      "bytes": 272,
+      "sha256": "d170d996ffe091b8abc756c7cc009060b478e5ce96ed15004cc06f3db7d31fb8"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/workspace-terminal.json",
+      "path": "corrected-validation/workspace-terminal.json",
+      "bytes": 283,
+      "sha256": "55b893f00fbf5a2c16df5e208562c266e5e33a5ef6860657b54cc1c22b66ddc9"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-validation-region-id/workspace.log",
+      "path": "corrected-validation/workspace.log",
+      "bytes": 66929,
+      "sha256": "2258a05a3223b5bbb0464d69aa7b36888b751a4dcefac19a007a4f775e4743c3"
+    },
+    {
+      "source": "/tmp/kv9-crc-write-profile-first/point_put/profile-summary.json",
+      "path": "supporting-profile/point_put/profile-summary.json",
+      "bytes": 280109,
+      "sha256": "49232ece1a0bf04a4762d56d283298e6d7f8bb0ddfe2d404fcb86f1fffb2475c"
+    },
+    {
+      "source": "/tmp/kv9-crc-write-profile-first/decode-terminal-first.json",
+      "path": "supporting-profile/decode-terminal-first.json",
+      "bytes": 298,
+      "sha256": "079496a94385acefbff6deade0e9b9d5085f131bc7571b8530a8766af42a93ef"
+    },
+    {
+      "source": "/tmp/kv9-crc-write-profile-first/decode-first.log",
+      "path": "supporting-profile/decode-first.log",
+      "bytes": 485,
+      "sha256": "c08d2e83f51e5060592259967dad4411f3a2ed683fa230280d6e0bf867ac2fc3"
+    },
+    {
+      "source": "/tmp/kv9-crc-write-profile-first/protocol.json",
+      "path": "supporting-profile/protocol.json",
+      "bytes": 3236,
+      "sha256": "0ae8a601a134bbd469c815f355b56dadd2d5734965a25aa81dd3a07cb86d2907"
+    },
+    {
+      "source": "/tmp/kv9-crc-write-profile-first/runtime-terminal-first.json",
+      "path": "supporting-profile/runtime-terminal-first.json",
+      "bytes": 320,
+      "sha256": "e7a1bb0895d6abd83f1586c62bc389886abab50b95439a9b69a29fd06a7b749d"
+    },
+    {
+      "source": "/tmp/kv9-crc-write-profile-first/build-bindings.json",
+      "path": "supporting-profile/build-bindings.json",
+      "bytes": 132175,
+      "sha256": "da80a09739326f957dceecdf0ef94057af1f8765479849f4d504e1e16895b170"
+    },
+    {
+      "source": "/tmp/kv9-crc-profile-coverage-investigation/REPORT.md",
+      "path": "supporting-profile/coverage-investigation/REPORT.md",
+      "bytes": 6159,
+      "sha256": "5610ea1b903a0af314844759a3266e91b70082bf7a5b98c12fe575d86ad951b5"
+    },
+    {
+      "source": "/tmp/kv9-crc-profile-coverage-investigation/diagnosis.json",
+      "path": "supporting-profile/coverage-investigation/diagnosis.json",
+      "bytes": 14977,
+      "sha256": "64540eb0bec1866d82efa2611124b6023ab29de576a3795eff5303388eac323e"
+    },
+    {
+      "source": "/tmp/kv9-crc-profile-coverage-investigation/RESULT.json",
+      "path": "supporting-profile/coverage-investigation/RESULT.json",
+      "bytes": 2049,
+      "sha256": "da8890266ce3ce10a048296408ff2f2a7943c6931245184475f60eb3fc4d1ea8"
+    }
+  ]
+}

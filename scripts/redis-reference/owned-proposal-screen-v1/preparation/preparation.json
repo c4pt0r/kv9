@@ -1,0 +1,129 @@
+{
+  "actual_result_audit_started": false,
+  "base": "/tmp/kv9-owned-batch-broad-workloads-preparation",
+  "base_choice": "The accepted broad driver already includes c1/c64, current storage guards and endpoint inventory binding. This screen narrows workload cells to point PUT1 and BatchPut64 only.",
+  "candidate_revision": "71c9d996e1dcc0897da14be1886e669f0c3ea773",
+  "changes": {
+    "audit.py": {
+      "diff": "audit.py.diff",
+      "diff_sha256": "e9a366e4631e84fe715116e6d94e64382e62f594851e80b108c5a7503c7da0dd",
+      "sha256": "6e92ab500cdd128b96dc0cfa712943973a096d61cf94bc382a1234cba7370699",
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/audit.py",
+      "source_sha256": "b5dc45f08183093f33a44d789de09eb5ed22778f86cd6d550b1f30d4d3502f74",
+      "unchanged": false
+    },
+    "commands.json": {
+      "diff": "commands.json.diff",
+      "diff_sha256": "a3c49239150319edad860480944748266006ac9526fe7538a8051ce9ec6a6c2e",
+      "sha256": "c2e8232ee2e1fa60b95a34e7f0b4b1745911444e53b553881d0ea242fe73bc1f",
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/commands.json",
+      "source_sha256": "4cd561e9a1e89cac81e4496ba98523643d884974d80eb1b91365c33ef3abccb8",
+      "unchanged": false
+    },
+    "driver-arguments.json": {
+      "diff": "driver-arguments.json.diff",
+      "diff_sha256": "7384179046ba977be07fa22c961c3e8d3a47e6ac67df545bdf88ef30081412ce",
+      "sha256": "19eb6e0377ded7004dfc9ed8ba305a9a395a75443a93f3e2fc35ebaacc2bbfb2",
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/driver-arguments.json",
+      "source_sha256": "6f1497dadeba0726d1c54e78d9bb8a47cc5db1fe3f2855f0504e0ec91aa8511b",
+      "unchanged": false
+    },
+    "input-layout.json": {
+      "diff": "input-layout.json.diff",
+      "diff_sha256": "a8b276d06de9f65853c3b6d1cb312f5e6db3dc4a2063013dab2861a416882b61",
+      "sha256": "c99b857f4eb630169e6b154ee1284c28bcbaf82fc783e1f4e5d7630f76d88252",
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/input-layout.json",
+      "source_sha256": "b3e1afaad8bd91f3cc13bcb727c61461f72822fc9b64c8398f45959f13a07378",
+      "unchanged": false
+    },
+    "isolate-and-run.py": {
+      "diff": "isolate-and-run.py.diff",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/isolate-and-run.py",
+      "source_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "unchanged": true
+    },
+    "matched-driver.py": {
+      "diff": "matched-driver.py.diff",
+      "diff_sha256": "c073fd79e3035e6cb85364c7bf9b1404587cce5df17c39a4df6a4f10c41b498d",
+      "sha256": "d18f0ed307fc1628492f3efe641e2af73abdfb76625d5f5ec88c1c7fd1fa915d",
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/matched-driver.py",
+      "source_sha256": "ec2203614200eabfb3aa4f423b66cd511c36fc664854fb767bf82e8293527e77",
+      "unchanged": false
+    },
+    "protocol.json": {
+      "diff": "protocol.json.diff",
+      "diff_sha256": "263389191229d23e91091606b7fb0ab9e311c736ac57ee96b04be5bd98d9fabb",
+      "sha256": "a48163ec58b6ee70cb3a6ede72c008aa51ba75161ba1f1d3a2f45b35773c56c2",
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/protocol.json",
+      "source_sha256": "f9331b5f3259c1fbb0459df790e2487f528feb4f27e571a0fe330ae2153bc94e",
+      "unchanged": false
+    },
+    "statistics/core.py": {
+      "diff": "statistics-core.py.diff",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/core.py",
+      "source_sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f",
+      "unchanged": true
+    },
+    "statistics/derive.py": {
+      "diff": "statistics-derive.py.diff",
+      "diff_sha256": "99b59b6bb86e268ff90e40b645c832553f15960b180f50064b8f18c96598ead2",
+      "sha256": "6a1ea66ae6632dc17bc6a6a235a718dfc798fb782785f3d4c572334aa8fe3288",
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/statistics/derive.py",
+      "source_sha256": "66dc2c8959926f879a823c99cb41d49ac443a2ac117abed32af8e6e3c2cc209f",
+      "unchanged": false
+    },
+    "test_audit_contract.py": {
+      "diff": "test_audit_contract.py.diff",
+      "diff_sha256": "3b33386863a1ce8d8486d332d9947255c7b4ef64d551069e399a568bc3c27024",
+      "sha256": "4f0fd82089d0e33fa1a65af12e36e5578b5dff94e10ccff040207eda2cd3c70d",
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/test_audit_contract.py",
+      "source_sha256": "c8d8df4818758e0bb6e79facf9b02ce23b90675dec1ee792a4d2dd562e494bfc",
+      "unchanged": false
+    },
+    "test_driver.py": {
+      "diff": "test_driver.py.diff",
+      "diff_sha256": "17b0c7bcf0d03f43e3d3a71bc57a3015c0c77f9b9845914596f2de8431317f8d",
+      "sha256": "87fc46acf1da03d4a4823fd7d3d5a32ae27c1b02f50d300f4ef568003d16ffa2",
+      "source": "/tmp/kv9-owned-batch-broad-workloads-preparation/test_driver.py",
+      "source_sha256": "2dd6fc1671733f27156189eaf62a25dbf69653b41061b82621ef2edbc837dd05",
+      "unchanged": false
+    }
+  },
+  "control_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "expected_inventory": {
+    "fresh_drain_stages": 48,
+    "native_cohorts": 16,
+    "native_endpoint_envelopes": 96,
+    "owned_lifetimes": 80,
+    "redis_cohorts": 8,
+    "smoke_cohorts": 12,
+    "timed_cohorts": 24,
+    "voter_listener_bindings": 48
+  },
+  "offline_contracts": {
+    "auditor": 15,
+    "complete": true,
+    "driver": 7,
+    "record": "contracts-first.json",
+    "screen": 4,
+    "total": 26
+  },
+  "pending_drafts": "pending-draft-first and pending-pins.json preserve the pre-release state only; release-pins-first.json contains actual terminal build pins.",
+  "protocol_id": "kv9-owned-proposal-write-screen-c1-c64-v1",
+  "public_byte_limit_scope": "16 MiB is the inherited matched benchmark fixture override, not the 64 MiB production default.",
+  "remaining_artifact_pins": [],
+  "root_next_steps": [
+    "Review frozen inputs and await every profile/helper terminal",
+    "Run the separate 12-cohort correctness smoke",
+    "Run the 24-cohort isolated timing command only after root release",
+    "Record actual root timing terminal and run frozen audit once",
+    "Write the exact accepted audit terminal gate, then run frozen statistics reader"
+  ],
+  "runtime_started": false,
+  "statistics_started": false,
+  "status": "FROZEN_HELPERS_READY_FOR_ROOT_REVIEW"
+}

@@ -1,0 +1,10 @@
+{
+  "candidate_revision": "71c9d996e1dcc0897da14be1886e669f0c3ea773",
+  "candidate_source": "/tmp/kv9-owned-proposal-buffers",
+  "candidate_build": "/tmp/kv9-owned-proposal-release-first",
+  "binary_sha256": null,
+  "manifest_sha256": null,
+  "original_release_terminal": false,
+  "runtime_authorized": false,
+  "scope": "Draft helper pins explicitly pending; PENDING_ values cannot match real release SHA256"
+}

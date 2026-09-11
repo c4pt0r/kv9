@@ -1,0 +1,20 @@
+{
+  "exit_code": 0,
+  "terminal": true,
+  "reaped": true,
+  "pid": 194729,
+  "pid_absent": true,
+  "ended_ns": 1789148267266121491,
+  "auditor_sha256_after": "6e92ab500cdd128b96dc0cfa712943973a096d61cf94bc382a1234cba7370699",
+  "log_sha256": "e77aec4f60084b9379f62b00b43ece9e6de9d0499f82073d911d9dae66023e7c",
+  "root_timing_session": 9028,
+  "root_timing_exit_code": 0,
+  "tool_session": 90099,
+  "tool_exit_code": 0,
+  "tool_terminal_receipt": "1f5e11",
+  "timing_session": 9028,
+  "auditor_invocation": "/tmp/kv9-owned-proposal-screen-independent-first/invocation-first.json",
+  "results": "/tmp/kv9-owned-proposal-screen-preparation/results-first",
+  "independent_terminal_path": "/tmp/kv9-owned-proposal-screen-independent-first/audit-terminal-first.json",
+  "independent_terminal_sha256": "4cce4860fef68f3573de45b5bd28bee1e74f6a4f5cac7caa2ceaf2ce00e1b784"
+}

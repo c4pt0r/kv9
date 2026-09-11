@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-owned-proposal-acceptance-preparation/process-runner.py",
+    "--build",
+    "/tmp/kv9-owned-proposal-release-first",
+    "--output",
+    "/tmp/kv9-owned-proposal-process-e2e-first"
+  ],
+  "cwd": "/tmp/kv9-owned-proposal-acceptance-preparation",
+  "revision": "71c9d996e1dcc0897da14be1886e669f0c3ea773",
+  "process_runner_sha256": "409f0f006af33118f4f0b9849286c86f5d83d013c5fec8b257850cbd5d27b4af",
+  "commands_sha256": "30b5ae4e796ea19c10d3a152ff242b79cc1760c8b7ae797286231216b7c2785b",
+  "release_readback_sha256": "50434f87e772718079be89a6a7414d99e4e12d5f5d40c144930cf4fd9ae4a8f8",
+  "started_ns": 1789146781929537015,
+  "pid": 4069171
+}

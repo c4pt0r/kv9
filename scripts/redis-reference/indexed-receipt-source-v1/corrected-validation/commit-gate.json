@@ -1,0 +1,12 @@
+{
+  "revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "tested_rust_hashes_unchanged": true,
+  "documentation_updated_after_checks": true,
+  "source_clean": true,
+  "hosted_workflows_dispatch_only": true,
+  "tests_passed": 711,
+  "tests_ignored": 23,
+  "focused_passed": 2,
+  "first_failure_retained": true,
+  "created_ns": 1789148886389384759
+}

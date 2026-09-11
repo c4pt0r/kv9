@@ -1,0 +1,8 @@
+   Compiling kv9-common v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/common)
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/raft)
+   Compiling kv9-server v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/server)
+   Compiling kv9-engine v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/engine)
+   Compiling kv9-region v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/region)
+   Compiling kv9-txn v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/txn)
+   Compiling kv9-meta v0.0.0 (/tmp/kv9-owned-proposal-buffers/crates/meta)
+    Finished `release` profile [optimized] target(s) in 12.83s

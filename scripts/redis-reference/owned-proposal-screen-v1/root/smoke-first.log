@@ -1,0 +1,13 @@
+PASS: matched cohort 000-old-point-r000-p00001
+PASS: matched cohort 001-new-point-r000-p00001
+PASS: matched cohort 002-redis-point-r000-p00001
+PASS: matched cohort 003-old-batch64-r000-p00001
+PASS: matched cohort 004-new-batch64-r000-p00001
+PASS: matched cohort 005-redis-batch64-r000-p00001
+PASS: matched cohort 006-old-point-r000-p00064
+PASS: matched cohort 007-new-point-r000-p00064
+PASS: matched cohort 008-redis-point-r000-p00064
+PASS: matched cohort 009-old-batch64-r000-p00064
+PASS: matched cohort 010-new-batch64-r000-p00064
+PASS: matched cohort 011-redis-batch64-r000-p00064
+PASS: all matched cohorts complete; independent final audit remains required

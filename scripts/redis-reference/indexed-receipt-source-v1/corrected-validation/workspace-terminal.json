@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "env",
+    "CARGO_TARGET_DIR=/home/dongxu/kv9/target",
+    "CARGO_BUILD_JOBS=6",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "cargo",
+    "test",
+    "--workspace"
+  ],
+  "pid": 296886,
+  "reaped": true,
+  "exit_code": 0,
+  "completed_ns": 1789148729289474228
+}

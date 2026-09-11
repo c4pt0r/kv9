@@ -1,0 +1,71 @@
+{
+  "complete": true,
+  "cpu_allowed": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONOPTIMIZE": "0"
+  },
+  "scope": "Finite source/config/schema/arithmetic contracts only; no fixture or actual-result auditor execution",
+  "tests": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/kv9-owned-proposal-screen-preparation/test_driver.py"
+      ],
+      "ended_ns": 1789146942744121989,
+      "exit_code": 0,
+      "log": "/tmp/kv9-owned-proposal-screen-preparation/test_driver-first.log",
+      "log_sha256": "b579532df51de279e5e67c010618405654e930154f3e674fe3229d6e0cb80cd4",
+      "pid": 4103968,
+      "started_ns": 1789146942318128197,
+      "test_source_sha256": "87fc46acf1da03d4a4823fd7d3d5a32ae27c1b02f50d300f4ef568003d16ffa2"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/kv9-owned-proposal-screen-preparation/test_audit_contract.py"
+      ],
+      "ended_ns": 1789146942794822118,
+      "exit_code": 0,
+      "log": "/tmp/kv9-owned-proposal-screen-preparation/test_audit_contract-first.log",
+      "log_sha256": "4d628588528da75c4242c02a900ba9ef2cc54ff18d6254a8389b7110130050cf",
+      "pid": 4103977,
+      "started_ns": 1789146942744342742,
+      "test_source_sha256": "4f0fd82089d0e33fa1a65af12e36e5578b5dff94e10ccff040207eda2cd3c70d"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/tmp/kv9-owned-proposal-screen-preparation/test_screen_contract.py"
+      ],
+      "ended_ns": 1789146942871305478,
+      "exit_code": 0,
+      "log": "/tmp/kv9-owned-proposal-screen-preparation/test_screen_contract-first.log",
+      "log_sha256": "8b0efd2d1cc662a596e5f77aa61deaf20e795eaabaf21d58f9425d8704da30d6",
+      "pid": 4103978,
+      "started_ns": 1789146942795036419,
+      "test_source_sha256": "780dbc040ca958851882c6927e4a8253c73b878e92234293879263e065138198"
+    }
+  ]
+}

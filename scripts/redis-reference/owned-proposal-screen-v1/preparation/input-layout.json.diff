@@ -1,0 +1,56 @@
+--- /tmp/kv9-owned-batch-broad-workloads-preparation/input-layout.json
++++ /tmp/kv9-owned-proposal-screen-preparation/input-layout.json
+@@ -14,13 +14,13 @@
+   ],
+   "dataset_scope": "Exact deterministic bytes and sentinel, configured nonce bound and deterministic write-key membership; no exact issued nonce ledger or complete linearizability history.",
+   "endpoint_semantics": "Endpoint files are bound, not semantically accepted here. Independent endpoint-stage reader validates populations and overlapping intervals separately.",
+-  "endpoint_snapshot_files": 288,
+-  "fresh_native_drains": 144,
++  "endpoint_snapshot_files": 96,
++  "fresh_native_drains": 48,
+   "input_inventory_format": "Original absolute path -> {bytes, sha256}, including matrix.json, native endpoint files and every original input read by the unchanged audit; no detached endpoint hash list.",
+-  "input_layout_changes_from_predecessor": "Only owned root/preparation paths and CRC control and owned-buffer candidate role pins; runtime/audit schemas and semantic predicates unchanged.",
+-  "managed_process_lifetimes": 240,
++  "input_layout_changes_from_predecessor": "Explicit write-only point1/batch64 c1/c64 screen (24 cohorts) from accepted broad72; candidate source/build and owned paths updated; original lifecycle/storage/validation schemas unchanged.",
++  "managed_process_lifetimes": 80,
+   "measurement_scope": "Both repeats; per-workload/concurrency/role and per-operation plus merged raw histograms; retain all outcomes/attempts. Pooled QPS=sum calls/sum elapsed; pooled mean=sum latency/count; pooled quantiles from merged counts, never averaged.",
+-  "native_cohorts": 48,
++  "native_cohorts": 16,
+   "native_endpoint_files": [
+     "before-metrics.json",
+     "before-status.json",
+@@ -38,7 +38,7 @@
+     "fixture/tmpfs-retention.json",
+     "fixture/data/"
+   ],
+-  "native_writer_bindings": 144,
++  "native_writer_bindings": 48,
+   "outer_files": [
+     "summary.json",
+     "before.json",
+@@ -47,20 +47,20 @@
+     "invocation.json",
+     "<exact-owned-container>-isolated.json"
+   ],
+-  "outer_root": "/tmp/kv9-owned-batch-broad-workloads-timing-first",
+-  "output": "/tmp/kv9-owned-batch-broad-workloads-preparation/results-first",
+-  "redis_cohorts": 24,
++  "outer_root": "/tmp/kv9-owned-proposal-screen-timing-first",
++  "output": "/tmp/kv9-owned-proposal-screen-preparation/results-first",
++  "redis_cohorts": 8,
+   "redis_retained_files": [
+     "redis-listener.json",
+     "<before|after>-redis-config.json",
+     "final-dataset.json"
+   ],
+-  "run": "/tmp/kv9-owned-batch-broad-workloads-timing-first/cohorts",
++  "run": "/tmp/kv9-owned-proposal-screen-timing-first/cohorts",
+   "run_files": [
+     "matrix.json",
+     "driver.py",
+     "isolation-snapshot.json",
+     "retained-inputs/"
+   ],
+-  "timed_cohorts": 72
++  "timed_cohorts": 24
+ }

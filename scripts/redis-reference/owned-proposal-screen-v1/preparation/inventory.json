@@ -1,0 +1,178 @@
+{
+  "file_count": 43,
+  "files": {
+    "/tmp/kv9-owned-proposal-screen-preparation/README.md": {
+      "bytes": 2913,
+      "sha256": "4c5381b732f2228dac6fcae71cc66e0a85c7441524132b9ed62383515cd129df"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/audit.py": {
+      "bytes": 49221,
+      "sha256": "6e92ab500cdd128b96dc0cfa712943973a096d61cf94bc382a1234cba7370699"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/audit.py.diff": {
+      "bytes": 9709,
+      "sha256": "e9a366e4631e84fe715116e6d94e64382e62f594851e80b108c5a7503c7da0dd"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/commands.json": {
+      "bytes": 2488,
+      "sha256": "c2e8232ee2e1fa60b95a34e7f0b4b1745911444e53b553881d0ea242fe73bc1f"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/commands.json.diff": {
+      "bytes": 2839,
+      "sha256": "a3c49239150319edad860480944748266006ac9526fe7538a8051ce9ec6a6c2e"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/contracts-first.json": {
+      "bytes": 2020,
+      "sha256": "d5441acddd9425bf1b6c58115af4d586993d43b9bde22aef720a0ef82ef7451c"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/driver-arguments.json": {
+      "bytes": 628,
+      "sha256": "19eb6e0377ded7004dfc9ed8ba305a9a395a75443a93f3e2fc35ebaacc2bbfb2"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/driver-arguments.json.diff": {
+      "bytes": 530,
+      "sha256": "7384179046ba977be07fa22c961c3e8d3a47e6ac67df545bdf88ef30081412ce"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/freeze-metadata-first-failure.json": {
+      "bytes": 543,
+      "sha256": "65a5adf36eb6f69d1d769b238057198785abb987f353b0eb1befee4451b9174e"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/input-layout.json": {
+      "bytes": 2666,
+      "sha256": "c99b857f4eb630169e6b154ee1284c28bcbaf82fc783e1f4e5d7630f76d88252"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/input-layout.json.diff": {
+      "bytes": 2843,
+      "sha256": "a8b276d06de9f65853c3b6d1cb312f5e6db3dc4a2063013dab2861a416882b61"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/matched-driver.py": {
+      "bytes": 52002,
+      "sha256": "d18f0ed307fc1628492f3efe641e2af73abdfb76625d5f5ec88c1c7fd1fa915d"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/matched-driver.py.diff": {
+      "bytes": 5091,
+      "sha256": "c073fd79e3035e6cb85364c7bf9b1404587cce5df17c39a4df6a4f10c41b498d"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-draft-first/audit.py": {
+      "bytes": 49157,
+      "sha256": "be4ed5493764e2316a1fbb4f4f37160b6bd5b8845906500a0c533cf7c1d1ab32"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-draft-first/commands.json": {
+      "bytes": 2488,
+      "sha256": "e32ac0051225f4df5d6e94e1ea55806a6ab3cf87684ed69f2d29ea6caee42895"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-draft-first/driver-arguments.json": {
+      "bytes": 628,
+      "sha256": "19eb6e0377ded7004dfc9ed8ba305a9a395a75443a93f3e2fc35ebaacc2bbfb2"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-draft-first/input-layout.json": {
+      "bytes": 2666,
+      "sha256": "c99b857f4eb630169e6b154ee1284c28bcbaf82fc783e1f4e5d7630f76d88252"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-draft-first/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-draft-first/matched-driver.py": {
+      "bytes": 51938,
+      "sha256": "dea63b9b464bd0daa5988ceef4d379614d615914d4e619c69aa82f9776862644"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-draft-first/pending-pins.json": {
+      "bytes": 412,
+      "sha256": "6a3a19a4127a56c831c16b16f5258d2594bb4ae40bf890a2856488eb628d128a"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-draft-first/statistics/core.py": {
+      "bytes": 6438,
+      "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-draft-first/statistics/derive.py": {
+      "bytes": 8195,
+      "sha256": "6a1ea66ae6632dc17bc6a6a235a718dfc798fb782785f3d4c572334aa8fe3288"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-draft-first/test_audit_contract.py": {
+      "bytes": 17570,
+      "sha256": "32ad6c7090ab608222fe6c8c950a0e5d1a80cd47df65ef8cfe5665aa2041696a"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-draft-first/test_driver.py": {
+      "bytes": 10126,
+      "sha256": "0616e12530abea6745f08102512ac033fa421836a7b62aeb0d221dd26370e8a5"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/pending-pins.json": {
+      "bytes": 412,
+      "sha256": "6a3a19a4127a56c831c16b16f5258d2594bb4ae40bf890a2856488eb628d128a"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/preparation.json": {
+      "bytes": 6662,
+      "sha256": "78b7f93902842587e3f3581262ac85481627c24395911f5a1275c5e2c4ee18ce"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/protocol.json": {
+      "bytes": 25259,
+      "sha256": "a48163ec58b6ee70cb3a6ede72c008aa51ba75161ba1f1d3a2f45b35773c56c2"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/protocol.json.diff": {
+      "bytes": 77004,
+      "sha256": "263389191229d23e91091606b7fb0ab9e311c736ac57ee96b04be5bd98d9fabb"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/release-pins-first.json": {
+      "bytes": 693,
+      "sha256": "f7625cc47235da413eccf91ae8f5192c41d4c3c0bab1b47511d1129701d66971"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/statistics-core.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/statistics-derive.py.diff": {
+      "bytes": 3456,
+      "sha256": "99b59b6bb86e268ff90e40b645c832553f15960b180f50064b8f18c96598ead2"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/statistics/core.py": {
+      "bytes": 6438,
+      "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/statistics/derive.py": {
+      "bytes": 8195,
+      "sha256": "6a1ea66ae6632dc17bc6a6a235a718dfc798fb782785f3d4c572334aa8fe3288"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/test_audit_contract-first.log": {
+      "bytes": 2083,
+      "sha256": "4d628588528da75c4242c02a900ba9ef2cc54ff18d6254a8389b7110130050cf"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/test_audit_contract.py": {
+      "bytes": 17603,
+      "sha256": "4f0fd82089d0e33fa1a65af12e36e5578b5dff94e10ccff040207eda2cd3c70d"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/test_audit_contract.py.diff": {
+      "bytes": 5814,
+      "sha256": "3b33386863a1ce8d8486d332d9947255c7b4ef64d551069e399a568bc3c27024"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/test_driver-first.log": {
+      "bytes": 105,
+      "sha256": "b579532df51de279e5e67c010618405654e930154f3e674fe3229d6e0cb80cd4"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/test_driver.py": {
+      "bytes": 9952,
+      "sha256": "87fc46acf1da03d4a4823fd7d3d5a32ae27c1b02f50d300f4ef568003d16ffa2"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/test_driver.py.diff": {
+      "bytes": 3731,
+      "sha256": "17b0c7bcf0d03f43e3d3a71bc57a3015c0c77f9b9845914596f2de8431317f8d"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/test_screen_contract-first.log": {
+      "bytes": 716,
+      "sha256": "8b0efd2d1cc662a596e5f77aa61deaf20e795eaabaf21d58f9425d8704da30d6"
+    },
+    "/tmp/kv9-owned-proposal-screen-preparation/test_screen_contract.py": {
+      "bytes": 4537,
+      "sha256": "780dbc040ca958851882c6927e4a8253c73b878e92234293879263e065138198"
+    }
+  },
+  "scope": "Frozen preparation files including historical pending draft and first metadata failure; this manifest excludes itself."
+}
