@@ -11,6 +11,8 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 GRPC = 'crates/raft/src/grpc.rs'
+BODY = 'crates/raft/src/grpc/direct_body.rs'
+BODY_TESTS = 'crates/raft/src/grpc/direct_body/tests.rs'
 TCP = 'crates/raft/src/transport.rs'
 
 
@@ -30,15 +32,16 @@ def main():
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
-    sources = {p: (ROOT / p).read_text() for p in (GRPC, TCP)}
-    grpc, tcp = sources[GRPC], sources[TCP]
+    sources = {p: (ROOT / p).read_text() for p in (GRPC, BODY, BODY_TESTS, TCP)}
+    grpc, body, tcp = sources[GRPC], sources[BODY], sources[TCP]
     cases = [
         ('missing-route-notification', GRPC, replace_once(grpc,
          'sender.destination.send_replace(peer.destination.clone());', 'let _ = sender;'),
          'grpc::tests::registered_address_change_replaces_live_peer_stream', 'new configured endpoint received no traffic'),
-        ('address-reuse-admits-old-generation', GRPC, replace_once(grpc,
-         'if Arc::ptr_eq(&message.destination, destination) {', 'if message.destination.addr == destination.addr {'),
-         'grpc::tests::route_generation_filter_rejects_old_queue_entries_even_after_address_reuse', 'assertion `left == right` failed'),
+        ('address-reuse-admits-old-generation', BODY, replace_once(body,
+         'if Arc::ptr_eq(&message.destination, &self.destination) {',
+         'if message.destination.addr == self.destination.addr {'),
+         'grpc::direct_body::tests::route_generation_filter_rejects_old_queue_entries_even_after_address_reuse', 'assertion `left == right` failed'),
         ('replace-live-worker-on-every-send', GRPC, replace_once(grpc,
          '.is_none_or(|sender| sender.task.is_finished())', '.is_none_or(|_| true)'),
          'grpc::tests::route_updates_keep_one_owned_worker_and_same_address_is_idempotent', 'route update spawned another worker'),
@@ -49,6 +52,25 @@ def main():
         ('tcp-retains-old-connection', TCP, replace_once(tcp,
          'if peer.addr != addr {\n            peer.stream = None;', 'if peer.addr != addr {\n            // Keep the stale stream.'),
          'transport::tests::tcp_address_update_moves_delivery_and_shutdown_drops_connections', 'new endpoint received no post-update message'),
+        ('stale-body-polls-replacement-queue', BODY, replace_once(body,
+         'if !owns(&state, &self.token) {\n            coop.made_progress();',
+         'if !state.receiver_open {\n            coop.made_progress();'),
+         'grpc::direct_body::tests::same_route_reconnect_fences_retained_body_and_its_drop',
+         'assertion failed: matches!(poll_body(&mut old_body, &intruder_waker), Poll::Ready(None))'),
+        ('stale-drop-invalidates-replacement', BODY, replace_once(body,
+         'if !owns(&state, token) {', 'if !state.receiver_open {'),
+         'grpc::direct_body::tests::same_route_reconnect_fences_retained_body_and_its_drop',
+         'assertion failed: owns(&rx.0.state.lock().unwrap(), &new_session.token)'),
+        ('enqueue-postpones-stall-deadline', BODY, replace_once(body,
+         'if newly_pending {\n                state.pending_since = Some(Instant::now());\n            }',
+         'state.pending_since = Some(Instant::now());'),
+         'grpc::direct_body::tests::sends_stale_inspection_and_notifications_do_not_reset_stall_age',
+         'stale traffic reset the backlog age'),
+        ('ready-body-restores-cooperative-budget', BODY, replace_once(body,
+         'if inspected != 0 || result.is_ready() {\n            coop.made_progress();\n        }',
+         'let _ = inspected; // Incorrectly restore the budget after ready work.'),
+         'grpc::direct_body::tests::ready_batches_exhaust_task_budget_without_dequeueing_on_pending',
+         'repeated Ready batches bypassed Tokio\'s cooperative budget'),
     ]
     env = dict(os.environ, CARGO_TARGET_DIR=os.environ.get('CARGO_TARGET_DIR', str(ROOT / 'target')))
     manifest = dict(sources={p: digest(s) for p, s in sources.items()}, controls=[])
@@ -95,7 +117,7 @@ def main():
             print(f'PASS: {name} baseline, intended failure and restored source', flush=True)
     if any((ROOT / p).read_text() != text for p, text in sources.items()):
         raise RuntimeError('source changed during controls')
-    print('PASS: 5 isolated route ownership source controls checked', flush=True)
+    print(f'PASS: {len(cases)} isolated route ownership source controls checked', flush=True)
 
 
 if __name__ == '__main__':

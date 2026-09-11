@@ -24,7 +24,9 @@ use std::time::Duration;
 
 use protobuf::Message as PbCodec;
 use raft::prelude::Message;
-use tokio::sync::{mpsc, watch};
+#[cfg(test)]
+use tokio::sync::mpsc;
+use tokio::sync::watch;
 use tonic::{Request, Response, Status, Streaming};
 
 use kv9_common::{BootstrapGeneration, ClusterId, Error, NodeId, RootDigest, StoreIncarnation};
@@ -39,6 +41,7 @@ pub mod pb {
 use pb::kv9_raft_client::Kv9RaftClient;
 use pb::kv9_raft_server::Kv9Raft;
 
+mod direct_body;
 mod endpoint;
 pub use endpoint::{
     grpc_confirm_endpoint, EndpointConfirmError, EndpointConfirmationReceipt, EndpointRoute,
@@ -136,12 +139,12 @@ const KEEPALIVE_INTERVAL: Duration = Duration::from_secs(1);
 const KEEPALIVE_TIMEOUT: Duration = Duration::from_secs(2);
 /// Third entry to the same liveness invariant (Tess's review): a peer whose
 /// h2 layer is ALIVE (acks PINGs) but whose application stops READING the
-/// request stream. The rpc future stays pending, HTTP/2 flow control stops
-/// polling the batch stream, the 16-slot buffer fills, and a send/rpc select
-/// has no clock — the worker would park forever with both arms pending. A
-/// batch send that cannot complete within this budget means the established
-/// stream stopped making progress: drop it and reconnect (the batch is lost;
-/// raft retransmits — best-effort by contract). Deliberately distinct from
+/// request stream. The rpc future stays pending and HTTP/2 flow control stops
+/// polling its request body. An independently polled owner watchdog bounds
+/// queued work without valid dequeue progress; empty streams do not expire.
+/// A backlog without progress within this budget drops the RPC and reconnects
+/// (already emitted messages cannot be recalled; raft retransmits traffic
+/// dropped by this best-effort transport). Deliberately distinct from
 /// CONNECT_BUDGET: that one bounds reaching a connection, this one bounds
 /// progress on an established stream.
 const STREAM_PROGRESS_BUDGET: Duration = Duration::from_secs(3);
@@ -912,7 +915,7 @@ struct OutboundMessage {
 }
 
 struct PeerSender {
-    queue: mpsc::Sender<OutboundMessage>,
+    queue: direct_body::Sender,
     destination: watch::Sender<Arc<PeerDestination>>,
     task: tokio::task::JoinHandle<()>,
 }
@@ -1075,7 +1078,7 @@ impl GrpcTransport {
             .as_ref()
             .is_none_or(|sender| sender.task.is_finished())
         {
-            let (queue, rx) = mpsc::channel(PEER_QUEUE);
+            let (queue, rx) = direct_body::channel();
             let (destination, updates) = watch::channel(peer.destination.clone());
             let task = self.handle.spawn(peer_worker(
                 self.me,
@@ -1158,7 +1161,7 @@ async fn peer_worker(
     me: NodeId,
     token: Option<String>,
     root_digest: RootDigest,
-    mut rx: mpsc::Receiver<OutboundMessage>,
+    rx: direct_body::Receiver,
     mut updates: watch::Receiver<Arc<PeerDestination>>,
     connect_attempts: Arc<AtomicU64>,
 ) {
@@ -1170,62 +1173,10 @@ async fn peer_worker(
             changed = updates.changed() => {
                 if changed.is_err() { return; }
             }
-            _ = peer_session(me, &token, root_digest, &mut rx, &destination,
+            _ = peer_session(me, &token, root_digest, &rx, &destination,
                              &connect_attempts) => return,
         }
     }
-}
-
-/// Receive only messages admitted to this exact connection generation.
-async fn receive_for_destination(
-    rx: &mut mpsc::Receiver<OutboundMessage>,
-    destination: &Arc<PeerDestination>,
-) -> Option<pb::RaftEnvelope> {
-    let mut discarded = 0;
-    while let Some(message) = rx.recv().await {
-        if Arc::ptr_eq(&message.destination, destination) {
-            return Some(message.envelope);
-        }
-        discarded += 1;
-        if discarded == MAX_BATCH_MSGS {
-            // A producer flooding a revoked generation cannot prevent the
-            // outer route-change/cancellation branch from being polled.
-            tokio::task::yield_now().await;
-            discarded = 0;
-        }
-    }
-    None
-}
-
-/// Coalesce only messages already admitted to this connection generation.
-/// Count every inspected envelope, including stale generations, so a revoked
-/// producer cannot monopolize a Tokio turn. A single legal message may cross
-/// the byte target, as in the existing transport contract.
-fn coalesce_queued(
-    first: pb::RaftEnvelope,
-    root_digest: RootDigest,
-    rx: &mut mpsc::Receiver<OutboundMessage>,
-    destination: &Arc<PeerDestination>,
-) -> pb::BatchRaftMessage {
-    let mut bytes = first.raft_message.len();
-    let mut batch = pb::BatchRaftMessage {
-        msgs: vec![first],
-        flushed_unix_nanos: 0,
-        root_digest: root_digest.as_bytes().to_vec(),
-    };
-    for _ in 1..MAX_BATCH_MSGS {
-        if bytes >= MAX_BATCH_BYTES {
-            break;
-        }
-        let Ok(message) = rx.try_recv() else {
-            break;
-        };
-        if Arc::ptr_eq(&message.destination, destination) {
-            bytes += message.envelope.raft_message.len();
-            batch.msgs.push(message.envelope);
-        }
-    }
-    batch
 }
 
 /// Batch one route generation by queued count/bytes and reconnect with backoff.
@@ -1233,7 +1184,7 @@ async fn peer_session(
     me: NodeId,
     token: &Option<String>,
     root_digest: RootDigest,
-    rx: &mut mpsc::Receiver<OutboundMessage>,
+    rx: &direct_body::Receiver,
     destination: &Arc<PeerDestination>,
     connect_attempts: &AtomicU64,
 ) {
@@ -1246,6 +1197,9 @@ async fn peer_session(
         .keep_alive_timeout(KEEPALIVE_TIMEOUT)
         .keep_alive_while_idle(true);
     loop {
+        if rx.sender_closed() {
+            return;
+        }
         // (Re)connect, under CONNECT_BUDGET (outer timeout as well as the
         // endpoint's own: the outer one also bounds legs connect_timeout does
         // not, and a budget expiry takes the same path as a connect error:
@@ -1262,57 +1216,28 @@ async fn peer_session(
             // Either way: drain whatever queued during the outage (drop:
             // best-effort), back off, retry.
             Ok(Err(_)) | Err(_) => {
-                for _ in 0..PEER_QUEUE {
-                    if rx.try_recv().is_err() {
-                        break;
-                    }
-                }
+                rx.discard_outage();
                 tokio::time::sleep(backoff).await;
                 backoff = (backoff * 2).min(RECONNECT_MAX);
                 continue;
             }
         };
 
-        // One stream per connection; the receiver task of `outbound` feeds it.
-        let (batch_tx, batch_rx) = mpsc::channel::<pb::BatchRaftMessage>(16);
-        let stream = tokio_stream::wrappers::ReceiverStream::new(batch_rx);
+        // The guard is created before tonic owns the body. An RPC future can
+        // disappear before HTTP/2 drops its body; the fresh token fences that
+        // retained body before this receiver is offered to another session.
+        let (session, stream) = rx.open(destination.clone(), root_digest);
         let mut stream_req = Request::new(stream);
         attach_auth(&mut stream_req, token, me);
         let rpc = client.batch_raft(stream_req);
         tokio::pin!(rpc);
-
-        // Batch loop: runs until the peer connection dies or we shut down.
-        'batching: loop {
-            let first = tokio::select! {
-                m = receive_for_destination(rx, destination) => match m {
-                    Some(m) => m,
-                    None => return, // transport dropped: shut down worker
-                },
-                // The RPC resolving means the server closed our stream.
-                _ = &mut rpc => break 'batching,
-            };
-            let batch = coalesce_queued(first, root_digest, rx, destination);
-            // Three-way select: the send may complete (normal path), the RPC
-            // may resolve (server closed the stream — reconnect), or neither
-            // within STREAM_PROGRESS_BUDGET (established stream stopped
-            // making progress: an alive peer that stopped reading keeps both
-            // other arms pending forever, and keepalive cannot see it because
-            // its h2 layer still acks PINGs — reconnect). A bare send, or a
-            // send/rpc select without a clock, are the two- and one-arm
-            // versions of the same wedge as the unbudgeted connect.
-            tokio::select! {
-                sent = batch_tx.send(batch) => {
-                    if sent.is_err() {
-                        break 'batching; // stream side gone: reconnect
-                    }
-                }
-                _ = &mut rpc => break 'batching,
-                _ = tokio::time::sleep(STREAM_PROGRESS_BUDGET) => {
-                    break 'batching; // stream stalled: drop it, reconnect
-                }
-            }
+        tokio::select! {
+            _ = &mut rpc => {},
+            // This future is polled by the peer owner independently of the
+            // HTTP/2 body. A frozen reader cannot freeze its watchdog too.
+            _ = session.stalled() => {},
         }
-        drop(batch_tx);
+        drop(session);
         // Loop back to reconnect.
     }
 }
@@ -1752,147 +1677,6 @@ mod tests {
             .await
             .unwrap();
         });
-    }
-
-    #[test]
-    fn route_generation_filter_rejects_old_queue_entries_even_after_address_reuse() {
-        let rt = tokio::runtime::Runtime::new().unwrap();
-        rt.block_on(async {
-            let a = Arc::new(PeerDestination {
-                addr: "127.0.0.1:1".parse().unwrap(),
-            });
-            let b = Arc::new(PeerDestination {
-                addr: "127.0.0.1:2".parse().unwrap(),
-            });
-            let new_a = Arc::new(PeerDestination { addr: a.addr });
-            let (tx, mut rx) = mpsc::channel(4);
-            for (destination, from_node) in [(a, 10), (b, 20), (new_a.clone(), 30)] {
-                tx.send(OutboundMessage {
-                    destination,
-                    envelope: pb::RaftEnvelope {
-                        from_node,
-                        ..Default::default()
-                    },
-                })
-                .await
-                .unwrap();
-            }
-            drop(tx);
-            assert_eq!(
-                receive_for_destination(&mut rx, &new_a)
-                    .await
-                    .unwrap()
-                    .from_node,
-                30
-            );
-            assert!(receive_for_destination(&mut rx, &new_a).await.is_none());
-        });
-    }
-
-    #[test]
-    fn queued_batch_bounds_stale_work_and_keeps_same_address_generations_separate() {
-        let destination = Arc::new(PeerDestination {
-            addr: "127.0.0.1:1".parse().unwrap(),
-        });
-        let stale = Arc::new(PeerDestination {
-            addr: destination.addr,
-        });
-        let (tx, mut rx) = mpsc::channel(MAX_BATCH_MSGS * 2);
-        for index in 0..MAX_BATCH_MSGS {
-            tx.try_send(OutboundMessage {
-                destination: stale.clone(),
-                envelope: pb::RaftEnvelope {
-                    from_node: index as u64 + 2,
-                    ..Default::default()
-                },
-            })
-            .unwrap();
-        }
-        tx.try_send(OutboundMessage {
-            destination: destination.clone(),
-            envelope: pb::RaftEnvelope {
-                from_node: 999,
-                ..Default::default()
-            },
-        })
-        .unwrap();
-        let batch = coalesce_queued(
-            pb::RaftEnvelope {
-                from_node: 1,
-                ..Default::default()
-            },
-            RootDigest::from_bytes([1; 32]),
-            &mut rx,
-            &destination,
-        );
-        assert_eq!(
-            batch.msgs.len(),
-            1,
-            "revoked generation leaked into a new session"
-        );
-        assert_eq!(batch.msgs[0].from_node, 1);
-        assert_eq!(rx.len(), 2, "stale ingress monopolized the coalescing turn");
-        assert_eq!(batch.root_digest, vec![1; 32]);
-    }
-
-    #[test]
-    fn queued_batch_flushes_available_work_and_preserves_fifo_at_count_and_byte_bounds() {
-        let destination = Arc::new(PeerDestination {
-            addr: "127.0.0.1:1".parse().unwrap(),
-        });
-        let (tx, mut rx) = mpsc::channel(MAX_BATCH_MSGS * 2);
-        let envelope = |id, size| pb::RaftEnvelope {
-            from_node: id,
-            raft_message: vec![7; size],
-            ..Default::default()
-        };
-        let empty = coalesce_queued(
-            envelope(0, 0),
-            RootDigest::from_bytes([0; 32]),
-            &mut rx,
-            &destination,
-        );
-        assert_eq!(
-            empty.msgs.len(),
-            1,
-            "an idle peer must flush its first message"
-        );
-        for index in 1..=MAX_BATCH_MSGS {
-            tx.try_send(OutboundMessage {
-                destination: destination.clone(),
-                envelope: envelope(index as u64, 0),
-            })
-            .unwrap();
-        }
-        let full = coalesce_queued(
-            envelope(0, 0),
-            RootDigest::from_bytes([0; 32]),
-            &mut rx,
-            &destination,
-        );
-        assert_eq!(
-            full.msgs.iter().map(|m| m.from_node).collect::<Vec<_>>(),
-            (0..MAX_BATCH_MSGS as u64).collect::<Vec<_>>()
-        );
-        assert_eq!(
-            rx.try_recv().unwrap().envelope.from_node,
-            MAX_BATCH_MSGS as u64
-        );
-        for id in 1..=2 {
-            tx.try_send(OutboundMessage {
-                destination: destination.clone(),
-                envelope: envelope(id, MAX_BATCH_BYTES / 2 + 1),
-            })
-            .unwrap();
-        }
-        let bytes = coalesce_queued(
-            envelope(0, MAX_BATCH_BYTES / 2),
-            RootDigest::from_bytes([0; 32]),
-            &mut rx,
-            &destination,
-        );
-        assert_eq!(bytes.msgs.len(), 2);
-        assert_eq!(rx.try_recv().unwrap().envelope.from_node, 2);
     }
 
     #[test]

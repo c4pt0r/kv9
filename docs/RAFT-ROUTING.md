@@ -5,6 +5,12 @@ Tracking: [#47](https://github.com/c4pt0r/kv9/issues/47). This extends the
 choice for an already authorized node/store binding. It cannot grant membership,
 replace a store incarnation, or change the root certificate.
 
+The experimental [direct peer body](DIRECT-PEER-BODY.md) preserves the route
+boundary and adds a fresh ownership token for every RPC, including same-route
+reconnects. Its retained-body/waker fencing and independent watchdog require
+the additional implementation argument and tests in that document. They are
+not new mechanically checked conclusions of the historical inventory below.
+
 ## Failure and implementation
 
 The original gRPC transport changed its address map but retained an outbound
