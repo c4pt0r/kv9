@@ -401,11 +401,9 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         for msg in self.transport.drain() {
             self.peer.step_message(msg);
         }
-        self.async_reads
-            .submit(|context| self.peer.read_index(context));
         let messages = self
-            .peer
-            .pump()
+            .drain
+            .pump_with_read_submission(|admit| self.async_reads.submit(admit))
             .map_err(|cause| self.poison_persistence(&cause))?;
         for msg in messages {
             let to = NodeId(msg.to);
@@ -1672,6 +1670,9 @@ fn single_change(node: NodeId, kind: ConfChangeType) -> ConfChangeV2 {
     cc.set_changes(vec![step].into());
     cc
 }
+
+#[cfg(test)]
+mod owner_read_tests;
 
 #[cfg(test)]
 mod tests {
