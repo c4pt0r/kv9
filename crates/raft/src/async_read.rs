@@ -12,6 +12,7 @@ use tokio::sync::oneshot;
 
 use crate::driver::{BarrierPhase, ReadIndexError};
 use crate::work::WorkSignal;
+use crate::{driver::DriverMetrics, read_profile::ReadTrace};
 
 type ReadResult = std::result::Result<u64, ReadIndexError>;
 const MAX_REQUESTS: usize = 128;
@@ -39,6 +40,7 @@ struct Request {
     started: Instant,
     deadline: Instant,
     owner: Weak<Inner>,
+    trace: Option<Arc<ReadTrace>>,
 }
 
 impl Request {
@@ -48,6 +50,11 @@ impl Request {
 
     fn finish(mut self, result: ReadResult) {
         if let Some(sender) = self.sender.take() {
+            if result.is_ok() {
+                if let Some(trace) = &self.trace {
+                    trace.sent();
+                }
+            }
             let _ = sender.send(result);
         }
     }
@@ -95,6 +102,7 @@ struct State {
 struct Inner {
     state: Mutex<State>,
     signal: Arc<WorkSignal>,
+    metrics: Arc<DriverMetrics>,
 }
 
 #[derive(Clone)]
@@ -123,6 +131,7 @@ pub(crate) struct ReadTicket {
     deadline: Instant,
     signal: Arc<WorkSignal>,
     finished: bool,
+    trace: Option<Arc<ReadTrace>>,
 }
 
 impl ReadTicket {
@@ -131,7 +140,13 @@ impl ReadTicket {
             biased;
             result = &mut self.receiver => {
                 self.finished = true;
-                result.unwrap_or_else(|_| Err(failed("read owner lost its sender")))
+                let result = result.unwrap_or_else(|_| Err(failed("read owner lost its sender")));
+                if result.is_ok() {
+                    if let Some(trace) = &self.trace {
+                        trace.observed();
+                    }
+                }
+                result
             },
             _ = tokio::time::sleep_until(self.deadline.into()) => {
                 Err(expired(self.started, self.quorum_observed.load(Ordering::Acquire)))
@@ -151,10 +166,16 @@ impl Drop for ReadTicket {
 }
 
 impl AsyncReads {
+    #[cfg(test)]
     pub(crate) fn new(signal: Arc<WorkSignal>) -> Self {
+        Self::with_metrics(signal, Arc::default())
+    }
+
+    pub(crate) fn with_metrics(signal: Arc<WorkSignal>, metrics: Arc<DriverMetrics>) -> Self {
         Self(Arc::new(Inner {
             state: Mutex::default(),
             signal,
+            metrics,
         }))
     }
 
@@ -169,6 +190,7 @@ impl AsyncReads {
             .ok_or_else(|| failed("read deadline overflow"))?;
         let (sender, receiver) = oneshot::channel();
         let quorum_observed = Arc::new(AtomicBool::new(false));
+        let trace = ReadTrace::sample(&context, started, &self.0.metrics);
         {
             let mut state = self.0.state.lock().expect("async read queue poisoned");
             if state.stopped {
@@ -193,6 +215,7 @@ impl AsyncReads {
                 started,
                 deadline,
                 owner: Arc::downgrade(&self.0),
+                trace: trace.clone(),
             });
         }
         self.0.signal.notify();
@@ -203,6 +226,7 @@ impl AsyncReads {
             deadline,
             signal: self.0.signal.clone(),
             finished: false,
+            trace,
         })
     }
 
@@ -248,6 +272,7 @@ impl AsyncReads {
                 }
                 state.group_attempts = state.group_attempts.saturating_add(1);
             }
+            let admission_started = Instant::now();
             let admitted = read_index(context.to_vec());
             let admitted = match admitted {
                 Ok(value) => Some(value),
@@ -269,6 +294,11 @@ impl AsyncReads {
             };
             let mut state = self.0.state.lock().expect("async read queue poisoned");
             if admitted == Some(true) {
+                for request in &members {
+                    if let Some(trace) = &request.trace {
+                        trace.submitted(admission_started);
+                    }
+                }
                 state.admitted_groups = state.admitted_groups.saturating_add(1);
                 state.admitted_members =
                     state.admitted_members.saturating_add(members.len() as u64);
@@ -318,6 +348,9 @@ impl AsyncReads {
             group.confirmed = Some(index);
             for request in &group.members {
                 request.quorum_observed.store(true, Ordering::Release);
+                if let Some(trace) = &request.trace {
+                    trace.confirmed();
+                }
             }
         }
         true
@@ -807,5 +840,105 @@ mod tests {
             "later stop or deadline erased a known eligible result"
         );
         assert_eq!(queue.snapshot().in_flight, 0);
+    }
+
+    fn profile_context(sampled: bool) -> [u8; 24] {
+        let metrics = Arc::default();
+        (0..4096)
+            .map(context)
+            .find(|c| ReadTrace::sample(c, Instant::now(), &metrics).is_some() == sampled)
+            .expect("mixed sample population contains both classes")
+    }
+
+    fn profile_count(metrics: &DriverMetrics) -> u64 {
+        metrics.read_profile_total.snapshot().outcomes[0].count
+    }
+
+    #[tokio::test]
+    async fn sampled_member_survives_deferral_and_unsampled_representative() {
+        let metrics = Arc::new(DriverMetrics::default());
+        let queue = AsyncReads::with_metrics(Arc::default(), metrics.clone());
+        let representative = profile_context(false);
+        let member = profile_context(true);
+        let first = queue
+            .register(representative, Instant::now(), Duration::from_secs(5))
+            .unwrap();
+        let second = queue
+            .register(member, Instant::now(), Duration::from_secs(5))
+            .unwrap();
+        queue.submit(|_| Ok(false));
+        assert_eq!(queue.snapshot().queued, 2);
+        assert_eq!(profile_count(&metrics), 0);
+        queue.submit(|context| {
+            assert_eq!(context, representative);
+            Ok(true)
+        });
+        assert!(!queue.confirm(&member, 9));
+        assert!(queue.confirm(&representative, 9));
+        assert!(queue.confirm(&representative, 99)); // First confirmation still wins.
+        queue.complete(Some(8));
+        assert_eq!(queue.snapshot().active, 2);
+        queue.complete(Some(9));
+        assert_eq!(queue.snapshot().in_flight, 0);
+        assert_eq!(
+            profile_count(&metrics),
+            0,
+            "send alone is not observed success"
+        );
+        assert_eq!(second.wait().await.unwrap(), 9);
+        assert_eq!(first.wait().await.unwrap(), 9);
+        assert_eq!(profile_count(&metrics), 1);
+        let stages = [
+            &metrics.read_profile_queue,
+            &metrics.read_profile_quorum,
+            &metrics.read_profile_apply,
+            &metrics.read_profile_notification,
+        ];
+        let mut sum = 0;
+        for metric in stages {
+            let snapshot = metric.snapshot();
+            assert!(snapshot.valid);
+            assert_eq!(snapshot.outcomes[0].count, 1);
+            sum += snapshot.outcomes[0].sum_ns;
+        }
+        let total = metrics.read_profile_total.snapshot();
+        assert_eq!(sum, total.outcomes[0].sum_ns);
+        assert_eq!(total.outcomes[1].count, 0);
+    }
+
+    #[tokio::test]
+    async fn canceled_or_failed_sample_does_not_enter_success_population() {
+        for cancel_before_send in [true, false] {
+            let metrics = Arc::new(DriverMetrics::default());
+            let queue = AsyncReads::with_metrics(Arc::default(), metrics.clone());
+            let context = profile_context(true);
+            let ticket = queue
+                .register(context, Instant::now(), Duration::from_secs(5))
+                .unwrap();
+            queue.submit(|_| Ok(true));
+            queue.confirm(&context, 7);
+            if cancel_before_send {
+                drop(ticket);
+                queue.complete(Some(7));
+            } else {
+                queue.complete(Some(7));
+                drop(ticket);
+            }
+            assert_eq!(queue.snapshot().in_flight, 0);
+            assert_eq!(profile_count(&metrics), 0);
+        }
+        let metrics = Arc::new(DriverMetrics::default());
+        let queue = AsyncReads::with_metrics(Arc::default(), metrics.clone());
+        let ticket = queue
+            .register(
+                profile_context(true),
+                Instant::now(),
+                Duration::from_secs(5),
+            )
+            .unwrap();
+        queue.close();
+        assert!(ticket.wait().await.is_err());
+        assert_eq!(queue.snapshot().in_flight, 0);
+        assert_eq!(profile_count(&metrics), 0);
     }
 }
