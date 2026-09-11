@@ -58,6 +58,32 @@ performance screening earlier so a rejected experiment costs less time.
 
 ## Current evidence
 
+The [two-worker comparison](RPC-WORKER-PAIR-PERFORMANCE.md) reaches
+**344,412–344,790 GET/s**, improving **4.795% / 5.381%** over event8 under
+the same CPU budget. Mean latency falls to **185.490–185.700 us**, with
+improved p99 in both repetitions. BatchGet(1) reaches 335,694–337,822 calls/s
+(+5.069% / +5.434%); mean voter RSS sums fall about 3.8–4.8 MiB across the
+read comparisons. Same-run Redis GET remains 497,503–505,913/s, a paired
+1.44–1.47x throughput gap. All 23,258,382 measured calls succeed and the
+independent audit passes. Default/experimental workspace checks pass 707/717
+tests and all-target Clippy passes. [Exact-source Chaos acceptance](RPC-WORKER-PAIR-ACCEPTANCE.md)
+passes all eleven windows, with 2,114 complete-history calls, 183 verified
+new leaf drops, fresh drains and owned cleanup. Select this as the next
+isolated short pure-read increment; master/default promotion remains open.
+
+Next refresh the bounded lifecycle diagnostic on the two-worker source before
+selecting another peer/owner or completion handoff optimization. Earlier wait
+and CPU breakdowns describe the old runtime and do not establish today's
+dominant cost or a fixed ceiling. Keep sustained traffic, writes/mixed,
+larger batches and dynamic-auth/storage callback progress in the general
+promotion gates. Redis parity and automatic splits remain open.
+
+### Earlier experiments
+
+The following records retain their historical source, measurement and selection
+scope. Their original next-step decisions are superseded by the current path
+above; gains from different baselines must not be added together.
+
 The [one-worker screen](RPC-WORKER-SCREENING.md) rejects `711631b`: GET
 throughput falls about 35%, mean latency rises about 53–54%, and both APIs'
 p99 worsens. All 20,736,623 measured calls and the independent audit pass.
