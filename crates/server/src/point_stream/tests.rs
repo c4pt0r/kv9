@@ -235,6 +235,90 @@ async fn real_stream_point_operations_and_per_frame_auth_share_handler_contracts
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn one_stream_observes_custom_auth_identity_changes_and_revocation_per_frame() {
+    use crate::grpc::{AuthContext, Authenticator};
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    struct RotatingAuth {
+        inner: Arc<dyn Authenticator>,
+        generation: AtomicUsize,
+        calls: AtomicUsize,
+    }
+    impl Authenticator for RotatingAuth {
+        fn authenticate(
+            &self,
+            metadata: &tonic::metadata::MetadataMap,
+        ) -> Result<AuthContext, Status> {
+            self.calls.fetch_add(1, Ordering::SeqCst);
+            let mut auth = self.inner.authenticate(metadata)?;
+            match self.generation.load(Ordering::SeqCst) {
+                0 => Ok(auth),
+                1 => {
+                    auth.principal = "bob".into();
+                    Ok(auth)
+                }
+                _ => Err(Status::unauthenticated("credential revoked")),
+            }
+        }
+    }
+
+    let auth = Arc::new(RotatingAuth {
+        inner: authenticator(),
+        generation: AtomicUsize::new(0),
+        calls: AtomicUsize::new(0),
+    });
+    let backend = Arc::new(Backend::default());
+    let probe = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = probe.local_addr().unwrap();
+    drop(probe);
+    let server = start(address, Kv9Grpc::new(backend.clone()), auth.clone())
+        .await
+        .unwrap();
+    let mut client = wire_client(address).await;
+    let (sender, receiver) = mpsc::channel(4);
+    let mut replies = bounded(client.exchange(request(ReceiverStream::new(receiver))))
+        .await
+        .unwrap()
+        .into_inner();
+    for id in 1..=3 {
+        auth.generation.store(id as usize - 1, Ordering::SeqCst);
+        let (operation, payload) = if id == 3 {
+            (1, put(b"private", b"must-not-write").encode_to_vec())
+        } else {
+            (0, get(b"key").encode_to_vec())
+        };
+        bounded(sender.send(frame(id, operation, payload)))
+            .await
+            .unwrap();
+        let reply = bounded(replies.message()).await.unwrap().unwrap();
+        assert_eq!(reply.id, id);
+        let reply = reply.reply.unwrap();
+        assert_eq!(
+            reply.code,
+            if id == 3 {
+                Code::Unauthenticated as i32
+            } else {
+                Code::Ok as i32
+            }
+        );
+        if id == 3 {
+            assert_eq!(reply.message, "credential revoked");
+        }
+    }
+    assert_eq!(auth.calls.load(Ordering::SeqCst), 4); // Opening plus three frames.
+    {
+        let calls = backend.calls.lock().unwrap();
+        assert_eq!(calls.len(), 2);
+        assert_eq!(calls[0].origin.label(), "alice");
+        assert_eq!(calls[1].origin.label(), "bob");
+        assert!(backend.values.lock().unwrap().is_empty());
+    }
+    drop(sender);
+    drop(replies);
+    stop(server).await;
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn out_of_order_replies_correlate_to_exact_requests_on_one_generation() {
     let mut peer = controlled_peer().await;
     let client = Arc::new(StreamClient::new(peer.address, 16));

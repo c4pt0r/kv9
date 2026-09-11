@@ -273,9 +273,17 @@ impl Kv9Grpc {
         request: &Request<T>,
         class: WorkClass,
     ) -> Result<Reservation, Status> {
+        self.reserve_message(request.get_ref(), class)
+    }
+
+    fn reserve_message<T: prost::Message>(
+        &self,
+        request: &T,
+        class: WorkClass,
+    ) -> Result<Reservation, Status> {
         self.backend
             .admission
-            .reserve(class, request.get_ref().encoded_len())
+            .reserve(class, request.encoded_len())
             .map_err(admission_status)
     }
 
@@ -745,10 +753,15 @@ fn auth_context<T>(request: &Request<T>) -> Result<AuthContext, Status> {
         .get::<AuthContext>()
         .cloned()
         .ok_or_else(|| Status::unauthenticated("authenticated identity missing"))?;
+    check_client_auth(&auth)?;
+    Ok(auth)
+}
+
+fn check_client_auth(auth: &AuthContext) -> Result<(), Status> {
     if auth.auth_kind != AuthKind::Client || auth.node_id.is_some() {
         return Err(Status::permission_denied("client identity required"));
     }
-    Ok(auth)
+    Ok(())
 }
 
 fn request_context(
@@ -1087,15 +1100,17 @@ fn api_type(value: i32) -> Result<ApiType, Status> {
     }
 }
 
-#[tonic::async_trait]
-impl proto::kv9_server::Kv9 for Kv9Grpc {
-    async fn raw_get(
+// Unary and point transports share these authenticated operations. Keeping the
+// decoded message and trusted identity typed avoids rebuilding a tonic Request
+// and boxing another async-trait future for every multiplexed stream frame.
+impl Kv9Grpc {
+    pub(crate) async fn raw_get_authenticated(
         &self,
-        request: Request<proto::RawGetRequest>,
+        auth: AuthContext,
+        request: proto::RawGetRequest,
     ) -> Result<Response<proto::RawGetResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::RawRead)?;
-        let request = request.into_inner();
+        check_client_auth(&auth)?;
+        let reservation = self.reserve_message(&request, WorkClass::RawRead)?;
         let context = request_context(request.context, &auth)?;
         let value = self
             .backend
@@ -1113,13 +1128,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
-    async fn raw_batch_get(
+    pub(crate) async fn raw_batch_get_authenticated(
         &self,
-        request: Request<proto::RawBatchGetRequest>,
+        auth: AuthContext,
+        request: proto::RawBatchGetRequest,
     ) -> Result<Response<proto::RawBatchGetResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::RawRead)?;
-        let request = request.into_inner();
+        check_client_auth(&auth)?;
+        let reservation = self.reserve_message(&request, WorkClass::RawRead)?;
         let context = request_context(request.context, &auth)?;
         let values = self
             .backend
@@ -1137,13 +1152,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         }))
     }
 
-    async fn raw_put(
+    pub(crate) async fn raw_put_authenticated(
         &self,
-        request: Request<proto::RawPutRequest>,
+        auth: AuthContext,
+        request: proto::RawPutRequest,
     ) -> Result<Response<proto::RawWriteResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::RawWrite)?;
-        let request = request.into_inner();
+        check_client_auth(&auth)?;
+        let reservation = self.reserve_message(&request, WorkClass::RawWrite)?;
         let context = request_context(request.context, &auth)?;
         let applied = self
             .backend
@@ -1161,13 +1176,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         Ok(Response::new(applied_response(applied)))
     }
 
-    async fn raw_batch_put(
+    pub(crate) async fn raw_batch_put_authenticated(
         &self,
-        request: Request<proto::RawBatchPutRequest>,
+        auth: AuthContext,
+        request: proto::RawBatchPutRequest,
     ) -> Result<Response<proto::RawWriteResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::RawWrite)?;
-        let request = request.into_inner();
+        check_client_auth(&auth)?;
+        let reservation = self.reserve_message(&request, WorkClass::RawWrite)?;
         let context = request_context(request.context, &auth)?;
         let pairs: Vec<_> = request
             .pairs
@@ -1187,13 +1202,13 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
         Ok(Response::new(applied_response(applied)))
     }
 
-    async fn raw_delete(
+    pub(crate) async fn raw_delete_authenticated(
         &self,
-        request: Request<proto::RawDeleteRequest>,
+        auth: AuthContext,
+        request: proto::RawDeleteRequest,
     ) -> Result<Response<proto::RawWriteResponse>, Status> {
-        let auth = auth_context(&request)?;
-        let reservation = self.reserve(&request, WorkClass::RawWrite)?;
-        let request = request.into_inner();
+        check_client_auth(&auth)?;
+        let reservation = self.reserve_message(&request, WorkClass::RawWrite)?;
         let context = request_context(request.context, &auth)?;
         self.backend
             .prepared_write(
@@ -1206,6 +1221,52 @@ impl proto::kv9_server::Kv9 for Kv9Grpc {
             .await
             .map(applied_response)
             .map(Response::new)
+    }
+}
+
+#[tonic::async_trait]
+impl proto::kv9_server::Kv9 for Kv9Grpc {
+    async fn raw_get(
+        &self,
+        request: Request<proto::RawGetRequest>,
+    ) -> Result<Response<proto::RawGetResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.raw_get_authenticated(auth, request.into_inner()).await
+    }
+
+    async fn raw_batch_get(
+        &self,
+        request: Request<proto::RawBatchGetRequest>,
+    ) -> Result<Response<proto::RawBatchGetResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.raw_batch_get_authenticated(auth, request.into_inner())
+            .await
+    }
+
+    async fn raw_put(
+        &self,
+        request: Request<proto::RawPutRequest>,
+    ) -> Result<Response<proto::RawWriteResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.raw_put_authenticated(auth, request.into_inner()).await
+    }
+
+    async fn raw_batch_put(
+        &self,
+        request: Request<proto::RawBatchPutRequest>,
+    ) -> Result<Response<proto::RawWriteResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.raw_batch_put_authenticated(auth, request.into_inner())
+            .await
+    }
+
+    async fn raw_delete(
+        &self,
+        request: Request<proto::RawDeleteRequest>,
+    ) -> Result<Response<proto::RawWriteResponse>, Status> {
+        let auth = auth_context(&request)?;
+        self.raw_delete_authenticated(auth, request.into_inner())
+            .await
     }
 
     async fn raw_scan(

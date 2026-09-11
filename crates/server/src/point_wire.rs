@@ -1,14 +1,17 @@
 //! Shared authenticated point dispatch and lossless response envelope.
 //! Stream and experiment transports project onto the same existing handlers.
 
-use crate::grpc::{proto::kv9_server::Kv9, Authenticator, Kv9Grpc};
+use crate::grpc::{AuthContext, Authenticator, Kv9Grpc};
 use prost::Message;
 use serde::{Deserialize, Serialize};
 use std::{fmt, sync::Arc};
 use tonic::{
     metadata::{KeyAndValueRef, MetadataMap},
-    Request, Response, Status,
+    Response, Status,
 };
+
+#[cfg(test)]
+mod tests;
 
 pub(crate) const FRAME_LIMIT: usize = crate::client::MAX_MESSAGE_BYTES + 8192;
 pub(crate) const CONNECTION_LIMIT: usize = 8;
@@ -178,7 +181,7 @@ impl Handler {
         &self,
         authorization: &str,
         payload: &[u8],
-    ) -> Result<Request<T>, Status> {
+    ) -> Result<(AuthContext, T), Status> {
         if authorization.len() > 4103 || payload.len() > crate::client::MAX_MESSAGE_BYTES {
             return Err(Status::resource_exhausted("frame exceeds point limits"));
         }
@@ -192,10 +195,7 @@ impl Handler {
         let auth = self.authenticator.authenticate(&metadata)?;
         let message =
             T::decode(payload).map_err(|_| Status::invalid_argument("invalid point request"))?;
-        let mut request = Request::new(message);
-        *request.metadata_mut() = metadata;
-        request.extensions_mut().insert(auth);
-        Ok(request)
+        Ok((auth, message))
     }
 }
 
@@ -207,21 +207,21 @@ impl Handler {
         } = request;
         match operation {
             0 => WireReply::encode(match self.request(&authorization, &payload) {
-                Ok(request) => self.api.raw_get(request).await,
+                Ok((auth, request)) => self.api.raw_get_authenticated(auth, request).await,
                 Err(error) => Err(error),
             }),
             1 => WireReply::encode(match self.request(&authorization, &payload) {
-                Ok(request) => self.api.raw_put(request).await,
+                Ok((auth, request)) => self.api.raw_put_authenticated(auth, request).await,
                 Err(error) => Err(error),
             }),
             2 => WireReply::encode(match self.request(&authorization, &payload) {
-                Ok(request) => self.api.raw_delete(request).await,
+                Ok((auth, request)) => self.api.raw_delete_authenticated(auth, request).await,
                 Err(error) => Err(error),
             }),
             3 => WireReply::encode(
                 match self.request::<crate::proto::RawBatchGetRequest>(&authorization, &payload) {
-                    Ok(request) if crate::client::valid_batch_keys(&request.get_ref().keys) => {
-                        self.api.raw_batch_get(request).await
+                    Ok((auth, request)) if crate::client::valid_batch_keys(&request.keys) => {
+                        self.api.raw_batch_get_authenticated(auth, request).await
                     }
                     Ok(_) => Err(Status::invalid_argument("invalid batch read bounds")),
                     Err(error) => Err(error),
@@ -229,15 +229,14 @@ impl Handler {
             ),
             4 => WireReply::encode(
                 match self.request::<crate::proto::RawBatchPutRequest>(&authorization, &payload) {
-                    Ok(request)
-                        if (1..=crate::client::MAX_BATCH_ITEMS)
-                            .contains(&request.get_ref().pairs.len())
-                            && request.get_ref().pairs.iter().all(|pair| {
+                    Ok((auth, request))
+                        if (1..=crate::client::MAX_BATCH_ITEMS).contains(&request.pairs.len())
+                            && request.pairs.iter().all(|pair| {
                                 pair.key.len() <= crate::client::MAX_KEY_BYTES
                                     && pair.value.len() <= crate::client::MAX_VALUE_BYTES
                             }) =>
                     {
-                        self.api.raw_batch_put(request).await
+                        self.api.raw_batch_put_authenticated(auth, request).await
                     }
                     Ok(_) => Err(Status::invalid_argument("invalid batch write bounds")),
                     Err(error) => Err(error),
