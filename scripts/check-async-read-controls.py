@@ -94,8 +94,8 @@ CASES = [
     ('bypassed-pending-read-credit', PEER, [(
         'if g.raw.raft.pending_read_count() >= MAX_PENDING_READ_INDEX {',
         'if false && g.raw.raft.pending_read_count() >= MAX_PENDING_READ_INDEX {')],
-     'driver::read_credit_tests::cap_one_seals_late_members_until_distinct_confirmation',
-     'read credit admitted a second unconfirmed context'),
+     'driver::read_credit_tests::cap_two_seals_late_members_until_distinct_confirmation',
+     'read credit admitted a third unconfirmed context'),
     ('full-read-credit-owner-spin', PEER, [(
         '&& g.raw.raft.pending_read_count() < MAX_PENDING_READ_INDEX)',
         '&& g.raw.raft.pending_read_count() < usize::MAX)')],

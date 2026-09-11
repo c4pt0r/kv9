@@ -34,7 +34,9 @@ use crate::{CommittedEntry, EntryKind, LogIndex, RaftGroup, Role};
 // Let queued reads accumulate behind the outstanding quorum confirmation.
 // Use raft-rs's actual pending queue: canceling a caller does not retract a
 // protocol request, and confirmation can free capacity before local apply.
-const MAX_PENDING_READ_INDEX: usize = 1;
+// Two protocol contexts can overlap. This is still actual Raft occupancy:
+// cancellation does not create room, and later groups need their own context.
+pub(crate) const MAX_PENDING_READ_INDEX: usize = 2;
 
 /// A raft-rs [`raft::Storage`] that can also **persist** what the Ready loop
 /// hands it: log entries and the HardState (term + vote + commit).

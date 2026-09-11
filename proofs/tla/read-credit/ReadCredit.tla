@@ -2,8 +2,10 @@
 EXTENDS ReadAdmission
 
 \* One invocation projects to the existing admission protocol. rcOccupied
-\* abstracts actual upstream pending_read_count() >= 1, not registry lifetime.
-\* Other protocol requests may occupy the slot. Upstream advance (including
+\* abstracts actual upstream pending_read_count() >= the configured bound,
+\* not registry lifetime. Multiple contexts can underlie this full/free bit;
+\* changes that do not cross the threshold can project to stuttering.
+\* Other protocol requests may fill the window. Upstream advance (including
 \* configuration-quorum reevaluation) or reset can release it. Neither this
 \* abstraction nor its projection proves upstream Raft certification.
 \* An admitted singleton request can return a ReadState immediately without
