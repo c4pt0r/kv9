@@ -3122,6 +3122,7 @@ impl NodeRuntime {
         }
         let grpc_runtime = tokio::runtime::Builder::new_multi_thread()
             .worker_threads(2)
+            .global_queue_interval(8)
             // Poll socket readiness while public handlers keep workers busy.
             // Peer messages share this executor with the public RPC service.
             .event_interval(8)
