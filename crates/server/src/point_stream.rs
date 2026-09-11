@@ -5,7 +5,9 @@ use crate::grpc::{proto, Authenticator, Kv9Grpc};
 use crate::point_wire::{
     Handler, WireMetadata, WireReply, WireRequest, CHANNEL_LIMIT, CONNECTION_LIMIT, FRAME_LIMIT,
 };
-use futures_util::{stream::FuturesUnordered, Stream, StreamExt};
+use futures_util::Stream;
+#[cfg(any(test, feature = "rpc-experiment"))]
+use futures_util::StreamExt;
 use prost::Message;
 #[cfg(any(test, feature = "rpc-experiment"))]
 use std::io;
@@ -26,7 +28,7 @@ use tokio::{
 };
 use tokio::{
     sync::{mpsc, oneshot, OwnedSemaphorePermit, Semaphore},
-    task::JoinHandle,
+    task::{JoinHandle, JoinSet},
     time::{timeout_at, Instant},
 };
 #[cfg(any(test, feature = "rpc-experiment"))]
@@ -124,7 +126,7 @@ pub(super) struct Replies {
     receiver: mpsc::Receiver<Result<wire::PointResponse, Status>>,
     task: JoinHandle<()>,
     // A service call returning headers has not finished its response stream.
-    _permit: OwnedSemaphorePermit,
+    _permit: Arc<OwnedSemaphorePermit>,
 }
 impl Stream for Replies {
     type Item = Result<wire::PointResponse, Status>;
@@ -148,17 +150,19 @@ impl wire::point_stream_server::PointStream for Service {
         self.handler
             .authenticator
             .authenticate(request.metadata())?;
-        let permit = self
-            .streams
-            .clone()
-            .try_acquire_owned()
-            .map_err(|_| Status::resource_exhausted("point stream limit"))?;
+        let permit = Arc::new(
+            self.streams
+                .clone()
+                .try_acquire_owned()
+                .map_err(|_| Status::resource_exhausted("point stream limit"))?,
+        );
         let (outgoing, receiver) = mpsc::channel(CHANNEL_LIMIT);
         let mut incoming = request.into_inner();
         let handler = self.handler.clone();
         let shutdown = self.shutdown.clone();
+        let stream_permit = permit.clone();
         let task = tokio::spawn(async move {
-            let mut jobs = FuturesUnordered::new();
+            let mut jobs = JoinSet::new();
             let mut last_id = 0;
             let mut input_closed = false;
             loop {
@@ -168,7 +172,11 @@ impl wire::point_stream_server::PointStream for Service {
                 tokio::select! {
                     _ = shutdown.cancelled() => break,
                     _ = outgoing.closed() => break,
-                    _ = jobs.next(), if !jobs.is_empty() => {},
+                    joined = jobs.join_next(), if !jobs.is_empty() => {
+                        // A panicking handler invalidates this generation as
+                        // before. Dropping the set aborts all remaining jobs.
+                        if !matches!(joined, Some(Ok(()))) { break; }
+                    },
                     received = async {
                         // The reservation travels with the handler until its
                         // reply is queued. Running + buffered replies <= limit.
@@ -194,7 +202,12 @@ impl wire::point_stream_server::PointStream for Service {
                         // client's independent absolute monotonic deadline.
                         let deadline = Instant::now() + Duration::from_micros(frame.remaining_micros);
                         let handler = handler.clone();
-                        jobs.push(async move {
+                        let handler_permit = stream_permit.clone();
+                        jobs.spawn(async move {
+                            // Abort is cooperative. Keep this stream slot until
+                            // the handler is actually dropped, even if the
+                            // response stream and its owner have already gone.
+                            let _stream_permit = handler_permit;
                             let reply = match timeout_at(deadline, handler.dispatch( frame.operation as u8,
                                 WireRequest { authorization: frame.authorization, payload: frame.payload }
                             )).await {
@@ -211,7 +224,7 @@ impl wire::point_stream_server::PointStream for Service {
                     }
                 }
             }
-            // Dropping jobs cancels observation. Existing owned write completion
+            // Dropping jobs aborts observation. Existing owned write completion
             // retains its admission reservation until the exact apply settles.
         });
         Ok(Response::new(Replies {

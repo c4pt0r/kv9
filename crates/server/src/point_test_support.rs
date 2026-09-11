@@ -1,7 +1,7 @@
 //! Instrumented point backend shared by unary/stream transport controls.
 use crate::api::{
-    AdminApi, ClusterInfo, CreateKeyspaceResult, DeleteRangeReceipt, RawApi, RawWrite,
-    RawWritePreparation, RegionLocation, RequestContext, TxnApi,
+    AdminApi, ClusterInfo, CreateKeyspaceResult, DeleteRangeReceipt, RawApi, RawReadJob,
+    RawReadPreparation, RawWrite, RawWritePreparation, RegionLocation, RequestContext, TxnApi,
 };
 use crate::grpc::{proto, Authenticator, TokenAuthenticator};
 use kv9_common::{
@@ -27,11 +27,40 @@ pub(crate) struct WriteGate {
     pub(crate) release: Mutex<Option<oneshot::Receiver<()>>>,
 }
 
+pub(crate) struct ReadDropGate {
+    pub(crate) entered: mpsc::UnboundedSender<()>,
+    pub(crate) finished: mpsc::UnboundedSender<bool>,
+    pub(crate) release: Mutex<Option<std::sync::mpsc::Receiver<()>>>,
+}
+
+pub(crate) struct ReadGate {
+    // false releases a normal read; true injects a panic in async preparation.
+    pub(crate) entered: mpsc::UnboundedSender<oneshot::Sender<bool>>,
+    pub(crate) dropping: Option<ReadDropGate>,
+}
+
+struct ReadWaitGuard(Arc<ReadGate>);
+
+impl Drop for ReadWaitGuard {
+    fn drop(&mut self) {
+        if let Some(gate) = &self.0.dropping {
+            // A failed test may already have dropped its observers. Never panic
+            // in a destructor during unwind; the test checks the explicit result.
+            let release = gate.release.lock().ok().and_then(|mut slot| slot.take());
+            let observed = gate.entered.send(()).is_ok();
+            let released =
+                release.is_some_and(|release| release.recv_timeout(Duration::from_secs(5)).is_ok());
+            let _ = gate.finished.send(observed && released);
+        }
+    }
+}
+
 #[derive(Default)]
 pub(crate) struct Backend {
     pub(crate) values: Mutex<HashMap<UserKey, Value>>,
     pub(crate) calls: Mutex<Vec<RequestContext>>,
     pub(crate) write_gate: Option<WriteGate>,
+    pub(crate) read_gates: HashMap<UserKey, Arc<ReadGate>>,
 }
 
 impl Backend {
@@ -66,6 +95,31 @@ macro_rules! unsupported {
 }
 
 impl RawApi for Backend {
+    fn prepare_raw_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        key: UserKey,
+    ) -> RawReadPreparation<Option<Value>> {
+        Box::pin(async move {
+            if let Some(gate) = self.read_gates.get(&key) {
+                let _guard = ReadWaitGuard(gate.clone());
+                let (release, receiver) = oneshot::channel();
+                gate.entered
+                    .send(release)
+                    .map_err(|_| Error::NotImplemented("test read observer dropped"))?;
+                assert!(
+                    !receiver
+                        .await
+                        .map_err(|_| Error::NotImplemented("test read control dropped"))?,
+                    "controlled async read preparation panic"
+                );
+            }
+            Ok(RawReadJob::Blocking(Box::new(move || {
+                self.raw_get(&ctx, &key)
+            })))
+        })
+    }
+
     fn prepare_raw_write(
         self: Arc<Self>,
         ctx: RequestContext,

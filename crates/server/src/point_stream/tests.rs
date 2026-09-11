@@ -7,7 +7,8 @@ use crate::client::TransportKind;
 use crate::client::{ClientConfig, Outcome, Peer, PersistentRawClient, RawOperation};
 use crate::grpc::NOT_LEADER_KEY;
 use crate::point_test_support::{
-    authenticator, context_message, deadline, get, put, request, Backend, WriteGate, APPLIED,
+    authenticator, context_message, deadline, get, put, request, Backend, ReadDropGate, ReadGate,
+    WriteGate, APPLIED,
 };
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::Code;
@@ -384,6 +385,216 @@ async fn held_write_interruption(use_deadline: bool, batch: bool) {
         2,
         "one settled write and one new successful read, no replay"
     );
+    stop(server).await;
+}
+
+async fn one_slot_server(api: Kv9Grpc) -> (StreamServer, SocketAddr, Arc<Semaphore>) {
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let permits = Arc::new(Semaphore::new(1));
+    let shutdown = CancellationToken::new();
+    let service = Service {
+        handler: Handler {
+            api,
+            authenticator: authenticator(),
+        },
+        streams: permits.clone(),
+        shutdown: shutdown.clone(),
+    };
+    let task = tokio::spawn(async move {
+        Server::builder()
+            .add_service(wire::point_stream_server::PointStreamServer::new(service))
+            .serve_with_incoming(TcpListenerStream::new(listener))
+            .await
+            .map_err(io::Error::other)
+    });
+    (StreamServer { task, shutdown }, address, permits)
+}
+
+// Release a controlled destructor on both the normal path and assertion unwind.
+// The backend also has its own finite recv_timeout as a final bound.
+struct ReadCleanupRelease(Option<std::sync::mpsc::Sender<()>>);
+
+impl Drop for ReadCleanupRelease {
+    fn drop(&mut self) {
+        if let Some(sender) = self.0.take() {
+            let _ = sender.send(());
+        }
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 3)]
+async fn client_cancellation_aborts_read_waiter_and_retains_slot_until_task_cleanup() {
+    let (read_entered, mut reads) = mpsc::unbounded_channel();
+    let (drop_entered, mut drops) = mpsc::unbounded_channel();
+    let (drop_finished, mut finished_drops) = mpsc::unbounded_channel();
+    let (release_drop, drop_release) = std::sync::mpsc::channel();
+    let release_drop = ReadCleanupRelease(Some(release_drop));
+    let backend = Arc::new(Backend {
+        read_gates: [(
+            b"held".to_vec(),
+            Arc::new(ReadGate {
+                entered: read_entered,
+                dropping: Some(ReadDropGate {
+                    entered: drop_entered,
+                    finished: drop_finished,
+                    release: Mutex::new(Some(drop_release)),
+                }),
+            }),
+        )]
+        .into_iter()
+        .collect(),
+        ..Backend::default()
+    });
+    let api = Kv9Grpc::new(backend.clone());
+    let admission = api.admission();
+    let (server, address, permits) = one_slot_server(api).await;
+    let client = Arc::new(StreamClient::new(address, 16));
+    let reader = client.clone();
+    let pending = tokio::spawn(async move {
+        reader
+            .raw_get(
+                request(get(b"held")),
+                Instant::now() + Duration::from_secs(30),
+            )
+            .await
+    });
+    let mut read_release = bounded(reads.recv()).await.unwrap();
+    let held = admission.snapshot();
+    assert_eq!(held.in_flight, 1);
+    assert!(held.encoded_bytes > 0);
+    // The real transport cancellation guard closes both generation directions.
+    // A raw tonic response-only drop with a live request sender is not this API.
+    pending.abort();
+    assert!(bounded(pending).await.unwrap_err().is_cancelled());
+    bounded(drops.recv()).await.unwrap();
+    let slots_during_cleanup = permits.available_permits();
+    let reservation_during_cleanup = admission.snapshot();
+    let (rejected_send, rejected_receive) = mpsc::channel(1);
+    let mut wire = wire_client(address).await;
+    let opening = bounded(wire.exchange(request(ReceiverStream::new(rejected_receive)))).await;
+    // Always release the controlled destructor before assertions or transport teardown.
+    drop(release_drop);
+    assert!(
+        bounded(finished_drops.recv()).await.unwrap(),
+        "controlled cleanup timed out"
+    );
+    bounded(read_release.closed()).await;
+    assert_eq!(
+        slots_during_cleanup, 0,
+        "aborted task recycled the stream slot before cleanup"
+    );
+    assert_eq!(reservation_during_cleanup.in_flight, held.in_flight);
+    assert_eq!(reservation_during_cleanup.encoded_bytes, held.encoded_bytes);
+    assert_eq!(opening.unwrap_err().code(), Code::ResourceExhausted);
+    eventually(|| admission.snapshot().in_flight == 0 && permits.available_permits() == 1).await;
+    assert_eq!(admission.snapshot().encoded_bytes, 0);
+    assert!(
+        backend.calls.lock().unwrap().is_empty(),
+        "canceled preparation reached an engine job"
+    );
+    let fresh = StreamClient::new(address, 16);
+    bounded(fresh.raw_get(request(get(b"fresh")), deadline()))
+        .await
+        .unwrap();
+    assert_eq!(backend.calls.lock().unwrap().len(), 1);
+    drop((client, rejected_send, fresh));
+    stop(server).await;
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 3)]
+async fn handler_panic_closes_generation_and_cancels_reads_but_retains_prepared_write() {
+    let (write_entered, mut writes) = mpsc::unbounded_channel();
+    let (release_write, write_release) = oneshot::channel();
+    let (read_entered, mut reads) = mpsc::unbounded_channel();
+    let (panic_entered, mut panics) = mpsc::unbounded_channel();
+    let backend = Arc::new(Backend {
+        write_gate: Some(WriteGate {
+            entered: write_entered,
+            release: Mutex::new(Some(write_release)),
+        }),
+        read_gates: [
+            (
+                b"held".to_vec(),
+                Arc::new(ReadGate {
+                    entered: read_entered,
+                    dropping: None,
+                }),
+            ),
+            (
+                b"panic".to_vec(),
+                Arc::new(ReadGate {
+                    entered: panic_entered,
+                    dropping: None,
+                }),
+            ),
+        ]
+        .into_iter()
+        .collect(),
+        ..Backend::default()
+    });
+    let api = Kv9Grpc::new(backend.clone());
+    let admission = api.admission();
+    let (server, address, permits) = one_slot_server(api).await;
+    let mut client = wire_client(address).await;
+    let (send, receive) = mpsc::channel(3);
+    let mut responses = bounded(client.exchange(request(ReceiverStream::new(receive))))
+        .await
+        .unwrap()
+        .into_inner();
+    send.send(frame(1, 1, put(b"once", b"settled").encode_to_vec()))
+        .await
+        .unwrap();
+    bounded(writes.recv()).await.unwrap();
+    let write_reservation = admission.snapshot();
+    send.send(frame(2, 0, get(b"held").encode_to_vec()))
+        .await
+        .unwrap();
+    let mut read_release = bounded(reads.recv()).await.unwrap();
+    send.send(frame(3, 0, get(b"panic").encode_to_vec()))
+        .await
+        .unwrap();
+    let panic_release = bounded(panics.recv()).await.unwrap();
+    assert_eq!(admission.snapshot().in_flight, 3);
+    panic_release.send(true).unwrap();
+    assert!(
+        !matches!(bounded(responses.message()).await, Ok(Some(_))),
+        "panicking generation produced a response for an unsettled operation"
+    );
+    bounded(read_release.closed()).await;
+    eventually(|| admission.snapshot().in_flight == 1).await;
+    assert_eq!(
+        admission.snapshot().encoded_bytes,
+        write_reservation.encoded_bytes,
+        "handler panic lost the independently owned write reservation"
+    );
+    assert!(backend.calls.lock().unwrap().is_empty());
+    assert!(backend.values.lock().unwrap().is_empty());
+    drop((responses, send));
+    eventually(|| permits.available_permits() == 1).await;
+    release_write.send(()).unwrap();
+    eventually(|| admission.snapshot().in_flight == 0).await;
+    assert_eq!(admission.snapshot().encoded_bytes, 0);
+    assert_eq!(
+        backend.calls.lock().unwrap().len(),
+        1,
+        "held write was replayed"
+    );
+    let fresh = StreamClient::new(address, 16);
+    let value = bounded(fresh.raw_get(request(get(b"once")), deadline()))
+        .await
+        .unwrap()
+        .into_inner()
+        .value
+        .unwrap();
+    assert!(value.found);
+    assert_eq!(value.value, b"settled");
+    assert_eq!(
+        backend.calls.lock().unwrap().len(),
+        2,
+        "old reads were detached or write replayed"
+    );
+    drop(fresh);
     stop(server).await;
 }
 
