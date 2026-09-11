@@ -53,7 +53,7 @@ pub(super) fn channel() -> (Sender, Receiver) {
 
 impl Sender {
     pub(super) fn try_send(&self, message: OutboundMessage) -> Result<(), ()> {
-        let (waker, newly_pending) = {
+        let waker = {
             let mut state = self.0.state.lock().expect("peer body queue poisoned");
             if !state.receiver_open || state.messages.len() == PEER_QUEUE {
                 return Err(());
@@ -63,15 +63,14 @@ impl Sender {
                 state.pending_since = Some(Instant::now());
             }
             state.messages.push_back(message);
-            (state.body_waker.take(), newly_pending)
+            state.body_waker.take()
         };
         // Never invoke an arbitrary waker while holding the queue lock.
         if let Some(waker) = waker {
             waker.wake();
         }
-        if newly_pending {
-            self.0.changed.notify_one();
-        }
+        // The independent watchdog's idle check is already due no later than
+        // this newly queued work's deadline. Only the body needs a send wake.
         Ok(())
     }
 
@@ -198,8 +197,8 @@ pub(super) struct Session {
 impl Session {
     pub(super) async fn stalled(&self) {
         loop {
-            // Register interest BEFORE examining state. Notify permits also
-            // retain an empty-to-nonempty transition before this registration.
+            // Register BEFORE inspecting ownership and closure. Lifecycle
+            // changes retain a permit or wake us; sends only wake the body.
             let changed = self.shared.changed.notified();
             tokio::pin!(changed);
             changed.as_mut().enable();
@@ -208,26 +207,28 @@ impl Session {
                 if !owns(&state, &self.token) || (!state.sender_open && state.messages.is_empty()) {
                     return;
                 }
+                // Capture time under the same lock as the empty predicate.
+                // Any later first enqueue at e has now+B <= e+B. An idle
+                // check therefore observes it without a producer Notify.
+                let now = Instant::now();
                 let deadline = state.pending_since.map(|at| at + STREAM_PROGRESS_BUDGET);
                 // An expired backlog is terminal even if notification remains
                 // continuously ready; expiry must not depend on select order.
-                if deadline.is_some_and(|at| Instant::now() >= at) {
+                if deadline.is_some_and(|at| now >= at) {
                     return;
                 }
-                deadline
+                deadline.unwrap_or(now + STREAM_PROGRESS_BUDGET)
             };
-            if let Some(deadline) = deadline {
-                tokio::select! {
-                    _ = &mut changed => {},
-                    _ = tokio::time::sleep_until(deadline) => {
-                        let state = self.shared.state.lock().expect("peer body queue poisoned");
-                        if !owns(&state, &self.token) || state.pending_since.is_some_and(|at| Instant::now() >= at + STREAM_PROGRESS_BUDGET) {
-                            return;
-                        }
-                    },
-                }
-            } else {
-                changed.await;
+            // Keep this Sleep across ordinary polls. An idle expiry only
+            // rechecks current state; it never declares an empty queue stalled.
+            tokio::select! {
+                _ = &mut changed => {},
+                _ = tokio::time::sleep_until(deadline) => {
+                    let state = self.shared.state.lock().expect("peer body queue poisoned");
+                    if !owns(&state, &self.token) || state.pending_since.is_some_and(|at| Instant::now() >= at + STREAM_PROGRESS_BUDGET) {
+                        return;
+                    }
+                },
             }
         }
     }
