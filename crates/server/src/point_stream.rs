@@ -114,7 +114,7 @@ pub(crate) fn service(
     shutdown: CancellationToken,
 ) -> wire::point_stream_server::PointStreamServer<Service> {
     wire::point_stream_server::PointStreamServer::new(Service {
-        handler: Handler { api, authenticator },
+        handler: Handler::new(api, authenticator),
         streams: Arc::new(Semaphore::new(CONNECTION_LIMIT)),
         shutdown,
     })
@@ -157,8 +157,8 @@ impl wire::point_stream_server::PointStream for Service {
                 .map_err(|_| Status::resource_exhausted("point stream limit"))?,
         );
         let (outgoing, receiver) = mpsc::channel(CHANNEL_LIMIT);
+        let handler = self.handler.for_stream(request.metadata());
         let mut incoming = request.into_inner();
-        let handler = self.handler.clone();
         let shutdown = self.shutdown.clone();
         let stream_permit = permit.clone();
         let task = tokio::spawn(async move {
@@ -307,7 +307,7 @@ pub(crate) async fn start(
     let shutdown = CancellationToken::new();
     let connections = Arc::new(Semaphore::new(CONNECTION_LIMIT));
     let service = Service {
-        handler: Handler { api, authenticator },
+        handler: Handler::new(api, authenticator),
         streams: Arc::new(Semaphore::new(CONNECTION_LIMIT)),
         shutdown: shutdown.clone(),
     };
