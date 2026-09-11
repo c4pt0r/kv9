@@ -210,16 +210,8 @@ async fn authentication_and_request_decoding_fail_before_backend_execution() {
     let decoded = handler
         .request::<proto::RawGetRequest>("Bearer secret", &get(b"key").encode_to_vec())
         .unwrap();
-    assert_eq!(
-        decoded
-            .extensions()
-            .get::<AuthContext>()
-            .unwrap()
-            .principal
-            .as_ref(),
-        "alice"
-    );
-    assert_eq!(decoded.into_inner(), get(b"key"));
+    assert_eq!(decoded.0.principal.as_ref(), "alice");
+    assert_eq!(decoded.1, get(b"key"));
     assert!(backend.calls.lock().unwrap().is_empty());
 }
 
