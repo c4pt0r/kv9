@@ -93,11 +93,15 @@ cost decomposition. No NIC/kernel ceiling or DPDK benefit is established.
 The [refreshed two-worker trace](RPC-PAIR-READ-LIFECYCLE.md) now passes its
 original CPU/fixture checks and independent lifecycle readback. Confirmation
 remains about 67 us and notification about 41 us in that sampled barrier.
-Next test global-queue polling on this two-worker control as a separate
-completion-scheduling interaction experiment. Change one mechanism while
-retaining persistent peer streaming, exact group identity, fresh quorum,
-successful-pump and applied-index fences. Do not infer gains by adding earlier
-percentages or extending these short runs to sustained capacity.
+The [two-worker global-queue screen](RPC-PAIR-GLOBAL-QUEUE-SCREENING.md) now
+rejects fixed interval eight: both APIs lose approximately 3% throughput and
+worsen mean latency in both repetitions. The accepted adaptive setting remains.
+Next investigate two persistent handler tasks per stream to coalesce completion
+wakeups while retaining useful parallel polling. The design review is complete;
+implementation and gains remain unverified. Preserve persistent peer streaming,
+exact group identity, fresh quorum, successful-pump and applied-index fences,
+along with original deadlines and cleanup ownership. Do not infer gains by adding
+earlier percentages or extending these short runs to sustained capacity.
 
 Before general promotion, check sustained point traffic, writes/mixed loads,
 larger batches and bounded slow dynamic-auth/storage callbacks. The shared

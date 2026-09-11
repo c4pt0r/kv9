@@ -78,11 +78,18 @@ shows the same pattern. All 3,324,772 measured calls, CPU/fixture readbacks and
 the independent twelve-document lifecycle analysis pass. This is instrumented
 diagnostic evidence, separate from the accepted uninstrumented QPS result.
 
-Next screen fixed global-queue polling at eight on the current two-worker/event8
-control, targeting the remaining remote completion scheduling hypothesis. The
-earlier result with default worker selection regressed and remains rejected; this is a separate
-interaction test after the worker-population change, without presumed gain.
-Neither profile establishes a fixed ceiling. Keep sustained traffic, writes/mixed,
+The [two-worker global-queue screen](RPC-PAIR-GLOBAL-QUEUE-SCREENING.md) now
+rejects fixed interval eight: GET throughput falls **3.217% / 2.614%** and
+BatchGet(1) falls **3.142% / 2.736%**, with worse mean latency in both repeats.
+All 23,488,956 measured calls and the first independent audit pass. Retain the
+adaptive interval; this rejected candidate does not advance to broad acceptance.
+
+Next investigate two persistent handler tasks per stream to coalesce request
+completion wakeups while retaining parallel preparation. The bounded design
+review is complete; implementation and gains remain unverified. Preserve
+response/deadline/admission ownership through queueing, panic and cancellation,
+and keep Raft confirmation requirements unchanged. Neither profile establishes
+a fixed ceiling. Keep sustained traffic, writes/mixed,
 larger batches and dynamic-auth/storage callback progress in the general
 promotion gates. Redis parity and automatic splits remain open.
 
