@@ -26,6 +26,12 @@ use kv9_server::{
 
 mod endpoint_cli;
 
+// Confined to the Linux kv9 binary: library users and benchmark clients retain
+// their own allocator. No Raft, storage, admission or scheduling policy changes.
+#[cfg(target_os = "linux")]
+#[global_allocator]
+static ALLOCATOR: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+
 /// Parsed CLI arguments (DESIGN §11).
 #[derive(Debug, Default)]
 struct Cli {

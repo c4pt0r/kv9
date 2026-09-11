@@ -135,3 +135,9 @@ kv9-raft.workspace = true
 kv9-region.workspace = true
 kv9-txn.workspace = true
 kv9-server.workspace = true
+
+# Isolated Linux server allocator experiment. Background threads are off by
+# default, and C allocator interposition is not enabled. Only Rust allocations
+# in the kv9 binary use this allocator; other binaries retain their allocator.
+[target.'cfg(target_os = "linux")'.dependencies]
+tikv-jemallocator = { version = "=0.6.1", default-features = false }
