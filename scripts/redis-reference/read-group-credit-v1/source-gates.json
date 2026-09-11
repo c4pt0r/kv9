@@ -1,0 +1,57 @@
+{
+  "files": {
+    "crates/raft/src/rawnode.rs": "97c0046a635bd6f09c0f8deb8371ad6e808996ce69bd6df62efc4e946f759eef",
+    "crates/raft/src/driver.rs": "dcd8bea84fc0b315f21a2fb74f05bf390a7cec387582c64c0d64f7229f3145c5",
+    "crates/raft/src/driver/read_credit_tests.rs": "a1ceb8b977f1c30d3f7cd44fad3dc2e044a4a77fb6cb03f131fd7eb20b089dcb",
+    "scripts/check-async-read-controls.py": "4edf65bd257936b96016bdec4e4df7b0be0cc69ed49b9b1d6f4b3b15f7491870"
+  },
+  "commands": [
+    {
+      "name": "tests",
+      "command": [
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "controls",
+      "command": [
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "python3",
+        "scripts/check-async-read-controls.py",
+        "--output",
+        "/tmp/kv9-read-group-credit-async-controls-first"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "complete": true,
+  "accepted": true
+}

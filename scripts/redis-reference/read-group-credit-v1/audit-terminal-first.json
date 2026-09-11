@@ -1,0 +1,11 @@
+{
+  "session_id": 20099,
+  "exit_code": 0,
+  "root_session_id": 20864,
+  "root_exit_code": 0,
+  "all_owned_commands_terminal": true,
+  "audit_sha256": "227e49b64205a4c79982fdee024cd09da0a44b428d660caa45845b32d262340a",
+  "audit_log_sha256": "11df0a847793d047286c631c1b1ff8b33d887c42d8c14c75cc62a45c88ee451b",
+  "invocation_sha256": "ebe169de5cbaa1ec8ce744a07021840ba3c5c7f65bce8aa1242212a6b87a49c3",
+  "written_ns": 1789123450735792372
+}

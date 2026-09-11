@@ -1,0 +1,817 @@
+{
+  "accepted": true,
+  "adapter_delta": "Traverse already accepted native cases and current before/after status paths; original per-voter counter arithmetic and predicates copied verbatim. Bind direct input hashes, same-process fields and accepted voter start ticks.",
+  "all_commands_terminal": true,
+  "input_binding_limit": "These separate status snapshots were not in the comparison audit input inventory; this readout hashes them directly before/after and matches voter identity to accepted cases. The original first adapter failure is retained.",
+  "input_hashes": {
+    "/tmp/kv9-async-groups-counter-summary.py": "1db90c17ff231bb508386c06ccdac37db7ec9a7dbb79ae848eafebbc93dfd832",
+    "/tmp/kv9-read-group-credit-comparison-preparation/results-first/audit.json": "227e49b64205a4c79982fdee024cd09da0a44b428d660caa45845b32d262340a",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/000-old-point-p00001/after-status.json": "72475fa74cdaf8405929f9a2db8c91c5d0b3c5a7f3e3f36d947259d5452583ae",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/000-old-point-p00001/before-status.json": "58f0732521345f43698bf2a02bac6dfe2d98f457b214520a6de4a8354efdb662",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/001-old-batch1-p00001/after-status.json": "667a49f317b7f35f1b5fe78d12984ba9502bf1549de69bc5dc08f88993cf05f5",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/001-old-batch1-p00001/before-status.json": "43633593301d2bab01ba6353e990dd5bfafdb5cfc9f2b7a9ecdfa48c06650078",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/002-new-point-p00001/after-status.json": "c8c150769d4c73c72455000c951680b8ac29fb9675da674b46e880de562a329e",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/002-new-point-p00001/before-status.json": "821db6437f0a19211564c0fc3f27b9508aee3ede830d291d2f0926ae7260e296",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/003-new-batch1-p00001/after-status.json": "5de2c1fd28ea6110aed84a5403b9eef6f750b3b4a1f0a1c64f0ad4434f54cfea",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/003-new-batch1-p00001/before-status.json": "42de8d0c68ddceb098e8453740f8881643794b4f86e0d889df9bf0f88a5a6080",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/006-old-point-p00064/after-status.json": "dd324b4b71ec3abc5dda54b837b16b10035057da276057060ce0b27cc082ff47",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/006-old-point-p00064/before-status.json": "0da2b040d9208b9ee0d0e9bc66ed250e29886124f081c57de28f2b83b31d9f6e",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/007-old-batch1-p00064/after-status.json": "4f01539535cf2271d6ddeff2159619a7489665a0549ae0f88666bf4ef1b61993",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/007-old-batch1-p00064/before-status.json": "277edea87997e502951fce3d87649e1f4619a91396bf1f464eb16328255623e2",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/008-new-point-p00064/after-status.json": "d5a11d5edb463d3125c694f40505542c38fde5e4062865dda03db86a24e12b64",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/008-new-point-p00064/before-status.json": "11e1650cafd7831849c2998e4ad970f8d7793696b33ca1a2ffd014a98fe3e8f8",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/009-new-batch1-p00064/after-status.json": "82ca2ec53368da39e71249d7b111b527ffb37ce55c89bed63676aa26f8d6b930",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/009-new-batch1-p00064/before-status.json": "5fab181c40e2b1bd0411f2a02de8709bd23da898ee064e9d353044e65087f78a",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/014-new-batch1-p10064/after-status.json": "891b2c3ec03beee8e47eb005b6cbf2897c1ecbdb9f41693aeed296eb95da0c12",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/014-new-batch1-p10064/before-status.json": "d52831952e3b606e3ab9a46aa55bb0e70a3957ed5ebe8d06b1387ba99057a29a",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/015-new-point-p10064/after-status.json": "4e911216a5e35b3cabb3d01328514a05d209db3bc74e879aa75ca5eb1a618346",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/015-new-point-p10064/before-status.json": "d609db041c98cc1f23fb22ef78dba20d29d3c2eb8d42a325aaf3a4344fd4042b",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/016-old-batch1-p10064/after-status.json": "de5f32e0746838c9cb22e71f38b476e847039f2c2922eff55d489482c3d00d03",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/016-old-batch1-p10064/before-status.json": "dcd64a6f0f04f356d4c2a7eca05d5683a3d4dd69ff38f42ca38486880ff4795f",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/017-old-point-p10064/after-status.json": "329e8b79b2cf7472964e5c10c8ca86cfb70cdea454d7998b8c454ef1a87c435c",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/017-old-point-p10064/before-status.json": "13907b861a392c83550206becceccf765437ee49b84c3b4a22ecdfea5ef3cbc7",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/020-new-batch1-p10001/after-status.json": "84aabef8c67162a9aeba37016d6057132d39cc90895f4ed1293d2092b5f61434",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/020-new-batch1-p10001/before-status.json": "a56ed38aaad23a9856d4354d1c62582b4a652d1307a89ae3f36e4ae61da88c85",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/021-new-point-p10001/after-status.json": "cbb4bad56221e392223b76d60aa0e705515e6bd28c2466ec25cd8100088b4765",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/021-new-point-p10001/before-status.json": "0fcf35bc7f0267ddc2f260bb2a17e5416cf762731d31b0fb03878138e8fa027e",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/022-old-batch1-p10001/after-status.json": "61482651e2fad95c9e540adaa4cdda6e5fc4bdc46d586dbb1f02b50ef2ef7297",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/022-old-batch1-p10001/before-status.json": "4ffcadea4a524e7cc8e51ae1ff67a10a152b3cc9249878d7476ef05a716d2c16",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/023-old-point-p10001/after-status.json": "9a6a1dfa89ca681bc55939f232aa33dbb733233d36a92730fbd3a43d672606ac",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/023-old-point-p10001/before-status.json": "26d15f8d8691628b6a97649abb9e3f1ae319d38243a7cb0c52a7835a9b708731"
+  },
+  "prior_reader": "/tmp/kv9-async-groups-counter-summary.py",
+  "prior_reader_sha256": "1db90c17ff231bb508386c06ccdac37db7ec9a7dbb79ae848eafebbc93dfd832",
+  "rows": [
+    {
+      "admitted_groups": 139858,
+      "admitted_members": 139858,
+      "api": "point_get",
+      "arm": "old-point",
+      "concurrency": 1,
+      "members_per_admitted_group": 1.0,
+      "ordinal": 0,
+      "repeat": 0,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 139858,
+          "admitted_members": 139858,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 139858,
+          "inspected": 139858,
+          "lifetime_max_group_after": 1,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 138815,
+      "admitted_members": 138815,
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "concurrency": 1,
+      "members_per_admitted_group": 1.0,
+      "ordinal": 1,
+      "repeat": 0,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 138815,
+          "admitted_members": 138815,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 138815,
+          "inspected": 138815,
+          "lifetime_max_group_after": 1,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 139749,
+      "admitted_members": 139749,
+      "api": "point_get",
+      "arm": "new-point",
+      "concurrency": 1,
+      "members_per_admitted_group": 1.0,
+      "ordinal": 2,
+      "repeat": 0,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 139749,
+          "admitted_members": 139749,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 139749,
+          "inspected": 139749,
+          "lifetime_max_group_after": 1,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 139045,
+      "admitted_members": 139045,
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "concurrency": 1,
+      "members_per_admitted_group": 1.0,
+      "ordinal": 3,
+      "repeat": 0,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 139045,
+          "admitted_members": 139045,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 139045,
+          "inspected": 139045,
+          "lifetime_max_group_after": 1,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 852904,
+      "admitted_members": 1729148,
+      "api": "point_get",
+      "arm": "old-point",
+      "concurrency": 64,
+      "members_per_admitted_group": 2.027365330681999,
+      "ordinal": 6,
+      "repeat": 0,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 852904,
+          "admitted_members": 1729148,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 852904,
+          "inspected": 1729148,
+          "lifetime_max_group_after": 64,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 848703,
+      "admitted_members": 1700332,
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "concurrency": 64,
+      "members_per_admitted_group": 2.003447613593919,
+      "ordinal": 7,
+      "repeat": 0,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 848703,
+          "admitted_members": 1700332,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 848703,
+          "inspected": 1700332,
+          "lifetime_max_group_after": 64,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 122473,
+      "admitted_members": 1867311,
+      "api": "point_get",
+      "arm": "new-point",
+      "concurrency": 64,
+      "members_per_admitted_group": 15.246715602622618,
+      "ordinal": 8,
+      "repeat": 0,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 122473,
+          "admitted_members": 1867311,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1181960,
+          "inspected": 15003819,
+          "lifetime_max_group_after": 64,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 122258,
+      "admitted_members": 1843792,
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "concurrency": 64,
+      "members_per_admitted_group": 15.081156243354219,
+      "ordinal": 9,
+      "repeat": 0,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 122258,
+          "admitted_members": 1843792,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1188641,
+          "inspected": 14808652,
+          "lifetime_max_group_after": 64,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 121990,
+      "admitted_members": 1841646,
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "concurrency": 64,
+      "members_per_admitted_group": 15.096696450528732,
+      "ordinal": 14,
+      "repeat": 1,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 121990,
+          "admitted_members": 1841646,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1186012,
+          "inspected": 14812679,
+          "lifetime_max_group_after": 64,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 123235,
+      "admitted_members": 1878801,
+      "api": "point_get",
+      "arm": "new-point",
+      "concurrency": 64,
+      "members_per_admitted_group": 15.245676958656226,
+      "ordinal": 15,
+      "repeat": 1,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 123235,
+          "admitted_members": 1878801,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1194170,
+          "inspected": 15072524,
+          "lifetime_max_group_after": 64,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 849979,
+      "admitted_members": 1707117,
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "concurrency": 64,
+      "members_per_admitted_group": 2.0084225610279782,
+      "ordinal": 16,
+      "repeat": 1,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 849979,
+          "admitted_members": 1707117,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 849979,
+          "inspected": 1707117,
+          "lifetime_max_group_after": 64,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 854943,
+      "admitted_members": 1736720,
+      "api": "point_get",
+      "arm": "old-point",
+      "concurrency": 64,
+      "members_per_admitted_group": 2.031386887780823,
+      "ordinal": 17,
+      "repeat": 1,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 854943,
+          "admitted_members": 1736720,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 854943,
+          "inspected": 1736720,
+          "lifetime_max_group_after": 64,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 139548,
+      "admitted_members": 139548,
+      "api": "batch_get",
+      "arm": "new-batch1",
+      "concurrency": 1,
+      "members_per_admitted_group": 1.0,
+      "ordinal": 20,
+      "repeat": 1,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 139548,
+          "admitted_members": 139548,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 139548,
+          "inspected": 139548,
+          "lifetime_max_group_after": 1,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 138724,
+      "admitted_members": 138724,
+      "api": "point_get",
+      "arm": "new-point",
+      "concurrency": 1,
+      "members_per_admitted_group": 1.0,
+      "ordinal": 21,
+      "repeat": 1,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 138724,
+          "admitted_members": 138724,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 138724,
+          "inspected": 138724,
+          "lifetime_max_group_after": 1,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 139424,
+      "admitted_members": 139424,
+      "api": "batch_get",
+      "arm": "old-batch1",
+      "concurrency": 1,
+      "members_per_admitted_group": 1.0,
+      "ordinal": 22,
+      "repeat": 1,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 139424,
+          "admitted_members": 139424,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 139424,
+          "inspected": 139424,
+          "lifetime_max_group_after": 1,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    },
+    {
+      "admitted_groups": 139475,
+      "admitted_members": 139475,
+      "api": "point_get",
+      "arm": "old-point",
+      "concurrency": 1,
+      "members_per_admitted_group": 1.0,
+      "ordinal": 23,
+      "repeat": 1,
+      "voters": {
+        "1": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 1,
+          "inspected": 1,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        },
+        "2": {
+          "admitted_groups": 139475,
+          "admitted_members": 139475,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 139475,
+          "inspected": 139475,
+          "lifetime_max_group_after": 1,
+          "lifetime_max_group_before": 0
+        },
+        "3": {
+          "admitted_groups": 0,
+          "admitted_members": 0,
+          "after_active_groups": 0,
+          "after_active_members": 0,
+          "after_in_flight": 0,
+          "after_queued": 0,
+          "group_attempts": 0,
+          "inspected": 0,
+          "lifetime_max_group_after": 0,
+          "lifetime_max_group_before": 0
+        }
+      }
+    }
+  ],
+  "scope": "Before/after fixture envelope includes setup, warmup, measurement, drain and final verification. Not timed-only counters or causal attribution; lifetime maximum cannot be assigned exclusively to this envelope.",
+  "unchanged_arithmetic_sha256": "bc487278c8742562b3c7fc9fcf222eafc73b119726673165d3edce6c189e5250",
+  "unchanged_arithmetic_source": "for n,s in after.items():\n keys=('inspected','group_attempts','admitted_groups','admitted_members')\n d={k:int(s['raft_async_read_'+k])-int(before[n]['raft_async_read_'+k]) for k in keys}\n assert all(v>=0 for v in d.values());assert d['admitted_groups']<=d['admitted_members']<=d['admitted_groups']*64\n d['lifetime_max_group_before']=int(before[n]['raft_async_read_max_admitted_group']);d['lifetime_max_group_after']=int(s['raft_async_read_max_admitted_group']);assert 0<=d['lifetime_max_group_before']<=d['lifetime_max_group_after']<=64\n d['after_active_groups']=int(s['raft_async_read_active_groups']);d['after_active_members']=int(s['raft_async_read_active']);d['after_queued']=int(s['raft_async_read_queued']);d['after_in_flight']=int(s['raft_async_read_in_flight']);assert not any(d[k] for k in ('after_active_groups','after_active_members','after_queued','after_in_flight'))\n voters[n]=d\ngroups=sum(d['admitted_groups'] for d in voters.values());members=sum(d['admitted_members'] for d in voters.values())\n"
+}

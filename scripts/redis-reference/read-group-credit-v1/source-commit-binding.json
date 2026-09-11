@@ -1,0 +1,7 @@
+{
+  "reason": "Root committed source during readback. The second attempt preserved its failed fixed-HEAD check; third binds exact clean commit and parent, with every original source-hash predicate retained.",
+  "current_revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "parent_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "original_script_sha256": "8155baa3f87c269b0c709a63c07226b8bfa016438a95f4d69f8f3560bf227e8d",
+  "revised_script_sha256": "5059fdbf46c04990729ede065c9e8771a400a363bc70e863f20027454b13e68e"
+}

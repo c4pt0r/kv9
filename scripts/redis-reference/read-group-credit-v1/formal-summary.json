@@ -1,0 +1,1603 @@
+{
+  "accepted": true,
+  "scope": "Single-invocation credit abstraction and conditional admission; not whole-system refinement",
+  "sources": {
+    "proofs/tla/read-admission/ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+    "proofs/tlaps/read-admission/ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+    "proofs/tla/read-credit/ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+    "proofs/tla/read-credit/ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+    "proofs/tlaps/read-credit/ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+    "proofs/tlaps/read-credit/inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7",
+    "scripts/check-read-credit-protocol.py": "b796b7855ad72cf748c26fc5e9c53a2974b528706ffb7b4e0d8f18bbac4fc5ef",
+    "scripts/check-tla.py": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70",
+    "scripts/check-tlaps.py": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8",
+    "scripts/ProofAudit.java": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a",
+    "proofs/tla/read-credit/Credit2.cfg": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6",
+    "proofs/tla/read-credit/Credit3.cfg": "e351c748d1d3a952062d2db39238226cd63be082c6b8aa9a1edb48ebae0f4f8b",
+    "proofs/tla/read-credit/CreditProgress.cfg": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da"
+  },
+  "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+  "tlapm_sha256": "1de5983ac393658362fe61882e270b65648fa07945453e971fcf9eeabf5ec579",
+  "records": [
+    {
+      "name": "Credit2-fp0",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-r5v6ex59",
+        "-config",
+        "Run.cfg",
+        "-coverage",
+        "999",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 3408,
+        "distinct": 832,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "Credit2-fp1",
+      "expected": null,
+      "fingerprint": 1,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "1",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-vh5ug8yu",
+        "-config",
+        "Run.cfg",
+        "-coverage",
+        "999",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 3408,
+        "distinct": 832,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "Credit3-fp0",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "e351c748d1d3a952062d2db39238226cd63be082c6b8aa9a1edb48ebae0f4f8b",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-wp5dmh4d",
+        "-config",
+        "Run.cfg",
+        "-coverage",
+        "999",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 11206,
+        "distinct": 2472,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "Credit3-fp1",
+      "expected": null,
+      "fingerprint": 1,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "e351c748d1d3a952062d2db39238226cd63be082c6b8aa9a1edb48ebae0f4f8b",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "1",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-j87jdqc5",
+        "-config",
+        "Run.cfg",
+        "-coverage",
+        "999",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 11206,
+        "distinct": 2472,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "CreditProgress-fp0",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-vako03q7",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 12,
+        "distinct": 6,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "CreditProgress-fp1",
+      "expected": null,
+      "fingerprint": 1,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "1",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-53t1t390",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 12,
+        "distinct": 6,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "proof-baseline",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/proof-baseline/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/proof-baseline/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.067121789092198,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/proof-baseline/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/proof-baseline/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.8646086691878736,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "bypass-credit-model-baseline",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-9_ifxkx5",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 3408,
+        "distinct": 832,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "bypass-credit-model-mutant",
+      "expected": "RCAdmissionEffects",
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "037f78fbfd862417ed274e360a64f8b260e4a2a88e6cc238a5336a74fbb2439e",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-w8ngsuaa",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 13,
+      "statistics": {
+        "generated": 57,
+        "distinct": 32,
+        "queued": 23
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "bypass-credit-model-restored",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-mnuykaza",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 3408,
+        "distinct": 832,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "bypass-credit-proof-baseline",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.0167262200266123,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.8645673689898103,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "bypass-credit-proof-mutant",
+      "expected": "ReadCreditProof: TLAPS exit 10",
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "037f78fbfd862417ed274e360a64f8b260e4a2a88e6cc238a5336a74fbb2439e",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.067293328931555,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/ReadCreditProof.tla"
+          ],
+          "exit_code": 10,
+          "seconds": 10.875384223880246
+        }
+      ],
+      "verdict": "expected rejection"
+    },
+    {
+      "name": "bypass-credit-proof-restored",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.016938467975706,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.8646232879254967,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "cancel-refunds-credit-model-baseline",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-ud1xdde0",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 3408,
+        "distinct": 832,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "cancel-refunds-credit-model-mutant",
+      "expected": "RCCancellationEffects",
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "8bb979f7c1063ee4e1f61dac1189fe4b533598f3995a12ffb5429db05647d9af",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-1efplucn",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 13,
+      "statistics": {
+        "generated": 18,
+        "distinct": 10,
+        "queued": 8
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "cancel-refunds-credit-model-restored",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-4jhohisl",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 3408,
+        "distinct": 832,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "cancel-refunds-credit-proof-baseline",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 4.633314837003127,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 1.0655300829093903,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "cancel-refunds-credit-proof-mutant",
+      "expected": "ReadCreditProof: TLAPS exit 10",
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "8bb979f7c1063ee4e1f61dac1189fe4b533598f3995a12ffb5429db05647d9af",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.7217972490470856,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/ReadCreditProof.tla"
+          ],
+          "exit_code": 10,
+          "seconds": 5.871505804825574
+        }
+      ],
+      "verdict": "expected rejection"
+    },
+    {
+      "name": "cancel-refunds-credit-proof-restored",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.067119267070666,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.8645318211056292,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "missing-release-fairness-model-baseline",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-6z8nz2fv",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 12,
+        "distinct": 6,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "missing-release-fairness-model-mutant",
+      "expected": "RCMCAdmission",
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "dd29967a03c8bf37bd841c83d62d0702e9f1f02201834f790b7c4eb22f381663",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-84wathj9",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 13,
+      "statistics": {
+        "generated": 12,
+        "distinct": 6,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "missing-release-fairness-model-restored",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-wrhm579h",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 12,
+        "distinct": 6,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "missing-release-fairness-proof-baseline",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.067365752067417,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.8646597689948976,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "missing-release-fairness-proof-mutant",
+      "expected": "ReadCreditProof: TLAPS exit 10",
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "dd29967a03c8bf37bd841c83d62d0702e9f1f02201834f790b7c4eb22f381663",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.1178485539276153,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/ReadCreditProof.tla"
+          ],
+          "exit_code": 10,
+          "seconds": 0.9149557640776038
+        }
+      ],
+      "verdict": "expected rejection"
+    },
+    {
+      "name": "missing-release-fairness-proof-restored",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.11780424695462,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.864615784958005,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "competing-refill-model-baseline",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-0hvtl5af",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 12,
+        "distinct": 6,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "competing-refill-model-mutant",
+      "expected": "RCMCAdmission",
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "14dc5d72b48fa4b1a97df7a8a4dce69873fc826ff539b580c25ed581703f6e20",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-nke6db3b",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 13,
+      "statistics": {
+        "generated": 15,
+        "distinct": 6,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "competing-refill-model-restored",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "Run.cfg": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-credit-tlc-ayhpsck2",
+        "-config",
+        "Run.cfg",
+        "ReadCreditMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 12,
+        "distinct": 6,
+        "queued": 0
+      },
+      "verdict": "accepted"
+    },
+    {
+      "name": "competing-refill-proof-baseline",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.018256361829117,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.864774890942499,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "competing-refill-proof-mutant",
+      "expected": "ReadCreditProof: TLAPS exit 10",
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "14dc5d72b48fa4b1a97df7a8a4dce69873fc826ff539b580c25ed581703f6e20",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.01696743699722,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/ReadCreditProof.tla"
+          ],
+          "exit_code": 10,
+          "seconds": 10.876311735948548
+        }
+      ],
+      "verdict": "expected rejection"
+    },
+    {
+      "name": "competing-refill-proof-restored",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.169998920056969,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.9160892858635634,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "proof-hole-baseline",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.0671652529854327,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.8645287740509957,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "proof-hole-mutant",
+      "expected": "proof hole: ReadCreditProof.RCCancellationKeepsCredit",
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "092529ed91b6d85c695ef58e7d40332815b28ca1bc324f7edbfb231f5e3e703d",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "verdict": "expected rejection"
+    },
+    {
+      "name": "proof-hole-restored",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.067183052189648,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.8646733029745519,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "custom-axiom-baseline",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.0169684649445117,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.8645599000155926,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "custom-axiom-mutant",
+      "expected": "unapproved module assumption: ReadCreditProof",
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "329269d3480acf57dd0d297ea758b2480c9d602f2ef06122c0029545354a4154",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "verdict": "expected rejection"
+    },
+    {
+      "name": "custom-axiom-restored",
+      "expected": null,
+      "fingerprint": 0,
+      "sources": {
+        "ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+        "ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+        "ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+        "ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+        "ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+        "inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+      },
+      "modules": [
+        {
+          "module": "ReadAdmissionProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/cache/ReadAdmissionProof",
+            "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/ReadAdmissionProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 3.0671280222013593,
+          "verdict": "proved",
+          "obligations": 196
+        },
+        {
+          "module": "ReadCreditProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/cache/ReadCreditProof",
+            "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/ReadCreditProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.8647388939280063,
+          "verdict": "proved",
+          "obligations": 69
+        }
+      ],
+      "verdict": "proved"
+    }
+  ]
+}

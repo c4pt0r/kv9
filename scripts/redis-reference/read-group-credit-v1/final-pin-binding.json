@@ -1,0 +1,62 @@
+{
+  "ancestry": {
+    "audit.py": {
+      "delta": "Only candidate path/protocol/revision/server/build-manifest literals; all executable predicates unchanged",
+      "final_sha256": "85a9a48ba745b6a5c16d947e8c455c3fe0aa1aa52b026b0abcdf057e67ab9035",
+      "parent_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/audit.py",
+      "parent_sha256": "6fade55411d5ac02d57fef87801fbff96f57cb74d8a4ddce394ddab5cf9fcc52",
+      "provisional_sha256": "d6528d75323ae563da43b9a29aa1dc6cee89d1ec3d803294e6337b68f1796ebf"
+    },
+    "driver-arguments.json": {
+      "delta": "Only candidate path/protocol/revision/server/build-manifest literals; all executable predicates unchanged",
+      "final_sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+      "parent_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/driver-arguments.json",
+      "parent_sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df",
+      "provisional_sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df"
+    },
+    "isolate-and-run.py": {
+      "delta": "Only candidate path/protocol/revision/server/build-manifest literals; all executable predicates unchanged",
+      "final_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "parent_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/isolate-and-run.py",
+      "parent_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb",
+      "provisional_sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "matched-driver.py": {
+      "delta": "Only candidate path/protocol/revision/server/build-manifest literals; all executable predicates unchanged",
+      "final_sha256": "68c1bd5a78f4a24c4e05cb32dc080b8e87165ad04b2453b97b2be08e984290cc",
+      "parent_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/matched-driver.py",
+      "parent_sha256": "ebaa51b3598706748ab3bcfa979f39f17ee6f120eb74a6df5d97e13a5a108ef1",
+      "provisional_sha256": "7e890206de408b212f9e3e30f1b6987f66cbf95647e9dd0b3acdc3b0548226a6"
+    },
+    "test_audit_contract.py": {
+      "delta": "Only candidate path/protocol/revision/server/build-manifest literals; all executable predicates unchanged",
+      "final_sha256": "a3b0231f40abd31c773a86230e9568ef4794172be6d1b4f04a7e84a5eb658027",
+      "parent_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/test_audit_contract.py",
+      "parent_sha256": "065d009942f51882831702d68183afdbf2ed2edc5a526dbdeeda2ecd50c0f743",
+      "provisional_sha256": "053d58fd5f346a7fc6e2ad67efe8770ca0a3da6a5c5b05645b0081421fafdc3b"
+    },
+    "test_driver_contract.py": {
+      "delta": "Only candidate path/protocol/revision/server/build-manifest literals; all executable predicates unchanged",
+      "final_sha256": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a",
+      "parent_path": "/tmp/kv9-peer-idle-watchdog-comparison-preparation/test_driver_contract.py",
+      "parent_sha256": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a",
+      "provisional_sha256": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a"
+    }
+  },
+  "build_manifest_sha256": "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd",
+  "contracts_pending": true,
+  "default_release_features": [],
+  "final_diff_sha256": "17fdb686ee48804c6aa14d3ee5f649520d830e6357b1c16cc2ca9df0f1a6a4bc",
+  "original_preparation_sha256": "f7f8b23e8ea9677b950816c884b56b9c2354f1ceeab037e498b5b7fd21c4f2ed",
+  "process_runner_untouched_sha256": "8b3993c0a2a4d2e7b2f8f721a41b5a6c2886f559ade835e8f4f7aa6eeb49cc67",
+  "protocol_sha256": "50e80ba9d1c35436852d9f103f7ae7e0214d49bf4b24eb4988c93c5fbd9330b0",
+  "provisional_preserved_at": "/tmp/kv9-read-group-credit-comparison-preparation/before-final-pins",
+  "root_build_exit_code": 0,
+  "root_build_session": 26711,
+  "scope": "24-cohort c1/c64 selection against accepted 5ee; fixed native03/Redis b8 clients and original workload/validation/cleanup unchanged.",
+  "server_sha256": "6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
+  "source_clean": true,
+  "source_file_count": 594,
+  "source_files_match_build": true,
+  "source_revision": "57ff6851e40ed63c837189d6eb0a11190704725a"
+}

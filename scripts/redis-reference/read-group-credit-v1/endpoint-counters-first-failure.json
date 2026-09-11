@@ -1,0 +1,8 @@
+{
+  "exit_code": 1,
+  "stage": "before any output rows",
+  "error": "KeyError: '/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts/000-old-point-p00001/before-status.json'",
+  "cause": "Original comparison input inventory binds fresh-drain records, not these separate status snapshots. The first adapter required a nonexistent inventory key.",
+  "retained_runtime_unchanged": true,
+  "prior_reader_sha256": "1db90c17ff231bb508386c06ccdac37db7ec9a7dbb79ae848eafebbc93dfd832"
+}

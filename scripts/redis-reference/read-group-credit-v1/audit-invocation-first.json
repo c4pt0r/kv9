@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "python3",
+    "/tmp/kv9-read-group-credit-comparison-preparation/audit.py",
+    "--run",
+    "/tmp/kv9-read-group-credit-matched-diagnostic-attempt1/cohorts",
+    "--output",
+    "/tmp/kv9-read-group-credit-comparison-preparation/results-first",
+    "--expected-driver-sha256",
+    "68c1bd5a78f4a24c4e05cb32dc080b8e87165ad04b2453b97b2be08e984290cc",
+    "--root-session",
+    "20864",
+    "--root-exit-code",
+    "0",
+    "--successful-arms",
+    "24"
+  ],
+  "root_session": 20864,
+  "root_exit_code": 0,
+  "started_ns": 1789123310331665334,
+  "auditor_sha256": "85a9a48ba745b6a5c16d947e8c455c3fe0aa1aa52b026b0abcdf057e67ab9035",
+  "driver_sha256": "68c1bd5a78f4a24c4e05cb32dc080b8e87165ad04b2453b97b2be08e984290cc",
+  "readiness_sha256": "b83c45ae6c5cf3ad5a01144e5e7c290516f7e17a3065d9a23fe689103bf2df5e",
+  "frozen_inventory_sha256": "3040da4fc18f7a1013a359b8962582fed2d5cac71256340b824acb40eed7b7bb"
+}

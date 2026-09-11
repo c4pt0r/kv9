@@ -1,0 +1,14 @@
+{
+  "reason": "The initial declaration parser omitted #[tokio::test] async functions; six async plus one synchronous tests exist. Runtime/source evidence is unchanged.",
+  "original_script_sha256": "1e7109f26fe563f14a30df32a2783ec2ee6a77e84627ef8701c5b615edc9777f",
+  "revised_script_sha256": "8155baa3f87c269b0c709a63c07226b8bfa016438a95f4d69f8f3560bf227e8d",
+  "changes": [
+    {
+      "before": "re.findall(r'#\\[test\\]\\s*fn (\\w+)\\(', separate_text)",
+      "after": "re.findall(r'#\\[(?:tokio::)?test\\]\\s*(?:async\\s+)?fn (\\w+)\\(', separate_text)"
+    },
+    {
+      "output": "audit-second.json"
+    }
+  ]
+}

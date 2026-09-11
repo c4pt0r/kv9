@@ -1,0 +1,40 @@
+{
+  "accepted": true,
+  "all_commands_terminal": true,
+  "contracts": {
+    "audit": {
+      "command": [
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "python3",
+        "/tmp/kv9-read-group-credit-comparison-preparation/test_audit_contract.py"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-read-group-credit-comparison-preparation/audit-contract-final-first.log",
+      "sha256": "1a1460eca77c2d864963cdbdd5555325f8ecf2d97ae7e7aca629ea3a3c8288ef",
+      "tests": 10
+    },
+    "driver": {
+      "command": [
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "taskset",
+        "-c",
+        "6-15,22-31",
+        "python3",
+        "/tmp/kv9-read-group-credit-comparison-preparation/test_driver_contract.py"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/kv9-read-group-credit-comparison-preparation/driver-contract-final-first.log",
+      "sha256": "8b7b6ff0ed3b47595d2aafae0eff0940b889553240c04b14ac2aa61b137e90b7",
+      "tests": 6
+    }
+  },
+  "final_source_revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "no_runtime_or_timing": true
+}

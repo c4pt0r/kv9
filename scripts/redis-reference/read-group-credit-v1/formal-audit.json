@@ -1,0 +1,262 @@
+{
+  "accepted": true,
+  "scope": "Retained local single-invocation credit model/safety projection and conditional admission gate; not grouped-read/Ready/Rust refinement",
+  "root_session": 85784,
+  "root_exit_code": 0,
+  "counts": {
+    "records": 37,
+    "source_bindings": 240,
+    "tlc": 18,
+    "sany": 19,
+    "proof_executions": 34,
+    "proved_executions": 30,
+    "failed_proof_executions": 4,
+    "successful_obligation_instances": 4229
+  },
+  "baseline_obligations": 265,
+  "baseline_theorems": 28,
+  "triples": 10,
+  "semantic_controls": 4,
+  "audit_controls": 2,
+  "traces": {
+    "bypass-credit": {
+      "states": [
+        {
+          "header": "1: <Initial predicate>",
+          "state": {
+            "raBudget": 2,
+            "raLeader": true,
+            "raApplied": false,
+            "raReceipt": 0,
+            "raCommitTerm": 0,
+            "raAdmittedTerm": 0,
+            "raSubmits": 0,
+            "raPhase": "Waiting",
+            "rcCanceled": false,
+            "raTerm": 1,
+            "raQuorum": false,
+            "raAdmittedCommitTerm": 0,
+            "raContext": 1,
+            "rcOccupied": true
+          }
+        },
+        {
+          "header": "2: <RCReadStep line 25, col 15 to line 27, col 53 of module ReadCredit>",
+          "state": {
+            "raBudget": 2,
+            "raLeader": true,
+            "raApplied": false,
+            "raReceipt": 0,
+            "raCommitTerm": 1,
+            "raAdmittedTerm": 0,
+            "raSubmits": 0,
+            "raPhase": "Waiting",
+            "rcCanceled": false,
+            "raTerm": 1,
+            "raQuorum": false,
+            "raAdmittedCommitTerm": 0,
+            "raContext": 1,
+            "rcOccupied": true
+          }
+        },
+        {
+          "header": "3: <RCPoll line 17, col 11 to line 24, col 33 of module ReadCredit>",
+          "state": {
+            "raBudget": 2,
+            "raLeader": true,
+            "raApplied": false,
+            "raReceipt": 0,
+            "raCommitTerm": 1,
+            "raAdmittedTerm": 1,
+            "raSubmits": 1,
+            "raPhase": "Submitted",
+            "rcCanceled": false,
+            "raTerm": 1,
+            "raQuorum": false,
+            "raAdmittedCommitTerm": 1,
+            "raContext": 1,
+            "rcOccupied": false
+          }
+        }
+      ],
+      "log": "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-mutant/tlc.log"
+    },
+    "cancel-refunds-credit": {
+      "states": [
+        {
+          "header": "1: <Initial predicate>",
+          "state": {
+            "raBudget": 2,
+            "raLeader": true,
+            "raApplied": false,
+            "raReceipt": 0,
+            "raCommitTerm": 0,
+            "raAdmittedTerm": 0,
+            "raSubmits": 0,
+            "raPhase": "Waiting",
+            "rcCanceled": false,
+            "raTerm": 1,
+            "raQuorum": false,
+            "raAdmittedCommitTerm": 0,
+            "raContext": 1,
+            "rcOccupied": true
+          }
+        },
+        {
+          "header": "2: <RCCancel line 37, col 13 to line 38, col 54 of module ReadCredit>",
+          "state": {
+            "raBudget": 2,
+            "raLeader": true,
+            "raApplied": false,
+            "raReceipt": 0,
+            "raCommitTerm": 0,
+            "raAdmittedTerm": 0,
+            "raSubmits": 0,
+            "raPhase": "Waiting",
+            "rcCanceled": true,
+            "raTerm": 1,
+            "raQuorum": false,
+            "raAdmittedCommitTerm": 0,
+            "raContext": 1,
+            "rcOccupied": false
+          }
+        }
+      ],
+      "log": "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-mutant/tlc.log"
+    },
+    "missing-release-fairness": {
+      "states": [
+        {
+          "header": "1: <Initial predicate>",
+          "state": {
+            "raBudget": 2,
+            "raLeader": true,
+            "raApplied": false,
+            "raReceipt": 0,
+            "raCommitTerm": 0,
+            "raAdmittedTerm": 0,
+            "raSubmits": 0,
+            "raPhase": "Waiting",
+            "rcCanceled": false,
+            "raTerm": 1,
+            "raQuorum": false,
+            "raAdmittedCommitTerm": 0,
+            "raContext": 1,
+            "rcOccupied": true
+          }
+        },
+        {
+          "header": "2: <RCMCCommit line 17, col 15 to line 17, col 62 of module ReadCreditMC>",
+          "state": {
+            "raBudget": 2,
+            "raLeader": true,
+            "raApplied": false,
+            "raReceipt": 0,
+            "raCommitTerm": 1,
+            "raAdmittedTerm": 0,
+            "raSubmits": 0,
+            "raPhase": "Waiting",
+            "rcCanceled": false,
+            "raTerm": 1,
+            "raQuorum": false,
+            "raAdmittedCommitTerm": 0,
+            "raContext": 1,
+            "rcOccupied": true
+          }
+        }
+      ],
+      "log": "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-mutant/tlc.log"
+    },
+    "competing-refill": {
+      "states": [
+        {
+          "header": "1: <Initial predicate>",
+          "state": {
+            "raBudget": 2,
+            "raLeader": true,
+            "raApplied": false,
+            "raReceipt": 0,
+            "raCommitTerm": 0,
+            "raAdmittedTerm": 0,
+            "raSubmits": 0,
+            "raPhase": "Waiting",
+            "rcCanceled": false,
+            "raTerm": 1,
+            "raQuorum": false,
+            "raAdmittedCommitTerm": 0,
+            "raContext": 1,
+            "rcOccupied": true
+          }
+        },
+        {
+          "header": "2: <RCMCCommit line 17, col 15 to line 17, col 62 of module ReadCreditMC>",
+          "state": {
+            "raBudget": 2,
+            "raLeader": true,
+            "raApplied": false,
+            "raReceipt": 0,
+            "raCommitTerm": 1,
+            "raAdmittedTerm": 0,
+            "raSubmits": 0,
+            "raPhase": "Waiting",
+            "rcCanceled": false,
+            "raTerm": 1,
+            "raQuorum": false,
+            "raAdmittedCommitTerm": 0,
+            "raContext": 1,
+            "rcOccupied": true
+          }
+        },
+        {
+          "header": "3: <RCRelease line 32, col 14 to line 33, col 48 of module ReadCredit>",
+          "state": {
+            "raBudget": 2,
+            "raLeader": true,
+            "raApplied": false,
+            "raReceipt": 0,
+            "raCommitTerm": 1,
+            "raAdmittedTerm": 0,
+            "raSubmits": 0,
+            "raPhase": "Waiting",
+            "rcCanceled": false,
+            "raTerm": 1,
+            "raQuorum": false,
+            "raAdmittedCommitTerm": 0,
+            "raContext": 1,
+            "rcOccupied": false
+          }
+        }
+      ],
+      "log": "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-mutant/tlc.log"
+    }
+  },
+  "historical_failures": [
+    {
+      "attempt": "first",
+      "exit_code": 75,
+      "error": "empty or trivial state exploration"
+    },
+    {
+      "attempt": "second",
+      "exit_code": 13,
+      "error": "missing counterexample states"
+    }
+  ],
+  "current_sources": {
+    "proofs/tla/read-admission/ReadAdmission.tla": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227",
+    "proofs/tlaps/read-admission/ReadAdmissionProof.tla": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51",
+    "proofs/tla/read-credit/ReadCredit.tla": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04",
+    "proofs/tla/read-credit/ReadCreditMC.tla": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7",
+    "proofs/tlaps/read-credit/ReadCreditProof.tla": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74",
+    "proofs/tlaps/read-credit/inventory.json": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7",
+    "scripts/check-read-credit-protocol.py": "b796b7855ad72cf748c26fc5e9c53a2974b528706ffb7b4e0d8f18bbac4fc5ef",
+    "scripts/check-tla.py": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70",
+    "scripts/check-tlaps.py": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8",
+    "scripts/ProofAudit.java": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a",
+    "proofs/tla/read-credit/Credit2.cfg": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6",
+    "proofs/tla/read-credit/Credit3.cfg": "e351c748d1d3a952062d2db39238226cd63be082c6b8aa9a1edb48ebae0f4f8b",
+    "proofs/tla/read-credit/CreditProgress.cfg": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da"
+  },
+  "inventory_sha256": "16e4114361adafd7460e580b1bfc9ad18f70ba12a95dc9cefc3e20f45f48ab40",
+  "inventory_files": 388
+}

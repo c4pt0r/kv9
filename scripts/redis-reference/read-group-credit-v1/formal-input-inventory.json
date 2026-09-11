@@ -1,0 +1,1554 @@
+{
+  "/tmp/kv9-read-group-credit-formal-first/CreditProgress-fp0/result.json": {
+    "bytes": 1150,
+    "sha256": "6ab7623bc9cd8ad91dad59a7b0c1a4bf774480ce0e54edde7b60a5595de75f7b"
+  },
+  "/tmp/kv9-read-group-credit-formal-first/CreditProgress-fp0/tlc.log": {
+    "bytes": 2400,
+    "sha256": "2b661b1ceb6b78502d929d8b6ee14da06942afef2b2f556f2c265799bb85f017"
+  },
+  "/tmp/kv9-read-group-credit-formal-first/summary.json": {
+    "bytes": 7221,
+    "sha256": "05e1ca4760183c336dd57e3a00915bc4b3860f94d4b4ffdc0139b87dab5a9a65"
+  },
+  "/tmp/kv9-read-group-credit-formal-run-third/command.json": {
+    "bytes": 281,
+    "sha256": "13c63c6e5176afd77834f05d4a2d848bc57dffcfa355f08dc523c4bdfd8121c2"
+  },
+  "/tmp/kv9-read-group-credit-formal-run-third/exit.json": {
+    "bytes": 17,
+    "sha256": "e89df0eae5ec7db81135aed16463968955c578bcc4f2ec43172eff351f080c17"
+  },
+  "/tmp/kv9-read-group-credit-formal-run-third/run.log": {
+    "bytes": 1732,
+    "sha256": "aa0a39fcb8bf26b2e81b3ed3d1b43c31a7195b4c1e83056a253107b1ef57ec90"
+  },
+  "/tmp/kv9-read-group-credit-formal-second/missing-release-fairness-model-mutant/result.json": {
+    "bytes": 1175,
+    "sha256": "dcf8aa0c4eeeaf6b55088e7bd85fa375facf387a414033c4cb7a46696213eb76"
+  },
+  "/tmp/kv9-read-group-credit-formal-second/missing-release-fairness-model-mutant/tlc.log": {
+    "bytes": 2910,
+    "sha256": "560b958c12f622f60fe49c0d1d35c491d04af1958792e2bd36a5d7079055f53a"
+  },
+  "/tmp/kv9-read-group-credit-formal-second/summary.json": {
+    "bytes": 32011,
+    "sha256": "8a51009c908439368406433189bb03a967781c3e20337d916e5a48e6b716b961"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp0/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp0/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp0/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp0/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp0/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp0/Run.cfg": {
+    "bytes": 193,
+    "sha256": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp0/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp0/result.json": {
+    "bytes": 1192,
+    "sha256": "d343ee68ffc866db9ddbf385af5a63f3d962827a800b0249ec96567462185895"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp0/tlc.log": {
+    "bytes": 20967,
+    "sha256": "950fa989065ad75b4b1aa02dbdfcb43f84060a2ef971bf92c8b8fc9e4d5bcbfc"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp1/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp1/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp1/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp1/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp1/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp1/Run.cfg": {
+    "bytes": 193,
+    "sha256": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp1/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp1/result.json": {
+    "bytes": 1192,
+    "sha256": "10932c893c063013b0c9d6d06e0ddd1828640bb96a8003b6a3ea1f98f21e6159"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit2-fp1/tlc.log": {
+    "bytes": 20966,
+    "sha256": "f4837819429c5ecfbb382ef102d9240eb84b56771e74a30d848132c2506131ff"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp0/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp0/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp0/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp0/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp0/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp0/Run.cfg": {
+    "bytes": 193,
+    "sha256": "e351c748d1d3a952062d2db39238226cd63be082c6b8aa9a1edb48ebae0f4f8b"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp0/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp0/result.json": {
+    "bytes": 1194,
+    "sha256": "543f003e97fe91e80875cdebe37398336dd3ff85917d93a6225e654d4180e186"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp0/tlc.log": {
+    "bytes": 21082,
+    "sha256": "2efe8f0295eccc65165edbbd7545a72f4711e3c4661eef1488ee6bc582977b88"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp1/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp1/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp1/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp1/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp1/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp1/Run.cfg": {
+    "bytes": 193,
+    "sha256": "e351c748d1d3a952062d2db39238226cd63be082c6b8aa9a1edb48ebae0f4f8b"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp1/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp1/result.json": {
+    "bytes": 1194,
+    "sha256": "8d0012f4c14e3f790789a56af49d6a17cbf65accdc825efa74ee72b836f24c43"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/Credit3-fp1/tlc.log": {
+    "bytes": 21082,
+    "sha256": "e23b66d89a522bba694276f0ce3c74de216812962c8d6dd142f3b64288dcc05d"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp0/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp0/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp0/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp0/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp0/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp0/Run.cfg": {
+    "bytes": 172,
+    "sha256": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp0/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp0/result.json": {
+    "bytes": 1167,
+    "sha256": "51575d72820f6da2921f3f20b1f4bef02571ffe8b027115c43cf709da99d0a35"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp0/tlc.log": {
+    "bytes": 2787,
+    "sha256": "7682bff49b33e158c314c5b4398eb77d5086115384957c145c34f2c30266910a"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp1/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp1/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp1/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp1/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp1/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp1/Run.cfg": {
+    "bytes": 172,
+    "sha256": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp1/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp1/result.json": {
+    "bytes": 1167,
+    "sha256": "756784a219e150b8d2ddaed4c3dfe9d28e0fbf37bb245fbbfff0768889c10503"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/CreditProgress-fp1/tlc.log": {
+    "bytes": 2786,
+    "sha256": "576e8a24eb2ab1d7d9637f2c5aa46f9bf558f41be5a0f442addde1c57bac0404"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-baseline/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-baseline/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-baseline/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-baseline/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-baseline/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-baseline/Run.cfg": {
+    "bytes": 193,
+    "sha256": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-baseline/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-baseline/result.json": {
+    "bytes": 1181,
+    "sha256": "30f1da0715e3df3e0bed6856287f021239094d730c086dac266fa0a5e936b329"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-baseline/tlc.log": {
+    "bytes": 2280,
+    "sha256": "a4ec70babeba552c531800ae2871b7c344dd69eb57b0704bf4735e8565f8090a"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-mutant/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-mutant/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-mutant/ReadCredit.tla": {
+    "bytes": 3361,
+    "sha256": "037f78fbfd862417ed274e360a64f8b260e4a2a88e6cc238a5336a74fbb2439e"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-mutant/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-mutant/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-mutant/Run.cfg": {
+    "bytes": 193,
+    "sha256": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-mutant/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-mutant/result.json": {
+    "bytes": 1194,
+    "sha256": "3a42b95474bc1c89596cdce95a663f9dee2ffefa0ffcdf7bc0799644144c2b44"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-mutant/tlc.log": {
+    "bytes": 3322,
+    "sha256": "906147ecd505e6f4b5768b4b1e7802f01158afc611bc9e60192308e8864fbb3f"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-restored/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-restored/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-restored/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-restored/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-restored/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-restored/Run.cfg": {
+    "bytes": 193,
+    "sha256": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-restored/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-restored/result.json": {
+    "bytes": 1181,
+    "sha256": "dcfed78713b2a5392f4a75c1209f87f09228f3876befdda11936f268b5836047"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-model-restored/tlc.log": {
+    "bytes": 2279,
+    "sha256": "ac5b85b4b5bc63c53ed8f1446c3d32b8571aaec71ea368d8b76e08483d394d44"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/ReadAdmissionProof.log": {
+    "bytes": 509,
+    "sha256": "06d4620291bcca5ae3f5fe91bce71789bf9992d62edb609556f61016b37fd184"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/ReadCreditProof.log": {
+    "bytes": 489,
+    "sha256": "632b4fb8080bb2b65f45571535997e2abe286907977ddc24dcd9de2075325645"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/result.json": {
+    "bytes": 1806,
+    "sha256": "b249b0a60815a69c00bec226fa1113ed729da91dd93718595c56ab79be09c9d9"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/sany.log": {
+    "bytes": 3594,
+    "sha256": "e3bdc70dfca87acf1bb0e56a98239914946d2bf265d56115ce9f4bf9a258459d"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-baseline/semantic-audit.json": {
+    "bytes": 4173,
+    "sha256": "55d04427e5ab62df204fc4454a0888453ae61f4c3b218aaac1b8326b075edf75"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/ReadAdmissionProof.log": {
+    "bytes": 503,
+    "sha256": "434bcf4127a79625627d8287d0e530e11400b34a910c2c1fff849c20cd3a0044"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/ReadCredit.tla": {
+    "bytes": 3361,
+    "sha256": "037f78fbfd862417ed274e360a64f8b260e4a2a88e6cc238a5336a74fbb2439e"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/ReadCreditProof.log": {
+    "bytes": 8057,
+    "sha256": "121dd4b871cb7c6438254c7d5d0907d38a8acae96a3b72f2ec9812f0099ce43d"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/result.json": {
+    "bytes": 1784,
+    "sha256": "4f0e1ef4fdfd5d7cd368fe5f32b52d564e537d2f30454a215779d8b5cca9ae47"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/sany.log": {
+    "bytes": 3578,
+    "sha256": "1333071bc0c0664ac49c7bf69c624e27bb86a35eb2b880bbbc2a904184e558a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-mutant/semantic-audit.json": {
+    "bytes": 4165,
+    "sha256": "f7869730a5731197c0ab111e089fe7881a24c3e18185b4d9ddc74f4112a684f6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/ReadAdmissionProof.log": {
+    "bytes": 509,
+    "sha256": "dbbb4dd9c6ef64fbe68502c42eefc7c8f9ae6dbead35e378601383f0b676f592"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/ReadCreditProof.log": {
+    "bytes": 489,
+    "sha256": "382fc8ab557e123a3ee2e9676d1b55511daeaf3fc2dd37d072b43e5c5f7cd98e"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/result.json": {
+    "bytes": 1805,
+    "sha256": "c8271209ead807931f0f4f0c80a5953a32096a25a501d78459461a459f7dfb0f"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/sany.log": {
+    "bytes": 3594,
+    "sha256": "6a5b3139f6fedda7b732deaae04bad07816f97f59b9ea00bf7898aba9675065e"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/bypass-credit-proof-restored/semantic-audit.json": {
+    "bytes": 4173,
+    "sha256": "858626fa8819c86e780e9d28dc6bdf10b12d22c43763b02eb54307477b44d72b"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-baseline/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-baseline/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-baseline/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-baseline/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-baseline/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-baseline/Run.cfg": {
+    "bytes": 193,
+    "sha256": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-baseline/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-baseline/result.json": {
+    "bytes": 1189,
+    "sha256": "1645f8467e63658db102126d7585a2947d9dfbb4bb2ce3f2129b017b8f3a7a62"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-baseline/tlc.log": {
+    "bytes": 2304,
+    "sha256": "f81b1ed8d04d03a041199743747b65662427e9ed3fdf2cb6649e23fdeaea8e06"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-mutant/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-mutant/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-mutant/ReadCredit.tla": {
+    "bytes": 3375,
+    "sha256": "8bb979f7c1063ee4e1f61dac1189fe4b533598f3995a12ffb5429db05647d9af"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-mutant/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-mutant/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-mutant/Run.cfg": {
+    "bytes": 193,
+    "sha256": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-mutant/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-mutant/result.json": {
+    "bytes": 1204,
+    "sha256": "e377a1bb0656f13e744e2c48a94e49ba2f3401a41aa420c64368e675d7dd138f"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-mutant/tlc.log": {
+    "bytes": 2944,
+    "sha256": "0addddd0829abdcb50de90f34482b8e2d421fb5e928f9722f5a2c584f085a91a"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-restored/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-restored/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-restored/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-restored/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-restored/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-restored/Run.cfg": {
+    "bytes": 193,
+    "sha256": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-restored/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-restored/result.json": {
+    "bytes": 1189,
+    "sha256": "787786ead7a39511c7864c015342f4e270cad30ebabf3da2af5bd8e6baa220db"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-model-restored/tlc.log": {
+    "bytes": 2304,
+    "sha256": "a659f09a26d1aac8120824c9acf88576ad15d68d29a10c0ccb9b1c8c50542d23"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/ReadAdmissionProof.log": {
+    "bytes": 533,
+    "sha256": "656267a08514f26cd9fb9d51c1d7f45f8e7b4cc26bb209dbdd48f119aeaab979"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/ReadCreditProof.log": {
+    "bytes": 513,
+    "sha256": "6a3a8541104a3394f7a4de77be16ec8766deacc2af16fc9bef7d5cf89424ed72"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/result.json": {
+    "bytes": 1845,
+    "sha256": "d4e67c59029ab0cc69799a6d6abed2faeb9028df9234ee8f244956687f2f5721"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/sany.log": {
+    "bytes": 3658,
+    "sha256": "02e215f5d92a58be21c68899942b85fd9635beba2034b9d867c0a750d9741f29"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-baseline/semantic-audit.json": {
+    "bytes": 4205,
+    "sha256": "93b44499a0f032061d1a655019574d241ca1fc3b373fb3c4d061a96d071d38e6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/ReadAdmissionProof.log": {
+    "bytes": 527,
+    "sha256": "f4e6503c57073a3e6a0288853ec050ef63e2214984b8cf15b84b953921d31f1a"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/ReadCredit.tla": {
+    "bytes": 3375,
+    "sha256": "8bb979f7c1063ee4e1f61dac1189fe4b533598f3995a12ffb5429db05647d9af"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/ReadCreditProof.log": {
+    "bytes": 1866,
+    "sha256": "246edacef665d03f73dc91cda796fc373513c4860ad1623e454074072ae8726b"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/result.json": {
+    "bytes": 1824,
+    "sha256": "ce7e7deb27052c6042de762d59a5359b4f016fb92ae540a20cc3627b215d35b2"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/sany.log": {
+    "bytes": 3642,
+    "sha256": "225e9a030839613f54e6f9fe5bd9857dde894bc85957dc378d71479f1e18bf0f"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-mutant/semantic-audit.json": {
+    "bytes": 4197,
+    "sha256": "16a20a1d10d75ccd5185bd26cd396c6f0f0ccc963d2244ecedf2d765562a84ea"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/ReadAdmissionProof.log": {
+    "bytes": 533,
+    "sha256": "4e7ab31556becef6848f4aeafb23cddbf3009cfa2cd60983dee27d302f4385af"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/ReadCreditProof.log": {
+    "bytes": 513,
+    "sha256": "a3bffc186d8ed7c6b7aea15e4d4cd6789520ad34ce191ec8c72f3d3b6791e496"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/result.json": {
+    "bytes": 1845,
+    "sha256": "3f618a2bd008494c15d243acd41b971da1e5130db90ae0244a42a48d6155e27a"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/sany.log": {
+    "bytes": 3658,
+    "sha256": "5840677eea968ff83d25eeefa93e719441457231867ab68d3a3a08e766b7e182"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/cancel-refunds-credit-proof-restored/semantic-audit.json": {
+    "bytes": 4205,
+    "sha256": "1c33ff59100e48642d83142f51fa644e10062ae430c87de851bd867c838575e3"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-baseline/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-baseline/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-baseline/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-baseline/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-baseline/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-baseline/Run.cfg": {
+    "bytes": 172,
+    "sha256": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-baseline/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-baseline/result.json": {
+    "bytes": 1180,
+    "sha256": "45f9499e8c9fa55dcdc1e7ffab6c747da82e10b0c3ac2afb32bb61bda608bcb6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-baseline/tlc.log": {
+    "bytes": 2826,
+    "sha256": "a6c4552158436b3ce13a37b857eddb4913aa759ccedc824f3657a96bdfe6086e"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-mutant/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-mutant/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-mutant/ReadCredit.tla": {
+    "bytes": 3388,
+    "sha256": "14dc5d72b48fa4b1a97df7a8a4dce69873fc826ff539b580c25ed581703f6e20"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-mutant/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-mutant/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-mutant/Run.cfg": {
+    "bytes": 172,
+    "sha256": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-mutant/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-mutant/result.json": {
+    "bytes": 1190,
+    "sha256": "99083fccfd7f0d95b79f43b4f2c9d4f96e8c491282860f38fd7331c468d3dc73"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-mutant/tlc.log": {
+    "bytes": 3768,
+    "sha256": "f609dc12595fa131484e936f9461d68124492e1b311817a7642e1c97c73e41c5"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-restored/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-restored/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-restored/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-restored/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-restored/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-restored/Run.cfg": {
+    "bytes": 172,
+    "sha256": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-restored/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-restored/result.json": {
+    "bytes": 1180,
+    "sha256": "687a137bf447fa14e283f122960518c3860ce0f60e3390ac093bffbfa417469e"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-model-restored/tlc.log": {
+    "bytes": 2825,
+    "sha256": "60d088d8a29dd23cce3eaee0ec8a5c3cbb537104a357ac360db68d2e3c30e04d"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/ReadAdmissionProof.log": {
+    "bytes": 518,
+    "sha256": "6635fb641945646047355d9f5b5f638314dfbb868e3d5d2e58193f9909d7f92b"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/ReadCreditProof.log": {
+    "bytes": 498,
+    "sha256": "8ac5eb69a5432417312548198fc50993a361139e586508ea941b397bd94517b9"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/result.json": {
+    "bytes": 1819,
+    "sha256": "98b9934d478b0650b15d6e85b5bb6ecf0e94c925c2a9ca90a98ed84c20d1944f"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/sany.log": {
+    "bytes": 3618,
+    "sha256": "57d7b58f06624d1e6d8f3e8e2e62d515ea6926a9bc10bfc7e43cbb167222a393"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-baseline/semantic-audit.json": {
+    "bytes": 4185,
+    "sha256": "495ee16f8d5ac9640bf0ce7e5e4f00c7c8565d0de0aed1b20a895e8e936f66d0"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/ReadAdmissionProof.log": {
+    "bytes": 512,
+    "sha256": "491d1e2759f529ca25a18d85c76cff76250f658c94d7ef37a9530903815e7c4b"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/ReadCredit.tla": {
+    "bytes": 3388,
+    "sha256": "14dc5d72b48fa4b1a97df7a8a4dce69873fc826ff539b580c25ed581703f6e20"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/ReadCreditProof.log": {
+    "bytes": 10582,
+    "sha256": "fe540653df1be01c163c4249940ebe31ff95271017adca79a7036b5bdb842561"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/result.json": {
+    "bytes": 1798,
+    "sha256": "1d93a7a0c48aba09daef646fb091c11addb9da8216c70b67eaa460718ac6495f"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/sany.log": {
+    "bytes": 3602,
+    "sha256": "f0e2fdaa5a9b94dab86577dbc18d61391f222c23ba25e12b8c4eb3b80d24844a"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-mutant/semantic-audit.json": {
+    "bytes": 4177,
+    "sha256": "a87cac5dea788ccb135047d31276e086c64b3872b10c4162e31e60f58da25f18"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/ReadAdmissionProof.log": {
+    "bytes": 518,
+    "sha256": "21a8f981a4e6604f5b4c976144b0710404eb85344565281deb6b3b678a542ce2"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/ReadCreditProof.log": {
+    "bytes": 498,
+    "sha256": "4574a12721bb8d2528e0b33680ee9169dd119190bf7efb6b69b7e4768d2dda2f"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/result.json": {
+    "bytes": 1820,
+    "sha256": "fc96cff4c902964a2ffc9cacd408a47a2b4f6b07a378e76034e32b92bb2e809f"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/sany.log": {
+    "bytes": 3618,
+    "sha256": "37384b508110bbf5c144a21da745b95dffcb60b58082fb983476f52771170976"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/competing-refill-proof-restored/semantic-audit.json": {
+    "bytes": 4185,
+    "sha256": "f29f9a2d850437bae9394e483047a8d0dfbf71c81fd3fd81f0ef04b7ef258b15"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/ReadAdmissionProof.log": {
+    "bytes": 488,
+    "sha256": "c96a14f1dd0c0daef1304988b7f623df2a2c1004ea8d3ebc868ca005203000c4"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/ReadCreditProof.log": {
+    "bytes": 468,
+    "sha256": "053b5cad8bd6bb4783fcfc7c0b886d8ba6d843b40cc9e51cacf630e976f72623"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/result.json": {
+    "bytes": 1771,
+    "sha256": "94220479143a6a22c2ec7e165122807ea8cc400172c3c45cc5dfdf0266ddc43a"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/sany.log": {
+    "bytes": 3538,
+    "sha256": "1a14b9d56cbd60824da41dfeede55a3b4c16d63357cf1efa3e902ef477888eb5"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-baseline/semantic-audit.json": {
+    "bytes": 4145,
+    "sha256": "96c2a1ae4b38e43bcc0118257fadfc9211dd1bbce420398bdd2349e734793faa"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-mutant/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-mutant/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-mutant/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-mutant/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-mutant/ReadCreditProof.tla": {
+    "bytes": 3343,
+    "sha256": "329269d3480acf57dd0d297ea758b2480c9d602f2ef06122c0029545354a4154"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-mutant/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-mutant/result.json": {
+    "bytes": 731,
+    "sha256": "23af23757e258e04e3c8e785d9d64d719b66459d0d226d7babe981e3a90e250f"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-mutant/sany.log": {
+    "bytes": 3612,
+    "sha256": "7b6d96658e3306d62ea982086e8115871f2fd4a903e87cd28710a5c353f6ffe5"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/ReadAdmissionProof.log": {
+    "bytes": 488,
+    "sha256": "50eba4ca178f5890bf339aab7dea6b629f767dc31a00426a06b6ce55d8564bf9"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/ReadCreditProof.log": {
+    "bytes": 468,
+    "sha256": "2c70ea72e7f34f503f2c77bc2633ec4dd9c19f487a465dfd60ef843dfb805da3"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/result.json": {
+    "bytes": 1771,
+    "sha256": "164b236b167f433b324cc3920cb56d59dc609669a51b0afc339ea15cc8ab32cc"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/sany.log": {
+    "bytes": 3538,
+    "sha256": "a6ed697dafa95503285f0ebf4a7471cc06a9ab3ea48de39c619640cbedb9c9f5"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/custom-axiom-restored/semantic-audit.json": {
+    "bytes": 4145,
+    "sha256": "a72c799377bbf28acf281a0e819a21ad9909e9b31317e715aaaa82d537e90f07"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-baseline/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-baseline/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-baseline/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-baseline/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-baseline/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-baseline/Run.cfg": {
+    "bytes": 172,
+    "sha256": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-baseline/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-baseline/result.json": {
+    "bytes": 1188,
+    "sha256": "85b4cdc4e55da21c7b49b828e826f6146f44d8b1999775937340bfe9001af9f3"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-baseline/tlc.log": {
+    "bytes": 2850,
+    "sha256": "a53e897f43038ea49c65ccbdb3d6c11f99e199f4ca31aaaf012972601ca2e850"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-mutant/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-mutant/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-mutant/ReadCredit.tla": {
+    "bytes": 3344,
+    "sha256": "dd29967a03c8bf37bd841c83d62d0702e9f1f02201834f790b7c4eb22f381663"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-mutant/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-mutant/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-mutant/Run.cfg": {
+    "bytes": 172,
+    "sha256": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-mutant/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-mutant/result.json": {
+    "bytes": 1198,
+    "sha256": "aa288d7d5ccb874d8255dae509145ee4f3a4eab6a03ca8b486f461ba37c28ba1"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-mutant/tlc.log": {
+    "bytes": 3311,
+    "sha256": "3ebe1f5c58efc277310ef3f00f0f8e6bc00f2838f79a71f972abee9a58e01d9c"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-restored/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-restored/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-restored/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-restored/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-restored/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-restored/Run.cfg": {
+    "bytes": 172,
+    "sha256": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-restored/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-restored/result.json": {
+    "bytes": 1188,
+    "sha256": "083e3082fe6537f957c27b49cb95e4c9f050f1d7690a27a28678d5808b40f22e"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-model-restored/tlc.log": {
+    "bytes": 2850,
+    "sha256": "e67b120eaca094bcfcc241deb55cccb2aa02bfe60d0fb9f4df49fb55b8c55259"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/ReadAdmissionProof.log": {
+    "bytes": 542,
+    "sha256": "3221f57356c3e63da8406f6397bb869a309b28e6c479a776d3c98b2f14def245"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/ReadCreditProof.log": {
+    "bytes": 522,
+    "sha256": "ebe7fe735fcee4c9c2ea5ba295f760177e42949be7386ffd7be40ccb8867ad42"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/result.json": {
+    "bytes": 1860,
+    "sha256": "b12091eda126cf34a717cdd77d18adb509996be16f7050ed6c4a25391a8d4ad6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/sany.log": {
+    "bytes": 3682,
+    "sha256": "581bc0a3f67f2ffecc6735eb6442ac9738d36418349ed2e9ff792fa3fe802125"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-baseline/semantic-audit.json": {
+    "bytes": 4217,
+    "sha256": "663799fc4d2cb1a66477e36a7b405c2a293db3ae1123e969d594353164046924"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/ReadAdmissionProof.log": {
+    "bytes": 536,
+    "sha256": "ad8444ad984338fdb0e89fa16a6247a1b2615f57505cc284f151d77e313b06be"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/ReadCredit.tla": {
+    "bytes": 3344,
+    "sha256": "dd29967a03c8bf37bd841c83d62d0702e9f1f02201834f790b7c4eb22f381663"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/ReadCreditProof.log": {
+    "bytes": 2008,
+    "sha256": "76b345d66db97e48787f9baae5245a5486b3230071eb0e69155a7184a9477eea"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/result.json": {
+    "bytes": 1840,
+    "sha256": "152d44da2b6e16c47b656dd7aaee2d9e2bf1e6aba3a07d77dae51371405e8415"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/sany.log": {
+    "bytes": 3666,
+    "sha256": "8219c938a63c80e251f718ae21cf62c7c960c20bff951bed503237a3737ea3de"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-mutant/semantic-audit.json": {
+    "bytes": 4209,
+    "sha256": "8d5b7383c0a83de3ce48b607438750640fb6bc3f3df620e9b71ebb4ba8f2e757"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/ReadAdmissionProof.log": {
+    "bytes": 542,
+    "sha256": "d7aa900ea261033283b6927a801b22dc8b5ef2a1493b15ee8429d2db7ed32cc2"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/ReadCreditProof.log": {
+    "bytes": 522,
+    "sha256": "985dc7c8da5964e41a5e4eca212b71387512b7841730741a455ff2cd9159a097"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/result.json": {
+    "bytes": 1858,
+    "sha256": "2b64b952c03f9e3306314e6162bf95f6f4ceddcc79e70e82d74221a766bc5fd8"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/sany.log": {
+    "bytes": 3682,
+    "sha256": "912cedb178a427b60f093e16e6d6026271011f609e5faefd9813ab05a8395b22"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/missing-release-fairness-proof-restored/semantic-audit.json": {
+    "bytes": 4217,
+    "sha256": "0149860a4d5d930d1f13c7cb8c6642f1860efd58c61b4cf44c368f5438466cb6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-baseline/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-baseline/ReadAdmissionProof.log": {
+    "bytes": 467,
+    "sha256": "24c6b393d1ae41995bd47d957ffb9564aa9f71390fe1c0dcd5c78da5b385291e"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-baseline/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-baseline/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-baseline/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-baseline/ReadCreditProof.log": {
+    "bytes": 447,
+    "sha256": "11a03563edf6df0d2db52f85a5b13f154c64b1a39599ecad86658ecd367fb5ab"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-baseline/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-baseline/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-baseline/result.json": {
+    "bytes": 1735,
+    "sha256": "e71dce852d6e89b1603781af7641e2ea8531b6c2ef0a0d188e9b86e6918959ea"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-baseline/sany.log": {
+    "bytes": 3482,
+    "sha256": "a62e115208addd9fe96d15c281c0c286822a6d2f87f7e1e0e4a79702dbbc7729"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-baseline/semantic-audit.json": {
+    "bytes": 4117,
+    "sha256": "2acb3a7d039e4e4e5aea4d913c086356cf33ca48634c3887205c741b87b96730"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/ReadAdmissionProof.log": {
+    "bytes": 482,
+    "sha256": "d8bdead18d8b050807e3990000a7011d5c18331c5a89d662d59985137f8a4ba3"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/ReadCreditProof.log": {
+    "bytes": 462,
+    "sha256": "460a52892a9d9868d529c37e1b5bf13f58c4216bb45768c0b728e9309cedb9ea"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/result.json": {
+    "bytes": 1761,
+    "sha256": "ccf94fb13029a60fe624a9bee4d2232ca99b7f977a25d01eff56936e2d340b99"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/sany.log": {
+    "bytes": 3522,
+    "sha256": "a54d6709e9d13fc6bfde13a8a82c6288c5e9bdf79975f6883fa8fd90028ae0df"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-baseline/semantic-audit.json": {
+    "bytes": 4137,
+    "sha256": "8493266cb33e0c832d474fc4615de0a837b57a778e93689fed784ac2b4c8fa33"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-mutant/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-mutant/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-mutant/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-mutant/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-mutant/ReadCreditProof.tla": {
+    "bytes": 3319,
+    "sha256": "092529ed91b6d85c695ef58e7d40332815b28ca1bc324f7edbfb231f5e3e703d"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-mutant/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-mutant/result.json": {
+    "bytes": 737,
+    "sha256": "2edb01e59fda61d02731a644dace87f3ae429740c5f40a69368de373ae593aa7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-mutant/sany.log": {
+    "bytes": 3505,
+    "sha256": "e9c5d3aa33e7aecfd44cf3ec28ba33c2b3a50cb39943fefff1ecbd8f8bdd5c4c"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/ReadAdmissionProof.log": {
+    "bytes": 482,
+    "sha256": "6ffadcf4f65808ffe16a5fd2fab450acf5930173d823e1c6d1f4965964db8472"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/ReadCreditProof.log": {
+    "bytes": 462,
+    "sha256": "f0499642a9fd7fc316f613ec8e1b7f57c6bc70b887cc54d07c005e425df04905"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/result.json": {
+    "bytes": 1760,
+    "sha256": "0b162973b55216bf5a2440f78517fb96c27d7863b17e3928cd65d19dca08c6d0"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/sany.log": {
+    "bytes": 3522,
+    "sha256": "5ed751df951d5bea5c1bfe753656ccf8f5313e55b10d09d1e0b72bc6f099c1c6"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/proof-hole-restored/semantic-audit.json": {
+    "bytes": 4137,
+    "sha256": "4c1b96f89e65cbe37eff297f635bf3128717f3f3444d5b674b5ca5a905d52e58"
+  },
+  "/tmp/kv9-read-group-credit-formal-third/summary.json": {
+    "bytes": 61683,
+    "sha256": "81345fcb3d7da8a4ea0694dda18b2f5149a3af3a5fb1a247af8f014d51e522c2"
+  },
+  "/tmp/kv9-read-group-credit/proofs/tla/read-admission/ReadAdmission.tla": {
+    "bytes": 6924,
+    "sha256": "538e3aa3c524a5a11a67d7e3076c4b3cf4fa403310731f1d53b9094cb82a7227"
+  },
+  "/tmp/kv9-read-group-credit/proofs/tla/read-credit/Credit2.cfg": {
+    "bytes": 193,
+    "sha256": "22acc0ae6f36ccf693b424391a782b961e01eb6a4071d21266fc7393b59a15b6"
+  },
+  "/tmp/kv9-read-group-credit/proofs/tla/read-credit/Credit3.cfg": {
+    "bytes": 193,
+    "sha256": "e351c748d1d3a952062d2db39238226cd63be082c6b8aa9a1edb48ebae0f4f8b"
+  },
+  "/tmp/kv9-read-group-credit/proofs/tla/read-credit/CreditProgress.cfg": {
+    "bytes": 172,
+    "sha256": "17ceb8954b3ff691aca05de34c241b0fbcb3e633b638355c51fbf5409bf663da"
+  },
+  "/tmp/kv9-read-group-credit/proofs/tla/read-credit/ReadCredit.tla": {
+    "bytes": 3368,
+    "sha256": "7008f18ce50ad772c4ab97b8da83e03ebca112597c17708fe8443dddbb1eab04"
+  },
+  "/tmp/kv9-read-group-credit/proofs/tla/read-credit/ReadCreditMC.tla": {
+    "bytes": 1295,
+    "sha256": "62d3f4d609fb24192c3a1e4a643882c871bbb7d0b8fc8705b0be3c7ee11911a7"
+  },
+  "/tmp/kv9-read-group-credit/proofs/tlaps/read-admission/ReadAdmissionProof.tla": {
+    "bytes": 9659,
+    "sha256": "0fc9a3fb7aaca030d92078904096346eb437f0351d9ac0536f1a8e9eac6b8e51"
+  },
+  "/tmp/kv9-read-group-credit/proofs/tlaps/read-credit/ReadCreditProof.tla": {
+    "bytes": 3331,
+    "sha256": "75baf0808ec1b70c332c8ea496decedef527ca1efd446c220efebbaee109fd74"
+  },
+  "/tmp/kv9-read-group-credit/proofs/tlaps/read-credit/inventory.json": {
+    "bytes": 1824,
+    "sha256": "34c8e9ff920f5dfbcc1bd6f698e8953bd9ada93f1fa0bc4bd7f2f7a7657ec9f7"
+  },
+  "/tmp/kv9-read-group-credit/scripts/ProofAudit.java": {
+    "bytes": 4578,
+    "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+  },
+  "/tmp/kv9-read-group-credit/scripts/check-read-credit-protocol.py": {
+    "bytes": 11782,
+    "sha256": "b796b7855ad72cf748c26fc5e9c53a2974b528706ffb7b4e0d8f18bbac4fc5ef"
+  },
+  "/tmp/kv9-read-group-credit/scripts/check-tla.py": {
+    "bytes": 13049,
+    "sha256": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70"
+  },
+  "/tmp/kv9-read-group-credit/scripts/check-tlaps.py": {
+    "bytes": 16239,
+    "sha256": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8"
+  }
+}

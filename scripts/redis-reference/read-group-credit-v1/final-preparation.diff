@@ -1,0 +1,121 @@
+--- /tmp/kv9-peer-idle-watchdog-comparison-preparation/audit.py
++++ /tmp/kv9-read-group-credit-comparison-preparation/audit.py
+@@ -30,29 +30,29 @@
+ SOURCE = Path('/tmp/kv9-point-batch1-measurement')
+ CLIENT_REV = '03c1c776a5dd7d1cc67491ab253e02ce51665bf8'
+ OLD_REV = '5ee897a2f58c57bdf17ea1757c96224adf0f0dbb'
+-NEW_REV = 'f62c08ed9dc59bf56336a64a24c76c2b775f634e'
++NEW_REV = '57ff6851e40ed63c837189d6eb0a11190704725a'
+ REDIS_REV = 'b8ec38f660786412705f350d96ab086f0e7f6c60'
+ REDIS_SOURCE = Path('/tmp/kv9-redis-point-get-reference')
+ PINS = {
+  'old': (OLD_REV, '0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711'),
+- 'new': (NEW_REV, 'c050cdf9b109816c28a186a3e954e4fe32a6488288f1f2398c68f83bd6d4609b'),
++ 'new': (NEW_REV, '6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30'),
+  'client': (CLIENT_REV, '22ca0883ca2900fab0b457d87ebc6bc50662d7145af0846304f02b5841a6d30b'),
+  'redis': (REDIS_REV, '61349111171ded5cb7fff9085c7886381788e5f4c7a407e91a5dda618d124892'),
+ }
+-PROTOCOL_ID = 'kv9-peer-idle-watchdog-c1-c64-v1'
++PROTOCOL_ID = 'kv9-read-group-credit-c1-c64-v1'
+ CONCURRENCIES = (1, 64)
+ ARMS = (('old-point','old','point_get'), ('old-batch1','old','batch_get'),
+         ('new-point','new','point_get'), ('new-batch1','new','batch_get'),
+         ('redis-mget1',None,'mget'), ('redis-get1',None,'get'))
+ ROLE_PATHS = {
+  'old': ('/tmp/kv9-rpc-worker-pair', '/tmp/kv9-rpc-pair-release-first', 'kv9'),
+- 'new': ('/tmp/kv9-peer-idle-watchdog', '/tmp/kv9-peer-idle-watchdog-release-first', 'kv9'),
++ 'new': ('/tmp/kv9-read-group-credit', '/tmp/kv9-read-group-credit-release-first', 'kv9'),
+  'client': ('/tmp/kv9-point-batch1-measurement', '/tmp/kv9-point-batch1-client-release-first', 'kv9-batch-benchmark'),
+  'redis': ('/tmp/kv9-redis-point-get-reference', '/tmp/kv9-redis-point-get-reference-release-first', 'kv9-redis-batch-reference'),
+ }
+ SERVER_MANIFESTS = {
+  'old': '1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417',
+- 'new': 'a0a3258c5dcaf4eeb1bb9c35f4e07b32f42d1fbc7d2253e76b442ec9dc3e83e1',
++ 'new': '7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd',
+ }
+ records = {}
+ def require(value, message):
+@@ -200,7 +200,7 @@
+             isolation['driver_sha256']==args.expected_driver_sha256,'outer isolation scope differs')
+     require(matrix['isolation_snapshot']==isolation and sha(outer/'isolation.json')==matrix['isolation_snapshot_sha256'] and
+             sha(ROOT/'isolation-snapshot.json')==sha(outer/'isolation.json'),'inner/outer snapshot binding differs')
+-    expected_argv=['/usr/bin/python3','/tmp/kv9-peer-idle-watchdog-comparison-preparation/matched-driver.py',
++    expected_argv=['/usr/bin/python3','/tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py',
+                    '--output',str(ROOT),'--isolation-snapshot',str(outer/'isolation.json'),
+                    '--client-source','/tmp/kv9-point-batch1-measurement',
+                    '--client-build','/tmp/kv9-point-batch1-client-release-first','--expected-client-revision',CLIENT_REV]
+@@ -276,7 +276,7 @@
+         require(sha(ROOT/'retained-inputs/helpers'/f'{number:02d}-{Path(path).name}')==h,'executed helper snapshot differs')
+         if Path(path).is_relative_to(SOURCE) or Path(path).is_relative_to(REDIS_SOURCE):
+             require(sha(path)==h,'validator/helper source changed')
+-    require(matrix['helper_hashes'][str(Path('/tmp/kv9-peer-idle-watchdog-comparison-preparation/matched-driver.py'))]==args.expected_driver_sha256,
++    require(matrix['helper_hashes'][str(Path('/tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py'))]==args.expected_driver_sha256,
+             'driver is not the retained helper identity')
+     sys.path.insert(0,str(SOURCE/'scripts'))
+     import batch_benchmark_report as native
+--- /tmp/kv9-peer-idle-watchdog-comparison-preparation/matched-driver.py
++++ /tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py
+@@ -26,15 +26,15 @@
+ sys.dont_write_bytecode = True
+ 
+ OLD_REVISION = "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb"
+-NEW_REVISION = "f62c08ed9dc59bf56336a64a24c76c2b775f634e"
++NEW_REVISION = "57ff6851e40ed63c837189d6eb0a11190704725a"
+ REDIS_REVISION = "b8ec38f660786412705f350d96ab086f0e7f6c60"
+ SERVER_PINS = {
+     "old": dict(revision=OLD_REVISION,
+                 binary_sha256="0d5ffa081482945d213b88aef12222afab44a44ed03bf46cf27bd292db7b1711",
+                 manifest_sha256="1bc2c98587f344f0066033450018d0a4c81b4f16a5c25a691b18136659ebe417"),
+     "new": dict(revision=NEW_REVISION,
+-                binary_sha256="c050cdf9b109816c28a186a3e954e4fe32a6488288f1f2398c68f83bd6d4609b",
+-                manifest_sha256="a0a3258c5dcaf4eeb1bb9c35f4e07b32f42d1fbc7d2253e76b442ec9dc3e83e1"),
++                binary_sha256="6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30",
++                manifest_sha256="7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd"),
+ }
+ REDIS_CLIENT_SHA = "61349111171ded5cb7fff9085c7886381788e5f4c7a407e91a5dda618d124892"
+ SERVER_COMMAND = ["cargo", "build", "--locked", "--bin", "kv9", "--release",
+@@ -601,8 +601,8 @@
+     parser.add_argument("--expected-client-revision", required=True)
+     parser.add_argument("--old-server-source", type=Path, default=Path("/tmp/kv9-rpc-worker-pair"))
+     parser.add_argument("--old-server-build", type=Path, default=Path("/tmp/kv9-rpc-pair-release-first"))
+-    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-peer-idle-watchdog"))
+-    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-peer-idle-watchdog-release-first"))
++    parser.add_argument("--new-server-source", type=Path, default=Path("/tmp/kv9-read-group-credit"))
++    parser.add_argument("--new-server-build", type=Path, default=Path("/tmp/kv9-read-group-credit-release-first"))
+     parser.add_argument("--redis-client-source", type=Path, default=Path("/tmp/kv9-redis-point-get-reference"))
+     parser.add_argument("--redis-client-build", type=Path, default=Path("/tmp/kv9-redis-point-get-reference-release-first"))
+     parser.add_argument("--output", type=Path, required=True)
+@@ -666,7 +666,7 @@
+                 helper_hashes[str(path)] = digest(path)
+     rows = make_plan(args.smoke)
+     args.output.mkdir(parents=True)
+-    plan = dict(version=2, protocol_id="kv9-peer-idle-watchdog-c1-c64-v1",
++    plan = dict(version=2, protocol_id="kv9-read-group-credit-c1-c64-v1",
+                 concurrency_points=[1, 64], complete=False, client_revision=args.expected_client_revision,
+                 smoke=args.smoke, placement=placement(args.smoke), role_bindings=roles, client_cargo=cargo,
+                 scope="Twelve-cohort c1/c64 correctness smoke only; no timing acceptance" if args.smoke else
+--- /tmp/kv9-peer-idle-watchdog-comparison-preparation/test_audit_contract.py
++++ /tmp/kv9-read-group-credit-comparison-preparation/test_audit_contract.py
+@@ -55,7 +55,7 @@
+                       if k not in {'version', 'rpc_transport', 'read_api', 'client', 'address', 'deadline_ms'}}
+             rows.append(dict(repeat=repeat, arm=arm, server_role=server, read_api=api,
+                              mix='read', target='kv9' if server else 'redis-memory', shared=shared))
+-    return dict(version=2, protocol_id='kv9-peer-idle-watchdog-c1-c64-v1',
++    return dict(version=2, protocol_id='kv9-read-group-credit-c1-c64-v1',
+                 concurrency_points=[1, 64], smoke=False, fixed_rates=None,
+                 attempts=[{} for _ in rows], cohort_inventory=rows)
+ 
+@@ -137,10 +137,10 @@
+             audit['paired_cases'](cases + [cases[0]], 0, 1, 'point')
+ 
+     def test_exact_candidate_and_control_pins_are_distinct(self):
+-        self.assertEqual(audit['PINS']['new'], ('f62c08ed9dc59bf56336a64a24c76c2b775f634e',
+-                         'c050cdf9b109816c28a186a3e954e4fe32a6488288f1f2398c68f83bd6d4609b'))
++        self.assertEqual(audit['PINS']['new'], ('57ff6851e40ed63c837189d6eb0a11190704725a',
++                         '6d76779a3e421388692b01ce08bd289477283fc05fd28b734eaed9138e0f7e30'))
+         self.assertEqual(audit['SERVER_MANIFESTS']['new'],
+-                         'a0a3258c5dcaf4eeb1bb9c35f4e07b32f42d1fbc7d2253e76b442ec9dc3e83e1')
++                         '7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd')
+         self.assertNotEqual(audit['PINS']['old'], audit['PINS']['new'])
+         self.assertEqual(set(audit['ROLE_PATHS']), {'old', 'new', 'client', 'redis'})
+ 

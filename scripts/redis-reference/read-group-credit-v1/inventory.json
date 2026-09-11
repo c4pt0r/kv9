@@ -1,0 +1,283 @@
+{
+  "scope": "Exact retained helper/evidence copies; authored README and this inventory are excluded. Complete original artifacts remain at source paths.",
+  "files": [
+    {
+      "path": "matched-driver.py",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/matched-driver.py",
+      "bytes": 45078,
+      "sha256": "68c1bd5a78f4a24c4e05cb32dc080b8e87165ad04b2453b97b2be08e984290cc"
+    },
+    {
+      "path": "audit.py",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/audit.py",
+      "bytes": 39350,
+      "sha256": "85a9a48ba745b6a5c16d947e8c455c3fe0aa1aa52b026b0abcdf057e67ab9035"
+    },
+    {
+      "path": "isolate-and-run.py",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/isolate-and-run.py",
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    {
+      "path": "driver-arguments.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/driver-arguments.json",
+      "bytes": 209,
+      "sha256": "47c521c0a15dff9cf44af891a6a891daec0b1f9beb2b994f2990002bc58527df"
+    },
+    {
+      "path": "test_driver_contract.py",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/test_driver_contract.py",
+      "bytes": 3451,
+      "sha256": "d038620cb5e17eaa3582c20aae4ea2cb5775777fa7af9132b4ecab3eaf05a30a"
+    },
+    {
+      "path": "test_audit_contract.py",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/test_audit_contract.py",
+      "bytes": 8280,
+      "sha256": "a3b0231f40abd31c773a86230e9568ef4794172be6d1b4f04a7e84a5eb658027"
+    },
+    {
+      "path": "protocol.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/protocol.json",
+      "bytes": 20749,
+      "sha256": "50e80ba9d1c35436852d9f103f7ae7e0214d49bf4b24eb4988c93c5fbd9330b0"
+    },
+    {
+      "path": "READINESS.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/READINESS.json",
+      "bytes": 4837,
+      "sha256": "b83c45ae6c5cf3ad5a01144e5e7c290516f7e17a3065d9a23fe689103bf2df5e"
+    },
+    {
+      "path": "frozen-inputs.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/frozen-inputs.json",
+      "bytes": 3977,
+      "sha256": "3040da4fc18f7a1013a359b8962582fed2d5cac71256340b824acb40eed7b7bb"
+    },
+    {
+      "path": "final-pin-binding.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/final-pin-binding.json",
+      "bytes": 4291,
+      "sha256": "a8af3c79f6f5559f84bfb042e6539dcd3e04c4fc7b540caac70b3aaf09e1bbbb"
+    },
+    {
+      "path": "contract-outcomes-final-first.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/contract-outcomes-final-first.json",
+      "bytes": 1198,
+      "sha256": "9bfe7c1ff4b71905b10fc25af46676fbefe2cdd7e19d7249572ba9377e58c32e"
+    },
+    {
+      "path": "final-preparation.diff",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/final-preparation.diff",
+      "bytes": 8499,
+      "sha256": "17fdb686ee48804c6aa14d3ee5f649520d830e6357b1c16cc2ca9df0f1a6a4bc"
+    },
+    {
+      "path": "driver-contract-final-first.log",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/driver-contract-final-first.log",
+      "bytes": 888,
+      "sha256": "8b7b6ff0ed3b47595d2aafae0eff0940b889553240c04b14ac2aa61b137e90b7"
+    },
+    {
+      "path": "audit-contract-final-first.log",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/audit-contract-final-first.log",
+      "bytes": 1403,
+      "sha256": "1a1460eca77c2d864963cdbdd5555325f8ecf2d97ae7e7aca629ea3a3c8288ef"
+    },
+    {
+      "path": "audit-invocation-first.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/audit-invocation-first.json",
+      "bytes": 1035,
+      "sha256": "ebe169de5cbaa1ec8ce744a07021840ba3c5c7f65bce8aa1242212a6b87a49c3"
+    },
+    {
+      "path": "audit-terminal-first.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/audit-terminal-first.json",
+      "bytes": 438,
+      "sha256": "9ac022d2d2ac1a7f9ad18a45b4b4554de111597210fa103525e6c20974e33afe"
+    },
+    {
+      "path": "audit-first.log",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/audit-first.log",
+      "bytes": 1276,
+      "sha256": "11df0a847793d047286c631c1b1ff8b33d887c42d8c14c75cc62a45c88ee451b"
+    },
+    {
+      "path": "statistics-first.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/statistics-first.json",
+      "bytes": 18420,
+      "sha256": "cbad8f86590a32ef0f3814e3e758f5fbe5ace1ce03e7e39d9aa5b64af81a547d"
+    },
+    {
+      "path": "READOUT.md",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/READOUT.md",
+      "bytes": 3272,
+      "sha256": "a2d742703c1e28d40a872eb592a96e20c7097ed50d57c6e4ffb0f9ae3a6cc500"
+    },
+    {
+      "path": "preparation-readme.md",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/README.md",
+      "bytes": 3390,
+      "sha256": "f3272e48dc924fd90ca2ffd40530f0c315709069c02a137f78516ff77a3f0e62"
+    },
+    {
+      "path": "comparison-audit.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/results-first/audit.json",
+      "bytes": 137656,
+      "sha256": "227e49b64205a4c79982fdee024cd09da0a44b428d660caa45845b32d262340a"
+    },
+    {
+      "path": "comparison-input-inventory.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/results-first/input-inventory.json",
+      "bytes": 263721,
+      "sha256": "491bc234414571ebdab97407432d48b7beb0d726bf62538c7aa4e816b9b04688"
+    },
+    {
+      "path": "source-gates.json",
+      "source": "/tmp/kv9-read-group-credit-source-validation-first/result.json",
+      "bytes": 1330,
+      "sha256": "f5a785c1d987ed6eb96b88371964047879051873c5da63e2a6c8bb083c9178d3"
+    },
+    {
+      "path": "source-controls.json",
+      "source": "/tmp/kv9-read-group-credit-async-controls-first/manifest.json",
+      "bytes": 68751,
+      "sha256": "ef0ed0ea5c1b3f3394018375b928a6c8a8d66d04ded9288e47104615ac063876"
+    },
+    {
+      "path": "workspace-gates.json",
+      "source": "/tmp/kv9-read-group-credit-workspace-first/result.json",
+      "bytes": 16230,
+      "sha256": "4337d458d8c394c7d63d57d581982e149911ba40dc120464b0c4d52969565a61"
+    },
+    {
+      "path": "source-audit.json",
+      "source": "/tmp/kv9-read-group-credit-source-independent-first/audit-third.json",
+      "bytes": 79776,
+      "sha256": "eee9b687d3d8808d2786a31ad6ce3b66f9b6ae9d1bb10b649b7ff993c69bc1dc"
+    },
+    {
+      "path": "source-audit-first.json",
+      "source": "/tmp/kv9-read-group-credit-source-independent-first/audit-first.json",
+      "bytes": 44774,
+      "sha256": "400c2eed5b466d0d811fe9b1e6351672e7699043f93ef41cf08231fd1ed28550"
+    },
+    {
+      "path": "source-audit-second.json",
+      "source": "/tmp/kv9-read-group-credit-source-independent-first/audit-second.json",
+      "bytes": 1108,
+      "sha256": "1495b413f87eec89a66886645b5b2fdc3a1726c4ce62941db4bda4c8ee2aac79"
+    },
+    {
+      "path": "source-audit-report.md",
+      "source": "/tmp/kv9-read-group-credit-source-independent-first/REPORT.md",
+      "bytes": 2124,
+      "sha256": "a17fb262899bf2573534f2c4242e903e7efb3a448fa5363c14785b82be0bf8ed"
+    },
+    {
+      "path": "source-parser-correction.json",
+      "source": "/tmp/kv9-read-group-credit-source-independent-first/parser-correction.json",
+      "bytes": 621,
+      "sha256": "93b76507c01109ebd100fdccbf8211022f686b2dd497937662a0bc5013e48770"
+    },
+    {
+      "path": "source-commit-binding.json",
+      "source": "/tmp/kv9-read-group-credit-source-independent-first/commit-binding-adjustment.json",
+      "bytes": 532,
+      "sha256": "4f30f0324342de41ec35c833cfc765e7a437a64d157d9101a6d9894c8debf78a"
+    },
+    {
+      "path": "formal-summary.json",
+      "source": "/tmp/kv9-read-group-credit-formal-third/summary.json",
+      "bytes": 61683,
+      "sha256": "81345fcb3d7da8a4ea0694dda18b2f5149a3af3a5fb1a247af8f014d51e522c2"
+    },
+    {
+      "path": "formal-summary-first.json",
+      "source": "/tmp/kv9-read-group-credit-formal-first/summary.json",
+      "bytes": 7221,
+      "sha256": "05e1ca4760183c336dd57e3a00915bc4b3860f94d4b4ffdc0139b87dab5a9a65"
+    },
+    {
+      "path": "formal-summary-second.json",
+      "source": "/tmp/kv9-read-group-credit-formal-second/summary.json",
+      "bytes": 32011,
+      "sha256": "8a51009c908439368406433189bb03a967781c3e20337d916e5a48e6b716b961"
+    },
+    {
+      "path": "formal-audit.json",
+      "source": "/tmp/kv9-read-group-credit-formal-independent-first/audit-first.json",
+      "bytes": 8666,
+      "sha256": "ccd4302cddf3e4c6ad9da0c8fd71512d3d24ebd0602d0c681a5149191813952a"
+    },
+    {
+      "path": "formal-input-inventory.json",
+      "source": "/tmp/kv9-read-group-credit-formal-independent-first/inventory-first.json",
+      "bytes": 75736,
+      "sha256": "16e4114361adafd7460e580b1bfc9ad18f70ba12a95dc9cefc3e20f45f48ab40"
+    },
+    {
+      "path": "formal-audit-report.md",
+      "source": "/tmp/kv9-read-group-credit-formal-independent-first/REPORT.md",
+      "bytes": 4005,
+      "sha256": "396861aefe31aa0285fa29a3fb48795bf6ac31338f719313d76b034c5e7e46f0"
+    },
+    {
+      "path": "formal-review.md",
+      "source": "/tmp/kv9-read-group-credit-formal-review.md",
+      "bytes": 17919,
+      "sha256": "a14c849efd44b79036a25d8c243bf04a5ffc777f15bd3fc1377c4291172737a3"
+    },
+    {
+      "path": "process-audit.json",
+      "source": "/tmp/kv9-read-group-credit-process-independent-first/results-first/audit.json",
+      "bytes": 10403,
+      "sha256": "5d6d923c90927f18d6cfa2ae22576d3393256d11175618674485eead0dc6973a"
+    },
+    {
+      "path": "process-inputs.json",
+      "source": "/tmp/kv9-read-group-credit-process-independent-first/results-first/original-inputs.json",
+      "bytes": 11935,
+      "sha256": "5d349c5cf5fa2c1f1f059e0730a85ad0442dfde04b1872bc5e3e5cec637060e5"
+    },
+    {
+      "path": "process-invocation.json",
+      "source": "/tmp/kv9-read-group-credit-process-independent-first/invocation.json",
+      "bytes": 923,
+      "sha256": "e796307a234a9271dd12a506a17555ab63840e2f2b0c81a6b65ea274f0822899"
+    },
+    {
+      "path": "process-terminal.json",
+      "source": "/tmp/kv9-read-group-credit-process-independent-first/terminal.json",
+      "bytes": 113,
+      "sha256": "fac8a1c559713588997cd590adeb4f80bd53cebb9ec90a0075edc876c4a6c96e"
+    },
+    {
+      "path": "build.json",
+      "source": "/tmp/kv9-read-group-credit-release-first/build.json",
+      "bytes": 65785,
+      "sha256": "7e5179f856b8828c26a6bf68ce0056755e16e12bbdc35c9a11845178712caabd"
+    },
+    {
+      "path": "endpoint-counters-first-failure.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/endpoint-counters-first-failure.json",
+      "bytes": 488,
+      "sha256": "7cf9bf00180243473422f28d1af2912de8121412be8553ece4aafe0b1e45d55b"
+    },
+    {
+      "path": "endpoint-counters-second.json",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/endpoint-counters-second.json",
+      "bytes": 30242,
+      "sha256": "6d7c65f2b3438e3fe0638d66451481ce3c9ad9fd8123ed3dfe5c4d9bbb3b6fac"
+    },
+    {
+      "path": "endpoint-counters-second.md",
+      "source": "/tmp/kv9-read-group-credit-comparison-preparation/endpoint-counters-second.md",
+      "bytes": 1575,
+      "sha256": "89e055270c51f8ce768f11fad3c780841c100183e2207a8ad852242144596aba"
+    }
+  ],
+  "file_count": 46,
+  "total_bytes": 1128242
+}

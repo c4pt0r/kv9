@@ -1,0 +1,1527 @@
+{
+  "version": 1,
+  "accepted": true,
+  "controls": [
+    {
+      "name": "ignored-context-sequence",
+      "source": "crates/raft/src/async_read.rs",
+      "test": "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+      "expected_failure": "assertion failed: !queue.confirm(&context(9), 1)",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120800400724883,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3429196,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120817564004065,
+          "log_sha256": "f5b2ecdb1b5cab573095e36d6e698c8b64de3ceb69e3b8d2a9563a7fca2b8f14",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120817637432759,
+          "source_sha256": "40979dd566263a52a77f428c3df5b99fb673a17a5c4d7b1267b9a3cece0453d9",
+          "validation_passed": true,
+          "process_id": 3441013,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120819204682948,
+          "log_sha256": "8a63f102f9c76a1a3d71b18449ffbbc0360c9685f3698f6c8c78afc6084e5b44",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "25cb043a7894a8ec9b6299cdda2c077f563572126124255d1b7c93649162df61",
+            "bytes": 151229096,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120819277807162,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3442055,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120820794449012,
+          "log_sha256": "18f015c54b9096986f9842e87a02dc55c74266d63c5b1e9ed6cb20959766b44e",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "overwritten-first-confirmation",
+      "source": "crates/raft/src/async_read.rs",
+      "test": "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+      "expected_failure": "confirmation was downgraded or apply coverage bypassed",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120820869031295,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3442690,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120821686066414,
+          "log_sha256": "8aaeb6be5b7d5908d881ff54693bc396e4d40efe392fed71ff5e0fc3260d35f6",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120821758727271,
+          "source_sha256": "27e06b7d07fa3fd66c01631ca438cb0603e1f2c24fa80353fb66e7d2bb1b67e2",
+          "validation_passed": true,
+          "process_id": 3443343,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120822625614839,
+          "log_sha256": "973a483c074936712cf16c9a7402d6d00e042f14f62f44e784ee603e2624019e",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "ba6732d4a233a90ccac3bae45da076e2d5be7d3d3eda8a7943208d30fa2d26d5",
+            "bytes": 151173128,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120822699203763,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3443978,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120823564444548,
+          "log_sha256": "7a1b4b9cc81e63f07b6a9f24ad2d99d5a9c625df836e92dd3476171f83bab652",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "omitted-apply-coverage",
+      "source": "crates/raft/src/async_read.rs",
+      "test": "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+      "expected_failure": "confirmation was downgraded or apply coverage bypassed",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120823637587157,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3444619,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120824452956285,
+          "log_sha256": "467023584b8102a9d1300660ba92251d02c2563e2a9f81ae882d8b5c24b3016a",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120824526514130,
+          "source_sha256": "4fd53f8102f1ed65b130da996ed88d3f081ae86387ee842183d92af88b6f365f",
+          "validation_passed": true,
+          "process_id": 3445254,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120825442033761,
+          "log_sha256": "b4921c35f19c47dccbe45948f5b541192335bcdbc3f0bc9b7032b88c6c7193a2",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "7a424e483d7d87cf36ca4f80e7e3243d58b174a76df7e8a7e333004a4d33bcea",
+            "bytes": 151172024,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120825515018644,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3445889,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120826430671913,
+          "log_sha256": "84bfcbe32241b660111393923152a62302dc9fa47052cce21d671d3818cde143",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "submitted-cancelled-request",
+      "source": "crates/raft/src/async_read.rs",
+      "test": "async_read::tests::cancellation_never_submits_and_capacity_is_bounded_until_owner_cleanup",
+      "expected_failure": "cancelled read reached Raft",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::cancellation_never_submits_and_capacity_is_bounded_until_owner_cleanup",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120826503881075,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3446526,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120827318966369,
+          "log_sha256": "ecc515e42fa68ec2718c0a164791de506ed075cef38db058624d2a8f86ddc8be",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::cancellation_never_submits_and_capacity_is_bounded_until_owner_cleanup",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120827392055366,
+          "source_sha256": "44c6b77cfe42d7555b78b314ad5d93275cf0fe89bc1ba799e7b5b197df296aee",
+          "validation_passed": true,
+          "process_id": 3447161,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120828257618699,
+          "log_sha256": "1d3fcdd2a2ddc18eb345d5efbd31e32152b056e1b8d88d27befff7e346d0d2c0",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "3e9bc4f288d9fe6aee88bb720ea94f815d0fcf95452db2cf2d6d21659259e8af",
+            "bytes": 151171816,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::cancellation_never_submits_and_capacity_is_bounded_until_owner_cleanup",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120828330993982,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3447796,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120829246156208,
+          "log_sha256": "32b37e31414b3084b61b42b7c42fb96285eac7839f4655dfca20060b6394eb46",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "released-claimed-reservation",
+      "source": "crates/raft/src/async_read.rs",
+      "test": "async_read::tests::stop_reaches_unclaimed_suffix_while_one_callback_is_blocked",
+      "expected_failure": "claimed storage was released before callback completion",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::stop_reaches_unclaimed_suffix_while_one_callback_is_blocked",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120829322101059,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3448433,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120830137122860,
+          "log_sha256": "4c969dcc30b54ba3f7cb25bb69b391747521c129596d021a2978541f29b188ed",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::stop_reaches_unclaimed_suffix_while_one_callback_is_blocked",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120830210551623,
+          "source_sha256": "e8b4d4bddb37f3e77d57866565abc02240016cf4f71ec43743d068ec9dd67f7d",
+          "validation_passed": true,
+          "process_id": 3449069,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120831526597210,
+          "log_sha256": "eb9110c1cf1a89fa88a3e617ac7eae86c7a4cec07208fd5105c788adc19b46ae",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "45a60772efd0f25f313bc954f394b95602a58480e9fc82389b4275d1fdde643c",
+            "bytes": 151206336,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::stop_reaches_unclaimed_suffix_while_one_callback_is_blocked",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120831599747121,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3449705,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120832915974145,
+          "log_sha256": "d0b2d915c97d7571a4648e1d2b5c1faeff946ea9ec3f8e3598bae26226ed0882",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "omitted-election-progress-wake",
+      "source": "crates/raft/src/driver.rs",
+      "test": "driver::tests::async_read_deferred_before_election_commit_progresses_without_a_tick",
+      "expected_failure": "election-ready admission waited for another tick",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::tests::async_read_deferred_before_election_commit_progresses_without_a_tick",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120832989247136,
+          "source_sha256": "dcd8bea84fc0b315f21a2fb74f05bf390a7cec387582c64c0d64f7229f3145c5",
+          "validation_passed": true,
+          "process_id": 3450341,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120833805040145,
+          "log_sha256": "d5f15dfc5672d2c25119141328b4ffa43a130ef21b194fcb48bf6fe8a9386b8d",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::tests::async_read_deferred_before_election_commit_progresses_without_a_tick",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120833878339185,
+          "source_sha256": "7c2145a9fa9e4bb68b2d1b70634bffc1d924a8c45b3914a0b40aadece15e9679",
+          "validation_passed": true,
+          "process_id": 3450977,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120837496562996,
+          "log_sha256": "abc9a21c94d507dae03a76e61016b6e7458ae5a11a4313750788c54450564d21",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "71b9408b8f1f34db1b1d2858cc3a9d1ef65b2dfbb00b1a870e9e198793b77938",
+            "bytes": 151168928,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::tests::async_read_deferred_before_election_commit_progresses_without_a_tick",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120837587091784,
+          "source_sha256": "dcd8bea84fc0b315f21a2fb74f05bf390a7cec387582c64c0d64f7229f3145c5",
+          "validation_passed": true,
+          "process_id": 3452710,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120839154838231,
+          "log_sha256": "ffe7badfb6576a86d37fd8469dbea17fb5938bd8863a5be4b6e6af099689c0d5",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "deferred-admission-self-spin",
+      "source": "crates/raft/src/async_read.rs",
+      "test": "async_read::tests::deferred_admission_has_a_finite_turn_and_does_not_self_spin",
+      "expected_failure": "deferred admission spun without new Raft work",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::deferred_admission_has_a_finite_turn_and_does_not_self_spin",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120839229979747,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3453686,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120840044956682,
+          "log_sha256": "477afebb1fd54e5ce86285dc1a2547dc5378f38dd4c973284a46d24882063027",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::deferred_admission_has_a_finite_turn_and_does_not_self_spin",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120840120531439,
+          "source_sha256": "681519f715644a652b7df20094fa64f805420bae755cb39fdd1b3e6854baaa26",
+          "validation_passed": true,
+          "process_id": 3454322,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120842988459330,
+          "log_sha256": "b86e740bb0b07603a3314faed2568c22d2c9c19869ca3e1252ffe72bf4dc10d1",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "1db8d6e169ccc76a14b5954e04311f195271fa3a9a15c9757672a2e74438a33a",
+            "bytes": 151173304,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::deferred_admission_has_a_finite_turn_and_does_not_self_spin",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120843080492541,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3455679,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120843997112524,
+          "log_sha256": "58c4e45267f0f2e3aa33e1671a4ebe3f05a2961a4ed356814f0aeae01dc0712b",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "late-member-after-quorum-start",
+      "source": "crates/raft/src/async_read.rs",
+      "test": "async_read::tests::sealed_members_share_one_confirmation_and_late_arrivals_require_another",
+      "expected_failure": "arrival joined a group after its quorum request started",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::sealed_members_share_one_confirmation_and_late_arrivals_require_another",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120844076671495,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3456315,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120844891611083,
+          "log_sha256": "943e04f56e9f06cded628339d484c353e7db86180c86a2131094a898f27aa89c",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::sealed_members_share_one_confirmation_and_late_arrivals_require_another",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120844964362758,
+          "source_sha256": "bbf57dd7c6f6eba98418a67bba679cff945b13164982658c17db6334a5abad97",
+          "validation_passed": true,
+          "process_id": 3456610,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120846333250355,
+          "log_sha256": "0d3b1271f9bdeecfe22b1a06bcb68df84a918c91c1944ea3decebf7e21add176",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "a8a2b9437f9185c25ef217de0a9e3b31e0c74c39a5c2f364059de6c40f5a6613",
+            "bytes": 151176832,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::sealed_members_share_one_confirmation_and_late_arrivals_require_another",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120846407315056,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3457585,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120847725959502,
+          "log_sha256": "02902bfb07cdf5618a708d9dca516808e5c3e479506c70f87586391d541a5bb3",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "representative-dependent-confirmation",
+      "source": "crates/raft/src/async_read.rs",
+      "test": "async_read::tests::canceled_representative_leaves_group_identity_for_its_live_members",
+      "expected_failure": "representative cancellation destroyed confirmation routing",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::canceled_representative_leaves_group_identity_for_its_live_members",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120847799919457,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3458220,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120848615971793,
+          "log_sha256": "f1bf66d5e5463e7fcb9307511f517d664abce737d855b82cc1f49eed2f56021a",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::canceled_representative_leaves_group_identity_for_its_live_members",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120848689278165,
+          "source_sha256": "b37c32c95cf1b113ed0c4c803e22226352924da6d57e40cc53f70f87eb272045",
+          "validation_passed": true,
+          "process_id": 3458855,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120850155735815,
+          "log_sha256": "2f6903d0707ba96bf08bf46dbada43f93e886afdf76c8774586e7d036da0b1f6",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "66cb4c0e0174225fd84d6f1585e865d9d832c76379f354473d2cc27964eb0d3d",
+            "bytes": 151182784,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::canceled_representative_leaves_group_identity_for_its_live_members",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120850228294388,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3459830,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120851694613035,
+          "log_sha256": "a65faacd4e3243dda1e8f93afd5982c90143c1754b981b1343327a22a5b738b8",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "unbounded-group-inspection",
+      "source": "crates/raft/src/async_read.rs",
+      "test": "async_read::tests::full_queue_emits_two_bounded_groups_and_retains_every_member",
+      "expected_failure": "sealed group exceeded its inspection or membership bound",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::full_queue_emits_two_bounded_groups_and_retains_every_member",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120851768648941,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3460465,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120852583975344,
+          "log_sha256": "083e46213f19a4d0b59f9d96e9f94a4caecf3c599ebf6c1f4b930affdc54a590",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::full_queue_emits_two_bounded_groups_and_retains_every_member",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120852657080438,
+          "source_sha256": "96dcb332a5a6da0fdb7cfd168ffb89e2f3d1b321db4d9276cdb152e5e9c982fb",
+          "validation_passed": true,
+          "process_id": 3461139,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120853572453925,
+          "log_sha256": "2c39888595fc07805b83eb898e6cef5d6159cc70043dcc092c1e5a90c662bc99",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "66db258d9156f5bd6639a0c0df912748413625f47a6d8b611d9de4453f4c8e55",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "async_read::tests::full_queue_emits_two_bounded_groups_and_retains_every_member",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120853645279777,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3461792,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120854512962189,
+          "log_sha256": "38d1ba623e2b9c441d6bf606ab2ac68b2d7f5bded24117e7c135374b647d25fc",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "per-member-quorum-broadcast",
+      "source": "crates/raft/src/async_read.rs",
+      "test": "driver::tests::sealed_read_groups_use_one_heartbeat_per_follower_and_fence_late_reads",
+      "expected_failure": "sealed group did not retain all submitted members",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::tests::sealed_read_groups_use_one_heartbeat_per_follower_and_fence_late_reads",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120854587345946,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3462427,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120855402539266,
+          "log_sha256": "e78570e8d6ee9be27912eaa00b8deeb04ac516b1711ea145a2d9b561330a1e50",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::tests::sealed_read_groups_use_one_heartbeat_per_follower_and_fence_late_reads",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120855475926738,
+          "source_sha256": "82612ac50329a1c6406c19a92a0641ca4edafc4bbab9597a079be1a5a26f21a6",
+          "validation_passed": true,
+          "process_id": 3463062,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120856792944753,
+          "log_sha256": "960cab92fd93c4b5e13075c2b5cb1321d3710056acd40fb166c513614b0d32de",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "b7080e754d7091235cdbbce2d4ce67842408ece4d2e224075ef1419466b6226d",
+            "bytes": 151187368,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::tests::sealed_read_groups_use_one_heartbeat_per_follower_and_fence_late_reads",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120856865927779,
+          "source_sha256": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+          "validation_passed": true,
+          "process_id": 3463697,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120858182172924,
+          "log_sha256": "a7beaa2e39776b3021476b14c06e5f3c945ea7540c74bc4274982269a173eaf2",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "bypassed-pending-read-credit",
+      "source": "crates/raft/src/rawnode.rs",
+      "test": "driver::read_credit_tests::cap_one_seals_late_members_until_distinct_confirmation",
+      "expected_failure": "read credit admitted a second unconfirmed context",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::read_credit_tests::cap_one_seals_late_members_until_distinct_confirmation",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120858266268342,
+          "source_sha256": "97c0046a635bd6f09c0f8deb8371ad6e808996ce69bd6df62efc4e946f759eef",
+          "validation_passed": true,
+          "process_id": 3464672,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120859081310845,
+          "log_sha256": "4cb0c88c366132379c497b02c6a6703e4273a16f6e91600982bb373c9e709965",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::read_credit_tests::cap_one_seals_late_members_until_distinct_confirmation",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120859155017765,
+          "source_sha256": "d6586ac5040a316752e15956e32adf554e13e474ae1d310f474ac1790c0bc6b0",
+          "validation_passed": true,
+          "process_id": 3465307,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120860020192047,
+          "log_sha256": "cdcad70db6c2fdad385723b45404e36ee6929e4e736ea107be9faed56424b646",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "c91ec170d587e8c411175d70ac149dac9138f80cb51001aea9982c055e1b6148",
+            "bytes": 151172824,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::read_credit_tests::cap_one_seals_late_members_until_distinct_confirmation",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120860097949496,
+          "source_sha256": "97c0046a635bd6f09c0f8deb8371ad6e808996ce69bd6df62efc4e946f759eef",
+          "validation_passed": true,
+          "process_id": 3465944,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120860964737595,
+          "log_sha256": "ad50f72fb7b05d1934c873eacb294e2b9d87904333b24ecafccaf06144622f7c",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "full-read-credit-owner-spin",
+      "source": "crates/raft/src/rawnode.rs",
+      "test": "driver::read_credit_tests::full_credit_owner_parks_and_confirmation_wakes_without_tick",
+      "expected_failure": "full read credit self-woke instead of parking the real owner",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::read_credit_tests::full_credit_owner_parks_and_confirmation_wakes_without_tick",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120861039037374,
+          "source_sha256": "97c0046a635bd6f09c0f8deb8371ad6e808996ce69bd6df62efc4e946f759eef",
+          "validation_passed": true,
+          "process_id": 3466255,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120861854186945,
+          "log_sha256": "1c62240ad62f23ce85d8ccd16573e65ea8a0c16e9054b0465de205be6f798979",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::read_credit_tests::full_credit_owner_parks_and_confirmation_wakes_without_tick",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120861929060116,
+          "source_sha256": "c804ea1fa86111d416ed4810eff345645e71be9b42ee09567207323fd588fff4",
+          "validation_passed": true,
+          "process_id": 3466891,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120864796547837,
+          "log_sha256": "3146924067ddf7631df2928922a977d349d72a182fb7de0400e0d5022b4df700",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "22381e1c995e9a40269bb418c321ac0350696546ec8611dd38bf057d5f0fcc78",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::read_credit_tests::full_credit_owner_parks_and_confirmation_wakes_without_tick",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120864869769198,
+          "source_sha256": "97c0046a635bd6f09c0f8deb8371ad6e808996ce69bd6df62efc4e946f759eef",
+          "validation_passed": true,
+          "process_id": 3468207,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120865785939458,
+          "log_sha256": "1108152633300b7cd8efb2a3f97b4d23e23bc01ff41b7431ded53ececba1b840",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    },
+    {
+      "name": "synchronous-read-credit-bypass",
+      "source": "crates/raft/src/rawnode.rs",
+      "test": "driver::read_credit_tests::synchronous_read_shares_credit_and_requires_its_own_confirmation",
+      "expected_failure": "synchronous admission bypassed outstanding protocol credit",
+      "runs": [
+        {
+          "phase": "baseline",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::read_credit_tests::synchronous_read_shares_credit_and_requires_its_own_confirmation",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120865861794196,
+          "source_sha256": "97c0046a635bd6f09c0f8deb8371ad6e808996ce69bd6df62efc4e946f759eef",
+          "validation_passed": true,
+          "process_id": 3468880,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120866676988734,
+          "log_sha256": "f9f09308fd61ba891c2183ec03314cade26ce01ff657e5b84345491ad90fb553",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        },
+        {
+          "phase": "mutant",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::read_credit_tests::synchronous_read_shares_credit_and_requires_its_own_confirmation",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120866751160153,
+          "source_sha256": "d6586ac5040a316752e15956e32adf554e13e474ae1d310f474ac1790c0bc6b0",
+          "validation_passed": true,
+          "process_id": 3469516,
+          "exit_code": 101,
+          "ended_unix_ns": 1789120869618515875,
+          "log_sha256": "fd1c2fcae664ed086cf554b0f78cc3f400590ff17e2544fcfe0e785342fdaaff",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "c91ec170d587e8c411175d70ac149dac9138f80cb51001aea9982c055e1b6148",
+            "bytes": 151172824,
+            "features": []
+          }
+        },
+        {
+          "phase": "restored",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "-p",
+            "kv9-raft",
+            "--lib",
+            "--message-format=json-render-diagnostics",
+            "driver::read_credit_tests::synchronous_read_shares_credit_and_requires_its_own_confirmation",
+            "--",
+            "--exact"
+          ],
+          "started_unix_ns": 1789120869709206572,
+          "source_sha256": "97c0046a635bd6f09c0f8deb8371ad6e808996ce69bd6df62efc4e946f759eef",
+          "validation_passed": true,
+          "process_id": 3470832,
+          "exit_code": 0,
+          "ended_unix_ns": 1789120870625404517,
+          "log_sha256": "3ed701f2a7fad5c962d43f656c0436bf58edc5548fc9a31fbab0c633069f7d6e",
+          "compile_errors": [],
+          "executable": {
+            "path": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+            "sha256": "4c48dceed11f847e47687f4436b765e3cc759c27b0332ad4fb3eff3a722ca41d",
+            "bytes": 151173224,
+            "features": []
+          }
+        }
+      ],
+      "accepted": true
+    }
+  ],
+  "revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "source_status": " M crates/raft/src/driver.rs\n M crates/raft/src/rawnode.rs\n M scripts/check-async-read-controls.py\n?? crates/raft/src/driver/\n?? docs/READ-INDEX-CREDIT.md\n",
+  "runner_sha256": "4edf65bd257936b96016bdec4e4df7b0be0cc69ed49b9b1d6f4b3b15f7491870",
+  "cargo_target": "/tmp/kv9-read-group-credit-async-controls-first/cargo-target",
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "scope": "Compiled semantic implementation controls against retained copied inputs; not a proof, fault-matrix acceptance, or production benchmark.",
+  "source_files": {
+    "Cargo.lock": "160d3a44b82aea1e526f15ffb0495887ff4f07cb0c736661a083dc764d35a5b6",
+    "Cargo.toml": "d7ac826f1d3d7a6ae57eb35e600c5f211bd71065ccf558705d88aba0cf13a420",
+    "crates/common/Cargo.toml": "fdf22914c01963c5d6209b2c42351c56fa787a63fc4ecaac6140ef3639e70ef5",
+    "crates/common/README.md": "2695f123dbba5c9f5c984d2e96bf981219e55292e4ae1f7c32b4e873af5e0afe",
+    "crates/common/src/codec.rs": "da74bbdb8344bec4b63fe1cccd6449d0c2a656b5c44267bc5f07b32599874570",
+    "crates/common/src/config.rs": "06c5eecb36396e69cda59026d67ad12360b3390286ac53b3878b3b8d7ce69d22",
+    "crates/common/src/error.rs": "e6937d6e20101b1870bffc34182916d535ccef2128b160f9212894840773c0ec",
+    "crates/common/src/fs/testing.rs": "9cb56a1b8449db260e26730c930e3209990edce48bc7687bd7e5abb7c7262dba",
+    "crates/common/src/fs.rs": "fef060c7e3edb08be323033820cc3609def04fd32d7aadbcd7bfe5e4858cb73b",
+    "crates/common/src/ids.rs": "ecd584cfd31a0b2766f80bf2628a84e0696e4b568d36eb5b21bc4b358f561e92",
+    "crates/common/src/keyspace.rs": "7b442da7db0c510b2a372d59628a2720d6ef324eedfb2528d123e61560f566cc",
+    "crates/common/src/lib.rs": "5577ee89e8ea4f643c3fe249253a5aeed1ae610cee141bf4f9796be49cea0256",
+    "crates/common/src/metrics.rs": "2889dad19c8cf68c093a3d88f8c04d08830d371ef0d61c2c8e1469e248d8b0e2",
+    "crates/common/src/root.rs": "657fa19d65d4ddcd33511087d5fcb9e6af9e5810976e6e75711eb32dc4826385",
+    "crates/common/src/store_lifecycle.rs": "172a4c2d82548d5fc7314d5b7a248bda0608f7a5c27609941e3001165fe14164",
+    "crates/common/src/time.rs": "0c8bf57eec8c089fc3cda830dd76ce4f7f58d20186bf0e593be7a1789bf9a490",
+    "crates/engine/Cargo.toml": "1820b514b91ac6124cc6d138074facfb909a67f598fa37a40d76fef3e454411f",
+    "crates/engine/README.md": "51e7d6aba4fbd32afa7fb24ed09fc1d4677a7e81e2dea8cb98b3a0cc4dcd6cb7",
+    "crates/engine/examples/segment_publication_probe.rs": "66e79d18dce6fa50a39485509f68ca8221e6a1d2c9b6020c6ca2e824d9566213",
+    "crates/engine/src/cf.rs": "fca152624381e4e2ce0df1419af0b933063c0c19eec0c9b2d45c683ab3e9bf3c",
+    "crates/engine/src/checkpoint.rs": "1d4e503560c50c9b291f2475a867b51557a7dd86147a204f04a3fce4d0e6fc67",
+    "crates/engine/src/flush_journal.rs": "1a5084cb498e5cbd15958883be93396e69558f0d171d837910a70fb2a74380a0",
+    "crates/engine/src/lib.rs": "16b07e3a1a7769e24f240692548b2cf05019bd4609c9a59934c747fb84065921",
+    "crates/engine/src/mem.rs": "17fe9839d0e40cb89e8b46e33ec76f233a5b431752ceb806fb688a3a298c50c1",
+    "crates/engine/src/minio.rs": "038a72f8effb3af5d0407b35223d39849ed18f9e8d5818e0b947a7636930f6f4",
+    "crates/engine/src/object_store.rs": "4815aba8a5ae7291d3ece61a60316774c716f9f66359eb0dcbeb0033a88bf487",
+    "crates/engine/src/persist.rs": "ea8b45a644c753d5e05b4f5c4eca9690921564b5e8921c8f0957f1c975309e0d",
+    "crates/engine/src/replicated.rs": "08e0ede336319388608cc79dbe1c9253e37ec1b320cabac70e5c0b74dee5417d",
+    "crates/engine/src/sst.rs": "7b2276f560ae2588210644a6c6c73e7f1d1c2da0a8cc02fdb9023807ff134aaa",
+    "crates/engine/src/testing.rs": "a0c4861d2dd54b97df6b30cbe651263a5b3a4fde3d94711c5b94acb77a791801",
+    "crates/engine/src/wal.rs": "eea567f32dc76406ebeb73fb7251fb86eb9ae9cd252231c1a46ca1b54f35ca2a",
+    "crates/engine/src/wal_segment.rs": "8b4dcf628e065390a381cddd82bc9487a53713636f6d2974862e03d3147f1c6b",
+    "crates/engine/src/wal_stream.rs": "a4d81d291aeed159a6deb881dd18be21cb807495549eb085ae827506f751e998",
+    "crates/engine/src/wal_v2.rs": "7bcf311600cd56000c91d9bfffa30bf25440d330c50cc79f1de2fb7b572b3295",
+    "crates/engine/src/write_batch.rs": "50dfbea56c0ccc007fdf74901ed76d93fd23a817ee529e2091aedd02f933ecee",
+    "crates/engine/tests/batch_atomicity.rs": "cdf89c7cea43de731a3dc3cf84cb044be27a4fe6545d9e459f722088d84f988f",
+    "crates/engine/tests/minio_backend.rs": "7c7c56d7d71babac1401252db81714dae8c25e018ed98e7dca3593a97833b9e2",
+    "crates/engine/tests/minio_checkpoint.rs": "0590bdecab160a8f1475dd1b00a55081b1d7ab7d7303fd7a0919d513d6bb5a2b",
+    "crates/engine/tests/object_safety.rs": "ab00f75e2e8475803d61815ce5bb3764164de78d1f62b1a7a1a6af2197700836",
+    "crates/meta/Cargo.toml": "dcfca446e6c1065b2c701a4f0c388cc95ec074de6c56fe1e61edbb20d448362b",
+    "crates/meta/README.md": "df2baea39657506048c311dcca4ddd13bc0885ac2ea7bb9219ec539fdbccdd8a",
+    "crates/meta/src/admission.rs": "718535a7469ce715e1eee24e3ae4183b71ef5fb2e3d1a5cc358f3612f63b362c",
+    "crates/meta/src/bootstrap.rs": "40c5d6fe926006d408735bd3db77f761c45d37ed7226a49d9318943e3adeb96b",
+    "crates/meta/src/catalog.rs": "859dfeb00c1d2ad2ff14883e481822886543ef6b7053da2c93032b28e1b1034a",
+    "crates/meta/src/codec.rs": "60db705f672d53254dff9cb8ada1907837239c54db4bcc07283bc669582416ad",
+    "crates/meta/src/endpoint.rs": "e7760c548786c89e3d8447e1e7e1b19638116ceb6c1588a5c8d93e33831075d5",
+    "crates/meta/src/layered.rs": "51ec007770bd55ab54ddd733e341c4aa8584edb4885a411fbdfc9875452c996a",
+    "crates/meta/src/leader.rs": "13b2c23dbadfa73892a1f7c89aaee747cc80135ff4b4a21143ffdacdccd69418",
+    "crates/meta/src/lib.rs": "d882352ee909bd7534218f23a958284c0114fbbae5b9840d55c2e93aa81c52a5",
+    "crates/meta/src/membership.rs": "acd860c837bf0664ecae64a356372c81ab01d9a6f8cda94319a3700ed0179f8e",
+    "crates/meta/src/migrate.rs": "e637b0a8f6471f71ae05e05d5f6477cf4e473d3a812636e086d21f95ee9c49f7",
+    "crates/meta/src/placement.rs": "c3f85e79fcac604c3cc06259e6052697736ea461d420bfe7ab0704b9c349eb10",
+    "crates/meta/src/root.rs": "3d623190e1913f0fc27284b5a47b880d192708394fc716b4fceda6ef48004452",
+    "crates/meta/src/routing.rs": "590e77737f61cc28f4b9223f522d86ad345dc545262eb90136a7038571f52057",
+    "crates/meta/src/schema.rs": "33b07183ea31e99ae82059338746176e2f8599ea555337afc510dfe5c3b5f658",
+    "crates/meta/src/store.rs": "ec6100e2caab7e028aaf89f18e7095fa161a542b33f30ed4dadf412519e3bc1b",
+    "crates/meta/src/tables.rs": "8e6ed9c2c0e7701d45df8d1f8632648d8fa79e62adf02ffb92cba499b3124856",
+    "crates/meta/src/tso.rs": "4753fc2c9b364faecc316a4eeaa36bd2caaac436563f30d13e5b0c35ac1f6370",
+    "crates/meta/tests/admission.rs": "2d2f672b329f1960e52bc72ffe9687cf1fd344442dfc87c0a114b0125ee520b5",
+    "crates/meta/tests/catalog.rs": "8a0dbd62c6593f28b47b58457aee269aa974db97c2b43c8390d4c149b92076ed",
+    "crates/meta/tests/catalog_facade.rs": "fdc742e22d395fe58602ef5b91dd3fa88035c32680278498509b0c95d06f6271",
+    "crates/meta/tests/endpoint.rs": "796b23be15f515b03a37e3381abcc0afa6482d99495c0d30205a59b83b196260",
+    "crates/raft/Cargo.toml": "8eeee5260eb9a5914a66cf6bf6b8455b6bb0ef80c9a549871b8bb470ae7e6d92",
+    "crates/raft/README.md": "8aa4d1c0d811a26a19edb64c3ec90f59460257e9118fc06be3915ed4dcc1ee21",
+    "crates/raft/build.rs": "0e3605bb8c9c19ea980b39d7822d5f24d5697310382ebad8d1991fbf89e7359e",
+    "crates/raft/examples/check-wire-floor.rs": "9c5ee500b2bd76a0e4acdd7c874c7280fa889ce33d471e1f9694eebe13ca802e",
+    "crates/raft/src/async_apply.rs": "73a18d0e02fab720e7138a5b7ac15799742b1018b7226454f0e24b94a2ccc6f5",
+    "crates/raft/src/async_read.rs": "7cae8d4bd986ff60d20a22d3f04dc4d39721f80f68d489a5ea98eefa32eb020f",
+    "crates/raft/src/command.rs": "093647b01c0b4d214ca97f193a7b0ad8afdc7193b6c999ad60759511558aa47b",
+    "crates/raft/src/driver/read_credit_tests.rs": "a1ceb8b977f1c30d3f7cd44fad3dc2e044a4a77fb6cb03f131fd7eb20b089dcb",
+    "crates/raft/src/driver.rs": "dcd8bea84fc0b315f21a2fb74f05bf390a7cec387582c64c0d64f7229f3145c5",
+    "crates/raft/src/grpc/endpoint.rs": "ca0944b0cfca6372baee560ab75668f7c0549cc1e8e2a174426764cb321bead5",
+    "crates/raft/src/grpc.rs": "9083374c5ac34abac7ed8eb5967b1c5fdb693b397e6f6570131e9691e422ac25",
+    "crates/raft/src/lib.rs": "1d599be1a310c3664934d60b0cae451f0fe822b79b105d380a7da47e01453e1b",
+    "crates/raft/src/rawnode.rs": "97c0046a635bd6f09c0f8deb8371ad6e808996ce69bd6df62efc4e946f759eef",
+    "crates/raft/src/state_machine/raw_group.rs": "a6340bbd8bba3471d455501f2081606064b3f3c4d1af58920eebc59b5d154ec4",
+    "crates/raft/src/state_machine.rs": "1b40923564c1304f370f05261bda704b498c001b0ef327e6f4aba653fcb247bd",
+    "crates/raft/src/storage/persistence_model.rs": "130a7fad59331102f8617eef1844abb552ea7496720fc00efa637674436323a2",
+    "crates/raft/src/storage.rs": "1eb0602124d35c4c11122fa21fca4a5dae87602014f37a14960890aa21cc3a16",
+    "crates/raft/src/testing.rs": "552a9b0d34f910ccbb96fbe4c13898c00e489fdcfb877e4ed4f47abd0c1ec967",
+    "crates/raft/src/transport.rs": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58",
+    "crates/raft/src/work.rs": "766fe563ceba1f2e398ce14704b9fc232be3b4fa52b0301783036f95f089164a",
+    "crates/raft/tests/driver_lock_order.rs": "8e872177453cc56899a3a50a10331e0ac4fc8c2f03ddef49bd2559bf53d1a479",
+    "crates/raft/tests/frame_bad_input.rs": "7b1a98055fab80c9de6680e6d276e6678e0dbacb8e7a8eddb7b896fc4e062fb3",
+    "crates/raft/tests/membership.rs": "a1f404f32c22e31d5128c66c2cf816404baf77eaa26a8b65c11e4d377b74de23",
+    "crates/region/Cargo.toml": "2da3bcc453c0b38b75e291b5f08e1737e6552cb0c3882085dd084933f6b203dc",
+    "crates/region/README.md": "bbb181447bc4eae39c04e822294acdc17bac3fc739cc3076e56990c698145767",
+    "crates/region/src/lib.rs": "d6d7a3f2b3e69cf59d58838df86cb3590d148e3687ca865774b54fa4b9e5c2c3",
+    "crates/region/src/manifest.rs": "ecbfb593fa561ec88fcadc2471c6f444416cbc3b0546f75fdfc4e46870076c96",
+    "crates/region/src/region.rs": "4c5d8f78e5771220d6c54fe593d38921e3b4d90154c7b9d24b221d49ae633f26",
+    "crates/region/src/router.rs": "ab96b6bca6fbfe657e45759989d2563fd1d97f014f0d3af1c1226f21168367d6",
+    "crates/region/src/split_merge.rs": "bbeea5b25f6c2db7006d7cf471596a76fcd81808a534e02d25165a5966653ffc",
+    "crates/region/src/wal.rs": "23be73ccb0385696f8a96d228403dffb988fcd2edfaa1e8b5981d318f8564ea0",
+    "crates/server/Cargo.toml": "747e628031ad91c41fa64813e862f02e7d3ef1c817808bcee7a4d5b86c8f621b",
+    "crates/server/README.md": "615a7610078271c0f1bc65570a59de4f90c52a73ed719332c1d8cf84bc300563",
+    "crates/server/build.rs": "62c74648de2e6f2fa5f729072ae6cfec12f699d0811cf3676e9f2343bd28758c",
+    "crates/server/examples/admission-pressure.rs": "b2cfe3d05f7c8a5421598a7bc8d70ce4aa5dfa66c40831b3b0347bfc635dfbe0",
+    "crates/server/examples/latency-overhead.rs": "21a30535d8acb097e0c4363ef0af93b4ae6ff4bfff9a7e90835dd42520d530bc",
+    "crates/server/examples/workload-loopback.rs": "e9e4c3b9fd3ab773688b6de276dcb9ab15e61db9c3983776a1c804629fc71862",
+    "crates/server/proto/kv9.proto": "b99a43f995d1cc6613978a45e1a3db72929240760b2d6ea6aedb2660e14492ab",
+    "crates/server/proto/point_stream.proto": "9018fe0dde6eb20cd987302a74495ef236656aa3043189e267eef585f674c5bd",
+    "crates/server/src/admission.rs": "edf1065f6e9b08551f3a9ce11559011f47c9131d6110e1fc99a7a7971853e356",
+    "crates/server/src/api.rs": "20ccd2b61baf163fe1fdc60c502ade9ff8773c91726f3a55c1daf933afa812da",
+    "crates/server/src/bin/kv9-batch-benchmark/common.rs": "b98d4a49f9ee2199e183204b72fd52813907574a03c1cf3376cf5d281d7902fd",
+    "crates/server/src/bin/kv9-batch-benchmark/metrics.rs": "210d129873ad633ec830481cb5df459102e2bc4f66e60b3444f89c216fa8cff1",
+    "crates/server/src/bin/kv9-batch-benchmark/model.rs": "a4a530d322dee4f949051793762b92110aa6eed80519a76e74bb7e25cfcda7d0",
+    "crates/server/src/bin/kv9-batch-benchmark.rs": "42b8c21a78158ac8e4cb6e515f33a7105cfce0578c46cb33a1d555fff3a48470",
+    "crates/server/src/bin/kv9-batch-workload/tests.rs": "3a8ef82367bb17027104f85e78c4f930bad7b5dc30622069b086e0eeb1085b68",
+    "crates/server/src/bin/kv9-batch-workload.rs": "ee70687c195fd83b097ecfb5a7e5d9bd2ed4704ee6c786bc66c61fb7154d0282",
+    "crates/server/src/bin/kv9-workload.rs": "1767199e0b3be51e628e6fe660f6764e96a4c154ed4c7d5968dec600e553f18a",
+    "crates/server/src/client/batch_tests.rs": "534c4be3f25974cbe682803ce8519616a2aa9c75f3708214cc4948610ff7edcc",
+    "crates/server/src/client/tests.rs": "a85443cf1d2f8b145d49c574daf9088ca20854c4b1a105af6d3f9dd77e8e158a",
+    "crates/server/src/client.rs": "1926aeb06b3623370d3b3db7451d2c110c843c53c76d0000b197e32728debaab",
+    "crates/server/src/endpoints.rs": "293ebefe2818521550df483702c3e19dcc964767d03e922d89f51322f9af1b06",
+    "crates/server/src/fence.rs": "58c5c321b84574398691b2ebd1f329669e7b2d0427188d706a6fd2068ef07dba",
+    "crates/server/src/grpc/tests/admission.rs": "62807693bb32e37c8410214c2adbf1a0d7057838eb0247f5d1af8162f0d3826a",
+    "crates/server/src/grpc/tests/async_batch_read.rs": "35203ae3c21f6055ca7ad0c8e95b36da8f27318b69e88527bd6250d6f26d26e2",
+    "crates/server/src/grpc.rs": "2865df993484a95fd7bcd966d99df3b6b71fbcba970ddd984f5b27ece19706ee",
+    "crates/server/src/lib.rs": "b75ef42814b7e99caedca02a0d3b65d8a9abd54e9118a325566ecf31b91e158a",
+    "crates/server/src/node.rs": "b072133e04e51c206af0eb51757fc2ed8cf7543bdc62ce7b74fd087cc5c84bc4",
+    "crates/server/src/observability.rs": "a9ce34aa6636e2f269a3754d9a174efbc0f520c2f2cfd547f436b5eedce44f8c",
+    "crates/server/src/point_stream/tests.rs": "45dce9814d21af79d83a8f1ef8b88af54cfa95f524c471902acbf63d67dd628e",
+    "crates/server/src/point_stream.rs": "106fd4060394ccb7e9bfcf7d40ed60b41ffb79969aeb58265ead899ad71a7794",
+    "crates/server/src/point_test_support.rs": "ad314f90f384f1daa114c50ed7af5fad1eb7b15d04f0caeb5680add6e5a2e224",
+    "crates/server/src/point_wire.rs": "efa6fc1b7e20a46d4a9a112f8c6c959707992898a1b8cfb97f953522230d8a93",
+    "crates/server/src/remote_storage.rs": "13d1b5cee4d614024e2fdd92cf5d70ea47ea02de4cf6dbce65c80d4412feafd0",
+    "crates/server/src/routing.rs": "d48ef5532621642593d57a7ba3f90161c4f0837e9bc523a48b5c21acd3e5650b",
+    "crates/server/src/rpc_experiment/tests.rs": "3ecfc5a0f22cd9e21deaed2c1aec1df5d2a9b75929609190a4c964680b77b9fa",
+    "crates/server/src/rpc_experiment.rs": "23dc895be57a6fc0185bf1a56215dec5633c92f7ef7b8e9363ccec447fb2e472",
+    "crates/server/src/runtime/endpoint_recovery.rs": "769e2b0ad389d69f44f6b78646d35ba623eb7b5ac3fe23a38d633e3877492235",
+    "crates/server/src/runtime/tests/async_batch_read_tests.rs": "612f4469185aeb9a2c01243074fddb767d0ab49fb36a9015eff4b27faa9bef8e",
+    "crates/server/src/runtime.rs": "a33a8b8935f1dc3215fd5bd24711af78f355eafbc9b2ef4e75b464c77cecdb45",
+    "crates/server/src/workload/config.rs": "3a104ee86e20a4b599d10c25f8861043f2623d5c454fe6909171d5707029f3e4",
+    "crates/server/src/workload/generator.rs": "dcd9a7d789b70828a6c1ff61aa3ed2c0941970bf34ce957f7f85973d019a992d",
+    "crates/server/src/workload/metrics.rs": "a955927eefe1876a243e53c57faf8d40a1b84e9b147b61285bd754d2e290ee0e",
+    "crates/server/src/workload/recorder.rs": "48f12dd05b225b66dba869e0545a88dda7f788e8ab25db69bd754ece4aaf7947",
+    "crates/server/src/workload/runner.rs": "cbbaca1c5237f69d8065f8c701af9001e1c70828db420f30d1b9ccc9d48516b5",
+    "crates/server/src/workload.rs": "6af930deed593e66f186f6ee0ab038fb2feb38fc92ae570429f0df0bf48fde43",
+    "crates/txn/Cargo.toml": "6a8a7aa3382f495da6f2fe7f6f5f1975aa69662fc240be007cecfbe7a6b3b56b",
+    "crates/txn/README.md": "e784b3263abced685f667af04eaa989c8fd41cb12f2bf65aba8a90945e0d069f",
+    "crates/txn/src/identity.rs": "2abe6bc3f28b2e09ec3ef21303088be88407a5957cb1a11cb3a9da45c20720dc",
+    "crates/txn/src/lib.rs": "bf5e6d32b3cf6a4687274a98804c890a469078f9a6c4d2434b4ce1cafb999933",
+    "crates/txn/src/percolator.rs": "95eccc4a872ea796df6995e74a3818f32311446da5c3c2ca068e0126cf292f83",
+    "crates/txn/src/raw.rs": "385e26e942cb778491a649bbe6eb87b8d6859f1217fe5bb57da2aad39e9c133e",
+    "proto/kv9_raft.proto": "e5f173f6a9ee6499b1c1704ca1068b1386b25480211067d1853f49f7b8e1ae31",
+    "rust-toolchain.toml": "a6a0bbd29ffaa8182dc22d1d9149709f1091e47df40ed96eb8a78a711c66a4ce",
+    "src/endpoint_cli.rs": "55f309a943faa8c4ad80095e8a8dfcab658dff0b3d34d28926d8ef2afe0b1420",
+    "src/main.rs": "6a0ec7ef14a6e8d75782046dc613895cbb0e1ddfccc6c9086322e52df6273e30"
+  }
+}

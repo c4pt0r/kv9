@@ -1,0 +1,772 @@
+{
+  "accepted": true,
+  "all_commands_terminal": true,
+  "attempt_reasons": {
+    "admission_bytes": 0,
+    "admission_count": 0,
+    "admission_oversize": 0,
+    "client_capacity": 0,
+    "client_input": 0,
+    "deadline": 0,
+    "not_leader": 0,
+    "protocol": 0,
+    "read_apply_unconfirmed": 0,
+    "read_quorum_unconfirmed": 0,
+    "rpc_status": 0,
+    "success": 15286353
+  },
+  "attempts": 28847557,
+  "audit_exit_code": 0,
+  "audit_session": 20099,
+  "audit_sha256": "227e49b64205a4c79982fdee024cd09da0a44b428d660caa45845b32d262340a",
+  "bindings": {
+    "outer_restoration": {
+      "accepted": true,
+      "configured_and_effective_before_after": "0-31",
+      "isolated": "6-15,22-31",
+      "namespace_maps_preserved": true,
+      "original_summary_sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "owned_containers": 3
+    },
+    "owned_lifetimes_exited": 80,
+    "qualifying_drains": 48,
+    "resource_samples": 2350,
+    "retained_bytes": 88755243,
+    "retained_files": 528,
+    "role_source_file_checks": 2337,
+    "voter_writer_listener_bindings": 48
+  },
+  "control_revision": "5ee897a2f58c57bdf17ea1757c96224adf0f0dbb",
+  "counts": 28847557,
+  "dropped_slots": 0,
+  "input_inventory_sha256": "491bc234414571ebdab97407432d48b7beb0d726bf62538c7aa4e816b9b04688",
+  "issued": 28847557,
+  "outcomes": {
+    "client_rejected": 0,
+    "read_failure": 0,
+    "refused": 0,
+    "success": 28847557,
+    "unknown_write": 0
+  },
+  "pairs": [
+    {
+      "api": "point_get",
+      "candidate": {
+        "calls": 131427,
+        "mean_us": 37.92578174195561,
+        "ordinal": 2,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 131427,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.352,
+          36.863
+        ],
+        "p95_us": [
+          44.544,
+          45.055
+        ],
+        "p99_us": [
+          58.88,
+          59.391
+        ],
+        "qps": 26285.27788911304,
+        "report_sha256": "b9fedcc54bb43f0d830e2d0edfc9595adc9f71964f87415cf702e276c9fde4b3"
+      },
+      "concurrency": 1,
+      "mean_change_percent": 0.09988925117083713,
+      "old": {
+        "calls": 131536,
+        "mean_us": 37.887935766634236,
+        "ordinal": 0,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 131536,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.352,
+          36.863
+        ],
+        "p95_us": [
+          44.544,
+          45.055
+        ],
+        "p99_us": [
+          58.368,
+          58.879
+        ],
+        "qps": 26307.09877554533,
+        "report_sha256": "90c7e21221277d3a1163dd8cb9414f44592015a158872e8e0cbe5faaec88698c"
+      },
+      "qps_change_percent": -0.08294676132274414,
+      "repeat": 0
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "calls": 130723,
+        "mean_us": 38.12258198633752,
+        "ordinal": 3,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 130723,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.352,
+          36.863
+        ],
+        "p95_us": [
+          44.544,
+          45.055
+        ],
+        "p99_us": [
+          60.416,
+          60.927
+        ],
+        "qps": 26144.417370786898,
+        "report_sha256": "dfbf792cd816fe81bb2ea848babe549abcc4e1998dc719f46686c68007421ffc"
+      },
+      "concurrency": 1,
+      "mean_change_percent": -0.171147619758949,
+      "old": {
+        "calls": 130493,
+        "mean_us": 38.187939736231066,
+        "ordinal": 1,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 130493,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          44.544,
+          45.055
+        ],
+        "p99_us": [
+          59.904,
+          60.415
+        ],
+        "qps": 26098.524684877462,
+        "report_sha256": "7914d34199c12031553905582832e251729c90d89d73d3aa8d1c5d7b7f2915f2"
+      },
+      "qps_change_percent": 0.17584398529633116,
+      "repeat": 0
+    },
+    {
+      "api": "point_get",
+      "candidate": {
+        "calls": 1858989,
+        "mean_us": 172.00985630307656,
+        "ordinal": 8,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1858989,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          165.888,
+          167.935
+        ],
+        "p95_us": [
+          243.712,
+          245.759
+        ],
+        "p99_us": [
+          303.104,
+          307.199
+        ],
+        "qps": 371789.2792589401,
+        "report_sha256": "e5d09015bfc9c7d0901f339938a5ec6492250b9d22878a137378553c76d6dc16"
+      },
+      "concurrency": 64,
+      "mean_change_percent": -7.43715227219337,
+      "old": {
+        "calls": 1720826,
+        "mean_us": 185.8303417899311,
+        "ordinal": 6,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1720826,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          172.032,
+          174.079
+        ],
+        "p95_us": [
+          282.624,
+          286.719
+        ],
+        "p99_us": [
+          360.448,
+          364.543
+        ],
+        "qps": 344151.6514377862,
+        "report_sha256": "fac45f7be789ccb181bc082dc9eb571135cf2c712c75f98ed52cd4c7cfd5320c"
+      },
+      "qps_change_percent": 8.030653842772594,
+      "repeat": 0
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "calls": 1835470,
+        "mean_us": 174.18390842236593,
+        "ordinal": 9,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1835470,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          167.936,
+          169.983
+        ],
+        "p95_us": [
+          245.76,
+          247.807
+        ],
+        "p99_us": [
+          315.392,
+          319.487
+        ],
+        "qps": 367082.38955110084,
+        "report_sha256": "6446cebd66492caf47ba91605c0c8e38acf5a469f7a7bec3cebc47e5d6764def"
+      },
+      "concurrency": 64,
+      "mean_change_percent": -7.822346234205757,
+      "old": {
+        "calls": 1692010,
+        "mean_us": 188.96543935142228,
+        "ordinal": 7,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1692010,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          176.128,
+          178.175
+        ],
+        "p95_us": [
+          286.72,
+          290.815
+        ],
+        "p99_us": [
+          364.544,
+          368.639
+        ],
+        "qps": 338390.5316741691,
+        "report_sha256": "bbc378acb5d01e4c08285bd2cb5ea26c337a91e8b1eea0bcd3868badb42edb4a"
+      },
+      "qps_change_percent": 8.478918643196165,
+      "repeat": 0
+    },
+    {
+      "api": "point_get",
+      "candidate": {
+        "calls": 130402,
+        "mean_us": 38.21747961687704,
+        "ordinal": 21,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 130402,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          46.08,
+          46.591
+        ],
+        "p99_us": [
+          55.808,
+          56.319
+        ],
+        "qps": 26080.301958928878,
+        "report_sha256": "201c4ca963fbbbeacdbffcfc8d368d5d861948ce5039b36b1ef8b397a382e3eb"
+      },
+      "concurrency": 1,
+      "mean_change_percent": 0.5770479313423671,
+      "old": {
+        "calls": 131153,
+        "mean_us": 37.998211722187065,
+        "ordinal": 23,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 131153,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          44.544,
+          45.055
+        ],
+        "p99_us": [
+          52.736,
+          53.247
+        ],
+        "qps": 26230.59288101709,
+        "report_sha256": "40054e756a3c7bd6be52aa5ee8fab571bdb68cd6a4e7326119206b300cc656a3"
+      },
+      "qps_change_percent": -0.5729604464906224,
+      "repeat": 1
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "calls": 131226,
+        "mean_us": 37.96984346851996,
+        "ordinal": 20,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 131226,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          44.544,
+          45.055
+        ],
+        "p99_us": [
+          52.224,
+          52.735
+        ],
+        "qps": 26245.101801327102,
+        "report_sha256": "5ccdb67c10910ba38f5a7f5be6cb18fb0f5da24c4258d8b48a8c324c41968ddb"
+      },
+      "concurrency": 1,
+      "mean_change_percent": -0.10502287555366197,
+      "old": {
+        "calls": 131102,
+        "mean_us": 38.00976241399826,
+        "ordinal": 22,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 131102,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          36.864,
+          37.375
+        ],
+        "p95_us": [
+          45.056,
+          45.567
+        ],
+        "p99_us": [
+          53.248,
+          53.759
+        ],
+        "qps": 26220.397891880006,
+        "report_sha256": "aae874f0e782ea357756b955c5e565357519f60d21014d2c6cf8c7dc62e80221"
+      },
+      "qps_change_percent": 0.09421637897701896,
+      "repeat": 1
+    },
+    {
+      "api": "point_get",
+      "candidate": {
+        "calls": 1870479,
+        "mean_us": 170.9557701631507,
+        "ordinal": 15,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1870479,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          165.888,
+          167.935
+        ],
+        "p95_us": [
+          239.616,
+          241.663
+        ],
+        "p99_us": [
+          299.008,
+          303.103
+        ],
+        "qps": 374086.2790552945,
+        "report_sha256": "953e8f907bb177ac5c8633ced5913de031c0534fd38533415a927bf6e1b11ea7"
+      },
+      "concurrency": 64,
+      "mean_change_percent": -7.600222466673568,
+      "old": {
+        "calls": 1728398,
+        "mean_us": 185.01751273317836,
+        "ordinal": 17,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1728398,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          172.032,
+          174.079
+        ],
+        "p95_us": [
+          278.528,
+          282.623
+        ],
+        "p99_us": [
+          352.256,
+          356.351
+        ],
+        "qps": 345670.96735152975,
+        "report_sha256": "17b34637672426eb6a9842af6dac51eedcab51331562ea804bcb16c366c1f742"
+      },
+      "qps_change_percent": 8.220335054886995,
+      "repeat": 1
+    },
+    {
+      "api": "batch_get",
+      "candidate": {
+        "calls": 1833324,
+        "mean_us": 174.39400232146636,
+        "ordinal": 14,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1833324,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          169.984,
+          172.031
+        ],
+        "p95_us": [
+          245.76,
+          247.807
+        ],
+        "p99_us": [
+          307.2,
+          311.295
+        ],
+        "qps": 366649.84405954095,
+        "report_sha256": "1e2bac9c831c77deb648251b2016dad5be065aeafb39d1fa7879bdab38c2e878"
+      },
+      "concurrency": 64,
+      "mean_change_percent": -7.341131053085204,
+      "old": {
+        "calls": 1698795,
+        "mean_us": 188.21080410702882,
+        "ordinal": 16,
+        "outcomes": {
+          "client_rejected": 0,
+          "read_failure": 0,
+          "refused": 0,
+          "success": 1698795,
+          "unknown_write": 0
+        },
+        "p50_us": [
+          174.08,
+          176.127
+        ],
+        "p95_us": [
+          286.72,
+          290.815
+        ],
+        "p99_us": [
+          360.448,
+          364.543
+        ],
+        "qps": 339745.69277275633,
+        "report_sha256": "d39ede8de8f102d8c3424fde46941ed9cd63b5e542331479526d098b36fd3c56"
+      },
+      "qps_change_percent": 7.9189087188162866,
+      "repeat": 1
+    }
+  ],
+  "reasons": {
+    "admission_bytes": 0,
+    "admission_count": 0,
+    "admission_oversize": 0,
+    "client_capacity": 0,
+    "client_input": 0,
+    "data_integrity": 0,
+    "deadline": 0,
+    "io": 0,
+    "not_leader": 0,
+    "protocol": 0,
+    "read_apply_unconfirmed": 0,
+    "read_quorum_unconfirmed": 0,
+    "rpc_status": 0,
+    "server_error": 0,
+    "success": 28847557
+  },
+  "redis_references": [
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "calls": 846622,
+      "concurrency": 1,
+      "mean_us": 5.824622981684861,
+      "ordinal": 4,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 846622,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.632,
+        5.695
+      ],
+      "p95_us": [
+        6.272,
+        6.335
+      ],
+      "p99_us": [
+        8.32,
+        8.447
+      ],
+      "qps": 169324.3287821873,
+      "repeat": 0,
+      "report_sha256": "0b6e1fabd65fd506a9604c453cf06f5b4618acfd82beb88697de06f26f03d427"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "calls": 858286,
+      "concurrency": 1,
+      "mean_us": 5.749962680272077,
+      "ordinal": 5,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 858286,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.568,
+        5.631
+      ],
+      "p95_us": [
+        6.016,
+        6.079
+      ],
+      "p99_us": [
+        8.128,
+        8.191
+      ],
+      "qps": 171657.18613009938,
+      "repeat": 0,
+      "report_sha256": "4a8df2a4447948130a753a13cb662536c1ec38bf80e1b9af2ebdba0c0c02ac6e"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "calls": 2533207,
+      "concurrency": 64,
+      "mean_us": 126.20556738158389,
+      "ordinal": 10,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 2533207,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        117.76,
+        118.783
+      ],
+      "p95_us": [
+        169.984,
+        172.031
+      ],
+      "p99_us": [
+        229.376,
+        231.423
+      ],
+      "qps": 506618.7238472444,
+      "repeat": 0,
+      "report_sha256": "bd44a7f55dfa8b7f8ee74a76579932fa7bf4b1af60c30e7428310aad53870b05"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "calls": 2545154,
+      "concurrency": 64,
+      "mean_us": 125.62003250687384,
+      "ordinal": 11,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 2545154,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        117.76,
+        118.783
+      ],
+      "p95_us": [
+        163.84,
+        165.887
+      ],
+      "p99_us": [
+        229.376,
+        231.423
+      ],
+      "qps": 509004.2709010024,
+      "repeat": 0,
+      "report_sha256": "744c9e51586add3cc6ed91f5db32837e414ebd25169a660c1a26615f7d1e9760"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "calls": 2534933,
+      "concurrency": 64,
+      "mean_us": 126.123910214984,
+      "ordinal": 12,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 2534933,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        117.76,
+        118.783
+      ],
+      "p95_us": [
+        165.888,
+        167.935
+      ],
+      "p99_us": [
+        229.376,
+        231.423
+      ],
+      "qps": 506965.7701960068,
+      "repeat": 1,
+      "report_sha256": "4408694e2b34ec3a5c7d957d7277e173b6ee114c21f8f70a9134368fc484e198"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "calls": 2526789,
+      "concurrency": 64,
+      "mean_us": 126.53220038356982,
+      "ordinal": 13,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 2526789,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        118.784,
+        119.807
+      ],
+      "p95_us": [
+        165.888,
+        167.935
+      ],
+      "p99_us": [
+        231.424,
+        233.471
+      ],
+      "qps": 505328.1451210004,
+      "repeat": 1,
+      "report_sha256": "6ef12e6116dfc0f9b37bc487f8a27f4f3c1282dee5bd641e048155a752b4187e"
+    },
+    {
+      "api": "get",
+      "arm": "redis-get1",
+      "calls": 862440,
+      "concurrency": 1,
+      "mean_us": 5.721927564816103,
+      "ordinal": 18,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 862440,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.568,
+        5.631
+      ],
+      "p95_us": [
+        5.952,
+        6.015
+      ],
+      "p99_us": [
+        7.744,
+        7.807
+      ],
+      "qps": 172487.92614067002,
+      "repeat": 1,
+      "report_sha256": "6f7e30cea64091564d658ec4bea46091be27b1fc1c2f460df3da03f1228479bf"
+    },
+    {
+      "api": "mget",
+      "arm": "redis-mget1",
+      "calls": 853773,
+      "concurrency": 1,
+      "mean_us": 5.774294888688211,
+      "ordinal": 19,
+      "outcomes": {
+        "read_failure": 0,
+        "success": 853773,
+        "unknown_write": 0
+      },
+      "p50_us": [
+        5.632,
+        5.695
+      ],
+      "p95_us": [
+        5.952,
+        6.015
+      ],
+      "p99_us": [
+        7.296,
+        7.359
+      ],
+      "qps": 170754.45823964878,
+      "repeat": 1,
+      "report_sha256": "14e10a63effceae05fbee569417c4b6ed3edb0b8861c244d59b9831a9ac1bb9f"
+    }
+  ],
+  "scope": "Two reversed repeats of 5-second closed-loop shared-host tmpfs-WAL diagnostics. Throughput uses successful calls / observed cohort duration; means are whole logical calls, p99 values are original histogram intervals, never averaged. c64 improves while c1 point QPS and p99 regress; candidate selection and exact-source Chaos acceptance remain separate.",
+  "source_revision": "57ff6851e40ed63c837189d6eb0a11190704725a",
+  "timing_exit_code": 0,
+  "timing_session": 20864
+}
