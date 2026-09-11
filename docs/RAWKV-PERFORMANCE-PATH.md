@@ -71,10 +71,18 @@ passes all eleven windows, with 2,114 complete-history calls, 183 verified
 new leaf drops, fresh drains and owned cleanup. Select this as the next
 isolated short pure-read increment; master/default promotion remains open.
 
-Next refresh the bounded lifecycle diagnostic on the two-worker source before
-selecting another peer/owner or completion handoff optimization. Earlier wait
-and CPU breakdowns describe the old runtime and do not establish today's
-dominant cost or a fixed ceiling. Keep sustained traffic, writes/mixed,
+The [refreshed two-worker lifecycle diagnostic](RPC-PAIR-READ-LIFECYCLE.md)
+now passes: GET's sampled 112.716-us barrier includes 66.634 us to observed
+confirmation and 40.770 us from result send to receiver observation. BatchGet(1)
+shows the same pattern. All 3,324,772 measured calls, CPU/fixture readbacks and
+the independent twelve-document lifecycle analysis pass. This is instrumented
+diagnostic evidence, separate from the accepted uninstrumented QPS result.
+
+Next screen fixed global-queue polling at eight on the current two-worker/event8
+control, targeting the remaining remote completion scheduling hypothesis. The
+earlier result with default worker selection regressed and remains rejected; this is a separate
+interaction test after the worker-population change, without presumed gain.
+Neither profile establishes a fixed ceiling. Keep sustained traffic, writes/mixed,
 larger batches and dynamic-auth/storage callback progress in the general
 promotion gates. Redis parity and automatic splits remain open.
 
