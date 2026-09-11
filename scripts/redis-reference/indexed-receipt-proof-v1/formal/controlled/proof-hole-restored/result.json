@@ -1,0 +1,14 @@
+{
+  "name": "proof-hole-restored",
+  "kind": "TLAPS/semantic",
+  "expected": null,
+  "sources": {
+    "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+    "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+    "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+  },
+  "exit_code": 0,
+  "obligations": 122,
+  "semantic_import_assumption_hole_audit": true,
+  "accepted_expected_result": true
+}

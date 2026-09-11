@@ -1,0 +1,62 @@
+--- /tmp/kv9-crc-write-profile-first/profile.py
++++ /tmp/kv9-crc-profile-active-prefix-preparation/profile.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Two exact-baseline point PUT/batch64 PUT CPU profiles; no QPS acceptance."""
++"""Two exact CRC write CPU profiles with a separately retained active read-only prefix; no QPS acceptance."""
+ import argparse
+ import hashlib
+ import importlib.util
+@@ -71,6 +71,7 @@
+     require(sha(DRIVER)==DRIVER_SHA,'reviewed fixture driver changed')
+     require(not (OUT/'summary.json').exists(),'profile attempt already started')
+     driver=module('matched_profile_fixture',DRIVER)
++    prefix_helper=module('active_prefix',OUT/'active_prefix.py')
+     frozen=preflight(driver)
+     sys.path.insert(0,str(SOURCE/'scripts'))
+     import benchmark
+@@ -89,17 +90,18 @@
+     # acceptance. The strict original workload validator is still invoked.
+     driver.placement=lambda _:dict(client_cpus=[0,1],server_cpus=[2,3,4,5],separated=True,exclusive_host=False)
+     modules=(benchmark,support,tmpfs,comparison,resp,native_validator,paired_validator)
+-    sources={str(DRIVER):DRIVER_SHA,str(Path(__file__)):sha(__file__),str(RESP):sha(RESP)}
++    sources={str(DRIVER):DRIVER_SHA,str(Path(__file__)):sha(__file__),str(RESP):sha(RESP),str(OUT/'active_prefix.py'):sha(OUT/'active_prefix.py')}
+     for loaded in list(sys.modules.values())+[support,tmpfs,comparison]:
+         path=getattr(loaded,'__file__',None)
+         if path and Path(path).resolve().is_relative_to(SOURCE):
+             file=Path(path).resolve();relative=str(file.relative_to(SOURCE));require(sha(file)==frozen['client_sources']['sources'][relative],'loaded helper differs');sources[str(file)]=sha(file)
+-    protocol=dict(version=1,protocol_id='kv9-crc-write-apply-cpu-v1',background_container_isolation=False,instrumented=True,throughput_acceptance=False,server_revision=driver.OLD_REVISION,
++    protocol=dict(version=1,protocol_id='kv9-crc-write-active-prefix-cpu-v1',background_container_isolation=False,instrumented=True,throughput_acceptance=False,server_revision=driver.OLD_REVISION,
+                   client_revision=CLIENT_REV,server_sha256=roles['old']['binary_sha256'],client_sha256=CLIENT_SHA,
+                   measure_ms=5000,workers=64,keys=4096,batch_sizes=[1,64],value_bytes=128,read_percent=0,warmup_calls=128,
+                   max_calls=10000000,deadline_ms=1500,client_cpus=[0,1],server_cpus=[2,3,4,5],profiler_cpus=PROFILER_CPUS,
+                   event='cpu-clock',frequency_hz=199,call_graph='dwarf,16384',recording_seconds=20,max_perf_bytes=CAP,
+                   storage=tmpfs.VOLATILE,exclusive_host=False,profiles=['point_put','batch_put64'],helper_sources=sources)
++    protocol['active_prefix']=dict(prefix_helper.CONFIG,scope='Unmeasured read-only unary CLI priming before the unchanged measurement client; changes cache/CPU state; real sample coverage remains pending original decoder',helper_sha256=sha(OUT/'active_prefix.py'))
+     save(OUT/'protocol.json',protocol);save(OUT/'build-bindings.json',frozen)
+     save(OUT/'preflight.json',dict(complete=True,perf_backend=str(PERF),perf_sha256=sha(PERF),
+          perf_version=subprocess.check_output([str(PERF),'--version'],text=True).strip(),
+@@ -126,6 +128,7 @@
+                  '-o',str(directory/'perf.data'),'--','sleep','20']
+         save(directory/'perf-command.json',dict(command=command,recorded_pid_scope=pids,started_unix_ns=time.time_ns()))
+         log=(directory/'perf-record.log').open('x');active['log']=log
++        record['record_started_monotonic_ns']=time.monotonic_ns()
+         profiler=subprocess.Popen(command,stdout=log,stderr=log,env=dict(os.environ,DEBUGINFOD_URLS=''),start_new_session=True)
+         active['process']=profiler;record['launcher_pid']=profiler.pid
+         deadline=time.monotonic()+3
+@@ -139,6 +142,15 @@
+         else:raise RuntimeError('actual owned perf process not observed')
+         time.sleep(.25)
+         require(profiler.poll() is None,'profiler terminated before measurement client')
++        prefix_helper.run(fixture,directory/'active-prefix',roles['old']['binary_sha256'],record['voters'],profiler)
++        record['active_prefix_summary_sha256']=sha(directory/'active-prefix/summary.json')
++        # Retain two fresh empty publications after prefix reads and their CLI exits.
++        driver.fresh_drain(fixture,directory,'post-prefix')
++        record['active_prefix_drain_sha256']=sha(directory/'post-prefix-fresh-drain.json')
++        require(profiler.poll() is None,'profiler terminated during active prefix/drain')
++        require(time.monotonic_ns()-record['record_started_monotonic_ns']<12_000_000_000,
++                'insufficient unchanged 20-second recorder budget before client launch')
++        record['prefix_sample_coverage']='pending unchanged offline containment/edge/bin checks; priming completion alone is not acceptance'
+         record['before_client_launch_unix_ns']=time.time_ns();save(directory/'profile-record.json',record)
+         print('LIVE: profiler '+str(actual[0]['pid'])+' voters '+','.join(map(str,pids)),flush=True)
+     def launched(fixture,command,logfile,client=False):

@@ -1,0 +1,43 @@
+{
+  "version": 3,
+  "rpc_transport": "tonic_stream",
+  "read_api": "batch_get",
+  "write_api": "batch_put",
+  "run_id": "prfbat",
+  "seed": 71,
+  "workers": 64,
+  "keys": 4096,
+  "batch_size": 64,
+  "value_bytes": 128,
+  "read_percent": 0,
+  "warmup_calls": 128,
+  "measure_ms": 5000,
+  "max_calls": 10000000,
+  "load": {
+    "kind": "closed_loop"
+  },
+  "client": {
+    "version": 1,
+    "peers": [
+      {
+        "node_id": 1,
+        "address": "127.0.0.1:34421"
+      },
+      {
+        "node_id": 2,
+        "address": "127.0.0.1:40023"
+      },
+      {
+        "node_id": 3,
+        "address": "127.0.0.1:41347"
+      }
+    ],
+    "keyspace_id": 100,
+    "epoch_conf_ver": 1,
+    "epoch_version": 1,
+    "max_in_flight": 64,
+    "max_attempts": 6,
+    "deadline_ms": 1500,
+    "retry_backoff_ms": 5
+  }
+}

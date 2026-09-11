@@ -1,0 +1,22 @@
+{
+  "terminal": true,
+  "exit_code": 0,
+  "tool_session": 99479,
+  "tool_receipt": "ee4b1f",
+  "pid": 1202665,
+  "pid_absent": true,
+  "actual_command": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-indexed-receipt-proof-preparation/check-controlled.py",
+    "--output",
+    "/tmp/kv9-indexed-receipt-proof-controlled-first"
+  ],
+  "recorded_ns": 1789151794857044279,
+  "summary_sha256": "3a4aefbd2d141fd580e3f79e06ddea10a9c37a16ab03356c13332809742ab275"
+}

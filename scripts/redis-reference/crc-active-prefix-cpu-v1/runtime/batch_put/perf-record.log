@@ -1,0 +1,2 @@
+[ perf record: Woken up 266538 times to write data ]
+[ perf record: Captured and wrote 50.439 MB /tmp/kv9-crc-profile-active-prefix-preparation/batch_put/perf.data (3169 samples) ]

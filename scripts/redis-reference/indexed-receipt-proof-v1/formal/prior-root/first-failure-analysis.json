@@ -1,0 +1,11 @@
+{
+  "original_run": "/tmp/kv9-indexed-receipt-proof-draft-first",
+  "tool_session": 90264,
+  "tool_terminal_receipt": "8ac084",
+  "exit_code": 1,
+  "tlapm_exit_code": 10,
+  "failed_obligations": 3,
+  "total_obligations": 55,
+  "complete_proof_accepted": false,
+  "changes": "Expose numeric/index-domain premises for uniqueness and minimum choice; split certificate ordering into explicit Tail/Append lemmas and bounded-index cases. Model, source candidate and claims unchanged; no additional assumptions."
+}

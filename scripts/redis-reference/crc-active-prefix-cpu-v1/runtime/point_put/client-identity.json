@@ -1,0 +1,51 @@
+{
+  "pid": 1079604,
+  "start_ticks": 144012227,
+  "user_ticks": 0,
+  "system_ticks": 0,
+  "rss_bytes": 729088,
+  "peak_rss_bytes": 729088,
+  "io": {
+    "rchar": 5700,
+    "wchar": 0,
+    "syscr": 10,
+    "syscw": 0,
+    "read_bytes": 0,
+    "write_bytes": 0,
+    "cancelled_write_bytes": 0
+  },
+  "cpu_affinity": [
+    0,
+    1
+  ],
+  "observed_unix_ns": 1789151409856799425,
+  "observed_monotonic_ns": 1440122280078411,
+  "executable_sha256": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+  "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+  "thread_placement": {
+    "pid": 1079604,
+    "expected": [
+      0,
+      1
+    ],
+    "process": [
+      0,
+      1
+    ],
+    "threads": {
+      "1079604": [
+        0,
+        1
+      ],
+      "1079605": [
+        0,
+        1
+      ],
+      "1079606": [
+        0,
+        1
+      ]
+    },
+    "observed_unix_ns": 1789151409860132566
+  }
+}

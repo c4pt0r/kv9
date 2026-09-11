@@ -1,0 +1,11 @@
+# Indexed receipt representation controlled acceptance
+
+The initial untyped proof failure (3/55 obligations, root session 90264) and corrected typed run (13 declared theorems, 122 fresh obligations, root session 97715, exit 0) remain retained. `typed-readback-first.json` checks the latter's exact model/proof hashes, semantic import/assumption/hole inventory and log. Its count is now frozen in `inventory.json`. Model and proof bytes remain identical to that corrected run; the original draft files remain in `draft-before-controlled-first/`.
+
+The final prepared gate uses the existing pinned TLC output validator and unchanged SANY/TLAPS semantic auditors. It runs two complete finite configurations (capacity 1 and 2; indexes0/1/2, two terms and three opaque outcomes), plus baseline/mutant/restored controls for a falsely retained ordering certificate and wrong-end eviction. Counterexamples must name AROrdering or ARRefinement, contain actual trace states and demonstrate the corresponding index/payload defect. No producer-ordering assumption or reduced success definition is introduced.
+
+Two semantic baseline/mutant/restored controls reject an omitted proof and an unapproved false axiom in the model before TLAPS. Every positive proof phase uses strict/no-fingerprint mode, one worker, a fresh cache and exactly 122 obligations. The 13 theorems are counted once; repeated controls are four fresh positive executions (488 obligation discharges), not extra theorems. Existing proof-output controls reject empty, zero-obligation and missing-summary outputs.
+
+The complete gate has 14 cases: 8 finite and 6 proof/semantic cases, including two finite and two semantic control triples. It retains copied inputs, full logs, actual subprocess exits, semantic inventories and parsed counterexamples. Any first failure stops acceptance; no auto-rerun or threshold relaxation. The output must be a new sibling path.
+
+Run only after the separately recorded CPU/runtime work is terminal, with `PYTHONOPTIMIZE=0`, `PYTHONDONTWRITEBYTECODE=1`, and CPUs6-15,22-31. `commands.json` contains the exact launch argv. This preparation does not itself claim final acceptance. The conditional source mapping and explicit standard-library boundary are in `MAPPING.md` and `source-mapping.json`; full Rust/Raft/liveness/crash refinement remains open.

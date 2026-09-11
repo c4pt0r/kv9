@@ -1,0 +1,41 @@
+{
+  "1": {
+    "advertised_endpoint": "127.0.0.1:35329",
+    "listener_inodes": [
+      {
+        "table": "tcp",
+        "local_address": "0100007F:8A01",
+        "inode": "217933349"
+      }
+    ],
+    "experimental_environment_absent": true,
+    "observed_unix_ns": 1789151461513921294,
+    "pid": 1088321
+  },
+  "2": {
+    "advertised_endpoint": "127.0.0.1:41909",
+    "listener_inodes": [
+      {
+        "table": "tcp",
+        "local_address": "0100007F:A3B5",
+        "inode": "217934423"
+      }
+    ],
+    "experimental_environment_absent": true,
+    "observed_unix_ns": 1789151461517137867,
+    "pid": 1088326
+  },
+  "3": {
+    "advertised_endpoint": "127.0.0.1:59709",
+    "listener_inodes": [
+      {
+        "table": "tcp",
+        "local_address": "0100007F:E93D",
+        "inode": "217933359"
+      }
+    ],
+    "experimental_environment_absent": true,
+    "observed_unix_ns": 1789151461520252039,
+    "pid": 1088331
+  }
+}

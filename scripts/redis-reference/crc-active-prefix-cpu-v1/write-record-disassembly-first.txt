@@ -1,0 +1,260 @@
+
+/tmp/kv9-wal-crc32-release-first/kv9:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000509c50 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE>:
+  509c50:	55                   	push   %rbp
+  509c51:	41 57                	push   %r15
+  509c53:	41 56                	push   %r14
+  509c55:	41 55                	push   %r13
+  509c57:	41 54                	push   %r12
+  509c59:	53                   	push   %rbx
+  509c5a:	48 83 ec 68          	sub    $0x68,%rsp
+  509c5e:	49 89 fd             	mov    %rdi,%r13
+  509c61:	49 81 f9 ff ff ff 03 	cmp    $0x3ffffff,%r9
+  509c68:	76 66                	jbe    509cd0 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x80>
+  509c6a:	ff 15 98 7c 9b 00    	call   *0x9b7c98(%rip)        # ec1908 <_DYNAMIC+0x2a8>
+  509c70:	bf 2f 00 00 00       	mov    $0x2f,%edi
+  509c75:	be 01 00 00 00       	mov    $0x1,%esi
+  509c7a:	ff 15 e8 7b 9b 00    	call   *0x9b7be8(%rip)        # ec1868 <_DYNAMIC+0x208>
+  509c80:	48 85 c0             	test   %rax,%rax
+  509c83:	0f 84 ff 02 00 00    	je     509f88 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x338>
+  509c89:	0f 10 05 6a 1f c7 ff 	movups -0x38e096(%rip),%xmm0        # 17bbfa <anon.acc1fbd7ecf111700020c2d4a007925f.438.llvm.14484003398972782012+0x1b2>
+  509c90:	0f 11 40 1f          	movups %xmm0,0x1f(%rax)
+  509c94:	0f 10 05 50 1f c7 ff 	movups -0x38e0b0(%rip),%xmm0        # 17bbeb <anon.acc1fbd7ecf111700020c2d4a007925f.438.llvm.14484003398972782012+0x1a3>
+  509c9b:	0f 11 40 10          	movups %xmm0,0x10(%rax)
+  509c9f:	0f 10 05 35 1f c7 ff 	movups -0x38e0cb(%rip),%xmm0        # 17bbdb <anon.acc1fbd7ecf111700020c2d4a007925f.438.llvm.14484003398972782012+0x193>
+  509ca6:	0f 11 00             	movups %xmm0,(%rax)
+  509ca9:	48 b9 0d 00 00 00 00 	movabs $0x800000000000000d,%rcx
+  509cb0:	00 00 80 
+  509cb3:	49 89 4d 00          	mov    %rcx,0x0(%r13)
+  509cb7:	49 c7 45 08 2f 00 00 	movq   $0x2f,0x8(%r13)
+  509cbe:	00 
+  509cbf:	49 89 45 10          	mov    %rax,0x10(%r13)
+  509cc3:	49 c7 45 18 2f 00 00 	movq   $0x2f,0x18(%r13)
+  509cca:	00 
+  509ccb:	e9 a9 02 00 00       	jmp    509f79 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x329>
+  509cd0:	4c 89 cd             	mov    %r9,%rbp
+  509cd3:	4d 89 c4             	mov    %r8,%r12
+  509cd6:	89 cb                	mov    %ecx,%ebx
+  509cd8:	49 89 f7             	mov    %rsi,%r15
+  509cdb:	48 89 54 24 08       	mov    %rdx,0x8(%rsp)
+  509ce0:	4d 8d 71 01          	lea    0x1(%r9),%r14
+  509ce4:	ff 15 1e 7c 9b 00    	call   *0x9b7c1e(%rip)        # ec1908 <_DYNAMIC+0x2a8>
+  509cea:	be 01 00 00 00       	mov    $0x1,%esi
+  509cef:	4c 89 74 24 10       	mov    %r14,0x10(%rsp)
+  509cf4:	4c 89 f7             	mov    %r14,%rdi
+  509cf7:	ff 15 6b 7b 9b 00    	call   *0x9b7b6b(%rip)        # ec1868 <_DYNAMIC+0x208>
+  509cfd:	48 85 c0             	test   %rax,%rax
+  509d00:	0f 84 92 02 00 00    	je     509f98 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x348>
+  509d06:	49 89 c6             	mov    %rax,%r14
+  509d09:	88 18                	mov    %bl,(%rax)
+  509d0b:	48 89 c7             	mov    %rax,%rdi
+  509d0e:	48 ff c7             	inc    %rdi
+  509d11:	4c 89 e6             	mov    %r12,%rsi
+  509d14:	48 89 ea             	mov    %rbp,%rdx
+  509d17:	ff 15 4b 7d 9b 00    	call   *0x9b7d4b(%rip)        # ec1a68 <memcpy@GLIBC_2.14>
+  509d1d:	48 8d 5d 09          	lea    0x9(%rbp),%rbx
+  509d21:	ff 15 e1 7b 9b 00    	call   *0x9b7be1(%rip)        # ec1908 <_DYNAMIC+0x2a8>
+  509d27:	be 01 00 00 00       	mov    $0x1,%esi
+  509d2c:	48 89 df             	mov    %rbx,%rdi
+  509d2f:	ff 15 33 7b 9b 00    	call   *0x9b7b33(%rip)        # ec1868 <_DYNAMIC+0x208>
+  509d35:	48 85 c0             	test   %rax,%rax
+  509d38:	0f 84 6a 02 00 00    	je     509fa8 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x358>
+  509d3e:	49 89 c4             	mov    %rax,%r12
+  509d41:	48 8b 54 24 10       	mov    0x10(%rsp),%rdx
+  509d46:	89 d0                	mov    %edx,%eax
+  509d48:	0f c8                	bswap  %eax
+  509d4a:	41 89 04 24          	mov    %eax,(%r12)
+  509d4e:	89 d0                	mov    %edx,%eax
+  509d50:	83 e0 07             	and    $0x7,%eax
+  509d53:	48 83 fd 07          	cmp    $0x7,%rbp
+  509d57:	73 0e                	jae    509d67 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x117>
+  509d59:	41 b8 c5 9d 1c 81    	mov    $0x811c9dc5,%r8d
+  509d5f:	4c 89 f1             	mov    %r14,%rcx
+  509d62:	e9 92 00 00 00       	jmp    509df9 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x1a9>
+  509d67:	89 d6                	mov    %edx,%esi
+  509d69:	81 e6 f8 ff ff 07    	and    $0x7fffff8,%esi
+  509d6f:	41 b8 c5 9d 1c 81    	mov    $0x811c9dc5,%r8d
+  509d75:	4c 89 f1             	mov    %r14,%rcx
+  509d78:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+  509d7f:	00 
+  509d80:	0f b6 39             	movzbl (%rcx),%edi
+  509d83:	44 31 c7             	xor    %r8d,%edi
+  509d86:	44 69 c7 93 01 00 01 	imul   $0x1000193,%edi,%r8d
+  509d8d:	0f b6 79 01          	movzbl 0x1(%rcx),%edi
+  509d91:	44 31 c7             	xor    %r8d,%edi
+  509d94:	44 69 c7 93 01 00 01 	imul   $0x1000193,%edi,%r8d
+  509d9b:	0f b6 79 02          	movzbl 0x2(%rcx),%edi
+  509d9f:	44 31 c7             	xor    %r8d,%edi
+  509da2:	44 69 c7 93 01 00 01 	imul   $0x1000193,%edi,%r8d
+  509da9:	0f b6 79 03          	movzbl 0x3(%rcx),%edi
+  509dad:	44 31 c7             	xor    %r8d,%edi
+  509db0:	44 69 c7 93 01 00 01 	imul   $0x1000193,%edi,%r8d
+  509db7:	0f b6 79 04          	movzbl 0x4(%rcx),%edi
+  509dbb:	44 31 c7             	xor    %r8d,%edi
+  509dbe:	44 69 c7 93 01 00 01 	imul   $0x1000193,%edi,%r8d
+  509dc5:	0f b6 79 05          	movzbl 0x5(%rcx),%edi
+  509dc9:	44 31 c7             	xor    %r8d,%edi
+  509dcc:	44 69 c7 93 01 00 01 	imul   $0x1000193,%edi,%r8d
+  509dd3:	0f b6 79 06          	movzbl 0x6(%rcx),%edi
+  509dd7:	44 31 c7             	xor    %r8d,%edi
+  509dda:	44 69 c7 93 01 00 01 	imul   $0x1000193,%edi,%r8d
+  509de1:	0f b6 79 07          	movzbl 0x7(%rcx),%edi
+  509de5:	48 83 c1 08          	add    $0x8,%rcx
+  509de9:	44 31 c7             	xor    %r8d,%edi
+  509dec:	44 69 c7 93 01 00 01 	imul   $0x1000193,%edi,%r8d
+  509df3:	48 83 c6 f8          	add    $0xfffffffffffffff8,%rsi
+  509df7:	75 87                	jne    509d80 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x130>
+  509df9:	48 85 c0             	test   %rax,%rax
+  509dfc:	74 18                	je     509e16 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x1c6>
+  509dfe:	31 f6                	xor    %esi,%esi
+  509e00:	0f b6 3c 31          	movzbl (%rcx,%rsi,1),%edi
+  509e04:	44 31 c7             	xor    %r8d,%edi
+  509e07:	44 69 c7 93 01 00 01 	imul   $0x1000193,%edi,%r8d
+  509e0e:	48 ff c6             	inc    %rsi
+  509e11:	48 39 f0             	cmp    %rsi,%rax
+  509e14:	75 ea                	jne    509e00 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x1b0>
+  509e16:	41 0f c8             	bswap  %r8d
+  509e19:	45 89 44 24 04       	mov    %r8d,0x4(%r12)
+  509e1e:	4c 89 e7             	mov    %r12,%rdi
+  509e21:	48 83 c7 08          	add    $0x8,%rdi
+  509e25:	4c 89 f6             	mov    %r14,%rsi
+  509e28:	ff 15 3a 7c 9b 00    	call   *0x9b7c3a(%rip)        # ec1a68 <memcpy@GLIBC_2.14>
+  509e2e:	48 8d 7c 24 20       	lea    0x20(%rsp),%rdi
+  509e33:	4c 89 fe             	mov    %r15,%rsi
+  509e36:	49 89 df             	mov    %rbx,%r15
+  509e39:	ff 15 01 80 9b 00    	call   *0x9b8001(%rip)        # ec1e40 <_DYNAMIC+0x7e0>
+  509e3f:	48 8b 7c 24 08       	mov    0x8(%rsp),%rdi
+  509e44:	4c 89 e6             	mov    %r12,%rsi
+  509e47:	48 89 da             	mov    %rbx,%rdx
+  509e4a:	e8 c1 07 10 00       	call   60a610 <_ZN3std2io5Write9write_all17h35f1eba8281fcd02E>
+  509e4f:	48 89 c5             	mov    %rax,%rbp
+  509e52:	0f 10 44 24 20       	movups 0x20(%rsp),%xmm0
+  509e57:	0f 10 4c 24 30       	movups 0x30(%rsp),%xmm1
+  509e5c:	0f 29 4c 24 50       	movaps %xmm1,0x50(%rsp)
+  509e61:	0f 29 44 24 40       	movaps %xmm0,0x40(%rsp)
+  509e66:	31 f6                	xor    %esi,%esi
+  509e68:	48 85 c0             	test   %rax,%rax
+  509e6b:	40 0f 95 c6          	setne  %sil
+  509e6f:	48 8d 7c 24 40       	lea    0x40(%rsp),%rdi
+  509e74:	ff 15 ce 7f 9b 00    	call   *0x9b7fce(%rip)        # ec1e48 <_DYNAMIC+0x7e8>
+  509e7a:	48 85 ed             	test   %rbp,%rbp
+  509e7d:	0f 84 c1 00 00 00    	je     509f44 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x2f4>
+  509e83:	48 89 6c 24 18       	mov    %rbp,0x18(%rsp)
+  509e88:	48 8d 44 24 18       	lea    0x18(%rsp),%rax
+  509e8d:	48 89 44 24 20       	mov    %rax,0x20(%rsp)
+  509e92:	48 8b 05 87 7a 9b 00 	mov    0x9b7a87(%rip),%rax        # ec1920 <_DYNAMIC+0x2c0>
+  509e99:	48 89 44 24 28       	mov    %rax,0x28(%rsp)
+  509e9e:	48 8d 35 d3 42 c5 ff 	lea    -0x3abd2d(%rip),%rsi        # 15e178 <anon.acc1fbd7ecf111700020c2d4a007925f.389.llvm.14484003398972782012+0x71>
+  509ea5:	48 8d 7c 24 40       	lea    0x40(%rsp),%rdi
+  509eaa:	48 8d 54 24 20       	lea    0x20(%rsp),%rdx
+  509eaf:	ff 15 73 7a 9b 00    	call   *0x9b7a73(%rip)        # ec1928 <_DYNAMIC+0x2c8>
+  509eb5:	0f 10 44 24 40       	movups 0x40(%rsp),%xmm0
+  509eba:	0f 29 44 24 20       	movaps %xmm0,0x20(%rsp)
+  509ebf:	48 8b 44 24 50       	mov    0x50(%rsp),%rax
+  509ec4:	48 89 44 24 30       	mov    %rax,0x30(%rsp)
+  509ec9:	48 8b 44 24 18       	mov    0x18(%rsp),%rax
+  509ece:	89 c1                	mov    %eax,%ecx
+  509ed0:	83 e1 03             	and    $0x3,%ecx
+  509ed3:	83 f9 01             	cmp    $0x1,%ecx
+  509ed6:	75 49                	jne    509f21 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x2d1>
+  509ed8:	48 8d 48 ff          	lea    -0x1(%rax),%rcx
+  509edc:	48 89 4c 24 08       	mov    %rcx,0x8(%rsp)
+  509ee1:	48 8b 68 ff          	mov    -0x1(%rax),%rbp
+  509ee5:	48 8b 58 07          	mov    0x7(%rax),%rbx
+  509ee9:	48 8b 03             	mov    (%rbx),%rax
+  509eec:	48 85 c0             	test   %rax,%rax
+  509eef:	74 05                	je     509ef6 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x2a6>
+  509ef1:	48 89 ef             	mov    %rbp,%rdi
+  509ef4:	ff d0                	call   *%rax
+  509ef6:	48 8b 73 08          	mov    0x8(%rbx),%rsi
+  509efa:	48 85 f6             	test   %rsi,%rsi
+  509efd:	74 0d                	je     509f0c <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x2bc>
+  509eff:	48 8b 53 10          	mov    0x10(%rbx),%rdx
+  509f03:	48 89 ef             	mov    %rbp,%rdi
+  509f06:	ff 15 64 79 9b 00    	call   *0x9b7964(%rip)        # ec1870 <_DYNAMIC+0x210>
+  509f0c:	be 18 00 00 00       	mov    $0x18,%esi
+  509f11:	ba 08 00 00 00       	mov    $0x8,%edx
+  509f16:	48 8b 7c 24 08       	mov    0x8(%rsp),%rdi
+  509f1b:	ff 15 4f 79 9b 00    	call   *0x9b794f(%rip)        # ec1870 <_DYNAMIC+0x210>
+  509f21:	48 b8 0d 00 00 00 00 	movabs $0x800000000000000d,%rax
+  509f28:	00 00 80 
+  509f2b:	49 89 45 00          	mov    %rax,0x0(%r13)
+  509f2f:	0f 28 44 24 20       	movaps 0x20(%rsp),%xmm0
+  509f34:	41 0f 11 45 08       	movups %xmm0,0x8(%r13)
+  509f39:	48 8b 44 24 30       	mov    0x30(%rsp),%rax
+  509f3e:	49 89 45 18          	mov    %rax,0x18(%r13)
+  509f42:	eb 12                	jmp    509f56 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x306>
+  509f44:	48 b8 0d 00 00 00 00 	movabs $0x800000000000000d,%rax
+  509f4b:	00 00 80 
+  509f4e:	48 83 c0 09          	add    $0x9,%rax
+  509f52:	49 89 45 00          	mov    %rax,0x0(%r13)
+  509f56:	48 8b 1d 13 79 9b 00 	mov    0x9b7913(%rip),%rbx        # ec1870 <_DYNAMIC+0x210>
+  509f5d:	ba 01 00 00 00       	mov    $0x1,%edx
+  509f62:	4c 89 e7             	mov    %r12,%rdi
+  509f65:	4c 89 fe             	mov    %r15,%rsi
+  509f68:	ff d3                	call   *%rbx
+  509f6a:	ba 01 00 00 00       	mov    $0x1,%edx
+  509f6f:	4c 89 f7             	mov    %r14,%rdi
+  509f72:	48 8b 74 24 10       	mov    0x10(%rsp),%rsi
+  509f77:	ff d3                	call   *%rbx
+  509f79:	48 83 c4 68          	add    $0x68,%rsp
+  509f7d:	5b                   	pop    %rbx
+  509f7e:	41 5c                	pop    %r12
+  509f80:	41 5d                	pop    %r13
+  509f82:	41 5e                	pop    %r14
+  509f84:	41 5f                	pop    %r15
+  509f86:	5d                   	pop    %rbp
+  509f87:	c3                   	ret
+  509f88:	bf 01 00 00 00       	mov    $0x1,%edi
+  509f8d:	be 2f 00 00 00       	mov    $0x2f,%esi
+  509f92:	ff 15 30 7a 9b 00    	call   *0x9b7a30(%rip)        # ec19c8 <_DYNAMIC+0x368>
+  509f98:	bf 01 00 00 00       	mov    $0x1,%edi
+  509f9d:	48 8b 74 24 10       	mov    0x10(%rsp),%rsi
+  509fa2:	ff 15 20 7a 9b 00    	call   *0x9b7a20(%rip)        # ec19c8 <_DYNAMIC+0x368>
+  509fa8:	bf 01 00 00 00       	mov    $0x1,%edi
+  509fad:	48 89 de             	mov    %rbx,%rsi
+  509fb0:	ff 15 12 7a 9b 00    	call   *0x9b7a12(%rip)        # ec19c8 <_DYNAMIC+0x368>
+  509fb6:	0f 0b                	ud2
+  509fb8:	49 89 c5             	mov    %rax,%r13
+  509fbb:	48 8b 73 08          	mov    0x8(%rbx),%rsi
+  509fbf:	48 85 f6             	test   %rsi,%rsi
+  509fc2:	74 0d                	je     509fd1 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x381>
+  509fc4:	48 8b 53 10          	mov    0x10(%rbx),%rdx
+  509fc8:	48 89 ef             	mov    %rbp,%rdi
+  509fcb:	ff 15 9f 78 9b 00    	call   *0x9b789f(%rip)        # ec1870 <_DYNAMIC+0x210>
+  509fd1:	be 18 00 00 00       	mov    $0x18,%esi
+  509fd6:	ba 08 00 00 00       	mov    $0x8,%edx
+  509fdb:	48 8b 7c 24 08       	mov    0x8(%rsp),%rdi
+  509fe0:	ff 15 8a 78 9b 00    	call   *0x9b788a(%rip)        # ec1870 <_DYNAMIC+0x210>
+  509fe6:	eb 3b                	jmp    50a023 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x3d3>
+  509fe8:	49 89 c5             	mov    %rax,%r13
+  509feb:	48 8d 7c 24 18       	lea    0x18(%rsp),%rdi
+  509ff0:	e8 5b a6 fd ff       	call   4e4650 <_ZN4core3ptr42drop_in_place$LT$std..io..error..Error$GT$17h45b2b2c9563eadcfE>
+  509ff5:	eb 2c                	jmp    50a023 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x3d3>
+  509ff7:	ff 15 d3 79 9b 00    	call   *0x9b79d3(%rip)        # ec19d0 <_DYNAMIC+0x370>
+  509ffd:	49 89 c5             	mov    %rax,%r13
+  50a000:	48 89 ef             	mov    %rbp,%rdi
+  50a003:	e8 18 74 fb ff       	call   4c1420 <_ZN4core3ptr81drop_in_place$LT$core..result..Result$LT$$LP$$RP$$C$std..io..error..Error$GT$$GT$17h6244fd93df097f17E.llvm.12159458675947043560>
+  50a008:	eb 19                	jmp    50a023 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x3d3>
+  50a00a:	49 89 c5             	mov    %rax,%r13
+  50a00d:	48 8d 7c 24 20       	lea    0x20(%rsp),%rdi
+  50a012:	ff 15 38 7e 9b 00    	call   *0x9b7e38(%rip)        # ec1e50 <_DYNAMIC+0x7f0>
+  50a018:	eb 09                	jmp    50a023 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x3d3>
+  50a01a:	ff 15 b0 79 9b 00    	call   *0x9b79b0(%rip)        # ec19d0 <_DYNAMIC+0x370>
+  50a020:	49 89 c5             	mov    %rax,%r13
+  50a023:	ba 01 00 00 00       	mov    $0x1,%edx
+  50a028:	4c 89 e7             	mov    %r12,%rdi
+  50a02b:	4c 89 fe             	mov    %r15,%rsi
+  50a02e:	ff 15 3c 78 9b 00    	call   *0x9b783c(%rip)        # ec1870 <_DYNAMIC+0x210>
+  50a034:	eb 03                	jmp    50a039 <_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE+0x3e9>
+  50a036:	49 89 c5             	mov    %rax,%r13
+  50a039:	ba 01 00 00 00       	mov    $0x1,%edx
+  50a03e:	4c 89 f7             	mov    %r14,%rdi
+  50a041:	48 8b 74 24 10       	mov    0x10(%rsp),%rsi
+  50a046:	ff 15 24 78 9b 00    	call   *0x9b7824(%rip)        # ec1870 <_DYNAMIC+0x210>
+  50a04c:	4c 89 ef             	mov    %r13,%rdi
+  50a04f:	e8 8c 2d 95 00       	call   e5cde0 <_Unwind_Resume@plt>

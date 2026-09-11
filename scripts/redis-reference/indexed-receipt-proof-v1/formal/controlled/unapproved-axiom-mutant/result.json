@@ -1,0 +1,12 @@
+{
+  "name": "unapproved-axiom-mutant",
+  "kind": "TLAPS/semantic",
+  "expected": "unapproved module assumption: AppliedReceipts",
+  "sources": {
+    "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+    "AppliedReceipts.tla": "ef91d013a8ae400a167732188f3424c839189cddce63747b8b5ec7368eb0c135",
+    "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+  },
+  "semantic_rejection": "unapproved module assumption: AppliedReceipts",
+  "accepted_expected_result": true
+}

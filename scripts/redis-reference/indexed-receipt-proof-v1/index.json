@@ -1,0 +1,1195 @@
+{
+  "source_revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "baseline_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "scope": "Compact exact-source local representation formal evidence; standard-library/caller composition premises explicit. Original files remain in place; root may copy the selected bytes to publication.",
+  "copies": 194,
+  "bytes": 1088855,
+  "theorems": 13,
+  "obligations_per_positive_run": 122,
+  "positive_proof_runs": 4,
+  "finite_runs": 8,
+  "controlled_cases": 14,
+  "proof_output_controls": 3,
+  "actual_terminal": {
+    "session": 99479,
+    "exit_code": 0,
+    "tool_receipt": "ee4b1f",
+    "path": "/tmp/kv9-indexed-receipt-proof-controlled-first/root-tool-terminal.json",
+    "sha256": "c146bf64c1cd06f64493fd850e7644233e55d3c78b8eabc9e54082abd9efc855"
+  },
+  "summary": {
+    "path": "/tmp/kv9-indexed-receipt-proof-controlled-first/summary.json",
+    "sha256": "3a4aefbd2d141fd580e3f79e06ddea10a9c37a16ab03356c13332809742ab275"
+  },
+  "report": {
+    "path": "/tmp/kv9-indexed-receipt-proof-publication-first/REPORT.md",
+    "sha256": "2ce49f12921b040bf21e4bbb44e0b1b53befbfa3c8f30dbe4e2ebd703931d5d6"
+  },
+  "all_selected_source_hashes_read_back": true,
+  "files": [
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/AppliedReceipts.tla",
+      "path": "formal/inputs/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/AppliedReceiptsCapacity1.cfg",
+      "path": "formal/inputs/AppliedReceiptsCapacity1.cfg",
+      "bytes": 214,
+      "sha256": "b71e1798b0c278ab63416bca0b0fdb01cf65829dba333f05a2b69258e5f1dce8"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/AppliedReceiptsCapacity2.cfg",
+      "path": "formal/inputs/AppliedReceiptsCapacity2.cfg",
+      "bytes": 214,
+      "sha256": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/AppliedReceiptsMC.cfg",
+      "path": "formal/inputs/AppliedReceiptsMC.cfg",
+      "bytes": 214,
+      "sha256": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/AppliedReceiptsProof.tla",
+      "path": "formal/inputs/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/MAPPING.md",
+      "path": "formal/inputs/MAPPING.md",
+      "bytes": 2438,
+      "sha256": "32a753a72b2b5d0e88c7ada4cf2a27f820c214b2efcd2b7d650339fbce3d3175"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/README.md",
+      "path": "formal/inputs/README.md",
+      "bytes": 2337,
+      "sha256": "61eab34f4f03c566b92be7a12d8deb94503946ff2c4c75c1173437b234bd5f8f"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/check-controlled.py",
+      "path": "formal/inputs/check-controlled.py",
+      "bytes": 14237,
+      "sha256": "7401dcf6b493209fa69174611cc81af22325f9523353616587a90100738d6773"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/check-draft.py",
+      "path": "formal/inputs/check-draft.py",
+      "bytes": 5059,
+      "sha256": "edb39d8620a9c82c46f1e05fdabd9217f4ba59910ef84fb0f15cb99e44766814"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/commands.json",
+      "path": "formal/inputs/commands.json",
+      "bytes": 675,
+      "sha256": "f062d558ab54408335d8899c006b7fb2a06bff08dae2e99177ea07ffe303c01f"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/freeze.json",
+      "path": "formal/inputs/freeze.json",
+      "bytes": 5740,
+      "sha256": "9dec972ea87ead668048784939214bf3ef8dae9715376707559353e806d34709"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/helpers/ProofAudit.java",
+      "path": "formal/inputs/helpers/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/helpers/check-tla.py",
+      "path": "formal/inputs/helpers/check-tla.py",
+      "bytes": 13049,
+      "sha256": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/helpers/check-tlaps.py",
+      "path": "formal/inputs/helpers/check-tlaps.py",
+      "bytes": 16239,
+      "sha256": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/inventory-draft.json",
+      "path": "formal/inputs/inventory-draft.json",
+      "bytes": 1376,
+      "sha256": "30b24018d733f7af37cb37a140622acb4a6b3c6c87a99d8bfe7a7d35b54ce035"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/inventory.json",
+      "path": "formal/inputs/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/source-mapping.json",
+      "path": "formal/inputs/source-mapping.json",
+      "bytes": 5399,
+      "sha256": "bf24584c46e08049d13dbde8c413eff2c4b62c584a25d6ca48f11406272fa658"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/source/typed-readback-first.json",
+      "path": "formal/inputs/typed-readback-first.json",
+      "bytes": 2488,
+      "sha256": "e20d648f50a82056e5c150a89ddabb1610ba3e3894e178c406cccd7d1bbbf17e"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/compile-auditor-invocation.json",
+      "path": "formal/controlled/compile-auditor-invocation.json",
+      "bytes": 345,
+      "sha256": "bcefdfb54d502c573ccd7ca8464245e2af11cf718b7068d6b2f601923e140ac9"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/compile-auditor-live.json",
+      "path": "formal/controlled/compile-auditor-live.json",
+      "bytes": 58,
+      "sha256": "208d313dcb356512b7754d30e9b6d1a4bde043c9419a4ec4f0c6afbef76c5753"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/compile-auditor-terminal.json",
+      "path": "formal/controlled/compile-auditor-terminal.json",
+      "bytes": 134,
+      "sha256": "7a8201f0dcbd8e24d68980fd9f16d8e81d9140370aa48babc2fb782a768348cf"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/compile-auditor.log",
+      "path": "formal/controlled/compile-auditor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/invocation.json",
+      "path": "formal/controlled/invocation.json",
+      "bytes": 482,
+      "sha256": "7e98013546df8544e93c3f9f1b5067395de56d469e51851c09a980be31fada14"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/root-tool-terminal.json",
+      "path": "formal/controlled/root-tool-terminal.json",
+      "bytes": 562,
+      "sha256": "c146bf64c1cd06f64493fd850e7644233e55d3c78b8eabc9e54082abd9efc855"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/summary.json",
+      "path": "formal/controlled/summary.json",
+      "bytes": 9598,
+      "sha256": "3a4aefbd2d141fd580e3f79e06ddea10a9c37a16ab03356c13332809742ab275"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/tools.json",
+      "path": "formal/controlled/tools.json",
+      "bytes": 321,
+      "sha256": "ddef0945b10f1c7e9c277975f992cad29372bba73c3445938093bf4ec5620cb8"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-1/AppliedReceipts.tla",
+      "path": "formal/controlled/capacity-1/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-1/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/capacity-1/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-1/Run.cfg",
+      "path": "formal/controlled/capacity-1/Run.cfg",
+      "bytes": 214,
+      "sha256": "b71e1798b0c278ab63416bca0b0fdb01cf65829dba333f05a2b69258e5f1dce8"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-1/inventory.json",
+      "path": "formal/controlled/capacity-1/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-1/result.json",
+      "path": "formal/controlled/capacity-1/result.json",
+      "bytes": 603,
+      "sha256": "dd36330569f77b0878f29e83f8d086f8456db97b1e4b7c7558420df510fba678"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-1/tlc-invocation.json",
+      "path": "formal/controlled/capacity-1/tlc-invocation.json",
+      "bytes": 462,
+      "sha256": "9a6a661fae8a89c498375ae4617abb850ecc7508169f7138ddabcd7db7b81da5"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-1/tlc-live.json",
+      "path": "formal/controlled/capacity-1/tlc-live.json",
+      "bytes": 58,
+      "sha256": "08c857f235b62b9264aa9b608dfbba26852b9e93ed6889184a40641be9208622"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-1/tlc-terminal.json",
+      "path": "formal/controlled/capacity-1/tlc-terminal.json",
+      "bytes": 134,
+      "sha256": "7a32e7307a46c8579542d0304aea844084b8067b32953f1419ec2da8b75c98cb"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-1/tlc.log",
+      "path": "formal/controlled/capacity-1/tlc.log",
+      "bytes": 2127,
+      "sha256": "8b407f5c53ab3e68b01ef270dc3541c2a9778578aaede2876a269bd3e84c43ee"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-2/AppliedReceipts.tla",
+      "path": "formal/controlled/capacity-2/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-2/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/capacity-2/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-2/Run.cfg",
+      "path": "formal/controlled/capacity-2/Run.cfg",
+      "bytes": 214,
+      "sha256": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-2/inventory.json",
+      "path": "formal/controlled/capacity-2/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-2/result.json",
+      "path": "formal/controlled/capacity-2/result.json",
+      "bytes": 605,
+      "sha256": "a55b64813a36d5e808cf840b0bd0843b87389d8e7511d16c29e3af375341f699"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-2/tlc-invocation.json",
+      "path": "formal/controlled/capacity-2/tlc-invocation.json",
+      "bytes": 462,
+      "sha256": "cb2c6119c8f5ab85b72d714ffd23f8f6014423b0f8bc1f11b118fdd35d3c5aec"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-2/tlc-live.json",
+      "path": "formal/controlled/capacity-2/tlc-live.json",
+      "bytes": 58,
+      "sha256": "d33a49a68a2ff135a80dc8140b8826bc6c4d45674ce85cb4d7e33e6aeeb8cc1f"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-2/tlc-terminal.json",
+      "path": "formal/controlled/capacity-2/tlc-terminal.json",
+      "bytes": 134,
+      "sha256": "fee52f2d6367a036a3f726340f67b6c88cbc782e97d50614690bfb53ade257b3"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/capacity-2/tlc.log",
+      "path": "formal/controlled/capacity-2/tlc.log",
+      "bytes": 2136,
+      "sha256": "c5353abd84a2805077fd32fc3728c3099067022f028ea891c69768c572945b33"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-baseline/AppliedReceipts.tla",
+      "path": "formal/controlled/certificate-baseline/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-baseline/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/certificate-baseline/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-baseline/Run.cfg",
+      "path": "formal/controlled/certificate-baseline/Run.cfg",
+      "bytes": 214,
+      "sha256": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-baseline/inventory.json",
+      "path": "formal/controlled/certificate-baseline/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-baseline/result.json",
+      "path": "formal/controlled/certificate-baseline/result.json",
+      "bytes": 615,
+      "sha256": "8e72d66183d5efd987933d319ccf3fc87e1422e055d689fe4ad086647ad74966"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-baseline/tlc-invocation.json",
+      "path": "formal/controlled/certificate-baseline/tlc-invocation.json",
+      "bytes": 482,
+      "sha256": "2c08de7ddd3639eee5ba73a3302d85c1b5ea58741349616b0333c372806e1c18"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-baseline/tlc-live.json",
+      "path": "formal/controlled/certificate-baseline/tlc-live.json",
+      "bytes": 58,
+      "sha256": "531c97790e9a0fecc82a8b5a5448f755a46a1f88b98bfd0a7820e53dc81c3754"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-baseline/tlc-terminal.json",
+      "path": "formal/controlled/certificate-baseline/tlc-terminal.json",
+      "bytes": 134,
+      "sha256": "c8665a6e7183f4adb3149fd9a3e31035a427c413504cdd76736dd7ac458200d1"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-baseline/tlc.log",
+      "path": "formal/controlled/certificate-baseline/tlc.log",
+      "bytes": 2146,
+      "sha256": "269ce57e288bb2ee60f29e56b48c284124e599c300832694b2a9821c4e7e227f"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant/AppliedReceipts.tla",
+      "path": "formal/controlled/certificate-mutant/AppliedReceipts.tla",
+      "bytes": 2625,
+      "sha256": "54d21d3f1ad4f358ba181de9b29d539014f859099ade819a476b5757cd883bd0"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/certificate-mutant/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant/Run.cfg",
+      "path": "formal/controlled/certificate-mutant/Run.cfg",
+      "bytes": 194,
+      "sha256": "5033ff46dc10d8d347bfcba81d1997c48fdc2cb79384312cc70174f5a8525185"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant/counterexample.json",
+      "path": "formal/controlled/certificate-mutant/counterexample.json",
+      "bytes": 964,
+      "sha256": "2fcd48db4eee160a79d47d5ad1ef311f8332b3a3023f631fdcb642f087911cbd"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant/inventory.json",
+      "path": "formal/controlled/certificate-mutant/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant/result.json",
+      "path": "formal/controlled/certificate-mutant/result.json",
+      "bytes": 620,
+      "sha256": "3edd49d492e883c1c39171142abd2602724027966b4a7984fab3a799c2d3e069"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant/tlc-invocation.json",
+      "path": "formal/controlled/certificate-mutant/tlc-invocation.json",
+      "bytes": 478,
+      "sha256": "c77a0c81c7ae27f4ff54cc7ca2bdeccd26b589afe551cef70afc7aa3f20098b4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant/tlc-live.json",
+      "path": "formal/controlled/certificate-mutant/tlc-live.json",
+      "bytes": 58,
+      "sha256": "1f8f0b2b916c3091fc1d6f5986da5c995cb72112ce7a0fe321eb4d82d44a39cb"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant/tlc-terminal.json",
+      "path": "formal/controlled/certificate-mutant/tlc-terminal.json",
+      "bytes": 135,
+      "sha256": "67c9361038a4b31d23151c7d7b66b280744b38566d0ec07f11490190b209c949"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant/tlc.log",
+      "path": "formal/controlled/certificate-mutant/tlc.log",
+      "bytes": 2798,
+      "sha256": "55a53ac5dbccbb6e528df50c65d48886b0259cec4a9db6278c477450d07a4d25"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-restored/AppliedReceipts.tla",
+      "path": "formal/controlled/certificate-restored/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-restored/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/certificate-restored/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-restored/Run.cfg",
+      "path": "formal/controlled/certificate-restored/Run.cfg",
+      "bytes": 214,
+      "sha256": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-restored/inventory.json",
+      "path": "formal/controlled/certificate-restored/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-restored/result.json",
+      "path": "formal/controlled/certificate-restored/result.json",
+      "bytes": 615,
+      "sha256": "d97a3ab35fcc3c8ad334982adf8ce4b012922284623f26546d34131832a7956c"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-restored/tlc-invocation.json",
+      "path": "formal/controlled/certificate-restored/tlc-invocation.json",
+      "bytes": 482,
+      "sha256": "d36d4ed3b68bacfa1563c395657bd9ba7c14e2fcccc6358635cdba11de83c892"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-restored/tlc-live.json",
+      "path": "formal/controlled/certificate-restored/tlc-live.json",
+      "bytes": 58,
+      "sha256": "c8599f32012e4172097efd14595836ab1992529f30938c9bea780d2e7a7fb047"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-restored/tlc-terminal.json",
+      "path": "formal/controlled/certificate-restored/tlc-terminal.json",
+      "bytes": 134,
+      "sha256": "d900875ed825103d321e3cfec8bb8562b885d1c7f2f7153f6e632d99c7aaaf8d"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-restored/tlc.log",
+      "path": "formal/controlled/certificate-restored/tlc.log",
+      "bytes": 2145,
+      "sha256": "dbadefc744dc89913e2cb90cf389b1e7eb49f8befc923c6a1340c0c52b5755bc"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-baseline/AppliedReceipts.tla",
+      "path": "formal/controlled/wrong-eviction-baseline/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-baseline/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/wrong-eviction-baseline/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-baseline/Run.cfg",
+      "path": "formal/controlled/wrong-eviction-baseline/Run.cfg",
+      "bytes": 214,
+      "sha256": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-baseline/inventory.json",
+      "path": "formal/controlled/wrong-eviction-baseline/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-baseline/result.json",
+      "path": "formal/controlled/wrong-eviction-baseline/result.json",
+      "bytes": 618,
+      "sha256": "524b74b6e112bb642c0c7543fc3ed3766d828d9c2fc5efe55ae192c37f59ef71"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-baseline/tlc-invocation.json",
+      "path": "formal/controlled/wrong-eviction-baseline/tlc-invocation.json",
+      "bytes": 488,
+      "sha256": "7a7dc534d35af6b0046d88b326bbc8c2fafc47ab69534defa8633ea4697a8bcc"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-baseline/tlc-live.json",
+      "path": "formal/controlled/wrong-eviction-baseline/tlc-live.json",
+      "bytes": 58,
+      "sha256": "da844db1989ece4e8b1f5172342390dd4ffee2e6d463f5311248bc17128405df"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-baseline/tlc-terminal.json",
+      "path": "formal/controlled/wrong-eviction-baseline/tlc-terminal.json",
+      "bytes": 134,
+      "sha256": "0d912572ec5caf9e321a3e73265b2d85a5c9c0c086d1f0f875bec576e0a75a08"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-baseline/tlc.log",
+      "path": "formal/controlled/wrong-eviction-baseline/tlc.log",
+      "bytes": 2149,
+      "sha256": "230f73c9a73853f5fbe5c2a402f1426f231c91066e6a3f5a4bf94b1c3902fabd"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-mutant/AppliedReceipts.tla",
+      "path": "formal/controlled/wrong-eviction-mutant/AppliedReceipts.tla",
+      "bytes": 2699,
+      "sha256": "ae44db8c9fdea09105ef01fde62ed022b7f68e469629cfdcc1bd37f2e4cacf6a"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-mutant/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/wrong-eviction-mutant/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-mutant/Run.cfg",
+      "path": "formal/controlled/wrong-eviction-mutant/Run.cfg",
+      "bytes": 196,
+      "sha256": "bf6d9eff30fe4b15bbd1d9b2e86d70d874a1d6dfb54d3ad880444e8589bcdfb2"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-mutant/counterexample.json",
+      "path": "formal/controlled/wrong-eviction-mutant/counterexample.json",
+      "bytes": 1334,
+      "sha256": "f4793fe318acd08139620e7291e2f9b6571cf07cf8ef2dd61102de646041cd88"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-mutant/inventory.json",
+      "path": "formal/controlled/wrong-eviction-mutant/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-mutant/result.json",
+      "path": "formal/controlled/wrong-eviction-mutant/result.json",
+      "bytes": 628,
+      "sha256": "3e13d4ff7d095edd07e9d910439e759d219852c129a3d6f17afe0ec2c12d2844"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-mutant/tlc-invocation.json",
+      "path": "formal/controlled/wrong-eviction-mutant/tlc-invocation.json",
+      "bytes": 484,
+      "sha256": "6c651c76c5e0e9f3ca4aec81f11f80e86160049d8919680e6a22a313e8c9c52a"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-mutant/tlc-live.json",
+      "path": "formal/controlled/wrong-eviction-mutant/tlc-live.json",
+      "bytes": 58,
+      "sha256": "12e6487a9bf879dffd6f04f169cb77982bb5229a6223001d748e21dc9c03af0b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-mutant/tlc-terminal.json",
+      "path": "formal/controlled/wrong-eviction-mutant/tlc-terminal.json",
+      "bytes": 135,
+      "sha256": "b3dfe2e987d64304697bd48442b7c1568277ea31c74ff2698187fd4297bb7a45"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-mutant/tlc.log",
+      "path": "formal/controlled/wrong-eviction-mutant/tlc.log",
+      "bytes": 3208,
+      "sha256": "b2d4d68f60431241899d48db93c4e3c7fec74a522648eb7f9cac23cf9baa46a9"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-restored/AppliedReceipts.tla",
+      "path": "formal/controlled/wrong-eviction-restored/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-restored/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/wrong-eviction-restored/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-restored/Run.cfg",
+      "path": "formal/controlled/wrong-eviction-restored/Run.cfg",
+      "bytes": 214,
+      "sha256": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-restored/inventory.json",
+      "path": "formal/controlled/wrong-eviction-restored/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-restored/result.json",
+      "path": "formal/controlled/wrong-eviction-restored/result.json",
+      "bytes": 618,
+      "sha256": "390b5f7d82fdd84f3b8314762e76eb5353cd1299a7037c7ef8d55fce1dd7cb44"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-restored/tlc-invocation.json",
+      "path": "formal/controlled/wrong-eviction-restored/tlc-invocation.json",
+      "bytes": 488,
+      "sha256": "108b5948be245972e02b07afa4695d985276caba2e5e4ad62163bf5858cb607a"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-restored/tlc-live.json",
+      "path": "formal/controlled/wrong-eviction-restored/tlc-live.json",
+      "bytes": 58,
+      "sha256": "4d22460bb882c5b48018b345b1146071e6e6eb81c138d8b52ea0396fe453ca02"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-restored/tlc-terminal.json",
+      "path": "formal/controlled/wrong-eviction-restored/tlc-terminal.json",
+      "bytes": 134,
+      "sha256": "11320a819ac9c5031ab1d0d32836599d141fc95423e964139f6560e6765bb72a"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-restored/tlc.log",
+      "path": "formal/controlled/wrong-eviction-restored/tlc.log",
+      "bytes": 2148,
+      "sha256": "e94d0e2eec11deea648e1279885d884f5519a1db1d9580ae533703dbda921561"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-baseline/AppliedReceipts.tla",
+      "path": "formal/controlled/proof-hole-baseline/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-baseline/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/proof-hole-baseline/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-baseline/inventory.json",
+      "path": "formal/controlled/proof-hole-baseline/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-baseline/result.json",
+      "path": "formal/controlled/proof-hole-baseline/result.json",
+      "bytes": 513,
+      "sha256": "ed2117c63ac3605ff3ca6b551cd3f4adc7a1efca1423a24f5f91088761d5af33"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-baseline/sany.log",
+      "path": "formal/controlled/proof-hole-baseline/sany.log",
+      "bytes": 3157,
+      "sha256": "ea207efc171157794a4c50f64969ac8749b45d2e11f09ddfc25a5d3faa6e7bdf"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-baseline/semantic-audit.json",
+      "path": "formal/controlled/proof-hole-baseline/semantic-audit.json",
+      "bytes": 3140,
+      "sha256": "4cdb10bab739d7b18db935ed1a07ecfa2a23c966d5479aa4fd21a09ad52d19ce"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-baseline/tlaps-invocation.json",
+      "path": "formal/controlled/proof-hole-baseline/tlaps-invocation.json",
+      "bytes": 458,
+      "sha256": "a099cea59fff0a21e9d0ed1f561d516a5879045737b24ab68725606d09d09b15"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-baseline/tlaps-live.json",
+      "path": "formal/controlled/proof-hole-baseline/tlaps-live.json",
+      "bytes": 58,
+      "sha256": "e7ffa4fbc4f65037bf7207bce4fa23f93282e1547e2eb7b5338329aea1def24f"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-baseline/tlaps-terminal.json",
+      "path": "formal/controlled/proof-hole-baseline/tlaps-terminal.json",
+      "bytes": 134,
+      "sha256": "3cee58700845dcfef6bf6f060d1b4bee940d8c9770b51bb234338196d67ae9cd"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-baseline/tlaps.log",
+      "path": "formal/controlled/proof-hole-baseline/tlaps.log",
+      "bytes": 488,
+      "sha256": "7c2d45bf8d4667971f86dac8d99bf181d80799fe97e6075e77433c870c646506"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-mutant/AppliedReceipts.tla",
+      "path": "formal/controlled/proof-hole-mutant/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-mutant/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/proof-hole-mutant/AppliedReceiptsProof.tla",
+      "bytes": 4797,
+      "sha256": "53304fc9584c7547a6b781f28e370513337bae21795c5694689d4fbf70633c28"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-mutant/inventory.json",
+      "path": "formal/controlled/proof-hole-mutant/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-mutant/result.json",
+      "path": "formal/controlled/proof-hole-mutant/result.json",
+      "bytes": 542,
+      "sha256": "b272f7bad3f5c6bb46a8bae78e1295fd23958eb003d838d3b9aa7f0d5befd608"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-mutant/sany.log",
+      "path": "formal/controlled/proof-hole-mutant/sany.log",
+      "bytes": 3136,
+      "sha256": "9408338f3f2321b349eeb0a78126e46d13d43d28758f92991a87b95aa1f4afa0"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-restored/AppliedReceipts.tla",
+      "path": "formal/controlled/proof-hole-restored/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-restored/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/proof-hole-restored/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-restored/inventory.json",
+      "path": "formal/controlled/proof-hole-restored/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-restored/result.json",
+      "path": "formal/controlled/proof-hole-restored/result.json",
+      "bytes": 513,
+      "sha256": "8d3e5dfc627045dc183bb5126ce52263d769f44779fdedbfd5c894df6efaad84"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-restored/sany.log",
+      "path": "formal/controlled/proof-hole-restored/sany.log",
+      "bytes": 3157,
+      "sha256": "856804a0c40f60cb1bfe2d3a3497563d7e9542d750cbe0340313ab92f13c91bc"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-restored/semantic-audit.json",
+      "path": "formal/controlled/proof-hole-restored/semantic-audit.json",
+      "bytes": 3140,
+      "sha256": "8864057cf2efde54af00ed98353ba720d45b5bbb8daf58ec67b914d1505d38c5"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-restored/tlaps-invocation.json",
+      "path": "formal/controlled/proof-hole-restored/tlaps-invocation.json",
+      "bytes": 458,
+      "sha256": "60c3ccc5bda375b8a6e78efd87ecc166afb20f7267f244447ccd54f3484e2b98"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-restored/tlaps-live.json",
+      "path": "formal/controlled/proof-hole-restored/tlaps-live.json",
+      "bytes": 58,
+      "sha256": "7a8a3ed484f0df8d57b69742b6e5205345c3e8bf1a90bc26b6d462f15df1543d"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-restored/tlaps-terminal.json",
+      "path": "formal/controlled/proof-hole-restored/tlaps-terminal.json",
+      "bytes": 134,
+      "sha256": "3f776c6054b55bf5f4522e1af37d041da12567859540f8ff6771643d5bab1d60"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/proof-hole-restored/tlaps.log",
+      "path": "formal/controlled/proof-hole-restored/tlaps.log",
+      "bytes": 488,
+      "sha256": "dfcb4e96a3c75ec462e45ea1fc62f7cd40b14070efb394002226eba861759d24"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-baseline/AppliedReceipts.tla",
+      "path": "formal/controlled/unapproved-axiom-baseline/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-baseline/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/unapproved-axiom-baseline/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-baseline/inventory.json",
+      "path": "formal/controlled/unapproved-axiom-baseline/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-baseline/result.json",
+      "path": "formal/controlled/unapproved-axiom-baseline/result.json",
+      "bytes": 519,
+      "sha256": "7952dac7ad9119ae695435487064b65bb1baed86c46f7817f60ecd2e613c245f"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-baseline/sany.log",
+      "path": "formal/controlled/unapproved-axiom-baseline/sany.log",
+      "bytes": 3217,
+      "sha256": "74457a967e8c3d076b64aee910789581a43754c75391382c2935de5b727c425e"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-baseline/semantic-audit.json",
+      "path": "formal/controlled/unapproved-axiom-baseline/semantic-audit.json",
+      "bytes": 3170,
+      "sha256": "d1e4b96ee05aab640b109b1572bfe3211d78373bd29b34e9b54a296508d3259b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-baseline/tlaps-invocation.json",
+      "path": "formal/controlled/unapproved-axiom-baseline/tlaps-invocation.json",
+      "bytes": 476,
+      "sha256": "407bb547401f8937d4e3be85bc66fd1941e0fdc8fbc5fa7e29ae9ecf3acfb527"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-baseline/tlaps-live.json",
+      "path": "formal/controlled/unapproved-axiom-baseline/tlaps-live.json",
+      "bytes": 58,
+      "sha256": "850ee0e101d90112ec825be9f3fdc47ec5a119dc778fe82ac4b41fd180a25a71"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-baseline/tlaps-terminal.json",
+      "path": "formal/controlled/unapproved-axiom-baseline/tlaps-terminal.json",
+      "bytes": 134,
+      "sha256": "832ca452ead9850292566c1970e8d5a778de35fd5a7fcd73595d8d67ca821761"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-baseline/tlaps.log",
+      "path": "formal/controlled/unapproved-axiom-baseline/tlaps.log",
+      "bytes": 506,
+      "sha256": "e39f7c71082f4bf62302f6a9dbb58ceafc5219e0edb5fa8940e64ad3bd41cbab"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-mutant/AppliedReceipts.tla",
+      "path": "formal/controlled/unapproved-axiom-mutant/AppliedReceipts.tla",
+      "bytes": 2710,
+      "sha256": "ef91d013a8ae400a167732188f3424c839189cddce63747b8b5ec7368eb0c135"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-mutant/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/unapproved-axiom-mutant/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-mutant/inventory.json",
+      "path": "formal/controlled/unapproved-axiom-mutant/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-mutant/result.json",
+      "path": "formal/controlled/unapproved-axiom-mutant/result.json",
+      "bytes": 544,
+      "sha256": "8fd9908a29a5bca76eb34accccd296b84c322af2035755a8dfd2cc8b7057832e"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-mutant/sany.log",
+      "path": "formal/controlled/unapproved-axiom-mutant/sany.log",
+      "bytes": 3288,
+      "sha256": "867b099415b324fd3b11a729eb0203d2802b094fb07e2ddc8aba06f8d89c003d"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/AppliedReceipts.tla",
+      "path": "formal/controlled/unapproved-axiom-restored/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/AppliedReceiptsProof.tla",
+      "path": "formal/controlled/unapproved-axiom-restored/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/inventory.json",
+      "path": "formal/controlled/unapproved-axiom-restored/inventory.json",
+      "bytes": 1380,
+      "sha256": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/result.json",
+      "path": "formal/controlled/unapproved-axiom-restored/result.json",
+      "bytes": 519,
+      "sha256": "c2658d199b2d0f578c09fcd5548e02dd33e9cf3f504d46d6c1c33c89928bd6a0"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/sany.log",
+      "path": "formal/controlled/unapproved-axiom-restored/sany.log",
+      "bytes": 3217,
+      "sha256": "5a1bb1068fd19548fc97802a4b744d2cea97618239934cbf75d19399875e247c"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/semantic-audit.json",
+      "path": "formal/controlled/unapproved-axiom-restored/semantic-audit.json",
+      "bytes": 3170,
+      "sha256": "9a47cf4ddd3bb0a83d01d4efbd03c7b9b905fd02be804d1103bff7d971ac4ed8"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/tlaps-invocation.json",
+      "path": "formal/controlled/unapproved-axiom-restored/tlaps-invocation.json",
+      "bytes": 476,
+      "sha256": "6ea065b400eaceb86c54d49c95767b7cf33b97857e2ab372abb8cf6706ef3d55"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/tlaps-live.json",
+      "path": "formal/controlled/unapproved-axiom-restored/tlaps-live.json",
+      "bytes": 58,
+      "sha256": "dc6375e388c19f65e7a9aa08090d327e792fb0484b5dafa2a547ab0825fd42eb"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/tlaps-terminal.json",
+      "path": "formal/controlled/unapproved-axiom-restored/tlaps-terminal.json",
+      "bytes": 134,
+      "sha256": "210fc51a692bbfb5419e6551388540a8dcd0666dace4471ade41f0e57840e063"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/tlaps.log",
+      "path": "formal/controlled/unapproved-axiom-restored/tlaps.log",
+      "bytes": 506,
+      "sha256": "fcf3691c05f3b2236efe8da5bfe55bb14155515bd44591fbd143a7e0e7153683"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/compile-auditor-invocation.json",
+      "path": "formal/first-failure/compile-auditor-invocation.json",
+      "bytes": 337,
+      "sha256": "325a7e36a5028913171e03eb393ee5b34c899a48472d7acd7673ba1a92b9b3db"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/compile-auditor-terminal.json",
+      "path": "formal/first-failure/compile-auditor-terminal.json",
+      "bytes": 80,
+      "sha256": "7d8eff8046999bc783b3d733f648e9c938e99ffc4d17fb0e5fbc35f53fa3a46d"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/compile-auditor.log",
+      "path": "formal/first-failure/compile-auditor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/inputs.json",
+      "path": "formal/first-failure/inputs.json",
+      "bytes": 1102,
+      "sha256": "332f9332c44a761df1f3d3de532081d8946d7458653565a1c93cb39d1c2d36d0"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/tlaps-invocation.json",
+      "path": "formal/first-failure/tlaps-invocation.json",
+      "bytes": 397,
+      "sha256": "c5a8fb176832de9ea8a1eef2437d565d3137019550c76521e3714a46478bbeba"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/tlaps-terminal.json",
+      "path": "formal/first-failure/tlaps-terminal.json",
+      "bytes": 81,
+      "sha256": "f7671aae55994826eb57b872928d6c3cfe7fa8bdbf4e93c2271604c196895253"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/tlaps.log",
+      "path": "formal/first-failure/tlaps.log",
+      "bytes": 4085,
+      "sha256": "19aadf5dc80deba0a7122b1396b62ac51036586df8584f62a8b2f1047ab93d0b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/tools.json",
+      "path": "formal/first-failure/tools.json",
+      "bytes": 321,
+      "sha256": "ddef0945b10f1c7e9c277975f992cad29372bba73c3445938093bf4ec5620cb8"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/source/AppliedReceipts.tla",
+      "path": "formal/first-failure/source/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/source/AppliedReceiptsMC.cfg",
+      "path": "formal/first-failure/source/AppliedReceiptsMC.cfg",
+      "bytes": 214,
+      "sha256": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/source/AppliedReceiptsProof.tla",
+      "path": "formal/first-failure/source/AppliedReceiptsProof.tla",
+      "bytes": 3003,
+      "sha256": "f4e4b778175bdc45ec01ca6907fb834bc4698c01d5216b3c77ca84a2dae690c4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/source/check-draft.py",
+      "path": "formal/first-failure/source/check-draft.py",
+      "bytes": 5059,
+      "sha256": "edb39d8620a9c82c46f1e05fdabd9217f4ba59910ef84fb0f15cb99e44766814"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/source/inventory-draft.json",
+      "path": "formal/first-failure/source/inventory-draft.json",
+      "bytes": 1326,
+      "sha256": "f0df11ae317c77c99c182f3af7c0beec4436576901c8ff76770c400a71a2ab81"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/source/sany.log",
+      "path": "formal/first-failure/source/sany.log",
+      "bytes": 2901,
+      "sha256": "c4b8710bf80f178df443e2afa1a3b32c832f79b8bf1c0f046b8811fa41a607c9"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-draft-first/source/semantic-audit.json",
+      "path": "formal/first-failure/source/semantic-audit.json",
+      "bytes": 2906,
+      "sha256": "7c339ddad1e09bc6e4336a33b68b0f1b0083971e4102be69844fa6793d3ffc03"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/compile-auditor-invocation.json",
+      "path": "formal/typed-lemmas/compile-auditor-invocation.json",
+      "bytes": 340,
+      "sha256": "8f3045f18b48e10399905e4ea8e3b45de2634cd91611146b65e9366ad36572ab"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/compile-auditor-terminal.json",
+      "path": "formal/typed-lemmas/compile-auditor-terminal.json",
+      "bytes": 80,
+      "sha256": "78d99ebe2d0de3c9cf21fc4e1dbc1a5fcc7d30dec424f5bda2cee992f8917021"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/compile-auditor.log",
+      "path": "formal/typed-lemmas/compile-auditor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/inputs.json",
+      "path": "formal/typed-lemmas/inputs.json",
+      "bytes": 1102,
+      "sha256": "d05f66e8891aef3c45a734870b1e96f4defe2e2e1413b3b0b62abe67b6081ed7"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/result.json",
+      "path": "formal/typed-lemmas/result.json",
+      "bytes": 357,
+      "sha256": "e667d95c31690be2cfe4983ba88dc0c124a8df7c0bf665c6342ed6a134b12f37"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tlaps-invocation.json",
+      "path": "formal/typed-lemmas/tlaps-invocation.json",
+      "bytes": 400,
+      "sha256": "ed18afde8d7dc49ebe38ab6ad90852b9dfb2417889e72bdda9105fc9124cf026"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tlaps-terminal.json",
+      "path": "formal/typed-lemmas/tlaps-terminal.json",
+      "bytes": 80,
+      "sha256": "3ae7d631133e5ca3d1692416972bd0c36ba9e94760eaafe62c73885b7b8f7744"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tlaps.log",
+      "path": "formal/typed-lemmas/tlaps.log",
+      "bytes": 423,
+      "sha256": "ee6b459fc183de32b6758542c99d3ac6687bebcd9436ada38efa2c9a70839912"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tools.json",
+      "path": "formal/typed-lemmas/tools.json",
+      "bytes": 321,
+      "sha256": "ddef0945b10f1c7e9c277975f992cad29372bba73c3445938093bf4ec5620cb8"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/source/AppliedReceipts.tla",
+      "path": "formal/typed-lemmas/source/AppliedReceipts.tla",
+      "bytes": 2682,
+      "sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/source/AppliedReceiptsMC.cfg",
+      "path": "formal/typed-lemmas/source/AppliedReceiptsMC.cfg",
+      "bytes": 214,
+      "sha256": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/source/AppliedReceiptsProof.tla",
+      "path": "formal/typed-lemmas/source/AppliedReceiptsProof.tla",
+      "bytes": 4830,
+      "sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/source/check-draft.py",
+      "path": "formal/typed-lemmas/source/check-draft.py",
+      "bytes": 5059,
+      "sha256": "edb39d8620a9c82c46f1e05fdabd9217f4ba59910ef84fb0f15cb99e44766814"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/source/inventory-draft.json",
+      "path": "formal/typed-lemmas/source/inventory-draft.json",
+      "bytes": 1376,
+      "sha256": "30b24018d733f7af37cb37a140622acb4a6b3c6c87a99d8bfe7a7d35b54ce035"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/source/sany.log",
+      "path": "formal/typed-lemmas/source/sany.log",
+      "bytes": 2987,
+      "sha256": "bfc65e52d78e0b1864ea50e216c17411fd995978ddcbc329fd2112979e748edf"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/source/semantic-audit.json",
+      "path": "formal/typed-lemmas/source/semantic-audit.json",
+      "bytes": 3055,
+      "sha256": "211f17c4b9cd43f4588543e75ce7ec841c56e8b0424ce700c33fdbb8317e46db"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-root-first/child-first.json",
+      "path": "formal/prior-root/child-first.json",
+      "bytes": 286,
+      "sha256": "7c45b73ebae760c17679b6f8e720edd44457a32a87d793f027f6206d7eb7e389"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-root-first/first-failure-analysis.json",
+      "path": "formal/prior-root/first-failure-analysis.json",
+      "bytes": 508,
+      "sha256": "6a419863c2ba7314145ec333d0a61af435ab63a243e352dbf84420c1a4b85dc9"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-root-first/first.log",
+      "path": "formal/prior-root/first.log",
+      "bytes": 394,
+      "sha256": "65b9bf67cfd0f2bfd5aa96b04c2661d7d0b7538fde45791672d409518676aa36"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-root-first/invocation-first.json",
+      "path": "formal/prior-root/invocation-first.json",
+      "bytes": 579,
+      "sha256": "f0dfcb590cfff4fdd736e78671ee14d67a40814da88fea76d51cba34e72260ce"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-root-first/terminal-first.json",
+      "path": "formal/prior-root/terminal-first.json",
+      "bytes": 137,
+      "sha256": "696aa474071d66c4ccc4e06ee88ce441cbbd26eff5ae35ceae82367899ff13b8"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-root-first/typed-invocation.json",
+      "path": "formal/prior-root/typed-invocation.json",
+      "bytes": 495,
+      "sha256": "353b02e081969c60ca8ee72eb05b08be21517c5a37ac92af3db63cea246f4837"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-root-first/typed-terminal.json",
+      "path": "formal/prior-root/typed-terminal.json",
+      "bytes": 137,
+      "sha256": "a311a0a6b660c0916b927ffe13080f28fb9a1a72b0e33a462f6d17a229c8b797"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-proof-root-first/typed.log",
+      "path": "formal/prior-root/typed.log",
+      "bytes": 341,
+      "sha256": "0d3e6933310ab6dae6ad0dd44ae91654574ac11bce0d97e6563724c57ed0058c"
+    },
+    {
+      "source": "/tmp/kv9-indexed-apply-receipts/crates/raft/src/driver/applied_ring.rs",
+      "path": "source/candidate-applied-ring.rs",
+      "bytes": 5095,
+      "sha256": "fb7ad04c7bb3537ba36c49b62141590d53b1ab603a5eeac2f09236a3f96e85c6"
+    },
+    {
+      "source": "/tmp/kv9-indexed-apply-receipts/crates/raft/src/driver.rs",
+      "path": "source/candidate-driver.rs",
+      "bytes": 153202,
+      "sha256": "6799991b0210348e6d0acbccbfec87c3fca910c68667213e0d56964f3a48ad2c"
+    },
+    {
+      "source": "/tmp/kv9-wal-crc32-table/crates/raft/src/driver.rs",
+      "path": "source/crc-baseline-driver.rs",
+      "bytes": 153270,
+      "sha256": "f2832061ad65c28b73f25757dcfe87fb4f990630ccd04043326ce5d3d4d01f63"
+    },
+    {
+      "source": "/tmp/kv9-indexed-receipt-release-first/build.json",
+      "path": "source/build.json",
+      "bytes": 65503,
+      "sha256": "406c397f56e8d7f177aa540dbddbdda21ba9d0d9f159b0cb83694acfc92275f6"
+    },
+    {
+      "source": "/home/dongxu/.rustup/toolchains/1.94.0-x86_64-unknown-linux-gnu/share/doc/rust/html/src/alloc/collections/vec_deque/mod.rs.html",
+      "path": "source/rust-1.94-vec-deque-source.html",
+      "bytes": 369335,
+      "sha256": "a94d8fdf02f3b309411571543165f447098d71e62991e9e0a456c91b04bd74fb"
+    }
+  ]
+}

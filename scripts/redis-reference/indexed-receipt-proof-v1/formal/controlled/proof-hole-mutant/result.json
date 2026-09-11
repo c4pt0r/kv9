@@ -1,0 +1,12 @@
+{
+  "name": "proof-hole-mutant",
+  "kind": "TLAPS/semantic",
+  "expected": "proof hole: AppliedReceiptsProof.ARLookupAlways",
+  "sources": {
+    "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+    "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+    "AppliedReceiptsProof.tla": "53304fc9584c7547a6b781f28e370513337bae21795c5694689d4fbf70633c28"
+  },
+  "semantic_rejection": "proof hole: AppliedReceiptsProof.ARLookupAlways",
+  "accepted_expected_result": true
+}

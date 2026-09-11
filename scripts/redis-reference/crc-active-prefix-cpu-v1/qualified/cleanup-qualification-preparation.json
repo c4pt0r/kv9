@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/qualify_cleanup.py",
+    "--output",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/cleanup-qualification-first"
+  ],
+  "cases": [
+    "injected post-spawn identity exception",
+    "actual timeout with SIGTERM-resistant child and KILL/reap"
+  ],
+  "executed": false,
+  "prepared_unix_ns": 1789150726374386336,
+  "qualification_document_sha256": "9aad191ef1f502ebfdf895be2fb53a7018b400a0ab5a72d29a16c3f7b580adfb",
+  "qualification_script_sha256": "5a67480b005504163f260753a3de4f4f730f8fb1cd7c43a50cba4b2acca4f9a1",
+  "runtime_authorized": false,
+  "scope": "Real Python dummy process cleanup only; no KV9/perf/network/cluster",
+  "unchanged_target_helper_sha256": "ed1a5ff2f804e9d9cc85c8a1f7fea8c42b579618d0260e3fe1da8c0ea2d8ccbe"
+}

@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+    "--strict",
+    "--nofp",
+    "--threads",
+    "1",
+    "--cache-dir",
+    "/tmp/kv9-indexed-receipt-proof-draft-first/fresh-cache",
+    "/tmp/kv9-indexed-receipt-proof-draft-first/source/AppliedReceiptsProof.tla"
+  ],
+  "cwd": "/tmp/kv9-indexed-receipt-proof-draft-first/source",
+  "started_ns": 1789150472277631674
+}

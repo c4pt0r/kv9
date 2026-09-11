@@ -1,0 +1,32 @@
+{
+  "active_prefix_sha256": "ed1a5ff2f804e9d9cc85c8a1f7fea8c42b579618d0260e3fe1da8c0ea2d8ccbe",
+  "analyzer_byte_identical": true,
+  "analyzer_sha256": "c188fd8c648100dee311923bb042dcff488098592eda8230ed5929bcbe958df4",
+  "commands_executed": {
+    "audit": false,
+    "cargo": false,
+    "decoder": false,
+    "profiler": false,
+    "tests": false,
+    "workload": false
+  },
+  "completed_unix_ns": 1789150292469539438,
+  "control_cases_authored": 7,
+  "control_results": null,
+  "controls_sha256": "b867c15bb003faf76c4aed649b8c38820d1c3dc97c8db639814d85211ef6c80f",
+  "predecessor_inputs": {
+    "/tmp/kv9-crc-profile-coverage-investigation/REPORT.md": "5610ea1b903a0af314844759a3266e91b70082bf7a5b98c12fe575d86ad951b5",
+    "/tmp/kv9-crc-write-profile-first/analyze.py": "c188fd8c648100dee311923bb042dcff488098592eda8230ed5929bcbe958df4",
+    "/tmp/kv9-crc-write-profile-first/profile.py": "2bf9911560e99c7f578407da86333e5424fda83a8b75c345175c25660e1d7125",
+    "/tmp/kv9-crc-write-profile-first/protocol.json": "0ae8a601a134bbd469c815f355b56dadd2d5734965a25aa81dd3a07cb86d2907",
+    "/tmp/kv9-wal-crc32-table/crates/server/src/grpc.rs": "2865df993484a95fd7bcd966d99df3b6b71fbcba970ddd984f5b27ece19706ee",
+    "/tmp/kv9-wal-crc32-table/src/main.rs": "6a0ec7ef14a6e8d75782046dc613895cbb0e1ddfccc6c9086322e52df6273e30"
+  },
+  "prepared_for_review": true,
+  "preview_sha256": "6880ca336d3692fe6a9426e65726fd1e6bb1c671a227c1342b32e39780c59409",
+  "profile_diff_sha256": "2acba932b10e20f779e20bdb036bb2c220e885cfc139028f15a972bf172e3f48",
+  "profile_sha256": "b19c4348fac62aa1ed73f345c74bc20a0387fd6cc2a73c13733248c9f95eb90d",
+  "remaining": "Root review and post-timing control release; later exact runtime qualification and unchanged decoder sample containment. No real prefix samples or new profile acceptance yet.",
+  "runtime_ready": false,
+  "scope": "Static adapter/control preparation only"
+}

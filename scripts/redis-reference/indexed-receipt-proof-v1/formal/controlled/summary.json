@@ -1,0 +1,250 @@
+{
+  "complete": true,
+  "representation_acceptance": true,
+  "records": [
+    {
+      "name": "capacity-1",
+      "kind": "TLC",
+      "capacity": 1,
+      "expected": null,
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "Run.cfg": "b71e1798b0c278ab63416bca0b0fdb01cf65829dba333f05a2b69258e5f1dce8",
+        "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 0,
+      "statistics": {
+        "generated": 667,
+        "distinct": 37,
+        "queued": 0
+      },
+      "accepted_expected_result": true
+    },
+    {
+      "name": "capacity-2",
+      "kind": "TLC",
+      "capacity": 2,
+      "expected": null,
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "Run.cfg": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6",
+        "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 0,
+      "statistics": {
+        "generated": 8119,
+        "distinct": 451,
+        "queued": 0
+      },
+      "accepted_expected_result": true
+    },
+    {
+      "name": "certificate-baseline",
+      "kind": "TLC",
+      "capacity": 2,
+      "expected": null,
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "Run.cfg": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6",
+        "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 0,
+      "statistics": {
+        "generated": 8119,
+        "distinct": 451,
+        "queued": 0
+      },
+      "accepted_expected_result": true
+    },
+    {
+      "name": "certificate-mutant",
+      "kind": "TLC",
+      "capacity": 2,
+      "expected": "AROrdering",
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "Run.cfg": "5033ff46dc10d8d347bfcba81d1997c48fdc2cb79384312cc70174f5a8525185",
+        "AppliedReceipts.tla": "54d21d3f1ad4f358ba181de9b29d539014f859099ade819a476b5757cd883bd0",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 12,
+      "statistics": {
+        "generated": 20,
+        "distinct": 20,
+        "queued": 17
+      },
+      "accepted_expected_result": true
+    },
+    {
+      "name": "certificate-restored",
+      "kind": "TLC",
+      "capacity": 2,
+      "expected": null,
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "Run.cfg": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6",
+        "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 0,
+      "statistics": {
+        "generated": 8119,
+        "distinct": 451,
+        "queued": 0
+      },
+      "accepted_expected_result": true
+    },
+    {
+      "name": "wrong-eviction-baseline",
+      "kind": "TLC",
+      "capacity": 2,
+      "expected": null,
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "Run.cfg": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6",
+        "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 0,
+      "statistics": {
+        "generated": 8119,
+        "distinct": 451,
+        "queued": 0
+      },
+      "accepted_expected_result": true
+    },
+    {
+      "name": "wrong-eviction-mutant",
+      "kind": "TLC",
+      "capacity": 2,
+      "expected": "ARRefinement",
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "Run.cfg": "bf6d9eff30fe4b15bbd1d9b2e86d70d874a1d6dfb54d3ad880444e8589bcdfb2",
+        "AppliedReceipts.tla": "ae44db8c9fdea09105ef01fde62ed022b7f68e469629cfdcc1bd37f2e4cacf6a",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 12,
+      "statistics": {
+        "generated": 362,
+        "distinct": 356,
+        "queued": 334
+      },
+      "accepted_expected_result": true
+    },
+    {
+      "name": "wrong-eviction-restored",
+      "kind": "TLC",
+      "capacity": 2,
+      "expected": null,
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "Run.cfg": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6",
+        "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 0,
+      "statistics": {
+        "generated": 8119,
+        "distinct": 451,
+        "queued": 0
+      },
+      "accepted_expected_result": true
+    },
+    {
+      "name": "proof-hole-baseline",
+      "kind": "TLAPS/semantic",
+      "expected": null,
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 0,
+      "obligations": 122,
+      "semantic_import_assumption_hole_audit": true,
+      "accepted_expected_result": true
+    },
+    {
+      "name": "proof-hole-mutant",
+      "kind": "TLAPS/semantic",
+      "expected": "proof hole: AppliedReceiptsProof.ARLookupAlways",
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+        "AppliedReceiptsProof.tla": "53304fc9584c7547a6b781f28e370513337bae21795c5694689d4fbf70633c28"
+      },
+      "semantic_rejection": "proof hole: AppliedReceiptsProof.ARLookupAlways",
+      "accepted_expected_result": true
+    },
+    {
+      "name": "proof-hole-restored",
+      "kind": "TLAPS/semantic",
+      "expected": null,
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 0,
+      "obligations": 122,
+      "semantic_import_assumption_hole_audit": true,
+      "accepted_expected_result": true
+    },
+    {
+      "name": "unapproved-axiom-baseline",
+      "kind": "TLAPS/semantic",
+      "expected": null,
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 0,
+      "obligations": 122,
+      "semantic_import_assumption_hole_audit": true,
+      "accepted_expected_result": true
+    },
+    {
+      "name": "unapproved-axiom-mutant",
+      "kind": "TLAPS/semantic",
+      "expected": "unapproved module assumption: AppliedReceipts",
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "AppliedReceipts.tla": "ef91d013a8ae400a167732188f3424c839189cddce63747b8b5ec7368eb0c135",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "semantic_rejection": "unapproved module assumption: AppliedReceipts",
+      "accepted_expected_result": true
+    },
+    {
+      "name": "unapproved-axiom-restored",
+      "kind": "TLAPS/semantic",
+      "expected": null,
+      "sources": {
+        "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+        "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+        "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+      },
+      "exit_code": 0,
+      "obligations": 122,
+      "semantic_import_assumption_hole_audit": true,
+      "accepted_expected_result": true
+    }
+  ],
+  "source_revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "scope": "Conditional local sequence/certificate/lookup refinement; not whole Rust, Raft, liveness or crash proof.",
+  "declared_theorems": 13,
+  "fresh_obligations_per_positive_run": 122,
+  "positive_proof_runs": 4,
+  "total_positive_proof_obligations": 488,
+  "finite_runs": 8,
+  "semantic_control_triples": 2,
+  "finite_control_triples": 2,
+  "proof_output_controls": 3,
+  "sources_unchanged": true,
+  "ended_ns": 1789151779811269931
+}

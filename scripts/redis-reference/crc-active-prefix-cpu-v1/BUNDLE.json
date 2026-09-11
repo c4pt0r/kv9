@@ -1,0 +1,17 @@
+{
+  "attribution_sha256": "5bc776385ba84ed1ad458214cdad983b7eb4e12cc17b8e513897948b02150d37",
+  "bundle_inventory_sha256": "5be88e541476356c578d687f839bb8a8788bc6d0865314e15a37cf90ba56f397",
+  "complete": true,
+  "completed_unix_ns": 1789151923354493628,
+  "decoder_exit_code": 0,
+  "decoder_session": 21261,
+  "gzip_files": 20,
+  "original_files": 174,
+  "original_path_index_sha256": "7f911e2de90b5e3fd0aca567c83afc0d9f3b2757e2b965c76520dc37bca07c34",
+  "runtime_exit_code": 0,
+  "runtime_session": 76156,
+  "scope": "Exact-byte CPU diagnostic evidence publication; raw perf/WAL/full host process inventories excluded; no new runtime or acceptance rerun.",
+  "source_and_copy_readback_unchanged": true,
+  "stored_original_bytes": 4859862,
+  "uncompressed_original_bytes": 26646826
+}

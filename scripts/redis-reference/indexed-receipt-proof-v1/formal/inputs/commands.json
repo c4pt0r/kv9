@@ -1,0 +1,30 @@
+{
+  "gate_after_root_runtime_terminal_release": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-indexed-receipt-proof-preparation/check-controlled.py",
+    "--output",
+    "/tmp/kv9-indexed-receipt-proof-controlled-first"
+  ],
+  "root_release_evidence": {
+    "profile_session": 76156,
+    "exit_code": 0,
+    "tool_receipt": "38b8e5"
+  },
+  "workers": {
+    "TLC": 1,
+    "TLAPS": 1
+  },
+  "cases": 14,
+  "finite_cases": 8,
+  "proof_semantic_cases": 6,
+  "theorems": 13,
+  "obligations_per_positive_proof": 122,
+  "positive_proof_runs": 4,
+  "runtime_benchmark": false
+}

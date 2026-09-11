@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+    "--strict",
+    "--nofp",
+    "--threads",
+    "1",
+    "--cache-dir",
+    "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/fresh-cache",
+    "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored/AppliedReceiptsProof.tla"
+  ],
+  "cwd": "/tmp/kv9-indexed-receipt-proof-controlled-first/unapproved-axiom-restored",
+  "started_ns": 1789151774140103973
+}

@@ -1,0 +1,86 @@
+(* created new "/tmp/kv9-indexed-receipt-proof-draft-first/fresh-cache/AppliedReceiptsProof.tlaps/AppliedReceiptsProof.thy" *)
+(* fingerprints written in "/tmp/kv9-indexed-receipt-proof-draft-first/fresh-cache/AppliedReceiptsProof.tlaps/fingerprints" *)
+File "/tmp/kv9-indexed-receipt-proof-draft-first/source/AppliedReceiptsProof.tla", line 45, characters 9-10:
+[ERROR]: Could not prove or check:
+           ASSUME NEW CONSTANT ARCapacity,
+                  NEW CONSTANT ARIndexes,
+                  NEW CONSTANT ARTerms,
+                  NEW CONSTANT AROutcomes,
+                  ARInputAssumption == ARLegalInputs,
+                  NEW VARIABLE arVector,
+                  NEW VARIABLE arDeque,
+                  NEW VARIABLE arOrdered,
+                  NEW CONSTANT s \in 
+                  Seq(ARReceipts),
+                  ARStrict(s) ,
+                  NEW CONSTANT key \in ARIndexes,
+                  NEW CONSTANT i \in 
+                  ARMatches(s, key),
+                  <2>1 ,
+                  <2>2 ,
+                  SMT 
+           PROVE  (CHOOSE j \in ARMatches(s, key) :
+                     \A k \in ARMatches(s, key) : j =< k)
+                  = i
+File "/tmp/kv9-indexed-receipt-proof-draft-first/source/AppliedReceiptsProof.tla", line 30, characters 1-2:
+[ERROR]: Could not prove or check:
+           ASSUME NEW CONSTANT ARCapacity,
+                  NEW CONSTANT ARIndexes,
+                  NEW CONSTANT ARTerms,
+                  NEW CONSTANT AROutcomes,
+                  ARInputAssumption == ARLegalInputs,
+                  ARStrict(s) ==
+                    \A i, j \in 1..Len(s) : i < j => s[i].index < s[j].index,
+                  ARMatches(s, key) == {i \in 1..Len(s) : s[i].index = key},
+                  NEW VARIABLE arVector,
+                  NEW VARIABLE arDeque,
+                  NEW VARIABLE arOrdered,
+                  NEW CONSTANT s \in 
+                  Seq(ARReceipts),
+                  ARStrict(s) ,
+                  NEW CONSTANT key \in ARIndexes,
+                  NEW CONSTANT i \in 
+                  ARMatches(s, key),
+                  NEW CONSTANT j \in 
+                  ARMatches(s, key),
+                  SMT 
+           PROVE  i = j
+File "/tmp/kv9-indexed-receipt-proof-draft-first/source/AppliedReceiptsProof.tla", line 23, characters 1-2:
+[ERROR]: Could not prove or check:
+           ASSUME NEW CONSTANT ARCapacity,
+                  NEW CONSTANT ARIndexes,
+                  NEW CONSTANT ARTerms,
+                  NEW CONSTANT AROutcomes,
+                  ARLegalInputs ==
+                    /\ ARCapacity \in Nat \ {0}
+                    /\ ARIndexes \subseteq Nat
+                    /\ ARIndexes # {}
+                    /\ ARTerms # {}
+                    /\ AROutcomes # {},
+                  ARInputAssumption == ARLegalInputs,
+                  ARReceipts ==
+                    [index : ARIndexes, term : ARTerms, outcome : AROutcomes],
+                  ARDequePush(s, e) ==
+                    Append(IF Len(s) = ARCapacity THEN Tail(s) ELSE s, e),
+                  ARStrict(s) ==
+                    \A i, j \in 1..Len(s) : i < j => s[i].index < s[j].index,
+                  ARCertificate(s, c, e) ==
+                    c
+                    /\ (IF Len(s) = 0
+                          THEN TRUE
+                          ELSE s[Len(s)].index < e.index),
+                  NEW VARIABLE arVector,
+                  NEW VARIABLE arDeque,
+                  NEW VARIABLE arOrdered,
+                  NEW CONSTANT s \in 
+                  Seq(ARReceipts),
+                  Len(s) =< ARCapacity ,
+                  NEW CONSTANT c \in BOOLEAN,
+                  c => ARStrict(s) ,
+                  NEW CONSTANT e \in ARReceipts,
+                  ARInputAssumption ,
+                  SMT 
+           PROVE  ARCertificate(s, c, e) => ARStrict(ARDequePush(s, e))
+File "/tmp/kv9-indexed-receipt-proof-draft-first/source/AppliedReceiptsProof.tla", line 1, character 1 to line 72, character 77:
+[ERROR]: 3/55 obligations failed.
+There were backend errors processing module `"AppliedReceiptsProof"`.

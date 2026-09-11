@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-write-profile-first/profile.py"
+  ],
+  "cwd": "/tmp/kv9-crc-write-profile-first",
+  "started_ns": 1789147138543447087,
+  "source_preflight_sha256": "2261750a393c0541f95d1fb1b2bdacad88f3a0e9a95534adee83dd37f259696b",
+  "image_session_terminal": {
+    "session": 51654,
+    "chunk": "f4cbc2",
+    "exit_code": 0
+  },
+  "process_session_terminal": {
+    "session": 5554,
+    "chunk": "899e1e",
+    "exit_code": 0
+  },
+  "screen_python_contracts_terminal": true,
+  "no_timed_screen_started": true
+}

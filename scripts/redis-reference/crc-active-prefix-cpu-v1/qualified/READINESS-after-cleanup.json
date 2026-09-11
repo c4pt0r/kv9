@@ -1,0 +1,74 @@
+{
+  "actual_profile_executed": false,
+  "all_commands_terminal": true,
+  "all_owned_dummy_lifetimes_exited": true,
+  "analyzer_byte_identical_to_original": true,
+  "cli_children": 9,
+  "cli_fallback_interventions": 0,
+  "decoder_executed": false,
+  "dummy_cleanup_cases": [
+    {
+      "accepted": true,
+      "calls": 1,
+      "expected_error": "RuntimeError('injected post-spawn identity failure')",
+      "name": "post_spawn_exception",
+      "original_prefix_complete": false,
+      "pids": [
+        902849
+      ],
+      "summary_sha256": "67d3243a0eb787c1775816b1a03967fde5713946ad9b8edfd4fdab9525755cf4"
+    },
+    {
+      "accepted": true,
+      "calls": 8,
+      "expected_error": "ValueError('prefix read deadline exceeded')",
+      "name": "timeout",
+      "original_prefix_complete": false,
+      "pids": [
+        902850,
+        902851,
+        902852,
+        902853,
+        902854,
+        902855,
+        902856,
+        902857
+      ],
+      "summary_sha256": "90d56151cada8472ffd188f7fb20e8b20ac35fc4abfbc092918f6c76e8b2d684"
+    }
+  ],
+  "evidence": {
+    "/tmp/kv9-crc-profile-active-prefix-preparation/PREPARATION.json": "98574f4984a9f1643fd7991be053b85cee6935753047cdc9c2c009727aa40dd8",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/cleanup-invocation-first.json": "5f95901941aedf1c7892b57fb65dbb76a8b1267d1ed39c1ddb5f15b7f851073a",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/cleanup-qualification-first.log": "9b0b0eb90826c4d1da2e0e07fa86e1eedc739412a2ca878eb38dd114b6eabeaa",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/cleanup-qualification-first/summary.json": "4898a718d6cbd2902d5fb17225126c6840c824b1caccde531fdeac5ed01c234c",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/cleanup-source-after-first.json": "e18f6959c25a463bc117ab665b7d86b0d7a4434e5e1c3cc96dde28505788a43f",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/cleanup-source-before-first.json": "e18f6959c25a463bc117ab665b7d86b0d7a4434e5e1c3cc96dde28505788a43f",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/cleanup-terminal-first.json": "8b8763ff8a9d60104ff0f0e0699b238006bb85d8475d47052fd4d03e151f3dd2",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/cleanup-tool-receipt-first.json": "9c9beb5232c359b43707cbb5a5297a8a1314f7c12627a71078ba5a14305b4930",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/inventory.json": "93a16b931d6f1f32b24146885712c89073d8b3786b1387616871cfc4c33a32d6",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/offline-contract-first.log": "83166b089fbcb82fac63f22522fa6ae99bb5e46368cd35d756277fd463dd6346",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/offline-contract-tool-receipt-first.json": "26a6a93575af7f21fedc6c0e301dd6d0ff0682f4a0a9f92ebbad7391cdd5677e"
+  },
+  "expected_dummy_voter_final_stops": 3,
+  "expected_original_prefix_failures_preserved": true,
+  "limitations": [
+    "Priming changes cache/CPU state and remains diagnostic only.",
+    "Only unchanged analyzer on a separately authorized actual recording can establish prefix/tail sample coverage.",
+    "Fast CLI exit before process identity capture must still fail closed.",
+    "No KV9, network, perf, decoder or benchmark runtime was executed by this qualification."
+  ],
+  "offline_contracts_passed": 7,
+  "preparation_qualified": true,
+  "runtime_launch_authorized": false,
+  "scope": "Offline contracts and real no-network Python dummy-process cleanup qualification only. Actual CPU profile coverage is untested and remains held.",
+  "source_bindings": {
+    "/tmp/kv9-crc-profile-active-prefix-preparation/active_prefix.py": "ed1a5ff2f804e9d9cc85c8a1f7fea8c42b579618d0260e3fe1da8c0ea2d8ccbe",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/analyze.py": "c188fd8c648100dee311923bb042dcff488098592eda8230ed5929bcbe958df4",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/cleanup-qualification-preparation.json": "2025dd233647bdae5e9535c000a895180aa47ebb630a6e8e67aca5cb70eb37e9",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/offline-contract-tool-receipt-first.json": "26a6a93575af7f21fedc6c0e301dd6d0ff0682f4a0a9f92ebbad7391cdd5677e",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/profile.py": "b19c4348fac62aa1ed73f345c74bc20a0387fd6cc2a73c13733248c9f95eb90d",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/qualify_cleanup.py": "5a67480b005504163f260753a3de4f4f730f8fb1cd7c43a50cba4b2acca4f9a1",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/test_prefix_contract.py": "b867c15bb003faf76c4aed649b8c38820d1c3dc97c8db639814d85211ef6c80f"
+  }
+}

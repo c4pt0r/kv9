@@ -1,0 +1,69 @@
+{
+  "reviewed": true,
+  "typed_root_session": 97715,
+  "typed_root_exit_code": 0,
+  "typed_root_tool_receipt": "6396c5",
+  "theorems": 13,
+  "fresh_obligations": 122,
+  "owned_modules": [
+    "AppliedReceipts",
+    "AppliedReceiptsProof"
+  ],
+  "standard_modules": [
+    "Integers",
+    "Naturals",
+    "Sequences",
+    "TLAPS"
+  ],
+  "owned_proof_holes": 0,
+  "owned_unapproved_assumptions": 0,
+  "first_failed_root_session": 90264,
+  "first_failed_obligations": "3/55",
+  "formal_acceptance": false,
+  "records": {
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/result.json": {
+      "bytes": 357,
+      "sha256": "e667d95c31690be2cfe4983ba88dc0c124a8df7c0bf665c6342ed6a134b12f37"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/inputs.json": {
+      "bytes": 1102,
+      "sha256": "d05f66e8891aef3c45a734870b1e96f4defe2e2e1413b3b0b62abe67b6081ed7"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tools.json": {
+      "bytes": 321,
+      "sha256": "ddef0945b10f1c7e9c277975f992cad29372bba73c3445938093bf4ec5620cb8"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tlaps.log": {
+      "bytes": 423,
+      "sha256": "ee6b459fc183de32b6758542c99d3ac6687bebcd9436ada38efa2c9a70839912"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tlaps-invocation.json": {
+      "bytes": 400,
+      "sha256": "ed18afde8d7dc49ebe38ab6ad90852b9dfb2417889e72bdda9105fc9124cf026"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tlaps-terminal.json": {
+      "bytes": 80,
+      "sha256": "3ae7d631133e5ca3d1692416972bd0c36ba9e94760eaafe62c73885b7b8f7744"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/source/semantic-audit.json": {
+      "bytes": 3055,
+      "sha256": "211f17c4b9cd43f4588543e75ce7ec841c56e8b0424ce700c33fdbb8317e46db"
+    },
+    "/tmp/kv9-indexed-receipt-proof-root-first/typed-terminal.json": {
+      "bytes": 137,
+      "sha256": "a311a0a6b660c0916b927ffe13080f28fb9a1a72b0e33a462f6d17a229c8b797"
+    },
+    "/tmp/kv9-indexed-receipt-proof-draft-first/tlaps.log": {
+      "bytes": 4085,
+      "sha256": "19aadf5dc80deba0a7122b1396b62ac51036586df8584f62a8b2f1047ab93d0b"
+    },
+    "/tmp/kv9-indexed-receipt-proof-draft-first/tlaps-terminal.json": {
+      "bytes": 81,
+      "sha256": "f7671aae55994826eb57b872928d6c3cfe7fa8bdbf4e93c2271604c196895253"
+    },
+    "/tmp/kv9-indexed-receipt-proof-draft-first/inputs.json": {
+      "bytes": 1102,
+      "sha256": "332f9332c44a761df1f3d3de532081d8946d7458653565a1c93cb39d1c2d36d0"
+    }
+  }
+}

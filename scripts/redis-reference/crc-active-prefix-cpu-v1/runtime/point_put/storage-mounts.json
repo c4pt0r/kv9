@@ -1,0 +1,41 @@
+{
+  "1": {
+    "path": "/dev/shm/kv9-ready-tmpfs-745rgiym/n1",
+    "mount": {
+      "filesystems": [
+        {
+          "target": "/dev/shm",
+          "fstype": "tmpfs",
+          "source": "tmpfs",
+          "options": "rw,nosuid,nodev,inode64"
+        }
+      ]
+    }
+  },
+  "2": {
+    "path": "/dev/shm/kv9-ready-tmpfs-745rgiym/n2",
+    "mount": {
+      "filesystems": [
+        {
+          "target": "/dev/shm",
+          "fstype": "tmpfs",
+          "source": "tmpfs",
+          "options": "rw,nosuid,nodev,inode64"
+        }
+      ]
+    }
+  },
+  "3": {
+    "path": "/dev/shm/kv9-ready-tmpfs-745rgiym/n3",
+    "mount": {
+      "filesystems": [
+        {
+          "target": "/dev/shm",
+          "fstype": "tmpfs",
+          "source": "tmpfs",
+          "options": "rw,nosuid,nodev,inode64"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-indexed-receipt-proof-preparation/check-draft.py",
+    "--output",
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas"
+  ],
+  "started_ns": 1789150858002338110,
+  "model_sha256": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+  "proof_sha256": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+}

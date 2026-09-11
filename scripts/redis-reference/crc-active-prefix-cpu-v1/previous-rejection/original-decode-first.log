@@ -1,0 +1,8 @@
+PASS: point_put 3324 selected CPU samples
+Traceback (most recent call last):
+  File "/tmp/kv9-crc-write-profile-first/analyze.py", line 79, in <module>
+    check(min(s['monotonic_ns']for s in samples)<start and max(s['monotonic_ns']for s in samples)>end,'recording fails to contain measurement')
+  File "/tmp/kv9-crc-write-profile-first/analyze.py", line 17, in check
+    if not v:raise ValueError(m)
+             ^^^^^^^^^^^^^^^^^^^
+ValueError: recording fails to contain measurement

@@ -1,0 +1,117 @@
+{
+  "binary_path": "/tmp/kv9-wal-crc32-release-first/kv9",
+  "binary_sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+  "commands": [
+    {
+      "argv": [
+        "nm",
+        "-S",
+        "--defined-only",
+        "/tmp/kv9-wal-crc32-release-first/kv9"
+      ],
+      "exit_code": 0,
+      "output_scope": "one matching symbol line selected from full nm stdout",
+      "retained_output": "write-record-symbol-first.txt"
+    },
+    {
+      "argv": [
+        "objdump",
+        "-d",
+        "--start-address=0x509c50",
+        "--stop-address=0x50a054",
+        "/tmp/kv9-wal-crc32-release-first/kv9"
+      ],
+      "exit_code": 0,
+      "retained_output": "write-record-disassembly-first.txt"
+    }
+  ],
+  "elf_symbol_address": "0000000000509c50",
+  "hash_loop_offset_intervals_half_open": [
+    [
+      304,
+      425
+    ],
+    [
+      432,
+      454
+    ]
+  ],
+  "limits": [
+    "Source and exact instructions identify inlined FNV-1a byte-load/XOR/multiply loops and their loop control.",
+    "No separate fnv1a frame is required or present in the retained representative leaf stacks.",
+    "A sampled instruction pointer is statistical on-CPU attribution, subject to sampling skid; it does not measure every invocation or all inclusive callee CPU.",
+    "All 283 BatchPut method leaves were at these loop sites in this recording; that is not a claim that all write_record_unsynced function CPU is checksum work.",
+    "FNV-1a in Raft storage is distinct from IEEE CRC32 frame_crc in engine storage."
+  ],
+  "profiles": [
+    {
+      "api": "point_put",
+      "fnv_loop_site_leaf_samples": 48,
+      "fnv_loop_site_percent_of_selected": 1.4607425441265978,
+      "input_selected_samples_sha256": "8d5bb08823d666d0c6bd1e7a9159a727743519ef79bede28ac3c061b91c508e4",
+      "method_leaf_offsets": {
+        "154": 1,
+        "254": 1,
+        "310": 2,
+        "317": 8,
+        "324": 1,
+        "331": 4,
+        "338": 1,
+        "345": 5,
+        "352": 3,
+        "359": 2,
+        "366": 3,
+        "373": 3,
+        "380": 3,
+        "387": 6,
+        "401": 4,
+        "419": 2,
+        "446": 1,
+        "519": 1
+      },
+      "method_leaf_samples": 51,
+      "other_method_leaf_samples": 3,
+      "selected_samples": 3286
+    },
+    {
+      "api": "batch_put",
+      "fnv_loop_site_leaf_samples": 283,
+      "fnv_loop_site_percent_of_selected": 9.12020625201418,
+      "input_selected_samples_sha256": "e71169ff5fee4c61c24403703617d108fbab6f93c2f765bd4db3b7ed1a097c44",
+      "method_leaf_offsets": {
+        "307": 1,
+        "310": 14,
+        "317": 18,
+        "324": 9,
+        "331": 21,
+        "338": 13,
+        "345": 23,
+        "352": 11,
+        "359": 38,
+        "366": 17,
+        "373": 20,
+        "380": 8,
+        "387": 21,
+        "394": 7,
+        "401": 25,
+        "409": 9,
+        "412": 2,
+        "419": 26
+      },
+      "method_leaf_samples": 283,
+      "other_method_leaf_samples": 0,
+      "selected_samples": 3103
+    }
+  ],
+  "scope": "Read-only mapping of already-selected sampled leaf instruction offsets to this exact binary, not new profiling or decoder execution.",
+  "source_call_line": 363,
+  "source_fnv1a_lines": [
+    60,
+    66
+  ],
+  "source_path": "/tmp/kv9-wal-crc32-table/crates/raft/src/storage.rs",
+  "source_sha256": "1eb0602124d35c4c11122fa21fca4a5dae87602014f37a14960890aa21cc3a16",
+  "symbol": "_ZN8kv9_raft7storage24DiskRaftStorage$LT$F$GT$21write_record_unsynced17h58b1fd76a26a972aE",
+  "symbol_bytes": 1028,
+  "terminal_tool_chunk": "54c29d"
+}

@@ -1,0 +1,25 @@
+{
+  "arm": "point_put",
+  "server_role": "old",
+  "read_api": "point_get",
+  "write_api": "point_put",
+  "workload": "point_put",
+  "target": "kv9",
+  "repeat": 0,
+  "mix": "write",
+  "shared": {
+    "run_id": "prfput",
+    "seed": 71,
+    "workers": 64,
+    "keys": 4096,
+    "batch_size": 1,
+    "value_bytes": 128,
+    "read_percent": 0,
+    "warmup_calls": 128,
+    "measure_ms": 5000,
+    "max_calls": 10000000,
+    "load": {
+      "kind": "closed_loop"
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "candidate_revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "baseline_revision": "ca0002c7f8e9ee6f595efcc9f4151085ccce87cb",
+  "capacity": 1024,
+  "source_bindings": {
+    "/tmp/kv9-indexed-apply-receipts/crates/raft/src/driver/applied_ring.rs": {
+      "bytes": 5095,
+      "sha256": "fb7ad04c7bb3537ba36c49b62141590d53b1ab603a5eeac2f09236a3f96e85c6"
+    },
+    "/tmp/kv9-indexed-apply-receipts/crates/raft/src/driver.rs": {
+      "bytes": 153202,
+      "sha256": "6799991b0210348e6d0acbccbfec87c3fca910c68667213e0d56964f3a48ad2c"
+    },
+    "/tmp/kv9-wal-crc32-table/crates/raft/src/driver.rs": {
+      "bytes": 153270,
+      "sha256": "f2832061ad65c28b73f25757dcfe87fb4f990630ccd04043326ce5d3d4d01f63"
+    },
+    "/tmp/kv9-indexed-receipt-release-first/build.json": {
+      "bytes": 65503,
+      "sha256": "406c397f56e8d7f177aa540dbddbdda21ba9d0d9f159b0cb83694acfc92275f6"
+    },
+    "/home/dongxu/.rustup/toolchains/1.94.0-x86_64-unknown-linux-gnu/share/doc/rust/html/src/alloc/collections/vec_deque/mod.rs.html": {
+      "bytes": 369335,
+      "sha256": "a94d8fdf02f3b309411571543165f447098d71e62991e9e0a456c91b04bd74fb"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/result.json": {
+      "bytes": 357,
+      "sha256": "e667d95c31690be2cfe4983ba88dc0c124a8df7c0bf665c6342ed6a134b12f37"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/inputs.json": {
+      "bytes": 1102,
+      "sha256": "d05f66e8891aef3c45a734870b1e96f4defe2e2e1413b3b0b62abe67b6081ed7"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tools.json": {
+      "bytes": 321,
+      "sha256": "ddef0945b10f1c7e9c277975f992cad29372bba73c3445938093bf4ec5620cb8"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tlaps.log": {
+      "bytes": 423,
+      "sha256": "ee6b459fc183de32b6758542c99d3ac6687bebcd9436ada38efa2c9a70839912"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tlaps-invocation.json": {
+      "bytes": 400,
+      "sha256": "ed18afde8d7dc49ebe38ab6ad90852b9dfb2417889e72bdda9105fc9124cf026"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/tlaps-terminal.json": {
+      "bytes": 80,
+      "sha256": "3ae7d631133e5ca3d1692416972bd0c36ba9e94760eaafe62c73885b7b8f7744"
+    },
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/source/semantic-audit.json": {
+      "bytes": 3055,
+      "sha256": "211f17c4b9cd43f4588543e75ce7ec841c56e8b0424ce700c33fdbb8317e46db"
+    },
+    "/tmp/kv9-indexed-receipt-proof-root-first/typed-terminal.json": {
+      "bytes": 137,
+      "sha256": "a311a0a6b660c0916b927ffe13080f28fb9a1a72b0e33a462f6d17a229c8b797"
+    },
+    "/tmp/kv9-indexed-receipt-proof-draft-first/tlaps.log": {
+      "bytes": 4085,
+      "sha256": "19aadf5dc80deba0a7122b1396b62ac51036586df8584f62a8b2f1047ab93d0b"
+    },
+    "/tmp/kv9-indexed-receipt-proof-draft-first/tlaps-terminal.json": {
+      "bytes": 81,
+      "sha256": "f7671aae55994826eb57b872928d6c3cfe7fa8bdbf4e93c2271604c196895253"
+    },
+    "/tmp/kv9-indexed-receipt-proof-draft-first/inputs.json": {
+      "bytes": 1102,
+      "sha256": "332f9332c44a761df1f3d3de532081d8946d7458653565a1c93cb39d1c2d36d0"
+    }
+  },
+  "mapping": {
+    "ARVectorPush": "CRC driver::push_ring appends one complete RingEntry then drains oldest excess; reachable pre-length<=1024 means at most one removed.",
+    "ARDequePush": "AppliedRing::push pops front exactly when len==1024, then pushes the owned receipt to back.",
+    "ARCertificate": "strictly_increasing &= previous_back.is_none_or(last.index < entry.index), evaluated before eviction; once false it remains false.",
+    "ARLookup": "AppliedRing::find_index chooses binary_search_by_key only with checked strict certificate, otherwise the original iterator first match.",
+    "ARLookupRefinement": "Same found/absent value and full index/term/outcome payload for every query; downstream inspect_applied term equality/exclusive outcome discrimination remains unchanged.",
+    "ARRefinement": "Logical sequence equality also preserves len/front/back used by eviction classification."
+  },
+  "standard_library_boundary": {
+    "rustc": "1.94.0 (4a4ef493e 2026-03-02)",
+    "contract_lines": "VecDeque source documentation lines3178-3189",
+    "trusted": "For a sorted deque binary_search_by_key returns a matching position iff present; among duplicates any matching position is allowed. Vec/VecDeque logical sequence operations, integer comparison, allocation/compiler and mutex implementation are not verified here.",
+    "invalid_input": "No sorted-search postcondition is claimed when unsorted. The proof establishes the certificate implies strict ordering before using that contract.",
+    "ARAny_scope": "A logical CHOOSE representative under uniqueness, not an executable binary-search model; TLC deterministic choice is not evidence for arbitrary malformed-search behavior."
+  },
+  "input_scope": "Every positive capacity and legal domain, arbitrary incoming indexes including duplicates/decreases/gaps/extremes; instantiate ARIndexes with the full u64 index domain to cover absent queries as well. Terms and exclusive outcomes are opaque payloads. No producer ordering or success-only restriction.",
+  "composition_scope": "Serialized ring operations with the unchanged caller locking/inspection code. No claim of machine-checked Rust extraction, whole-driver/Raft/Ready composition, liveness, cancellation, allocator/OOM or crash-storage correctness."
+}

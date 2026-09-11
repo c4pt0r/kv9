@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/test_prefix_contract.py"
+  ],
+  "pid": 814465,
+  "root_timing_terminal": {
+    "exit_code": 0,
+    "session": 49261,
+    "tool_receipt": "6c6673"
+  },
+  "source_before_sha256": "e447ec9e91af19851bd8d48f5273e30a599b7d1ff4ed8f7a509b55999de242bc",
+  "started_unix_ns": 1789150479199219869,
+  "supervisor_pid": 814464
+}

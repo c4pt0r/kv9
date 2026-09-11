@@ -1,0 +1,236 @@
+{
+  "accepted": true,
+  "cases": [
+    {
+      "accepted": true,
+      "calls": 1,
+      "expected_error": "RuntimeError('injected post-spawn identity failure')",
+      "name": "post_spawn_exception",
+      "original_prefix_complete": false,
+      "pids": [
+        902849
+      ],
+      "summary_sha256": "67d3243a0eb787c1775816b1a03967fde5713946ad9b8edfd4fdab9525755cf4"
+    },
+    {
+      "accepted": true,
+      "calls": 8,
+      "expected_error": "ValueError('prefix read deadline exceeded')",
+      "name": "timeout",
+      "original_prefix_complete": false,
+      "pids": [
+        902850,
+        902851,
+        902852,
+        902853,
+        902854,
+        902855,
+        902856,
+        902857
+      ],
+      "summary_sha256": "90d56151cada8472ffd188f7fb20e8b20ac35fc4abfbc092918f6c76e8b2d684"
+    }
+  ],
+  "cleanup": [
+    {
+      "absent": true,
+      "exit_code": -15,
+      "fallback_intervened": false,
+      "pid": 902849
+    },
+    {
+      "absent": true,
+      "exit_code": -9,
+      "fallback_intervened": false,
+      "pid": 902850
+    },
+    {
+      "absent": true,
+      "exit_code": -9,
+      "fallback_intervened": false,
+      "pid": 902851
+    },
+    {
+      "absent": true,
+      "exit_code": -9,
+      "fallback_intervened": false,
+      "pid": 902852
+    },
+    {
+      "absent": true,
+      "exit_code": -9,
+      "fallback_intervened": false,
+      "pid": 902853
+    },
+    {
+      "absent": true,
+      "exit_code": -9,
+      "fallback_intervened": false,
+      "pid": 902854
+    },
+    {
+      "absent": true,
+      "exit_code": -9,
+      "fallback_intervened": false,
+      "pid": 902855
+    },
+    {
+      "absent": true,
+      "exit_code": -9,
+      "fallback_intervened": false,
+      "pid": 902856
+    },
+    {
+      "absent": true,
+      "exit_code": -9,
+      "fallback_intervened": false,
+      "pid": 902857
+    },
+    {
+      "absent": true,
+      "exit_code": -15,
+      "fallback_intervened": true,
+      "pid": 902846
+    },
+    {
+      "absent": true,
+      "exit_code": -15,
+      "fallback_intervened": true,
+      "pid": 902847
+    },
+    {
+      "absent": true,
+      "exit_code": -15,
+      "fallback_intervened": true,
+      "pid": 902848
+    }
+  ],
+  "dummy_source_sha256": "81848edecbf62818c256f61b91036f56ef5ba79b6ac2fd6df233da6a09ef2193",
+  "dummy_voters": {
+    "1": {
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "cpu_affinity": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "executable_bytes": 8020928,
+      "executable_device": 66306,
+      "executable_inode": 12191968,
+      "executable_path": "/usr/bin/python3.12",
+      "observed_monotonic_ns": 1439512837333751,
+      "observed_unix_ns": 1789150800414055756,
+      "pid": 902846,
+      "start_ticks": 143951283,
+      "system_ticks": 0,
+      "user_ticks": 0
+    },
+    "2": {
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "cpu_affinity": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "executable_bytes": 8020928,
+      "executable_device": 66306,
+      "executable_inode": 12191968,
+      "executable_path": "/usr/bin/python3.12",
+      "observed_monotonic_ns": 1439512837384385,
+      "observed_unix_ns": 1789150800414106161,
+      "pid": 902847,
+      "start_ticks": 143951283,
+      "system_ticks": 0,
+      "user_ticks": 0
+    },
+    "3": {
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "cpu_affinity": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "executable_bytes": 8020928,
+      "executable_device": 66306,
+      "executable_inode": 12191968,
+      "executable_path": "/usr/bin/python3.12",
+      "observed_monotonic_ns": 1439512837428909,
+      "observed_unix_ns": 1789150800414150654,
+      "pid": 902848,
+      "start_ticks": 143951283,
+      "system_ticks": 0,
+      "user_ticks": 0
+    }
+  },
+  "ended_unix_ns": 1789150803952686685,
+  "helper_sha256": "ed1a5ff2f804e9d9cc85c8a1f7fea8c42b579618d0260e3fe1da8c0ea2d8ccbe",
+  "pid": 902845,
+  "python_executable": "/usr/bin/python3.12",
+  "python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+  "scope": "Expected failure-path qualification of frozen prefix helper using real Python dummy children; no RPC/profile/measurement acceptance",
+  "source_after": {
+    "/tmp/kv9-crc-profile-active-prefix-preparation/active_prefix.py": "ed1a5ff2f804e9d9cc85c8a1f7fea8c42b579618d0260e3fe1da8c0ea2d8ccbe",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/analyze.py": "c188fd8c648100dee311923bb042dcff488098592eda8230ed5929bcbe958df4",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/profile.py": "b19c4348fac62aa1ed73f345c74bc20a0387fd6cc2a73c13733248c9f95eb90d",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/test_prefix_contract.py": "b867c15bb003faf76c4aed649b8c38820d1c3dc97c8db639814d85211ef6c80f"
+  },
+  "source_before": {
+    "/tmp/kv9-crc-profile-active-prefix-preparation/active_prefix.py": "ed1a5ff2f804e9d9cc85c8a1f7fea8c42b579618d0260e3fe1da8c0ea2d8ccbe",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/analyze.py": "c188fd8c648100dee311923bb042dcff488098592eda8230ed5929bcbe958df4",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/profile.py": "b19c4348fac62aa1ed73f345c74bc20a0387fd6cc2a73c13733248c9f95eb90d",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/test_prefix_contract.py": "b867c15bb003faf76c4aed649b8c38820d1c3dc97c8db639814d85211ef6c80f"
+  },
+  "source_unchanged": true,
+  "started_unix_ns": 1789150800413298061
+}

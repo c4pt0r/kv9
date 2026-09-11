@@ -1,0 +1,25 @@
+{
+  "arm": "batch_put",
+  "server_role": "old",
+  "read_api": "batch_get",
+  "write_api": "batch_put",
+  "workload": "batch_put",
+  "target": "kv9",
+  "repeat": 0,
+  "mix": "write",
+  "shared": {
+    "run_id": "prfbat",
+    "seed": 71,
+    "workers": 64,
+    "keys": 4096,
+    "batch_size": 64,
+    "value_bytes": 128,
+    "read_percent": 0,
+    "warmup_calls": 128,
+    "measure_ms": 5000,
+    "max_calls": 10000000,
+    "load": {
+      "kind": "closed_loop"
+    }
+  }
+}

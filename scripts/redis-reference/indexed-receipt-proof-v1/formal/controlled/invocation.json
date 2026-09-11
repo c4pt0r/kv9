@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/tmp/kv9-indexed-receipt-proof-preparation/check-controlled.py",
+    "--output",
+    "/tmp/kv9-indexed-receipt-proof-controlled-first"
+  ],
+  "pid": 1202665,
+  "started_ns": 1789151750166567318,
+  "allowed_cpus": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "freeze_sha256": "9dec972ea87ead668048784939214bf3ef8dae9715376707559353e806d34709"
+}

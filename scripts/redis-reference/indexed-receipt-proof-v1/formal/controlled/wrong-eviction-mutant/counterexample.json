@@ -1,0 +1,34 @@
+{
+  "property": "ARRefinement",
+  "trace": [
+    "1: <Initial predicate>\n/\\ arOrdered = TRUE\n/\\ arVector = <<>>\n/\\ arDeque = <<>>",
+    "2: <ARPush line 68, col 5 to line 70, col 56 of module AppliedReceipts>\n/\\ arOrdered = TRUE\n/\\ arVector = <<[index |-> 0, term |-> 1, outcome |-> plain]>>\n/\\ arDeque = <<[index |-> 0, term |-> 1, outcome |-> plain]>>",
+    "3: <ARPush line 68, col 5 to line 70, col 56 of module AppliedReceipts>\n/\\ arOrdered = FALSE\n/\\ arVector = << [index |-> 0, term |-> 1, outcome |-> plain],\n   [index |-> 0, term |-> 1, outcome |-> fenceRejected] >>\n/\\ arDeque = << [index |-> 0, term |-> 1, outcome |-> plain],\n   [index |-> 0, term |-> 1, outcome |-> fenceRejected] >>",
+    "4: <ARPush line 68, col 5 to line 70, col 56 of module AppliedReceipts>\n/\\ arOrdered = FALSE\n/\\ arVector = << [index |-> 0, term |-> 1, outcome |-> fenceRejected],\n   [index |-> 0, term |-> 1, outcome |-> plain] >>\n/\\ arDeque = << [index |-> 0, term |-> 1, outcome |-> plain],\n   [index |-> 0, term |-> 1, outcome |-> plain] >>"
+  ],
+  "final_vector": [
+    [
+      0,
+      "1",
+      "fenceRejected"
+    ],
+    [
+      0,
+      "1",
+      "plain"
+    ]
+  ],
+  "final_deque": [
+    [
+      0,
+      "1",
+      "plain"
+    ],
+    [
+      0,
+      "1",
+      "plain"
+    ]
+  ],
+  "attributable": true
+}

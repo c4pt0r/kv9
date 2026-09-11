@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "tlapm_version": "4600b24",
+  "sany_jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+  "roots": [
+    "AppliedReceiptsProof"
+  ],
+  "modules": {
+    "AppliedReceiptsProof": {
+      "theorems": [
+        "ARPushSequenceType",
+        "ARPushSequenceEquality",
+        "ARCertificatePreservesOrdering",
+        "ARStrictUniqueMatch",
+        "ARUniqueLookup",
+        "ARInvariantInit",
+        "ARInvariantPush",
+        "ARInvariantStep",
+        "ARInvariantAlways",
+        "ARLookupObservation",
+        "ARLookupAlways"
+      ],
+      "obligations": null
+    }
+  },
+  "models": {
+    "AppliedReceipts": {
+      "source": "AppliedReceipts.tla",
+      "assumptions": [
+        {
+          "axiom": false,
+          "sha256": "7f5708545a2af85491a8eaf131f625cfbaeec777a3d09245776e90c158caf1ce"
+        }
+      ]
+    }
+  },
+  "standard_modules": {
+    "Integers": "071da69e5eea383d361ef308ba12ecc931bf968fcea98175c3bca419bbd8cbf2",
+    "Naturals": "73f2a68412039aa86f37ad08f0d0fef50fa8327d0ad8806f515548c75e9d9d84",
+    "Sequences": "f613cffe14133769f0972b6f6e0139aaf0773004a51bac88ada382426e3eb7f4",
+    "TLAPS": "9afe54984062748a0568966434cc0945d682f8cd89fdbc38f73b5579751b0c55"
+  },
+  "status": "Draft proof obligation count intentionally unset; no accepted check yet."
+}

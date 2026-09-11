@@ -1,0 +1,16 @@
+{
+  "all_commands_terminal": true,
+  "bindings": {
+    "/tmp/kv9-crc-profile-active-prefix-preparation/offline-contract-first.log": "83166b089fbcb82fac63f22522fa6ae99bb5e46368cd35d756277fd463dd6346",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/offline-contract-invocation-first.json": "6fba91f59760da32a831672b1b28338f360dd3ea78db96c3e2638609e87a188d",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/offline-contract-source-after-first.json": "e447ec9e91af19851bd8d48f5273e30a599b7d1ff4ed8f7a509b55999de242bc",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/offline-contract-source-before-first.json": "e447ec9e91af19851bd8d48f5273e30a599b7d1ff4ed8f7a509b55999de242bc",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/offline-contract-terminal-first.json": "dc316a33010dde6ca9fdc3b16ae85aac3270ddf724abac1593e786efa95a8d85"
+  },
+  "contracts_passed": 7,
+  "exit_code": 0,
+  "pid": 814465,
+  "session_id": null,
+  "source_unchanged": true,
+  "tool_chunk": "aa75e2"
+}

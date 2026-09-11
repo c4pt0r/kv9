@@ -1,0 +1,450 @@
+{
+  "complete": true,
+  "voters": {
+    "1": {
+      "pid": 1074824,
+      "start_ticks": 144011619,
+      "user_ticks": 0,
+      "system_ticks": 0,
+      "rss_bytes": 704512,
+      "peak_rss_bytes": 704512,
+      "io": {
+        "rchar": 5700,
+        "wchar": 0,
+        "syscr": 10,
+        "syscw": 0,
+        "read_bytes": 0,
+        "write_bytes": 0,
+        "cancelled_write_bytes": 0
+      },
+      "cpu_affinity": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "observed_unix_ns": 1789151403776172672,
+      "observed_monotonic_ns": 1440116199451729,
+      "executable_sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "thread_placement": {
+        "pid": 1074824,
+        "expected": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "process": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "threads": {
+          "1074824": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "1074825": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "1074826": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "1074827": [
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "observed_unix_ns": 1789151403785163511
+      },
+      "command_line": [
+        "/tmp/kv9-wal-crc32-release-first/kv9",
+        "start",
+        "--node-id",
+        "1",
+        "--addr",
+        "127.0.0.1:58937",
+        "--data-dir",
+        "/tmp/kv9-crc-profile-active-prefix-preparation/point_put/fixture/data/n1"
+      ]
+    },
+    "2": {
+      "pid": 1074829,
+      "start_ticks": 144011621,
+      "user_ticks": 0,
+      "system_ticks": 0,
+      "rss_bytes": 376832,
+      "peak_rss_bytes": 376832,
+      "io": {
+        "rchar": 3300,
+        "wchar": 0,
+        "syscr": 7,
+        "syscw": 0,
+        "read_bytes": 0,
+        "write_bytes": 0,
+        "cancelled_write_bytes": 0
+      },
+      "cpu_affinity": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "observed_unix_ns": 1789151403791331482,
+      "observed_monotonic_ns": 1440116214610157,
+      "executable_sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "thread_placement": {
+        "pid": 1074829,
+        "expected": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "process": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "threads": {
+          "1074829": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "1074830": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "1074831": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "1074832": [
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "observed_unix_ns": 1789151403799989017
+      },
+      "command_line": [
+        "/tmp/kv9-wal-crc32-release-first/kv9",
+        "start",
+        "--node-id",
+        "2",
+        "--addr",
+        "127.0.0.1:40359",
+        "--data-dir",
+        "/tmp/kv9-crc-profile-active-prefix-preparation/point_put/fixture/data/n2"
+      ]
+    },
+    "3": {
+      "pid": 1074834,
+      "start_ticks": 144011622,
+      "user_ticks": 0,
+      "system_ticks": 0,
+      "rss_bytes": 376832,
+      "peak_rss_bytes": 376832,
+      "io": {
+        "rchar": 2468,
+        "wchar": 0,
+        "syscr": 6,
+        "syscw": 0,
+        "read_bytes": 0,
+        "write_bytes": 0,
+        "cancelled_write_bytes": 0
+      },
+      "cpu_affinity": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "observed_unix_ns": 1789151403806239061,
+      "observed_monotonic_ns": 1440116229517777,
+      "executable_sha256": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "thread_placement": {
+        "pid": 1074834,
+        "expected": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "process": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "threads": {
+          "1074834": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "1074835": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "1074836": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "1074837": [
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "observed_unix_ns": 1789151403814969573
+      },
+      "command_line": [
+        "/tmp/kv9-wal-crc32-release-first/kv9",
+        "start",
+        "--node-id",
+        "3",
+        "--addr",
+        "127.0.0.1:59159",
+        "--data-dir",
+        "/tmp/kv9-crc-profile-active-prefix-preparation/point_put/fixture/data/n3"
+      ]
+    }
+  },
+  "recorded_pid_scope": [
+    1074824,
+    1074829,
+    1074834
+  ],
+  "anchor_before": {
+    "monotonic_before_ns": 1440119297477316,
+    "realtime_ns": 1789151406874199121,
+    "monotonic_after_ns": 1440119297477616
+  },
+  "perf_binary_sha256": "a9dde21212f2b4bfa54d66f9c40b4121556367940f0f7c6f7f64c7885e07ff45",
+  "permission_probe": {
+    "command": [
+      "sudo",
+      "-n",
+      "/usr/lib/linux-hwe-6.17-tools-6.17.0-19/perf",
+      "stat",
+      "-e",
+      "cpu-clock",
+      "-p",
+      "1074824,1074829,1074834",
+      "--",
+      "sleep",
+      "0.2"
+    ],
+    "exit_code": 0
+  },
+  "record_started_monotonic_ns": 1440119568141289,
+  "launcher_pid": 1076233,
+  "profiler_lifetimes": [
+    {
+      "pid": 1076233,
+      "start_ticks": 144011956,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "comm": "sudo",
+      "cpu_affinity": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "command_line": [
+        "sudo",
+        "-n",
+        "/usr/lib/linux-hwe-6.17-tools-6.17.0-19/perf",
+        "record",
+        "--no-buildid-cache",
+        "--clockid",
+        "mono",
+        "-e",
+        "cpu-clock",
+        "-F",
+        "199",
+        "--call-graph",
+        "dwarf,16384",
+        "--no-bpf-event",
+        "--max-size",
+        "128M",
+        "-m",
+        "256",
+        "-p",
+        "1074824,1074829,1074834",
+        "-o",
+        "/tmp/kv9-crc-profile-active-prefix-preparation/point_put/perf.data",
+        "--",
+        "sleep",
+        "20"
+      ],
+      "observed_unix_ns": 1789151407165535170
+    },
+    {
+      "pid": 1076234,
+      "start_ticks": 144011957,
+      "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+      "comm": "perf",
+      "cpu_affinity": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "command_line": [
+        "/usr/lib/linux-hwe-6.17-tools-6.17.0-19/perf",
+        "record",
+        "--no-buildid-cache",
+        "--clockid",
+        "mono",
+        "-e",
+        "cpu-clock",
+        "-F",
+        "199",
+        "--call-graph",
+        "dwarf,16384",
+        "--no-bpf-event",
+        "--max-size",
+        "128M",
+        "-m",
+        "256",
+        "-p",
+        "1074824,1074829,1074834",
+        "-o",
+        "/tmp/kv9-crc-profile-active-prefix-preparation/point_put/perf.data",
+        "--",
+        "sleep",
+        "20"
+      ],
+      "observed_unix_ns": 1789151407165616963
+    }
+  ],
+  "executing_profiler": {
+    "pid": 1076234,
+    "start_ticks": 144011957,
+    "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "comm": "perf",
+    "cpu_affinity": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "command_line": [
+      "/usr/lib/linux-hwe-6.17-tools-6.17.0-19/perf",
+      "record",
+      "--no-buildid-cache",
+      "--clockid",
+      "mono",
+      "-e",
+      "cpu-clock",
+      "-F",
+      "199",
+      "--call-graph",
+      "dwarf,16384",
+      "--no-bpf-event",
+      "--max-size",
+      "128M",
+      "-m",
+      "256",
+      "-p",
+      "1074824,1074829,1074834",
+      "-o",
+      "/tmp/kv9-crc-profile-active-prefix-preparation/point_put/perf.data",
+      "--",
+      "sleep",
+      "20"
+    ],
+    "observed_unix_ns": 1789151407165616963
+  },
+  "active_prefix_summary_sha256": "63a893332784178db894e57862f45aa3d48e1ce1aafc2b701ba72045e359296b",
+  "active_prefix_drain_sha256": "33217dcc45976a2de37b7f0364de35c92b416979d225e98a5cbbafc72c98fa47",
+  "prefix_sample_coverage": "pending unchanged offline containment/edge/bin checks; priming completion alone is not acceptance",
+  "before_client_launch_unix_ns": 1789151409855941300,
+  "perf_exit_code": 0,
+  "anchor_after": {
+    "monotonic_before_ns": 1440140269148179,
+    "realtime_ns": 1789151427845871116,
+    "monotonic_after_ns": 1440140269149762
+  },
+  "raw_perf_bytes": 60274788,
+  "raw_perf_sha256": "b3002271ad807499c0b5e00207457301e2110b391a1ec2c131838762757bf60f",
+  "profiler_lifetimes_exited": true
+}

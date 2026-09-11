@@ -1,0 +1,9 @@
+{
+  "ended_unix_ns": 1789150803958905962,
+  "exit_code": 0,
+  "invocation_sha256": "5f95901941aedf1c7892b57fb65dbb76a8b1267d1ed39c1ddb5f15b7f851073a",
+  "log_sha256": "9b0b0eb90826c4d1da2e0e07fa86e1eedc739412a2ca878eb38dd114b6eabeaa",
+  "pid": 902845,
+  "reaped": true,
+  "source_unchanged": true
+}

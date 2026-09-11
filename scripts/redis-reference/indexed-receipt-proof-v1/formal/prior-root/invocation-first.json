@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-indexed-receipt-proof-preparation/check-draft.py",
+    "--output",
+    "/tmp/kv9-indexed-receipt-proof-draft-first"
+  ],
+  "started_ns": 1789150471734759306,
+  "timing_terminal": {
+    "session": 49261,
+    "tool_receipt": "6c6673",
+    "exit_code": 0
+  },
+  "source_revision": "74d241161eadf2121128f6fd9101ead18e562765",
+  "draft_reader_sha256": "edb39d8620a9c82c46f1e05fdabd9217f4ba59910ef84fb0f15cb99e44766814"
+}

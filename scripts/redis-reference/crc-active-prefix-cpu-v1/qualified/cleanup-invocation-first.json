@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/qualify_cleanup.py",
+    "--output",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/cleanup-qualification-first"
+  ],
+  "pid": 902845,
+  "scope": "One root-authorized dummy process cleanup qualification; no KV9/perf/network",
+  "source_before_sha256": "e18f6959c25a463bc117ab665b7d86b0d7a4434e5e1c3cc96dde28505788a43f",
+  "started_unix_ns": 1789150800378963469,
+  "supervisor_pid": 902844
+}

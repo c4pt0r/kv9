@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-write-profile-first/analyze.py"
+  ],
+  "pid": 4164559,
+  "reaped": true,
+  "exit_code": 1,
+  "completed_ns": 1789147229366561694
+}

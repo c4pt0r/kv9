@@ -1,0 +1,34 @@
+{
+  "/tmp/kv9-crc-profile-active-prefix-preparation/PREPARATION.json": {
+    "bytes": 1899,
+    "sha256": "98574f4984a9f1643fd7991be053b85cee6935753047cdc9c2c009727aa40dd8"
+  },
+  "/tmp/kv9-crc-profile-active-prefix-preparation/README.md": {
+    "bytes": 6645,
+    "sha256": "1443a23116ecf170f3e113b7813097fa88be5011ef843208bca7b275e3870919"
+  },
+  "/tmp/kv9-crc-profile-active-prefix-preparation/active_prefix.py": {
+    "bytes": 11302,
+    "sha256": "ed1a5ff2f804e9d9cc85c8a1f7fea8c42b579618d0260e3fe1da8c0ea2d8ccbe"
+  },
+  "/tmp/kv9-crc-profile-active-prefix-preparation/analyze.py": {
+    "bytes": 10987,
+    "sha256": "c188fd8c648100dee311923bb042dcff488098592eda8230ed5929bcbe958df4"
+  },
+  "/tmp/kv9-crc-profile-active-prefix-preparation/profile.diff": {
+    "bytes": 5166,
+    "sha256": "2acba932b10e20f779e20bdb036bb2c220e885cfc139028f15a972bf172e3f48"
+  },
+  "/tmp/kv9-crc-profile-active-prefix-preparation/profile.py": {
+    "bytes": 15120,
+    "sha256": "b19c4348fac62aa1ed73f345c74bc20a0387fd6cc2a73c13733248c9f95eb90d"
+  },
+  "/tmp/kv9-crc-profile-active-prefix-preparation/protocol.preview.json": {
+    "bytes": 3929,
+    "sha256": "6880ca336d3692fe6a9426e65726fd1e6bb1c671a227c1342b32e39780c59409"
+  },
+  "/tmp/kv9-crc-profile-active-prefix-preparation/test_prefix_contract.py": {
+    "bytes": 3506,
+    "sha256": "b867c15bb003faf76c4aed649b8c38820d1c3dc97c8db639814d85211ef6c80f"
+  }
+}

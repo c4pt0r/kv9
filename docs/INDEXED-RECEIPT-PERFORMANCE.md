@@ -156,20 +156,21 @@ tests/doctests (23 ignored), Clippy and formatting after the retained test
 fixture type correction; [source evidence](../scripts/redis-reference/indexed-receipt-source-v1/index.json)
 is unchanged.
 
-The written representation argument is scoped to the ring API and standard
-container/search contracts. A separate parameterized TLA+/TLAPS proof is being
-qualified; this report does not claim its completion or a machine-checked
-Rust/Raft composition. The measured source remains frozen during that work.
+The [parameterized TLA+/TLAPS representation proof](INDEXED-RECEIPT-PROOF.md)
+now passes 13 theorems, 122 fresh obligations and all controlled checks. Its
+scope is the ring API under standard container/search and caller-locking
+contracts, not whole-Rust/Raft composition. The measured source remains frozen.
 
 ## Next development step
 
 Keep CRC selected and the indexed candidate available. Obtain accepted batch
 CPU attribution on the selected source, then target the dominant removable
 work while retaining quorum, commit/apply acknowledgements, fences and the
-dual-WAL recovery contract. A previous post-CRC batch recording failed its
-sample-prefix coverage check and supplies no accepted batch CPU attribution.
-The next recording must pass the unchanged coverage checks; instrumentation
-does not produce replacement QPS evidence.
+dual-WAL recovery contract. The [new post-CRC diagnostic](POST-CRC-CPU-PROFILE.md)
+passes unchanged sample coverage checks and identifies engine CRC at 18.079%
+of selected batch CPU samples, versus receipt lookup at 0.870%. The previous
+rejected prefix recording remains retained. Neither diagnostic supplies
+replacement QPS evidence; the next CRC prototype remains unselected.
 
 The candidate still needs broader read/mixed and exact-source Chaos acceptance
 before general selection. Redis throughput and c1/loaded-tail parity remain

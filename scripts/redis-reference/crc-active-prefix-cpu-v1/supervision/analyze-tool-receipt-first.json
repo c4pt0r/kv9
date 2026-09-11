@@ -1,0 +1,11 @@
+{
+  "all_commands_terminal": true,
+  "exit_code": 0,
+  "invocation_sha256": "afda051af8d1d849aa0aef9061a8034f5ad936bf85f122ffd5b9aad0f609bd9a",
+  "launch_tool_chunk": "c98ab6",
+  "pid": 1107639,
+  "session_id": 21261,
+  "supervisor_pid": 1107638,
+  "terminal_sha256": "9f09d4c9fc981d5571018eb6b0cc7a241b680fd5ed855c559e467939831c0e26",
+  "terminal_tool_chunk": "e10616"
+}

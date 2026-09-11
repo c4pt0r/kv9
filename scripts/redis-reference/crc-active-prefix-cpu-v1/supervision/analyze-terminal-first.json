@@ -1,0 +1,10 @@
+{
+  "absent": true,
+  "ended_unix_ns": 1789151485447081139,
+  "exit_code": 0,
+  "invocation_sha256": "afda051af8d1d849aa0aef9061a8034f5ad936bf85f122ffd5b9aad0f609bd9a",
+  "log_sha256": "c368855fb9564344f8e77719c8d48283a8481b72342f3c9689d9ea259f9a37d3",
+  "pid": 1107639,
+  "reaped": true,
+  "source_unchanged": true
+}

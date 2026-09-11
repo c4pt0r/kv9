@@ -1,0 +1,10 @@
+{
+  "/tmp/kv9-indexed-receipt-proof-preparation/AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+  "/tmp/kv9-indexed-receipt-proof-preparation/AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b",
+  "/tmp/kv9-indexed-receipt-proof-preparation/AppliedReceiptsMC.cfg": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6",
+  "/tmp/kv9-indexed-receipt-proof-preparation/inventory-draft.json": "30b24018d733f7af37cb37a140622acb4a6b3c6c87a99d8bfe7a7d35b54ce035",
+  "/tmp/kv9-indexed-receipt-proof-preparation/check-draft.py": "edb39d8620a9c82c46f1e05fdabd9217f4ba59910ef84fb0f15cb99e44766814",
+  "/tmp/kv9-indexed-receipt-proof-preparation/helpers/check-tlaps.py": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8",
+  "/tmp/kv9-indexed-receipt-proof-preparation/helpers/check-tla.py": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70",
+  "/tmp/kv9-indexed-receipt-proof-preparation/helpers/ProofAudit.java": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+}

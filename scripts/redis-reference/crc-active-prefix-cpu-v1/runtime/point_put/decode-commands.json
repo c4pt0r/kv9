@@ -1,0 +1,39 @@
+{
+  "perf-script": {
+    "command": [
+      "sudo",
+      "-n",
+      "env",
+      "DEBUGINFOD_URLS=",
+      "/usr/lib/linux-hwe-6.17-tools-6.17.0-19/perf",
+      "script",
+      "-f",
+      "--ns",
+      "-F",
+      "comm,pid,tid,time,period,event,ip,sym,symoff,dso",
+      "-i",
+      "/tmp/kv9-crc-profile-active-prefix-preparation/point_put/perf.data"
+    ],
+    "exit_code": 0
+  },
+  "perf-top": {
+    "command": [
+      "sudo",
+      "-n",
+      "env",
+      "DEBUGINFOD_URLS=",
+      "/usr/lib/linux-hwe-6.17-tools-6.17.0-19/perf",
+      "report",
+      "-f",
+      "--stdio",
+      "--no-children",
+      "--sort",
+      "symbol",
+      "--percent-limit",
+      "0",
+      "-i",
+      "/tmp/kv9-crc-profile-active-prefix-preparation/point_put/perf.data"
+    ],
+    "exit_code": 0
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "scope": "Publication script authoring only; original profile and decoder remain successful and unchanged",
+  "authoring_tool_chunk": "8474e4",
+  "authoring_exit_code": 1,
+  "error": "SyntaxError: invalid decimal literal caused by nested triple-single-quoted Python strings in the script-writing command; parsing failed before any script or copied evidence was written",
+  "following_invocation_tool_chunk": "231853",
+  "following_invocation_exit_code": 2,
+  "following_error": "package.py did not exist after the failed authoring command",
+  "repair": "Write the same bounded packaging code directly through apply_patch; retain this failed preparation record. No runtime or decoder rerun."
+}

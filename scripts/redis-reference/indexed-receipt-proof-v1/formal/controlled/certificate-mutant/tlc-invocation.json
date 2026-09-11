@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "java",
+    "-XX:+UseParallelGC",
+    "-Xmx1g",
+    "-cp",
+    "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+    "tlc2.TLC",
+    "-tool",
+    "-workers",
+    "1",
+    "-fp",
+    "0",
+    "-metadir",
+    "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant/fresh-states",
+    "-config",
+    "Run.cfg",
+    "AppliedReceipts.tla"
+  ],
+  "cwd": "/tmp/kv9-indexed-receipt-proof-controlled-first/certificate-mutant",
+  "started_ns": 1789151752455031568
+}

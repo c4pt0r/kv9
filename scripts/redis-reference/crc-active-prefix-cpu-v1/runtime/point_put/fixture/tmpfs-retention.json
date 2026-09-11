@@ -1,0 +1,203 @@
+{
+  "children_exited": true,
+  "complete": true,
+  "files": {
+    "n1/catalog.segments/9859da293735cd70921a74e39b92f639/00000000000000000001.wal": {
+      "bytes": 16776099,
+      "sha256": "98656c7b270da936373b545d487185813a2aaa5173bda1833472346fc1cf929c"
+    },
+    "n1/catalog.segments/9859da293735cd70921a74e39b92f639/00000000000000000002.wal": {
+      "bytes": 16775580,
+      "sha256": "a2a75472f0b519bbef829cd7a2cb9b66e2374dc6f2e7fded2fbbeb0f4eda15a1"
+    },
+    "n1/catalog.segments/9859da293735cd70921a74e39b92f639/00000000000000000003.wal": {
+      "bytes": 16769790,
+      "sha256": "681f50d713c746c737ccaa35a17b718573599bdd18d3fd76e4fc41143356ddf4"
+    },
+    "n1/catalog.segments/9859da293735cd70921a74e39b92f639/00000000000000000004.wal": {
+      "bytes": 16775015,
+      "sha256": "b95907f5a0360be4ac05a4b7a4e64ccb1cd3bcfe62f8e6c71481b9b4f295b3d4"
+    },
+    "n1/catalog.segments/9859da293735cd70921a74e39b92f639/00000000000000000005.wal": {
+      "bytes": 16775120,
+      "sha256": "0098c5489b661bae795beb8de7697f33800c2e62066db5c715399aebe366b7b5"
+    },
+    "n1/catalog.segments/9859da293735cd70921a74e39b92f639/00000000000000000006.wal": {
+      "bytes": 14473315,
+      "sha256": "56a713af814c4f52e98657c76be644c0069a9eeb650c2b2580d8f5f4694f3c8c"
+    },
+    "n1/catalog.wal": {
+      "bytes": 672,
+      "sha256": "e9a6ada45f43ed9fce6f7996136baa083348b7c37654c1316ccd925d2d5ff77e"
+    },
+    "n1/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "n1/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "c58656f595138595fc3506314e62a61e31d49477b0f72026e16a220fa73f87e8"
+    },
+    "n1/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "4a0cf88295113a5924f94ce11c6860be786979d24fcf2980704f03a33504c0b6"
+    },
+    "n1/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "e653ebc817bf59599f1833553b7159e5d57083ae37d164cc1ceae9066f212b49"
+    },
+    "n1/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "0be47b02dba72b2eac61f8725a2cfbd1c9ce9fc471b1e72f6818ccb97b42a933"
+    },
+    "n1/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "n1/metrics.json": {
+      "bytes": 62149,
+      "sha256": "e856a5b43fe75d4d3f4d06c210fd7644db69c5489abaf3c549dee576a8dcf782"
+    },
+    "n1/raft/raft.log": {
+      "bytes": 126153222,
+      "sha256": "fefc33f167cd2cd82be4552101da9284a1f781c8d3eff609ca4334a59db038fb"
+    },
+    "n1/status": {
+      "bytes": 3448,
+      "sha256": "8124facf71158d049cbcd7f1a38103c8e18aab5c0b681159abcfbce09c572eac"
+    },
+    "n2/catalog.segments/bfeb1627b4ea9ba5c0dc289984c42382/00000000000000000001.wal": {
+      "bytes": 16776264,
+      "sha256": "5a6c18e5ac2af40bc017dddeb1e5b803d2dc35dd9318b10da30af29c8c451f1c"
+    },
+    "n2/catalog.segments/bfeb1627b4ea9ba5c0dc289984c42382/00000000000000000002.wal": {
+      "bytes": 16777030,
+      "sha256": "4771709304a376a4908837bcbfbeb2362f8c2760ed89f8ebc9b78f69a466fa60"
+    },
+    "n2/catalog.segments/bfeb1627b4ea9ba5c0dc289984c42382/00000000000000000003.wal": {
+      "bytes": 16776070,
+      "sha256": "9187fa28648034709cbab9f286cc38f0e91cce22d51ab741ec46987546347d2c"
+    },
+    "n2/catalog.segments/bfeb1627b4ea9ba5c0dc289984c42382/00000000000000000004.wal": {
+      "bytes": 16776395,
+      "sha256": "834aef942904276e21f6a4efa832f6250f0efc9d0be8b8577fcdbb80eb6dd886"
+    },
+    "n2/catalog.segments/bfeb1627b4ea9ba5c0dc289984c42382/00000000000000000005.wal": {
+      "bytes": 16776590,
+      "sha256": "07db3120fe4612be7c55ceada02f9bf67895b015a5c40d064d34074b3184c532"
+    },
+    "n2/catalog.segments/bfeb1627b4ea9ba5c0dc289984c42382/00000000000000000006.wal": {
+      "bytes": 14677130,
+      "sha256": "6a341b6f504e5bf25fed14869b58ac0270fc78932312c900b326fde98d0f04ef"
+    },
+    "n2/catalog.wal": {
+      "bytes": 672,
+      "sha256": "95fbe075164ad89c6d25028f94f57a57f8b573f3936be319853dcaf64fa4792c"
+    },
+    "n2/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "n2/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "c58656f595138595fc3506314e62a61e31d49477b0f72026e16a220fa73f87e8"
+    },
+    "n2/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "ed7686e9d9a0139a0d7ccfdcc612317277d9aa39be86ddb20c09d3649f0da1a5"
+    },
+    "n2/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "16315483e1682310535d626ad810d5ee24f077342c300682739865ed81ab615e"
+    },
+    "n2/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "ad5794b301f2ae50bada4e49473405fc91cbfda3b76df0abc4b8293f8d1b1862"
+    },
+    "n2/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "n2/metrics.json": {
+      "bytes": 63192,
+      "sha256": "509b7a653ddc397a1689b56c42702b516ff729a8d6106d2b4969922e97614cec"
+    },
+    "n2/raft/raft.log": {
+      "bytes": 126244358,
+      "sha256": "6788b2f85213c62bb3c3ecc5a7b08e743357d75036113cfff604edd5ef148ea8"
+    },
+    "n2/status": {
+      "bytes": 3492,
+      "sha256": "04ba0d6e4e6e46c76c2c910ae4af196f3a916498a37aebb7a02782ef125acca4"
+    },
+    "n3/catalog.segments/3659135196a8a219760a362a9abfc91f/00000000000000000001.wal": {
+      "bytes": 16775224,
+      "sha256": "32e4c6e7f5dceeb1ba07451954571206e955918a1effe81bbe95a5bf124a41ac"
+    },
+    "n3/catalog.segments/3659135196a8a219760a362a9abfc91f/00000000000000000002.wal": {
+      "bytes": 16776825,
+      "sha256": "b3cfed8974ae266fed29a15cb7523ed22a10a17ad6126e9c30697be6a0315af1"
+    },
+    "n3/catalog.segments/3659135196a8a219760a362a9abfc91f/00000000000000000003.wal": {
+      "bytes": 16771285,
+      "sha256": "7d56694b35a671dd0c8d0b2539dd17e1ba4bdb1aa4d5030bab229e7555d2e70f"
+    },
+    "n3/catalog.segments/3659135196a8a219760a362a9abfc91f/00000000000000000004.wal": {
+      "bytes": 16776800,
+      "sha256": "369505ebbee8266ff28ced4e582f36f3fbd30aa7528632dc5db3c77e532a8480"
+    },
+    "n3/catalog.segments/3659135196a8a219760a362a9abfc91f/00000000000000000005.wal": {
+      "bytes": 16776995,
+      "sha256": "0b6fc235165bc9f83eb975b849474c109549c63eeac6a9b9303b4d5db281d74f"
+    },
+    "n3/catalog.segments/3659135196a8a219760a362a9abfc91f/00000000000000000006.wal": {
+      "bytes": 14408350,
+      "sha256": "31e08cb42514fdf1fce43d93307578c0d96da89472b7e490dbf443f7d8c93205"
+    },
+    "n3/catalog.wal": {
+      "bytes": 672,
+      "sha256": "904c24915e5609dd0d8d6c19eee27a198638de4303a486c99403eb47004d4bb4"
+    },
+    "n3/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "n3/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "c58656f595138595fc3506314e62a61e31d49477b0f72026e16a220fa73f87e8"
+    },
+    "n3/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "48a053482b5126ac217fedd8dfe8fc075bcbc6dc07216e902aeced408a9f4301"
+    },
+    "n3/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "45aec32dbdac97ea7fb7b74809128f747b96bc8b9cbbb5c3cdcc0e1b897f0200"
+    },
+    "n3/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "8f25aae624f789ac3ada7ae219087cc8f3d4cc93fc428883c09866fba177d0ce"
+    },
+    "n3/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "n3/metrics.json": {
+      "bytes": 61873,
+      "sha256": "d6ca4b719e7e2c81a5d1065b430647bf5cc042990f4212efeb803b726498fb8e"
+    },
+    "n3/raft/raft.log": {
+      "bytes": 126127938,
+      "sha256": "434b245954e09e12b646ffec98a51b1c23081c9877fcef1d4c2f6306e0c88437"
+    },
+    "n3/status": {
+      "bytes": 3463,
+      "sha256": "f141c03a967a380f25bbec922a3c3fac092ffd0941c6b055bc18455d167e85c7"
+    }
+  },
+  "original_runtime_storage": "volatile tmpfs",
+  "original_scratch": "/dev/shm/kv9-ready-tmpfs-745rgiym",
+  "retained_copy_storage": "post-run disk evidence copy; not runtime durability",
+  "retained_data": "/tmp/kv9-crc-profile-active-prefix-preparation/point_put/fixture/data",
+  "scratch_removed": true
+}

@@ -1,0 +1,19 @@
+{
+  "name": "wrong-eviction-mutant",
+  "kind": "TLC",
+  "capacity": 2,
+  "expected": "ARRefinement",
+  "sources": {
+    "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+    "Run.cfg": "bf6d9eff30fe4b15bbd1d9b2e86d70d874a1d6dfb54d3ad880444e8589bcdfb2",
+    "AppliedReceipts.tla": "ae44db8c9fdea09105ef01fde62ed022b7f68e469629cfdcc1bd37f2e4cacf6a",
+    "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+  },
+  "exit_code": 12,
+  "statistics": {
+    "generated": 362,
+    "distinct": 356,
+    "queued": 334
+  },
+  "accepted_expected_result": true
+}

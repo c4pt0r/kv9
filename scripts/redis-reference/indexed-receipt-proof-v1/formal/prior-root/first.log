@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/tmp/kv9-indexed-receipt-proof-preparation/check-draft.py", line 112, in <module>
+    main()
+  File "/tmp/kv9-indexed-receipt-proof-preparation/check-draft.py", line 98, in main
+    assert code == 0 and '[ERROR]' not in output and '[WARNING]' not in output
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

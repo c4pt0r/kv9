@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "javac",
+    "-cp",
+    "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+    "-d",
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/auditor",
+    "/tmp/kv9-indexed-receipt-proof-typed-lemmas/source/helpers/ProofAudit.java"
+  ],
+  "cwd": "/tmp/kv9-indexed-receipt-proof-typed-lemmas/source",
+  "started_ns": 1789150858092620718
+}

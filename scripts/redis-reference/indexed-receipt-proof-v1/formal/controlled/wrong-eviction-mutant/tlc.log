@@ -1,0 +1,82 @@
+@!@!@STARTMSG 2262:0 @!@!@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+@!@!@ENDMSG 2262 @!@!@
+@!@!@STARTMSG 2187:0 @!@!@
+Running breadth-first search Model-Checking with fp 0 and seed -1207423803107369209 with 1 worker on 20 cores with 981MB heap and 64MB offheap memory [pid: 1206526] (Linux 6.17.0-19-generic amd64, Ubuntu 21.0.12 x86_64, MSBDiskFPSet, DiskStateQueue).
+@!@!@ENDMSG 2187 @!@!@
+@!@!@STARTMSG 2220:0 @!@!@
+Starting SANY...
+@!@!@ENDMSG 2220 @!@!@
+Parsing file /tmp/kv9-indexed-receipt-proof-controlled-first/wrong-eviction-mutant/AppliedReceipts.tla
+Parsing file /tmp/Integers.tla
+Parsing file /tmp/Sequences.tla
+Parsing file /tmp/Naturals.tla
+Semantic processing of module Naturals
+Semantic processing of module Integers
+Semantic processing of module Sequences
+Semantic processing of module AppliedReceipts
+@!@!@STARTMSG 2219:0 @!@!@
+SANY finished.
+@!@!@ENDMSG 2219 @!@!@
+@!@!@STARTMSG 2185:0 @!@!@
+Starting... (2026-09-11 11:35:54)
+@!@!@ENDMSG 2185 @!@!@
+@!@!@STARTMSG 2189:0 @!@!@
+Computing initial states...
+@!@!@ENDMSG 2189 @!@!@
+@!@!@STARTMSG 2190:0 @!@!@
+Finished computing initial states: 1 distinct state generated at 2026-09-11 11:35:54.
+@!@!@ENDMSG 2190 @!@!@
+@!@!@STARTMSG 2110:1 @!@!@
+Invariant ARRefinement is violated.
+@!@!@ENDMSG 2110 @!@!@
+@!@!@STARTMSG 2121:1 @!@!@
+The behavior up to this point is:
+@!@!@ENDMSG 2121 @!@!@
+@!@!@STARTMSG 2217:4 @!@!@
+1: <Initial predicate>
+/\ arOrdered = TRUE
+/\ arVector = <<>>
+/\ arDeque = <<>>
+
+@!@!@ENDMSG 2217 @!@!@
+@!@!@STARTMSG 2217:4 @!@!@
+2: <ARPush line 68, col 5 to line 70, col 56 of module AppliedReceipts>
+/\ arOrdered = TRUE
+/\ arVector = <<[index |-> 0, term |-> 1, outcome |-> plain]>>
+/\ arDeque = <<[index |-> 0, term |-> 1, outcome |-> plain]>>
+
+@!@!@ENDMSG 2217 @!@!@
+@!@!@STARTMSG 2217:4 @!@!@
+3: <ARPush line 68, col 5 to line 70, col 56 of module AppliedReceipts>
+/\ arOrdered = FALSE
+/\ arVector = << [index |-> 0, term |-> 1, outcome |-> plain],
+   [index |-> 0, term |-> 1, outcome |-> fenceRejected] >>
+/\ arDeque = << [index |-> 0, term |-> 1, outcome |-> plain],
+   [index |-> 0, term |-> 1, outcome |-> fenceRejected] >>
+
+@!@!@ENDMSG 2217 @!@!@
+@!@!@STARTMSG 2217:4 @!@!@
+4: <ARPush line 68, col 5 to line 70, col 56 of module AppliedReceipts>
+/\ arOrdered = FALSE
+/\ arVector = << [index |-> 0, term |-> 1, outcome |-> fenceRejected],
+   [index |-> 0, term |-> 1, outcome |-> plain] >>
+/\ arDeque = << [index |-> 0, term |-> 1, outcome |-> plain],
+   [index |-> 0, term |-> 1, outcome |-> plain] >>
+
+@!@!@ENDMSG 2217 @!@!@
+@!@!@STARTMSG 2200:0 @!@!@
+Progress(4) at 2026-09-11 11:35:54: 362 states generated (63,508 s/min), 356 distinct states found (62,456 ds/min), 334 states left on queue.
+@!@!@ENDMSG 2200 @!@!@
+@!@!@STARTMSG 2199:0 @!@!@
+362 states generated, 356 distinct states found, 334 states left on queue.
+@!@!@ENDMSG 2199 @!@!@
+@!@!@STARTMSG 2194:0 @!@!@
+The depth of the complete state graph search is 4.
+@!@!@ENDMSG 2194 @!@!@
+@!@!@STARTMSG 2268:0 @!@!@
+The average outdegree of the complete state graph is 18 (minimum is 12, the maximum 18 and the 95th percentile is 18).
+@!@!@ENDMSG 2268 @!@!@
+@!@!@STARTMSG 2186:0 @!@!@
+Finished in 347ms at (2026-09-11 11:35:54)
+@!@!@ENDMSG 2186 @!@!@

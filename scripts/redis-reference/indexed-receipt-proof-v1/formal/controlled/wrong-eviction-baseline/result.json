@@ -1,0 +1,19 @@
+{
+  "name": "wrong-eviction-baseline",
+  "kind": "TLC",
+  "capacity": 2,
+  "expected": null,
+  "sources": {
+    "inventory.json": "d2dd0dea91f96ab3165cac750fd793eb1309a29fad7a1ec996067dd97bd9df20",
+    "Run.cfg": "e1e691e2e1530eb5ca92396954821fd127c906027e26bdb87f42a96f1b22a1e6",
+    "AppliedReceipts.tla": "f92a2caf003e93dc0f8f3ceefcbc6def7c9e44db5e0dd860c7541e74d123bff4",
+    "AppliedReceiptsProof.tla": "5bde93c53356a66bd175f2e5d768f283a17ba50b2492fbdb8131bc2b29aac54b"
+  },
+  "exit_code": 0,
+  "statistics": {
+    "generated": 8119,
+    "distinct": 451,
+    "queued": 0
+  },
+  "accepted_expected_result": true
+}

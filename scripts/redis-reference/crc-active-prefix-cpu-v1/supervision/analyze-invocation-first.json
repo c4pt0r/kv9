@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-profile-active-prefix-preparation/analyze.py"
+  ],
+  "identity": {
+    "boot_id": "455869d6-cdc2-4933-85cb-743fb8fcb02e",
+    "cpu_affinity": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "executable": "/usr/bin/env",
+    "pid": 1107639,
+    "start_ticks": 144019261
+  },
+  "pid": 1107639,
+  "preflight_sha256": "1fa952287f404ec5f1a0befa08e84c63b7043202a0d1227cb54b3a07b53d7568",
+  "source_before_sha256": "fb63f2a000e9cd31651b617edee2e6a73f324c316c45e1676a74facd0510714b",
+  "started_unix_ns": 1789151480193500542,
+  "supervisor_pid": 1107638,
+  "supervisor_sha256": "ae2394252d4f52bc63b18f569e5cb094cee5aa95680c59ed757f7894e9bccbff"
+}

@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "env",
+    "PYTHONOPTIMIZE=0",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "/tmp/kv9-crc-write-profile-first/analyze.py"
+  ],
+  "started_ns": 1789147225682150357,
+  "runtime_tool_terminal": {
+    "session": 85277,
+    "chunk": "33aecf",
+    "exit_code": 0
+  },
+  "decoder_sha256": "c188fd8c648100dee311923bb042dcff488098592eda8230ed5929bcbe958df4"
+}
