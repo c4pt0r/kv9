@@ -106,6 +106,7 @@ struct State {
     active: BTreeMap<[u8; 24], ReadGroup>,
     reserved: BTreeSet<[u8; 24]>,
     in_flight: usize,
+    local_reserved: usize,
     peak: usize,
     inspected: u64,
     group_attempts: u64,
@@ -132,6 +133,7 @@ pub struct AsyncReadSnapshot {
     pub active: usize,
     pub active_groups: usize,
     pub in_flight: usize,
+    pub local_reserved: usize,
     pub peak: usize,
     pub inspected: u64,
     pub group_attempts: u64,
@@ -150,6 +152,76 @@ pub(crate) struct ReadTicket {
     finished: bool,
     #[cfg(feature = "read-stage-timing")]
     timing: Arc<crate::read_stage_timing::ReadStageMetrics>,
+}
+
+/// The same bounded admission slot can either finish a local lease attempt or
+/// become a queued Safe ReadIndex request, without resetting its deadline.
+#[cfg(any(test, feature = "experimental-leader-lease"))]
+pub(crate) struct LocalReadReservation {
+    owner: Arc<Inner>,
+    context: [u8; 24],
+    started: Instant,
+    deadline: Instant,
+    retained: bool,
+}
+
+#[cfg(any(test, feature = "experimental-leader-lease"))]
+impl LocalReadReservation {
+    pub(crate) fn submit(mut self) -> std::result::Result<ReadTicket, ReadIndexError> {
+        let (sender, receiver) = oneshot::channel();
+        let quorum_observed = Arc::new(AtomicBool::new(false));
+        {
+            let mut state = self.owner.state.lock().expect("async read queue poisoned");
+            if state.stopped {
+                return Err(failed("read owner is stopped"));
+            }
+            if Instant::now() >= self.deadline {
+                return Err(expired(self.started, false));
+            }
+            assert!(
+                state.reserved.contains(&self.context),
+                "read reservation missing"
+            );
+            state.queued.push_back(Request {
+                context: self.context,
+                sender: Some(sender),
+                quorum_observed: quorum_observed.clone(),
+                started: self.started,
+                deadline: self.deadline,
+                owner: Arc::downgrade(&self.owner),
+                #[cfg(feature = "read-stage-timing")]
+                timeline: crate::read_stage_timing::Timeline::new(Instant::now()),
+            });
+            state.local_reserved -= 1;
+            self.retained = false;
+        }
+        self.owner.signal.notify();
+        Ok(ReadTicket {
+            receiver,
+            quorum_observed,
+            started: self.started,
+            deadline: self.deadline,
+            signal: self.owner.signal.clone(),
+            finished: false,
+            #[cfg(feature = "read-stage-timing")]
+            timing: self.owner.timing.clone(),
+        })
+    }
+}
+
+#[cfg(any(test, feature = "experimental-leader-lease"))]
+impl Drop for LocalReadReservation {
+    fn drop(&mut self) {
+        if self.retained {
+            let mut state = self.owner.state.lock().expect("async read queue poisoned");
+            assert!(
+                state.reserved.remove(&self.context),
+                "read reservation missing"
+            );
+            state.local_reserved -= 1;
+            state.in_flight -= 1;
+        }
+    }
 }
 
 impl ReadTicket {
@@ -249,6 +321,38 @@ impl AsyncReads {
             finished: false,
             #[cfg(feature = "read-stage-timing")]
             timing: self.0.timing.clone(),
+        })
+    }
+
+    #[cfg(any(test, feature = "experimental-leader-lease"))]
+    pub(crate) fn reserve_local(
+        &self,
+        context: [u8; 24],
+        started: Instant,
+        deadline: Instant,
+    ) -> std::result::Result<LocalReadReservation, ReadIndexError> {
+        let mut state = self.0.state.lock().expect("async read queue poisoned");
+        if state.stopped {
+            return Err(failed("read owner is stopped"));
+        }
+        if state.in_flight >= MAX_REQUESTS {
+            return Err(failed("asynchronous read admission count limit reached"));
+        }
+        if Instant::now() >= deadline {
+            return Err(expired(started, false));
+        }
+        if state.active.contains_key(&context) || !state.reserved.insert(context) {
+            return Err(failed("duplicate asynchronous read context"));
+        }
+        state.in_flight += 1;
+        state.local_reserved += 1;
+        state.peak = state.peak.max(state.in_flight);
+        Ok(LocalReadReservation {
+            owner: self.0.clone(),
+            context,
+            started,
+            deadline,
+            retained: true,
         })
     }
 
@@ -439,6 +543,7 @@ impl AsyncReads {
             active: state.active.values().map(|g| g.members.len()).sum(),
             active_groups: state.active.len(),
             in_flight: state.in_flight,
+            local_reserved: state.local_reserved,
             peak: state.peak,
             inspected: state.inspected,
             group_attempts: state.group_attempts,
@@ -464,6 +569,111 @@ mod tests {
         queue
             .register(context(id), Instant::now(), Duration::from_secs(5))
             .unwrap()
+    }
+
+    #[test]
+    fn local_reads_share_capacity_and_contexts_with_queued_reads() {
+        let queue = AsyncReads::new(Arc::default());
+        let started = Instant::now();
+        let deadline = started + Duration::from_secs(5);
+        let locals: Vec<_> = (0..MAX_REQUESTS as u64 / 2)
+            .map(|id| queue.reserve_local(context(id), started, deadline).unwrap())
+            .collect();
+        assert!(queue
+            .register(context(0), started, Duration::from_secs(5))
+            .is_err());
+        let queued: Vec<_> = (MAX_REQUESTS as u64 / 2..MAX_REQUESTS as u64)
+            .map(|id| register(&queue, id))
+            .collect();
+        assert!(queue
+            .reserve_local(context(999), started, deadline)
+            .is_err());
+        assert!(queue
+            .register(context(999), started, Duration::from_secs(5))
+            .is_err());
+        assert_eq!(queue.snapshot().in_flight, MAX_REQUESTS);
+        assert_eq!(queue.snapshot().local_reserved, MAX_REQUESTS / 2);
+        drop(locals);
+        assert_eq!(queue.snapshot().in_flight, MAX_REQUESTS / 2);
+        assert_eq!(queue.snapshot().local_reserved, 0);
+        drop(queued);
+        queue.submit(|_| panic!("canceled request was submitted"));
+        assert_eq!(queue.snapshot().in_flight, 0);
+    }
+
+    #[tokio::test]
+    async fn local_fallback_keeps_one_slot_original_context_and_absolute_deadline() {
+        let queue = AsyncReads::new(Arc::default());
+        let started = Instant::now() - Duration::from_secs(2);
+        let deadline = started + Duration::from_secs(5);
+        let local = queue.reserve_local(context(1), started, deadline).unwrap();
+        let ticket = local.submit().unwrap();
+        assert_eq!(
+            (ticket.started, ticket.deadline),
+            (started, deadline),
+            "local fallback reset the original request budget"
+        );
+        let snapshot = queue.snapshot();
+        assert_eq!(
+            (snapshot.in_flight, snapshot.local_reserved, snapshot.queued),
+            (1, 0, 1)
+        );
+        assert!(queue.reserve_local(context(1), started, deadline).is_err());
+        queue.submit(|ctx| {
+            assert_eq!(ctx, context(1));
+            Ok(true)
+        });
+        assert!(queue.confirm(&context(1), 7));
+        queue.complete(Some(7));
+        assert_eq!(ticket.wait().await.unwrap(), 7);
+        assert_eq!(queue.snapshot().in_flight, 0);
+    }
+
+    #[test]
+    fn expired_or_stopped_local_fallback_releases_its_slot_without_admission() {
+        for stopped in [false, true] {
+            let queue = AsyncReads::new(Arc::default());
+            let started = Instant::now();
+            let mut local = queue
+                .reserve_local(context(1), started, started + Duration::from_secs(5))
+                .unwrap();
+            if stopped {
+                queue.close();
+                assert_eq!(queue.snapshot().in_flight, 1);
+            } else {
+                local.deadline = Instant::now();
+            }
+            let result = local.submit();
+            if stopped {
+                assert!(matches!(result, Err(ReadIndexError::Failed(_))));
+            } else {
+                assert!(matches!(
+                    result,
+                    Err(ReadIndexError::Unconfirmed {
+                        phase: BarrierPhase::QuorumConfirmation,
+                        ..
+                    })
+                ));
+            }
+            let snapshot = queue.snapshot();
+            assert_eq!(
+                (snapshot.in_flight, snapshot.local_reserved, snapshot.queued),
+                (0, 0, 0)
+            );
+        }
+    }
+
+    #[test]
+    fn canceled_local_fallback_keeps_owner_storage_until_bounded_cleanup() {
+        let queue = AsyncReads::new(Arc::default());
+        let started = Instant::now();
+        let local = queue
+            .reserve_local(context(1), started, started + Duration::from_secs(5))
+            .unwrap();
+        drop(local.submit().unwrap());
+        assert_eq!(queue.snapshot().in_flight, 1);
+        queue.submit(|_| panic!("canceled fallback reached Raft"));
+        assert_eq!(queue.snapshot().in_flight, 0);
     }
 
     #[cfg(feature = "read-stage-timing")]

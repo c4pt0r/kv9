@@ -23,6 +23,11 @@ use crate::transport::RaftTransport;
 use crate::ReadyConsume;
 use crate::{Command, EntryKind, MemStateMachine, Role, StateMachine};
 
+#[cfg(any(test, feature = "experimental-leader-lease"))]
+mod lease_read;
+#[cfg(any(test, feature = "experimental-leader-lease"))]
+pub use lease_read::{LeaseReadView, ReadPreparation};
+
 /// Queryable node state (the server's `status` surface, agreed seam with the
 /// acceptance harness: success is judged on these fields, not on log text).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -274,6 +279,8 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     pump_gate: Mutex<()>,
     completion: crate::work::CompletionSignal,
     metrics: Arc<DriverMetrics>,
+    #[cfg(any(test, feature = "experimental-leader-lease"))]
+    lease_read_hits: std::sync::atomic::AtomicU64,
 }
 
 impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> {
@@ -331,6 +338,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             pump_gate: Mutex::new(()),
             completion: crate::work::CompletionSignal::default(),
             metrics,
+            #[cfg(any(test, feature = "experimental-leader-lease"))]
+            lease_read_hits: std::sync::atomic::AtomicU64::new(0),
         }))
     }
 
@@ -1130,8 +1139,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         }
     }
 
-    /// How many read barriers this node has REQUESTED (minted a read
-    /// context for) since boot — successful or not. Diagnostic counter; the
+    /// How many read establishment contexts this node has minted since boot,
+    /// successful or not. Experimental lease attempts also mint a context;
+    /// `lease_read_hits` counts their successes and the async registry counts
+    /// actual quorum groups. Diagnostic counter; the
     /// delete-range evidence cell pins "one request establishes exactly one
     /// quorum barrier" on it (a per-chunk regression multiplies it).
     pub fn read_barriers_minted(&self) -> u64 {
@@ -1285,7 +1296,7 @@ fn classify_apply_wait(result: &std::result::Result<ApplyWaitOutcome, ApplyWaitE
     }
 }
 
-fn classify_read(result: &std::result::Result<ReadBarrier, ReadIndexError>) -> Outcome {
+fn classify_read<T>(result: &std::result::Result<T, ReadIndexError>) -> Outcome {
     match result {
         Ok(_) => Outcome::Success,
         Err(ReadIndexError::NotLeader { .. }) => Outcome::Rejected,

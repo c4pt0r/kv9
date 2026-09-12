@@ -24,9 +24,12 @@ The subsequent [Rust controller](LEASE-CONTROLLER.md) passes local source/fault
 controls and integer-timing proofs; its feature does not enable a server read path.
 The [voting adapter](LEASE-VOTE-BINDING.md) adds durable policy/epochs and actual
 election gates. The [renewal adapter](LEASE-RENEWAL-PUBLICATION.md) now adds exact
-renewal/grant envelopes and whole-pump certificate publication. The server lease
-read path, clock qualification and actual lease Chaos remain open; there is
-still no lease performance measurement.
+renewal/grant envelopes and whole-pump certificate publication. The
+[read-view integration](LEASE-READ-VIEW.md) now passes local tests and source
+fault controls for experimental GET/BatchGet over one retained applied view,
+including real unary and streaming RPCs. Default startup remains Safe ReadIndex;
+clock qualification and actual lease Chaos remain open. There is still no lease
+performance measurement; existing selected-versus-Redis results remain the baseline.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |

@@ -2170,6 +2170,10 @@ impl RuntimeBackend {
     /// Other hits are doc/comment text. The invariant is the two ENGINE
     /// counts, never the raw method-name total. Additionally inventory the one
     /// production `.try_resident_snapshot()` call in the resident constructor.
+    /// Experimental lease reads use the driver's positioned snapshot constructor
+    /// instead; inventory `try_positioned_resident_snapshot` across engine/raft
+    /// and the two `finish_lease_*` consumers separately. That owned view is
+    /// never exchanged for a new snapshot here.
     /// `Engine::snapshot()` is a
     /// public API and the type system cannot forbid a future second call
     /// site; what IS mechanically held is (a) `ReadBarrier` is neither
@@ -2206,7 +2210,7 @@ impl RuntimeBackend {
         key: &[u8],
     ) -> Result<Option<Value>> {
         let view = self.check_read_view(view, ctx, KeySpan::Point(key))?;
-        // The consumed quorum credential established authority. LeaderRead's
+        // The consumed quorum credential or retained lease view established authority. LeaderRead's
         // hint is used only when is_leader is false, so no driver/status locks
         // are needed here to compute an unused hint.
         let read = LeaderRead::new(view.as_ref(), true, None)?;
@@ -2287,6 +2291,48 @@ impl RuntimeBackend {
         self.finish_prepared_read(established, move |backend, view| {
             backend.prepared_get_from_view(view, &ctx, &key)
         })
+    }
+
+    #[cfg(any(test, feature = "experimental-leader-lease"))]
+    fn finish_lease_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        key: UserKey,
+        view: kv9_raft::driver::LeaseReadView,
+    ) -> Result<crate::api::RawReadJob<Option<Value>>> {
+        let view = view.into_view();
+        match self.try_ensure_serving() {
+            Some(serving) => {
+                serving?;
+                Ok(crate::api::RawReadJob::Completed(
+                    self.prepared_get_from_view(view, &ctx, &key)?,
+                ))
+            }
+            None => Ok(crate::api::RawReadJob::Blocking(Box::new(move || {
+                self.ensure_serving()?;
+                self.prepared_get_from_view(view, &ctx, &key)
+            }))),
+        }
+    }
+
+    #[cfg(any(test, feature = "experimental-leader-lease"))]
+    fn finish_lease_batch_get(
+        self: Arc<Self>,
+        ctx: RequestContext,
+        keys: Vec<UserKey>,
+        view: kv9_raft::driver::LeaseReadView,
+    ) -> Result<crate::api::RawReadJob<Vec<Option<Value>>>> {
+        let view = view.into_view();
+        match self.try_ensure_serving() {
+            Some(serving) => {
+                serving?;
+                self.finish_resident_batch_get(ctx, keys, view)
+            }
+            None => Ok(crate::api::RawReadJob::Blocking(Box::new(move || {
+                self.ensure_serving()?;
+                self.prepared_batch_get_from_view(view, &ctx, &keys)
+            }))),
+        }
     }
 
     fn finish_prepared_batch_get(
@@ -2472,6 +2518,19 @@ impl RawApi for RuntimeBackend {
             });
         }
         Box::pin(async move {
+            #[cfg(any(test, feature = "experimental-leader-lease"))]
+            let established = match self
+                .driver
+                .read_preparation_async(READ_BARRIER_DEADLINE)
+                .await
+            {
+                Ok(kv9_raft::driver::ReadPreparation::Lease(view)) => {
+                    return self.finish_lease_get(ctx, key, view);
+                }
+                Ok(kv9_raft::driver::ReadPreparation::Quorum(barrier)) => Ok(barrier),
+                Err(error) => Err(error),
+            };
+            #[cfg(not(any(test, feature = "experimental-leader-lease")))]
             let established = self.driver.read_barrier_async(READ_BARRIER_DEADLINE).await;
             self.finish_prepared_get(ctx, key, established)
         })
@@ -2505,6 +2564,19 @@ impl RawApi for RuntimeBackend {
             });
         }
         Box::pin(async move {
+            #[cfg(any(test, feature = "experimental-leader-lease"))]
+            let established = match self
+                .driver
+                .read_preparation_async(READ_BARRIER_DEADLINE)
+                .await
+            {
+                Ok(kv9_raft::driver::ReadPreparation::Lease(view)) => {
+                    return self.finish_lease_batch_get(ctx, keys, view);
+                }
+                Ok(kv9_raft::driver::ReadPreparation::Quorum(barrier)) => Ok(barrier),
+                Err(error) => Err(error),
+            };
+            #[cfg(not(any(test, feature = "experimental-leader-lease")))]
             let established = self.driver.read_barrier_async(READ_BARRIER_DEADLINE).await;
             self.finish_prepared_batch_get(ctx, keys, established)
         })
@@ -2730,13 +2802,17 @@ impl TxnApi for RuntimeBackend {
     }
 }
 
-/// The things a test may substitute at startup — and the reason each one has to be a
-/// startup parameter rather than something a test does afterwards.
+/// Startup-only substitutions for tests and explicit experimental installation.
 ///
-/// `Default` is exactly production, so the public entry points are visibly unaffected: they
-/// pass `StartOverrides::default()` and there is no other way in.
+/// `Default` is ordinary production. The experimental lease entry point supplies
+/// its immutable policy and caller-provided clock before the Raft owner starts.
 #[derive(Default)]
 struct StartOverrides {
+    #[cfg(any(test, feature = "experimental-leader-lease"))]
+    lease: Option<(
+        kv9_raft::lease_policy::LeasePolicy,
+        Arc<dyn kv9_raft::rawnode::LeaseClock>,
+    )>,
     /// `None` installs [`CatalogFenceAdjudicator`], which is what every live node runs.
     ///
     /// It must be chosen here because the driver pump starts on the very next lines and
@@ -2850,6 +2926,32 @@ pub struct NodeRuntime {
 }
 
 impl NodeRuntime {
+    /// Experimental programmatic installation. The supplied clock must meet
+    /// the documented rate/pause and nonblocking-sampling premises; this API
+    /// does not qualify that clock. Ordinary startup keeps Safe ReadIndex.
+    #[cfg(feature = "experimental-leader-lease")]
+    pub fn start_with_experimental_lease(
+        id: NodeId,
+        config: Config,
+        auth: RuntimeAuth,
+        root: RootDescriptor,
+        store_identity: StoreIdentity,
+        policy: kv9_raft::lease_policy::LeasePolicy,
+        clock: Arc<dyn kv9_raft::rawnode::LeaseClock>,
+    ) -> Result<Self> {
+        Self::start_core(
+            id,
+            config,
+            auth,
+            root,
+            store_identity,
+            None,
+            StartOverrides {
+                lease: Some((policy, clock)),
+                ..Default::default()
+            },
+        )
+    }
     /// Start a node whose creation authority and store identity were explicitly
     /// provisioned. This function persists/verifies that bundle before opening
     /// Raft or the catalog: ordinary process startup can never infer permission
@@ -3029,6 +3131,14 @@ impl NodeRuntime {
         // only after all recovered progress has committed Raft authority, before
         // starting the peer or exposing Serving.
         engine.enable_segmentation()?;
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        let peer = Arc::new(match overrides.lease {
+            Some((policy, clock)) => {
+                RaftPeer::with_lease_storage(id, META_REGION_0, storage, policy, clock)?
+            }
+            None => RaftPeer::with_storage(id, META_REGION_0, storage)?,
+        });
+        #[cfg(not(any(test, feature = "experimental-leader-lease")))]
         let peer = Arc::new(RaftPeer::with_storage(id, META_REGION_0, storage)?);
         if replay.discarded_tail_bytes > 0 {
             eprintln!(
@@ -4313,6 +4423,7 @@ fn prepare_test_store(directory: &Path, id: NodeId) -> StoreIncarnation {
 #[cfg(test)]
 mod tests {
     mod async_batch_read_tests;
+    mod lease_read_tests;
 
     #[tokio::test]
     async fn accepted_grpc_sockets_disable_nagle_without_rebinding() {
@@ -8368,6 +8479,19 @@ mod tests {
         Vec<std::net::SocketAddr>,
         PathBuf,
     ) {
+        unformed_trio_with_lease(tag, defer_owner, None)
+    }
+
+    fn unformed_trio_with_lease(
+        tag: &str,
+        defer_owner: bool,
+        clock: Option<Arc<dyn kv9_raft::rawnode::LeaseClock>>,
+    ) -> (
+        Vec<NodeRuntime>,
+        RootDescriptor,
+        Vec<std::net::SocketAddr>,
+        PathBuf,
+    ) {
         let base = std::env::temp_dir().join(format!(
             "kv9-{tag}-{}-{}",
             std::process::id(),
@@ -8421,6 +8545,20 @@ mod tests {
                     StartOverrides {
                         listener: Some(listeners.next().unwrap()),
                         defer_owner,
+                        lease: clock.as_ref().map(|clock| {
+                            (
+                                kv9_raft::lease_policy::LeasePolicy {
+                                    node: id,
+                                    group: META_REGION_0.0,
+                                    configuration: 7,
+                                    voters: vec![1, 2, 3],
+                                    promise_ns: 1_000_000_000,
+                                    drift_ppb: 0,
+                                    margin_ns: 0,
+                                },
+                                clock.clone(),
+                            )
+                        }),
                         ..Default::default()
                     },
                 )

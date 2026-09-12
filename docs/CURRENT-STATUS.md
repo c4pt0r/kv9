@@ -93,9 +93,16 @@ The [renewal adapter](LEASE-RENEWAL-PUBLICATION.md) now binds each leader lifeti
 exact renewal/grant envelopes and certificate activation after the whole owning
 pump succeeds. Its local gate passes 231 Raft library tests (12 new), the
 default-feature restart probe, experimental-feature Clippy and eight compiled
-source fault controls. Exact immutable
-read views, clock qualification and actual lease Chaos remain next; the server
-still uses Safe ReadIndex and there is no lease performance result.
+source fault controls. The [read-view integration](LEASE-READ-VIEW.md) now adds
+an explicit experimental server installation and prepared GET/BatchGet lease
+reads bound to one owned applied view. Its local gate passes 136 Engine,
+243 Raft and 207 server tests (586 total, one existing server test ignored),
+default/experimental compilation and Clippy. Nine compiled source mutations
+fail their declared assertions; eight targets pass before mutation and after
+restoration. Real unary/streaming RPCs enter the lease path; deferred copies
+retain metadata and values across epoch changes. Default startup remains Safe
+ReadIndex. Qualified clocks, actual lease Chaos and matched performance remain
+next; there is still no lease performance result or checklist closure.
 
 ## Latest fixed-rate write diagnosis
 

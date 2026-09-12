@@ -38,6 +38,8 @@ mod lease_gate;
 mod lease_wire;
 #[cfg(any(test, feature = "experimental-leader-lease"))]
 pub use lease_gate::LeaseClock;
+#[cfg(any(test, feature = "experimental-leader-lease"))]
+pub(crate) use lease_gate::LeaseRead;
 
 /// A raft-rs [`raft::Storage`] that can also **persist** what the Ready loop
 /// hands it: log entries and the HardState (term + vote + commit).
@@ -966,6 +968,41 @@ impl<S: PersistentRaftStorage> DrainToken<S> {
             )));
         }
         Ok(DrainToken { peer: peer.clone() })
+    }
+}
+
+#[cfg(any(test, feature = "experimental-leader-lease"))]
+impl<S: PersistentRaftStorage> RaftPeer<S> {
+    pub(crate) fn try_begin_lease_read(&self, remaining_ns: u64) -> Result<Option<LeaseRead>> {
+        let mut g = match self.inner.try_lock() {
+            Ok(g) => g,
+            Err(std::sync::TryLockError::WouldBlock) => return Ok(None),
+            Err(std::sync::TryLockError::Poisoned(_)) => panic!("peer lock poisoned"),
+        };
+        g.check_fatal()?;
+        if !g.alive {
+            return Ok(None);
+        }
+        let PeerInner { raw, lease, .. } = &mut *g;
+        Ok(lease
+            .as_mut()
+            .and_then(|lease| lease.begin_read(raw, remaining_ns)))
+    }
+
+    pub(crate) fn try_finish_lease_read(&self, read: LeaseRead, view_index: u64) -> Result<bool> {
+        let mut g = match self.inner.try_lock() {
+            Ok(g) => g,
+            Err(std::sync::TryLockError::WouldBlock) => return Ok(false),
+            Err(std::sync::TryLockError::Poisoned(_)) => panic!("peer lock poisoned"),
+        };
+        g.check_fatal()?;
+        if !g.alive {
+            return Ok(false);
+        }
+        let PeerInner { raw, lease, .. } = &mut *g;
+        Ok(lease
+            .as_mut()
+            .is_some_and(|lease| lease.finish_read(raw, read, view_index)))
     }
 }
 

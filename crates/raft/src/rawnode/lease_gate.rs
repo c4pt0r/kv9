@@ -11,7 +11,14 @@ use crate::lease::{
 /// not establish the required real-time rate bound (including process pauses).
 /// Sampling failures permanently fence voting in this peer incarnation.
 pub trait LeaseClock: Send + Sync {
+    /// Sampling on a resident read must not perform I/O or block. Concrete
+    /// platform qualification must establish this and the elapsed-rate bounds.
     fn sample(&self) -> crate::lease::Result<ClockReading>;
+}
+
+pub(crate) struct LeaseRead {
+    owner: Arc<()>,
+    ticket: crate::lease::ReadTicket,
 }
 
 pub(super) struct InstalledLease {
@@ -112,6 +119,51 @@ impl InstalledLease {
 
     pub(super) fn incarnation(&self) -> u64 {
         self.epoch.incarnation
+    }
+
+    pub(super) fn begin_read<S: PersistentRaftStorage>(
+        &mut self,
+        raw: &RawNode<S>,
+        remaining_ns: u64,
+    ) -> Option<LeaseRead> {
+        let now = self.synchronize(raw).ok()?;
+        if raw.raft.state != StateRole::Leader {
+            return None;
+        }
+        let deadline = now.nanos.checked_add(remaining_ns)?;
+        let progress = self.progress(raw);
+        let ticket = self
+            .leader
+            .as_mut()?
+            .begin_read(now, progress, deadline)
+            .ok()?;
+        Some(LeaseRead {
+            owner: self.owner.clone(),
+            ticket,
+        })
+    }
+
+    pub(super) fn finish_read<S: PersistentRaftStorage>(
+        &mut self,
+        raw: &RawNode<S>,
+        read: LeaseRead,
+        view_index: u64,
+    ) -> bool {
+        if !Arc::ptr_eq(&read.owner, &self.owner) {
+            return false;
+        }
+        let Ok(now) = self.synchronize(raw) else {
+            return false;
+        };
+        if raw.raft.state != StateRole::Leader {
+            return false;
+        }
+        let progress = self.progress(raw);
+        self.leader.as_mut().is_some_and(|leader| {
+            leader
+                .finish_read(now, progress, read.ticket, view_index)
+                .is_ok()
+        })
     }
 
     fn may_vote<S: PersistentRaftStorage>(&mut self, raw: &RawNode<S>) -> Result<()> {

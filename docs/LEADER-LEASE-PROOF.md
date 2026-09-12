@@ -279,10 +279,14 @@ acquisition, renewal, revocation/expiration, generation exhaustion, restart
 quarantine and local read-view validation, with a parameterized inductive proof
 and fault controls. Its [Rust component](LEASE-CONTROLLER.md) now has local source
 tests and integer timing proofs. Its [voting adapter](LEASE-VOTE-BINDING.md) now
-binds durable peer installation and actual election gates. Next bind the leader
-lifetime and actual grant/publication/read-view paths with source refinement. Local Rust tests
-must exercise delayed ACKs, stale rounds, application stalls, cancellation and
-the check/snapshot/revoke races. Actual Chaos Mesh E2E must include bidirectional
+binds durable peer installation and actual election gates. The
+[renewal adapter](LEASE-RENEWAL-PUBLICATION.md) binds leader lifetime and actual
+grant/publication paths; the [read-view adapter](LEASE-READ-VIEW.md) now binds the
+owned applied view and final authority check to experimental GET/BatchGet.
+Their local source and fault controls cover delayed ACKs, stale rounds,
+application stalls, cancellation and capture/expiry boundaries. This remains
+a conditional implementation mapping, not a complete machine-checked Rust
+refinement. Actual Chaos Mesh E2E must include bidirectional
 and asymmetric partitions, delayed/reordered renewal traffic, process pause,
 grantor restart, leader replacement and post-recovery linearizability histories.
 Clock-bound violation tests must demonstrate disabling/refusal where detection

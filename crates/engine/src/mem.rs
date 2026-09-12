@@ -121,6 +121,19 @@ impl MemEngine {
         Some(Box::new(MemSnapshot { state }))
     }
 
+    pub(crate) fn try_positioned_resident_snapshot(&self) -> Option<crate::PositionedReadView> {
+        let state = match self.state.try_read() {
+            Ok(state) => state.clone(),
+            Err(std::sync::TryLockError::WouldBlock) => return None,
+            Err(std::sync::TryLockError::Poisoned(_)) => panic!("mem engine lock poisoned"),
+        };
+        let position = state.applied;
+        Some(crate::PositionedReadView {
+            view: Box::new(MemSnapshot { state }),
+            position,
+        })
+    }
+
     /// A snapshot of the current state. O(1): the maps share their structure.
     ///
     /// **Must return an owned `State`, never a `RwLockReadGuard`.** Returning a guard
@@ -390,6 +403,26 @@ impl ReadView for MemSnapshot {
 #[cfg(test)]
 mod resident_tests {
     use super::*;
+
+    #[test]
+    fn positioned_resident_snapshot_refuses_an_in_progress_index_writer() {
+        let engine = std::sync::Arc::new(MemEngine::new());
+        let held = engine.state.write().unwrap();
+        let (sent, received) = std::sync::mpsc::channel();
+        let reader = engine.clone();
+        let worker = std::thread::spawn(move || {
+            sent.send(reader.try_positioned_resident_snapshot().is_none())
+                .unwrap();
+        });
+        let result = received.recv_timeout(std::time::Duration::from_secs(2));
+        drop(held);
+        worker.join().unwrap();
+        assert_eq!(
+            result.ok(),
+            Some(true),
+            "positioned snapshot blocked on the index writer"
+        );
+    }
 
     #[test]
     fn resident_snapshot_never_waits_for_a_writer_and_owns_its_version() {
