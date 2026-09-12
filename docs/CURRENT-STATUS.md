@@ -19,50 +19,51 @@ remain open. An abstract proof or one-host fault run does not close these gates.
 
 ## Latest completed optimization experiment
 
-[ThinLTO with one release codegen unit](RELEASE-THIN-LTO-PERFORMANCE.md) improves
-all four point-read/mixed cells in both run orders. C64 GET throughput rises
-**8.511%**, mean falls **7.847%**, and p99 improves. C1 GET throughput rises
-**6.402%**; mixed throughput rises **13.891% at c1** and **10.424% at c64**.
-Separate mixed GET/PUT means and p99 improve in both repetitions.
+[ThinLTO complete72 qualification](RELEASE-THIN-LTO-FULL72.md) improves throughput
+and mean latency in all 12 point/batch workload cells and both run orders.
+C64 GET throughput rises **8.465%**, c1 GET **6.806%**, and c64 point mixed
+throughput **10.390%**. Loaded BatchPut(64) has a tail tradeoff: pooled p99 rises
+from **8.258–8.323 ms to 8.389–8.520 ms**, despite better throughput and mean.
+The other 11 pooled cells improve p99; all individual repetitions remain visible.
 
 | Same-run metric | Selected CRC | ThinLTO candidate | Redis |
 | --- | ---: | ---: | ---: |
-| c1 GET calls/s | 26,591.615 | 28,293.988 | 174,022.103 |
-| c1 GET mean us | 37.485 | 35.226 | 5.671 |
-| c1 GET p99 us | 50.176–50.687 | 45.056–45.567 | 7.424–7.487 |
-| c64 GET calls/s | 346,695.956 | 376,202.163 | 510,898.184 |
-| c64 GET mean us | 184.474 | 169.998 | 125.158 |
-| c64 GET p99 us | 352.256–356.351 | 323.584–327.679 | 229.376–231.423 |
-| c64 mixed combined calls/s | 170,992.289 | 188,817.154 | 500,132.085 |
-| c64 mixed GET mean us | 386.171 | 350.297 | 127.850 |
+| c1 GET calls/s | 26,510.350 | 28,314.673 | 174,264.654 |
+| c1 GET mean us | 37.605 | 35.206 | 5.660 |
+| c1 GET p99 us | 49.664–50.175 | 44.544–45.055 | 7.104–7.167 |
+| c64 GET calls/s | 346,550.757 | 375,885.286 | 512,498.244 |
+| c64 GET mean us | 184.555 | 170.140 | 124.766 |
+| c64 GET p99 us | 352.256–356.351 | 323.584–327.679 | 231.424–233.471 |
+| c64 BatchGet(64) items/s | 2,277,629.998 | 2,342,052.591 | 5,964,711.568 |
+| c64 BatchPut(64) items/s | 878,613.230 | 905,638.841 | 6,091,968.177 |
 
-All 12 smoke and 24 timed cohorts complete with **50,708,100 measured
-single-attempt successes**, zero dropped slots and independent acceptance.
-The audit verifies 80 exited lifetimes, 48 fresh drains/bindings, 4,681 resource
-samples and exact CPU/namespace restoration. [Validation](RELEASE-THIN-LTO-VALIDATION.md)
-passes 709 workspace tests/doctests (23 existing ignored), formatting/Clippy
-and ordinary recovery histories with 359 operations (326 OK / 33 unknown).
-The production compiler flags/default feature graph and source identity are
-verified separately from the workspace test graph.
+All 36 smoke and 72 timed cohorts complete. Independent acceptance verifies
+**81,648,272 measured single-attempt successes**, zero dropped slots, 240 exited
+lifetimes, 144 fresh drains/bindings and exact CPU/namespace restoration. All
+24 smoke and 48 timed native retention records were independently decoded.
+Current full72 originals are cold; their compressed objects remain local and
+original-path audits require rehydration. The full report separates logical,
+compressed and allocated byte totals.
 
-Candidate `02d0c01` now passes the [21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md):
-**9,923 complete history operations** (9,371 OK / 35 refused / 517 unknown),
-with positive fault effects, four fresh final replica drains and **33 observed
-server lifetimes / 25 containers** confirmed exited or removed. The original
-delay-selector failure and its tested correction remain separately retained.
-Broader point/batch performance qualification is pending; selected runtime
-remains CRC. This correctness run adds no new QPS measurement. The result
-reaches 73.635% of Redis c64 GET throughput; isolated GET mean is still about
-6.21 times Redis. Read parity is not complete.
+[Validation](RELEASE-THIN-LTO-VALIDATION.md) retains 709 workspace tests/doctests
+(23 existing ignored), formatting/Clippy and 359 complete ordinary recovery
+operations. Candidate `02d0c01` also passes the
+[21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md): **9,923 complete
+history operations** (9,371 OK / 35 refused / 517 unknown), positive fault
+effects, four fresh final drains and 33 server lifetimes / 25 containers
+confirmed exited or removed. Original failures retain their original scope.
 
-Scope: unchanged fixed clients, default uninstrumented production builds,
-shared-host loopback and ordinary three-voter quorum/sync on **tmpfs WAL**,
-versus standalone Redis without persistence/pipelining. No equal-durability,
-real-disk, cross-host, sustained-capacity or significance claim. Completed
-historical WAL artifacts were moved to verified local cold retention to make
-space; original cold paths require rehydration before reuse of old full audits.
-Current ThinLTO and global-queue evidence is resident. See the retention overlay
-linked by the performance report; no storage guard was lowered.
+Next complete fresh main-source, default-build and recovery confirmation.
+Selected runtime remains CRC until that integration completes. The new result
+reaches **73.344% of Redis c64 GET throughput**; isolated GET mean remains
+**6.220 times Redis**. Read parity is not complete.
+
+Scope: fixed clients, default uninstrumented production builds, shared-host
+loopback and ordinary three-voter quorum/sync on **tmpfs WAL**, versus Redis
+without persistence/pipelining. No equal-durability, real-disk, cross-host,
+sustained-capacity or significance claim. Compression runs after writer exit
+between cohorts; no codec overlaps measurement, but gaps can affect cache and
+thermal state. Storage floors and caps remain unchanged.
 
 ## Diagnosis and next performance work
 
@@ -76,16 +77,15 @@ The [cross-branch experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) now links
 prior decisions, including earlier global-queue and persistent-stream-worker
 regressions. The latest single-owner and two-worker revisits stop before timing;
 they provide no new performance result. Scheduling rewrites require a new cause.
-The ThinLTO candidate now passes source, ordinary recovery, the complete
-point-read/mixed screen above and the 21-window actual exact-build fault gate.
-Next complete 36 smoke / 72 timed broader point/batch cohorts. A post-process
-compressed-retention implementation passes 53 helper controls and actual
-1,073,741,841-byte compression/decode/restore qualification. Its real CRC WAL
-restore pilot also passes; the linked Chaos report records the new historical
-cold-retention overlay. Further actual capacity is still required before runtime.
-Storage floors and workloads remain unchanged. Finish these gates before default promotion.
-Do not add its percentage to the separate notification candidate's historical improvement.
-The read milestone remains open before dynamic multi-Raft and automatic splits.
+The ThinLTO candidate now passes source, ordinary recovery, complete72 broader
+point/batch performance and the 21-window exact-build fault gate. Local retention
+capacity and full original-byte auditing have completed. Advance to fresh main
+integration checks, preserving the loaded batch-write p99 tradeoff. Investigate
+that tail at a common offered load; do not replace the original closed-loop
+result. The [quorum-path plan](QUORUM-LATENCY-NEXT.md) now maps exact source
+boundaries and rejects ambiguous repeated-context/route-generation timing.
+Keep notification candidate `42e0117` separate. Redis read parity remains open
+before dynamic multi-Raft and automatic splits.
 
 The earlier [notification comparison](COALESCED-OWNER-PERFORMANCE.md) remains
 historical accepted evidence: candidate `42e0117` improves c64 GET 1.123% and mixed
@@ -132,12 +132,12 @@ isolated GET improvement. Original setup/reader failures remain published.
 
 ## Next development steps
 
-1. **Finish the strongest current candidate:** keep `02d0c01` frozen after its
-   favorable screen and accepted 21-window exact-build Chaos matrix. Qualify
-   local retention capacity, then execute 36 smoke / 72 timed point/batch cohorts.
-   Keep `42e0117` separate; any combined candidate needs
-   its own source mapping and matched qualification. A short screen alone does
-   not justify default promotion.
+1. **Integrate the qualified candidate:** keep `02d0c01` frozen after accepted
+   full72 performance and exact-build Chaos. Confirm exact runtime/build source
+   correspondence, full local release checks, observer-feature Clippy and a
+   fresh default build/recovery before selecting main. Preserve the batch-write
+   tail tradeoff and investigate it at a common offered load. Keep `42e0117`
+   separate; any combination requires its own matched qualification.
 2. **Reduce isolated GET latency:** localize serial RPC, owner-service and
    completion-wait costs with a bounded diagnostic. Preserve the selected shared
    executor and consensus boundaries; the current evidence does not justify

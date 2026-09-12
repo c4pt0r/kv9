@@ -45,12 +45,43 @@ do not sum follower means or infer which response completed a quorum without
 observing the actual confirmation boundary. Preserve group versus request
 counts when several readers share a sealed context.
 
+A context identifies a sealed read group, not an individual heartbeat emission.
+The pinned raft-rs 0.7.0 `Raft::bcast_heartbeat` reuses
+`read_only.last_pending_request_ctx()`. Periodic heartbeats can therefore repeat
+the same context before confirmation. Record emission and response counts;
+exclude ambiguous matches from per-message round-trip statistics and retain
+their population. A separately labeled first-dispatch-to-first-response span
+can describe a context's progress, but cannot identify which transmission
+produced that response. Add a repeated-context control before recording.
+
+Route generations are also local: `PeerDestination` uses an `Arc` allocation's
+identity, while the protobuf envelope carries no equivalent connection token.
+Retain that lifetime when correlating local enqueue/dequeue events; a raw
+address alone can be reused after allocation release. Do not claim an exact
+cross-process connection join from the current wire fields. Lost observations,
+duplicate contexts or route replacement must yield explicitly unmatched or
+ambiguous timing, without changing message delivery.
+
 Bound diagnostic storage and sampling before execution. Retain offered,
 selected, completed, dropped and unmatched populations, including cancellation,
 route replacement and shutdown. A missing trace is unknown timing, not zero
 latency. Observer overflow must not affect admission, retries or protocol
 progress. Quantify instrumentation overhead against the uninstrumented control;
 instrumented throughput cannot be advertised as a speedup.
+
+## Source boundaries reviewed in candidate 02d0c01
+
+Recheck these boundaries against the implementation selected after the broad
+comparison. This map is source inspection, not new timing or instrumentation.
+
+| Boundary | Existing location and observation constraint |
+| --- | --- |
+| Group submission | `AsyncReadQueue::submit` in `crates/raft/src/async_read.rs`; distinguish deferred admission from an admitted sealed group. |
+| Leader dispatch | `NodeDriver::step_inner` in `crates/raft/src/driver.rs` calls `RaftPeer::pump` before `GrpcTransport::send`; the interval includes owner and Ready processing. |
+| Peer queue | `GrpcTransport::enqueue`, `receive_for_destination` and `coalesce_queued` in `crates/raft/src/grpc.rs`; record failed admission and stale-generation discards as well as successful dequeue. |
+| Inbound processing | `RaftGrpcService::batch_raft` validates and decodes before `RaftInbox::send`; `RaftInbox::drain` in `crates/raft/src/work.rs` precedes `RaftPeer::step_message`. Keep validation, inbox residence and Raft processing distinct. |
+| Exact confirmation | `AsyncReadQueue::confirm`, called from `NodeDriver::step_inner` on exact `ReadState` contexts; an inbound response alone is insufficient. |
+| Successful completion | `NodeDriver::step_observed` calls `AsyncReadQueue::complete` only after successful pump processing and completion publication, with the unified apply watermark. Keep this fence and later waiter resumption separate. |
 
 ## Execution and decision
 
