@@ -1,11 +1,11 @@
 # RawKV performance development path
 
-> Latest direction: [ThinLTO qualification](RELEASE-THIN-LTO-PERFORMANCE.md)
-> improves c64 GET 8.511%, c1 GET 6.402% and c64 mixed throughput 10.424%, with
-> better means and p99 in both orders. The exact build now passes the
-> [21-window Chaos matrix](RELEASE-THIN-LTO-CHAOS.md), including 9,923 complete
-> history operations. Broader point/batch performance remains next; CRC stays
-> selected. Consult the
+> Latest direction: [ThinLTO full72 qualification](RELEASE-THIN-LTO-FULL72.md)
+> and [main integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md) are complete.
+> ThinLTO is selected. The [32-us owner-poll screen](OWNER-POLL-PERFORMANCE.md)
+> rejects that candidate. The [leader-lease proof](LEADER-LEASE-PROOF.md) now
+> establishes a conditional path to zero per-read quorum RTT; runtime refinement,
+> clock qualification and actual lease Chaos acceptance remain open. Consult the
 > [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before another candidate.
 > Redis read parity and industrial gates remain open.
 
@@ -14,7 +14,7 @@ memory-resident RawKV data. Data residency, durable acknowledgement, replication
 and API overhead are separate dimensions. Performance work must improve the
 implementation while keeping each measured mode's guarantees explicit.
 
-## Product sequence, updated 2026-09-10
+## Product sequence, updated 2026-09-12
 
 First bring client-visible memory RawKV throughput to Redis-class performance,
 then implement dynamic multi-Raft and automatic range partitioning/splits.
@@ -47,20 +47,20 @@ accepting scale-out. This sequence does not mark those prerequisites complete.
 ## Current checkpoint
 
 The [current status](CURRENT-STATUS.md) is authoritative for runtime selection.
-Selected behavior remains CRC `ca0002c7`. The [ThinLTO screen](RELEASE-THIN-LTO-PERFORMANCE.md)
-completes all 24 timed cohorts: c64 GET +8.511%, c1 GET +6.402% and mixed
-throughput +13.891% at c1 / +10.424% at c64. Mean/p99 improve in both orders,
-including separate mixed GET/PUT. The candidate reaches 376,202 GET/s at c64;
-isolated GET mean is 35.226 us, about 6.21 times the same-run Redis mean.
+Selected behavior is ThinLTO `11113f6`, with the same executable bytes as
+qualified `02d0c01`. The [36 smoke / 72 timed point/batch comparison](RELEASE-THIN-LTO-FULL72.md)
+is complete: c1/c64 GET improve 6.806% / 8.465% versus CRC in that experiment.
+All cells improve throughput and mean in both orders; loaded BatchPut retains
+its documented p99 regression. The exact candidate passed the
+[21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md), with 9,923 complete
+history operations. Fresh main integration and recovery also passed.
 
-The exact `02d0c01` build now passes the [21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md),
-with 9,923 complete history operations and all observed server lifetimes exited.
-Next qualify 36 smoke / 72 timed point/batch cohorts with the fixed clients.
-Large-file compression/decode/restore qualification and a real historical WAL
-restore pilot pass. Further local capacity precedes that campaign; its duration,
-workloads and acceptance predicates remain fixed.
-[Source and ordinary recovery validation](RELEASE-THIN-LTO-VALIDATION.md) also
-passes within its documented scope. Separate notification candidate
+The more recent [owner-poll screen](OWNER-POLL-PERFORMANCE.md) rejects polling;
+its same-run selected controls deliver c1/c64 GET 28,252.671 / 374,812.758 calls/s
+against Redis 173,925.251 / 511,910.764. No new speedup is claimed. The requested
+[lease proof](LEADER-LEASE-PROOF.md) now separates the zero-consensus-RTT theorem
+from the missing implementation/clock/recovery/Chaos gates. Production keeps
+Safe ReadIndex. Separate notification candidate
 `42e0117` remains experimental; combining it with ThinLTO requires a distinct
 matched qualification. Fresh ReadIndex, sealed groups, successful pump/apply/view
 fences and durable writes remain mandatory. Historical rejected scheduling

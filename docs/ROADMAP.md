@@ -9,6 +9,9 @@
 > The [bounded owner-poll screen](OWNER-POLL-PERFORMANCE.md) now rejects the
 > 32-us candidate: every matched workload/order loses throughput and worsens
 > latency, with more server CPU. Main remains on `11113f6`.
+> The [leader-lease proof](LEADER-LEASE-PROOF.md) now establishes a conditional
+> path to zero per-read quorum RTT; implementation, clock qualification and
+> actual lease Chaos acceptance remain ahead of any runtime selection.
 > Redis read parity and industrial gates remain open.
 
 Updated: 2026-09-12. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
@@ -51,6 +54,12 @@ targets unresolved intervals inside a fresh quorum round, reusing completed
 body-handoff evidence and preserving all earlier rejected experiment decisions.
 Preserve fresh quorum reads, sealed groups, successful pump/apply/view fences
 and durable acknowledgements.
+The separately requested lease path now has a complete conditional mathematical
+argument, eight checked TLAPS lemmas / 23 obligations and real-clock SMT
+containment. Next specify fixed-configuration acquisition/renewal/revocation,
+voter restart promises and the exact local view gate, then prove the transition
+model and implementation refinement. Qualify actual fault histories before
+matched throughput/latency comparison. See [the proof and implementation gates](LEADER-LEASE-PROOF.md).
 The product sequence remains memory RawKV read performance, then dynamic
 multi-Raft and automatic splits, without waiving storage/proof/fault prerequisites.
 Earlier rejected executor/handoff experiments retain their decisions. Evaluate

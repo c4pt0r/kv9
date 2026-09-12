@@ -12,6 +12,13 @@ source, client, workload and duration recorded in its linked report. Historical
 percentages must not be relabeled as current measurements. Accepted evidence
 does not itself imply a selected candidate or full industrial qualification.
 
+The [leader-lease proof](LEADER-LEASE-PROOF.md) is a new design checkpoint:
+eight TLAPS lemmas / 23 obligations plus real-clock containment show how to
+remove per-read quorum RTT under explicit additional premises. There is no
+lease-enabled runtime or performance result yet. Do not relabel earlier Safe
+ReadIndex timings as lease performance; preserve the implementation/proof/Chaos
+gates and the selected `11113f6` baseline.
+
 | Change / source | Recorded decision and evidence |
 | --- | --- |
 | Independent per-request stream tasks `f2c4e85` | Retained; older c64 GET +38.15–38.93%, with better mean/p99. [Original report](https://github.com/c4pt0r/kv9/blob/cf5c87e/docs/PARALLEL-STREAM-GET-PERFORMANCE.md). |

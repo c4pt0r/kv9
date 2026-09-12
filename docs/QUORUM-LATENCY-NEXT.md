@@ -16,8 +16,14 @@ Do not retune that budget or repeat losing cohorts. Next review existing
 selected-build profiles, then identify a concrete CPU/call-stack cost outside
 performance timing before another rewrite. Preserve the original mutex predicate,
 deadlines and all consensus fences.
-Track this under #20 and #9. Production already uses leader Safe ReadIndex;
-clock-derived lease reads require a separate design and proof.
+Track this under #20 and #9. Production already uses leader Safe ReadIndex.
+The requested [leader-lease design proof](LEADER-LEASE-PROOF.md) now separately
+establishes zero per-read quorum RTT under explicit clock/voting/recovery premises.
+Eight TLAPS lemmas / 23 obligations and real-clock containment pass; source
+refinement, clock qualification and actual lease Chaos E2E remain open. Prioritize
+its fixed-configuration transition/implementation contract before a lease candidate.
+The selected-build CPU-profile reuse investigation remains available for the
+existing Safe ReadIndex path; old profile shares do not describe selected ThinLTO.
 
 The immediate objective is to locate avoidable work inside a fresh Safe
 ReadIndex round. Keep quorum confirmation, sealed membership, successful
