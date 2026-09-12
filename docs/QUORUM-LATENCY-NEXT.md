@@ -7,9 +7,12 @@ is also complete; its tail and arrival-accounting limitations remain open.
 The opt-in [quorum-message trace](QUORUM-MESSAGE-TRACE.md) and its
 [actual capture/overhead comparison](QUORUM-TRACE-RESULTS.md) now pass after
 replacing the original contended recorder with immutable slots. Preserve both
-original campaigns. The next implementation tests bounded owner polling against
-observed local inbox residence, with the original mutex predicate and deadlines,
-explicit CPU accounting and no assumed gain. Track this under #20 and #9.
+original campaigns. [Owner-poll candidate `2ca5fcc`](https://github.com/c4pt0r/kv9/blob/2ca5fccb157b26b6c3c79eb52f7c7838f10a5c8c/docs/BOUNDED-OWNER-POLL.md) now passes the
+scheduling proof/model and Rust source gates. Its clean default release, ordinary
+recovery and 24-cohort uninstrumented screen remain pending. Keep the original
+mutex predicate and deadlines, explicit CPU accounting and no assumed gain.
+Track this under #20 and #9. Production already uses leader Safe ReadIndex;
+clock-derived lease reads require a separate design and proof.
 
 The immediate objective is to locate avoidable work inside a fresh Safe
 ReadIndex round. Keep quorum confirmation, sealed membership, successful
