@@ -1,8 +1,10 @@
 # Next batch-write tail investigation
 
-This is a proposed diagnostic protocol, not a new performance result or a
-runtime authorization receipt. Freeze the actual runner, configuration,
-capacity reservation and independent acceptance reader before execution.
+This protocol has now run once. See the [accepted fixed-rate result](BATCH-WRITE-FIXED-RATE-RESULTS.md)
+for all eight cohorts, higher ThinLTO p99, client drops and the preserved reader
+failure/repair. The original planned rates, duration and scope below remain
+visible. Actual frozen commands, capacity releases and terminal receipts are in
+the linked evidence; this planning document is not a runtime receipt.
 
 The [complete72 result](RELEASE-THIN-LTO-FULL72.md) improves loaded BatchPut(64)
 throughput by 3.076% and mean latency, but worsens pooled p99. Its closed-loop

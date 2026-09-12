@@ -18,6 +18,22 @@ core-protocol implementation proofs, the full actual Chaos Mesh failure matrix,
 independent host-failure acceptance, dynamic data groups and automatic splits
 remain open. An abstract proof or one-host fault run does not close these gates.
 
+## Latest fixed-rate write diagnosis
+
+The [eight-cohort fixed-rate result](BATCH-WRITE-FIXED-RATE-RESULTS.md) is now
+accepted. It preserves the write-tail problem: at 8k offered BatchPut(64) calls/s,
+pooled p99 is **4.850–4.915 ms CRC / 5.439–5.505 ms ThinLTO**; at 12k,
+**6.750–6.816 ms / 7.143–7.209 ms**. Scheduled-to-completion p99 also rises in
+both run orders. All 797,956 issued calls succeed with one attempt, but 2,044
+of 800,000 offered slots are dropped by the client; equal realized work is not
+established. This is a new diagnosis, not a new optimization or maximum-QPS run.
+
+Four smoke/eight timed cohorts, 32 exited timed lifetimes, 24 fresh drains and
+all twelve byte-retention records pass independent readback. The first reader's
+obsolete Redis pairing lookup failed after all eight per-cohort checks; its
+six-line repair and original failure remain published. No cohort was rerun.
+The next main implementation investigation is the exact single-GET quorum path.
+
 ## Latest completed optimization experiment
 
 [ThinLTO complete72 qualification](RELEASE-THIN-LTO-FULL72.md) improves throughput
@@ -85,9 +101,10 @@ regressions. The latest single-owner and two-worker revisits stop before timing;
 they provide no new performance result. Scheduling rewrites require a new cause.
 ThinLTO is now integrated after the full72 comparison, original 21-window fault
 gate and fresh main-source/default-build/recovery confirmation. Original timing
-and Chaos receipts retain their source/build identities. Investigate the loaded
-batch-write tail with the [common offered-load plan](BATCH-WRITE-TAIL-NEXT.md);
-do not replace the original closed-loop result. The
+and Chaos receipts retain their source/build identities. The completed
+[common offered-load diagnosis](BATCH-WRITE-FIXED-RATE-RESULTS.md) retains higher
+write tails and client scheduling/drop limitations; it does not replace the
+original closed-loop result. The
 [quorum-path plan](QUORUM-LATENCY-NEXT.md) now maps exact source
 boundaries and rejects ambiguous repeated-context/route-generation timing.
 Keep notification candidate `42e0117` separate. Redis read parity remains open
@@ -138,17 +155,16 @@ isolated GET improvement. Original setup/reader failures remain published.
 
 ## Next development steps
 
-1. **Investigate the remaining batch-write tail:** ThinLTO `11113f6` is selected
-   after fresh local integration confirmation. Freeze the common offered-load
-   comparison, retain schedule-to-completion latency and dropped slots, and
-   distinguish equal offered rate from equal completed work. Preserve the
-   closed-loop tradeoff. Keep `42e0117` separate; any combination requires its
-   own matched qualification.
-2. **Reduce isolated GET latency:** localize serial RPC, owner-service and
-   completion-wait costs with a bounded diagnostic. Preserve the selected shared
-   executor and consensus boundaries; the current evidence does not justify
-   another worker-count or transport sweep. Do not repeat completed screens
-   without a new cause.
+1. **Reduce isolated GET latency:** localize serial RPC, owner-service and
+   completion-wait costs with the bounded quorum-path diagnostic. Preserve the
+   selected shared executor and consensus boundaries; current evidence does not
+   justify another worker-count or transport sweep. Keep repeated-context and
+   route-generation ambiguity explicit; do not repeat screens without a cause.
+2. **Retain the write-tail problem and separate arrival calibration:** the fixed
+   offered-load diagnosis is complete, with higher ThinLTO p99 and nonzero client
+   drops. Check the pinned client's timer/strided-slot fidelity separately before
+   claiming matched work or a server-specific cause. Preserve the original
+   results. Keep `42e0117` separate; combinations require their own qualification.
 3. **Qualify useful improvements:** applicable proof mapping, full point/batch
    checks and actual exact-source Chaos Mesh fault injection precede promotion.
    Preserve fresh Safe ReadIndex, sealed groups, durable writes and complete

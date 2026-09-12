@@ -32,6 +32,7 @@ does not itself imply a selected candidate or full industrial qualification.
 | Coalesced owner notifications `42e0117` | Experimental modest loaded-read/mixed improvement; isolated GET does not improve, broader API/Chaos gates remain. [Report](COALESCED-OWNER-PERFORMANCE.md). |
 | Fixed global queue interval eight on CRC `3338650` | Revisit of `c893834` under newer c1/c64 GET/mixed scope; rejected again, c64 GET -2.390%. [Complete report](GLOBAL-QUEUE-PERFORMANCE.md). |
 | ThinLTO and one release codegen unit `02d0c01` | Complete [full72 comparison](RELEASE-THIN-LTO-FULL72.md): all 12 point/batch cells improve throughput/mean in both orders; c1/c64 GET +6.806%/+8.465%. Loaded BatchPut pooled p99 worsens, explicitly retained. Exact-build [21-window Chaos](RELEASE-THIN-LTO-CHAOS.md) accepted; [fresh main integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md) now passes. [Earlier screen](RELEASE-THIN-LTO-PERFORMANCE.md) remains separately scoped. |
+| Fixed-rate BatchPut tail diagnosis on CRC / selected `11113f6` | [Eight accepted cohorts](BATCH-WRITE-FIXED-RATE-RESULTS.md): ThinLTO whole-call and scheduled p99 remain higher at 8k/12k offered calls/s in both orders. All 797,956 issued calls succeed; 2,044 dropped slots prevent strict equal-work attribution. No runtime change or performance rerun. |
 
 ## Latest unmeasured prototypes
 
@@ -60,9 +61,11 @@ The ThinLTO candidate `02d0c01` now passes full workspace checks (709 tests,
 12 cells, with a loaded BatchPut p99 tradeoff. Keep the exact source and artifacts
 frozen. Main integration `11113f6` now passes fresh release and observer checks,
 a separate default build and 291-operation recovery (262 OK / 29 unknown).
-The new server/client reproduce the original executable hashes. Investigate
-the write tail at a [common offered load](BATCH-WRITE-TAIL-NEXT.md) without
-discarding the closed-loop result. A combination with notification candidate
+The new server/client reproduce the original executable hashes. The completed
+[fixed-rate write diagnosis](BATCH-WRITE-FIXED-RATE-RESULTS.md) preserves higher
+tails at both common offered rates and client-drop/scheduling limitations.
+Keep the original closed-loop result; the main next implementation investigation
+is the single-GET quorum path. A combination with notification candidate
 `42e0117` requires its own matched qualification; historical percentages cannot
 be added.
 

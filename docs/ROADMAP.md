@@ -21,8 +21,12 @@ operations. The 36 smoke / 72 timed point/batch cohorts and independent audit
 now pass. Main now selects the exact qualified source after fresh local release,
 observer-feature and default-build/recovery checks. The retained server/client
 bytes match the original candidate. Preserve the loaded batch-write p99
-regression and follow the [common offered-load plan](BATCH-WRITE-TAIL-NEXT.md);
-the closed-loop result must not be replaced by a favorable rerun.
+regression. The [completed fixed-rate diagnosis](BATCH-WRITE-FIXED-RATE-RESULTS.md)
+retains higher whole-call and scheduled p99 at both offered rates and both
+orders, with 2,044 client-dropped slots preventing strict matched-work inference.
+All 797,956 issued calls succeed; no performance cohort was rerun. Client timer
+calibration is a separate environment question. The main next work is the
+single-GET quorum-path diagnostic, with no premature server-cause claim.
 Keep notification candidate `42e0117` separate; its gains cannot be added to
 ThinLTO's measurements. The [next latency investigation](QUORUM-LATENCY-NEXT.md)
 targets unresolved intervals inside a fresh quorum round, reusing completed

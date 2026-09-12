@@ -2,8 +2,10 @@
 
 The full ThinLTO point/batch comparison and [main integration](RELEASE-THIN-LTO-MAIN-INTEGRATION.md)
 now pass. Begin from selected `11113f6`, whose server bytes reproduce the qualified
-candidate. This plan has no new profile, benchmark result or implementation.
-Track the work under #20 and the checkpoint in #9.
+candidate. The [fixed-rate write-tail diagnosis](BATCH-WRITE-FIXED-RATE-RESULTS.md)
+is also complete; its tail and arrival-accounting limitations remain open.
+This single-GET plan is now the next main implementation investigation and has
+no new profile, benchmark result or instrumentation yet. Track it under #20 and #9.
 
 The immediate objective is to locate avoidable work inside a fresh Safe
 ReadIndex round. Keep quorum confirmation, sealed membership, successful
