@@ -13,6 +13,8 @@
 > path to zero per-read quorum RTT, with a [proved transition model](LEASE-AUTHORITY-MODEL.md).
 > Implementation, clock qualification and
 > actual lease Chaos acceptance remain ahead of any runtime selection.
+> The [Rust controller component](LEASE-CONTROLLER.md) now passes its local source
+> and integer-timing gates; actual peer/read-path integration is next.
 > Redis read parity and industrial gates remain open.
 
 Updated: 2026-09-12. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
@@ -59,8 +61,10 @@ The separately requested lease path now has a complete conditional mathematical
 argument, eight checked TLAPS lemmas / 23 obligations and real-clock SMT
 containment. The [fixed-configuration transition proof](LEASE-AUTHORITY-MODEL.md)
 adds 27 theorems / 348 obligations and bounded fault-model evidence for renewal,
-revocation, restart promises and the local view gate. Next implement and refine
-the controller and actual voting/read paths. Expired authority plus unavailable
+revocation, restart promises and the local view gate. The
+[Rust component](LEASE-CONTROLLER.md) passes 205 Raft library tests, source fault
+controls and integer-timing proofs. Next establish unique installation and bind
+actual voting/persistence/pump/read-view paths. Expired authority plus unavailable
 quorum must fail closed. Qualify the clock and actual fault histories before
 matched throughput/latency comparison. See [the proof and implementation gates](LEADER-LEASE-PROOF.md).
 The product sequence remains memory RawKV read performance, then dynamic

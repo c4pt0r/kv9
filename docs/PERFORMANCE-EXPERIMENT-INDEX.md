@@ -20,6 +20,8 @@ finite fault-model evidence and the fail-closed expiration contract. There is no
 lease-enabled runtime or performance result yet. Do not relabel earlier Safe
 ReadIndex timings as lease performance; preserve the implementation/proof/Chaos
 gates and the selected `11113f6` baseline.
+The subsequent [Rust controller](LEASE-CONTROLLER.md) passes local source/fault
+controls and integer-timing proofs; its feature does not enable a server read path.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |
