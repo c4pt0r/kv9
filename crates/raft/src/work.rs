@@ -180,7 +180,7 @@ const DRAIN_BYTES: usize = 1024 * 1024;
 
 #[derive(Default)]
 struct InboxState {
-    messages: VecDeque<(Message, usize)>,
+    messages: VecDeque<(Message, usize, Option<crate::wait_profile::Sample>)>,
     bytes: usize,
     signal: Option<Arc<WorkSignal>>,
 }
@@ -190,8 +190,19 @@ struct InboxState {
 /// A bounded prefix is drained per turn; one legal large message may exceed the
 /// per-turn byte target. Refusal means the transport must drop/retry, never ACK
 /// consensus on its own. Raft's ordinary retransmission remains responsible.
-#[derive(Clone, Default)]
-pub struct RaftInbox(Arc<Mutex<InboxState>>);
+#[derive(Clone)]
+pub struct RaftInbox(Arc<Mutex<InboxState>>, Arc<crate::wait_profile::WaitSeries>);
+
+impl Default for RaftInbox {
+    fn default() -> Self {
+        Self(
+            Arc::default(),
+            Arc::new(crate::wait_profile::WaitSeries::new(
+                "receiver_inbox_residence",
+            )),
+        )
+    }
+}
 
 #[derive(Debug)]
 pub struct InboxFull;
@@ -199,15 +210,21 @@ pub struct InboxFull;
 impl RaftInbox {
     pub fn send(&self, message: Message) -> Result<(), InboxFull> {
         let bytes = message.compute_size() as usize;
+        let mut observation = self.1.sample(crate::wait_profile::kind(&message));
         let signal = {
             let mut state = self.0.lock().expect("raft inbox poisoned");
             if state.messages.len() >= MAX_INBOX_MESSAGES
                 || bytes > MAX_INBOX_BYTES.saturating_sub(state.bytes)
             {
+                drop(state);
+                crate::wait_profile::finish(observation, kv9_common::metrics::Outcome::Rejected);
                 return Err(InboxFull);
             }
             state.bytes += bytes;
-            state.messages.push_back((message, bytes));
+            if let Some(sample) = &mut observation {
+                sample.restart();
+            }
+            state.messages.push_back((message, bytes, observation));
             state.signal.clone()
         };
         if let Some(signal) = signal {
@@ -227,13 +244,17 @@ impl RaftInbox {
 
     pub(crate) fn drain(&self) -> Vec<Message> {
         let mut out = Vec::new();
+        let mut completed = Vec::new();
         let mut bytes = 0;
         let signal = {
             let mut state = self.0.lock().expect("raft inbox poisoned");
             while out.len() < DRAIN_MESSAGES && bytes < DRAIN_BYTES {
-                let Some((message, weight)) = state.messages.pop_front() else {
+                let Some((message, weight, observation)) = state.messages.pop_front() else {
                     break;
                 };
+                if let Some(sample) = observation {
+                    completed.push(sample.stop());
+                }
                 state.bytes -= weight;
                 bytes += weight;
                 out.push(message);
@@ -247,7 +268,14 @@ impl RaftInbox {
         if let Some(signal) = signal {
             signal.notify();
         }
+        for sample in completed {
+            sample.record(kv9_common::metrics::Outcome::Success);
+        }
         out
+    }
+
+    pub(crate) fn wait_snapshots(&self) -> Vec<crate::wait_profile::WaitSnapshot> {
+        self.1.snapshots()
     }
 }
 
@@ -374,5 +402,29 @@ mod tests {
         assert!(inbox.drain().is_empty());
         assert!(!signal.state.lock().unwrap().pending);
         assert_eq!(inbox.0.lock().unwrap().bytes, 0);
+        let rows = inbox.wait_snapshots();
+        let row = &rows[6]; // Default messages are MsgHup (other).
+        assert_eq!(row.attempts, MAX_INBOX_MESSAGES as u64 + 1);
+        assert_eq!(row.selected_from_attempts, 65);
+        assert_eq!(row.abandoned_unknown_duration, 0);
+        assert_eq!(
+            row.latency.outcomes[kv9_common::metrics::Outcome::Success as usize].count,
+            64
+        );
+        assert_eq!(
+            row.latency.outcomes[kv9_common::metrics::Outcome::Rejected as usize].count,
+            1
+        );
+    }
+
+    #[test]
+    fn dropping_a_queued_sample_retains_unknown_and_no_fictitious_drain() {
+        let inbox = RaftInbox::default();
+        let observations = inbox.1.clone();
+        inbox.send(Message::default()).unwrap();
+        drop(inbox);
+        let rows = observations.snapshots();
+        assert_eq!(rows[6].abandoned_unknown_duration, 1);
+        assert!(rows[6].latency.outcomes.iter().all(|h| h.count == 0));
     }
 }
