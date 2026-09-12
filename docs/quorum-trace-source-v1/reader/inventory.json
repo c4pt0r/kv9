@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "scope": "Frozen offline quorum-trace reader preparation; excludes inventory itself. No actual runtime acceptance.",
+  "file_count": 39,
+  "total_bytes": 579754,
+  "files": {
+    "README.md": {
+      "bytes": 7416,
+      "sha256": "45b55d444057969a31799ef6b2a6155cecf5b9bef457d98f19f73657d396bbf1"
+    },
+    "commands.json": {
+      "bytes": 856,
+      "sha256": "24fbbfcbad9d46b21ec0c21cf3a438d14d5bc19958e8c96f1559dcfab9ef96a3"
+    },
+    "complete-chain-controls-first/invocation.json": {
+      "bytes": 453,
+      "sha256": "cbe576757551da218bc2213bd2d024b0d1f827f000cad14196a82e3eb90811eb"
+    },
+    "complete-chain-controls-first/output.log": {
+      "bytes": 2552,
+      "sha256": "d266287efa797e46b86990e3269aee3b8077594dc7988ceb235cf5ff510e9481"
+    },
+    "complete-chain-controls-first/result.json": {
+      "bytes": 561,
+      "sha256": "89e640b4bf2be3c3ceafea4f36354328b041aca0ed2fa86bd029929a79b8b3ed"
+    },
+    "complete-chain-controls-first/terminal.json": {
+      "bytes": 482,
+      "sha256": "1cf8b484bc09a9a6ec0a9fc102bf88209674f3507ce1463de210de45be2b9cfb"
+    },
+    "controls-first/invocation.json": {
+      "bytes": 453,
+      "sha256": "dbf6f22dfd9a6db61caa0f539d732c029a3e1047b97ab991397f9222ebf1d0db"
+    },
+    "controls-first/output.log": {
+      "bytes": 1930,
+      "sha256": "79712cac6ddf95be242b5cca7f6ce7b2163ce859881ee85da1d77e30fd5d6992"
+    },
+    "controls-first/result.json": {
+      "bytes": 561,
+      "sha256": "d09f27660b0b1407c3fd6117f26962ea0bb4793882e138826bddbeb54c1579c9"
+    },
+    "controls-first/terminal.json": {
+      "bytes": 299,
+      "sha256": "f998b37a61383f9b712b31a87ce67e763a18cdb0b7d4662bca529eb8b60e1eb8"
+    },
+    "draft-before-complete-chain/read_trace.py": {
+      "bytes": 21850,
+      "sha256": "407093337320a26d7a8dd7eec86d03e350e58d588619f7c2a5fd0db64bf77a5e"
+    },
+    "draft-before-complete-chain/test_read_trace.py": {
+      "bytes": 13213,
+      "sha256": "0e8411fe4aad2a4e8aecbdeb3bbbcd16261421c9ed36703600490ff0ccce2263"
+    },
+    "draft-before-expanded-boundaries/read_trace.py": {
+      "bytes": 20423,
+      "sha256": "61b4700c3dc64dab90a10422968a48743e33fb76c5e241a645101c43a26a24d5"
+    },
+    "draft-before-expanded-boundaries/test_read_trace.py": {
+      "bytes": 10971,
+      "sha256": "8930074d243cd297423392c2f10b6c7fc8013654394f00e6e6ea036043a5aa87"
+    },
+    "draft-controls-first/read_trace.py": {
+      "bytes": 20205,
+      "sha256": "b074073f29b3921e71b573ee63c6c9a1b1e85ba6ac1d2c0c4d24d8b57aa507d8"
+    },
+    "draft-controls-first/test_read_trace.py": {
+      "bytes": 10775,
+      "sha256": "db15408684c9732962bc22f3c8dd9affca960b5078646800d030239c8b1c7805"
+    },
+    "expanded-boundary-controls-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "4b5696bdaeb2dfbc8f26955153dd5af621c2a5d3f7b3645a80a79d8eeda563b7"
+    },
+    "expanded-boundary-controls-first/output.log": {
+      "bytes": 2387,
+      "sha256": "d9d08340f9486ddd956f2fa96a56b43c48a4d2287647b7e527d13d91eceab74e"
+    },
+    "expanded-boundary-controls-first/result.json": {
+      "bytes": 609,
+      "sha256": "938ef1703dd1c577d4018276a07dc2f215d8cc8c5b5084b920b8c3a145c2c841"
+    },
+    "expanded-boundary-controls-first/terminal.json": {
+      "bytes": 485,
+      "sha256": "b9a2814eb5611d6134037335d2c4fd315c4b741f2c17fe6e916a702ece9b157c"
+    },
+    "identity.synthetic.json": {
+      "bytes": 144,
+      "sha256": "a1821da7cee7c68d83ae60cc53369653d184d68d7e1c336fae116a04ed376f84"
+    },
+    "lineage.json": {
+      "bytes": 1157,
+      "sha256": "e13d4a294f833346f3473846f20fc085c993e804f5ff51c3aa64b5d1268791cb"
+    },
+    "pending-documentation-first/README.md": {
+      "bytes": 5952,
+      "sha256": "00aa7a0759de9b04077836b60e706678e5284133873c51c6b379ea7824e4cf6e"
+    },
+    "pending-documentation-first/schema.json": {
+      "bytes": 1533,
+      "sha256": "efa756ed4be7f35507754035b86899c4090a356ec1ca4eb933989b23a1dadb8d"
+    },
+    "read_trace.py": {
+      "bytes": 24037,
+      "sha256": "c43d73e4876711d43a50c62cd4b370700be95f470d6ebb321cba1583b0619046"
+    },
+    "schema.json": {
+      "bytes": 2134,
+      "sha256": "a167e487427207f35e46fb2fe4b27c3b3a60e3e019d5551fee55519a1912a7a4"
+    },
+    "source-final/crates/raft/src/async_read.rs": {
+      "bytes": 38597,
+      "sha256": "6b1fc9dd0ecf5e1d8d198ef894e3ebe41d725cb7388f69a0ece878a4ff8590be"
+    },
+    "source-final/crates/raft/src/driver.rs": {
+      "bytes": 154647,
+      "sha256": "e6c29a124a2885f96dd36df63481fbcc030f30a195bc2b09f272f1face5cd038"
+    },
+    "source-final/crates/raft/src/grpc.rs": {
+      "bytes": 150101,
+      "sha256": "d0de37386d8334c41b3a77fec809ff541a9bcf00ecaa9e7db1cbb967daaec9bf"
+    },
+    "source-final/crates/raft/src/quorum_trace.rs": {
+      "bytes": 20482,
+      "sha256": "0c13286fbed2eec8378b3a4224812cfd75298e96a2ae9314b889918ccd1d6305"
+    },
+    "source-final/crates/raft/src/work.rs": {
+      "bytes": 17093,
+      "sha256": "47531d9efc8021a7725ed47bfd8a617aa62ddb9492da8ab42b03868270146f1b"
+    },
+    "source-final/crates/server/src/observability.rs": {
+      "bytes": 26697,
+      "sha256": "5fff056180bfbb599a0cfe05e77fc5b1d00ee9b2d0b5dccf481c22b9054f63c8"
+    },
+    "source-inputs.json": {
+      "bytes": 2514,
+      "sha256": "e43cc95877dc794176353bd7c4fefa67704b5244858a162dad0f535d0f002c37"
+    },
+    "source-review-pending.json": {
+      "bytes": 1601,
+      "sha256": "84909af210864e63ca4a7f0c9df21558c5e4a7c6cc219fd6883c220a8bbf2017"
+    },
+    "test_read_trace.py": {
+      "bytes": 14338,
+      "sha256": "df246b415bcfc303aea47ab8bbc7d78b287a8b8e8f1468be3d273ffb1a69a3d5"
+    },
+    "ticket-propagation-control-first/invocation.json": {
+      "bytes": 534,
+      "sha256": "6c7288b1747d25837c9c710aad217a0ad73933248bd3d57110cb2548fca50fab"
+    },
+    "ticket-propagation-control-first/output.log": {
+      "bytes": 270,
+      "sha256": "52d0aeb275cdc77a7fe4fd6700728e4cd7b4a73ecd481cfd84e232b52828350b"
+    },
+    "ticket-propagation-control-first/result.json": {
+      "bytes": 642,
+      "sha256": "b028ddf33b70458da3342d3a88ece9d91af54f7e9cfb5d1efe1b32349a6e517e"
+    },
+    "ticket-propagation-control-first/terminal.json": {
+      "bytes": 299,
+      "sha256": "73dfca9c8ef8df3d0f92b1244154ea5f4a70d930b4c12a1256c1710a0e8a0f50"
+    }
+  }
+}

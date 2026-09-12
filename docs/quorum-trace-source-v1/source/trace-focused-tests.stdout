@@ -1,0 +1,55 @@
+
+running 12 tests
+test grpc::tests::trace_keeps_repeated_contexts_and_replaced_routes_distinct ... ok
+test async_read::tests::trace_preserves_refusal_cancellation_and_owner_close_without_success ... ok
+test async_read::tests::trace_requires_exact_confirmation_and_apply_fence_for_the_sealed_group ... ok
+test quorum_trace::tests::trace_capture_is_a_finite_prefix_not_a_queue_drain ... ok
+test quorum_trace::tests::trace_full_contention_and_ticket_exhaustion_have_separate_loss_counts ... ok
+test quorum_trace::tests::trace_retains_actual_route_allocation_and_records_abandonment ... ok
+test quorum_trace::tests::trace_samples_exact_contexts_and_preserves_repeated_emissions ... ok
+test quorum_trace::tests::trace_capture_conserves_concurrent_observations ... ok
+test quorum_trace::tests::trace_counter_overflow_is_invalid_and_poison_never_escapes_to_consensus ... ok
+test work::tests::trace_closed_observer_does_not_close_inbox_or_change_queued_messages ... ok
+test work::tests::trace_shadow_queue_preserves_admission_order_and_rejected_messages ... ok
+test grpc::tests::trace_records_queue_rejection_and_unknown_peer_without_delivery_changes ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 183 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+running 3 tests
+test observability::tests::trace_export_requires_marker_and_binds_one_process_lifetime ... ok
+test observability::tests::trace_marker_must_be_an_empty_regular_file ... ok
+test observability::tests::trace_failed_capture_and_publication_are_terminal_observation_failures ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 203 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "source": "/tmp/kv9-quorum-message-trace",
+  "source_revision": "root_owned_not_assumed_from_reader_preparation",
+  "source_files": {
+    "crates/raft/src/quorum_trace.rs": {
+      "original_path": "/tmp/kv9-quorum-message-trace/crates/raft/src/quorum_trace.rs",
+      "copy_path": "source-final/crates/raft/src/quorum_trace.rs",
+      "bytes": 20482,
+      "sha256": "0c13286fbed2eec8378b3a4224812cfd75298e96a2ae9314b889918ccd1d6305",
+      "equals_earlier_draft": true
+    },
+    "crates/raft/src/grpc.rs": {
+      "original_path": "/tmp/kv9-quorum-message-trace/crates/raft/src/grpc.rs",
+      "copy_path": "source-final/crates/raft/src/grpc.rs",
+      "bytes": 150101,
+      "sha256": "d0de37386d8334c41b3a77fec809ff541a9bcf00ecaa9e7db1cbb967daaec9bf",
+      "equals_earlier_draft": true
+    },
+    "crates/raft/src/work.rs": {
+      "original_path": "/tmp/kv9-quorum-message-trace/crates/raft/src/work.rs",
+      "copy_path": "source-final/crates/raft/src/work.rs",
+      "bytes": 17093,
+      "sha256": "47531d9efc8021a7725ed47bfd8a617aa62ddb9492da8ab42b03868270146f1b",
+      "equals_earlier_draft": true
+    },
+    "crates/raft/src/async_read.rs": {
+      "original_path": "/tmp/kv9-quorum-message-trace/crates/raft/src/async_read.rs",
+      "copy_path": "source-final/crates/raft/src/async_read.rs",
+      "bytes": 38597,
+      "sha256": "6b1fc9dd0ecf5e1d8d198ef894e3ebe41d725cb7388f69a0ece878a4ff8590be",
+      "equals_earlier_draft": true
+    },
+    "crates/raft/src/driver.rs": {
+      "original_path": "/tmp/kv9-quorum-message-trace/crates/raft/src/driver.rs",
+      "copy_path": "source-final/crates/raft/src/driver.rs",
+      "bytes": 154647,
+      "sha256": "e6c29a124a2885f96dd36df63481fbcc030f30a195bc2b09f272f1face5cd038",
+      "equals_earlier_draft": true
+    },
+    "crates/server/src/observability.rs": {
+      "original_path": "/tmp/kv9-quorum-message-trace/crates/server/src/observability.rs",
+      "copy_path": "source-final/crates/server/src/observability.rs",
+      "bytes": 26697,
+      "sha256": "5fff056180bfbb599a0cfe05e77fc5b1d00ee9b2d0b5dccf481c22b9054f63c8",
+      "equals_earlier_draft": true
+    }
+  },
+  "stage_names_match": true,
+  "exact_scope_matches": true,
+  "root_source_schema_confirmation": {
+    "reported_by": "/root",
+    "session_id": 23090,
+    "exit_code": 0,
+    "tool_receipt": "d0261f",
+    "scope": "Root communicated source/schema qualification; this preparation did not execute Rust gates."
+  },
+  "runtime_acceptance": false
+}

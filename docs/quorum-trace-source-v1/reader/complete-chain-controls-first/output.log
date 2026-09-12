@@ -1,0 +1,22 @@
+test_any_loss_disables_context_timing_but_ticket_spans_are_partial (test_read_trace.TraceControls.test_any_loss_disables_context_timing_but_ticket_spans_are_partial) ... ok
+test_distinct_followers_are_separate_edges (test_read_trace.TraceControls.test_distinct_followers_are_separate_edges) ... ok
+test_exact_counter_selector_clock_and_schema_failures (test_read_trace.TraceControls.test_exact_counter_selector_clock_and_schema_failures) ... ok
+test_expected_process_identity_is_required (test_read_trace.TraceControls.test_expected_process_identity_is_required) ... ok
+test_follower_local_processing_is_not_leader_rtt (test_read_trace.TraceControls.test_follower_local_processing_is_not_leader_rtt) ... ok
+test_histogram_uses_raw_integer_counts_not_averaged_percentiles (test_read_trace.TraceControls.test_histogram_uses_raw_integer_counts_not_averaged_percentiles) ... ok
+test_late_response_is_not_a_quorum_closer_or_zero_duration (test_read_trace.TraceControls.test_late_response_is_not_a_quorum_closer_or_zero_duration) ... ok
+test_missing_queue_intermediates_never_make_a_complete_context (test_read_trace.TraceControls.test_missing_queue_intermediates_never_make_a_complete_context) ... ok
+test_only_exact_declared_v1_source_scope_is_accepted (test_read_trace.TraceControls.test_only_exact_declared_v1_source_scope_is_accepted) ... ok
+test_prefix_suffix_and_measured_timestamp_ties (test_read_trace.TraceControls.test_prefix_suffix_and_measured_timestamp_ties) ... ok
+test_repeated_group_admission_prevents_group_message_join (test_read_trace.TraceControls.test_repeated_group_admission_prevents_group_message_join) ... ok
+test_repeated_heartbeat_cannot_be_first_matched (test_read_trace.TraceControls.test_repeated_heartbeat_cannot_be_first_matched) ... ok
+test_repeated_response_is_ambiguous (test_read_trace.TraceControls.test_repeated_response_is_ambiguous) ... ok
+test_reversed_accepted_dequeued_span_is_not_clamped (test_read_trace.TraceControls.test_reversed_accepted_dequeued_span_is_not_clamped) ... ok
+test_ticket_key_route_origin_and_terminal_conflicts_remain_unknown (test_read_trace.TraceControls.test_ticket_key_route_origin_and_terminal_conflicts_remain_unknown) ... ok
+test_unique_leader_group_and_local_tickets (test_read_trace.TraceControls.test_unique_leader_group_and_local_tickets) ... ok
+test_unobserved_or_multiple_terms_never_invented (test_read_trace.TraceControls.test_unobserved_or_multiple_terms_never_invented) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.008s
+
+OK

@@ -1,0 +1,203 @@
+{
+  "complete": true,
+  "source_root": "/tmp/kv9-quorum-message-trace",
+  "commands": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "started_ns": 1789223228439193550,
+      "exit_code": 0,
+      "ended_ns": 1789223228803568235
+    },
+    {
+      "name": "trace-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "started_ns": 1789223228839295810,
+      "exit_code": 0,
+      "ended_ns": 1789223332374063787
+    },
+    {
+      "name": "trace-focused-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace",
+        "trace_"
+      ],
+      "started_ns": 1789223332414886208,
+      "exit_code": 0,
+      "ended_ns": 1789223332529552219
+    },
+    {
+      "name": "trace-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace"
+      ],
+      "started_ns": 1789223332565023006,
+      "exit_code": 0,
+      "ended_ns": 1789223351414787823
+    },
+    {
+      "name": "trace-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--all-targets",
+        "--features",
+        "kv9-server/quorum-trace",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_ns": 1789223351454945962,
+      "exit_code": 0,
+      "ended_ns": 1789223356226511120
+    },
+    {
+      "name": "default-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--workspace",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "started_ns": 1789223356263445672,
+      "exit_code": 0,
+      "ended_ns": 1789223472975746333
+    },
+    {
+      "name": "default-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--workspace"
+      ],
+      "started_ns": 1789223473029251230,
+      "exit_code": 0,
+      "ended_ns": 1789223495341517150
+    },
+    {
+      "name": "default-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_ns": 1789223495379035105,
+      "exit_code": 0,
+      "ended_ns": 1789223499550893237
+    },
+    {
+      "name": "observer-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-raft/read-stage-timing",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "started_ns": 1789223499588100480,
+      "exit_code": 0,
+      "ended_ns": 1789223599726642362
+    },
+    {
+      "name": "observer-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-raft/read-stage-timing"
+      ],
+      "started_ns": 1789223599777398633,
+      "exit_code": 0,
+      "ended_ns": 1789223618227338583
+    },
+    {
+      "name": "observer-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--all-targets",
+        "--features",
+        "kv9-raft/read-stage-timing",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_ns": 1789223618263919731,
+      "exit_code": 0,
+      "ended_ns": 1789223622286480286
+    }
+  ]
+}

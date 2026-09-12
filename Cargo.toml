@@ -125,6 +125,7 @@ name = "kv9"
 path = "src/main.rs"
 
 [features]
+quorum-trace = ["kv9-server/quorum-trace"]
 # Compiles the deterministic partition-injection surface (kv9-raft's testing
 # feature) into the kv9 binary for the partition E2E ONLY. Never enable in a
 # production build: the mask can drop real raft traffic. A binary built with

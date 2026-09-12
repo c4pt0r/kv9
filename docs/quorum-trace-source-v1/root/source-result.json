@@ -1,0 +1,340 @@
+{
+  "complete": true,
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "python3",
+    "/tmp/kv9-quorum-trace-source-root-first/check-source.py"
+  ],
+  "script_sha256": "adf4501f3421c43b3051ed5e5a88c70f28af524e13d3d076f29446b2c1b76857",
+  "started_ns": 1789223228223163126,
+  "initial_available_bytes": 111984476160,
+  "minimum_available_bytes": 85899345920,
+  "additional_consumption_ceiling_bytes": 17179869184,
+  "accounting": "Conservative decrease in available filesystem bytes, including unrelated host writers; 5-second samples",
+  "samples": [
+    {
+      "unix_ns": 1789223228223482874,
+      "available_bytes": 111984472064
+    },
+    {
+      "unix_ns": 1789223233223600243,
+      "available_bytes": 112023818240
+    },
+    {
+      "unix_ns": 1789223238223713957,
+      "available_bytes": 112017915904
+    },
+    {
+      "unix_ns": 1789223243223826662,
+      "available_bytes": 112006025216
+    },
+    {
+      "unix_ns": 1789223248223948097,
+      "available_bytes": 112000954368
+    },
+    {
+      "unix_ns": 1789223253224060528,
+      "available_bytes": 111989985280
+    },
+    {
+      "unix_ns": 1789223258224174807,
+      "available_bytes": 111983415296
+    },
+    {
+      "unix_ns": 1789223263224300572,
+      "available_bytes": 111973867520
+    },
+    {
+      "unix_ns": 1789223268224422114,
+      "available_bytes": 111964520448
+    },
+    {
+      "unix_ns": 1789223273224545106,
+      "available_bytes": 111957598208
+    },
+    {
+      "unix_ns": 1789223278224659046,
+      "available_bytes": 111961079808
+    },
+    {
+      "unix_ns": 1789223283224773143,
+      "available_bytes": 111974371328
+    },
+    {
+      "unix_ns": 1789223288224886828,
+      "available_bytes": 111974318080
+    },
+    {
+      "unix_ns": 1789223293224988016,
+      "available_bytes": 111974318080
+    },
+    {
+      "unix_ns": 1789223298225089103,
+      "available_bytes": 111974285312
+    },
+    {
+      "unix_ns": 1789223303225197853,
+      "available_bytes": 111974318080
+    },
+    {
+      "unix_ns": 1789223308225315244,
+      "available_bytes": 111974285312
+    },
+    {
+      "unix_ns": 1789223313225437338,
+      "available_bytes": 111965970432
+    },
+    {
+      "unix_ns": 1789223318225544525,
+      "available_bytes": 111947087872
+    },
+    {
+      "unix_ns": 1789223323225640903,
+      "available_bytes": 111944699904
+    },
+    {
+      "unix_ns": 1789223328225753212,
+      "available_bytes": 111944699904
+    },
+    {
+      "unix_ns": 1789223333225848350,
+      "available_bytes": 111953223680
+    },
+    {
+      "unix_ns": 1789223338225950176,
+      "available_bytes": 111953162240
+    },
+    {
+      "unix_ns": 1789223343226061912,
+      "available_bytes": 111950991360
+    },
+    {
+      "unix_ns": 1789223348226160224,
+      "available_bytes": 111952752640
+    },
+    {
+      "unix_ns": 1789223353226275251,
+      "available_bytes": 111928676352
+    },
+    {
+      "unix_ns": 1789223358226396935,
+      "available_bytes": 111900442624
+    },
+    {
+      "unix_ns": 1789223363226524966,
+      "available_bytes": 111885156352
+    },
+    {
+      "unix_ns": 1789223368226641350,
+      "available_bytes": 111869751296
+    },
+    {
+      "unix_ns": 1789223373226761025,
+      "available_bytes": 111858393088
+    },
+    {
+      "unix_ns": 1789223378226881969,
+      "available_bytes": 111858806784
+    },
+    {
+      "unix_ns": 1789223383227015873,
+      "available_bytes": 111837913088
+    },
+    {
+      "unix_ns": 1789223388227133433,
+      "available_bytes": 111840706560
+    },
+    {
+      "unix_ns": 1789223393227246622,
+      "available_bytes": 111817404416
+    },
+    {
+      "unix_ns": 1789223398227361713,
+      "available_bytes": 111814004736
+    },
+    {
+      "unix_ns": 1789223403227481059,
+      "available_bytes": 111832911872
+    },
+    {
+      "unix_ns": 1789223408227585776,
+      "available_bytes": 111819448320
+    },
+    {
+      "unix_ns": 1789223413227713145,
+      "available_bytes": 111832092672
+    },
+    {
+      "unix_ns": 1789223418227822509,
+      "available_bytes": 111814643712
+    },
+    {
+      "unix_ns": 1789223423227943745,
+      "available_bytes": 111828140032
+    },
+    {
+      "unix_ns": 1789223428228066283,
+      "available_bytes": 111801380864
+    },
+    {
+      "unix_ns": 1789223433228177911,
+      "available_bytes": 111824568320
+    },
+    {
+      "unix_ns": 1789223438228285352,
+      "available_bytes": 111784476672
+    },
+    {
+      "unix_ns": 1789223443228407031,
+      "available_bytes": 111772905472
+    },
+    {
+      "unix_ns": 1789223448228525786,
+      "available_bytes": 111784722432
+    },
+    {
+      "unix_ns": 1789223453228654521,
+      "available_bytes": 111757557760
+    },
+    {
+      "unix_ns": 1789223458228783610,
+      "available_bytes": 111760154624
+    },
+    {
+      "unix_ns": 1789223463228897502,
+      "available_bytes": 111742750720
+    },
+    {
+      "unix_ns": 1789223468229018461,
+      "available_bytes": 111755698176
+    },
+    {
+      "unix_ns": 1789223473229108226,
+      "available_bytes": 111766700032
+    },
+    {
+      "unix_ns": 1789223478229216965,
+      "available_bytes": 111766163456
+    },
+    {
+      "unix_ns": 1789223483229309862,
+      "available_bytes": 111766188032
+    },
+    {
+      "unix_ns": 1789223488229409317,
+      "available_bytes": 111760646144
+    },
+    {
+      "unix_ns": 1789223493229548460,
+      "available_bytes": 111766089728
+    },
+    {
+      "unix_ns": 1789223498229667030,
+      "available_bytes": 111738224640
+    },
+    {
+      "unix_ns": 1789223503229784964,
+      "available_bytes": 111716933632
+    },
+    {
+      "unix_ns": 1789223508229885311,
+      "available_bytes": 111710986240
+    },
+    {
+      "unix_ns": 1789223513229998929,
+      "available_bytes": 111697846272
+    },
+    {
+      "unix_ns": 1789223518230113515,
+      "available_bytes": 111674327040
+    },
+    {
+      "unix_ns": 1789223523230234410,
+      "available_bytes": 111685275648
+    },
+    {
+      "unix_ns": 1789223528230339121,
+      "available_bytes": 111662039040
+    },
+    {
+      "unix_ns": 1789223533230432449,
+      "available_bytes": 111661748224
+    },
+    {
+      "unix_ns": 1789223538230568995,
+      "available_bytes": 111657439232
+    },
+    {
+      "unix_ns": 1789223543230676685,
+      "available_bytes": 111650295808
+    },
+    {
+      "unix_ns": 1789223548230787419,
+      "available_bytes": 111657623552
+    },
+    {
+      "unix_ns": 1789223553230899725,
+      "available_bytes": 111667941376
+    },
+    {
+      "unix_ns": 1789223558231009305,
+      "available_bytes": 111667924992
+    },
+    {
+      "unix_ns": 1789223563231119014,
+      "available_bytes": 111667929088
+    },
+    {
+      "unix_ns": 1789223568231184440,
+      "available_bytes": 111667924992
+    },
+    {
+      "unix_ns": 1789223573231298757,
+      "available_bytes": 111667920896
+    },
+    {
+      "unix_ns": 1789223578231423194,
+      "available_bytes": 111663136768
+    },
+    {
+      "unix_ns": 1789223583231528284,
+      "available_bytes": 111649386496
+    },
+    {
+      "unix_ns": 1789223588231648885,
+      "available_bytes": 111638380544
+    },
+    {
+      "unix_ns": 1789223593231761852,
+      "available_bytes": 111638327296
+    },
+    {
+      "unix_ns": 1789223598231855404,
+      "available_bytes": 111638323200
+    },
+    {
+      "unix_ns": 1789223603231956410,
+      "available_bytes": 111646941184
+    },
+    {
+      "unix_ns": 1789223608232048050,
+      "available_bytes": 111646908416
+    },
+    {
+      "unix_ns": 1789223613232144151,
+      "available_bytes": 111646445568
+    },
+    {
+      "unix_ns": 1789223618232247197,
+      "available_bytes": 111646875648
+    }
+  ],
+  "pid": 318562,
+  "exit_code": 0,
+  "ended_ns": 1789223622401458362
+}

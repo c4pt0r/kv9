@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_read_trace"
+  ],
+  "cwd": "/tmp/kv9-quorum-trace-reader-preparation-first",
+  "started_ns": 1789223466126032830,
+  "sources": {
+    "read_trace.py": "407093337320a26d7a8dd7eec86d03e350e58d588619f7c2a5fd0db64bf77a5e",
+    "test_read_trace.py": "0e8411fe4aad2a4e8aecbdeb3bbbcd16261421c9ed36703600490ff0ccce2263"
+  },
+  "scope_literal_matches_current_source": true
+}

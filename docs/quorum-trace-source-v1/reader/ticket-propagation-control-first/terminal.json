@@ -1,0 +1,10 @@
+{
+  "complete": true,
+  "exit_code": 0,
+  "execution_kind": "direct_tool_terminal",
+  "session_id": null,
+  "terminal_tool_receipt": "5f8ac1",
+  "child_pid": 315596,
+  "result_sha256": "b028ddf33b70458da3342d3a88ece9d91af54f7e9cfb5d1efe1b32349a6e517e",
+  "scope": "Synthetic helper controls only"
+}

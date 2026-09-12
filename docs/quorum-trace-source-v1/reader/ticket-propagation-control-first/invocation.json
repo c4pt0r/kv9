@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_read_trace.TraceControls.test_ticket_key_route_origin_and_terminal_conflicts_remain_unknown"
+  ],
+  "cwd": "/tmp/kv9-quorum-trace-reader-preparation-first",
+  "started_ns": 1789223185727056296,
+  "sources": {
+    "read_trace.py": "61b4700c3dc64dab90a10422968a48743e33fb76c5e241a645101c43a26a24d5",
+    "test_read_trace.py": "8930074d243cd297423392c2f10b6c7fc8013654394f00e6e6ea036043a5aa87"
+  }
+}

@@ -1,0 +1,234 @@
+       Fresh unicode-ident v1.0.24
+       Fresh proc-macro2 v1.0.107
+       Fresh quote v1.0.47
+       Fresh libc v0.2.189
+       Fresh syn v2.0.119
+       Fresh syn v3.0.4
+       Fresh pin-project-lite v0.2.17
+       Fresh futures-core v0.3.34
+       Fresh synstructure v0.13.2
+       Fresh itoa v1.0.18
+       Fresh tokio-macros v2.7.2
+       Fresh zerofrom-derive v0.1.7
+       Fresh yoke-derive v0.8.2
+       Fresh socket2 v0.6.5
+       Fresh mio v1.2.2
+       Fresh zerofrom v0.1.8
+       Fresh smallvec v1.15.2
+       Fresh stable_deref_trait v1.2.1
+       Fresh tokio v1.53.1
+       Fresh yoke v0.8.3
+       Fresh jobserver v0.1.35
+       Fresh shlex v2.0.1
+       Fresh find-msvc-tools v0.1.12
+       Fresh http v1.5.0
+       Fresh futures-macro v0.3.34
+       Fresh cc v1.4.5
+       Fresh zerovec-derive v0.11.6
+       Fresh slab v0.4.12
+       Fresh bytes v1.12.1
+       Fresh futures-sink v0.3.34
+       Fresh futures-task v0.3.34
+       Fresh futures-util v0.3.34
+       Fresh cmake v0.1.58
+       Fresh zerovec v0.11.8
+       Fresh serde_core v1.0.229
+       Fresh tracing-core v0.1.36
+       Fresh tracing-attributes v0.1.31
+       Fresh displaydoc v0.2.7
+       Fresh fs_extra v1.3.0
+       Fresh pkg-config v0.3.34
+       Fresh typenum v1.20.1
+       Fresh dunce v1.0.5
+       Fresh tracing v0.1.44
+       Fresh tokio-util v0.7.19
+       Fresh http-body v1.1.0
+       Fresh aho-corasick v1.1.5
+       Fresh regex-syntax v0.8.11
+       Fresh percent-encoding v2.3.2
+       Fresh regex-automata v0.4.18
+       Fresh tower-service v0.3.3
+       Fresh anyhow v1.0.104
+       Fresh itertools v0.14.0
+       Fresh regex v1.13.1
+       Fresh tinystr v0.8.4
+       Fresh litemap v0.8.3
+       Fresh version_check v0.9.5
+       Fresh writeable v0.6.4
+       Fresh zeroize v1.9.0
+       Fresh icu_locale_core v2.3.0
+       Fresh prost-derive v0.14.4
+       Fresh zerotrie v0.2.5
+       Fresh potential_utf v0.1.6
+       Fresh serde_derive v1.0.229
+       Fresh try-lock v0.2.5
+       Fresh utf8_iter v1.0.4
+       Fresh fnv v1.0.7
+       Fresh atomic-waker v1.1.2
+       Fresh icu_collections v2.3.0
+       Fresh h2 v0.4.19
+       Fresh serde v1.0.229
+       Fresh icu_provider v2.3.1
+       Fresh want v0.3.1
+       Fresh httparse v1.10.1
+       Fresh rustls-pki-types v1.15.1
+       Fresh aws-lc-sys v0.45.0
+       Fresh sync_wrapper v1.0.2
+       Fresh futures-channel v0.3.34
+       Fresh httpdate v1.0.3
+       Fresh tower-layer v0.3.3
+       Fresh hyper v1.11.0
+       Fresh aws-lc-rs v1.18.1
+       Fresh generic-array v0.14.7
+       Fresh icu_normalizer_data v2.3.0
+       Fresh icu_properties_data v2.3.0
+       Fresh hashbrown v0.17.1
+       Fresh ipnet v2.12.2
+       Fresh linux-raw-sys v0.12.1
+       Fresh equivalent v1.0.2
+       Fresh unicase v2.9.0
+       Fresh untrusted v0.9.0
+       Fresh cfg-if v1.0.4
+       Fresh foldhash v0.1.5
+       Fresh base64 v0.22.1
+       Fresh hashbrown v0.15.5
+       Fresh hyper-util v0.1.20
+       Fresh indexmap v2.14.0
+       Fresh pulldown-cmark v0.13.4
+       Fresh rustix v1.1.4
+       Fresh rustls-webpki v0.103.15
+       Fresh icu_normalizer v2.3.0
+       Fresh icu_properties v2.3.0
+       Fresh prettyplease v0.2.37
+       Fresh tower v0.5.3
+       Fresh http-body-util v0.1.5
+       Fresh once_cell v1.21.4
+       Fresh fixedbitset v0.5.7
+       Fresh memchr v2.8.3
+       Fresh fastrand v2.5.0
+       Fresh subtle v2.6.1
+       Fresh petgraph v0.8.3
+       Fresh tempfile v3.27.0
+       Fresh prost-types v0.14.4
+       Fresh rustls v0.23.44
+       Fresh idna_adapter v1.2.2
+       Fresh pulldown-cmark-to-cmark v22.0.1
+       Fresh block-buffer v0.10.4
+       Fresh crypto-common v0.1.7
+       Fresh form_urlencoded v1.2.2
+       Fresh hybrid-array v0.4.14
+       Fresh multimap v0.10.1
+       Fresh heck v0.5.0
+       Fresh autocfg v1.5.1
+       Fresh prost-build v0.14.4
+       Fresh digest v0.10.7
+       Fresh protobuf-codegen v2.28.0
+       Fresh idna v1.1.0
+       Fresh tonic-build v0.14.6
+       Fresh bitflags v1.3.2
+       Fresh openssl-probe v0.2.1
+       Fresh rand_core v0.10.1
+       Fresh rustls-native-certs v0.8.4
+       Fresh protobuf-build v0.14.1
+       Fresh url v2.5.8
+       Fresh tonic-prost-build v0.14.6
+       Fresh rustversion v1.0.23
+       Fresh zerocopy v0.8.56
+       Fresh block-buffer v0.12.1
+       Fresh crypto-common v0.2.2
+       Fresh tokio-rustls v0.26.5
+       Fresh getrandom v0.2.17
+       Fresh thiserror-impl v1.0.69
+       Fresh async-trait v0.1.92
+       Fresh cpufeatures v0.3.1
+       Fresh log v0.4.34
+       Fresh mime v0.3.17
+       Fresh bitflags v2.13.1
+       Fresh scopeguard v1.2.0
+       Fresh rustls-platform-verifier v0.7.0
+       Fresh tower-http v0.6.11
+       Fresh lock_api v0.4.14
+       Fresh axum-core v0.5.6
+       Fresh chacha20 v0.10.2
+       Fresh thiserror v1.0.69
+       Fresh digest v0.11.3
+       Fresh hyper-rustls v0.27.9
+       Fresh rand_core v0.6.4
+       Fresh num-traits v0.2.19
+       Fresh ppv-lite86 v0.2.21
+       Fresh getrandom v0.4.3
+       Fresh parking_lot_core v0.9.12
+       Fresh zmij v1.0.23
+       Fresh pin-project-internal v1.1.13
+       Fresh thiserror-impl v2.0.20
+       Fresh matchit v0.8.4
+       Fresh ryu v1.0.23
+       Fresh spin v0.10.1
+       Fresh iana-time-zone v0.1.65
+       Fresh triomphe v0.1.16
+       Fresh either v1.18.0
+       Fresh cpufeatures v0.2.17
+       Fresh serde_urlencoded v0.7.1
+       Fresh crc-fast v1.10.0
+       Fresh itertools v0.15.0
+       Fresh sha2 v0.10.9
+       Fresh chrono v0.4.45
+       Fresh archery v1.2.3
+       Fresh thiserror v2.0.20
+       Fresh pin-project v1.1.13
+       Fresh axum v0.8.9
+       Fresh serde_json v1.0.151
+       Fresh rand v0.10.2
+       Fresh parking_lot v0.12.5
+       Fresh rand_chacha v0.3.1
+       Fresh reqwest v0.13.4
+       Fresh md-5 v0.11.0
+       Fresh protobuf v2.28.0
+       Fresh quick-xml v0.41.0
+       Fresh hyper-timeout v0.5.2
+       Fresh erased-serde v0.3.31
+       Fresh tokio-stream v0.1.19
+       Fresh humantime v2.4.0
+       Fresh byteorder v1.5.0
+       Fresh tonic v0.14.6
+       Fresh slog v2.8.2
+       Fresh object_store v0.14.1
+       Fresh fxhash v0.2.1
+       Fresh raft-proto v0.7.0
+       Fresh rand v0.8.8
+   Compiling kv9-common v0.0.0 (/tmp/kv9-quorum-message-trace/crates/common)
+       Fresh rpds v1.2.1
+   Compiling kv9-raft v0.0.0 (/tmp/kv9-quorum-message-trace/crates/raft)
+       Fresh prost v0.14.4
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_common --edition=2021 crates/common/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=3 -C linker-plugin-lto -C codegen-units=1 --cfg 'feature="testing"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("testing"))' -C metadata=b6073455c343c9f4 -C extra-filename=-6f43a4921a76199a --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rmeta --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rmeta --extern thiserror=/home/dongxu/kv9/target/release/deps/libthiserror-2d1971d5356cd042.rmeta`
+       Fresh getset v0.1.7
+       Fresh tonic-prost v0.14.6
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name build_script_build --edition=2021 crates/raft/build.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no -C debug-assertions=off --cfg 'feature="quorum-trace"' --cfg 'feature="read-stage-timing"' --cfg 'feature="testing"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("quorum-trace", "read-stage-timing", "testing"))' -C metadata=452468aae53f68f0 -C extra-filename=-6e5772ac17be9182 --out-dir /home/dongxu/kv9/target/release/build/kv9-raft-6e5772ac17be9182 -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern tonic_prost_build=/home/dongxu/kv9/target/release/deps/libtonic_prost_build-e532348ae68a08db.rlib`
+       Fresh raft v0.7.0
+   Compiling kv9-server v0.0.0 (/tmp/kv9-quorum-message-trace/crates/server)
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name build_script_build --edition=2021 crates/server/build.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no -C debug-assertions=off --cfg 'feature="quorum-trace"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("checkpoint-testing", "quorum-trace", "rpc-experiment"))' -C metadata=34e659e2dd5151a4 -C extra-filename=-8fd92e79a9943b7f --out-dir /home/dongxu/kv9/target/release/build/kv9-server-8fd92e79a9943b7f -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern tonic_prost_build=/home/dongxu/kv9/target/release/deps/libtonic_prost_build-e532348ae68a08db.rlib`
+     Running `/home/dongxu/kv9/target/release/build/kv9-raft-6e5772ac17be9182/build-script-build`
+     Running `/home/dongxu/kv9/target/release/build/kv9-server-8fd92e79a9943b7f/build-script-build`
+   Compiling kv9-engine v0.0.0 (/tmp/kv9-quorum-message-trace/crates/engine)
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_engine --edition=2021 crates/engine/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=3 -C linker-plugin-lto -C codegen-units=1 --cfg 'feature="testing"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("testing"))' -C metadata=40197eef4b087d1d -C extra-filename=-831163ec49c60d58 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern futures_util=/home/dongxu/kv9/target/release/deps/libfutures_util-455d1842c1ed6ddf.rmeta --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rmeta --extern s3_client=/home/dongxu/kv9/target/release/deps/libobject_store-d141092d731e3aa1.rmeta --extern rpds=/home/dongxu/kv9/target/release/deps/librpds-d0d9b5fbc070d539.rmeta --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rmeta --extern serde_json=/home/dongxu/kv9/target/release/deps/libserde_json-87d58736268df41f.rmeta --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rmeta --extern thiserror=/home/dongxu/kv9/target/release/deps/libthiserror-2d1971d5356cd042.rmeta --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rmeta -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_raft --edition=2021 crates/raft/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=3 -C linker-plugin-lto -C codegen-units=1 --cfg 'feature="quorum-trace"' --cfg 'feature="read-stage-timing"' --cfg 'feature="testing"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("quorum-trace", "read-stage-timing", "testing"))' -C metadata=223abe978915e50e -C extra-filename=-ee420a0c0f361eb2 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rmeta --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rmeta --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rmeta --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rmeta --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rmeta --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rmeta --extern slog=/home/dongxu/kv9/target/release/deps/libslog-8fcf38c9b0147ce6.rmeta --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rmeta --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rmeta --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rmeta --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rmeta -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+   Compiling kv9-region v0.0.0 (/tmp/kv9-quorum-message-trace/crates/region)
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_region --edition=2021 crates/region/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=3 -C linker-plugin-lto -C codegen-units=1 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("testing"))' -C metadata=11ddc62e04d36476 -C extra-filename=-8c9504311a401867 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rmeta --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rmeta --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rmeta -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+   Compiling kv9-meta v0.0.0 (/tmp/kv9-quorum-message-trace/crates/meta)
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_meta --edition=2021 crates/meta/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=3 -C linker-plugin-lto -C codegen-units=1 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=9271dc894de0f096 -C extra-filename=-a7524a7a162c75d2 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rmeta --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rmeta --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rmeta --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rmeta -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+   Compiling kv9-txn v0.0.0 (/tmp/kv9-quorum-message-trace/crates/txn)
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_txn --edition=2021 crates/txn/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=3 -C linker-plugin-lto -C codegen-units=1 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=b22a1496dd5371ea -C extra-filename=-5cf1d2f6c462d25d --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rmeta --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rmeta --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rmeta -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_server --edition=2021 crates/server/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=3 -C linker-plugin-lto -C codegen-units=1 --cfg 'feature="quorum-trace"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("checkpoint-testing", "quorum-trace", "rpc-experiment"))' -C metadata=3b100df679efd1cf -C extra-filename=-3714563a16eb0de3 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern futures_util=/home/dongxu/kv9/target/release/deps/libfutures_util-455d1842c1ed6ddf.rmeta --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rmeta --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rmeta --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-a7524a7a162c75d2.rmeta --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rmeta --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rmeta --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-5cf1d2f6c462d25d.rmeta --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rmeta --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rmeta --extern serde_json=/home/dongxu/kv9/target/release/deps/libserde_json-87d58736268df41f.rmeta --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rmeta --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rmeta --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rmeta --extern tokio_util=/home/dongxu/kv9/target/release/deps/libtokio_util-525f24cfb5646704.rmeta --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rmeta --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rmeta -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_raft --edition=2021 crates/raft/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --test --cfg 'feature="quorum-trace"' --cfg 'feature="read-stage-timing"' --cfg 'feature="testing"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("quorum-trace", "read-stage-timing", "testing"))' -C metadata=7c760ac9b5a5d0c9 -C extra-filename=-617406db5687a66f --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern slog=/home/dongxu/kv9/target/release/deps/libslog-8fcf38c9b0147ce6.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name check_wire_floor --edition=2021 crates/raft/examples/check-wire-floor.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --cfg 'feature="quorum-trace"' --cfg 'feature="read-stage-timing"' --cfg 'feature="testing"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("quorum-trace", "read-stage-timing", "testing"))' -C metadata=9681b3b45b967f3d -C extra-filename=-0ee47cf4de9e0256 --out-dir /home/dongxu/kv9/target/release/examples -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern slog=/home/dongxu/kv9/target/release/deps/libslog-8fcf38c9b0147ce6.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name driver_lock_order --edition=2021 crates/raft/tests/driver_lock_order.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --test --cfg 'feature="quorum-trace"' --cfg 'feature="read-stage-timing"' --cfg 'feature="testing"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("quorum-trace", "read-stage-timing", "testing"))' -C metadata=0b8aabbed53d8546 -C extra-filename=-5bfd343bb8e68a80 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern slog=/home/dongxu/kv9/target/release/deps/libslog-8fcf38c9b0147ce6.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name membership --edition=2021 crates/raft/tests/membership.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --test --cfg 'feature="quorum-trace"' --cfg 'feature="read-stage-timing"' --cfg 'feature="testing"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("quorum-trace", "read-stage-timing", "testing"))' -C metadata=a9b626bee30e88f3 -C extra-filename=-b5cb8e3957c774f8 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern slog=/home/dongxu/kv9/target/release/deps/libslog-8fcf38c9b0147ce6.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name frame_bad_input --edition=2021 crates/raft/tests/frame_bad_input.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --test --cfg 'feature="quorum-trace"' --cfg 'feature="read-stage-timing"' --cfg 'feature="testing"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("quorum-trace", "read-stage-timing", "testing"))' -C metadata=d033ff87239d3105 -C extra-filename=-6d269ec3400137c5 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern slog=/home/dongxu/kv9/target/release/deps/libslog-8fcf38c9b0147ce6.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name latency_overhead --edition=2021 crates/server/examples/latency-overhead.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --cfg 'feature="quorum-trace"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("checkpoint-testing", "quorum-trace", "rpc-experiment"))' -C metadata=8e6cbb240f791d48 -C extra-filename=-e8dda2cbbafa655b --out-dir /home/dongxu/kv9/target/release/examples -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern futures_util=/home/dongxu/kv9/target/release/deps/libfutures_util-455d1842c1ed6ddf.rlib --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-a7524a7a162c75d2.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rlib --extern kv9_server=/home/dongxu/kv9/target/release/deps/libkv9_server-3714563a16eb0de3.rlib --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-5cf1d2f6c462d25d.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern serde_json=/home/dongxu/kv9/target/release/deps/libserde_json-87d58736268df41f.rlib --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tokio_util=/home/dongxu/kv9/target/release/deps/libtokio_util-525f24cfb5646704.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name workload_loopback --edition=2021 crates/server/examples/workload-loopback.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --cfg 'feature="quorum-trace"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("checkpoint-testing", "quorum-trace", "rpc-experiment"))' -C metadata=14e61b8bcb6d7aa2 -C extra-filename=-70a2f382b7fa15b0 --out-dir /home/dongxu/kv9/target/release/examples -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern futures_util=/home/dongxu/kv9/target/release/deps/libfutures_util-455d1842c1ed6ddf.rlib --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-a7524a7a162c75d2.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rlib --extern kv9_server=/home/dongxu/kv9/target/release/deps/libkv9_server-3714563a16eb0de3.rlib --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-5cf1d2f6c462d25d.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern serde_json=/home/dongxu/kv9/target/release/deps/libserde_json-87d58736268df41f.rlib --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tokio_util=/home/dongxu/kv9/target/release/deps/libtokio_util-525f24cfb5646704.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_workload --edition=2021 crates/server/src/bin/kv9-workload.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --test --cfg 'feature="quorum-trace"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("checkpoint-testing", "quorum-trace", "rpc-experiment"))' -C metadata=ea652bcea8397baf -C extra-filename=-8ab6752b78810856 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern futures_util=/home/dongxu/kv9/target/release/deps/libfutures_util-455d1842c1ed6ddf.rlib --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-a7524a7a162c75d2.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rlib --extern kv9_server=/home/dongxu/kv9/target/release/deps/libkv9_server-3714563a16eb0de3.rlib --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-5cf1d2f6c462d25d.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern serde_json=/home/dongxu/kv9/target/release/deps/libserde_json-87d58736268df41f.rlib --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tokio_util=/home/dongxu/kv9/target/release/deps/libtokio_util-525f24cfb5646704.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name admission_pressure --edition=2021 crates/server/examples/admission-pressure.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --cfg 'feature="quorum-trace"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("checkpoint-testing", "quorum-trace", "rpc-experiment"))' -C metadata=128ed22b70b65640 -C extra-filename=-5e25c0a110293f0d --out-dir /home/dongxu/kv9/target/release/examples -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern futures_util=/home/dongxu/kv9/target/release/deps/libfutures_util-455d1842c1ed6ddf.rlib --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-a7524a7a162c75d2.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rlib --extern kv9_server=/home/dongxu/kv9/target/release/deps/libkv9_server-3714563a16eb0de3.rlib --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-5cf1d2f6c462d25d.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern serde_json=/home/dongxu/kv9/target/release/deps/libserde_json-87d58736268df41f.rlib --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tokio_util=/home/dongxu/kv9/target/release/deps/libtokio_util-525f24cfb5646704.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_batch_workload --edition=2021 crates/server/src/bin/kv9-batch-workload.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --test --cfg 'feature="quorum-trace"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("checkpoint-testing", "quorum-trace", "rpc-experiment"))' -C metadata=538245414bf221cc -C extra-filename=-becceb623d1e270a --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern futures_util=/home/dongxu/kv9/target/release/deps/libfutures_util-455d1842c1ed6ddf.rlib --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-a7524a7a162c75d2.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rlib --extern kv9_server=/home/dongxu/kv9/target/release/deps/libkv9_server-3714563a16eb0de3.rlib --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-5cf1d2f6c462d25d.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern serde_json=/home/dongxu/kv9/target/release/deps/libserde_json-87d58736268df41f.rlib --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tokio_util=/home/dongxu/kv9/target/release/deps/libtokio_util-525f24cfb5646704.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_batch_benchmark --edition=2021 crates/server/src/bin/kv9-batch-benchmark.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --test --cfg 'feature="quorum-trace"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("checkpoint-testing", "quorum-trace", "rpc-experiment"))' -C metadata=5b2e1d6cb8f2b9a1 -C extra-filename=-3efe2d123c470e1f --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern futures_util=/home/dongxu/kv9/target/release/deps/libfutures_util-455d1842c1ed6ddf.rlib --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-a7524a7a162c75d2.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rlib --extern kv9_server=/home/dongxu/kv9/target/release/deps/libkv9_server-3714563a16eb0de3.rlib --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-5cf1d2f6c462d25d.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern serde_json=/home/dongxu/kv9/target/release/deps/libserde_json-87d58736268df41f.rlib --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tokio_util=/home/dongxu/kv9/target/release/deps/libtokio_util-525f24cfb5646704.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_server --edition=2021 crates/server/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --test --cfg 'feature="quorum-trace"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("checkpoint-testing", "quorum-trace", "rpc-experiment"))' -C metadata=de5d2d1c0794794c -C extra-filename=-fb8945974548204d --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern futures_util=/home/dongxu/kv9/target/release/deps/libfutures_util-455d1842c1ed6ddf.rlib --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-a7524a7a162c75d2.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rlib --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-5cf1d2f6c462d25d.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern protobuf=/home/dongxu/kv9/target/release/deps/libprotobuf-279f7bebe303cc1a.rlib --extern raft=/home/dongxu/kv9/target/release/deps/libraft-e3cd0545a5c82c1c.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern serde_json=/home/dongxu/kv9/target/release/deps/libserde_json-87d58736268df41f.rlib --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tokio_util=/home/dongxu/kv9/target/release/deps/libtokio_util-525f24cfb5646704.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`
+    Finished `release` profile [optimized] target(s) in 1m 43s

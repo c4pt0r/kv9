@@ -1,0 +1,12 @@
+{
+  "complete": true,
+  "exit_code": 0,
+  "execution_kind": "direct_tool_terminal",
+  "session_id": null,
+  "terminal_tool_receipt": "4d6ecb",
+  "child_pid": 375824,
+  "result_path": "/tmp/kv9-quorum-trace-reader-preparation-first/complete-chain-controls-first/result.json",
+  "result_sha256": "89e640b4bf2be3c3ceafea4f36354328b041aca0ed2fa86bd029929a79b8b3ed",
+  "synthetic_control_count": 17,
+  "scope": "Synthetic helper controls only; exact source hashes are in result.json."
+}

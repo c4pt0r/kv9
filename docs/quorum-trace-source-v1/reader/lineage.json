@@ -1,0 +1,32 @@
+{
+  "final_reader": {
+    "bytes": 24037,
+    "sha256": "c43d73e4876711d43a50c62cd4b370700be95f470d6ebb321cba1583b0619046"
+  },
+  "final_tests": {
+    "bytes": 14338,
+    "sha256": "df246b415bcfc303aea47ab8bbc7d78b287a8b8e8f1468be3d273ffb1a69a3d5"
+  },
+  "retained_source_revisions": [
+    "draft-controls-first",
+    "draft-before-expanded-boundaries",
+    "draft-before-complete-chain"
+  ],
+  "changes": [
+    {
+      "after": "controls-first",
+      "scope": "Propagate queue ticket conflicts to associated context timing; affected control only."
+    },
+    {
+      "after": "ticket-propagation-control-first",
+      "scope": "Add dispatch and response/context-progress spans, exact scope binding and late/repeated-group controls."
+    },
+    {
+      "after": "expanded-boundary-controls-first",
+      "scope": "Require mandatory full local stages, ticket identities and ordering for complete-context confidence; preserve partial endpoint candidates; distinct-follower fixture made complete and missing-stage controls added."
+    }
+  ],
+  "final_source_schema_confirmed_by_root": true,
+  "actual_trace_read": false,
+  "runtime_or_rust_executed": false
+}

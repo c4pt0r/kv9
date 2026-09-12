@@ -1,0 +1,12 @@
+{
+  "complete": true,
+  "exit_code": 0,
+  "execution_kind": "direct_tool_terminal",
+  "session_id": null,
+  "terminal_tool_receipt": "460bb8",
+  "child_pid": 346347,
+  "result_path": "/tmp/kv9-quorum-trace-reader-preparation-first/expanded-boundary-controls-first/result.json",
+  "result_sha256": "938ef1703dd1c577d4018276a07dc2f215d8cc8c5b5084b920b8c3a145c2c841",
+  "synthetic_control_count": 16,
+  "scope": "Synthetic helper controls only; exact source hashes are in result.json."
+}

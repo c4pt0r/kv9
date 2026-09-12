@@ -16,8 +16,11 @@ tokio.workspace = true
 tokio-stream.workspace = true
 tonic.workspace = true
 tonic-prost.workspace = true
+serde = { workspace = true, optional = true }
 
 [features]
+# Sampled local quorum events; no default runtime instrumentation.
+quorum-trace = ["dep:serde", "read-stage-timing"]
 # Bounded latency diagnosis only; absent from the default runtime.
 read-stage-timing = []
 # Testing-only seams: the apply freeze, and the deterministic partition-

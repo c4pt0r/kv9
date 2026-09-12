@@ -1,0 +1,7 @@
+{
+  "node_id": 1,
+  "process_id": 123,
+  "exporter_created_unix_ns": "1000000000",
+  "process_start_ticks": 50,
+  "boot_id": "synthetic-boot"
+}

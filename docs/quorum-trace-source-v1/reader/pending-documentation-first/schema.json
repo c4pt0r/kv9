@@ -1,0 +1,70 @@
+{
+  "status": "pending_root_final_source_confirmation",
+  "filename": "quorum-trace.json",
+  "maximum_input_bytes": 67108864,
+  "maximum_output_bytes": 67108864,
+  "maximum_events": 65536,
+  "schema_version": 1,
+  "sample_every": 256,
+  "stage_names": [
+    "group_submit",
+    "group_admitted",
+    "group_deferred",
+    "group_refused",
+    "group_closed",
+    "quorum_confirmed",
+    "completion_eligible",
+    "members_uncovered",
+    "outbound_offered",
+    "outbound_accepted",
+    "outbound_rejected",
+    "outbound_dequeued",
+    "route_discarded",
+    "queue_abandoned",
+    "inbound_validated",
+    "inbox_offered",
+    "inbox_admitted",
+    "inbox_rejected",
+    "inbox_drained",
+    "unknown_peer",
+    "encoding_rejected",
+    "masked_outbound",
+    "driver_step"
+  ],
+  "counter_fields": [
+    "offered",
+    "selected",
+    "recorded",
+    "contended",
+    "poisoned",
+    "full",
+    "exhausted"
+  ],
+  "loss_fields": [
+    "contended",
+    "poisoned",
+    "full",
+    "exhausted"
+  ],
+  "envelope_fields": [
+    "node_id",
+    "process_id",
+    "exporter_created_unix_ns",
+    "process_start_ticks",
+    "boot_id",
+    "captured_unix_ns",
+    "trace"
+  ],
+  "expected_identity_fields": [
+    "node_id",
+    "process_id",
+    "exporter_created_unix_ns",
+    "process_start_ticks",
+    "boot_id"
+  ],
+  "unix_timestamp_type": "decimal string",
+  "missing_os_identity_accepted_for_attribution": false,
+  "one_process_per_invocation": true,
+  "trace_is_finite_observation_prefix": true,
+  "capture_is_shutdown": false
+}

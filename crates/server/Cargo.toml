@@ -36,6 +36,7 @@ kv9-engine = { workspace = true, features = ["testing"] }
 kv9-raft = { workspace = true, features = ["testing"] }
 
 [features]
+quorum-trace = ["kv9-raft/quorum-trace"]
 # Test-only crash gates, never enabled by default.
 checkpoint-testing = []
 # Isolated transport comparison. Never enabled in the default runtime.

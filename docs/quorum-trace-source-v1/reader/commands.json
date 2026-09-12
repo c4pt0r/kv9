@@ -1,0 +1,28 @@
+{
+  "runtime_pending": true,
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONOPTIMIZE": "0"
+  },
+  "single_process_reader_argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "-B",
+    "/tmp/kv9-quorum-trace-reader-preparation-first/read_trace.py",
+    "--input",
+    "ACTUAL_QUORUM_TRACE_JSON",
+    "--identity",
+    "INDEPENDENT_EXPECTED_PROCESS_IDENTITY_JSON",
+    "--output",
+    "FRESH_TRACE_ANALYSIS_JSON"
+  ],
+  "required_bindings": [
+    "Root-owned exact source/build and exporter lifetime evidence",
+    "One actual regular non-symlink trace export and independently captured identity",
+    "Fresh output path; one process per invocation"
+  ],
+  "reader_sha256": "c43d73e4876711d43a50c62cd4b370700be95f470d6ebb321cba1583b0619046",
+  "controls_are_terminal_and_not_to_be_rerun_by_this_handoff": true
+}

@@ -1,0 +1,182 @@
+{
+  "source_gate": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "trace-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "check_cargo_artifacts": true
+    },
+    {
+      "name": "trace-focused-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace",
+        "trace_"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "trace-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "trace-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--all-targets",
+        "--features",
+        "kv9-server/quorum-trace",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "default-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--workspace",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "check_cargo_artifacts": true,
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "default-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--workspace"
+      ],
+      "check_cargo_artifacts": false,
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "default-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "check_cargo_artifacts": false,
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "observer-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-raft/read-stage-timing",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "check_cargo_artifacts": true
+    },
+    {
+      "name": "observer-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-raft/read-stage-timing"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "observer-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--all-targets",
+        "--features",
+        "kv9-raft/read-stage-timing",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "check_cargo_artifacts": false
+    }
+  ]
+}

@@ -4065,6 +4065,9 @@ impl NodeRuntime {
                 &self.node.store.engine.io_metrics(),
             )
         });
+        #[cfg(feature = "quorum-trace")]
+        self.metrics_exporter
+            .export_quorum_trace(|| self.driver.capture_quorum_trace());
         let bootstrap = self
             .node
             .meta
