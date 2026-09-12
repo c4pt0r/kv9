@@ -2,8 +2,8 @@
 
 > Latest direction: [ThinLTO qualification](RELEASE-THIN-LTO-PERFORMANCE.md)
 > improves c64 GET 8.511%, c1 GET 6.402% and c64 mixed throughput 10.424%, with
-> better means and p99 in both orders. Freeze `02d0c01` for broader API and actual
-> exact-build Chaos Mesh gates; CRC remains selected. Consult the
+> better means and p99 in both orders. Exact-build 21-window Chaos Mesh passes;
+> freeze `02d0c01` for broader point/batch performance. CRC remains selected. Consult the
 > [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before another candidate.
 > Redis read parity and industrial gates remain open.
 
@@ -14,14 +14,16 @@ The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 2
 explicit dependencies, implementation steps and acceptance criteria. Track delivery in
 [GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
 
-The [current checkpoint](CURRENT-STATUS.md) records the completed notification
-candidate: c64 GET throughput +1.123%, c64 mixed +2.730%, with better loaded/mixed
-read means and p99 in both repetitions. C1 GET does not improve (-0.248% throughput,
-+0.260% mean). The [formal/source/recovery gates](COALESCED-OWNER-VALIDATION.md)
-pass, but broader API performance and actual exact-source Chaos remain open.
-Keep CRC selected and `42e0117` experimental. Qualify that candidate and localize
-isolated GET RPC/owner/completion costs next; preserve fresh quorum reads, sealed
-groups, successful pump/apply/view fences and durable acknowledgements.
+The [current checkpoint](CURRENT-STATUS.md) records the favorable ThinLTO
+point-read/mixed screen and accepted exact-build Chaos matrix, including 9,923
+complete history operations. Finish local retention capacity, then run the
+frozen 36 smoke / 72 timed point/batch cohorts before selecting that candidate.
+Keep notification candidate `42e0117` separate; its gains cannot be added to
+ThinLTO's measurements. The [next latency investigation](QUORUM-LATENCY-NEXT.md)
+targets unresolved intervals inside a fresh quorum round, reusing completed
+body-handoff evidence and preserving all earlier rejected experiment decisions.
+Preserve fresh quorum reads, sealed groups, successful pump/apply/view fences
+and durable acknowledgements.
 The product sequence remains memory RawKV read performance, then dynamic
 multi-Raft and automatic splits, without waiving storage/proof/fault prerequisites.
 Earlier rejected executor/handoff experiments retain their decisions. Evaluate
