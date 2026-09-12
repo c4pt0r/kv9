@@ -1,10 +1,11 @@
-# Quorum-message trace source checkpoint
+# Quorum-message trace and actual capture
 
-The next single-GET investigation now has an implemented opt-in recorder and
-offline reader on [diagnostic source `1875e74`](https://github.com/c4pt0r/kv9/blob/1875e74141753cc6a55f025384b480b71ee84c1a/docs/QUORUM-MESSAGE-TRACE.md).
-It passes source checks and a clean production diagnostic release build, with
-no actual trace or new performance result yet.
-Main continues to select the previously qualified ThinLTO runtime `11113f6`.
+The [actual capture and overhead comparison](QUORUM-TRACE-RESULTS.md) now
+preserves two original campaigns. Recorder `1875e74` loses 1,083 selected
+observations to contention. Its [immutable-slot repair `7d45612`](https://github.com/c4pt0r/kv9/blob/7d456126b020050a3cf77b61c515764dda77ee65/docs/QUORUM-MESSAGE-TRACE.md)
+records six prefixes without loss and passes the unchanged reader. The repaired
+source, clean production build and four fixed-client cohorts are qualified;
+no database speedup is implied. Main still selects ThinLTO `11113f6`.
 
 The feature records exact existing ReadIndex contexts across group submission,
 peer queue admission/dequeue, inbound validation, follower/leader inbox and
@@ -15,8 +16,10 @@ The [source guide](https://github.com/c4pt0r/kv9/blob/1875e74141753cc6a55f025384
 correspondence argument; it is not a completed proof of core Raft.
 
 Storage is bounded to 65,536 events per process, selected by context sequence
-modulo 256. One observer try-lock records each selected boundary or an explicit
-loss. Checked local tickets distinguish queue entries; retaining the actual
+modulo 256. The repaired recorder atomically reserves unique immutable slots;
+capacity/clock exhaustion remains explicit. Originating slots provide bounded
+nonzero local tickets, with gaps allowed. The original mutex/loss result remains
+retained. Local tickets distinguish queue entries; retaining the actual
 route allocation prevents reused addresses from joining different routes.
 Periodic heartbeats may reuse a context, so repeated messages remain ambiguous.
 Cancellation, queue rejection, abandoned tickets and prefix truncation remain
@@ -29,7 +32,7 @@ intermediate queue stages leave a context incomplete even if a measured endpoint
 span remains available. Any observation loss disables complete-context/message
 attribution; exact queue-ticket spans may remain explicitly partial.
 
-## Local acceptance
+## Original source acceptance
 
 | Configuration | Passed | Existing ignored |
 | --- | ---: | ---: |
@@ -57,19 +60,14 @@ passes. Its server SHA256 begins `fe19660e`; all 738 source-file hashes and the
 exact non-test release feature graph were independently checked. No testing or
 alternate RPC feature is enabled. Build success is not runtime acceptance.
 
-## Next execution
+## Repaired source and execution
 
-1. Use the committed diagnostic server and its verified release binding. Keep
-   the previously pinned workload client.
-2. Run the existing c1 GET workload on three voters with an uninstrumented
-   control and both run orders. Capture only after measurement, retaining
-   process lifetimes, fresh drains, full outcomes and original storage/CPU guards.
-3. Read each replica's trace independently, account for loss and ambiguous
-   contexts, and quantify instrumentation overhead. Instrumented QPS is not
-   an optimization result.
-4. Change the dominant measured source boundary, then compare uninstrumented
-   throughput and latency and apply the appropriate correctness/fault gates.
-   Earlier rejected transport/worker experiments need new causal evidence.
+The immutable-slot source passes 17 focused and 455 diagnostic tests (one
+existing ignored), formatting/Clippy and a clean production build. All six
+process captures, four original cohorts and independent lifecycle/source/readback
+checks pass. The [result report](QUORUM-TRACE-RESULTS.md) retains complete counts,
+local spans, observer overhead and original immutable evidence. It defines the
+next bounded owner-poll experiment and its correctness/CPU/performance gates.
 
 [The previous accepted read numbers](RELEASE-THIN-LTO-FULL72.md) remain
 28,314.673 c1 GET/s and 375,885.286 c64 GET/s, with 35.206 us and 170.140 us mean

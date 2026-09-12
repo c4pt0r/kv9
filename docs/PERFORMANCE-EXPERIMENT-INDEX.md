@@ -52,11 +52,21 @@ neither changes selected runtime or qualifies any original checklist item.
 
 ## Current direction and reuse rule
 
-The [quorum-message trace source checkpoint](QUORUM-MESSAGE-TRACE.md) now
-implements bounded local stage/ticket observations on diagnostic branch
-`1875e74`. Source checks and 17 reader controls pass; actual trace capture and
-uninstrumented overhead control remain pending. This does not revisit or
-reverse any rejected optimization and adds no new performance result.
+The [quorum-path capture](QUORUM-TRACE-RESULTS.md) is now complete. Recorder
+`1875e74` lost 1,083 observations; bounded immutable-slot repair `7d45612`
+records all selected events in six prefixes and passes the unchanged reader.
+The observed leader-local round-trip means are 17.286 / 17.102 us, with local
+follower inbox admission-to-drain means 1.752–1.817 us. These are sampled
+lifecycle populations, not pure network or parked-thread durations.
+
+The next isolated candidate tests one bounded 32-us owner-poll budget before
+the existing condition-variable wait. No earlier listed experiment tested that
+mechanism. It preserves the authoritative mutex predicate, all notifications
+and the original deadline; it does not combine `42e0117` or retune Tokio workers,
+global queues, peer executors or request-body channels. Extra CPU and shared-core
+regression are explicit rejection risks. Require scheduling refinement and
+race/recovery checks before an uninstrumented c1/c64/mixed screen with both orders.
+This hypothesis is not an established removable cost or projected speedup.
 
 The ThinLTO candidate `02d0c01` now passes full workspace checks (709 tests,
 23 existing ignored, formatting/Clippy), a source-bound default production build,

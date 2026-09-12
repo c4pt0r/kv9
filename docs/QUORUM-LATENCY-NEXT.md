@@ -4,10 +4,12 @@ The full ThinLTO point/batch comparison and [main integration](RELEASE-THIN-LTO-
 now pass. Begin from selected `11113f6`, whose server bytes reproduce the qualified
 candidate. The [fixed-rate write-tail diagnosis](BATCH-WRITE-FIXED-RATE-RESULTS.md)
 is also complete; its tail and arrival-accounting limitations remain open.
-The opt-in [quorum-message trace](QUORUM-MESSAGE-TRACE.md) now implements
-these boundaries on the isolated diagnostic branch and passes local source
-checks. Actual trace capture, overhead comparison and the resulting runtime
-optimization remain next. No new GET benchmark result. Track this under #20 and #9.
+The opt-in [quorum-message trace](QUORUM-MESSAGE-TRACE.md) and its
+[actual capture/overhead comparison](QUORUM-TRACE-RESULTS.md) now pass after
+replacing the original contended recorder with immutable slots. Preserve both
+original campaigns. The next implementation tests bounded owner polling against
+observed local inbox residence, with the original mutex predicate and deadlines,
+explicit CPU accounting and no assumed gain. Track this under #20 and #9.
 
 The immediate objective is to locate avoidable work inside a fresh Safe
 ReadIndex round. Keep quorum confirmation, sealed membership, successful

@@ -25,12 +25,15 @@ regression. The [completed fixed-rate diagnosis](BATCH-WRITE-FIXED-RATE-RESULTS.
 retains higher whole-call and scheduled p99 at both offered rates and both
 orders, with 2,044 client-dropped slots preventing strict matched-work inference.
 All 797,956 issued calls succeed; no performance cohort was rerun. Client timer
-calibration is a separate environment question. The [quorum-message recorder](QUORUM-MESSAGE-TRACE.md)
-now passes local source checks on isolated branch `1875e74`; its 17 offline
-reader controls and the first production diagnostic build also pass. Next,
-capture the three-voter c1 GET experiment
-and quantify observer overhead before changing the measured source boundary.
-No new GET performance or server-cause claim follows from source qualification.
+calibration is a separate environment question. The [quorum-path capture](QUORUM-TRACE-RESULTS.md)
+now preserves the original lossy recorder result and a qualified immutable-slot
+repair. Six repaired prefixes have zero loss, 2,318 matched leader-local round-trip
+candidates and 1,159 exact group chains. The 17.286 / 17.102-us round-trip means
+include transport and remote work; 0.285 / 0.297-us confirmation-to-eligibility
+means retain the original successful pump/apply fence. This is diagnosis, not
+a new selected runtime speedup. Next test one bounded 32-us owner-poll budget
+against observed inbox residence, with scheduling refinement, race/recovery
+checks and fixed-client c1/c64/mixed throughput, latency and CPU-cost acceptance.
 Keep notification candidate `42e0117` separate; its gains cannot be added to
 ThinLTO's measurements. The [next latency investigation](QUORUM-LATENCY-NEXT.md)
 targets unresolved intervals inside a fresh quorum round, reusing completed
