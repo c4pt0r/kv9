@@ -64,6 +64,30 @@ remains the latest broad comparison.
 
 ## Current experiment and correctness evidence
 
+The [confirmation-queue diagnostic](https://github.com/c4pt0r/kv9/blob/c423d3c605bf6b88bda3521b85e6997c2b203120/docs/CONFIRMATION-QUEUE-RESULTS.md) is complete on independent
+source `6530239`. Both fixed cells pass readback: 974,650 measured successes,
+8 exited lifetimes, 6 drains and 12 metric documents. All-client accounting is
+999,488 successful calls / 999,490 attempts. Under mixed load, the leader's
+heartbeat sender queue averages 30.654 us and heartbeat-response inbox 20.758 us;
+its batch-channel admission averages 0.268 us. These different message populations
+are not additive request phases, and admission is not wire delivery. All 90
+stage/kind and 630 outcome rows are published. Source gates and 369-call ordinary
+recovery pass; this is diagnostic evidence, not a new performance selection.
+
+A new [bounded Append-payload candidate](https://github.com/c4pt0r/kv9/commit/74b958a8bcdf25252ab55ba6149876a1cddc0637)
+sets raft-rs `max_size_per_msg` to 64 KiB instead of its zero default (one entry
+per Append). It uses the existing contiguous log-slice mechanism without a new
+batch timer; `batch_append` remains disabled. The real lag/rejoin test checks
+multi-entry messages, the target's single-oversized-entry exception and final
+replica values. Local source gates pass 436 Raft/server and 234 experimental
+server tests/doctests, with overlap and one ignored per configuration, plus
+formatting and Clippy. Its clean original release and independent 357-call
+ordinary recovery pass (327 OK, 30 unknown; five server/two client lifetimes).
+The fixed uninstrumented GET/mixed screen is next; no new performance gain,
+Chaos qualification or runtime promotion is established yet.
+
+### Previous held metadata combination
+
 [Candidate bb13e43](https://github.com/c4pt0r/kv9/commit/bb13e4313c313ca910969d1f01ef862619b57906)
 integrates immutable stream metadata with selected CRC, allocator and read
 workers. Its six adapter Rust files and metadata-independent consumer sections
@@ -94,20 +118,18 @@ isolate network RTT or the measurement-only request latency. The
 [CPU/thread profile](https://github.com/c4pt0r/kv9/blob/6fb3434c7cafcbd8d93b04f298208d5785fa292a/docs/READ-PATH-CPU-PROFILE.md)
 also does not assign async requests to OS-thread waits.
 
-1. **[Split confirmation-path waiting](https://github.com/c4pt0r/kv9/blob/3641d0ff0644f700cf3ea8c9c1dbda8fd7462f00/docs/READ-CONFIRMATION-DIAGNOSTIC-PLAN.md):** instrument bounded sender queue,
-   stream backpressure, receiver inbox and owner-processing observations on
-   selected CRC. Keep local clock boundaries and leader/follower/message-kind
-   populations explicit. Without an exact context join, queue averages must
-   not be summed into a request-latency decomposition. Preserve the selected
-   protocol under source projection, run focused checks, then record fresh
-   c1 and c64 mixed diagnostics. Avoid repeating the existing coarse profile.
-2. **Implement the measured scheduling/transport change:** peer traffic already
-   uses persistent BatchRaft streams and public handlers use bounded parallel
-   JoinSet tasks. Choose a concrete improvement from the new waiting evidence;
-   qualify pure/mixed throughput, means and tails using the fixed controls.
-   A useful candidate still needs the full point/batch matrix and exact-source
-   actual Chaos Mesh before promotion. Preserve deadlines, fresh Safe ReadIndex
-   and full pump/apply/view fences. DPDK needs actual cross-host/NIC evidence.
+1. **Screen bounded Append payloads:** compare candidate `74b958a` against CRC
+   and fixed Redis controls at c1/c64 GET and 50% mixed traffic, retaining both
+   repetitions, GET-only means/tails and complete outcomes. The completed
+   diagnostic motivates reducing replication work; it does not prove this
+   configuration helps. Reject a throughput gain with repeatable read-tail loss.
+2. **Qualify only a useful change:** retain fresh Safe ReadIndex, durable writes,
+   full pump/apply/view fences, queue bounds and cancellation ownership. Complete
+   the applicable proof mapping, full point/batch matrix and exact-source actual
+   Chaos Mesh before promotion. If this candidate is unhelpful, retain the
+   diagnostic result and examine the remaining transport/owner scheduling work;
+   do not replay held experiments without a new cause. DPDK needs cross-host/NIC
+   evidence. The selected runtime stays CRC until a candidate passes its gates.
 3. **Consistency and availability closure:** continue implementation/proof mapping,
    remote admission bounds, persistence failure cuts and actual Chaos Mesh E2E.
    Cover metadata, routing and scheduling without a service-critical singleton;
