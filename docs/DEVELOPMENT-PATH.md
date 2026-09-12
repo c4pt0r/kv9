@@ -1,10 +1,10 @@
 # Detailed development path
 
-> Latest performance direction: [matched read-stage diagnosis](READ-STAGE-RESULTS.md)
-> identifies the c1 quorum round trip and c64 remote completion resumption.
-> A bounded global-queue polling experiment is in progress; default selection
-> and the Redis read milestone remain open. The prior uninstrumented results
-> retain their original scope.
+> Latest result: [global queue polling is rejected](GLOBAL-QUEUE-PERFORMANCE.md)
+> after the complete c1/c64 GET/mixed screen: loaded GET throughput falls 2.390%,
+> with worse mean/p99 in both orders. Continue from the selected CRC runtime,
+> targeting actual per-request task/wakeup and quorum-message costs. The read
+> milestone and industrial correctness/storage/scale-out gates remain open.
 
 Updated: 2026-09-11. GitHub tracker: [#9](https://github.com/c4pt0r/kv9/issues/9).
 

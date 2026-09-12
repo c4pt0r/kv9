@@ -1,10 +1,10 @@
 # kv9 development roadmap
 
-> Latest performance direction: [matched read-stage diagnosis](READ-STAGE-RESULTS.md)
-> identifies the c1 quorum round trip and c64 remote completion resumption.
-> A bounded global-queue polling experiment is in progress; default selection
-> and the Redis read milestone remain open. The prior uninstrumented results
-> retain their original scope.
+> Latest result: [global queue polling is rejected](GLOBAL-QUEUE-PERFORMANCE.md)
+> after the complete c1/c64 GET/mixed screen: loaded GET throughput falls 2.390%,
+> with worse mean/p99 in both orders. Continue from the selected CRC runtime,
+> targeting actual per-request task/wakeup and quorum-message costs. The read
+> milestone and industrial correctness/storage/scale-out gates remain open.
 
 Updated: 2026-09-11. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
 [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md) maps that architecture to the current implementation.
