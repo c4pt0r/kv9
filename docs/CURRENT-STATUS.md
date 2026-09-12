@@ -20,20 +20,32 @@ remain open. An abstract proof or one-host fault run does not close these gates.
 
 ## Current read-latency implementation
 
-The [bounded quorum-message trace](QUORUM-MESSAGE-TRACE.md) is implemented on
-isolated diagnostic branch `codex/quorum-message-trace` at `1875e74`. It preserves
-existing contexts, local route lifetimes and all consensus/apply fences, with
-bounded sampling, explicit loss and one-shot post-measurement export.
-Local source checks pass: 709 default tests, 453 diagnostic tests, 438 existing
-read-stage tests, all three Clippy configurations, and 17 synthetic reader
-controls. Test populations overlap; existing ignored tests remain documented.
-A complete local chain requires intermediate queue observations, and repeated
-contexts or observation loss cannot authorize full message attribution.
+The [quorum-path capture](QUORUM-TRACE-RESULTS.md) now passes both four-cohort
+campaigns. Original recorder `1875e74` lost 1,083 selected observations to its
+mutex; those prefixes remain unsuitable for complete-context attribution.
+Repaired recorder `7d45612` uses bounded immutable event slots. It passes 17
+focused tests, 455 diagnostic tests (one existing ignored), formatting/Clippy,
+a source-bound production build, and the unchanged actual capture reader.
 
-The first clean diagnostic release (`fe19660e`) and its source/feature binding
-also pass. Actual trace capture and an uninstrumented overhead comparison are next. There
-is no new GET QPS, runtime optimization, recovery or Chaos acceptance in this
-source checkpoint. The qualified default runtime remains selected.
+All six repaired process prefixes have zero observation loss. They contain
+2,318 matched leader-local dequeue-to-response candidates and 1,159 exact group
+chains. Round-trip means are 17.286 / 17.102 us; confirmed-to-eligible means
+are 0.285 / 0.297 us. These sampled lifecycle intervals overlap and include
+setup/verification; they are not pure-network time or an additive client breakdown.
+Late-response and reversed-ticket spans remain explicitly unavailable.
+
+The repaired experiment's uninstrumented controls deliver 28,300.825 /
+28,171.583 GET/s with 35.215 / 35.375 us means. Diagnostic throughput is
+1.025% / 0.777% lower. All 562,182 measured calls succeed once; 16 owned
+lifetimes, 12 drains and source/listener/retention/restoration checks pass.
+This completes diagnosis, not a database speedup or new Chaos acceptance.
+Selected default runtime remains `11113f6`.
+
+Next, test bounded owner polling against the observed inbox residence, keeping
+the original mutex/condition-variable predicate and tick deadline. One fixed
+32-us poll budget needs scheduling refinement/race checks, clean build/recovery,
+and uninstrumented c1/c64/mixed comparisons with CPU cost and read/write tails.
+Notification coalescing stays separate; no result or promotion is assumed.
 
 ## Latest fixed-rate write diagnosis
 
@@ -49,7 +61,7 @@ Four smoke/eight timed cohorts, 32 exited timed lifetimes, 24 fresh drains and
 all twelve byte-retention records pass independent readback. The first reader's
 obsolete Redis pairing lookup failed after all eight per-cohort checks; its
 six-line repair and original failure remain published. No cohort was rerun.
-The quorum-path recorder now passes source checks; actual diagnosis is next.
+The quorum-path diagnosis is now complete; a bounded owner-poll candidate is next.
 
 ## Latest completed optimization experiment
 

@@ -1,0 +1,2487 @@
+{
+  "complete": true,
+  "started_ns": 1789226654631246475,
+  "ended_ns": 1789226655497798550,
+  "archive_sha256": "bb457dac0bb092fb1db2742d5edc0b2806f48a5e9f1673728d48cda099994e87",
+  "archive_bytes": 19410367,
+  "raw_bytes": 103793205,
+  "files": {
+    "/tmp/kv9-point-write-v3-release-first/native/build.json": {
+      "bytes": 487,
+      "sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c"
+    },
+    "/tmp/kv9-point-write-v3-release-first/native/cargo.jsonl": {
+      "bytes": 208922,
+      "sha256": "c68ed599b2b0185d8b8bd4ea277d04345f6b5442cdf851f59e93918a5e2a5d06"
+    },
+    "/tmp/kv9-point-write-v3-release-first/native/sources.json": {
+      "bytes": 60425,
+      "sha256": "74298441490d8ecb5c17e7004597e1ab66173cd3fda7c5ae147f2e32a6dcc65c"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/root-build-bindings.json": {
+      "bytes": 1359,
+      "sha256": "ec3b5bb8b905c56bc2f1ea4993379fc2f50e81f4d6fdf29f6832c10e3cc4efb9"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/after.json": {
+      "bytes": 41276,
+      "sha256": "7759c70144799d8a180e9c493b8f1b2d9bf9939aef1c5b91661471679dae3c1d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/before.json": {
+      "bytes": 41189,
+      "sha256": "29e6a9344eac1d95afa57ea8fa1ade1bd996e47ad61fd2e4b48c83159fb19b88"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/after-metrics.json": {
+      "bytes": 931022,
+      "sha256": "6fa39a8663e297d7de608aa4149bc5819139f8b9c28cb741ad79d9111bd767f4"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/after-resources.json": {
+      "bytes": 1764,
+      "sha256": "af4470885ce91fcc80a9734384149a0e2565bcc9e3dd64753215c2d2b754768c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/after-status.json": {
+      "bytes": 12825,
+      "sha256": "a0d60cfc45c8c98389b077c8d798293dbb015f972bd8ca00bfc3eef75497ea07"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/before-allocator-provenance.json": {
+      "bytes": 4148,
+      "sha256": "09beff21146fba574b1469e88e2318ce871003dc15e38703fd1b972a483da84b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/before-fresh-drain.json": {
+      "bytes": 40557,
+      "sha256": "240d78862f879012c04da3a862c2d493da93b65db2923b12c5b822acec58f61c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/before-metrics.json": {
+      "bytes": 928590,
+      "sha256": "794c23e0762e9f727e463852f0649cdc9c9a2ccd3f9dda5cf9f13af97149791e"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/before-resources.json": {
+      "bytes": 1739,
+      "sha256": "10f835996efc6efcc5545b9a9c78b1b47dbe921ae696b8ca44449a9bca8c7b97"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/before-status.json": {
+      "bytes": 12748,
+      "sha256": "60eca25f4a42e538fad9e6fb957363209d5b7cdf806cd57bac7686ce8109d141"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/cleanup.json": {
+      "bytes": 6164,
+      "sha256": "c4e04d49d253a26be8217a181a5a8126c901dc88be11073efc3b8870778bcd75"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/client-exit.json": {
+      "bytes": 64,
+      "sha256": "c5c93b6c667672a0a8ea915de758aa6f4f2c3e7d511f4758eb183476676df78b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/client-identity.json": {
+      "bytes": 908,
+      "sha256": "4a81a3d72255c561d40cdd73e61656a9af0d41654cc14ccc09b6b89a7b0b2d88"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture-result.json": {
+      "bytes": 21594,
+      "sha256": "d5f938f4272989c70c15b0cc3faeb0f51713526cd3e82115b0cf6590977bdd07"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n1/catalog.segments/e34a8616b7c738d9d080e13b7c5661bf/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "5a910315a5c89c304df4e56c4a2a06187ce70f8707d2831b44a5631a20725829"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n1/catalog.wal": {
+      "bytes": 117,
+      "sha256": "3e7c9a96d7234a67f2619d1a26826e534f83e8d0fbb2b7d780a7ea33a6340138"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n1/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n1/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "c101edc5a5da3aed4e046c51f52f3362eb52292b2d2c8b431c348352e4672fbd"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n1/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "b1f1ddf34f9f15aa5d852382479f0659767cea63adb6c468d4fec329e57c77a9"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n1/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "bdeac56deea57686bf0a4bfeedcd966a6bb3840408197e16aad083e6cc529879"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n1/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "7b2bf26d59fbca9f611e21d2dc863ce9567256cc84511707235a03d1df39d769"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n1/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n1/metrics.json": {
+      "bytes": 61927,
+      "sha256": "f50d244f0f6687a514c8d3f054278351265485130a51f1440badea104b8823f2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n1/raft/raft.log": {
+      "bytes": 928091,
+      "sha256": "db98c759019c94c78831f46cc99069a7384f7a717e6602dbaab549a3b057d3ec"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n1/status": {
+      "bytes": 3439,
+      "sha256": "d2668b208e47bddc05a2858f639cabb30164ae6352716a4951b3378cca2bf08a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n2/catalog.segments/78e37b1ff2679040e92cb961bec4282d/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "22a35a7744f681e17edecca13ec0fd0aeae19cdfac267d89a064027534cf666f"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n2/catalog.wal": {
+      "bytes": 117,
+      "sha256": "64a5508d52f3c340987f17a00e7c24dc67f3a3dcf35546759ee7e42c049ea7b8"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n2/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n2/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "c101edc5a5da3aed4e046c51f52f3362eb52292b2d2c8b431c348352e4672fbd"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n2/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "ea964239afddf2237eae3145e7e33d851a4ce1d24f38d753a9598e7c62dd998a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n2/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "db806634bdce7db6c556f40d07c57f8b1f675c4c8faab54a3c4ec58ddfc22e33"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n2/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "0915e133812caade34b174cf4a60e7382f48086492c39d625ff3516261e154bb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n2/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n2/metrics.json": {
+      "bytes": 62787,
+      "sha256": "5edc7d6df471fdabbb8cdd74e733aecf3e9368bb139b36a776ad456e408d6525"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n2/raft/raft.log": {
+      "bytes": 928091,
+      "sha256": "db98c759019c94c78831f46cc99069a7384f7a717e6602dbaab549a3b057d3ec"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n2/status": {
+      "bytes": 3490,
+      "sha256": "fb73373417e046e4c6e4ebc5f93ed10649dd8ead3db54df16a4faadb51587aa2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n3/catalog.segments/592442ade91a970df79ad243e6dd6c8a/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "6dcfd8fc9e2f0e139259dd727e3aa6a9c3f411d8fabd1ae232c343bdeac46cc5"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n3/catalog.wal": {
+      "bytes": 117,
+      "sha256": "947d9b1e6611dc1700d2894a3990aecfd0800be373f503db9e98b9d3a6de8fdd"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n3/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n3/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "c101edc5a5da3aed4e046c51f52f3362eb52292b2d2c8b431c348352e4672fbd"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n3/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "1bcda7e20984b73ddb31470485b267b639602003eec2e4f161cd54807028a7be"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n3/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "ef756680e16d6bc9fd1adacfdb03cc3cba111ce59b7f22e84ef5fb21f3386b7f"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n3/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "60846b8d19dd3492593b62c08858ec74b39b93ed58a605946028575d8189497b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n3/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n3/metrics.json": {
+      "bytes": 61654,
+      "sha256": "2b2116e28ddb19b6b67abce2bea85cf8b0fa73257aa80a80c1e1a27bc7e8dcb3"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n3/raft/raft.log": {
+      "bytes": 928091,
+      "sha256": "db98c759019c94c78831f46cc99069a7384f7a717e6602dbaab549a3b057d3ec"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/data/n3/status": {
+      "bytes": 3454,
+      "sha256": "e36e07bb4ba66b1842a3d2aa5e9e60555f4de6782812231f0385cde43d090055"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/tmpfs-retention.json": {
+      "bytes": 5122,
+      "sha256": "175c3eb4f687d09effc2e35ff7bd9e0c91911926653c512794c29d5078a4ab3c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/fixture/tmpfs-voters.json": {
+      "bytes": 35853,
+      "sha256": "c2fc0108026e231ecf3b45c2baf64c3cd515a3012637052ad190219b35939809"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/host-resource-samples.json": {
+      "bytes": 1276243,
+      "sha256": "53c9b74e33a98a719f9c42afbb49bb1b6abaa7a4ec71ae5ca1d7a795e411ee38"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/listener-after.json": {
+      "bytes": 936,
+      "sha256": "a4a3dee185680e6086dd310063f9c5d50aa5c61f124e7e6c43550557b48769c5"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/listener-before.json": {
+      "bytes": 936,
+      "sha256": "1450c43a47ad0dbc5687265aafd75046a3b05d1c5a888b606958e87bbc8687ad"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/post-client-allocator-provenance.json": {
+      "bytes": 4177,
+      "sha256": "dd8731481e26c1ccfc2ae42698fae40bc1d3345a6fd2586b5f8019f39c3c2094"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/post-client-fresh-drain.json": {
+      "bytes": 40790,
+      "sha256": "09fd56cf040dd1f6d4718709a38dd9c6f4e497881a580e62e685b1c7d8a0a1bf"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/post-readback-fresh-drain.json": {
+      "bytes": 40793,
+      "sha256": "3c16375f145b1bd58b3441ce1b00c0239083634b2c66f74a3cb9a4a7956c5b5d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/profile-plan.json": {
+      "bytes": 477,
+      "sha256": "c50bbd64c49d506b18356b46bc003aaa859799b33c3a93844e41b493e5ef8e0e"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-00.txt": {
+      "bytes": 80906,
+      "sha256": "50536b11c5882fbbcb68883b7b28c3886f0ba098324b2480911aa6b8d6f3ac85"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-01.txt": {
+      "bytes": 80906,
+      "sha256": "e4bceb32f89280f5c2bfbcbebd017ca381f56b58cdc1c5700f4b90a92896c6eb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-02.txt": {
+      "bytes": 80906,
+      "sha256": "bb7391dd21047bd7029ef740d2a12628a74e4a2655e71c8d697b17750e205975"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-03.txt": {
+      "bytes": 80906,
+      "sha256": "28144ae2ba3668b1243e8ae70dbac40058dca4d5082288fe264f9b7601d51b7b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-04.txt": {
+      "bytes": 80906,
+      "sha256": "35ab135575e8075e849c554e6f6d8d71ed3a59b6c78772e102e4a04285293d5b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-05.txt": {
+      "bytes": 80906,
+      "sha256": "568bba745ec4f3ba6317ae52e63c98fb19121a4f8d505f08c668ed60e39de65a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-06.txt": {
+      "bytes": 80906,
+      "sha256": "41b90b4d1fff697c4436c7567f1401f2b5937c38960900fbbc6b1427bb45c869"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-07.txt": {
+      "bytes": 80906,
+      "sha256": "3c100d1f23dbd7984185d0cff7ab7cba62e5947fedf710c3dd63dd2d41813934"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-08.txt": {
+      "bytes": 80906,
+      "sha256": "a7c7e97daf5934e9fe3269f46111760f092d422af7194f78e934e187858b8a12"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-09.txt": {
+      "bytes": 80906,
+      "sha256": "9442841f1df6d52c584b40f6e6f32a88908c717772b85787fc1fb9f5c54fcf99"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-10.txt": {
+      "bytes": 80906,
+      "sha256": "379e57254097f96ae2f3db1983c8d1eb92d1754b78cc01fd623043b15f3932b3"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-11.txt": {
+      "bytes": 80906,
+      "sha256": "750bc1c3e0e68904500816099bf5f7a35cd1bb64880e203d5385d8dd10580bb4"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-12.txt": {
+      "bytes": 80906,
+      "sha256": "a37e84b956fbd37b7dd3352a17e15d0a51c5084bea61362b303e030494491690"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-13.txt": {
+      "bytes": 80906,
+      "sha256": "d17838465b31e71cefda4a2b6cfcfd7f59712e7af881ce0280fcfafb6c580db6"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-14.txt": {
+      "bytes": 80906,
+      "sha256": "385cffb910f7bc8a84ac567322169e6314fabad8274cde684e4d9c2c9c38644c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-15.txt": {
+      "bytes": 80906,
+      "sha256": "6df98fff9f53cf91a3a30f170b8f984a4f31fb64e0388cbc4a019e84c85c854e"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/readback-16.txt": {
+      "bytes": 324,
+      "sha256": "08de4be5f3b33345a7d50378f01f257fd397c01bd42f5ac5912506d1345dc5a5"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/requested-config.json": {
+      "bytes": 808,
+      "sha256": "af28cd7daedfbe7f1b55f54f1ba99a15d299e874e61203a346ec2dfa9eea0bb3"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/resource-coverage.json": {
+      "bytes": 1647,
+      "sha256": "5fcfaa03df51d785320c7f7874d813bb91bd6e11f006988faed32cae36937b0d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/resource-samples.json": {
+      "bytes": 791589,
+      "sha256": "f19951c17689047663a7777ca57c8b32d931739f6fb75e98d94d7e8846893635"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/run/report.json": {
+      "bytes": 1431811,
+      "sha256": "82ea0854a9865b49313ba2949bfc4baaa26c8e01b6d5044128799894321c36c9"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/sample-calls.json": {
+      "bytes": 632101,
+      "sha256": "b486354b27c6fb961c0552bd5d432bdc40e832b6c92af8a40e6c906b3a969e4d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/storage-preflight.json": {
+      "bytes": 638,
+      "sha256": "c9147be7768e22eab5d5b011055f27bc827b8af9d1fa5857ba4d244298ce16c8"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/storage-resource-samples.json": {
+      "bytes": 76947,
+      "sha256": "6a688ebc6a9893ad3b11db882504d7d1fda32cb0269c93cdbc411f195b63992b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/summary.json": {
+      "bytes": 21594,
+      "sha256": "d5f938f4272989c70c15b0cc3faeb0f51713526cd3e82115b0cf6590977bdd07"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/000-control-c1-r0/trace-capture-hook.json": {
+      "bytes": 83,
+      "sha256": "8a0a456719ca047a40213816a44f9b98bab01bc5ae7f5e185a71e728fed5663f"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/after-metrics.json": {
+      "bytes": 1144014,
+      "sha256": "2a9a8a0081b93111bb9cd103818f87ca6aea09be1e701dc38aa83cd16d6ba6a5"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/after-resources.json": {
+      "bytes": 1764,
+      "sha256": "465bcdf91b8d3ca95ecdbfabb1d982d159a4aa1ae7c777c6c4424dd2a5083a1b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/after-status.json": {
+      "bytes": 13110,
+      "sha256": "de978fb7773ed7f5d9ac175ee6a46519589ae20281924d4004c5470cfd9ec79a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/before-allocator-provenance.json": {
+      "bytes": 4142,
+      "sha256": "b68041eaf37aa9a8166277faec5a0bde92d374e85065d3ca6dbe49c7d231f2ae"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/before-fresh-drain.json": {
+      "bytes": 41459,
+      "sha256": "3032d9fac098e4e18b59c492acd1d81e3aa94523be799f6ccb1a0438c2ed6a66"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/before-metrics.json": {
+      "bytes": 1140018,
+      "sha256": "5c6830d6b88aea3155f95b17a8420ce7405407e42c5528d5cf5007ad1e71be6e"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/before-resources.json": {
+      "bytes": 1739,
+      "sha256": "5184cc48a44efdb6367be260fe62a44946b676be928565efe6e0fbfb648fb799"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/before-status.json": {
+      "bytes": 13033,
+      "sha256": "13e066a94954a56a0cce4de9d02c5756a2f12da1e572303fe14b30f94a229f2a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/cleanup.json": {
+      "bytes": 6168,
+      "sha256": "faa0cd270e53f6201568614348d393a162eb2a8be09c64a44d47fd4fbe1e4125"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/client-exit.json": {
+      "bytes": 64,
+      "sha256": "06639c1aee5b610d2ac4bbf6721e54175eed048a7694b725a45af1064cd69965"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/client-identity.json": {
+      "bytes": 910,
+      "sha256": "7013e3a209688397757bde5265c932977d815fb320d684e68f73a1cf6ad91313"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture-result.json": {
+      "bytes": 21593,
+      "sha256": "4b59bea6fb8d47d58aae527812208021a7146e643a79e510fc5456c95648abc7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/catalog.segments/a3e52a5df3aac93910a777c57bb8a023/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "1c766a49a64eab54895bd8c089412c875aa48987cbecae4aacca1854a73cb221"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/catalog.wal": {
+      "bytes": 117,
+      "sha256": "54514703c38bf5ca2bf283538442b37d5dff1a50a64028990473ae9a42dfa080"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "58f7b94d0eab304b7c14641eca3fe2ff7fb72155b6966f98c42ed83357e33adb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "e74a7549d14cecb4f7234e7955a5e8a3d401daf6a962278125124cdb7defcc58"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "b3d6cf16d55275a17da7a907c89a07d562315c8a05aad2d6ace2bdde5dbd5edc"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "73116367d1159ed80df8c1bbea90142c5ae3afa866a8f303aae9dedd5030e56d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/metrics.json": {
+      "bytes": 75722,
+      "sha256": "5509ed3b7d361e64ac3d62e06be1bddd0a7299a61299a8d5d2d8770b018b8a49"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/quorum-trace.json": {
+      "bytes": 1208201,
+      "sha256": "793c2c2ed3e687a73fa63ec1e4c04cec88d8662be9ad169487d71bb93800a4eb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/raft/raft.log": {
+      "bytes": 928091,
+      "sha256": "baecf05617de0fa60b5962738ae0dbdefebde3716295bbc09bbf0799c3a62be2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n1/status": {
+      "bytes": 3507,
+      "sha256": "515180c8dbb5e26d515a646c1d063d39530dfe7e6e4c6a89360629b4c3261124"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/catalog.segments/bd65aeaed1f7598adeb893f04567ca71/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "dd046b170f171057e5952bf8fad2e193438dffe7774742eb8170cdea72f41690"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/catalog.wal": {
+      "bytes": 117,
+      "sha256": "a6014580fbda78bcde2ab2f0f0951b2505d7f6b0d326aacac6840cd2005607f6"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "58f7b94d0eab304b7c14641eca3fe2ff7fb72155b6966f98c42ed83357e33adb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "0c39de46d7f607f52b9478465ad991f583fc684aa5d424d2339ff8c414f9c5c8"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "9d3a38a55098842c1c56d0ee3f6c6e1ca3eeea1165c24cf21814ca8e0274a63e"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "df77142e1904d1fb1d4d2d592bf97c42e0ae72e994e400f866cb072c58783775"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/metrics.json": {
+      "bytes": 77284,
+      "sha256": "5fc0006bc09a1745a11b033f4e024842445a3a06c9a00a8e95ad695ab860b210"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/quorum-trace.json": {
+      "bytes": 3011997,
+      "sha256": "2d48c3574e39dc240c14b1f3a83a2b31b0b1a24e95b479ca75ec53720975c2ff"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/raft/raft.log": {
+      "bytes": 928091,
+      "sha256": "baecf05617de0fa60b5962738ae0dbdefebde3716295bbc09bbf0799c3a62be2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n2/status": {
+      "bytes": 3558,
+      "sha256": "73bdcbe015e2ef3e863ff2ad385dcbfba6987e5d8166ad4887b8090843ba918f"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/catalog.segments/d9ae0ea26245d98950602aa078951c5f/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "11cba3f02cc4c917041aaca8f08a92de0fc15d8e03d99c2b58e88a749a42518a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/catalog.wal": {
+      "bytes": 117,
+      "sha256": "2d42e264c92c88a8f7f7c2d4e04434be8b1d3d41ced830e9c84b5dd84bf2c029"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "58f7b94d0eab304b7c14641eca3fe2ff7fb72155b6966f98c42ed83357e33adb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "0c707cfb89607f4636d2f9d24b24fe7b5587328ce6b5e041dff922f471aa2956"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "39866db5d0a034bdaa317ef17397cac21aac5b603aa00b29f3919b648a764c14"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "94f46601d5f794a74b42f2c9ff62609fb9912e0147be76090a7387aacada820a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/metrics.json": {
+      "bytes": 75445,
+      "sha256": "4bf539d204945b7711c701591af62241ebfb989e46ad0d1a5e04f0889b052887"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/quorum-trace.json": {
+      "bytes": 1207704,
+      "sha256": "0a06100893c6372d9025cdb9bb7a4b95c263571484a150f3608f85459ff4f931"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/raft/raft.log": {
+      "bytes": 928091,
+      "sha256": "baecf05617de0fa60b5962738ae0dbdefebde3716295bbc09bbf0799c3a62be2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/data/n3/status": {
+      "bytes": 3522,
+      "sha256": "fd116432f730c8fb60bea7fbea7415374281ce2bc681e4180713beec0b2b89f6"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/tmpfs-retention.json": {
+      "bytes": 5975,
+      "sha256": "ba0c6a72d06a58469f8ae997663a2e8c5a0f40d7cfa0be0986e928e7af811e0c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/fixture/tmpfs-voters.json": {
+      "bytes": 35796,
+      "sha256": "ae0ee5d0fa6b83bdddbbe6e8a33cd4596585a70665d3eca34f4d6e9a5c49e0c0"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/host-resource-samples.json": {
+      "bytes": 1264848,
+      "sha256": "2d7f2a9cc0a7cf274b72f8163871aaab8afd4360d6b79ceca298c461af9c2973"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/listener-after.json": {
+      "bytes": 936,
+      "sha256": "7a585b41a5dac260918c7ced1b8c96e46e15b2a192130556a5197a0c5e3f6a46"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/listener-before.json": {
+      "bytes": 936,
+      "sha256": "2f3a7facc31dc4f07f1621f39331b4695d7a5c67f0275dadc85e9d0ce6cc923d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/post-client-allocator-provenance.json": {
+      "bytes": 4167,
+      "sha256": "389cd5647305f8390902f1567147ee1cf59a941294893b6d964f9ebbc6a16828"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/post-client-fresh-drain.json": {
+      "bytes": 41693,
+      "sha256": "4b7e9865db16a32b0df7d83ef317cb4bf4054e6849fdac53f5a307cbfd6735bf"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/post-readback-fresh-drain.json": {
+      "bytes": 41696,
+      "sha256": "00b7a5892b16e6653809e283a8fd9a74fe29239f0d5acef2f18b6c2a19728429"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/profile-plan.json": {
+      "bytes": 473,
+      "sha256": "198790517046a2033e890c29aa6c9ffeea0dbb1549f2e210f2e83167828e9aa5"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n1/expected-identity.json": {
+      "bytes": 185,
+      "sha256": "f69baecba3bf6172a6a15a84fde0b29a87b64f9387d2de766839abe72d428a40"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n1/metrics-before.json": {
+      "bytes": 75722,
+      "sha256": "b1a193be61c1ab273d23b8893982a98e5712cef966b5e5f410434b4f17fd258b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n1/quorum-trace.json": {
+      "bytes": 1208201,
+      "sha256": "793c2c2ed3e687a73fa63ec1e4c04cec88d8662be9ad169487d71bb93800a4eb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n1/status-after.txt": {
+      "bytes": 3507,
+      "sha256": "515180c8dbb5e26d515a646c1d063d39530dfe7e6e4c6a89360629b4c3261124"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n1/status-before.txt": {
+      "bytes": 3514,
+      "sha256": "869ed3220189ad764e8433d2fef35b7bc9a963f6a043bcdea2df2c0971b674e7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n2/expected-identity.json": {
+      "bytes": 185,
+      "sha256": "880b5aabab4e4b243426f3a538fde687506c3b401861310f271990ce5f3e6c9a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n2/metrics-before.json": {
+      "bytes": 77283,
+      "sha256": "9278a68ce9f222c5029dd0cf3b8c4196240c00538e7f990bcab262162e9709af"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n2/quorum-trace.json": {
+      "bytes": 3011997,
+      "sha256": "2d48c3574e39dc240c14b1f3a83a2b31b0b1a24e95b479ca75ec53720975c2ff"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n2/status-after.txt": {
+      "bytes": 3558,
+      "sha256": "73bdcbe015e2ef3e863ff2ad385dcbfba6987e5d8166ad4887b8090843ba918f"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n2/status-before.txt": {
+      "bytes": 3565,
+      "sha256": "3f0541c7e51342ff2223a70cfe79f3545cd2ed0e4cb205034cc0932030cbe49e"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n3/expected-identity.json": {
+      "bytes": 185,
+      "sha256": "2a9eb4553f059cad6a652af94566131c22c143389da1e6a70209002a9b5aefbe"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n3/metrics-before.json": {
+      "bytes": 75445,
+      "sha256": "706b4b11dc7be3a97a23a8c0f0faff9263dde19929ba0d3c9dca88ff9d7a06a2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n3/quorum-trace.json": {
+      "bytes": 1207704,
+      "sha256": "0a06100893c6372d9025cdb9bb7a4b95c263571484a150f3608f85459ff4f931"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n3/status-after.txt": {
+      "bytes": 3522,
+      "sha256": "fd116432f730c8fb60bea7fbea7415374281ce2bc681e4180713beec0b2b89f6"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/n3/status-before.txt": {
+      "bytes": 3529,
+      "sha256": "c1a40b5d53f80717a3b80a034ca9bd531f924774f5e92f4d8c01feaccf7ed685"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/quorum-trace-exports/record.json": {
+      "bytes": 45029,
+      "sha256": "28d975fd94808db49659e637bce3435161dd13e21d6d82344e323c16482b4706"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-00.txt": {
+      "bytes": 80906,
+      "sha256": "212ddec0a0adce0275cef7fe6935d1c351df8bc126bfddc1bf640aa6226d9721"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-01.txt": {
+      "bytes": 80906,
+      "sha256": "3f237de7c29207a63f3483abd369d4b13653c8a3d1f800b36028931163f19b11"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-02.txt": {
+      "bytes": 80906,
+      "sha256": "bb0ae698c3c41ec79e9a4dbde6ddfe021acac745e290e50b554ffe7a94bf0331"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-03.txt": {
+      "bytes": 80906,
+      "sha256": "fda179c50926ddd752f2fe727595e6192d8cf389555eba03a4f1155d29c9c7cd"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-04.txt": {
+      "bytes": 80906,
+      "sha256": "e8f736b3d5e0099bff21948a548773ba328130777aaf1f21ea119c02e8f7aa3d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-05.txt": {
+      "bytes": 80906,
+      "sha256": "896cd9cbc288daac1e3c0a8adfb074a4d6ee2fcd7f3c239d84267ad595076115"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-06.txt": {
+      "bytes": 80906,
+      "sha256": "a2980c4cf22b73f504a2be6d970930dfebe4083563b443994adbaac134b4d898"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-07.txt": {
+      "bytes": 80906,
+      "sha256": "585a2f478d470287efdabcd00b6d321d599fb44d7696ffb8c44eeade10055b23"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-08.txt": {
+      "bytes": 80906,
+      "sha256": "ea8f93c1934b0bca8f024fd5377e5a1f0dbc6ca766591a375a69c69298989602"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-09.txt": {
+      "bytes": 80906,
+      "sha256": "d74e5a876c9d5f1e28a152d14a9a32dfff3f6cec39a9a0ca5597c2184759cfcc"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-10.txt": {
+      "bytes": 80906,
+      "sha256": "b7ab5b6e1381ee58dafe265ac37e1c44ec382ab3f65e9b845f287da1b0ae7f59"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-11.txt": {
+      "bytes": 80906,
+      "sha256": "66fa730b06f4804ccc121a78e84dfab9da758c43adc797d002531a334480c889"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-12.txt": {
+      "bytes": 80906,
+      "sha256": "ba4539a1983fdf380eddbb2237bfe924f9f2c440d79a2804c8cedfc50c2cb2d7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-13.txt": {
+      "bytes": 80906,
+      "sha256": "45bd8edb5b6ebe42b187455de0dd0120c61b6de0bc185352f965847412e04212"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-14.txt": {
+      "bytes": 80906,
+      "sha256": "6f04259cb9f7b012ee59268446d1f075e40e6c9c7927e74415cb259dad8a03cc"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-15.txt": {
+      "bytes": 80906,
+      "sha256": "81c159a44bad509cd7b4a555275d0cf6b54a5312dcf306de48199781bc5522fc"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/readback-16.txt": {
+      "bytes": 324,
+      "sha256": "5d5ae742738be7a2ba2205beebfc9cd188279248b1d19e70b754e86d0828dcdf"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/requested-config.json": {
+      "bytes": 808,
+      "sha256": "ef4d6cadf4ccbb274c37b993950611315d6685d8fee6bd0ba423d56945b5e56c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/resource-coverage.json": {
+      "bytes": 1653,
+      "sha256": "41726370d3686432fbbaefd2e2cf886a3ea2ed7d9d725827924dcde0dc03742d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/resource-samples.json": {
+      "bytes": 784486,
+      "sha256": "9bdee03941f05c0b4273c5b08b394d22d77db6110511c6be8120592fd95de4b8"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/run/report.json": {
+      "bytes": 1431839,
+      "sha256": "0b2d2103d25ad482f953ba24a85c10a72a4308101bff0052e97a21278e746694"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/sample-calls.json": {
+      "bytes": 626422,
+      "sha256": "6139e8e0f879438757f139fc40a208de8a1ecb3b4cee3e7941d6b8658bd420aa"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/storage-preflight.json": {
+      "bytes": 636,
+      "sha256": "5eadc2a41ee3d62568d359857f186607c89540a4c9b128398786ce58f6010bb1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/storage-resource-samples.json": {
+      "bytes": 76038,
+      "sha256": "dce3ea739684c96473df458c675a4d31276d8968e771809de940cdc4862b5366"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/summary.json": {
+      "bytes": 21593,
+      "sha256": "4b59bea6fb8d47d58aae527812208021a7146e643a79e510fc5456c95648abc7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/001-trace-c1-r0/trace-capture-hook.json": {
+      "bytes": 45029,
+      "sha256": "28d975fd94808db49659e637bce3435161dd13e21d6d82344e323c16482b4706"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/after-metrics.json": {
+      "bytes": 1144011,
+      "sha256": "5314cdd7ba73a0d4f62b63f85b4ec48acf790bb20e3b79af730600414406d8de"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/after-resources.json": {
+      "bytes": 1763,
+      "sha256": "9f0a8f33c5befdced04a78c2e33664d6f9c033192c3b1313d7ee443efa1887cc"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/after-status.json": {
+      "bytes": 13110,
+      "sha256": "9e9847b0417dddd522f9e65b04d83f9792266f3e9b190b3b786660431ce35d7a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/before-allocator-provenance.json": {
+      "bytes": 4132,
+      "sha256": "aedba23dca3ac2d1d8397582d80f121ebe8112212ee1297d5381f77ee93ffda9"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/before-fresh-drain.json": {
+      "bytes": 41459,
+      "sha256": "d30c88469adc0bf072395692a109fa61df66b02326c43e77e5af268287ef3ba5"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/before-metrics.json": {
+      "bytes": 1139993,
+      "sha256": "140669af4329984338b8d75fb42802eeac875d7cc04ce509b9a12d93d4c9e2de"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/before-resources.json": {
+      "bytes": 1739,
+      "sha256": "0586c71fb856868378c9acaaf3b2306927538154ae0e8e0464eda64ec84463a0"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/before-status.json": {
+      "bytes": 13033,
+      "sha256": "ab3605451c7e238f6ecba34596927b8bfc7de017a680031d1d6a7480657d6e9e"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/cleanup.json": {
+      "bytes": 6166,
+      "sha256": "4b0341e79b930dfee16e8d7326981f0dbe75f6a8fdd875a9cd24a1538ee93f49"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/client-exit.json": {
+      "bytes": 64,
+      "sha256": "42c35b711bf7bbacd2e9c13c106189ce75bde4d906b5ed20c2c8f199205395d7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/client-identity.json": {
+      "bytes": 908,
+      "sha256": "d388925f79937962a84b6e850ff31754c0a03ba9a6586519465193937f50a867"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture-result.json": {
+      "bytes": 21596,
+      "sha256": "2cfcbd7e711f8c97974736697a3bdc721a49de62ab2fa49ae3072481cce601b8"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/catalog.segments/1d29023f40ec36e5cac730e35a30bef4/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "2d95691de6aa55d3a8ad4d7e2256fa6f8c7e16c5eb5691e521851ff249632377"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/catalog.wal": {
+      "bytes": 117,
+      "sha256": "dce58a0032e8e49ffea0143f9cc5e3135835e5effb24528f573be59762631a74"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "7109caa6c47b252acc1f3a5022942effd237f303468a1b8698c79c25bf3491bb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "2b9363ba85b101f6b9e8aebeb0f406adbd407ebd0db7900c4f09f6937fab5150"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "aab7d3baaae0ce591d2b29d3d11708ea8dfc29808e95aa8e7daa79da8b7110e9"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "731637fca3a0e0fd2491e457574b61d1575e97eddd6a895c30b079d672a08713"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/metrics.json": {
+      "bytes": 75726,
+      "sha256": "62b96e0018a7c20257a3646ad3da6b47ff00123adc8019f97e794f23bf971d26"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/quorum-trace.json": {
+      "bytes": 1196871,
+      "sha256": "c048f7428682c49eca3f179797af53d92d01fc601e9624a54098b5805bf7f15e"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/raft/raft.log": {
+      "bytes": 928091,
+      "sha256": "8202f8262e29c8a410d815d9d80de9fc25a872f3fd00484775ded8aab97e27a7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n1/status": {
+      "bytes": 3507,
+      "sha256": "d3adf6c4ef14b539300d4349c8332523572edc99619fe0031008b6549d4a718d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/catalog.segments/18a681f5230e7ac789c7b5a6075fa9da/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "0344fd22005f5e03718c81217d0727b3a780455dc4f75639acbedcd7fce860af"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/catalog.wal": {
+      "bytes": 117,
+      "sha256": "537c986de6eeaf3f6c299647ff8eacd64870124b1f97492b6e1421d9b71aff0d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "7109caa6c47b252acc1f3a5022942effd237f303468a1b8698c79c25bf3491bb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "fd100c06902cf88b0b947038270e6ce08106909fb59c88747228d2272732e38b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "fcb75e0abcac199d6413c31c10ddaaa7bd1300429606b4c11bb817b8aee2d8f9"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "c08cdbe4301da8a8f8b23eaa359ed8ebd027310554e3195863baca26943419fe"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/metrics.json": {
+      "bytes": 77278,
+      "sha256": "68b363cb87c5b5927e1b0e7f51ec9f2b05c23dce99972fcfbd3ecd1288929bf2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/quorum-trace.json": {
+      "bytes": 2983648,
+      "sha256": "67a56ec175c559a472b478eff87e42a7b93f5510034eb737a0ffa68ff2253e9c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/raft/raft.log": {
+      "bytes": 928091,
+      "sha256": "8202f8262e29c8a410d815d9d80de9fc25a872f3fd00484775ded8aab97e27a7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n2/status": {
+      "bytes": 3558,
+      "sha256": "913560639be661217d57f10ff9d745c3ccc25a01492df894b08f924b2cd9428c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/catalog.segments/b5f609d61e31e946b6a6c447478c9a43/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "738167e0df43b9518cabb118ae4f496f5c12bd2918757d98fa7254511ad7671b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/catalog.wal": {
+      "bytes": 117,
+      "sha256": "925ba0ae4b6413d0e0bdb7fc09e790ef92020d7a0cda609466bc07bfcf5041bb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "7109caa6c47b252acc1f3a5022942effd237f303468a1b8698c79c25bf3491bb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "bf58e4ded1eb3e014fcde2ca102ab65767bd03537f387991b1b3bb58c25cc585"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "40ab181dc422a3cbc734f70159472c6658c2d1f8ad776bbc4b6f4afb86878255"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "6f5ee13dc250a4dadede5951a277477a3aac02e571872cddd32b25540c261512"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/metrics.json": {
+      "bytes": 75444,
+      "sha256": "e53ae72a62efa3829e75f61b416bfcd09fd8cd1d233e2f9b33d332dcbc749f77"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/quorum-trace.json": {
+      "bytes": 1196366,
+      "sha256": "2478cfc044c7d06780799283fc135d226a302145c51764a1a9087138e8fa03b8"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/raft/raft.log": {
+      "bytes": 928091,
+      "sha256": "8202f8262e29c8a410d815d9d80de9fc25a872f3fd00484775ded8aab97e27a7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/data/n3/status": {
+      "bytes": 3522,
+      "sha256": "2c0568010ba668e861a6e8b61bc1922b9d882e498ba9fc96ab4bea27e4dbd135"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/tmpfs-retention.json": {
+      "bytes": 5975,
+      "sha256": "3b0ab7289603f457dbdc6f74a8bcc39e1b110d6ed0874ad16537c9f7ea82a580"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/fixture/tmpfs-voters.json": {
+      "bytes": 35796,
+      "sha256": "3a31c524e321f8f1f946e318cc1d189fcd69b7635557d43acd389adb12307540"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/host-resource-samples.json": {
+      "bytes": 1264849,
+      "sha256": "7751f14db03e15b4c807e45eda2a502f79af3eee176eeac2bcbb742f8adec796"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/listener-after.json": {
+      "bytes": 936,
+      "sha256": "289445c2a5bf1bdf3b4ffbb14ab8577f21f72dd3ded11751e2d1bf9505afcf59"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/listener-before.json": {
+      "bytes": 936,
+      "sha256": "daed68de14f89c2b42351efd80b276f59c6ec39ae17b14625fe014e539ba0e1b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/post-client-allocator-provenance.json": {
+      "bytes": 4155,
+      "sha256": "f519a19f028b24ac6662d477417865dfe68af45782f7ae8d811863f135f20c59"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/post-client-fresh-drain.json": {
+      "bytes": 41693,
+      "sha256": "4e6dcc9aa0c13ffe7b269cf78156f0997b78c7c254aa02fa9310bc59ba555983"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/post-readback-fresh-drain.json": {
+      "bytes": 41696,
+      "sha256": "cbf1b9efce24978572c0fe850ce1ad9337b1eed132bec3b227b1d9389abdec38"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/profile-plan.json": {
+      "bytes": 473,
+      "sha256": "c2772ebe06391ae939d3340873fc4f369ec8f5c9b4025d4f9b987a2ee97c99af"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n1/expected-identity.json": {
+      "bytes": 185,
+      "sha256": "12ca142d72b78e27ff1d9ef477bec0fc2f5045b8133152f431055ccb1f02d61b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n1/metrics-before.json": {
+      "bytes": 75726,
+      "sha256": "79e1b23c44f31e106e13a575ab50c843e8802060f559c0863ce1eae7b3f4043a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n1/quorum-trace.json": {
+      "bytes": 1196871,
+      "sha256": "c048f7428682c49eca3f179797af53d92d01fc601e9624a54098b5805bf7f15e"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n1/status-after.txt": {
+      "bytes": 3507,
+      "sha256": "d3adf6c4ef14b539300d4349c8332523572edc99619fe0031008b6549d4a718d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n1/status-before.txt": {
+      "bytes": 3514,
+      "sha256": "ed4d6a653d8444a9301450474e3aa4aa38971bee18240d8ace88a2188d5f279d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n2/expected-identity.json": {
+      "bytes": 185,
+      "sha256": "a2d9f316b72f3ab3aa2931860130f2500ab8fea71043f6f25b81be3b5f0a7403"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n2/metrics-before.json": {
+      "bytes": 77277,
+      "sha256": "2211cc36288aa8b16c66309327febfef10167f27f32d7c8c6aaa866260059940"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n2/quorum-trace.json": {
+      "bytes": 2983648,
+      "sha256": "67a56ec175c559a472b478eff87e42a7b93f5510034eb737a0ffa68ff2253e9c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n2/status-after.txt": {
+      "bytes": 3558,
+      "sha256": "913560639be661217d57f10ff9d745c3ccc25a01492df894b08f924b2cd9428c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n2/status-before.txt": {
+      "bytes": 3565,
+      "sha256": "010aea6c64713da91d7a65b66423de73be53f7b14132ae4009659e01fe301f24"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n3/expected-identity.json": {
+      "bytes": 185,
+      "sha256": "83cb3d66d9d6cd2c1e0226b066cd1f7ac74ec7d03ca13f4f9453b1f509e22c62"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n3/metrics-before.json": {
+      "bytes": 75444,
+      "sha256": "c29c1caea487114b9e60162a89c2a495c9328e8c95ff291ce911ca4c44b13cd2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n3/quorum-trace.json": {
+      "bytes": 1196366,
+      "sha256": "2478cfc044c7d06780799283fc135d226a302145c51764a1a9087138e8fa03b8"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n3/status-after.txt": {
+      "bytes": 3522,
+      "sha256": "2c0568010ba668e861a6e8b61bc1922b9d882e498ba9fc96ab4bea27e4dbd135"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/n3/status-before.txt": {
+      "bytes": 3529,
+      "sha256": "2710bb44cb8c186a5a173d2a4633087cf515b8fa17f491501ab5934be76d7278"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/quorum-trace-exports/record.json": {
+      "bytes": 45027,
+      "sha256": "3dd442a194098c9ef8e134f226cfcf0e71657261adc59125f42ac5ea2992e390"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-00.txt": {
+      "bytes": 80906,
+      "sha256": "7a4486eaf2b2e68b0b15d5485944e75edb1897ef1d4a4544a61a700775d85823"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-01.txt": {
+      "bytes": 80906,
+      "sha256": "0fcf6ca5a2a1d63e4bd4fb3c2981eaff766b5012aa2b49a34ec653dda8288c5c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-02.txt": {
+      "bytes": 80906,
+      "sha256": "597826d17aa88a0fd02a48eb4012440f4d56740e45065eef09d569fd460f9c03"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-03.txt": {
+      "bytes": 80906,
+      "sha256": "9be838267aec96d19d96cd92c5491c6b2820036188b4a41bf91cb01e7cb7ddd1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-04.txt": {
+      "bytes": 80906,
+      "sha256": "45df843741ac938ec851ebeb1bfdc9917f04757008b929946c5ef0494e1ccaac"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-05.txt": {
+      "bytes": 80906,
+      "sha256": "0eca2b2ec716fe0402a9aeba7d48ebf74f5344327308451d85ac3a6fa219c848"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-06.txt": {
+      "bytes": 80906,
+      "sha256": "d553e0cc3ec237138f4cb78f145807179d621e3a7d41cea516cbd0274034d4b2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-07.txt": {
+      "bytes": 80906,
+      "sha256": "a48f00950e013a9533a01f3a527bfffe36e0e7d2bbd26824fac83a5b8b361049"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-08.txt": {
+      "bytes": 80906,
+      "sha256": "f3ee91e30e4dfed8ad4b79ffb73b2b86be03d5e05dd49ae32b9436c5e7803924"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-09.txt": {
+      "bytes": 80906,
+      "sha256": "9819663fc372750534f5fbc475c8e9ca3491c82269aa79f9764c11fbccfdd8df"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-10.txt": {
+      "bytes": 80906,
+      "sha256": "3c4abdf0c7b03a60c4ff0dd17e59b6a11b264f378940df1ddb6616164bc2eb4c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-11.txt": {
+      "bytes": 80906,
+      "sha256": "061d3c1a3cb25b222c700789bdf1a92dd37c1a3e63e28e53e6d2de1ff6afcbef"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-12.txt": {
+      "bytes": 80906,
+      "sha256": "a77dc95533ca981512c3e10b503db3e21eef3693710f0048f1b5ea946ab4ea5d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-13.txt": {
+      "bytes": 80906,
+      "sha256": "df1ef5c8f7decb47fb46ca2df9958509aa935f58f2f8eb7690da1e9d6336e4c7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-14.txt": {
+      "bytes": 80906,
+      "sha256": "b2dfd804c16ba22a507fc2b4e6c70d53a076baa7a9ba7a614d534cd15ad268d8"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-15.txt": {
+      "bytes": 80906,
+      "sha256": "91c933da02b545d85e9d1b64089d49dfc49ff85787eb24d46dcb62fc00b15818"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/readback-16.txt": {
+      "bytes": 324,
+      "sha256": "4cfa657a09f30b9374fc431d93a9f963b8eac28345bf72e54f43cac0934f8886"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/requested-config.json": {
+      "bytes": 808,
+      "sha256": "d4c5b374de86e03138d809f2bd17d23274ea1339a2cf9dba78dbae7797d93778"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/resource-coverage.json": {
+      "bytes": 1649,
+      "sha256": "afd30677d415f6acf6fb2bee85e639ff4a78439ad0c3348d215f9916942e1f1c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/resource-samples.json": {
+      "bytes": 784490,
+      "sha256": "fcb146df8761e1f1bf53056ffe4a3b84987eaa19958578a9f5814d3507c0680a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/run/report.json": {
+      "bytes": 1431840,
+      "sha256": "2a22b0bb5b06fc8d1b3a77d08444ff15722008e0e11aa55d75fb934deb08f7b7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/sample-calls.json": {
+      "bytes": 626426,
+      "sha256": "cde721513e4d31c2c28d8354df6cabba89b3092f3c9b30d96c79efd0c15f388d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/storage-preflight.json": {
+      "bytes": 636,
+      "sha256": "74ded207e632052d0f9dbcd2f780f244fc461afec4b93e0399e7b0f99cb6cf7b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/storage-resource-samples.json": {
+      "bytes": 76038,
+      "sha256": "be1ee1e6ebb03c053d09adcc14914d3459fab858ff4b950a72f327300106061b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/summary.json": {
+      "bytes": 21596,
+      "sha256": "2cfcbd7e711f8c97974736697a3bdc721a49de62ab2fa49ae3072481cce601b8"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/002-trace-c1-r1/trace-capture-hook.json": {
+      "bytes": 45027,
+      "sha256": "3dd442a194098c9ef8e134f226cfcf0e71657261adc59125f42ac5ea2992e390"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/after-metrics.json": {
+      "bytes": 931080,
+      "sha256": "00d361a22b65cb81c3c704e7001eaab9cadbd3c98e067c4e13cb1758916ee111"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/after-resources.json": {
+      "bytes": 1764,
+      "sha256": "2bf7720067733b3bcbb9f8fd91e7a4a772a5951276d15627f60043445ee08377"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/after-status.json": {
+      "bytes": 12825,
+      "sha256": "8bb86b0d7c3570b75a96f3b4a132685c504d56c9646e434f2b7602301b07a951"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/before-allocator-provenance.json": {
+      "bytes": 4138,
+      "sha256": "2af52b8909f9974d04d2b98572643b2e8318dffbefded85718ada6f06b3d0705"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/before-fresh-drain.json": {
+      "bytes": 40554,
+      "sha256": "67b0eb28d04504bd2f1b36649151fd05c4a83ab10c76aa29eaa6e8e0545905a3"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/before-metrics.json": {
+      "bytes": 928662,
+      "sha256": "f2d1cd9e019a219de42583e9e321e0325ea065d9111078ab2c9d2bd9e729a666"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/before-resources.json": {
+      "bytes": 1739,
+      "sha256": "0501d0080cb05d7ccf26e24b2c513ebd71357fc73876139140d600f68532f0dc"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/before-status.json": {
+      "bytes": 12748,
+      "sha256": "16d0e00e75ce97670be23cbc1e52fc85450922d31a5601ef5c231ab315f92459"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/cleanup.json": {
+      "bytes": 5847,
+      "sha256": "fe40eea70bd02f7d93d21768394aa9b158220229cba7cb36b1baa471d1794974"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/client-exit.json": {
+      "bytes": 64,
+      "sha256": "971a33092c3eecc99e2187714280193722fcd5faba3ede9154ca3b2e09c01e90"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/client-identity.json": {
+      "bytes": 908,
+      "sha256": "e00a133fac64159c9f38ae91f066244a5d498d4da5192e4decd7829e5279b0f3"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture-result.json": {
+      "bytes": 21593,
+      "sha256": "31144f216f43a65e3bb98d91ffa537dd775b33a64a606c7ab939c93c36a93425"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n1/catalog.segments/05a17916c0f8d63d16522d776098979f/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "5ae13e15e5b5ef7a14802ae93a16e954e428b0944f465b3f5f7723d71e201886"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n1/catalog.wal": {
+      "bytes": 117,
+      "sha256": "13d31c0af82e743a1dcb87947507c9f68e3e410016f0769e2e0bd6f6837666a7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n1/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n1/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "5d2ff60ecb31ba8a39e584eec1360b274c5af930333d0ac75dcd38c96ea1d5ff"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n1/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "534124ae1f879e25d08d1d6eeca602472e9aeaf3f0a2eaadf3ed7cbcb8f00008"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n1/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "eac06f13e53bf5d0e15be9d45fe6e1f8341407736ce5946860545993dfba1bdc"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n1/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "8777716c296e45675a6b4ee5e9cd2f31863a89f4f96f31e85966dcbba2149d15"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n1/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n1/metrics.json": {
+      "bytes": 61934,
+      "sha256": "b41be0c98c24c2208eb7700618585a880553a8ba5ddbe3bab109f1fb4e1e7a69"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n1/raft/raft.log": {
+      "bytes": 928091,
+      "sha256": "184b9d5c84fa0d248cc081a0f9c0db11dcac1a26c11f6cb079e490b2f357de87"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n1/status": {
+      "bytes": 3439,
+      "sha256": "8245bf47581045785041e02b95b56e2532285a95f1fa3ad95288954dea217e91"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n2/catalog.segments/d8c1c5c3b2ce103470b6e4fb69867520/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "5159c37a815995e142f84c991b19aa74954bfda7c93547fdc29884e9cbeb21b5"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n2/catalog.wal": {
+      "bytes": 117,
+      "sha256": "0404c47f890cc8fa8f4a3daea03b110525df548c37c65e58206f256c43b44f9d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n2/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n2/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "5d2ff60ecb31ba8a39e584eec1360b274c5af930333d0ac75dcd38c96ea1d5ff"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n2/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "7f8fff703730d891f1457fcb261218e60a1e70bcdb8d2b99ab9eb19384731e4e"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n2/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "cb7214903aabd992e13ead67a98c1b6c1afb193a332217ce5c5d2dabae0dcc9c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n2/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "13050bf5028b0f6d050bc5fdde1495a8bb6394059972b0da4b431f4000c951ab"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n2/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n2/metrics.json": {
+      "bytes": 62794,
+      "sha256": "70976949eb268cdd8f19ce780e67857556fcef3a025504786edd92c24b94d432"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n2/raft/raft.log": {
+      "bytes": 928091,
+      "sha256": "184b9d5c84fa0d248cc081a0f9c0db11dcac1a26c11f6cb079e490b2f357de87"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n2/status": {
+      "bytes": 3490,
+      "sha256": "d59e076f0c2e021581a96fda08f8605b65997b5025d59d96146df11166e9bd75"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n3/catalog.segments/4e7290444f052406771616f8a35157d6/00000000000000000001.wal": {
+      "bytes": 830027,
+      "sha256": "6f92cb220a6b4ce6b797616f83e1d176230c9b0afb5764f69544fd2d2e4f799b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n3/catalog.wal": {
+      "bytes": 117,
+      "sha256": "e4673a857d525cc16c2f11d77159e9a1e31199e5d869359a48f4f685b2b8716a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n3/kv9-initialized": {
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n3/kv9-root-descriptor": {
+      "bytes": 179,
+      "sha256": "5d2ff60ecb31ba8a39e584eec1360b274c5af930333d0ac75dcd38c96ea1d5ff"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n3/kv9-serving-endpoint": {
+      "bytes": 235,
+      "sha256": "39f86a8dd570b5d93fef297bf93aca073c6a0c772b13f189277ae72fb3e85238"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n3/kv9-store-identity": {
+      "bytes": 80,
+      "sha256": "72881e4b8eb8fa46903526afe2fb65575106a902a9e9c0ca856526138953fc7d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n3/kv9-store-lifecycle": {
+      "bytes": 97,
+      "sha256": "67253dd7aa2986c1be20ed4419db17d4bf29b9de6dfd522a6df8d6b0f3ebec8c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n3/kv9-store-lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n3/metrics.json": {
+      "bytes": 61698,
+      "sha256": "4ad57143a727904aca2b306fb6334845f8a0273030288ff4276cdcb48ff78101"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n3/raft/raft.log": {
+      "bytes": 928087,
+      "sha256": "d6c0fe64aa52157a0676e4c04f5ad34fce9b0bc951abb3a24e4cedf88f9ffedd"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/data/n3/status": {
+      "bytes": 3454,
+      "sha256": "54e3d1417530ab03bc11f5b003d53422097a55c6fe0599187fac382b04274f2d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/tmpfs-retention.json": {
+      "bytes": 5122,
+      "sha256": "aa63f01c9162f8745ca8142e0a28477440d6b0339f7ae8d590a2662527d2af3a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/fixture/tmpfs-voters.json": {
+      "bytes": 35853,
+      "sha256": "2c1631385bd1b72249dbf4f4c652e13f4dd2a0bf1b185338da79a1d5d55f8248"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/host-resource-samples.json": {
+      "bytes": 1276244,
+      "sha256": "ab69a3a16b661dd6c60a72bb4bd52f3cce84cf32fd5f652c3698deeb6b3fa920"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/listener-after.json": {
+      "bytes": 936,
+      "sha256": "0b1037079ec7d8e5c1b4f6de1801c99d9658a15a1dadb181cd5de43dfba3f8fe"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/listener-before.json": {
+      "bytes": 936,
+      "sha256": "e7ac706fc3375185ff6859e5b41fe06fd3281d79ddddd6b9869dce434fb34657"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/post-client-allocator-provenance.json": {
+      "bytes": 4165,
+      "sha256": "0d3d3681cf2c2daec310fa6da074f561e5f1b93bee7e1056da198b496a3b43fb"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/post-client-fresh-drain.json": {
+      "bytes": 40790,
+      "sha256": "c75fed010921c0cb7f98ff95457e88bd3c81f607cad49bd5f6cd6f911b8b6353"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/post-readback-fresh-drain.json": {
+      "bytes": 40793,
+      "sha256": "032499dbfae4b1ee189906e84858284fd32c2e516812356c36636368dc964070"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/profile-plan.json": {
+      "bytes": 477,
+      "sha256": "c9aa73b58190b515d07d4d699f6441c9e7d5014dfdb6e5331a6c3e0ac86ec4a2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-00.txt": {
+      "bytes": 80906,
+      "sha256": "2eb3584c1a06596a929b038ec6b2d3cfa97c274e7b1e79989c775190d6fe9f7c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-01.txt": {
+      "bytes": 80906,
+      "sha256": "e69d1ebc779d27b2163c760cebe4a605a7418b71085aa8e63e1f192bacfd4b3f"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-02.txt": {
+      "bytes": 80906,
+      "sha256": "a25555978f418834d487320f2277498c7fb75b32bd4cfdfe29df2e1b666eab66"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-03.txt": {
+      "bytes": 80906,
+      "sha256": "33d064fcfa3a0b3fe1b22b3e20e8b13b8acefd62208da76f16abdecd4b4279bf"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-04.txt": {
+      "bytes": 80906,
+      "sha256": "9260d3cc32cf56792da9cc24a1b16735e69b05dd5b0422ec0c2bb4a29ed4bac5"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-05.txt": {
+      "bytes": 80906,
+      "sha256": "d23381a320ed3a4ca1fe66d3d7406e32b24d8c97dfad70d68c5aeaee61e02ab2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-06.txt": {
+      "bytes": 80906,
+      "sha256": "9fc7c63b72d3ae6e97f6a7f6c3f496f9a4033bfdf402ee2d2f9412e6c17e5094"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-07.txt": {
+      "bytes": 80906,
+      "sha256": "af6842f1fb209a0b8506b86740b1d659cbfbe8bf9abc58cc1fa9487e5495a86b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-08.txt": {
+      "bytes": 80906,
+      "sha256": "63038ee288b6cad6326aed4dc7d50992a86241141badb3fa08add9e162894182"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-09.txt": {
+      "bytes": 80906,
+      "sha256": "5e23eeefeb63815565e5a4fb9b1cfdee4117b3cfc30c8c455cad35fefd2ebf8e"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-10.txt": {
+      "bytes": 80906,
+      "sha256": "49856f52973093b99241562b2c17c9591b26f0b4bd721d88e5113928e9cde2b6"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-11.txt": {
+      "bytes": 80906,
+      "sha256": "532cdb89712078804f1e68dd8fbd49d96d8510fc8125a486e6a61dcbb9170458"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-12.txt": {
+      "bytes": 80906,
+      "sha256": "3fa7672e34f0f894478bc27b97134887306627c44a52d810976372bda852ca8c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-13.txt": {
+      "bytes": 80906,
+      "sha256": "2a6a9eb28846e5b6ac9d393fb5a5592972085871973906c038b368beffc9c96d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-14.txt": {
+      "bytes": 80906,
+      "sha256": "de3d5aca41209731ad0abf985f4b9012df933e8cab32ea331061695df047964b"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-15.txt": {
+      "bytes": 80906,
+      "sha256": "6aefa74d4c98063a97403dcb801c4299191175d53663c2487842c7ffffea1fb7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/readback-16.txt": {
+      "bytes": 324,
+      "sha256": "0dd2c0b4f834032b9f22302efcab473bb09e83852ab733717a0a141feca6dd7a"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/requested-config.json": {
+      "bytes": 808,
+      "sha256": "539976c333706d265ba658f9bcbbb76d86002898561f3f5141d26b6cb4ad633c"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/resource-coverage.json": {
+      "bytes": 1649,
+      "sha256": "aae099fda44a2d628f8aa36345c05a35d69d631fe698cfbfba455024fc5d2c24"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/resource-samples.json": {
+      "bytes": 791585,
+      "sha256": "9d839c148fa0e84f3b1c9bdb1fc69c25ecd4e6fa504acde6ab575082256329d7"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/run/report.json": {
+      "bytes": 1431781,
+      "sha256": "71475c8e7adc4a410be3de2f4c12a00ec8e5027932b1fe094c6791ec5ef1db65"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/sample-calls.json": {
+      "bytes": 632097,
+      "sha256": "8e827cb29eb94e012ae29359e11cfef9e9d46ed0b28d45da5dacb615197175de"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/storage-preflight.json": {
+      "bytes": 638,
+      "sha256": "b8654e92e83ddb4aa859c48fe58e39944a19880d67cc1ded934a0f97c07145aa"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/storage-resource-samples.json": {
+      "bytes": 76947,
+      "sha256": "4e19fb9bdf0e0467661d7caaae5c699ad2fd1bb3a8ab3257ee173df982c0d068"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/summary.json": {
+      "bytes": 21593,
+      "sha256": "31144f216f43a65e3bb98d91ffa537dd775b33a64a606c7ab939c93c36a93425"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/003-control-c1-r1/trace-capture-hook.json": {
+      "bytes": 83,
+      "sha256": "8a0a456719ca047a40213816a44f9b98bab01bc5ae7f5e185a71e728fed5663f"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/build-bindings.json": {
+      "bytes": 1359,
+      "sha256": "f15e5757270fca6e288473ae2d777095cde294f2e9ee8a27c8fc41a5e214c2ed"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/protocol.json": {
+      "bytes": 256546,
+      "sha256": "1d5e05e7707619585ae3b410c85ca77775d61a796fa0b9f0224d81cfe97a2dd5"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/cohorts/summary.json": {
+      "bytes": 103238,
+      "sha256": "3188eb3b1b7e4dfdf5b7131e824964934ab4eca0fb3675de43f6b4ecff8c189d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/invocation.json": {
+      "bytes": 569,
+      "sha256": "4d5252e61b167a9f1a8bcabe7603609ca463f893f327d803eb2e283c35353bf1"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/isolation.json": {
+      "bytes": 2108,
+      "sha256": "c3af50c1cbd9d4ad64fd2f75715db533ca340755d9878ea73cd69b8fb350895d"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/kv9-chaos-ci-p0-20260908-control-plane-isolated.json": {
+      "bytes": 845,
+      "sha256": "5d0c3fbc0674f0eccef49e2a0bb6799105456de40c30de20cc37b8ac9a304ab2"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/kv9-chaos-control-plane-isolated.json": {
+      "bytes": 829,
+      "sha256": "0ddcdd65f983a80b7d79aa19744661bdae14192413225fec6f28a4b6c7eda893"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/kv9-minio-dev-isolated.json": {
+      "bytes": 11065,
+      "sha256": "d7d46d27112af015f0ba8df9296a82eeea443e622df4433ef75c53fd109d9baa"
+    },
+    "/tmp/kv9-quorum-trace-slots-isolation-first/summary.json": {
+      "bytes": 170,
+      "sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8"
+    },
+    "/tmp/kv9-quorum-trace-slots-release-first/build.json": {
+      "bytes": 87899,
+      "sha256": "6599e57c486e289ed101ec6e50a32f7b0a7aa5997531ca8c9152dff06ad9a628"
+    },
+    "/tmp/kv9-quorum-trace-slots-release-first/cache-safety.json": {
+      "bytes": 21389,
+      "sha256": "b1890496c38d21ba335761567916d902b53bf98546a1579b0b6ee27acb85006b"
+    },
+    "/tmp/kv9-quorum-trace-slots-release-first/kv9-cargo.jsonl": {
+      "bytes": 211791,
+      "sha256": "b3eb75fbb7ca6617ffd2aa7844450872c0e8bc985b7c08f037308bbedbcf36c8"
+    },
+    "/tmp/kv9-thin-lto-main-integration-release-verbose-first/build.json": {
+      "bytes": 72507,
+      "sha256": "582ee4f5840aa8cf04168ee8aeffe92250ed0807ee3f53aea93b25d3494b809d"
+    },
+    "/tmp/kv9-thin-lto-main-integration-release-verbose-first/cache-safety.json": {
+      "bytes": 21997,
+      "sha256": "5751e4796ab0b430d92d66c12a8ca046be2c2b9fbc1cf616b6ec59c942517564"
+    },
+    "/tmp/kv9-thin-lto-main-integration-release-verbose-first/kv9-cargo.jsonl": {
+      "bytes": 212090,
+      "sha256": "35d9ddcda68e7e86289838f7a859665d8ee8ed867ed5e0667811cac4553afd16"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/PREPARATION.json": {
+      "bytes": 604,
+      "sha256": "d6bc2aae6cba46ae36897ee5a3d7eec69cdb79ff5585ffeeeeaffde3eb911498"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/README.md": {
+      "bytes": 3212,
+      "sha256": "dcba5dd0c4534a5d27fe6a9b12ffab005afba05a26bcac39689e920c90f7d580"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/common.py": {
+      "bytes": 5758,
+      "sha256": "b63bdf8b4a986d8df248d8ace4ec614cbee89386f619dc48b74bfa9a8686e000"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/contract.py": {
+      "bytes": 4598,
+      "sha256": "4e9214e5f75c35bb83ed65192fd85aea036969833938e23b51f183720fc5d3b9"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/diagnostic_build.py": {
+      "bytes": 1874,
+      "sha256": "46ac4f0fe4e9365ae767c69b3ccacf5d6009881904cf2ff53f74077065ebde2d"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/isolate-and-run.py": {
+      "bytes": 12536,
+      "sha256": "7dcab2745b1e3fbc6a04bcc0d155b1c1c5a0cd3b91ae23bcab359bf47e36f1d2"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/metrics26.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/native_checks.py": {
+      "bytes": 23685,
+      "sha256": "826deff55f373f38b5c7a87d14a341a4232704a8e9d64e39a9b1a241351e9d07"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/outer_checks.py": {
+      "bytes": 4428,
+      "sha256": "b5b00ce102aba5694c6c123cd33406876cdfb9fcbbd5c458b7f752e5aae41757"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/preflight.py": {
+      "bytes": 1346,
+      "sha256": "6b6e6546d1bc9198e5fcc755fc59f5952cbfe15177ba26f9e2566ccaccd780b7"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/read_stages.py": {
+      "bytes": 7511,
+      "sha256": "abbfd917c24465fedca8440999d50d9bef7493c859d2591e8f6f0d16a9437d42"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/readback.py": {
+      "bytes": 6516,
+      "sha256": "fde0d6caa108d6dad3d3e4601c43073a8e04a873ae3a51ebda908582df93c2b3"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/run.py": {
+      "bytes": 6205,
+      "sha256": "cfd57cc56d46d2f8c54267d1c401ccd3a26557a46d3e3be830175caba502cbf7"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/stage_checks.py": {
+      "bytes": 8868,
+      "sha256": "87206cfc58f15cd76fb6ab57c774fe4b5443a38777b160789b6ea62481c3ecab"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/test_read_stages.py": {
+      "bytes": 8008,
+      "sha256": "c7416bf8f2a8f759ee192276a03bfb48b49d8ab7a18f1c9904bd9f1b1baa3265"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/ancestry/v3_fixture.py": {
+      "bytes": 51967,
+      "sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/common.py": {
+      "bytes": 5942,
+      "sha256": "bcf475bed28698a344b4fe2989da525210d2af55a27deb941588868c8c768d5e"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/contract.py": {
+      "bytes": 4624,
+      "sha256": "f15d74005cddc28fb6e96249c73e02a53c5ff3a2a313e7a65c8e027b44d33a71"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/diagnostic_build.py": {
+      "bytes": 1997,
+      "sha256": "f428b8346c3d0998b0e6a01a9c7a813ea230b7b6993f0efc2e803bb443f27f35"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/export_hook.py": {
+      "bytes": 17797,
+      "sha256": "fe5c761cc8f6ce694d2e03bfe7554f19a6a3f3f1c5c763861e29052bc30e5e55"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/isolate-and-run.py": {
+      "bytes": 12536,
+      "sha256": "7dcab2745b1e3fbc6a04bcc0d155b1c1c5a0cd3b91ae23bcab359bf47e36f1d2"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/metrics26.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/native_checks.py": {
+      "bytes": 23685,
+      "sha256": "826deff55f373f38b5c7a87d14a341a4232704a8e9d64e39a9b1a241351e9d07"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/outer_checks.py": {
+      "bytes": 4428,
+      "sha256": "b5b00ce102aba5694c6c123cd33406876cdfb9fcbbd5c458b7f752e5aae41757"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/preflight.py": {
+      "bytes": 1346,
+      "sha256": "6b6e6546d1bc9198e5fcc755fc59f5952cbfe15177ba26f9e2566ccaccd780b7"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/read_stages.py": {
+      "bytes": 7511,
+      "sha256": "abbfd917c24465fedca8440999d50d9bef7493c859d2591e8f6f0d16a9437d42"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/read_trace.py": {
+      "bytes": 24037,
+      "sha256": "c43d73e4876711d43a50c62cd4b370700be95f470d6ebb321cba1583b0619046"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/readback.py": {
+      "bytes": 13012,
+      "sha256": "0a058e79a573b480c4075b25bdb6466a176b7ccce117ef749b2514d47a48c851"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/run.py": {
+      "bytes": 6846,
+      "sha256": "65e968563504ca4289538dce3eba95a93d07ff9c7172fb796cdf397f5ee68b12"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/stage_checks.py": {
+      "bytes": 9854,
+      "sha256": "cf43fb4cb3fc30dc2ad963703804aae254d075977cd1821ac89f3f02fd7110d5"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/test_campaign.py": {
+      "bytes": 8292,
+      "sha256": "5d3cc5df91f2568d1288c01de42b52a1d5a2e7abfc63aec1a439b018d2e76f11"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/test_export_hook.py": {
+      "bytes": 14223,
+      "sha256": "84cf0f0e9daf9dc37bb900aeb1efd88760c480088fd6de6f602466b1190c981e"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/test_read_stages.py": {
+      "bytes": 8008,
+      "sha256": "c7416bf8f2a8f759ee192276a03bfb48b49d8ab7a18f1c9904bd9f1b1baa3265"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/test_read_trace.py": {
+      "bytes": 14338,
+      "sha256": "df246b415bcfc303aea47ab8bbc7d78b287a8b8e8f1468be3d273ffb1a69a3d5"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/before-control-error-type-repair/v3_fixture.py": {
+      "bytes": 51967,
+      "sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/after-metrics.json": {
+      "bytes": 340,
+      "sha256": "09ea6c85975c58d91e03717972534830aed952a3bc99829baa5c950902932771"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/after-status.json": {
+      "bytes": 757,
+      "sha256": "58b719f8a8034910a321f04cb56ac6e7fcfa769e1122d87e69bccc9d1689488b"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/cleanup.json": {
+      "bytes": 463,
+      "sha256": "3a0d42f915a4efd1008ab4afcdd35e16d1e870301541e05a354ae697f7d93d88"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/client-exit.json": {
+      "bytes": 49,
+      "sha256": "ca7cc63f6d71536b4da76ae546feb9aa05104e7c5511a6bdc2c29b6dfbba2e94"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/client-identity.json": {
+      "bytes": 97,
+      "sha256": "c396949096b01a27371849519e2e18297e0ea67b6dac071167ed6c296b33a4ad"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n1/metrics.json": {
+      "bytes": 110,
+      "sha256": "aa52e05837238561de1e30f8abeadee991c18be03b75c7342774bb3bc6529f26"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n1/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n1/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "45c55f0ddc8af38833059383ba842162d2dff4cf5bd3d394ea98a45b7c83ead2"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n1/status": {
+      "bytes": 190,
+      "sha256": "2add7e13a6155e614290352d9dc51d1c4400b3c71b7e93baebc8c019919185ac"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n2/metrics.json": {
+      "bytes": 110,
+      "sha256": "41042a9d4fb8b05f76ddc0c97bb00a1181aa2e954811a8bddbb2318d4cc96c72"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n2/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n2/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "0ea500224c2af2c16b115cab27f055fec7b442d32893635db3cd334c4181ae79"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n2/status": {
+      "bytes": 190,
+      "sha256": "9ffa89de98370d427a22787f1317c5fdf086447038a36b7712fd746fe36914f1"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n3/metrics.json": {
+      "bytes": 110,
+      "sha256": "cab18e14157ea82fb879188eef5d74ca489f113007f0722bdcb6418b24d68717"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n3/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n3/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "375e5a252c0d5e733d41b3d4c57ee5aa2e69a31ca7fd94c28b9f41262e382fcc"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/data/n3/status": {
+      "bytes": 190,
+      "sha256": "65f7aef19e99f88c174498fa5aab79477ed073b1822d822833397681ecbc132f"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/fixture/tmpfs-retention.json": {
+      "bytes": 369,
+      "sha256": "f01677ee018e83ec9bfad0893fb73714ad660e102a4a5bfa4c5c740d5a7c1849"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/listener-after.json": {
+      "bytes": 58,
+      "sha256": "47ac1c50c9a6026475254ee293fb1d98310279eba676fcebe3295e54fdc77055"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/post-readback-fresh-drain.json": {
+      "bytes": 2414,
+      "sha256": "f5de5ea054aceee60960d56f71eb716b73e843440230472b15968886f9cd0ac2"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n1/expected-identity.json": {
+      "bytes": 146,
+      "sha256": "baae8c6f6a6b00b7e2b9e11594911d51ef1fa10bc54f67da4ef8f7954ea2559c"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n1/metrics-before.json": {
+      "bytes": 110,
+      "sha256": "aa52e05837238561de1e30f8abeadee991c18be03b75c7342774bb3bc6529f26"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n1/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "45c55f0ddc8af38833059383ba842162d2dff4cf5bd3d394ea98a45b7c83ead2"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n1/status-after.txt": {
+      "bytes": 190,
+      "sha256": "2add7e13a6155e614290352d9dc51d1c4400b3c71b7e93baebc8c019919185ac"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n1/status-before.txt": {
+      "bytes": 197,
+      "sha256": "7eac99523e4edfe75fdf3b7cb9e8e7bf7cfd6be1af50f97b674ce25e214b7c31"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n2/expected-identity.json": {
+      "bytes": 146,
+      "sha256": "97bd13b8157834373a70358a8a166b96ec179c1f4a34004aaaa8942e69407bbd"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n2/metrics-before.json": {
+      "bytes": 110,
+      "sha256": "41042a9d4fb8b05f76ddc0c97bb00a1181aa2e954811a8bddbb2318d4cc96c72"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n2/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "0ea500224c2af2c16b115cab27f055fec7b442d32893635db3cd334c4181ae79"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n2/status-after.txt": {
+      "bytes": 190,
+      "sha256": "9ffa89de98370d427a22787f1317c5fdf086447038a36b7712fd746fe36914f1"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n2/status-before.txt": {
+      "bytes": 197,
+      "sha256": "6a5562d2c3f379cd6a5e3fe7dcc27db2d7745aa0def771a4bebbfda5680aadda"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n3/expected-identity.json": {
+      "bytes": 146,
+      "sha256": "56815f51aed58145100f6de68760812d1cfdac83c608be88ac085200ef3adcfc"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n3/metrics-before.json": {
+      "bytes": 110,
+      "sha256": "cab18e14157ea82fb879188eef5d74ca489f113007f0722bdcb6418b24d68717"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n3/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "375e5a252c0d5e733d41b3d4c57ee5aa2e69a31ca7fd94c28b9f41262e382fcc"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n3/status-after.txt": {
+      "bytes": 190,
+      "sha256": "65f7aef19e99f88c174498fa5aab79477ed073b1822d822833397681ecbc132f"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/n3/status-before.txt": {
+      "bytes": 197,
+      "sha256": "66350c98af1748834489e71adf3d1fd21ea61a97fa024a3660507c3d0f97131a"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/quorum-trace-exports/record.json": {
+      "bytes": 10800,
+      "sha256": "5d587fefc432aadaf1b83924e5214791280f9cb8a4ab7a9c70cdd6cf6e04998d"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/storage-mounts.json": {
+      "bytes": 556,
+      "sha256": "f16ef544df7c56b75b0458a245cdb0969d8ac985fd81c928e422e3a7bfcc4deb"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_complete_export_binds_original_bytes_and_actual_launch_identity-___fiq0c/trace-capture-hook.json": {
+      "bytes": 8818,
+      "sha256": "fb18fcbc192a14305197060d390d8579d0c6b5065f64648e311bc091bf042c94"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/after-metrics.json": {
+      "bytes": 229651,
+      "sha256": "ebd2fe22ce67491f8ef2e97aab5fed7f249f37233c2c670d161af97b9a31726c"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/after-resources.json": {
+      "bytes": 136,
+      "sha256": "7f866dd0353fda30906c062c2ff0f38e8c107ebc8cbf7b2250eaf880cc679631"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/after-status.json": {
+      "bytes": 2750,
+      "sha256": "d7f38f9469196b544486aed87a236d46ec6f7b15f4f450578b0cd18f066c93f6"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/before-fresh-drain.json": {
+      "bytes": 8454,
+      "sha256": "7c429ffa3f3a0e826ce1c9ef29847224efb75ace5864e50b02a2f34d3f763923"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/before-metrics.json": {
+      "bytes": 229651,
+      "sha256": "b8a9d1e7a300aa57187daf84dc2ba02983d5e480cbc4e6f6e73b11d6f1c1b6e0"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/before-resources.json": {
+      "bytes": 136,
+      "sha256": "7f866dd0353fda30906c062c2ff0f38e8c107ebc8cbf7b2250eaf880cc679631"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/before-status.json": {
+      "bytes": 2750,
+      "sha256": "d432c30f4ecda1f6cf12a83aaea47a7c0b3c3fcf3c708fec1f49f6daa5f41bbb"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/client-exit.json": {
+      "bytes": 42,
+      "sha256": "83f3d874a847fe36635a703ef97ff25c0e3a13e59f427848413881e3ad064e39"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/client-identity.json": {
+      "bytes": 26,
+      "sha256": "bc566bf8cc79b0a89be6fed52e0feb76dc83c9fa19ccdf9fe6a9cf293b71b1ff"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/fixture-result.json": {
+      "bytes": 19,
+      "sha256": "1c6c91228666cbca3e625c109f243bcd913b1e8c9532dfc3e41c1372d25e063d"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/post-client-fresh-drain.json": {
+      "bytes": 8454,
+      "sha256": "25a94e22cf9c4ba732ef0805e15ae004f6e97ba737c62d25485e9fc2080e4ab0"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-49clxsa0/post-readback-fresh-drain.json": {
+      "bytes": 8454,
+      "sha256": "464429655995d96d82ad39cd7f26ae0c1c7f3051fa8c2194c562db8371b878b3"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/after-metrics.json": {
+      "bytes": 229651,
+      "sha256": "79441f4eb19af7ab9af98ed7dff838e35330b701191d845d16333e15836b354d"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/after-resources.json": {
+      "bytes": 136,
+      "sha256": "7f866dd0353fda30906c062c2ff0f38e8c107ebc8cbf7b2250eaf880cc679631"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/after-status.json": {
+      "bytes": 2750,
+      "sha256": "d7f38f9469196b544486aed87a236d46ec6f7b15f4f450578b0cd18f066c93f6"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/before-fresh-drain.json": {
+      "bytes": 8454,
+      "sha256": "7c429ffa3f3a0e826ce1c9ef29847224efb75ace5864e50b02a2f34d3f763923"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/before-metrics.json": {
+      "bytes": 229651,
+      "sha256": "b8a9d1e7a300aa57187daf84dc2ba02983d5e480cbc4e6f6e73b11d6f1c1b6e0"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/before-resources.json": {
+      "bytes": 136,
+      "sha256": "7f866dd0353fda30906c062c2ff0f38e8c107ebc8cbf7b2250eaf880cc679631"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/before-status.json": {
+      "bytes": 2750,
+      "sha256": "d432c30f4ecda1f6cf12a83aaea47a7c0b3c3fcf3c708fec1f49f6daa5f41bbb"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/client-exit.json": {
+      "bytes": 42,
+      "sha256": "83f3d874a847fe36635a703ef97ff25c0e3a13e59f427848413881e3ad064e39"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/client-identity.json": {
+      "bytes": 26,
+      "sha256": "bc566bf8cc79b0a89be6fed52e0feb76dc83c9fa19ccdf9fe6a9cf293b71b1ff"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/fixture-result.json": {
+      "bytes": 19,
+      "sha256": "1c6c91228666cbca3e625c109f243bcd913b1e8c9532dfc3e41c1372d25e063d"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/post-client-fresh-drain.json": {
+      "bytes": 8454,
+      "sha256": "25a94e22cf9c4ba732ef0805e15ae004f6e97ba737c62d25485e9fc2080e4ab0"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_default_branch_retains_shared_lifetime_and_capture_checks-wdhkjod1/post-readback-fresh-drain.json": {
+      "bytes": 8454,
+      "sha256": "464429655995d96d82ad39cd7f26ae0c1c7f3051fa8c2194c562db8371b878b3"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/after-metrics.json": {
+      "bytes": 349,
+      "sha256": "23753a522241136bde5f8e7e65fffc8a00e5a66e79c57f3539e91b6d0652d982"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/after-status.json": {
+      "bytes": 757,
+      "sha256": "58b719f8a8034910a321f04cb56ac6e7fcfa769e1122d87e69bccc9d1689488b"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/cleanup.json": {
+      "bytes": 463,
+      "sha256": "3a0d42f915a4efd1008ab4afcdd35e16d1e870301541e05a354ae697f7d93d88"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/client-exit.json": {
+      "bytes": 49,
+      "sha256": "ca7cc63f6d71536b4da76ae546feb9aa05104e7c5511a6bdc2c29b6dfbba2e94"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/client-identity.json": {
+      "bytes": 97,
+      "sha256": "c396949096b01a27371849519e2e18297e0ea67b6dac071167ed6c296b33a4ad"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n1/metrics.json": {
+      "bytes": 110,
+      "sha256": "aa52e05837238561de1e30f8abeadee991c18be03b75c7342774bb3bc6529f26"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n1/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n1/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "45c55f0ddc8af38833059383ba842162d2dff4cf5bd3d394ea98a45b7c83ead2"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n1/status": {
+      "bytes": 190,
+      "sha256": "2add7e13a6155e614290352d9dc51d1c4400b3c71b7e93baebc8c019919185ac"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n2/metrics.json": {
+      "bytes": 110,
+      "sha256": "41042a9d4fb8b05f76ddc0c97bb00a1181aa2e954811a8bddbb2318d4cc96c72"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n2/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n2/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "0ea500224c2af2c16b115cab27f055fec7b442d32893635db3cd334c4181ae79"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n2/status": {
+      "bytes": 190,
+      "sha256": "9ffa89de98370d427a22787f1317c5fdf086447038a36b7712fd746fe36914f1"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n3/metrics.json": {
+      "bytes": 110,
+      "sha256": "cab18e14157ea82fb879188eef5d74ca489f113007f0722bdcb6418b24d68717"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n3/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n3/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "375e5a252c0d5e733d41b3d4c57ee5aa2e69a31ca7fd94c28b9f41262e382fcc"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/data/n3/status": {
+      "bytes": 190,
+      "sha256": "65f7aef19e99f88c174498fa5aab79477ed073b1822d822833397681ecbc132f"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/fixture/tmpfs-retention.json": {
+      "bytes": 369,
+      "sha256": "f01677ee018e83ec9bfad0893fb73714ad660e102a4a5bfa4c5c740d5a7c1849"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/listener-after.json": {
+      "bytes": 58,
+      "sha256": "47ac1c50c9a6026475254ee293fb1d98310279eba676fcebe3295e54fdc77055"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/post-readback-fresh-drain.json": {
+      "bytes": 2414,
+      "sha256": "f5de5ea054aceee60960d56f71eb716b73e843440230472b15968886f9cd0ac2"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n1/expected-identity.json": {
+      "bytes": 146,
+      "sha256": "baae8c6f6a6b00b7e2b9e11594911d51ef1fa10bc54f67da4ef8f7954ea2559c"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n1/metrics-before.json": {
+      "bytes": 110,
+      "sha256": "aa52e05837238561de1e30f8abeadee991c18be03b75c7342774bb3bc6529f26"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n1/quorum-trace.json": {
+      "bytes": 23,
+      "sha256": "ae4f9e5508c25d1e8fdbb1d718db61f9011f056701349194964c5366b44a94fb"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n1/status-after.txt": {
+      "bytes": 190,
+      "sha256": "2add7e13a6155e614290352d9dc51d1c4400b3c71b7e93baebc8c019919185ac"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n1/status-before.txt": {
+      "bytes": 197,
+      "sha256": "7eac99523e4edfe75fdf3b7cb9e8e7bf7cfd6be1af50f97b674ce25e214b7c31"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n2/expected-identity.json": {
+      "bytes": 146,
+      "sha256": "97bd13b8157834373a70358a8a166b96ec179c1f4a34004aaaa8942e69407bbd"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n2/metrics-before.json": {
+      "bytes": 110,
+      "sha256": "41042a9d4fb8b05f76ddc0c97bb00a1181aa2e954811a8bddbb2318d4cc96c72"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n2/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "0ea500224c2af2c16b115cab27f055fec7b442d32893635db3cd334c4181ae79"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n2/status-after.txt": {
+      "bytes": 190,
+      "sha256": "9ffa89de98370d427a22787f1317c5fdf086447038a36b7712fd746fe36914f1"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n2/status-before.txt": {
+      "bytes": 197,
+      "sha256": "6a5562d2c3f379cd6a5e3fe7dcc27db2d7745aa0def771a4bebbfda5680aadda"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n3/expected-identity.json": {
+      "bytes": 146,
+      "sha256": "56815f51aed58145100f6de68760812d1cfdac83c608be88ac085200ef3adcfc"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n3/metrics-before.json": {
+      "bytes": 110,
+      "sha256": "cab18e14157ea82fb879188eef5d74ca489f113007f0722bdcb6418b24d68717"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n3/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "375e5a252c0d5e733d41b3d4c57ee5aa2e69a31ca7fd94c28b9f41262e382fcc"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n3/status-after.txt": {
+      "bytes": 190,
+      "sha256": "65f7aef19e99f88c174498fa5aab79477ed073b1822d822833397681ecbc132f"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/n3/status-before.txt": {
+      "bytes": 197,
+      "sha256": "66350c98af1748834489e71adf3d1fd21ea61a97fa024a3660507c3d0f97131a"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/quorum-trace-exports/record.json": {
+      "bytes": 10725,
+      "sha256": "2630b8124c06903949281e519b459fd17c692461e8d51b93d92975af6c4dfa04"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/storage-mounts.json": {
+      "bytes": 541,
+      "sha256": "d5fff83493d7fa3c6c877d2f98d66ac4f433e6f44d631fca03a4ba8dcb819e4e"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-8y_kth3w/trace-capture-hook.json": {
+      "bytes": 8743,
+      "sha256": "b528633b69b208511524cd722ff04f4e4836d8cd76bd2140d0aa901c877d0688"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/after-metrics.json": {
+      "bytes": 349,
+      "sha256": "23753a522241136bde5f8e7e65fffc8a00e5a66e79c57f3539e91b6d0652d982"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/after-status.json": {
+      "bytes": 757,
+      "sha256": "58b719f8a8034910a321f04cb56ac6e7fcfa769e1122d87e69bccc9d1689488b"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/cleanup.json": {
+      "bytes": 463,
+      "sha256": "3a0d42f915a4efd1008ab4afcdd35e16d1e870301541e05a354ae697f7d93d88"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/client-exit.json": {
+      "bytes": 49,
+      "sha256": "ca7cc63f6d71536b4da76ae546feb9aa05104e7c5511a6bdc2c29b6dfbba2e94"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/client-identity.json": {
+      "bytes": 97,
+      "sha256": "c396949096b01a27371849519e2e18297e0ea67b6dac071167ed6c296b33a4ad"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n1/metrics.json": {
+      "bytes": 110,
+      "sha256": "aa52e05837238561de1e30f8abeadee991c18be03b75c7342774bb3bc6529f26"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n1/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n1/quorum-trace.json": {
+      "bytes": 3625,
+      "sha256": "4ce92a5b3a1659c9913eef6f9c55bd7ed2ed2f6e4888bf365be5bfc13efcae3b"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n1/status": {
+      "bytes": 190,
+      "sha256": "2add7e13a6155e614290352d9dc51d1c4400b3c71b7e93baebc8c019919185ac"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n2/metrics.json": {
+      "bytes": 110,
+      "sha256": "41042a9d4fb8b05f76ddc0c97bb00a1181aa2e954811a8bddbb2318d4cc96c72"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n2/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n2/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "0ea500224c2af2c16b115cab27f055fec7b442d32893635db3cd334c4181ae79"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n2/status": {
+      "bytes": 190,
+      "sha256": "9ffa89de98370d427a22787f1317c5fdf086447038a36b7712fd746fe36914f1"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n3/metrics.json": {
+      "bytes": 110,
+      "sha256": "cab18e14157ea82fb879188eef5d74ca489f113007f0722bdcb6418b24d68717"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n3/quorum-trace.capture": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n3/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "375e5a252c0d5e733d41b3d4c57ee5aa2e69a31ca7fd94c28b9f41262e382fcc"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/data/n3/status": {
+      "bytes": 190,
+      "sha256": "65f7aef19e99f88c174498fa5aab79477ed073b1822d822833397681ecbc132f"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/fixture/tmpfs-retention.json": {
+      "bytes": 369,
+      "sha256": "f01677ee018e83ec9bfad0893fb73714ad660e102a4a5bfa4c5c740d5a7c1849"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/listener-after.json": {
+      "bytes": 58,
+      "sha256": "47ac1c50c9a6026475254ee293fb1d98310279eba676fcebe3295e54fdc77055"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/post-readback-fresh-drain.json": {
+      "bytes": 2414,
+      "sha256": "f5de5ea054aceee60960d56f71eb716b73e843440230472b15968886f9cd0ac2"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n1/expected-identity.json": {
+      "bytes": 146,
+      "sha256": "baae8c6f6a6b00b7e2b9e11594911d51ef1fa10bc54f67da4ef8f7954ea2559c"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n1/metrics-before.json": {
+      "bytes": 110,
+      "sha256": "aa52e05837238561de1e30f8abeadee991c18be03b75c7342774bb3bc6529f26"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n1/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "45c55f0ddc8af38833059383ba842162d2dff4cf5bd3d394ea98a45b7c83ead2"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n1/status-after.txt": {
+      "bytes": 190,
+      "sha256": "2add7e13a6155e614290352d9dc51d1c4400b3c71b7e93baebc8c019919185ac"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n1/status-before.txt": {
+      "bytes": 197,
+      "sha256": "7eac99523e4edfe75fdf3b7cb9e8e7bf7cfd6be1af50f97b674ce25e214b7c31"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n2/expected-identity.json": {
+      "bytes": 146,
+      "sha256": "97bd13b8157834373a70358a8a166b96ec179c1f4a34004aaaa8942e69407bbd"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n2/metrics-before.json": {
+      "bytes": 110,
+      "sha256": "41042a9d4fb8b05f76ddc0c97bb00a1181aa2e954811a8bddbb2318d4cc96c72"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n2/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "0ea500224c2af2c16b115cab27f055fec7b442d32893635db3cd334c4181ae79"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n2/status-after.txt": {
+      "bytes": 190,
+      "sha256": "9ffa89de98370d427a22787f1317c5fdf086447038a36b7712fd746fe36914f1"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n2/status-before.txt": {
+      "bytes": 197,
+      "sha256": "6a5562d2c3f379cd6a5e3fe7dcc27db2d7745aa0def771a4bebbfda5680aadda"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n3/expected-identity.json": {
+      "bytes": 146,
+      "sha256": "56815f51aed58145100f6de68760812d1cfdac83c608be88ac085200ef3adcfc"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n3/metrics-before.json": {
+      "bytes": 110,
+      "sha256": "cab18e14157ea82fb879188eef5d74ca489f113007f0722bdcb6418b24d68717"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n3/quorum-trace.json": {
+      "bytes": 3624,
+      "sha256": "375e5a252c0d5e733d41b3d4c57ee5aa2e69a31ca7fd94c28b9f41262e382fcc"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n3/status-after.txt": {
+      "bytes": 190,
+      "sha256": "65f7aef19e99f88c174498fa5aab79477ed073b1822d822833397681ecbc132f"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/n3/status-before.txt": {
+      "bytes": 197,
+      "sha256": "66350c98af1748834489e71adf3d1fd21ea61a97fa024a3660507c3d0f97131a"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/quorum-trace-exports/record.json": {
+      "bytes": 10725,
+      "sha256": "2a1bc9fbdc18ddb646bdea45141caa143949d7f0298a43d1f2955dfacf75b6ce"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/storage-mounts.json": {
+      "bytes": 541,
+      "sha256": "f2c586134b8bddc277d18cf33516ee097cc604b14ee96daac7fdd2117852cfe8"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/campaign-synthetic-first/test_trace_copy_corruption_and_duplicate_json_keys_are_rejected-b4sumt_q/trace-capture-hook.json": {
+      "bytes": 8743,
+      "sha256": "6029e868a2ab6619c308be6d49206dea6e39e6bda6c403f1924771e895e27b38"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/common.py": {
+      "bytes": 5942,
+      "sha256": "bcf475bed28698a344b4fe2989da525210d2af55a27deb941588868c8c768d5e"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/contract.py": {
+      "bytes": 4622,
+      "sha256": "d339ff3ad77f88809d48c50e14b8aeaf075f3a7b3f613258d5a338bdb2332731"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/control-error-type-repair-first/invocation.json": {
+      "bytes": 2032,
+      "sha256": "36370a82919a20670f5db35ec05737e204340cc122143e2f586c8c0a2d5b53cb"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/control-error-type-repair-first/output.log": {
+      "bytes": 255,
+      "sha256": "3b9714ac9a10e9e8602e7a38728be7dae64347ff2b68c62a732e6b9dad0bcec6"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/control-error-type-repair-first/result.json": {
+      "bytes": 2084,
+      "sha256": "43632b099db39b7bc157039ad4fdb8636e916dbec0ffcd6a68bea4d49093ef8b"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/control-repair.json": {
+      "bytes": 478,
+      "sha256": "330755edfd5f464d2258f17bd69fecabe49763e42399dd30836f646c6f5df968"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/controls-first/invocation.json": {
+      "bytes": 1984,
+      "sha256": "353dd30eb2926dbac27775a411c1f1e5147d5a509c956cef7885bdfa4ca82f04"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/controls-first/output.log": {
+      "bytes": 3203,
+      "sha256": "66bdd053be961883cc45ddfb919fa094b5d12610c7c191a4f7e4805769000be0"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/controls-first/result.json": {
+      "bytes": 2037,
+      "sha256": "b703a5e518964bff23cb7feae4a16504becbb9bf2ca856e4720f0e344e8923f2"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/diagnostic_build.py": {
+      "bytes": 1997,
+      "sha256": "f428b8346c3d0998b0e6a01a9c7a813ea230b7b6993f0efc2e803bb443f27f35"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/driver-arguments.json": {
+      "bytes": 103,
+      "sha256": "b4cc86f8c3aa3d3313a32174656940a3fd69c5b5e8d54faf8e48792e63d2c4ef"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/export_hook.py": {
+      "bytes": 17797,
+      "sha256": "fe5c761cc8f6ce694d2e03bfe7554f19a6a3f3f1c5c763861e29052bc30e5e55"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/isolate-and-run.py": {
+      "bytes": 12536,
+      "sha256": "7dcab2745b1e3fbc6a04bcc0d155b1c1c5a0cd3b91ae23bcab359bf47e36f1d2"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/metrics26.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/native_checks.py": {
+      "bytes": 23685,
+      "sha256": "826deff55f373f38b5c7a87d14a341a4232704a8e9d64e39a9b1a241351e9d07"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/outer_checks.py": {
+      "bytes": 4428,
+      "sha256": "b5b00ce102aba5694c6c123cd33406876cdfb9fcbbd5c458b7f752e5aae41757"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/preflight.py": {
+      "bytes": 1351,
+      "sha256": "fca7aa108e88cd2b5010ea2defe39b82e86b5077de170aa8da0b670aeaedba1e"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/previous-preparation-inventory.json": {
+      "bytes": 43895,
+      "sha256": "3ed4128b0851746317288bbaaf2e360303863e947a8ce5aea499b8d658fca44a"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/read_stages.py": {
+      "bytes": 7511,
+      "sha256": "abbfd917c24465fedca8440999d50d9bef7493c859d2591e8f6f0d16a9437d42"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/read_trace.py": {
+      "bytes": 24037,
+      "sha256": "c43d73e4876711d43a50c62cd4b370700be95f470d6ebb321cba1583b0619046"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/readback.py": {
+      "bytes": 13012,
+      "sha256": "0a058e79a573b480c4075b25bdb6466a176b7ccce117ef749b2514d47a48c851"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/run.py": {
+      "bytes": 6846,
+      "sha256": "65e968563504ca4289538dce3eba95a93d07ff9c7172fb796cdf397f5ee68b12"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/source-lineage.json": {
+      "bytes": 489,
+      "sha256": "28927dedfcb8d70f9d60c91b8d29d63fbe6dfcf1f39862d0916fe173aeaa388d"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/stage_checks.py": {
+      "bytes": 9854,
+      "sha256": "cf43fb4cb3fc30dc2ad963703804aae254d075977cd1821ac89f3f02fd7110d5"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/test_campaign.py": {
+      "bytes": 8310,
+      "sha256": "ec7447b9c4440c84047961d16777d8c2707a5e01cec091e1465ee0d7fe691f63"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/test_export_hook.py": {
+      "bytes": 14223,
+      "sha256": "84cf0f0e9daf9dc37bb900aeb1efd88760c480088fd6de6f602466b1190c981e"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/test_read_stages.py": {
+      "bytes": 8008,
+      "sha256": "c7416bf8f2a8f759ee192276a03bfb48b49d8ab7a18f1c9904bd9f1b1baa3265"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/test_read_trace.py": {
+      "bytes": 14338,
+      "sha256": "df246b415bcfc303aea47ab8bbc7d78b287a8b8e8f1468be3d273ffb1a69a3d5"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/v3_fixture.py": {
+      "bytes": 51967,
+      "sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/inventory.json": {
+      "bytes": 44217,
+      "sha256": "8ecafa87f3cbb9e51166757cf20561fa96938d0d39b9c649aab0b848fea93be5"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/results-first/analysis.json": {
+      "bytes": 24635256,
+      "sha256": "bf2d524df42f91b8d45de18053cabeafb38914135c98000db7f0ee6d464d454a"
+    },
+    "/tmp/kv9-quorum-trace-slots-fixture-preparation-first/results-first/input-inventory.json": {
+      "bytes": 72808,
+      "sha256": "d2c7a5b7f9978cc66732e8297e6564ffa699e6e54a3b457c24501131e4957de2"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/runtime-release.json": {
+      "bytes": 499,
+      "sha256": "a34878a435c4d6b3d60f265b3a43eae6605f5b41121e0071e4ce5db972ba0d08"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/commands-source.json": {
+      "bytes": 1597,
+      "sha256": "576ad17c9eb3d98be68c51db6a82e1b7f3bd1e2994c493db6747ead802414b59"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/source-invocation.json": {
+      "bytes": 649,
+      "sha256": "76d38cbfdf8a760edfee5aae66316b6a3a8849af4849a842ad25c643be09f55c"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/preparation-binding.json": {
+      "bytes": 203,
+      "sha256": "25673e1587c36f931df0ec18242a6371d4a885923d580a83aefbd86f3273ff06"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/source-preflight-first.json": {
+      "bytes": 248108,
+      "sha256": "a249349f4584d1266d15201fee522682f7c0c892da56acd76e3758b9d1b930d8"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/source-result.json": {
+      "bytes": 2483,
+      "sha256": "7c84e42e579a354ec2e7eb055a48a75fba8935e1ef82ec183c4c1e57821ada14"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/compiled-input-readback.json": {
+      "bytes": 15138,
+      "sha256": "3325d9330217e46ca00f98c2711b562a753fd7751d31b66ca3af2519be32fa46"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/release-invocation.json": {
+      "bytes": 867,
+      "sha256": "03e307b7a13234d5618848ac5a45fc086b359b4e74bc08e236a1c737aa2f66bf"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/release-terminal.json": {
+      "bytes": 68,
+      "sha256": "003bf50fd3de49662388aa057fbe76f2fa4ba1bab8d49234acb2e60650b06fb4"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/release-binding.json": {
+      "bytes": 634,
+      "sha256": "37298d516b0918d8748b3bc4ac38c5832eb76059b26a17ec99c27b73d990262f"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/release-result.json": {
+      "bytes": 1989,
+      "sha256": "3090402f4a2e827175c21efaa72e5b244a579d4d05aeab8b2b96b1c3967c1175"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/source-terminal.json": {
+      "bytes": 68,
+      "sha256": "9bd2131afdb74706dd0e6ef721a7a313691acc706fe009168a5ca5d267159e7e"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/commands.json": {
+      "bytes": 810,
+      "sha256": "c66d31abbb3b8702720e9be45340b6c0bf5dee4322fadb112270d9d073a36841"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/run-runtime.py": {
+      "bytes": 1684,
+      "sha256": "4e6a1a8748c2130d5d9c25d6c5a88ba29693b3116dcc8f43034d529dc541a59b"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/report-results.py": {
+      "bytes": 3139,
+      "sha256": "46e096a2fc8e6bbf18a51d4650c47008fbc595e240a68233515b01078fcfce5f"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/run-release.py": {
+      "bytes": 2058,
+      "sha256": "009318b9b7bb1c5dc60bec94e8253c90367ed29fa4ffd4855d74c9a5c3c169b6"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/run-readback.py": {
+      "bytes": 1972,
+      "sha256": "1203b10e4dc43fe5fcad455d59e408515377e0af3a90c863a300ebacb0a41520"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/check-source.py": {
+      "bytes": 2449,
+      "sha256": "48a89e1287d6dad2dae678e53c46d92b54888770c99736aef05130e4b004be20"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/run-source.py": {
+      "bytes": 1859,
+      "sha256": "5b3b681c5b0016c2ef321b53f981e98e3156962f489c3f814389daf09a6ed439"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/build-release.py": {
+      "bytes": 3520,
+      "sha256": "db5e6212b0f0044f84fa75969e82e4ea19a8533de3a4424282b5f98f05b2ee53"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/archive-evidence.py": {
+      "bytes": 2462,
+      "sha256": "6e610fbf07fdc6475ae3b84fab89a40f8dbdc18cde638d52e66da56785737cae"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/runtime-first/terminal-receipt.json": {
+      "bytes": 164,
+      "sha256": "2c580f39b3ccbab4f953e03b4f94475596a2d08b954c2ff624d9fd4f46644568"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/runtime-first/result.json": {
+      "bytes": 799,
+      "sha256": "dff0a7562716ff8f74fed79511d9e2e19c1106da94309f35bcb7d9cdeda83773"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/runtime-first/output.log": {
+      "bytes": 441,
+      "sha256": "c0e258f323c4a66782aa442fd4912d0b609aca80ccce653d7f9fb49ac49d3e6e"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/runtime-first/invocation.json": {
+      "bytes": 747,
+      "sha256": "f92fafff68666ad4a6479264824b5ded063d80091624b04bd4fda69bc4e44114"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/readback-first/terminal-receipt.json": {
+      "bytes": 68,
+      "sha256": "405b74181b5f7580ad25982be4b9ba13aa3881a22e1bcb6ed7a89b0b56105c24"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/readback-first/result.json": {
+      "bytes": 845,
+      "sha256": "931e9f65be07055827daa1e6b1f6ff4b0fc5bcba1e371187bca11db7a45c54f2"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/readback-first/output.log": {
+      "bytes": 17052,
+      "sha256": "ad7eace521f522ec73efdff45c4b4fb774bcdbb566e360c2f3780c54bdfd3cc5"
+    },
+    "/tmp/kv9-quorum-trace-slots-root-first/readback-first/invocation.json": {
+      "bytes": 793,
+      "sha256": "3f5171287dc055bc2d6cdedd6590a369278f8946dca68dd15c41164caeda6213"
+    }
+  },
+  "scope": "Original runtime/readback/preparation evidence; exact source/client/build hashes. No executable artifacts. Every gzip member independently read back without extracting."
+}

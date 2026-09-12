@@ -1,0 +1,34 @@
+{
+  "files": {
+    "archive-inventory.json": {
+      "bytes": 144418,
+      "sha256": "ecdc7dae940f2b132ed7bb62427c25ddb083ba955df231ecd9229b28b2ea285b"
+    },
+    "leader-roundtrip-by-peer.csv": {
+      "bytes": 280,
+      "sha256": "c340ac0120b4a7e98106201a0eedf8debee83741d9145a69841c609a732da314"
+    },
+    "original-evidence.tar.gz": {
+      "bytes": 19410367,
+      "sha256": "bb457dac0bb092fb1db2742d5edc0b2806f48a5e9f1673728d48cda099994e87"
+    },
+    "report-results.py": {
+      "bytes": 3139,
+      "sha256": "46e096a2fc8e6bbf18a51d4650c47008fbc595e240a68233515b01078fcfce5f"
+    },
+    "span-accounting.csv": {
+      "bytes": 4617,
+      "sha256": "78650dc673f13283603a29ada0f4b57b7b2e7778340d7d680b803f10a320a80e"
+    },
+    "stage-counts.csv": {
+      "bytes": 6728,
+      "sha256": "78ba1a2b7cb034331cf466279fa73b4bd7a94cf3b812979e29870f94e259c695"
+    },
+    "summary.json": {
+      "bytes": 962640,
+      "sha256": "c2c6e3ba6e1d9fc6c49df7e031ba1e8de682e37160ab04e44c152965ca850199"
+    }
+  },
+  "file_count": 7,
+  "bytes": 20532189
+}

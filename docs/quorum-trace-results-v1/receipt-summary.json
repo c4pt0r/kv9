@@ -1,0 +1,16 @@
+{
+  "readback": {
+    "exit_code": 0,
+    "original_result_path": "/tmp/kv9-quorum-trace-fixture-root-first/readback-first/result.json",
+    "original_result_sha256": "6bdff4b4dd78cabef299d7cc255a57bdae24a3e89b75ddd175297be38b256c48",
+    "provenance": "Actual yielded tool terminal explicitly supplied by root; no separate root terminal file existed at handoff.",
+    "session_id": 55391,
+    "tool_receipt": "468553"
+  },
+  "runtime": {
+    "chunk_id": "c5772f",
+    "exit_code": 0,
+    "output": "PASS: four original control/trace cohorts terminal; independent readback pending",
+    "session_id": 15017
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "/usr/bin/python3",
+    "-B",
+    "/tmp/kv9-quorum-trace-results-publication-first/derive.py"
+  ],
+  "started_ns": 1789226245671028613,
+  "source_sha256": "e7d1fa99635be36a984d8477d1e142362e7a50d181b0d2663fb4d2ffe6a4f46c",
+  "scope": "Reporting derivation only from accepted original inputs; no validation, trace-correlation, runtime or codec execution."
+}

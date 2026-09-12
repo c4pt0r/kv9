@@ -1,0 +1,37 @@
+{
+  "complete": true,
+  "totals": {
+    "measured_calls": 562636,
+    "measured_attempts": 562636,
+    "dropped_slots": 0,
+    "all_phase_calls": 612312,
+    "all_phase_attempts": 612316,
+    "recorded_trace_events": 40113,
+    "lost_selected_observations": 1083,
+    "complete_context_count": 0,
+    "valid_partial_ticket_spans": 26261
+  },
+  "comparisons": [
+    {
+      "repeat": 0,
+      "order": "control\u2192trace",
+      "control_arm": "control-c1-r0",
+      "trace_arm": "trace-c1-r0",
+      "get_rate_change_percent": -1.7440294006334067,
+      "whole_call_mean_change_percent": 1.765011807090322
+    },
+    {
+      "repeat": 1,
+      "order": "trace\u2192control",
+      "control_arm": "control-c1-r1",
+      "trace_arm": "trace-c1-r1",
+      "get_rate_change_percent": -2.398677042565611,
+      "whole_call_mean_change_percent": 2.4624200624858927
+    }
+  ],
+  "report": "/tmp/kv9-quorum-trace-results-publication-first/results-first/REPORT.md",
+  "input_files": 470,
+  "input_bytes": 66117101,
+  "stage_rows": 138,
+  "span_accounting_rows": 104
+}
