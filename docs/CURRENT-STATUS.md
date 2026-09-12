@@ -84,21 +84,37 @@ and [ordinary recovery evidence](https://github.com/c4pt0r/kv9/blob/79ea149/docs
 retain their exact scopes. Constructor failure, full implementation refinement
 and actual candidate Chaos/host failure are not newly established by this screen.
 
+## Completed CPU and scheduler investigation
+
+The [exact-artifact diagnostic](PEER-SCHEDULING-DIAGNOSTIC.md) accepts four
+instrumented c64 GET fixtures with 6,703,621 measured successes, 6,120 selected
+CPU samples and 380,154 scheduler events. Sampled CPU rises from 2.9831 to 3.1701
+core equivalents with outbound isolation. Switching and wake activity increase,
+but different waiting populations move in different directions. Source-supported
+thread roles and all unknown/ambiguous boundaries are retained. This establishes
+no new uninstrumented QPS result and does not promote the rejected executor.
+
+A concrete next target is `WorkSignal::notify`: it coalesces `pending` but still
+calls `notify_one` repeatedly. Recovered notification stacks account for about
+4% of each CPU population, including futex work; the removable fraction remains
+unmeasured. The next candidate should suppress notifications while `pending` is
+already true, with a mechanized no-lost-wakeup refinement and concrete race tests.
+Original setup/reader failures remain published; both environment restorations
+pass. All work is local and no hosted CI is dispatched.
+
 ## Next development steps
 
-1. **Attribute the newly observed scheduling cost:** compare exact CRC and
-   outbound-isolation artifacts at c64 GET using bounded on-CPU and scheduler/
-   wakeup observations, separating public workers, outbound peer work and the
-   Raft owner. The candidate's observed server CPU/QPS ratio rises 16.024%; that
-   ratio is a diagnostic lead, not per-request service time or a proven cause.
-   Include c1 only as a specific contrast. Preserve full outcomes and source,
-   CPU and artifact identities; do not replay coarse ReadIndex/queue/body profiles.
-2. **Change only an identified mechanism:** use the resulting evidence to reduce
-   an avoidable scheduling handoff or task cost in a separate candidate from CRC.
-   Preserve original queues, ownership and fairness. An extra worker remains a
-   confounder; a shared-three-worker control is necessary for an isolation-specific
-   attribution, but the rejected candidate does not receive broader promotion
-   tests. Avoid another unmotivated thread-count or event-frequency sweep.
+1. **Coalesce redundant owner wakeups:** start from CRC and notify only on the
+   false-to-true `pending` transition under the existing mutex. Preserve stop,
+   publication/drain ordering, the atomic park boundary and independent ticks.
+   Mechanize equivalence of `RSNotify`/`RSHint` under `RSParkedSignal`, then check
+   concrete producer/drain/park/stop races and recovery. The existing evidence
+   identifies a candidate mechanism, not its effect size.
+2. **Measure the identified change:** quantify suppressed notifications and
+   syscall/CPU cost, then run the same uninstrumented c1 GET, c64 GET and c64
+   mixed screen with full outcomes and operation-specific means/tails. Keep
+   existing queues, ownership, fairness and the selected shared executor. Avoid
+   further runtime sweeps without new evidence.
 3. **Qualify useful improvements:** applicable proof mapping, full point/batch
    checks and actual exact-source Chaos Mesh fault injection precede promotion.
    Preserve fresh Safe ReadIndex, sealed groups, durable writes and complete

@@ -17,15 +17,20 @@ The earlier body-handoff diagnostic is complete and does not identify its batch
 channel as the primary read bottleneck. Event-one and older held candidates
 retain their original decisions; no broad roadmap item closes.
 
-Next attribute the new c64 scheduling cost using exact retained CRC/candidate
-artifacts, bounded on-CPU and scheduler/wakeup observations, and explicit public/
-peer/owner thread roles. The observed CPU/QPS ratio is a lead, not a causal proof.
-Only an identified mechanism should motivate the next isolated implementation
-change from CRC. Preserve fresh Safe ReadIndex, complete successful pump/apply/view
-fences, durable writes, cancellation/deadlines and bounded ownership. Qualify a
-useful change with applicable proof, full point/batch checks and actual exact-source
-Chaos before promotion. Continue dynamic multi-Raft and automatic splits after
-the read-performance milestone and all applicable prerequisites.
+The [completed CPU/scheduler diagnostic](PEER-SCHEDULING-DIAGNOSTIC.md) retains
+6,703,621 measured successes, 6,120 selected CPU samples and 380,154 scheduler
+events with source-supported thread roles. It identifies the unconditional
+`notify_one` call inside `WorkSignal::notify` as a suppression candidate.
+Next implement false-to-true notification coalescing from CRC, prove the
+`RSNotify`/`RSHint` refinement under `RSParkedSignal`, and check concrete
+producer/drain/park/stop races. Measure suppression/syscall cost, then use the
+unchanged uninstrumented c1/c64 GET and mixed throughput/latency screen. The
+instrumented populations do not establish a speedup or explain the entire
+executor regression. Preserve fresh Safe ReadIndex, complete successful
+pump/apply/view fences, durable writes, cancellation/deadlines and bounded
+ownership. Qualify a useful change with applicable proof, full point/batch
+checks and actual exact-source Chaos before promotion. Continue dynamic
+multi-Raft and automatic splits after the read milestone and prerequisites.
 
 <!-- kv9-roadmap-20260908:epic -->
 This is the execution tracker for evolving kv9 from its basic distributed Raw KV baseline into an industrial-grade distributed database. Priorities are consistency, recoverability, bounded resources, measured throughput and scalable ownership. Complex private-network TLS configuration is P4 work.

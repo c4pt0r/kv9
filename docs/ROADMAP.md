@@ -10,9 +10,12 @@ explicit dependencies, implementation steps and acceptance criteria. Track deliv
 The [current checkpoint](CURRENT-STATUS.md) records the completed outbound
 executor screen: c1 GET +4.159%, c64 GET -4.415%, mixed c64 -2.066%, with worse
 c64 read means/tails in both repeats. Keep CRC selected; stop default promotion
-and broader tests for this candidate. Next use bounded exact-artifact CPU and
-scheduler/wakeup observations to identify the added cost before another runtime
-change. Existing body-handoff and event-frequency experiments remain completed.
+and broader tests for this candidate. The completed
+[CPU/scheduler diagnostic](PEER-SCHEDULING-DIAGNOSTIC.md) identifies redundant
+owner notifications as the next candidate: coalesce `notify_one` on the
+false-to-true pending transition, prove no lost wakeup and validate concrete
+races before the unchanged throughput/latency screen. Instrumented samples
+establish no speedup. Existing handoff/runtime experiments remain completed.
 Preserve original queue/watchdog and consensus guards. The product sequence
 remains memory RawKV read performance, then dynamic multi-Raft and automatic splits.
 This priority does not waive the storage, proof, fault or recovery prerequisites

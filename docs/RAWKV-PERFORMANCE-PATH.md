@@ -40,8 +40,11 @@ accepting scale-out. This sequence does not mark those prerequisites complete.
 The [current status](CURRENT-STATUS.md) is authoritative for runtime selection.
 Selected behavior remains CRC `ca0002c7`. The completed outbound executor screen
 improves c1 GET by 4.159% but loses 4.415% c64 GET and 2.066% c64 mixed throughput,
-with worse c64 read means/tails. It is not promoted. Next investigate the observed
-CPU/scheduling cost with exact retained artifacts before changing another runtime
+with worse c64 read means/tails. It is not promoted. The
+[completed CPU/scheduler diagnostic](PEER-SCHEDULING-DIAGNOSTIC.md) identifies
+the unconditional owner `notify_one` call as a suppression candidate.
+Next prove and test false-to-true notification coalescing before the unchanged
+uninstrumented throughput/latency screen. Do not change another runtime
 mechanism; preserve the full proof, point/batch and actual Chaos promotion gates.
 The reports below retain their earlier source boundaries and historical decisions.
 
