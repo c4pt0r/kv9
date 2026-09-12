@@ -19,49 +19,48 @@ remain open. An abstract proof or one-host fault run does not close these gates.
 
 ## Latest completed uninstrumented performance
 
-The [outbound executor screen and original evidence](https://github.com/c4pt0r/kv9/blob/3ed8661de5e2f5a3a1f5cc1cdf31ac8cd76a655c/docs/PEER-EXECUTOR-ISOLATION-PERFORMANCE.md)
-complete 24 cohorts: two forward/reverse ten-second repetitions, fixed v3
-clients, 4,096 keys, 128-byte values, closed-loop load and fixed CPU placement.
-KV9 uses three voters with ordinary quorum/sync on **tmpfs WAL**. Redis is
-standalone with persistence and pipelining disabled. This is shared-host loopback,
-not equal-durability, real-disk, cross-host or sustained-capacity evidence.
+The [notification-coalescing screen](COALESCED-OWNER-PERFORMANCE.md) completes
+12 smoke and 24 timed cohorts using two opposite ten-second run orders, fixed
+v3 clients, 4,096 keys, 128-byte values and identical CPU placement. Candidate
+`42e0117` only suppresses duplicate owner wakes; selected runtime remains CRC.
 
-| Metric | Selected CRC | Outbound isolation | Redis |
+| Metric | Selected CRC | Notification candidate | Redis |
 | --- | ---: | ---: | ---: |
-| c1 GET calls/s | 26,751 | 27,863 | 173,283 |
-| c1 GET mean us | 37.265 | 35.774 | 5.693 |
-| c1 GET p99 interval us | 49.664--50.175 | 47.616--48.127 | 7.680--7.743 |
-| c64 GET calls/s | 345,508 | 330,252 | 507,233 |
-| c64 GET mean us | 185.108 | 193.665 | 126.062 |
-| c64 GET p99 interval us | 352.256--356.351 | 364.544--368.639 | 229.376--231.423 |
-| c64 mixed combined calls/s | 171,768 | 168,220 | 500,948 |
-| c64 mixed GET mean us | 384.481 | 395.922 | 127.628 |
-| c64 mixed GET p99 interval us | 622.592--630.783 | 679.936--688.127 | 233.472--235.519 |
+| c1 GET calls/s | 26,461.551 | 26,395.976 | 174,159.224 |
+| c1 GET mean us | 37.674 | 37.772 | 5.665 |
+| c1 GET p99 interval us | 50.176–50.687 | 50.176–50.687 | 7.360–7.423 |
+| c64 GET calls/s | 345,626.302 | 349,507.003 | 513,504.422 |
+| c64 GET mean us | 185.046 | 182.990 | 124.523 |
+| c64 GET p99 interval us | 352.256–356.351 | 331.776–335.871 | 229.376–231.423 |
+| c64 mixed combined calls/s | 171,594.529 | 176,278.501 | 503,716.521 |
+| c64 mixed GET mean us | 384.744 | 375.026 | 126.920 |
+| c64 mixed GET p99 interval us | 622.592–630.783 | 606.208–614.399 | 233.472–235.519 |
 
-**Do not promote outbound isolation; keep CRC selected.** Its extra per-node
-worker improves c1 GET by 4.159%, but loses 4.415% c64 GET and 2.066% c64 mixed
-throughput. Both repetitions have the same direction. C64 means and tails worsen,
-including separate mixed GET. The default read-performance gate fails, so no
-full-matrix or candidate Chaos expansion follows. The selected CRC remains about
-6.48x below same-run Redis c1 throughput and 1.47x below c64 throughput.
+C64 GET throughput improves **1.123%** and mixed throughput **2.730%**, with
+better loaded/mixed GET mean and p99 in both repetitions. C1 GET is slightly
+slower: **-0.248% throughput / +0.260% mean**. C1 mixed moves in different
+directions across repeats. Keep this modest loaded-read candidate experimental;
+broader API measurements and actual exact-source Chaos remain pending. C1 mean
+is still about 6.67x Redis and c64 GET throughput about 68.1% of Redis.
 
-All 49,236,254 measured calls succeed in one attempt. Across all client phases,
-49,534,310 successful calls / 49,534,326 attempts retain 16 initialization routing
-attempts. The first complete timing and independent audit accept 80 exited
-lifetimes, 48 fresh drains/bindings, 4,675 resource samples and exact CPU/namespace
-restoration. Seven driver/source-binding and 17 auditor contracts pass, as do
-12 smoke cells. Previously completed source/recovery gates remain accepted and
-are not rerun: 224/234 overlapping server tests/doctests, formatting/Clippy and
-356-call ordinary recovery (328 OK / 28 unknown).
+All **49,944,895 measured calls** succeed in one attempt. Complete phase accounting
+retains initialization routing attempts. The independent audit accepts 80 exited
+lifetimes, 48 fresh drains/bindings, 4,679 resource samples and exact CPU/namespace
+restoration. Seven driver/binding and 17 auditor contracts pass. No runtime
+cohort was repeated or omitted. See the report for all four cells and both repeats.
 
-Before timing, root reclaims only reviewed release compiler-cache objects and
-archive-backed extracted Cargo packages, recovering 2,897,895,424 available bytes.
-Original binaries, source/recovery evidence, WALs, crate downloads and named
-build/package locks remain intact. The original file-only capacity rejection
-and its derived directory-allocation accounting remain published. Actual storage
-guards are unchanged. Both repetitions, separate operation histograms, all
-outcomes and original preparation failures are retained. This is a screen,
-not statistical significance or a general no-regression bound.
+[Local validation](COALESCED-OWNER-VALIDATION.md) passes 14 new TLAPS theorems /
+64 obligations plus unchanged scheduling dependency 33 / 294, 438 default
+Raft/Server tests/doctests (one existing ignored), 214 overlapping Raft testing
+tests/doctests, formatting/Clippy, and ordinary recovery with 369 operations
+(341 OK / 28 unknown). Three new concurrent tests cover producer/drain/stop races.
+This does not close full Rust/database proofs, candidate Chaos or host failure.
+
+Scope: shared-host loopback, ordinary three-voter quorum/sync on **tmpfs WAL**,
+versus standalone Redis with persistence/pipelining disabled. No equal-durability,
+real-disk, cross-host, sustained-capacity or statistical-significance claim.
+Root reclaimed only 8.14 GiB of obsolete debug intermediates to preserve the
+unchanged storage guards; original executables, evidence and WALs remain intact.
 
 ## Completed diagnosis and rejected prototype
 
@@ -94,27 +93,22 @@ but different waiting populations move in different directions. Source-supported
 thread roles and all unknown/ambiguous boundaries are retained. This establishes
 no new uninstrumented QPS result and does not promote the rejected executor.
 
-A concrete next target is `WorkSignal::notify`: it coalesces `pending` but still
-calls `notify_one` repeatedly. Recovered notification stacks account for about
-4% of each CPU population, including futex work; the removable fraction remains
-unmeasured. The next candidate should suppress notifications while `pending` is
-already true, with a mechanized no-lost-wakeup refinement and concrete race tests.
-Original setup/reader failures remain published; both environment restorations
-pass. All work is local and no hosted CI is dispatched.
+The identified `WorkSignal::notify` candidate is now implemented, proven and
+screened as `42e0117`; see the completed validation and performance reports above.
+The original sampled notification stacks were about 4% of CPU, not a predicted
+speedup. The actual screen establishes a modest loaded-read improvement and no
+isolated GET improvement. Original setup/reader failures remain published.
 
 ## Next development steps
 
-1. **Coalesce redundant owner wakeups:** start from CRC and notify only on the
-   false-to-true `pending` transition under the existing mutex. Preserve stop,
-   publication/drain ordering, the atomic park boundary and independent ticks.
-   Mechanize equivalence of `RSNotify`/`RSHint` under `RSParkedSignal`, then check
-   concrete producer/drain/park/stop races and recovery. The existing evidence
-   identifies a candidate mechanism, not its effect size.
-2. **Measure the identified change:** quantify suppressed notifications and
-   syscall/CPU cost, then run the same uninstrumented c1 GET, c64 GET and c64
-   mixed screen with full outcomes and operation-specific means/tails. Keep
-   existing queues, ownership, fairness and the selected shared executor. Avoid
-   further runtime sweeps without new evidence.
+1. **Finish candidate acceptance:** keep `42e0117` frozen while completing
+   applicable broader point/batch measurements and actual candidate Chaos Mesh.
+   The short loaded-read improvement does not itself justify default promotion.
+2. **Reduce isolated GET latency:** localize serial RPC, owner-service and
+   completion-wait costs with a bounded diagnostic. Preserve the selected shared
+   executor and consensus boundaries; the current evidence does not justify
+   another worker-count or transport sweep. Do not repeat completed screens
+   without a new cause.
 3. **Qualify useful improvements:** applicable proof mapping, full point/batch
    checks and actual exact-source Chaos Mesh fault injection precede promotion.
    Preserve fresh Safe ReadIndex, sealed groups, durable writes and complete

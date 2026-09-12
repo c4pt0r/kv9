@@ -1,0 +1,1398 @@
+{
+  "version": 1,
+  "files": {
+    "proof/Schedule2-fp0/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp0/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "proof/Schedule2-fp0/CoalescedWakeMC.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp0/CoalescedWakeMC.tla",
+      "bytes": 805,
+      "sha256": "0656427f2d822a136f175941ed82a62b7b8e4bc2d23ab5bbbbb6110078560d91"
+    },
+    "proof/Schedule2-fp0/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp0/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/Schedule2-fp0/Run.cfg": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp0/Run.cfg",
+      "bytes": 155,
+      "sha256": "ce8f738ac110119a5f2503b8892290ee14f629f5b1b1bac2caafb5e921ceb9f2"
+    },
+    "proof/Schedule2-fp0/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp0/result.json",
+      "bytes": 1077,
+      "sha256": "39b5b9c37ee0e429a14922a6b6ce63cceaaa265e81036e26fc593d6e459c8817"
+    },
+    "proof/Schedule2-fp0/tlc.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp0/tlc.log",
+      "bytes": 31074,
+      "sha256": "c551b07d71ef0ea643e1d6c073a14f870c5b1449ffbfc5b268cdfdb60f18795b"
+    },
+    "proof/Schedule2-fp1/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp1/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "proof/Schedule2-fp1/CoalescedWakeMC.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp1/CoalescedWakeMC.tla",
+      "bytes": 805,
+      "sha256": "0656427f2d822a136f175941ed82a62b7b8e4bc2d23ab5bbbbb6110078560d91"
+    },
+    "proof/Schedule2-fp1/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp1/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/Schedule2-fp1/Run.cfg": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp1/Run.cfg",
+      "bytes": 155,
+      "sha256": "ce8f738ac110119a5f2503b8892290ee14f629f5b1b1bac2caafb5e921ceb9f2"
+    },
+    "proof/Schedule2-fp1/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp1/result.json",
+      "bytes": 1077,
+      "sha256": "ca2e026656838e3675a9af265d0f3951f0741a645ed08ecf461a3adb906c90af"
+    },
+    "proof/Schedule2-fp1/tlc.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule2-fp1/tlc.log",
+      "bytes": 31074,
+      "sha256": "31305a98f474ab4db3feb770e0ad74255d55ebaf5adbe4eefb4a428ec11e6dcd"
+    },
+    "proof/Schedule3-fp0/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp0/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "proof/Schedule3-fp0/CoalescedWakeMC.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp0/CoalescedWakeMC.tla",
+      "bytes": 805,
+      "sha256": "0656427f2d822a136f175941ed82a62b7b8e4bc2d23ab5bbbbb6110078560d91"
+    },
+    "proof/Schedule3-fp0/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp0/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/Schedule3-fp0/Run.cfg": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp0/Run.cfg",
+      "bytes": 155,
+      "sha256": "cd2d2cdc8bea662cd92a0ced860cc4b40a6071b703440e41270e798224894cbe"
+    },
+    "proof/Schedule3-fp0/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp0/result.json",
+      "bytes": 1078,
+      "sha256": "2df0038c13fb93ccf17d5f171acfddbdf3133d56109dd87574bd9c912c156c79"
+    },
+    "proof/Schedule3-fp0/tlc.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp0/tlc.log",
+      "bytes": 31108,
+      "sha256": "8a2775e3003f17bfe26bf6091c3854efa3f90768ecdb268a27f310370a25c0a3"
+    },
+    "proof/Schedule3-fp1/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp1/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "proof/Schedule3-fp1/CoalescedWakeMC.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp1/CoalescedWakeMC.tla",
+      "bytes": 805,
+      "sha256": "0656427f2d822a136f175941ed82a62b7b8e4bc2d23ab5bbbbb6110078560d91"
+    },
+    "proof/Schedule3-fp1/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp1/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/Schedule3-fp1/Run.cfg": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp1/Run.cfg",
+      "bytes": 155,
+      "sha256": "cd2d2cdc8bea662cd92a0ced860cc4b40a6071b703440e41270e798224894cbe"
+    },
+    "proof/Schedule3-fp1/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp1/result.json",
+      "bytes": 1078,
+      "sha256": "eb14c040c6d0d1b88108ce47d1701953898a4f6c63fb4bacecfc14de1cbf9186"
+    },
+    "proof/Schedule3-fp1/tlc.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/Schedule3-fp1/tlc.log",
+      "bytes": 31109,
+      "sha256": "198e9468c6de980c016b757c81786f648ce6335d2b9788928cb307d80709fb79"
+    },
+    "proof/auditor/ProofAudit.class": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/auditor/ProofAudit.class",
+      "bytes": 6462,
+      "sha256": "5362cc4105112e010aa12dee2414be6860a87fcdcadcb8aae897a4248ca1cd4b"
+    },
+    "proof/auditor/ProofAudit.java": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/auditor/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    "proof/first-wake-before/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-before/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "proof/first-wake-before/CoalescedWakeMC.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-before/CoalescedWakeMC.tla",
+      "bytes": 805,
+      "sha256": "0656427f2d822a136f175941ed82a62b7b8e4bc2d23ab5bbbbb6110078560d91"
+    },
+    "proof/first-wake-before/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-before/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/first-wake-before/Run.cfg": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-before/Run.cfg",
+      "bytes": 136,
+      "sha256": "cebf09896fe4eb94e4f81083afe00531ebea6f31bc1704b1b9b89157c4190ec3"
+    },
+    "proof/first-wake-before/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-before/result.json",
+      "bytes": 1081,
+      "sha256": "cf097d7139b7e99df31e187fa1ac048caf468b1e584d320b0e85bc2d1aa59878"
+    },
+    "proof/first-wake-before/tlc.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-before/tlc.log",
+      "bytes": 23606,
+      "sha256": "6cf6ddfc076f666978cd14c7912f1d40024fa445cb12dd003f9c2be22a89dcad"
+    },
+    "proof/first-wake-mutant/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-mutant/CoalescedWake.tla",
+      "bytes": 1561,
+      "sha256": "b833b37b374ed8bd257cdc2f2a5cf9944a7eec68fc48aee074f7704d398b31ac"
+    },
+    "proof/first-wake-mutant/CoalescedWakeMC.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-mutant/CoalescedWakeMC.tla",
+      "bytes": 805,
+      "sha256": "0656427f2d822a136f175941ed82a62b7b8e4bc2d23ab5bbbbb6110078560d91"
+    },
+    "proof/first-wake-mutant/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-mutant/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/first-wake-mutant/Run.cfg": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-mutant/Run.cfg",
+      "bytes": 136,
+      "sha256": "cebf09896fe4eb94e4f81083afe00531ebea6f31bc1704b1b9b89157c4190ec3"
+    },
+    "proof/first-wake-mutant/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-mutant/result.json",
+      "bytes": 1092,
+      "sha256": "7b7a6bf6cf9a222106e6f7e180b6ddcc0efb61490caedd94b5d18ab7b0c897ad"
+    },
+    "proof/first-wake-mutant/tlc.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-mutant/tlc.log",
+      "bytes": 21341,
+      "sha256": "b02c90a61267643be890a599f8a93f8a100403786821600c3246ff8aafead519"
+    },
+    "proof/first-wake-restored/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-restored/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "proof/first-wake-restored/CoalescedWakeMC.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-restored/CoalescedWakeMC.tla",
+      "bytes": 805,
+      "sha256": "0656427f2d822a136f175941ed82a62b7b8e4bc2d23ab5bbbbb6110078560d91"
+    },
+    "proof/first-wake-restored/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-restored/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/first-wake-restored/Run.cfg": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-restored/Run.cfg",
+      "bytes": 136,
+      "sha256": "cebf09896fe4eb94e4f81083afe00531ebea6f31bc1704b1b9b89157c4190ec3"
+    },
+    "proof/first-wake-restored/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-restored/result.json",
+      "bytes": 1083,
+      "sha256": "10c28fb2a4447a97ec688aebf4cc39d6a5d5666b2a33f5433362cda0a9405b0e"
+    },
+    "proof/first-wake-restored/tlc.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/first-wake-restored/tlc.log",
+      "bytes": 23612,
+      "sha256": "d0d0b9c5f130fb75c943ffd3652526c2c56811714b8cf5f129090a48828d6304"
+    },
+    "proof/proof-assumption/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-assumption/CoalescedWake.tla",
+      "bytes": 1624,
+      "sha256": "e9eedb7ef1d89210d431e0fad2892b552e0de61d85b5bb760627f48e53c772ea"
+    },
+    "proof/proof-assumption/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-assumption/CoalescedWakeProof.tla",
+      "bytes": 2808,
+      "sha256": "4fbdb3a290b78b352d23233e2bf2250311574f2c8e187814dd919a7f70122b03"
+    },
+    "proof/proof-assumption/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-assumption/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/proof-assumption/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-assumption/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "proof/proof-assumption/inventory.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-assumption/inventory.json",
+      "bytes": 2328,
+      "sha256": "1767338d71749cf59b71a05a939c111ee1044f5794a65adfa6b8fb0c23e5b7f5"
+    },
+    "proof/proof-assumption/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-assumption/result.json",
+      "bytes": 616,
+      "sha256": "2f3a95638ae460d69ab5d35aae507aedc6bd65053adfd0e8fcfb7f1b6cc5da09"
+    },
+    "proof/proof-assumption/sany.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-assumption/sany.log",
+      "bytes": 4321,
+      "sha256": "09ca68a6f94220e00098ebf70366789facc7505197ef32565864e6375b2082dc"
+    },
+    "proof/proof-hole/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-hole/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "proof/proof-hole/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-hole/CoalescedWakeProof.tla",
+      "bytes": 2777,
+      "sha256": "0f3f9b0eb96abcd237694f555565a4c273cd667ed6d1b9a2b4bea299b869bb3e"
+    },
+    "proof/proof-hole/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-hole/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/proof-hole/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-hole/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "proof/proof-hole/inventory.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-hole/inventory.json",
+      "bytes": 2328,
+      "sha256": "1767338d71749cf59b71a05a939c111ee1044f5794a65adfa6b8fb0c23e5b7f5"
+    },
+    "proof/proof-hole/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-hole/result.json",
+      "bytes": 614,
+      "sha256": "dc7561bf639324219cf701d3f9055e726955e5d50f6f19bf774a402609edf545"
+    },
+    "proof/proof-hole/sany.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-hole/sany.log",
+      "bytes": 4181,
+      "sha256": "366fb0d00ae65a36aaa46e06a0aefe6de0545561aae8c559db007eaae5779745"
+    },
+    "proof/proof-missing-first-wake/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/CoalescedWake.tla",
+      "bytes": 1561,
+      "sha256": "b833b37b374ed8bd257cdc2f2a5cf9944a7eec68fc48aee074f7704d398b31ac"
+    },
+    "proof/proof-missing-first-wake/CoalescedWakeProof.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/CoalescedWakeProof.log",
+      "bytes": 1897,
+      "sha256": "9e751d535d75b40a58be6b658c4236152a1940119d4560559b5abddda9fbd339"
+    },
+    "proof/proof-missing-first-wake/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/CoalescedWakeProof.tla",
+      "bytes": 2808,
+      "sha256": "4fbdb3a290b78b352d23233e2bf2250311574f2c8e187814dd919a7f70122b03"
+    },
+    "proof/proof-missing-first-wake/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/proof-missing-first-wake/RaftScheduleProof.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/RaftScheduleProof.log",
+      "bytes": 833,
+      "sha256": "56f1c4e15ddfe629a49b0369e600c12679a6455e0e4910a4eb49d16408aca208"
+    },
+    "proof/proof-missing-first-wake/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "proof/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/CoalescedWakeProof.thy": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/CoalescedWakeProof.thy",
+      "bytes": 417,
+      "sha256": "182c22a852abe9febc8081e1aa161a22dd9cceb9c372ab36d46d71dd58bb6e6a"
+    },
+    "proof/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints",
+      "bytes": 3505,
+      "sha256": "a8e86ac1973888238dfb36db0ddb90a6df00c675302a2cad06c51c4345956875"
+    },
+    "proof/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_37/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_37/CoalescedWake.tla",
+      "bytes": 1561,
+      "sha256": "b833b37b374ed8bd257cdc2f2a5cf9944a7eec68fc48aee074f7704d398b31ac"
+    },
+    "proof/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_37/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_37/CoalescedWakeProof.tla",
+      "bytes": 2808,
+      "sha256": "4fbdb3a290b78b352d23233e2bf2250311574f2c8e187814dd919a7f70122b03"
+    },
+    "proof/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_37/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_37/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_37/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_37/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "proof/proof-missing-first-wake/cache/RaftScheduleProof/RaftScheduleProof.tlaps/RaftScheduleProof.thy": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/cache/RaftScheduleProof/RaftScheduleProof.tlaps/RaftScheduleProof.thy",
+      "bytes": 416,
+      "sha256": "ad567a2e3b47ecdd8bcd1ee3f9d72e558c198c281e8a2f1b2c3e7a32b73961e3"
+    },
+    "proof/proof-missing-first-wake/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints",
+      "bytes": 15641,
+      "sha256": "8bcdedd84b575f5ce39b998793373e3e86d2a6b0ca933c36ed642b8f207892fe"
+    },
+    "proof/proof-missing-first-wake/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-11_22_11_28/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-11_22_11_28/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/proof-missing-first-wake/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-11_22_11_28/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-11_22_11_28/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "proof/proof-missing-first-wake/inventory.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/inventory.json",
+      "bytes": 2328,
+      "sha256": "1767338d71749cf59b71a05a939c111ee1044f5794a65adfa6b8fb0c23e5b7f5"
+    },
+    "proof/proof-missing-first-wake/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/result.json",
+      "bytes": 1660,
+      "sha256": "dc898804f1c0113ebb2562b43a8a1984c439014df6779ebbdff3b10495510345"
+    },
+    "proof/proof-missing-first-wake/sany.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/sany.log",
+      "bytes": 4294,
+      "sha256": "0c3db74115207a3666333aed681af943652a8a4eb0c8033b83cb9e6b4a7a530b"
+    },
+    "proof/proof-missing-first-wake/semantic-audit.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof-missing-first-wake/semantic-audit.json",
+      "bytes": 5539,
+      "sha256": "f07d12cd19217e826d1a9b73f288ad9c0baa2f280c3e478ac7cabbe28d298f55"
+    },
+    "proof/proof/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "proof/proof/CoalescedWakeProof.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/CoalescedWakeProof.log",
+      "bytes": 429,
+      "sha256": "b99728acd3bf95817ceff6800f858ccdde4fce212ae3f46723300ef2ecd8d82c"
+    },
+    "proof/proof/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/CoalescedWakeProof.tla",
+      "bytes": 2808,
+      "sha256": "4fbdb3a290b78b352d23233e2bf2250311574f2c8e187814dd919a7f70122b03"
+    },
+    "proof/proof/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/proof/RaftScheduleProof.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/RaftScheduleProof.log",
+      "bytes": 738,
+      "sha256": "3a743253fb2d8f483d9173e4857136ec968e0b8853a7003f15a39a90f5d43e76"
+    },
+    "proof/proof/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "proof/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/CoalescedWakeProof.thy": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/CoalescedWakeProof.thy",
+      "bytes": 417,
+      "sha256": "182c22a852abe9febc8081e1aa161a22dd9cceb9c372ab36d46d71dd58bb6e6a"
+    },
+    "proof/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints",
+      "bytes": 3503,
+      "sha256": "9f02025757c0b54659c42f4b13ac04953540c5411d5cdf070259c1ec40f003d2"
+    },
+    "proof/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_27/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_27/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "proof/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_27/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_27/CoalescedWakeProof.tla",
+      "bytes": 2808,
+      "sha256": "4fbdb3a290b78b352d23233e2bf2250311574f2c8e187814dd919a7f70122b03"
+    },
+    "proof/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_27/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_27/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_27/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/cache/CoalescedWakeProof/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_11_27/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "proof/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/RaftScheduleProof.thy": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/RaftScheduleProof.thy",
+      "bytes": 416,
+      "sha256": "ad567a2e3b47ecdd8bcd1ee3f9d72e558c198c281e8a2f1b2c3e7a32b73961e3"
+    },
+    "proof/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints",
+      "bytes": 15641,
+      "sha256": "6f2259341dec4c5c523cc1ce506eec2a6d822419968753225eb4c7e52be0e87e"
+    },
+    "proof/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-11_22_11_18/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-11_22_11_18/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-11_22_11_18/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-11_22_11_18/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "proof/proof/inventory.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/inventory.json",
+      "bytes": 2328,
+      "sha256": "1767338d71749cf59b71a05a939c111ee1044f5794a65adfa6b8fb0c23e5b7f5"
+    },
+    "proof/proof/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/result.json",
+      "bytes": 1556,
+      "sha256": "cb18001f417bcd0825fc3d93dbb37144ae024841883cd381fb2021ace2680f0c"
+    },
+    "proof/proof/sany.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/sany.log",
+      "bytes": 4142,
+      "sha256": "f324665c11c50291c004230de2431865a37c6ba514262f8d44f3ac1158f5e492"
+    },
+    "proof/proof/semantic-audit.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/proof/semantic-audit.json",
+      "bytes": 5463,
+      "sha256": "87f524d68277a14db52b595bc21a577c08bca30bfc0446cc949c95d3e9fe59d3"
+    },
+    "proof/service/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/service/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "proof/service/CoalescedWakeMC.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/service/CoalescedWakeMC.tla",
+      "bytes": 805,
+      "sha256": "0656427f2d822a136f175941ed82a62b7b8e4bc2d23ab5bbbbb6110078560d91"
+    },
+    "proof/service/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/service/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "proof/service/Run.cfg": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/service/Run.cfg",
+      "bytes": 197,
+      "sha256": "189424c0a7de9bb357dda44533003013febfe4f14f01359d021b1f5ffd9538f9"
+    },
+    "proof/service/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/service/result.json",
+      "bytes": 1069,
+      "sha256": "57a54e827f7e994647192255460dab44144d621df5030a925ad1eb5c05eb9568"
+    },
+    "proof/service/tlc.log": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/service/tlc.log",
+      "bytes": 25237,
+      "sha256": "39b51a14cbd1c36f175cf74c3710137ae468880ea5e3aea3f19214408aff4004"
+    },
+    "proof/summary.json": {
+      "original": "/tmp/kv9-coalesced-owner-proof-first/summary.json",
+      "bytes": 15308,
+      "sha256": "c1d7a67fc1b1f44ef592d132a40a534ca8a40424bc8faff40ea3ef7813611768"
+    },
+    "recovery-audit/audit.json": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/audit.json",
+      "bytes": 10613,
+      "sha256": "0eff7638c8f7cc45b4e5cab87f00db9fb8893608b45d65c0402c18d3a0852e03"
+    },
+    "recovery-audit/batch-tonic-stream-history-checked.json": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/batch-tonic-stream-history-checked.json",
+      "bytes": 19590,
+      "sha256": "8c5f7055638ea989444653c2d2242fb0427fced4211ebc1999391f16efea311c"
+    },
+    "recovery-audit/batch-tonic-stream-raw-history.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/batch-tonic-stream-raw-history.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recovery-audit/batch-tonic-stream-raw-history.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/batch-tonic-stream-raw-history.stdout",
+      "bytes": 751,
+      "sha256": "cb96ff5d1cda9d6d6403f162d853ffa8b8313dfbd843daff80c170e02b0acdd3"
+    },
+    "recovery-audit/batch-tonic-stream-report-checked.json": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/batch-tonic-stream-report-checked.json",
+      "bytes": 22438,
+      "sha256": "4db54c6d357c27b0ab0d43b67396a1f21a1c8c1bf1be7cb46ad38eee0e19d58f"
+    },
+    "recovery-audit/batch-tonic-unary-history-checked.json": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/batch-tonic-unary-history-checked.json",
+      "bytes": 19429,
+      "sha256": "f902dbd54a87deae09634c2616c05ee3bee6e83d3724d2545f2335c57a385642"
+    },
+    "recovery-audit/batch-tonic-unary-raw-history.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/batch-tonic-unary-raw-history.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recovery-audit/batch-tonic-unary-raw-history.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/batch-tonic-unary-raw-history.stdout",
+      "bytes": 632,
+      "sha256": "baec3bd3bfa35a22e3223791df907223166af00cac6373e40ae7314c2595bb08"
+    },
+    "recovery-audit/batch-tonic-unary-report-checked.json": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/batch-tonic-unary-report-checked.json",
+      "bytes": 22264,
+      "sha256": "9a5b899e6123d6b90e6aef7f40501dbab6860a3461f6e51f26f9e0381afb4e33"
+    },
+    "recovery-audit/commands.json": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/commands.json",
+      "bytes": 1957,
+      "sha256": "2e1a9240a14f0c9545e186a12a78d4e028b11a9bbad0fa978aedb5d08c810028"
+    },
+    "recovery-audit/original-inputs.json": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/original-inputs.json",
+      "bytes": 12620,
+      "sha256": "9289197694589b97dd56e97b7f760bed920af897459f4ee888f531befd67548d"
+    },
+    "recovery-audit/source-head.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/source-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recovery-audit/source-head.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/source-head.stdout",
+      "bytes": 41,
+      "sha256": "83e8380b585984e4304184b75ca8f8fd6f9584b097df2f336a34bd7dd0a5bc0a"
+    },
+    "recovery-audit/source-status.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/source-status.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recovery-audit/source-status.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-recovery-preparation-first/results-first/source-status.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recovery/batch-tonic-stream-checked.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-stream-checked.json",
+      "bytes": 22438,
+      "sha256": "4db54c6d357c27b0ab0d43b67396a1f21a1c8c1bf1be7cb46ad38eee0e19d58f"
+    },
+    "recovery/batch-tonic-stream-config.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-stream-config.json",
+      "bytes": 787,
+      "sha256": "04294753427a4afb5f1b431929b75d5256b02b5ff2820b36a421c3ee6e261b22"
+    },
+    "recovery/batch-tonic-stream.log": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-stream.log",
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9"
+    },
+    "recovery/batch-tonic-stream.stop": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-stream.stop",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recovery/batch-tonic-stream/build.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-stream/build.json",
+      "bytes": 487,
+      "sha256": "16678fd4a044db4bd01ea0c7840ff69c9eef94b2bd16389316ec2b75e3329e82"
+    },
+    "recovery/batch-tonic-stream/config.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-stream/config.json",
+      "bytes": 821,
+      "sha256": "2447e11958a9aaf7eab61003ea5ef8d634726c05d1a9cfe7eb4f76af2a0660e8"
+    },
+    "recovery/batch-tonic-stream/history.jsonl": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-stream/history.jsonl",
+      "bytes": 430660,
+      "sha256": "5a81e584567b1ca65eab08dace1944ecd975d2af0d1d69b96ab3b1cb61771254"
+    },
+    "recovery/batch-tonic-stream/progress.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-stream/progress.json",
+      "bytes": 720,
+      "sha256": "6be0711ce3373c68ca25d6732d499acecf29cae6e31ca4b1c5d56271f488a015"
+    },
+    "recovery/batch-tonic-stream/ready.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-stream/ready.json",
+      "bytes": 71,
+      "sha256": "978fa81f815168781e1cde81b214562778cc442181b34fe02b84deae9fa995c9"
+    },
+    "recovery/batch-tonic-stream/report.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-stream/report.json",
+      "bytes": 200609,
+      "sha256": "dde7ba97d2d7a368cf9f1d5ebe24846089ba19705a02e709ba354d99b990390a"
+    },
+    "recovery/batch-tonic-unary-checked.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-unary-checked.json",
+      "bytes": 22264,
+      "sha256": "9a5b899e6123d6b90e6aef7f40501dbab6860a3461f6e51f26f9e0381afb4e33"
+    },
+    "recovery/batch-tonic-unary-config.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-unary-config.json",
+      "bytes": 819,
+      "sha256": "4a2a05dff8151b671ada9b6a304cb7eef3f203a2863fedf482738ad8263353c4"
+    },
+    "recovery/batch-tonic-unary.log": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-unary.log",
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9"
+    },
+    "recovery/batch-tonic-unary.stop": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-unary.stop",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recovery/batch-tonic-unary/build.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-unary/build.json",
+      "bytes": 487,
+      "sha256": "16678fd4a044db4bd01ea0c7840ff69c9eef94b2bd16389316ec2b75e3329e82"
+    },
+    "recovery/batch-tonic-unary/config.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-unary/config.json",
+      "bytes": 818,
+      "sha256": "67843dae83a561c1589f3262a221c5b1e34607ce92bc55a7803d5c06ffcf6a32"
+    },
+    "recovery/batch-tonic-unary/history.jsonl": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-unary/history.jsonl",
+      "bytes": 421988,
+      "sha256": "380d092e868fc86e09e8e75f6de43fc84ba368e13cab8467738a1a7db9f36dfb"
+    },
+    "recovery/batch-tonic-unary/progress.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-unary/progress.json",
+      "bytes": 720,
+      "sha256": "fe1c431068cfe81818dff060994324b2ac745cdd5439fdcb59c9fb0d747a77b6"
+    },
+    "recovery/batch-tonic-unary/ready.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-unary/ready.json",
+      "bytes": 71,
+      "sha256": "5019fa8b172cca9e40cb12bda5860dfb114e43bac7a11738a6359ae5eb759d18"
+    },
+    "recovery/batch-tonic-unary/report.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/batch-tonic-unary/report.json",
+      "bytes": 200869,
+      "sha256": "b91a5bbd56da657f4832d66190b9ba8f28dd15f74dbb753a5cf96e7865b7c35b"
+    },
+    "recovery/fixture/command-000.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/command-000.json",
+      "bytes": 335,
+      "sha256": "4c469ee2c28041b9c821aff519c80ae00f23008dc920faf60836fcb9adc4465d"
+    },
+    "recovery/fixture/command-001.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/command-001.json",
+      "bytes": 335,
+      "sha256": "08bbcc27f3e4914cb7dc1e7f950f08b9b83236e295a805d71ebea9a670931081"
+    },
+    "recovery/fixture/command-002.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/command-002.json",
+      "bytes": 335,
+      "sha256": "49bcf935a359e1884ded90cb5b489df7562e08320395df7bf9db3c22a4c085f6"
+    },
+    "recovery/fixture/command-003.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/command-003.json",
+      "bytes": 945,
+      "sha256": "b4efdcc59e47691ac3bde306362eec755626a93de3608bca89ad5ca01a71839f"
+    },
+    "recovery/fixture/command-004.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/command-004.json",
+      "bytes": 609,
+      "sha256": "db370958ac74aff783ebe27dbb874375bf8201d20401adf52ead5d2e25b7dda6"
+    },
+    "recovery/fixture/command-005.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/command-005.json",
+      "bytes": 609,
+      "sha256": "c149638573906f59373587a789ceb35d675ab4a27db66bd2e75c043b7b9c8a1a"
+    },
+    "recovery/fixture/command-006.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/command-006.json",
+      "bytes": 609,
+      "sha256": "7a9f3d497630b437fd4c5d4b7ec34aded46a12b5399733d6eeb4b7bf52519bdc"
+    },
+    "recovery/fixture/command-007.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/command-007.json",
+      "bytes": 317,
+      "sha256": "b1bce247043530fb8549eaea07b626318cac35ad2b9b309f531e8df8070bbc74"
+    },
+    "recovery/fixture/command-008.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/command-008.json",
+      "bytes": 317,
+      "sha256": "9b2962cb8b5440c5a1ac418dbcf805636e07fb3c96d6d3083614993d86540cbe"
+    },
+    "recovery/fixture/data/n1/catalog.segments/c5662fa989d9b7e41cbbc818dfc810a9/00000000000000000001.wal": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n1/catalog.segments/c5662fa989d9b7e41cbbc818dfc810a9/00000000000000000001.wal",
+      "bytes": 183339,
+      "sha256": "7896776038bc98ecf0edd5e3f4600e3c80d95566119bc0a4247673d4b273faeb"
+    },
+    "recovery/fixture/data/n1/catalog.wal": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n1/catalog.wal",
+      "bytes": 117,
+      "sha256": "58bece344b26cf8bb891dbb9c60e0fa039819161054cb176185b1acf62b28ba3"
+    },
+    "recovery/fixture/data/n1/kv9-initialized": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n1/kv9-initialized",
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "recovery/fixture/data/n1/kv9-root-descriptor": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n1/kv9-root-descriptor",
+      "bytes": 179,
+      "sha256": "625b1eaefda010b4d17ad2d0a9e79be061e488800b8960ee019bacb60688f493"
+    },
+    "recovery/fixture/data/n1/kv9-serving-endpoint": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n1/kv9-serving-endpoint",
+      "bytes": 235,
+      "sha256": "613b8985d98369f2a2fd12ac6ce1df0bc80208c1aa9d2259218c59fe244bac7e"
+    },
+    "recovery/fixture/data/n1/kv9-store-identity": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n1/kv9-store-identity",
+      "bytes": 80,
+      "sha256": "bbaf800497d8bad67d0636d0ce58c3a602f40f9fd921230383ada48e29c3295b"
+    },
+    "recovery/fixture/data/n1/kv9-store-lifecycle": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n1/kv9-store-lifecycle",
+      "bytes": 97,
+      "sha256": "90c63455da1dae840b317771013942f3e80d5b4183a7b8bd7ba04a611af605c3"
+    },
+    "recovery/fixture/data/n1/kv9-store-lock": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n1/kv9-store-lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recovery/fixture/data/n1/metrics.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n1/metrics.json",
+      "bytes": 62224,
+      "sha256": "c9574a66456c17d5fab0b5c30e6389ae7050b46bd583a0a211455308a3d682fa"
+    },
+    "recovery/fixture/data/n1/raft/raft.log": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n1/raft/raft.log",
+      "bytes": 188069,
+      "sha256": "f71dbd2d6cf4ee090fb744627581b4a20734aa1cef2b75372c8473b5aa79dc8e"
+    },
+    "recovery/fixture/data/n1/status": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n1/status",
+      "bytes": 3437,
+      "sha256": "e0796bf08a2f0f9640505163ae78d297208571761f6b0737af66f973844f5314"
+    },
+    "recovery/fixture/data/n2/catalog.segments/734be9aebd0518d23c6d839d84352567/00000000000000000001.wal": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n2/catalog.segments/734be9aebd0518d23c6d839d84352567/00000000000000000001.wal",
+      "bytes": 181619,
+      "sha256": "a94174b01e0d3a47e70c6b4a1b804278efdcfc6e10c685237f4bb5a5780f76e0"
+    },
+    "recovery/fixture/data/n2/catalog.wal": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n2/catalog.wal",
+      "bytes": 117,
+      "sha256": "8a3d568d6325cf688713682efe6784c5d4069e388538876d9e443669e37e2af1"
+    },
+    "recovery/fixture/data/n2/kv9-initialized": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n2/kv9-initialized",
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "recovery/fixture/data/n2/kv9-root-descriptor": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n2/kv9-root-descriptor",
+      "bytes": 179,
+      "sha256": "625b1eaefda010b4d17ad2d0a9e79be061e488800b8960ee019bacb60688f493"
+    },
+    "recovery/fixture/data/n2/kv9-serving-endpoint": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n2/kv9-serving-endpoint",
+      "bytes": 235,
+      "sha256": "6e51299f6b9d03738af8c333e4ffb79e3032f3a257eec9c567b558de2af7595a"
+    },
+    "recovery/fixture/data/n2/kv9-store-identity": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n2/kv9-store-identity",
+      "bytes": 80,
+      "sha256": "76467750492a02e7ab2198da130e3ae02218bb6151ac3c9c5f984f3e939b8a94"
+    },
+    "recovery/fixture/data/n2/kv9-store-lifecycle": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n2/kv9-store-lifecycle",
+      "bytes": 97,
+      "sha256": "ffdaee247fd52b6aff91f43a35fea6a348868e6d053e6db8f695e916b10a6569"
+    },
+    "recovery/fixture/data/n2/kv9-store-lock": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n2/kv9-store-lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recovery/fixture/data/n2/metrics.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n2/metrics.json",
+      "bytes": 63360,
+      "sha256": "ae53fe31f99ada2982ddc58bb5104b90610dac0464ddc2c23db46e260d829334"
+    },
+    "recovery/fixture/data/n2/raft/raft.log": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n2/raft/raft.log",
+      "bytes": 187433,
+      "sha256": "80a891e30a2612fc94517eec3f795187ab022c2413c17c043ad37dc148139e88"
+    },
+    "recovery/fixture/data/n2/status": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n2/status",
+      "bytes": 3443,
+      "sha256": "cb0b244f0064be03c80236c632edde8f8d9e2839ca78aac7faa17c6a0fe10904"
+    },
+    "recovery/fixture/data/n3/catalog.segments/24b6f00c54f976b0c342e16e761de286/00000000000000000001.wal": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n3/catalog.segments/24b6f00c54f976b0c342e16e761de286/00000000000000000001.wal",
+      "bytes": 181619,
+      "sha256": "fc608843590e9180ee9d09bc86a4d28c7022ebffaaaa009c13cf5c55cbb64f7f"
+    },
+    "recovery/fixture/data/n3/catalog.wal": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n3/catalog.wal",
+      "bytes": 117,
+      "sha256": "709ef1dce9025d71587b7c43456cd61fee507a4df26e2affa5fe997b73debb84"
+    },
+    "recovery/fixture/data/n3/kv9-initialized": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n3/kv9-initialized",
+      "bytes": 12,
+      "sha256": "45df99afdb30dc04d8c57dc9fa1857f1cb1bcd89852d0200c356e8b168a093c1"
+    },
+    "recovery/fixture/data/n3/kv9-root-descriptor": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n3/kv9-root-descriptor",
+      "bytes": 179,
+      "sha256": "625b1eaefda010b4d17ad2d0a9e79be061e488800b8960ee019bacb60688f493"
+    },
+    "recovery/fixture/data/n3/kv9-serving-endpoint": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n3/kv9-serving-endpoint",
+      "bytes": 235,
+      "sha256": "fbf4ac204f46f921ed94888cefcb8260583ad6581534a93987fed05af049958e"
+    },
+    "recovery/fixture/data/n3/kv9-store-identity": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n3/kv9-store-identity",
+      "bytes": 80,
+      "sha256": "18569c58142037940b3a44cde54d1924f005ebf37ce30d1f321bceb9aedee6b0"
+    },
+    "recovery/fixture/data/n3/kv9-store-lifecycle": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n3/kv9-store-lifecycle",
+      "bytes": 97,
+      "sha256": "c665ebbc04289cac1ac701ea9b8e6034f07718cb820ba125df7b46c58e313d73"
+    },
+    "recovery/fixture/data/n3/kv9-store-lock": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n3/kv9-store-lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "recovery/fixture/data/n3/metrics.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n3/metrics.json",
+      "bytes": 61847,
+      "sha256": "7b7e7b228d5e39459fa2cae25b1620a413c9108c8a4c37b495a3b9c53cfe69f0"
+    },
+    "recovery/fixture/data/n3/raft/raft.log": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n3/raft/raft.log",
+      "bytes": 187338,
+      "sha256": "a0d7614d02badeed303b769d5badfafa7a7c09382821cf39a66407af773454d7"
+    },
+    "recovery/fixture/data/n3/status": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/data/n3/status",
+      "bytes": 3432,
+      "sha256": "a070501daf98eddc92162ae5e7581209557355e7062f2dad76788df66c8f8fcd"
+    },
+    "recovery/fixture/fixture.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/fixture.json",
+      "bytes": 3198,
+      "sha256": "f1fafd1101f5d5255c119759b19f140bb7e40569ea83f8b7ac62dac47d7a23b1"
+    },
+    "recovery/fixture/n1.log": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/n1.log",
+      "bytes": 111,
+      "sha256": "8fa5733067db9aeda0347d130350de6150fc45f6ef740d0c1cdcca2548c0dea9"
+    },
+    "recovery/fixture/n2-restart.log": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/n2-restart.log",
+      "bytes": 111,
+      "sha256": "a3e84b3d0cb76700cda7b357529226358e5e4ffba7a110373d382347291627c7"
+    },
+    "recovery/fixture/n2.log": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/n2.log",
+      "bytes": 111,
+      "sha256": "a3e84b3d0cb76700cda7b357529226358e5e4ffba7a110373d382347291627c7"
+    },
+    "recovery/fixture/n3-restart.log": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/n3-restart.log",
+      "bytes": 111,
+      "sha256": "4111dfc604b62b9f173d8dc1b6900158232ffd325640a50c39d0860fb3943a12"
+    },
+    "recovery/fixture/n3.log": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/n3.log",
+      "bytes": 111,
+      "sha256": "4111dfc604b62b9f173d8dc1b6900158232ffd325640a50c39d0860fb3943a12"
+    },
+    "recovery/fixture/root.bin": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/fixture/root.bin",
+      "bytes": 179,
+      "sha256": "625b1eaefda010b4d17ad2d0a9e79be061e488800b8960ee019bacb60688f493"
+    },
+    "recovery/summary.json": {
+      "original": "/tmp/kv9-coalesced-owner-process-e2e-first/summary.json",
+      "bytes": 203076,
+      "sha256": "c01f97eb141de838ba3f7971391e0e41684ba8d707c71deac2f185e0e6495a5d"
+    },
+    "release/build.json": {
+      "original": "/tmp/kv9-coalesced-owner-release-first/build.json",
+      "bytes": 68514,
+      "sha256": "1076ed28118a8d67650e489a093576793de7ada8aabdfaa6814db9026c68c1de"
+    },
+    "release/cache-safety.json": {
+      "original": "/tmp/kv9-coalesced-owner-release-first/cache-safety.json",
+      "bytes": 21548,
+      "sha256": "3bc2c578fc0ad8383fbda5cd256f114eac717eb91ed0731618cdf791a32300c4"
+    },
+    "release/kv9-build.log": {
+      "original": "/tmp/kv9-coalesced-owner-release-first/kv9-build.log",
+      "bytes": 254,
+      "sha256": "2781e3fed9317b7712eec3f4d858d21840409aa6ae5bccdb94222387771fe0c0"
+    },
+    "release/kv9-cargo.jsonl": {
+      "original": "/tmp/kv9-coalesced-owner-release-first/kv9-cargo.jsonl",
+      "bytes": 212029,
+      "sha256": "6f041fbf8ba4805b2a84ce212b0583dea587ea0301fb808753197136a06fa065"
+    },
+    "release/workload/build.json": {
+      "original": "/tmp/kv9-coalesced-owner-release-first/workload/build.json",
+      "bytes": 487,
+      "sha256": "16678fd4a044db4bd01ea0c7840ff69c9eef94b2bd16389316ec2b75e3329e82"
+    },
+    "release/workload/build.log": {
+      "original": "/tmp/kv9-coalesced-owner-release-first/workload/build.log",
+      "bytes": 651,
+      "sha256": "78d844247cfa7dee84b3e28363a969cdbc18a1ee17c8cc0d8dd8df77c6a5b4d3"
+    },
+    "release/workload/cargo.jsonl": {
+      "original": "/tmp/kv9-coalesced-owner-release-first/workload/cargo.jsonl",
+      "bytes": 209014,
+      "sha256": "6110b491e13500f52d15fa1f5da4911f0ef9a7e58236fa008257b5a2b1819f5d"
+    },
+    "release/workload/sources.json": {
+      "original": "/tmp/kv9-coalesced-owner-release-first/workload/sources.json",
+      "bytes": 64389,
+      "sha256": "89427131f9e3f4980c124287c7b4c6d66248d7e61884ab2babbd25203c163207"
+    },
+    "root/check-source.py": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/check-source.py",
+      "bytes": 2437,
+      "sha256": "a5b36e188db88663db953cf76a3bc397e7e55249863ecf9fcd97f90d1b3efe05"
+    },
+    "root/proof-development-first/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "root/proof-development-first/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/CoalescedWakeProof.tla",
+      "bytes": 2693,
+      "sha256": "2d4e8a55488e0a05f5b51bfe61b9bea080f328490ba5c8b90c658d36ba500618"
+    },
+    "root/proof-development-first/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "root/proof-development-first/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "root/proof-development-first/cache/CoalescedWakeProof.tlaps/CoalescedWakeProof.thy": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/cache/CoalescedWakeProof.tlaps/CoalescedWakeProof.thy",
+      "bytes": 417,
+      "sha256": "182c22a852abe9febc8081e1aa161a22dd9cceb9c372ab36d46d71dd58bb6e6a"
+    },
+    "root/proof-development-first/cache/CoalescedWakeProof.tlaps/fingerprints": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/cache/CoalescedWakeProof.tlaps/fingerprints",
+      "bytes": 3284,
+      "sha256": "23c83c02db037e7e58d9e6fc746015fac7bfd2e7b6ab438410a16e71abc8cf96"
+    },
+    "root/proof-development-first/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_03_02/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_03_02/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "root/proof-development-first/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_03_02/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_03_02/CoalescedWakeProof.tla",
+      "bytes": 2693,
+      "sha256": "2d4e8a55488e0a05f5b51bfe61b9bea080f328490ba5c8b90c658d36ba500618"
+    },
+    "root/proof-development-first/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_03_02/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_03_02/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "root/proof-development-first/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_03_02/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_03_02/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "root/proof-development-first/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/result.json",
+      "bytes": 987,
+      "sha256": "b661a30dfe6b86337d6bb7098afdadc47197d4c018b9605dc5b3f59b34835a59"
+    },
+    "root/proof-development-first/tlapm.log": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-first/tlapm.log",
+      "bytes": 1519,
+      "sha256": "4dfb00855ac4d29a8cb9d172d6de38dd264aa6110cf8987f824fce7fe90d28da"
+    },
+    "root/proof-development-second/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "root/proof-development-second/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/CoalescedWakeProof.tla",
+      "bytes": 2782,
+      "sha256": "54c05b862d19973e511d39c49cf070ea3d8bd33370f851f03b039001234250fa"
+    },
+    "root/proof-development-second/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "root/proof-development-second/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "root/proof-development-second/cache/CoalescedWakeProof.tlaps/CoalescedWakeProof.thy": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/cache/CoalescedWakeProof.tlaps/CoalescedWakeProof.thy",
+      "bytes": 417,
+      "sha256": "182c22a852abe9febc8081e1aa161a22dd9cceb9c372ab36d46d71dd58bb6e6a"
+    },
+    "root/proof-development-second/cache/CoalescedWakeProof.tlaps/fingerprints": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/cache/CoalescedWakeProof.tlaps/fingerprints",
+      "bytes": 3468,
+      "sha256": "c41013159d5510f610e98547acd277981af92e68ff570530402c8efc0c84d23c"
+    },
+    "root/proof-development-second/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_06/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_06/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "root/proof-development-second/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_06/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_06/CoalescedWakeProof.tla",
+      "bytes": 2782,
+      "sha256": "54c05b862d19973e511d39c49cf070ea3d8bd33370f851f03b039001234250fa"
+    },
+    "root/proof-development-second/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_06/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_06/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "root/proof-development-second/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_06/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_06/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "root/proof-development-second/proof.log": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/proof.log",
+      "bytes": 1604,
+      "sha256": "4ef18be61419e6e342b6d40926588704cd1f758dab5b891d2e18810e3849e77b"
+    },
+    "root/proof-development-second/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-second/result.json",
+      "bytes": 988,
+      "sha256": "dfd652ed30dc654d80ca4e25e1a91115e98da9c21134a75b045e0e0882b4d00e"
+    },
+    "root/proof-development-third/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "root/proof-development-third/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/CoalescedWakeProof.tla",
+      "bytes": 2808,
+      "sha256": "4fbdb3a290b78b352d23233e2bf2250311574f2c8e187814dd919a7f70122b03"
+    },
+    "root/proof-development-third/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "root/proof-development-third/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "root/proof-development-third/cache/CoalescedWakeProof.tlaps/CoalescedWakeProof.thy": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/cache/CoalescedWakeProof.tlaps/CoalescedWakeProof.thy",
+      "bytes": 417,
+      "sha256": "182c22a852abe9febc8081e1aa161a22dd9cceb9c372ab36d46d71dd58bb6e6a"
+    },
+    "root/proof-development-third/cache/CoalescedWakeProof.tlaps/fingerprints": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/cache/CoalescedWakeProof.tlaps/fingerprints",
+      "bytes": 3503,
+      "sha256": "b7a75a4255a2814871358536cc2d02b685becf132974df278a53bc16f525a812"
+    },
+    "root/proof-development-third/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_34/CoalescedWake.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_34/CoalescedWake.tla",
+      "bytes": 1611,
+      "sha256": "daf79882ca8f36543e9fb0c4d1fbc16e65bb71d7d3f1292c0a209b5d1edb45e1"
+    },
+    "root/proof-development-third/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_34/CoalescedWakeProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_34/CoalescedWakeProof.tla",
+      "bytes": 2808,
+      "sha256": "4fbdb3a290b78b352d23233e2bf2250311574f2c8e187814dd919a7f70122b03"
+    },
+    "root/proof-development-third/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_34/RaftSchedule.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_34/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    "root/proof-development-third/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_34/RaftScheduleProof.tla": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/cache/CoalescedWakeProof.tlaps/fingerprints.history/2026-09-11_22_08_34/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    "root/proof-development-third/proof.log": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/proof.log",
+      "bytes": 384,
+      "sha256": "3b5f445633f12f11c31a629ab29aa4342da58db3fb6e1683a837acd846f958ac"
+    },
+    "root/proof-development-third/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-development-third/result.json",
+      "bytes": 865,
+      "sha256": "46be45cc580088e68e8a1af0a33ebb2e422365286bf4d93f77d7bf4845117b5f"
+    },
+    "root/proof-first.log": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/proof-first.log",
+      "bytes": 635,
+      "sha256": "42a5291fb0ad1b8d5ac6baff29b0f3be92699e808aa40076109256b9aa8965a7"
+    },
+    "root/recovery-audit-first/invocation.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/recovery-audit-first/invocation.json",
+      "bytes": 810,
+      "sha256": "cdfe615dd6834dc88d82452f9849ec4fc545c2877ac98dd282341a655c50bb69"
+    },
+    "root/recovery-audit-first/output.log": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/recovery-audit-first/output.log",
+      "bytes": 2729,
+      "sha256": "5610016520b05435186ed12a4e5da9096dd0ed07ccb43ca746e9e75676b3313a"
+    },
+    "root/recovery-audit-first/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/recovery-audit-first/result.json",
+      "bytes": 862,
+      "sha256": "d950d45d17f723d167bf3cb00df6c4c6b2c3ee9becec12e7a3ec493dc8a0f1f8"
+    },
+    "root/recovery-contracts-first/invocation.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/recovery-contracts-first/invocation.json",
+      "bytes": 487,
+      "sha256": "dc34e03875092717f3f0815f8a1b149f63dfe033d4de08722965b27a4070d2d7"
+    },
+    "root/recovery-contracts-first/output.log": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/recovery-contracts-first/output.log",
+      "bytes": 822,
+      "sha256": "b65d7069a99a571280db6a338bb225ab80bbf48d664cc0794831b8372f884e05"
+    },
+    "root/recovery-contracts-first/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/recovery-contracts-first/result.json",
+      "bytes": 539,
+      "sha256": "b5c75e8aa24a1a63eb24bdc330204368f62994b364fef252346e6437b438f9b8"
+    },
+    "root/recovery-first/invocation.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/recovery-first/invocation.json",
+      "bytes": 605,
+      "sha256": "ee8dda6a898eaea24a2620b0bf3c9792c5fe1d98874e401871eabf2e7fa9b239"
+    },
+    "root/recovery-first/output.log": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/recovery-first/output.log",
+      "bytes": 288,
+      "sha256": "721ea9c7550f9d3cad200cd50684869195f8787996b6b8faa7fa448804881ebd"
+    },
+    "root/recovery-first/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/recovery-first/result.json",
+      "bytes": 657,
+      "sha256": "00ee9e12036998fd9ef5d67b703cbcb442248680b079a035dd1c0b4f83b5cf9b"
+    },
+    "root/release-first.log": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/release-first.log",
+      "bytes": 170,
+      "sha256": "dc941ee3b83adc6d5e1b3ce259ad20196fa2521101c69f525ea8935a471e33da"
+    },
+    "root/release-invocation.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/release-invocation.json",
+      "bytes": 846,
+      "sha256": "9f62bda6af67dda0e7170eec3c8b781c765d312e51ff3117c3043fcb4df50e0f"
+    },
+    "root/release-readback.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/release-readback.json",
+      "bytes": 869,
+      "sha256": "2aaed00589e3cee9ac0cd26b35b68e841bccd076770a5f340da38f04f99c8010"
+    },
+    "root/release-result.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/release-result.json",
+      "bytes": 1434,
+      "sha256": "36a6ea63795f1bd1bb672fa97a12ff1f7e65be179c0dee57b235f76be4f55b15"
+    },
+    "root/run-release.py": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/run-release.py",
+      "bytes": 2134,
+      "sha256": "00130468b0b67afa73e90b172cc483942d369621b4dc64332dedf51da0139fb8"
+    },
+    "root/run-source.py": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/run-source.py",
+      "bytes": 1856,
+      "sha256": "ab6da86e50b0ed48f8b9ec4f74aaaed90b3a092f57a97bf97d4a4f8cb1347cd0"
+    },
+    "root/run-stage.py": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/run-stage.py",
+      "bytes": 2091,
+      "sha256": "e5830465f92313e1595aa6eb6dfab6750619cea3e92c267b6553c3e85bf11f00"
+    },
+    "root/source-first.log": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/source-first.log",
+      "bytes": 299,
+      "sha256": "e32c6021b949495b2652fd1f4225c2e822eb1216b342e7337b852eac92ab0d53"
+    },
+    "root/source-invocation.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/source-invocation.json",
+      "bytes": 646,
+      "sha256": "287517f665b89403cdc0c301de38d0292d41892c5c1512d409aa3fe0b07e0f55"
+    },
+    "root/source-result.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/source-result.json",
+      "bytes": 3281,
+      "sha256": "1987b2e2dd79f3bd30f1c4c38acc6e767e72c2e0b8093ee8d60adf6e6d0c16f1"
+    },
+    "root/start.json": {
+      "original": "/tmp/kv9-coalesced-owner-root-first/start.json",
+      "bytes": 627,
+      "sha256": "d91136c800cf424f7df3e72f774538ce88dd51a451ce3d1c7dad6a153711ed18"
+    },
+    "source/cache-clean.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/cache-clean.stderr",
+      "bytes": 28,
+      "sha256": "bc761a7e3d33e4647574d494308e67cc234fb91e085d5d189ee87647f99ed99b"
+    },
+    "source/cache-clean.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source/cache-metadata.json": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/cache-metadata.json",
+      "bytes": 27206,
+      "sha256": "08eccb0f049af5b733fca0ed0d26561d70a4ee7107fb4e30acfa0b7455aab445"
+    },
+    "source/cache-metadata.log": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source/cache-safety.json": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/cache-safety.json",
+      "bytes": 32573,
+      "sha256": "d155893aa1711d4cd48d5edbc9414997e87ad55f6646f8d07aee66db717717b1"
+    },
+    "source/default-clippy.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/default-clippy.stderr",
+      "bytes": 5106,
+      "sha256": "fd99d80025e57953b30e6a370afe10ef70bb69a8f31a3f0b70b9bcd68245bdd8"
+    },
+    "source/default-clippy.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/default-clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source/default-compile.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/default-compile.stderr",
+      "bytes": 6969,
+      "sha256": "e7557623313c273275bd96d90a2d6a0ffbf890876d888ecf7dd91bcf18424c20"
+    },
+    "source/default-compile.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/default-compile.stdout",
+      "bytes": 217297,
+      "sha256": "285297f9113df9b05658b9991e399fa08a255f88f63762432f9da02f1a12bbb2"
+    },
+    "source/default-tests.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/default-tests.stderr",
+      "bytes": 1006,
+      "sha256": "42f40578ad77209cafd544454c95f0c257254e36d81e88cb15a51efb757e16a9"
+    },
+    "source/default-tests.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/default-tests.stdout",
+      "bytes": 39048,
+      "sha256": "19c40ed0ccfd8b0555272068dcab81fb8cfffb055b4fc9f7e5da37cb42ac993f"
+    },
+    "source/format.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source/format.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/format.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source/result.json": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/result.json",
+      "bytes": 2584,
+      "sha256": "707c296b8828a0e62bead8fe2c29d4e7858978aaec7a35d0e9ec8e4a25e090c9"
+    },
+    "source/sources-after.json": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/sources-after.json",
+      "bytes": 67759,
+      "sha256": "2c16ada754c0a8308d03002d3c52a3962b6efcbab55efc75423051e94e7f630c"
+    },
+    "source/sources-before.json": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/sources-before.json",
+      "bytes": 67759,
+      "sha256": "2c16ada754c0a8308d03002d3c52a3962b6efcbab55efc75423051e94e7f630c"
+    },
+    "source/testing-clippy.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/testing-clippy.stderr",
+      "bytes": 62,
+      "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531"
+    },
+    "source/testing-clippy.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/testing-clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source/testing-compile.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/testing-compile.stderr",
+      "bytes": 620,
+      "sha256": "00365cc012972352accbca3a2c4111e8fc482d328d2cc1430fc5263b8828bc9f"
+    },
+    "source/testing-compile.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/testing-compile.stdout",
+      "bytes": 208128,
+      "sha256": "2ddee5e80d94dda8150b7557817eedbb51151680e17c270140f52bb626acede7"
+    },
+    "source/testing-tests.stderr": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/testing-tests.stderr",
+      "bytes": 507,
+      "sha256": "0d60993ccbd68f5f80ae37f92800956e9570cf7b5e582266b88b12413ab630d3"
+    },
+    "source/testing-tests.stdout": {
+      "original": "/tmp/kv9-coalesced-owner-source-first/testing-tests.stdout",
+      "bytes": 18252,
+      "sha256": "676d2ac1ca3fc8ef6464eec6805c8ad1aed0cf8c1f94c01d1c119a7d2fca8f41"
+    }
+  },
+  "decoded_bytes": 5069166,
+  "archive_sha256": "d38b1325b3cc87d703ea56db44608119deada578b105afc4a67156a5ed2db544",
+  "scope": "Original local formal/source/ordinary-recovery evidence and failed development derivations. No candidate Chaos Mesh or performance acceptance. Retained release executables stay at original paths; manifests bind their bytes."
+}

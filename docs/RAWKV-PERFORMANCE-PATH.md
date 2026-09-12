@@ -38,15 +38,17 @@ accepting scale-out. This sequence does not mark those prerequisites complete.
 ## Current checkpoint
 
 The [current status](CURRENT-STATUS.md) is authoritative for runtime selection.
-Selected behavior remains CRC `ca0002c7`. The completed outbound executor screen
-improves c1 GET by 4.159% but loses 4.415% c64 GET and 2.066% c64 mixed throughput,
-with worse c64 read means/tails. It is not promoted. The
-[completed CPU/scheduler diagnostic](PEER-SCHEDULING-DIAGNOSTIC.md) identifies
-the unconditional owner `notify_one` call as a suppression candidate.
-Next prove and test false-to-true notification coalescing before the unchanged
-uninstrumented throughput/latency screen. Do not change another runtime
-mechanism; preserve the full proof, point/batch and actual Chaos promotion gates.
-The reports below retain their earlier source boundaries and historical decisions.
+Selected behavior remains CRC `ca0002c7`. The [notification candidate screen](COALESCED-OWNER-PERFORMANCE.md)
+completes 24 timed cohorts: c64 GET +1.123%, c64 mixed +2.730%, with better loaded
+and mixed GET mean/p99 in both repeats. Single GET does not improve: -0.248%
+throughput and +0.260% mean. Its 37.772 us mean remains about 6.67x Redis.
+Keep `42e0117` experimental pending broader API performance and actual candidate
+Chaos. The [new proof/source/recovery qualification](COALESCED-OWNER-VALIDATION.md)
+is complete within its documented scope; no full correctness gate closes.
+Next localize isolated GET serial RPC, owner and completion costs. Preserve
+fresh ReadIndex, sealed groups, successful pump/apply/view fences and durable
+writes. The previous outbound-executor regression remains rejected. The reports
+below retain their earlier source boundaries and historical decisions.
 
 ## Earlier development evidence
 
