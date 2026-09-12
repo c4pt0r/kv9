@@ -31,6 +31,11 @@ use kv9_common::{Error, NodeId, RegionId, Result};
 
 use crate::{CommittedEntry, EntryKind, LogIndex, RaftGroup, Role};
 
+// raft-rs treats a zero target as one entry per Append, not unlimited bytes.
+// Bound the encoded entry payload when a follower has several entries ready.
+// Its existing progress rule still permits one legal entry above this target.
+const APPEND_ENTRY_BYTES: u64 = 64 * 1024;
+
 /// A raft-rs [`raft::Storage`] that can also **persist** what the Ready loop
 /// hands it: log entries and the HardState (term + vote + commit).
 ///
@@ -269,6 +274,7 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             // forbids. A raft-rs default change must not be able to change
             // our read semantics silently.
             read_only_option: ReadOnlyOption::Safe,
+            max_size_per_msg: APPEND_ENTRY_BYTES,
             // Bound work exposed by one Ready. A single legal large entry may
             // exceed this target; transport admission has a separate bound.
             max_committed_size_per_ready: 1024 * 1024,
@@ -1232,5 +1238,101 @@ mod tests {
             .find(|p| p.node_id() != leader)
             .unwrap();
         assert!(follower.propose_traced(put(b"x", b"y")).is_err());
+    }
+
+    #[test]
+    fn lagging_follower_receives_bounded_multi_entry_appends_without_losing_large_entries() {
+        let cluster = InProcessCluster::new(R, &[N1, N2, N3]).unwrap();
+        let mut sms = vec![
+            MemStateMachine::new(),
+            MemStateMachine::new(),
+            MemStateMachine::new(),
+        ];
+        cluster.peer(N1).unwrap().campaign().unwrap();
+        run(&cluster, &mut sms, "elect", |c, _| c.leader() == Some(N1));
+        cluster.set_alive(N3, false);
+        let mut expected = Vec::new();
+        let mut last = LogIndex(0);
+        for index in 0u64..80 {
+            let key = index.to_be_bytes().to_vec();
+            let value = vec![
+                index as u8;
+                if index == 40 {
+                    APPEND_ENTRY_BYTES as usize + 1
+                } else {
+                    2048
+                }
+            ];
+            last = cluster
+                .peer(N1)
+                .unwrap()
+                .propose_traced(put(&key, &value))
+                .unwrap()
+                .index;
+            expected.push((key, value));
+        }
+        run(
+            &cluster,
+            &mut sms,
+            "quorum applies while third voter is absent",
+            |_, sms| sms[0].applied_index() >= last && sms[1].applied_index() >= last,
+        );
+        assert!(sms[2].applied_index() < last);
+        cluster.set_alive(N3, true);
+        let mut multi_entry = 0;
+        let mut oversized_single = 0;
+        // Observe the real adapter's messages before delivery. This exercises
+        // raft-rs slicing, progress responses, persistence/Ready and follower
+        // application together, rather than inspecting the configuration value.
+        for _ in 0..100 {
+            for peer in cluster.peers() {
+                peer.tick();
+            }
+            for _ in 0..10 {
+                let mut messages = Vec::new();
+                for peer in cluster.peers() {
+                    messages.extend(peer.pump().unwrap());
+                }
+                for message in messages {
+                    if message.from == N1.0 && message.to == N3.0 && !message.entries.is_empty() {
+                        let bytes: u64 = message
+                            .entries
+                            .iter()
+                            .map(|e| u64::from(e.compute_size()))
+                            .sum();
+                        assert!(
+                            bytes <= APPEND_ENTRY_BYTES || message.entries.len() == 1,
+                            "multiple entries exceeded the payload target"
+                        );
+                        multi_entry += usize::from(message.entries.len() > 1);
+                        oversized_single += usize::from(bytes > APPEND_ENTRY_BYTES);
+                        for (offset, entry) in message.entries.iter().enumerate() {
+                            assert_eq!(entry.index, message.index + offset as u64 + 1);
+                        }
+                    }
+                    cluster.peer(NodeId(message.to)).unwrap().step(message);
+                }
+                for (peer, sm) in cluster.peers().iter().zip(&mut sms) {
+                    drive_apply(&HarnessPump(peer.as_ref()), sm).unwrap();
+                }
+            }
+            if sms.iter().all(|sm| sm.applied_index() >= last) {
+                break;
+            }
+        }
+        assert!(
+            multi_entry > 0,
+            "lagging follower still received only single-entry appends"
+        );
+        assert!(oversized_single > 0, "legal large entry was not replicated");
+        assert!(sms.iter().all(|sm| sm.applied_index() >= last));
+        for sm in &sms {
+            for (key, value) in &expected {
+                assert_eq!(
+                    sm.get(ColumnFamily::Default, key).unwrap().as_ref(),
+                    Some(value)
+                );
+            }
+        }
     }
 }
