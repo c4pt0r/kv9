@@ -1,0 +1,23 @@
+{
+  "candidate": "2ca5fccb157b26b6c3c79eb52f7c7838f10a5c8c",
+  "decision": "rejected",
+  "reason": "All eight matched workload/repetition comparisons regress throughput, mean and p99; every pooled workload uses more server CPU.",
+  "selected_runtime": "11113f68f6a5df77da1ffb4fcec850953716ffa3",
+  "cohorts_rerun": false,
+  "poll_budget_retuned": false,
+  "timing_terminal": {
+    "session": 53149,
+    "receipt": "7d34ec",
+    "exit_code": 0
+  },
+  "audit_terminal": {
+    "session": 39270,
+    "receipt": "acb34b",
+    "exit_code": 0
+  },
+  "statistics_terminal": {
+    "receipt": "e4c8df",
+    "exit_code": 0
+  },
+  "actual_chaos_on_rejected_candidate": false
+}

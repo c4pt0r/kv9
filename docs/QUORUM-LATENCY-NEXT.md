@@ -9,9 +9,13 @@ The opt-in [quorum-message trace](QUORUM-MESSAGE-TRACE.md) and its
 replacing the original contended recorder with immutable slots. Preserve both
 original campaigns. [Owner-poll candidate `2ca5fcc`](https://github.com/c4pt0r/kv9/blob/2ca5fccb157b26b6c3c79eb52f7c7838f10a5c8c/docs/BOUNDED-OWNER-POLL.md) now passes the
 scheduling proof/model and Rust source gates. Its [clean default release and
-ordinary recovery](OWNER-POLL-RECOVERY.md) also pass. The 24-cohort
-uninstrumented screen remains pending. Keep the original
-mutex predicate and deadlines, explicit CPU accounting and no assumed gain.
+ordinary recovery](OWNER-POLL-RECOVERY.md) also pass. The [24-cohort
+uninstrumented screen](OWNER-POLL-PERFORMANCE.md) is complete and rejects the
+32-us candidate in every matched workload/order, including higher server CPU.
+Do not retune that budget or repeat losing cohorts. Next review existing
+selected-build profiles, then identify a concrete CPU/call-stack cost outside
+performance timing before another rewrite. Preserve the original mutex predicate,
+deadlines and all consensus fences.
 Track this under #20 and #9. Production already uses leader Safe ReadIndex;
 clock-derived lease reads require a separate design and proof.
 

@@ -1,0 +1,313 @@
+{
+  "rows": [
+    {
+      "concurrency": 1,
+      "read_percent": 50,
+      "role": "old",
+      "server_cpu_cores": 2.1301269659536874,
+      "client_cpu_cores": 0.16358857259340467,
+      "cpu": {
+        "voter-3": {
+          "cpu_cores": 0.5188577151539625,
+          "sample_seconds": 19.928392115999998,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-2": {
+          "cpu_cores": 1.0994365307392133,
+          "sample_seconds": 19.928390032,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 0.16358857259340467,
+          "sample_seconds": 19.928042333999997,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-1": {
+          "cpu_cores": 0.5118327200605117,
+          "sample_seconds": 19.928385974999998,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    },
+    {
+      "concurrency": 1,
+      "read_percent": 50,
+      "role": "new",
+      "server_cpu_cores": 3.3611731774421867,
+      "client_cpu_cores": 0.1383118401283814,
+      "cpu": {
+        "voter-3": {
+          "cpu_cores": 0.8957409831347576,
+          "sample_seconds": 19.882979941,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-2": {
+          "cpu_cores": 1.5812552679790846,
+          "sample_seconds": 19.882937712,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 0.1383118401283814,
+          "sample_seconds": 19.882607284000002,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-1": {
+          "cpu_cores": 0.8841769263283445,
+          "sample_seconds": 19.882898407,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    },
+    {
+      "concurrency": 1,
+      "read_percent": 50,
+      "role": "redis",
+      "server_cpu_cores": 0.5284219015861774,
+      "client_cpu_cores": 0.6078596607080319,
+      "cpu": {
+        "redis": {
+          "cpu_cores": 0.5284219015861774,
+          "sample_seconds": 19.889410277000003,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 0.6078596607080319,
+          "sample_seconds": 19.88945933,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    },
+    {
+      "concurrency": 1,
+      "read_percent": 100,
+      "role": "old",
+      "server_cpu_cores": 1.6083752087309826,
+      "client_cpu_cores": 0.20498881405060926,
+      "cpu": {
+        "voter-3": {
+          "cpu_cores": 0.335809529366625,
+          "sample_seconds": 19.951786397,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-2": {
+          "cpu_cores": 0.9367568588864317,
+          "sample_seconds": 19.951815482,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 0.20498881405060926,
+          "sample_seconds": 19.952308222,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-1": {
+          "cpu_cores": 0.335808820477926,
+          "sample_seconds": 19.951828515,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    },
+    {
+      "concurrency": 1,
+      "read_percent": 100,
+      "role": "new",
+      "server_cpu_cores": 3.3526558363304866,
+      "client_cpu_cores": 0.17086533332888576,
+      "cpu": {
+        "voter-3": {
+          "cpu_cores": 0.872362359205865,
+          "sample_seconds": 19.957303082,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-2": {
+          "cpu_cores": 1.563336524008811,
+          "sample_seconds": 19.957315344999998,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 0.17086533332888576,
+          "sample_seconds": 19.957237279,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-1": {
+          "cpu_cores": 0.9169569531158104,
+          "sample_seconds": 19.957316358,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    },
+    {
+      "concurrency": 1,
+      "read_percent": 100,
+      "role": "redis",
+      "server_cpu_cores": 0.5273126101358583,
+      "client_cpu_cores": 0.6112492640763071,
+      "cpu": {
+        "redis": {
+          "cpu_cores": 0.5273126101358583,
+          "sample_seconds": 19.893322857,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 0.6112492640763071,
+          "sample_seconds": 19.893684483,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    },
+    {
+      "concurrency": 64,
+      "read_percent": 50,
+      "role": "old",
+      "server_cpu_cores": 3.504931652908424,
+      "client_cpu_cores": 0.6167244326645448,
+      "cpu": {
+        "voter-3": {
+          "cpu_cores": 0.5699968622205065,
+          "sample_seconds": 19.912390317000003,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-2": {
+          "cpu_cores": 2.348349146980222,
+          "sample_seconds": 19.911860236,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 0.6167244326645448,
+          "sample_seconds": 19.911648298,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-1": {
+          "cpu_cores": 0.5865856437076952,
+          "sample_seconds": 19.91184088,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    },
+    {
+      "concurrency": 64,
+      "read_percent": 50,
+      "role": "new",
+      "server_cpu_cores": 3.665496179725716,
+      "client_cpu_cores": 0.5461581649613183,
+      "cpu": {
+        "voter-3": {
+          "cpu_cores": 0.6836860468368936,
+          "sample_seconds": 19.921424553,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-2": {
+          "cpu_cores": 2.280030246296933,
+          "sample_seconds": 19.920788364,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 0.5461581649613183,
+          "sample_seconds": 19.920969231999997,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-1": {
+          "cpu_cores": 0.7017798865918894,
+          "sample_seconds": 19.920776111000002,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    },
+    {
+      "concurrency": 64,
+      "read_percent": 50,
+      "role": "redis",
+      "server_cpu_cores": 0.9959485003537006,
+      "client_cpu_cores": 1.4484136508805554,
+      "cpu": {
+        "redis": {
+          "cpu_cores": 0.9959485003537006,
+          "sample_seconds": 19.890586704999997,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 1.4484136508805554,
+          "sample_seconds": 19.890726645999997,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    },
+    {
+      "concurrency": 64,
+      "read_percent": 100,
+      "role": "old",
+      "server_cpu_cores": 3.0290043969568496,
+      "client_cpu_cores": 1.1622232570885445,
+      "cpu": {
+        "voter-3": {
+          "cpu_cores": 0.24169591690752537,
+          "sample_seconds": 19.901039544,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-2": {
+          "cpu_cores": 2.4194862207503323,
+          "sample_seconds": 19.900919289,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 1.1622232570885445,
+          "sample_seconds": 19.901511916,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-1": {
+          "cpu_cores": 0.3678222592989918,
+          "sample_seconds": 19.900916312,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    },
+    {
+      "concurrency": 64,
+      "read_percent": 100,
+      "role": "new",
+      "server_cpu_cores": 3.43640716902289,
+      "client_cpu_cores": 0.8531993475517178,
+      "cpu": {
+        "voter-3": {
+          "cpu_cores": 0.48846355137541037,
+          "sample_seconds": 19.878658239,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-2": {
+          "cpu_cores": 2.3583548375267545,
+          "sample_seconds": 19.878263972,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 0.8531993475517178,
+          "sample_seconds": 19.878121155000002,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "voter-1": {
+          "cpu_cores": 0.5895887801207251,
+          "sample_seconds": 19.878261586999997,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    },
+    {
+      "concurrency": 64,
+      "read_percent": 100,
+      "role": "redis",
+      "server_cpu_cores": 0.9950066125327821,
+      "client_cpu_cores": 1.4533080349531144,
+      "cpu": {
+        "redis": {
+          "cpu_cores": 0.9950066125327821,
+          "sample_seconds": 19.899365241,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        },
+        "client": {
+          "cpu_cores": 1.4533080349531144,
+          "sample_seconds": 19.899428960999998,
+          "scope": "Retained resource-coverage CPU estimate, weighted by observed sample seconds across these cohorts"
+        }
+      }
+    }
+  ],
+  "scope": "Process CPU estimates use each retained observation interval and are weighted by sample seconds. All process work within those intervals is included; this is not exclusive request service time."
+}

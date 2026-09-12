@@ -6,6 +6,9 @@
 > [Main integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md) now passes fresh
 > local checks, default-build and recovery confirmation. Consult the
 > [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before another candidate.
+> The [bounded owner-poll screen](OWNER-POLL-PERFORMANCE.md) now rejects the
+> 32-us candidate: every matched workload/order loses throughput and worsens
+> latency, with more server CPU. Main remains on `11113f6`.
 > Redis read parity and industrial gates remain open.
 
 Updated: 2026-09-12. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
@@ -37,8 +40,11 @@ now passes 14 new TLAPS theorems / 49 obligations, model/negative controls,
 populations. Original failed drafts and command/build-inventory failures remain
 retained. The [clean default release and ordinary recovery](OWNER-POLL-RECOVERY.md)
 now pass, including 363 complete operations, 29 unknown outcomes and seven
-exited lifetimes. Next run the fixed-client 24-cohort c1/c64 GET/mixed screen,
-including Redis, both orders, latency and CPU cost. Main still selects `11113f6`; no speedup is assumed.
+exited lifetimes. The [24-cohort c1/c64 GET/mixed screen](OWNER-POLL-PERFORMANCE.md)
+now passes accounting but rejects the candidate: every workload/order loses
+throughput and worsens mean/p99, with more server CPU. Main still selects
+`11113f6`. Reuse existing profiles and capture a concrete selected-build CPU cost
+before another rewrite; do not retune this poll budget or repeat losing cohorts.
 Keep notification candidate `42e0117` separate; its gains cannot be added to
 ThinLTO's measurements. The [next latency investigation](QUORUM-LATENCY-NEXT.md)
 targets unresolved intervals inside a fresh quorum round, reusing completed

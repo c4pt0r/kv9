@@ -20,6 +20,13 @@ remain open. An abstract proof or one-host fault run does not close these gates.
 
 ## Current read-latency implementation
 
+The [32-us owner-poll screen](OWNER-POLL-PERFORMANCE.md) is complete and the
+candidate is rejected. All eight workload/repetition comparisons regress
+throughput, mean and p99. Pooled c1/c64 GET lose 18.963% / 25.251%; c1 server
+CPU rises from 1.6084 to 3.3527 estimated cores. Main remains on `11113f6`.
+Same-run selected c1/c64 GET are 28,252.671 / 374,812.758 calls/s; Redis is
+173,925.251 / 511,910.764. This is a new point comparison, not a speedup.
+
 The [quorum-path capture](QUORUM-TRACE-RESULTS.md) now passes both four-cohort
 campaigns. Original recorder `1875e74` lost 1,083 selected observations to its
 mutex; those prefixes remain unsuitable for complete-context attribution.
@@ -53,11 +60,11 @@ now hashes published archives under a separate bounded allowance.
 
 The [clean default release and ordinary recovery](OWNER-POLL-RECOVERY.md) now
 pass: 363 complete operations, 334 OK / 29 unknown, six fresh drains and seven
-exited lifetimes. The uninstrumented c1/c64 GET/mixed screen remains pending;
-it preserves 12 two-second smoke / 24 ten-second timed cohorts, Redis and both
-full run orders. CPU cost and read/write tails are
-mandatory; notification coalescing stays separate. No new performance result,
-selected runtime change, Chaos acceptance or original checklist closure follows.
+exited lifetimes. The 12 two-second smoke / 24 ten-second timed cohorts now pass independent
+readback: 49,184,881 measured single-attempt successes, 80 exited lifetimes and
+48 fresh drains. Performance and CPU cost reject the candidate in both orders;
+no poll budget is retuned and no cohort is rerun. There is no selected runtime
+change, new Chaos acceptance or original checklist closure.
 Production still uses leader Safe ReadIndex; no lease-read shortcut is enabled.
 
 ## Latest fixed-rate write diagnosis
@@ -75,8 +82,8 @@ all twelve byte-retention records pass independent readback. The first reader's
 obsolete Redis pairing lookup failed after all eight per-cohort checks; its
 six-line repair and original failure remain published. No cohort was rerun.
 The quorum-path diagnosis is complete; the owner-poll candidate has passed its
-source/proof, clean build and ordinary recovery checkpoints; timing remains
-pending.
+source/proof, clean build and ordinary recovery checkpoints, but its completed
+performance screen rejects promotion.
 
 ## Latest completed optimization experiment
 
