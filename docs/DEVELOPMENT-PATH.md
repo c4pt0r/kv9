@@ -8,13 +8,14 @@ active product milestone, followed by dynamic multi-Raft and automatic splits.
 The dependency index and proof/fault/availability gates below still apply;
 partial experimental results do not complete their broader work packages.
 
-The immutable stream metadata/CRC combination is screened: c64 pure GET changes
-+0.010% with opposite repeat signs, mixed throughput falls 0.453%, and second-repeat
-mixed GET p99 worsens. Hold it and keep CRC selected. Source checks and new
-370-call complete recovery histories pass, but no exact-source Chaos acceptance
-transfers from the old adapter. Next split confirmation-path queue/transport/owner
-waiting with bounded diagnostic instrumentation, then implement the measured
-improvement. Full workload/proof/Chaos gates remain required for promotion.
+The [confirmation-queue diagnostic](https://github.com/c4pt0r/kv9/blob/c423d3c605bf6b88bda3521b85e6997c2b203120/docs/CONFIRMATION-QUEUE-RESULTS.md) now passes exact-source
+checks, recovery and two fixed cells. Mixed-load sender/receiver waits are much
+larger than local batch-channel admission; independent message means must not
+be added into GET latency. The next isolated candidate `74b958a` uses a 64-KiB
+Append entry-payload target instead of raft-rs's one-entry default. Source gates
+and 357-call ordinary recovery pass; next run the fixed c1/c64 GET/mixed screen.
+Keep CRC selected until performance, proof and exact-source fault gates justify
+promotion. The prior metadata, receipt and scheduling candidates remain held.
 
 <!-- kv9-roadmap-20260908:epic -->
 This is the execution tracker for evolving kv9 from its basic distributed Raw KV baseline into an industrial-grade distributed database. Priorities are consistency, recoverability, bounded resources, measured throughput and scalable ownership. Complex private-network TLS configuration is P4 work.
