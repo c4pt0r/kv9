@@ -7,13 +7,13 @@ The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 2
 explicit dependencies, implementation steps and acceptance criteria. Track delivery in
 [GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
 
-The [current checkpoint](CURRENT-STATUS.md) records the completed vector-only
-receipt lookup experiment: c64 mixed gains, with small pure-GET regressions.
-Keep CRC selected. The next candidate integrates immutable stream metadata
-reuse with current CRC/allocator/workers and retains fresh authentication per
-frame; current-combination performance and fault acceptance remain pending.
-The product sequence is memory RawKV read performance, then dynamic
-multi-Raft and automatic splits.
+The [current checkpoint](CURRENT-STATUS.md) records a completed stream metadata
+combination screen: pure GET is effectively unchanged and mixed throughput
+regresses. Keep CRC selected and hold the candidate. Next split the dominant
+read-confirmation interval into queue, transport and owner-processing waits,
+then implement the measured improvement. Peer RPC already uses persistent
+batch streams. The product sequence remains memory RawKV read performance,
+then dynamic multi-Raft and automatic splits.
 This priority does not waive the storage, proof, fault or recovery prerequisites
 below. Preserve durable writes and fresh quorum reads; evaluate throughput and
 latency together, including mixed-read tails. CI runs locally except at releases
