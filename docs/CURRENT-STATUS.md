@@ -75,6 +75,24 @@ remains the latest broad comparison.
 
 ## Current experiment and correctness evidence
 
+The [request-body handoff diagnostic](https://github.com/c4pt0r/kv9/blob/a75c005/docs/RAFT-BODY-HANDOFF-RESULTS.md)
+now completes both fixed cells with 984,862 measured successes, eight exited
+lifetimes, six drains and 12 checked metric documents. At c1, heartbeat/response
+batch offer-to-poll means are 0.444--0.475 us; at c64 mixed, leader heartbeat
+averages 0.987 us and mixed batches 3.244 us (p99 32.768--65.535 us). These
+independent local populations are not additive GET phases or socket/ACK latency.
+442 default / 234 experimental overlapping tests, two partition regressions,
+formatting/Clippy and 368-call ordinary recovery pass. The first Clippy failure
+and test-only unused-helper removal are retained. This diagnostic does not
+justify replacing the batch channel as the primary optimization.
+
+The clean [event-one candidate](https://github.com/c4pt0r/kv9/commit/5bed688c3b829770092ee6802078102b894ef6d5)
+changes only event_interval(8) to (1), preserving two RPC workers and adaptive
+global-queue scheduling. Its 224 default / 234 experimental overlapping server
+tests, formatting and Clippy pass, and its original default release is bound.
+The complete uninstrumented comparison and actual-runtime recovery remain pending.
+No performance gain is claimed; CRC stays selected.
+
 The [confirmation-queue diagnostic](https://github.com/c4pt0r/kv9/blob/c423d3c605bf6b88bda3521b85e6997c2b203120/docs/CONFIRMATION-QUEUE-RESULTS.md) is complete on independent
 source `6530239`. Both fixed cells pass readback: 974,650 measured successes,
 8 exited lifetimes, 6 drains and 12 metric documents. All-client accounting is
@@ -133,20 +151,18 @@ isolate network RTT or the measurement-only request latency. The
 [CPU/thread profile](https://github.com/c4pt0r/kv9/blob/6fb3434c7cafcbd8d93b04f298208d5785fa292a/docs/READ-PATH-CPU-PROFILE.md)
 also does not assign async requests to OS-thread waits.
 
-1. **Measure request-body handoff:** follow the [bounded plan](https://github.com/c4pt0r/kv9/blob/51efc6598324c10c1e27cd6fef869d4b9a39e7c4/docs/RAFT-REQUEST-BODY-HANDOFF-PLAN.md)
-   from batch offer to the existing request stream yielding that batch. Preserve
-   the 16-slot channel, original select arms, progress timeout, route cancellation
-   and export cap. This interval includes admission; do not call it pure queue
-   residence or sum unrelated sample means. Check source/recovery, then record
-   fixed c1 GET/c64 mixed diagnostic cells. Do not replay held small candidates.
-2. **Remove a handoff only when evidence supports it:** if this interval matters,
-   prototype a clean uninstrumented path with bounded ownership and an effective
-   stalled-reader watchdog. Compare the complete screen, retaining GET-only
-   means/tails and both repeats. Preserve fresh Safe ReadIndex, durable writes
-   and all pump/apply/view fences; useful changes need applicable proof,
-   full point/batch and actual exact-source Chaos gates before promotion. If the
-   interval is small, identify the next specific owner/HTTP2/socket boundary.
-   DPDK needs cross-host/NIC evidence. The selected runtime remains CRC.
+1. **Complete the event-one comparison:** evaluate the one-setting candidate
+   against selected CRC and Redis using the fixed forward/reverse 24-cohort
+   screen, after original-binary recovery checks. Compare c1/c64 GET and mixed
+   throughput, GET means and tails together. More frequent executor maintenance
+   may reduce waiting or add overhead; retain both repetitions and all outcomes.
+2. **Follow measured scheduling or transport costs:** keep the completed body
+   diagnostic and held candidates as evidence, without blind reruns. A useful
+   uninstrumented change needs applicable proof, full point/batch and actual
+   exact-source Chaos before promotion. If event-one regresses, hold it and
+   select a specific remaining ownership/encoding/socket boundary. Preserve fresh
+   Safe ReadIndex, durable writes and full pump/apply/view fences. DPDK needs
+   cross-host/NIC evidence. Selected runtime remains CRC.
 3. **Consistency and availability closure:** continue implementation/proof mapping,
    remote admission bounds, persistence failure cuts and actual Chaos Mesh E2E.
    Cover metadata, routing and scheduling without a service-critical singleton;
