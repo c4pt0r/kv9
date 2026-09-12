@@ -1,0 +1,1052 @@
+{
+  "version": 1,
+  "archive": {
+    "path": "original-evidence.tar.gz",
+    "bytes": 367750,
+    "sha256": "f5c5db015e96c2b88f6531e25cf944ac101e49a2991fdcd7b0a56510f8e9b9c4"
+  },
+  "member_count": 151,
+  "members": [
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-preparation-first/proof.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-preparation-first/proof.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-preparation-first/proof.stdout",
+      "bytes": 87,
+      "sha256": "756701879e0b4c43600114717eaa6d6b14aaed23d0ea133f2694d06c4f86e76a",
+      "member": "tmp/kv9-write-crc-slicing8-preparation-first/proof.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-preparation-first/source-binding.json",
+      "bytes": 1684,
+      "sha256": "113eff1f35157e67ae76893e5d6dc2b52ec36ecfccbf36c9dc3bc45cd7b28c19",
+      "member": "tmp/kv9-write-crc-slicing8-preparation-first/source-binding.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/bitwise-source.command.json",
+      "bytes": 527,
+      "sha256": "0f851ea242f4dc810f204610290131ae6c80b9948ee0100f9ad93a30b7b11be2",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/bitwise-source.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/bitwise-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/bitwise-source.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/bitwise-source.stdout",
+      "bytes": 31747,
+      "sha256": "eea567f32dc76406ebeb73fb7251fb86eb9ae9cd252231c1a46ca1b54f35ca2a",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/bitwise-source.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/byte-source.command.json",
+      "bytes": 527,
+      "sha256": "3c1a74ef87dbdc7a556d771834bf2ca880d1ec75a4b4929405dd0201f69402b0",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/byte-source.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/byte-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/byte-source.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/byte-source.stdout",
+      "bytes": 34239,
+      "sha256": "3651e5136ee6117819b27d38f5c788029ae0ec5941bf47ab16565b736c711478",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/byte-source.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/RustTable.command.json",
+      "bytes": 536,
+      "sha256": "69524cb08f40d3e7c37eb8ff89f2715c58a53dd955e97329b68d9cd249d97482",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/RustTable.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/RustTable.lean",
+      "bytes": 6305,
+      "sha256": "391dc02544e3c654590224111c3c9426be66011c972b011d6a0a5a8352b01179",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/RustTable.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/RustTable.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/RustTable.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/RustTable.stdout",
+      "bytes": 835,
+      "sha256": "bc3018066ef6f8fec610e6f7336c2bcbd16e1c7e236be9ea3669e6f8bdd5232e",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/RustTable.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/compiled-tables.json",
+      "bytes": 40441,
+      "sha256": "44f43fc4c25943eccc03bae00efa85e393b1296d512a7d22be68aaa612c6b3fb",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/compiled-tables.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/rustc.command.json",
+      "bytes": 570,
+      "sha256": "d54cac7debd127fc54dced127c191381b8cae2cf182ab4dc05ac4da0d1c002e9",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/rustc.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/rustc.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/rustc.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/table.command.json",
+      "bytes": 481,
+      "sha256": "84aab966568d1ee41e6867fb5d688709e4bc457a49d12d8a6d01cac4a0c53277",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/table.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/table.rs",
+      "bytes": 2100,
+      "sha256": "94c43041dbf602fbafc0ca630827ad1f5782e027866fcb79eda5eff548c604c4",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/table.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/table.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/table.stdout",
+      "bytes": 37666,
+      "sha256": "4c6e73bc0f551a5fb30c8caeb62c7543a751c485b7622f3b394fa3c17b679e9f",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/table.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/RustSlicing.command.json",
+      "bytes": 540,
+      "sha256": "c64413835e119119845483e48bdb4dc4d19897e217ba59fe89ebeaa4fa8d089d",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/RustSlicing.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "c523326aa6b553bc40713db449d2e88284cab6ce2f6a57dea1999ce52628edcd",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/RustSlicing.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/RustSlicing.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/RustSlicing.stdout",
+      "bytes": 1062,
+      "sha256": "eba0c7b23875588071e908092bae7d1cb83f05753fa28abe47401a243897f9b0",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/RustSlicing.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/compiled-tables.json",
+      "bytes": 40436,
+      "sha256": "b281f511ca6bc1536b50221ef40605a418d8debeb4787c9c4285858d27a4e8d4",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/compiled-tables.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/rustc.command.json",
+      "bytes": 570,
+      "sha256": "879de4d931f43078a9f27790086e34cf3ffaced2a7cfbf5e90f507d01d4d6378",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/rustc.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/rustc.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/rustc.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/table.command.json",
+      "bytes": 481,
+      "sha256": "ecd39921730730fdd81da2435ed6fe189e1232b32cbb4948bf11f03eec8a6cb7",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/table.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/table.rs",
+      "bytes": 2100,
+      "sha256": "b5f25a7d8ad1f674e21082cfac8b1e6994ef03f7143dc3140c7052a3a89258df",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/table.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/table.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/table.stdout",
+      "bytes": 37666,
+      "sha256": "7b44b0131292bf7110f472cc306b4868a1daddd3299755164a521fa1ae60303b",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/table.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-proof-hole/Slicing8.command.json",
+      "bytes": 525,
+      "sha256": "7d25cf57d28f1fb9bd125088ac0766c0d268e1b8a9d28463c64b19e4b57c13e4",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-proof-hole/Slicing8.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-proof-hole/Slicing8.lean",
+      "bytes": 7610,
+      "sha256": "37059665532c14eed45b0481b78085781a0bd6353f0595ead539c023e18ecd9f",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-proof-hole/Slicing8.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-proof-hole/Slicing8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-proof-hole/Slicing8.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-proof-hole/Slicing8.stdout",
+      "bytes": 1329,
+      "sha256": "add755de3eb83bfcd0e74a7262c1f6ba5ef8f5490c1e0c4c5f05ea7b8ad6129c",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-proof-hole/Slicing8.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-source-big-endian/rejection.json",
+      "bytes": 97,
+      "sha256": "10520eb81345e48ef774ff62bab7e263b2ed401ac9caeab7c7f88f55c6a8a3ec",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-source-big-endian/rejection.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-source-big-endian/wal-mutant.rs",
+      "bytes": 36699,
+      "sha256": "08d558cf7d869680aaa30d92db3d220d94c9b1739c1bf6b6a5d26ef58acc160f",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-source-big-endian/wal-mutant.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-source-missing-complement/rejection.json",
+      "bytes": 97,
+      "sha256": "10520eb81345e48ef774ff62bab7e263b2ed401ac9caeab7c7f88f55c6a8a3ec",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-source-missing-complement/rejection.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-source-missing-complement/wal-mutant.rs",
+      "bytes": 36698,
+      "sha256": "53692761141e4aa3a7ea5bdc11a5adc0a953b8ae1be139274aecc70f853137f1",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-source-missing-complement/wal-mutant.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-source-tail-shift/rejection.json",
+      "bytes": 97,
+      "sha256": "10520eb81345e48ef774ff62bab7e263b2ed401ac9caeab7c7f88f55c6a8a3ec",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-source-tail-shift/rejection.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-source-tail-shift/wal-mutant.rs",
+      "bytes": 36699,
+      "sha256": "e979fd0d4b3c1577bbb8067267d246177c5e428ac59735e49e273000c16b2669",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-source-tail-shift/wal-mutant.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-unapproved-axiom/Slicing8.command.json",
+      "bytes": 531,
+      "sha256": "bc502108278b7a8a59d34d23dd50f83b117c1b7624678018d5f5f71e53677d0b",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-unapproved-axiom/Slicing8.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-unapproved-axiom/Slicing8.lean",
+      "bytes": 7645,
+      "sha256": "43faccfd4b5018b9095098b2a1b07b4de50d0c23cd57a1a9d98f6e32e0b1e373",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-unapproved-axiom/Slicing8.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-unapproved-axiom/Slicing8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-unapproved-axiom/Slicing8.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-unapproved-axiom/Slicing8.stdout",
+      "bytes": 1311,
+      "sha256": "fb48f158d021d304f78d08d05e7f4c09b68dc1052b2155db5db01689632d29c0",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-unapproved-axiom/Slicing8.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-wrong-block-row/RustSlicing.command.json",
+      "bytes": 536,
+      "sha256": "23d8a4e6ac4928cfa45fa3e7393f3ddfddb7a573d7fe2de4fcd8c69ce82b60b8",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-wrong-block-row/RustSlicing.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-wrong-block-row/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "8df9af4f93a159ca052eb2258242cd90abfc88080274cc8d4485822b73ab51bf",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-wrong-block-row/RustSlicing.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-wrong-block-row/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-wrong-block-row/RustSlicing.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-wrong-block-row/RustSlicing.stdout",
+      "bytes": 2220,
+      "sha256": "d08476238b9da0a17c140134ad250435902e4db5a7c9ca8bfb35866215a683d9",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/control-wrong-block-row/RustSlicing.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/inputs/CRC32.lean",
+      "bytes": 7579,
+      "sha256": "12739201f01dd1718cf9b0ec81f3539dd9b6dbc25d17a2fb104c2454d81e6a01",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/inputs/CRC32.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/inputs/RustSlicing.lean.in",
+      "bytes": 4657,
+      "sha256": "464f890c5cb6eae1170052b5fb1ce470ec0fd74d24540de6ae7819ef2c25d5c5",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/inputs/RustSlicing.lean.in"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/inputs/RustTable.lean.in",
+      "bytes": 2383,
+      "sha256": "e56b58af76b33ab3c1a5c09ad684a286cc465c48ff882cc59b4bb02293171c9e",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/inputs/RustTable.lean.in"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/inputs/Slicing8.lean",
+      "bytes": 7783,
+      "sha256": "20ae98432bba62c7dc626c7c53ba3c377cbf3880d9b1c8536e5c311bdcfa04f2",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/inputs/Slicing8.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/inputs/check-crc32-proof.py",
+      "bytes": 12999,
+      "sha256": "810a28389aeb9db21f2cef845d3be87e6e924486c3116087e3ac61e389c8ea6d",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/inputs/check-crc32-proof.py"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/inputs/check-crc32-slicing8-proof.py",
+      "bytes": 14452,
+      "sha256": "a8f7eb291b1458f96eff1ffd380cd8dadf0b675c483bc83bc0c63a8def9e1a71",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/inputs/check-crc32-slicing8-proof.py"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/inputs/lean-toolchain",
+      "bytes": 25,
+      "sha256": "3aac669c7a910ec2389f4e4f921b605adf6ebf2d1e0c9b9cd0be4d33f3f5db71",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/inputs/lean-toolchain"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/inputs/slicing-source-contract.json",
+      "bytes": 5313,
+      "sha256": "d1c5b07d1e04b9a09f4a978d18bff5fc32e3e9ba1dbb6cb0f8833af979a23988",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/inputs/slicing-source-contract.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/inputs/source-contract.json",
+      "bytes": 1478,
+      "sha256": "16c49fd8655a04f6a40ce756a02b4de3d0789557fabd9077b04f184b41ae6423",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/inputs/source-contract.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/inputs/wal.rs",
+      "bytes": 36699,
+      "sha256": "14bc5d0a56a2513f5155302bb982bd8ef41670cff7742649780ee42a946b209a",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/inputs/wal.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/inventory.json",
+      "bytes": 20993,
+      "sha256": "271fe4313fe8937a3d482c36ab30519b73d55eeee315258ce0af291a320d2527",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/inventory.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/lean-version.command.json",
+      "bytes": 441,
+      "sha256": "6ee64ab239ce26bb128078d6ce1308a434a48b7d6d9e4cdd770e5f40bd8d33bb",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/lean-version.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/lean-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/lean-version.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/lean-version.stdout",
+      "bytes": 106,
+      "sha256": "63f3e16bf0258e2cc0ab3010eb1830723df9bb85097b7b72b0137b9be25a78e9",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/lean-version.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/CRC32.axioms.json",
+      "bytes": 1208,
+      "sha256": "a9fe4884382cb45c28a386520528d7c8a357cf269d41a5c94d57416bdb1eebea",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/CRC32.axioms.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/CRC32.command.json",
+      "bytes": 509,
+      "sha256": "6c78f163fa9d9111c4c4addfbc71c99a7707ffa653814e0a1c2a882e88a433bb",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/CRC32.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/CRC32.lean",
+      "bytes": 8167,
+      "sha256": "377a5d58ad8afe38fe7ac272c04226a4a0422f6a23b8092b168fed44769d1a86",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/CRC32.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/CRC32.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/CRC32.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/CRC32.stdout",
+      "bytes": 1148,
+      "sha256": "b85b7618ba878c6b5c0b6f9b9fdc74fbf3260ffd276245594e71ece4de6dd090",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/CRC32.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustSlicing.axioms.json",
+      "bytes": 823,
+      "sha256": "463a134b2bc600a2553699c4c5866199c9cf7ddd1b70463cd233d8f129ca6d4b",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/RustSlicing.axioms.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustSlicing.command.json",
+      "bytes": 521,
+      "sha256": "02e789afbf7e8df23d24d6054791350be93b914058cace58398109305198bfd4",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/RustSlicing.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "a3da717e7de57231f3b32342a400f07dfcfcc238180e2ae211ea0967b77db00f",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/RustSlicing.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/RustSlicing.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustSlicing.stdout",
+      "bytes": 811,
+      "sha256": "ee7f1ff6b9cc01c68048440d6a4d49970279aca59981438161d1db0c1e16d132",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/RustSlicing.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustTable.axioms.json",
+      "bytes": 644,
+      "sha256": "e3d65f6ee8726017527c6ef7f450538bdc9bc3fedfece1117faefef438e86434",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/RustTable.axioms.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustTable.command.json",
+      "bytes": 517,
+      "sha256": "c57b2b8ef684b109f366929a6c5cbfa26739b1749f2c260c6e0353002faed339",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/RustTable.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustTable.lean",
+      "bytes": 6305,
+      "sha256": "d318afb3c5f9e6beeb24c07dedfb839c044bfe7a1c288531dacd0eb1a739ecea",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/RustTable.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustTable.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/RustTable.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustTable.stdout",
+      "bytes": 628,
+      "sha256": "52a1f6b938065f4cdc64d82ab531fe5cec2f1da738e01ff2193fde57cc3cad74",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/RustTable.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/Slicing8.axioms.json",
+      "bytes": 1310,
+      "sha256": "9364a68aeb72c586a77783551fce9438fc619393c0ff992eed206730831eb6d6",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/Slicing8.axioms.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/Slicing8.command.json",
+      "bytes": 515,
+      "sha256": "d93e3e8262726013ea63c98bbfd358c495504252398e5cc7bbb8560d06f156a7",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/Slicing8.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/Slicing8.lean",
+      "bytes": 7784,
+      "sha256": "9d4bcb3c043d56f02a53b6317ca6f60452e6925cd08905b135d0b7fb313f8bf5",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/Slicing8.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/Slicing8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/Slicing8.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/Slicing8.stdout",
+      "bytes": 1249,
+      "sha256": "a5a934a3d75a85f0829609a6bea9eeff49644085600315a7de78e7029ebb0511",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/Slicing8.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/compiled-tables.json",
+      "bytes": 40440,
+      "sha256": "662e82988087ab702aba5b6c61948e7aa232b02c1797fb4fde98ff3994466930",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/compiled-tables.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/rustc.command.json",
+      "bytes": 551,
+      "sha256": "c9846079a157ae0a5c02b1c4fb44120dda00074891ccce47da9c12ec3c20d5a7",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/rustc.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/rustc.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/rustc.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/table.command.json",
+      "bytes": 443,
+      "sha256": "fc8118a7b1e331efb951f16657dd16879b624cae3d07e59ef2aa12655df1e8f1",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/table.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/table.rs",
+      "bytes": 2100,
+      "sha256": "80ff145da373cfc9d197a1c0b962b35c6f00f9aaaad7471b253d9e55dd3b5827",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/table.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/table.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/table.stdout",
+      "bytes": 37666,
+      "sha256": "9e15b17a3de8fd4f35b918fb5cbce011bcf5a1d35d195a3bfa7acffd9ebf605a",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/positive/table.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/CRC32.axioms.json",
+      "bytes": 1208,
+      "sha256": "a9fe4884382cb45c28a386520528d7c8a357cf269d41a5c94d57416bdb1eebea",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/CRC32.axioms.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/CRC32.command.json",
+      "bytes": 509,
+      "sha256": "a06684cd7d1bcf78687dcd7921eae099a25c4dcccf0322019815b70203029052",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/CRC32.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/CRC32.lean",
+      "bytes": 8167,
+      "sha256": "377a5d58ad8afe38fe7ac272c04226a4a0422f6a23b8092b168fed44769d1a86",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/CRC32.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/CRC32.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/CRC32.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/CRC32.stdout",
+      "bytes": 1148,
+      "sha256": "b85b7618ba878c6b5c0b6f9b9fdc74fbf3260ffd276245594e71ece4de6dd090",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/CRC32.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustSlicing.axioms.json",
+      "bytes": 823,
+      "sha256": "463a134b2bc600a2553699c4c5866199c9cf7ddd1b70463cd233d8f129ca6d4b",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/RustSlicing.axioms.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustSlicing.command.json",
+      "bytes": 521,
+      "sha256": "3036a5178ad4720112685ff8a81f10b8ad6fe18f4dd32dd89a7a486e0c264c34",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/RustSlicing.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustSlicing.lean",
+      "bytes": 29722,
+      "sha256": "a3da717e7de57231f3b32342a400f07dfcfcc238180e2ae211ea0967b77db00f",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/RustSlicing.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustSlicing.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/RustSlicing.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustSlicing.stdout",
+      "bytes": 811,
+      "sha256": "ee7f1ff6b9cc01c68048440d6a4d49970279aca59981438161d1db0c1e16d132",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/RustSlicing.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustTable.axioms.json",
+      "bytes": 644,
+      "sha256": "e3d65f6ee8726017527c6ef7f450538bdc9bc3fedfece1117faefef438e86434",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/RustTable.axioms.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustTable.command.json",
+      "bytes": 517,
+      "sha256": "f9b85c5b9c7c48044960ae110cd6540e437c80a18baf6d7a8c752d30364c8811",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/RustTable.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustTable.lean",
+      "bytes": 6305,
+      "sha256": "d318afb3c5f9e6beeb24c07dedfb839c044bfe7a1c288531dacd0eb1a739ecea",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/RustTable.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustTable.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/RustTable.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustTable.stdout",
+      "bytes": 628,
+      "sha256": "52a1f6b938065f4cdc64d82ab531fe5cec2f1da738e01ff2193fde57cc3cad74",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/RustTable.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/Slicing8.axioms.json",
+      "bytes": 1310,
+      "sha256": "9364a68aeb72c586a77783551fce9438fc619393c0ff992eed206730831eb6d6",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/Slicing8.axioms.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/Slicing8.command.json",
+      "bytes": 515,
+      "sha256": "280e9ebbb3280770cb178f055892547210f841a76ee6b120e14ac3d5e9ca8535",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/Slicing8.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/Slicing8.lean",
+      "bytes": 7784,
+      "sha256": "9d4bcb3c043d56f02a53b6317ca6f60452e6925cd08905b135d0b7fb313f8bf5",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/Slicing8.lean"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/Slicing8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/Slicing8.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/Slicing8.stdout",
+      "bytes": 1249,
+      "sha256": "a5a934a3d75a85f0829609a6bea9eeff49644085600315a7de78e7029ebb0511",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/Slicing8.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/compiled-tables.json",
+      "bytes": 40440,
+      "sha256": "662e82988087ab702aba5b6c61948e7aa232b02c1797fb4fde98ff3994466930",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/compiled-tables.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/rustc.command.json",
+      "bytes": 551,
+      "sha256": "14b0bdb34f4c1f1f631981d269891d7f3f40da0992677e401ca878782a9d4f27",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/rustc.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/rustc.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/rustc.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/rustc.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/rustc.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/table.command.json",
+      "bytes": 443,
+      "sha256": "b76f664886cf4bffb81fa74ba95a1f6dcc48f3231ed2ccd857d8ea99d6785e97",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/table.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/table.rs",
+      "bytes": 2100,
+      "sha256": "80ff145da373cfc9d197a1c0b962b35c6f00f9aaaad7471b253d9e55dd3b5827",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/table.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/table.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/table.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/table.stdout",
+      "bytes": 37666,
+      "sha256": "9e15b17a3de8fd4f35b918fb5cbce011bcf5a1d35d195a3bfa7acffd9ebf605a",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/restored/table.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/result.json",
+      "bytes": 12562,
+      "sha256": "d8e723d3a67fc510b0c0b81e83fadde19ba6ed40ca5652578f4ee8cdbc8f5209",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/rustc-sysroot.command.json",
+      "bytes": 439,
+      "sha256": "3f0fc3bab1d1b053aacd3d37dd1f75375ef9851da41efc340947cd4c1daf4391",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/rustc-sysroot.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/rustc-sysroot.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/rustc-sysroot.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/rustc-sysroot.stdout",
+      "bytes": 64,
+      "sha256": "165014992e9a86caf71eab17d9129db920166702327d37be7d5a124aa859c48f",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/rustc-sysroot.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/rustc-version.command.json",
+      "bytes": 487,
+      "sha256": "bd6befed8cc6ffd20de53b283fc359b35f403c4dc7b3e119dc68fca0e1eee5b0",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/rustc-version.command.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/rustc-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/rustc-version.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/rustc-version.stdout",
+      "bytes": 196,
+      "sha256": "b75985398e5509a90a7d5d68f8ec6690675f703c5cfa11893b04fc9c3fceca69",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/rustc-version.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/source-inputs.json",
+      "bytes": 1911,
+      "sha256": "89af35dc0a35c2c40c4deca47db7b9542c558317b51db1ada31bfb374aa3321a",
+      "member": "tmp/kv9-write-crc-slicing8-proof-first/source-inputs.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/cache-clean.stderr",
+      "bytes": 38,
+      "sha256": "06a757cac402e5a82a48158b11495f72095956953d752b0991b5ec5572520034",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/cache-clean.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/cache-clean.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/cache-metadata.json",
+      "bytes": 27487,
+      "sha256": "3638f8c7ac39727cb9edae78dda5527b8728637efba8e219308be4158dea92dd",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/cache-metadata.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/cache-metadata.log"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/cache-safety.json",
+      "bytes": 5864,
+      "sha256": "873051b72bb933fd44e6f8f09d8d61b04484637dc8cf2051a82dabe531e7f6dd",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/cache-safety.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/clippy.stderr",
+      "bytes": 621,
+      "sha256": "ba13fa73d62676e8097f55ffcc36250fccb6887fef483e4ab2fb60ce16e77b4d",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/clippy.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/clippy.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/commands.json",
+      "bytes": 707,
+      "sha256": "3f5199d1a1f2a86e2a6aec6b9a1efab640a96d2a0b7b4904fb520216f59dda05",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/commands.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/compile-tests.stderr",
+      "bytes": 622,
+      "sha256": "21682abf68a65563d3aa949f4cef7b8365fff5d3aa7ac8586998d06c9191df2d",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/compile-tests.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/compile-tests.stdout",
+      "bytes": 136721,
+      "sha256": "c814a88178cfb1b744caae99d5346363205d53da580e9cb4fbc4fa3b4700f4ab",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/compile-tests.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/engine-tests.stderr",
+      "bytes": 172,
+      "sha256": "f2e0f8a97425ec67ab19de863dbd404884b0c41e707af3a89669fc1f6bc4f145",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/engine-tests.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/engine-tests.stdout",
+      "bytes": 10411,
+      "sha256": "a5beb7df6fc24d7870b62c354b9ed6966196acfa61b950e1ef9353fde5d05608",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/engine-tests.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/format.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/format.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/format.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/result.json",
+      "bytes": 1375,
+      "sha256": "7389b298273d18cf833faf5856362e0c19eeda3e076197ac08b1a59886ff13e6",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/source-after.json",
+      "bytes": 72443,
+      "sha256": "e4cc25397502a2f29723afd3927f44142db942ce52687b23a80cbbcf0a5bf991",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/source-after.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-first/source-before.json",
+      "bytes": 72443,
+      "sha256": "e4cc25397502a2f29723afd3927f44142db942ce52687b23a80cbbcf0a5bf991",
+      "member": "tmp/kv9-write-crc-slicing8-source-first/source-before.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-root-first/check-source.py",
+      "bytes": 2205,
+      "sha256": "c591479c67c1c90c157f6e6f3799cc3818a4e0f9f18d0b33acbb140779965bdc",
+      "member": "tmp/kv9-write-crc-slicing8-source-root-first/check-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-root-first/run-source.py",
+      "bytes": 1866,
+      "sha256": "89a091fc3aeee37b1d5e57820f54951b5bb673f25877ffecfa98741df80761cd",
+      "member": "tmp/kv9-write-crc-slicing8-source-root-first/run-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-root-first/source-first.log",
+      "bytes": 69,
+      "sha256": "ecea0bf99044c9004eadabf7feac20271c2321805e82455723e20a35dcd5f717",
+      "member": "tmp/kv9-write-crc-slicing8-source-root-first/source-first.log"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-root-first/source-invocation.json",
+      "bytes": 656,
+      "sha256": "145af255a71dab1b89891d179f8b44369e1976b4f0228f296c6695987f1a82d8",
+      "member": "tmp/kv9-write-crc-slicing8-source-root-first/source-invocation.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-source-root-first/source-result.json",
+      "bytes": 977,
+      "sha256": "7c9abc9f99d1a05497d1ee0cfffa3abcb64f52b49163f288e9a8d74092cdd441",
+      "member": "tmp/kv9-write-crc-slicing8-source-root-first/source-result.json"
+    }
+  ],
+  "excluded": [
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/CRC32.olean",
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-polynomial/table",
+      "bytes": 3965656,
+      "sha256": "6cdb6e8af964130db117d427f573196cb24979274080c5142b0d9c015f72a64a",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/CRC32.olean",
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/RustTable.olean",
+      "bytes": 812536,
+      "sha256": "12537123a6379ebb02aa6ef4049f69c250da563ccffd28bcc4fb997eec7d103e",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/Slicing8.olean",
+      "bytes": 669320,
+      "sha256": "08bd81810c533b61ec942d396ae0ac6521dace9aaa67e8942c674c23eab8afcd",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-compiled-recurrence/table",
+      "bytes": 3965656,
+      "sha256": "176fa2998c7aff692e492c298b45335a27bbc824a20ded55fb5eaca0090f6baf",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-proof-hole/CRC32.olean",
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-unapproved-axiom/CRC32.olean",
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-unapproved-axiom/Slicing8.olean",
+      "bytes": 640144,
+      "sha256": "7d064ee00d82729bb53a651e41f9029960167d381f16a4ffabbc200c188a937f",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-wrong-block-row/CRC32.olean",
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-wrong-block-row/RustTable.olean",
+      "bytes": 812536,
+      "sha256": "12537123a6379ebb02aa6ef4049f69c250da563ccffd28bcc4fb997eec7d103e",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/control-wrong-block-row/Slicing8.olean",
+      "bytes": 669320,
+      "sha256": "08bd81810c533b61ec942d396ae0ac6521dace9aaa67e8942c674c23eab8afcd",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/CRC32.olean",
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustSlicing.olean",
+      "bytes": 6367680,
+      "sha256": "403932fc30d583ef4a86585543c068b66741673594330e14985100137484d1db",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/RustTable.olean",
+      "bytes": 812536,
+      "sha256": "12537123a6379ebb02aa6ef4049f69c250da563ccffd28bcc4fb997eec7d103e",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/Slicing8.olean",
+      "bytes": 669320,
+      "sha256": "08bd81810c533b61ec942d396ae0ac6521dace9aaa67e8942c674c23eab8afcd",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/positive/table",
+      "bytes": 3965656,
+      "sha256": "b8bcee19e6fb6c409cf86dba303da3f7f3fe644dea171c4345ab2d627e181af8",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/CRC32.olean",
+      "bytes": 1533624,
+      "sha256": "f362af4478126ab06a5881aa4cbdd8c7339c94be1a7ace480ea36a30c1df52db",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustSlicing.olean",
+      "bytes": 6367680,
+      "sha256": "403932fc30d583ef4a86585543c068b66741673594330e14985100137484d1db",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/RustTable.olean",
+      "bytes": 812536,
+      "sha256": "12537123a6379ebb02aa6ef4049f69c250da563ccffd28bcc4fb997eec7d103e",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/Slicing8.olean",
+      "bytes": 669320,
+      "sha256": "08bd81810c533b61ec942d396ae0ac6521dace9aaa67e8942c674c23eab8afcd",
+      "reason": "Native/compiled proof payload retained locally"
+    },
+    {
+      "original_path": "/tmp/kv9-write-crc-slicing8-proof-first/restored/table",
+      "bytes": 3965656,
+      "sha256": "b8bcee19e6fb6c409cf86dba303da3f7f3fe644dea171c4345ab2d627e181af8",
+      "reason": "Native/compiled proof payload retained locally"
+    }
+  ],
+  "readback_complete": true
+}
