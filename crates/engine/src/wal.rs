@@ -65,10 +65,42 @@ const CRC32_TABLE: [u32; 256] = {
     table
 };
 
+// Entry n applies the byte transition to its index followed by n zero bytes.
+// Eight independent lookups replace the serial dependency across eight bytes.
+// The first table is the existing IEEE table; no hardware CRC polynomial or
+// platform byte order is assumed.
+const CRC32_SLICING: [[u32; 256]; 8] = {
+    let mut tables = [[0; 256]; 8];
+    tables[0] = CRC32_TABLE;
+    let mut slice = 1;
+    while slice < tables.len() {
+        let mut byte = 0;
+        while byte < 256 {
+            let prior = tables[slice - 1][byte];
+            tables[slice][byte] = (prior >> 8) ^ CRC32_TABLE[(prior & 0xff) as usize];
+            byte += 1;
+        }
+        slice += 1;
+    }
+    tables
+};
+
 pub(crate) fn crc32_parts(parts: &[&[u8]]) -> u32 {
     let mut crc: u32 = 0xFFFF_FFFF;
     for part in parts {
-        for &byte in *part {
+        let mut chunks = part.chunks_exact(8);
+        for chunk in &mut chunks {
+            let low = crc ^ u32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]);
+            crc = CRC32_SLICING[7][(low & 0xff) as usize]
+                ^ CRC32_SLICING[6][((low >> 8) & 0xff) as usize]
+                ^ CRC32_SLICING[5][((low >> 16) & 0xff) as usize]
+                ^ CRC32_SLICING[4][(low >> 24) as usize]
+                ^ CRC32_SLICING[3][usize::from(chunk[4])]
+                ^ CRC32_SLICING[2][usize::from(chunk[5])]
+                ^ CRC32_SLICING[1][usize::from(chunk[6])]
+                ^ CRC32_SLICING[0][usize::from(chunk[7])];
+        }
+        for &byte in chunks.remainder() {
             crc = (crc >> 8) ^ CRC32_TABLE[((crc ^ u32::from(byte)) & 0xff) as usize];
         }
     }
@@ -741,6 +773,34 @@ mod tests {
         for value in 0..=u16::MAX {
             let bytes = value.to_le_bytes();
             assert_eq!(crc32(&bytes), bitwise_crc32(&bytes), "input {value}");
+        }
+    }
+
+    #[test]
+    fn crc32_slicing_preserves_unaligned_inputs_and_every_short_split() {
+        let mut data = [0u8; 160];
+        let mut state = 0x759a_b31du32;
+        for byte in &mut data {
+            state ^= state << 13;
+            state ^= state >> 17;
+            state ^= state << 5;
+            *byte = state as u8;
+        }
+        // Exercise every start alignment and every tail length on both sides
+        // of several eight-byte boundaries, with state carried across parts.
+        for offset in 0..8 {
+            for length in 0..=128 {
+                let bytes = &data[offset..offset + length];
+                let expected = bitwise_crc32(bytes);
+                assert_eq!(crc32(bytes), expected, "offset {offset}, length {length}");
+                for split in 0..=length {
+                    assert_eq!(
+                        crc32_parts(&[&bytes[..split], &[], &bytes[split..]]),
+                        expected,
+                        "offset {offset}, length {length}, split {split}"
+                    );
+                }
+            }
         }
     }
 
