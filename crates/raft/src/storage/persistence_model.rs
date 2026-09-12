@@ -9,6 +9,102 @@ use std::sync::Arc;
 
 const DIRECTORY: &str = "/new-parent/replica/raft";
 
+fn lease_policy() -> crate::lease_policy::LeasePolicy {
+    crate::lease_policy::LeasePolicy {
+        node: 2,
+        group: 0,
+        configuration: 7,
+        voters: vec![1, 2, 3],
+        promise_ns: 100,
+        drift_ppb: 100_000,
+        margin_ns: 1,
+    }
+}
+
+#[test]
+fn lease_epochs_survive_crash_and_are_strictly_increasing() {
+    let fs = ModelFs::default();
+    let store = open(&fs);
+    fs.clear_events();
+    let first = store.begin_lease_incarnation(&lease_policy()).unwrap();
+    assert_eq!(first.incarnation, 1);
+    assert_eq!(
+        fs.events().iter().map(|e| e.operation).collect::<Vec<_>>(),
+        [Operation::Write, Operation::SyncData]
+    );
+    drop(store);
+    fs.crash(Crash::LoseUnsynced);
+    let store = open(&fs);
+    assert_eq!(store.recovered_lease_epoch(), Some(first));
+    let second = store.begin_lease_incarnation(&lease_policy()).unwrap();
+    assert_eq!(second.incarnation, 2);
+    drop(store);
+    fs.crash(Crash::LoseUnsynced);
+    assert_eq!(open(&fs).recovered_lease_epoch(), Some(second));
+}
+
+#[test]
+fn every_lease_epoch_io_cut_prevents_publication_and_preserves_old_policy() {
+    let policy = lease_policy();
+    let fs = ModelFs::default();
+    let store = open(&fs);
+    store.begin_lease_incarnation(&policy).unwrap();
+    fs.clear_events();
+    store.begin_lease_incarnation(&policy).unwrap();
+    let cuts = fs.events();
+    let mut cases = 0;
+    for cut in cuts {
+        for errno in [5, 28] {
+            let mut faults = vec![Fault::Before(errno), Fault::After(errno)];
+            if cut.operation == Operation::Write {
+                faults.push(Fault::ShortWrite { bytes: 4, errno });
+            }
+            for fault in faults {
+                for crash in [Crash::LoseUnsynced, Crash::KeepUnsynced]
+                    .into_iter()
+                    .chain((0..16).map(Crash::Seeded))
+                {
+                    let fs = ModelFs::default();
+                    let store = open(&fs);
+                    let old = store.begin_lease_incarnation(&policy).unwrap();
+                    fs.clear_events();
+                    fs.fail_at(cut.number, fault);
+                    assert!(store.begin_lease_incarnation(&policy).is_err());
+                    assert!(fs.fault_arrived());
+                    assert_eq!(
+                        store.recovered_lease_epoch(),
+                        Some(old.clone()),
+                        "failed epoch sync published an installation"
+                    );
+                    let events = fs.events().len();
+                    assert!(store.begin_lease_incarnation(&policy).is_err());
+                    assert_eq!(fs.events().len(), events, "failed writer remained usable");
+                    drop(store);
+                    fs.crash(crash);
+                    let recovered = open(&fs);
+                    let epoch = recovered.recovered_lease_epoch().unwrap();
+                    assert_eq!(epoch.policy, policy);
+                    assert!([1, 2].contains(&epoch.incarnation));
+                    if cut.operation == Operation::SyncData && matches!(fault, Fault::After(_)) {
+                        assert_eq!(epoch.incarnation, 2);
+                    }
+                    assert!(
+                        RaftPeer::with_storage(NodeId(2), RegionId(0), recovered).is_err(),
+                        "recovery bypassed the durable lease opt-in"
+                    );
+                    let store = open(&fs);
+                    assert_eq!(
+                        store.begin_lease_incarnation(&policy).unwrap().incarnation,
+                        epoch.incarnation + 1
+                    );
+                    cases += 1;
+                }
+            }
+        }
+    }
+    assert_eq!(cases, 180);
+}
+
 fn open(fs: &ModelFs) -> DiskRaftStorage<ModelFs> {
     DiskRaftStorage::open_on(fs.clone(), Path::new(DIRECTORY), &[1, 2, 3])
         .unwrap()

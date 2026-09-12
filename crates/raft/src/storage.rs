@@ -42,6 +42,7 @@ use raft::{GetEntriesContext, RaftState};
 use kv9_common::fs::{self, DurableFile, FileSystem, OsFileSystem};
 use kv9_common::{Error, Result};
 
+use crate::lease_policy::{LeaseEpoch, LeasePolicy};
 use crate::rawnode::PersistentRaftStorage;
 
 const REC_CONF_STATE: u8 = 1;
@@ -53,6 +54,8 @@ const REC_ENTRY: u8 = 3;
 /// let a crash land between the two (task #24). Kind 1 remains the index-0
 /// initial configuration written at open.
 const REC_CONF_STATE_AT: u8 = 4;
+/// Always decoded. Builds predating leases refuse this unknown record kind.
+const REC_LEASE_EPOCH: u8 = 5;
 
 /// Max record body; anything larger is corrupt (same spirit as the frame cap).
 const MAX_RECORD_LEN: u32 = 64 * 1024 * 1024;
@@ -78,6 +81,7 @@ pub struct DiskRaftStorage<F: FileSystem = OsFileSystem> {
     /// Highest conf-change index recorded via `REC_CONF_STATE_AT` (0 = only
     /// the initial configuration exists). The replay guard boundary.
     conf_index: Mutex<u64>,
+    lease_epoch: Mutex<Option<LeaseEpoch>>,
     io_metrics: Arc<WalIoMetrics>,
 }
 
@@ -129,6 +133,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
         let mut valid_len: u64 = 0;
         let mut saw_any = false;
         let mut conf_idx: u64 = 0;
+        let mut lease_epoch: Option<LeaseEpoch> = None;
         let mut cursor: usize = 0;
         // The loop ends where records stop parsing — a torn tail
         // (short/checksum-fail) or the clean end of file; either way the valid
@@ -137,6 +142,15 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             // From here the record is checksum-valid: decode failures are real
             // inconsistencies, not crash artifacts — refuse to open.
             match kind {
+                REC_LEASE_EPOCH => {
+                    let next = LeaseEpoch::decode(payload)?;
+                    if LeaseEpoch::successor(lease_epoch.as_ref(), &next.policy)? != next {
+                        return Err(Error::Raft(
+                            "non-sequential durable lease incarnation".into(),
+                        ));
+                    }
+                    lease_epoch = Some(next);
+                }
                 REC_CONF_STATE => {
                     let cs = ConfState::parse_from_bytes(payload).map_err(|e| {
                         Error::Raft(format!("checksum-valid ConfState undecodable: {e}"))
@@ -206,6 +220,7 @@ impl<F: FileSystem> DiskRaftStorage<F> {
             file: Mutex::new(Some(file)),
             path,
             conf_index: Mutex::new(conf_idx),
+            lease_epoch: Mutex::new(lease_epoch),
             io_metrics,
         };
         let was_pristine = !saw_any;
@@ -422,6 +437,26 @@ impl<F: FileSystem> raft::Storage for DiskRaftStorage<F> {
 }
 
 impl<F: FileSystem> PersistentRaftStorage for DiskRaftStorage<F> {
+    fn recovered_lease_epoch(&self) -> Option<LeaseEpoch> {
+        self.lease_epoch
+            .lock()
+            .expect("lease epoch poisoned")
+            .clone()
+    }
+
+    fn begin_lease_incarnation(&self, policy: &LeasePolicy) -> Result<LeaseEpoch> {
+        let mut published = None;
+        self.with_writer(|file| {
+            let mut current = self.lease_epoch.lock().expect("lease epoch poisoned");
+            let next = LeaseEpoch::successor(current.as_ref(), policy)?;
+            Self::write_record(&self.io_metrics, file, REC_LEASE_EPOCH, &next.encode())?;
+            *current = Some(next.clone());
+            published = Some(next);
+            Ok(())
+        })?;
+        Ok(published.expect("successful writer publishes epoch"))
+    }
+
     /// One synchronization covers the complete append slice before the runtime
     /// view exposes any member. The Ready loop sends no message until return.
     fn append(&self, entries: &[Entry]) -> Result<()> {

@@ -17,6 +17,7 @@ pub mod driver;
 pub mod grpc;
 #[cfg(any(test, feature = "experimental-leader-lease"))]
 pub mod lease;
+pub mod lease_policy;
 pub mod rawnode;
 #[cfg(feature = "read-stage-timing")]
 mod read_stage_timing;

@@ -23,7 +23,9 @@ Eight TLAPS lemmas / 23 obligations and real-clock containment pass. Its
 [transition model](LEASE-AUTHORITY-MODEL.md) now adds 27 theorems / 348 obligations
 and finite fault-model evidence, including local read actions and expiry refusal.
 The [Rust controller](LEASE-CONTROLLER.md) now passes its source and integer-timing
-gates. Next bind unique installation and actual voting/recovery/pump/read-view paths. Source refinement,
+gates. Its [voting adapter](LEASE-VOTE-BINDING.md) now binds durable installation,
+recovery quarantine and actual elections. Next bind leader lifetime, grant/pump
+publication and exact read views. Source refinement,
 clock qualification and actual lease Chaos E2E remain open.
 The selected-build CPU-profile reuse investigation remains available for the
 existing Safe ReadIndex path; old profile shares do not describe selected ThinLTO.

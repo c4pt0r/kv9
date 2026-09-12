@@ -29,7 +29,13 @@ use slog::{o, Discard, Logger};
 
 use kv9_common::{Error, NodeId, RegionId, Result};
 
+use crate::lease_policy::{LeaseEpoch, LeasePolicy};
 use crate::{CommittedEntry, EntryKind, LogIndex, RaftGroup, Role};
+
+#[cfg(any(test, feature = "experimental-leader-lease"))]
+mod lease_gate;
+#[cfg(any(test, feature = "experimental-leader-lease"))]
+pub use lease_gate::LeaseClock;
 
 /// A raft-rs [`raft::Storage`] that can also **persist** what the Ready loop
 /// hands it: log entries and the HardState (term + vote + commit).
@@ -42,6 +48,19 @@ use crate::{CommittedEntry, EntryKind, LogIndex, RaftGroup, Role};
 /// its vote and can vote twice in one term — two leaders — which is why the
 /// cross-process path must use the durable impl.
 pub trait PersistentRaftStorage: raft::Storage + Send + Sync + 'static {
+    /// Always exposed so a non-lease constructor cannot reopen a lease voter.
+    fn recovered_lease_epoch(&self) -> Option<LeaseEpoch> {
+        None
+    }
+
+    /// Synchronize a stable policy and fresh epoch before installing a voter.
+    /// Volatile and older storage adapters deliberately refuse this opt-in.
+    fn begin_lease_incarnation(&self, _policy: &LeasePolicy) -> Result<LeaseEpoch> {
+        Err(Error::Raft(
+            "storage does not support durable lease epochs".into(),
+        ))
+    }
+
     fn append(&self, entries: &[Entry]) -> Result<()>;
     fn set_hardstate(&self, hs: &HardState) -> Result<()>;
 
@@ -144,6 +163,8 @@ pub struct RaftPeer<S: PersistentRaftStorage = MemStorage> {
 
 struct PeerInner<S: PersistentRaftStorage> {
     raw: RawNode<S>,
+    #[cfg(any(test, feature = "experimental-leader-lease"))]
+    lease: Option<lease_gate::InstalledLease>,
     /// Committed, non-empty entries not yet drained via [`DrainToken`].
     ready: Vec<CommittedEntry>,
     /// Outgoing raft messages awaiting delivery by the cluster pump.
@@ -183,6 +204,10 @@ impl<S: PersistentRaftStorage> PeerInner<S> {
     }
 
     fn fail_storage(&mut self, operation: &str, cause: Error) -> Error {
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        if let Some(lease) = &mut self.lease {
+            lease.fence();
+        }
         let cause = self
             .fatal
             .get_or_insert_with(|| {
@@ -254,6 +279,43 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// ([`crate::storage::DiskRaftStorage`]) for real processes; the storage's
     /// initial state carries the voter set and any surviving HardState/log.
     pub fn with_storage(node: NodeId, region: RegionId, storage: S) -> Result<RaftPeer<S>> {
+        if storage.recovered_lease_epoch().is_some() {
+            return Err(Error::Raft(
+                "lease voter requires its durable policy and recovery quarantine".into(),
+            ));
+        }
+        Self::build(
+            node,
+            region,
+            storage,
+            #[cfg(any(test, feature = "experimental-leader-lease"))]
+            None,
+        )
+    }
+
+    /// Experimental vote binding only. This installs no lease read path.
+    /// The supplied clock must satisfy the policy's rate/sampling assumptions.
+    /// Policy changes and disabling this mode on the same store are refused.
+    #[cfg(any(test, feature = "experimental-leader-lease"))]
+    pub fn with_lease_storage(
+        node: NodeId,
+        region: RegionId,
+        storage: S,
+        policy: LeasePolicy,
+        clock: Arc<dyn LeaseClock>,
+    ) -> Result<RaftPeer<S>> {
+        Self::build(node, region, storage, Some((policy, clock)))
+    }
+
+    fn build(
+        node: NodeId,
+        region: RegionId,
+        storage: S,
+        #[cfg(any(test, feature = "experimental-leader-lease"))] lease_setup: Option<(
+            LeasePolicy,
+            Arc<dyn LeaseClock>,
+        )>,
+    ) -> Result<RaftPeer<S>> {
         let cfg = Config {
             id: node.0,
             election_tick: 10,
@@ -264,10 +326,9 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             check_quorum: true,
             // PINNED, not defaulted (task #28 seam constraint): Safe makes a
             // ReadState index valid only after the leader confirms leadership
-            // with a quorum round-trip. LeaseBased would trade that proof for
-            // clock trust — the exact trade the linearizable-read promise
-            // forbids. A raft-rs default change must not be able to change
-            // our read semantics silently.
+            // with a quorum round-trip. Our explicit lease protocol requires
+            // separate voting/clock/view proofs; selecting raft-rs LeaseBased
+            // does not establish them. Never change read semantics silently.
             read_only_option: ReadOnlyOption::Safe,
             // Bound work exposed by one Ready. A single legal large entry may
             // exceed this target; transport admission has a separate bound.
@@ -278,6 +339,12 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
         let logger = Logger::root(Discard, o!());
         let raw = RawNode::new(&cfg, storage, &logger).map_err(raft_err)?;
         let conf_applied = raw.store().recovered_conf_index();
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        let lease = lease_setup
+            .map(|(policy, clock)| {
+                lease_gate::InstalledLease::install(node, region, &raw, policy, clock)
+            })
+            .transpose()?;
         Ok(RaftPeer {
             node,
             region,
@@ -285,6 +352,8 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             work_signal: Arc::new(crate::work::WorkSignal::default()),
             inner: Mutex::new(PeerInner {
                 raw,
+                #[cfg(any(test, feature = "experimental-leader-lease"))]
+                lease,
                 ready: Vec::new(),
                 outbox: Vec::new(),
                 read_states: Vec::new(),
@@ -299,6 +368,12 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
 
     pub fn node_id(&self) -> NodeId {
         self.node
+    }
+
+    /// Diagnostic identity only; cannot authorize a grant or read.
+    #[cfg(any(test, feature = "experimental-leader-lease"))]
+    pub fn lease_incarnation(&self) -> Option<u64> {
+        self.lock().lease.as_ref().map(|lease| lease.incarnation())
     }
 
     fn lock(&self) -> MutexGuard<'_, PeerInner<S>> {
@@ -406,6 +481,12 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     fn tick(&self) {
         let mut g = self.lock();
         if g.alive {
+            // Leader ticks can step down/check quorum, but cannot self-vote.
+            // Follower/candidate ticks can internally call hup/campaign.
+            #[cfg(any(test, feature = "experimental-leader-lease"))]
+            if g.raw.raft.state != StateRole::Leader && g.lease_may_vote().is_err() {
+                return;
+            }
             g.raw.tick();
         }
     }
@@ -416,6 +497,27 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// skipping means divergence (droppable iff someone resends it).
     fn step(&self, msg: Message) {
         let mut g = self.lock();
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        if g.alive && g.lease.is_some() {
+            use raft::eraftpb::MessageType::*;
+            // A winning PreVote response calls campaign(ELECTION) inside
+            // raft-rs; filtering only RequestVote/TimeoutNow misses that path.
+            let election = matches!(
+                msg.get_msg_type(),
+                MsgHup
+                    | MsgRequestVote
+                    | MsgRequestPreVoteResponse
+                    | MsgRequestVoteResponse
+                    | MsgTimeoutNow
+                    | MsgTransferLeader
+            );
+            // Snapshot restore can change membership inside RawNode::step.
+            // This adapter has a fixed-configuration proof; no snapshot or
+            // membership migration is authorized yet.
+            if msg.get_msg_type() == MsgSnapshot || (election && g.lease_may_vote().is_err()) {
+                return;
+            }
+        }
         if g.alive && g.raw.step(msg).is_err() {
             g.step_errors += 1;
         }
@@ -516,6 +618,12 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     pub fn propose_conf_change_traced(&self, cc: ConfChangeV2) -> Result<ProposedAt> {
         let mut g = self.lock();
         g.check_fatal()?;
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        if g.lease.is_some() {
+            return Err(Error::Raft(
+                "lease membership migration is not implemented".into(),
+            ));
+        }
         let term = g.raw.raft.term;
         g.raw
             .propose_conf_change(Vec::new(), cc)
@@ -554,6 +662,13 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
             v.sort_unstable();
             l.sort_unstable();
             return Ok((v, l));
+        }
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        if let Some(lease) = &mut g.lease {
+            lease.fence();
+            return Err(Error::Raft(
+                "lease membership apply requires a proved migration protocol".into(),
+            ));
         }
         let cs = match kind {
             EntryKind::ConfChangeV1 => {
@@ -663,7 +778,13 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// surface, so no production path can call it.
     #[cfg(any(test, feature = "testing"))]
     pub fn transfer_leader_for_tests(&self, transferee: NodeId) {
-        self.lock().raw.transfer_leader(transferee.0);
+        let mut g = self.lock();
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        if g.lease_may_vote().is_err() {
+            return;
+        }
+        g.raw.transfer_leader(transferee.0);
+        drop(g);
         self.work_signal.notify();
     }
 }
@@ -693,6 +814,8 @@ impl<S: PersistentRaftStorage> RaftGroup for RaftPeer<S> {
     fn campaign(&self) -> Result<()> {
         let mut g = self.lock();
         g.check_fatal()?;
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        g.lease_may_vote()?;
         let result = g.raw.campaign().map_err(raft_err);
         drop(g);
         self.work_signal.notify();
