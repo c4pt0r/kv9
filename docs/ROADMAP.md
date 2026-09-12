@@ -7,14 +7,14 @@ The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 2
 explicit dependencies, implementation steps and acceptance criteria. Track delivery in
 [GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
 
-The [current checkpoint](CURRENT-STATUS.md) records the completed
-confirmation-queue diagnostic and bounded Append-payload comparison. The latter
-has +0.790% c64 GET but only +0.031% mixed throughput and unchanged mixed GET p99;
-keep CRC selected and hold the candidate. The storage-guard failure and separate
-complete rerun are preserved. Next remove redundant inbox-vector construction
-without changing ordering, filtering, bounds or wakeups, and measure before
-claiming a gain. The product sequence remains memory RawKV read performance,
-then dynamic multi-Raft and automatic splits.
+The [current checkpoint](CURRENT-STATUS.md) records the completed inbox vector
+reuse screen: +0.420% mixed c64 throughput, but -0.494% c1 GET and pure-c64 tail
+tradeoffs. Keep CRC selected and hold this and the Append candidate. Next
+measure batch offer through request-body polling while preserving channel
+bounds, route cancellation and stream-progress timeout. Use that observation
+to decide whether removing one handoff is justified, then compare a clean
+candidate. The product sequence remains memory RawKV read performance, then
+dynamic multi-Raft and automatic splits.
 This priority does not waive the storage, proof, fault or recovery prerequisites
 below. Preserve durable writes and fresh quorum reads; evaluate throughput and
 latency together, including mixed-read tails. CI runs locally except at releases

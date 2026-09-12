@@ -9,21 +9,20 @@ The dependency index and proof/fault/availability gates below still apply;
 partial experimental results do not complete their broader work packages.
 
 The [confirmation-queue diagnostic](https://github.com/c4pt0r/kv9/blob/c423d3c605bf6b88bda3521b85e6997c2b203120/docs/CONFIRMATION-QUEUE-RESULTS.md)
-identifies mixed-load sender/inbox residence, but queue means are not additive
-GET phases. The [complete bounded Append-payload screen](https://github.com/c4pt0r/kv9/blob/381d0973c078522d3698a922ecac8594cc9df348/docs/RAFT-APPEND-PAYLOAD-PERFORMANCE.md)
-now records +0.790% c64 GET and only +0.031% mixed throughput, with unchanged
-mixed GET p99. Keep CRC selected; hold `74b958a` without expanding qualification.
-The first 18/24 attempt stopped on storage protection; a separate full second
-attempt passes after dev-cache reclamation with the same binaries and guards.
-Both attempts and the reason for rerunning remain published.
+identifies mixed-load sender/inbox residence but leaves request-body consumption
+unmeasured. The [inbox vector reuse screen](https://github.com/c4pt0r/kv9/blob/51efc6598324c10c1e27cd6fef869d4b9a39e7c4/docs/INBOX-VECTOR-REUSE-PERFORMANCE.md)
+completes source gates, 359-call ordinary recovery and all 24 timing cohorts:
++0.420% mixed c64 throughput, but -0.494% c1 GET and pure-c64 tail tradeoffs.
+Keep CRC selected; hold `1045755` and the prior Append/metadata/receipt candidates.
+All outcomes and original evidence remain available; no broad issue closes.
 
-Next remove redundant inbox-vector construction in `GrpcTransport::drain`,
-preserving FIFO, bounds, partition filtering and wakeups; validate default and
-testing-feature paths, then measure the same complete screen. Its gain is not
-yet known. Subsequent transport scheduling work must preserve stream-progress
-timeouts and route cancellation. Promotion still requires applicable proof,
-full point/batch evidence and actual exact-source Chaos. Prior metadata,
-receipt and scheduling experiments remain held.
+Next implement the [bounded request-body handoff observation](https://github.com/c4pt0r/kv9/blob/51efc6598324c10c1e27cd6fef869d4b9a39e7c4/docs/RAFT-REQUEST-BODY-HANDOFF-PLAN.md),
+preserving the existing channel/select/route/progress behavior. Measure batch
+offer to request-stream poll in fixed c1 GET/c64 mixed cells after source and
+recovery checks; do not confuse it with admission, wire delivery or per-read
+latency. A meaningful interval can justify removing one handoff in a separate
+uninstrumented candidate. Promotion still requires applicable proof, full
+point/batch evidence and actual exact-source Chaos. No new gain is presumed.
 
 <!-- kv9-roadmap-20260908:epic -->
 This is the execution tracker for evolving kv9 from its basic distributed Raw KV baseline into an industrial-grade distributed database. Priorities are consistency, recoverability, bounded resources, measured throughput and scalable ownership. Complex private-network TLS configuration is P4 work.

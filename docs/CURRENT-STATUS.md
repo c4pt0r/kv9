@@ -20,43 +20,47 @@ remain open. An abstract proof or one-host fault run does not close these gates.
 
 ## Latest completed uninstrumented performance
 
-The [bounded Append-payload screen and exact evidence](https://github.com/c4pt0r/kv9/blob/381d0973c078522d3698a922ecac8594cc9df348/docs/RAFT-APPEND-PAYLOAD-PERFORMANCE.md)
-complete a fresh 24-cohort comparison: two forward/reverse ten-second
-repetitions, fixed v3 clients, 4,096 keys, 128-byte values, closed-loop load and
-fixed CPU placement. KV9 uses three voters with ordinary quorum/sync on
-**tmpfs WAL**. Redis is standalone with persistence and pipelining disabled.
-This is shared-host loopback, not equal-durability, disk, cross-host or
-sustained-capacity evidence.
+The [inbox vector reuse screen and exact evidence](https://github.com/c4pt0r/kv9/blob/51efc6598324c10c1e27cd6fef869d4b9a39e7c4/docs/INBOX-VECTOR-REUSE-PERFORMANCE.md)
+complete 24 cohorts: two forward/reverse ten-second repetitions, fixed v3
+clients, 4,096 keys, 128-byte values, closed-loop load and fixed CPU placement.
+KV9 uses three voters with ordinary quorum/sync on **tmpfs WAL**. Redis is
+standalone with persistence and pipelining disabled. This is shared-host
+loopback, not equal-durability, disk, cross-host or sustained-capacity evidence.
 
-| Metric | Selected CRC | 64-KiB Append | Redis |
+| Metric | Selected CRC | Inbox vector reuse | Redis |
 | --- | ---: | ---: | ---: |
-| c1 GET calls/s | 26,443 | 26,492 | 174,086 |
-| c1 GET mean us | 37.701 | 37.625 | 5.667 |
-| c1 GET p99 interval us | 50.176-50.687 | 50.176-50.687 | 7.232-7.295 |
-| c64 GET calls/s | 343,972 | 346,690 | 509,202 |
-| c64 GET mean us | 185.934 | 184.477 | 125.576 |
-| c64 GET p99 interval us | 352.256-356.351 | 352.256-356.351 | 231.424-233.471 |
-| c64 mixed combined calls/s | 171,766 | 171,818 | 502,854 |
-| c64 mixed GET mean us | 384.575 | 384.376 | 127.140 |
-| c64 mixed GET p99 interval us | 622.592-630.783 | 622.592-630.783 | 233.472-235.519 |
+| c1 GET calls/s | 26,725 | 26,593 | 174,388 |
+| c1 GET mean us | 37.305 | 37.489 | 5.659 |
+| c1 GET p99 interval us | 49.664-50.175 | 49.152-49.663 | 7.360-7.423 |
+| c64 GET calls/s | 345,439 | 345,339 | 513,870 |
+| c64 GET mean us | 185.144 | 185.202 | 124.437 |
+| c64 GET p99 interval us | 352.256-356.351 | 356.352-360.447 | 229.376-231.423 |
+| c64 mixed combined calls/s | 171,845 | 172,567 | 505,972 |
+| c64 mixed GET mean us | 384.352 | 382.613 | 126.373 |
+| c64 mixed GET p99 interval us | 622.592-630.783 | 622.592-630.783 | 231.424-233.471 |
 
-Pure c64 throughput rises **0.790%** pooled (+0.145% / +1.437%), with
-opposite repeat movements in p99. Mixed throughput changes only **+0.031%**
-(+0.096% / -0.034%); mixed GET p99 is unchanged in both repeats and its mean
-is essentially unchanged. C1 GET changes +0.184% with opposite repeat signs.
-The candidate does not demonstrate the intended mixed-load benefit.
-**Keep CRC selected; hold this candidate and stop its full-matrix/Chaos expansion.**
+Mixed c64 throughput improves **0.420%** (+0.255% / +0.585%), with a lower GET
+mean in both repeats but unchanged GET p99. Pure c1 throughput falls **0.494%**
+(-0.588% / -0.400%), with higher mean in both repeats. Pure c64 throughput is
+**-0.029%** with opposite repeat signs; p95 worsens in both repeats, and p99
+worsens in repeat 0. Pooled c1 p99 improves despite unchanged per-repeat buckets;
+that is not a repeat-specific tail improvement. **Keep CRC selected; hold
+1045755 and stop its full-matrix/Chaos expansion.**
 
-The first timing attempt stops on the unchanged 96-GiB retention guard after
-18/24 cohorts. Root preserves it, reclaims 7.611 GiB of rebuildable dev cache
-under the shared lock, and revalidates original sources/binaries. A separate
-whole second attempt passes with unchanged protocols, order and guards; none
-of the first attempt is pooled into statistics. All **49,675,313 measured calls**
-succeed in one attempt. Its independent audit accepts 80 exited lifetimes,
-48 fresh drains/bindings, 4,678 resource samples and exact restoration. Both
-repetitions, separate GET/PUT histograms and all outcomes are published.
+All **49,860,618 measured calls** succeed in one attempt. The first complete
+recording, independent audit and statistics pass, including 80 exited lifetimes,
+48 fresh drains/bindings, 4,675 resource samples and exact restoration. Before
+runtime, root reclaims only rebuildable pip HTTP downloads after a reference/link
+census; source/binary identities, original evidence and storage guards remain
+unchanged. Both repetitions and separate GET/PUT histograms are published.
 This screen is not significance, a no-regression bound or full point/batch
 acceptance. Benchmark sentinels do not replace complete histories.
+
+The earlier [bounded Append-payload screen](https://github.com/c4pt0r/kv9/blob/381d0973c078522d3698a922ecac8594cc9df348/docs/RAFT-APPEND-PAYLOAD-PERFORMANCE.md)
+remains held: +0.790% c64 GET, only +0.031% mixed throughput and unchanged mixed
+GET p99. Its first 18/24 attempt stops on the unchanged 96-GiB retention floor;
+a separate full second attempt passes after dev-cache reclamation. Both attempts
+are retained, and only the complete second attempt supplies its statistics.
 
 The previous [metadata/CRC combination](https://github.com/c4pt0r/kv9/blob/3641d0ff0644f700cf3ea8c9c1dbda8fd7462f00/docs/STREAM-METADATA-CRC-PERFORMANCE.md)
 remains held: +0.010% c64 GET, -0.453% mixed throughput and worse mixed GET mean.
@@ -81,19 +85,21 @@ are not additive request phases, and admission is not wire delivery. All 90
 stage/kind and 630 outcome rows are published. Source gates and 369-call ordinary
 recovery pass; this is diagnostic evidence, not a new performance selection.
 
-The held [bounded Append-payload candidate](https://github.com/c4pt0r/kv9/commit/74b958a8bcdf25252ab55ba6149876a1cddc0637)
-sets raft-rs `max_size_per_msg` to 64 KiB instead of its zero default (one entry
-per Append). It uses the existing contiguous log-slice mechanism without a new
-batch timer; `batch_append` remains disabled. The real lag/rejoin test checks
-multi-entry messages, the target's single-oversized-entry exception and final
-replica values. Local source gates pass 436 Raft/server and 234 experimental
-server tests/doctests, with overlap and one ignored per configuration, plus
-formatting and Clippy. Its clean original release and independent 357-call
-ordinary recovery pass (327 OK, 30 unknown; five server/two client lifetimes).
-The [complete uninstrumented screen](https://github.com/c4pt0r/kv9/blob/381d0973c078522d3698a922ecac8594cc9df348/docs/RAFT-APPEND-PAYLOAD-PERFORMANCE.md)
-now shows no useful mixed-load benefit. No Chaos qualification or runtime
-promotion follows from this experiment; its catch-up regression is functional
-evidence, not a catch-up performance measurement.
+The [inbox vector reuse candidate](https://github.com/c4pt0r/kv9/commit/1045755eac4292a2ccfdfa3d71741ed60e2f4668)
+changes one runtime source function relative to CRC: it returns the inbox's
+owned bounded FIFO vector and filters in place in testing builds. The
+[source argument](https://github.com/c4pt0r/kv9/blob/1045755eac4292a2ccfdfa3d71741ed60e2f4668/docs/INBOX-VECTOR-REUSE.md)
+preserves order, bounds, partition observations and wakeups. Local release-profile
+gates pass 435 Raft/server tests/doctests (one ignored), two explicit testing
+partition regressions, formatting and Clippy. The original clean default release
+binds all 595 source files. Fresh ordinary stream/unary recovery passes:
+359 calls, 330 OK and 29 unknown, five server/two client lifetimes and six drains.
+Seven driver/source-binding and 17 auditor checks pass before runtime.
+This source/ordinary-process evidence does not establish actual Chaos or a
+whole-implementation proof. The [completed screen](https://github.com/c4pt0r/kv9/blob/51efc6598324c10c1e27cd6fef869d4b9a39e7c4/docs/INBOX-VECTOR-REUSE-PERFORMANCE.md)
+shows a small mixed gain with pure-read tradeoffs, so no promotion follows.
+The previous Append source gates and 357-call recovery remain published in
+its report; catch-up correctness does not establish catch-up performance.
 
 ### Previous held metadata combination
 
@@ -127,20 +133,20 @@ isolate network RTT or the measurement-only request latency. The
 [CPU/thread profile](https://github.com/c4pt0r/kv9/blob/6fb3434c7cafcbd8d93b04f298208d5785fa292a/docs/READ-PATH-CPU-PROFILE.md)
 also does not assign async requests to OS-thread waits.
 
-1. **Remove redundant inbox vector construction:** `GrpcTransport::drain`
-   currently moves the inbox's owned bounded FIFO vector into another vector.
-   Reuse that vector while preserving testing-feature partition filtering,
-   ordering, admission bounds and wakeups. Check both feature paths, then run
-   the same complete c1/c64 GET/mixed screen. This is the next proposed change,
-   not an established gain. Do not repeat Append-size tuning without a new cause.
-2. **Qualify only a useful change:** retain fresh Safe ReadIndex, durable writes,
-   full pump/apply/view fences, queue bounds and cancellation ownership. Complete
-   the applicable proof mapping, full point/batch matrix and exact-source actual
-   Chaos Mesh before promotion. If vector reuse is insufficient, inspect the
-   peer-worker to request-body channel handoff, including stream-progress timeout
-   and route cancellation, before changing scheduling. Do not replay held
-   experiments without a new cause. DPDK needs cross-host/NIC
-   evidence. The selected runtime stays CRC until a candidate passes its gates.
+1. **Measure request-body handoff:** follow the [bounded plan](https://github.com/c4pt0r/kv9/blob/51efc6598324c10c1e27cd6fef869d4b9a39e7c4/docs/RAFT-REQUEST-BODY-HANDOFF-PLAN.md)
+   from batch offer to the existing request stream yielding that batch. Preserve
+   the 16-slot channel, original select arms, progress timeout, route cancellation
+   and export cap. This interval includes admission; do not call it pure queue
+   residence or sum unrelated sample means. Check source/recovery, then record
+   fixed c1 GET/c64 mixed diagnostic cells. Do not replay held small candidates.
+2. **Remove a handoff only when evidence supports it:** if this interval matters,
+   prototype a clean uninstrumented path with bounded ownership and an effective
+   stalled-reader watchdog. Compare the complete screen, retaining GET-only
+   means/tails and both repeats. Preserve fresh Safe ReadIndex, durable writes
+   and all pump/apply/view fences; useful changes need applicable proof,
+   full point/batch and actual exact-source Chaos gates before promotion. If the
+   interval is small, identify the next specific owner/HTTP2/socket boundary.
+   DPDK needs cross-host/NIC evidence. The selected runtime remains CRC.
 3. **Consistency and availability closure:** continue implementation/proof mapping,
    remote admission bounds, persistence failure cuts and actual Chaos Mesh E2E.
    Cover metadata, routing and scheduling without a service-critical singleton;
