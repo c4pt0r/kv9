@@ -6,6 +6,7 @@
 //! Notifications do not advance Raft time and grant no persistence authority.
 
 use std::collections::VecDeque;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Condvar, Mutex};
 use std::time::{Duration, Instant};
 
@@ -84,12 +85,22 @@ struct State {
     stopped: bool,
 }
 
+// One experimental budget, bounded by the owner's existing tick deadline.
+// Polling changes scheduling only; the mutex predicate remains authoritative.
+const OWNER_POLL_BUDGET: Duration = Duration::from_micros(32);
+
+#[cfg(test)]
+type PollObserver = (std::sync::mpsc::Sender<()>, std::sync::mpsc::Receiver<()>);
+
 #[derive(Debug, Default)]
 pub struct WorkSignal {
     state: Mutex<State>,
     changed: Condvar,
+    poll_hint: AtomicBool,
     #[cfg(test)]
     park_observer: Mutex<Option<std::sync::mpsc::Sender<()>>>,
+    #[cfg(test)]
+    poll_observer: Mutex<Option<PollObserver>>,
 }
 
 impl WorkSignal {
@@ -97,6 +108,7 @@ impl WorkSignal {
         let mut state = self.state.lock().expect("work signal poisoned");
         if !state.stopped {
             state.pending = true;
+            self.poll_hint.store(true, Ordering::Release);
             self.changed.notify_one();
         }
     }
@@ -104,6 +116,7 @@ impl WorkSignal {
     pub(crate) fn stop(&self) {
         let mut state = self.state.lock().expect("work signal poisoned");
         state.stopped = true;
+        self.poll_hint.store(true, Ordering::Release);
         self.changed.notify_all();
     }
 
@@ -112,10 +125,26 @@ impl WorkSignal {
     pub(crate) fn begin_turn(&self) -> bool {
         let mut state = self.state.lock().expect("work signal poisoned");
         state.pending = false;
+        self.poll_hint.store(false, Ordering::Relaxed);
         !state.stopped
     }
 
     pub(crate) fn wait_until(&self, deadline: Instant) {
+        #[cfg(test)]
+        if let Some((entered, resume)) = self.poll_observer.lock().unwrap().take() {
+            let _ = entered.send(());
+            let _ = resume.recv_timeout(Duration::from_secs(5));
+        }
+        // Do not hold the signal/queue/peer mutex while polling. A stale false
+        // hint only spends this finite budget; a stale true hint only skips it.
+        // Neither can bypass the original atomic predicate-to-park sequence.
+        let poll_deadline = deadline.min(Instant::now() + OWNER_POLL_BUDGET);
+        while !self.poll_hint.load(Ordering::Acquire) {
+            if Instant::now() >= poll_deadline {
+                break;
+            }
+            std::hint::spin_loop();
+        }
         let mut state = self.state.lock().expect("work signal poisoned");
         while !state.pending && !state.stopped {
             let remaining = deadline.saturating_duration_since(Instant::now());
@@ -345,6 +374,76 @@ mod tests {
         assert!(clock.due(start + Duration::from_secs(60)));
         assert!(!clock.due(start + Duration::from_secs(60)));
         assert_eq!(clock.next(), start + Duration::from_secs(60) + period);
+    }
+
+    #[test]
+    fn owner_poll_false_hint_preserves_already_published_work() {
+        let signal = WorkSignal::default();
+        signal.notify();
+        signal.poll_hint.store(false, Ordering::Relaxed);
+        signal.wait_until(Instant::now() + Duration::from_secs(60));
+        assert!(signal.state.lock().unwrap().pending);
+        assert!(signal.begin_turn());
+    }
+
+    #[test]
+    fn owner_poll_true_hint_cannot_bypass_the_park_predicate() {
+        let signal = Arc::new(WorkSignal::default());
+        signal.poll_hint.store(true, Ordering::Relaxed);
+        let parked = signal.observe_next_park();
+        let copy = signal.clone();
+        let owner = std::thread::spawn(move || {
+            copy.wait_until(Instant::now() + Duration::from_secs(60));
+            copy.begin_turn()
+        });
+        parked.recv_timeout(Duration::from_secs(2)).unwrap();
+        signal.stop();
+        assert!(!owner.join().unwrap());
+    }
+
+    fn owner_poll_interleaving(stale_hint: bool, stop: bool) {
+        let signal = Arc::new(WorkSignal::default());
+        let (entered_tx, entered_rx) = std::sync::mpsc::channel();
+        let (resume_tx, resume_rx) = std::sync::mpsc::channel();
+        *signal.poll_observer.lock().unwrap() = Some((entered_tx, resume_rx));
+        let parked = signal.observe_next_park();
+        let copy = signal.clone();
+        let owner = std::thread::spawn(move || {
+            copy.wait_until(Instant::now() + Duration::from_secs(60));
+            copy.begin_turn()
+        });
+        entered_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+        // The producer must acquire the authoritative mutex while the owner
+        // is in its polling phase; the observer holds no such mutex.
+        if stop {
+            signal.stop();
+        } else {
+            signal.notify();
+        }
+        if stale_hint {
+            signal.poll_hint.store(false, Ordering::Relaxed);
+        }
+        resume_tx.send(()).unwrap();
+        assert_eq!(owner.join().unwrap(), !stop);
+        assert!(matches!(
+            parked.try_recv(),
+            Err(std::sync::mpsc::TryRecvError::Empty)
+        ));
+    }
+
+    #[test]
+    fn owner_poll_observes_publication_without_parking() {
+        owner_poll_interleaving(false, false);
+    }
+
+    #[test]
+    fn owner_poll_stale_hint_falls_back_without_losing_publication() {
+        owner_poll_interleaving(true, false);
+    }
+
+    #[test]
+    fn owner_poll_stale_hint_cannot_prevent_stop() {
+        owner_poll_interleaving(true, true);
     }
 
     #[test]
