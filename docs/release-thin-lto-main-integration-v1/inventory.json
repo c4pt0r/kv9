@@ -1,0 +1,1137 @@
+{
+  "files": {
+    "initial-build/build.json": {
+      "bytes": 72507,
+      "sha256": "582ee4f5840aa8cf04168ee8aeffe92250ed0807ee3f53aea93b25d3494b809d",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/build.json"
+    },
+    "initial-build/cache-clean.stderr": {
+      "bytes": 39,
+      "sha256": "afe6f57dc7e3f3fe6733e6d2f5ef08b03132d6ed76b870fdd75040ba7920187f",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/cache-clean.stderr"
+    },
+    "initial-build/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/cache-clean.stdout"
+    },
+    "initial-build/cache-metadata.json": {
+      "bytes": 27401,
+      "sha256": "c8c4266ef0cc5463b8124945930e56bc30494a02391f67f09d89aa060c366649",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/cache-metadata.json"
+    },
+    "initial-build/cache-metadata.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/cache-metadata.log"
+    },
+    "initial-build/cache-safety.json": {
+      "bytes": 21837,
+      "sha256": "7424b7a21697b4ed65a85200dbf362fb2c7473f17d5eec769ca0a606d60df387",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/cache-safety.json"
+    },
+    "initial-build/kv9-build.log": {
+      "bytes": 130,
+      "sha256": "694aa4bb8d8631fd42d81a4b1deef5b7922c396893feabfb85d21c6a4b35c436",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/kv9-build.log"
+    },
+    "initial-build/kv9-cargo.jsonl": {
+      "bytes": 212090,
+      "sha256": "d9b0450aa8da628ac88364f7f3be9cc6b0444bc7cf2a863ed7f91b341c6956a8",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/kv9-cargo.jsonl"
+    },
+    "initial-build/workload/build.json": {
+      "bytes": 487,
+      "sha256": "631d75993bd8dc7e502117cc44161de1ceaf75e04e4ff4850e5e57a1433b7df7",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/workload/build.json"
+    },
+    "initial-build/workload/build.log": {
+      "bytes": 665,
+      "sha256": "90c71e5a48d89be817042f85c4947105c273ade5c46ca20e07c4a2db50cea02e",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/workload/build.log"
+    },
+    "initial-build/workload/cargo.jsonl": {
+      "bytes": 209078,
+      "sha256": "58aa5776ca811c608739aceef9993798f60e725f5cc2e5cb17497816f26ec16c",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/workload/cargo.jsonl"
+    },
+    "initial-build/workload/sources.json": {
+      "bytes": 68184,
+      "sha256": "80eeb6bdb543d428bb0645f991614dde72217882ac4828a4c0f2db2430dc546e",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/workload/sources.json"
+    },
+    "ordinary-recovery/batch-tonic-stream-checked.json": {
+      "bytes": 16856,
+      "sha256": "8dddf91abfbb2ce80f3992c151c71fbd00c3aacdcf7e43a6e3b3877c3b1716c4",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-stream-checked.json"
+    },
+    "ordinary-recovery/batch-tonic-stream-config.json": {
+      "bytes": 787,
+      "sha256": "0d33766d653a831fcd2309dd17672090a567b313ff56c82ea4e59ca162d23052",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-stream-config.json"
+    },
+    "ordinary-recovery/batch-tonic-stream.log": {
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-stream.log"
+    },
+    "ordinary-recovery/batch-tonic-stream/build.json": {
+      "bytes": 487,
+      "sha256": "631d75993bd8dc7e502117cc44161de1ceaf75e04e4ff4850e5e57a1433b7df7",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-stream/build.json"
+    },
+    "ordinary-recovery/batch-tonic-stream/config.json": {
+      "bytes": 821,
+      "sha256": "9a42bba9bac583c8a78aef64572d66fb86d6a70934b86841af660f1d9752e8fd",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-stream/config.json"
+    },
+    "ordinary-recovery/batch-tonic-stream/history.jsonl": {
+      "bytes": 320634,
+      "sha256": "955251336430455f02a3621ea56d75adbb3af1ef75059f159779c2317f78ddef",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-stream/history.jsonl"
+    },
+    "ordinary-recovery/batch-tonic-stream/progress.json": {
+      "bytes": 720,
+      "sha256": "314d82a44b42a0f8c8307580bcfb2994e165a76ba5430672ea5ce2f04a882caa",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-stream/progress.json"
+    },
+    "ordinary-recovery/batch-tonic-stream/ready.json": {
+      "bytes": 72,
+      "sha256": "fdeedd87cf7db8967dfe382f3ef6af20539a1f225c71e6977899fe811458c9bb",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-stream/ready.json"
+    },
+    "ordinary-recovery/batch-tonic-stream/report.json": {
+      "bytes": 200686,
+      "sha256": "4db42dd3fefcd7659d8eb64ccc82475468c3d99594c04eda211fd8195ad21b4a",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-stream/report.json"
+    },
+    "ordinary-recovery/batch-tonic-unary-checked.json": {
+      "bytes": 18139,
+      "sha256": "b16866051041175e01f0eab53625983ecef8c0ced706f293d32bb605ce810b2d",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-unary-checked.json"
+    },
+    "ordinary-recovery/batch-tonic-unary-config.json": {
+      "bytes": 819,
+      "sha256": "0e809ff81eb9e8ab61381c5a22371a1c45af829547a919da9f25147c4fa211e9",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-unary-config.json"
+    },
+    "ordinary-recovery/batch-tonic-unary.log": {
+      "bytes": 89,
+      "sha256": "e4d6c40991383c7e23cad652adbf1c64980284efeba2a7fcc596b562d82612b9",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-unary.log"
+    },
+    "ordinary-recovery/batch-tonic-unary/build.json": {
+      "bytes": 487,
+      "sha256": "631d75993bd8dc7e502117cc44161de1ceaf75e04e4ff4850e5e57a1433b7df7",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-unary/build.json"
+    },
+    "ordinary-recovery/batch-tonic-unary/config.json": {
+      "bytes": 818,
+      "sha256": "929e565b56abcdad3875dd398a5d3cef8146897d16234782380ce1319bea27c2",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-unary/config.json"
+    },
+    "ordinary-recovery/batch-tonic-unary/history.jsonl": {
+      "bytes": 341828,
+      "sha256": "b4dfebaf21e9508ca2e5c27daadce012c8dfbf174bd2a172295fbe4efab8b75e",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-unary/history.jsonl"
+    },
+    "ordinary-recovery/batch-tonic-unary/progress.json": {
+      "bytes": 720,
+      "sha256": "b6ce1cd4a4ab327fb3c2e0a8db25efcb8b034038856dbbbb337201fd90d60490",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-unary/progress.json"
+    },
+    "ordinary-recovery/batch-tonic-unary/ready.json": {
+      "bytes": 72,
+      "sha256": "2c10da78db5743796f4e41c7e72e2306e67db6227648cca432f28374d5855884",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-unary/ready.json"
+    },
+    "ordinary-recovery/batch-tonic-unary/report.json": {
+      "bytes": 200957,
+      "sha256": "b1f48eb49054bb5e54066827cc1bf0ecb678ffe4180f60214dc8876ef8692df6",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-unary/report.json"
+    },
+    "ordinary-recovery/fixture/command-000.json": {
+      "bytes": 363,
+      "sha256": "74ea8e0ebf908e84ee13171e6e0fbbdfa28b8cf3f1b8b58cf2d57e7858ea537e",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/command-000.json"
+    },
+    "ordinary-recovery/fixture/command-001.json": {
+      "bytes": 363,
+      "sha256": "922613d8fb4b8865e7e4c206dc0ee3f68b651ae2736ccb4cd7e9f70897ce4d41",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/command-001.json"
+    },
+    "ordinary-recovery/fixture/command-002.json": {
+      "bytes": 363,
+      "sha256": "9f7786bee3e19959e4e84bb9162b0c04510d5faec0b527e4e31f1325ca153a99",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/command-002.json"
+    },
+    "ordinary-recovery/fixture/command-003.json": {
+      "bytes": 983,
+      "sha256": "c321ee08330314e0e02bb4ed8370c8a55034858577b7d15c8bfc2423d3425288",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/command-003.json"
+    },
+    "ordinary-recovery/fixture/command-004.json": {
+      "bytes": 657,
+      "sha256": "71edde0b1f6210d6a59e46fd586bf1e0d896b969e684bc7b724693d1820ec289",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/command-004.json"
+    },
+    "ordinary-recovery/fixture/command-005.json": {
+      "bytes": 657,
+      "sha256": "65957ab03b79958f30dea555da0c1b97554e8ea5594dd14b30f00972fb2b9ccb",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/command-005.json"
+    },
+    "ordinary-recovery/fixture/command-006.json": {
+      "bytes": 657,
+      "sha256": "ded7af54e149eb43d2ddbccccd5449e95d831d40a78c1a101d106c69bebc4346",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/command-006.json"
+    },
+    "ordinary-recovery/fixture/command-007.json": {
+      "bytes": 335,
+      "sha256": "aca3a1c7c6a228fb17490b4d846911b5e26e4dbaef8d150a1a7d6e450116d07d",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/command-007.json"
+    },
+    "ordinary-recovery/fixture/command-008.json": {
+      "bytes": 335,
+      "sha256": "984509be25a28dd096d8cb69a0574e9807e1de228b1a5eaf1ae7276e1c3b07fe",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/command-008.json"
+    },
+    "ordinary-recovery/fixture/data/n1/metrics.json": {
+      "bytes": 62664,
+      "sha256": "0167211c21561e2093e680430224034d49cc0e7a58cf1e5b2a8cf95ce1d9fc5a",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/data/n1/metrics.json"
+    },
+    "ordinary-recovery/fixture/data/n1/status": {
+      "bytes": 3439,
+      "sha256": "2c51d6be4e76aa807412f6b93c4c71921c8a7f7361072ae2b24d643d87319895",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/data/n1/status"
+    },
+    "ordinary-recovery/fixture/data/n2/metrics.json": {
+      "bytes": 63387,
+      "sha256": "1af3d3777b4486f5f0fe0ec3858b2f8f7d9a9092e2f5bdd62befe151ad642550",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/data/n2/metrics.json"
+    },
+    "ordinary-recovery/fixture/data/n2/status": {
+      "bytes": 3444,
+      "sha256": "ee711fa370d2300b92f6e0469909412873deda4f90e118edc080b1261300222a",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/data/n2/status"
+    },
+    "ordinary-recovery/fixture/data/n3/metrics.json": {
+      "bytes": 61866,
+      "sha256": "5b74be6a48392f9848eac8b0c265b65e53c6f8ff45a7e51636dccf5bcbae7ed2",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/data/n3/metrics.json"
+    },
+    "ordinary-recovery/fixture/data/n3/status": {
+      "bytes": 3433,
+      "sha256": "d3b9f996660be28683fe2b45feb59b695a8cb15091009e30fe9b3679c580888a",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/data/n3/status"
+    },
+    "ordinary-recovery/fixture/fixture.json": {
+      "bytes": 3206,
+      "sha256": "7292c081bab70c9b86f87e39063adbd1f02bc6e0ab63756cde0687c0f2ed0ff8",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/fixture.json"
+    },
+    "ordinary-recovery/fixture/n1.log": {
+      "bytes": 121,
+      "sha256": "eb90964464093dd4f4e42c423425b596a9d652e61c4aaea578cf5b08afddac48",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/n1.log"
+    },
+    "ordinary-recovery/fixture/n2-restart.log": {
+      "bytes": 121,
+      "sha256": "d8a7b694ef27c3952a0c8a4688d4cd4ea7c8ab9e4316a9fef43bd282b44c8989",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/n2-restart.log"
+    },
+    "ordinary-recovery/fixture/n2.log": {
+      "bytes": 121,
+      "sha256": "d8a7b694ef27c3952a0c8a4688d4cd4ea7c8ab9e4316a9fef43bd282b44c8989",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/n2.log"
+    },
+    "ordinary-recovery/fixture/n3-restart.log": {
+      "bytes": 121,
+      "sha256": "6a64130023aeb1999f45f8a11e6e5787595aa3a913b02aabd6d398f7af776abc",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/n3-restart.log"
+    },
+    "ordinary-recovery/fixture/n3.log": {
+      "bytes": 121,
+      "sha256": "6a64130023aeb1999f45f8a11e6e5787595aa3a913b02aabd6d398f7af776abc",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/n3.log"
+    },
+    "ordinary-recovery/summary.json": {
+      "bytes": 190174,
+      "sha256": "cefa928ef16b9354968ca0b08edc10b95367f463378d5277a4ca2920cd141786",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/summary.json"
+    },
+    "publication-preparation/BUNDLE-README.md": {
+      "bytes": 2451,
+      "sha256": "c8df2ad375e98858422b687bb8ee4ecd97d026ccd7bf71eb629c4abb50d15982",
+      "source": "/tmp/kv9-thin-lto-main-integration-publication-preparation-first/BUNDLE-README.md"
+    },
+    "publication-preparation/README.md": {
+      "bytes": 2197,
+      "sha256": "82d887ab8e029f06206a1efbb5f5cbe3ec487d51cabcbffb5faeb931d4cca852",
+      "source": "/tmp/kv9-thin-lto-main-integration-publication-preparation-first/README.md"
+    },
+    "publication-preparation/ancestry/full72-package-reporting.py": {
+      "bytes": 17769,
+      "sha256": "c9d412eadbb8c4d952d9d9dddeb6b6e5f995cf79df3519dd975e164229ac57de",
+      "source": "/tmp/kv9-thin-lto-main-integration-publication-preparation-first/ancestry/full72-package-reporting.py"
+    },
+    "publication-preparation/archive_helpers.py": {
+      "bytes": 17769,
+      "sha256": "c9d412eadbb8c4d952d9d9dddeb6b6e5f995cf79df3519dd975e164229ac57de",
+      "source": "/tmp/kv9-thin-lto-main-integration-publication-preparation-first/archive_helpers.py"
+    },
+    "publication-preparation/commands.json": {
+      "bytes": 1494,
+      "sha256": "d6a0ffea8cb967ac23d94a72f9570f6f2402be593a5e1188ede7a37cd25133ca",
+      "source": "/tmp/kv9-thin-lto-main-integration-publication-preparation-first/commands.json"
+    },
+    "publication-preparation/inventory.json": {
+      "bytes": 1621,
+      "sha256": "197059ccce4bd4e2e4bb6b8756d31f7ff515873429039a0c9d5637d7883e72e7",
+      "source": "/tmp/kv9-thin-lto-main-integration-publication-preparation-first/inventory.json"
+    },
+    "publication-preparation/package-reporting.py": {
+      "bytes": 13255,
+      "sha256": "b4070b0ce187802aac0f783271dc3dcb4e6bef5b44449834b1a4afedc0d82090",
+      "source": "/tmp/kv9-thin-lto-main-integration-publication-preparation-first/package-reporting.py"
+    },
+    "publication-preparation/package-reporting.py.diff": {
+      "bytes": 30795,
+      "sha256": "495d474c8a5c5f52d11eb0dd16d348b5559669eb3bc412c719a33feae76abf8c",
+      "source": "/tmp/kv9-thin-lto-main-integration-publication-preparation-first/package-reporting.py.diff"
+    },
+    "publication-preparation/source-pins.json": {
+      "bytes": 3607,
+      "sha256": "a56c7da023db706edd39b08f25b0cda4aab9d18aebdca8e08a1fcfebc56ad81e",
+      "source": "/tmp/kv9-thin-lto-main-integration-publication-preparation-first/source-pins.json"
+    },
+    "publication-preparation/static-review.json": {
+      "bytes": 655,
+      "sha256": "2c1637eaa06645b2dd988a41415f945dd935e1da5c03f5863fee275f0f8b4783",
+      "source": "/tmp/kv9-thin-lto-main-integration-publication-preparation-first/static-review.json"
+    },
+    "publication-preparation/verify.py": {
+      "bytes": 2279,
+      "sha256": "7b0a73a124e5dd5073ed1ffd3e2cf4ea93c4f1f87aa8963bfec4aee8ee19c993",
+      "source": "/tmp/kv9-thin-lto-main-integration-publication-preparation-first/verify.py"
+    },
+    "recovery-preparation/READINESS.final.json": {
+      "bytes": 573,
+      "sha256": "31acdfbd32590753139951d377338850a5aad711db6d19aee55afc7d4a139061",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/READINESS.final.json"
+    },
+    "recovery-preparation/READINESS.pending.json": {
+      "bytes": 972,
+      "sha256": "b4d9b19fbfea47de9c12f8e8c355a4e11944748673d2e8fc5a1c843d2a3672ba",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/READINESS.pending.json"
+    },
+    "recovery-preparation/README.md": {
+      "bytes": 3757,
+      "sha256": "2bcb280fdcb4fc4f150b472b493b2d9b032408f6601b3e0d9eb8e0fabc22e1df",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/README.md"
+    },
+    "recovery-preparation/VERBOSE-BUILD.md": {
+      "bytes": 1690,
+      "sha256": "77e1c20a82aefa39f72d054a5a2c407de62bf0c003d883e4e6a6f1fd2d237ab0",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/VERBOSE-BUILD.md"
+    },
+    "recovery-preparation/ancestry-prior-preparation/READINESS.pending.json": {
+      "bytes": 820,
+      "sha256": "7835f2765213863496ed90205b03afcfb54e1c5a0eea20379702dd961afd34ac",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/ancestry-prior-preparation/READINESS.pending.json"
+    },
+    "recovery-preparation/ancestry-prior-preparation/inventory.pending.json": {
+      "bytes": 4571,
+      "sha256": "a170a1cc746dc57e4fbf9a083310f57d235e60230ed5daf573362b5b50f9cb89",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/ancestry-prior-preparation/inventory.pending.json"
+    },
+    "recovery-preparation/audit.py": {
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/audit.py"
+    },
+    "recovery-preparation/binding-readback.json": {
+      "bytes": 1235,
+      "sha256": "11e1d83f5716562585673644462511bf5e9ef817cb642d73c2e9c7a0510a6680",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/binding-readback.json"
+    },
+    "recovery-preparation/binding.final.json": {
+      "bytes": 2178,
+      "sha256": "5424f0c7ec97e227fef8b6049106306ef569f4695904774a6224340ea6187506",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/binding.final.json"
+    },
+    "recovery-preparation/binding.pending.json": {
+      "bytes": 992,
+      "sha256": "0b259e433be48319eb092e0aaabba7d3ae18afc666012f4e33875a30b9d1ee26",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/binding.pending.json"
+    },
+    "recovery-preparation/binding.source-pinned.json": {
+      "bytes": 962,
+      "sha256": "cc1cd1e375958cbed54f7d1c6b1e1499cd3cd6a0056fd736b395c5adfd47744f",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/binding.source-pinned.json"
+    },
+    "recovery-preparation/commands.json": {
+      "bytes": 1747,
+      "sha256": "1fb372096b4fb5f84c910386a905236d7fa91b4be5fae482c43aa073070f7de6",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/commands.json"
+    },
+    "recovery-preparation/commands.pending.json": {
+      "bytes": 1486,
+      "sha256": "ebf0697706f700e7258bdf89f1d84a68e67c14c75a43e29fac4d6c1eeaddd3dc",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/commands.pending.json"
+    },
+    "recovery-preparation/commands.source-pinned.json": {
+      "bytes": 1787,
+      "sha256": "647ee5b5d5d9327b2ce89639a09e87a8beca166fd99d487215642a60a244fbca",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/commands.source-pinned.json"
+    },
+    "recovery-preparation/diffs/audit.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/diffs/audit.py.diff"
+    },
+    "recovery-preparation/diffs/binding.pending.json.diff": {
+      "bytes": 1977,
+      "sha256": "5a57a03f16522a838b2bb677e3d2c3ad7d2078e0348eb41d0bf55b1b08b0cf79",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/diffs/binding.pending.json.diff"
+    },
+    "recovery-preparation/diffs/commands.pending.json.diff": {
+      "bytes": 2431,
+      "sha256": "c7b18f43e101d59764bf1c036c6eee0f1e3ea9e036353819403580933a208c09",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/diffs/commands.pending.json.diff"
+    },
+    "recovery-preparation/diffs/commands.source-pinned.json.diff": {
+      "bytes": 2726,
+      "sha256": "11acf3953788b3552395474946c639cdae06af8338818b55680ec2e2dad0e114",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/diffs/commands.source-pinned.json.diff"
+    },
+    "recovery-preparation/diffs/process-runner.py.diff": {
+      "bytes": 571,
+      "sha256": "5600194652eb1ec7edf7c945a7f57f6a9bace37d3792ded7cdf8f86298f08354",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/diffs/process-runner.py.diff"
+    },
+    "recovery-preparation/diffs/scope-and-requirements.json.diff": {
+      "bytes": 1145,
+      "sha256": "0e446980d7197a71c737cfbf0a6c8fcdfc5e9e51b435d54ee5d95e748860a941",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/diffs/scope-and-requirements.json.diff"
+    },
+    "recovery-preparation/diffs/test_contract.py.diff": {
+      "bytes": 826,
+      "sha256": "7ab21c2561edd91e1854e6334617f6a731345b56a8ab0e79ea53b12b462584a4",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/diffs/test_contract.py.diff"
+    },
+    "recovery-preparation/fixtures/check-latency-metrics.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/fixtures/check-latency-metrics.py"
+    },
+    "recovery-preparation/fixtures/original-metrics.json": {
+      "bytes": 62587,
+      "sha256": "6d635f0a7928080081af6940fa75af61e51551af29ee1ea5c0b10e18389c03a7",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/fixtures/original-metrics.json"
+    },
+    "recovery-preparation/fixtures/predecessor-process-runner.py": {
+      "bytes": 714,
+      "sha256": "617ce01151492ed04729e63dee7557462a499af28d7f5a865bb5054245ab2aaf",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/fixtures/predecessor-process-runner.py"
+    },
+    "recovery-preparation/freeze-after-build.pending.json": {
+      "bytes": 1494,
+      "sha256": "790f031b54888808fda1761c38de14b111e20bda4a8e684227d19f1b12330b9d",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/freeze-after-build.pending.json"
+    },
+    "recovery-preparation/freeze_after_build.py": {
+      "bytes": 5635,
+      "sha256": "f379b1758a3f9de1acd8f69c3c0cbd08bd1fbd77df2d91bd5ec90856216fb8e3",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/freeze_after_build.py"
+    },
+    "recovery-preparation/inventory.final.json": {
+      "bytes": 7031,
+      "sha256": "45d66f75c2860894df64c1084086e660adb58907bba50b9718c2b95138f9cf32",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/inventory.final.json"
+    },
+    "recovery-preparation/inventory.pending.json": {
+      "bytes": 6373,
+      "sha256": "3053be1e23d29424ba959f476e82c5f74b35494634173758f6b047ba3f61dbc8",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/inventory.pending.json"
+    },
+    "recovery-preparation/lineage.json": {
+      "bytes": 621,
+      "sha256": "7ab057520c4eb904c89f43c430d7677271e88450ccd953189002e0fd05b16ee4",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/lineage.json"
+    },
+    "recovery-preparation/logging-repair-provenance.json": {
+      "bytes": 972,
+      "sha256": "e81de2e9c30071e6cc88d1387ebf6fdb08e57847066d21eb6ba8451127db2357",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/logging-repair-provenance.json"
+    },
+    "recovery-preparation/originals/audit.py": {
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/originals/audit.py"
+    },
+    "recovery-preparation/originals/binding-readback.json": {
+      "bytes": 3178,
+      "sha256": "a53b1714de3ce4e1f3bd4d2534cdfc88b2b535f32c6701c4e4204deb29402403",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/originals/binding-readback.json"
+    },
+    "recovery-preparation/originals/binding.final.json": {
+      "bytes": 1918,
+      "sha256": "b540cb2a189a8a4451a23284aed9dd8bbafb993cb2cc8ced4b755974e5809a4d",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/originals/binding.final.json"
+    },
+    "recovery-preparation/originals/binding.pending.json": {
+      "bytes": 934,
+      "sha256": "73b6e984ef5a052ed68f4e0e8bcb3f6cf57b9bdfcea0b206a7eed9e1f87e5f4f",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/originals/binding.pending.json"
+    },
+    "recovery-preparation/originals/commands.json": {
+      "bytes": 1659,
+      "sha256": "3bc7789d5fc1b2afe769e6b3c76ea8b5abb4be1b766f51a29c9523950c9e43d1",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/originals/commands.json"
+    },
+    "recovery-preparation/originals/commands.pending.json": {
+      "bytes": 1351,
+      "sha256": "73d55b72b58496425ad2726c65bb0251e50752d2da22fe510830717445af0f55",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/originals/commands.pending.json"
+    },
+    "recovery-preparation/originals/process-runner.py": {
+      "bytes": 714,
+      "sha256": "617ce01151492ed04729e63dee7557462a499af28d7f5a865bb5054245ab2aaf",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/originals/process-runner.py"
+    },
+    "recovery-preparation/originals/scope-and-requirements.json": {
+      "bytes": 2701,
+      "sha256": "7c93aaba8ef7e50f5067efd73028ddbf8907494f26241eec227dee04b69033fe",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/originals/scope-and-requirements.json"
+    },
+    "recovery-preparation/originals/test_contract.py": {
+      "bytes": 3778,
+      "sha256": "009d2d374970be687f32ee6bb8caa20f683d3d617b1a3d02a898075a34ee0a4f",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/originals/test_contract.py"
+    },
+    "recovery-preparation/process-runner.py": {
+      "bytes": 729,
+      "sha256": "8d2add5c8d3883d34e8857ff39e2b12407e1765be32164528452e152ff98b1a9",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/process-runner.py"
+    },
+    "recovery-preparation/results-first/audit.json": {
+      "bytes": 10628,
+      "sha256": "c91a6cfab97d4e61d53bbc4022b45118c2f0be0a4e283c6b4da73dfeb8cd553b",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/audit.json"
+    },
+    "recovery-preparation/results-first/batch-tonic-stream-history-checked.json": {
+      "bytes": 14638,
+      "sha256": "21f9e719470390099607c0ad5f526a176fa942b16269040fe288180cbcaa522f",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/batch-tonic-stream-history-checked.json"
+    },
+    "recovery-preparation/results-first/batch-tonic-stream-raw-history.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/batch-tonic-stream-raw-history.stderr"
+    },
+    "recovery-preparation/results-first/batch-tonic-stream-raw-history.stdout": {
+      "bytes": 633,
+      "sha256": "33c215ecf546cef31f40994f5b640546c4718d325435952fd718ffd360830cd3",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/batch-tonic-stream-raw-history.stdout"
+    },
+    "recovery-preparation/results-first/batch-tonic-stream-report-checked.json": {
+      "bytes": 16856,
+      "sha256": "8dddf91abfbb2ce80f3992c151c71fbd00c3aacdcf7e43a6e3b3877c3b1716c4",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/batch-tonic-stream-report-checked.json"
+    },
+    "recovery-preparation/results-first/batch-tonic-unary-history-checked.json": {
+      "bytes": 15781,
+      "sha256": "56a0c2fb6e43bf158349232b961de367b60e736c542e5d9d571d51b6b993b84d",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/batch-tonic-unary-history-checked.json"
+    },
+    "recovery-preparation/results-first/batch-tonic-unary-raw-history.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/batch-tonic-unary-raw-history.stderr"
+    },
+    "recovery-preparation/results-first/batch-tonic-unary-raw-history.stdout": {
+      "bytes": 751,
+      "sha256": "1670f55de2547973236a66258655c788866dd0cb93297990264dc31f938dcb13",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/batch-tonic-unary-raw-history.stdout"
+    },
+    "recovery-preparation/results-first/batch-tonic-unary-report-checked.json": {
+      "bytes": 18139,
+      "sha256": "b16866051041175e01f0eab53625983ecef8c0ced706f293d32bb605ce810b2d",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/batch-tonic-unary-report-checked.json"
+    },
+    "recovery-preparation/results-first/commands.json": {
+      "bytes": 2021,
+      "sha256": "ed6a0c6a8c372989c8afbf43849ae7bc71ad608c777114df4b47106dddaca313",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/commands.json"
+    },
+    "recovery-preparation/results-first/original-inputs.json": {
+      "bytes": 12653,
+      "sha256": "0fb954bffc0e88a419c3c0199a0d12b98a2b494648debb265665677abf1bdeb4",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/original-inputs.json"
+    },
+    "recovery-preparation/results-first/source-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/source-head.stderr"
+    },
+    "recovery-preparation/results-first/source-head.stdout": {
+      "bytes": 41,
+      "sha256": "98ad331cd9913943f6c9f29e6cee4993681de74dbdde27279a1bcff3e12a71e5",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/source-head.stdout"
+    },
+    "recovery-preparation/results-first/source-status.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/source-status.stderr"
+    },
+    "recovery-preparation/results-first/source-status.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/source-status.stdout"
+    },
+    "recovery-preparation/scope-and-requirements.json": {
+      "bytes": 2870,
+      "sha256": "c9a4d86c865f10b9a0dcb64826d685cbb522ce8cd1ca6e9a81d089e7a8e08816",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/scope-and-requirements.json"
+    },
+    "recovery-preparation/source-helper-bindings.json": {
+      "bytes": 3651,
+      "sha256": "e521a2771a329378db72ed8be20d011b1c617851e00816aec416a5df8352589c",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/source-helper-bindings.json"
+    },
+    "recovery-preparation/test_contract.py": {
+      "bytes": 3790,
+      "sha256": "71f6fcba081ddf7b81ad6421d980320bd23467351ec53b78758acb7e214aaad3",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/test_contract.py"
+    },
+    "recovery-preparation/verbose-diffs/README.md.diff": {
+      "bytes": 1628,
+      "sha256": "0960252a0bc78a51c4a6555ce90516213367e7becf6c5602686be359a162296f",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/verbose-diffs/README.md.diff"
+    },
+    "recovery-preparation/verbose-diffs/binding.pending.json.diff": {
+      "bytes": 881,
+      "sha256": "f71e73c2d9ca79e5b805d545e2b5061ae6b5bc93602799237180800c535f8bb2",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/verbose-diffs/binding.pending.json.diff"
+    },
+    "recovery-preparation/verbose-diffs/binding.source-pinned.json.diff": {
+      "bytes": 825,
+      "sha256": "94d405e2da1989508b8e57736813caa35ecf5fc7dc95f96334c5fb2b0171b220",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/verbose-diffs/binding.source-pinned.json.diff"
+    },
+    "recovery-preparation/verbose-diffs/commands.pending.json.diff": {
+      "bytes": 1868,
+      "sha256": "83d63fee4315164d0bc6f6b5f14f1e69a1bb9fd19f9e912a77cfc710e83f82c1",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/verbose-diffs/commands.pending.json.diff"
+    },
+    "recovery-preparation/verbose-diffs/commands.source-pinned.json.diff": {
+      "bytes": 2050,
+      "sha256": "c960403732155622ddb6392ac582168058fb501efd271329c1c1c3255ea30109",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/verbose-diffs/commands.source-pinned.json.diff"
+    },
+    "recovery-preparation/verbose-diffs/freeze-after-build.pending.json.diff": {
+      "bytes": 576,
+      "sha256": "3ca50625509d6553c6546e8bc2c769c7e7cf85aa2892f7c506d3fea8ede8d406",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/verbose-diffs/freeze-after-build.pending.json.diff"
+    },
+    "recovery-preparation/verbose-diffs/freeze_after_build.py.diff": {
+      "bytes": 547,
+      "sha256": "964ae786631685444020e8d4d04db240a04d1e1b518107fe3cea7ab1b4ae0a43",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/verbose-diffs/freeze_after_build.py.diff"
+    },
+    "recovery-preparation/verbose-lineage.json": {
+      "bytes": 3595,
+      "sha256": "eae8299ed880c9fff68a22878ff88553dd4b1dd6b3beb3d1567e482a04ec82ef",
+      "source": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/verbose-lineage.json"
+    },
+    "root/artifact-correspondence.json": {
+      "bytes": 1175,
+      "sha256": "0cb0616d073447751316889ad1d058b18f8c0defc25a6ec993b54a4172d86827",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/artifact-correspondence.json"
+    },
+    "root/audit-first.log": {
+      "bytes": 2706,
+      "sha256": "2976a5a45f4ed480c1b12be4ff01b447c3ee50a23a51d79bac4a5156f66b96fe",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/audit-first.log"
+    },
+    "root/audit-invocation.json": {
+      "bytes": 1054,
+      "sha256": "4f2f99a3acc25ae06eac25f37a93d4ad8fe8485819d40d8b9e86ccc90627caed",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/audit-invocation.json"
+    },
+    "root/audit-result.json": {
+      "bytes": 1215,
+      "sha256": "b1b985e7ecf4782f86f90608dfc7180811b68c65787d6524dd770cf103482bc7",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/audit-result.json"
+    },
+    "root/audit-terminal.json": {
+      "bytes": 662,
+      "sha256": "a9ea30d7fe0db771665a2884a51a38c8c9bf5dbb5f6f353311d74df429299b15",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/audit-terminal.json"
+    },
+    "root/check-release-verbose.py": {
+      "bytes": 3955,
+      "sha256": "848bea47afe1ca1c63dca5f732a5e0215cffec74fc5a822e48ac4b996ae45e26",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/check-release-verbose.py"
+    },
+    "root/check-release.py": {
+      "bytes": 3923,
+      "sha256": "bee69177556cc31c57468641ee37f94b54ee84b7a284157c06b029ff01ab203a",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/check-release.py"
+    },
+    "root/check-source.py": {
+      "bytes": 2488,
+      "sha256": "0ee50d3744484722d348906e55640bc3b42208c6f4c24183e3ed90a5180a6c38",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/check-source.py"
+    },
+    "root/commands-source.json": {
+      "bytes": 2164,
+      "sha256": "59afc5549942389b9c6b9beca7400aff4a3c41ea6ab95eccbd90539086bd5a73",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/commands-source.json"
+    },
+    "root/default-metrics-readback.json": {
+      "bytes": 2067,
+      "sha256": "72699c3f6e76fe5e9ef80d368c84a58e11fc281d0db5c056f94bbe3e2610a7a7",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/default-metrics-readback.json"
+    },
+    "root/production-codegen-verbose.json": {
+      "bytes": 6963,
+      "sha256": "df19a3ea58959430ffa7a9a9f9c9ce0f48689a13e18617cfa9603c0680fbdff4",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/production-codegen-verbose.json"
+    },
+    "root/publication-preflight-first-failure.json": {
+      "bytes": 333,
+      "sha256": "aed4d9c66001a665410702a133e802dcf0f4817daf36e826c7405ba50d2a658c",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/publication-preflight-first-failure.json"
+    },
+    "root/recovery-first.log": {
+      "bytes": 288,
+      "sha256": "721ea9c7550f9d3cad200cd50684869195f8787996b6b8faa7fa448804881ebd",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/recovery-first.log"
+    },
+    "root/recovery-freeze-invocation.json": {
+      "bytes": 991,
+      "sha256": "9ec16d38b9edce776b524b2a089c6fa107158dd800adba28871c4917df0e6f3f",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/recovery-freeze-invocation.json"
+    },
+    "root/recovery-invocation.json": {
+      "bytes": 829,
+      "sha256": "8695b3ed491d6d2860172560e0deffad9db64e449d1f266ec05d041d69e8ec45",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/recovery-invocation.json"
+    },
+    "root/recovery-result.json": {
+      "bytes": 1168,
+      "sha256": "8b644b06ffb674549ea61ec3ccc451cc3d2946417d2b1ffea0160a8e45b42902",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/recovery-result.json"
+    },
+    "root/recovery-terminal.json": {
+      "bytes": 315,
+      "sha256": "84eeabc8e262da8c09f4790c9204e5ac9dd5bbfc3ea0e155d6349f472b6ebb58",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/recovery-terminal.json"
+    },
+    "root/release-first.log": {
+      "bytes": 180,
+      "sha256": "2dcf6c568d8e0ef041509a3c2500bd230845f1a10b3b9d65fd5cf45a572f96be",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/release-first.log"
+    },
+    "root/release-invocation.json": {
+      "bytes": 859,
+      "sha256": "83f2d41583b92381a3b170bee657301f67424cd4e0e9a8429d09ec4a4c735678",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/release-invocation.json"
+    },
+    "root/release-readback-first-failure.json": {
+      "bytes": 549,
+      "sha256": "5a298c8a342d654cefdf897b0611453a7c307b4a089417aca10d1559fad4060b",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/release-readback-first-failure.json"
+    },
+    "root/release-result.json": {
+      "bytes": 1714,
+      "sha256": "c2f401933557725caeec7846deafa4aad4ea1932a902b4a0063aff45632ba6cb",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/release-result.json"
+    },
+    "root/release-terminal.json": {
+      "bytes": 181,
+      "sha256": "4287d9272ff0b1d88d80d9e0442cee6c6dc0be790ebaeef95853e5f18ea311d1",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/release-terminal.json"
+    },
+    "root/release-verbose-first.log": {
+      "bytes": 188,
+      "sha256": "e87315fa9ca12de2cd5a2ef736bcf674f293c04436fa74b9eb62fb38fb543cb9",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/release-verbose-first.log"
+    },
+    "root/release-verbose-invocation.json": {
+      "bytes": 898,
+      "sha256": "b86d44fcdc4b178315d7ef924c81b4d28a4e66a352896a22f86913865cae0f13",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/release-verbose-invocation.json"
+    },
+    "root/release-verbose-readback.json": {
+      "bytes": 1209,
+      "sha256": "915590163978af3756e9c8307a14beb93322896a2edcd01dc1c44d7ae602be00",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/release-verbose-readback.json"
+    },
+    "root/release-verbose-result.json": {
+      "bytes": 1753,
+      "sha256": "dfb15aab0f6a62b973eb8b47a7824c7b17fa5e881913ac1d67a4b6ee2d60a559",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/release-verbose-result.json"
+    },
+    "root/release-verbose-terminal.json": {
+      "bytes": 546,
+      "sha256": "1ec1700d39cf10b9d91c6056f83bcb8ce5973de0126d543e7351db97b95885a8",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/release-verbose-terminal.json"
+    },
+    "root/run-recovery-stage.py": {
+      "bytes": 3091,
+      "sha256": "6b3d0d7574e08d03601874dbcee50392c17d957c9a6535fa32830bfb7b02e709",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/run-recovery-stage.py"
+    },
+    "root/run-release-verbose.py": {
+      "bytes": 2135,
+      "sha256": "ad30801ee334281ed94cef2a2a0ae7fcfab82d09f0c97f3a13ff8497e5aeb9eb",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/run-release-verbose.py"
+    },
+    "root/run-release.py": {
+      "bytes": 2077,
+      "sha256": "c55242c74e6cd724e5edb52b555452cbaae320e373a80d07c4dd1d87e161db56",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/run-release.py"
+    },
+    "root/run-source.py": {
+      "bytes": 1866,
+      "sha256": "e23410bb1003f5d8c198d12546cb423b1ccb8aafa1ce585aaf8e5f208bc8c8ba",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/run-source.py"
+    },
+    "root/source-commit.json": {
+      "bytes": 111,
+      "sha256": "8f75e0f4625d2c25a0fa6a7b6cc1a1108f50cf021b3bdeb119259e21420055d3",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/source-commit.json"
+    },
+    "root/source-correspondence-before-commit.json": {
+      "bytes": 25095,
+      "sha256": "090f942dc492f22358d2be17246bfd7e416595a7f6f455987ca510b5654b29c0",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/source-correspondence-before-commit.json"
+    },
+    "root/source-first.log": {
+      "bytes": 305,
+      "sha256": "1ca38d82320922f05c630957040c74f26e1080958aca4a46a5e8c3dfc89cb83e",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/source-first.log"
+    },
+    "root/source-invocation.json": {
+      "bytes": 657,
+      "sha256": "c541bc16d8b776e735ffa5e1fc9c5006b3ad54b6733e1dfa8d6d8ce0dd1390c0",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/source-invocation.json"
+    },
+    "root/source-readback.json": {
+      "bytes": 3021,
+      "sha256": "3d51cc6cd423eefc31f0d085b2888b7c89ede96d6430de307f465e0038e29754",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/source-readback.json"
+    },
+    "root/source-result.json": {
+      "bytes": 6140,
+      "sha256": "f61d88638fbf55e4a9a7db5c627fe17f68415244036c05b4882e4a0a5b6e9a36",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/source-result.json"
+    },
+    "root/source-terminal.json": {
+      "bytes": 266,
+      "sha256": "e8251e95b061482de0ebe35ea6ae64c4ef47ca3948c8903d781c99b75cf12e00",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/source-terminal.json"
+    },
+    "source-gate/cache-clean.stderr": {
+      "bytes": 2253,
+      "sha256": "80744480468ae0b8a90e18efc2ef4a30983ea0533f3824785face338d248593c",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/cache-clean.stderr"
+    },
+    "source-gate/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/cache-clean.stdout"
+    },
+    "source-gate/cache-metadata.json": {
+      "bytes": 27401,
+      "sha256": "c8c4266ef0cc5463b8124945930e56bc30494a02391f67f09d89aa060c366649",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/cache-metadata.json"
+    },
+    "source-gate/cache-metadata.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/cache-metadata.log"
+    },
+    "source-gate/cache-safety.json": {
+      "bytes": 58546,
+      "sha256": "25f7aeaf291830e0f002d3058e00e77a4f81cf47dd89355079074b81b73ea23b",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/cache-safety.json"
+    },
+    "source-gate/default-clippy.stderr": {
+      "bytes": 297510,
+      "sha256": "e2d9dc3b1341b4b4866569092f2610b2623fb3681d2689cd8f6dc6ce60a61ee7",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/default-clippy.stderr"
+    },
+    "source-gate/default-clippy.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/default-clippy.stdout"
+    },
+    "source-gate/default-compile.stderr": {
+      "bytes": 378898,
+      "sha256": "799177a84bcebe093a1fbffec5ffb9e725b9031f1924a1ef2fc4a97e148d298e",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/default-compile.stderr"
+    },
+    "source-gate/default-compile.stdout": {
+      "bytes": 231294,
+      "sha256": "605980a80de242af6483f2ea6f8c3e212741d5b5dcdf2527d2d416affe60fed9",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/default-compile.stdout"
+    },
+    "source-gate/default-tests.stderr": {
+      "bytes": 18642,
+      "sha256": "679c0dc9124e816e00a4ae2a10e1a1b9e1ce1e267e29fb701a4fb891c3d2b220",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/default-tests.stderr"
+    },
+    "source-gate/default-tests.stdout": {
+      "bytes": 63604,
+      "sha256": "5c6d5a92c1f059eaf2105e5c77338ca5966e146ff76ab853682b4a4de990be10",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/default-tests.stdout"
+    },
+    "source-gate/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/format.stderr"
+    },
+    "source-gate/format.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/format.stdout"
+    },
+    "source-gate/observer-clippy.stderr": {
+      "bytes": 48420,
+      "sha256": "b7a8683824a29b41741e525049283faa8098ad806f47a12f51d89629b5c3bab6",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/observer-clippy.stderr"
+    },
+    "source-gate/observer-clippy.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/observer-clippy.stdout"
+    },
+    "source-gate/observer-compile.stderr": {
+      "bytes": 39714,
+      "sha256": "1227655be3a67b192905a4d52c442a05694d1bc7adad27bf3f6063e829bc9f0f",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/observer-compile.stderr"
+    },
+    "source-gate/observer-compile.stdout": {
+      "bytes": 217317,
+      "sha256": "181ef2b61f9463611b581be6496b2bb12445315c5d1c37e18d69decd0315a316",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/observer-compile.stdout"
+    },
+    "source-gate/observer-tests.stderr": {
+      "bytes": 11483,
+      "sha256": "a7b9fa6da82a3643e6b369a2a6798218ac504ea2f9d5611187039f58a5788525",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/observer-tests.stderr"
+    },
+    "source-gate/observer-tests.stdout": {
+      "bytes": 39039,
+      "sha256": "6b51a5837a179d726eb89fbdebca1ad9c548468666b3a160fc59b17ccad0d2cb",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/observer-tests.stdout"
+    },
+    "source-gate/result.json": {
+      "bytes": 2568,
+      "sha256": "d8f5d04c8e1302db6e531876e95979d8f2e2dbb90f833e43eea3f91738f43e18",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/result.json"
+    },
+    "source-gate/sources-after.json": {
+      "bytes": 71753,
+      "sha256": "9fd640b400856752d89ffa4ffad3cf604605bd645c6443d44b057cdd3fff1944",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/sources-after.json"
+    },
+    "source-gate/sources-before.json": {
+      "bytes": 71753,
+      "sha256": "9fd640b400856752d89ffa4ffad3cf604605bd645c6443d44b057cdd3fff1944",
+      "source": "/tmp/kv9-thin-lto-main-integration-source-first/sources-before.json"
+    },
+    "verbose-build/build.json": {
+      "bytes": 72507,
+      "sha256": "582ee4f5840aa8cf04168ee8aeffe92250ed0807ee3f53aea93b25d3494b809d",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/build.json"
+    },
+    "verbose-build/cache-clean.stderr": {
+      "bytes": 3748,
+      "sha256": "63d34f2bf28a7e4aaa2006ca50de214f423127392e365baad1556cea7895fff6",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/cache-clean.stderr"
+    },
+    "verbose-build/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/cache-clean.stdout"
+    },
+    "verbose-build/cache-metadata.json": {
+      "bytes": 27401,
+      "sha256": "c8c4266ef0cc5463b8124945930e56bc30494a02391f67f09d89aa060c366649",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/cache-metadata.json"
+    },
+    "verbose-build/cache-metadata.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/cache-metadata.log"
+    },
+    "verbose-build/cache-safety.json": {
+      "bytes": 21997,
+      "sha256": "5751e4796ab0b430d92d66c12a8ca046be2c2b9fbc1cf616b6ec59c942517564",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/cache-safety.json"
+    },
+    "verbose-build/kv9-build.log": {
+      "bytes": 8701,
+      "sha256": "4889a3302194052ad0c25b800aa81eb99e1094695af93f061ae15caaf1a43722",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/kv9-build.log"
+    },
+    "verbose-build/kv9-cargo.jsonl": {
+      "bytes": 212090,
+      "sha256": "35d9ddcda68e7e86289838f7a859665d8ee8ed867ed5e0667811cac4553afd16",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/kv9-cargo.jsonl"
+    },
+    "verbose-build/workload/build.json": {
+      "bytes": 487,
+      "sha256": "631d75993bd8dc7e502117cc44161de1ceaf75e04e4ff4850e5e57a1433b7df7",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/workload/build.json"
+    },
+    "verbose-build/workload/build.log": {
+      "bytes": 19863,
+      "sha256": "d13d46a4b18a468f696b96cd2db9bcf95af1b8b9cbd9f582723e7ab12dd1d32c",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/workload/build.log"
+    },
+    "verbose-build/workload/cargo.jsonl": {
+      "bytes": 209078,
+      "sha256": "55bfea8199605014705f43d6367c60b52ad1ea3867fb6a8fad2c86bce550ae64",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/workload/cargo.jsonl"
+    },
+    "verbose-build/workload/sources.json": {
+      "bytes": 68184,
+      "sha256": "80eeb6bdb543d428bb0645f991614dde72217882ac4828a4c0f2db2430dc546e",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/workload/sources.json"
+    }
+  },
+  "omitted": [
+    {
+      "bytes": 16141024,
+      "name": "initial-build/kv9",
+      "payload_not_read_or_hashed": true,
+      "reason": "non-reporting payload/archive/binary type",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/kv9"
+    },
+    {
+      "bytes": 3420912,
+      "name": "initial-build/workload/kv9-batch-workload",
+      "payload_not_read_or_hashed": true,
+      "reason": "non-reporting payload/archive/binary type",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-first/workload/kv9-batch-workload"
+    },
+    {
+      "bytes": 16141024,
+      "name": "verbose-build/kv9",
+      "payload_not_read_or_hashed": true,
+      "reason": "non-reporting payload/archive/binary type",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/kv9"
+    },
+    {
+      "bytes": 3420912,
+      "name": "verbose-build/workload/kv9-batch-workload",
+      "payload_not_read_or_hashed": true,
+      "reason": "non-reporting payload/archive/binary type",
+      "source": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/workload/kv9-batch-workload"
+    },
+    {
+      "reason": "GitHub/API/credential filename; not opened",
+      "source": "/tmp/kv9-thin-lto-main-integration-root-first/issue9-integration-before.json"
+    },
+    {
+      "bytes": 0,
+      "name": "ordinary-recovery/batch-tonic-stream.stop",
+      "payload_not_read_or_hashed": true,
+      "reason": "non-reporting payload/archive/binary type",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-stream.stop"
+    },
+    {
+      "bytes": 0,
+      "name": "ordinary-recovery/batch-tonic-unary.stop",
+      "payload_not_read_or_hashed": true,
+      "reason": "non-reporting payload/archive/binary type",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/batch-tonic-unary.stop"
+    },
+    {
+      "reason": "payload/cache/symlink subtree; no traversal",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/data"
+    },
+    {
+      "bytes": 179,
+      "name": "ordinary-recovery/fixture/root.bin",
+      "payload_not_read_or_hashed": true,
+      "reason": "non-reporting payload/archive/binary type",
+      "source": "/tmp/kv9-thin-lto-main-integration-process-e2e-first/fixture/root.bin"
+    }
+  ],
+  "parts": [
+    {
+      "bytes": 565744,
+      "name": "evidence.tar.gz.001",
+      "sha256": "79f6688e17f64396e11af7ed1a13b3b0986996c74021070a5fe96eeddf5c772b"
+    }
+  ],
+  "required_actual_inputs": {
+    "audit_sha256": "c91a6cfab97d4e61d53bbc4022b45118c2f0be0a4e283c6b4da73dfeb8cd553b",
+    "audit_terminal": "/tmp/kv9-thin-lto-main-integration-root-first/audit-terminal.json",
+    "audit_terminal_sha256": "a9ea30d7fe0db771665a2884a51a38c8c9bf5dbb5f6f353311d74df429299b15",
+    "recovery_terminal": "/tmp/kv9-thin-lto-main-integration-root-first/recovery-terminal.json",
+    "recovery_terminal_sha256": "84eeabc8e262da8c09f4790c9204e5ac9dd5bbfc3ea0e155d6349f472b6ebb58",
+    "release_readback_sha256": "915590163978af3756e9c8307a14beb93322896a2edcd01dc1c44d7ae602be00",
+    "release_terminal": "/tmp/kv9-thin-lto-main-integration-root-first/release-verbose-terminal.json",
+    "release_terminal_sha256": "1ec1700d39cf10b9d91c6056f83bcb8ce5973de0126d543e7351db97b95885a8"
+  },
+  "revision": "11113f68f6a5df77da1ffb4fcec850953716ffa3",
+  "root_terminals": {
+    "audit": {
+      "audit_path": "/tmp/kv9-thin-lto-main-integration-recovery-preparation-verbose-first/results-first/audit.json",
+      "audit_sha256": "c91a6cfab97d4e61d53bbc4022b45118c2f0be0a4e283c6b4da73dfeb8cd553b",
+      "complete": true,
+      "execution_kind": "direct_tool_terminal",
+      "exit_code": 0,
+      "observed_terminal_ns": 1789216795435452366,
+      "result_path": "/tmp/kv9-thin-lto-main-integration-root-first/audit-result.json",
+      "result_sha256": "b1b985e7ecf4782f86f90608dfc7180811b68c65787d6524dd770cf103482bc7",
+      "root_session": null,
+      "tool_receipt": "373069",
+      "tool_result": {
+        "chunk_id": "373069",
+        "exit_code": 0,
+        "wall_time_seconds": 0.200469039
+      }
+    },
+    "recovery": {
+      "complete": true,
+      "exit_code": 0,
+      "observed_terminal_ns": 1789216778979550776,
+      "result_path": "/tmp/kv9-thin-lto-main-integration-root-first/recovery-result.json",
+      "result_sha256": "8b644b06ffb674549ea61ec3ccc451cc3d2946417d2b1ffea0160a8e45b42902",
+      "root_session": 56800,
+      "tool_receipt": "ea8c1a"
+    },
+    "release": {
+      "complete": true,
+      "exit_code": 0,
+      "observed_terminal_ns": 1789216651335908560,
+      "readback_path": "/tmp/kv9-thin-lto-main-integration-root-first/release-verbose-readback.json",
+      "readback_sha256": "915590163978af3756e9c8307a14beb93322896a2edcd01dc1c44d7ae602be00",
+      "readback_tool_receipt": "ce70ec",
+      "result_path": "/tmp/kv9-thin-lto-main-integration-root-first/release-verbose-result.json",
+      "result_sha256": "dfb15aab0f6a62b973eb8b47a7824c7b17fa5e881913ac1d67a4b6ee2d60a559",
+      "root_session": 15498,
+      "tool_receipt": "d570ea"
+    }
+  },
+  "scope": "Main integration source/build/ordinary recovery reporting only; not payload backup, new performance measurement, or new Chaos acceptance.",
+  "top_level": {
+    "README.md": {
+      "bytes": 2451,
+      "sha256": "c8df2ad375e98858422b687bb8ee4ecd97d026ccd7bf71eb629c4abb50d15982"
+    },
+    "verify.py": {
+      "bytes": 2279,
+      "sha256": "7b0a73a124e5dd5073ed1ffd3e2cf4ea93c4f1f87aa8963bfec4aee8ee19c993"
+    }
+  }
+}
