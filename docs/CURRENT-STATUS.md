@@ -58,11 +58,17 @@ receiver resumption at 42.449 us (37.47%). Those instrumented populations includ
 initialization/verification and do not establish pure network or scheduler time.
 Source `40f014f` and its two original diagnostic fixtures are qualified and pushed.
 
-The global queue hypothesis failed its complete screen. Next inspect actual
-point-stream per-request tasks/wakeups and quorum message handling, preserving
-all read, apply, admission, deadline and cancellation semantics. Do not carry
-`3338650`'s rejected setting into the next candidate. The read milestone remains
-open before dynamic multi-Raft and automatic splits.
+The [cross-branch experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) now links
+prior decisions, including earlier global-queue and persistent-stream-worker
+regressions. The latest single-owner and two-worker revisits stop before timing;
+they provide no new performance result. Scheduling rewrites require a new cause.
+The active distinct candidate tests ThinLTO and one release codegen unit while
+keeping the fixed clients and all runtime/consistency semantics unchanged.
+Its full release workspace checks pass 709 tests/doctests (23 existing ignored),
+formatting and all-target Clippy. The retained production build is source-bound with actual ThinLTO/codegen flags
+and panic unwinding verified; ordinary recovery and matched measurement remain
+pending.
+The read milestone remains open before dynamic multi-Raft and automatic splits.
 
 The earlier [notification comparison](COALESCED-OWNER-PERFORMANCE.md) remains
 historical accepted evidence: candidate `42e0117` improves c64 GET 1.123% and mixed
