@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/tmp/kv9-owner-poll-root-first/check-source.py", line 58, in <module>
+    main()
+  File "/tmp/kv9-owner-poll-root-first/check-source.py", line 26, in main
+    before = builder.snapshot()
+             ^^^^^^^^^^^^^^^^^^
+  File "/tmp/kv9-bounded-owner-poll/scripts/build-workload.py", line 45, in snapshot
+    raise RuntimeError("source inventory exceeds its byte bound")
+RuntimeError: source inventory exceeds its byte bound

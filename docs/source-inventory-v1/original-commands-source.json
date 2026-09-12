@@ -1,0 +1,121 @@
+{
+  "source_gate": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "default-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--workspace",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "check_cargo_artifacts": true
+    },
+    {
+      "name": "owner-poll-focused-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "owner_poll_"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "default-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--workspace"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "default-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "read-stage-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/read-stage-timing",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "check_cargo_artifacts": true
+    },
+    {
+      "name": "read-stage-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/read-stage-timing"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "read-stage-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--all-targets",
+        "--features",
+        "kv9-server/read-stage-timing",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "check_cargo_artifacts": false
+    }
+  ]
+}

@@ -11,6 +11,13 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_BINARY = 512 * 1024 * 1024
+# Published raw evidence remains part of the source identity. Account for its
+# opaque archives separately without relaxing ordinary source-file limits.
+MAX_SOURCE_FILE = 2 * 1024 * 1024
+MAX_SOURCE_TOTAL = 64 * 1024 * 1024
+MAX_EVIDENCE_FILE = 32 * 1024 * 1024
+MAX_EVIDENCE_TOTAL = 64 * 1024 * 1024
+HASH_CHUNK = 64 * 1024
 _cache_spec = importlib.util.spec_from_file_location('kv9_build_cache', ROOT / 'scripts/build_cache.py')
 cache = importlib.util.module_from_spec(_cache_spec)
 _cache_spec.loader.exec_module(cache)
@@ -30,20 +37,29 @@ def snapshot():
     if len(paths) > 10_000:
         raise RuntimeError("source inventory exceeds its file count bound")
     sources = {}
-    total = 0
+    totals = {False: 0, True: 0}
     for name in paths:
         path = ROOT / name
+        if path.is_symlink():
+            raise RuntimeError("source inventory requires regular files")
         if not path.exists():
             sources[name] = None  # A tracked deletion is part of a dirty build.
             continue
-        if path.is_symlink() or not path.is_file():
+        if not path.is_file():
             raise RuntimeError("source inventory requires regular files")
+        evidence = name.startswith('docs/') and name.endswith('/original-evidence.tar.gz')
+        file_limit = MAX_EVIDENCE_FILE if evidence else MAX_SOURCE_FILE
+        total_limit = MAX_EVIDENCE_TOTAL if evidence else MAX_SOURCE_TOTAL
+        digest = hashlib.sha256()
+        size = 0
         with path.open("rb") as stream:
-            data = stream.read(2 * 1024 * 1024 + 1)
-        total += len(data)
-        if len(data) > 2 * 1024 * 1024 or total > 64 * 1024 * 1024:
-            raise RuntimeError("source inventory exceeds its byte bound")
-        sources[name] = sha(data)
+            while data := stream.read(min(HASH_CHUNK, file_limit - size + 1)):
+                size += len(data)
+                totals[evidence] += len(data)
+                if size > file_limit or totals[evidence] > total_limit:
+                    raise RuntimeError("source inventory exceeds its byte bound")
+                digest.update(data)
+        sources[name] = digest.hexdigest()
     revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     dirty = bool(subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=all"], cwd=ROOT))
     return dict(revision=revision, dirty=dirty, sources=sources)

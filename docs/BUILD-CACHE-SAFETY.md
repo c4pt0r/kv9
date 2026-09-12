@@ -113,3 +113,28 @@ regression. Integration records remain at
 The inherited lock descriptor's behavior after owner death was reviewed in
 source, not exercised by this regression. Raw Cargo coordination remains an
 explicit limitation. No hosted CI was dispatched.
+## Retained evidence in source inventories
+
+The quorum capture publication exposed a pre-Cargo inventory failure: the two
+original evidence archives are 18,936,215 and 19,410,367 bytes, while ordinary
+source files are limited to 2 MiB each and 64 MiB combined. The full tree totals
+about 89 MiB. The original failed owner-poll source invocation is retained at
+[the original source receipt](source-inventory-v1/original-source-result.json); no compile or runtime test
+had started in that invocation.
+
+`build-workload.py` now hashes `docs/**/original-evidence.tar.gz` in 64-KiB
+chunks under a separate 32-MiB-per-archive / 64-MiB-combined archive budget.
+Every archive byte still contributes to the full source identity and the
+before/after comparison. Ordinary source limits and the 10,000-file limit
+remain unchanged. Other archive names and locations receive no allowance;
+live and dangling symlinks are rejected. These are source inventory limits,
+independent of runtime retention, timing and disk-reservation limits.
+
+Run `python3 -B scripts/check-source-inventory.py` for the seven local boundary
+controls. They require no Cargo, service, network access or hosted CI. Aggregate
+and archive overflow controls use smaller test-only limits; production limits
+remain fixed in the helper.
+
+The [seven control outcomes](source-inventory-v1/controls-output.log) passed on
+the first invocation. The [publication inventory](source-inventory-v1/inventory.json)
+retains the original failure and the exact revised helper/control source hashes.

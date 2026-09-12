@@ -1,0 +1,21 @@
+{
+  "complete": true,
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "python3",
+    "-B",
+    "/home/dongxu/kv9/scripts/check-source-inventory.py"
+  ],
+  "sources": {
+    "/home/dongxu/kv9/scripts/build-workload.py": "16fc5032211c1458f5a063204a70594956351ec604dcad0c7d51f6561dce7b2e",
+    "/home/dongxu/kv9/scripts/check-source-inventory.py": "607a585bfb690e00bb8f60566bf17a2ff9b378cede167be51b425514cde6d0ca"
+  },
+  "started_ns": 1789228557471975879,
+  "exit_code": 0,
+  "ended_ns": 1789228557585810957
+}

@@ -1,0 +1,29 @@
+{
+  "complete": false,
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "python3",
+    "/tmp/kv9-owner-poll-root-first/check-source.py"
+  ],
+  "script_sha256": "bdacc6918639aa76a9b9502fb8abe3edf90aef45c14f93802538cf84135a9146",
+  "started_ns": 1789228354263659610,
+  "initial_available_bytes": 111339995136,
+  "minimum_available_bytes": 85899345920,
+  "additional_consumption_ceiling_bytes": 17179869184,
+  "accounting": "Conservative decrease in available filesystem bytes, including unrelated host writers; 5-second samples",
+  "samples": [
+    {
+      "unix_ns": 1789228354264122083,
+      "available_bytes": 111339991040
+    }
+  ],
+  "pid": 832252,
+  "exit_code": 1,
+  "failure": "RuntimeError('source qualification failed')",
+  "ended_ns": 1789228354377562077
+}

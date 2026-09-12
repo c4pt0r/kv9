@@ -1,0 +1,12 @@
+test_archive_allowance_does_not_extend_other_paths (__main__.SourceInventoryTests.test_archive_allowance_does_not_extend_other_paths) ... ok
+test_archive_file_bound_is_enforced (__main__.SourceInventoryTests.test_archive_file_bound_is_enforced) ... ok
+test_archive_is_fully_hashed_and_byte_changes_change_identity (__main__.SourceInventoryTests.test_archive_is_fully_hashed_and_byte_changes_change_identity) ... ok
+test_live_and_dangling_symlinks_are_rejected (__main__.SourceInventoryTests.test_live_and_dangling_symlinks_are_rejected) ... ok
+test_ordinary_source_exact_limit_is_accepted (__main__.SourceInventoryTests.test_ordinary_source_exact_limit_is_accepted) ... ok
+test_source_and_archive_aggregate_bounds_are_independent (__main__.SourceInventoryTests.test_source_and_archive_aggregate_bounds_are_independent) ... ok
+test_tracked_deletion_remains_part_of_identity (__main__.SourceInventoryTests.test_tracked_deletion_remains_part_of_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.012s
+
+OK

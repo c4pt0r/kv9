@@ -1,0 +1,44 @@
+{
+  "files": [
+    {
+      "path": "controls-output.log",
+      "bytes": 1057,
+      "sha256": "ad1e946d4130fd1c3266d1989d26101e390ced4e95c465200bb26921ce715e91"
+    },
+    {
+      "path": "controls-result.json",
+      "bytes": 586,
+      "sha256": "da56bb0557107d6742c4a6c52f98e2d8ab6184a7078f97b25ea6c9de3d586a34"
+    },
+    {
+      "path": "original-check-source.py",
+      "bytes": 2429,
+      "sha256": "bdacc6918639aa76a9b9502fb8abe3edf90aef45c14f93802538cf84135a9146"
+    },
+    {
+      "path": "original-commands-source.json",
+      "bytes": 2299,
+      "sha256": "775c8f30078654d74e0f74b03f305fdb4c34a42049ce09818c203a197e978846"
+    },
+    {
+      "path": "original-run-source.py",
+      "bytes": 1851,
+      "sha256": "7b35ea2c36be97c0d3453889748c62a71a6618bdd67de0f456b79cc5633a2401"
+    },
+    {
+      "path": "original-source-first.log",
+      "bytes": 467,
+      "sha256": "f9f44ae0617560e0d58afc318ea43a131d144db11d5d4f2ca1a308d735049879"
+    },
+    {
+      "path": "original-source-invocation.json",
+      "bytes": 641,
+      "sha256": "8b3698690fd669e5c0a46328e494a23bfa46e9d3b6e33cff3afbb6b07943acfa"
+    },
+    {
+      "path": "original-source-result.json",
+      "bytes": 845,
+      "sha256": "4a881fc25f814c0269682034b508776cf5ce8ae9cf4bc3aa163265431a942efc"
+    }
+  ]
+}
