@@ -1,0 +1,10 @@
+{
+  "complete": true,
+  "files": 1280,
+  "decoded_bytes": 297938920,
+  "encoded_bytes": 29177277,
+  "parts": 14,
+  "inventory_sha256": "176760c613ca3193ecc1ff4b16a8ca6900e16615890eb5df04cb32f79f0cf19b",
+  "runtime_reaudit": false,
+  "payload_backup": false
+}
