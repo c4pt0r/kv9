@@ -12,6 +12,11 @@ source, client, workload and duration recorded in its linked report. Historical
 percentages must not be relabeled as current measurements. Accepted evidence
 does not itself imply a selected candidate or full industrial qualification.
 
+The current priority is [write performance against Redis with one primary and
+two replicas](WRITE-PERFORMANCE-NEXT.md). The v4 reference client and local
+correctness checks are complete; independent timing validation is next. Read
+optimization is held. No new QPS or lease performance result is established.
+
 The [leader-lease proof](LEADER-LEASE-PROOF.md) is a new design checkpoint:
 eight TLAPS lemmas / 23 obligations plus real-clock containment show how to
 remove per-read quorum RTT under explicit additional premises. The subsequent
@@ -37,6 +42,7 @@ adds no throughput, latency or Redis comparison result.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |
+| Slicing-by-eight engine CRC `e5662bb` | Existing isolated candidate to resume for writes on ThinLTO. Source-bound Lean equivalence and ordinary recovery pass on its historical base; no database performance or actual Chaos acceptance yet. [Qualification](https://github.com/c4pt0r/kv9/blob/65511010e2fda8adba04efd831a39bcdca1979a4/docs/CRC32-SLICING-QUALIFICATION.md). |
 | Independent per-request stream tasks `f2c4e85` | Retained; older c64 GET +38.15–38.93%, with better mean/p99. [Original report](https://github.com/c4pt0r/kv9/blob/cf5c87e/docs/PARALLEL-STREAM-GET-PERFORMANCE.md). |
 | Linux jemalloc `629bee4` | Held: older c64 GET +4.47% / +6.24% and better mean/p99, with aggregate mean voter RSS +23.1% / +25.9%. Larger working sets and mixed/write qualification remain necessary. [Report](https://github.com/c4pt0r/kv9/blob/d79ea48/docs/JEMALLOC-SERVER-PERFORMANCE.md). |
 | One RPC runtime worker `711631b` | Rejected for throughput/latency regression. [Report](https://github.com/c4pt0r/kv9/blob/99993db/docs/RPC-WORKER-SCREENING.md). |
@@ -107,8 +113,8 @@ a separate default build and 291-operation recovery (262 OK / 29 unknown).
 The new server/client reproduce the original executable hashes. The completed
 [fixed-rate write diagnosis](BATCH-WRITE-FIXED-RATE-RESULTS.md) preserves higher
 tails at both common offered rates and client-drop/scheduling limitations.
-Keep the original closed-loop result; the main next implementation investigation
-is the single-GET quorum path. A combination with notification candidate
+Keep the original closed-loop result; the active next phase is the
+[three-copy write comparison and optimization](WRITE-PERFORMANCE-NEXT.md). A combination with notification candidate
 `42e0117` requires its own matched qualification; historical percentages cannot
 be added.
 

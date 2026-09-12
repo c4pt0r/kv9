@@ -1,13 +1,9 @@
 # RawKV performance development path
 
-> Latest direction: [ThinLTO full72 qualification](RELEASE-THIN-LTO-FULL72.md)
-> and [main integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md) are complete.
-> ThinLTO is selected. The [32-us owner-poll screen](OWNER-POLL-PERFORMANCE.md)
-> rejects that candidate. The [leader-lease proof](LEADER-LEASE-PROOF.md) now
-> establishes a conditional path to zero per-read quorum RTT; runtime refinement,
-> clock qualification and actual lease Chaos acceptance remain open. Consult the
-> [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before another candidate.
-> Redis read parity and industrial gates remain open.
+> Latest direction: [write performance against three-copy Redis](WRITE-PERFORMANCE-NEXT.md).
+> Selected ThinLTO remains the baseline; read optimization and lease qualification
+> are held. Compare WAIT 1 and WAIT 2 with explicit acknowledgment semantics.
+> Preserve proof, actual Chaos Mesh and availability gates.
 
 Tracking: #13, #20 and #9. The product target is Redis-class performance for
 memory-resident RawKV data. Data residency, durable acknowledgement, replication
@@ -16,9 +12,10 @@ implementation while keeping each measured mode's guarantees explicit.
 
 ## Product sequence, updated 2026-09-12
 
-First bring client-visible memory RawKV throughput to Redis-class performance,
-then implement dynamic multi-Raft and automatic range partitioning/splits.
-The current GET/PUT/mixed rates remain below that target. Evaluate the same
+First optimize client-visible write throughput and latency toward Redis with
+one primary and two replicas, then implement dynamic multi-Raft and automatic
+range partitioning/splits. Read parity remains unachieved but is held as a
+separate concern under the latest product direction. Evaluate the same
 payloads, concurrency and resource budget with repeated paired Redis runs;
 report latency, refusals and unknown outcomes alongside throughput. Raft quorum,
 linearizable reads and committed/applied write acknowledgements are mandatory.

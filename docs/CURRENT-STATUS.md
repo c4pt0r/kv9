@@ -1,8 +1,10 @@
 # Development checkpoint — 2026-09-12
 
 Tracking: [#9](https://github.com/c4pt0r/kv9/issues/9). The target remains an
-industrial distributed database. Memory RawKV read performance comes before
-dynamic multi-Raft and automatic range splits.
+industrial distributed database. The active priority is now write throughput and
+latency approaching Redis with one primary and two replicas. Reads stay at the
+selected baseline; read parity is not a prerequisite for this write phase.
+See the [write comparison contract and executable plan](WRITE-PERFORMANCE-NEXT.md).
 
 ## Delivered foundation and product limits
 
@@ -18,7 +20,7 @@ core-protocol implementation proofs, the full actual Chaos Mesh failure matrix,
 independent host-failure acceptance, dynamic data groups and automatic splits
 remain open. An abstract proof or one-host fault run does not close these gates.
 
-## Current read-latency implementation
+## Held read-latency work
 
 The [32-us owner-poll screen](OWNER-POLL-PERFORMANCE.md) is complete and the
 candidate is rejected. All eight workload/repetition comparisons regress
@@ -102,7 +104,7 @@ fail their declared assertions; eight targets pass before mutation and after
 restoration. Real unary/streaming RPCs enter the lease path; deferred copies
 retain metadata and values across epoch changes. Default startup remains Safe
 ReadIndex. Qualified clocks, actual lease Chaos and matched performance remain
-next; there is still no lease performance result or checklist closure.
+open on the held lease path; there is still no lease performance result or checklist closure.
 
 The [explicit Linux clock adapter](LEASE-CLOCK.md) now supplies BOOTTIME samples
 under caller-declared drift and sample-error bounds. Installation rejects
@@ -205,7 +207,7 @@ write tails and client scheduling/drop limitations; it does not replace the
 original closed-loop result. The
 [quorum-path plan](QUORUM-LATENCY-NEXT.md) now maps exact source
 boundaries and rejects ambiguous repeated-context/route-generation timing.
-Keep notification candidate `42e0117` separate. Redis read parity remains open
+Keep notification candidate `42e0117` separate. Redis read parity remains unachieved; the new write phase takes priority
 before dynamic multi-Raft and automatic splits.
 
 The earlier [notification comparison](COALESCED-OWNER-PERFORMANCE.md) remains
@@ -253,31 +255,28 @@ isolated GET improvement. Original setup/reader failures remain published.
 
 ## Next development steps
 
-1. **Reduce isolated GET latency:** bind the [tested lease controller](LEASE-CONTROLLER.md)
-   to unique peer ownership, actual votes/pump publication and exact read views,
-   then refine and qualify the candidate. Preserve the selected Safe ReadIndex baseline. For its
-   existing path, reuse the selected-build CPU-profile fixture and completed
-   quorum trace before another rewrite. Current evidence does not justify
-   another worker-count/transport sweep or a repeat of the rejected poll budget.
-2. **Retain the write-tail problem and separate arrival calibration:** the fixed
-   offered-load diagnosis is complete, with higher ThinLTO p99 and nonzero client
-   drops. Check the pinned client's timer/strided-slot fidelity separately before
-   claiming matched work or a server-specific cause. Preserve the original
-   results. Keep `42e0117` separate; combinations require their own qualification.
-3. **Qualify useful improvements:** applicable proof mapping, full point/batch
-   checks and actual exact-source Chaos Mesh fault injection precede promotion.
-   Preserve fresh Safe ReadIndex, sealed groups, durable writes and complete
-   successful pump/apply/view fences. DPDK requires cross-host/NIC evidence.
+1. **Establish the three-copy write reference:** the version-4 Redis client adds
+   same-connection SET/MSET plus WAIT 1/2, one deadline and no uncertain-write
+   replay. [Local correctness evidence](redis-replication-reference-v1/README.md)
+   is complete; independent v4 performance validation and matched timing are next.
+2. **Optimize writes on selected ThinLTO:** reuse the proved slicing-by-eight CRC
+   experiment, then measured allocation/batching/replication costs. Existing
+   engine and Raft Ready group commit remain in place. Preserve the documented
+   batch-write p99 problem and fixed-rate client drops.
+3. **Qualify improvements before promotion:** exact source proofs, complete API
+   regression checks and actual Chaos Mesh faults remain mandatory. Raft commit,
+   durable apply, bounded ownership and response fences cannot be weakened.
 4. **Close industrial correctness and availability:** compose implementation
-   proofs, remote admission bounds, persistence failure cuts and the actual Chaos
-   matrix. Metadata, routing and scheduling must have no service-critical
-   singleton; only the object-store dependency is exempt. Local Kind cannot
-   establish independent host loss.
-5. **Scale out after the read milestone:** bounded RegionManager/dynamic multi-Raft
-   (#22), epoch-fenced routing (#23), recoverable learner attachment/membership
-   (#24), then durable split intent, ownership fencing, data handoff and
-   idempotent recovery (#25). Follow with placement and independent-hotspot
-   scaling (#27), retaining prerequisites in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md).
+   proofs, persistence failure cuts and actual fault histories. Metadata, routing
+   and scheduling must have no service-critical singleton; only object storage
+   is exempt. Local Kind cannot establish independent host loss.
+5. **Scale out after the write phase:** bounded RegionManager/dynamic multi-Raft
+   (#22), epoch routing (#23), recoverable membership (#24), automatic splits
+   (#25), then placement (#27), retaining storage and proof prerequisites.
+
+The [write plan](WRITE-PERFORMANCE-NEXT.md) defines the 24-cohort comparison and
+separates replication confirmation from fsync and Raft consistency. Read/lease
+optimization is held; no lease performance or new Redis QPS result is claimed.
 
 Earlier held [inbox-vector](https://github.com/c4pt0r/kv9/blob/51efc6598324c10c1e27cd6fef869d4b9a39e7c4/docs/INBOX-VECTOR-REUSE-PERFORMANCE.md),
 [Append-payload](https://github.com/c4pt0r/kv9/blob/381d0973c078522d3698a922ecac8594cc9df348/docs/RAFT-APPEND-PAYLOAD-PERFORMANCE.md),

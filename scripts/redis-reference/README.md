@@ -1,5 +1,12 @@
 # Local Redis reference comparison
 
+The new `kv9-redis-batch-reference` v4 client supports a primary with two replicas,
+including same-connection SET/MSET plus WAIT 1/2 and replication-confirmation
+latency. See the [comparison contract and next steps](../../docs/WRITE-PERFORMANCE-NEXT.md)
+and [local correctness evidence](../../docs/redis-replication-reference-v1/README.md).
+The existing standalone fixture below retains its original scope. Its reader and
+lifecycle checks do not yet qualify a three-copy v4 performance campaign.
+
 This bounded fixture compares a standalone Redis memory reference with three
 WAL-backed KV9 voters. It measures the current Raw KV hot path without changing
 KV9 acknowledgment, WAL, quorum, or read-barrier behavior. It is not a comparison

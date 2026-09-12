@@ -1,0 +1,110 @@
+# Write performance against three-copy Redis
+
+Updated: 2026-09-12. The current priority is write throughput and latency,
+targeting Redis with one primary and two replicas. Read optimization is held at
+the selected ThinLTO/Safe ReadIndex baseline. The experimental lease work and
+its remaining clock/Chaos gates are retained; read parity is not claimed and is
+no longer a prerequisite for this write phase.
+
+## Comparison contract
+
+| Panel | Successful call requires | Interpretation |
+| --- | --- | --- |
+| KV9, three voters | Existing Raft commit, durable apply and response fences | Preserve all current consistency and synchronization rules. |
+| Redis, primary + two replicas, WAIT 1 | SET/MSET OK and at least one replica acknowledgment on that connection | Primary replication-confirmed reference; two acknowledged copies, not Raft semantics. |
+| Redis, primary + two replicas, WAIT 2 | SET/MSET OK and both replica acknowledgments on that connection | Additional all-replica latency/throughput reference. |
+| Redis asynchronous replication | SET/MSET OK only | Optional separately labeled reference; never substitute it for WAIT results. |
+
+[WAIT](https://redis.io/docs/latest/commands/wait/) applies to preceding writes
+on the same connection and returns the actual acknowledgment count. It does not
+make Redis strongly consistent or provide replica fsync receipts. The installed
+Redis 7.0.15 lacks [WAITAOF](https://redis.io/docs/latest/commands/waitaof/), which
+requires Redis 7.2 or newer. A future fsync-confirmed panel needs a separately
+qualified version/configuration; even WAITAOF does not establish Raft semantics.
+
+The first performance panel will use KV9's normal synchronization calls on
+explicitly volatile tmpfs WAL and Redis with save disabled and appendonly=no.
+It isolates replication/protocol/CPU cost on one shared host. It cannot establish
+power-loss durability, independent host failure, cross-host capacity or equal
+durability. Keep actual disk costs in a separate panel. Preserve all historical
+standalone Redis measurements under their original configuration and hashes.
+
+## Implemented reference client
+
+`kv9-redis-batch-reference` version 4 adds mandatory, explicit
+`write_confirmation` configuration. For example, a point-write run includes:
+
+```json
+{
+  "version": 4,
+  "read_api": "get",
+  "write_api": "set",
+  "batch_size": 1,
+  "write_confirmation": {"kind": "wait", "replicas": 1, "timeout_ms": 100}
+}
+```
+
+This fragment supplements the existing address, deadline, dataset, concurrency
+and bounded-load fields. Batch writes use mget/mset and batch_size=64.
+`{"kind":"async"}` selects explicit asynchronous acknowledgment. WAIT counts
+must be 1 or 2; its nonzero timeout cannot exceed the original call deadline.
+Null, missing v4 confirmation and unknown fields are rejected.
+
+Each worker permits one logical call in flight on one persistent connection.
+It sends the data command and WAIT together, consumes both responses and uses
+one absolute deadline. There is no additional artificial client round trip,
+no second connection for confirmation and no retry of an uncertain write.
+A short acknowledgment count is `replication_shortfall` in the `unknown_write`
+population. A timeout, lost response or malformed confirmation cannot turn the
+preceding OK into a successful logical write. Reads issue no WAIT.
+
+Reports retain whole-call/dispatch latency histograms, separate command and
+confirmation attempts, actual replica acknowledgment counts and their combined
+RESP command count. One SET+WAIT is one logical call and two RESP commands;
+one MSET(64)+WAIT is one logical call and 64 input items. Attempt counters record
+client send attempts, not guaranteed server execution. Version 1–3 input and
+metric shapes stay compatible. The current tree also restores the exact v3
+point GET/SET implementation from `0be806d9671e2c50701a64aa7889c8859b7648ba`,
+which was already used by the retained matched point measurements.
+
+[Local validation and original evidence](redis-replication-reference-v1/README.md)
+cover real three-process SET/MSET confirmation, replica pause/shortfall controls,
+unknown-write/deadline/framing tests and backward report compatibility. This
+checkpoint provides no new QPS result and changes no KV9 runtime algorithm.
+The v4 independent performance-report reader and matched timing remain next.
+
+## Executable development order
+
+1. Extend the independent report reader for v4 accounting and rejection controls.
+   Freeze a clean release client, the selected KV9 binary, Redis executable,
+   three-node configuration, CPU allocation and finite workload protocol.
+   Reuse the current source-bound build lock and retention/disk guards.
+2. Run SET/Put and MSET/BatchPut(64), concurrency 1 and 64, 128-byte values,
+   10-second windows and two opposite target orders. KV9, Redis WAIT 1 and
+   Redis WAIT 2 give 24 timed cohorts, with fresh smoke checks and datasets.
+   Preserve every attempted cohort. Report successful calls/s, items/s,
+   mean/p50/p95/p99, unknown writes, errors, drops and client/server CPU.
+   No build, profiling or artifact compression may overlap timing.
+3. Resume the existing [slicing-by-eight CRC candidate and proof](https://github.com/c4pt0r/kv9/blob/65511010e2fda8adba04efd831a39bcdca1979a4/docs/CRC32-SLICING-QUALIFICATION.md).
+   It preserves the checksum polynomial and WAL bytes; it already has a
+   source-bound Lean equivalence proof and ordinary recovery evidence on its
+   historical base. Rebase the isolated change onto selected ThinLTO and check
+   the exact new source. Historical kernel timings are not a database speedup.
+   Existing engine and Raft Ready group commit must not be reimplemented.
+4. Compare the isolated candidate with the frozen write baseline. Qualify useful
+   improvements with full point/batch regression coverage, applicable exact
+   source proofs, ordinary recovery and actual Chaos Mesh fault histories before
+   default promotion. Preserve loaded batch-write p99 and fixed-rate client-drop
+   limitations; an aggregate throughput gain alone is insufficient.
+5. Continue with measured checksum, allocation, batching and replication costs.
+   Use the retained profiles before collecting a necessary current-source profile;
+   do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC
+   evidence. A real-disk panel must retain every sync and acknowledgment rule.
+6. After the write phase, return to bounded dynamic multi-Raft (#22), epoch routing
+   (#23), recoverable membership (#24), automatic splits (#25) and placement
+   (#27), with their existing storage/recovery/proof prerequisites. Metadata and
+   scheduling must be replicated or safely replaceable. Only object storage may
+   be a service-critical singleton.
+
+CI remains local. GitHub CI is reserved for releases or explicitly selected key
+milestones. This client checkpoint closes no original industrial work package.
