@@ -4,8 +4,9 @@ The complete 72-cohort comparison supports advancing candidate `02d0c01` to
 main integration. All 12 workload/concurrency cells improve throughput and
 mean latency against CRC, in both run orders. There is one tail tradeoff:
 loaded batch-only writes have a higher pooled p99. Keep that result visible;
-this is not an across-the-board latency win. Main still selects CRC until
-fresh integration checks complete.
+this is not an across-the-board latency win. [Fresh main integration](RELEASE-THIN-LTO-MAIN-INTEGRATION.md)
+now passes; selected `11113f6` reproduces the qualified server/client bytes.
+The measurements below retain their original source and execution identity.
 
 ## Same-run results
 
@@ -113,18 +114,19 @@ corrected before the successful smoke. No timed cohort was retried.
 
 The exact candidate's [709 local tests and ordinary recovery](RELEASE-THIN-LTO-VALIDATION.md)
 and [21-window actual Chaos Mesh acceptance](RELEASE-THIN-LTO-CHAOS.md) retain
-their original scope. Fresh main-source confirmation remains required before
-promoting a main executable. No hosted CI was dispatched.
+their original scope. Fresh main-source/default-build/recovery confirmation
+is now complete in `11113f6`; no new timing or Chaos campaign is inferred.
+No hosted CI was dispatched.
 
 ## Next development steps
 
-1. Integrate the exact qualified profile and default-off observer source into
-   an isolated main worktree. Confirm runtime/build source equality, full local
-   workspace release checks, the explicit observer-feature Clippy gap, a fresh
-   default retained build and ordinary recovery. Publish the batch-write tail
-   tradeoff with that selection; preserve all original receipts.
-2. Investigate the batch-write tail with a separately frozen common offered
-   load to distinguish increased saturation/work volume from implementation
+1. **Completed:** integrate the exact qualified profile/default-off observer
+   source as `11113f6`. Fresh workspace/observer release checks, both Clippy
+   configurations, a separate default build and ordinary recovery pass. The
+   server/client executable hashes reproduce the original qualified artifacts.
+   Preserve the batch-write tail tradeoff and original experiment identity.
+2. Investigate the batch-write tail with a separately frozen [common offered
+   load](BATCH-WRITE-TAIL-NEXT.md) to distinguish increased saturation/work volume from implementation
    cost. This is a new hypothesis, not a rerun of the same closed-loop test to
    replace its result. Keep acknowledgement boundaries unchanged and measure
    operation-specific tails and outcome accounting.

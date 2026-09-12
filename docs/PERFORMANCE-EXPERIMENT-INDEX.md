@@ -6,7 +6,8 @@ main tree. Searching only current files missed prior rejected scheduling work.
 That omission caused unnecessary implementation/check work in the latest turn;
 the repeated prototypes are retained below and stopped before new timing.
 
-Selected runtime remains CRC `ca0002c7`. Each result below applies only to the
+Main now selects [ThinLTO `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md), with
+the same executable bytes as qualified `02d0c01`. Each result below applies only to the
 source, client, workload and duration recorded in its linked report. Historical
 percentages must not be relabeled as current measurements. Accepted evidence
 does not itself imply a selected candidate or full industrial qualification.
@@ -30,7 +31,7 @@ does not itself imply a selected candidate or full industrial qualification.
 | Separate outbound peer executor `36ae89a` | Rejected as the next increment; retain complete latency/throughput tradeoffs. [Report](https://github.com/c4pt0r/kv9/blob/3ed8661/docs/PEER-EXECUTOR-ISOLATION-PERFORMANCE.md). |
 | Coalesced owner notifications `42e0117` | Experimental modest loaded-read/mixed improvement; isolated GET does not improve, broader API/Chaos gates remain. [Report](COALESCED-OWNER-PERFORMANCE.md). |
 | Fixed global queue interval eight on CRC `3338650` | Revisit of `c893834` under newer c1/c64 GET/mixed scope; rejected again, c64 GET -2.390%. [Complete report](GLOBAL-QUEUE-PERFORMANCE.md). |
-| ThinLTO and one release codegen unit `02d0c01` | Complete [full72 comparison](RELEASE-THIN-LTO-FULL72.md): all 12 point/batch cells improve throughput/mean in both orders; c1/c64 GET +6.806%/+8.465%. Loaded BatchPut pooled p99 worsens, explicitly retained. Exact-build [21-window Chaos](RELEASE-THIN-LTO-CHAOS.md) accepted; next fresh main integration checks. [Earlier screen](RELEASE-THIN-LTO-PERFORMANCE.md) remains separately scoped. |
+| ThinLTO and one release codegen unit `02d0c01` | Complete [full72 comparison](RELEASE-THIN-LTO-FULL72.md): all 12 point/batch cells improve throughput/mean in both orders; c1/c64 GET +6.806%/+8.465%. Loaded BatchPut pooled p99 worsens, explicitly retained. Exact-build [21-window Chaos](RELEASE-THIN-LTO-CHAOS.md) accepted; [fresh main integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md) now passes. [Earlier screen](RELEASE-THIN-LTO-PERFORMANCE.md) remains separately scoped. |
 
 ## Latest unmeasured prototypes
 
@@ -57,10 +58,13 @@ The ThinLTO candidate `02d0c01` now passes full workspace checks (709 tests,
 9,923 complete history operations. Full72 accepts 81,648,272 measured successes,
 240 exited lifetimes and 144 drains/bindings. Throughput and mean improve in all
 12 cells, with a loaded BatchPut p99 tradeoff. Keep the exact source and artifacts
-frozen while completing fresh main integration checks. Investigate the write
-tail at a common offered load without discarding the closed-loop result.
-Selected runtime remains CRC until integration completes. A combination with notification candidate `42e0117` requires its
-own matched qualification; historical percentages cannot be added.
+frozen. Main integration `11113f6` now passes fresh release and observer checks,
+a separate default build and 291-operation recovery (262 OK / 29 unknown).
+The new server/client reproduce the original executable hashes. Investigate
+the write tail at a [common offered load](BATCH-WRITE-TAIL-NEXT.md) without
+discarding the closed-loop result. A combination with notification candidate
+`42e0117` requires its own matched qualification; historical percentages cannot
+be added.
 
 After this qualification, use the [quorum-path plan](QUORUM-LATENCY-NEXT.md)
 to localize isolated-read latency. Reuse the existing body-handoff measurement;

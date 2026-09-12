@@ -9,8 +9,9 @@ dynamic multi-Raft and automatic range splits.
 The current foundation provides three-voter RawKV, self-hosted metadata,
 Raft-ordered durable writes, fresh linearizable ReadIndex reads, MinIO
 checkpoints, WAL-tail recovery, streaming RPC and atomic native batch APIs.
-Selected runtime behavior remains CRC `ca0002c7`; later main commits update
-build-cache safety and documentation. Experimental branches are not selected.
+Main now selects [ThinLTO integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md).
+The fresh default server reproduces the qualified candidate executable exactly.
+Other experimental branches remain separate.
 
 The full dataset still resides in RAM. Incremental bounded storage, complete
 core-protocol implementation proofs, the full actual Chaos Mesh failure matrix,
@@ -26,7 +27,7 @@ throughput **10.390%**. Loaded BatchPut(64) has a tail tradeoff: pooled p99 rise
 from **8.258–8.323 ms to 8.389–8.520 ms**, despite better throughput and mean.
 The other 11 pooled cells improve p99; all individual repetitions remain visible.
 
-| Same-run metric | Selected CRC | ThinLTO candidate | Redis |
+| Same-run metric | CRC baseline | Qualified ThinLTO | Redis |
 | --- | ---: | ---: | ---: |
 | c1 GET calls/s | 26,510.350 | 28,314.673 | 174,264.654 |
 | c1 GET mean us | 37.605 | 35.206 | 5.660 |
@@ -53,9 +54,14 @@ history operations** (9,371 OK / 35 refused / 517 unknown), positive fault
 effects, four fresh final drains and 33 server lifetimes / 25 containers
 confirmed exited or removed. Original failures retain their original scope.
 
-Next complete fresh main-source, default-build and recovery confirmation.
-Selected runtime remains CRC until that integration completes. The new result
-reaches **73.344% of Redis c64 GET throughput**; isolated GET mean remains
+[Fresh main integration](RELEASE-THIN-LTO-MAIN-INTEGRATION.md) now passes 709
+workspace tests (23 existing ignored), 438 observer-feature tests (1 ignored),
+formatting and both Clippy configurations. A separate default build reproduces
+the qualified server/client bytes; ordinary recovery accepts 291 operations
+(262 OK / 29 unknown), six fresh drains and seven exited lifetimes. All three
+voters retain the default 26 metrics. The missing verbose-build-log failure and
+its logging-only repair remain recorded. The original full72 result reaches
+**73.344% of Redis c64 GET throughput**; isolated GET mean remains
 **6.220 times Redis**. Read parity is not complete.
 
 Scope: fixed clients, default uninstrumented production builds, shared-host
@@ -77,12 +83,12 @@ The [cross-branch experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) now links
 prior decisions, including earlier global-queue and persistent-stream-worker
 regressions. The latest single-owner and two-worker revisits stop before timing;
 they provide no new performance result. Scheduling rewrites require a new cause.
-The ThinLTO candidate now passes source, ordinary recovery, complete72 broader
-point/batch performance and the 21-window exact-build fault gate. Local retention
-capacity and full original-byte auditing have completed. Advance to fresh main
-integration checks, preserving the loaded batch-write p99 tradeoff. Investigate
-that tail at a common offered load; do not replace the original closed-loop
-result. The [quorum-path plan](QUORUM-LATENCY-NEXT.md) now maps exact source
+ThinLTO is now integrated after the full72 comparison, original 21-window fault
+gate and fresh main-source/default-build/recovery confirmation. Original timing
+and Chaos receipts retain their source/build identities. Investigate the loaded
+batch-write tail with the [common offered-load plan](BATCH-WRITE-TAIL-NEXT.md);
+do not replace the original closed-loop result. The
+[quorum-path plan](QUORUM-LATENCY-NEXT.md) now maps exact source
 boundaries and rejects ambiguous repeated-context/route-generation timing.
 Keep notification candidate `42e0117` separate. Redis read parity remains open
 before dynamic multi-Raft and automatic splits.
@@ -132,12 +138,12 @@ isolated GET improvement. Original setup/reader failures remain published.
 
 ## Next development steps
 
-1. **Integrate the qualified candidate:** keep `02d0c01` frozen after accepted
-   full72 performance and exact-build Chaos. Confirm exact runtime/build source
-   correspondence, full local release checks, observer-feature Clippy and a
-   fresh default build/recovery before selecting main. Preserve the batch-write
-   tail tradeoff and investigate it at a common offered load. Keep `42e0117`
-   separate; any combination requires its own matched qualification.
+1. **Investigate the remaining batch-write tail:** ThinLTO `11113f6` is selected
+   after fresh local integration confirmation. Freeze the common offered-load
+   comparison, retain schedule-to-completion latency and dropped slots, and
+   distinguish equal offered rate from equal completed work. Preserve the
+   closed-loop tradeoff. Keep `42e0117` separate; any combination requires its
+   own matched qualification.
 2. **Reduce isolated GET latency:** localize serial RPC, owner-service and
    completion-wait costs with a bounded diagnostic. Preserve the selected shared
    executor and consensus boundaries; the current evidence does not justify

@@ -3,7 +3,8 @@
 > Latest direction: [ThinLTO full72 qualification](RELEASE-THIN-LTO-FULL72.md)
 > improves throughput and mean latency in all 12 point/batch cells and both orders.
 > C64 GET improves 8.465%; loaded BatchPut has a documented p99 tradeoff.
-> Advance `02d0c01` to fresh main integration checks. CRC remains selected. Consult the
+> [Main integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md) now passes fresh
+> local checks, default-build and recovery confirmation. Consult the
 > [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before another candidate.
 > Redis read parity and industrial gates remain open.
 
@@ -17,10 +18,11 @@ explicit dependencies, implementation steps and acceptance criteria. Track deliv
 The [current checkpoint](CURRENT-STATUS.md) records accepted ThinLTO full72
 performance and the exact-build Chaos matrix, including 9,923 complete history
 operations. The 36 smoke / 72 timed point/batch cohorts and independent audit
-now pass. Next confirm the exact qualified source in main with local release,
-observer-feature and fresh default-build/recovery checks. Preserve the loaded
-batch-write p99 regression and investigate it at a common offered load; the
-closed-loop result must not be replaced by a favorable rerun.
+now pass. Main now selects the exact qualified source after fresh local release,
+observer-feature and default-build/recovery checks. The retained server/client
+bytes match the original candidate. Preserve the loaded batch-write p99
+regression and follow the [common offered-load plan](BATCH-WRITE-TAIL-NEXT.md);
+the closed-loop result must not be replaced by a favorable rerun.
 Keep notification candidate `42e0117` separate; its gains cannot be added to
 ThinLTO's measurements. The [next latency investigation](QUORUM-LATENCY-NEXT.md)
 targets unresolved intervals inside a fresh quorum round, reusing completed
