@@ -303,6 +303,55 @@ async fn out_of_order_replies_correlate_to_exact_requests_on_one_generation() {
     );
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn pending_read_does_not_serialize_later_read_and_half_close_drains_both() {
+    let (entered, mut reads) = mpsc::unbounded_channel();
+    let backend = Arc::new(Backend {
+        read_gates: [(
+            b"held".to_vec(),
+            Arc::new(ReadGate {
+                entered,
+                dropping: None,
+            }),
+        )]
+        .into_iter()
+        .collect(),
+        ..Backend::default()
+    });
+    let api = Kv9Grpc::new(backend.clone());
+    let admission = api.admission();
+    let (server, address, permits) = one_slot_server(api).await;
+    let mut wire = wire_client(address).await;
+    let (send, receive) = mpsc::channel(2);
+    let mut replies = bounded(wire.exchange(request(ReceiverStream::new(receive))))
+        .await
+        .unwrap()
+        .into_inner();
+    send.send(frame(1, 0, get(b"held").encode_to_vec()))
+        .await
+        .unwrap();
+    let release = bounded(reads.recv()).await.unwrap();
+    send.send(frame(2, 0, get(b"ready").encode_to_vec()))
+        .await
+        .unwrap();
+    drop(send);
+    let ready = bounded(replies.message()).await.unwrap().unwrap();
+    assert_eq!(ready.id, 2, "pending read serialized a later ready request");
+    assert_eq!(ready.reply.unwrap().code, 0);
+    assert_eq!(permits.available_permits(), 0);
+    assert_eq!(admission.snapshot().in_flight, 1);
+    release.send(false).unwrap();
+    let held = bounded(replies.message()).await.unwrap().unwrap();
+    assert_eq!(held.id, 1, "half-close discarded an admitted read");
+    assert_eq!(held.reply.unwrap().code, 0);
+    assert!(bounded(replies.message()).await.unwrap().is_none());
+    drop(replies);
+    eventually(|| admission.snapshot().in_flight == 0 && permits.available_permits() == 1).await;
+    assert_eq!(admission.snapshot().encoded_bytes, 0);
+    assert_eq!(backend.calls.lock().unwrap().len(), 2);
+    stop(server).await;
+}
+
 async fn held_write_interruption(use_deadline: bool, batch: bool) {
     let (entered_tx, mut entered) = mpsc::unbounded_channel();
     let (release, receiver) = oneshot::channel();

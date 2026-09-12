@@ -5,9 +5,7 @@ use crate::grpc::{proto, Authenticator, Kv9Grpc};
 use crate::point_wire::{
     Handler, WireMetadata, WireReply, WireRequest, CHANNEL_LIMIT, CONNECTION_LIMIT, FRAME_LIMIT,
 };
-use futures_util::Stream;
-#[cfg(any(test, feature = "rpc-experiment"))]
-use futures_util::StreamExt;
+use futures_util::{stream::FuturesUnordered, Stream, StreamExt};
 use prost::Message;
 #[cfg(any(test, feature = "rpc-experiment"))]
 use std::io;
@@ -28,7 +26,7 @@ use tokio::{
 };
 use tokio::{
     sync::{mpsc, oneshot, OwnedSemaphorePermit, Semaphore},
-    task::{JoinHandle, JoinSet},
+    task::JoinHandle,
     time::{timeout_at, Instant},
 };
 #[cfg(any(test, feature = "rpc-experiment"))]
@@ -162,7 +160,10 @@ impl wire::point_stream_server::PointStream for Service {
         let shutdown = self.shutdown.clone();
         let stream_permit = permit.clone();
         let task = tokio::spawn(async move {
-            let mut jobs = JoinSet::new();
+            // Each stream polls its bounded concurrent handlers directly.
+            // Their wakeups coalesce onto this stream task rather than creating
+            // a separately scheduled Tokio task for every request.
+            let mut jobs = FuturesUnordered::new();
             let mut last_id = 0;
             let mut input_closed = false;
             loop {
@@ -172,11 +173,7 @@ impl wire::point_stream_server::PointStream for Service {
                 tokio::select! {
                     _ = shutdown.cancelled() => break,
                     _ = outgoing.closed() => break,
-                    joined = jobs.join_next(), if !jobs.is_empty() => {
-                        // A panicking handler invalidates this generation as
-                        // before. Dropping the set aborts all remaining jobs.
-                        if !matches!(joined, Some(Ok(()))) { break; }
-                    },
+                    _ = jobs.next(), if !jobs.is_empty() => {},
                     received = async {
                         // The reservation travels with the handler until its
                         // reply is queued. Running + buffered replies <= limit.
@@ -203,7 +200,7 @@ impl wire::point_stream_server::PointStream for Service {
                         let deadline = Instant::now() + Duration::from_micros(frame.remaining_micros);
                         let handler = handler.clone();
                         let handler_permit = stream_permit.clone();
-                        jobs.spawn(async move {
+                        jobs.push(async move {
                             // Abort is cooperative. Keep this stream slot until
                             // the handler is actually dropped, even if the
                             // response stream and its owner have already gone.
@@ -224,8 +221,9 @@ impl wire::point_stream_server::PointStream for Service {
                     }
                 }
             }
-            // Dropping jobs aborts observation. Existing owned write completion
-            // retains its admission reservation until the exact apply settles.
+            // Closing or panicking this stream drops all concurrent futures.
+            // Existing owned write completion retains its admission reservation
+            // until the exact apply settles, independently of these observers.
         });
         Ok(Response::new(Replies {
             receiver,
