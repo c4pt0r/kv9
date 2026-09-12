@@ -171,9 +171,46 @@ impl fmt::Debug for WireRequest {
 pub(crate) struct Handler {
     pub(crate) api: Kv9Grpc,
     pub(crate) authenticator: Arc<dyn Authenticator>,
+    authorization_metadata: Option<Arc<MetadataMap>>,
 }
 
 impl Handler {
+    pub(crate) fn new(api: Kv9Grpc, authenticator: Arc<dyn Authenticator>) -> Self {
+        Self {
+            api,
+            authenticator,
+            authorization_metadata: None,
+        }
+    }
+
+    /// Retain one reconstructed singleton for this admitted stream only.
+    /// Authentication results are never cached. Opening-only headers and flags
+    /// must not become visible to the per-frame authenticator.
+    pub(crate) fn for_stream(&self, opening: &MetadataMap) -> Self {
+        let authorization_metadata = opening
+            .get("authorization")
+            .and_then(|value| value.to_str().ok())
+            .filter(|value| value.len() <= 4103)
+            .and_then(|value| Self::authorization_map(value).ok())
+            .map(Arc::new);
+        Self {
+            api: self.api.clone(),
+            authenticator: self.authenticator.clone(),
+            authorization_metadata,
+        }
+    }
+
+    fn authorization_map(authorization: &str) -> Result<MetadataMap, Status> {
+        let mut metadata = MetadataMap::new();
+        metadata.insert(
+            "authorization",
+            authorization
+                .parse()
+                .map_err(|_| Status::unauthenticated("invalid authorization"))?,
+        );
+        Ok(metadata)
+    }
+
     pub(crate) fn request<T: Message + Default>(
         &self,
         authorization: &str,
@@ -182,22 +219,33 @@ impl Handler {
         if authorization.len() > 4103 || payload.len() > crate::client::MAX_MESSAGE_BYTES {
             return Err(Status::resource_exhausted("frame exceeds point limits"));
         }
-        let mut metadata = MetadataMap::new();
-        metadata.insert(
-            "authorization",
-            authorization
-                .parse()
-                .map_err(|_| Status::unauthenticated("invalid authorization"))?,
-        );
-        let auth = self.authenticator.authenticate(&metadata)?;
+        let cached = self.authorization_metadata.as_deref().filter(|metadata| {
+            metadata
+                .get("authorization")
+                .is_some_and(|value| value.as_encoded_bytes() == authorization.as_bytes())
+        });
+        let mut owned = None;
+        let metadata = match cached {
+            Some(metadata) => metadata,
+            None => owned.insert(Self::authorization_map(authorization)?),
+        };
+        let auth = self.authenticator.authenticate(metadata)?;
         let message =
             T::decode(payload).map_err(|_| Status::invalid_argument("invalid point request"))?;
         let mut request = Request::new(message);
-        *request.metadata_mut() = metadata;
+        // Only the five directly dispatched Raw handlers receive this request.
+        // They consume the fresh AuthContext and protobuf, never metadata.
+        // Keep the original owned representation for uncached transports/frames.
+        if let Some(metadata) = owned {
+            *request.metadata_mut() = metadata;
+        }
         request.extensions_mut().insert(auth);
         Ok(request)
     }
 }
+
+#[cfg(test)]
+mod tests;
 
 impl Handler {
     pub(crate) async fn dispatch(self, operation: u8, request: WireRequest) -> WireReply {
