@@ -2808,6 +2808,8 @@ pub struct NodeRuntime {
     driver_thread: Option<std::thread::JoinHandle<()>>,
     remote_storage: Option<crate::remote_storage::RemoteStorage>,
     grpc_runtime: tokio::runtime::Runtime,
+    // Own the executor until public tasks and their transport references stop.
+    _peer_runtime: tokio::runtime::Runtime,
     #[cfg(feature = "rpc-experiment")]
     experimental_rpc: Option<crate::rpc_experiment::ExperimentalServer>,
     #[cfg(feature = "rpc-experiment")]
@@ -3123,15 +3125,24 @@ impl NodeRuntime {
         let grpc_runtime = tokio::runtime::Builder::new_multi_thread()
             .worker_threads(2)
             // Poll socket readiness while public handlers keep workers busy.
-            // Peer messages share this executor with the public RPC service.
+            // Inbound peer streams still share the public RPC listener.
             .event_interval(8)
             .enable_all()
             .build()
             .map_err(|error| Error::Config(format!("create gRPC runtime: {error}")))?;
+        // Outbound Raft tasks keep their original bounded queues and watchdogs,
+        // but do not compete with public handlers in the same runnable queue.
+        let peer_runtime = tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(1)
+            .thread_name("kv9-raft-tx")
+            .event_interval(8)
+            .enable_all()
+            .build()
+            .map_err(|error| Error::Config(format!("create Raft transport runtime: {error}")))?;
         let transport = GrpcTransport::new(
             id,
             Some(auth.cluster_token.clone()),
-            grpc_runtime.handle().clone(),
+            peer_runtime.handle().clone(),
             root.digest(),
         );
         for seed in &seeds {
@@ -3337,6 +3348,7 @@ impl NodeRuntime {
             driver_thread,
             remote_storage,
             grpc_runtime,
+            _peer_runtime: peer_runtime,
             public_admission,
             raft_io_metrics,
             metrics_exporter: crate::observability::MetricsExporter::new(&data_dir, id.0),
