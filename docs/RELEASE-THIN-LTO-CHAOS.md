@@ -122,11 +122,16 @@ p99. The current 24-cohort performance result remains unchanged.
 The new post-process compressed-retention preparation passes 53 tiny/helper
 controls: seven driver, 15 auditor and 31 retention controls. It compresses only
 after writer exit, independently decodes exact original bytes and verifies a
-combined smoke/timing capacity cap. It is not yet qualified on its deferred
-large synthetic file or a new performance runtime. Local disk capacity remains
-insufficient for the full campaign; bounded cache reclamation and separately
-verified historical cold retention are the next environment steps. No existing
-evidence is discarded, and no workload or storage floor is reduced.
+combined smoke/timing capacity cap. Its actual **1,073,741,841-byte** synthetic
+compression/independent-decode/fresh-restore qualification now passes
+(`70393/0`, `c603b7`). [Capacity and restore evidence](https://github.com/c4pt0r/kv9/blob/7d869009602919748a8cd8e920dade305e3072fb/docs/thin-lto-capacity-v1/README.md)
+retains 38 completed historical CRC transactions and an independently rehashed
+seven-file real WAL restore. The remaining 554 files / 8,482,763,491 logical
+bytes are cold; net payload allocation saving is 2,442,665,984 bytes, excluding
+metadata. Original full-input audits require rehydration first. The exact native
+cache cleanup also preserves binaries and invalidates affected Cargo build-script
+success markers before removing outputs. Further capacity remains necessary for
+the full performance runtime. No workload or storage floor is reduced.
 
 Full proof, fault, bounded-storage, host-availability and Redis-read-parity gates
 remain open before dynamic multi-Raft and automatic splits. All checks are local;

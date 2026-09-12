@@ -79,9 +79,11 @@ they provide no new performance result. Scheduling rewrites require a new cause.
 The ThinLTO candidate now passes source, ordinary recovery, the complete
 point-read/mixed screen above and the 21-window actual exact-build fault gate.
 Next complete 36 smoke / 72 timed broader point/batch cohorts. A post-process
-compressed-retention preparation passes 53 helper controls; large-file and
-actual capacity qualification are still required before runtime. Storage floors
-and workloads remain unchanged. Finish these gates before default promotion.
+compressed-retention implementation passes 53 helper controls and actual
+1,073,741,841-byte compression/decode/restore qualification. Its real CRC WAL
+restore pilot also passes; the linked Chaos report records the new historical
+cold-retention overlay. Further actual capacity is still required before runtime.
+Storage floors and workloads remain unchanged. Finish these gates before default promotion.
 Do not add its percentage to the separate notification candidate's historical improvement.
 The read milestone remains open before dynamic multi-Raft and automatic splits.
 
