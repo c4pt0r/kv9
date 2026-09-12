@@ -17,66 +17,58 @@ core-protocol implementation proofs, the full actual Chaos Mesh failure matrix,
 independent host-failure acceptance, dynamic data groups and automatic splits
 remain open. An abstract proof or one-host fault run does not close these gates.
 
-## Latest diagnosis and active experiment
+## Latest completed optimization experiment
 
-[Matched asynchronous read stages](READ-STAGE-RESULTS.md) now isolate the next
-performance work. In the c1 diagnostic lifecycle, quorum confirmation averages
-20.636 us (85.72% of the observed read wait); at c64, receiver resumption averages
-42.449 us (37.47%). These successful stage chains include initialization and
-verification, and are not measurement-only latency or new uninstrumented QPS.
+[Global queue polling at interval eight](GLOBAL-QUEUE-PERFORMANCE.md) is rejected:
+c64 GET throughput falls **2.390%**, with **2.450%** higher mean and worse p99 in
+both run orders. C1 GET and c64 mixed throughput also fall in both repetitions.
+Selected runtime remains CRC. The prior notification candidate remains separate;
+this screen does not compare the two candidates directly.
 
-Source `40f014f` passes default435/diagnostic438 tests and both Clippy variants.
-Two original fixtures pass independent acceptance with 1,811,433 measured
-single-attempt successes, eight exited lifetimes, six drains and 12 metric
-documents. The next candidate explicitly checks the RPC executor's global task
-queue every eight selections, targeting remote completion wakes while local
-RPC tasks stay busy. Its correctness/recovery/performance gates are in progress;
-no candidate is selected. The c1 quorum round trip remains a separate target.
-
-## Latest completed uninstrumented performance
-
-The [notification-coalescing screen](COALESCED-OWNER-PERFORMANCE.md) completes
-12 smoke and 24 timed cohorts using two opposite ten-second run orders, fixed
-v3 clients, 4,096 keys, 128-byte values and identical CPU placement. Candidate
-`42e0117` only suppresses duplicate owner wakes; selected runtime remains CRC.
-
-| Metric | Selected CRC | Notification candidate | Redis |
+| Same-run metric | Selected CRC | Rejected interval-eight | Redis |
 | --- | ---: | ---: | ---: |
-| c1 GET calls/s | 26,461.551 | 26,395.976 | 174,159.224 |
-| c1 GET mean us | 37.674 | 37.772 | 5.665 |
-| c1 GET p99 interval us | 50.176–50.687 | 50.176–50.687 | 7.360–7.423 |
-| c64 GET calls/s | 345,626.302 | 349,507.003 | 513,504.422 |
-| c64 GET mean us | 185.046 | 182.990 | 124.523 |
-| c64 GET p99 interval us | 352.256–356.351 | 331.776–335.871 | 229.376–231.423 |
-| c64 mixed combined calls/s | 171,594.529 | 176,278.501 | 503,716.521 |
-| c64 mixed GET mean us | 384.744 | 375.026 | 126.920 |
-| c64 mixed GET p99 interval us | 622.592–630.783 | 606.208–614.399 | 233.472–235.519 |
+| c1 GET calls/s | 26,542.953 | 26,391.062 | 174,382.402 |
+| c1 GET mean us | 37.562 | 37.779 | 5.658 |
+| c1 GET p99 us | 49.664–50.175 | 50.176–50.687 | 7.296–7.359 |
+| c64 GET calls/s | 346,069.116 | 337,799.779 | 511,088.898 |
+| c64 GET mean us | 184.807 | 189.335 | 125.114 |
+| c64 GET p99 us | 352.256–356.351 | 356.352–360.447 | 231.424–233.471 |
+| c64 mixed combined calls/s | 170,326.223 | 168,640.129 | 503,781.883 |
+| c64 mixed GET mean us | 387.535 | 390.292 | 126.912 |
 
-C64 GET throughput improves **1.123%** and mixed throughput **2.730%**, with
-better loaded/mixed GET mean and p99 in both repetitions. C1 GET is slightly
-slower: **-0.248% throughput / +0.260% mean**. C1 mixed moves in different
-directions across repeats. Keep this modest loaded-read candidate experimental;
-broader API measurements and actual exact-source Chaos remain pending. C1 mean
-is still about 6.67x Redis and c64 GET throughput about 68.1% of Redis.
+All 12 smoke and 24 timed cohorts complete, with **49,504,037 measured calls**
+succeeding in one attempt. Independent acceptance checks 80 exited lifetimes,
+48 fresh drains/bindings, 4,678 resource samples and exact CPU/namespace
+restoration. Seven driver/binding and 17 auditor contracts plus the statistics
+contract pass. No original runtime is rerun or omitted. [Correctness and ordinary
+recovery](GLOBAL-QUEUE-VALIDATION.md) pass 435 tests/doctests (one existing ignored),
+formatting/Clippy and full histories with 363 operations (330 OK / 33 unknown).
 
-All **49,944,895 measured calls** succeed in one attempt. Complete phase accounting
-retains initialization routing attempts. The independent audit accepts 80 exited
-lifetimes, 48 fresh drains/bindings, 4,679 resource samples and exact CPU/namespace
-restoration. Seven driver/binding and 17 auditor contracts pass. No runtime
-cohort was repeated or omitted. See the report for all four cells and both repeats.
+Scope: default-feature uninstrumented builds, shared-host loopback, ordinary
+three-voter quorum/sync on **tmpfs WAL**, versus standalone Redis without
+persistence/pipelining. No equal-durability, real-disk, cross-host or significance
+claim. Precisely reviewed obsolete debug intermediates supplied 6.06 GiB of
+space; original binaries, WAL, histories, sources and storage guards remain.
 
-[Local validation](COALESCED-OWNER-VALIDATION.md) passes 14 new TLAPS theorems /
-64 obligations plus unchanged scheduling dependency 33 / 294, 438 default
-Raft/Server tests/doctests (one existing ignored), 214 overlapping Raft testing
-tests/doctests, formatting/Clippy, and ordinary recovery with 369 operations
-(341 OK / 28 unknown). Three new concurrent tests cover producer/drain/stop races.
-This does not close full Rust/database proofs, candidate Chaos or host failure.
+## Diagnosis and next performance work
 
-Scope: shared-host loopback, ordinary three-voter quorum/sync on **tmpfs WAL**,
-versus standalone Redis with persistence/pipelining disabled. No equal-durability,
-real-disk, cross-host, sustained-capacity or statistical-significance claim.
-Root reclaimed only 8.14 GiB of obsolete debug intermediates to preserve the
-unchanged storage guards; original executables, evidence and WALs remain intact.
+[Matched asynchronous read stages](READ-STAGE-RESULTS.md) observe c1 quorum
+confirmation at 20.636 us (85.72% of the successful lifecycle read wait) and c64
+receiver resumption at 42.449 us (37.47%). Those instrumented populations include
+initialization/verification and do not establish pure network or scheduler time.
+Source `40f014f` and its two original diagnostic fixtures are qualified and pushed.
+
+The global queue hypothesis failed its complete screen. Next inspect actual
+point-stream per-request tasks/wakeups and quorum message handling, preserving
+all read, apply, admission, deadline and cancellation semantics. Do not carry
+`3338650`'s rejected setting into the next candidate. The read milestone remains
+open before dynamic multi-Raft and automatic splits.
+
+The earlier [notification comparison](COALESCED-OWNER-PERFORMANCE.md) remains
+historical accepted evidence: candidate `42e0117` improves c64 GET 1.123% and mixed
+throughput 2.730%, with no isolated GET improvement. It remains experimental
+pending broader API and actual Chaos qualification. Its proof/source/recovery
+scopes are retained in [the validation report](COALESCED-OWNER-VALIDATION.md).
 
 ## Completed diagnosis and rejected prototype
 
