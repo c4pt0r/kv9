@@ -6,7 +6,9 @@ release code generation only: ThinLTO and one codegen unit. Runtime source,
 consensus semantics and the fixed v3 measurement clients remain unchanged.
 
 This is a favorable experimental checkpoint. Selected runtime remains CRC
-`ca0002c7` until broader API and actual exact-build Chaos Mesh qualification.
+`ca0002c7` pending broader point/batch performance qualification. The exact build
+now passes the [21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md); that
+correctness run adds no new throughput or latency measurement.
 The read-performance milestone remains open before dynamic multi-Raft and
 automatic range splits. [Source and recovery validation](RELEASE-THIN-LTO-VALIDATION.md)
 has passed within its stated scope.
@@ -83,8 +85,11 @@ runtime-memory comparison. Compiler correctness remains a premise.
 1. Freeze this source, binary and complete result. Extend the existing matched
    protocol to the broader point/batch API matrix, retaining separate operation
    counts, means, p99 and equivalent acknowledgement boundaries.
-2. Qualify the exact candidate build with actual Chaos Mesh fault injection and
-   complete histories. Ordinary process recovery does not substitute for it.
+2. The exact-build [21-window Chaos gate](RELEASE-THIN-LTO-CHAOS.md) now passes:
+   9,923 complete history operations, positive effects, fresh drains and owned
+   cleanup. Preserve this scoped result and the original failed delay-selection
+   attempt. Dedicated link/FSYNC and broader industrial fault obligations remain
+   separate; ordinary process recovery does not substitute for actual injection.
 3. If those gates pass, promote the code-generation setting as its own change;
    evaluate combination with `42e0117` separately. Its historical notification
    improvement cannot be added to this percentage.

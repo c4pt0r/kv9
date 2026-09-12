@@ -3,7 +3,9 @@
 Candidate `02d0c01024b65a84b220c6948ff2224bfa7900bc` passes full-workspace release
 checks and ordinary streaming/unary process recovery. Its
 [performance screen](RELEASE-THIN-LTO-PERFORMANCE.md) is favorable. It remains
-experimental pending broader API and actual exact-build Chaos Mesh acceptance.
+experimental pending broader point/batch performance qualification. The exact
+build now also passes the [21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md),
+with 9,923 complete history operations and independently verified cleanup.
 
 ## Source and compiler scope
 
