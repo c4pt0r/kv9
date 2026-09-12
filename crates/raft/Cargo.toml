@@ -17,6 +17,11 @@ tokio-stream.workspace = true
 tonic.workspace = true
 tonic-prost.workspace = true
 
+[target.'cfg(target_os = "linux")'.dependencies]
+# Already locked through Tokio. Explicit clock_gettime/clock_getres error
+# handling for the optional Linux lease clock; no new package or default clock.
+libc = "=0.2.189"
+
 [features]
 # Protocol component under validation; does not enable lease reads in a server.
 experimental-leader-lease = []

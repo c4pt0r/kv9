@@ -1072,6 +1072,7 @@ version = "0.0.0"
 dependencies = [
  "kv9-common",
  "kv9-engine",
+ "libc",
  "prost",
  "protobuf",
  "raft",

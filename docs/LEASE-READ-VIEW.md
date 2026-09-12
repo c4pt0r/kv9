@@ -155,7 +155,9 @@ mismatch, and a fixture using a principal as the bearer token. The authenticatio
 failures did not exercise the lease read path and are not safety evidence.
 No production assertion, deadline, storage floor or command cap was relaxed.
 
-Next qualify a concrete clock contract through supported process/host pauses,
+The [concrete Linux clock adapter](LEASE-CLOCK.md) now checks explicit drift and
+sample-error bounds against the durable policy and passes actual process-pause
+expiration. Next qualify its physical contract through supported host/VM pauses,
 then run actual lease-enabled Chaos Mesh partition, delay, pause and restart
 histories, including asymmetric and application-message ordering cases. Obtain
 matched c1/c64 GET, mixed and batch throughput, mean and p99 only after those

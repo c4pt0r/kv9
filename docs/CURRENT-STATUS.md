@@ -10,7 +10,7 @@ The current foundation provides three-voter RawKV, self-hosted metadata,
 Raft-ordered durable writes, fresh linearizable ReadIndex reads, MinIO
 checkpoints, WAL-tail recovery, streaming RPC and atomic native batch APIs.
 Main now selects [ThinLTO integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md).
-The fresh default server reproduces the qualified candidate executable exactly.
+The last qualified default release reproduces that candidate executable exactly.
 Other experimental branches remain separate.
 
 The full dataset still resides in RAM. Incremental bounded storage, complete
@@ -103,6 +103,16 @@ restoration. Real unary/streaming RPCs enter the lease path; deferred copies
 retain metadata and values across epoch changes. Default startup remains Safe
 ReadIndex. Qualified clocks, actual lease Chaos and matched performance remain
 next; there is still no lease performance result or checklist closure.
+
+The [explicit Linux clock adapter](LEASE-CLOCK.md) now supplies BOOTTIME samples
+under caller-declared drift and sample-error bounds. Installation rejects
+insufficient timing margins before durable opt-in. Three SMT checks prove
+sampled-time containment, recovery and the shared margin; three weakened
+formulas produce countermodels. Its [local validation](lease-clock-v1/README.md)
+passes 593 library tests (one existing ignored), default restart protection,
+actual SIGSTOP/SIGCONT expiration, default/experimental compilation and Clippy.
+Physical rate/error calibration, host suspend/virtualization qualification and
+actual lease-enabled Chaos remain open before performance selection.
 
 ## Latest fixed-rate write diagnosis
 

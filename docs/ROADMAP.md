@@ -19,6 +19,9 @@
 > now binds grants and whole-pump publication. The [read-view integration](LEASE-READ-VIEW.md)
 > passes local source/service/fault controls with default startup still on Safe
 > ReadIndex; clock qualification and actual lease Chaos remain next.
+> The [explicit Linux clock](LEASE-CLOCK.md) now passes sampled-error arithmetic,
+> source tests and actual process-pause expiration. Physical clock/host-suspend
+> qualification and lease-enabled Chaos remain required before selection.
 > Redis read parity and industrial gates remain open.
 
 Updated: 2026-09-12. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
@@ -77,7 +80,10 @@ to experimental GET/BatchGet. Its local gate passes 586 tests (one existing
 server test ignored) and nine compiled source fault controls. Unary/streaming
 RPC traversal and deferred same-view metadata/value checks pass. Default startup
 remains Safe ReadIndex. Expired authority plus unavailable quorum fails closed.
-Next qualify the clock and actual fault histories before
+The [Linux clock adapter](LEASE-CLOCK.md) now checks an explicit drift/error
+contract against the durable policy. Its three arithmetic proof queries and
+three countermodels, 593 library tests and actual process-pause expiration pass.
+Next qualify physical clocks and supported host/VM pauses, then actual fault histories before
 matched throughput/latency comparison. See [the proof and implementation gates](LEADER-LEASE-PROOF.md).
 The product sequence remains memory RawKV read performance, then dynamic
 multi-Raft and automatic splits, without waiving storage/proof/fault prerequisites.
