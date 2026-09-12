@@ -8,11 +8,13 @@ active product milestone, followed by dynamic multi-Raft and automatic splits.
 The dependency index and proof/fault/availability gates below still apply;
 partial experimental results do not complete their broader work packages.
 
-The indexed-receipt read/mixed screen is complete: c64 mixed throughput gains
-2.775% and GET mean improves 2.924%, but pure c64 GET falls 0.411% with higher
-tails. Keep CRC selected. Next isolate indexed lookup while retaining original
-vector storage/eviction, then run focused correctness and the same read/mixed
-screen. Full workload/proof/Chaos acceptance remains required for promotion.
+The vector-only receipt lookup screen is complete: c64 mixed throughput gains
+2.589% and GET mean improves 2.711%, but pure c64 GET falls 0.349% and c1
+throughput/mean regress. Keep CRC selected. The new immutable stream metadata
+combination passes focused server checks and retains per-frame authentication.
+Next qualify exact-source recovery and pure/mixed performance; old isolated
+adapter gains do not transfer. Full workload/proof/Chaos acceptance remains
+required for promotion.
 
 <!-- kv9-roadmap-20260908:epic -->
 This is the execution tracker for evolving kv9 from its basic distributed Raw KV baseline into an industrial-grade distributed database. Priorities are consistency, recoverability, bounded resources, measured throughput and scalable ownership. Complex private-network TLS configuration is P4 work.

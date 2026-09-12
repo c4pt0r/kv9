@@ -7,10 +7,12 @@ The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 2
 explicit dependencies, implementation steps and acceptance criteria. Track delivery in
 [GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
 
-The [current checkpoint](CURRENT-STATUS.md) records the latest indexed-receipt
-read/mixed screen: repeatable mixed gains, with a small pure-GET regression.
-Keep CRC selected and isolate indexed lookup from the deque retention change
-next. The product sequence is memory RawKV read performance, then dynamic
+The [current checkpoint](CURRENT-STATUS.md) records the completed vector-only
+receipt lookup experiment: c64 mixed gains, with small pure-GET regressions.
+Keep CRC selected. The next candidate integrates immutable stream metadata
+reuse with current CRC/allocator/workers and retains fresh authentication per
+frame; current-combination performance and fault acceptance remain pending.
+The product sequence is memory RawKV read performance, then dynamic
 multi-Raft and automatic splits.
 This priority does not waive the storage, proof, fault or recovery prerequisites
 below. Preserve durable writes and fresh quorum reads; evaluate throughput and
