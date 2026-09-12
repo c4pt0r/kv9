@@ -6,12 +6,21 @@ latency approaching Redis with one primary and two replicas. Reads stay at the
 selected baseline; read parity is not a prerequisite for this write phase.
 See the [write comparison contract and executable plan](WRITE-PERFORMANCE-NEXT.md).
 
-The [latest write qualification](write-reference-qualification-v1/README.md)
-completes the independent Redis v4 reader and clean release. The isolated CRC
-candidate `e748620` passes fresh proof, 710 workspace tests/doctests (23 existing
-ignored), Clippy and ordinary recovery: 363 complete operations, including 26
-unknowns. Matched performance and actual candidate Chaos Mesh remain pending;
-there is no new accepted QPS result or default runtime change.
+The [three-node Redis write comparison](WRITE-REDIS3-BASELINE.md) now passes
+12 smoke and 24 timed cohorts: 18,993,624 measured successful calls, all with
+one data-command attempt, no errors, unknown writes or dropped slots. At c64,
+KV9 delivers 136,519.558 point writes/s versus Redis WAIT 1/2 at 229,760.166 /
+232,465.084. BatchPut(64) delivers 887,520.285 items/s versus about four million;
+KV9 batch p99 is 9.437–9.568 ms versus 1.245–1.294 ms. These are short,
+single-host volatile-storage comparisons, without equal durability.
+
+The [isolated CRC qualification](write-reference-qualification-v1/README.md)
+retains fresh proof, 710 workspace tests/doctests (23 existing ignored), Clippy
+and ordinary recovery: 363 complete operations, including 26 unknowns.
+Its exact-source point/pressure tools and four-binary Chaos image now build,
+probe and load successfully. Candidate A/B timing and actual Chaos Mesh remain
+pending; the selected runtime is unchanged. The baseline audit's smoke-schema
+repair and all original failures remain retained; no workload was rerun.
 
 ## Delivered foundation and product limits
 

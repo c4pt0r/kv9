@@ -13,10 +13,14 @@ percentages must not be relabeled as current measurements. Accepted evidence
 does not itself imply a selected candidate or full industrial qualification.
 
 The current priority is [write performance against Redis with one primary and
-two replicas](WRITE-PERFORMANCE-NEXT.md). The v4 reference client and local
-correctness, independent accounting and clean release checks are complete;
-matched timing is next. Read
-optimization is held. No new QPS or lease performance result is established.
+two replicas](WRITE-PERFORMANCE-NEXT.md). The [matched baseline](WRITE-REDIS3-BASELINE.md)
+now passes 12 smoke/24 timed cohorts and independent readback. At c64, selected
+KV9 reaches 136,519.558 point writes/s and 887,520.285 BatchPut(64) items/s;
+Redis WAIT 1/2 reach 229,760.166 / 232,465.084 point writes/s and about four
+million batch items/s. Preserve KV9's 9.437–9.568-ms loaded batch p99 and the
+volatile-storage/durability limits. This is a baseline, not a selected speedup.
+The CRC reapplication needs matched A/B and actual Chaos acceptance. Read
+optimization remains held; no lease performance result is established.
 
 The [leader-lease proof](LEADER-LEASE-PROOF.md) is a new design checkpoint:
 eight TLAPS lemmas / 23 obligations plus real-clock containment show how to

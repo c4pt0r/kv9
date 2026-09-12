@@ -22,8 +22,9 @@ Redis 7.0.15 lacks [WAITAOF](https://redis.io/docs/latest/commands/waitaof/), wh
 requires Redis 7.2 or newer. A future fsync-confirmed panel needs a separately
 qualified version/configuration; even WAITAOF does not establish Raft semantics.
 
-The first performance panel will use KV9's normal synchronization calls on
-explicitly volatile tmpfs WAL and Redis with save disabled and appendonly=no.
+The [first accepted performance panel](WRITE-REDIS3-BASELINE.md) uses KV9's
+normal synchronization calls on explicitly volatile tmpfs WAL and Redis with
+save disabled and appendonly=no.
 It isolates replication/protocol/CPU cost on one shared host. It cannot establish
 power-loss durability, independent host failure, cross-host capacity or equal
 durability. Keep actual disk costs in a separate panel. Preserve all historical
@@ -73,20 +74,21 @@ unknown-write/deadline/framing tests and backward report compatibility. This
 checkpoint provides no new QPS result and changes no KV9 runtime algorithm.
 The [independent v4 reader and clean release](write-reference-qualification-v1/README.md)
 now pass 44 Python tests, all four original client reports and 32 rejection
-controls. Fresh matched release smokes and timing remain next.
+controls. The subsequent [12 smoke and 24 timed cohorts](WRITE-REDIS3-BASELINE.md)
+now pass independent readback. All 18,993,624 measured calls succeed once;
+original failed audit and schema repair remain retained without workload reruns.
 
 ## Executable development order
 
-1. The independent v4 reader and clean release client are qualified for accounting
-   and build provenance. Finish freezing the selected KV9 binary, Redis executable,
-   three-node configuration, CPU allocation and finite workload protocol.
-   Reuse the current source-bound build lock and retention/disk guards.
-2. Run SET/Put and MSET/BatchPut(64), concurrency 1 and 64, 128-byte values,
-   10-second windows and two opposite target orders. KV9, Redis WAIT 1 and
-   Redis WAIT 2 give 24 timed cohorts, with fresh smoke checks and datasets.
-   Preserve every attempted cohort. Report successful calls/s, items/s,
-   mean/p50/p95/p99, unknown writes, errors, drops and client/server CPU.
-   No build, profiling or artifact compression may overlap timing.
+1. Completed: independent v4 accounting, clean releases and exact source/binary,
+   Redis three-node configuration, CPU and finite-protocol binding. Preserve
+   the current build lock, immutable inputs and original retention/disk guards.
+2. Completed: SET/Put and MSET/BatchPut(64), c1/c64, 128-byte values, ten-second
+   windows and two opposite orders, with 12 fresh smokes and 24 timed cohorts.
+   The [report](WRITE-REDIS3-BASELINE.md) includes successful calls/items per second,
+   mean/p50/p95/p99, all outcomes, drops and independently recomputed client/all
+   three-server CPU. No build, profiler or codec overlaps timing. Use these as
+   the selected write baseline; do not repeat runs to conceal failed attempts.
 3. The existing [slicing-by-eight CRC candidate and proof](https://github.com/c4pt0r/kv9/blob/65511010e2fda8adba04efd831a39bcdca1979a4/docs/CRC32-SLICING-QUALIFICATION.md)
    is now reapplied to selected ThinLTO as experimental `e748620`.
    It preserves the checksum polynomial and WAL bytes; it already has a
@@ -97,8 +99,13 @@ controls. Fresh matched release smokes and timing remain next.
    [Original qualification evidence](write-reference-qualification-v1/README.md)
    preserves the separate populations. Historical kernel timings are not a database speedup.
    Existing engine and Raft Ready group commit must not be reimplemented.
-4. Compare the isolated candidate with the frozen write baseline. Qualify useful
-   improvements with full point/batch regression coverage, applicable exact
+4. Next: run an initial selected-versus-CRC write screen with the same fixed
+   native v3 client: point Put/BatchPut(64), c1/c64, two opposite orders, eight
+   two-second smokes and sixteen ten-second timed cohorts. Reserve capacity
+   before launch; retain original 96-GiB preflight and every storage cap/floor.
+   Its exact-source Chaos image is built, probed and loaded; run and independently
+   audit the actual candidate fault histories. Qualify useful
+   improvements with full point/batch and mixed-read regression coverage, applicable exact
    source proofs, ordinary recovery and actual Chaos Mesh fault histories before
    default promotion. Preserve loaded batch-write p99 and fixed-rate client-drop
    limitations; an aggregate throughput gain alone is insufficient.
