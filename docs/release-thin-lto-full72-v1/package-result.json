@@ -1,0 +1,12 @@
+{
+  "complete": true,
+  "files": 7831,
+  "decoded_bytes": 1044821409,
+  "encoded_bytes": 126683757,
+  "parts": 61,
+  "omitted_entries": 5936,
+  "inventory_sha256": "e3adec63e830e07f3868e3f4e77e27893b60de5c773d4fc0ea9bc5b168de1f37",
+  "output": "/tmp/kv9-release-thin-lto-evidence/docs/release-thin-lto-full72-v1",
+  "runtime_reaudit": false,
+  "payload_backup": false
+}
