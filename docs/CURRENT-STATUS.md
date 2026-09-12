@@ -51,9 +51,11 @@ pre-Cargo inventory failure and misnamed diagnostic-feature command are retained
 [Build inventory repair `2ccb478`](BUILD-CACHE-SAFETY.md#retained-evidence-in-source-inventories)
 now hashes published archives under a separate bounded allowance.
 
-A clean default release, ordinary recovery and the uninstrumented c1/c64 GET/mixed
-screen remain pending. The screen preserves 12 two-second smoke / 24 ten-second
-timed cohorts, Redis and both full run orders. CPU cost and read/write tails are
+The [clean default release and ordinary recovery](OWNER-POLL-RECOVERY.md) now
+pass: 363 complete operations, 334 OK / 29 unknown, six fresh drains and seven
+exited lifetimes. The uninstrumented c1/c64 GET/mixed screen remains pending;
+it preserves 12 two-second smoke / 24 ten-second timed cohorts, Redis and both
+full run orders. CPU cost and read/write tails are
 mandatory; notification coalescing stays separate. No new performance result,
 selected runtime change, Chaos acceptance or original checklist closure follows.
 Production still uses leader Safe ReadIndex; no lease-read shortcut is enabled.
@@ -73,7 +75,8 @@ all twelve byte-retention records pass independent readback. The first reader's
 obsolete Redis pairing lookup failed after all eight per-cohort checks; its
 six-line repair and original failure remain published. No cohort was rerun.
 The quorum-path diagnosis is complete; the owner-poll candidate has passed its
-source/proof checkpoint and awaits runtime qualification.
+source/proof, clean build and ordinary recovery checkpoints; timing remains
+pending.
 
 ## Latest completed optimization experiment
 

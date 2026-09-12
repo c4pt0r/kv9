@@ -35,9 +35,10 @@ a new selected runtime speedup. The [32-us owner-poll source checkpoint](https:/
 now passes 14 new TLAPS theorems / 49 obligations, model/negative controls,
 714 default tests and 443 standalone read-stage tests, with overlapping
 populations. Original failed drafts and command/build-inventory failures remain
-retained. Next qualify the clean default release and ordinary recovery before
-the fixed-client 24-cohort c1/c64 GET/mixed screen, including Redis, both orders,
-latency and CPU cost. Main still selects `11113f6`; no speedup is assumed.
+retained. The [clean default release and ordinary recovery](OWNER-POLL-RECOVERY.md)
+now pass, including 363 complete operations, 29 unknown outcomes and seven
+exited lifetimes. Next run the fixed-client 24-cohort c1/c64 GET/mixed screen,
+including Redis, both orders, latency and CPU cost. Main still selects `11113f6`; no speedup is assumed.
 Keep notification candidate `42e0117` separate; its gains cannot be added to
 ThinLTO's measurements. The [next latency investigation](QUORUM-LATENCY-NEXT.md)
 targets unresolved intervals inside a fresh quorum round, reusing completed
