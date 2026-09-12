@@ -1,0 +1,693 @@
+{
+  "files": {
+    "process-preparation/READINESS.json": {
+      "bytes": 939,
+      "sha256": "a5a91f7924ca89eedcd4753c67334537f011365ef51e2648224d9b44c5ad02e1",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/READINESS.json"
+    },
+    "process-preparation/READINESS.json.final-binding.diff": {
+      "bytes": 1525,
+      "sha256": "54c6507e47da94a0d661861f918a29df0b88fc42b1d0caaef7facfc52342fab8",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/READINESS.json.final-binding.diff"
+    },
+    "process-preparation/README.md": {
+      "bytes": 4931,
+      "sha256": "5c541a50f5db00b154561d215d484e2dba1d5a15812f42cc3d188c97f7d4fe4d",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/README.md"
+    },
+    "process-preparation/README.md.final-binding.diff": {
+      "bytes": 1157,
+      "sha256": "5db716d158800922c949b2aa996cda1676df7ef95952c9e2f7531ad019a99da1",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/README.md.final-binding.diff"
+    },
+    "process-preparation/SOURCE-RELEASE-BOUND.md": {
+      "bytes": 1750,
+      "sha256": "d6a482b4fd479d72e88a1e71dddc2b3c5c3e4cf26b017fbbe956c33b65865778",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/SOURCE-RELEASE-BOUND.md"
+    },
+    "process-preparation/audit.py": {
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/audit.py"
+    },
+    "process-preparation/binding.final.json": {
+      "bytes": 5821,
+      "sha256": "36c7162cf1e49f66002fba732094e62d66ab41269a3eab2cf1f49ead15f5d661",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/binding.final.json"
+    },
+    "process-preparation/binding.pending.json": {
+      "bytes": 961,
+      "sha256": "dd6d2bd975b5f43969bc4c6f3d48f676296d80ed0036515b827857ce4e2ea24b",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/binding.pending.json"
+    },
+    "process-preparation/binding.pending.json.diff": {
+      "bytes": 1313,
+      "sha256": "7d7c9d8e00c9898a82e5467afa2f33c9aa01aca45f863819dc7965ff7eb87ef8",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/binding.pending.json.diff"
+    },
+    "process-preparation/candidate-doc-final.md": {
+      "bytes": 5493,
+      "sha256": "dfa86d2dafadef4e3a294f2f9a38ca3a333ca005913e3692566437eda7ec0b29",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/candidate-doc-final.md"
+    },
+    "process-preparation/candidate-doc-observed.md": {
+      "bytes": 5493,
+      "sha256": "dfa86d2dafadef4e3a294f2f9a38ca3a333ca005913e3692566437eda7ec0b29",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/candidate-doc-observed.md"
+    },
+    "process-preparation/commands.json": {
+      "bytes": 1767,
+      "sha256": "c7874c69b9e1987fc7751be9be97d10f07d01f9c42a98b9fd68caf3b15a2c827",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/commands.json"
+    },
+    "process-preparation/commands.json.final-binding.diff": {
+      "bytes": 1099,
+      "sha256": "acf89c71943357a957ac1545786729da72dff30ea2d2574bb9fbd3678d8fac57",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/commands.json.final-binding.diff"
+    },
+    "process-preparation/commands.pending.json": {
+      "bytes": 1410,
+      "sha256": "49ca6c3c125ac239822923361fef01b7bbe8d092d3952ad242c2cf689ea485de",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/commands.pending.json"
+    },
+    "process-preparation/commands.pending.json.diff": {
+      "bytes": 1839,
+      "sha256": "0780e5e54b0f0764cd86a2a423e4f222b1c7735f751fd64ad5c52610a9931dc3",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/commands.pending.json.diff"
+    },
+    "process-preparation/fixtures/check-latency-metrics.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/fixtures/check-latency-metrics.py"
+    },
+    "process-preparation/fixtures/original-metrics.json": {
+      "bytes": 62587,
+      "sha256": "6d635f0a7928080081af6940fa75af61e51551af29ee1ea5c0b10e18389c03a7",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/fixtures/original-metrics.json"
+    },
+    "process-preparation/fixtures/predecessor-process-runner.py": {
+      "bytes": 711,
+      "sha256": "4bfcd2940a09ea6613bab526911090a3ca511a91e88d37e44038d4f6199236d0",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/fixtures/predecessor-process-runner.py"
+    },
+    "process-preparation/inventory.json": {
+      "bytes": 6906,
+      "sha256": "570c7517302488f53caa8bcac9a42a148c6441e270e49e0475a16607f2c9a549",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/inventory.json"
+    },
+    "process-preparation/inventory.pending.json": {
+      "bytes": 3155,
+      "sha256": "a366268aade387d20187768dba96fff0fac72e1b48b6268513eb28c776183d3c",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/inventory.pending.json"
+    },
+    "process-preparation/lineage.json": {
+      "bytes": 4487,
+      "sha256": "17b8e0f0ab9656dc897c499e0caafc0636e00a1910b0c266bdc301ff824c3de4",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/lineage.json"
+    },
+    "process-preparation/pending-before-final-binding-first/READINESS.json": {
+      "bytes": 706,
+      "sha256": "a28bc2115821936d5d911c3a0048bd153f1469196a923a3f6becbd75ad721735",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/READINESS.json"
+    },
+    "process-preparation/pending-before-final-binding-first/README.md": {
+      "bytes": 4518,
+      "sha256": "4116b0d070dd889ea6055eb6ee9deb224daa72a885031e27f44b0326c237c67c",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/README.md"
+    },
+    "process-preparation/pending-before-final-binding-first/audit.py": {
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/audit.py"
+    },
+    "process-preparation/pending-before-final-binding-first/binding.pending.json": {
+      "bytes": 961,
+      "sha256": "dd6d2bd975b5f43969bc4c6f3d48f676296d80ed0036515b827857ce4e2ea24b",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/binding.pending.json"
+    },
+    "process-preparation/pending-before-final-binding-first/binding.pending.json.diff": {
+      "bytes": 1313,
+      "sha256": "7d7c9d8e00c9898a82e5467afa2f33c9aa01aca45f863819dc7965ff7eb87ef8",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/binding.pending.json.diff"
+    },
+    "process-preparation/pending-before-final-binding-first/candidate-doc-observed.md": {
+      "bytes": 5493,
+      "sha256": "dfa86d2dafadef4e3a294f2f9a38ca3a333ca005913e3692566437eda7ec0b29",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/candidate-doc-observed.md"
+    },
+    "process-preparation/pending-before-final-binding-first/commands.json": {
+      "bytes": 1410,
+      "sha256": "49ca6c3c125ac239822923361fef01b7bbe8d092d3952ad242c2cf689ea485de",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/commands.json"
+    },
+    "process-preparation/pending-before-final-binding-first/commands.pending.json": {
+      "bytes": 1410,
+      "sha256": "49ca6c3c125ac239822923361fef01b7bbe8d092d3952ad242c2cf689ea485de",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/commands.pending.json"
+    },
+    "process-preparation/pending-before-final-binding-first/commands.pending.json.diff": {
+      "bytes": 1839,
+      "sha256": "0780e5e54b0f0764cd86a2a423e4f222b1c7735f751fd64ad5c52610a9931dc3",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/commands.pending.json.diff"
+    },
+    "process-preparation/pending-before-final-binding-first/inventory.json": {
+      "bytes": 3155,
+      "sha256": "a366268aade387d20187768dba96fff0fac72e1b48b6268513eb28c776183d3c",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/inventory.json"
+    },
+    "process-preparation/pending-before-final-binding-first/inventory.pending.json": {
+      "bytes": 3155,
+      "sha256": "a366268aade387d20187768dba96fff0fac72e1b48b6268513eb28c776183d3c",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/inventory.pending.json"
+    },
+    "process-preparation/pending-before-final-binding-first/lineage.json": {
+      "bytes": 4487,
+      "sha256": "17b8e0f0ab9656dc897c499e0caafc0636e00a1910b0c266bdc301ff824c3de4",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/lineage.json"
+    },
+    "process-preparation/pending-before-final-binding-first/process-runner.py": {
+      "bytes": 721,
+      "sha256": "aae30a0721ee54ca9f5a5ba7721c7df3092c8b709fff9e2cc10c394ccb5fa286",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/process-runner.py"
+    },
+    "process-preparation/pending-before-final-binding-first/process-runner.py.diff": {
+      "bytes": 553,
+      "sha256": "c38c2629b0cae52908bbadae26884d756e6d3c58d009d6e1c23b9ea605694fc6",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/process-runner.py.diff"
+    },
+    "process-preparation/pending-before-final-binding-first/test_contract.py": {
+      "bytes": 3779,
+      "sha256": "3c5479d90247fe1e10dd0269c59edaaf69e0abb1009da26431adf9e4a783a0f9",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/test_contract.py"
+    },
+    "process-preparation/pending-before-final-binding-first/test_contract.py.diff": {
+      "bytes": 803,
+      "sha256": "3b2feb2c943d6991ed370f92c9827460c6736e255584de2692252f9c0bca8bcf",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/pending-before-final-binding-first/test_contract.py.diff"
+    },
+    "process-preparation/predecessor-inputs/audit.py": {
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/predecessor-inputs/audit.py"
+    },
+    "process-preparation/predecessor-inputs/binding.pending.json": {
+      "bytes": 921,
+      "sha256": "deb22f96c62aed9fe643e5eceb0495d6a49bfdf9e773b0611fa40449463f6742",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/predecessor-inputs/binding.pending.json"
+    },
+    "process-preparation/predecessor-inputs/commands.pending.json": {
+      "bytes": 1320,
+      "sha256": "226c9563275d0ae4f09c98e025cc8bba5b7a2e3d7e6ee20038f7fb5d0383a5e0",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/predecessor-inputs/commands.pending.json"
+    },
+    "process-preparation/predecessor-inputs/lineage.json": {
+      "bytes": 4219,
+      "sha256": "4e22b94011e41d2e95b9595da91d9e41ea2d107fd3f07926856062dc10e2d507",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/predecessor-inputs/lineage.json"
+    },
+    "process-preparation/predecessor-inputs/process-runner.py": {
+      "bytes": 711,
+      "sha256": "4bfcd2940a09ea6613bab526911090a3ca511a91e88d37e44038d4f6199236d0",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/predecessor-inputs/process-runner.py"
+    },
+    "process-preparation/predecessor-inputs/test_contract.py": {
+      "bytes": 3773,
+      "sha256": "16d3a889b153f5162575ff94335798a37bc3d538709e3d2c0a9e5e67f9c94ec1",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/predecessor-inputs/test_contract.py"
+    },
+    "process-preparation/process-runner.py": {
+      "bytes": 721,
+      "sha256": "aae30a0721ee54ca9f5a5ba7721c7df3092c8b709fff9e2cc10c394ccb5fa286",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/process-runner.py"
+    },
+    "process-preparation/process-runner.py.diff": {
+      "bytes": 553,
+      "sha256": "c38c2629b0cae52908bbadae26884d756e6d3c58d009d6e1c23b9ea605694fc6",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/process-runner.py.diff"
+    },
+    "process-preparation/release-readback.json": {
+      "bytes": 850,
+      "sha256": "828df69ef1e39552154cc79ab43fa5e928a2b9052c58173f20c8aea8b9374a96",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/release-readback.json"
+    },
+    "process-preparation/results-first/audit.json": {
+      "bytes": 10535,
+      "sha256": "feb884459b2f683b836f27f43d6652df17e09efa4ad7f0def529725a56664c18",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/audit.json"
+    },
+    "process-preparation/results-first/batch-tonic-stream-history-checked.json": {
+      "bytes": 18560,
+      "sha256": "5e4b9403627ef5b3e64e635d3ad61978fd7c78c29b7d415ac480b8f723da54ce",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/batch-tonic-stream-history-checked.json"
+    },
+    "process-preparation/results-first/batch-tonic-stream-raw-history.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/batch-tonic-stream-raw-history.stderr"
+    },
+    "process-preparation/results-first/batch-tonic-stream-raw-history.stdout": {
+      "bytes": 633,
+      "sha256": "4be2fb46c0f46e6fe936f71f54ad84a8b87c5f403281dc823e73bdd1cd1bd90b",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/batch-tonic-stream-raw-history.stdout"
+    },
+    "process-preparation/results-first/batch-tonic-stream-report-checked.json": {
+      "bytes": 21282,
+      "sha256": "bc01cbb4097c18c18b1f1fe38489b6bf875129840a12dc794a20ca48967df6a4",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/batch-tonic-stream-report-checked.json"
+    },
+    "process-preparation/results-first/batch-tonic-unary-history-checked.json": {
+      "bytes": 18775,
+      "sha256": "b73bd8b03e5876d8dddebc0e63e879f478499bb80e0da73817f5538958b26d68",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/batch-tonic-unary-history-checked.json"
+    },
+    "process-preparation/results-first/batch-tonic-unary-raw-history.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/batch-tonic-unary-raw-history.stderr"
+    },
+    "process-preparation/results-first/batch-tonic-unary-raw-history.stdout": {
+      "bytes": 633,
+      "sha256": "37bae8c258dc90ed8f5dd8a7d9eb63c6e5453f266358c1040b83bcde43dd5b17",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/batch-tonic-unary-raw-history.stdout"
+    },
+    "process-preparation/results-first/batch-tonic-unary-report-checked.json": {
+      "bytes": 21525,
+      "sha256": "08f253633f59202484ad3ba45a9e5875ee80e6ca0144ed3bc0a7eb909a56c6cc",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/batch-tonic-unary-report-checked.json"
+    },
+    "process-preparation/results-first/commands.json": {
+      "bytes": 1963,
+      "sha256": "c24fad7ba7d5736698d9215d18105672a652006c280e86260ea4fa1ec3c9d610",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/commands.json"
+    },
+    "process-preparation/results-first/original-inputs.json": {
+      "bytes": 12636,
+      "sha256": "86940f5c9bda9f08094e16c873234a524f200b23f963de254f61677b80c11395",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/original-inputs.json"
+    },
+    "process-preparation/results-first/source-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/source-head.stderr"
+    },
+    "process-preparation/results-first/source-head.stdout": {
+      "bytes": 41,
+      "sha256": "8bdc46eafcaa8bdddf325076e56e4beb311575c5b1d1cfff9fe4df0db6adac52",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/source-head.stdout"
+    },
+    "process-preparation/results-first/source-status.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/source-status.stderr"
+    },
+    "process-preparation/results-first/source-status.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/results-first/source-status.stdout"
+    },
+    "process-preparation/test_contract.py": {
+      "bytes": 3779,
+      "sha256": "3c5479d90247fe1e10dd0269c59edaaf69e0abb1009da26431adf9e4a783a0f9",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/test_contract.py"
+    },
+    "process-preparation/test_contract.py.diff": {
+      "bytes": 803,
+      "sha256": "3b2feb2c943d6991ed370f92c9827460c6736e255584de2692252f9c0bca8bcf",
+      "source": "/tmp/kv9-peer-executor-isolation-process-preparation-first/test_contract.py.diff"
+    },
+    "process/batch-tonic-stream-checked.json": {
+      "bytes": 21282,
+      "sha256": "bc01cbb4097c18c18b1f1fe38489b6bf875129840a12dc794a20ca48967df6a4",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-stream-checked.json"
+    },
+    "process/batch-tonic-stream-config.json": {
+      "bytes": 787,
+      "sha256": "bc5b9734e87fd67e33ca89544dfdf0f5a599047264a6b787907a23028a3d6244",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-stream-config.json"
+    },
+    "process/batch-tonic-stream/build.json": {
+      "bytes": 487,
+      "sha256": "baa340665350cd086d1d9628ec0ceaa8bf8162168acb3a092fcbd796ebde5d45",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-stream/build.json"
+    },
+    "process/batch-tonic-stream/config.json": {
+      "bytes": 821,
+      "sha256": "84d68a7181a8b2d45ab29b56a701fd1ce8fba2c3cced244d6ece8fe6b88a3676",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-stream/config.json"
+    },
+    "process/batch-tonic-stream/history.jsonl": {
+      "bytes": 413266,
+      "sha256": "6aadf3d672c13e4242853d6e1f2c7bfbfa28854f483436b8a224aedaab267bc0",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-stream/history.jsonl"
+    },
+    "process/batch-tonic-stream/progress.json": {
+      "bytes": 720,
+      "sha256": "2158bb138db81e2c6c43aa720c35d0be1ca4dc4bc6a1c150fb50614a32f8b1a5",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-stream/progress.json"
+    },
+    "process/batch-tonic-stream/ready.json": {
+      "bytes": 71,
+      "sha256": "27109bc6a9e9a029fe1f0c69528a46577e7ea02a217d97fdd1d6f2926aa297a9",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-stream/ready.json"
+    },
+    "process/batch-tonic-stream/report.json": {
+      "bytes": 200586,
+      "sha256": "00a9994a6c9fb1bb00a00a109ccfc4cf48f5bc4070167f653c65d10144b39cd4",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-stream/report.json"
+    },
+    "process/batch-tonic-unary-checked.json": {
+      "bytes": 21525,
+      "sha256": "08f253633f59202484ad3ba45a9e5875ee80e6ca0144ed3bc0a7eb909a56c6cc",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-unary-checked.json"
+    },
+    "process/batch-tonic-unary-config.json": {
+      "bytes": 819,
+      "sha256": "5466ae40c1fe1acac760346cd58a22af51c2d51ac8b8170981d18c6148a774f4",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-unary-config.json"
+    },
+    "process/batch-tonic-unary/build.json": {
+      "bytes": 487,
+      "sha256": "baa340665350cd086d1d9628ec0ceaa8bf8162168acb3a092fcbd796ebde5d45",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-unary/build.json"
+    },
+    "process/batch-tonic-unary/config.json": {
+      "bytes": 818,
+      "sha256": "067cf32e5329c53ffc8925bd96460d3c4f27e39715e015546bd1e640e2989a51",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-unary/config.json"
+    },
+    "process/batch-tonic-unary/history.jsonl": {
+      "bytes": 407691,
+      "sha256": "2f3a5173854f91c2ed8cef371aac69582979e539ddd3489cf0944af265648e51",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-unary/history.jsonl"
+    },
+    "process/batch-tonic-unary/progress.json": {
+      "bytes": 720,
+      "sha256": "2c2b183ca5448fff6ec8b7336c6632823a2f7299a34ecc4f50aaa9dd7a8bdf40",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-unary/progress.json"
+    },
+    "process/batch-tonic-unary/ready.json": {
+      "bytes": 71,
+      "sha256": "63062717c1bfdad63e4056b5b9e2e32a3c86feb7e1e2c72538e4010b468b9f19",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-unary/ready.json"
+    },
+    "process/batch-tonic-unary/report.json": {
+      "bytes": 200904,
+      "sha256": "bea4a5458cd8b1b190eea422aa1e6016233d8765dff49dd67d0f45d9c42a779e",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/batch-tonic-unary/report.json"
+    },
+    "process/fixture/command-000.json": {
+      "bytes": 351,
+      "sha256": "7c3fe96400929cb7d60c0f3ef459742dd355c5abbf283948cd4d45e599f370c3",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/fixture/command-000.json"
+    },
+    "process/fixture/command-001.json": {
+      "bytes": 351,
+      "sha256": "0f479febb19950bd6e6a068e12f2d28ab6ea840ef139d5556442c683564ff16e",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/fixture/command-001.json"
+    },
+    "process/fixture/command-002.json": {
+      "bytes": 351,
+      "sha256": "fa95532e1505c4abf9328cc70ec8db98c530af5c979aa4ca4990f7a312ae0803",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/fixture/command-002.json"
+    },
+    "process/fixture/command-003.json": {
+      "bytes": 969,
+      "sha256": "14723051b0fb0df8073460e46c09133f20ad4ffe73fbd9a4eeb755830a0ae845",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/fixture/command-003.json"
+    },
+    "process/fixture/command-004.json": {
+      "bytes": 641,
+      "sha256": "2890ee5eb8c892013b1c6c8da58a5bf7a9ea80d1e574d06c4afcfc7d81a7d888",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/fixture/command-004.json"
+    },
+    "process/fixture/command-005.json": {
+      "bytes": 641,
+      "sha256": "76db0a81348772bec7771ac6df5b9bf37b257cb4561370efa50190c212d7e26c",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/fixture/command-005.json"
+    },
+    "process/fixture/command-006.json": {
+      "bytes": 641,
+      "sha256": "3726ce3acc0d125e188d9deb7a22b3ad29206fdc32222a00e3e5da74ca50db60",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/fixture/command-006.json"
+    },
+    "process/fixture/command-007.json": {
+      "bytes": 325,
+      "sha256": "6570cac9188054eed9805dc1179741d306857bb0b777d9cd4ae943d556a9429f",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/fixture/command-007.json"
+    },
+    "process/fixture/command-008.json": {
+      "bytes": 325,
+      "sha256": "ff3d595da5436505c0577f6ed5b24ed4065d1fd9497479141bf76c41dd95ec6d",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/fixture/command-008.json"
+    },
+    "process/fixture/fixture.json": {
+      "bytes": 3198,
+      "sha256": "86718b824744e5025aacc8255cd9c932471f93c4ea0aa19c8541a78fdc59d70f",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/fixture/fixture.json"
+    },
+    "process/summary.json": {
+      "bytes": 200375,
+      "sha256": "2432c270443a32eb3f0a30d83ec83826bd7ef95e577cc4d3cd51217733023c24",
+      "source": "/tmp/kv9-peer-executor-isolation-process-e2e-first/summary.json"
+    },
+    "release/build.json": {
+      "bytes": 65799,
+      "sha256": "6af4a691b4976695dbaceaf88d0bcc1ac6c33b22fb401191f3c60cd429c7dd2d",
+      "source": "/tmp/kv9-peer-executor-isolation-release-first/build.json"
+    },
+    "release/cache-clean.stderr": {
+      "bytes": 39,
+      "sha256": "216a39a85a10a48506c929262129ccc772058d7f071b56f7cc1c38fbc788317e",
+      "source": "/tmp/kv9-peer-executor-isolation-release-first/cache-clean.stderr"
+    },
+    "release/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-peer-executor-isolation-release-first/cache-clean.stdout"
+    },
+    "release/cache-safety.json": {
+      "bytes": 21444,
+      "sha256": "23ad1eda9319f9f6e7967c0c74016e1ea64e9b925959196b689fee1bb5a914e4",
+      "source": "/tmp/kv9-peer-executor-isolation-release-first/cache-safety.json"
+    },
+    "release/kv9-build.log": {
+      "bytes": 121,
+      "sha256": "2cb9ecd331a6cefc93ead89d396f299da7ff628cd3aeb9a3e24cfaf878aecf2f",
+      "source": "/tmp/kv9-peer-executor-isolation-release-first/kv9-build.log"
+    },
+    "release/kv9-cargo.jsonl": {
+      "bytes": 211834,
+      "sha256": "ef01e90faa6bcc0ffebcbd3eb27206ee70e44ca821484cec2da759ae003f9cac",
+      "source": "/tmp/kv9-peer-executor-isolation-release-first/kv9-cargo.jsonl"
+    },
+    "release/workload/build.json": {
+      "bytes": 487,
+      "sha256": "baa340665350cd086d1d9628ec0ceaa8bf8162168acb3a092fcbd796ebde5d45",
+      "source": "/tmp/kv9-peer-executor-isolation-release-first/workload/build.json"
+    },
+    "release/workload/build.log": {
+      "bytes": 609,
+      "sha256": "64417f666269ac2d34a6479b38539b3f6d6a50dc647ae0bf8aff9f01f4c7f9d4",
+      "source": "/tmp/kv9-peer-executor-isolation-release-first/workload/build.log"
+    },
+    "release/workload/cargo.jsonl": {
+      "bytes": 208822,
+      "sha256": "b25f22265560ce8ef78d5a32c6a2dcdcfa8df6fb09a4f0ce6575161bf34a8bed",
+      "source": "/tmp/kv9-peer-executor-isolation-release-first/workload/cargo.jsonl"
+    },
+    "release/workload/sources.json": {
+      "bytes": 61806,
+      "sha256": "3eb5ac13e1865b1f1cc16ede3334bc7823938c006a66265911f3fb7d4a0cb2bc",
+      "source": "/tmp/kv9-peer-executor-isolation-release-first/workload/sources.json"
+    },
+    "root/build-release.py": {
+      "bytes": 1030,
+      "sha256": "6f76b0ee7f5392ba60e474cfcc9506e7daa50ec8826664b272e67633e597ab51",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/build-release.py"
+    },
+    "root/check-source.py": {
+      "bytes": 2821,
+      "sha256": "1632ef5a3c4fef469585028024328b1f6c81959bd40f4a23c5d9ac384ff535fd",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/check-source.py"
+    },
+    "root/committed-source.json": {
+      "bytes": 65045,
+      "sha256": "997f12620b5b982ad1984c2d8c9af30d135c801cda3afdffd840f2aa9dee0f5e",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/committed-source.json"
+    },
+    "root/process-audit-first/invocation.json": {
+      "bytes": 841,
+      "sha256": "61a713ab33fc08e966a8d0e63443d78ba41c38ca243ca12838df7c17898f22f0",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/process-audit-first/invocation.json"
+    },
+    "root/process-audit-first/output.log": {
+      "bytes": 2705,
+      "sha256": "5db3eaecd0cadbfb4c731c66182e86c79c07067848d0b05cb4109e88e57572b8",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/process-audit-first/output.log"
+    },
+    "root/process-audit-first/result.json": {
+      "bytes": 893,
+      "sha256": "25cf6194f3784516c0e2aec97fbc33432c038091723169968e4caedc03f9cf5b",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/process-audit-first/result.json"
+    },
+    "root/process-contracts-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "5ea498676fa7048be797985dfd706b5609fce40dc19986fd34879d140c1a7ad0",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/process-contracts-first/invocation.json"
+    },
+    "root/process-contracts-first/output.log": {
+      "bytes": 822,
+      "sha256": "b65d7069a99a571280db6a338bb225ab80bbf48d664cc0794831b8372f884e05",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/process-contracts-first/output.log"
+    },
+    "root/process-contracts-first/result.json": {
+      "bytes": 553,
+      "sha256": "5968399556c2c7fd5c92cb3d029f9ffabc01a60cbcd98ac9bde7d037d097b8b9",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/process-contracts-first/result.json"
+    },
+    "root/process-first/invocation.json": {
+      "bytes": 635,
+      "sha256": "44b51319ad95935d4fba03ed7439e948a12308c909f85b512e5dbd80afa7a314",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/process-first/invocation.json"
+    },
+    "root/process-first/output.log": {
+      "bytes": 288,
+      "sha256": "721ea9c7550f9d3cad200cd50684869195f8787996b6b8faa7fa448804881ebd",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/process-first/output.log"
+    },
+    "root/process-first/result.json": {
+      "bytes": 687,
+      "sha256": "6d3147c9069f2cc6ee6d06f2fc86283ec37a3d71c4d93f0f104d97b9434a7601",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/process-first/result.json"
+    },
+    "root/readback-release.py": {
+      "bytes": 2464,
+      "sha256": "66136d0fdf5bc88c2f5e4040066a2d8b3cefd4eb5d955a167c244ba4bce3884b",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/readback-release.py"
+    },
+    "root/release-first.log": {
+      "bytes": 178,
+      "sha256": "ba4d2da89986538943cf2a3901e1c19ae1132cd6c144a826bf35611de8e73859",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/release-first.log"
+    },
+    "root/release-invocation.json": {
+      "bytes": 488,
+      "sha256": "c19a294cfb577b216c83ac04dbd3b768d8982f8945c8bbd621f35f959ded1413",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/release-invocation.json"
+    },
+    "root/release-readback.json": {
+      "bytes": 850,
+      "sha256": "828df69ef1e39552154cc79ab43fa5e928a2b9052c58173f20c8aea8b9374a96",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/release-readback.json"
+    },
+    "root/release-result.json": {
+      "bytes": 563,
+      "sha256": "70f09d020208742f2b214711737bdc5a8841f6c8a4460c107cfcd76fe4eb9e15",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/release-result.json"
+    },
+    "root/run-stage.py": {
+      "bytes": 2091,
+      "sha256": "e5830465f92313e1595aa6eb6dfab6750619cea3e92c267b6553c3e85bf11f00",
+      "source": "/tmp/kv9-peer-executor-isolation-root-first/run-stage.py"
+    },
+    "source-checks/first/cache-clean.stderr": {
+      "bytes": 38,
+      "sha256": "b866b8b2bf1c98836ebfc3141ec272a1493b4c3e05edffe86a674ccdf456a7bb",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/cache-clean.stderr"
+    },
+    "source-checks/first/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/cache-clean.stdout"
+    },
+    "source-checks/first/cache-metadata.json": {
+      "bytes": 26690,
+      "sha256": "aaddb632a729b8292c4143012ff240db187b8749e5b24dc43b95e82f53acd525",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/cache-metadata.json"
+    },
+    "source-checks/first/cache-metadata.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/cache-metadata.log"
+    },
+    "source-checks/first/cache-safety.json": {
+      "bytes": 18302,
+      "sha256": "9205e3e752f9e9f7f418beccd0aadccc9bc36ca16ad82d0711f22576c7dd32ea",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/cache-safety.json"
+    },
+    "source-checks/first/clippy.stderr": {
+      "bytes": 608,
+      "sha256": "761a9ba01449ad88b4934ad9657b518e5387f1ab8e2be7735a22f889d5fb1cad",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/clippy.stderr"
+    },
+    "source-checks/first/clippy.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/clippy.stdout"
+    },
+    "source-checks/first/compile.stderr": {
+      "bytes": 609,
+      "sha256": "a8c364b682ef26dc3002ae33a098438376ad7cc16d6d99374faf9d5c5f1fe559",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/compile.stderr"
+    },
+    "source-checks/first/compile.stdout": {
+      "bytes": 213139,
+      "sha256": "608b6f7ad06277399bb3fe75feac3d581cd63da96d03652548718151c9421b1c",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/compile.stdout"
+    },
+    "source-checks/first/experimental-tests.stderr": {
+      "bytes": 1108,
+      "sha256": "bae10a39e5ad91225bd9f852fd0a16bf29eea19fcce5c1cc50a1f67a5c3c0919",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/experimental-tests.stderr"
+    },
+    "source-checks/first/experimental-tests.stdout": {
+      "bytes": 21838,
+      "sha256": "3a9d6f82746bf53fa6e6c8412bb2b7cb8fa0dd384504665a06f482aed90fa315",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/experimental-tests.stdout"
+    },
+    "source-checks/first/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/format.stderr"
+    },
+    "source-checks/first/format.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/format.stdout"
+    },
+    "source-checks/first/result.json": {
+      "bytes": 1683,
+      "sha256": "a459346be852aaebf5bad35c8db3b4bf7f6178a207b63694c5891eecf5ebd3df",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/result.json"
+    },
+    "source-checks/first/sources-after.json": {
+      "bytes": 65044,
+      "sha256": "88efe74c9c64d0b0d4d4e85d203727d91a0fa16016fe5f44d8825e02ec4ff663",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/sources-after.json"
+    },
+    "source-checks/first/sources-before.json": {
+      "bytes": 65044,
+      "sha256": "88efe74c9c64d0b0d4d4e85d203727d91a0fa16016fe5f44d8825e02ec4ff663",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/sources-before.json"
+    },
+    "source-checks/first/tests.stderr": {
+      "bytes": 561,
+      "sha256": "6f0d58873dfa18eedd33120a13131d043f770c298cbe9e653b2e93e42e7d685a",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/tests.stderr"
+    },
+    "source-checks/first/tests.stdout": {
+      "bytes": 20796,
+      "sha256": "9c65acff872fe4246c24cae0ea782b87576a4bb8c23d2002b2026bba0aa26cea",
+      "source": "/tmp/kv9-peer-executor-isolation-source-first/tests.stdout"
+    }
+  },
+  "parts": [
+    {
+      "bytes": 338121,
+      "name": "evidence.tar.gz.001",
+      "sha256": "99795d7d999a6291741518e0491700be27bd3b7e6ada195c3ce9bfac6f924cbc"
+    }
+  ],
+  "scope": "Original-byte compact reporting selection; integrity verification only. Raw WAL, binaries and bulky host observations remain local under original audit inventories.",
+  "top_level": {}
+}
