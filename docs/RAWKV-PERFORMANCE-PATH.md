@@ -68,6 +68,9 @@ Safe ReadIndex. Separate notification candidate
 matched qualification. Fresh ReadIndex, sealed groups, successful pump/apply/view
 fences and durable writes remain mandatory. Historical rejected scheduling
 screens remain rejected; review the index and all branch history first.
+The [Rust controller component](LEASE-CONTROLLER.md) now passes local source and
+integer-timing checks. Actual peer/read-path integration and qualification remain
+ahead of any new lease throughput/latency comparison.
 
 ## Earlier development evidence
 

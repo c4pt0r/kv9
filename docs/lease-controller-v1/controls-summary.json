@@ -1,0 +1,182 @@
+{
+  "clone_control": 1,
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "math_countermodels": 4,
+  "math_proofs": 3,
+  "math_records": [
+    {
+      "expected": "unsat",
+      "name": "floor",
+      "source_sha256": "57056a8f4bb7523930ea22f2a09433eb41e7b7d4d174625d7e950ef3aa9a6a99",
+      "verdict": "unsat"
+    },
+    {
+      "expected": "unsat",
+      "name": "ceil",
+      "source_sha256": "d77b69a22d7076129c0afa23cd249500834e212b844af4bae2ad30351287c522",
+      "verdict": "unsat"
+    },
+    {
+      "expected": "unsat",
+      "name": "timing",
+      "source_sha256": "350bdf7bd22cf4f43e2262af981884f8ac308222bf4352458bc2cd6dd5259e24",
+      "verdict": "unsat"
+    },
+    {
+      "expected": "sat",
+      "name": "floor-rounded-up",
+      "source_sha256": "676d02f94f6797cfe9525d46342d6ca269184a76612fa5bf5e455597a3f395ce",
+      "verdict": "sat"
+    },
+    {
+      "expected": "sat",
+      "name": "ceil-rounded-down",
+      "source_sha256": "021eaec5d8477c3ce633c1e55529c93920e529f59c3bda78e5e0d686fd426497",
+      "verdict": "sat"
+    },
+    {
+      "expected": "sat",
+      "name": "leader-without-drift-margin",
+      "source_sha256": "16b4fbcea63932903f88b442185f1f6d3cb46b828fa2c89e2501ceabb7853857",
+      "verdict": "sat"
+    },
+    {
+      "expected": "sat",
+      "name": "recovery-rounded-down",
+      "source_sha256": "13d9ab18e6f872890d7e6fb19444603f7738252851990cd1771c9c88b6b9adf7",
+      "verdict": "sat"
+    },
+    {
+      "expected": "unsat",
+      "name": "floor-restored",
+      "source_sha256": "57056a8f4bb7523930ea22f2a09433eb41e7b7d4d174625d7e950ef3aa9a6a99",
+      "verdict": "unsat"
+    },
+    {
+      "expected": "unsat",
+      "name": "ceil-restored",
+      "source_sha256": "d77b69a22d7076129c0afa23cd249500834e212b844af4bae2ad30351287c522",
+      "verdict": "unsat"
+    },
+    {
+      "expected": "unsat",
+      "name": "timing-restored",
+      "source_sha256": "350bdf7bd22cf4f43e2262af981884f8ac308222bf4352458bc2cd6dd5259e24",
+      "verdict": "unsat"
+    }
+  ],
+  "records": [
+    {
+      "name": "rust-baseline",
+      "source_sha256": "05e740a10d99e38e5ef1eef4071ac527901e01539f6881939aa91ddff05eec35",
+      "test": null,
+      "test_binary_sha256": "79cf7bcb91d11923848d414acc4f195461e70cf342ebf3f35f6db81c99d5262c",
+      "verdict": "passed"
+    },
+    {
+      "name": "lost-quarantine",
+      "source_sha256": "150148adeb1efb911f94a45740803dd465329622e93aa13b13f09d59fbb7a4f0",
+      "test": "recovery_and_repeated_restart_cannot_shorten_prior_obligations",
+      "test_binary_sha256": "37be82740688d4c59edf57435e3bbcd68f190901a5a23ad37f495c6fb20077a6",
+      "verdict": "expected test failure"
+    },
+    {
+      "name": "vote-before-hold-expiry",
+      "source_sha256": "e6329150bf2071d5146ddc44072d4b8453dd1e216132ccc772a9d2b5c00ef79d",
+      "test": "fastest_voters_cannot_form_an_election_quorum_during_the_slowest_leader_lease",
+      "test_binary_sha256": "4239fb034e07d3a6565ba328f886d166ff529011ea3bad27fb686628a3eb5d09",
+      "verdict": "expected test failure"
+    },
+    {
+      "name": "publish-without-quorum",
+      "source_sha256": "8276984fd2034c52471bf84dd2cee3bd7fa080a4bf662690ba6ce27b365f4561",
+      "test": "duplicate_acks_do_not_form_a_quorum_and_receipt_does_not_publish",
+      "test_binary_sha256": "4f1764eb14f68f1031af7dbac52cbfb4942af02eeea2f16ecfef6ccd899e2233",
+      "verdict": "expected test failure"
+    },
+    {
+      "name": "mix-round-acks",
+      "source_sha256": "83f50a559d182a62f66a7d36e972bc4c9e4bb0779df881f0c30a681bbdf4fd24",
+      "test": "late_old_round_acks_cannot_complete_the_new_round",
+      "test_binary_sha256": "7e6844e0b8c5f0e06f52312cc02b7c25109b3655372a737b9eccc91774d66f80",
+      "verdict": "expected test failure"
+    },
+    {
+      "name": "stale-frontier",
+      "source_sha256": "3b497313088262c0e6b97bafd373e1951793c447e9ad0354c4ec9a277bcd8145",
+      "test": "fresh_frontier_and_exact_view_are_required_after_completed_writes",
+      "test_binary_sha256": "be1abe1dabfd9d6078709e59021aa179055701cc79f1c40836e82b40c5d14467",
+      "verdict": "expected test failure"
+    },
+    {
+      "name": "early-view",
+      "source_sha256": "317cae0986168e397fd07f51d6b6114e156f54f9b240cc6326a818c9e646d711",
+      "test": "fresh_frontier_and_exact_view_are_required_after_completed_writes",
+      "test_binary_sha256": "bb70152feffeb79fa8707b36f2dc7015c6e2fddc4b44147256403f64b52d49ab",
+      "verdict": "expected test failure"
+    },
+    {
+      "name": "missing-generation",
+      "source_sha256": "351eb73b1d822227ccc0714e1b10801e8f2d69af10283b6d7d0ccf6229025e86",
+      "test": "revoke_rearm_and_new_renewal_cannot_resurrect_old_tickets",
+      "test_binary_sha256": "3029032b38c791714872356bd0ef263f3be54c6c983d561220b0a3ba785d6ed3",
+      "verdict": "expected test failure"
+    },
+    {
+      "name": "extend-ticket-expiry",
+      "source_sha256": "05b99349777188b09c20df971ff7c038942bff362d04033c8a3273539ab96b86",
+      "test": "an_old_read_retains_its_own_deadline_across_renewal",
+      "test_binary_sha256": "fbec0de9bd1cd2bf3828a4ed61490bcc36309b6b124798cb3515a49a8910fb07",
+      "verdict": "expected test failure"
+    },
+    {
+      "name": "clone-ticket",
+      "source_sha256": "838269dcc1489bdb4bfb2260b77ee7d77d037bb2a0d3705ab97812dc41b6e1dc",
+      "test": null,
+      "verdict": "expected compile rejection"
+    },
+    {
+      "name": "rust-restored",
+      "source_sha256": "05e740a10d99e38e5ef1eef4071ac527901e01539f6881939aa91ddff05eec35",
+      "test": null,
+      "test_binary_sha256": "79cf7bcb91d11923848d414acc4f195461e70cf342ebf3f35f6db81c99d5262c",
+      "verdict": "passed"
+    }
+  ],
+  "rust_fault_controls": 8,
+  "rust_tests": 25,
+  "rustc": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8\n",
+  "scope": "Isolated optimized Rust component and integer arithmetic; no runtime lease or E2E qualification",
+  "sources": {
+    "crates/raft/src/lease.rs": "05e740a10d99e38e5ef1eef4071ac527901e01539f6881939aa91ddff05eec35",
+    "crates/raft/src/lease/tests.rs": "e46da97e03df9e764e56413767d21c3767134b7dff49f764e098a1df7e008c68",
+    "proofs/smt/lease_timing/ceil.smt2": "d77b69a22d7076129c0afa23cd249500834e212b844af4bae2ad30351287c522",
+    "proofs/smt/lease_timing/floor.smt2": "57056a8f4bb7523930ea22f2a09433eb41e7b7d4d174625d7e950ef3aa9a6a99",
+    "proofs/smt/lease_timing/inventory.json": "f7271f4d8b778b9a59849a580d2574695eb8bb00c543a8deac867788aeba9782",
+    "proofs/smt/lease_timing/timing.smt2": "350bdf7bd22cf4f43e2262af981884f8ac308222bf4352458bc2cd6dd5259e24",
+    "scripts/check-lease-controller.py": "c066fbaff66d87a02f246f6e094efa7f7fc31594599568ad986b5aa11992f683"
+  },
+  "z3_sha256": "4321b0c0db1574a1e90881d9e097f12b8753d0c3e78b21a0155c77005a631436",
+  "z3_version": "Z3 version 4.8.9 - 64 bit"
+}

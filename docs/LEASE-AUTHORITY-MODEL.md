@@ -154,8 +154,9 @@ run is counted as acceptance. Hosted CI and performance measurement did not run.
 
 ## Next gate
 
-Implement an isolated lease controller and bind its events to the actual Raft
-voting/recovery and read-view paths. Establish source refinement and local
+The [Rust controller component](LEASE-CONTROLLER.md) now passes its local source
+and integer-timing gates. Next bind its unique installation and events to actual
+Raft voting/recovery, pump publication and read-view paths. Establish refinement and local
 correctness before enabling a candidate. Then run actual Chaos Mesh histories
 with asymmetric partitions, delayed renewal messages, process pauses, voter
 restarts and failover; qualify the clock/observer mapping separately. Existing

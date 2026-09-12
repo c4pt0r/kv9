@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "z3_sha256": "4321b0c0db1574a1e90881d9e097f12b8753d0c3e78b21a0155c77005a631436",
+  "z3_version": "Z3 version 4.8.9 - 64 bit",
+  "proof_order": [
+    "floor",
+    "ceil",
+    "timing"
+  ],
+  "sources": {
+    "ceil.smt2": "d77b69a22d7076129c0afa23cd249500834e212b844af4bae2ad30351287c522",
+    "floor.smt2": "57056a8f4bb7523930ea22f2a09433eb41e7b7d4d174625d7e950ef3aa9a6a99",
+    "timing.smt2": "350bdf7bd22cf4f43e2262af981884f8ac308222bf4352458bc2cd6dd5259e24"
+  },
+  "dependencies": {
+    "timing": {
+      "floor": {
+        "n": "E*a",
+        "d": "b"
+      },
+      "ceil": {
+        "n": "E*b",
+        "d": "a"
+      }
+    }
+  }
+}

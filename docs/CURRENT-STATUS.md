@@ -79,6 +79,12 @@ authority preservation and that read steps require no network action. An expired
 lease plus unavailable quorum must return unavailability/timeout, never local
 read success. Rust refinement, clock qualification and actual lease Chaos E2E
 remain open; Safe ReadIndex stays selected until those gates pass.
+The [Rust controller component](LEASE-CONTROLLER.md) now passes 205 Raft library
+tests (25 new lease tests), explicit experimental-feature compilation and Clippy.
+Eight optimized source fault controls, the non-Clone ticket guard, three integer
+timing proofs and four arithmetic countermodels also pass. No server lease path
+is enabled. Next bind unique peer ownership, actual voting/persistence/pump
+events and the exact read view before qualifying clocks and actual fault histories.
 
 ## Latest fixed-rate write diagnosis
 
@@ -219,9 +225,9 @@ isolated GET improvement. Original setup/reader failures remain published.
 
 ## Next development steps
 
-1. **Reduce isolated GET latency:** implement and refine a lease candidate against
-   the [proved transition contract](LEASE-AUTHORITY-MODEL.md), including fail-closed
-   expiration and recovery promises. Preserve the selected Safe ReadIndex baseline. For its
+1. **Reduce isolated GET latency:** bind the [tested lease controller](LEASE-CONTROLLER.md)
+   to unique peer ownership, actual votes/pump publication and exact read views,
+   then refine and qualify the candidate. Preserve the selected Safe ReadIndex baseline. For its
    existing path, reuse the selected-build CPU-profile fixture and completed
    quorum trace before another rewrite. Current evidence does not justify
    another worker-count/transport sweep or a repeat of the rejected poll budget.

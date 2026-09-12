@@ -18,6 +18,8 @@ tonic.workspace = true
 tonic-prost.workspace = true
 
 [features]
+# Protocol component under validation; does not enable lease reads in a server.
+experimental-leader-lease = []
 # Bounded latency diagnosis only; absent from the default runtime.
 read-stage-timing = []
 # Testing-only seams: the apply freeze, and the deterministic partition-

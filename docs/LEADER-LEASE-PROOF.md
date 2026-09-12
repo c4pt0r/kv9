@@ -276,8 +276,9 @@ Source inspected at `c2fc693`, using pinned raft-rs `0.7.0`:
 The [fixed-configuration transition model](LEASE-AUTHORITY-MODEL.md) now specifies
 acquisition, renewal, revocation/expiration, generation exhaustion, restart
 quarantine and local read-view validation, with a parameterized inductive proof
-and fault controls. The next gate is its Rust implementation and source refinement,
-including bounded clock arithmetic and actual voting/publication bindings. Local Rust tests
+and fault controls. Its [Rust component](LEASE-CONTROLLER.md) now has local source
+tests and integer timing proofs. The next gate is unique peer installation and
+actual voting/publication/read-view bindings with source refinement. Local Rust tests
 must exercise delayed ACKs, stale rounds, application stalls, cancellation and
 the check/snapshot/revoke races. Actual Chaos Mesh E2E must include bidirectional
 and asymmetric partitions, delayed/reordered renewal traffic, process pause,
