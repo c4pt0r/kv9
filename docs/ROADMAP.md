@@ -1,10 +1,10 @@
 # kv9 development roadmap
 
-> Latest result: [global queue polling is rejected](GLOBAL-QUEUE-PERFORMANCE.md)
-> after the complete c1/c64 GET/mixed screen: loaded GET throughput falls 2.390%,
-> with worse mean/p99 in both orders. Continue from the selected CRC runtime,
-> targeting actual per-request task/wakeup and quorum-message costs. The read
-> milestone and industrial correctness/storage/scale-out gates remain open.
+> Latest direction: consult the [cross-branch experiment index](PERFORMANCE-EXPERIMENT-INDEX.md)
+> before another candidate. Global queue and persistent-handler scheduling have
+> prior rejected screens; repeated prototypes stop before timing. The next
+> distinct experiment tests ThinLTO release code generation with unchanged
+> runtime semantics and fixed clients. Read parity and industrial gates remain open.
 
 Updated: 2026-09-11. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
 [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md) maps that architecture to the current implementation.
