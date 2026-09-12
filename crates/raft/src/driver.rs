@@ -1106,6 +1106,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         &self.metrics
     }
 
+    pub fn transport_wait_snapshots(&self) -> Vec<crate::wait_profile::WaitSnapshot> {
+        self.transport.wait_snapshots()
+    }
+
     pub fn apply_lag_observation(&self) -> ApplyLagObservation {
         let before = self.peer.status_snapshot();
         let driver_applied = self.driver_applied();

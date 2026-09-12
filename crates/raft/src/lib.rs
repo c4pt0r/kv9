@@ -21,6 +21,7 @@ pub mod storage;
 #[cfg(any(test, feature = "testing"))]
 pub mod testing;
 pub mod transport;
+pub mod wait_profile;
 pub mod work;
 pub use async_apply::AsyncApplySnapshot;
 pub use async_read::AsyncReadSnapshot;

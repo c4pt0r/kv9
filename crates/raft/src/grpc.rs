@@ -909,6 +909,7 @@ struct PeerDestination {
 struct OutboundMessage {
     destination: Arc<PeerDestination>,
     envelope: pb::RaftEnvelope,
+    observation: Option<crate::wait_profile::Sample>,
 }
 
 struct PeerSender {
@@ -952,6 +953,8 @@ pub struct GrpcTransport {
     /// recovery (which, in-process, would revive the wedged socket itself and
     /// erase the old/new discrimination).
     connect_attempts: Arc<AtomicU64>,
+    outbound_wait: crate::wait_profile::WaitSeries,
+    batch_wait: Arc<crate::wait_profile::WaitSeries>,
     /// Deterministic partition injection (task #28). Consulted symmetrically:
     /// `send` drops outbound to a masked peer, `drain` drops inbound from one —
     /// both check this single mask, so one process isolates a peer in both
@@ -981,6 +984,8 @@ impl GrpcTransport {
             inbox,
             root_digest,
             connect_attempts: Arc::new(AtomicU64::new(0)),
+            outbound_wait: crate::wait_profile::WaitSeries::new("sender_queue_residence"),
+            batch_wait: Arc::new(crate::wait_profile::WaitSeries::batch_channel()),
             #[cfg(any(test, feature = "testing"))]
             partition: crate::testing::PartitionState::from_env(),
         })
@@ -1065,9 +1070,12 @@ impl GrpcTransport {
         self.connect_attempts.load(Ordering::Relaxed)
     }
 
-    fn enqueue(&self, to: NodeId, envelope: pb::RaftEnvelope) {
+    fn enqueue(&self, to: NodeId, envelope: pb::RaftEnvelope, kind: usize) {
+        let mut observation = self.outbound_wait.sample(kind);
         let mut peers = self.peers.lock().expect("peers poisoned");
         let Some(peer) = peers.get_mut(&to.0) else {
+            drop(peers);
+            crate::wait_profile::finish(observation, kv9_common::metrics::Outcome::Rejected);
             return; // unknown peer: Raft retransmits after registration
         };
         if peer
@@ -1084,6 +1092,7 @@ impl GrpcTransport {
                 rx,
                 updates,
                 self.connect_attempts.clone(),
+                self.batch_wait.clone(),
             ));
             peer.sender = Some(PeerSender {
                 queue,
@@ -1093,7 +1102,10 @@ impl GrpcTransport {
         }
         // This enqueue is the send linearization point, serialized with
         // register_peer. Queue overflow still drops best-effort Raft traffic.
-        let _ = peer
+        if let Some(sample) = &mut observation {
+            sample.restart();
+        }
+        let sent = peer
             .sender
             .as_ref()
             .unwrap()
@@ -1101,11 +1113,25 @@ impl GrpcTransport {
             .try_send(OutboundMessage {
                 destination: peer.destination.clone(),
                 envelope,
+                observation,
             });
+        drop(peers);
+        if let Err(error) = sent {
+            crate::wait_profile::finish(
+                error.into_inner().observation,
+                kv9_common::metrics::Outcome::Rejected,
+            );
+        }
     }
 }
 
 impl RaftTransport for GrpcTransport {
+    fn wait_snapshots(&self) -> Vec<crate::wait_profile::WaitSnapshot> {
+        let mut rows = self.outbound_wait.snapshots();
+        rows.extend(self.batch_wait.snapshots());
+        rows.extend(self.inbox.wait_snapshots());
+        rows
+    }
     fn set_work_signal(&self, signal: Arc<crate::work::WorkSignal>) {
         self.inbox.set_signal(signal);
     }
@@ -1128,7 +1154,7 @@ impl RaftTransport for GrpcTransport {
             epoch_conf_ver: 0,
             epoch_version: 0,
         };
-        self.enqueue(to, env);
+        self.enqueue(to, env, crate::wait_profile::kind(&msg));
     }
 
     fn drain(&self) -> Vec<Message> {
@@ -1161,6 +1187,7 @@ async fn peer_worker(
     mut rx: mpsc::Receiver<OutboundMessage>,
     mut updates: watch::Receiver<Arc<PeerDestination>>,
     connect_attempts: Arc<AtomicU64>,
+    batch_wait: Arc<crate::wait_profile::WaitSeries>,
 ) {
     loop {
         // Clone and release the watch borrow before any await or route lock.
@@ -1171,7 +1198,7 @@ async fn peer_worker(
                 if changed.is_err() { return; }
             }
             _ = peer_session(me, &token, root_digest, &mut rx, &destination,
-                             &connect_attempts) => return,
+                             &connect_attempts, &batch_wait) => return,
         }
     }
 }
@@ -1184,8 +1211,10 @@ async fn receive_for_destination(
     let mut discarded = 0;
     while let Some(message) = rx.recv().await {
         if Arc::ptr_eq(&message.destination, destination) {
+            crate::wait_profile::finish(message.observation, kv9_common::metrics::Outcome::Success);
             return Some(message.envelope);
         }
+        crate::wait_profile::finish(message.observation, kv9_common::metrics::Outcome::Replaced);
         discarded += 1;
         if discarded == MAX_BATCH_MSGS {
             // A producer flooding a revoked generation cannot prevent the
@@ -1221,8 +1250,14 @@ fn coalesce_queued(
             break;
         };
         if Arc::ptr_eq(&message.destination, destination) {
+            crate::wait_profile::finish(message.observation, kv9_common::metrics::Outcome::Success);
             bytes += message.envelope.raft_message.len();
             batch.msgs.push(message.envelope);
+        } else {
+            crate::wait_profile::finish(
+                message.observation,
+                kv9_common::metrics::Outcome::Replaced,
+            );
         }
     }
     batch
@@ -1236,6 +1271,7 @@ async fn peer_session(
     rx: &mut mpsc::Receiver<OutboundMessage>,
     destination: &Arc<PeerDestination>,
     connect_attempts: &AtomicU64,
+    batch_wait: &crate::wait_profile::WaitSeries,
 ) {
     let url = format!("http://{}", destination.addr);
     let mut backoff = RECONNECT_MIN;
@@ -1263,8 +1299,12 @@ async fn peer_session(
             // best-effort), back off, retry.
             Ok(Err(_)) | Err(_) => {
                 for _ in 0..PEER_QUEUE {
-                    if rx.try_recv().is_err() {
-                        break;
+                    match rx.try_recv() {
+                        Ok(message) => crate::wait_profile::finish(
+                            message.observation,
+                            kv9_common::metrics::Outcome::Error,
+                        ),
+                        Err(_) => break,
                     }
                 }
                 tokio::time::sleep(backoff).await;
@@ -1300,14 +1340,24 @@ async fn peer_session(
             // its h2 layer still acks PINGs — reconnect). A bare send, or a
             // send/rpc select without a clock, are the two- and one-arm
             // versions of the same wedge as the unbudgeted connect.
+            let observation = batch_wait.sample(0);
             tokio::select! {
                 sent = batch_tx.send(batch) => {
+                    crate::wait_profile::finish(observation, if sent.is_ok() {
+                        kv9_common::metrics::Outcome::Success
+                    } else {
+                        kv9_common::metrics::Outcome::Rejected
+                    });
                     if sent.is_err() {
                         break 'batching; // stream side gone: reconnect
                     }
                 }
-                _ = &mut rpc => break 'batching,
+                _ = &mut rpc => {
+                    crate::wait_profile::finish(observation, kv9_common::metrics::Outcome::Error);
+                    break 'batching;
+                },
                 _ = tokio::time::sleep(STREAM_PROGRESS_BUDGET) => {
+                    crate::wait_profile::finish(observation, kv9_common::metrics::Outcome::Unconfirmed);
                     break 'batching; // stream stalled: drop it, reconnect
                 }
             }
@@ -1756,8 +1806,10 @@ mod tests {
 
     #[test]
     fn route_generation_filter_rejects_old_queue_entries_even_after_address_reuse() {
+        use kv9_common::metrics::Outcome;
         let rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(async {
+            let observations = crate::wait_profile::WaitSeries::new("test");
             let a = Arc::new(PeerDestination {
                 addr: "127.0.0.1:1".parse().unwrap(),
             });
@@ -1766,8 +1818,12 @@ mod tests {
             });
             let new_a = Arc::new(PeerDestination { addr: a.addr });
             let (tx, mut rx) = mpsc::channel(4);
-            for (destination, from_node) in [(a, 10), (b, 20), (new_a.clone(), 30)] {
+            for (kind, (destination, from_node)) in [(a, 10), (b, 20), (new_a.clone(), 30)]
+                .into_iter()
+                .enumerate()
+            {
                 tx.send(OutboundMessage {
+                    observation: observations.sample(kind),
                     destination,
                     envelope: pb::RaftEnvelope {
                         from_node,
@@ -1786,7 +1842,53 @@ mod tests {
                 30
             );
             assert!(receive_for_destination(&mut rx, &new_a).await.is_none());
+            let rows = observations.snapshots();
+            assert_eq!(
+                rows[0].latency.outcomes[Outcome::Replaced as usize].count,
+                1
+            );
+            assert_eq!(
+                rows[1].latency.outcomes[Outcome::Replaced as usize].count,
+                1
+            );
+            assert_eq!(rows[2].latency.outcomes[Outcome::Success as usize].count, 1);
+            assert!(rows.iter().all(|r| r.abandoned_unknown_duration == 0));
         });
+    }
+
+    #[test]
+    fn unknown_route_and_queue_overflow_are_observed_without_unbounding_admission() {
+        use kv9_common::metrics::Outcome;
+        // A non-running current-thread runtime keeps the bounded queue full.
+        let rt = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            None,
+            rt.handle().clone(),
+            test_root().root_digest,
+        );
+        transport.send(NodeId(9), Message::default());
+        transport.register_peer(NodeId(2), "127.0.0.1:1".parse().unwrap());
+        for _ in 0..PEER_QUEUE + 64 {
+            transport.send(NodeId(2), Message::default());
+        }
+        let rows = transport.wait_snapshots();
+        let row = &rows[6];
+        assert_eq!(row.attempts, (PEER_QUEUE + 65) as u64);
+        assert_eq!(row.latency.outcomes[Outcome::Rejected as usize].count, 2);
+        assert_eq!(row.latency.outcomes[Outcome::Success as usize].count, 0);
+        assert_eq!(
+            transport.peers.lock().unwrap()[&2]
+                .sender
+                .as_ref()
+                .unwrap()
+                .queue
+                .capacity(),
+            0
+        );
     }
 
     #[test]
@@ -1800,6 +1902,7 @@ mod tests {
         let (tx, mut rx) = mpsc::channel(MAX_BATCH_MSGS * 2);
         for index in 0..MAX_BATCH_MSGS {
             tx.try_send(OutboundMessage {
+                observation: None,
                 destination: stale.clone(),
                 envelope: pb::RaftEnvelope {
                     from_node: index as u64 + 2,
@@ -1809,6 +1912,7 @@ mod tests {
             .unwrap();
         }
         tx.try_send(OutboundMessage {
+            observation: None,
             destination: destination.clone(),
             envelope: pb::RaftEnvelope {
                 from_node: 999,
@@ -1859,6 +1963,7 @@ mod tests {
         );
         for index in 1..=MAX_BATCH_MSGS {
             tx.try_send(OutboundMessage {
+                observation: None,
                 destination: destination.clone(),
                 envelope: envelope(index as u64, 0),
             })
@@ -1880,6 +1985,7 @@ mod tests {
         );
         for id in 1..=2 {
             tx.try_send(OutboundMessage {
+                observation: None,
                 destination: destination.clone(),
                 envelope: envelope(id, MAX_BATCH_BYTES / 2 + 1),
             })
