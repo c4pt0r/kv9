@@ -1,6 +1,7 @@
 # Next isolated-read latency investigation
 
-Finish the frozen ThinLTO point/batch comparison before building another
+The full ThinLTO point/batch comparison and [main integration](RELEASE-THIN-LTO-MAIN-INTEGRATION.md)
+now pass. Begin from selected `11113f6`, whose server bytes reproduce the qualified
 candidate. This plan has no new profile, benchmark result or implementation.
 Track the work under #20 and the checkpoint in #9.
 
@@ -86,8 +87,9 @@ comparison. This map is source inspection, not new timing or instrumentation.
 ## Execution and decision
 
 1. Check the default and diagnostic feature builds, including the explicit
-   `kv9-raft/read-stage-timing` Clippy configuration missing from the historical
-   record. Add focused controls for context/generation matching, bounded loss
+   `kv9-raft/read-stage-timing` Clippy configuration now confirmed during main
+   integration (the older diagnostic record had a different command). Add
+   focused controls for context/generation matching, bounded loss
    accounting and confirmation/fence ordering. Existing accepted tests keep
    their original source scope.
 2. Freeze the source, build, clients, event schema and acceptance reader before

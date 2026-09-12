@@ -4,8 +4,10 @@ Candidate `02d0c01024b65a84b220c6948ff2224bfa7900bc` passes full-workspace relea
 checks and ordinary streaming/unary process recovery. Its
 [earlier screen](RELEASE-THIN-LTO-PERFORMANCE.md) and subsequent
 [complete72 point/batch comparison](RELEASE-THIN-LTO-FULL72.md) are accepted.
-Fresh main integration checks remain pending, with the full72 batch-write p99
-tradeoff disclosed. The exact
+[Fresh main integration](RELEASE-THIN-LTO-MAIN-INTEGRATION.md) now passes as
+`11113f6`, reproducing the qualified executable bytes and preserving the full72
+batch-write p99 tradeoff. The records below remain the original `02d0c01`
+qualification. The exact
 build now also passes the [21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md),
 with 9,923 complete history operations and independently verified cleanup.
 

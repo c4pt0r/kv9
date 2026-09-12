@@ -10,8 +10,9 @@ their default builds. Consensus semantics and the fixed v3 clients are unchanged
 
 This is the earlier favorable 24-cohort screen. The subsequent
 [complete72 point/batch comparison](RELEASE-THIN-LTO-FULL72.md) now passes,
-retaining a loaded batch-write p99 tradeoff. Selected runtime remains CRC
-`ca0002c7` pending fresh main integration checks. The exact build
+retaining a loaded batch-write p99 tradeoff. [Main integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md)
+now passes fresh checks/build/recovery and reproduces the qualified executable
+bytes. These earlier measurements retain their original scope. The exact build
 now passes the [21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md); that
 correctness run adds no new throughput or latency measurement.
 The read-performance milestone remains open before dynamic multi-Raft and
@@ -24,7 +25,7 @@ Both ten-second repetitions are pooled by actual counts and elapsed time.
 Quantiles are intervals from merged raw histogram buckets, not averages of
 percentiles. Mixed throughput counts GET and PUT together.
 
-| Metric | Selected CRC | ThinLTO | Redis |
+| Metric | CRC baseline | ThinLTO | Redis |
 | --- | ---: | ---: | ---: |
 | c1 GET calls/s | 26,591.615 | **28,293.988** | 174,022.103 |
 | c1 GET mean us | 37.485 | **35.226** | 5.671 |
@@ -95,7 +96,7 @@ runtime-memory comparison. Compiler correctness remains a premise.
    cleanup. Preserve this scoped result and the original failed delay-selection
    attempt. Dedicated link/FSYNC and broader industrial fault obligations remain
    separate; ordinary process recovery does not substitute for actual injection.
-3. Advance to fresh main integration checks with the full72 batch-write tail
+3. Fresh main integration now passes with the full72 batch-write tail
    tradeoff disclosed; evaluate combination with `42e0117` separately. Its
    historical notification improvement cannot be added to this percentage.
 4. Continue reducing isolated read latency with the
