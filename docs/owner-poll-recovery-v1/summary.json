@@ -1,0 +1,52 @@
+{
+  "complete": true,
+  "revision": "2ca5fccb157b26b6c3c79eb52f7c7838f10a5c8c",
+  "operations": 363,
+  "outcomes": {
+    "ok": 334,
+    "unknown": 29
+  },
+  "fresh_drains": 6,
+  "server_lifetimes": 5,
+  "client_lifetimes": 2,
+  "release": {
+    "complete": true,
+    "revision": "2ca5fccb157b26b6c3c79eb52f7c7838f10a5c8c",
+    "source_tree_sha256": "287ffd0ed8327b43adfa3642b85f19b7ea54b71d16838a90173b74ef660b483b",
+    "server_sha256": "c2a31c8158ddeb811bffe8b1babbfd062e571e2345669f9b6663d8794cc0c3b2",
+    "manifest_sha256": "a8158b963a390676898b7e9e490ad0b70e2308efe81b653294a0f6d835b1128d",
+    "cache_receipt_sha256": "9582013acfda9b69ede9540c1e7754e5c4b7b0cbef040c3b912a18e91e9071a7",
+    "workload_sha256": "ce632f50191616b87085bb4cb5e12bb9675a7a7538a9e2d5234cad2aaf8eb709",
+    "workload_manifest_sha256": "6c655d5ca47211d965c88af5d8e5841ef75e7b9b9386c6e55a1dcadaebb61a6e",
+    "first_observed_units": 11,
+    "artifact_observations": 20,
+    "default_feature_observations": 20,
+    "source_count": 716,
+    "rustc": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8\n",
+    "instrumentation_enabled": false,
+    "production_codegen_sha256": "fcd57917110b016ea32b6a55b6eecd997a633046232eb4114b1c33d9d16d682f",
+    "panic": "unwind",
+    "target_cpu": "unchanged default target",
+    "lto": "thin",
+    "codegen_units": 1,
+    "source_gate_receipt": "/tmp/kv9-bounded-owner-poll/docs/owner-poll-source-v1/qualification.json",
+    "source_gate_sha256": "ff2138e21cd3f62ec0f9488e727eec0ad67bf5adf4cf58b87a9fb6f4892829be",
+    "documentation_changes_after_source_gate": [
+      "docs/BOUNDED-OWNER-POLL.md",
+      "docs/owner-poll-source-v1/archive-inventory.json",
+      "docs/owner-poll-source-v1/original-evidence.tar.gz",
+      "docs/owner-poll-source-v1/proof-summary.json",
+      "docs/owner-poll-source-v1/qualification.json"
+    ]
+  },
+  "recovery_terminal": {
+    "session": 33692,
+    "receipt": "ec0bb4",
+    "exit_code": 0
+  },
+  "audit_terminal": {
+    "receipt": "789e8a",
+    "exit_code": 0
+  },
+  "scope": "Default production build and ordinary local stream/unary atomic point/batch histories with leader loss and original-directory restart. No performance, actual Chaos Mesh, independent host or power-loss acceptance."
+}
