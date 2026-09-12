@@ -1,0 +1,2261 @@
+{
+  "version": 1,
+  "complete": true,
+  "scope": "Two-repeat 10-second selected KV9 versus Redis WAIT1/WAIT2 point/batch64 writes; all three servers counted. No equal durability, continuous replica health, sustained capacity or full-history claim.",
+  "audit_path": "/tmp/kv9-write-redis3-audit-repair-first/results-first/audit.json",
+  "audit_sha256": "58dcc6d906ad2eaed497a5d1374e679bc333f3937fd6e757b79d5408357b2a69",
+  "timed_cohorts": 24,
+  "smoke_cohorts": 12,
+  "measured_successful_calls": 18993624,
+  "measured_successful_items": 259615761,
+  "measured_unknown_writes": 0,
+  "measured_errors": 0,
+  "measured_dropped_slots": 0,
+  "all_measured_data_calls_single_attempt": true,
+  "rate_aggregation": "Sum successful calls/items divided by sum cohort elapsed time; two opposite target orders",
+  "latency_aggregation": "Merged successful whole-call raw histograms; percentiles are bucket bounds, not averaged quantiles",
+  "cpu_scope": "Recomputed from first/last in-window proc process user+system ticks and each process monotonic sample duration; 100 ticks/s on the same captured boot. Three server rates summed; endpoint gaps <=150 ms, no substage attribution.",
+  "cpu_ticks_per_second": 100,
+  "pooled": [
+    {
+      "workload": "point",
+      "concurrency": 1,
+      "target": "kv9",
+      "successful_calls": 385807,
+      "successful_items": 385807,
+      "elapsed_seconds": 20.000062453,
+      "calls_per_second": 19290.28976317667,
+      "items_per_second": 19290.28976317667,
+      "whole_call_latency": {
+        "count": 385807,
+        "sum_ns": 19961222197,
+        "mean_ns": 51738.8803132136,
+        "p50": {
+          "lower_ns": 50688,
+          "upper_ns": 51199
+        },
+        "p95": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        },
+        "p99": {
+          "lower_ns": 66560,
+          "upper_ns": 67583
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 0.14858363022197862,
+        "voter-1": 0.638886190953887,
+        "voter-2": 1.2382489455878716,
+        "voter-3": 0.6443891988004612
+      },
+      "server_cpu_cores": 2.5215243353422196,
+      "client_cpu_cores": 0.14858363022197862,
+      "calls_per_second_min": 19254.018083780065,
+      "calls_per_second_max": 19326.561524681314,
+      "ordinals": [
+        0,
+        23
+      ]
+    },
+    {
+      "workload": "point",
+      "concurrency": 1,
+      "target": "redis-wait1",
+      "successful_calls": 1522318,
+      "successful_items": 1522318,
+      "elapsed_seconds": 20.000011565,
+      "calls_per_second": 76115.85598600627,
+      "items_per_second": 76115.85598600627,
+      "whole_call_latency": {
+        "count": 1522318,
+        "sum_ns": 19813841116,
+        "mean_ns": 13015.573037959217,
+        "p50": {
+          "lower_ns": 12800,
+          "upper_ns": 12927
+        },
+        "p95": {
+          "lower_ns": 13952,
+          "upper_ns": 14079
+        },
+        "p99": {
+          "lower_ns": 16256,
+          "upper_ns": 16383
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 0.48847416006556205,
+        "redis-primary": 0.7508274423580062,
+        "redis-replica-a": 0.2558143944566908,
+        "redis-replica-b": 0.2543040563206511
+      },
+      "server_cpu_cores": 1.260945893135348,
+      "client_cpu_cores": 0.48847416006556205,
+      "calls_per_second_min": 75873.4522148998,
+      "calls_per_second_max": 76358.25978210456,
+      "ordinals": [
+        1,
+        22
+      ]
+    },
+    {
+      "workload": "point",
+      "concurrency": 1,
+      "target": "redis-wait2",
+      "successful_calls": 1290798,
+      "successful_items": 1290798,
+      "elapsed_seconds": 20.000011148,
+      "calls_per_second": 64539.864025479794,
+      "items_per_second": 64539.864025479794,
+      "whole_call_latency": {
+        "count": 1290798,
+        "sum_ns": 19840739827,
+        "mean_ns": 15370.909954152392,
+        "p50": {
+          "lower_ns": 15104,
+          "upper_ns": 15231
+        },
+        "p95": {
+          "lower_ns": 16384,
+          "upper_ns": 16639
+        },
+        "p99": {
+          "lower_ns": 19200,
+          "upper_ns": 19455
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 0.4216923890228217,
+        "redis-primary": 0.6806824242719537,
+        "redis-replica-a": 0.23629990534660647,
+        "redis-replica-b": 0.21614726139158585
+      },
+      "server_cpu_cores": 1.133129591010146,
+      "client_cpu_cores": 0.4216923890228217,
+      "calls_per_second_min": 64418.27927019773,
+      "calls_per_second_max": 64661.448723471156,
+      "ordinals": [
+        2,
+        21
+      ]
+    },
+    {
+      "workload": "point",
+      "concurrency": 64,
+      "target": "kv9",
+      "successful_calls": 2730467,
+      "successful_items": 2730467,
+      "elapsed_seconds": 20.000555553,
+      "calls_per_second": 136519.55780750504,
+      "items_per_second": 136519.55780750504,
+      "whole_call_latency": {
+        "count": 2730467,
+        "sum_ns": 1279688890667,
+        "mean_ns": 468670.3375895039,
+        "p50": {
+          "lower_ns": 446464,
+          "upper_ns": 450559
+        },
+        "p95": {
+          "lower_ns": 638976,
+          "upper_ns": 647167
+        },
+        "p99": {
+          "lower_ns": 753664,
+          "upper_ns": 761855
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 0.42333809121891186,
+        "voter-1": 0.6098610823142243,
+        "voter-2": 2.3519603117197256,
+        "voter-3": 0.5982869877233786
+      },
+      "server_cpu_cores": 3.5601083817573285,
+      "client_cpu_cores": 0.42333809121891186,
+      "calls_per_second_min": 136444.394959572,
+      "calls_per_second_max": 136594.72287533645,
+      "ordinals": [
+        6,
+        17
+      ]
+    },
+    {
+      "workload": "point",
+      "concurrency": 64,
+      "target": "redis-wait1",
+      "successful_calls": 4595372,
+      "successful_items": 4595372,
+      "elapsed_seconds": 20.000734121,
+      "calls_per_second": 229760.16641184367,
+      "items_per_second": 229760.16641184367,
+      "whole_call_latency": {
+        "count": 4595372,
+        "sum_ns": 1279285710466,
+        "mean_ns": 278385.66942262783,
+        "p50": {
+          "lower_ns": 278528,
+          "upper_ns": 282623
+        },
+        "p95": {
+          "lower_ns": 307200,
+          "upper_ns": 311295
+        },
+        "p99": {
+          "lower_ns": 323584,
+          "upper_ns": 327679
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 1.1573746396456128,
+        "redis-primary": 0.9999231224682338,
+        "redis-replica-a": 0.09360156857158361,
+        "redis-replica-b": 0.09360185724636061
+      },
+      "server_cpu_cores": 1.187126548286178,
+      "client_cpu_cores": 1.1573746396456128,
+      "calls_per_second_min": 229465.32505152255,
+      "calls_per_second_max": 230055.01150388803,
+      "ordinals": [
+        7,
+        16
+      ]
+    },
+    {
+      "workload": "point",
+      "concurrency": 64,
+      "target": "redis-wait2",
+      "successful_calls": 4649463,
+      "successful_items": 4649463,
+      "elapsed_seconds": 20.000693984,
+      "calls_per_second": 232465.08364756947,
+      "items_per_second": 232465.08364756947,
+      "whole_call_latency": {
+        "count": 4649463,
+        "sum_ns": 1279297972153,
+        "mean_ns": 275149.6188168397,
+        "p50": {
+          "lower_ns": 274432,
+          "upper_ns": 278527
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 299008,
+          "upper_ns": 303103
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 1.1330450384307398,
+        "redis-primary": 0.9994669580038985,
+        "redis-replica-a": 0.0914084017838734,
+        "redis-replica-b": 0.09291531456876395
+      },
+      "server_cpu_cores": 1.1837906743565358,
+      "client_cpu_cores": 1.1330450384307398,
+      "calls_per_second_min": 231811.25704039232,
+      "calls_per_second_max": 233118.90855851996,
+      "ordinals": [
+        8,
+        15
+      ]
+    },
+    {
+      "workload": "batch64",
+      "concurrency": 1,
+      "target": "kv9",
+      "successful_calls": 116593,
+      "successful_items": 7461952,
+      "elapsed_seconds": 20.006281879,
+      "calls_per_second": 5827.819517147972,
+      "items_per_second": 372980.4490974702,
+      "whole_call_latency": {
+        "count": 116593,
+        "sum_ns": 19993532814,
+        "mean_ns": 171481.41667166984,
+        "p50": {
+          "lower_ns": 165888,
+          "upper_ns": 167935
+        },
+        "p95": {
+          "lower_ns": 190464,
+          "upper_ns": 192511
+        },
+        "p99": {
+          "lower_ns": 217088,
+          "upper_ns": 219135
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 0.14259264425388155,
+        "voter-1": 0.4594057922352434,
+        "voter-2": 0.9393991334999162,
+        "voter-3": 0.45890576342668926
+      },
+      "server_cpu_cores": 1.857710689161849,
+      "client_cpu_cores": 0.14259264425388155,
+      "calls_per_second_min": 5824.910889930715,
+      "calls_per_second_max": 5830.7264072584,
+      "ordinals": [
+        3,
+        20
+      ]
+    },
+    {
+      "workload": "batch64",
+      "concurrency": 1,
+      "target": "redis-wait1",
+      "successful_calls": 473538,
+      "successful_items": 30306432,
+      "elapsed_seconds": 20.000045939,
+      "calls_per_second": 23676.845615469465,
+      "items_per_second": 1515318.1193900458,
+      "whole_call_latency": {
+        "count": 473538,
+        "sum_ns": 19469307694,
+        "mean_ns": 41114.56249340074,
+        "p50": {
+          "lower_ns": 40448,
+          "upper_ns": 40959
+        },
+        "p95": {
+          "lower_ns": 43520,
+          "upper_ns": 44031
+        },
+        "p99": {
+          "lower_ns": 52224,
+          "upper_ns": 52735
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 0.41764155357054294,
+        "redis-primary": 0.521804354093189,
+        "redis-replica-a": 0.2702121208911283,
+        "redis-replica-b": 0.27323227721357196
+      },
+      "server_cpu_cores": 1.0652487521978893,
+      "client_cpu_cores": 0.41764155357054294,
+      "calls_per_second_min": 23668.686014173432,
+      "calls_per_second_max": 23685.00518892423,
+      "ordinals": [
+        4,
+        19
+      ]
+    },
+    {
+      "workload": "batch64",
+      "concurrency": 1,
+      "target": "redis-wait2",
+      "successful_calls": 447779,
+      "successful_items": 28657856,
+      "elapsed_seconds": 20.000011544,
+      "calls_per_second": 22388.93707710552,
+      "items_per_second": 1432891.9729347532,
+      "whole_call_latency": {
+        "count": 447779,
+        "sum_ns": 19497805794,
+        "mean_ns": 43543.368031997925,
+        "p50": {
+          "lower_ns": 43008,
+          "upper_ns": 43519
+        },
+        "p95": {
+          "lower_ns": 47104,
+          "upper_ns": 47615
+        },
+        "p99": {
+          "lower_ns": 56320,
+          "upper_ns": 56831
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 0.3970075669266886,
+        "redis-primary": 0.5041975312988553,
+        "redis-replica-a": 0.2571315459168072,
+        "redis-replica-b": 0.25763550077892383
+      },
+      "server_cpu_cores": 1.0189645779945864,
+      "client_cpu_cores": 0.3970075669266886,
+      "calls_per_second_min": 22353.882780804095,
+      "calls_per_second_max": 22423.99138694491,
+      "ordinals": [
+        5,
+        18
+      ]
+    },
+    {
+      "workload": "batch64",
+      "concurrency": 64,
+      "target": "kv9",
+      "successful_calls": 277466,
+      "successful_items": 17757824,
+      "elapsed_seconds": 20.008358467,
+      "calls_per_second": 13867.504446085752,
+      "items_per_second": 887520.2845494881,
+      "whole_call_latency": {
+        "count": 277466,
+        "sum_ns": 1280128722869,
+        "mean_ns": 4613641.753832902,
+        "p50": {
+          "lower_ns": 4325376,
+          "upper_ns": 4390911
+        },
+        "p95": {
+          "lower_ns": 6815744,
+          "upper_ns": 6881279
+        },
+        "p99": {
+          "lower_ns": 9437184,
+          "upper_ns": 9568255
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 0.41160943412637196,
+        "voter-1": 0.7723960083208912,
+        "voter-2": 1.7752566577476474,
+        "voter-3": 0.7724009777803951
+      },
+      "server_cpu_cores": 3.320053643848934,
+      "client_cpu_cores": 0.41160943412637196,
+      "calls_per_second_min": 13738.204430081092,
+      "calls_per_second_max": 13996.771615302912,
+      "ordinals": [
+        9,
+        14
+      ]
+    },
+    {
+      "workload": "batch64",
+      "concurrency": 64,
+      "target": "redis-wait1",
+      "successful_calls": 1254238,
+      "successful_items": 80271232,
+      "elapsed_seconds": 20.001350612,
+      "calls_per_second": 62707.66531373677,
+      "items_per_second": 4013290.580079153,
+      "whole_call_latency": {
+        "count": 1254238,
+        "sum_ns": 1273959587087,
+        "mean_ns": 1015723.9591584691,
+        "p50": {
+          "lower_ns": 1032192,
+          "upper_ns": 1040383
+        },
+        "p95": {
+          "lower_ns": 1163264,
+          "upper_ns": 1179647
+        },
+        "p99": {
+          "lower_ns": 1245184,
+          "upper_ns": 1261567
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 1.3621232446980134,
+        "redis-primary": 0.9996756886121982,
+        "redis-replica-a": 0.4993381944033566,
+        "redis-replica-b": 0.50034273522484
+      },
+      "server_cpu_cores": 1.9993566182403948,
+      "client_cpu_cores": 1.3621232446980134,
+      "calls_per_second_min": 62584.068046449735,
+      "calls_per_second_max": 62831.26181329181,
+      "ordinals": [
+        10,
+        13
+      ]
+    },
+    {
+      "workload": "batch64",
+      "concurrency": 64,
+      "target": "redis-wait2",
+      "successful_calls": 1249785,
+      "successful_items": 79986240,
+      "elapsed_seconds": 20.001193035,
+      "calls_per_second": 62485.5226292255,
+      "items_per_second": 3999073.448270432,
+      "whole_call_latency": {
+        "count": 1249785,
+        "sum_ns": 1273898772536,
+        "mean_ns": 1019294.3366547046,
+        "p50": {
+          "lower_ns": 1032192,
+          "upper_ns": 1040383
+        },
+        "p95": {
+          "lower_ns": 1179648,
+          "upper_ns": 1196031
+        },
+        "p99": {
+          "lower_ns": 1277952,
+          "upper_ns": 1294335
+        }
+      },
+      "cpu_cores_by_role": {
+        "client": 1.3607433658831167,
+        "redis-primary": 1.000370939602368,
+        "redis-replica-a": 0.4989328047659679,
+        "redis-replica-b": 0.5014443798169476
+      },
+      "server_cpu_cores": 2.000748124185283,
+      "client_cpu_cores": 1.3607433658831167,
+      "calls_per_second_min": 62303.711695285,
+      "calls_per_second_max": 62667.336316458306,
+      "ordinals": [
+        11,
+        12
+      ]
+    }
+  ],
+  "repetitions": [
+    {
+      "ordinal": 0,
+      "repeat": 0,
+      "target": "kv9",
+      "workload": "point",
+      "concurrency": 1,
+      "successful_calls": 192541,
+      "successful_items": 192541,
+      "elapsed_ns": 10000042545,
+      "calls_per_second": 19254.018083780065,
+      "items_per_second": 19254.018083780065,
+      "whole_call_latency": {
+        "count": 192541,
+        "sum_ns": 9980315996,
+        "mean_ns": 51834.757251702234,
+        "p50": {
+          "lower_ns": 50688,
+          "upper_ns": 51199
+        },
+        "p95": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        },
+        "p99": {
+          "lower_ns": 66560,
+          "upper_ns": 67583
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 1.48,
+          "sample_seconds": 9.995309543,
+          "cpu_cores": 0.14806945133945212
+        },
+        "voter-1": {
+          "cpu_seconds": 6.4,
+          "sample_seconds": 9.995120068,
+          "cpu_cores": 0.6403124681303228
+        },
+        "voter-2": {
+          "cpu_seconds": 12.38,
+          "sample_seconds": 9.995120951,
+          "cpu_cores": 1.2386043211174345
+        },
+        "voter-3": {
+          "cpu_seconds": 6.4,
+          "sample_seconds": 9.995132371,
+          "cpu_cores": 0.6403116799702462
+        }
+      },
+      "outcomes": {
+        "success": 192541,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 192541,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/000-kv9-point-r000-p00001/run/report.json",
+      "source_report_sha256": "ab60e78cf2e98040789b742aed01e50ba54ed9d5fbb9f425bd9fcd73f6cb6bc5"
+    },
+    {
+      "ordinal": 1,
+      "repeat": 0,
+      "target": "redis-wait1",
+      "workload": "point",
+      "concurrency": 1,
+      "successful_calls": 763583,
+      "successful_items": 763583,
+      "elapsed_ns": 10000005267,
+      "calls_per_second": 76358.25978210456,
+      "items_per_second": 76358.25978210456,
+      "whole_call_latency": {
+        "count": 763583,
+        "sum_ns": 9906619979,
+        "mean_ns": 12973.86136019267,
+        "p50": {
+          "lower_ns": 12672,
+          "upper_ns": 12799
+        },
+        "p95": {
+          "lower_ns": 13952,
+          "upper_ns": 14079
+        },
+        "p99": {
+          "lower_ns": 16256,
+          "upper_ns": 16383
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 4.86,
+          "sample_seconds": 9.925974139,
+          "cpu_cores": 0.4896244874248307
+        },
+        "redis-primary": {
+          "cpu_seconds": 7.45,
+          "sample_seconds": 9.926314045,
+          "cpu_cores": 0.7505303545934708
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 2.54,
+          "sample_seconds": 9.926399405,
+          "cpu_cores": 0.2558833164340117
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 2.53,
+          "sample_seconds": 9.926390469,
+          "cpu_cores": 0.2548761312484291
+        }
+      },
+      "outcomes": {
+        "success": 763583,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 763583,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/001-redis-wait1-point-r000-p00001/run/report.json",
+      "source_report_sha256": "6d9f02b30fdf9e30cf1f22e54db9b6fa8f4edc3b0a84d5bd52bc7d73abd18e51"
+    },
+    {
+      "ordinal": 2,
+      "repeat": 0,
+      "target": "redis-wait2",
+      "workload": "point",
+      "concurrency": 1,
+      "successful_calls": 646615,
+      "successful_items": 646615,
+      "elapsed_ns": 10000007930,
+      "calls_per_second": 64661.448723471156,
+      "items_per_second": 64661.448723471156,
+      "whole_call_latency": {
+        "count": 646615,
+        "sum_ns": 9920611362,
+        "mean_ns": 15342.377399225195,
+        "p50": {
+          "lower_ns": 15104,
+          "upper_ns": 15231
+        },
+        "p95": {
+          "lower_ns": 16384,
+          "upper_ns": 16639
+        },
+        "p99": {
+          "lower_ns": 19200,
+          "upper_ns": 19455
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 4.18,
+          "sample_seconds": 9.92402009,
+          "cpu_cores": 0.42120027590552767
+        },
+        "redis-primary": {
+          "cpu_seconds": 6.76,
+          "sample_seconds": 9.923728856,
+          "cpu_cores": 0.6811955564377221
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 2.34,
+          "sample_seconds": 9.923691365,
+          "cpu_cores": 0.2357993526736409
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 2.15,
+          "sample_seconds": 9.923654226,
+          "cpu_cores": 0.2166540622069433
+        }
+      },
+      "outcomes": {
+        "success": 646615,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 646615,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/002-redis-wait2-point-r000-p00001/run/report.json",
+      "source_report_sha256": "133c865c00d1dc9805d698583e3f4cc589d39aea0e81dc5a6f9563468d724a43"
+    },
+    {
+      "ordinal": 3,
+      "repeat": 0,
+      "target": "kv9",
+      "workload": "batch64",
+      "concurrency": 1,
+      "successful_calls": 58343,
+      "successful_items": 3733952,
+      "elapsed_ns": 10006128898,
+      "calls_per_second": 5830.7264072584,
+      "items_per_second": 373166.4900645376,
+      "whole_call_latency": {
+        "count": 58343,
+        "sum_ns": 9999833369,
+        "mean_ns": 171397.3119140257,
+        "p50": {
+          "lower_ns": 165888,
+          "upper_ns": 167935
+        },
+        "p95": {
+          "lower_ns": 190464,
+          "upper_ns": 192511
+        },
+        "p99": {
+          "lower_ns": 217088,
+          "upper_ns": 219135
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 1.42,
+          "sample_seconds": 9.960187745,
+          "cpu_cores": 0.14256759373966998
+        },
+        "voter-1": {
+          "cpu_seconds": 4.6,
+          "sample_seconds": 9.960304524,
+          "cpu_cores": 0.46183326914513523
+        },
+        "voter-2": {
+          "cpu_seconds": 9.36,
+          "sample_seconds": 9.960280158,
+          "cpu_cores": 0.9397326030515456
+        },
+        "voter-3": {
+          "cpu_seconds": 4.59,
+          "sample_seconds": 9.960256363,
+          "cpu_cores": 0.4608315120332411
+        }
+      },
+      "outcomes": {
+        "success": 58343,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 58343,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/003-kv9-batch64-r000-p00001/run/report.json",
+      "source_report_sha256": "5e66487f0a94ca85143d2c040544f9157d872710eae57dc678e7ff0acfec1cb8"
+    },
+    {
+      "ordinal": 4,
+      "repeat": 0,
+      "target": "redis-wait1",
+      "workload": "batch64",
+      "concurrency": 1,
+      "successful_calls": 236687,
+      "successful_items": 15147968,
+      "elapsed_ns": 10000005909,
+      "calls_per_second": 23668.686014173432,
+      "items_per_second": 1514795.9049070997,
+      "whole_call_latency": {
+        "count": 236687,
+        "sum_ns": 9734858391,
+        "mean_ns": 41129.670793072706,
+        "p50": {
+          "lower_ns": 40448,
+          "upper_ns": 40959
+        },
+        "p95": {
+          "lower_ns": 43520,
+          "upper_ns": 44031
+        },
+        "p99": {
+          "lower_ns": 52224,
+          "upper_ns": 52735
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 4.16,
+          "sample_seconds": 9.940093553,
+          "cpu_cores": 0.41850712750530183
+        },
+        "redis-primary": {
+          "cpu_seconds": 5.17,
+          "sample_seconds": 9.940198449,
+          "cpu_cores": 0.5201103405053357
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 2.69,
+          "sample_seconds": 9.940165096,
+          "cpu_cores": 0.2706192476704916
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 2.72,
+          "sample_seconds": 9.940127436,
+          "cpu_cores": 0.27363834291993283
+        }
+      },
+      "outcomes": {
+        "success": 236687,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 236687,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/004-redis-wait1-batch64-r000-p00001/run/report.json",
+      "source_report_sha256": "2610a54a3043f21039f713a092ab84b2359337fc10e3549d1ee5b7a661d73639"
+    },
+    {
+      "ordinal": 5,
+      "repeat": 0,
+      "target": "redis-wait2",
+      "workload": "batch64",
+      "concurrency": 1,
+      "successful_calls": 223539,
+      "successful_items": 14306496,
+      "elapsed_ns": 10000007703,
+      "calls_per_second": 22353.882780804095,
+      "items_per_second": 1430648.497971462,
+      "whole_call_latency": {
+        "count": 223539,
+        "sum_ns": 9749024318,
+        "mean_ns": 43612.185426256714,
+        "p50": {
+          "lower_ns": 43520,
+          "upper_ns": 44031
+        },
+        "p95": {
+          "lower_ns": 47104,
+          "upper_ns": 47615
+        },
+        "p99": {
+          "lower_ns": 56320,
+          "upper_ns": 56831
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 3.94,
+          "sample_seconds": 9.940321479,
+          "cpu_cores": 0.3963654503854503
+        },
+        "redis-primary": {
+          "cpu_seconds": 5.02,
+          "sample_seconds": 9.940146432,
+          "cpu_cores": 0.5050227412987872
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 2.55,
+          "sample_seconds": 9.940110304,
+          "cpu_cores": 0.25653638863281575
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 2.56,
+          "sample_seconds": 9.940080278,
+          "cpu_cores": 0.2575431916446339
+        }
+      },
+      "outcomes": {
+        "success": 223539,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 223539,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/005-redis-wait2-batch64-r000-p00001/run/report.json",
+      "source_report_sha256": "f94deddfeb2a638745e18275bc3ab60eb0ce9072928807fc25da107ddba5a454"
+    },
+    {
+      "ordinal": 6,
+      "repeat": 0,
+      "target": "kv9",
+      "workload": "point",
+      "concurrency": 64,
+      "successful_calls": 1364502,
+      "successful_items": 1364502,
+      "elapsed_ns": 10000425451,
+      "calls_per_second": 136444.394959572,
+      "items_per_second": 136444.394959572,
+      "whole_call_latency": {
+        "count": 1364502,
+        "sum_ns": 639848514646,
+        "mean_ns": 468924.5707562173,
+        "p50": {
+          "lower_ns": 446464,
+          "upper_ns": 450559
+        },
+        "p95": {
+          "lower_ns": 638976,
+          "upper_ns": 647167
+        },
+        "p99": {
+          "lower_ns": 753664,
+          "upper_ns": 761855
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 4.21,
+          "sample_seconds": 9.957768727,
+          "cpu_cores": 0.4227854768894956
+        },
+        "voter-1": {
+          "cpu_seconds": 6.06,
+          "sample_seconds": 9.958010158,
+          "cpu_cores": 0.6085553141489374
+        },
+        "voter-2": {
+          "cpu_seconds": 23.41,
+          "sample_seconds": 9.958021609,
+          "cpu_cores": 2.350868567993685
+        },
+        "voter-3": {
+          "cpu_seconds": 5.95,
+          "sample_seconds": 9.958212867,
+          "cpu_cores": 0.5974967676898526
+        }
+      },
+      "outcomes": {
+        "success": 1364502,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 1364502,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/006-kv9-point-r000-p00064/run/report.json",
+      "source_report_sha256": "c678c77aa01dde9b5338ab539f813dee731e997616614a0ad17880a90ab3f9c6"
+    },
+    {
+      "ordinal": 7,
+      "repeat": 0,
+      "target": "redis-wait1",
+      "workload": "point",
+      "concurrency": 64,
+      "successful_calls": 2294752,
+      "successful_items": 2294752,
+      "elapsed_ns": 10000430346,
+      "calls_per_second": 229465.32505152255,
+      "items_per_second": 229465.32505152255,
+      "whole_call_latency": {
+        "count": 2294752,
+        "sum_ns": 639643622209,
+        "mean_ns": 278741.9390892785,
+        "p50": {
+          "lower_ns": 278528,
+          "upper_ns": 282623
+        },
+        "p95": {
+          "lower_ns": 307200,
+          "upper_ns": 311295
+        },
+        "p99": {
+          "lower_ns": 323584,
+          "upper_ns": 327679
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 11.51,
+          "sample_seconds": 9.932021083,
+          "cpu_cores": 1.1588779266388112
+        },
+        "redis-primary": {
+          "cpu_seconds": 9.93,
+          "sample_seconds": 9.931738815,
+          "cpu_cores": 0.9998249234064257
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 0.9,
+          "sample_seconds": 9.931707126,
+          "cpu_cores": 0.09061886225419492
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 0.91,
+          "sample_seconds": 9.931678432,
+          "cpu_cores": 0.09162600322096293
+        }
+      },
+      "outcomes": {
+        "success": 2294752,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 2294752,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/007-redis-wait1-point-r000-p00064/run/report.json",
+      "source_report_sha256": "3c2a03c807793bb7d706ce4e39822063af69cf158d4f09efde66def806a21215"
+    },
+    {
+      "ordinal": 8,
+      "repeat": 0,
+      "target": "redis-wait2",
+      "workload": "point",
+      "concurrency": 64,
+      "successful_calls": 2331273,
+      "successful_items": 2331273,
+      "elapsed_ns": 10000359964,
+      "calls_per_second": 233118.90855851996,
+      "items_per_second": 233118.90855851996,
+      "whole_call_latency": {
+        "count": 2331273,
+        "sum_ns": 639643416972,
+        "mean_ns": 274375.1662598074,
+        "p50": {
+          "lower_ns": 270336,
+          "upper_ns": 274431
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 299008,
+          "upper_ns": 303103
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 11.27,
+          "sample_seconds": 9.930675825,
+          "cpu_cores": 1.134867374446794
+        },
+        "redis-primary": {
+          "cpu_seconds": 9.92,
+          "sample_seconds": 9.930532086,
+          "cpu_cores": 0.9989394237983634
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 0.91,
+          "sample_seconds": 9.930595866,
+          "cpu_cores": 0.09163599166447037
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 0.92,
+          "sample_seconds": 9.930593471,
+          "cpu_cores": 0.09264300292692951
+        }
+      },
+      "outcomes": {
+        "success": 2331273,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 2331273,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/008-redis-wait2-point-r000-p00064/run/report.json",
+      "source_report_sha256": "3a413261e3722a038814b81dbbe6fe0166cf6898f213cd0fbda8aa60cbd6502c"
+    },
+    {
+      "ordinal": 9,
+      "repeat": 0,
+      "target": "kv9",
+      "workload": "batch64",
+      "concurrency": 64,
+      "successful_calls": 140044,
+      "successful_items": 8962816,
+      "elapsed_ns": 10005450103,
+      "calls_per_second": 13996.771615302912,
+      "items_per_second": 895793.3833793864,
+      "whole_call_latency": {
+        "count": 140044,
+        "sum_ns": 640105949500,
+        "mean_ns": 4570748.832509783,
+        "p50": {
+          "lower_ns": 4325376,
+          "upper_ns": 4390911
+        },
+        "p95": {
+          "lower_ns": 6684672,
+          "upper_ns": 6750207
+        },
+        "p99": {
+          "lower_ns": 8650752,
+          "upper_ns": 8781823
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 4.15,
+          "sample_seconds": 9.943432435,
+          "cpu_cores": 0.41736090903502987
+        },
+        "voter-1": {
+          "cpu_seconds": 7.67,
+          "sample_seconds": 9.943511423,
+          "cpu_cores": 0.7713572875532463
+        },
+        "voter-2": {
+          "cpu_seconds": 17.71,
+          "sample_seconds": 9.943490153,
+          "cpu_cores": 1.7810647697636433
+        },
+        "voter-3": {
+          "cpu_seconds": 7.64,
+          "sample_seconds": 9.943566225,
+          "cpu_cores": 0.7683360101521323
+        }
+      },
+      "outcomes": {
+        "success": 140044,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 140044,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/009-kv9-batch64-r000-p00064/run/report.json",
+      "source_report_sha256": "4777de16ce12ea481f539a084bf5a8c075356a73e606f1df55f975c45d448a7e"
+    },
+    {
+      "ordinal": 10,
+      "repeat": 0,
+      "target": "redis-wait1",
+      "workload": "batch64",
+      "concurrency": 64,
+      "successful_calls": 628357,
+      "successful_items": 40214848,
+      "elapsed_ns": 10000706366,
+      "calls_per_second": 62831.26181329181,
+      "items_per_second": 4021200.7560506756,
+      "whole_call_latency": {
+        "count": 628357,
+        "sum_ns": 636962940071,
+        "mean_ns": 1013695.940478104,
+        "p50": {
+          "lower_ns": 1032192,
+          "upper_ns": 1040383
+        },
+        "p95": {
+          "lower_ns": 1163264,
+          "upper_ns": 1179647
+        },
+        "p99": {
+          "lower_ns": 1228800,
+          "upper_ns": 1245183
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 13.75,
+          "sample_seconds": 9.989309359,
+          "cpu_cores": 1.3764715363041347
+        },
+        "redis-primary": {
+          "cpu_seconds": 9.99,
+          "sample_seconds": 9.989661057,
+          "cpu_cores": 1.000033929379392
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 5.0,
+          "sample_seconds": 9.989642533,
+          "cpu_cores": 0.5005184102917489
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 5.0,
+          "sample_seconds": 9.989616924,
+          "cpu_cores": 0.5005196934016085
+        }
+      },
+      "outcomes": {
+        "success": 628357,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 628357,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/010-redis-wait1-batch64-r000-p00064/run/report.json",
+      "source_report_sha256": "ba5403eb1f40b4985b7829b7154da7d7fffd18003213837f5c7b16f39377489f"
+    },
+    {
+      "ordinal": 11,
+      "repeat": 0,
+      "target": "redis-wait2",
+      "workload": "batch64",
+      "concurrency": 64,
+      "successful_calls": 626706,
+      "successful_items": 40109184,
+      "elapsed_ns": 10000520795,
+      "calls_per_second": 62667.336316458306,
+      "items_per_second": 4010709.5242533316,
+      "whole_call_latency": {
+        "count": 626706,
+        "sum_ns": 636954100067,
+        "mean_ns": 1016352.3248014221,
+        "p50": {
+          "lower_ns": 1032192,
+          "upper_ns": 1040383
+        },
+        "p95": {
+          "lower_ns": 1163264,
+          "upper_ns": 1179647
+        },
+        "p99": {
+          "lower_ns": 1277952,
+          "upper_ns": 1294335
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 13.63,
+          "sample_seconds": 9.977571909,
+          "cpu_cores": 1.366063820367501
+        },
+        "redis-primary": {
+          "cpu_seconds": 9.98,
+          "sample_seconds": 9.977228075,
+          "cpu_cores": 1.000277825161374
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 5.0,
+          "sample_seconds": 9.977184815,
+          "cpu_cores": 0.5011433678649362
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 5.05,
+          "sample_seconds": 9.977139109,
+          "cpu_cores": 0.5061571202755494
+        }
+      },
+      "outcomes": {
+        "success": 626706,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 626706,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/011-redis-wait2-batch64-r000-p00064/run/report.json",
+      "source_report_sha256": "b6983367021cce14c7aed250131da298a186754a3b78ee6789bc0d9cba70a69a"
+    },
+    {
+      "ordinal": 12,
+      "repeat": 1,
+      "target": "redis-wait2",
+      "workload": "batch64",
+      "concurrency": 64,
+      "successful_calls": 623079,
+      "successful_items": 39877056,
+      "elapsed_ns": 10000672240,
+      "calls_per_second": 62303.711695285,
+      "items_per_second": 3987437.54849824,
+      "whole_call_latency": {
+        "count": 623079,
+        "sum_ns": 636944672469,
+        "mean_ns": 1022253.4742287896,
+        "p50": {
+          "lower_ns": 1040384,
+          "upper_ns": 1048575
+        },
+        "p95": {
+          "lower_ns": 1179648,
+          "upper_ns": 1196031
+        },
+        "p99": {
+          "lower_ns": 1277952,
+          "upper_ns": 1294335
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 13.48,
+          "sample_seconds": 9.945361893,
+          "cpu_cores": 1.3554056800575394
+        },
+        "redis-primary": {
+          "cpu_seconds": 9.95,
+          "sample_seconds": 9.94538184,
+          "cpu_cores": 1.0004643522063101
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 4.94,
+          "sample_seconds": 9.945337627,
+          "cpu_cores": 0.49671516295119944
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 4.94,
+          "sample_seconds": 9.945309725,
+          "cpu_cores": 0.4967165565072435
+        }
+      },
+      "outcomes": {
+        "success": 623079,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 623079,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/012-redis-wait2-batch64-r000-p10064/run/report.json",
+      "source_report_sha256": "bc42efa0f1000e719001d3506c11effda901cd1fdc50f1ae7943ae8b338e7c40"
+    },
+    {
+      "ordinal": 13,
+      "repeat": 1,
+      "target": "redis-wait1",
+      "workload": "batch64",
+      "concurrency": 64,
+      "successful_calls": 625881,
+      "successful_items": 40056384,
+      "elapsed_ns": 10000644246,
+      "calls_per_second": 62584.068046449735,
+      "items_per_second": 4005380.354972783,
+      "whole_call_latency": {
+        "count": 625881,
+        "sum_ns": 636996647016,
+        "mean_ns": 1017760.000728573,
+        "p50": {
+          "lower_ns": 1032192,
+          "upper_ns": 1040383
+        },
+        "p95": {
+          "lower_ns": 1163264,
+          "upper_ns": 1179647
+        },
+        "p99": {
+          "lower_ns": 1245184,
+          "upper_ns": 1261567
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 13.42,
+          "sample_seconds": 9.957490687,
+          "cpu_cores": 1.3477291038313979
+        },
+        "redis-primary": {
+          "cpu_seconds": 9.95,
+          "sample_seconds": 9.95680781,
+          "cpu_cores": 0.9993162658022621
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 4.96,
+          "sample_seconds": 9.956758747,
+          "cpu_cores": 0.49815408066349526
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 4.98,
+          "sample_seconds": 9.956710458,
+          "cpu_cores": 0.5001651922095092
+        }
+      },
+      "outcomes": {
+        "success": 625881,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 625881,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/013-redis-wait1-batch64-r000-p10064/run/report.json",
+      "source_report_sha256": "3b9b76033203b709a74e082e18d635fca456d7a55a916a7a703b66d4bdc35d8f"
+    },
+    {
+      "ordinal": 14,
+      "repeat": 1,
+      "target": "kv9",
+      "workload": "batch64",
+      "concurrency": 64,
+      "successful_calls": 137422,
+      "successful_items": 8795008,
+      "elapsed_ns": 10002908364,
+      "calls_per_second": 13738.204430081092,
+      "items_per_second": 879245.0835251899,
+      "whole_call_latency": {
+        "count": 137422,
+        "sum_ns": 640022773369,
+        "mean_ns": 4657353.06842427,
+        "p50": {
+          "lower_ns": 4325376,
+          "upper_ns": 4390911
+        },
+        "p95": {
+          "lower_ns": 6946816,
+          "upper_ns": 7012351
+        },
+        "p99": {
+          "lower_ns": 10485760,
+          "upper_ns": 10616831
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 4.03,
+          "sample_seconds": 9.92977581,
+          "cpu_cores": 0.40585004909592215
+        },
+        "voter-1": {
+          "cpu_seconds": 7.68,
+          "sample_seconds": 9.929714014,
+          "cpu_cores": 0.7734361723985095
+        },
+        "voter-2": {
+          "cpu_seconds": 17.57,
+          "sample_seconds": 9.929692604,
+          "cpu_cores": 1.769440475218965
+        },
+        "voter-3": {
+          "cpu_seconds": 7.71,
+          "sample_seconds": 9.929531352,
+          "cpu_cores": 0.7764716910276996
+        }
+      },
+      "outcomes": {
+        "success": 137422,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 137422,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/014-kv9-batch64-r000-p10064/run/report.json",
+      "source_report_sha256": "a8a929d5bbbb206a9b7f44f8d538df3880f4c076b2243574a64251ed185ec182"
+    },
+    {
+      "ordinal": 15,
+      "repeat": 1,
+      "target": "redis-wait2",
+      "workload": "point",
+      "concurrency": 64,
+      "successful_calls": 2318190,
+      "successful_items": 2318190,
+      "elapsed_ns": 10000334020,
+      "calls_per_second": 231811.25704039232,
+      "items_per_second": 231811.25704039232,
+      "whole_call_latency": {
+        "count": 2318190,
+        "sum_ns": 639654555181,
+        "mean_ns": 275928.4420953416,
+        "p50": {
+          "lower_ns": 274432,
+          "upper_ns": 278527
+        },
+        "p95": {
+          "lower_ns": 282624,
+          "upper_ns": 286719
+        },
+        "p99": {
+          "lower_ns": 299008,
+          "upper_ns": 303103
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 11.29,
+          "sample_seconds": 9.980271432,
+          "cpu_cores": 1.1312317582666722
+        },
+        "redis-primary": {
+          "cpu_seconds": 9.98,
+          "sample_seconds": 9.980081107,
+          "cpu_cores": 0.9999918731121391
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 0.91,
+          "sample_seconds": 9.980046531,
+          "cpu_cores": 0.09118193960051789
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 0.93,
+          "sample_seconds": 9.980010164,
+          "cpu_cores": 0.09318627784114951
+        }
+      },
+      "outcomes": {
+        "success": 2318190,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 2318190,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/015-redis-wait2-point-r000-p10064/run/report.json",
+      "source_report_sha256": "183f0ce06dcb33e843b7bcfc49a99e68668143b0cb181098b635f82b0a275e67"
+    },
+    {
+      "ordinal": 16,
+      "repeat": 1,
+      "target": "redis-wait1",
+      "workload": "point",
+      "concurrency": 64,
+      "successful_calls": 2300620,
+      "successful_items": 2300620,
+      "elapsed_ns": 10000303775,
+      "calls_per_second": 230055.01150388803,
+      "items_per_second": 230055.01150388803,
+      "whole_call_latency": {
+        "count": 2300620,
+        "sum_ns": 639642088257,
+        "mean_ns": 278030.3084633707,
+        "p50": {
+          "lower_ns": 278528,
+          "upper_ns": 282623
+        },
+        "p95": {
+          "lower_ns": 307200,
+          "upper_ns": 311295
+        },
+        "p99": {
+          "lower_ns": 323584,
+          "upper_ns": 327679
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 11.49,
+          "sample_seconds": 9.940541536,
+          "cpu_cores": 1.1558726411824332
+        },
+        "redis-primary": {
+          "cpu_seconds": 9.94,
+          "sample_seconds": 9.939788859,
+          "cpu_cores": 1.0000212420005088
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 0.96,
+          "sample_seconds": 9.939754735,
+          "cpu_cores": 0.0965818599748377
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 0.95,
+          "sample_seconds": 9.939722144,
+          "cpu_cores": 0.09557611231350735
+        }
+      },
+      "outcomes": {
+        "success": 2300620,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 2300620,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/016-redis-wait1-point-r000-p10064/run/report.json",
+      "source_report_sha256": "e0c814003dad99c3db89cc97e8d181398a8d5de5c541e8024f65b2f3b88643c2"
+    },
+    {
+      "ordinal": 17,
+      "repeat": 1,
+      "target": "kv9",
+      "workload": "point",
+      "concurrency": 64,
+      "successful_calls": 1365965,
+      "successful_items": 1365965,
+      "elapsed_ns": 10000130102,
+      "calls_per_second": 136594.72287533645,
+      "items_per_second": 136594.72287533645,
+      "whole_call_latency": {
+        "count": 1365965,
+        "sum_ns": 639840376021,
+        "mean_ns": 468416.3767160945,
+        "p50": {
+          "lower_ns": 446464,
+          "upper_ns": 450559
+        },
+        "p95": {
+          "lower_ns": 638976,
+          "upper_ns": 647167
+        },
+        "p99": {
+          "lower_ns": 753664,
+          "upper_ns": 761855
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 4.21,
+          "sample_seconds": 9.931771512,
+          "cpu_cores": 0.423892152061019
+        },
+        "voter-1": {
+          "cpu_seconds": 6.07,
+          "sample_seconds": 9.93176532,
+          "cpu_cores": 0.6111703009913649
+        },
+        "voter-2": {
+          "cpu_seconds": 23.37,
+          "sample_seconds": 9.931769799,
+          "cpu_cores": 2.3530549411599386
+        },
+        "voter-3": {
+          "cpu_seconds": 5.95,
+          "sample_seconds": 9.931907166,
+          "cpu_cores": 0.5990793007377975
+        }
+      },
+      "outcomes": {
+        "success": 1365965,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 1365965,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/017-kv9-point-r000-p10064/run/report.json",
+      "source_report_sha256": "7982b84ba7232e7468793cf17829cade8570d50dba73f6ea5e22d3c4c653e816"
+    },
+    {
+      "ordinal": 18,
+      "repeat": 1,
+      "target": "redis-wait2",
+      "workload": "batch64",
+      "concurrency": 1,
+      "successful_calls": 224240,
+      "successful_items": 14351360,
+      "elapsed_ns": 10000003841,
+      "calls_per_second": 22423.99138694491,
+      "items_per_second": 1435135.4487644741,
+      "whole_call_latency": {
+        "count": 224240,
+        "sum_ns": 9748781476,
+        "mean_ns": 43474.765768819125,
+        "p50": {
+          "lower_ns": 43008,
+          "upper_ns": 43519
+        },
+        "p95": {
+          "lower_ns": 46592,
+          "upper_ns": 47103
+        },
+        "p99": {
+          "lower_ns": 56320,
+          "upper_ns": 56831
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 3.95,
+          "sample_seconds": 9.933355139,
+          "cpu_cores": 0.397650133789302
+        },
+        "redis-primary": {
+          "cpu_seconds": 5.0,
+          "sample_seconds": 9.933017116,
+          "cpu_cores": 0.5033717290133379
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 2.56,
+          "sample_seconds": 9.932986098,
+          "cpu_cores": 0.25772713006368286
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 2.56,
+          "sample_seconds": 9.932957345,
+          "cpu_cores": 0.2577278761081804
+        }
+      },
+      "outcomes": {
+        "success": 224240,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 224240,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/018-redis-wait2-batch64-r000-p10001/run/report.json",
+      "source_report_sha256": "a7b76abfcc6d0bd3eb52179076053e1906338d4802df750ac93624cb163ba686"
+    },
+    {
+      "ordinal": 19,
+      "repeat": 1,
+      "target": "redis-wait1",
+      "workload": "batch64",
+      "concurrency": 1,
+      "successful_calls": 236851,
+      "successful_items": 15158464,
+      "elapsed_ns": 10000040030,
+      "calls_per_second": 23685.00518892423,
+      "items_per_second": 1515840.3320911508,
+      "whole_call_latency": {
+        "count": 236851,
+        "sum_ns": 9734449303,
+        "mean_ns": 41099.464654994066,
+        "p50": {
+          "lower_ns": 40448,
+          "upper_ns": 40959
+        },
+        "p95": {
+          "lower_ns": 43520,
+          "upper_ns": 44031
+        },
+        "p99": {
+          "lower_ns": 52224,
+          "upper_ns": 52735
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 4.14,
+          "sample_seconds": 9.933407848,
+          "cpu_cores": 0.41677539705908184
+        },
+        "redis-primary": {
+          "cpu_seconds": 5.2,
+          "sample_seconds": 9.933150477,
+          "cpu_cores": 0.5234995696521955
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 2.68,
+          "sample_seconds": 9.933110693,
+          "cpu_cores": 0.26980470497410575
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 2.71,
+          "sample_seconds": 9.933073693,
+          "cpu_cores": 0.272825923149023
+        }
+      },
+      "outcomes": {
+        "success": 236851,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 236851,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/019-redis-wait1-batch64-r000-p10001/run/report.json",
+      "source_report_sha256": "94bcfff67b5ed9228b9860c6181033c56e389e91a36cd39be08300b604248eeb"
+    },
+    {
+      "ordinal": 20,
+      "repeat": 1,
+      "target": "kv9",
+      "workload": "batch64",
+      "concurrency": 1,
+      "successful_calls": 58250,
+      "successful_items": 3728000,
+      "elapsed_ns": 10000152981,
+      "calls_per_second": 5824.910889930715,
+      "items_per_second": 372794.29695556575,
+      "whole_call_latency": {
+        "count": 58250,
+        "sum_ns": 9993699445,
+        "mean_ns": 171565.65570815452,
+        "p50": {
+          "lower_ns": 165888,
+          "upper_ns": 167935
+        },
+        "p95": {
+          "lower_ns": 190464,
+          "upper_ns": 192511
+        },
+        "p99": {
+          "lower_ns": 217088,
+          "upper_ns": 219135
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 1.42,
+          "sample_seconds": 9.956688156,
+          "cpu_cores": 0.14261770357287867
+        },
+        "voter-1": {
+          "cpu_seconds": 4.55,
+          "sample_seconds": 9.95672777,
+          "cpu_cores": 0.4569774433031425
+        },
+        "voter-2": {
+          "cpu_seconds": 9.35,
+          "sample_seconds": 9.956706491,
+          "cpu_cores": 0.9390655442591975
+        },
+        "voter-3": {
+          "cpu_seconds": 4.55,
+          "sample_seconds": 9.956686784,
+          "cpu_cores": 0.45697932441860767
+        }
+      },
+      "outcomes": {
+        "success": 58250,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 58250,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/020-kv9-batch64-r000-p10001/run/report.json",
+      "source_report_sha256": "598635f33f3642c97ddeee458daa150ef295e559993f3926b8f2b8a4f92aa4c0"
+    },
+    {
+      "ordinal": 21,
+      "repeat": 1,
+      "target": "redis-wait2",
+      "workload": "point",
+      "concurrency": 1,
+      "successful_calls": 644183,
+      "successful_items": 644183,
+      "elapsed_ns": 10000003218,
+      "calls_per_second": 64418.27927019773,
+      "items_per_second": 64418.27927019773,
+      "whole_call_latency": {
+        "count": 644183,
+        "sum_ns": 9920128465,
+        "mean_ns": 15399.550228739348,
+        "p50": {
+          "lower_ns": 15232,
+          "upper_ns": 15359
+        },
+        "p95": {
+          "lower_ns": 16640,
+          "upper_ns": 16895
+        },
+        "p99": {
+          "lower_ns": 19200,
+          "upper_ns": 19455
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 4.19,
+          "sample_seconds": 9.924571485,
+          "cpu_cores": 0.4221844747990145
+        },
+        "redis-primary": {
+          "cpu_seconds": 6.75,
+          "sample_seconds": 9.923999715,
+          "cpu_cores": 0.6801693061112708
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 2.35,
+          "sample_seconds": 9.923967876,
+          "cpu_cores": 0.23680044407269904
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 2.14,
+          "sample_seconds": 9.923925486,
+          "cpu_cores": 0.2156404744290923
+        }
+      },
+      "outcomes": {
+        "success": 644183,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 644183,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/021-redis-wait2-point-r000-p10001/run/report.json",
+      "source_report_sha256": "39f7ec85e7096c861a665fd2c47021e7a09b6a0c581f359b66c2b37d02d52853"
+    },
+    {
+      "ordinal": 22,
+      "repeat": 1,
+      "target": "redis-wait1",
+      "workload": "point",
+      "concurrency": 1,
+      "successful_calls": 758735,
+      "successful_items": 758735,
+      "elapsed_ns": 10000006298,
+      "calls_per_second": 75873.4522148998,
+      "items_per_second": 75873.4522148998,
+      "whole_call_latency": {
+        "count": 758735,
+        "sum_ns": 9907221137,
+        "mean_ns": 13057.551235938767,
+        "p50": {
+          "lower_ns": 12800,
+          "upper_ns": 12927
+        },
+        "p95": {
+          "lower_ns": 13952,
+          "upper_ns": 14079
+        },
+        "p99": {
+          "lower_ns": 16256,
+          "upper_ns": 16383
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 4.84,
+          "sample_seconds": 9.931780463,
+          "cpu_cores": 0.4873245052114277
+        },
+        "redis-primary": {
+          "cpu_seconds": 7.46,
+          "sample_seconds": 9.931777387,
+          "cpu_cores": 0.7511243666984135
+        },
+        "redis-replica-a": {
+          "cpu_seconds": 2.54,
+          "sample_seconds": 9.931748182,
+          "cpu_cores": 0.25574550959753684
+        },
+        "redis-replica-b": {
+          "cpu_seconds": 2.52,
+          "sample_seconds": 9.931727695,
+          "cpu_cores": 0.25373228882107407
+        }
+      },
+      "outcomes": {
+        "success": 758735,
+        "unknown_write": 0,
+        "read_failure": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 758735,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/022-redis-wait1-point-r000-p10001/run/report.json",
+      "source_report_sha256": "84bd0e5b73bc821f707c27ccdc1ee0421cc1f39fe2a66fe53733ea6e428f8f39"
+    },
+    {
+      "ordinal": 23,
+      "repeat": 1,
+      "target": "kv9",
+      "workload": "point",
+      "concurrency": 1,
+      "successful_calls": 193266,
+      "successful_items": 193266,
+      "elapsed_ns": 10000019908,
+      "calls_per_second": 19326.561524681314,
+      "items_per_second": 19326.561524681314,
+      "whole_call_latency": {
+        "count": 193266,
+        "sum_ns": 9980906201,
+        "mean_ns": 51643.36303850651,
+        "p50": {
+          "lower_ns": 50688,
+          "upper_ns": 51199
+        },
+        "p95": {
+          "lower_ns": 59392,
+          "upper_ns": 59903
+        },
+        "p99": {
+          "lower_ns": 66560,
+          "upper_ns": 67583
+        }
+      },
+      "cpu": {
+        "client": {
+          "cpu_seconds": 1.49,
+          "sample_seconds": 9.993433467,
+          "cpu_cores": 0.1490979056317562
+        },
+        "voter-1": {
+          "cpu_seconds": 6.37,
+          "sample_seconds": 9.992790425,
+          "cpu_cores": 0.6374595812660606
+        },
+        "voter-2": {
+          "cpu_seconds": 12.37,
+          "sample_seconds": 9.992782199,
+          "cpu_cores": 1.2378934868847529
+        },
+        "voter-3": {
+          "cpu_seconds": 6.48,
+          "sample_seconds": 9.99278801,
+          "cpu_cores": 0.648467674238193
+        }
+      },
+      "outcomes": {
+        "success": 193266,
+        "refused": 0,
+        "unknown_write": 0,
+        "read_failure": 0,
+        "client_rejected": 0
+      },
+      "dropped_slots": 0,
+      "data_attempts": 193266,
+      "source_report": "/tmp/kv9-write-redis3-timing-first/cohorts/023-kv9-point-r000-p10001/run/report.json",
+      "source_report_sha256": "8cc37fb0362fab1e7e4b5475d217fcf32cf3dd317b479df798979fc95d29f055"
+    }
+  ],
+  "input_bindings": {
+    "/tmp/kv9-write-redis3-timing-first/cohorts/000-kv9-point-r000-p00001/run/report.json": {
+      "bytes": 1431965,
+      "sha256": "ab60e78cf2e98040789b742aed01e50ba54ed9d5fbb9f425bd9fcd73f6cb6bc5"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/000-kv9-point-r000-p00001/resource-samples.json": {
+      "bytes": 1503647,
+      "sha256": "4b261705a7e9d6c081339daf562e3d51956aea7baaca28b336ae080ce0784548"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/000-kv9-point-r000-p00001/resource-coverage.json": {
+      "bytes": 1671,
+      "sha256": "9fb2ec1f39ebee03bfb5ca95854017b745e6b3a952885372f0eac9b3cc74610e"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/001-redis-wait1-point-r000-p00001/run/report.json": {
+      "bytes": 917146,
+      "sha256": "6d9f02b30fdf9e30cf1f22e54db9b6fa8f4edc3b0a84d5bd52bc7d73abd18e51"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/001-redis-wait1-point-r000-p00001/resource-samples.json": {
+      "bytes": 1493073,
+      "sha256": "327e516ee4c66f1790be303d3603e1addc3cca0002c1e4948994a78ef89a6b6c"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/001-redis-wait1-point-r000-p00001/resource-coverage.json": {
+      "bytes": 1553,
+      "sha256": "155f771c7e2b21532ecb7c673a60a707f57d17bae861383ed0a8d057afd75889"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/002-redis-wait2-point-r000-p00001/run/report.json": {
+      "bytes": 917135,
+      "sha256": "133c865c00d1dc9805d698583e3f4cc589d39aea0e81dc5a6f9563468d724a43"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/002-redis-wait2-point-r000-p00001/resource-samples.json": {
+      "bytes": 1492566,
+      "sha256": "eb6a71f98d14c6a96c1247e8a949504c0ef1e16ea1c8f0e10b1613a3dee60f63"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/002-redis-wait2-point-r000-p00001/resource-coverage.json": {
+      "bytes": 1555,
+      "sha256": "7bbcdab25187f187dadc0818408b78a6aeaafe34ddb0a9944604339c8aff1442"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/003-kv9-batch64-r000-p00001/run/report.json": {
+      "bytes": 1431285,
+      "sha256": "5e66487f0a94ca85143d2c040544f9157d872710eae57dc678e7ff0acfec1cb8"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/003-kv9-batch64-r000-p00001/resource-samples.json": {
+      "bytes": 1388722,
+      "sha256": "46f779fbd698db988e28e79ecfff39291a30186b8a2b4eb90a7d19fca11a0fc3"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/003-kv9-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 1674,
+      "sha256": "308c988a24dd19c7cdaaadc0f9827e4bb13a33893b66f3ca68fdc51652b4e59d"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/004-redis-wait1-batch64-r000-p00001/run/report.json": {
+      "bytes": 916798,
+      "sha256": "2610a54a3043f21039f713a092ab84b2359337fc10e3549d1ee5b7a661d73639"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/004-redis-wait1-batch64-r000-p00001/resource-samples.json": {
+      "bytes": 1471004,
+      "sha256": "201e045969b96a0d7d1b8b6ce837c537e7a5038247d9434300ca26abcd6ab6a2"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/004-redis-wait1-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 1559,
+      "sha256": "6b3806c4b5cfb5a42022febcd8d9f34bb68ac4de3021ec3e2391a550a8ed20cc"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/005-redis-wait2-batch64-r000-p00001/run/report.json": {
+      "bytes": 916840,
+      "sha256": "f94deddfeb2a638745e18275bc3ab60eb0ce9072928807fc25da107ddba5a454"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/005-redis-wait2-batch64-r000-p00001/resource-samples.json": {
+      "bytes": 1470305,
+      "sha256": "d9f639e21c0ed9c1998011f4bc9c1d51cfd688bbb43ed918e17ab4568d62be2c"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/005-redis-wait2-batch64-r000-p00001/resource-coverage.json": {
+      "bytes": 1556,
+      "sha256": "db5280c05bcca9dc39bf138871b52b48ed174ae8b90f07766583af82e71b5b78"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/006-kv9-point-r000-p00064/run/report.json": {
+      "bytes": 1445147,
+      "sha256": "c678c77aa01dde9b5338ab539f813dee731e997616614a0ad17880a90ab3f9c6"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/006-kv9-point-r000-p00064/resource-samples.json": {
+      "bytes": 4581753,
+      "sha256": "0fac360b5f994cf155d18ea3962338f43b7c1f1b5b53c24310bf440b1c5dc1dc"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/006-kv9-point-r000-p00064/resource-coverage.json": {
+      "bytes": 3796,
+      "sha256": "33140d8293bd65897b3591d08adc16683c0e53bd398688f8151f017991097d54"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/007-redis-wait1-point-r000-p00064/run/report.json": {
+      "bytes": 929302,
+      "sha256": "3c2a03c807793bb7d706ce4e39822063af69cf158d4f09efde66def806a21215"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/007-redis-wait1-point-r000-p00064/resource-samples.json": {
+      "bytes": 1493354,
+      "sha256": "640baefdbf9bdaffa52b236f217c2942aa0ac1639a36cce4a989bf49b4d54d95"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/007-redis-wait1-point-r000-p00064/resource-coverage.json": {
+      "bytes": 1574,
+      "sha256": "747ed26828120fc6c4eea84a5937d153eb51f756dadd20ee99707fd52cfd86ea"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/008-redis-wait2-point-r000-p00064/run/report.json": {
+      "bytes": 929099,
+      "sha256": "3a413261e3722a038814b81dbbe6fe0166cf6898f213cd0fbda8aa60cbd6502c"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/008-redis-wait2-point-r000-p00064/resource-samples.json": {
+      "bytes": 1493560,
+      "sha256": "0cb69af9ade766ed74a2c45ea8116d3aca946cd3f171e02105eb4ff4395b8b8f"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/008-redis-wait2-point-r000-p00064/resource-coverage.json": {
+      "bytes": 1573,
+      "sha256": "9029142befa4ad64eb586dedd4d84539ca454b5e136334e2051faa5ce5ff15e1"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/009-kv9-batch64-r000-p00064/run/report.json": {
+      "bytes": 1443983,
+      "sha256": "4777de16ce12ea481f539a084bf5a8c075356a73e606f1df55f975c45d448a7e"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/009-kv9-batch64-r000-p00064/resource-samples.json": {
+      "bytes": 3726346,
+      "sha256": "33656d3288f006695fa8464dd1abba2ccb360e5c92dfedd584652bf1c76c50b9"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/009-kv9-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 3632,
+      "sha256": "a1b11995ff2c002fb7861f18884183ffc3d037ec4ff509070627e3e605546f8c"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/010-redis-wait1-batch64-r000-p00064/run/report.json": {
+      "bytes": 928947,
+      "sha256": "ba5403eb1f40b4985b7829b7154da7d7fffd18003213837f5c7b16f39377489f"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/010-redis-wait1-batch64-r000-p00064/resource-samples.json": {
+      "bytes": 1479709,
+      "sha256": "23aaeef0bc60680b7897c5f6da3689e3461daec421eb86a9aef9ba06b6ae6e90"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/010-redis-wait1-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 1564,
+      "sha256": "72729af9dce44a98d1be28d677a64e288a9d7212eaed359e756848c87f08bfbf"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/011-redis-wait2-batch64-r000-p00064/run/report.json": {
+      "bytes": 928974,
+      "sha256": "b6983367021cce14c7aed250131da298a186754a3b78ee6789bc0d9cba70a69a"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/011-redis-wait2-batch64-r000-p00064/resource-samples.json": {
+      "bytes": 1479709,
+      "sha256": "2154d13671fe5b2f5d951cf129eec14e7727dfa8c54fe0e1d44124ef5e2fe45a"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/011-redis-wait2-batch64-r000-p00064/resource-coverage.json": {
+      "bytes": 1563,
+      "sha256": "0c13cc0d56930ddbfb4416181c015bb452c0d429dfe18eff441d03d8a803ea1a"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/012-redis-wait2-batch64-r000-p10064/run/report.json": {
+      "bytes": 928981,
+      "sha256": "bc42efa0f1000e719001d3506c11effda901cd1fdc50f1ae7943ae8b338e7c40"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/012-redis-wait2-batch64-r000-p10064/resource-samples.json": {
+      "bytes": 1472189,
+      "sha256": "c55368c08bd5043d1c1efcc3f3a1e70793030395fce014bd12b2cd6562235bba"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/012-redis-wait2-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 1571,
+      "sha256": "1ec630978e8888da3caa4243c61554a9abb4641b6ea4d845a07d35d7a9171652"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/013-redis-wait1-batch64-r000-p10064/run/report.json": {
+      "bytes": 928978,
+      "sha256": "3b9b76033203b709a74e082e18d635fca456d7a55a916a7a703b66d4bdc35d8f"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/013-redis-wait1-batch64-r000-p10064/resource-samples.json": {
+      "bytes": 1472211,
+      "sha256": "dd5c556175c16e08c15ea465ebc9cc2837d0400bed068ecfdf2ed1731161427a"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/013-redis-wait1-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 1571,
+      "sha256": "f31ef4aa58c7570a242d6cca4a2157deb0ff9ff0e0411930118101e9b7faeffd"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/014-kv9-batch64-r000-p10064/run/report.json": {
+      "bytes": 1444020,
+      "sha256": "a8a929d5bbbb206a9b7f44f8d538df3880f4c076b2243574a64251ed185ec182"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/014-kv9-batch64-r000-p10064/resource-samples.json": {
+      "bytes": 3706177,
+      "sha256": "8887850c20f27ffd5515e5faff4d57f8fc9c2eb6c4408aba2be18a19718d02b8"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/014-kv9-batch64-r000-p10064/resource-coverage.json": {
+      "bytes": 3929,
+      "sha256": "b0e7106abbd56b86577ba07950159662f89b6fbfc19a25db29c889b5f2073c2c"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/015-redis-wait2-point-r000-p10064/run/report.json": {
+      "bytes": 929082,
+      "sha256": "183f0ce06dcb33e843b7bcfc49a99e68668143b0cb181098b635f82b0a275e67"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/015-redis-wait2-point-r000-p10064/resource-samples.json": {
+      "bytes": 1494339,
+      "sha256": "7fbbfc97d0f6854719346b884312207d72597cd265e7318d521a3953a6c5f1ff"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/015-redis-wait2-point-r000-p10064/resource-coverage.json": {
+      "bytes": 1573,
+      "sha256": "a489d7d61ba95b60e7c23f918a52538ccf98382e7409767b50a389219e7e9b0c"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/016-redis-wait1-point-r000-p10064/run/report.json": {
+      "bytes": 929317,
+      "sha256": "e0c814003dad99c3db89cc97e8d181398a8d5de5c541e8024f65b2f3b88643c2"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/016-redis-wait1-point-r000-p10064/resource-samples.json": {
+      "bytes": 1493366,
+      "sha256": "2f9b08d58822eed5088f7acd9a7c5440f3dd8b5d688ebd717444cb2dce0251a4"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/016-redis-wait1-point-r000-p10064/resource-coverage.json": {
+      "bytes": 1571,
+      "sha256": "dd4459f1b43133b2eb805201c925ce2856fc777f878779b883df3df42a648c26"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/017-kv9-point-r000-p10064/run/report.json": {
+      "bytes": 1445153,
+      "sha256": "7982b84ba7232e7468793cf17829cade8570d50dba73f6ea5e22d3c4c653e816"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/017-kv9-point-r000-p10064/resource-samples.json": {
+      "bytes": 4108060,
+      "sha256": "15a35fee7ba36a9117f82f7ce8ae3e1bdc73f624c2f1de33ef8a8ba3f9a92c31"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/017-kv9-point-r000-p10064/resource-coverage.json": {
+      "bytes": 4122,
+      "sha256": "5e4319cd79ff01f0d20f878237469f978c9991661ae7c4c95b4fb9204f400a94"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/018-redis-wait2-batch64-r000-p10001/run/report.json": {
+      "bytes": 916858,
+      "sha256": "a7b76abfcc6d0bd3eb52179076053e1906338d4802df750ac93624cb163ba686"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/018-redis-wait2-batch64-r000-p10001/resource-samples.json": {
+      "bytes": 1470292,
+      "sha256": "b5faf08977ba44afb9a52bd9d3c911d533614d00c31154a1b3fb332a23ab273c"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/018-redis-wait2-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 1557,
+      "sha256": "51a63db4e601f65389ed81eb664761f963dc1b0e26b2e06959b047d8967b74a0"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/019-redis-wait1-batch64-r000-p10001/run/report.json": {
+      "bytes": 916816,
+      "sha256": "94bcfff67b5ed9228b9860c6181033c56e389e91a36cd39be08300b604248eeb"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/019-redis-wait1-batch64-r000-p10001/resource-samples.json": {
+      "bytes": 1470440,
+      "sha256": "1481b7e67a57473c25608603df88bde0a9773794adac431d7e1326cc0fad7174"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/019-redis-wait1-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 1556,
+      "sha256": "89288a78cac071f39597ed0359e4973ff682908084a90746cd5c97ce554b4c20"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/020-kv9-batch64-r000-p10001/run/report.json": {
+      "bytes": 1431289,
+      "sha256": "598635f33f3642c97ddeee458daa150ef295e559993f3926b8f2b8a4f92aa4c0"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/020-kv9-batch64-r000-p10001/resource-samples.json": {
+      "bytes": 1388657,
+      "sha256": "56053a9bd5b573e51f362318a4cb3963f056ad98a05e62f5c6a7b70b103d21fc"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/020-kv9-batch64-r000-p10001/resource-coverage.json": {
+      "bytes": 1665,
+      "sha256": "82d5237460a79acd70a4fc45a0d3aa6a31de9e471bb0b080dd209ff13f0b11af"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/021-redis-wait2-point-r000-p10001/run/report.json": {
+      "bytes": 917155,
+      "sha256": "39f7ec85e7096c861a665fd2c47021e7a09b6a0c581f359b66c2b37d02d52853"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/021-redis-wait2-point-r000-p10001/resource-samples.json": {
+      "bytes": 1492552,
+      "sha256": "e81b2a8d6578f4c4939be2b6a423c8e67b090ef5be4e3b6a22e94b0c7d6078c5"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/021-redis-wait2-point-r000-p10001/resource-coverage.json": {
+      "bytes": 1556,
+      "sha256": "530a27ad47c96a94b0aa815cc049060d744a0dfc41d0f8ca4eeecb3a60e5f6a8"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/022-redis-wait1-point-r000-p10001/run/report.json": {
+      "bytes": 917154,
+      "sha256": "84bd0e5b73bc821f707c27ccdc1ee0421cc1f39fe2a66fe53733ea6e428f8f39"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/022-redis-wait1-point-r000-p10001/resource-samples.json": {
+      "bytes": 1492876,
+      "sha256": "a0934c779dc2bced723cafe5c46c80c486ec1b75152d5defa98beb112d9b8cf1"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/022-redis-wait1-point-r000-p10001/resource-coverage.json": {
+      "bytes": 1561,
+      "sha256": "d85abeeef483949d0784f57965457ec3680e1fb0d7bb26ae05b98d0f537c7816"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/023-kv9-point-r000-p10001/run/report.json": {
+      "bytes": 1431959,
+      "sha256": "8cc37fb0362fab1e7e4b5475d217fcf32cf3dd317b479df798979fc95d29f055"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/023-kv9-point-r000-p10001/resource-samples.json": {
+      "bytes": 1492039,
+      "sha256": "dc15676a40050051f1424b54bcb75c3ea4dee8e687178711cf32afe3c0f25db6"
+    },
+    "/tmp/kv9-write-redis3-timing-first/cohorts/023-kv9-point-r000-p10001/resource-coverage.json": {
+      "bytes": 1667,
+      "sha256": "b894b3280386d61cbc8ff9c6c6f28f01472b265fe8a4e594341a52e56696915e"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "complete": true,
+  "scope": "Published reporting byte identity and arithmetic, retaining prior independent runtime audit",
+  "packaging": {
+    "complete": true,
+    "started_ns": 1789257258951020552,
+    "initial_available_bytes": 107383238656,
+    "selection_sha256": "0bc7bf58f5c4055bf183723875f2fa01fa5774110ff837cad11899247b6b694a",
+    "maximum_added_bytes": 1073741824,
+    "original_benchmark_guards_unchanged": true,
+    "members": 2303,
+    "decoded_bytes": 354258232,
+    "compressed_bytes": 60782348,
+    "compressed_sha256": "5fcd958d38069c0b5b866aa8ec0d4caefe0ff7d1d19b4eb763169aa18ec53037",
+    "parts": 29,
+    "inventory_sha256": "aab217ddf25c2b8b2357bf7b64cb9bbbfeb13f7a400c7cd99936e98c2ffbdc62",
+    "credentials_pattern_scan_passed": true,
+    "ended_ns": 1789257262399975993,
+    "final_available_bytes": 107320680448
+  },
+  "terminals": {
+    "smoke": "9034/6e43ea/0",
+    "timing": "42336/2cb856/0",
+    "failed_original_audit": "179a68/1",
+    "smoke_schema_controls": "75924a/0",
+    "accepted_audit": "59024/b37127/0",
+    "summary_initial_failure": "0cd89f/1",
+    "summary": "3372d1/0",
+    "packaging": "75634/410302/0",
+    "member_verification": "40c31f/0",
+    "archived_arithmetic": "9d130b/0"
+  },
+  "archived_arithmetic_inputs": 74,
+  "regenerated_summary_identical": true,
+  "original_workloads_rerun": false,
+  "hosted_ci_dispatched": false,
+  "selected_runtime_changed": false,
+  "original_checklist_items_closed": 0,
+  "readback": {
+    "verify": "PASS: 2303 exact evidence files, 29 bounded archive parts; integrity only\n",
+    "recompute": "PASS: identical pooled/per-repeat rates, latency bounds, outcomes and sampled CPU from 74 archived inputs; no workload or WAL replay\n"
+  }
+}
