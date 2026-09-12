@@ -7,14 +7,15 @@ The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 2
 explicit dependencies, implementation steps and acceptance criteria. Track delivery in
 [GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
 
-The [current checkpoint](CURRENT-STATUS.md) records the completed inbox vector
-reuse screen: +0.420% mixed c64 throughput, but -0.494% c1 GET and pure-c64 tail
-tradeoffs. Keep CRC selected and hold this and the Append candidate. Next
-measure batch offer through request-body polling while preserving channel
-bounds, route cancellation and stream-progress timeout. Use that observation
-to decide whether removing one handoff is justified, then compare a clean
-candidate. The product sequence remains memory RawKV read performance, then
-dynamic multi-Raft and automatic splits.
+The [current checkpoint](CURRENT-STATUS.md) records the completed request-body
+handoff diagnostic. Sub-microsecond c1 means and 3.244-us mixed leader batches
+do not justify replacing that queue as the primary read optimization; populations
+are not additive request phases. Next compare event interval one versus eight
+on the existing two RPC workers, retaining adaptive global scheduling, source
+and recovery gates, throughput and GET mean/tail evidence. CRC stays selected;
+the Append, inbox-vector and other held candidates remain unpromoted. The product
+sequence remains memory RawKV read performance, then dynamic multi-Raft and
+automatic splits.
 This priority does not waive the storage, proof, fault or recovery prerequisites
 below. Preserve durable writes and fresh quorum reads; evaluate throughput and
 latency together, including mixed-read tails. CI runs locally except at releases
