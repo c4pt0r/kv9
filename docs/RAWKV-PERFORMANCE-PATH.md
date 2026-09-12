@@ -1,5 +1,11 @@
 # RawKV performance development path
 
+> Latest performance direction: [matched read-stage diagnosis](READ-STAGE-RESULTS.md)
+> identifies the c1 quorum round trip and c64 remote completion resumption.
+> A bounded global-queue polling experiment is in progress; default selection
+> and the Redis read milestone remain open. The prior uninstrumented results
+> retain their original scope.
+
 Tracking: #13, #20 and #9. The product target is Redis-class performance for
 memory-resident RawKV data. Data residency, durable acknowledgement, replication
 and API overhead are separate dimensions. Performance work must improve the
