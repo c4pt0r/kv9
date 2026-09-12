@@ -72,10 +72,13 @@ valid leases eliminate per-read quorum RTT under explicit clock-rate, voting,
 restart and quorum-intersection premises. Eight TLAPS lemmas / 23 obligations
 and real-clock SMT containment pass, with negative proof controls and three
 clock countermodels. The complete linearizability argument and current source
-gaps are documented. This is a design proof, not a Rust refinement, clock-platform
-qualification, new performance measurement or lease Chaos acceptance. The next
-lease gate is a fixed-configuration transition model and implementation contract;
-Safe ReadIndex remains selected until implementation/proof/actual Chaos gates pass.
+gaps are documented. The [fixed-configuration transition model](LEASE-AUTHORITY-MODEL.md)
+now adds 27 TLAPS theorems / 348 obligations, an exhaustive three-voter finite
+configuration, fault counterexamples and reachability witnesses. It proves
+authority preservation and that read steps require no network action. An expired
+lease plus unavailable quorum must return unavailability/timeout, never local
+read success. Rust refinement, clock qualification and actual lease Chaos E2E
+remain open; Safe ReadIndex stays selected until those gates pass.
 
 ## Latest fixed-rate write diagnosis
 
@@ -216,9 +219,9 @@ isolated GET improvement. Original setup/reader failures remain published.
 
 ## Next development steps
 
-1. **Reduce isolated GET latency:** turn the [conditional lease proof](LEADER-LEASE-PROOF.md)
-   into a fixed-configuration transition/refinement contract before implementing
-   a lease candidate. Preserve the selected Safe ReadIndex baseline. For its
+1. **Reduce isolated GET latency:** implement and refine a lease candidate against
+   the [proved transition contract](LEASE-AUTHORITY-MODEL.md), including fail-closed
+   expiration and recovery promises. Preserve the selected Safe ReadIndex baseline. For its
    existing path, reuse the selected-build CPU-profile fixture and completed
    quorum trace before another rewrite. Current evidence does not justify
    another worker-count/transport sweep or a repeat of the rejected poll budget.
