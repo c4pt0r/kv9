@@ -7,13 +7,14 @@ The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 2
 explicit dependencies, implementation steps and acceptance criteria. Track delivery in
 [GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
 
-The [current checkpoint](CURRENT-STATUS.md) records the completed local
-confirmation-queue diagnostic and the next bounded Append-payload experiment.
-Mixed-load queue residence motivates testing fewer replication messages. The
-64-KiB candidate passes source checks and ordinary recovery; its uninstrumented
-GET/mixed comparison remains pending. Keep CRC selected and evaluate throughput
-and read tails together. The product sequence remains memory RawKV read
-performance, then dynamic multi-Raft and automatic splits.
+The [current checkpoint](CURRENT-STATUS.md) records the completed
+confirmation-queue diagnostic and bounded Append-payload comparison. The latter
+has +0.790% c64 GET but only +0.031% mixed throughput and unchanged mixed GET p99;
+keep CRC selected and hold the candidate. The storage-guard failure and separate
+complete rerun are preserved. Next remove redundant inbox-vector construction
+without changing ordering, filtering, bounds or wakeups, and measure before
+claiming a gain. The product sequence remains memory RawKV read performance,
+then dynamic multi-Raft and automatic splits.
 This priority does not waive the storage, proof, fault or recovery prerequisites
 below. Preserve durable writes and fresh quorum reads; evaluate throughput and
 latency together, including mixed-read tails. CI runs locally except at releases

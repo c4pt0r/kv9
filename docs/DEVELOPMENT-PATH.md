@@ -8,14 +8,22 @@ active product milestone, followed by dynamic multi-Raft and automatic splits.
 The dependency index and proof/fault/availability gates below still apply;
 partial experimental results do not complete their broader work packages.
 
-The [confirmation-queue diagnostic](https://github.com/c4pt0r/kv9/blob/c423d3c605bf6b88bda3521b85e6997c2b203120/docs/CONFIRMATION-QUEUE-RESULTS.md) now passes exact-source
-checks, recovery and two fixed cells. Mixed-load sender/receiver waits are much
-larger than local batch-channel admission; independent message means must not
-be added into GET latency. The next isolated candidate `74b958a` uses a 64-KiB
-Append entry-payload target instead of raft-rs's one-entry default. Source gates
-and 357-call ordinary recovery pass; next run the fixed c1/c64 GET/mixed screen.
-Keep CRC selected until performance, proof and exact-source fault gates justify
-promotion. The prior metadata, receipt and scheduling candidates remain held.
+The [confirmation-queue diagnostic](https://github.com/c4pt0r/kv9/blob/c423d3c605bf6b88bda3521b85e6997c2b203120/docs/CONFIRMATION-QUEUE-RESULTS.md)
+identifies mixed-load sender/inbox residence, but queue means are not additive
+GET phases. The [complete bounded Append-payload screen](https://github.com/c4pt0r/kv9/blob/381d0973c078522d3698a922ecac8594cc9df348/docs/RAFT-APPEND-PAYLOAD-PERFORMANCE.md)
+now records +0.790% c64 GET and only +0.031% mixed throughput, with unchanged
+mixed GET p99. Keep CRC selected; hold `74b958a` without expanding qualification.
+The first 18/24 attempt stopped on storage protection; a separate full second
+attempt passes after dev-cache reclamation with the same binaries and guards.
+Both attempts and the reason for rerunning remain published.
+
+Next remove redundant inbox-vector construction in `GrpcTransport::drain`,
+preserving FIFO, bounds, partition filtering and wakeups; validate default and
+testing-feature paths, then measure the same complete screen. Its gain is not
+yet known. Subsequent transport scheduling work must preserve stream-progress
+timeouts and route cancellation. Promotion still requires applicable proof,
+full point/batch evidence and actual exact-source Chaos. Prior metadata,
+receipt and scheduling experiments remain held.
 
 <!-- kv9-roadmap-20260908:epic -->
 This is the execution tracker for evolving kv9 from its basic distributed Raw KV baseline into an industrial-grade distributed database. Priorities are consistency, recoverability, bounded resources, measured throughput and scalable ownership. Complex private-network TLS configuration is P4 work.
