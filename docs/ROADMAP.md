@@ -7,21 +7,19 @@ The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 2
 explicit dependencies, implementation steps and acceptance criteria. Track delivery in
 [GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
 
-The [current checkpoint](CURRENT-STATUS.md) records the completed outbound
-executor screen: c1 GET +4.159%, c64 GET -4.415%, mixed c64 -2.066%, with worse
-c64 read means/tails in both repeats. Keep CRC selected; stop default promotion
-and broader tests for this candidate. The completed
-[CPU/scheduler diagnostic](PEER-SCHEDULING-DIAGNOSTIC.md) identifies redundant
-owner notifications as the next candidate: coalesce `notify_one` on the
-false-to-true pending transition, prove no lost wakeup and validate concrete
-races before the unchanged throughput/latency screen. Instrumented samples
-establish no speedup. Existing handoff/runtime experiments remain completed.
-Preserve original queue/watchdog and consensus guards. The product sequence
-remains memory RawKV read performance, then dynamic multi-Raft and automatic splits.
-This priority does not waive the storage, proof, fault or recovery prerequisites
-below. Preserve durable writes and fresh quorum reads; evaluate throughput and
-latency together, including mixed-read tails. CI runs locally except at releases
-or explicitly selected key milestones.
+The [current checkpoint](CURRENT-STATUS.md) records the completed notification
+candidate: c64 GET throughput +1.123%, c64 mixed +2.730%, with better loaded/mixed
+read means and p99 in both repetitions. C1 GET does not improve (-0.248% throughput,
++0.260% mean). The [formal/source/recovery gates](COALESCED-OWNER-VALIDATION.md)
+pass, but broader API performance and actual exact-source Chaos remain open.
+Keep CRC selected and `42e0117` experimental. Qualify that candidate and localize
+isolated GET RPC/owner/completion costs next; preserve fresh quorum reads, sealed
+groups, successful pump/apply/view fences and durable acknowledgements.
+The product sequence remains memory RawKV read performance, then dynamic
+multi-Raft and automatic splits, without waiving storage/proof/fault prerequisites.
+Earlier rejected executor/handoff experiments retain their decisions. Evaluate
+throughput and latency together, including mixed-read tails. CI runs locally
+except at releases or explicitly selected key milestones.
 
 The target is an industrial-grade distributed database. Prioritize consistency, recovery, measured throughput
 and scalable architecture. Complex private-network TLS configuration is not a prerequisite for the current

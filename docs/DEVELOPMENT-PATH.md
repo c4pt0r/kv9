@@ -8,29 +8,35 @@ active product milestone, followed by dynamic multi-Raft and automatic splits.
 The dependency index and proof/fault/availability gates below still apply;
 partial experimental results do not complete their broader work packages.
 
-The [completed outbound executor screen](https://github.com/c4pt0r/kv9/blob/3ed8661de5e2f5a3a1f5cc1cdf31ac8cd76a655c/docs/PEER-EXECUTOR-ISOLATION-PERFORMANCE.md)
-finds c1 GET +4.159%, c64 GET -4.415% and c64 mixed -2.066%, with worse c64
-read means/tails in both repetitions. Keep CRC selected and stop this candidate's
-promotion/full-matrix/Chaos expansion. All 49,236,254 measured calls succeed in
-one attempt; full outcomes, repetitions and original evidence are published.
-The earlier body-handoff diagnostic is complete and does not identify its batch
-channel as the primary read bottleneck. Event-one and older held candidates
-retain their original decisions; no broad roadmap item closes.
+The [completed notification screen](COALESCED-OWNER-PERFORMANCE.md) finds
+candidate `42e0117` improves c64 GET throughput 1.123% and c64 mixed throughput
+2.730%, with better loaded/mixed GET mean and p99 in both repetitions. C1 GET
+remains unimproved (-0.248% throughput, +0.260% mean); its mean is about 6.67x
+same-run Redis. All 49,944,895 measured calls succeed in one attempt, and all
+24 cohorts plus exact environment restoration pass the independent audit.
+This is shared-host loopback with ordinary three-voter quorum/sync on tmpfs WAL,
+not equal-durability, real-disk, cross-host or sustained-capacity evidence.
 
-The [completed CPU/scheduler diagnostic](PEER-SCHEDULING-DIAGNOSTIC.md) retains
-6,703,621 measured successes, 6,120 selected CPU samples and 380,154 scheduler
-events with source-supported thread roles. It identifies the unconditional
-`notify_one` call inside `WorkSignal::notify` as a suppression candidate.
-Next implement false-to-true notification coalescing from CRC, prove the
-`RSNotify`/`RSHint` refinement under `RSParkedSignal`, and check concrete
-producer/drain/park/stop races. Measure suppression/syscall cost, then use the
-unchanged uninstrumented c1/c64 GET and mixed throughput/latency screen. The
-instrumented populations do not establish a speedup or explain the entire
-executor regression. Preserve fresh Safe ReadIndex, complete successful
-pump/apply/view fences, durable writes, cancellation/deadlines and bounded
-ownership. Qualify a useful change with applicable proof, full point/batch
-checks and actual exact-source Chaos before promotion. Continue dynamic
-multi-Raft and automatic splits after the read milestone and prerequisites.
+[Proof/source/ordinary-recovery qualification](COALESCED-OWNER-VALIDATION.md)
+passes: new scheduling refinement 14 theorems / 64 obligations, unchanged
+scheduling dependency 33 / 294, 438 default tests/doctests (one existing ignored),
+214 overlapping testing-feature tests/doctests, formatting/Clippy and 369 checked
+recovery operations (341 OK / 28 unknown). The three new race tests cover
+concurrent publication, bounded drain and terminal stop. Full implementation
+proofs and actual candidate Chaos remain open; do not close a broad work package.
+
+Keep CRC selected and the notification candidate frozen for applicable broader
+point/batch measurements and actual exact-source Chaos acceptance. Prioritize
+isolated GET serial RPC/owner/completion costs for the next bounded diagnostic.
+The [CPU/scheduler investigation](PEER-SCHEDULING-DIAGNOSTIC.md) led to this change;
+its sampled 4% notification stacks never predicted the measured effect size.
+The earlier outbound-executor regression and body-handoff investigation retain
+their original decisions; do not rerun their rejected candidates.
+
+Preserve fresh Safe ReadIndex, sealed groups, complete successful pump/apply/view
+fences, durable writes, cancellation/deadlines and bounded ownership. Dynamic
+multi-Raft and automatic splits follow the still-open read milestone and their
+existing storage/recovery/proof prerequisites. CI stays local.
 
 <!-- kv9-roadmap-20260908:epic -->
 This is the execution tracker for evolving kv9 from its basic distributed Raw KV baseline into an industrial-grade distributed database. Priorities are consistency, recoverability, bounded resources, measured throughput and scalable ownership. Complex private-network TLS configuration is P4 work.
