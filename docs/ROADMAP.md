@@ -7,15 +7,14 @@ The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 2
 explicit dependencies, implementation steps and acceptance criteria. Track delivery in
 [GitHub issue #9](https://github.com/c4pt0r/kv9/issues/9).
 
-The [current checkpoint](CURRENT-STATUS.md) records the completed event-one
-regression: c1 GET -6.325%, c64 GET -13.085%, mixed c64 -5.385%, with worse read
-means/tails in both repeats. Keep CRC selected. The completed request-body
-diagnostic does not justify replacing the batch channel as the primary read
-optimization. A new outbound peer-executor prototype now passes source/recovery
-gates; compare its performance next, then a shared-three-worker control if
-promising to distinguish placement from added worker count. Preserve original
-queue/watchdog and consensus guards. The product sequence remains memory RawKV
-read performance, then dynamic multi-Raft and automatic splits.
+The [current checkpoint](CURRENT-STATUS.md) records the completed outbound
+executor screen: c1 GET +4.159%, c64 GET -4.415%, mixed c64 -2.066%, with worse
+c64 read means/tails in both repeats. Keep CRC selected; stop default promotion
+and broader tests for this candidate. Next use bounded exact-artifact CPU and
+scheduler/wakeup observations to identify the added cost before another runtime
+change. Existing body-handoff and event-frequency experiments remain completed.
+Preserve original queue/watchdog and consensus guards. The product sequence
+remains memory RawKV read performance, then dynamic multi-Raft and automatic splits.
 This priority does not waive the storage, proof, fault or recovery prerequisites
 below. Preserve durable writes and fresh quorum reads; evaluate throughput and
 latency together, including mixed-read tails. CI runs locally except at releases

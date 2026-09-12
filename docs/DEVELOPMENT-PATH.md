@@ -8,21 +8,24 @@ active product milestone, followed by dynamic multi-Raft and automatic splits.
 The dependency index and proof/fault/availability gates below still apply;
 partial experimental results do not complete their broader work packages.
 
-The [confirmation-queue diagnostic](https://github.com/c4pt0r/kv9/blob/c423d3c605bf6b88bda3521b85e6997c2b203120/docs/CONFIRMATION-QUEUE-RESULTS.md)
-identifies mixed-load sender/inbox residence but leaves request-body consumption
-unmeasured. The [inbox vector reuse screen](https://github.com/c4pt0r/kv9/blob/51efc6598324c10c1e27cd6fef869d4b9a39e7c4/docs/INBOX-VECTOR-REUSE-PERFORMANCE.md)
-completes source gates, 359-call ordinary recovery and all 24 timing cohorts:
-+0.420% mixed c64 throughput, but -0.494% c1 GET and pure-c64 tail tradeoffs.
-Keep CRC selected; hold `1045755` and the prior Append/metadata/receipt candidates.
-All outcomes and original evidence remain available; no broad issue closes.
+The [completed outbound executor screen](https://github.com/c4pt0r/kv9/blob/3ed8661de5e2f5a3a1f5cc1cdf31ac8cd76a655c/docs/PEER-EXECUTOR-ISOLATION-PERFORMANCE.md)
+finds c1 GET +4.159%, c64 GET -4.415% and c64 mixed -2.066%, with worse c64
+read means/tails in both repetitions. Keep CRC selected and stop this candidate's
+promotion/full-matrix/Chaos expansion. All 49,236,254 measured calls succeed in
+one attempt; full outcomes, repetitions and original evidence are published.
+The earlier body-handoff diagnostic is complete and does not identify its batch
+channel as the primary read bottleneck. Event-one and older held candidates
+retain their original decisions; no broad roadmap item closes.
 
-Next implement the [bounded request-body handoff observation](https://github.com/c4pt0r/kv9/blob/51efc6598324c10c1e27cd6fef869d4b9a39e7c4/docs/RAFT-REQUEST-BODY-HANDOFF-PLAN.md),
-preserving the existing channel/select/route/progress behavior. Measure batch
-offer to request-stream poll in fixed c1 GET/c64 mixed cells after source and
-recovery checks; do not confuse it with admission, wire delivery or per-read
-latency. A meaningful interval can justify removing one handoff in a separate
-uninstrumented candidate. Promotion still requires applicable proof, full
-point/batch evidence and actual exact-source Chaos. No new gain is presumed.
+Next attribute the new c64 scheduling cost using exact retained CRC/candidate
+artifacts, bounded on-CPU and scheduler/wakeup observations, and explicit public/
+peer/owner thread roles. The observed CPU/QPS ratio is a lead, not a causal proof.
+Only an identified mechanism should motivate the next isolated implementation
+change from CRC. Preserve fresh Safe ReadIndex, complete successful pump/apply/view
+fences, durable writes, cancellation/deadlines and bounded ownership. Qualify a
+useful change with applicable proof, full point/batch checks and actual exact-source
+Chaos before promotion. Continue dynamic multi-Raft and automatic splits after
+the read-performance milestone and all applicable prerequisites.
 
 <!-- kv9-roadmap-20260908:epic -->
 This is the execution tracker for evolving kv9 from its basic distributed Raw KV baseline into an industrial-grade distributed database. Priorities are consistency, recoverability, bounded resources, measured throughput and scalable ownership. Complex private-network TLS configuration is P4 work.

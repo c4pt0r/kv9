@@ -19,46 +19,51 @@ remain open. An abstract proof or one-host fault run does not close these gates.
 
 ## Latest completed uninstrumented performance
 
-The [event-one screen and original evidence](https://github.com/c4pt0r/kv9/blob/a7d6ccf/docs/RPC-EVENT-ONE-PERFORMANCE.md)
+The [outbound executor screen and original evidence](https://github.com/c4pt0r/kv9/blob/3ed8661de5e2f5a3a1f5cc1cdf31ac8cd76a655c/docs/PEER-EXECUTOR-ISOLATION-PERFORMANCE.md)
 complete 24 cohorts: two forward/reverse ten-second repetitions, fixed v3
 clients, 4,096 keys, 128-byte values, closed-loop load and fixed CPU placement.
 KV9 uses three voters with ordinary quorum/sync on **tmpfs WAL**. Redis is
 standalone with persistence and pipelining disabled. This is shared-host loopback,
 not equal-durability, real-disk, cross-host or sustained-capacity evidence.
 
-| Metric | Selected CRC | Event one | Redis |
+| Metric | Selected CRC | Outbound isolation | Redis |
 | --- | ---: | ---: | ---: |
-| c1 GET calls/s | 26,619 | 24,935 | 173,073 |
-| c1 GET mean us | 37.449 | 39.987 | 5.701 |
-| c1 GET p99 interval us | 49.664--50.175 | 51.200--51.711 | 7.552--7.615 |
-| c64 GET calls/s | 345,535 | 300,321 | 510,849 |
-| c64 GET mean us | 185.097 | 212.978 | 125.172 |
-| c64 GET p99 interval us | 352.256--356.351 | 413.696--417.791 | 231.424--233.471 |
-| c64 mixed combined calls/s | 171,794 | 162,542 | 502,676 |
-| c64 mixed GET mean us | 384.665 | 408.502 | 127.179 |
-| c64 mixed GET p99 interval us | 622.592--630.783 | 671.744--679.935 | 233.472--235.519 |
+| c1 GET calls/s | 26,751 | 27,863 | 173,283 |
+| c1 GET mean us | 37.265 | 35.774 | 5.693 |
+| c1 GET p99 interval us | 49.664--50.175 | 47.616--48.127 | 7.680--7.743 |
+| c64 GET calls/s | 345,508 | 330,252 | 507,233 |
+| c64 GET mean us | 185.108 | 193.665 | 126.062 |
+| c64 GET p99 interval us | 352.256--356.351 | 364.544--368.639 | 229.376--231.423 |
+| c64 mixed combined calls/s | 171,768 | 168,220 | 500,948 |
+| c64 mixed GET mean us | 384.481 | 395.922 | 127.628 |
+| c64 mixed GET p99 interval us | 622.592--630.783 | 679.936--688.127 | 233.472--235.519 |
 
-**Reject event one; keep CRC selected.** The only runtime change makes the
-existing two-worker executor poll I/O every task rather than every eight tasks.
-It loses 6.325% c1 GET, 13.085% c64 GET and 5.385% c64 mixed throughput. Means
-and tails worsen in both repetitions, including separate mixed GET latency.
-No full-matrix or candidate Chaos expansion follows this regression.
+**Do not promote outbound isolation; keep CRC selected.** Its extra per-node
+worker improves c1 GET by 4.159%, but loses 4.415% c64 GET and 2.066% c64 mixed
+throughput. Both repetitions have the same direction. C64 means and tails worsen,
+including separate mixed GET. The default read-performance gate fails, so no
+full-matrix or candidate Chaos expansion follows. The selected CRC remains about
+6.48x below same-run Redis c1 throughput and 1.47x below c64 throughput.
 
-All 48,550,288 measured calls succeed in one attempt. Across all client phases,
-48,848,344 successful calls / 48,848,360 attempts retain 16 initialization
-routing attempts. The first full timing and independent audit accept 80 exited
-lifetimes, 48 fresh drains/bindings, 4,679 resource samples and exact CPU/namespace
-restoration. Source checks and 372-call ordinary recovery pass (338 OK / 34
-unknown). The root statistics-wrapper inventory-shape failure is retained; its
-correction does not rerun the workload or alter the frozen arithmetic.
+All 49,236,254 measured calls succeed in one attempt. Across all client phases,
+49,534,310 successful calls / 49,534,326 attempts retain 16 initialization routing
+attempts. The first complete timing and independent audit accept 80 exited
+lifetimes, 48 fresh drains/bindings, 4,675 resource samples and exact CPU/namespace
+restoration. Seven driver/source-binding and 17 auditor contracts pass, as do
+12 smoke cells. Previously completed source/recovery gates remain accepted and
+are not rerun: 224/234 overlapping server tests/doctests, formatting/Clippy and
+356-call ordinary recovery (328 OK / 28 unknown).
 
-Before timing, root reclaims only reviewed Go compiler-cache objects, recovering
-5,155,196,928 available bytes. Original binaries, evidence and WALs stay intact;
-Rust caches, downloads and uv stay unchanged. The 96-GiB retention floor remains.
-Both repetitions, separate operation histograms and all outcomes are published.
-This is a screen, not statistical significance or a general no-regression bound.
+Before timing, root reclaims only reviewed release compiler-cache objects and
+archive-backed extracted Cargo packages, recovering 2,897,895,424 available bytes.
+Original binaries, source/recovery evidence, WALs, crate downloads and named
+build/package locks remain intact. The original file-only capacity rejection
+and its derived directory-allocation accounting remain published. Actual storage
+guards are unchanged. Both repetitions, separate operation histograms, all
+outcomes and original preparation failures are retained. This is a screen,
+not statistical significance or a general no-regression bound.
 
-## Completed diagnosis and current prototype
+## Completed diagnosis and rejected prototype
 
 The [request-body handoff diagnostic](https://github.com/c4pt0r/kv9/blob/a75c005/docs/RAFT-BODY-HANDOFF-RESULTS.md)
 passes both fixed cells with 984,862 measured successes, eight exited lifetimes,
@@ -69,37 +74,31 @@ not additive GET phases or wire/ACK latency. It does not justify replacing the
 batch channel as the primary read optimization. Source tests and 368-call
 ordinary recovery pass; original failed Clippy and its test-only fix are retained.
 
-The [outbound peer-executor prototype](https://github.com/c4pt0r/kv9/commit/36ae89a774131b368cf1ed28e95df02ba325c8d4)
-keeps two public workers/event8 and places existing outbound Raft tasks and
-connections on one extra per-node worker. Inbound peer RPCs keep the existing
-listener. No new per-message task, queue, port or cluster-wide service is added.
-Total async workers rise from two to three; process CPU affinity stays unchanged.
-The [source correspondence and ownership contract](https://github.com/c4pt0r/kv9/blob/36ae89a774131b368cf1ed28e95df02ba325c8d4/docs/PEER-EXECUTOR-ISOLATION.md)
-preserves the existing transport state machine and consensus guards.
-
-Default/experimental server suites pass 224/234 tests and doctests (overlapping,
-one pre-existing ignored test each), formatting and all-target Clippy. Original
-release/source readback binds 595 files and 11 freshly compiled first-party units.
-The [ordinary recovery gate and original evidence](https://github.com/c4pt0r/kv9/blob/79ea149/docs/PEER-EXECUTOR-ISOLATION-VALIDATION.md)
-pass 356 calls (328 OK / 28 unknown), complete stream/unary histories, five
-server/two client lifetimes and six drains. Five process contracts pass. These
-gates do not independently inject runtime-constructor failure or establish
-actual Chaos/host failure, complete drop-order refinement or a performance gain.
-No performance result is available for this prototype. It is not selected, and
-its additional worker cost must remain visible in any comparison.
+The outbound peer-executor prototype keeps two public workers/event8 and places
+existing outbound Raft tasks and connections on one additional per-node worker.
+Inbound peer RPCs keep the original listener; no new per-message task, queue,
+port or cluster-wide service is added. Its performance gate now shows the tradeoff
+above and rejects default promotion. The [source correspondence and ownership
+contract](https://github.com/c4pt0r/kv9/blob/36ae89a774131b368cf1ed28e95df02ba325c8d4/docs/PEER-EXECUTOR-ISOLATION.md)
+and [ordinary recovery evidence](https://github.com/c4pt0r/kv9/blob/79ea149/docs/PEER-EXECUTOR-ISOLATION-VALIDATION.md)
+retain their exact scopes. Constructor failure, full implementation refinement
+and actual candidate Chaos/host failure are not newly established by this screen.
 
 ## Next development steps
 
-1. **Screen outbound executor placement:** after source/recovery gates, compare
-   the exact uninstrumented prototype with selected CRC and Redis at c1/c64 GET
-   and mixed load. Keep both complete repetitions, GET mean/p95/p99, PUT outcomes,
-   source/CPU identity and storage guards. Preserve originals while preparing
-   enough retention space; do not relax the acceptance floor.
-2. **Separate placement from resource count:** if promising, compare a shared
-   three-worker/event8 control under the same CPU budget before attributing a
-   gain to isolation. Inbound Raft still shares public HTTP2 handling; do not
-   describe this prototype as complete network isolation. A regression ends its
-   expansion. Avoid more unmotivated frequency sweeps or held-candidate replays.
+1. **Attribute the newly observed scheduling cost:** compare exact CRC and
+   outbound-isolation artifacts at c64 GET using bounded on-CPU and scheduler/
+   wakeup observations, separating public workers, outbound peer work and the
+   Raft owner. The candidate's observed server CPU/QPS ratio rises 16.024%; that
+   ratio is a diagnostic lead, not per-request service time or a proven cause.
+   Include c1 only as a specific contrast. Preserve full outcomes and source,
+   CPU and artifact identities; do not replay coarse ReadIndex/queue/body profiles.
+2. **Change only an identified mechanism:** use the resulting evidence to reduce
+   an avoidable scheduling handoff or task cost in a separate candidate from CRC.
+   Preserve original queues, ownership and fairness. An extra worker remains a
+   confounder; a shared-three-worker control is necessary for an isolation-specific
+   attribution, but the rejected candidate does not receive broader promotion
+   tests. Avoid another unmotivated thread-count or event-frequency sweep.
 3. **Qualify useful improvements:** applicable proof mapping, full point/batch
    checks and actual exact-source Chaos Mesh fault injection precede promotion.
    Preserve fresh Safe ReadIndex, sealed groups, durable writes and complete

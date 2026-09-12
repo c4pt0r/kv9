@@ -35,7 +35,17 @@ there must be no service-critical singleton except the object-store dependency.
 Existing snapshot, retention and storage prerequisites remain required before
 accepting scale-out. This sequence does not mark those prerequisites complete.
 
-## Current evidence
+## Current checkpoint
+
+The [current status](CURRENT-STATUS.md) is authoritative for runtime selection.
+Selected behavior remains CRC `ca0002c7`. The completed outbound executor screen
+improves c1 GET by 4.159% but loses 4.415% c64 GET and 2.066% c64 mixed throughput,
+with worse c64 read means/tails. It is not promoted. Next investigate the observed
+CPU/scheduling cost with exact retained artifacts before changing another runtime
+mechanism; preserve the full proof, point/batch and actual Chaos promotion gates.
+The reports below retain their earlier source boundaries and historical decisions.
+
+## Earlier development evidence
 
 **Streaming gRPC with tonic is selected** for the next point-transport integration
 and performance work. The [same-artifact five-arm comparison](../scripts/redis-reference/results/40e813f-streaming-rpc-c64-tmpfs-diagnostic.md)
@@ -162,7 +172,7 @@ ratios visible and report the actual guarantee beside each result. No throughput
 increase from early success replies, stale reads, hidden refusals, changed value
 sizes, or unreported operation budgets counts as progress.
 
-## Ordered implementation increments
+## Earlier implementation increments
 
 ### 1. Finish the current synchronous batching candidate
 
