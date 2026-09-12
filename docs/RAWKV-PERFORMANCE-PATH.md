@@ -1,10 +1,11 @@
 # RawKV performance development path
 
-> Latest direction: consult the [cross-branch experiment index](PERFORMANCE-EXPERIMENT-INDEX.md)
-> before another candidate. Global queue and persistent-handler scheduling have
-> prior rejected screens; repeated prototypes stop before timing. The next
-> distinct experiment tests ThinLTO release code generation with unchanged
-> runtime semantics and fixed clients. Read parity and industrial gates remain open.
+> Latest direction: [ThinLTO qualification](RELEASE-THIN-LTO-PERFORMANCE.md)
+> improves c64 GET 8.511%, c1 GET 6.402% and c64 mixed throughput 10.424%, with
+> better means and p99 in both orders. Freeze `02d0c01` for broader API and actual
+> exact-build Chaos Mesh gates; CRC remains selected. Consult the
+> [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before another candidate.
+> Redis read parity and industrial gates remain open.
 
 Tracking: #13, #20 and #9. The product target is Redis-class performance for
 memory-resident RawKV data. Data residency, durable acknowledgement, replication
@@ -44,17 +45,19 @@ accepting scale-out. This sequence does not mark those prerequisites complete.
 ## Current checkpoint
 
 The [current status](CURRENT-STATUS.md) is authoritative for runtime selection.
-Selected behavior remains CRC `ca0002c7`. The [notification candidate screen](COALESCED-OWNER-PERFORMANCE.md)
-completes 24 timed cohorts: c64 GET +1.123%, c64 mixed +2.730%, with better loaded
-and mixed GET mean/p99 in both repeats. Single GET does not improve: -0.248%
-throughput and +0.260% mean. Its 37.772 us mean remains about 6.67x Redis.
-Keep `42e0117` experimental pending broader API performance and actual candidate
-Chaos. The [new proof/source/recovery qualification](COALESCED-OWNER-VALIDATION.md)
-is complete within its documented scope; no full correctness gate closes.
-Next localize isolated GET serial RPC, owner and completion costs. Preserve
-fresh ReadIndex, sealed groups, successful pump/apply/view fences and durable
-writes. The previous outbound-executor regression remains rejected. The reports
-below retain their earlier source boundaries and historical decisions.
+Selected behavior remains CRC `ca0002c7`. The [ThinLTO screen](RELEASE-THIN-LTO-PERFORMANCE.md)
+completes all 24 timed cohorts: c64 GET +8.511%, c1 GET +6.402% and mixed
+throughput +13.891% at c1 / +10.424% at c64. Mean/p99 improve in both orders,
+including separate mixed GET/PUT. The candidate reaches 376,202 GET/s at c64;
+isolated GET mean is 35.226 us, about 6.21 times the same-run Redis mean.
+
+Freeze `02d0c01` for broader point/batch API checks and actual exact-build Chaos
+Mesh. Its [source and ordinary recovery validation](RELEASE-THIN-LTO-VALIDATION.md)
+is complete within the documented scope. Separate notification candidate
+`42e0117` remains experimental; combining it with ThinLTO requires a distinct
+matched qualification. Fresh ReadIndex, sealed groups, successful pump/apply/view
+fences and durable writes remain mandatory. Historical rejected scheduling
+screens remain rejected; review the index and all branch history first.
 
 ## Earlier development evidence
 

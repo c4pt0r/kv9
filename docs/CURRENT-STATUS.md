@@ -1,4 +1,4 @@
-# Development checkpoint — 2026-09-11
+# Development checkpoint — 2026-09-12
 
 Tracking: [#9](https://github.com/c4pt0r/kv9/issues/9). The target remains an
 industrial distributed database. Memory RawKV read performance comes before
@@ -19,36 +19,45 @@ remain open. An abstract proof or one-host fault run does not close these gates.
 
 ## Latest completed optimization experiment
 
-[Global queue polling at interval eight](GLOBAL-QUEUE-PERFORMANCE.md) is rejected:
-c64 GET throughput falls **2.390%**, with **2.450%** higher mean and worse p99 in
-both run orders. C1 GET and c64 mixed throughput also fall in both repetitions.
-Selected runtime remains CRC. The prior notification candidate remains separate;
-this screen does not compare the two candidates directly.
+[ThinLTO with one release codegen unit](RELEASE-THIN-LTO-PERFORMANCE.md) improves
+all four point-read/mixed cells in both run orders. C64 GET throughput rises
+**8.511%**, mean falls **7.847%**, and p99 improves. C1 GET throughput rises
+**6.402%**; mixed throughput rises **13.891% at c1** and **10.424% at c64**.
+Separate mixed GET/PUT means and p99 improve in both repetitions.
 
-| Same-run metric | Selected CRC | Rejected interval-eight | Redis |
+| Same-run metric | Selected CRC | ThinLTO candidate | Redis |
 | --- | ---: | ---: | ---: |
-| c1 GET calls/s | 26,542.953 | 26,391.062 | 174,382.402 |
-| c1 GET mean us | 37.562 | 37.779 | 5.658 |
-| c1 GET p99 us | 49.664–50.175 | 50.176–50.687 | 7.296–7.359 |
-| c64 GET calls/s | 346,069.116 | 337,799.779 | 511,088.898 |
-| c64 GET mean us | 184.807 | 189.335 | 125.114 |
-| c64 GET p99 us | 352.256–356.351 | 356.352–360.447 | 231.424–233.471 |
-| c64 mixed combined calls/s | 170,326.223 | 168,640.129 | 503,781.883 |
-| c64 mixed GET mean us | 387.535 | 390.292 | 126.912 |
+| c1 GET calls/s | 26,591.615 | 28,293.988 | 174,022.103 |
+| c1 GET mean us | 37.485 | 35.226 | 5.671 |
+| c1 GET p99 us | 50.176–50.687 | 45.056–45.567 | 7.424–7.487 |
+| c64 GET calls/s | 346,695.956 | 376,202.163 | 510,898.184 |
+| c64 GET mean us | 184.474 | 169.998 | 125.158 |
+| c64 GET p99 us | 352.256–356.351 | 323.584–327.679 | 229.376–231.423 |
+| c64 mixed combined calls/s | 170,992.289 | 188,817.154 | 500,132.085 |
+| c64 mixed GET mean us | 386.171 | 350.297 | 127.850 |
 
-All 12 smoke and 24 timed cohorts complete, with **49,504,037 measured calls**
-succeeding in one attempt. Independent acceptance checks 80 exited lifetimes,
-48 fresh drains/bindings, 4,678 resource samples and exact CPU/namespace
-restoration. Seven driver/binding and 17 auditor contracts plus the statistics
-contract pass. No original runtime is rerun or omitted. [Correctness and ordinary
-recovery](GLOBAL-QUEUE-VALIDATION.md) pass 435 tests/doctests (one existing ignored),
-formatting/Clippy and full histories with 363 operations (330 OK / 33 unknown).
+All 12 smoke and 24 timed cohorts complete with **50,708,100 measured
+single-attempt successes**, zero dropped slots and independent acceptance.
+The audit verifies 80 exited lifetimes, 48 fresh drains/bindings, 4,681 resource
+samples and exact CPU/namespace restoration. [Validation](RELEASE-THIN-LTO-VALIDATION.md)
+passes 709 workspace tests/doctests (23 existing ignored), formatting/Clippy
+and ordinary recovery histories with 359 operations (326 OK / 33 unknown).
+The production compiler flags/default feature graph and source identity are
+verified separately from the workspace test graph.
 
-Scope: default-feature uninstrumented builds, shared-host loopback, ordinary
-three-voter quorum/sync on **tmpfs WAL**, versus standalone Redis without
-persistence/pipelining. No equal-durability, real-disk, cross-host or significance
-claim. Precisely reviewed obsolete debug intermediates supplied 6.06 GiB of
-space; original binaries, WAL, histories, sources and storage guards remain.
+Candidate `02d0c01` remains experimental pending broader API and actual
+exact-build Chaos Mesh qualification. Selected runtime remains CRC. The result
+reaches 73.635% of Redis c64 GET throughput; isolated GET mean is still about
+6.21 times Redis. Read parity is not complete.
+
+Scope: unchanged fixed clients, default uninstrumented production builds,
+shared-host loopback and ordinary three-voter quorum/sync on **tmpfs WAL**,
+versus standalone Redis without persistence/pipelining. No equal-durability,
+real-disk, cross-host, sustained-capacity or significance claim. Completed
+historical WAL artifacts were moved to verified local cold retention to make
+space; original cold paths require rehydration before reuse of old full audits.
+Current ThinLTO and global-queue evidence is resident. See the retention overlay
+linked by the performance report; no storage guard was lowered.
 
 ## Diagnosis and next performance work
 
@@ -62,12 +71,10 @@ The [cross-branch experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) now links
 prior decisions, including earlier global-queue and persistent-stream-worker
 regressions. The latest single-owner and two-worker revisits stop before timing;
 they provide no new performance result. Scheduling rewrites require a new cause.
-The active distinct candidate tests ThinLTO and one release codegen unit while
-keeping the fixed clients and all runtime/consistency semantics unchanged.
-Its full release workspace checks pass 709 tests/doctests (23 existing ignored),
-formatting and all-target Clippy. The retained production build is source-bound with actual ThinLTO/codegen flags
-and panic unwinding verified; ordinary recovery and matched measurement remain
-pending.
+The ThinLTO candidate now passes source, ordinary recovery and the complete
+point-read/mixed screen above. Next complete its broader API and actual
+exact-build fault gates before considering default promotion. Do not add its
+percentage to the separate notification candidate's historical improvement.
 The read milestone remains open before dynamic multi-Raft and automatic splits.
 
 The earlier [notification comparison](COALESCED-OWNER-PERFORMANCE.md) remains
@@ -115,9 +122,11 @@ isolated GET improvement. Original setup/reader failures remain published.
 
 ## Next development steps
 
-1. **Finish candidate acceptance:** keep `42e0117` frozen while completing
-   applicable broader point/batch measurements and actual candidate Chaos Mesh.
-   The short loaded-read improvement does not itself justify default promotion.
+1. **Finish the strongest current candidate:** freeze `02d0c01` and extend its
+   complete favorable screen to broader point/batch measurements and actual
+   exact-build Chaos Mesh. Keep `42e0117` separate; any combined candidate needs
+   its own source mapping and matched qualification. A short screen alone does
+   not justify default promotion.
 2. **Reduce isolated GET latency:** localize serial RPC, owner-service and
    completion-wait costs with a bounded diagnostic. Preserve the selected shared
    executor and consensus boundaries; the current evidence does not justify

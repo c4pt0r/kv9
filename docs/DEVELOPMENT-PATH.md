@@ -1,12 +1,13 @@
 # Detailed development path
 
-> Latest direction: consult the [cross-branch experiment index](PERFORMANCE-EXPERIMENT-INDEX.md)
-> before another candidate. Global queue and persistent-handler scheduling have
-> prior rejected screens; repeated prototypes stop before timing. The next
-> distinct experiment tests ThinLTO release code generation with unchanged
-> runtime semantics and fixed clients. Read parity and industrial gates remain open.
+> Latest direction: [ThinLTO qualification](RELEASE-THIN-LTO-PERFORMANCE.md)
+> improves c64 GET 8.511%, c1 GET 6.402% and c64 mixed throughput 10.424%, with
+> better means and p99 in both orders. Freeze `02d0c01` for broader API and actual
+> exact-build Chaos Mesh gates; CRC remains selected. Consult the
+> [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before another candidate.
+> Redis read parity and industrial gates remain open.
 
-Updated: 2026-09-11. GitHub tracker: [#9](https://github.com/c4pt0r/kv9/issues/9).
+Updated: 2026-09-12. GitHub tracker: [#9](https://github.com/c4pt0r/kv9/issues/9).
 
 See [CURRENT-STATUS.md](CURRENT-STATUS.md) for the current performance baseline,
 published experiments and next executable steps. Read performance remains the

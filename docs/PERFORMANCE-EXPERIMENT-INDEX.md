@@ -29,6 +29,7 @@ does not itself imply a selected candidate or full industrial qualification.
 | Separate outbound peer executor `36ae89a` | Rejected as the next increment; retain complete latency/throughput tradeoffs. [Report](https://github.com/c4pt0r/kv9/blob/3ed8661/docs/PEER-EXECUTOR-ISOLATION-PERFORMANCE.md). |
 | Coalesced owner notifications `42e0117` | Experimental modest loaded-read/mixed improvement; isolated GET does not improve, broader API/Chaos gates remain. [Report](COALESCED-OWNER-PERFORMANCE.md). |
 | Fixed global queue interval eight on CRC `3338650` | Revisit of `c893834` under newer c1/c64 GET/mixed scope; rejected again, c64 GET -2.390%. [Complete report](GLOBAL-QUEUE-PERFORMANCE.md). |
+| ThinLTO and one release codegen unit `02d0c01` | Favorable complete screen: c1 GET +6.402%, c64 GET +8.511%, c64 mixed +10.424%; means/p99 improve in both orders. Experimental pending broader API and actual exact-build Chaos. [Report](RELEASE-THIN-LTO-PERFORMANCE.md). |
 
 ## Latest unmeasured prototypes
 
@@ -48,14 +49,14 @@ neither changes selected runtime or qualifies any original checklist item.
 
 ## Current direction and reuse rule
 
-The next distinct candidate [02d0c01](https://github.com/c4pt0r/kv9/blob/02d0c01/docs/RELEASE-THIN-LTO.md) tests **ThinLTO plus one release codegen unit**,
-keeping runtime code, default features, panic unwinding and portable CPU target
-unchanged. The timed native and Redis clients remain the original fixed v3
-binaries. Local release workspace checks pass **709 tests/doctests**, with
-23 existing ignored, formatting and all-target Clippy. Retained production
-builds, ordinary recovery,
-complete matched throughput/mean/p99 and exact-build fault acceptance retain
-their order and scope. No performance benefit is assumed before measurement.
+The ThinLTO candidate `02d0c01` now passes full workspace checks (709 tests,
+23 existing ignored, formatting/Clippy), a source-bound default production build,
+359-operation ordinary recovery and all 24 point-read/mixed timing cohorts.
+Its favorable throughput/mean/p99 result is in the table above. Keep the source,
+server and original fixed clients frozen for broader point/batch and actual
+exact-build Chaos Mesh acceptance. Selected runtime remains CRC until promotion
+criteria pass. A combination with notification candidate `42e0117` requires its
+own matched qualification; historical percentages cannot be added.
 
 Before revisiting any row, state the new evidence and changed variable that
 could invalidate its old conclusion. A fresh branch, renamed helper or repeated
