@@ -17,6 +17,22 @@ core-protocol implementation proofs, the full actual Chaos Mesh failure matrix,
 independent host-failure acceptance, dynamic data groups and automatic splits
 remain open. An abstract proof or one-host fault run does not close these gates.
 
+## Latest diagnosis and active experiment
+
+[Matched asynchronous read stages](READ-STAGE-RESULTS.md) now isolate the next
+performance work. In the c1 diagnostic lifecycle, quorum confirmation averages
+20.636 us (85.72% of the observed read wait); at c64, receiver resumption averages
+42.449 us (37.47%). These successful stage chains include initialization and
+verification, and are not measurement-only latency or new uninstrumented QPS.
+
+Source `40f014f` passes default435/diagnostic438 tests and both Clippy variants.
+Two original fixtures pass independent acceptance with 1,811,433 measured
+single-attempt successes, eight exited lifetimes, six drains and 12 metric
+documents. The next candidate explicitly checks the RPC executor's global task
+queue every eight selections, targeting remote completion wakes while local
+RPC tasks stay busy. Its correctness/recovery/performance gates are in progress;
+no candidate is selected. The c1 quorum round trip remains a separate target.
+
 ## Latest completed uninstrumented performance
 
 The [notification-coalescing screen](COALESCED-OWNER-PERFORMANCE.md) completes

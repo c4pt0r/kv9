@@ -1,5 +1,11 @@
 # Detailed development path
 
+> Latest performance direction: [matched read-stage diagnosis](READ-STAGE-RESULTS.md)
+> identifies the c1 quorum round trip and c64 remote completion resumption.
+> A bounded global-queue polling experiment is in progress; default selection
+> and the Redis read milestone remain open. The prior uninstrumented results
+> retain their original scope.
+
 Updated: 2026-09-11. GitHub tracker: [#9](https://github.com/c4pt0r/kv9/issues/9).
 
 See [CURRENT-STATUS.md](CURRENT-STATUS.md) for the current performance baseline,

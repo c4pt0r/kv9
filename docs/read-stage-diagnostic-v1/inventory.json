@@ -1,0 +1,1473 @@
+{
+  "files": {
+    "preparation/READINESS.json": {
+      "bytes": 582,
+      "sha256": "0f8872b13cf72c157c263dc177be8158607701210bc60caf91f09f674cbbd95c",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/READINESS.json"
+    },
+    "preparation/READINESS.pending.json": {
+      "bytes": 171,
+      "sha256": "3bc1a501d30d4c92617287421fe62e9913c619c87890ec9f6fd8bbb6f50db7ff",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/READINESS.pending.json"
+    },
+    "preparation/README.md": {
+      "bytes": 4840,
+      "sha256": "8ffdc724faa4299476548b4318790c6a986fc5cf859f5987cee92b1d399ef29f",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/README.md"
+    },
+    "preparation/binding-finalization.json": {
+      "bytes": 855,
+      "sha256": "e61d4a1f9e830ddf344370cdceb1c0d9778b5eccf538f0dc87d64c53c5c67711",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/binding-finalization.json"
+    },
+    "preparation/commands.json": {
+      "bytes": 2071,
+      "sha256": "3c13b202677056264db7461bfaaaf21aa8329c0af35c27641b42f0e02d3409d5",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/commands.json"
+    },
+    "preparation/common.py": {
+      "bytes": 5758,
+      "sha256": "b63bdf8b4a986d8df248d8ace4ec614cbee89386f619dc48b74bfa9a8686e000",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/common.py"
+    },
+    "preparation/contract.py": {
+      "bytes": 4598,
+      "sha256": "4e9214e5f75c35bb83ed65192fd85aea036969833938e23b51f183720fc5d3b9",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/contract.py"
+    },
+    "preparation/diagnostic_build.py": {
+      "bytes": 1874,
+      "sha256": "46ac4f0fe4e9365ae767c69b3ccacf5d6009881904cf2ff53f74077065ebde2d",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diagnostic_build.py"
+    },
+    "preparation/diffs/commands.json.diff": {
+      "bytes": 2828,
+      "sha256": "c92ef999287f283863bc346b9dfab898b520a1684f315c009ab9b055ca6b39be",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/commands.json.diff"
+    },
+    "preparation/diffs/common.py.diff": {
+      "bytes": 2440,
+      "sha256": "b2821e80dce0af1f033d4b9dc0ef97385f83e15dc568350934a3dbe9884070d9",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/common.py.diff"
+    },
+    "preparation/diffs/contract.py.diff": {
+      "bytes": 2360,
+      "sha256": "e152133fa4d226cea6be31eaaab7a44f545fd0a891d2a57dac5ab847196c5de2",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/contract.py.diff"
+    },
+    "preparation/diffs/driver-arguments.json.diff": {
+      "bytes": 352,
+      "sha256": "17d480c67a8f0b969ddc7b6dbd02da5ed0178d4291761baa28a16720fe7d76e3",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/driver-arguments.json.diff"
+    },
+    "preparation/diffs/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/isolate-and-run.py.diff"
+    },
+    "preparation/diffs/metrics26.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/metrics26.py.diff"
+    },
+    "preparation/diffs/native_checks.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/native_checks.py.diff"
+    },
+    "preparation/diffs/outer_checks.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/outer_checks.py.diff"
+    },
+    "preparation/diffs/preflight.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/preflight.py.diff"
+    },
+    "preparation/diffs/readback.py.diff": {
+      "bytes": 3667,
+      "sha256": "2543dde330835f68ab040bb7852fe3a527d7cb5e81412f27ede682ca3abbadd4",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/readback.py.diff"
+    },
+    "preparation/diffs/run.py.diff": {
+      "bytes": 1757,
+      "sha256": "0677624e4e6a815046b2ef51db7506511102fe5c100bcbfd06c34f2b2ec04aa6",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/run.py.diff"
+    },
+    "preparation/diffs/stage_checks.py.diff": {
+      "bytes": 6236,
+      "sha256": "f7556a2cf47cdb245081446732fbf9c260e3c6c501c31affcacaf9f68ad124a2",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/stage_checks.py.diff"
+    },
+    "preparation/diffs/test_fixture_contract.py.diff": {
+      "bytes": 1829,
+      "sha256": "80b8e908c0a37a778db8d3f8ad7fb485ff18ab46ad479d9b1493074aaf1663e0",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/test_fixture_contract.py.diff"
+    },
+    "preparation/diffs/v3_fixture.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/diffs/v3_fixture.py.diff"
+    },
+    "preparation/driver-arguments.json": {
+      "bytes": 95,
+      "sha256": "b82f92538c37f4382874844dadebe056ecaaf8f9dd4b2a62bf0f74da40f4c750",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/driver-arguments.json"
+    },
+    "preparation/inventory.json": {
+      "bytes": 12468,
+      "sha256": "d554bb58ea3d085613f54314401a8bf6b2a9584b98a05ee77ffc9bbf53b20029",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/inventory.json"
+    },
+    "preparation/inventory.pending.json": {
+      "bytes": 4511,
+      "sha256": "a565a5e5ee03df041e6bac123a35c759e123324c457491d93033ded89089c80c",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/inventory.pending.json"
+    },
+    "preparation/isolate-and-run.py": {
+      "bytes": 12536,
+      "sha256": "7dcab2745b1e3fbc6a04bcc0d155b1c1c5a0cd3b91ae23bcab359bf47e36f1d2",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/isolate-and-run.py"
+    },
+    "preparation/metrics26.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/metrics26.py"
+    },
+    "preparation/native_checks.py": {
+      "bytes": 23685,
+      "sha256": "826deff55f373f38b5c7a87d14a341a4232704a8e9d64e39a9b1a241351e9d07",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/native_checks.py"
+    },
+    "preparation/originals/commands.json": {
+      "bytes": 2163,
+      "sha256": "150e1a6c8d05c7158f6a71d35534ac62dce2f4c0905c1d386299b69eb1d40e41",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/commands.json"
+    },
+    "preparation/originals/common.py": {
+      "bytes": 5540,
+      "sha256": "7d22ddc7a194978a2060de172490292e8ccde574b6eadd77470346e975248b15",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/common.py"
+    },
+    "preparation/originals/contract.py": {
+      "bytes": 4579,
+      "sha256": "b99f0b53c6c77dd85ae781c37b9c4b6caf256fe168cbbf78c6b2d9263bf52a16",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/contract.py"
+    },
+    "preparation/originals/driver-arguments.json": {
+      "bytes": 102,
+      "sha256": "7e92eb0ba67c26bb23bb81d86b7257a9d26773b526bfe147f19331acf26b8188",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/driver-arguments.json"
+    },
+    "preparation/originals/isolate-and-run.py": {
+      "bytes": 12536,
+      "sha256": "7dcab2745b1e3fbc6a04bcc0d155b1c1c5a0cd3b91ae23bcab359bf47e36f1d2",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/isolate-and-run.py"
+    },
+    "preparation/originals/lifecycle_checks.py": {
+      "bytes": 8063,
+      "sha256": "aeef0c3dedda7fc05cef1c7721d7a65ad2fa9914318c9a862a98f093effbf9c3",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/lifecycle_checks.py"
+    },
+    "preparation/originals/metrics26.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/metrics26.py"
+    },
+    "preparation/originals/native_checks.py": {
+      "bytes": 23685,
+      "sha256": "826deff55f373f38b5c7a87d14a341a4232704a8e9d64e39a9b1a241351e9d07",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/native_checks.py"
+    },
+    "preparation/originals/outer_checks.py": {
+      "bytes": 4428,
+      "sha256": "b5b00ce102aba5694c6c123cd33406876cdfb9fcbbd5c458b7f752e5aae41757",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/outer_checks.py"
+    },
+    "preparation/originals/preflight.py": {
+      "bytes": 1346,
+      "sha256": "6b6e6546d1bc9198e5fcc755fc59f5952cbfe15177ba26f9e2566ccaccd780b7",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/preflight.py"
+    },
+    "preparation/originals/readback.py": {
+      "bytes": 6495,
+      "sha256": "63a5f0be223e96a941dc755599ba93e850f937134c87167950334f82df853a5c",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/readback.py"
+    },
+    "preparation/originals/run.py": {
+      "bytes": 6207,
+      "sha256": "f8ed2536d20352cfa723aeb30be87334913a01ee6a766134a4aaa34a402fc3ed",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/run.py"
+    },
+    "preparation/originals/test_fixture_contract.py": {
+      "bytes": 3857,
+      "sha256": "801993d2ca3975d3b46491c42cd9fdbee10e5a1fdeb6e4a60530ccc2f80e8c88",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/test_fixture_contract.py"
+    },
+    "preparation/originals/v3_fixture.py": {
+      "bytes": 51967,
+      "sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/originals/v3_fixture.py"
+    },
+    "preparation/outer_checks.py": {
+      "bytes": 4428,
+      "sha256": "b5b00ce102aba5694c6c123cd33406876cdfb9fcbbd5c458b7f752e5aae41757",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/outer_checks.py"
+    },
+    "preparation/pending-first/READINESS.pending.json": {
+      "bytes": 171,
+      "sha256": "3bc1a501d30d4c92617287421fe62e9913c619c87890ec9f6fd8bbb6f50db7ff",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/READINESS.pending.json"
+    },
+    "preparation/pending-first/commands.json": {
+      "bytes": 2071,
+      "sha256": "3c13b202677056264db7461bfaaaf21aa8329c0af35c27641b42f0e02d3409d5",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/commands.json"
+    },
+    "preparation/pending-first/common.py": {
+      "bytes": 5758,
+      "sha256": "b63bdf8b4a986d8df248d8ace4ec614cbee89386f619dc48b74bfa9a8686e000",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/common.py"
+    },
+    "preparation/pending-first/contract.py": {
+      "bytes": 4598,
+      "sha256": "4e9214e5f75c35bb83ed65192fd85aea036969833938e23b51f183720fc5d3b9",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/contract.py"
+    },
+    "preparation/pending-first/diagnostic_build.py": {
+      "bytes": 1874,
+      "sha256": "46ac4f0fe4e9365ae767c69b3ccacf5d6009881904cf2ff53f74077065ebde2d",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/diagnostic_build.py"
+    },
+    "preparation/pending-first/driver-arguments.json": {
+      "bytes": 95,
+      "sha256": "b82f92538c37f4382874844dadebe056ecaaf8f9dd4b2a62bf0f74da40f4c750",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/driver-arguments.json"
+    },
+    "preparation/pending-first/inventory.pending.json": {
+      "bytes": 4511,
+      "sha256": "a565a5e5ee03df041e6bac123a35c759e123324c457491d93033ded89089c80c",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/inventory.pending.json"
+    },
+    "preparation/pending-first/isolate-and-run.py": {
+      "bytes": 12536,
+      "sha256": "7dcab2745b1e3fbc6a04bcc0d155b1c1c5a0cd3b91ae23bcab359bf47e36f1d2",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/isolate-and-run.py"
+    },
+    "preparation/pending-first/metrics26.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/metrics26.py"
+    },
+    "preparation/pending-first/native_checks.py": {
+      "bytes": 23685,
+      "sha256": "826deff55f373f38b5c7a87d14a341a4232704a8e9d64e39a9b1a241351e9d07",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/native_checks.py"
+    },
+    "preparation/pending-first/originals/commands.json": {
+      "bytes": 2163,
+      "sha256": "150e1a6c8d05c7158f6a71d35534ac62dce2f4c0905c1d386299b69eb1d40e41",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/commands.json"
+    },
+    "preparation/pending-first/originals/common.py": {
+      "bytes": 5540,
+      "sha256": "7d22ddc7a194978a2060de172490292e8ccde574b6eadd77470346e975248b15",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/common.py"
+    },
+    "preparation/pending-first/originals/contract.py": {
+      "bytes": 4579,
+      "sha256": "b99f0b53c6c77dd85ae781c37b9c4b6caf256fe168cbbf78c6b2d9263bf52a16",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/contract.py"
+    },
+    "preparation/pending-first/originals/driver-arguments.json": {
+      "bytes": 102,
+      "sha256": "7e92eb0ba67c26bb23bb81d86b7257a9d26773b526bfe147f19331acf26b8188",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/driver-arguments.json"
+    },
+    "preparation/pending-first/originals/isolate-and-run.py": {
+      "bytes": 12536,
+      "sha256": "7dcab2745b1e3fbc6a04bcc0d155b1c1c5a0cd3b91ae23bcab359bf47e36f1d2",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/isolate-and-run.py"
+    },
+    "preparation/pending-first/originals/lifecycle_checks.py": {
+      "bytes": 8063,
+      "sha256": "aeef0c3dedda7fc05cef1c7721d7a65ad2fa9914318c9a862a98f093effbf9c3",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/lifecycle_checks.py"
+    },
+    "preparation/pending-first/originals/metrics26.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/metrics26.py"
+    },
+    "preparation/pending-first/originals/native_checks.py": {
+      "bytes": 23685,
+      "sha256": "826deff55f373f38b5c7a87d14a341a4232704a8e9d64e39a9b1a241351e9d07",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/native_checks.py"
+    },
+    "preparation/pending-first/originals/outer_checks.py": {
+      "bytes": 4428,
+      "sha256": "b5b00ce102aba5694c6c123cd33406876cdfb9fcbbd5c458b7f752e5aae41757",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/outer_checks.py"
+    },
+    "preparation/pending-first/originals/preflight.py": {
+      "bytes": 1346,
+      "sha256": "6b6e6546d1bc9198e5fcc755fc59f5952cbfe15177ba26f9e2566ccaccd780b7",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/preflight.py"
+    },
+    "preparation/pending-first/originals/readback.py": {
+      "bytes": 6495,
+      "sha256": "63a5f0be223e96a941dc755599ba93e850f937134c87167950334f82df853a5c",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/readback.py"
+    },
+    "preparation/pending-first/originals/run.py": {
+      "bytes": 6207,
+      "sha256": "f8ed2536d20352cfa723aeb30be87334913a01ee6a766134a4aaa34a402fc3ed",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/run.py"
+    },
+    "preparation/pending-first/originals/test_fixture_contract.py": {
+      "bytes": 3857,
+      "sha256": "801993d2ca3975d3b46491c42cd9fdbee10e5a1fdeb6e4a60530ccc2f80e8c88",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/test_fixture_contract.py"
+    },
+    "preparation/pending-first/originals/v3_fixture.py": {
+      "bytes": 51967,
+      "sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/originals/v3_fixture.py"
+    },
+    "preparation/pending-first/outer_checks.py": {
+      "bytes": 4428,
+      "sha256": "b5b00ce102aba5694c6c123cd33406876cdfb9fcbbd5c458b7f752e5aae41757",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/outer_checks.py"
+    },
+    "preparation/pending-first/preflight.py": {
+      "bytes": 1346,
+      "sha256": "6b6e6546d1bc9198e5fcc755fc59f5952cbfe15177ba26f9e2566ccaccd780b7",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/preflight.py"
+    },
+    "preparation/pending-first/read_stages.py": {
+      "bytes": 7511,
+      "sha256": "abbfd917c24465fedca8440999d50d9bef7493c859d2591e8f6f0d16a9437d42",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/read_stages.py"
+    },
+    "preparation/pending-first/readback.py": {
+      "bytes": 6516,
+      "sha256": "fde0d6caa108d6dad3d3e4601c43073a8e04a873ae3a51ebda908582df93c2b3",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/readback.py"
+    },
+    "preparation/pending-first/root-build-bindings.json": {
+      "bytes": 376,
+      "sha256": "c3dd51b127c9498b18b456a7f7eeadbfd4104991e4039a3753ed2eb7a41e48da",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/root-build-bindings.json"
+    },
+    "preparation/pending-first/root-build-bindings.pending.json": {
+      "bytes": 376,
+      "sha256": "c3dd51b127c9498b18b456a7f7eeadbfd4104991e4039a3753ed2eb7a41e48da",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/root-build-bindings.pending.json"
+    },
+    "preparation/pending-first/run.py": {
+      "bytes": 6205,
+      "sha256": "cfd57cc56d46d2f8c54267d1c401ccd3a26557a46d3e3be830175caba502cbf7",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/run.py"
+    },
+    "preparation/pending-first/stage_checks.py": {
+      "bytes": 8868,
+      "sha256": "87206cfc58f15cd76fb6ab57c774fe4b5443a38777b160789b6ea62481c3ecab",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/stage_checks.py"
+    },
+    "preparation/pending-first/test_fixture_contract.py": {
+      "bytes": 3888,
+      "sha256": "60d0550520244387589c7c7323b5d790c38e416c3fe7c1ce91bb9e931d99aef8",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/test_fixture_contract.py"
+    },
+    "preparation/pending-first/test_read_stages.py": {
+      "bytes": 8008,
+      "sha256": "c7416bf8f2a8f759ee192276a03bfb48b49d8ab7a18f1c9904bd9f1b1baa3265",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/test_read_stages.py"
+    },
+    "preparation/pending-first/v3_fixture.py": {
+      "bytes": 51967,
+      "sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/pending-first/v3_fixture.py"
+    },
+    "preparation/preflight.py": {
+      "bytes": 1346,
+      "sha256": "6b6e6546d1bc9198e5fcc755fc59f5952cbfe15177ba26f9e2566ccaccd780b7",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/preflight.py"
+    },
+    "preparation/read_stages.py": {
+      "bytes": 7511,
+      "sha256": "abbfd917c24465fedca8440999d50d9bef7493c859d2591e8f6f0d16a9437d42",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/read_stages.py"
+    },
+    "preparation/readback.py": {
+      "bytes": 6516,
+      "sha256": "fde0d6caa108d6dad3d3e4601c43073a8e04a873ae3a51ebda908582df93c2b3",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/readback.py"
+    },
+    "preparation/results-first/analysis.json": {
+      "bytes": 127785,
+      "sha256": "5178315ace56b548c9484ecdcc6ce87871c12d2c938c6062f97d098c5554d31c",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/results-first/analysis.json"
+    },
+    "preparation/results-first/input-inventory.json": {
+      "bytes": 33852,
+      "sha256": "5e58e0e74c568abe68d8e4235aa1ba001f0310874622b286f64332796789af6a",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/results-first/input-inventory.json"
+    },
+    "preparation/reuse.json": {
+      "bytes": 1469,
+      "sha256": "1ad1498c500482d73f0bab27a1e00ee60d0aaa6fa8549ce8f3e4a1bf660c69c8",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/reuse.json"
+    },
+    "preparation/root-build-bindings.json": {
+      "bytes": 655,
+      "sha256": "a233a8116afcd583afa9e79ca0e522c243b1f419ebcadd3372cea45927c516f8",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/root-build-bindings.json"
+    },
+    "preparation/root-build-bindings.pending.json": {
+      "bytes": 376,
+      "sha256": "c3dd51b127c9498b18b456a7f7eeadbfd4104991e4039a3753ed2eb7a41e48da",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/root-build-bindings.pending.json"
+    },
+    "preparation/root-original-binding.json": {
+      "bytes": 655,
+      "sha256": "a233a8116afcd583afa9e79ca0e522c243b1f419ebcadd3372cea45927c516f8",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/root-original-binding.json"
+    },
+    "preparation/run.py": {
+      "bytes": 6205,
+      "sha256": "cfd57cc56d46d2f8c54267d1c401ccd3a26557a46d3e3be830175caba502cbf7",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/run.py"
+    },
+    "preparation/source-scope.json": {
+      "bytes": 2428,
+      "sha256": "91784bba4c901862506a8663df8628693d3f5a673db7fea2309d6183a1d82cc4",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/source-scope.json"
+    },
+    "preparation/stage_checks.py": {
+      "bytes": 8868,
+      "sha256": "87206cfc58f15cd76fb6ab57c774fe4b5443a38777b160789b6ea62481c3ecab",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/stage_checks.py"
+    },
+    "preparation/test_fixture_contract.py": {
+      "bytes": 3888,
+      "sha256": "60d0550520244387589c7c7323b5d790c38e416c3fe7c1ce91bb9e931d99aef8",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/test_fixture_contract.py"
+    },
+    "preparation/test_read_stages.py": {
+      "bytes": 8008,
+      "sha256": "c7416bf8f2a8f759ee192276a03bfb48b49d8ab7a18f1c9904bd9f1b1baa3265",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/test_read_stages.py"
+    },
+    "preparation/v3_fixture.py": {
+      "bytes": 51967,
+      "sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+      "source": "/tmp/kv9-read-stage-fixture-preparation-first/v3_fixture.py"
+    },
+    "prior-metrics/00-input-inventory.json": {
+      "bytes": 324816,
+      "sha256": "c7415fb44d543b9da579590730d24248da37fe5de1710ace0cd8eaa149dc7107",
+      "source": "/tmp/kv9-coalesced-owner-screen-preparation-first/results-first/input-inventory.json"
+    },
+    "prior-metrics/01-after-metrics.json": {
+      "bytes": 931088,
+      "sha256": "4df4d909fabc349c40004cf6e5645c7ce167192ba3270ae1e07e457050b960ef",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/003-old-point-r100-p00001/after-metrics.json"
+    },
+    "prior-metrics/02-before-metrics.json": {
+      "bytes": 928615,
+      "sha256": "f099c5c90e96502e07fd68463ff5b8f1592abf204e6c92276c7615519715094a",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/003-old-point-r100-p00001/before-metrics.json"
+    },
+    "prior-metrics/03-after-metrics.json": {
+      "bytes": 931089,
+      "sha256": "eaa31b87eba7095def1bc4c666d2719351c49654281ea2f5bb31630b4adfaa2f",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/004-new-point-r100-p00001/after-metrics.json"
+    },
+    "prior-metrics/04-before-metrics.json": {
+      "bytes": 928647,
+      "sha256": "2a3b905d4047bdb85545cac3e471472c4d6ea5b12f419807d54935195c194771",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/004-new-point-r100-p00001/before-metrics.json"
+    },
+    "prior-metrics/05-after-metrics.json": {
+      "bytes": 931313,
+      "sha256": "c6934a8329eee56f5d06180fec6b6992eadc0aca96f6501baa3b955189c2a762",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/009-old-point-r100-p00064/after-metrics.json"
+    },
+    "prior-metrics/06-before-metrics.json": {
+      "bytes": 928602,
+      "sha256": "73e1d1bc061ebde0a1568468bd3228ee27c28814ffe2caf05de453d49f8a39b9",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/009-old-point-r100-p00064/before-metrics.json"
+    },
+    "prior-metrics/07-after-metrics.json": {
+      "bytes": 931331,
+      "sha256": "14b626f6ac8551a2dab7034961b284c5ca60a1579f25884f50c02a224b7e1bca",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/010-new-point-r100-p00064/after-metrics.json"
+    },
+    "prior-metrics/08-before-metrics.json": {
+      "bytes": 928649,
+      "sha256": "ab292c5550854650a6d8d646408b3f34fd25ce48410b40d7325c3b6c46f1f399",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/010-new-point-r100-p00064/before-metrics.json"
+    },
+    "prior-metrics/09-after-metrics.json": {
+      "bytes": 931303,
+      "sha256": "c700dca85e937c8ab7ab6676e6d83179319289246d618ff2b90ede4245053b85",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/013-new-point-r100-p10064/after-metrics.json"
+    },
+    "prior-metrics/10-before-metrics.json": {
+      "bytes": 928592,
+      "sha256": "548e5703cb526c15d26dd1a278e547fe1a64422e478705b2d18c9599232efd7d",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/013-new-point-r100-p10064/before-metrics.json"
+    },
+    "prior-metrics/11-after-metrics.json": {
+      "bytes": 931370,
+      "sha256": "44552cb0572c01c4156fa2844bd078ecfa9b629a410a9ebc403f0c62f0dc3761",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/014-old-point-r100-p10064/after-metrics.json"
+    },
+    "prior-metrics/12-before-metrics.json": {
+      "bytes": 928674,
+      "sha256": "20e7fac35cda82e0bba985aebe1c3ba57b2e03ef5b234bd486822cf2cf770716",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/014-old-point-r100-p10064/before-metrics.json"
+    },
+    "prior-metrics/13-after-metrics.json": {
+      "bytes": 931068,
+      "sha256": "e58e1e4d39ca2863f39a2ea2c080f23b5153ee14f9932bd7804c0cc8d41eebf1",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/019-new-point-r100-p10001/after-metrics.json"
+    },
+    "prior-metrics/14-before-metrics.json": {
+      "bytes": 928618,
+      "sha256": "054f92f603f4ba3cde17ada155217f070b3d45744c46cfca7c59813c560bb55d",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/019-new-point-r100-p10001/before-metrics.json"
+    },
+    "prior-metrics/15-after-metrics.json": {
+      "bytes": 931093,
+      "sha256": "b462d7f10b8ddb9af6b4d973ca31c587496fb21f25b92642d794c0cfdf032675",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/020-old-point-r100-p10001/after-metrics.json"
+    },
+    "prior-metrics/16-before-metrics.json": {
+      "bytes": 928669,
+      "sha256": "22857fd3e02814af10892cc2d1cb0f1e4712ad69a9544550993fdead2017f250",
+      "source": "/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/020-old-point-r100-p10001/before-metrics.json"
+    },
+    "release/build.json": {
+      "bytes": 69732,
+      "sha256": "ed7d897ac49ebc1b18a6d3c29f5b7425011b518b8a0d6805d57afff4ac275bfc",
+      "source": "/tmp/kv9-read-stage-release-first/build.json"
+    },
+    "release/cache-clean.stderr": {
+      "bytes": 39,
+      "sha256": "5ddd375e9c9082d037f1ac8b0ed74fbad75236884e2bfe0837c9b1db1fec3d99",
+      "source": "/tmp/kv9-read-stage-release-first/cache-clean.stderr"
+    },
+    "release/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-release-first/cache-clean.stdout"
+    },
+    "release/cache-safety.json": {
+      "bytes": 21059,
+      "sha256": "3d56c57f7afa80d2a220c02cbb81002930b689140e2c0ecc28944cd8b21a5299",
+      "source": "/tmp/kv9-read-stage-release-first/cache-safety.json"
+    },
+    "release/kv9-build.log": {
+      "bytes": 472,
+      "sha256": "94700f764a404aa95c95c70b6c5f9f65de1c1a014d79e0221c15519b96b7ad44",
+      "source": "/tmp/kv9-read-stage-release-first/kv9-build.log"
+    },
+    "release/kv9-cargo.jsonl": {
+      "bytes": 211686,
+      "sha256": "05d3e9824ed05a2524f286dfbdbd2b336de83f4ab9a861a9670e844e8f91ab9a",
+      "source": "/tmp/kv9-read-stage-release-first/kv9-cargo.jsonl"
+    },
+    "release/workload/build.json": {
+      "bytes": 487,
+      "sha256": "4a048b0da885548c398f9074aaf2f0f652a5956a5ad2cd371e5ed74cbf7cb0be",
+      "source": "/tmp/kv9-read-stage-release-first/workload/build.json"
+    },
+    "release/workload/build.log": {
+      "bytes": 567,
+      "sha256": "466b7cadc9b3655cdd53dc7989c563e50ba61f74550c7524b1b40958aa70f1f1",
+      "source": "/tmp/kv9-read-stage-release-first/workload/build.log"
+    },
+    "release/workload/cargo.jsonl": {
+      "bytes": 208630,
+      "sha256": "c9824e917271bd9ca0be36ade052c0556238fc4b8599b559a2ab269262446301",
+      "source": "/tmp/kv9-read-stage-release-first/workload/cargo.jsonl"
+    },
+    "release/workload/sources.json": {
+      "bytes": 65493,
+      "sha256": "ea37dfe8793da319f9c80138b4e29021acdd199354157f588a1b39d1d4d432dd",
+      "source": "/tmp/kv9-read-stage-release-first/workload/sources.json"
+    },
+    "root/build-release.py": {
+      "bytes": 2841,
+      "sha256": "d0ebb41ba881b2e86486293df6709acf0b78526bd540dde76c598ba788789b68",
+      "source": "/tmp/kv9-read-stage-root-first/build-release.py"
+    },
+    "root/check-source.py": {
+      "bytes": 2381,
+      "sha256": "6a7deee77d31e8a26f26a0a0444ce1bbec355fafa1c6c38b8348f137ad2124e0",
+      "source": "/tmp/kv9-read-stage-root-first/check-source.py"
+    },
+    "root/checkpoint-source-release.json": {
+      "bytes": 802,
+      "sha256": "33ef0eee2ee2f0fff1ed67431d16d1adf1b16b65075dd673e723265a74996d3f",
+      "source": "/tmp/kv9-read-stage-root-first/checkpoint-source-release.json"
+    },
+    "root/commands.json": {
+      "bytes": 9164,
+      "sha256": "10fabde2e1c399d5c4dd31c733bd330e5e1f1e3cf3b633c2eab5a376b1d4aa0f",
+      "source": "/tmp/kv9-read-stage-root-first/commands.json"
+    },
+    "root/diagnostic-first/invocation.json": {
+      "bytes": 718,
+      "sha256": "1cd449b79348a0b40e9b8b4379a81cd86a73ea52522ba9d50164ae73a745799d",
+      "source": "/tmp/kv9-read-stage-root-first/diagnostic-first/invocation.json"
+    },
+    "root/diagnostic-first/output.log": {
+      "bytes": 312,
+      "sha256": "d45368ff7c70dfd049d10ce7727265fe5a25246a9df8b3a599a84e2ef3d2d791",
+      "source": "/tmp/kv9-read-stage-root-first/diagnostic-first/output.log"
+    },
+    "root/diagnostic-first/result.json": {
+      "bytes": 770,
+      "sha256": "b53d1cff39a485210f580544f70aee3085b21ae37a786fd99db05a7dbf16a997",
+      "source": "/tmp/kv9-read-stage-root-first/diagnostic-first/result.json"
+    },
+    "root/diagnostic-readback-first/invocation.json": {
+      "bytes": 780,
+      "sha256": "4a4b4b792d18f148b5fd7d34a807ea2ae121120f4101735816faef59c94b9577",
+      "source": "/tmp/kv9-read-stage-root-first/diagnostic-readback-first/invocation.json"
+    },
+    "root/diagnostic-readback-first/output.log": {
+      "bytes": 15708,
+      "sha256": "953d0e81fad3d7801b21150ba7d7d2fa7a227b2a29985f53f490c8119e87c37d",
+      "source": "/tmp/kv9-read-stage-root-first/diagnostic-readback-first/output.log"
+    },
+    "root/diagnostic-readback-first/result.json": {
+      "bytes": 832,
+      "sha256": "1336a42466c504bbfd534b65f3819040bade10e69f6791f67e7f58803dd69216",
+      "source": "/tmp/kv9-read-stage-root-first/diagnostic-readback-first/result.json"
+    },
+    "root/diagnostic-release-binding.json": {
+      "bytes": 655,
+      "sha256": "a233a8116afcd583afa9e79ca0e522c243b1f419ebcadd3372cea45927c516f8",
+      "source": "/tmp/kv9-read-stage-root-first/diagnostic-release-binding.json"
+    },
+    "root/existing-metric-deltas.json": {
+      "bytes": 5421423,
+      "sha256": "f9b04646103a0330907607eaeb1dc1cc3c1068482d9a6679f3e94278431989dd",
+      "source": "/tmp/kv9-read-stage-root-first/existing-metric-deltas.json"
+    },
+    "root/existing-metric-inputs.json": {
+      "bytes": 3561,
+      "sha256": "4b8e48123c8096b7aef4ab6e156c94491e095d2b383b42e36b22f24fb9316a8a",
+      "source": "/tmp/kv9-read-stage-root-first/existing-metric-inputs.json"
+    },
+    "root/fixture-contracts-first/invocation.json": {
+      "bytes": 483,
+      "sha256": "5aec9e9782dbbe6f508bbeeb6817990375f5d6debdfeed3676fbb6781a06434e",
+      "source": "/tmp/kv9-read-stage-root-first/fixture-contracts-first/invocation.json"
+    },
+    "root/fixture-contracts-first/output.log": {
+      "bytes": 644,
+      "sha256": "ba0bcf99bbb8952b54ff8223f480f31ca0c1bbeb8f3e92fc8a6a656a9a0fdb35",
+      "source": "/tmp/kv9-read-stage-root-first/fixture-contracts-first/output.log"
+    },
+    "root/fixture-contracts-first/result.json": {
+      "bytes": 535,
+      "sha256": "5ffde5303fea81d2bad9c5d6fd151da956f52f83dce591621a910a06a359b47e",
+      "source": "/tmp/kv9-read-stage-root-first/fixture-contracts-first/result.json"
+    },
+    "root/fixture-preflight-first.json": {
+      "bytes": 147824,
+      "sha256": "81e7339f0988b8408ae057c251e807143815245f959f0cdee3cce04001231107",
+      "source": "/tmp/kv9-read-stage-root-first/fixture-preflight-first.json"
+    },
+    "root/metric-contracts-first/invocation.json": {
+      "bytes": 478,
+      "sha256": "b84aedd957d4bb0ba5b857700aeb2674b41a93d4ebd79b725d2c99fb89470d06",
+      "source": "/tmp/kv9-read-stage-root-first/metric-contracts-first/invocation.json"
+    },
+    "root/metric-contracts-first/output.log": {
+      "bytes": 1196,
+      "sha256": "97a6d9c04b3adae88c1692a39f9ab5a24b79d1964e024961e350ff7f84becb82",
+      "source": "/tmp/kv9-read-stage-root-first/metric-contracts-first/output.log"
+    },
+    "root/metric-contracts-first/result.json": {
+      "bytes": 530,
+      "sha256": "8458041dce49b61aef11f2254c9bd1bd5668a96cfd545a4a707e88efbcebeb18",
+      "source": "/tmp/kv9-read-stage-root-first/metric-contracts-first/result.json"
+    },
+    "root/release-first.log": {
+      "bytes": 168,
+      "sha256": "e85fcc7bc1af1978617fed34719efaf441826dc95b35b9f639f0b33a8f3dce8e",
+      "source": "/tmp/kv9-read-stage-root-first/release-first.log"
+    },
+    "root/release-invocation.json": {
+      "bytes": 821,
+      "sha256": "5a8045dac50e60029a39f4c5e29839fc8d9f08116ffc979630bd60e77ac4c78e",
+      "source": "/tmp/kv9-read-stage-root-first/release-invocation.json"
+    },
+    "root/release-result.json": {
+      "bytes": 1409,
+      "sha256": "3e0ac163f5b6bce5c315befa6f129686b92b926d4f902b56d2824840a8fa057d",
+      "source": "/tmp/kv9-read-stage-root-first/release-result.json"
+    },
+    "root/run-release.py": {
+      "bytes": 2103,
+      "sha256": "6cdea5d31a979da4cc3365c110c72330d0f6df3af3ee44f45869c4c7f1b44530",
+      "source": "/tmp/kv9-read-stage-root-first/run-release.py"
+    },
+    "root/run-source.py": {
+      "bytes": 1851,
+      "sha256": "27dbc1d928e8dd4f27baf708514ab3d50fdf68a841dfdcf27bc535208b51190c",
+      "source": "/tmp/kv9-read-stage-root-first/run-source.py"
+    },
+    "root/run-stage.py": {
+      "bytes": 2091,
+      "sha256": "e5830465f92313e1595aa6eb6dfab6750619cea3e92c267b6553c3e85bf11f00",
+      "source": "/tmp/kv9-read-stage-root-first/run-stage.py"
+    },
+    "root/source-first.log": {
+      "bytes": 317,
+      "sha256": "1c7e18b48ff5d9df75e7507c881b08cd048c17f453ce0ed089890134e9ab53b2",
+      "source": "/tmp/kv9-read-stage-root-first/source-first.log"
+    },
+    "root/source-invocation.json": {
+      "bytes": 641,
+      "sha256": "f33c947f719b24d9e6a5f9199cccfff62643e945812d348427118f60a1617c7c",
+      "source": "/tmp/kv9-read-stage-root-first/source-invocation.json"
+    },
+    "root/source-preflight-first/invocation.json": {
+      "bytes": 650,
+      "sha256": "738e490f480b4b2e89f63de045946a9332b24d25229d6266f9c18f0c0775966b",
+      "source": "/tmp/kv9-read-stage-root-first/source-preflight-first/invocation.json"
+    },
+    "root/source-preflight-first/output.log": {
+      "bytes": 93,
+      "sha256": "d28444c06bfb03c36a90d0c8afd0a1ae04551c25d528684b3c8327ead5c94ae9",
+      "source": "/tmp/kv9-read-stage-root-first/source-preflight-first/output.log"
+    },
+    "root/source-preflight-first/result.json": {
+      "bytes": 702,
+      "sha256": "92f14c86628b08719f83532b0e20b6f42189fe566c8d9b0ef1989f48e984ce0d",
+      "source": "/tmp/kv9-read-stage-root-first/source-preflight-first/result.json"
+    },
+    "root/source-result.json": {
+      "bytes": 2831,
+      "sha256": "abde1cb1ed01d94d61675adbe750b310673093bd7a0ced365f935ffeb34d6135",
+      "source": "/tmp/kv9-read-stage-root-first/source-result.json"
+    },
+    "runtime/after.json": {
+      "bytes": 41129,
+      "sha256": "12dbb095f50811a4cd56739d89dac62091457ff8edd4cbe9ac7efe67269872d4",
+      "source": "/tmp/kv9-read-stage-isolation-first/after.json"
+    },
+    "runtime/before.json": {
+      "bytes": 41119,
+      "sha256": "32f5485fe8a8e367e7446f4e2a6c3bd9b17fd36e7cddd284629ed807b0e6d07a",
+      "source": "/tmp/kv9-read-stage-isolation-first/before.json"
+    },
+    "runtime/cohorts/000-crc-c1/after-metrics.json": {
+      "bytes": 1144029,
+      "sha256": "dec493bf0838d181c3961d502137939e7e75ab8bc6d5f6eb2afde1e4517294e5",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/after-metrics.json"
+    },
+    "runtime/cohorts/000-crc-c1/after-resources.json": {
+      "bytes": 1767,
+      "sha256": "537ce4b8c6ed8e9df230d0f7dfa7a60c89a65310a7a5d052685efef16c7441fc",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/after-resources.json"
+    },
+    "runtime/cohorts/000-crc-c1/after-status.json": {
+      "bytes": 12828,
+      "sha256": "a296b4c027a558a3f8ff83fa7c03755027b8e641e411322689bf912cef519f1b",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/after-status.json"
+    },
+    "runtime/cohorts/000-crc-c1/background-before.json": {
+      "bytes": 26775,
+      "sha256": "a15235eda3d57f4ab427f063e692f08f51a9f04a385182c4d9870861752f54ed",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/background-before.json"
+    },
+    "runtime/cohorts/000-crc-c1/before-allocator-provenance.json": {
+      "bytes": 4182,
+      "sha256": "b585e762babdaccabf1d26922a6b8049b928172827d0e2815da31bace00cca8d",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/before-allocator-provenance.json"
+    },
+    "runtime/cohorts/000-crc-c1/before-fresh-drain.json": {
+      "bytes": 40565,
+      "sha256": "2720db0e7f9d37d1813591fa809068d1402bf6334d893eafa86cb584e345e109",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/before-fresh-drain.json"
+    },
+    "runtime/cohorts/000-crc-c1/before-metrics.json": {
+      "bytes": 1140002,
+      "sha256": "6ffe894a611a9a2caffd61ecb75bc157b7fdd28487b0212cf5b3dc4d8f0436e1",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/before-metrics.json"
+    },
+    "runtime/cohorts/000-crc-c1/before-resources.json": {
+      "bytes": 1742,
+      "sha256": "6aa8b8e14ef80f400d93076c6159fedd31fa8e760449c4529dc4ed8aac8f139c",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/before-resources.json"
+    },
+    "runtime/cohorts/000-crc-c1/before-status.json": {
+      "bytes": 12751,
+      "sha256": "8d8bb631f678abd79217dfe7c33c22fd2a1d2cfa8a7ccc8f727d358f90315fef",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/before-status.json"
+    },
+    "runtime/cohorts/000-crc-c1/cleanup.json": {
+      "bytes": 6193,
+      "sha256": "2ad3d24d5db9a8a3ba81bd74909945292a1b0b03f3882761c6fb1b52cc0db0b2",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/cleanup.json"
+    },
+    "runtime/cohorts/000-crc-c1/client-exit.json": {
+      "bytes": 64,
+      "sha256": "2a1875eded4728232ef90369232e7225d8bb429b7f6fb93b1fd749b1c7f9de8b",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/client-exit.json"
+    },
+    "runtime/cohorts/000-crc-c1/client-identity.json": {
+      "bytes": 912,
+      "sha256": "79d46fdf798d9e210a81e2ef47010c070fd1f389c48468c26711eb345fe5c4ce",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/client-identity.json"
+    },
+    "runtime/cohorts/000-crc-c1/client.log": {
+      "bytes": 82,
+      "sha256": "af04e933130389f0a726ee1d7fd3b483b5dacd899914e77b15e5716c7456edf1",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/client.log"
+    },
+    "runtime/cohorts/000-crc-c1/fixture-result.json": {
+      "bytes": 21591,
+      "sha256": "8298247c77907666d5244c9a676523878ae766cb50378741a5b99b6b1f07c412",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/fixture-result.json"
+    },
+    "runtime/cohorts/000-crc-c1/host-after.json": {
+      "bytes": 10794,
+      "sha256": "2029c93ffec83ae47e8e0535693740427beb1226989d5b949d22e6be679bda95",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/host-after.json"
+    },
+    "runtime/cohorts/000-crc-c1/host-before.json": {
+      "bytes": 10794,
+      "sha256": "862aba59b99106bccb32fac039b80f9119971f3c245a4b2fac1f9d5eab9537b1",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/host-before.json"
+    },
+    "runtime/cohorts/000-crc-c1/host-resource-samples.json": {
+      "bytes": 1286962,
+      "sha256": "e3abafffadd580060810fcf469c6cd3f37e4f58ffb41e8dc830fbceefc06bf1f",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/host-resource-samples.json"
+    },
+    "runtime/cohorts/000-crc-c1/listener-after.json": {
+      "bytes": 939,
+      "sha256": "0563d89b029daff0f57c5cd3db69ce25c2ca86f5fa79a43890b4baca21e7ad50",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/listener-after.json"
+    },
+    "runtime/cohorts/000-crc-c1/listener-before.json": {
+      "bytes": 939,
+      "sha256": "0362fa823b1d5fe7f9c3bc1c14e785c220604e874876455c52e71122e38ac5c9",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/listener-before.json"
+    },
+    "runtime/cohorts/000-crc-c1/post-client-allocator-provenance.json": {
+      "bytes": 4207,
+      "sha256": "14890d96d513720412678e8584b84428eb288e81eb96abee79848b277ab5c56a",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/post-client-allocator-provenance.json"
+    },
+    "runtime/cohorts/000-crc-c1/post-client-fresh-drain.json": {
+      "bytes": 40799,
+      "sha256": "63f01455d3eafe1e2e463c6794e60054741f06dafa306747a6e9fdaa6197cf5a",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/post-client-fresh-drain.json"
+    },
+    "runtime/cohorts/000-crc-c1/post-readback-fresh-drain.json": {
+      "bytes": 40802,
+      "sha256": "3f1b5cd573d8403fa2f19bb9c2df1416bc209b10fbf73676d1b999686ac67e4e",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/post-readback-fresh-drain.json"
+    },
+    "runtime/cohorts/000-crc-c1/pre-cleanup.json": {
+      "bytes": 21564,
+      "sha256": "0c43df2ebb63193bc169ef834e4265542a47570957f6594008d38e99d2c9e018",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/pre-cleanup.json"
+    },
+    "runtime/cohorts/000-crc-c1/profile-plan.json": {
+      "bytes": 466,
+      "sha256": "edcf10b79f49419a319d20b54779b65c82e49692be028787948e7a490dbf918a",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/profile-plan.json"
+    },
+    "runtime/cohorts/000-crc-c1/readback-00.txt": {
+      "bytes": 80906,
+      "sha256": "37b7ddbf54513e88c18d76c1a0c1c2834ff9d6354c9b85cfef250d11e7a44c98",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-00.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-01.txt": {
+      "bytes": 80906,
+      "sha256": "b66ed4aa14999ef32b5387a6dd9eb9ad4f9b9c8c6d080f5140a53b4c0797318e",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-01.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-02.txt": {
+      "bytes": 80906,
+      "sha256": "837b5667b2a01bb34dceb9db6b4d287c088352a909c9a9ab949fbcc0b2c38117",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-02.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-03.txt": {
+      "bytes": 80906,
+      "sha256": "80e11147e54c668fe5f02e242c3d6ad9b05be2fe99edcf7596184b11d9ca803f",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-03.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-04.txt": {
+      "bytes": 80906,
+      "sha256": "920fa79bf589dfd3d284f33c0ad96c3ecf948b0c47a8b5c4f03ad0e98d5adb52",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-04.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-05.txt": {
+      "bytes": 80906,
+      "sha256": "e3d210a12b7a4a6f11354eb81869ae2bcc9f490899d00b2edacd5d5f0c1cac83",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-05.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-06.txt": {
+      "bytes": 80906,
+      "sha256": "6356eb12c7c77c0267ebd016f97f5f2d1193c85a1fb1983ee4a7b2e36d92e8f6",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-06.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-07.txt": {
+      "bytes": 80906,
+      "sha256": "68d691b773beee1a47075114bbc0d1cf93ce7eb8e4ae348f7ff71e2c191cc889",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-07.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-08.txt": {
+      "bytes": 80906,
+      "sha256": "d6b52e2ca3bea35858d4ac5867cdb2862f82a09ae943fd922e7fe238b346f056",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-08.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-09.txt": {
+      "bytes": 80906,
+      "sha256": "d6e35d9f4c8c4d2260e3d587cafe7e485b939b149aad547ef8371ec4954ea1b6",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-09.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-10.txt": {
+      "bytes": 80906,
+      "sha256": "d6376d9fb17e0689526a2ef1eee313ebfaca18b651c15619f3b78915f85f050d",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-10.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-11.txt": {
+      "bytes": 80906,
+      "sha256": "5b7c8b9ed9ec40b8f22c81ae4146c9fbc20b9b3285e6cd463b64abd813c2aea7",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-11.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-12.txt": {
+      "bytes": 80906,
+      "sha256": "26f7ef12a6a3ff178a1b0bf5cb0a2f5e063ce105d75a2f3b2091d936a3d9c097",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-12.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-13.txt": {
+      "bytes": 80906,
+      "sha256": "859108795ac84777768c36744cc73a37392e36addee358275efbedac15fd8802",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-13.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-14.txt": {
+      "bytes": 80906,
+      "sha256": "a5b2c3fc9f571e35aaf33b3efdfb22b3f2180fe3e4085bdda209c23f337844b5",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-14.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-15.txt": {
+      "bytes": 80906,
+      "sha256": "ebb965c541f8dc5396388e473940dea4b3f7d464d5c5230d0e195252d081fff0",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-15.txt"
+    },
+    "runtime/cohorts/000-crc-c1/readback-16.txt": {
+      "bytes": 324,
+      "sha256": "4fdb12f8df71afaea2f686ecbd5c1ab233e4067e563625c9591ec0a47992b71a",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/readback-16.txt"
+    },
+    "runtime/cohorts/000-crc-c1/requested-config.json": {
+      "bytes": 808,
+      "sha256": "ab6044207295425336ac402e4930def0065060a28cc4f96e15011436a8fbe369",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/requested-config.json"
+    },
+    "runtime/cohorts/000-crc-c1/resource-coverage.json": {
+      "bytes": 1667,
+      "sha256": "c1637e78d58e2c98ec256e8715219396943892378871a06bc55f554aa457c178",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/resource-coverage.json"
+    },
+    "runtime/cohorts/000-crc-c1/resource-samples.json": {
+      "bytes": 803172,
+      "sha256": "cb9c8a5501a4ae9e7e32c7415f92371a6e2562329becac931ae11b53a1025e26",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/resource-samples.json"
+    },
+    "runtime/cohorts/000-crc-c1/run/build.json": {
+      "bytes": 487,
+      "sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/run/build.json"
+    },
+    "runtime/cohorts/000-crc-c1/run/config.json": {
+      "bytes": 808,
+      "sha256": "ab6044207295425336ac402e4930def0065060a28cc4f96e15011436a8fbe369",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/run/config.json"
+    },
+    "runtime/cohorts/000-crc-c1/run/report.json": {
+      "bytes": 1431869,
+      "sha256": "8dc974f460dd2066eb6dddccd52ce5b9a1df5d000c463f9432f81fe8b1738c19",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/run/report.json"
+    },
+    "runtime/cohorts/000-crc-c1/sample-calls.json": {
+      "bytes": 642260,
+      "sha256": "8a206fcea7209482e091491db5e248ccd059ad7c67314964bb6c21570687724f",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/sample-calls.json"
+    },
+    "runtime/cohorts/000-crc-c1/storage-mounts.json": {
+      "bytes": 828,
+      "sha256": "07ddefa5fa6788056fa1b47eedf07e0da81c44026b01d29b969c4f0904a11546",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/storage-mounts.json"
+    },
+    "runtime/cohorts/000-crc-c1/storage-preflight.json": {
+      "bytes": 623,
+      "sha256": "7373319ec349ef9af701433cfc6cef1b18a807bc1deed70f543b4d5888322787",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/storage-preflight.json"
+    },
+    "runtime/cohorts/000-crc-c1/storage-resource-samples.json": {
+      "bytes": 75939,
+      "sha256": "4798066c87baff7640376379f71be811373fa19fe319808349d320fb5738fc6c",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/storage-resource-samples.json"
+    },
+    "runtime/cohorts/000-crc-c1/summary.json": {
+      "bytes": 21591,
+      "sha256": "8298247c77907666d5244c9a676523878ae766cb50378741a5b99b6b1f07c412",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/000-crc-c1/summary.json"
+    },
+    "runtime/cohorts/001-crc-c64/after-metrics.json": {
+      "bytes": 1144469,
+      "sha256": "34f4564abe5d11b53a1064344fdf3b00f2993902c2d402031e59870b8e437287",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/after-metrics.json"
+    },
+    "runtime/cohorts/001-crc-c64/after-resources.json": {
+      "bytes": 1768,
+      "sha256": "ce9a3ad952625872ad6a3da6e0090eb027258890110c71d8ba92c8ed882d029d",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/after-resources.json"
+    },
+    "runtime/cohorts/001-crc-c64/after-status.json": {
+      "bytes": 12839,
+      "sha256": "e6cc3178f1d33fb3de401f246e01855fed47c69c32464fdcb081621c2fd3ea63",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/after-status.json"
+    },
+    "runtime/cohorts/001-crc-c64/background-before.json": {
+      "bytes": 26775,
+      "sha256": "7e750dd640c978daab1b15f3ca54c827b7c67ff2d1000c0ffb2ded53f071c8bb",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/background-before.json"
+    },
+    "runtime/cohorts/001-crc-c64/before-allocator-provenance.json": {
+      "bytes": 4182,
+      "sha256": "016390814065c9fc0390cceeda51269e86f4dc07398804782a6e9566103e4fde",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/before-allocator-provenance.json"
+    },
+    "runtime/cohorts/001-crc-c64/before-fresh-drain.json": {
+      "bytes": 40565,
+      "sha256": "61b25db120ad392d924d5e9fe49a254b47998b0d6c5ecc70ffb0473151156e86",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/before-fresh-drain.json"
+    },
+    "runtime/cohorts/001-crc-c64/before-metrics.json": {
+      "bytes": 1140006,
+      "sha256": "754e3f401f040add8b62077fc74ee91aa1e20638cbada9729799ee0918601fbc",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/before-metrics.json"
+    },
+    "runtime/cohorts/001-crc-c64/before-resources.json": {
+      "bytes": 1742,
+      "sha256": "1b18c78bac4446b68c2e683541c9709a9d09197abec11bf08d2e8c18ebb558ec",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/before-resources.json"
+    },
+    "runtime/cohorts/001-crc-c64/before-status.json": {
+      "bytes": 12751,
+      "sha256": "3aaaebc5456634ebe5f1560b260b45666ecf108bcec1db593510712e7934aecd",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/before-status.json"
+    },
+    "runtime/cohorts/001-crc-c64/cleanup.json": {
+      "bytes": 6193,
+      "sha256": "1862d54305c3d2015f4be1e4e5ee48d01a9f497e820ca664c65a27ae6a6ec5a5",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/cleanup.json"
+    },
+    "runtime/cohorts/001-crc-c64/client-exit.json": {
+      "bytes": 64,
+      "sha256": "17259a2615565fcd524397dc84bc37a2a2607a9d90a9eaae84a454aced04598b",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/client-exit.json"
+    },
+    "runtime/cohorts/001-crc-c64/client-identity.json": {
+      "bytes": 913,
+      "sha256": "288b176f68d7d929c967ebfbf9aef05703c422e585ba827ddeff9bb94c1986ec",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/client-identity.json"
+    },
+    "runtime/cohorts/001-crc-c64/client.log": {
+      "bytes": 82,
+      "sha256": "af04e933130389f0a726ee1d7fd3b483b5dacd899914e77b15e5716c7456edf1",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/client.log"
+    },
+    "runtime/cohorts/001-crc-c64/fixture-result.json": {
+      "bytes": 21637,
+      "sha256": "88b0f11979191482ed5639f36bf8bf56cb5e1c9999097f55d20183b404537d5e",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/fixture-result.json"
+    },
+    "runtime/cohorts/001-crc-c64/host-after.json": {
+      "bytes": 10794,
+      "sha256": "8ef0bcdbe6cb98674c7bdf5c558be2469cdcf5a88c3eabce7c33c5bc34b1ba3c",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/host-after.json"
+    },
+    "runtime/cohorts/001-crc-c64/host-before.json": {
+      "bytes": 10794,
+      "sha256": "1568fac1e2c58d6867f318f34bc82173dca5eb5f784b71f5acc6e718eb69e2bd",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/host-before.json"
+    },
+    "runtime/cohorts/001-crc-c64/host-resource-samples.json": {
+      "bytes": 1275577,
+      "sha256": "8c0941c29410b2a1e028a980ea8a0b1baf8d61b8a08562c7469ff0fb5e1b8176",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/host-resource-samples.json"
+    },
+    "runtime/cohorts/001-crc-c64/listener-after.json": {
+      "bytes": 939,
+      "sha256": "dbcec6b3ee2b4c97d3d99df43552a6f7f065ca43f0d10089bc41521ac0e0cc61",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/listener-after.json"
+    },
+    "runtime/cohorts/001-crc-c64/listener-before.json": {
+      "bytes": 939,
+      "sha256": "d3b7f3493411ae1b65f998d989f86a4f7eb492b42ffa19282cd7dac5cde50f0c",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/listener-before.json"
+    },
+    "runtime/cohorts/001-crc-c64/post-client-allocator-provenance.json": {
+      "bytes": 4209,
+      "sha256": "ce79719560bc5bee5c04e8288b31b3488f45f88c0b556b75aac26ae9007b4be8",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/post-client-allocator-provenance.json"
+    },
+    "runtime/cohorts/001-crc-c64/post-client-fresh-drain.json": {
+      "bytes": 40832,
+      "sha256": "e507472b2a8ca880c23ce40363a305e1b65c46341bbee5e6d0ebec97f24a9ef5",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/post-client-fresh-drain.json"
+    },
+    "runtime/cohorts/001-crc-c64/post-readback-fresh-drain.json": {
+      "bytes": 40835,
+      "sha256": "0824650eae1d7da22974bf4842ed50f1957fb467a69bd859ea61466984f9438c",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/post-readback-fresh-drain.json"
+    },
+    "runtime/cohorts/001-crc-c64/pre-cleanup.json": {
+      "bytes": 21610,
+      "sha256": "8a1862b94a1af37b7b451461534e7fb9cb8de2888a8a8e68b21a6695115cb297",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/pre-cleanup.json"
+    },
+    "runtime/cohorts/001-crc-c64/profile-plan.json": {
+      "bytes": 468,
+      "sha256": "3094a207e0492ac34eeda2d1c0718f1792d2bb50c38581dae407941349946d06",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/profile-plan.json"
+    },
+    "runtime/cohorts/001-crc-c64/readback-00.txt": {
+      "bytes": 80906,
+      "sha256": "13e9aa83a241cdf1c77e6df7dd0a632dbd3f1964b61c5e06f3cb0316145e676a",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-00.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-01.txt": {
+      "bytes": 80906,
+      "sha256": "7c3b552401f43fc56573ef87a949a8b8071ef08be528003b9c60311fc7ee885b",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-01.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-02.txt": {
+      "bytes": 80906,
+      "sha256": "1561a2bdeba6a77fe5524cedafeb89f81ae6949629e02184203103b003460322",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-02.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-03.txt": {
+      "bytes": 80906,
+      "sha256": "3bf94fb334792bc1afeb682f3a579158200702b57481645b9dc964fbaf2f9e54",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-03.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-04.txt": {
+      "bytes": 80906,
+      "sha256": "c565e9407ee404ef6811139d6586a9ffc0ec03a4eb65b169ba80c6c1af217712",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-04.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-05.txt": {
+      "bytes": 80906,
+      "sha256": "d2c7806a51fa03eebcaf199851ae38120f411c4d489a0626566b5d31ef9231f5",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-05.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-06.txt": {
+      "bytes": 80906,
+      "sha256": "3d98bd32888cbee9dc537479fc198a5260e2ec79d43fe648c511220a6d699afd",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-06.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-07.txt": {
+      "bytes": 80906,
+      "sha256": "ec86898b73c56b0c15103ec1efebcd9f776dd97708b25754eab25fbf544e0c0a",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-07.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-08.txt": {
+      "bytes": 80906,
+      "sha256": "91482e041365e96a7a8c66df8c5562db24b744dcfcab461ae4e5a74e34d02a57",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-08.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-09.txt": {
+      "bytes": 80906,
+      "sha256": "38cac6666f1e6874fd5bf5da34b331f7096756ada4c26766e67093c8b279ba0f",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-09.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-10.txt": {
+      "bytes": 80906,
+      "sha256": "b910eaf4b5db038e7cb6bd385860b874facb1eb1455fb42896fe12a70103b67c",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-10.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-11.txt": {
+      "bytes": 80906,
+      "sha256": "75adcc1d148b46ac4539693f996dd8bdc0244deb525f043205d980601aa68260",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-11.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-12.txt": {
+      "bytes": 80906,
+      "sha256": "f388aeee338f4a6c4bb715967ba0917e10ab885823ec804144222d7a9c189da5",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-12.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-13.txt": {
+      "bytes": 80906,
+      "sha256": "7df976db3c82dc212fe1211ecf72f2266f29ef76fbfdb0730e44607313e70022",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-13.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-14.txt": {
+      "bytes": 80906,
+      "sha256": "5772774ccf45d981eca69a5d3e05de015eb9a5c0df54ed79fbe0a1f7a9740831",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-14.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-15.txt": {
+      "bytes": 80906,
+      "sha256": "681eab492a4740a6fa15935d09a35a3bb44bbfae4e54d9bcc96d831564c970e9",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-15.txt"
+    },
+    "runtime/cohorts/001-crc-c64/readback-16.txt": {
+      "bytes": 324,
+      "sha256": "3f43334f30442936965e03eb48102ed3b8a9bbe0778a32f724817f7f16ec9c7c",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/readback-16.txt"
+    },
+    "runtime/cohorts/001-crc-c64/requested-config.json": {
+      "bytes": 810,
+      "sha256": "9bcd6d1217a5d915502429a8754f709a0bfc1a9b868ac7956c6baae7b3cf5e13",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/requested-config.json"
+    },
+    "runtime/cohorts/001-crc-c64/resource-coverage.json": {
+      "bytes": 1662,
+      "sha256": "e37bd3ff8b27f6dc6926584e95b33569cf58036122f463a9766173281787de9f",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/resource-coverage.json"
+    },
+    "runtime/cohorts/001-crc-c64/resource-samples.json": {
+      "bytes": 875955,
+      "sha256": "3bce8c622f2840bb07941ec749e1de4be95147ead3c506b8af8788af0bba70e1",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/resource-samples.json"
+    },
+    "runtime/cohorts/001-crc-c64/run/build.json": {
+      "bytes": 487,
+      "sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/run/build.json"
+    },
+    "runtime/cohorts/001-crc-c64/run/config.json": {
+      "bytes": 810,
+      "sha256": "9bcd6d1217a5d915502429a8754f709a0bfc1a9b868ac7956c6baae7b3cf5e13",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/run/config.json"
+    },
+    "runtime/cohorts/001-crc-c64/run/report.json": {
+      "bytes": 1444976,
+      "sha256": "a1708207372bf98f41616faecc21d3c684151478fc9d4ac78c1afe1eabcbe727",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/run/report.json"
+    },
+    "runtime/cohorts/001-crc-c64/sample-calls.json": {
+      "bytes": 700827,
+      "sha256": "d5a32949261fbdd30d517954b339ef1931cc27f21fd52c6df89000b38d610229",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/sample-calls.json"
+    },
+    "runtime/cohorts/001-crc-c64/storage-mounts.json": {
+      "bytes": 828,
+      "sha256": "454af91c893a41ed0691db1b93cc53246e3f1a4105d94d67a5de7e6deb033735",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/storage-mounts.json"
+    },
+    "runtime/cohorts/001-crc-c64/storage-preflight.json": {
+      "bytes": 624,
+      "sha256": "7836ca6932f96361e45de9d9e762b1e2b2b3e12792e7ed27cc9999b0d060d2a3",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/storage-preflight.json"
+    },
+    "runtime/cohorts/001-crc-c64/storage-resource-samples.json": {
+      "bytes": 75379,
+      "sha256": "c62e9461891cfec3e0c83a4c4e773b60afc04e518805723ea97af0b7fc49364c",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/storage-resource-samples.json"
+    },
+    "runtime/cohorts/001-crc-c64/summary.json": {
+      "bytes": 21637,
+      "sha256": "88b0f11979191482ed5639f36bf8bf56cb5e1c9999097f55d20183b404537d5e",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/001-crc-c64/summary.json"
+    },
+    "runtime/cohorts/build-bindings.json": {
+      "bytes": 655,
+      "sha256": "3b49c3b0dfa0f1a97607f582480eadd75a4c8f688f4f8b83070a6a30abbffa36",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/build-bindings.json"
+    },
+    "runtime/cohorts/driver.py": {
+      "bytes": 6205,
+      "sha256": "cfd57cc56d46d2f8c54267d1c401ccd3a26557a46d3e3be830175caba502cbf7",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/driver.py"
+    },
+    "runtime/cohorts/isolation-snapshot.json": {
+      "bytes": 2100,
+      "sha256": "dd95f580fe36f391f0e3049861a6bf4bd72de951d347cc5fc426d6118c843e27",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/isolation-snapshot.json"
+    },
+    "runtime/cohorts/protocol.json": {
+      "bytes": 154378,
+      "sha256": "739af3e86895634a654fa18ed90ffe2ee3eb8893785b15cce589364fdfff119c",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/protocol.json"
+    },
+    "runtime/cohorts/summary.json": {
+      "bytes": 51699,
+      "sha256": "d9d076104dbf032308100e5824961928b4bd619ae1f22cb5fd743d5cff0aa58b",
+      "source": "/tmp/kv9-read-stage-isolation-first/cohorts/summary.json"
+    },
+    "runtime/invocation.json": {
+      "bytes": 537,
+      "sha256": "59aee2a2142f81bf052622c847361a7c772d6ae10c4d387d7b60c96bfb7c106a",
+      "source": "/tmp/kv9-read-stage-isolation-first/invocation.json"
+    },
+    "runtime/isolation.json": {
+      "bytes": 2100,
+      "sha256": "dd95f580fe36f391f0e3049861a6bf4bd72de951d347cc5fc426d6118c843e27",
+      "source": "/tmp/kv9-read-stage-isolation-first/isolation.json"
+    },
+    "runtime/kv9-chaos-ci-p0-20260908-control-plane-isolated.json": {
+      "bytes": 845,
+      "sha256": "5d0c3fbc0674f0eccef49e2a0bb6799105456de40c30de20cc37b8ac9a304ab2",
+      "source": "/tmp/kv9-read-stage-isolation-first/kv9-chaos-ci-p0-20260908-control-plane-isolated.json"
+    },
+    "runtime/kv9-chaos-control-plane-isolated.json": {
+      "bytes": 829,
+      "sha256": "0ddcdd65f983a80b7d79aa19744661bdae14192413225fec6f28a4b6c7eda893",
+      "source": "/tmp/kv9-read-stage-isolation-first/kv9-chaos-control-plane-isolated.json"
+    },
+    "runtime/kv9-minio-dev-isolated.json": {
+      "bytes": 11065,
+      "sha256": "d7d46d27112af015f0ba8df9296a82eeea443e622df4433ef75c53fd109d9baa",
+      "source": "/tmp/kv9-read-stage-isolation-first/kv9-minio-dev-isolated.json"
+    },
+    "runtime/summary.json": {
+      "bytes": 170,
+      "sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "source": "/tmp/kv9-read-stage-isolation-first/summary.json"
+    },
+    "source/cache-clean.stderr": {
+      "bytes": 38,
+      "sha256": "b866b8b2bf1c98836ebfc3141ec272a1493b4c3e05edffe86a674ccdf456a7bb",
+      "source": "/tmp/kv9-read-stage-source-first/cache-clean.stderr"
+    },
+    "source/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-source-first/cache-clean.stdout"
+    },
+    "source/cache-metadata.json": {
+      "bytes": 26197,
+      "sha256": "55a39733ecece1ae0b5497091e3718e5bf6f7f50f3355b89394e7c5104d19521",
+      "source": "/tmp/kv9-read-stage-source-first/cache-metadata.json"
+    },
+    "source/cache-metadata.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-source-first/cache-metadata.log"
+    },
+    "source/cache-safety.json": {
+      "bytes": 42979,
+      "sha256": "81048d4c835fc0a646b6dbaaa38d1ed86eccbed45d9528aa64999309079d1926",
+      "source": "/tmp/kv9-read-stage-source-first/cache-safety.json"
+    },
+    "source/default-clippy.stderr": {
+      "bytes": 566,
+      "sha256": "507ac1796375a1d268ed63c8524f4ca2cc2987de33ba84ad3fb7d6a8295e7af8",
+      "source": "/tmp/kv9-read-stage-source-first/default-clippy.stderr"
+    },
+    "source/default-clippy.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-source-first/default-clippy.stdout"
+    },
+    "source/default-compile.stderr": {
+      "bytes": 567,
+      "sha256": "7d912b0691ec6fb901d8c73432925c3cadfc806894320904c300efaf80f55aef",
+      "source": "/tmp/kv9-read-stage-source-first/default-compile.stderr"
+    },
+    "source/default-compile.stdout": {
+      "bytes": 216270,
+      "sha256": "390b3e1c20b81708ed43d5baa746f0cb87b5cf2941443ba2e5438644697cb50f",
+      "source": "/tmp/kv9-read-stage-source-first/default-compile.stdout"
+    },
+    "source/default-tests.stderr": {
+      "bytes": 1006,
+      "sha256": "42f40578ad77209cafd544454c95f0c257254e36d81e88cb15a51efb757e16a9",
+      "source": "/tmp/kv9-read-stage-source-first/default-tests.stderr"
+    },
+    "source/default-tests.stdout": {
+      "bytes": 38741,
+      "sha256": "33414071aa9f07496f168f5582f61e7e41d3ee3390998c3f9e71511550753926",
+      "source": "/tmp/kv9-read-stage-source-first/default-tests.stdout"
+    },
+    "source/diagnostic-clippy.stderr": {
+      "bytes": 62,
+      "sha256": "64d0cbd4b7e4c6329fde55978dd3d261407b55f34c21add0feebf7e0575ee531",
+      "source": "/tmp/kv9-read-stage-source-first/diagnostic-clippy.stderr"
+    },
+    "source/diagnostic-clippy.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-source-first/diagnostic-clippy.stdout"
+    },
+    "source/diagnostic-compile.stderr": {
+      "bytes": 419,
+      "sha256": "9bd57c990e9a97eb01e19d183bcd026ba31b2767c56763d7e5ac377d9ca8f4b8",
+      "source": "/tmp/kv9-read-stage-source-first/diagnostic-compile.stderr"
+    },
+    "source/diagnostic-compile.stdout": {
+      "bytes": 216407,
+      "sha256": "e58755d64643a055f9d19fa5fba32074cf7f5c9cd933908f70304a503db0eb08",
+      "source": "/tmp/kv9-read-stage-source-first/diagnostic-compile.stdout"
+    },
+    "source/diagnostic-tests.stderr": {
+      "bytes": 1006,
+      "sha256": "cc8363492e6bc5a5af8f1672c6f3fbc0c461b661277339d1e607fae66b82d5a2",
+      "source": "/tmp/kv9-read-stage-source-first/diagnostic-tests.stderr"
+    },
+    "source/diagnostic-tests.stdout": {
+      "bytes": 39039,
+      "sha256": "3ee61e641d0e4fa4d2d0752bf3a8914a588e8643ecb04e232f542f356a6442ae",
+      "source": "/tmp/kv9-read-stage-source-first/diagnostic-tests.stdout"
+    },
+    "source/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-source-first/format.stderr"
+    },
+    "source/format.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-read-stage-source-first/format.stdout"
+    },
+    "source/result.json": {
+      "bytes": 2691,
+      "sha256": "28e2fe41c5441097c1d138532aa0417fb18ba0a6e706d86effeb9f78711de506",
+      "source": "/tmp/kv9-read-stage-source-first/result.json"
+    },
+    "source/sources-after.json": {
+      "bytes": 68917,
+      "sha256": "66f2e15b1098cc3a4f785d4db0d19385472c992a9f99fb2ab4ac64b5d8a8c6de",
+      "source": "/tmp/kv9-read-stage-source-first/sources-after.json"
+    },
+    "source/sources-before.json": {
+      "bytes": 68917,
+      "sha256": "66f2e15b1098cc3a4f785d4db0d19385472c992a9f99fb2ab4ac64b5d8a8c6de",
+      "source": "/tmp/kv9-read-stage-source-first/sources-before.json"
+    }
+  },
+  "parts": [
+    {
+      "bytes": 2097152,
+      "name": "evidence.tar.gz.001",
+      "sha256": "f8284ddbb1bd1fe767772d6c30d1146b4ceca385da68b9cbc1242b2181fc737c"
+    },
+    {
+      "bytes": 210660,
+      "name": "evidence.tar.gz.002",
+      "sha256": "3535e4f1ff047e23df57594c8cbbabd7749f35a1d38614795e3967b0c5e3c24b"
+    }
+  ],
+  "scope": "Original-byte reporting selection. Runtime and source acceptance are recorded separately; archive verification establishes integrity only. Original executables and WAL remain at their retained paths. This is instrumented diagnosis, not a new uninstrumented performance result.",
+  "top_level": {}
+}

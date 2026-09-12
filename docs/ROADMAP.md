@@ -1,5 +1,11 @@
 # kv9 development roadmap
 
+> Latest performance direction: [matched read-stage diagnosis](READ-STAGE-RESULTS.md)
+> identifies the c1 quorum round trip and c64 remote completion resumption.
+> A bounded global-queue polling experiment is in progress; default selection
+> and the Redis read milestone remain open. The prior uninstrumented results
+> retain their original scope.
+
 Updated: 2026-09-11. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
 [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md) maps that architecture to the current implementation.
 
