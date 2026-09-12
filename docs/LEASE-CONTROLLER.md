@@ -5,9 +5,11 @@ Tracking: [#9](https://github.com/c4pt0r/kv9/issues/9), #20.
 The [proved transition protocol](LEASE-AUTHORITY-MODEL.md) now has a Rust
 algorithm component in [`kv9_raft::lease`](../crates/raft/src/lease.rs). It is
 compiled by unit tests or the explicit `experimental-leader-lease` feature.
-There is no server configuration switch, message adapter, or lease read path
+There is no server configuration switch, renewal-message adapter, or lease read path
 yet. Default runtime remains selected `11113f6` / Safe ReadIndex. No new
 throughput, latency, clock-platform or actual lease Chaos result is claimed.
+The subsequent [voting adapter](LEASE-VOTE-BINDING.md) now installs the voter
+inside `RaftPeer`, persists immutable policy/epochs and gates actual elections.
 
 ## Implemented behavior
 
@@ -108,14 +110,15 @@ The component deliberately accepts algorithm observations. It does not prove
 that a caller supplies truthful Raft terms/frontiers, qualified clocks or actual
 immutable-view positions. The production adapter must establish those facts:
 
-1. Install exactly one controller for its owned peer/leader lifetime and mint
-   a unique incarnation. Never reconstruct a controller with reused round identity
+1. The voting adapter now installs one voter per peer and persists a fresh
+   incarnation and immutable policy. Bind one leader controller to each actual
+   leader lifetime. Never reconstruct a controller with reused round identity
    or accept another controller's ticket. Bind immutable membership and maximum
    promise policy across restart/upgrade; a changed policy cannot shorten a
    surviving promise. The public experimental constructor is not this private
    installation capability.
-2. Gate all actual votes, local campaigns, tick-driven self-votes and forced
-   transfer paths before raft-rs can grant them. Capture the current local term,
+2. The adapter now gates actual votes, campaigns, tick-driven self-votes, winning
+   PreVote responses and forced-transfer paths. Bind grants to the current local term,
    membership and leader from the same serialized peer state. A network field
    cannot substitute for those observations.
 3. Add an exact, versioned renewal envelope and ACK path. Hold grants before

@@ -242,8 +242,9 @@ duration at most `Emax`. Its remaining real lifetime is at most `Emax/a`.
 A recovering voter with no trustworthy retained deadline can refuse grants,
 votes and self-votes for at least `Emax*b/a` units on its fresh bounded-rate
 clock; even the fastest such clock then waits at least `Emax/a` real time.
-Restarting again cannot shorten this quarantine. This conservative rule needs
-its own persistence/incarnation refinement and is not present in production.
+Restarting again cannot shorten this quarantine. The experimental
+[voting adapter](LEASE-VOTE-BINDING.md) now persists policy/epochs and enforces
+recovery quarantine. It does not enable production lease reads.
 
 Before a forced transfer, invalidate lease authority under the read gate and
 prevent delayed renewals from restoring it; otherwise wait out the promise.
@@ -277,8 +278,9 @@ The [fixed-configuration transition model](LEASE-AUTHORITY-MODEL.md) now specifi
 acquisition, renewal, revocation/expiration, generation exhaustion, restart
 quarantine and local read-view validation, with a parameterized inductive proof
 and fault controls. Its [Rust component](LEASE-CONTROLLER.md) now has local source
-tests and integer timing proofs. The next gate is unique peer installation and
-actual voting/publication/read-view bindings with source refinement. Local Rust tests
+tests and integer timing proofs. Its [voting adapter](LEASE-VOTE-BINDING.md) now
+binds durable peer installation and actual election gates. Next bind the leader
+lifetime and actual grant/publication/read-view paths with source refinement. Local Rust tests
 must exercise delayed ACKs, stale rounds, application stalls, cancellation and
 the check/snapshot/revoke races. Actual Chaos Mesh E2E must include bidirectional
 and asymmetric partitions, delayed/reordered renewal traffic, process pause,

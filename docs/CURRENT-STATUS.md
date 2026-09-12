@@ -83,8 +83,14 @@ The [Rust controller component](LEASE-CONTROLLER.md) now passes 205 Raft library
 tests (25 new lease tests), explicit experimental-feature compilation and Clippy.
 Eight optimized source fault controls, the non-Clone ticket guard, three integer
 timing proofs and four arithmetic countermodels also pass. No server lease path
-is enabled. Next bind unique peer ownership, actual voting/persistence/pump
-events and the exact read view before qualifying clocks and actual fault histories.
+is enabled. The [voting adapter](LEASE-VOTE-BINDING.md) now adds durable immutable
+policy/epochs, restart quarantine and actual election gates, including implicit
+self-votes after PreVote responses. Its first local gate passes 219 Raft tests,
+including a three-voter partition/expiry election test and 180 filesystem fault
+combinations. A default-feature restart probe and eight compiled source fault
+controls also pass; the original capsule's missing-protobuf failure is preserved.
+Next bind leader lifetime, grant/pump publication and the exact read
+view before qualifying clocks and actual fault histories.
 
 ## Latest fixed-rate write diagnosis
 
