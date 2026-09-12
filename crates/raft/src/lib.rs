@@ -15,6 +15,8 @@ mod async_read;
 pub mod command;
 pub mod driver;
 pub mod grpc;
+#[cfg(feature = "quorum-trace")]
+pub mod quorum_trace;
 pub mod rawnode;
 #[cfg(feature = "read-stage-timing")]
 mod read_stage_timing;

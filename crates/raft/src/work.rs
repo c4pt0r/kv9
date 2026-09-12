@@ -181,6 +181,8 @@ const DRAIN_BYTES: usize = 1024 * 1024;
 #[derive(Default)]
 struct InboxState {
     messages: VecDeque<(Message, usize)>,
+    #[cfg(feature = "quorum-trace")]
+    traces: VecDeque<Option<crate::quorum_trace::Ticket>>,
     bytes: usize,
     signal: Option<Arc<WorkSignal>>,
 }
@@ -191,23 +193,53 @@ struct InboxState {
 /// per-turn byte target. Refusal means the transport must drop/retry, never ACK
 /// consensus on its own. Raft's ordinary retransmission remains responsible.
 #[derive(Clone, Default)]
-pub struct RaftInbox(Arc<Mutex<InboxState>>);
+pub struct RaftInbox(
+    Arc<Mutex<InboxState>>,
+    #[cfg(feature = "quorum-trace")] Option<Arc<crate::quorum_trace::QuorumTrace>>,
+);
 
 #[derive(Debug)]
 pub struct InboxFull;
 
 impl RaftInbox {
+    #[cfg(feature = "quorum-trace")]
+    pub(crate) fn with_trace(trace: Arc<crate::quorum_trace::QuorumTrace>) -> Self {
+        Self(Arc::default(), Some(trace))
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    pub(crate) fn trace(&self) -> Option<&Arc<crate::quorum_trace::QuorumTrace>> {
+        self.1.as_ref()
+    }
+
     pub fn send(&self, message: Message) -> Result<(), InboxFull> {
+        #[cfg(feature = "quorum-trace")]
+        let mut observation = self.trace().and_then(|trace| {
+            crate::quorum_trace::Key::message(&message)
+                .and_then(|key| trace.queue(crate::quorum_trace::Stage::InboxOffered, key, None))
+        });
         let bytes = message.compute_size() as usize;
         let signal = {
             let mut state = self.0.lock().expect("raft inbox poisoned");
             if state.messages.len() >= MAX_INBOX_MESSAGES
                 || bytes > MAX_INBOX_BYTES.saturating_sub(state.bytes)
             {
+                #[cfg(feature = "quorum-trace")]
+                if let Some(ticket) = &mut observation {
+                    ticket.finish(crate::quorum_trace::Stage::InboxRejected);
+                }
                 return Err(InboxFull);
+            }
+            #[cfg(feature = "quorum-trace")]
+            if let Some(ticket) = &observation {
+                ticket
+                    .point
+                    .record(crate::quorum_trace::Stage::InboxAdmitted);
             }
             state.bytes += bytes;
             state.messages.push_back((message, bytes));
+            #[cfg(feature = "quorum-trace")]
+            state.traces.push_back(observation);
             state.signal.clone()
         };
         if let Some(signal) = signal {
@@ -234,6 +266,10 @@ impl RaftInbox {
                 let Some((message, weight)) = state.messages.pop_front() else {
                     break;
                 };
+                #[cfg(feature = "quorum-trace")]
+                if let Some(Some(mut ticket)) = state.traces.pop_front() {
+                    ticket.finish(crate::quorum_trace::Stage::InboxDrained);
+                }
                 state.bytes -= weight;
                 bytes += weight;
                 out.push(message);
@@ -345,6 +381,68 @@ mod tests {
         assert!(clock.due(start + Duration::from_secs(60)));
         assert!(!clock.due(start + Duration::from_secs(60)));
         assert_eq!(clock.next(), start + Duration::from_secs(60) + period);
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    #[test]
+    fn trace_shadow_queue_preserves_admission_order_and_rejected_messages() {
+        use crate::quorum_trace::{tests::heartbeat, QuorumTrace, Stage};
+        let trace = QuorumTrace::new(2, 0);
+        let inbox = RaftInbox::with_trace(trace.clone());
+        for index in 0..MAX_INBOX_MESSAGES {
+            let mut message = if index % 2 == 0 {
+                heartbeat(0)
+            } else {
+                Message::default()
+            };
+            message.index = index as u64;
+            inbox.send(message).unwrap();
+        }
+        assert!(inbox.send(heartbeat(0)).is_err());
+        let mut messages = Vec::new();
+        while !inbox.0.lock().unwrap().messages.is_empty() {
+            messages.extend(inbox.drain());
+        }
+        assert_eq!(
+            messages.iter().map(|m| m.index).collect::<Vec<_>>(),
+            (0..MAX_INBOX_MESSAGES as u64).collect::<Vec<_>>()
+        );
+        assert!(inbox.0.lock().unwrap().traces.is_empty());
+        drop(inbox);
+        let snapshot = trace.capture().unwrap();
+        assert_eq!(
+            snapshot.stage_counts[Stage::InboxDrained as usize].recorded,
+            (MAX_INBOX_MESSAGES / 2) as u64
+        );
+        assert_eq!(
+            snapshot.stage_counts[Stage::InboxRejected as usize].recorded,
+            1
+        );
+        assert_eq!(
+            snapshot.stage_counts[Stage::QueueAbandoned as usize].recorded,
+            0
+        );
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    #[test]
+    fn trace_closed_observer_does_not_close_inbox_or_change_queued_messages() {
+        use crate::quorum_trace::{tests::heartbeat, QuorumTrace, Stage};
+        let trace = QuorumTrace::new(2, 0);
+        let inbox = RaftInbox::with_trace(trace.clone());
+        inbox.send(heartbeat(0)).unwrap();
+        let snapshot = trace.capture().unwrap();
+        inbox.send(heartbeat(256)).unwrap();
+        assert_eq!(inbox.drain(), vec![heartbeat(0), heartbeat(256)]);
+        assert!(inbox.drain().is_empty());
+        assert_eq!(
+            snapshot.stage_counts[Stage::InboxAdmitted as usize].recorded,
+            1
+        );
+        assert_eq!(
+            snapshot.stage_counts[Stage::InboxDrained as usize].recorded,
+            0
+        );
     }
 
     #[test]

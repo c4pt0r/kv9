@@ -117,6 +117,8 @@ struct State {
 
 struct Inner {
     state: Mutex<State>,
+    #[cfg(feature = "quorum-trace")]
+    trace: std::sync::OnceLock<Arc<crate::quorum_trace::QuorumTrace>>,
     signal: Arc<WorkSignal>,
     #[cfg(feature = "read-stage-timing")]
     timing: Arc<crate::read_stage_timing::ReadStageMetrics>,
@@ -189,6 +191,8 @@ impl AsyncReads {
     pub(crate) fn new(signal: Arc<WorkSignal>) -> Self {
         Self(Arc::new(Inner {
             state: Mutex::default(),
+            #[cfg(feature = "quorum-trace")]
+            trace: std::sync::OnceLock::new(),
             signal,
             #[cfg(feature = "read-stage-timing")]
             timing: Arc::default(),
@@ -198,6 +202,26 @@ impl AsyncReads {
     #[cfg(feature = "read-stage-timing")]
     pub(crate) fn timing(&self) -> Arc<crate::read_stage_timing::ReadStageMetrics> {
         self.0.timing.clone()
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    pub(crate) fn attach_trace(&self, trace: Option<Arc<crate::quorum_trace::QuorumTrace>>) {
+        if let Some(trace) = trace {
+            let _ = self.0.trace.set(trace);
+        }
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    fn trace_group(
+        &self,
+        stage: crate::quorum_trace::Stage,
+        context: [u8; 24],
+        members: usize,
+        index: Option<u64>,
+    ) {
+        if let Some(trace) = self.0.trace.get() {
+            trace.group(stage, context, members, index);
+        }
     }
 
     pub(crate) fn register(
@@ -296,6 +320,15 @@ impl AsyncReads {
             }
             #[cfg(feature = "read-stage-timing")]
             let issued = Instant::now();
+            #[cfg(feature = "quorum-trace")]
+            let member_count = members.len();
+            #[cfg(feature = "quorum-trace")]
+            self.trace_group(
+                crate::quorum_trace::Stage::GroupSubmit,
+                context,
+                member_count,
+                None,
+            );
             let admitted = read_index(context.to_vec());
             let admitted = match admitted {
                 Ok(value) => Some(value),
@@ -315,6 +348,17 @@ impl AsyncReads {
                     None
                 }
             };
+            #[cfg(feature = "quorum-trace")]
+            self.trace_group(
+                match admitted {
+                    Some(true) => crate::quorum_trace::Stage::GroupAdmitted,
+                    Some(false) => crate::quorum_trace::Stage::GroupDeferred,
+                    None => crate::quorum_trace::Stage::GroupRefused,
+                },
+                context,
+                member_count,
+                None,
+            );
             let mut state = self.0.state.lock().expect("async read queue poisoned");
             if admitted == Some(true) {
                 state.admitted_groups = state.admitted_groups.saturating_add(1);
@@ -324,6 +368,13 @@ impl AsyncReads {
             }
             if state.stopped {
                 drop(state);
+                #[cfg(feature = "quorum-trace")]
+                self.trace_group(
+                    crate::quorum_trace::Stage::GroupClosed,
+                    context,
+                    members.len(),
+                    None,
+                );
                 for request in members {
                     request.finish(Err(failed("read owner stopped during admission")));
                 }
@@ -368,6 +419,13 @@ impl AsyncReads {
         };
         if group.confirmed.is_none() {
             group.confirmed = Some(index);
+            #[cfg(feature = "quorum-trace")]
+            self.trace_group(
+                crate::quorum_trace::Stage::QuorumConfirmed,
+                context,
+                group.members.len(),
+                Some(index),
+            );
             #[cfg(feature = "read-stage-timing")]
             let confirmed = Instant::now();
             for request in &mut group.members {
@@ -393,10 +451,21 @@ impl AsyncReads {
     fn select_completions(&self, applied: Option<u64>) -> Vec<(Request, ReadResult)> {
         let mut state = self.0.state.lock().expect("async read queue poisoned");
         let mut selected = Vec::new();
-        state.active.retain(|_, group| {
+        state.active.retain(|_context, group| {
             let covered = group
                 .confirmed
                 .filter(|index| applied.is_some_and(|at| at >= *index));
+            #[cfg(feature = "quorum-trace")]
+            let before = group.members.len();
+            #[cfg(feature = "quorum-trace")]
+            if let Some(index) = covered {
+                self.trace_group(
+                    crate::quorum_trace::Stage::CompletionEligible,
+                    *_context,
+                    before,
+                    Some(index),
+                );
+            }
             let mut pos = 0;
             while pos < group.members.len() {
                 let request = &group.members[pos];
@@ -408,6 +477,15 @@ impl AsyncReads {
                 } else {
                     pos += 1;
                 }
+            }
+            #[cfg(feature = "quorum-trace")]
+            if covered.is_none() && before > group.members.len() {
+                self.trace_group(
+                    crate::quorum_trace::Stage::MembersUncovered,
+                    *_context,
+                    before - group.members.len(),
+                    group.confirmed,
+                );
             }
             !group.members.is_empty()
         });
@@ -423,6 +501,25 @@ impl AsyncReads {
                 std::mem::take(&mut state.active),
             )
         };
+        #[cfg(feature = "quorum-trace")]
+        {
+            for request in &queued {
+                self.trace_group(
+                    crate::quorum_trace::Stage::GroupClosed,
+                    request.context,
+                    1,
+                    None,
+                );
+            }
+            for (context, group) in &active {
+                self.trace_group(
+                    crate::quorum_trace::Stage::GroupClosed,
+                    *context,
+                    group.members.len(),
+                    group.confirmed,
+                );
+            }
+        }
         for request in queued
             .into_iter()
             .chain(active.into_values().flat_map(|g| g.members))
@@ -464,6 +561,78 @@ mod tests {
         queue
             .register(context(id), Instant::now(), Duration::from_secs(5))
             .unwrap()
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    #[tokio::test]
+    async fn trace_requires_exact_confirmation_and_apply_fence_for_the_sealed_group() {
+        use crate::quorum_trace::{QuorumTrace, Stage};
+        let trace = QuorumTrace::new(1, 0);
+        let queue = AsyncReads::new(Arc::default());
+        queue.attach_trace(Some(trace.clone()));
+        let first = register(&queue, 0);
+        let second = register(&queue, 1);
+        queue.submit(|_| Ok(false));
+        queue.submit(|_| Ok(true));
+        assert!(!queue.confirm(&context(256), 9));
+        queue.complete(Some(100)); // No exact confirmation yet.
+        assert!(queue.confirm(&context(0), 9));
+        assert!(queue.confirm(&context(0), 10)); // First confirmation wins.
+        queue.complete(Some(8));
+        assert_eq!(queue.snapshot().in_flight, 2);
+        queue.complete(Some(9));
+        assert_eq!(first.wait().await.unwrap(), 9);
+        assert_eq!(second.wait().await.unwrap(), 9);
+        let snapshot = trace.capture().unwrap();
+        let stages: Vec<_> = snapshot.events.iter().map(|e| e.stage).collect();
+        assert_eq!(
+            stages,
+            vec![
+                Stage::GroupSubmit,
+                Stage::GroupDeferred,
+                Stage::GroupSubmit,
+                Stage::GroupAdmitted,
+                Stage::QuorumConfirmed,
+                Stage::CompletionEligible
+            ]
+        );
+        assert!(snapshot
+            .events
+            .iter()
+            .all(|e| e.members == Some(2) && e.key.context == context(0) && e.key.term.is_none()));
+        assert_eq!(snapshot.events.last().unwrap().index, Some(9));
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    #[tokio::test]
+    async fn trace_preserves_refusal_cancellation_and_owner_close_without_success() {
+        use crate::quorum_trace::{QuorumTrace, Stage};
+        let trace = QuorumTrace::new(1, 0);
+        let queue = AsyncReads::new(Arc::default());
+        queue.attach_trace(Some(trace.clone()));
+        let refused = register(&queue, 0);
+        queue.submit(|_| Err(Error::NotLeader { leader: None }));
+        assert!(refused.wait().await.is_err());
+        let canceled = register(&queue, 256);
+        queue.submit(|_| Ok(true));
+        drop(canceled);
+        queue.complete(None);
+        let closed = register(&queue, 512);
+        queue.submit(|_| Ok(true));
+        queue.close();
+        assert!(closed.wait().await.is_err());
+        let snapshot = trace.capture().unwrap();
+        for stage in [
+            Stage::GroupRefused,
+            Stage::MembersUncovered,
+            Stage::GroupClosed,
+        ] {
+            assert_eq!(snapshot.stage_counts[stage as usize].recorded, 1);
+        }
+        assert_eq!(
+            snapshot.stage_counts[Stage::CompletionEligible as usize].recorded,
+            0
+        );
     }
 
     #[cfg(feature = "read-stage-timing")]

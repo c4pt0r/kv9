@@ -201,6 +201,8 @@ pub struct NodeDriver<S: PersistentRaftStorage = MemStorage, E: crate::ApplyStor
     /// the peer — which can propose and observe but not drain.
     drain: crate::DrainToken<S>,
     transport: Arc<dyn RaftTransport>,
+    #[cfg(feature = "quorum-trace")]
+    quorum_trace: Option<Arc<crate::quorum_trace::QuorumTrace>>,
     /// Generic over the engine so the durable `WalEngine` (or any other) sits
     /// directly in the apply downstream — the server passes a state machine
     /// sharing ONE engine instance with its MetaStore, or catalog reads and
@@ -289,6 +291,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         let drain = crate::DrainToken::mint(&peer)?;
         transport.set_work_signal(peer.work_signal.clone());
         let async_reads = crate::async_read::AsyncReads::new(peer.work_signal.clone());
+        #[cfg(feature = "quorum-trace")]
+        let quorum_trace = transport.quorum_trace();
+        #[cfg(feature = "quorum-trace")]
+        async_reads.attach_trace(quorum_trace.clone());
         let metrics = Arc::new(DriverMetrics {
             #[cfg(feature = "read-stage-timing")]
             read_stages: async_reads.timing(),
@@ -300,6 +306,8 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             peer,
             drain,
             transport,
+            #[cfg(feature = "quorum-trace")]
+            quorum_trace,
             sm: Mutex::new(sm),
             applied: Mutex::new(Vec::new()),
             conf_receipts: Mutex::new(Vec::new()),
@@ -374,6 +382,11 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     /// continuing would silently diverge this node from the group. On error
     /// the driver poisons itself (pump stops, `status().fatal` set) and the
     /// failed entry never enters the success-correlation ring.
+    #[cfg(feature = "quorum-trace")]
+    pub fn capture_quorum_trace(&self) -> Option<crate::quorum_trace::Snapshot> {
+        self.quorum_trace.as_ref()?.capture()
+    }
+
     pub fn step(&self) -> Result<()> {
         let _owner = self.pump_gate.lock().expect("pump gate poisoned");
         self.step_observed()
@@ -420,6 +433,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             return Err(Error::Raft(f.clone()));
         }
         for msg in self.transport.drain() {
+            #[cfg(feature = "quorum-trace")]
+            if let Some(trace) = &self.quorum_trace {
+                trace.message(crate::quorum_trace::Stage::DriverStep, &msg);
+            }
             self.peer.step_message(msg);
         }
         self.async_reads

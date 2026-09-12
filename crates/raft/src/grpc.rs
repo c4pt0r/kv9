@@ -315,6 +315,19 @@ impl From<mpsc::UnboundedSender<Message>> for InboundSender {
     }
 }
 impl InboundSender {
+    #[cfg(feature = "quorum-trace")]
+    fn observe_validated(&self, message: &Message) {
+        match self {
+            Self::Bounded(inbox) => {
+                if let Some(trace) = inbox.trace() {
+                    trace.message(crate::quorum_trace::Stage::InboundValidated, message);
+                }
+            }
+            #[cfg(test)]
+            Self::Fixture(_) => {}
+        }
+    }
+
     fn send(&self, message: Message) -> bool {
         match self {
             Self::Bounded(inbox) => inbox.send(message).is_ok(),
@@ -425,6 +438,8 @@ impl Kv9Raft for RaftGrpcService {
                         "raft sender does not match authenticated node",
                     ));
                 }
+                #[cfg(feature = "quorum-trace")]
+                self.inbox.observe_validated(&msg);
                 // Bounded best-effort admission never blocks this runtime.
                 // Ending a saturated stream permits Raft retransmission.
                 if !self.inbox.send(msg) {
@@ -909,6 +924,8 @@ struct PeerDestination {
 struct OutboundMessage {
     destination: Arc<PeerDestination>,
     envelope: pb::RaftEnvelope,
+    #[cfg(feature = "quorum-trace")]
+    observation: Option<crate::quorum_trace::Ticket>,
 }
 
 struct PeerSender {
@@ -972,7 +989,11 @@ impl GrpcTransport {
         handle: tokio::runtime::Handle,
         root_digest: RootDigest,
     ) -> Arc<GrpcTransport> {
+        #[cfg(not(feature = "quorum-trace"))]
         let inbox = crate::work::RaftInbox::default();
+        #[cfg(feature = "quorum-trace")]
+        let inbox =
+            crate::work::RaftInbox::with_trace(crate::quorum_trace::QuorumTrace::new(me.0, 0));
         Arc::new(GrpcTransport {
             me,
             token,
@@ -1065,9 +1086,18 @@ impl GrpcTransport {
         self.connect_attempts.load(Ordering::Relaxed)
     }
 
-    fn enqueue(&self, to: NodeId, envelope: pb::RaftEnvelope) {
+    fn enqueue(
+        &self,
+        to: NodeId,
+        envelope: pb::RaftEnvelope,
+        #[cfg(feature = "quorum-trace")] key: Option<crate::quorum_trace::Key>,
+    ) {
         let mut peers = self.peers.lock().expect("peers poisoned");
         let Some(peer) = peers.get_mut(&to.0) else {
+            #[cfg(feature = "quorum-trace")]
+            if let (Some(trace), Some(key)) = (self.inbox.trace(), key) {
+                trace.key(crate::quorum_trace::Stage::UnknownPeer, key);
+            }
             return; // unknown peer: Raft retransmits after registration
         };
         if peer
@@ -1093,7 +1123,20 @@ impl GrpcTransport {
         }
         // This enqueue is the send linearization point, serialized with
         // register_peer. Queue overflow still drops best-effort Raft traffic.
-        let _ = peer
+        #[cfg(feature = "quorum-trace")]
+        let observation = self.inbox.trace().and_then(|trace| {
+            key.and_then(|key| {
+                trace.queue(
+                    crate::quorum_trace::Stage::OutboundOffered,
+                    key,
+                    Some(crate::quorum_trace::Route::new(&peer.destination)),
+                )
+            })
+        });
+        #[cfg(feature = "quorum-trace")]
+        let point = observation.as_ref().map(|ticket| ticket.point.clone());
+        #[allow(unused_mut)]
+        let mut sent = peer
             .sender
             .as_ref()
             .unwrap()
@@ -1101,11 +1144,36 @@ impl GrpcTransport {
             .try_send(OutboundMessage {
                 destination: peer.destination.clone(),
                 envelope,
+                #[cfg(feature = "quorum-trace")]
+                observation,
             });
+        #[cfg(feature = "quorum-trace")]
+        match &mut sent {
+            Ok(()) => {
+                if let Some(point) = point {
+                    // Post-try_send observation can race a dequeue. The reader
+                    // must reject reversed spans, never clamp them to zero.
+                    point.record(crate::quorum_trace::Stage::OutboundAccepted);
+                }
+            }
+            Err(
+                mpsc::error::TrySendError::Full(message)
+                | mpsc::error::TrySendError::Closed(message),
+            ) => {
+                if let Some(ticket) = &mut message.observation {
+                    ticket.finish(crate::quorum_trace::Stage::OutboundRejected);
+                }
+            }
+        }
+        let _ = sent;
     }
 }
 
 impl RaftTransport for GrpcTransport {
+    #[cfg(feature = "quorum-trace")]
+    fn quorum_trace(&self) -> Option<Arc<crate::quorum_trace::QuorumTrace>> {
+        self.inbox.trace().cloned()
+    }
     fn set_work_signal(&self, signal: Arc<crate::work::WorkSignal>) {
         self.inbox.set_signal(signal);
     }
@@ -1115,9 +1183,19 @@ impl RaftTransport for GrpcTransport {
         // raft retransmits, and a real partition drops packets identically.
         #[cfg(any(test, feature = "testing"))]
         if self.partition.is_masked(to.0) {
+            #[cfg(feature = "quorum-trace")]
+            if let Some(trace) = self.inbox.trace() {
+                trace.message(crate::quorum_trace::Stage::MaskedOutbound, &msg);
+            }
             return;
         }
+        #[cfg(feature = "quorum-trace")]
+        let key = crate::quorum_trace::Key::message(&msg);
         let Ok(bytes) = msg.write_to_bytes() else {
+            #[cfg(feature = "quorum-trace")]
+            if let (Some(trace), Some(key)) = (self.inbox.trace(), key) {
+                trace.key(crate::quorum_trace::Stage::EncodingRejected, key);
+            }
             return;
         };
         let env = pb::RaftEnvelope {
@@ -1128,7 +1206,12 @@ impl RaftTransport for GrpcTransport {
             epoch_conf_ver: 0,
             epoch_version: 0,
         };
-        self.enqueue(to, env);
+        self.enqueue(
+            to,
+            env,
+            #[cfg(feature = "quorum-trace")]
+            key,
+        );
     }
 
     fn drain(&self) -> Vec<Message> {
@@ -1182,9 +1265,18 @@ async fn receive_for_destination(
     destination: &Arc<PeerDestination>,
 ) -> Option<pb::RaftEnvelope> {
     let mut discarded = 0;
-    while let Some(message) = rx.recv().await {
+    #[allow(unused_mut)]
+    while let Some(mut message) = rx.recv().await {
         if Arc::ptr_eq(&message.destination, destination) {
+            #[cfg(feature = "quorum-trace")]
+            if let Some(ticket) = &mut message.observation {
+                ticket.finish(crate::quorum_trace::Stage::OutboundDequeued);
+            }
             return Some(message.envelope);
+        }
+        #[cfg(feature = "quorum-trace")]
+        if let Some(ticket) = &mut message.observation {
+            ticket.finish(crate::quorum_trace::Stage::RouteDiscarded);
         }
         discarded += 1;
         if discarded == MAX_BATCH_MSGS {
@@ -1217,12 +1309,22 @@ fn coalesce_queued(
         if bytes >= MAX_BATCH_BYTES {
             break;
         }
-        let Ok(message) = rx.try_recv() else {
+        #[allow(unused_mut)]
+        let Ok(mut message) = rx.try_recv() else {
             break;
         };
         if Arc::ptr_eq(&message.destination, destination) {
+            #[cfg(feature = "quorum-trace")]
+            if let Some(ticket) = &mut message.observation {
+                ticket.finish(crate::quorum_trace::Stage::OutboundDequeued);
+            }
             bytes += message.envelope.raft_message.len();
             batch.msgs.push(message.envelope);
+        } else {
+            #[cfg(feature = "quorum-trace")]
+            if let Some(ticket) = &mut message.observation {
+                ticket.finish(crate::quorum_trace::Stage::RouteDiscarded);
+            }
         }
     }
     batch
@@ -1754,6 +1856,114 @@ mod tests {
         });
     }
 
+    #[cfg(feature = "quorum-trace")]
+    #[test]
+    fn trace_records_queue_rejection_and_unknown_peer_without_delivery_changes() {
+        use crate::quorum_trace::{tests::heartbeat, Stage};
+        let rt = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        let transport = GrpcTransport::new(
+            NodeId(1),
+            None,
+            rt.handle().clone(),
+            test_root().root_digest,
+        );
+        let trace = transport.quorum_trace().unwrap();
+        transport.send(NodeId(2), heartbeat(0));
+        transport.register_peer(NodeId(2), "127.0.0.1:1".parse().unwrap());
+        // The current-thread runtime is not polling: no connection or dequeue
+        // can race these real bounded-queue admissions.
+        for _ in 0..PEER_QUEUE + 1 {
+            transport.send(NodeId(2), heartbeat(0));
+        }
+        assert_eq!(
+            transport.peers.lock().unwrap()[&2]
+                .sender
+                .as_ref()
+                .unwrap()
+                .queue
+                .capacity(),
+            0
+        );
+        assert_eq!(transport.connect_attempts(), 0);
+        drop(transport);
+        drop(rt); // Drops the actual queued messages and their tickets.
+        let snapshot = trace.capture().unwrap();
+        for (stage, expected) in [
+            (Stage::UnknownPeer, 1),
+            (Stage::OutboundAccepted, PEER_QUEUE as u64),
+            (Stage::OutboundRejected, 1),
+            (Stage::QueueAbandoned, PEER_QUEUE as u64),
+        ] {
+            assert_eq!(snapshot.stage_counts[stage as usize].recorded, expected);
+        }
+        assert_eq!(
+            snapshot.stage_counts[Stage::OutboundDequeued as usize].recorded,
+            0
+        );
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    #[tokio::test]
+    async fn trace_keeps_repeated_contexts_and_replaced_routes_distinct() {
+        use crate::quorum_trace::{tests::heartbeat, Key, QuorumTrace, Route, Stage};
+        let trace = QuorumTrace::new(1, 0);
+        let old = Arc::new(PeerDestination {
+            addr: "127.0.0.1:1".parse().unwrap(),
+        });
+        let current = Arc::new(PeerDestination { addr: old.addr });
+        let key = Key::message(&heartbeat(0)).unwrap();
+        let (tx, mut rx) = mpsc::channel(4);
+        for (destination, from_node) in [(old, 10), (current.clone(), 20), (current.clone(), 30)] {
+            let observation =
+                trace.queue(Stage::OutboundOffered, key, Some(Route::new(&destination)));
+            let point = observation.as_ref().unwrap().point.clone();
+            tx.send(OutboundMessage {
+                destination,
+                envelope: pb::RaftEnvelope {
+                    from_node,
+                    ..Default::default()
+                },
+                observation,
+            })
+            .await
+            .unwrap();
+            point.record(Stage::OutboundAccepted);
+        }
+        let first = receive_for_destination(&mut rx, &current).await.unwrap();
+        let batch = coalesce_queued(first, test_root().root_digest, &mut rx, &current);
+        assert_eq!(
+            batch.msgs.iter().map(|e| e.from_node).collect::<Vec<_>>(),
+            vec![20, 30]
+        );
+        drop(tx);
+        assert!(receive_for_destination(&mut rx, &current).await.is_none());
+        let snapshot = trace.capture().unwrap();
+        let starts: Vec<_> = snapshot
+            .events
+            .iter()
+            .filter(|e| e.stage == Stage::OutboundOffered)
+            .collect();
+        assert_eq!(starts.len(), 3);
+        assert_ne!(starts[0].local_route, starts[1].local_route);
+        assert_eq!(starts[1].local_route, starts[2].local_route);
+        assert_ne!(starts[1].local_ticket, starts[2].local_ticket);
+        assert_eq!(
+            snapshot.stage_counts[Stage::RouteDiscarded as usize].recorded,
+            1
+        );
+        assert_eq!(
+            snapshot.stage_counts[Stage::OutboundDequeued as usize].recorded,
+            2
+        );
+        assert_eq!(
+            snapshot.stage_counts[Stage::QueueAbandoned as usize].recorded,
+            0
+        );
+    }
+
     #[test]
     fn route_generation_filter_rejects_old_queue_entries_even_after_address_reuse() {
         let rt = tokio::runtime::Runtime::new().unwrap();
@@ -1768,6 +1978,8 @@ mod tests {
             let (tx, mut rx) = mpsc::channel(4);
             for (destination, from_node) in [(a, 10), (b, 20), (new_a.clone(), 30)] {
                 tx.send(OutboundMessage {
+                    #[cfg(feature = "quorum-trace")]
+                    observation: None,
                     destination,
                     envelope: pb::RaftEnvelope {
                         from_node,
@@ -1800,6 +2012,8 @@ mod tests {
         let (tx, mut rx) = mpsc::channel(MAX_BATCH_MSGS * 2);
         for index in 0..MAX_BATCH_MSGS {
             tx.try_send(OutboundMessage {
+                #[cfg(feature = "quorum-trace")]
+                observation: None,
                 destination: stale.clone(),
                 envelope: pb::RaftEnvelope {
                     from_node: index as u64 + 2,
@@ -1809,6 +2023,8 @@ mod tests {
             .unwrap();
         }
         tx.try_send(OutboundMessage {
+            #[cfg(feature = "quorum-trace")]
+            observation: None,
             destination: destination.clone(),
             envelope: pb::RaftEnvelope {
                 from_node: 999,
@@ -1859,6 +2075,8 @@ mod tests {
         );
         for index in 1..=MAX_BATCH_MSGS {
             tx.try_send(OutboundMessage {
+                #[cfg(feature = "quorum-trace")]
+                observation: None,
                 destination: destination.clone(),
                 envelope: envelope(index as u64, 0),
             })
@@ -1880,6 +2098,8 @@ mod tests {
         );
         for id in 1..=2 {
             tx.try_send(OutboundMessage {
+                #[cfg(feature = "quorum-trace")]
+                observation: None,
                 destination: destination.clone(),
                 envelope: envelope(id, MAX_BATCH_BYTES / 2 + 1),
             })

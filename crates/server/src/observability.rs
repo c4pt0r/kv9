@@ -62,6 +62,24 @@ struct ExportState {
     failures: u64,
     failures_saturated: bool,
     last: &'static str,
+    #[cfg(feature = "quorum-trace")]
+    trace_next: Instant,
+    #[cfg(feature = "quorum-trace")]
+    trace_attempted: bool,
+    #[cfg(feature = "quorum-trace")]
+    trace_last: &'static str,
+}
+
+#[cfg(feature = "quorum-trace")]
+#[derive(Serialize)]
+struct TraceDocument<'a> {
+    node_id: u64,
+    process_id: u32,
+    exporter_created_unix_ns: &'a str,
+    captured_unix_ns: String,
+    process_start_ticks: Option<u64>,
+    boot_id: Option<&'a str>,
+    trace: kv9_raft::quorum_trace::Snapshot,
 }
 
 pub(crate) struct MetricsExporter {
@@ -175,6 +193,12 @@ impl MetricsExporter {
                 failures: 0,
                 failures_saturated: false,
                 last: "not_attempted",
+                #[cfg(feature = "quorum-trace")]
+                trace_next: Instant::now(),
+                #[cfg(feature = "quorum-trace")]
+                trace_attempted: false,
+                #[cfg(feature = "quorum-trace")]
+                trace_last: "not_attempted",
             }),
         }
     }
@@ -248,10 +272,102 @@ impl MetricsExporter {
         "success"
     }
 
+    /// Diagnostic builds poll a local marker at most once per second. The
+    /// experiment owner must create it only after timed client work has ended.
+    /// Capture closes the observer, never the driver or any protocol queue.
+    #[cfg(feature = "quorum-trace")]
+    pub(crate) fn export_quorum_trace(
+        &self,
+        capture: impl FnOnce() -> Option<kv9_raft::quorum_trace::Snapshot>,
+    ) {
+        {
+            let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
+            let now = Instant::now();
+            if state.trace_attempted || now < state.trace_next {
+                return;
+            }
+            state.trace_next = now + INTERVAL;
+        }
+        let marker = self.path.with_file_name("quorum-trace.capture");
+        let metadata = std::fs::symlink_metadata(marker);
+        if matches!(&metadata, Err(error) if error.kind() == std::io::ErrorKind::NotFound) {
+            return;
+        }
+        {
+            let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
+            if state.trace_attempted {
+                return;
+            }
+            state.trace_attempted = true;
+            state.trace_last = "capturing";
+        }
+        let outcome = match metadata {
+            Ok(metadata) if metadata.is_file() && metadata.len() == 0 => match capture() {
+                Some(trace) => self.write_quorum_trace(trace),
+                None => "capture_unavailable",
+            },
+            Ok(_) => "invalid_marker",
+            Err(_) => "marker_error",
+        };
+        self.state
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .trace_last = outcome;
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    fn write_quorum_trace(&self, trace: kv9_raft::quorum_trace::Snapshot) -> &'static str {
+        use std::io::Write;
+        if trace.node != self.node_id || trace.process_id != std::process::id() {
+            return "identity_error";
+        }
+        let document = TraceDocument {
+            node_id: self.node_id,
+            process_id: std::process::id(),
+            exporter_created_unix_ns: &self.started_unix_ns,
+            captured_unix_ns: unix_ns(),
+            process_start_ticks: self.process_identity.start_ticks,
+            boot_id: self.process_identity.boot_id.as_deref(),
+            trace,
+        };
+        let Ok(bytes) = serde_json::to_vec(&document) else {
+            return "encode_error";
+        };
+        if bytes.len() > 64 * 1024 * 1024 {
+            return "size_limit";
+        }
+        let path = self.path.with_file_name("quorum-trace.json");
+        let tmp = path.with_extension("tmp");
+        let Ok(mut file) = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&tmp)
+        else {
+            return "create_error";
+        };
+        if file.write_all(&bytes).is_err() {
+            return "write_error";
+        }
+        drop(file);
+        if std::fs::rename(tmp, path).is_err() {
+            return "rename_error";
+        }
+        // Best effort, no fsync or durable ACK. Failures are not retried with
+        // a different observation prefix; the experiment must retain them.
+        "success"
+    }
+
     pub(crate) fn status_lines(&self) -> String {
         let state = self.state.lock().unwrap_or_else(|e| e.into_inner());
-        format!("{}metrics_schema_version=2\nmetrics_export_successes={}\nmetrics_export_failures={}\nmetrics_export_failures_saturated={}\nmetrics_export_last={}\n",
-            self.process_identity.status_lines(), state.successes, state.failures, state.failures_saturated, state.last)
+        #[allow(unused_mut)]
+        let mut lines = format!("{}metrics_schema_version=2\nmetrics_export_successes={}\nmetrics_export_failures={}\nmetrics_export_failures_saturated={}\nmetrics_export_last={}\n",
+            self.process_identity.status_lines(), state.successes, state.failures, state.failures_saturated, state.last);
+        #[cfg(feature = "quorum-trace")]
+        lines.push_str(&format!(
+            "quorum_trace_export_attempted={}\nquorum_trace_export_last={}\n",
+            state.trace_attempted, state.trace_last
+        ));
+        lines
     }
 }
 
@@ -365,6 +481,138 @@ mod tests {
             crate::admission::PublicAdmission::new(Default::default()).unwrap(),
             driver,
         )
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    fn trace_fixture() -> kv9_raft::quorum_trace::Snapshot {
+        use kv9_raft::quorum_trace::{
+            CountSnapshot, Snapshot, MAX_EVENTS, SAMPLE_EVERY, STAGE_NAMES,
+        };
+        Snapshot {
+            schema_version: 1,
+            node: 1,
+            region: 0,
+            process_id: std::process::id(),
+            sample_every: SAMPLE_EVERY,
+            maximum_events: MAX_EVENTS,
+            captured_at_ns: 0,
+            counters_valid: true,
+            clock: "process_local_monotonic_instant",
+            scope: "synthetic exporter test",
+            stage_names: STAGE_NAMES.to_vec(),
+            events: vec![],
+            stage_counts: STAGE_NAMES
+                .iter()
+                .map(|_| CountSnapshot {
+                    offered: 0,
+                    selected: 0,
+                    recorded: 0,
+                    contended: 0,
+                    poisoned: 0,
+                    full: 0,
+                    exhausted: 0,
+                })
+                .collect(),
+        }
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    fn trace_dir(label: &str) -> PathBuf {
+        let dir = std::env::temp_dir().join(format!(
+            "kv9-trace-{label}-{}-{}",
+            std::process::id(),
+            unix_ns()
+        ));
+        std::fs::create_dir(&dir).unwrap();
+        dir
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    #[test]
+    fn trace_export_requires_marker_and_binds_one_process_lifetime() {
+        let dir = trace_dir("success");
+        let exporter = MetricsExporter::new(&dir, 1);
+        exporter.export_quorum_trace(|| panic!("no marker must not capture"));
+        assert!(!dir.join("quorum-trace.json").exists());
+        std::fs::write(dir.join("quorum-trace.capture"), []).unwrap();
+        exporter.state.lock().unwrap().trace_next = Instant::now();
+        exporter.export_quorum_trace(|| Some(trace_fixture()));
+        let bytes = std::fs::read(dir.join("quorum-trace.json")).unwrap();
+        let doc: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(doc.as_object().unwrap().len(), 7);
+        assert_eq!(doc["node_id"], 1);
+        assert_eq!(doc["process_id"], std::process::id());
+        assert_eq!(doc["exporter_created_unix_ns"], exporter.started_unix_ns);
+        assert_eq!(
+            doc["process_start_ticks"],
+            serde_json::to_value(exporter.process_identity.start_ticks).unwrap()
+        );
+        assert_eq!(
+            doc["boot_id"],
+            serde_json::to_value(&exporter.process_identity.boot_id).unwrap()
+        );
+        assert_eq!(doc["trace"]["stage_names"].as_array().unwrap().len(), 23);
+        assert!(exporter
+            .status_lines()
+            .contains("quorum_trace_export_last=success\n"));
+        exporter.export_quorum_trace(|| panic!("capture must not retry"));
+        assert_eq!(bytes, std::fs::read(dir.join("quorum-trace.json")).unwrap());
+        assert!(!dir.join("quorum-trace.tmp").exists());
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    #[test]
+    fn trace_failed_capture_and_publication_are_terminal_observation_failures() {
+        for mode in ["unavailable", "identity", "rename"] {
+            let dir = trace_dir(mode);
+            std::fs::write(dir.join("quorum-trace.capture"), []).unwrap();
+            let exporter = MetricsExporter::new(&dir, 1);
+            if mode == "rename" {
+                std::fs::create_dir(dir.join("quorum-trace.json")).unwrap();
+            }
+            exporter.export_quorum_trace(|| {
+                if mode == "unavailable" {
+                    return None;
+                }
+                let mut trace = trace_fixture();
+                if mode == "identity" {
+                    trace.node = 2;
+                }
+                Some(trace)
+            });
+            let expected = match mode {
+                "unavailable" => "capture_unavailable",
+                "identity" => "identity_error",
+                _ => "rename_error",
+            };
+            assert!(exporter
+                .status_lines()
+                .contains(&format!("quorum_trace_export_last={expected}\n")));
+            exporter
+                .export_quorum_trace(|| panic!("failed prefix must not be replaced by another"));
+            std::fs::remove_dir_all(dir).unwrap();
+        }
+    }
+
+    #[cfg(feature = "quorum-trace")]
+    #[test]
+    fn trace_marker_must_be_an_empty_regular_file() {
+        for mode in ["directory", "nonempty"] {
+            let dir = trace_dir(mode);
+            let marker = dir.join("quorum-trace.capture");
+            if mode == "directory" {
+                std::fs::create_dir(marker).unwrap();
+            } else {
+                std::fs::write(marker, "unexpected content").unwrap();
+            }
+            let exporter = MetricsExporter::new(&dir, 1);
+            exporter.export_quorum_trace(|| panic!("invalid marker must not capture"));
+            assert!(exporter
+                .status_lines()
+                .contains("quorum_trace_export_last=invalid_marker\n"));
+            std::fs::remove_dir_all(dir).unwrap();
+        }
     }
 
     #[test]
