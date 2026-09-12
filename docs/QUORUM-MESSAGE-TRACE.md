@@ -4,7 +4,12 @@ This diagnostic feature implements the next observation boundary in
 [the quorum-latency plan](QUORUM-LATENCY-NEXT.md). It is not a runtime
 optimization, a new performance result, a core Raft proof, or a completed
 industrial acceptance gate. The selected runtime remains `11113f6`. Implementation lives on the isolated
-`codex/quorum-message-trace` branch; it is not promoted as a runtime optimization.
+`codex/quorum-trace-slots` branch; it is not promoted as a runtime optimization.
+The prior `1875e74` capture lost 1,083 selected observations to its shared
+observer mutex across six process prefixes. The frozen reader correctly
+refused every complete-context RTT attribution. This revision changes only
+observer storage to remove that identified source of loss; its actual capture
+and overhead qualification are pending.
 
 ## Scope and activation
 
@@ -25,8 +30,13 @@ starts that obtained a retained local ticket. Offered does not mean a client
 request count, and group member observations must not be summed as unique
 requests across stages.
 
-Recording performs one observer try-lock, with no wait/retry on contention.
-Full/poisoned/contended observations return no decision to the protocol. The
+Recording reserves an immutable preallocated slot with a strong atomic CAS.
+The cursor only advances up to capacity, never resets or wraps, and each failed
+CAS implies another successful reservation. There are at most 65,536 such
+advances during one recorder lifetime. Each unique reservation initializes its
+own `OnceLock`, so no other writer can hold that cell. No mutex or protocol
+lock is acquired. The existing contended/poisoned fields remain zero for schema
+compatibility; capacity and clock exhaustion still return no observation. The
 observer does add CPU, atomics, clock reads, memory, and scheduling overhead;
 that overhead must be measured against an uninstrumented control.
 
@@ -51,7 +61,8 @@ fabricate it by locking the Raft peer or by joining an ambiguous message term.
 | Inbox offered/admitted/rejected/drained | Existing bounded inbox and unchanged admission/drain order. Test-only inbound masking occurs after drain and can leave an unmatched driver step. |
 | Driver step | Immediately before the existing Raft step call, not its successful return. |
 
-Each queued observation gets a checked nonwrapping ticket. Each outbound ticket
+Each queued observation uses its unique originating slot index plus one as
+a nonzero ticket. Non-ticket events leave intentional gaps in ticket IDs. Each outbound ticket
 retains the actual destination Arc allocation, preventing pointer reuse while
 the trace names it. Ticket and route identifiers have meaning only inside one
 process capture. The wire has no equivalent route token.
@@ -73,7 +84,7 @@ The experiment owner creates an empty regular file named
 `data-dir/quorum-trace.capture` only after timed clients have exited. The status
 loop polls at most once per second and attempts capture once. It closes only
 the observer, waits at most 100 ms for active observation callbacks, then takes
-a finite snapshot. A timeout, poison, invalid marker or I/O failure is retained
+a finite snapshot. A timeout, incomplete slot, invalid marker or I/O failure is retained
 as a terminal observation failure, without retrying a different prefix.
 Default OS signal termination need not run destructors, so capture is explicit
 while the node remains alive rather than relying on shutdown.
@@ -112,27 +123,40 @@ performance neutrality.
    key ends there; a selected invocation increments selected then records one
    event or exactly one loss class. With counters valid and callbacks quiescent,
    selected = recorded + contended + poisoned + full + exhausted, and recorded
-   equals the corresponding event count. Capacity and ticket increments are
-   checked under the observer mutex; tickets cannot wrap or alias in a prefix.
+   equals the corresponding event count. The reservation cursor starts at zero; a successful strong CAS from n to
+   n+1 uniquely owns slot n. By induction the cursor equals the number of
+   successful reservations and cannot exceed capacity. Therefore slots cannot
+   alias, and originating-slot-plus-one tickets are unique and bounded by
+   capacity. Only the owner calls `OnceLock::set`; this call has no competing
+   initializer. The retained route remains alive inside the immutable cell.
 4. Entry checks closed, increments active, then rechecks closed, all SeqCst.
    Capture sets closed and waits for active zero. An entrant that passed its
    second check before closure is visible to that wait until its final decrement;
    one that enters after the cut cannot update counts/events. Late active-only
    increments cannot alter the snapshot. A successful capture therefore reads
-   quiescent observation state; timeout/poison yields no snapshot.
+   quiescent observation state. The acquire/release ordering of the SeqCst
+   active counter and each OnceLock publishes completed events. Every reserved
+   cell must be initialized; timeout or a missing cell yields no snapshot.
+   A writer unwinding before publishing its reserved event cannot silently
+   remove that hole from an otherwise accepted prefix.
 5. Group confirmation is still the exact first matching ReadState. Eligibility
    is observed at the existing selection point after successful whole-pump
    completion and only with covered confirmation. No trace record substitutes
    for this fence, an apply/view receipt, or a durable write acknowledgement.
 
-Focused tests cover sampling/repeated contexts, capacity/contention/poison,
-checked-ticket exhaustion, counter overflow, concurrent capture, retained route
+Focused tests cover sampling/repeated contexts, concurrent complete ticket
+chains, exact concurrent saturation, counter overflow, incomplete-slot rejection,
+concurrent capture, retained route
 lifetime, abandonment, bounded inbox behavior, refusal/cancellation/close,
 first confirmation and apply coverage, route replacement/coalescing, and
 one-shot process-bound export. Local build/test results and actual experiments
 must be recorded separately; no measured improvement is claimed here.
 
-## Local source validation
+## Previous revision source validation
+
+These results belong to `1875e74`; the slot revision needs its own diagnostic
+source checks and a source-bound production build. The default and standalone
+read-stage compilation paths contain no changed code.
 
 The first source qualification passed without a failed command or rerun:
 709 default workspace tests/doctests (23 existing ignored), 453 diagnostic
