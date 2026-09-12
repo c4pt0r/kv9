@@ -1,0 +1,7 @@
+{
+  "receipt": "282605",
+  "exit_code": 1,
+  "available_bytes": 102922977280,
+  "floor_bytes": 103079215104,
+  "outcome": "Metadata packaging stopped before creating output; original transactions and guards unchanged. The newly created evidence worktree duplicates main tracked files; use sparse checkout to release only those reproducible auxiliary copies, then retry metadata packaging."
+}

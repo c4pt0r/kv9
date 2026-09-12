@@ -1,0 +1,15 @@
+{
+  "cold_files": 552,
+  "cold_logical_bytes": 12241339982,
+  "complete": true,
+  "copied_metadata_bytes": 10374841,
+  "metadata_inventory_sha256": "55122b2b501d7a930ca09da06ccdf4b4bb6e45d75e4d890e062167ddc17de73c",
+  "metadata_only": true,
+  "net_allocated_savings_excluding_transaction_metadata": 4292853760,
+  "original_metadata_files": 356,
+  "original_payload_operations": false,
+  "outcome_sha256": "80c365b1310c87517425e29787d6ecdecb20bc9d5740f6a7b4f811a32ecd5bd9",
+  "publication_inventory_sha256": "20a62ee1197bf56eae39cf28b33b3c88cdd4ba53f8fd4220259c8083b2d98e32",
+  "restore_commands_sha256": "a9981efd40c9edac8c5e5a4f2322ce85da1dfa22c9fa867e2723ba7f9a6fbab9",
+  "scope": "Ready for root publication; old resident-WAL descriptions need this overlay. No payload integrity rerun or restore performed."
+}

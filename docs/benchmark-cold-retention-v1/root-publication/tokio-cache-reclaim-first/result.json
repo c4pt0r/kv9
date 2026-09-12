@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "cargo",
+    "clean",
+    "--locked",
+    "--manifest-path",
+    "/tmp/kv9-release-thin-lto/Cargo.toml",
+    "--target-dir",
+    "/home/dongxu/kv9/target",
+    "--profile",
+    "release",
+    "-p",
+    "tokio"
+  ],
+  "scope": "Reproducible Tokio release cache only, under the retained-build lock, after first-party cache invalidation was insufficient. Original retained artifacts/WALs/histories remain unchanged. Future builds must rebuild this dependency.",
+  "before_available_bytes": 103054864384,
+  "started_ns": 1789200444365091125,
+  "complete": true,
+  "exit_code": 0,
+  "after_available_bytes": 103107862528,
+  "ended_ns": 1789200444488587932
+}

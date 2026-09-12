@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "started_ns": 1789200373106652843,
+  "before_available_bytes": 102977228800,
+  "retained_artifact_pins": {
+    "/tmp/kv9-release-thin-lto-release-first/kv9": "dd028cb2f61633dda133b05d814a6d173a79a83145d8ced2f81dc0cf8e0f33bc",
+    "/tmp/kv9-release-thin-lto-release-first/workload/kv9-batch-workload": "bd18336b5da137adbe008bc69db15dbf7769b73a74a876b9461c493665086d83",
+    "/tmp/kv9-wal-crc32-release-first/kv9": "b33b5d302f901aac5cf6a95449b9bb5dd68473747e011220dbed7aed2e591d13",
+    "/tmp/kv9-point-write-v3-release-first/native/kv9-batch-benchmark": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957"
+  },
+  "scope": "Invalidate reproducible first-party release target cache only under existing BuildCache lock. No build, test, original binary/WAL/history deletion or candidate requalification.",
+  "after_available_bytes": 103055007744,
+  "ended_ns": 1789200373278337001
+}

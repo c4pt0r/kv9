@@ -1,0 +1,2150 @@
+{
+  "files": {
+    "READINESS.json": {
+      "bytes": 813,
+      "sha256": "a3cb3b41d563e83b3872cf7d4716e294558d89411829efa3738d66359e0ebc7f",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/READINESS.json"
+    },
+    "README.md": {
+      "bytes": 5624,
+      "sha256": "95a2eaf5ad09f82a40f43939479a628ae41fcb714fd8cd1a20c88317c2dbbd5c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/README.md"
+    },
+    "build_report.py": {
+      "bytes": 19948,
+      "sha256": "1c6e527c562a5bede65040da788d0bb3b1166b614410edf02db9477da71ac8e7",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/build_report.py"
+    },
+    "first-attempt/build_report.py": {
+      "bytes": 19552,
+      "sha256": "6c7f97e2652ecb5bf857ee91cbb816c17d1f3485a81201a88740713f64ade291",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/build_report.py"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-batch-00-first/catalog.json": {
+      "bytes": 168237,
+      "sha256": "251756037cb1159ca835d93736bb268683589eac0be399c1b1b12cffa3f91ac1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-batch-00-first/catalog.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-batch-00-first/journal.jsonl": {
+      "bytes": 128493,
+      "sha256": "2c493d38efd08e2cc73d3f52036319fc846108937b2ddded8f426868afad4cc1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-batch-00-first/journal.jsonl"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-batch-00-first/root-reviewed-release.json": {
+      "bytes": 370,
+      "sha256": "a44579cdc2c9fe36e4f44c4cfda4031a76e4ff754c5ef5395beb54ef81258854",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-batch-00-first/root-reviewed-release.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-batch-00-first/selection.json": {
+      "bytes": 131382,
+      "sha256": "bb3ef1cdd000cf30477d00049e77be6b4072fed951e80ddefd83d5c03ad0842d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-batch-00-first/selection.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-batch-00-first/used-release.json": {
+      "bytes": 370,
+      "sha256": "a44579cdc2c9fe36e4f44c4cfda4031a76e4ff754c5ef5395beb54ef81258854",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-batch-00-first/used-release.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/READINESS.json": {
+      "bytes": 1904,
+      "sha256": "6f80fd967a8ab60e9c8cdf56ed43bda349c0f4a455da63242854d435266f286c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/READINESS.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/README.md": {
+      "bytes": 10314,
+      "sha256": "77730c5c61e4ba914497c3d2a26da185a8db1dc99bf9c3d6cc34358cbc8d8fba",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/README.md"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/catalog_readback.py": {
+      "bytes": 2033,
+      "sha256": "34fba6559920d49f861960287c747dc228032df2208205922558a8ba967744d9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/catalog_readback.py"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/cold.py": {
+      "bytes": 28732,
+      "sha256": "42f3b410d6f503ecde41b1fc34095dc08cb2b3a250d43654d022463e9291e27b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/cold.py"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/commands.json": {
+      "bytes": 24652,
+      "sha256": "c32704186f17ef6aefc3ea86299e603963ab1875d52e2cc16663bbf505b0d867",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/commands.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controller.diff": {
+      "bytes": 11055,
+      "sha256": "b414469ec4b13dee3b087e79a5e9c3e1ad10464c14bad8b0abd0677c47391268",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controller.diff"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-first.log": {
+      "bytes": 1423,
+      "sha256": "8056533b0c7121c9dc22ddd5ced2548bb7b69c008fdb3bc71073bd1fe7285078",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-first.log"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-result-first.json": {
+      "bytes": 357,
+      "sha256": "1dd2a911e82dcec7884231517638f54cd0bf06f89f2d362ea7d2fe8a7e683d54",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-result-first.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-terminal-first.json": {
+      "bytes": 518,
+      "sha256": "cf055f7283b878d8e45ab2fe82102305b094be3f3ad2eaafcf5ee9cb86207b3b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-terminal-first.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/inventory.json": {
+      "bytes": 54640,
+      "sha256": "f1a4b492354b987f7253a9d9cf04afe4fd87bc61f87c4589aa1b95d21330f336",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/inventory.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/test_controller.py": {
+      "bytes": 10213,
+      "sha256": "49d5506735769ac6ca615f887f0382c4c423b130962218668f4264d819523143",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/test_controller.py"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/tool-receipts-first.json": {
+      "bytes": 345,
+      "sha256": "a39af03b3b6edf8f3ba7323c3907daf575373450928d4a968491e2e84e7b5a7d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/tool-receipts-first.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/READINESS.json": {
+      "bytes": 2621,
+      "sha256": "09e27fe12cd58c428aee02d6d9892f1f9fa4019fae349db0015c05d232d31684",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/READINESS.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/README.md": {
+      "bytes": 6709,
+      "sha256": "34f9e4b4aefd16bbeff934f971bd1b8bff82e997be8f72041c608ebcdb8bea93",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/README.md"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/ancestry.json": {
+      "bytes": 666,
+      "sha256": "9e444f9c850abee8d61b9f2723c54e1fbc8f47be9011c5671208c6472d678ca5",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/ancestry.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/catalog_readback.py": {
+      "bytes": 2033,
+      "sha256": "34fba6559920d49f861960287c747dc228032df2208205922558a8ba967744d9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/catalog_readback.py"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/cold.py": {
+      "bytes": 28754,
+      "sha256": "859ff21907b9791464225896e4e2f5f64b066d1b82b4f4c2b40c6f8c716f063c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/cold.py"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/commands.json": {
+      "bytes": 7925,
+      "sha256": "6a9a5ae5cd2eea22912f350888d2531caee1a5ed7d59e131acc2986ac695ee53",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/commands.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controller.diff": {
+      "bytes": 662,
+      "sha256": "7442791dcd91699ec76ff6281d63d1c4bd67260450ee494c68dd05d9f5929d44",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controller.diff"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-first.log": {
+      "bytes": 1423,
+      "sha256": "9e39e16a2261ad20fcea884942d3952d7791a0efa86bb0f72d07d56de7086489",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-first.log"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-result-first.json": {
+      "bytes": 357,
+      "sha256": "db4c51426f79bc057a9d8cefdd506e9ac46eff1cc72ff46f8bd2e724aae8f435",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-result-first.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-terminal-first.json": {
+      "bytes": 243,
+      "sha256": "47a1254969b2a0f584500637c77e70b8f3a4b505687a711e435a01e62aa713ec",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-terminal-first.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/inventory.json": {
+      "bytes": 54499,
+      "sha256": "142ed85aee5484a2ec58a152f54706273487d944b80ce70e65a98694940ebd2c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/inventory.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-first.log": {
+      "bytes": 740,
+      "sha256": "08dc970249e3f64e92e700d9610c8d30cbc3b5b6f748b2b8a9507a35fdc849bc",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-first.log"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-result-first.json": {
+      "bytes": 235,
+      "sha256": "562e6170461085a25d65ad8fc49a8ab9db8bd5cef000d4d0b25c270dbbacd59d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-result-first.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-terminal-first.json": {
+      "bytes": 240,
+      "sha256": "971bfac83e330ae56cd1deaf108df7f4e43dd737652915c403f6cedc4b328a82",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-terminal-first.json"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/test_controller.py": {
+      "bytes": 10213,
+      "sha256": "49d5506735769ac6ca615f887f0382c4c423b130962218668f4264d819523143",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/test_controller.py"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/test_scope.py": {
+      "bytes": 3846,
+      "sha256": "be6dd568e77c8fb7e9bf67c125df7554b35cca379bd8317ac2ffc09bad0d6ce0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/test_scope.py"
+    },
+    "first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/tool-receipts-first.json": {
+      "bytes": 233,
+      "sha256": "2920a5b1bede432eb3bd2a0f1ad0c2f80ea78a38a0c4eb9ce31de7192cd5dc67",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/tool-receipts-first.json"
+    },
+    "first-attempt/metadata/tmp/kv9-coalesced-owner-screen-preparation-first/results-first/audit.json": {
+      "bytes": 533919,
+      "sha256": "ab8cfb527d8e2741fc18e01fd4f4af6401b589cb926039acbb65ee3d49dee4bd",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-coalesced-owner-screen-preparation-first/results-first/audit.json"
+    },
+    "first-attempt/metadata/tmp/kv9-coalesced-owner-screen-preparation-first/results-first/input-inventory.json": {
+      "bytes": 324816,
+      "sha256": "c7415fb44d543b9da579590730d24248da37fe5de1710ace0cd8eaa149dc7107",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-coalesced-owner-screen-preparation-first/results-first/input-inventory.json"
+    },
+    "first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/000-old-point-r050-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5746,
+      "sha256": "2bfa0afb6e94fb60979e3846e51db7779e7e52baecbd38574490d7fd343aa321",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/000-old-point-r050-p00001/fixture/tmpfs-retention.json"
+    },
+    "first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/001-new-point-r050-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5746,
+      "sha256": "9b7201bc909b4d479c83a0106d6d308ac4c8a6351bfb1d3aa6baced4dc5011b7",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/001-new-point-r050-p00001/fixture/tmpfs-retention.json"
+    },
+    "first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/003-old-point-r100-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5131,
+      "sha256": "391ee89fbc6ddcb5b7dd27f156c3fd19cdfa339db18a635e669dc5824f5c97bb",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/003-old-point-r100-p00001/fixture/tmpfs-retention.json"
+    },
+    "first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/004-new-point-r100-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5131,
+      "sha256": "c68679fff25ef98ffe139be123fffc86d13df84659ad809001c5f7563045d1b1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/004-new-point-r100-p00001/fixture/tmpfs-retention.json"
+    },
+    "first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/006-old-point-r050-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 9997,
+      "sha256": "6d34170429236837cc277890f875ae7fed68ec2041c17a2f0fb7baaff40f81d1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/006-old-point-r050-p00064/fixture/tmpfs-retention.json"
+    },
+    "first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/matrix.json": {
+      "bytes": 851164,
+      "sha256": "27d1f509e7e9b19add883f68e5a4e3491b06332928af4fc05e23bca2d031bc71",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/matrix.json"
+    },
+    "first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/summary.json": {
+      "bytes": 170,
+      "sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-coalesced-owner-screen-timing-first/summary.json"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "aea288c17704b89dffaf7d5315f0d7e002e1536bbfbd3fd0d472c235c1f01201",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/invocation.json"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/output.log": {
+      "bytes": 16842,
+      "sha256": "5d4af4e7d7b79c3eeec287584c98c5dcfde3c40928c4ec458621b394a77a1870",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/output.log"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/result.json": {
+      "bytes": 552,
+      "sha256": "4cb1f213f709d46655d1ccedb98fe2f90ffad169d3dac4b6d4c222189716baf4",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/result.json"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/invocation.json": {
+      "bytes": 591,
+      "sha256": "575bf07fbae3b73a4d20fdb8ce2c8f0f3993595ab7ea634e1dc55f522796539e",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/invocation.json"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/output.log": {
+      "bytes": 96,
+      "sha256": "6fe2db6455451e8a98913173764499c98a994d551327b65d4cf01d61c3748e45",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/output.log"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/result.json": {
+      "bytes": 643,
+      "sha256": "8a83916d78244875ac4d67d280946f3a583c63570552a2ea47414188f086eff0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/result.json"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "6cb1da9b79c868cd6d5d726143b7e6a8c617925b6d3132c47a4045f0ab20c0b7",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/invocation.json"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/output.log": {
+      "bytes": 16838,
+      "sha256": "3555ce0810f56f3ba533e0989fcab08d4897e7c49911d193d98ad58ed9a07aeb",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/output.log"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/result.json": {
+      "bytes": 552,
+      "sha256": "cfbc2c4401526bf973a1cba6a8464040e848fa6f1a6ff99c393d3e918a942d5a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/result.json"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/invocation.json": {
+      "bytes": 813,
+      "sha256": "c09ba446fe287651e808622b4d2d99ea74383c9fad6f70f0e1464df466cfd57a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/invocation.json"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/output.log": {
+      "bytes": 95,
+      "sha256": "e089c486cef7fd7a1d6309d565e1a0a04d23101d3ac5d6c85123679ff15f43aa",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/output.log"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/result.json": {
+      "bytes": 865,
+      "sha256": "cb9cfb3eb29ba3b3e4c6e4fb253b61174440ee7390ceb6997b79b9eab02686f8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/result.json"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "cb58c18a89cb8d06a55159b560d44ccf058a35ec6e59272eb1a9cb11bbb7eaee",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/invocation.json"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/output.log": {
+      "bytes": 96,
+      "sha256": "1bbd119a91e0d16e79b075490fdc8bac4a44976be37142c939b268c0c8457f66",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/output.log"
+    },
+    "first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/result.json": {
+      "bytes": 553,
+      "sha256": "3b2828616593bd2e139b72973d116df54a841e06e5fe6a318e72201ab1ea37c3",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/result.json"
+    },
+    "first-attempt/result.json": {
+      "bytes": 362,
+      "sha256": "228250b76da6802c154a1e882ff89fefdf361e2365ed4950e699371d14622c20",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/first-attempt/result.json"
+    },
+    "inspection-receipts.json": {
+      "bytes": 283,
+      "sha256": "7231dd1e6590db98f4c789741728e015891194e4773532a949cc5aed2396e41b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/inspection-receipts.json"
+    },
+    "metadata-inventory.json": {
+      "bytes": 104308,
+      "sha256": "55122b2b501d7a930ca09da06ccdf4b4bb6e45d75e4d890e062167ddc17de73c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata-inventory.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-00-first/catalog.json": {
+      "bytes": 168237,
+      "sha256": "251756037cb1159ca835d93736bb268683589eac0be399c1b1b12cffa3f91ac1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-00-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-00-first/journal.jsonl": {
+      "bytes": 128493,
+      "sha256": "2c493d38efd08e2cc73d3f52036319fc846108937b2ddded8f426868afad4cc1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-00-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-00-first/root-reviewed-release.json": {
+      "bytes": 370,
+      "sha256": "a44579cdc2c9fe36e4f44c4cfda4031a76e4ff754c5ef5395beb54ef81258854",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-00-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-00-first/selection.json": {
+      "bytes": 131382,
+      "sha256": "bb3ef1cdd000cf30477d00049e77be6b4072fed951e80ddefd83d5c03ad0842d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-00-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-00-first/used-release.json": {
+      "bytes": 370,
+      "sha256": "a44579cdc2c9fe36e4f44c4cfda4031a76e4ff754c5ef5395beb54ef81258854",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-00-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-01-first/catalog.json": {
+      "bytes": 98939,
+      "sha256": "e161250772f4f1fdbffc740d147950e628f8c78fde1d6727c29fdbdf92bf40e0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-01-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-01-first/journal.jsonl": {
+      "bytes": 74148,
+      "sha256": "c4e2078f55262cc986d8c0a1c105ba5c94c157e1062325fb1ecc94d5170966aa",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-01-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-01-first/root-reviewed-release.json": {
+      "bytes": 370,
+      "sha256": "a8047564c8fbcb38c02e01c906137e48425bf8f0c8317acbc3a7c87a65f42235",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-01-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-01-first/selection.json": {
+      "bytes": 77706,
+      "sha256": "e1bd9bf54dffc38b30516935b2a6921c3045f9c7f435a7742dee26493e6745ea",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-01-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-01-first/used-release.json": {
+      "bytes": 370,
+      "sha256": "a8047564c8fbcb38c02e01c906137e48425bf8f0c8317acbc3a7c87a65f42235",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-01-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-02-first/catalog.json": {
+      "bytes": 159317,
+      "sha256": "6a40a14aea911d10cf641263e65f426b67c3b8f2d035ca988cb8077b8cdf27fd",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-02-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-02-first/journal.jsonl": {
+      "bytes": 124482,
+      "sha256": "2de6798bab5b2f56ee716a58ae4b312cf639984b4daa7790ba1bf3a93669167b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-02-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-02-first/root-reviewed-release.json": {
+      "bytes": 370,
+      "sha256": "36917ac641699e8a5246b1d1a3db2ac87d06fab737fe862a7f3212114eec206d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-02-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-02-first/selection.json": {
+      "bytes": 124211,
+      "sha256": "408e609a0fd11465c98a656f7578906bdc6f85286e8af9ca6ababfd6e41e8392",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-02-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-02-first/used-release.json": {
+      "bytes": 370,
+      "sha256": "36917ac641699e8a5246b1d1a3db2ac87d06fab737fe862a7f3212114eec206d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-02-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-03-first/catalog.json": {
+      "bytes": 89922,
+      "sha256": "9ce957540281b959b1daf88ccc796a30132993aa3c0a121544d4c1b448bf65ca",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-03-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-03-first/journal.jsonl": {
+      "bytes": 67483,
+      "sha256": "a0655578fcee45404e2c269f6a97e4a9e1d67d45f9d93940c9ac8d8e35346792",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-03-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-03-first/root-reviewed-release.json": {
+      "bytes": 370,
+      "sha256": "7eae1e32b1f106222b269bc1530d5e4edf28ee80391bc13c9effd432c31cf6fc",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-03-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-03-first/selection.json": {
+      "bytes": 70678,
+      "sha256": "5c0e6cb642fa423b3be56cddcaea3d5cc5cc505c7fab1d8d44fb67b391047390",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-03-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-03-first/used-release.json": {
+      "bytes": 370,
+      "sha256": "7eae1e32b1f106222b269bc1530d5e4edf28ee80391bc13c9effd432c31cf6fc",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-03-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-04-first/catalog.json": {
+      "bytes": 211144,
+      "sha256": "91ff7f551d9625c2b5434cf05db71925b223034f4d0384fac5772110b8df83dd",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-04-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-04-first/journal.jsonl": {
+      "bytes": 160821,
+      "sha256": "da86abd7b3f9f25bddfe5a8cebeac31de32c7bf0de81dfb0222b158cf15d41b4",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-04-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-04-first/root-reviewed-release.json": {
+      "bytes": 370,
+      "sha256": "f7527d11ac259982191ee4ecf1234093bdb98650cd6fd2242798335acd6602ec",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-04-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-04-first/selection.json": {
+      "bytes": 166473,
+      "sha256": "bbf40207754b2debb6eeefdc8e2bd38898c2eaca08870c00a0ae07f10b6ef069",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-04-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-04-first/used-release.json": {
+      "bytes": 370,
+      "sha256": "f7527d11ac259982191ee4ecf1234093bdb98650cd6fd2242798335acd6602ec",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-04-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-05-first/catalog.json": {
+      "bytes": 105483,
+      "sha256": "df7059b93d02517c717b7baeccb8bc74116f76db7cc7e377f71d6d0e9c2071a9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-05-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-05-first/journal.jsonl": {
+      "bytes": 76657,
+      "sha256": "be57d9870c9ef2243c8f7fedb0c12e9fe3dc09e0ab7102aea5b747faad828694",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-05-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-05-first/root-reviewed-release.json": {
+      "bytes": 370,
+      "sha256": "b6655510d4de0b407ba42fdd8df477900961e1af16823dff470067a58a6924aa",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-05-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-05-first/selection.json": {
+      "bytes": 83626,
+      "sha256": "00f86de217899ad0ccc30ffe6076ecba580e029e31838855d905f378b90d9e4e",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-05-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-05-first/used-release.json": {
+      "bytes": 370,
+      "sha256": "b6655510d4de0b407ba42fdd8df477900961e1af16823dff470067a58a6924aa",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-05-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-06-first/catalog.json": {
+      "bytes": 177172,
+      "sha256": "1e44b7be0354a700f44a6bfa14495445a6f46f510ab4722b03953352eb28f7d8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-06-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-06-first/journal.jsonl": {
+      "bytes": 133285,
+      "sha256": "0c704f82b81604ee501ec9147fdc51f0915d2137cd8d8d3af40ff3967f883541",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-06-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-06-first/root-reviewed-release.json": {
+      "bytes": 370,
+      "sha256": "b2f69d8202e82b770298455f39358166777edb78a8339a07a02d32253aeccebb",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-06-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-06-first/selection.json": {
+      "bytes": 139586,
+      "sha256": "b1bda29fe5020e16639e3b38c74cb253cc9fbdd50814cec61957c95d6e354168",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-06-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-06-first/used-release.json": {
+      "bytes": 370,
+      "sha256": "b2f69d8202e82b770298455f39358166777edb78a8339a07a02d32253aeccebb",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-06-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-07-first/catalog.json": {
+      "bytes": 96131,
+      "sha256": "aab7e5e903982c7483b33df930f26cdb69a3a67380a8136e0eeac8155a3d14df",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-07-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-07-first/journal.jsonl": {
+      "bytes": 69954,
+      "sha256": "878de1367dfff6bf572d64056afdb85a1c7e9175297f26b2736ede149bec25bf",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-07-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-07-first/root-reviewed-release.json": {
+      "bytes": 370,
+      "sha256": "3586200a3d09117f9c47e69aaf0254a330cfcb9d1e74e631dbc4fb09300c3954",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-07-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-07-first/selection.json": {
+      "bytes": 76273,
+      "sha256": "0e6cec1f261a266e0e7001268670f4d137f8828f081e87a945232159d06e87a3",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-07-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-07-first/used-release.json": {
+      "bytes": 370,
+      "sha256": "3586200a3d09117f9c47e69aaf0254a330cfcb9d1e74e631dbc4fb09300c3954",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-07-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-08-first/catalog.json": {
+      "bytes": 124274,
+      "sha256": "92aff3ada9b2110b17bcdb61f4cce17c145c11d649b6775ba7cb56b8df8bd9b8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-08-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-08-first/journal.jsonl": {
+      "bytes": 93759,
+      "sha256": "8e007023b078696ff21a3f9cf997f06e0bec80d83c58c7cc7efd7d0f7cd6fa2d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-08-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-08-first/root-reviewed-release.json": {
+      "bytes": 370,
+      "sha256": "22d944be8b2075929e4ee560271c3a1d4c285d3278ae558f18acaaf5fca22b22",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-08-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-08-first/selection.json": {
+      "bytes": 98052,
+      "sha256": "2adcfb85763e6ce770d71210fa774b73aa4f430603e1dde00344f604541e25e8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-08-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-batch-08-first/used-release.json": {
+      "bytes": 370,
+      "sha256": "22d944be8b2075929e4ee560271c3a1d4c285d3278ae558f18acaaf5fca22b22",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-batch-08-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/READINESS.json": {
+      "bytes": 1904,
+      "sha256": "6f80fd967a8ab60e9c8cdf56ed43bda349c0f4a455da63242854d435266f286c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/READINESS.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/README.md": {
+      "bytes": 10314,
+      "sha256": "77730c5c61e4ba914497c3d2a26da185a8db1dc99bf9c3d6cc34358cbc8d8fba",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/README.md"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/catalog_readback.py": {
+      "bytes": 2033,
+      "sha256": "34fba6559920d49f861960287c747dc228032df2208205922558a8ba967744d9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/catalog_readback.py"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/cold.py": {
+      "bytes": 28732,
+      "sha256": "42f3b410d6f503ecde41b1fc34095dc08cb2b3a250d43654d022463e9291e27b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/cold.py"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/commands.json": {
+      "bytes": 24652,
+      "sha256": "c32704186f17ef6aefc3ea86299e603963ab1875d52e2cc16663bbf505b0d867",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/commands.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controller.diff": {
+      "bytes": 11055,
+      "sha256": "b414469ec4b13dee3b087e79a5e9c3e1ad10464c14bad8b0abd0677c47391268",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controller.diff"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-first.log": {
+      "bytes": 1423,
+      "sha256": "8056533b0c7121c9dc22ddd5ced2548bb7b69c008fdb3bc71073bd1fe7285078",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-first.log"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-result-first.json": {
+      "bytes": 357,
+      "sha256": "1dd2a911e82dcec7884231517638f54cd0bf06f89f2d362ea7d2fe8a7e683d54",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-result-first.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-terminal-first.json": {
+      "bytes": 518,
+      "sha256": "cf055f7283b878d8e45ab2fe82102305b094be3f3ad2eaafcf5ee9cb86207b3b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/controls-terminal-first.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/inventory.json": {
+      "bytes": 54640,
+      "sha256": "f1a4b492354b987f7253a9d9cf04afe4fd87bc61f87c4589aa1b95d21330f336",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/inventory.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/test_controller.py": {
+      "bytes": 10213,
+      "sha256": "49d5506735769ac6ca615f887f0382c4c423b130962218668f4264d819523143",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/test_controller.py"
+    },
+    "metadata/tmp/kv9-benchmark-cold-controller-preparation-first/tool-receipts-first.json": {
+      "bytes": 345,
+      "sha256": "a39af03b3b6edf8f3ba7323c3907daf575373450928d4a968491e2e84e7b5a7d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-controller-preparation-first/tool-receipts-first.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-pilot-first/catalog.json": {
+      "bytes": 3956,
+      "sha256": "6b9021813c97aeeda20b204a41e965b4ce1fd8f9c0d5f6a6c035899bd4f4792e",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-pilot-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-pilot-first/journal.jsonl": {
+      "bytes": 4983,
+      "sha256": "bd0e467440e9435118f6cd026cfe8255ef662364fc96370e66382d181c2ca245",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-pilot-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-pilot-first/root-reviewed-release.json": {
+      "bytes": 367,
+      "sha256": "ddaac1a13d103856304414d40559a7201b8d4e5ecb8776fbf25af5ab3f466335",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-pilot-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-pilot-first/selection.json": {
+      "bytes": 3272,
+      "sha256": "527b9787aa36a2d43f174af1976840ca6b8d215512dd6873e4e743b278bd7d52",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-pilot-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-pilot-first/used-release.json": {
+      "bytes": 367,
+      "sha256": "ddaac1a13d103856304414d40559a7201b8d4e5ecb8776fbf25af5ab3f466335",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-pilot-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-00-first/catalog.json": {
+      "bytes": 174904,
+      "sha256": "48befb3502103c42da6ab930a29869fd2155861214e98034e623e0b0de99d0d9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-00-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-00-first/journal.jsonl": {
+      "bytes": 135362,
+      "sha256": "953065f5d6ca19f4c5f04240f8e455769e2623f51389559c30a1cd8ba5527704",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-00-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-00-first/root-reviewed-release.json": {
+      "bytes": 381,
+      "sha256": "6465be2efb6a52af61498df6ea17ecbd1aa0148dd3aa5f3b0a30dc979f7727b0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-00-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-00-first/selection.json": {
+      "bytes": 135974,
+      "sha256": "97f471094c88f15425d71bed4f58e7ca6f8ff018093d87bf849448472c33d074",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-00-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-00-first/used-release.json": {
+      "bytes": 381,
+      "sha256": "6465be2efb6a52af61498df6ea17ecbd1aa0148dd3aa5f3b0a30dc979f7727b0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-00-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-01-first/catalog.json": {
+      "bytes": 94838,
+      "sha256": "e030312ea98734b740003f2c47e4240fac6fe0d988defa155cd6cfaf55b10880",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-01-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-01-first/journal.jsonl": {
+      "bytes": 71847,
+      "sha256": "02a76e18cb8626075036b111efd282db74b3422cd07590c49c3085d0139535f2",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-01-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-01-first/root-reviewed-release.json": {
+      "bytes": 381,
+      "sha256": "09aff5da29b412eff1bef98b08093ce1b07e147d80d120ab447211f69f42a4ef",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-01-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-01-first/selection.json": {
+      "bytes": 74245,
+      "sha256": "f40727119c599c6961161317fcb8333cb2d1786dde8f401c2fa90454f50cfe69",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-01-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-01-first/used-release.json": {
+      "bytes": 381,
+      "sha256": "09aff5da29b412eff1bef98b08093ce1b07e147d80d120ab447211f69f42a4ef",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-01-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-02-first/catalog.json": {
+      "bytes": 162674,
+      "sha256": "da5e810cc6601a4845f5eca423d4c579a6224e82799f31db69640931f0b46dc2",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-02-first/catalog.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-02-first/journal.jsonl": {
+      "bytes": 128382,
+      "sha256": "5e8c8cd76a46fe261b6ea9da9b2e1538c0f3165a910c45fbded50c6c5256ccf5",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-02-first/journal.jsonl"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-02-first/root-reviewed-release.json": {
+      "bytes": 381,
+      "sha256": "6d3f84b8a73c6beb111dae6a89ad590850897aff190c0749ffdb799f9aa5983d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-02-first/root-reviewed-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-02-first/selection.json": {
+      "bytes": 126303,
+      "sha256": "f15415c04dbc1bc8f9e0ef7a6e7ef30dd8e4774a23bc164d072de0f5fc553609",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-02-first/selection.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-batch-02-first/used-release.json": {
+      "bytes": 381,
+      "sha256": "6d3f84b8a73c6beb111dae6a89ad590850897aff190c0749ffdb799f9aa5983d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-batch-02-first/used-release.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/READINESS.json": {
+      "bytes": 2621,
+      "sha256": "09e27fe12cd58c428aee02d6d9892f1f9fa4019fae349db0015c05d232d31684",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/READINESS.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/README.md": {
+      "bytes": 6709,
+      "sha256": "34f9e4b4aefd16bbeff934f971bd1b8bff82e997be8f72041c608ebcdb8bea93",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/README.md"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/ancestry.json": {
+      "bytes": 666,
+      "sha256": "9e444f9c850abee8d61b9f2723c54e1fbc8f47be9011c5671208c6472d678ca5",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/ancestry.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/catalog_readback.py": {
+      "bytes": 2033,
+      "sha256": "34fba6559920d49f861960287c747dc228032df2208205922558a8ba967744d9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/catalog_readback.py"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/cold.py": {
+      "bytes": 28754,
+      "sha256": "859ff21907b9791464225896e4e2f5f64b066d1b82b4f4c2b40c6f8c716f063c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/cold.py"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/commands.json": {
+      "bytes": 7925,
+      "sha256": "6a9a5ae5cd2eea22912f350888d2531caee1a5ed7d59e131acc2986ac695ee53",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/commands.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controller.diff": {
+      "bytes": 662,
+      "sha256": "7442791dcd91699ec76ff6281d63d1c4bd67260450ee494c68dd05d9f5929d44",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controller.diff"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-first.log": {
+      "bytes": 1423,
+      "sha256": "9e39e16a2261ad20fcea884942d3952d7791a0efa86bb0f72d07d56de7086489",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-first.log"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-result-first.json": {
+      "bytes": 357,
+      "sha256": "db4c51426f79bc057a9d8cefdd506e9ac46eff1cc72ff46f8bd2e724aae8f435",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-result-first.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-terminal-first.json": {
+      "bytes": 243,
+      "sha256": "47a1254969b2a0f584500637c77e70b8f3a4b505687a711e435a01e62aa713ec",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/controls-terminal-first.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/inventory.json": {
+      "bytes": 54499,
+      "sha256": "142ed85aee5484a2ec58a152f54706273487d944b80ce70e65a98694940ebd2c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/inventory.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-first.log": {
+      "bytes": 740,
+      "sha256": "08dc970249e3f64e92e700d9610c8d30cbc3b5b6f748b2b8a9507a35fdc849bc",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-first.log"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-result-first.json": {
+      "bytes": 235,
+      "sha256": "562e6170461085a25d65ad8fc49a8ab9db8bd5cef000d4d0b25c270dbbacd59d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-result-first.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-terminal-first.json": {
+      "bytes": 240,
+      "sha256": "971bfac83e330ae56cd1deaf108df7f4e43dd737652915c403f6cedc4b328a82",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/scope-terminal-first.json"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/test_controller.py": {
+      "bytes": 10213,
+      "sha256": "49d5506735769ac6ca615f887f0382c4c423b130962218668f4264d819523143",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/test_controller.py"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/test_scope.py": {
+      "bytes": 3846,
+      "sha256": "be6dd568e77c8fb7e9bf67c125df7554b35cca379bd8317ac2ffc09bad0d6ce0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/test_scope.py"
+    },
+    "metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/tool-receipts-first.json": {
+      "bytes": 233,
+      "sha256": "2920a5b1bede432eb3bd2a0f1ad0c2f80ea78a38a0c4eb9ce31de7192cd5dc67",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-benchmark-cold-supplement-preparation-first/tool-receipts-first.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-preparation-first/results-first/audit.json": {
+      "bytes": 533919,
+      "sha256": "ab8cfb527d8e2741fc18e01fd4f4af6401b589cb926039acbb65ee3d49dee4bd",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-preparation-first/results-first/audit.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-preparation-first/results-first/input-inventory.json": {
+      "bytes": 324816,
+      "sha256": "c7415fb44d543b9da579590730d24248da37fe5de1710ace0cd8eaa149dc7107",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-preparation-first/results-first/input-inventory.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/000-old-point-r050-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5746,
+      "sha256": "2bfa0afb6e94fb60979e3846e51db7779e7e52baecbd38574490d7fd343aa321",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/000-old-point-r050-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/001-new-point-r050-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5746,
+      "sha256": "9b7201bc909b4d479c83a0106d6d308ac4c8a6351bfb1d3aa6baced4dc5011b7",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/001-new-point-r050-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/003-old-point-r100-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5131,
+      "sha256": "391ee89fbc6ddcb5b7dd27f156c3fd19cdfa339db18a635e669dc5824f5c97bb",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/003-old-point-r100-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/004-new-point-r100-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5131,
+      "sha256": "c68679fff25ef98ffe139be123fffc86d13df84659ad809001c5f7563045d1b1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/004-new-point-r100-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/006-old-point-r050-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 9997,
+      "sha256": "6d34170429236837cc277890f875ae7fed68ec2041c17a2f0fb7baaff40f81d1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/006-old-point-r050-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/007-new-point-r050-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 10396,
+      "sha256": "f277a0208522e87155619ec4a172a33c85e6877dad2e3d6991a98758e5945992",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/007-new-point-r050-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/009-old-point-r100-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 5131,
+      "sha256": "0dd27e453d5a76a0af786d21b61317b16528666c83b703feea67cace8459c560",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/009-old-point-r100-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/010-new-point-r100-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 5131,
+      "sha256": "8191eb1a612e7a081c17b981562d546b25dd694c72b86926ba656d5532898ed0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/010-new-point-r100-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/013-new-point-r100-p10064/fixture/tmpfs-retention.json": {
+      "bytes": 5131,
+      "sha256": "c7e9566183c21677127784bc9cc3661f4f30687e0bfe0c0591ee54990ebb2436",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/013-new-point-r100-p10064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/014-old-point-r100-p10064/fixture/tmpfs-retention.json": {
+      "bytes": 5131,
+      "sha256": "52aef2c82cef87fe8da545587b877f4b15f2c9cd0945b50795ba102872ec7c65",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/014-old-point-r100-p10064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/016-new-point-r050-p10064/fixture/tmpfs-retention.json": {
+      "bytes": 9997,
+      "sha256": "e4bcf47d25b642c3d2621da00cef03cf9519ebec91befb859e3cf1886b9ad8a7",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/016-new-point-r050-p10064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/017-old-point-r050-p10064/fixture/tmpfs-retention.json": {
+      "bytes": 9997,
+      "sha256": "934060c48152187fa33bb0d11ef9e938841b5292a0e2a719e004ffd37952e8bf",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/017-old-point-r050-p10064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/019-new-point-r100-p10001/fixture/tmpfs-retention.json": {
+      "bytes": 5131,
+      "sha256": "7e3d176e91c7f558569f6a3cde3075aa3ad327cccc25a4ed1ea9e5408d827073",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/019-new-point-r100-p10001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/020-old-point-r100-p10001/fixture/tmpfs-retention.json": {
+      "bytes": 5131,
+      "sha256": "f96f641efd72139b16418c7b1b14aab3e87d93c42882b721697fe2100350861b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/020-old-point-r100-p10001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/022-new-point-r050-p10001/fixture/tmpfs-retention.json": {
+      "bytes": 5746,
+      "sha256": "0863d0654e9b97c000f3793a55d9d23155d7597419b0df6664df9ae60f27f84b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/022-new-point-r050-p10001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/023-old-point-r050-p10001/fixture/tmpfs-retention.json": {
+      "bytes": 5746,
+      "sha256": "723cc8dc2e73326e9344dd3715db9e7fb0a6ef79a329127e3e55ac8a5ff932d3",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/023-old-point-r050-p10001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/matrix.json": {
+      "bytes": 851164,
+      "sha256": "27d1f509e7e9b19add883f68e5a4e3491b06332928af4fc05e23bca2d031bc71",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/cohorts/matrix.json"
+    },
+    "metadata/tmp/kv9-coalesced-owner-screen-timing-first/summary.json": {
+      "bytes": 170,
+      "sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-coalesced-owner-screen-timing-first/summary.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-preparation-first/results-first/audit.json": {
+      "bytes": 534240,
+      "sha256": "f3a6fd1fcbaad19812b6625a4a0fd28a559fd5b0cc30f87fc77e453fe2835582",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-preparation-first/results-first/audit.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-preparation-first/results-first/input-inventory.json": {
+      "bytes": 328611,
+      "sha256": "b5ccf96672b1ca54ce54af64cdc8ec9e658960925ac289615ab58b658a67f4f1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-preparation-first/results-first/input-inventory.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/000-old-point-r050-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5749,
+      "sha256": "a4bf14d1b0a98326c7eaf2b99c5d02e692883be5e924a53a7f31cb20c12bcc67",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/000-old-point-r050-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/001-new-point-r050-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5749,
+      "sha256": "06d8df997ad34551a0dbdb2f98f7d4f4ad539ec0bfdafdcd85b07cc36d2a098e",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/001-new-point-r050-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/003-old-point-r100-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5134,
+      "sha256": "6097723760f3a04d119c7a61fa92257c1f00e126b48ca2faba18d6b1213b850e",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/003-old-point-r100-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/004-new-point-r100-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5134,
+      "sha256": "13cc2e9dd444cdc587202e8f706b349ae160b86621478d498ac518814b7addf4",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/004-new-point-r100-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/006-old-point-r050-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 10000,
+      "sha256": "08b0a5a1a2cf36a042fec3b8b1fa973560ee1d2844bbc1abf249e783db95faa9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/006-old-point-r050-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/007-new-point-r050-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 10000,
+      "sha256": "05a7aa76e11555b01f321a5aaf37cfa034aafa01baace0101e5af62bc687fb67",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/007-new-point-r050-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/009-old-point-r100-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 5134,
+      "sha256": "d0370c0b2a316c401be9906f282cb0c542c659e87c1a9a77ce208ca319518f9a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/009-old-point-r100-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/010-new-point-r100-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 5134,
+      "sha256": "ce0daa69beba4ed49fde30a6ca6a34f147ca0881f29fc2c4cff7cdab4ed5469c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/010-new-point-r100-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/013-new-point-r100-p10064/fixture/tmpfs-retention.json": {
+      "bytes": 5134,
+      "sha256": "56f6ed7f472e6235ad09e297e234cf940b213d991322a8a7b5e55e7b6cb248e5",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/013-new-point-r100-p10064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/014-old-point-r100-p10064/fixture/tmpfs-retention.json": {
+      "bytes": 5134,
+      "sha256": "6804d239f628c337ae6db87d56d3229c0ed490af83aba8e950b659908ed58bf4",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/014-old-point-r100-p10064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/016-new-point-r050-p10064/fixture/tmpfs-retention.json": {
+      "bytes": 10000,
+      "sha256": "4584ad21de683867cde8c1c6769c5b28cc499050a2271ba4f666bb89c1e2095d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/016-new-point-r050-p10064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/matrix.json": {
+      "bytes": 848275,
+      "sha256": "2e5565bbc350ac62159ac0d65896a6c03552d03494a0c4cabf4bb3a348c3b1f6",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/cohorts/matrix.json"
+    },
+    "metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/summary.json": {
+      "bytes": 170,
+      "sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-inbox-vector-reuse-screen-timing-first/summary.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-preparation-first/results-first/audit.json": {
+      "bytes": 534180,
+      "sha256": "da847468bb1a77ee9ca9cc3317b9635683f65251a60e32a636aa4e01c1eebe00",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-preparation-first/results-first/audit.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-preparation-first/results-first/input-inventory.json": {
+      "bytes": 335871,
+      "sha256": "9ad7c863c1e64a97dd439214be64b5ea388635e2f8ce9252f14ebff47e80c2a5",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-preparation-first/results-first/input-inventory.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/000-old-point-r050-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5754,
+      "sha256": "6129445e49775f515d1d361920f374c384004001ce96283293c9bb7225096753",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/000-old-point-r050-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/001-new-point-r050-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5754,
+      "sha256": "3186e3d634c62ddc9009eab54105404730fda127cb61ca6eacc34dea2a378b75",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/001-new-point-r050-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/003-old-point-r100-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5139,
+      "sha256": "ac64f3499fa0cd31cb74d4e66d93ebc88b9ba4c5e1dd7a3e19f7523b183c4349",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/003-old-point-r100-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/004-new-point-r100-p00001/fixture/tmpfs-retention.json": {
+      "bytes": 5139,
+      "sha256": "2fddb712444b75b2c3dc5a0278ecab25f4a800f5b7754c5ee1cd99e1b1e15c7c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/004-new-point-r100-p00001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/006-old-point-r050-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 10005,
+      "sha256": "c620bbd9c1f274a5f799b6f453119e52e41e0793260d9837248b4ce0475206ea",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/006-old-point-r050-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/007-new-point-r050-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 10002,
+      "sha256": "7af7a4aec76e6a9e66c72b6373f524941bfe787c23ac340ee8cf4da415cd4008",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/007-new-point-r050-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/009-old-point-r100-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 5139,
+      "sha256": "7ab00a7a35a4d705b994db5b6e2af2330221811f06819093b090b8d92471910f",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/009-old-point-r100-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/010-new-point-r100-p00064/fixture/tmpfs-retention.json": {
+      "bytes": 5139,
+      "sha256": "a2c80c8fb944f3ccfd146085c464beaeada9e081d52408bac3abfaf478d0fad7",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/010-new-point-r100-p00064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/013-new-point-r100-p10064/fixture/tmpfs-retention.json": {
+      "bytes": 5139,
+      "sha256": "bf38b351977b2e274b502e9c8f8b5d8d00ef224c102f80842ba189446940648c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/013-new-point-r100-p10064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/014-old-point-r100-p10064/fixture/tmpfs-retention.json": {
+      "bytes": 5139,
+      "sha256": "f7dc73e2663d2afb042d1f239908bddb0b28dc22b19a9eda2d1f584791e446ce",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/014-old-point-r100-p10064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/016-new-point-r050-p10064/fixture/tmpfs-retention.json": {
+      "bytes": 10003,
+      "sha256": "15f864fbd9c6addfdb1a00d6349af654ef18e033d52527f7205f36c10663eed9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/016-new-point-r050-p10064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/017-old-point-r050-p10064/fixture/tmpfs-retention.json": {
+      "bytes": 10005,
+      "sha256": "96b498b6c0dcb4e052ca629186122bad40d2fde275dbf578f3af1ef05d36f090",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/017-old-point-r050-p10064/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/019-new-point-r100-p10001/fixture/tmpfs-retention.json": {
+      "bytes": 5139,
+      "sha256": "24a3e4eb1b231b458f45a14896320488009007404db39ae60b52cec9cd70c404",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/019-new-point-r100-p10001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/020-old-point-r100-p10001/fixture/tmpfs-retention.json": {
+      "bytes": 5139,
+      "sha256": "3c7dd2a5cda030a825cef25ffe93ae8a7561a596c1959076d0f7fe28bf20ee91",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/020-old-point-r100-p10001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/022-new-point-r050-p10001/fixture/tmpfs-retention.json": {
+      "bytes": 5754,
+      "sha256": "64c4feaabf17ba941d1ff212a056efe8f42602bb7c55dabe1ec97e8dba178a91",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/022-new-point-r050-p10001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/023-old-point-r050-p10001/fixture/tmpfs-retention.json": {
+      "bytes": 5754,
+      "sha256": "680e0fabd1ed8b83f7cc204c2e43d5d2db9099b5fb926ad19fd7d16858e62ba9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/023-old-point-r050-p10001/fixture/tmpfs-retention.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/matrix.json": {
+      "bytes": 848489,
+      "sha256": "9121d810082213aa00128a927be4d3a4ad3054edf6f1650327e3b8d620e5dbda",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/cohorts/matrix.json"
+    },
+    "metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/summary.json": {
+      "bytes": 170,
+      "sha256": "c07a17e59dddeefcdf3315a39f50a3915d5fdc1ebff1583a93026461e54975a8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-peer-executor-isolation-screen-timing-first/summary.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/authorize-cold.py": {
+      "bytes": 1601,
+      "sha256": "41da57ce5689d53c9964887d192f4ac0b7c071909324d7aa97bed45388eaba74",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/authorize-cold.py"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "aea288c17704b89dffaf7d5315f0d7e002e1536bbfbd3fd0d472c235c1f01201",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/output.log": {
+      "bytes": 16842,
+      "sha256": "5d4af4e7d7b79c3eeec287584c98c5dcfde3c40928c4ec458621b394a77a1870",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/result.json": {
+      "bytes": 552,
+      "sha256": "4cb1f213f709d46655d1ccedb98fe2f90ffad169d3dac4b6d4c222189716baf4",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/invocation.json": {
+      "bytes": 591,
+      "sha256": "575bf07fbae3b73a4d20fdb8ce2c8f0f3993595ab7ea634e1dc55f522796539e",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/output.log": {
+      "bytes": 96,
+      "sha256": "6fe2db6455451e8a98913173764499c98a994d551327b65d4cf01d61c3748e45",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/result.json": {
+      "bytes": 643,
+      "sha256": "8a83916d78244875ac4d67d280946f3a583c63570552a2ea47414188f086eff0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "6cb1da9b79c868cd6d5d726143b7e6a8c617925b6d3132c47a4045f0ab20c0b7",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/output.log": {
+      "bytes": 16838,
+      "sha256": "3555ce0810f56f3ba533e0989fcab08d4897e7c49911d193d98ad58ed9a07aeb",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/result.json": {
+      "bytes": 552,
+      "sha256": "cfbc2c4401526bf973a1cba6a8464040e848fa6f1a6ff99c393d3e918a942d5a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/invocation.json": {
+      "bytes": 813,
+      "sha256": "c09ba446fe287651e808622b4d2d99ea74383c9fad6f70f0e1464df466cfd57a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/output.log": {
+      "bytes": 95,
+      "sha256": "e089c486cef7fd7a1d6309d565e1a0a04d23101d3ac5d6c85123679ff15f43aa",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/result.json": {
+      "bytes": 865,
+      "sha256": "cb9cfb3eb29ba3b3e4c6e4fb253b61174440ee7390ceb6997b79b9eab02686f8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "cb58c18a89cb8d06a55159b560d44ccf058a35ec6e59272eb1a9cb11bbb7eaee",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/output.log": {
+      "bytes": 96,
+      "sha256": "1bbd119a91e0d16e79b075490fdc8bac4a44976be37142c939b268c0c8457f66",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/result.json": {
+      "bytes": 553,
+      "sha256": "3b2828616593bd2e139b72973d116df54a841e06e5fe6a318e72201ab1ea37c3",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-0-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-accounting-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "da8661ce0e4475d697e835a4ef2c83bcc3e95d07d8bc263fb411fa5cefbd8e81",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-accounting-first/output.log": {
+      "bytes": 10240,
+      "sha256": "1a740a62cb71d66540d762d9f08840dee9803b5396ab040df0bfe92cebb4b3ee",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-accounting-first/result.json": {
+      "bytes": 552,
+      "sha256": "8787e571e9e27c91c08700136b315a60a8c2714e5cb77309cbf1bcc53a7e0085",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-evict_after_root_release-first/invocation.json": {
+      "bytes": 591,
+      "sha256": "e3d32f6a5f894798cbc327361770fe58e40665e9364d3bcd56e15f3fd3ce7b26",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-evict_after_root_release-first/output.log": {
+      "bytes": 96,
+      "sha256": "e7861d5ee3b898c570398502b0a28710111fd8419fe3757893ef6809d19bb399",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-evict_after_root_release-first/result.json": {
+      "bytes": 643,
+      "sha256": "bf4556c79779181059bf8feb30577cb7bd2b78d8efaf5701280f2f20640c7327",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-final-readback-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "f83413599b7aa851c6de7fdbdda6814c2d2f40579ce7a69a0aac8985a0dfa7d0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-final-readback-first/output.log": {
+      "bytes": 10236,
+      "sha256": "803607b1d89d5b161605f556cd4a148e5a4bf919165989907502cc888622a3ef",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-final-readback-first/result.json": {
+      "bytes": 552,
+      "sha256": "d9fe06eda7af68f6f07b9b23a9fa6f8dbad84e7af9e7efd77665c9f48840175c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-init-first/invocation.json": {
+      "bytes": 813,
+      "sha256": "31257ffb4778a2fbe66bfc24c58f5f8e33b09fb54cd3ff3e2b93f04b698ca496",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-init-first/output.log": {
+      "bytes": 95,
+      "sha256": "171c8c95a093338259ad7b3e7380191d8e67986be01b80750d8ff25807b12709",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-init-first/result.json": {
+      "bytes": 865,
+      "sha256": "989f7f6f319f084f533032d54dc60db0706a445bea36f7e6c267e7a7f23927bd",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-stage-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "59136d7bf3f7d641d4ab86e9c55a56e14711c6e54a2342c8cca577d17c37e96b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-stage-first/output.log": {
+      "bytes": 96,
+      "sha256": "66f94461a1b14321b71d4792948d32b5b03c7c8aac790153225a8a4ec6a58f67",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-1-stage-first/result.json": {
+      "bytes": 553,
+      "sha256": "e6a8459c3f12dfe6e36f5ebf5135a58ead17af9f3d47efa87ff525a3b8f087b5",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-1-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-accounting-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "12fbb7c92aa93d8be35fbc133bb71d14a2d03d30ff4de258752c8f0005050064",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-accounting-first/output.log": {
+      "bytes": 15731,
+      "sha256": "8dc8f72923a62854d4c29fb366b38cc79401fcfc5285d1072ba45680898e978e",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-accounting-first/result.json": {
+      "bytes": 552,
+      "sha256": "8ee3fdc8618db3a15a1ff3c8212130aba32cf3dd9ac6819b5572917308ac76dd",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-evict_after_root_release-first/invocation.json": {
+      "bytes": 591,
+      "sha256": "bd1f216a6b07c9325e23cd09d014e789367e64d0b1dcdbc8b3e794a4feb3c25c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-evict_after_root_release-first/output.log": {
+      "bytes": 96,
+      "sha256": "e867dec1a0034ca211c54d95cca19d7d17fb9c950755de266e2779e350db2ea7",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-evict_after_root_release-first/result.json": {
+      "bytes": 643,
+      "sha256": "8a996b98e047918fa6d1e50245e1188ab63f6853c2affb6ead4e24f3b07ca8df",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-final-readback-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "b00b4756af0cadabadf709899cd9695f173b96e90a79cd8ddd3aa0f0fcfc04fe",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-final-readback-first/output.log": {
+      "bytes": 15727,
+      "sha256": "f60d90d69911780e21b652b5ea77d4077b04d3f2ff27d39c5571704221d33b96",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-final-readback-first/result.json": {
+      "bytes": 552,
+      "sha256": "dc2bb22060f0f6a59e774aed0eb5cdc3cca8e8c7adefff323a562e520a1dec36",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-init-first/invocation.json": {
+      "bytes": 813,
+      "sha256": "6bf07dee48c80c3e6829c8edd53cb504428b36bff935e8c7eb0528339c76ef53",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-init-first/output.log": {
+      "bytes": 95,
+      "sha256": "02c329ac841590c0bc3daf620d00b08ee8553c416c97121fcea0bb085318149a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-init-first/result.json": {
+      "bytes": 865,
+      "sha256": "06920845cbf62511c63ddb05540a5ea26cc1a8558ac4398d3197d8e665166f25",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-stage-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "3a159496b89277e06ceee15792b8e4bdb3011ca4e041d493c59f1b64f6cda27d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-stage-first/output.log": {
+      "bytes": 96,
+      "sha256": "78f70f0a04ccab38c4d5ecec6579409e1602159bc5c99eff5507185e8603db25",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-2-stage-first/result.json": {
+      "bytes": 553,
+      "sha256": "37e37015731e160e9a48106a4eda723396db31ddfbe61957fd7c5546cd7893b7",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-2-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-accounting-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "8c3ca0ad9e4ff74a81ea64a2e7ebf221f354c8fd666d1deef1a88faf80a32bfd",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-accounting-first/output.log": {
+      "bytes": 9397,
+      "sha256": "7e567f614f6dbee61356c84c6fdb1f85add7def4a5cda2040f1945c2f99aced0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-accounting-first/result.json": {
+      "bytes": 552,
+      "sha256": "ded556912348b874a2220e75a5a2d80bfa0c30ac292d431ecc773f89c49ed3e9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-evict_after_root_release-first/invocation.json": {
+      "bytes": 591,
+      "sha256": "92919932297fc2605f4662390b23321285ab077ed6094078646283b788aa6d1a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-evict_after_root_release-first/output.log": {
+      "bytes": 96,
+      "sha256": "1bc8176ded0df54b69c6e7e6622b8b31e3ad1c95f4e5aa25538a1e3386c53d4a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-evict_after_root_release-first/result.json": {
+      "bytes": 643,
+      "sha256": "bc6e91231bfccd8a01ebfe0b4a80e134dcaaa5db5150dfc64aebf599336cbdf1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-final-readback-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "4a0802bceafdcf5367a774678dd6218bfbb39f6bd235dbd74b2fc5078c5fb526",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-final-readback-first/output.log": {
+      "bytes": 9393,
+      "sha256": "c53f10ad1706ac9c7732f1675cbae5820a0b9e0615d972c563e47a249115a679",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-final-readback-first/result.json": {
+      "bytes": 552,
+      "sha256": "e3eaba0e5391b185a3e3cdf1540d261c8b390319b64529506e427dc615eaab5b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-init-first/invocation.json": {
+      "bytes": 813,
+      "sha256": "e803ec12cc16b89a4991e0898eddb7a6fdbe54d4e9a9d6f6ca54d6383cb852df",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-init-first/output.log": {
+      "bytes": 95,
+      "sha256": "5a99d63d504aee0aed2bfa97124224e89c6caed9c33834db019bfb7edb8045f4",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-init-first/result.json": {
+      "bytes": 865,
+      "sha256": "47d5e5e6cfc5d36b5c3924a36cc28e173d9e8d69bc74cd06a2abb40c85669a29",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-stage-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "dfbbc4c8b4419caa4af4611dfd6fb501b4f11ddd7aa0d74968a14f84cf607e04",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-stage-first/output.log": {
+      "bytes": 96,
+      "sha256": "5a831b89a2cfff3e54e943a0105d602a0844aa4736a2853a650a601ee85714f9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-3-stage-first/result.json": {
+      "bytes": 553,
+      "sha256": "4cfc10621be6a6f220329646d1128c429dd7ed8532aeac57e6a96c0ea10d1d7f",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-3-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-accounting-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "c9f0cb830f10c9cc0022e44dbf488d6383f35b756e1ab42feb458271a98de2b0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-accounting-first/output.log": {
+      "bytes": 20606,
+      "sha256": "ad4ab551adcb59909b2e7e1d6d8ae8e12c30a6796f00f8a58c1b97e7f6472683",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-accounting-first/result.json": {
+      "bytes": 552,
+      "sha256": "73719a3b3a4034d6c9b44977ee2d5c67a8ea2b64ae533d8d974af028ef63d7b1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-evict_after_root_release-first/invocation.json": {
+      "bytes": 591,
+      "sha256": "43fd45d0b6d64dc958d28005a051e6eee9896010d14083e0718ccbeab448aba2",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-evict_after_root_release-first/output.log": {
+      "bytes": 96,
+      "sha256": "83578284bdd872a864b1fc39e8aee715a36771c691744ef20076c47b3a1a66e8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-evict_after_root_release-first/result.json": {
+      "bytes": 643,
+      "sha256": "d7e9d51264fce44ea72b60f9d9a59ea08d55181c4d615a49940273b8aae97be6",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-final-readback-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "3eb1a8c942569c805bc8e4b3128bf7248cfa9de0b672d9285dcedd48c5fd3c59",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-final-readback-first/output.log": {
+      "bytes": 20602,
+      "sha256": "1acdfc29869ad673c9d3b9c2e92a75dd0fbc8d633def2e5bd33b4c7d7eb6bb7d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-final-readback-first/result.json": {
+      "bytes": 552,
+      "sha256": "8e3b732a57338153bb8a9a6f309acd74c458e4be5b9d1251e4230d7f6e4fb954",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-init-first/invocation.json": {
+      "bytes": 813,
+      "sha256": "653763f4c179881cefdfc510d8974302cdaabf5020362582cc2fd071cfe81b9f",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-init-first/output.log": {
+      "bytes": 95,
+      "sha256": "b7cbfe8043349f7d12dc6dbebcd73bda90759a53ac49959ace13492df495dbd2",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-init-first/result.json": {
+      "bytes": 865,
+      "sha256": "0bd2a9402069d20cccb1c83b87a92519847b2aec0b0df4df7647dd3741eeba56",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-stage-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "ce48d4a8a250ecbbed04c8b0f85b70913654dd44373703a7ee6630b2e0339706",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-stage-first/output.log": {
+      "bytes": 96,
+      "sha256": "ae1590582f8f57bc7c2d836594899718302d6ef2a0cdd43429b709247491e512",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-4-stage-first/result.json": {
+      "bytes": 553,
+      "sha256": "89dec1b6bab293dfa3d8e0606a0e3e0f303c8fd7f8b1315a8a8fe12c8b8d1cd6",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-4-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-accounting-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "b521d7a32385f71c31196d303c222a1fab770cc066dbaa86c1c1a5bc693a0523",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-accounting-first/output.log": {
+      "bytes": 10529,
+      "sha256": "7daddc4882c83fd24b5c56a0d851e349bee9ee0618044637251e2decc1aec74a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-accounting-first/result.json": {
+      "bytes": 552,
+      "sha256": "6951ab1c0480ce2ba4d2d6baca2745d331463e1a069f9d11ccd0613be3016fc2",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-evict_after_root_release-first/invocation.json": {
+      "bytes": 591,
+      "sha256": "541d6bd8b37fa21eee2864f6172209a6e1bf1032ab16fd7a014343a729daf206",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-evict_after_root_release-first/output.log": {
+      "bytes": 96,
+      "sha256": "f75290967383c33a2f27c73322a2db3a57ece6d8579485c8806dd67231c00367",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-evict_after_root_release-first/result.json": {
+      "bytes": 643,
+      "sha256": "a0f8fc4f26ff65d07e9fd80a744e9a819bfe48ed414d373fcf25f9596d25906d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-final-readback-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "6cd2c05d57bd960ad666f848c06cbb636769201c456c8fa4fea8d7386c064c4a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-final-readback-first/output.log": {
+      "bytes": 10525,
+      "sha256": "6a6815690faaaec92eec9d8b60be5534a03f51f7a009b027bfdc955acbdfe673",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-final-readback-first/result.json": {
+      "bytes": 552,
+      "sha256": "d53e8955d5716897044491639386ce82c610477669978db1487448a0708309d7",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-init-first/invocation.json": {
+      "bytes": 813,
+      "sha256": "bdc16e1f7dd0a9d34bf5a08136315d9fbc6ebbc2d40a463d2d2d88613827f97f",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-init-first/output.log": {
+      "bytes": 95,
+      "sha256": "9bc94d2230cef31441062a808f2192844b28c8bcb217091df73264485e2f168b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-init-first/result.json": {
+      "bytes": 865,
+      "sha256": "b1701741afd51b15a74d1d208a13d4b505a3a559100d655d87d032cc99d3b913",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-stage-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "074bb17280a5aa5bf22a8976abe1bf8103d1c3512a610df2a6a4385025a7c44d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-stage-first/output.log": {
+      "bytes": 96,
+      "sha256": "988e2dcda1e50550953ca64b5c362029513fde709907857f65dcf4457008a095",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-5-stage-first/result.json": {
+      "bytes": 553,
+      "sha256": "8816255fe66e482fbd71614cbeec7910c4f19ae602d66e5abc138f48a4006781",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-5-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-accounting-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "a3dc2973ccf848815c7de010ffda562c6d2843dcb24c16aa6393ed9d7384047a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-accounting-first/output.log": {
+      "bytes": 16903,
+      "sha256": "6d01102ede40ee12b93596f153a70368ba18a4dfce51c965c85a2b24967f4ef0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-accounting-first/result.json": {
+      "bytes": 552,
+      "sha256": "6e2bf3f4286158386ce84fffd29adb8dae95ec39dc90e20bc8837e6431814ca0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-evict_after_root_release-first/invocation.json": {
+      "bytes": 591,
+      "sha256": "7febc3a9572590b474475d9b20dcefb0d4e4f9a79c39fc8ba3541789a84cd8ec",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-evict_after_root_release-first/output.log": {
+      "bytes": 96,
+      "sha256": "a9cf0f26751abe6e13e58829d88d48fe6b7c6ec83e49f88ddcccaa3896b89951",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-evict_after_root_release-first/result.json": {
+      "bytes": 643,
+      "sha256": "35edbbd43aa925913011e7b23ee7207432a227507e620ed45ae1116d981f8a1b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-final-readback-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "b2d584358a04922b27984964e822260dd2dddd3c8802be1f1fc00b75891fd0f8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-final-readback-first/output.log": {
+      "bytes": 16899,
+      "sha256": "59a53be4c7e7800087a8c3600f459ed6e79f99f7089230adf3ec52e983db6d05",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-final-readback-first/result.json": {
+      "bytes": 552,
+      "sha256": "a7f7df4616088fe4c8edf5b3c65ba5e43ef7f9bbd918ecf776ce9a544f523629",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-init-first/invocation.json": {
+      "bytes": 813,
+      "sha256": "a2ea1009c11d9ea2cec66433508b24257ace88dc4f1133ee4b0a126aa77975d5",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-init-first/output.log": {
+      "bytes": 95,
+      "sha256": "2590d433314544406cd21d00b5d4e96fdd669ba989986aea71f12a57cbf15d06",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-init-first/result.json": {
+      "bytes": 865,
+      "sha256": "d442fb0a9d06632453e672a613693f1209b8fd2c1a9f06116b92971ec42c2fb4",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-stage-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "946ad2a2443ba822718aa56493e2ec40fd0759158590572d39515d19cea25801",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-stage-first/output.log": {
+      "bytes": 96,
+      "sha256": "57d7fafb9fd63911da65fdb042439e61e1f67e78f972b4c57242908d0ade82ed",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-6-stage-first/result.json": {
+      "bytes": 553,
+      "sha256": "371a09e9c4e3c6c3695d0c248a54f4f4953211d5907f4dc7ddb30476885b9706",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-6-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-accounting-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "f4c009b997e273b815f2a3673dfb97ff754460b437c5ee951ef617d297da028d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-accounting-first/output.log": {
+      "bytes": 9676,
+      "sha256": "e49c8c77c8d728088a3b3ece28062c2628020f7b39729faee48a868736525d3c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-accounting-first/result.json": {
+      "bytes": 552,
+      "sha256": "3bd7275192587aecd973f65dd5662b76842eae7565f9a85bacfedc044b86ccd7",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-evict_after_root_release-first/invocation.json": {
+      "bytes": 591,
+      "sha256": "51c85a689d4bff46973fbb34e91fdd78eed60540b00bdef8c7ec8db7a615342c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-evict_after_root_release-first/output.log": {
+      "bytes": 96,
+      "sha256": "ad8c0e00f7a43847371b1214f92450782340a36fb18d5e919615967f033542f4",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-evict_after_root_release-first/result.json": {
+      "bytes": 643,
+      "sha256": "98b953e5103a47402608c2bd25bd966bc1c77176a5e0c9c1db65d662e7925afd",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-final-readback-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "56c298b80155020d5e666d9318d2383f290ec94791dc10bb398a6f7ce7a6272c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-final-readback-first/output.log": {
+      "bytes": 9672,
+      "sha256": "0610bde38436e6919e0ba66cada2f9978d685488f46e312f52a3217c9a91d20a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-final-readback-first/result.json": {
+      "bytes": 552,
+      "sha256": "e55e8a05bfb12dfe1ec01b13d5d64220b77e3d77956a026caffbdd6ba15eb738",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-init-first/invocation.json": {
+      "bytes": 813,
+      "sha256": "c728b982a88fba511819133561eb7c589145a9b1f1994759910c5998af89c3ee",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-init-first/output.log": {
+      "bytes": 95,
+      "sha256": "9967d81c25ecba2a95ee4f390c625dfe56623fd959aa7d93c75b626a4ee67bd5",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-init-first/result.json": {
+      "bytes": 865,
+      "sha256": "c459cfa97479a3cf9bb2e646ca1394ac9d72a38a28e8e07e063abd9715c5f33e",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-stage-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "502fde0008161c29a6a0c98366f6274d1887d173af7b9900b10b598f294939b8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-stage-first/output.log": {
+      "bytes": 96,
+      "sha256": "4c555613876d514c1fd04bbf9f7aa99eca27b263bc8a48f118fa8bbddae61c02",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-7-stage-first/result.json": {
+      "bytes": 553,
+      "sha256": "de765ab0678c8c5f760aefe31c7832c9acab4f6994e668e0145bf574c89605c1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-7-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-accounting-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "ba72e79d5d72c42025e4c7126a6ebce8c7931f0f34549909fea257d3fe809394",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-accounting-first/output.log": {
+      "bytes": 12266,
+      "sha256": "8fea8909929e016aee28559af5f1f621a133767b067af19c7f5a2da3b905a8dd",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-accounting-first/result.json": {
+      "bytes": 552,
+      "sha256": "61a261eb1a1049dcb8e5c5fc25b69153cddd5d919d50aefe4f0b7f9bb8f2349a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-evict_after_root_release-first/invocation.json": {
+      "bytes": 591,
+      "sha256": "a8b67602524e447b72a85711a6611073cca4668a510bf1bdc0e2eff281737a06",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-evict_after_root_release-first/output.log": {
+      "bytes": 96,
+      "sha256": "446a916746f51c9ade9c058b1fbc30069e34f60a2b892e223948df39be223b35",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-evict_after_root_release-first/result.json": {
+      "bytes": 643,
+      "sha256": "a792f5c1e34a87d8b4092e8fb1841bd503c656c28f17fad80dd623defaff53b9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-final-readback-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "ea6dcf4aa1de9c26de8461542f30acdbaf0815a28e0309cb5b00524043d30856",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-final-readback-first/output.log": {
+      "bytes": 12262,
+      "sha256": "15fd8c95d3857e827ca243fb95d9529b8b524ae08e46b3223cadf2222eefac99",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-final-readback-first/result.json": {
+      "bytes": 552,
+      "sha256": "855fcbf826e304c9db119d7f633b8a8cc79e295b163c2e6665a6c9b734a257e1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-init-first/invocation.json": {
+      "bytes": 813,
+      "sha256": "ac52ea7870438945d38121d8a4579b7e47b21c243c21436396986242c416ccda",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-init-first/output.log": {
+      "bytes": 95,
+      "sha256": "8b871cd009f4e294fa979ba81240428b2e53b754a6f4bbe56d332c9eededc276",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-init-first/result.json": {
+      "bytes": 865,
+      "sha256": "5554c4e356b3bae15e2d53af712c7cba25846f9576ca0134c18a3b9343e22c23",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-stage-first/invocation.json": {
+      "bytes": 501,
+      "sha256": "a3406f65d89828c23bf28a2f2585b3d6c87b8508a7ed08ed43fc385865ae1c8c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-stage-first/output.log": {
+      "bytes": 96,
+      "sha256": "2c1d04f2c57e1f5362aa97ca32c9a01abb16d2eca20d6b2a0c2c063a6e49465c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-8-stage-first/result.json": {
+      "bytes": 553,
+      "sha256": "dbe2b41b5be453c4b1974c4ace58db42ff2aea06027efe6ac7cad85832518cdb",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-8-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-accounting-first/invocation.json": {
+      "bytes": 497,
+      "sha256": "0c67234355d955bfec4949e38eea40fde0198024661dd35f893a982b6996ecfc",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-accounting-first/output.log": {
+      "bytes": 1171,
+      "sha256": "8d4394fa2bb16f89b594d7e4359bdf30915418849ef6836fcf94cd75db4902e3",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-accounting-first/result.json": {
+      "bytes": 549,
+      "sha256": "8ac75d2c4a36861b088c126ec1405efd7e01394fcec4617d7f2cd8dcddc07f07",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-evict_after_root_release-first/invocation.json": {
+      "bytes": 585,
+      "sha256": "a38ce3ce386850709601d7039d92521ce7c97c4faea173232e9ac7f846e4a146",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-evict_after_root_release-first/output.log": {
+      "bytes": 93,
+      "sha256": "99072ed9f1be56a89cb982c8046c25d2e6e4932b0b0db70262a7cbb94bc3df0f",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-evict_after_root_release-first/result.json": {
+      "bytes": 637,
+      "sha256": "ba5fbde70b83319f5ba423711b46ca7a9a7fe980d5017398968d666d72997b85",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-init-first/invocation.json": {
+      "bytes": 819,
+      "sha256": "a77df6b6fe34bbe9ab67f5b1db9aac19b7912219c1e45313ba56c8c44e52ddad",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-init-first/output.log": {
+      "bytes": 92,
+      "sha256": "7cd3fefe0a85599e7ecbde4feb47c9f4659ad20faa5c049858a28482b4e0f542",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-init-first/result.json": {
+      "bytes": 871,
+      "sha256": "a77037158e6ff70e0b3da04c8e64262b81d541a336541f5792e6c5bae7d0e4ad",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restore-first/invocation.json": {
+      "bytes": 500,
+      "sha256": "248996f2cdf55ca1bc33cb45efb36887538bbe41b95d95631690a8a25d62305f",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restore-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restore-first/output.log": {
+      "bytes": 95,
+      "sha256": "42932277243ed2800236b3efc23fabbf62b36408ad0e9a9e60a6866626f2d761",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restore-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restore-first/result.json": {
+      "bytes": 552,
+      "sha256": "e6c631b9c25b4254624d576754a37eb302ebbc420ae8f873547dbae0060a4c1c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restore-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restored-readback-first/invocation.json": {
+      "bytes": 497,
+      "sha256": "77eec85a98cf666d0905e8ce7d216c293082ce28a6bc20909f1aab1a08bfe90d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restored-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restored-readback-first/output.log": {
+      "bytes": 1171,
+      "sha256": "6bbbd95c4407239dd3a6fba492cd55e92a65895353014459cd08c2596e68af2f",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restored-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restored-readback-first/result.json": {
+      "bytes": 549,
+      "sha256": "b976b12142fd7ee33328c7ab0c3d044c6750cfa0ca1836f76ea38d9ded017c0a",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-restored-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-stage-first/invocation.json": {
+      "bytes": 498,
+      "sha256": "7aadc2a7867d2594633ffa0528a8929a9bb2ebcafd3f09e34fc07599ae500041",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-stage-first/output.log": {
+      "bytes": 93,
+      "sha256": "30da7068b9eb5b6119e6f3e262a07f246598fe400b41480ef0ae7f38de9e65cc",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-stage-first/result.json": {
+      "bytes": 550,
+      "sha256": "5a941672c73933a8cc11ec6a7ef833010d87da70fa663f93a971eabd1d9bbb79",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-pilot-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/authorize-cold.py": {
+      "bytes": 1543,
+      "sha256": "37b1bfefb659e85fa80a926034292864c4a9d43a0b8282ce844173137a88cdd8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/authorize-cold.py"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-accounting-first/invocation.json": {
+      "bytes": 511,
+      "sha256": "94347aa2edd6499e9ba0b41b42e405bc3734fafd2120d8480de7150943b4188c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-accounting-first/output.log": {
+      "bytes": 18364,
+      "sha256": "c5eb7f736cfa3e8ddee6b7491aedba84f44a00392d9cf793dac653fcb0543e03",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-accounting-first/result.json": {
+      "bytes": 563,
+      "sha256": "0890e76f6b07c349ee37d5b105b8dc4f486fc74f94936f20415e479f4701db30",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-evict_after_root_release-first/invocation.json": {
+      "bytes": 613,
+      "sha256": "aed871505f4a78bb662b42d377f91390f7984059bbbbee7487f3149c19eced93",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-evict_after_root_release-first/output.log": {
+      "bytes": 107,
+      "sha256": "6b34c84fba5363b84e97116d32d2e87447eb7f09804f429122bba7f1a8baf4cf",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-evict_after_root_release-first/result.json": {
+      "bytes": 665,
+      "sha256": "1095e8c27cf842416af89e8c381876692029261198fb9ba4f1eb777e0e633299",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-final-readback-first/invocation.json": {
+      "bytes": 511,
+      "sha256": "1227fd061c22c0f9157087a7790856e52b5e1060bbf99391dbb1ba1e4487ffbe",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-final-readback-first/output.log": {
+      "bytes": 18360,
+      "sha256": "6d9b8a46359378f05007ab4e3059390deff5727272c17a9a3cb52d8c23cf614e",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-final-readback-first/result.json": {
+      "bytes": 563,
+      "sha256": "08e747dcf7c6760b6f797cbae31c033f5fe37016682d28d12dfcebddddba4b76",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-init-first/invocation.json": {
+      "bytes": 837,
+      "sha256": "8047ec0682125a8a7c4e1f80ac1d09d34081f534b0dfb9e3184b338b0bf08801",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-init-first/output.log": {
+      "bytes": 106,
+      "sha256": "c53346e12c0b3b98fbbcc5744aa63dbe784bb862a98c47dec67187f0ee2546c6",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-init-first/result.json": {
+      "bytes": 889,
+      "sha256": "ba4cdba19739f20727a2647a915754849146ad658d29e9e8a194d749002a9d31",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-stage-first/invocation.json": {
+      "bytes": 512,
+      "sha256": "de87ca75f08f7119e606bb8c33039d1c365d378abe16fa4f467da9f4588e75f8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-stage-first/output.log": {
+      "bytes": 107,
+      "sha256": "f042b1789681a818ba014d5546b498b2c8a5ca0129c12e8a58016010057759a4",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-stage-first/result.json": {
+      "bytes": 564,
+      "sha256": "8431d47334e3b60a9cc2a6539b647c96ad1c02c8e6f36e0028f6bb7b2716b516",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-0-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-accounting-first/invocation.json": {
+      "bytes": 511,
+      "sha256": "0fcc4083fb5dd94923542191ecd08fe949e2f9bfe043ef91ecd996de644f31d3",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-accounting-first/output.log": {
+      "bytes": 10371,
+      "sha256": "f50b14f3e3efb7edb5aa6d73eac86fe75e5af73565dedb80a930c12a3046a394",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-accounting-first/result.json": {
+      "bytes": 563,
+      "sha256": "da7dbd5ba05a4ecddf53ef472a6be33059d6d9a4fba7d94bc60d4cd13e7e1399",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-evict_after_root_release-first/invocation.json": {
+      "bytes": 613,
+      "sha256": "d20b0272a51d52f96548f36c8bac6134b1ec3b047baa4ff444ade1f1da7448a1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-evict_after_root_release-first/output.log": {
+      "bytes": 107,
+      "sha256": "98c6e69fc52b616370b4162e329acaa34ef63a3184afe981da521c1ffe68f7eb",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-evict_after_root_release-first/result.json": {
+      "bytes": 665,
+      "sha256": "73c118c80eafb729faf94fd1a2d146e57f473c14729bc50b95180bc339d2d1b2",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-final-readback-first/invocation.json": {
+      "bytes": 511,
+      "sha256": "e31a4bc9a732939a03b0ea3ef8e00985fdb8faf63177dd619ba52e2f437e6ff8",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-final-readback-first/output.log": {
+      "bytes": 10367,
+      "sha256": "abf3273f10bdafba4ede1a66adc3ec3ce67020b91970f7150973423df67f3af5",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-final-readback-first/result.json": {
+      "bytes": 563,
+      "sha256": "6d8adb41a1c883640304599b17132b3b450b0249317a818e541bdbdcb8f458cf",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-init-first/invocation.json": {
+      "bytes": 837,
+      "sha256": "208007e27691bea4c95bf41c92053ec9dcc26d2e36476d33bba27d827b2525da",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-init-first/output.log": {
+      "bytes": 106,
+      "sha256": "7f98dec55213bcd87d43e4c8604083a2fa81466a883115d651f11f8c15e1ce0f",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-init-first/result.json": {
+      "bytes": 889,
+      "sha256": "06648e85a74db70dd8282ed9686bad4ced52d060888480c8dda6cdedf13c9f9f",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-stage-first/invocation.json": {
+      "bytes": 512,
+      "sha256": "4453344ad9add52328c6bb965172ab177c83d28ec22c93ca47ac7572ac25265d",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-stage-first/output.log": {
+      "bytes": 107,
+      "sha256": "62a6aadbdb9559fefe3241c4c5af399013e9d424d19154fea909a7686cb10268",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-stage-first/result.json": {
+      "bytes": 564,
+      "sha256": "ef6485e05898a0adfc2869d9d724d2836466188334a6259b2dceba939e71b024",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-1-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-accounting-first/invocation.json": {
+      "bytes": 511,
+      "sha256": "fd6393afff63cbe36b82e334c4b39da3b0b05c1429be54115b46a8be0d8c2cf4",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-accounting-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-accounting-first/output.log": {
+      "bytes": 16926,
+      "sha256": "98439a40016789775e604cf5256229036c54101630c7d363a645018a2fb25549",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-accounting-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-accounting-first/result.json": {
+      "bytes": 563,
+      "sha256": "c3ec7d469f2a58740dcd09c83c2cf61d4427ea74da197f8bc514eb1c0132d030",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-accounting-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-evict_after_root_release-first/invocation.json": {
+      "bytes": 613,
+      "sha256": "7c15c3230aae8fa817a450e965d529dae02c69785883e795ec053d7e1e5586e3",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-evict_after_root_release-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-evict_after_root_release-first/output.log": {
+      "bytes": 107,
+      "sha256": "2508da93117b84b88c2f4840f067c5543e613f00a694c6510b16cfa7bc162886",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-evict_after_root_release-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-evict_after_root_release-first/result.json": {
+      "bytes": 665,
+      "sha256": "5100845c9db6287fcca8c39a8bc5b533758d52dda06c05f9a1e9cd999257454f",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-evict_after_root_release-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-final-readback-first/invocation.json": {
+      "bytes": 511,
+      "sha256": "fe6b58bc49fdcdb1e4bf6d51c024e0f568e5619b711db77ac9cd42730c94cc6b",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-final-readback-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-final-readback-first/output.log": {
+      "bytes": 16922,
+      "sha256": "d98f2e7de46cf4e00838aa4c11962ee73770983257a9376779b07fb18d8c29cd",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-final-readback-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-final-readback-first/result.json": {
+      "bytes": 563,
+      "sha256": "a5fb11368c4cb743659420201827cd3b1a43646a878771659c5dcd365aa1a4ac",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-final-readback-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-init-first/invocation.json": {
+      "bytes": 837,
+      "sha256": "b47dc6f4608eedf42e06ca831ab7d04046d0baeb2f3fd4a9ba3cc4d2412bca68",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-init-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-init-first/output.log": {
+      "bytes": 106,
+      "sha256": "e332792f94f7f4d0d2065d192231a6056b0095b73e86b830893da5eef7efa256",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-init-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-init-first/result.json": {
+      "bytes": 889,
+      "sha256": "78dd475647521b60b24d62ca515a1a73e1b7672b4aa7faff223d6adccc14d236",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-init-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-stage-first/invocation.json": {
+      "bytes": 512,
+      "sha256": "83afbbc19c208f275847c77ba9ae5567668cbcd65023ad772300b5e9893d2de5",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-stage-first/invocation.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-stage-first/output.log": {
+      "bytes": 107,
+      "sha256": "6fbe69c672bbd2b5e628e7c18eb0f9f5eac536932bc616c8a2bbe0e9b3f53cfd",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-stage-first/output.log"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-stage-first/result.json": {
+      "bytes": 564,
+      "sha256": "6d9b56aa1f972fa7dca6a8b7b635e5450545dcb704a25bde0e40dddfd23825d1",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/cold-2-stage-first/result.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/finish-cold-batch.py": {
+      "bytes": 868,
+      "sha256": "ec9dc52d0cefe37732c359cf2b3ed576625e29f4eb9c89e7a29a36aabf2c6c9c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/finish-cold-batch.py"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/prepare-cold-batch.py": {
+      "bytes": 528,
+      "sha256": "9e689092fddf2f20005a7522d21fc023ca51a2b9ca2d769fc83012f554e6f832",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/prepare-cold-batch.py"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/rejected-root-release-argument.json": {
+      "bytes": 441,
+      "sha256": "d20b0bed97e0914a48f9c085bdc2d6e8a18ae0542680189bcc1f06d95088ed08",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/rejected-root-release-argument.json"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/run-cold.py": {
+      "bytes": 1722,
+      "sha256": "204087f5c155766b1bfba52efc2dbbeca75bfc5cb1112e8cea116d5f41fc8bc0",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/cold-supplement-first/run-cold.py"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/finish-cold-batch.py": {
+      "bytes": 868,
+      "sha256": "ec9dc52d0cefe37732c359cf2b3ed576625e29f4eb9c89e7a29a36aabf2c6c9c",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/finish-cold-batch.py"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/prepare-cold-batch.py": {
+      "bytes": 528,
+      "sha256": "9e689092fddf2f20005a7522d21fc023ca51a2b9ca2d769fc83012f554e6f832",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/prepare-cold-batch.py"
+    },
+    "metadata/tmp/kv9-release-thin-lto-root-first/run-cold.py": {
+      "bytes": 1780,
+      "sha256": "b6f23500fb16e3ce3b22a74ceacc8d8f087990e1b8f61824f28817545997b383",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/metadata/tmp/kv9-release-thin-lto-root-first/run-cold.py"
+    },
+    "outcome.json": {
+      "bytes": 38959,
+      "sha256": "80c365b1310c87517425e29787d6ecdecb20bc9d5740f6a7b4f811a32ecd5bd9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/outcome.json"
+    },
+    "publication-inventory.json": {
+      "bytes": 83129,
+      "sha256": "20a62ee1197bf56eae39cf28b33b3c88cdd4ba53f8fd4220259c8083b2d98e32",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/publication-inventory.json"
+    },
+    "restore-commands.json": {
+      "bytes": 10628,
+      "sha256": "a9981efd40c9edac8c5e5a4f2322ce85da1dfa22c9fa867e2723ba7f9a6fbab9",
+      "source": "/tmp/kv9-benchmark-cold-publication-first/restore-commands.json"
+    }
+  },
+  "parts": [
+    {
+      "bytes": 1586531,
+      "name": "evidence.tar.gz.001",
+      "sha256": "934ba935d1e65b453fb50cb9821a1de75b6d6444e4c94fb6334c8fbc9f3a5646"
+    }
+  ],
+  "scope": "Exact metadata-only cold-retention publication. Includes prior failed metadata draft. No WAL/object/binary payload, payload revalidation, restore, backup or performance acceptance. See README for cold paths and capacity requirements.",
+  "top_level": {
+    "READINESS.json": {
+      "bytes": 813,
+      "sha256": "a3cb3b41d563e83b3872cf7d4716e294558d89411829efa3738d66359e0ebc7f"
+    },
+    "README.md": {
+      "bytes": 5624,
+      "sha256": "95a2eaf5ad09f82a40f43939479a628ae41fcb714fd8cd1a20c88317c2dbbd5c"
+    },
+    "outcome.json": {
+      "bytes": 38959,
+      "sha256": "80c365b1310c87517425e29787d6ecdecb20bc9d5740f6a7b4f811a32ecd5bd9"
+    },
+    "restore-commands.json": {
+      "bytes": 10628,
+      "sha256": "a9981efd40c9edac8c5e5a4f2322ce85da1dfa22c9fa867e2723ba7f9a6fbab9"
+    }
+  }
+}

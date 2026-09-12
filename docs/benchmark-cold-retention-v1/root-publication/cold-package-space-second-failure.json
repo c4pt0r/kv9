@@ -1,0 +1,6 @@
+{
+  "receipt": "f23eda",
+  "exit_code": 1,
+  "available_bytes": 102977327104,
+  "change": "Auxiliary evidence worktree made sparse; its duplicate tracked files reclaimed. Still insufficient for publication guard; no output created, no old payload touched."
+}

@@ -1,0 +1,76 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "clean",
+        "--locked",
+        "--manifest-path",
+        "/tmp/kv9-release-thin-lto/Cargo.toml",
+        "--target-dir",
+        "/home/dongxu/kv9/target",
+        "--profile",
+        "release",
+        "-p",
+        "kv9",
+        "-p",
+        "kv9-common",
+        "-p",
+        "kv9-engine",
+        "-p",
+        "kv9-meta",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-region",
+        "-p",
+        "kv9-server",
+        "-p",
+        "kv9-txn"
+      ],
+      "ended_ns": 1789200373254631436,
+      "exit_code": 0,
+      "started_ns": 1789200373140800821
+    }
+  ],
+  "complete": true,
+  "ended_ns": 1789200373255053416,
+  "first_party_artifacts": [],
+  "first_party_packages": [
+    "kv9",
+    "kv9-common",
+    "kv9-engine",
+    "kv9-meta",
+    "kv9-raft",
+    "kv9-region",
+    "kv9-server",
+    "kv9-txn"
+  ],
+  "invalidation_complete": true,
+  "lock_acquired_ns": 1789200373140712215,
+  "lock_identity": [
+    66306,
+    108829546
+  ],
+  "lock_path": "/home/dongxu/kv9/target/.kv9-retained-build.lock",
+  "manifest": "/tmp/kv9-release-thin-lto/Cargo.toml",
+  "metadata_command": [
+    "cargo",
+    "metadata",
+    "--locked",
+    "--no-deps",
+    "--format-version",
+    "1",
+    "--manifest-path",
+    "/tmp/kv9-release-thin-lto/Cargo.toml"
+  ],
+  "metadata_exit_code": 0,
+  "pid": 1592881,
+  "profile": "release",
+  "scope": "Invalidate reproducible first-party release target cache only under existing BuildCache lock. No build, test, original binary/WAL/history deletion or candidate requalification.",
+  "source_identity_sha256": "c85156129c85e5b06ac68cb651cba331acf70798805c9f2b7fc5061179199311",
+  "source_root": "/tmp/kv9-release-thin-lto",
+  "started_ns": 1789200373108566083,
+  "target_directory": "/home/dongxu/kv9/target",
+  "version": 1
+}
