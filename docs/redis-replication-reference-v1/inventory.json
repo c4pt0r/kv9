@@ -1,0 +1,1853 @@
+{
+  "version": 1,
+  "scope": "Original source/test/process evidence; native executable payloads stay local. No benchmark acceptance.",
+  "archive": {
+    "path": "original-evidence.tar.gz",
+    "bytes": 2016219,
+    "sha256": "54155356d42d337127d656735cab296be463855a06e8cea4285f0f76f1915ba4"
+  },
+  "member_count": 304,
+  "member_bytes": 13287685,
+  "members": [
+    {
+      "original_path": "/home/dongxu/kv9/scripts/build_cache.py",
+      "bytes": 8216,
+      "sha256": "68fc8a5d245ff06031bff01fd56d8dd7936897025d94630a17e6718cceaf8628",
+      "member": "home/dongxu/kv9/scripts/build_cache.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis-batch-reference-preparation/run_fixture.py",
+      "bytes": 26410,
+      "sha256": "008c5bea0640a4a5a092feb6617798a84e9dd4889fd11bf8c6791cfe0852864a",
+      "member": "tmp/kv9-redis-batch-reference-preparation/run_fixture.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-root-first/check-source.py",
+      "bytes": 3844,
+      "sha256": "36404033e544a0fe7a81625cab3b3f6d03b2cd9479a76f146e5db9868436849d",
+      "member": "tmp/kv9-redis3-client-compat-root-first/check-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-root-first/run-source.py",
+      "bytes": 1861,
+      "sha256": "32d966bf73348932682e380330f53e7c01dfb78b70eed843af999397d65eb3f4",
+      "member": "tmp/kv9-redis3-client-compat-root-first/run-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-root-first/source-first.log",
+      "bytes": 584,
+      "sha256": "cb268467e5aaa965bffb11b7e998c36fb00fb248d87364831c42ec4c72f687cd",
+      "member": "tmp/kv9-redis3-client-compat-root-first/source-first.log"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-root-first/source-invocation.json",
+      "bytes": 650,
+      "sha256": "b80622d1ab69eb66e04cf5d7220668358dc9cd9604faaf99c602681d487b9ea5",
+      "member": "tmp/kv9-redis3-client-compat-root-first/source-invocation.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-root-first/source-result.json",
+      "bytes": 854,
+      "sha256": "d5d4463436448ad5bf690ad37b97cf84a49fc004e36be6f17133c7b62b7465dd",
+      "member": "tmp/kv9-redis3-client-compat-root-first/source-result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/cache-clean.stderr",
+      "bytes": 39,
+      "sha256": "5b26ceb719bd30736b474c2f233e29e9d32470f6b90c74b5f5f1a5f4ca22cea8",
+      "member": "tmp/kv9-redis3-client-compat-source-first/cache-clean.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-compat-source-first/cache-clean.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/cache-metadata.json",
+      "bytes": 2278,
+      "sha256": "576562db82947174221dc5b0cb46a8f65ff5ffcd3296f9cbdcc18256a3593e54",
+      "member": "tmp/kv9-redis3-client-compat-source-first/cache-metadata.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-compat-source-first/cache-metadata.log"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/cache-safety.json",
+      "bytes": 3500,
+      "sha256": "b1ae08a10065549696a2a18c57204affa06859e511d681be2f2dde4bf1f686e3",
+      "member": "tmp/kv9-redis3-client-compat-source-first/cache-safety.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/clippy.stderr",
+      "bytes": 913,
+      "sha256": "dd8c2a0e0c592be7b3cdbb45389e2b4a7ec283886e59ab604ab9da62fce7f357",
+      "member": "tmp/kv9-redis3-client-compat-source-first/clippy.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-compat-source-first/clippy.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/commands.json",
+      "bytes": 792,
+      "sha256": "f647e3908e995baa6291e2ce487f7ff89d9eaad2dd6f81e57064aa0566a049fd",
+      "member": "tmp/kv9-redis3-client-compat-source-first/commands.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/compile-tests.stderr",
+      "bytes": 156,
+      "sha256": "b53330f65979e222791eb09a588158c105593ba5f2aa8245d45187c36b1e1a13",
+      "member": "tmp/kv9-redis3-client-compat-source-first/compile-tests.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/compile-tests.stdout",
+      "bytes": 28863,
+      "sha256": "7bfcdefa24fbaacad5198b9164dc4b3b4294bec0faf3e5df975fec61758b3866",
+      "member": "tmp/kv9-redis3-client-compat-source-first/compile-tests.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/result.json",
+      "bytes": 1157,
+      "sha256": "8a5123c91a44b15597e4d4838e7635d3db2a89b4845cd622ee276301ac7c0482",
+      "member": "tmp/kv9-redis3-client-compat-source-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/source/crates/server/src/bin/kv9-batch-benchmark/common.rs",
+      "bytes": 8032,
+      "sha256": "b98d4a49f9ee2199e183204b72fd52813907574a03c1cf3376cf5d281d7902fd",
+      "member": "tmp/kv9-redis3-client-compat-source-first/source/crates/server/src/bin/kv9-batch-benchmark/common.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/Cargo.lock",
+      "bytes": 6697,
+      "sha256": "760aa7fef0feac6f200f5b83c966b589c1519cfa230fe84798e724f5f687f464",
+      "member": "tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/Cargo.lock"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/Cargo.toml",
+      "bytes": 326,
+      "sha256": "0b025adcb1540c704f2c77d3a73eec4c7e12d81ed0598170c1c8a1a084bf8c34",
+      "member": "tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/Cargo.toml"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/batch/artifact.rs",
+      "bytes": 2394,
+      "sha256": "147a25e646a8eadcd199921e43bbeb288ad088508f6f71dbad036a46f9136b48",
+      "member": "tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/batch/artifact.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/batch/confirmation_tests.rs",
+      "bytes": 12999,
+      "sha256": "74cd7d226f910c4857d9334990936ce3cc3883c9d0f276e8586277e30788eed1",
+      "member": "tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/batch/confirmation_tests.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/batch/metrics.rs",
+      "bytes": 10265,
+      "sha256": "524a7bac09d6af9d837654c055bc3a97c93bddbdd98f26f762a15ec54d6ab012",
+      "member": "tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/batch/metrics.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/batch/model.rs",
+      "bytes": 15165,
+      "sha256": "3cba588fdebab285f0c815319f15cd329f28d70c9a2e5947841ed638f520139a",
+      "member": "tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/batch/model.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/batch/wire.rs",
+      "bytes": 24239,
+      "sha256": "1926be21ec8d46cf7d30f9c126687f5475726938cf2cbc701434733ff33e8098",
+      "member": "tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/batch/wire.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs",
+      "bytes": 28654,
+      "sha256": "6d176a5f8c22018f740627b4a3cdb89d36ed002acf9876f3b54db8e060cffae0",
+      "member": "tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/main.rs",
+      "bytes": 8940,
+      "sha256": "1e9a0940b607aa91a0e4dba8da2a6340c3a25d915c43ebbb0a7d22f3f40e762c",
+      "member": "tmp/kv9-redis3-client-compat-source-first/source/scripts/redis-reference/src/main.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/source-before.json",
+      "bytes": 1184,
+      "sha256": "26b022bf6f0e13217987b6ac75b034e3431edbef4aa488a11e97302c70771549",
+      "member": "tmp/kv9-redis3-client-compat-source-first/source-before.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/tests.stderr",
+      "bytes": 213,
+      "sha256": "62597e76bd8c3d35f178b437075d7b8adfa036458161c930db649ac3f9d8ec63",
+      "member": "tmp/kv9-redis3-client-compat-source-first/tests.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-compat-source-first/tests.stdout",
+      "bytes": 2362,
+      "sha256": "196b977c9ff8ec9d75d8610c9c9d12e7a47cdec4244fe7eec20e8f368fd06d61",
+      "member": "tmp/kv9-redis3-client-compat-source-first/tests.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait1/build.json",
+      "bytes": 511,
+      "sha256": "58867f0b44a8483e5ce5e403844b83315408d8f59ad58cad6d6a628a228c9b55",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait1/build.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait1/config.json",
+      "bytes": 455,
+      "sha256": "e79e0772c4806efc4e709f21710a5d64a91a2ffcd703ec7e8e1c71b5882458d0",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait1/config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait1/ready.json",
+      "bytes": 77,
+      "sha256": "4fd6367279b0d0abae482ac9d620385e084d0a43188dabb88165d12d81152e3c",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait1/ready.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait1/report.json",
+      "bytes": 917075,
+      "sha256": "36f2cdc55cc976d6a5e1fd1892db3d422b3ec9a29b33e09f778baf4895be9597",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait1/report.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait1.config.json",
+      "bytes": 455,
+      "sha256": "e79e0772c4806efc4e709f21710a5d64a91a2ffcd703ec7e8e1c71b5882458d0",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait1.config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait1.dataset.json",
+      "bytes": 44238,
+      "sha256": "41ea8cf50b490689b60966e54820ea3944e3b30e2e6ba8b97ed4265c14599e6d",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait1.dataset.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait1.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait1.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait1.stdout",
+      "bytes": 81,
+      "sha256": "0c85ee9f765dea8921238303f3660ac398d3eab779f1a8e1490ee993bc0044ba",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait1.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait2/build.json",
+      "bytes": 511,
+      "sha256": "58867f0b44a8483e5ce5e403844b83315408d8f59ad58cad6d6a628a228c9b55",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait2/build.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait2/config.json",
+      "bytes": 455,
+      "sha256": "aaf32ee4b7027b83e6155815e418ed184b065537be7dea2bf7dcd1ccc15f43e6",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait2/config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait2/ready.json",
+      "bytes": 77,
+      "sha256": "86f9a6627d0626b8f8db4322c2d6c6b52142319172bafc927c9fd962b55128b3",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait2/ready.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait2/report.json",
+      "bytes": 917100,
+      "sha256": "cdb0fb09bfc07f2b00f15205b23b831b8ce4c57c96dc8a9a1242a14038ac67a8",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait2/report.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait2.config.json",
+      "bytes": 455,
+      "sha256": "aaf32ee4b7027b83e6155815e418ed184b065537be7dea2bf7dcd1ccc15f43e6",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait2.config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait2.dataset.json",
+      "bytes": 44238,
+      "sha256": "e35baa9dc0920a6b8bcc2b27f9cb7ebd9d0530efd071642e445708d0ec26d6de",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait2.dataset.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait2.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait2.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b1-wait2.stdout",
+      "bytes": 81,
+      "sha256": "0c85ee9f765dea8921238303f3660ac398d3eab779f1a8e1490ee993bc0044ba",
+      "member": "tmp/kv9-redis3-client-final-process-first/b1-wait2.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait1/build.json",
+      "bytes": 511,
+      "sha256": "58867f0b44a8483e5ce5e403844b83315408d8f59ad58cad6d6a628a228c9b55",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait1/build.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait1/config.json",
+      "bytes": 459,
+      "sha256": "7785975d92a4da2c2d61c768a60c62199e271f1df5a64e9db12bd7fb3304342e",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait1/config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait1/ready.json",
+      "bytes": 77,
+      "sha256": "50766bcdad95c6293239d13f3676574b48abf451d0cda5dc3bc96baf2f624ff0",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait1/ready.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait1/report.json",
+      "bytes": 916947,
+      "sha256": "4e5864629d66f4341bdfc2d3016cd57374eba1f24160b5afa8fb4552f9543920",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait1/report.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait1.config.json",
+      "bytes": 459,
+      "sha256": "7785975d92a4da2c2d61c768a60c62199e271f1df5a64e9db12bd7fb3304342e",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait1.config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait1.dataset.json",
+      "bytes": 44496,
+      "sha256": "9cbb5a8d1d9168060af957a953635ad77571592537df5f1c72fd98cb44f60230",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait1.dataset.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait1.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait1.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait1.stdout",
+      "bytes": 81,
+      "sha256": "0c85ee9f765dea8921238303f3660ac398d3eab779f1a8e1490ee993bc0044ba",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait1.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait2/build.json",
+      "bytes": 511,
+      "sha256": "58867f0b44a8483e5ce5e403844b83315408d8f59ad58cad6d6a628a228c9b55",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait2/build.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait2/config.json",
+      "bytes": 459,
+      "sha256": "ffd15c96e43542ded00ea3052562c2f94b7adfea301d6e3069aee8efb9ee3cf0",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait2/config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait2/ready.json",
+      "bytes": 77,
+      "sha256": "6ce981be589887322eb9dc82cc94fe79847a924679fa81a5de782d42f437954c",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait2/ready.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait2/report.json",
+      "bytes": 916941,
+      "sha256": "b24b4ddd5613f60c6c67395190f6861660a57b6f24968e3ac685b353ee80fcf4",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait2/report.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait2.config.json",
+      "bytes": 459,
+      "sha256": "ffd15c96e43542ded00ea3052562c2f94b7adfea301d6e3069aee8efb9ee3cf0",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait2.config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait2.dataset.json",
+      "bytes": 44496,
+      "sha256": "568ceba3fe8a3d144b33e32cef733991a9f9de83f905521ac29ab5706e5e4559",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait2.dataset.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait2.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait2.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/b64-wait2.stdout",
+      "bytes": 81,
+      "sha256": "0c85ee9f765dea8921238303f3660ac398d3eab779f1a8e1490ee993bc0044ba",
+      "member": "tmp/kv9-redis3-client-final-process-first/b64-wait2.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/result.json",
+      "bytes": 3631,
+      "sha256": "330a1203992a6d5e73bf3b161c09c405b6b84efacf678f9b2dacbe5f5f200de9",
+      "member": "tmp/kv9-redis3-client-final-process-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-final-process-first/run.py",
+      "bytes": 4962,
+      "sha256": "f242b0590234328b2ee33bf512df3faf6fe2a20db21f0eb66bf858755a611dd4",
+      "member": "tmp/kv9-redis3-client-final-process-first/run.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-root-first/check-source.py",
+      "bytes": 3844,
+      "sha256": "70e7757d580b1b34b3edfcd74ea07fe81a964705f9529b7ddb27a1c1e1612c64",
+      "member": "tmp/kv9-redis3-client-legacy-root-first/check-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-root-first/run-source.py",
+      "bytes": 1861,
+      "sha256": "8395a177b863af8a0a63a796dff52daf01baead3ba113261ec486876c2aa24c0",
+      "member": "tmp/kv9-redis3-client-legacy-root-first/run-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-root-first/source-first.log",
+      "bytes": 126,
+      "sha256": "788e86cd9e338a9b0381b42fe2fda01454ccea5f04ffeb117ac1ec5d0aaae4a8",
+      "member": "tmp/kv9-redis3-client-legacy-root-first/source-first.log"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-root-first/source-invocation.json",
+      "bytes": 650,
+      "sha256": "701f7f1b1b3a49a33036a1711c42a3c09dabc614de98c56e9f56b1fc5b2c5ecb",
+      "member": "tmp/kv9-redis3-client-legacy-root-first/source-invocation.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-root-first/source-result.json",
+      "bytes": 793,
+      "sha256": "4b7d3d5605aea12170cc01f5bf720dbca84fea05426cba2bcb57c9ef19af4827",
+      "member": "tmp/kv9-redis3-client-legacy-root-first/source-result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/build.json",
+      "bytes": 511,
+      "sha256": "58867f0b44a8483e5ce5e403844b83315408d8f59ad58cad6d6a628a228c9b55",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/build.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/build.stderr",
+      "bytes": 155,
+      "sha256": "7e43a12db30e6ed7ffea2d584c1d0540c9f5cfc3af7fc63fc941245aad0ae73f",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/build.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/build.stdout",
+      "bytes": 28820,
+      "sha256": "9502750c39a9e430667c141d69c95cb1f3834a109a1c59a1d577f54c307310a8",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/build.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/cache-clean.stderr",
+      "bytes": 38,
+      "sha256": "d3720cff3480eb5ea6edbab9840ca7199577ab8317c67433dce70501a779af16",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/cache-clean.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/cache-clean.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/cache-metadata.json",
+      "bytes": 2278,
+      "sha256": "576562db82947174221dc5b0cb46a8f65ff5ffcd3296f9cbdcc18256a3593e54",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/cache-metadata.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/cache-metadata.log"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/cache-safety.json",
+      "bytes": 4536,
+      "sha256": "ceb2bd4ca41a8b79894902a379a8e93dd20a4540a332344cfe32b08d8a9c9ffc",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/cache-safety.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/clippy.stderr",
+      "bytes": 155,
+      "sha256": "48ec8171f2f3fd826a062c182bc44367003fbf08165f7b73254edffc52ca568b",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/clippy.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/clippy.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/commands.json",
+      "bytes": 792,
+      "sha256": "f647e3908e995baa6291e2ce487f7ff89d9eaad2dd6f81e57064aa0566a049fd",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/commands.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/compile-tests.stderr",
+      "bytes": 156,
+      "sha256": "3b58c2f2ab6668035360b462cd424ed6fd35c59f595aa17f06f631a8bdc6201c",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/compile-tests.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/compile-tests.stdout",
+      "bytes": 28863,
+      "sha256": "13304cbe873e6ef511638ac0a47381672930e5eab6b1a71ba8c85c975bdc8033",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/compile-tests.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/result.json",
+      "bytes": 1490,
+      "sha256": "33e7afa7a456241008e4ac489c238636ca2f76d43707c15ac8e523943ebdf0cd",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source/crates/server/src/bin/kv9-batch-benchmark/common.rs",
+      "bytes": 8032,
+      "sha256": "b98d4a49f9ee2199e183204b72fd52813907574a03c1cf3376cf5d281d7902fd",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source/crates/server/src/bin/kv9-batch-benchmark/common.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/Cargo.lock",
+      "bytes": 6697,
+      "sha256": "760aa7fef0feac6f200f5b83c966b589c1519cfa230fe84798e724f5f687f464",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/Cargo.lock"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/Cargo.toml",
+      "bytes": 326,
+      "sha256": "0b025adcb1540c704f2c77d3a73eec4c7e12d81ed0598170c1c8a1a084bf8c34",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/Cargo.toml"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/batch/artifact.rs",
+      "bytes": 2394,
+      "sha256": "147a25e646a8eadcd199921e43bbeb288ad088508f6f71dbad036a46f9136b48",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/batch/artifact.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/batch/confirmation_tests.rs",
+      "bytes": 12999,
+      "sha256": "74cd7d226f910c4857d9334990936ce3cc3883c9d0f276e8586277e30788eed1",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/batch/confirmation_tests.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/batch/metrics.rs",
+      "bytes": 10265,
+      "sha256": "524a7bac09d6af9d837654c055bc3a97c93bddbdd98f26f762a15ec54d6ab012",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/batch/metrics.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/batch/model.rs",
+      "bytes": 15165,
+      "sha256": "3cba588fdebab285f0c815319f15cd329f28d70c9a2e5947841ed638f520139a",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/batch/model.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/batch/wire.rs",
+      "bytes": 24239,
+      "sha256": "1926be21ec8d46cf7d30f9c126687f5475726938cf2cbc701434733ff33e8098",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/batch/wire.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs",
+      "bytes": 28880,
+      "sha256": "e89725627049da6faf67f82ecaece1bf6db0b76f7507b024d52f7b72db11b747",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/main.rs",
+      "bytes": 8940,
+      "sha256": "1e9a0940b607aa91a0e4dba8da2a6340c3a25d915c43ebbb0a7d22f3f40e762c",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source/scripts/redis-reference/src/main.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source-after.json",
+      "bytes": 1184,
+      "sha256": "ff2abd5d61ca192e4003b1eb06c2517a09a9e070757760d142296fab095fab5e",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source-after.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/source-before.json",
+      "bytes": 1184,
+      "sha256": "ff2abd5d61ca192e4003b1eb06c2517a09a9e070757760d142296fab095fab5e",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/source-before.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/tests.stderr",
+      "bytes": 213,
+      "sha256": "62597e76bd8c3d35f178b437075d7b8adfa036458161c930db649ac3f9d8ec63",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/tests.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/tests.stdout",
+      "bytes": 2362,
+      "sha256": "8bd982e11695587b3c1020f94b1ed775b96ea36b2f0740148c7018e8345cd5da",
+      "member": "tmp/kv9-redis3-client-legacy-source-first/tests.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-preparation-first/kv9-redis-batch-reference.rs",
+      "bytes": 18896,
+      "sha256": "beac89f03c0edc93db686a910230bf2fc69c580396e682b0bd13c746fe38049c",
+      "member": "tmp/kv9-redis3-client-preparation-first/kv9-redis-batch-reference.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-preparation-first/metrics.rs",
+      "bytes": 4811,
+      "sha256": "7ed00ec8534dbed87698c802fdf791e9cbde25bcdee446cd6220df1843823646",
+      "member": "tmp/kv9-redis3-client-preparation-first/metrics.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-preparation-first/model.rs",
+      "bytes": 4263,
+      "sha256": "c6c531cd11f96004ae316733ffa4d25f7dff9cb46ba6cc0c9a5ec114bc95a127",
+      "member": "tmp/kv9-redis3-client-preparation-first/model.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-preparation-first/v3-source-binding.json",
+      "bytes": 1246,
+      "sha256": "01b0a058cf53964d4482f6af3a2a13d09681b833953e347d415c2d7e0db46e24",
+      "member": "tmp/kv9-redis3-client-preparation-first/v3-source-binding.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-preparation-first/wire.rs",
+      "bytes": 8972,
+      "sha256": "aeba08d96d57cde657effbda27d497ca157182c64e67b0c9c72ca76b0a1facf2",
+      "member": "tmp/kv9-redis3-client-preparation-first/wire.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-first/b1-wait1/build.json",
+      "bytes": 511,
+      "sha256": "4727ebbffe8cf5cfd58112f79bf130e6838b536710a8772c85e7ca98d6edf890",
+      "member": "tmp/kv9-redis3-client-process-first/b1-wait1/build.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-first/b1-wait1/config.json",
+      "bytes": 455,
+      "sha256": "e79e0772c4806efc4e709f21710a5d64a91a2ffcd703ec7e8e1c71b5882458d0",
+      "member": "tmp/kv9-redis3-client-process-first/b1-wait1/config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-first/b1-wait1/ready.json",
+      "bytes": 77,
+      "sha256": "5df4db34495cbe7dec71ecfde3eed8aeb315fd40aa5c726caeb1be251b263352",
+      "member": "tmp/kv9-redis3-client-process-first/b1-wait1/ready.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-first/b1-wait1/report.json",
+      "bytes": 917081,
+      "sha256": "8d316fa7d20261739080c570cccdecf7aa5fa3f295ad133fb998f12e02f5c186",
+      "member": "tmp/kv9-redis3-client-process-first/b1-wait1/report.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-first/b1-wait1.config.json",
+      "bytes": 455,
+      "sha256": "e79e0772c4806efc4e709f21710a5d64a91a2ffcd703ec7e8e1c71b5882458d0",
+      "member": "tmp/kv9-redis3-client-process-first/b1-wait1.config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-first/b1-wait1.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-process-first/b1-wait1.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-first/b1-wait1.stdout",
+      "bytes": 81,
+      "sha256": "0c85ee9f765dea8921238303f3660ac398d3eab779f1a8e1490ee993bc0044ba",
+      "member": "tmp/kv9-redis3-client-process-first/b1-wait1.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-first/result.json",
+      "bytes": 801,
+      "sha256": "c1127fc4e70a10e0c9cb59645e458e45b79ed88e73d04c22eb85d43fb26ada75",
+      "member": "tmp/kv9-redis3-client-process-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-first/run.py",
+      "bytes": 4731,
+      "sha256": "296b16d3f08618a60503110d291230d227077d2762380a97cebbe79d8c827b19",
+      "member": "tmp/kv9-redis3-client-process-first/run.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b1-wait1.config.json",
+      "bytes": 455,
+      "sha256": "e79e0772c4806efc4e709f21710a5d64a91a2ffcd703ec7e8e1c71b5882458d0",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b1-wait1.config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b1-wait1.dataset.json",
+      "bytes": 44238,
+      "sha256": "41ea8cf50b490689b60966e54820ea3944e3b30e2e6ba8b97ed4265c14599e6d",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b1-wait1.dataset.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b1-wait2/build.json",
+      "bytes": 511,
+      "sha256": "4727ebbffe8cf5cfd58112f79bf130e6838b536710a8772c85e7ca98d6edf890",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b1-wait2/build.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b1-wait2/config.json",
+      "bytes": 455,
+      "sha256": "aaf32ee4b7027b83e6155815e418ed184b065537be7dea2bf7dcd1ccc15f43e6",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b1-wait2/config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b1-wait2/ready.json",
+      "bytes": 77,
+      "sha256": "3a05605fbd0d085257a1bec440790f0cb41e8b07996c3725ce5cbb2c9740f624",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b1-wait2/ready.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b1-wait2/report.json",
+      "bytes": 917096,
+      "sha256": "c9e6c53e0c5d1ac9335f7854a00441a367157b0eb60a89b116b646c2b75f0ff7",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b1-wait2/report.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b1-wait2.config.json",
+      "bytes": 455,
+      "sha256": "aaf32ee4b7027b83e6155815e418ed184b065537be7dea2bf7dcd1ccc15f43e6",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b1-wait2.config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b1-wait2.dataset.json",
+      "bytes": 44238,
+      "sha256": "e35baa9dc0920a6b8bcc2b27f9cb7ebd9d0530efd071642e445708d0ec26d6de",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b1-wait2.dataset.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b1-wait2.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b1-wait2.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b1-wait2.stdout",
+      "bytes": 81,
+      "sha256": "0c85ee9f765dea8921238303f3660ac398d3eab779f1a8e1490ee993bc0044ba",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b1-wait2.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait1/build.json",
+      "bytes": 511,
+      "sha256": "4727ebbffe8cf5cfd58112f79bf130e6838b536710a8772c85e7ca98d6edf890",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait1/build.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait1/config.json",
+      "bytes": 459,
+      "sha256": "7785975d92a4da2c2d61c768a60c62199e271f1df5a64e9db12bd7fb3304342e",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait1/config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait1/ready.json",
+      "bytes": 77,
+      "sha256": "eefdfae39ee273192644558c16c295d4e8ad8b150d429afef03bcaa3709e7939",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait1/ready.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait1/report.json",
+      "bytes": 916974,
+      "sha256": "bc9b18946701418db55ece165645cf80379bb2390f9fbb78a030a49cd86afa35",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait1/report.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait1.config.json",
+      "bytes": 459,
+      "sha256": "7785975d92a4da2c2d61c768a60c62199e271f1df5a64e9db12bd7fb3304342e",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait1.config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait1.dataset.json",
+      "bytes": 44496,
+      "sha256": "9cbb5a8d1d9168060af957a953635ad77571592537df5f1c72fd98cb44f60230",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait1.dataset.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait1.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait1.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait1.stdout",
+      "bytes": 81,
+      "sha256": "0c85ee9f765dea8921238303f3660ac398d3eab779f1a8e1490ee993bc0044ba",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait1.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait2/build.json",
+      "bytes": 511,
+      "sha256": "4727ebbffe8cf5cfd58112f79bf130e6838b536710a8772c85e7ca98d6edf890",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait2/build.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait2/config.json",
+      "bytes": 459,
+      "sha256": "ffd15c96e43542ded00ea3052562c2f94b7adfea301d6e3069aee8efb9ee3cf0",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait2/config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait2/ready.json",
+      "bytes": 77,
+      "sha256": "083949d6277c70d51efe961e979c4076760d4baa6d3f2f729b16bf2221e76fdd",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait2/ready.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait2/report.json",
+      "bytes": 916969,
+      "sha256": "6e135ece6291f50b6da9040711599e045b41d897cfd9d6f5353da7098fd7e3af",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait2/report.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait2.config.json",
+      "bytes": 459,
+      "sha256": "ffd15c96e43542ded00ea3052562c2f94b7adfea301d6e3069aee8efb9ee3cf0",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait2.config.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait2.dataset.json",
+      "bytes": 44496,
+      "sha256": "f8df5837df3b12643fa0b3c938569d8f2d5184e123fce8da65957a04e2d5ff3e",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait2.dataset.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait2.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait2.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/b64-wait2.stdout",
+      "bytes": 81,
+      "sha256": "0c85ee9f765dea8921238303f3660ac398d3eab779f1a8e1490ee993bc0044ba",
+      "member": "tmp/kv9-redis3-client-process-reader-first/b64-wait2.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/result.json",
+      "bytes": 4054,
+      "sha256": "01b4e4ca89685f175eecc1e8fb36d4c493af8e32524ff5c4f8e187a9b38fc948",
+      "member": "tmp/kv9-redis3-client-process-reader-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-process-reader-first/run.py",
+      "bytes": 5190,
+      "sha256": "ea946efbdde59a0e5fbd5cb51bd1c54f7f17286e0f87943a55281a8b7b40147d",
+      "member": "tmp/kv9-redis3-client-process-reader-first/run.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-root-first/check-source.py",
+      "bytes": 3845,
+      "sha256": "0017e3a4ff925c4a7a793499cb59d4e0795d81471373250f824ffee798af20d3",
+      "member": "tmp/kv9-redis3-client-reasons-root-first/check-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-root-first/run-source.py",
+      "bytes": 1862,
+      "sha256": "aaa4c3da842b4532d32dacb0c855cbaa713700bcf8b2ba6174d3cef6413b0cdc",
+      "member": "tmp/kv9-redis3-client-reasons-root-first/run-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-root-first/source-first.log",
+      "bytes": 557,
+      "sha256": "4b6e7dc8eeed67af10bbc13a264d7e2b2f37b110536622cf614f3b816cd89fbb",
+      "member": "tmp/kv9-redis3-client-reasons-root-first/source-first.log"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-root-first/source-invocation.json",
+      "bytes": 653,
+      "sha256": "f766b1b7e78ef840f237be4755a9b90b4ead5cee6055a3972f9caadbefe2edec",
+      "member": "tmp/kv9-redis3-client-reasons-root-first/source-invocation.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-root-first/source-result.json",
+      "bytes": 857,
+      "sha256": "48c746bdbe03453f47f52879e82ffcdaa8226721e34a2dd6eb0e8c534d12cb07",
+      "member": "tmp/kv9-redis3-client-reasons-root-first/source-result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/cache-clean.stderr",
+      "bytes": 35,
+      "sha256": "5f01d9e4980d1ac7ca86d0a71ec05e692acd52d2305a75e1e170265fba5c352b",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/cache-clean.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/cache-clean.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/cache-metadata.json",
+      "bytes": 2278,
+      "sha256": "576562db82947174221dc5b0cb46a8f65ff5ffcd3296f9cbdcc18256a3593e54",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/cache-metadata.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/cache-metadata.log"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/cache-safety.json",
+      "bytes": 3189,
+      "sha256": "c804038957a91634695eabaada358352b55ae82cfe13f9de3f6186955692d6fa",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/cache-safety.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/commands.json",
+      "bytes": 792,
+      "sha256": "f647e3908e995baa6291e2ce487f7ff89d9eaad2dd6f81e57064aa0566a049fd",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/commands.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/compile-tests.stderr",
+      "bytes": 156,
+      "sha256": "063b5bec8bda9acacff4312375c3fd681c486a1205da780621953c5d29c5b617",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/compile-tests.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/compile-tests.stdout",
+      "bytes": 28863,
+      "sha256": "2f1afd713634cc5bbf64e4b128acedac7d7229ba98c195a4b26501abbfb214b4",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/compile-tests.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/result.json",
+      "bytes": 721,
+      "sha256": "dc10410a06ea2cdca25e9e70e0defc712dc0d6a047b3a5f3aecf85ec5aa745a8",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/source/crates/server/src/bin/kv9-batch-benchmark/common.rs",
+      "bytes": 8032,
+      "sha256": "b98d4a49f9ee2199e183204b72fd52813907574a03c1cf3376cf5d281d7902fd",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/source/crates/server/src/bin/kv9-batch-benchmark/common.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/Cargo.lock",
+      "bytes": 6697,
+      "sha256": "760aa7fef0feac6f200f5b83c966b589c1519cfa230fe84798e724f5f687f464",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/Cargo.lock"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/Cargo.toml",
+      "bytes": 326,
+      "sha256": "0b025adcb1540c704f2c77d3a73eec4c7e12d81ed0598170c1c8a1a084bf8c34",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/Cargo.toml"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/batch/artifact.rs",
+      "bytes": 2394,
+      "sha256": "147a25e646a8eadcd199921e43bbeb288ad088508f6f71dbad036a46f9136b48",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/batch/artifact.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/batch/confirmation_tests.rs",
+      "bytes": 11770,
+      "sha256": "b936a7b26ead0395889d90ee116a9cfc0688c450e755c7a61d6a20c21b2a4ff9",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/batch/confirmation_tests.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/batch/metrics.rs",
+      "bytes": 9434,
+      "sha256": "a73fcd31188ebdf14b0062d034b855c8ef91009dcb6112b5774d0ee210f9e8dc",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/batch/metrics.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/batch/model.rs",
+      "bytes": 15162,
+      "sha256": "10f9a161beaabd885924a0dd596c6a6beb4374044aa45c4b9a08c2fef8d7894f",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/batch/model.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/batch/wire.rs",
+      "bytes": 24239,
+      "sha256": "1926be21ec8d46cf7d30f9c126687f5475726938cf2cbc701434733ff33e8098",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/batch/wire.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs",
+      "bytes": 28294,
+      "sha256": "859c6788218f49d6422530404e3559ee5551422d6700280947b0c7a96c8893ed",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/main.rs",
+      "bytes": 8940,
+      "sha256": "1e9a0940b607aa91a0e4dba8da2a6340c3a25d915c43ebbb0a7d22f3f40e762c",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/source/scripts/redis-reference/src/main.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/source-before.json",
+      "bytes": 1184,
+      "sha256": "237c919965e5f654c87b48e979a9e89442ed95faa3ebca7255060def95559495",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/source-before.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/tests.stderr",
+      "bytes": 281,
+      "sha256": "6333fe7851066f73cb20c5dddccc71ce3584264ad700bb37596e52d6df0efbfb",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/tests.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-reasons-source-first/tests.stdout",
+      "bytes": 2830,
+      "sha256": "0f11e4c0547e57abb08591f31b07f64d0650325faef2fb00679a73757ee580ac",
+      "member": "tmp/kv9-redis3-client-reasons-source-first/tests.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-root-first/check-source.py",
+      "bytes": 3837,
+      "sha256": "a7e62c9bb1ce5029044b9e6e77651789013a5c6289656ce8bb118ae9a3a0fc29",
+      "member": "tmp/kv9-redis3-client-root-first/check-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-root-first/run-source.py",
+      "bytes": 1854,
+      "sha256": "ba6b73f35eaa6185ae866924435b96f3cb35bddafd45a522aa3bcfcbe723ff3b",
+      "member": "tmp/kv9-redis3-client-root-first/run-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-root-first/source-first.log",
+      "bytes": 514,
+      "sha256": "785df042f65a47f78c645092437b4afdb9b0cf2234941756a07d04e5ceafebc6",
+      "member": "tmp/kv9-redis3-client-root-first/source-first.log"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-root-first/source-invocation.json",
+      "bytes": 645,
+      "sha256": "0fcc7a89ae9dd4e8c6b92d38c937fdc8ebe722475659d6d9b0eaef20c1188834",
+      "member": "tmp/kv9-redis3-client-root-first/source-invocation.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-root-first/source-result.json",
+      "bytes": 849,
+      "sha256": "53da94007f96b06b075989d06742d0fbc33728366812bc23d81be3a8c4ac8125",
+      "member": "tmp/kv9-redis3-client-root-first/source-result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-root-first/check-source.py",
+      "bytes": 3844,
+      "sha256": "7f738a09e4ebea1797f034fa1508ddf9b716687552e8a1b3151fd7965c395472",
+      "member": "tmp/kv9-redis3-client-schema-root-first/check-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-root-first/run-source.py",
+      "bytes": 1861,
+      "sha256": "b8d4f6401138adf4713df776a10a587aa6e98e9a183a9da14173c920f762768a",
+      "member": "tmp/kv9-redis3-client-schema-root-first/run-source.py"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-root-first/source-first.log",
+      "bytes": 126,
+      "sha256": "788e86cd9e338a9b0381b42fe2fda01454ccea5f04ffeb117ac1ec5d0aaae4a8",
+      "member": "tmp/kv9-redis3-client-schema-root-first/source-first.log"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-root-first/source-invocation.json",
+      "bytes": 650,
+      "sha256": "1e0f2a30ff781316ff2ca36e32766546a856bb0d4f1fdfa9b634587d5c6ab1a5",
+      "member": "tmp/kv9-redis3-client-schema-root-first/source-invocation.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-root-first/source-result.json",
+      "bytes": 793,
+      "sha256": "431bc4d27eb6f52759505d9b3cf4eca4a0dbecf97da85be86e2ff39566af16e9",
+      "member": "tmp/kv9-redis3-client-schema-root-first/source-result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/build.json",
+      "bytes": 511,
+      "sha256": "4727ebbffe8cf5cfd58112f79bf130e6838b536710a8772c85e7ca98d6edf890",
+      "member": "tmp/kv9-redis3-client-schema-source-first/build.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/build.stderr",
+      "bytes": 155,
+      "sha256": "4d7c03895680b39938fa3f53a5ed3ba9571ba4fe1739b1b02817f2e988a5a449",
+      "member": "tmp/kv9-redis3-client-schema-source-first/build.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/build.stdout",
+      "bytes": 28820,
+      "sha256": "adae0109553dfdac87a7617e9df05642c575e334d617c0dd88133ae804f4d05c",
+      "member": "tmp/kv9-redis3-client-schema-source-first/build.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/cache-clean.stderr",
+      "bytes": 38,
+      "sha256": "174a015301be14e859efce65b11d9da29527eb4d9112b0d3eaf26c01f12c4725",
+      "member": "tmp/kv9-redis3-client-schema-source-first/cache-clean.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-schema-source-first/cache-clean.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/cache-metadata.json",
+      "bytes": 2278,
+      "sha256": "576562db82947174221dc5b0cb46a8f65ff5ffcd3296f9cbdcc18256a3593e54",
+      "member": "tmp/kv9-redis3-client-schema-source-first/cache-metadata.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-schema-source-first/cache-metadata.log"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/cache-safety.json",
+      "bytes": 4536,
+      "sha256": "c2c1a8820ae2269582f3c13142f8bfd08f33d3aa5085ec0f967fb1af4f9b1cb1",
+      "member": "tmp/kv9-redis3-client-schema-source-first/cache-safety.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/clippy.stderr",
+      "bytes": 513,
+      "sha256": "ae7a6b17918555beb3ff4f23b2583454817d03335e71a13f644d765869b6e4bb",
+      "member": "tmp/kv9-redis3-client-schema-source-first/clippy.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-schema-source-first/clippy.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/commands.json",
+      "bytes": 792,
+      "sha256": "f647e3908e995baa6291e2ce487f7ff89d9eaad2dd6f81e57064aa0566a049fd",
+      "member": "tmp/kv9-redis3-client-schema-source-first/commands.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/compile-tests.stderr",
+      "bytes": 156,
+      "sha256": "f30188c8a0bc0f05afd84954d3be8f9dfdd58ea67b3f394ff5c90c8df271984d",
+      "member": "tmp/kv9-redis3-client-schema-source-first/compile-tests.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/compile-tests.stdout",
+      "bytes": 28863,
+      "sha256": "17ec31cc5160c64a8b4d1caab24d5fceb71b872b9b5b904fce7539dfead4fe60",
+      "member": "tmp/kv9-redis3-client-schema-source-first/compile-tests.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/result.json",
+      "bytes": 1490,
+      "sha256": "25672a9a7e2d37f4ddbb48f189f98bdccbbac7c57764fa9031086235c8746150",
+      "member": "tmp/kv9-redis3-client-schema-source-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source/crates/server/src/bin/kv9-batch-benchmark/common.rs",
+      "bytes": 8032,
+      "sha256": "b98d4a49f9ee2199e183204b72fd52813907574a03c1cf3376cf5d281d7902fd",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source/crates/server/src/bin/kv9-batch-benchmark/common.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/Cargo.lock",
+      "bytes": 6697,
+      "sha256": "760aa7fef0feac6f200f5b83c966b589c1519cfa230fe84798e724f5f687f464",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/Cargo.lock"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/Cargo.toml",
+      "bytes": 326,
+      "sha256": "0b025adcb1540c704f2c77d3a73eec4c7e12d81ed0598170c1c8a1a084bf8c34",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/Cargo.toml"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/batch/artifact.rs",
+      "bytes": 2394,
+      "sha256": "147a25e646a8eadcd199921e43bbeb288ad088508f6f71dbad036a46f9136b48",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/batch/artifact.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/batch/confirmation_tests.rs",
+      "bytes": 11860,
+      "sha256": "329f9ae89fac7d3d6c407fc8a58e7a0e9c7a74bff5515e75b4920f5201e46339",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/batch/confirmation_tests.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/batch/metrics.rs",
+      "bytes": 9434,
+      "sha256": "a73fcd31188ebdf14b0062d034b855c8ef91009dcb6112b5774d0ee210f9e8dc",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/batch/metrics.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/batch/model.rs",
+      "bytes": 15165,
+      "sha256": "3cba588fdebab285f0c815319f15cd329f28d70c9a2e5947841ed638f520139a",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/batch/model.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/batch/wire.rs",
+      "bytes": 24239,
+      "sha256": "1926be21ec8d46cf7d30f9c126687f5475726938cf2cbc701434733ff33e8098",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/batch/wire.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs",
+      "bytes": 28294,
+      "sha256": "859c6788218f49d6422530404e3559ee5551422d6700280947b0c7a96c8893ed",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/main.rs",
+      "bytes": 8940,
+      "sha256": "1e9a0940b607aa91a0e4dba8da2a6340c3a25d915c43ebbb0a7d22f3f40e762c",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source/scripts/redis-reference/src/main.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source-after.json",
+      "bytes": 1184,
+      "sha256": "12565239c570d27c99958488e5e2c4744482c01aa3ee0ed9ea2d98cc44ba95f6",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source-after.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/source-before.json",
+      "bytes": 1184,
+      "sha256": "12565239c570d27c99958488e5e2c4744482c01aa3ee0ed9ea2d98cc44ba95f6",
+      "member": "tmp/kv9-redis3-client-schema-source-first/source-before.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/tests.stderr",
+      "bytes": 213,
+      "sha256": "62597e76bd8c3d35f178b437075d7b8adfa036458161c930db649ac3f9d8ec63",
+      "member": "tmp/kv9-redis3-client-schema-source-first/tests.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/tests.stdout",
+      "bytes": 2254,
+      "sha256": "9d5ec76f633b04f2136e7b1ef325a3ca0f044e4be8b09dff44413909b4c7ac03",
+      "member": "tmp/kv9-redis3-client-schema-source-first/tests.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/cache-clean.stderr",
+      "bytes": 21,
+      "sha256": "0bdaeb2aa6a92a0fdfec2d2cc4d0ab71946de5d0654e08c526e4629130ae0f28",
+      "member": "tmp/kv9-redis3-client-source-first/cache-clean.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-source-first/cache-clean.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/cache-metadata.json",
+      "bytes": 2278,
+      "sha256": "576562db82947174221dc5b0cb46a8f65ff5ffcd3296f9cbdcc18256a3593e54",
+      "member": "tmp/kv9-redis3-client-source-first/cache-metadata.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-client-source-first/cache-metadata.log"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/cache-safety.json",
+      "bytes": 1965,
+      "sha256": "decb575f666dda2dab1e9490f177f9cdc9449e2f098c41ac7fc164bdd0d7dc21",
+      "member": "tmp/kv9-redis3-client-source-first/cache-safety.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/commands.json",
+      "bytes": 792,
+      "sha256": "f647e3908e995baa6291e2ce487f7ff89d9eaad2dd6f81e57064aa0566a049fd",
+      "member": "tmp/kv9-redis3-client-source-first/commands.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/compile-tests.stderr",
+      "bytes": 1804,
+      "sha256": "9ab880b925ef792a5de7defc27be24a0e478afa65bf2c40e7915dca5c9102883",
+      "member": "tmp/kv9-redis3-client-source-first/compile-tests.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/compile-tests.stdout",
+      "bytes": 28143,
+      "sha256": "c03a8d5afb95de91070b0750e5824d1f9101e616c4606781ede8b5c2df45b79c",
+      "member": "tmp/kv9-redis3-client-source-first/compile-tests.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/result.json",
+      "bytes": 411,
+      "sha256": "3c51d28d4c7107129db31562cb49dbf87cfa911ef84a179fbda2dcfdcc5cdafa",
+      "member": "tmp/kv9-redis3-client-source-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/source/crates/server/src/bin/kv9-batch-benchmark/common.rs",
+      "bytes": 8032,
+      "sha256": "b98d4a49f9ee2199e183204b72fd52813907574a03c1cf3376cf5d281d7902fd",
+      "member": "tmp/kv9-redis3-client-source-first/source/crates/server/src/bin/kv9-batch-benchmark/common.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/Cargo.lock",
+      "bytes": 6697,
+      "sha256": "760aa7fef0feac6f200f5b83c966b589c1519cfa230fe84798e724f5f687f464",
+      "member": "tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/Cargo.lock"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/Cargo.toml",
+      "bytes": 326,
+      "sha256": "0b025adcb1540c704f2c77d3a73eec4c7e12d81ed0598170c1c8a1a084bf8c34",
+      "member": "tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/Cargo.toml"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/batch/artifact.rs",
+      "bytes": 2394,
+      "sha256": "147a25e646a8eadcd199921e43bbeb288ad088508f6f71dbad036a46f9136b48",
+      "member": "tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/batch/artifact.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/batch/confirmation_tests.rs",
+      "bytes": 11770,
+      "sha256": "b936a7b26ead0395889d90ee116a9cfc0688c450e755c7a61d6a20c21b2a4ff9",
+      "member": "tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/batch/confirmation_tests.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/batch/metrics.rs",
+      "bytes": 9431,
+      "sha256": "a3f938c246450e36a415b77c8c8ee130bc5edde3a63b81a668565f4add8d8738",
+      "member": "tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/batch/metrics.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/batch/model.rs",
+      "bytes": 15162,
+      "sha256": "10f9a161beaabd885924a0dd596c6a6beb4374044aa45c4b9a08c2fef8d7894f",
+      "member": "tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/batch/model.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/batch/wire.rs",
+      "bytes": 24239,
+      "sha256": "1926be21ec8d46cf7d30f9c126687f5475726938cf2cbc701434733ff33e8098",
+      "member": "tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/batch/wire.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs",
+      "bytes": 28294,
+      "sha256": "859c6788218f49d6422530404e3559ee5551422d6700280947b0c7a96c8893ed",
+      "member": "tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/bin/kv9-redis-batch-reference.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/main.rs",
+      "bytes": 8940,
+      "sha256": "1e9a0940b607aa91a0e4dba8da2a6340c3a25d915c43ebbb0a7d22f3f40e762c",
+      "member": "tmp/kv9-redis3-client-source-first/source/scripts/redis-reference/src/main.rs"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-source-first/source-before.json",
+      "bytes": 1184,
+      "sha256": "2e725816fa41d11aa963d3c68063d81b4291e5431e20df39553d8c2279a5f118",
+      "member": "tmp/kv9-redis3-client-source-first/source-before.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-publication-first/rustfmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-publication-first/rustfmt.stderr"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-publication-first/rustfmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "member": "tmp/kv9-redis3-publication-first/rustfmt.stdout"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-publication-first/terminal-receipts.json",
+      "bytes": 1206,
+      "sha256": "c892a2965f730ffeb13942394a38bc550635feeba038ad80705686c26edeed94",
+      "member": "tmp/kv9-redis3-publication-first/terminal-receipts.json"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-publication-first/validation-summary.json",
+      "bytes": 7150,
+      "sha256": "2fd0d74a79843052f51686e6d45013046796eb6bf8bba7fe8c685c7574a9f35a",
+      "member": "tmp/kv9-redis3-publication-first/validation-summary.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/README.md",
+      "bytes": 2656,
+      "sha256": "a77021dab987f9683db1f96c26f14dae227d46afaf0f483b05c12d70a0abf3e1",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/README.md"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/after-cleanup-port-check.json",
+      "bytes": 287,
+      "sha256": "0a9f79799a32a7e7d6ef801f68eb23b1d51874eec7744832b5c4a6d0d626d8a0",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/after-cleanup-port-check.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/after-setup.json",
+      "bytes": 12488,
+      "sha256": "6afd89a46892d3c9375d22072901e7532b6dc996e6f0edb4385d406cdae3f141",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/after-setup.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/before-capacity.json",
+      "bytes": 66,
+      "sha256": "c50fc18615f3e16fad3e109df5d3af70737789161769e88f82420150029557e6",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/before-capacity.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/before-setup.json",
+      "bytes": 12419,
+      "sha256": "0f9acc1c156f2cc0798c81c00c0f0aa4bf31e677159d1843ada1da4ed367f6c6",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/before-setup.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/before-shutdown.json",
+      "bytes": 12527,
+      "sha256": "04edcba05952bdd83d35c2f02506f3d552be561c7400ccdd0d903c15f72a1d2a",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/before-shutdown.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/cleanup.json",
+      "bytes": 2918,
+      "sha256": "6d5305bdcdc5d86669bfed872dccc21554b2f7ce4c686335747188285dc00f77",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/cleanup.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/history.jsonl",
+      "bytes": 1562485,
+      "sha256": "e4f21a198d9ca26c9c4eaa208fd480ac64202dfb402b7f7c2bb8924eb46fdb5f",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/history.jsonl"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/initialized-dataset.json",
+      "bytes": 484,
+      "sha256": "6788093d23040acce87f9fac48deb10bebf54b8a89989d698696bf480a7e605f",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/initialized-dataset.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/inventory.json",
+      "bytes": 9378,
+      "sha256": "14e22a0430c63d1baeb65085b428821c6684d920ba2f0ecd42e108f66302bdb0",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/inventory.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/invocation.json",
+      "bytes": 663,
+      "sha256": "ec5b8232bb7116418e97fb4eef4abe4d2b2e14e47133016666113b151df0efc6",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/invocation.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/launch-tool-receipt.json",
+      "bytes": 417,
+      "sha256": "7505c9a7c54a7413457a6c2ee33aac1aa72c8e084b91bb0ccfcbf39165efeb38",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/launch-tool-receipt.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/lineage.json",
+      "bytes": 907,
+      "sha256": "495858762f6aaee97f5f7446d0eb81eab37b64e7756915a571f2f918567d9d50",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/lineage.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/original-run.py",
+      "bytes": 17387,
+      "sha256": "817744bedf602d7bf4479a8fc0a3c27a8936fc84ddd3cedf90c8e2807a2d44d0",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/original-run.py"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/primary-identity.json",
+      "bytes": 545,
+      "sha256": "ec6c8f8cd41f46403c98a916de714db3a97cb4bd604ce105ac6c460a6bce7b68",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/primary-identity.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/primary.conf",
+      "bytes": 226,
+      "sha256": "ab805d4a7adcd2d314a9d43b0932338daad5eb3413e808fa26bbf8ca89bface6",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/primary.conf"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/primary.log",
+      "bytes": 2499,
+      "sha256": "19146ad523ab4e269559265c917b8ec07898f4d8f7c89b92bf5f789328030478",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/primary.log"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/ready.json",
+      "bytes": 2956,
+      "sha256": "f5ad13d912e550e6d4312906b3ef2c34347c8bc63d9948d1b457de307d2f78d4",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/ready.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/replica-a-data/dump.rdb",
+      "bytes": 172,
+      "sha256": "616643efe15e00b3eab81fba0b41987fd0bb61761265e110550d06b0445cc420",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/replica-a-data/dump.rdb"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/replica-a-identity.json",
+      "bytes": 547,
+      "sha256": "ccf2a444d9045c6f261ad7b37b030b087fa239e68ca15563d70908467c97368f",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/replica-a-identity.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/replica-a.conf",
+      "bytes": 276,
+      "sha256": "a900779a6a9c645de00454f2767983381ccd94bc911e5b4af0868b61d6e31cdf",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/replica-a.conf"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/replica-a.log",
+      "bytes": 1870,
+      "sha256": "7c2a437c46d7a2f0ef650cfc2bca2e1c67498bc0a365144b551097091f89b161",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/replica-a.log"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/replica-b-data/dump.rdb",
+      "bytes": 172,
+      "sha256": "616643efe15e00b3eab81fba0b41987fd0bb61761265e110550d06b0445cc420",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/replica-b-data/dump.rdb"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/replica-b-identity.json",
+      "bytes": 547,
+      "sha256": "d2307ed1ec41452d59d469bfce81c8ced787b172aaa31191324c1d0f635c934e",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/replica-b-identity.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/replica-b.conf",
+      "bytes": 276,
+      "sha256": "7e8915f0835ac1157e6cb201a31b976725397a55fe479c433cc93105ae6baff1",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/replica-b.conf"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/replica-b.log",
+      "bytes": 1870,
+      "sha256": "1979abfff51dac818d641d2993e60c4fea6637567cc720651d31f20836ec2876",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/replica-b.log"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/result.json",
+      "bytes": 646,
+      "sha256": "8f7a4fef3825cbb466d161902fb58a474966cfd033b5fb53546483c7eeefa6c3",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/run.py",
+      "bytes": 15543,
+      "sha256": "bcae5385220b67b79d38918d85868ea55e713875e4e6a8fa99a51ed79d02b9e2",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/run.py"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/setup-result.json",
+      "bytes": 231,
+      "sha256": "c3e41caee123d407d92ab709b1d3e82e11f1440d43f98226f139df7325fb8bf1",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/setup-result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/source.diff",
+      "bytes": 6155,
+      "sha256": "62786141caf16838651041ea29749c2d91865a1f0c645179a7ebcfdfef814e8f",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/source.diff"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/stop-request.json",
+      "bytes": 582,
+      "sha256": "0cfb5f507e82e3573e285eff2ed2d5bfc6b1e7054b0eb2eaa6d0ac1044eefa7d",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/stop-request.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/supervisor.log",
+      "bytes": 2524,
+      "sha256": "05937bbbd1a58c2eb6e316ef0b38360568d38033ec85663202e2402eed469688",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/supervisor.log"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-compat-correctness-first/terminal-receipt.json",
+      "bytes": 677,
+      "sha256": "c66ecf733e6a1d11d75b344dd6c0f1fc68e2765c61145c02b09c887405489906",
+      "member": "tmp/kv9-write-redis3-compat-correctness-first/terminal-receipt.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/README.md",
+      "bytes": 3797,
+      "sha256": "65a36e84cdbf61aa5cab2afd15a178de46c46abd39a1dd6c7305ff604dcb210c",
+      "member": "tmp/kv9-write-redis3-correctness-first/README.md"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/after-cleanup-port-check.json",
+      "bytes": 287,
+      "sha256": "de6e189dc8377d58f11a9c582d8d097eec13e6a7a4d115f6a7c64f414e327124",
+      "member": "tmp/kv9-write-redis3-correctness-first/after-cleanup-port-check.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/after-controls.json",
+      "bytes": 12215,
+      "sha256": "8348b5386d2f5b685ca0d835d84402f8b83e64eabee09b800101dbc5a91b784d",
+      "member": "tmp/kv9-write-redis3-correctness-first/after-controls.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/before-capacity.json",
+      "bytes": 66,
+      "sha256": "5f5cd50fb217c715990f5c8c0e679244f0bc96c1b1a1b5d7b5b0cd55635dba47",
+      "member": "tmp/kv9-write-redis3-correctness-first/before-capacity.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/before-controls.json",
+      "bytes": 12146,
+      "sha256": "13548aae864500aa847bd212789513c3ef47965b89a68fde4a597118bceb3dbf",
+      "member": "tmp/kv9-write-redis3-correctness-first/before-controls.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/before-shutdown.json",
+      "bytes": 12254,
+      "sha256": "82c41af3d94ef9d8314040d07efb5b5afeae26ac0bfcd648ca1855a0192d4a75",
+      "member": "tmp/kv9-write-redis3-correctness-first/before-shutdown.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/cleanup.json",
+      "bytes": 2897,
+      "sha256": "ec9931e42846f094c36455b64c9faebc9c7f3507a5d68ca65b8a04d6823938de",
+      "member": "tmp/kv9-write-redis3-correctness-first/cleanup.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/control-handoff.json",
+      "bytes": 2512,
+      "sha256": "6256283fcbd8fca964ea1b57ec49658bb9d9f239ebf83ff026199847bcaf92e6",
+      "member": "tmp/kv9-write-redis3-correctness-first/control-handoff.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/controls-result.json",
+      "bytes": 3153,
+      "sha256": "2b5ccc8f76e0b630e0b32e311090e8644a3fd03aa57f0400b2ae7132345d73ae",
+      "member": "tmp/kv9-write-redis3-correctness-first/controls-result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/history.jsonl",
+      "bytes": 2795570,
+      "sha256": "0e3e03f64603e2fc6673969347225609f9deb6b4913b2262e05e25d7ef904b2b",
+      "member": "tmp/kv9-write-redis3-correctness-first/history.jsonl"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/initialized-dataset.json",
+      "bytes": 484,
+      "sha256": "6788093d23040acce87f9fac48deb10bebf54b8a89989d698696bf480a7e605f",
+      "member": "tmp/kv9-write-redis3-correctness-first/initialized-dataset.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/inventory.json",
+      "bytes": 8947,
+      "sha256": "4b331879e83fcc0247b84ae47e06d8e613641eb5520ef1b453e4bdd686a953c3",
+      "member": "tmp/kv9-write-redis3-correctness-first/inventory.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/invocation.json",
+      "bytes": 610,
+      "sha256": "4b51ac9dec9e44ad14a31f67f4adf93e7517966175fe491ba513168071db3b3e",
+      "member": "tmp/kv9-write-redis3-correctness-first/invocation.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/launch-tool-receipt.json",
+      "bytes": 403,
+      "sha256": "8d19af72978ea23d16ac1eec00d49eaec1f0951cc21ca5bfc207e00b6e68d23c",
+      "member": "tmp/kv9-write-redis3-correctness-first/launch-tool-receipt.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/primary-identity.json",
+      "bytes": 538,
+      "sha256": "c7f7a08df33607868bb2c710c7f073abf21a5fa2e95be8e4fdb065f02d538e9d",
+      "member": "tmp/kv9-write-redis3-correctness-first/primary-identity.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/primary.conf",
+      "bytes": 219,
+      "sha256": "5dcacaabbbf6e84f36b084d907e9fb1a3432f946fed5e760399929f80e1563d2",
+      "member": "tmp/kv9-write-redis3-correctness-first/primary.conf"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/primary.log",
+      "bytes": 2499,
+      "sha256": "58cc7ce867a2ade1cdf0341ad3edf083d989683c4f125e6d26e0b1c09606ca79",
+      "member": "tmp/kv9-write-redis3-correctness-first/primary.log"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/ready.json",
+      "bytes": 2913,
+      "sha256": "170dd1c094b73133fd3f22da2c2352397d04c93edd3846517de9af567290ec04",
+      "member": "tmp/kv9-write-redis3-correctness-first/ready.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/replica-a-data/dump.rdb",
+      "bytes": 172,
+      "sha256": "c8cdf31bd7a7645d59126ffdb7c5f4f63f7b0efd76a6b6df58fc00966491081a",
+      "member": "tmp/kv9-write-redis3-correctness-first/replica-a-data/dump.rdb"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/replica-a-identity.json",
+      "bytes": 540,
+      "sha256": "a8f138f272d607ecbe6cee87c093c1ce921aa74c4229a1fd40b20691df3b0036",
+      "member": "tmp/kv9-write-redis3-correctness-first/replica-a-identity.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/replica-a.conf",
+      "bytes": 269,
+      "sha256": "478956b8d071c26a52fcbd64fb62da3bccd714f9f5589e791f42214761579abf",
+      "member": "tmp/kv9-write-redis3-correctness-first/replica-a.conf"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/replica-a.log",
+      "bytes": 1870,
+      "sha256": "babc59eb855216eb2ded7a0361c624f3b1cab601cd7f5d54e344c9b2a0510f6e",
+      "member": "tmp/kv9-write-redis3-correctness-first/replica-a.log"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/replica-b-data/dump.rdb",
+      "bytes": 172,
+      "sha256": "c8cdf31bd7a7645d59126ffdb7c5f4f63f7b0efd76a6b6df58fc00966491081a",
+      "member": "tmp/kv9-write-redis3-correctness-first/replica-b-data/dump.rdb"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/replica-b-identity.json",
+      "bytes": 540,
+      "sha256": "7221685d2e7cad9471e9669e0a10220a0e6215d0194f95bee1d7428d19c863c5",
+      "member": "tmp/kv9-write-redis3-correctness-first/replica-b-identity.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/replica-b.conf",
+      "bytes": 269,
+      "sha256": "eb670b797d8ec6599e49e83563d6b1bde702a6164a9a34a50b9f0c8a6ac802cb",
+      "member": "tmp/kv9-write-redis3-correctness-first/replica-b.conf"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/replica-b.log",
+      "bytes": 1870,
+      "sha256": "0b50d50ee5081a1ae6efbd3611411dd769467a2d3a29e8d8d35fa25f1d991885",
+      "member": "tmp/kv9-write-redis3-correctness-first/replica-b.log"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/result.json",
+      "bytes": 649,
+      "sha256": "3c424d1cd6db5a10d28aa86cf3ec0ecee738410e31aff2251c6da4fd7c77410e",
+      "member": "tmp/kv9-write-redis3-correctness-first/result.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/resumed-dataset.json",
+      "bytes": 484,
+      "sha256": "dfb1db1b7c6d6fe5216ad940ffb4812802e038d901561560b5307475c377ea8e",
+      "member": "tmp/kv9-write-redis3-correctness-first/resumed-dataset.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/run.py",
+      "bytes": 17387,
+      "sha256": "817744bedf602d7bf4479a8fc0a3c27a8936fc84ddd3cedf90c8e2807a2d44d0",
+      "member": "tmp/kv9-write-redis3-correctness-first/run.py"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/stop-request.json",
+      "bytes": 421,
+      "sha256": "23777bef029fb2117848ec57bd0a6a4a849f67c99653e871fd91cf1017b90836",
+      "member": "tmp/kv9-write-redis3-correctness-first/stop-request.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/supervisor.log",
+      "bytes": 2477,
+      "sha256": "b720c0257b94f7a57fef96a9aa8da9ec6f90f0fde3b6957ae8ed390f8e8a9bc0",
+      "member": "tmp/kv9-write-redis3-correctness-first/supervisor.log"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-correctness-first/terminal-receipt.json",
+      "bytes": 622,
+      "sha256": "9f2beaef8a26fdba11828b282b48f374349ff8404527171c7fe61f99a47844ef",
+      "member": "tmp/kv9-write-redis3-correctness-first/terminal-receipt.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-preflight-first/CORRECTNESS-FIXTURE.md",
+      "bytes": 7464,
+      "sha256": "11b031759a2ccc304af6a3d0e66e7095174bd81f8c5523ddcf57836ef7f32b2d",
+      "member": "tmp/kv9-write-redis3-preflight-first/CORRECTNESS-FIXTURE.md"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-preflight-first/README.md",
+      "bytes": 9961,
+      "sha256": "0f666ee9628dcf5c4d49cab5d6520b6004578d0e8dc3d8a262434130ee89799a",
+      "member": "tmp/kv9-write-redis3-preflight-first/README.md"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-preflight-first/first-inspection-failure.json",
+      "bytes": 251,
+      "sha256": "afed33584fdc67a928b16e86e2fa6514b5d2c5c6cee1ebdb0845a79a70f543be",
+      "member": "tmp/kv9-write-redis3-preflight-first/first-inspection-failure.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-preflight-first/inventory.json",
+      "bytes": 1881,
+      "sha256": "13591f374001c95d2dc7e7b1c5912b6efb175c9603d36be879b0a543dd9aa8c4",
+      "member": "tmp/kv9-write-redis3-preflight-first/inventory.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-preflight-first/port-reader-first-failure.json",
+      "bytes": 368,
+      "sha256": "c38ddaa824e472de06cd6021a779fcb6ba3aa7298a8670fa63b7fc564e2aa774",
+      "member": "tmp/kv9-write-redis3-preflight-first/port-reader-first-failure.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-preflight-first/ports-and-existing-processes.json",
+      "bytes": 766,
+      "sha256": "d87070fbf2d6a8b383e0a147c4e9810e3e4d8612a085c55202999aef27336f0a",
+      "member": "tmp/kv9-write-redis3-preflight-first/ports-and-existing-processes.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-preflight-first/privileged-existing-redis.json",
+      "bytes": 1068,
+      "sha256": "756c87eb282e55315f94c2b1ead7643ae69e727c2eec45cac4912ae6d19426cd",
+      "member": "tmp/kv9-write-redis3-preflight-first/privileged-existing-redis.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-preflight-first/resources-first.json",
+      "bytes": 1282,
+      "sha256": "06a5e6fd2edb14d53d31779207b52b9faeb2fc32a8ef2325ba2064f04f67e422",
+      "member": "tmp/kv9-write-redis3-preflight-first/resources-first.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-preflight-first/source-tool-bindings.json",
+      "bytes": 8604,
+      "sha256": "32ddddad34cd11522002c51be579f6c7dea07d26cff9a9e8840b63c3ce974a1e",
+      "member": "tmp/kv9-write-redis3-preflight-first/source-tool-bindings.json"
+    },
+    {
+      "original_path": "/tmp/kv9-write-redis3-preflight-first/tool-versions-first.json",
+      "bytes": 1091,
+      "sha256": "e3111e903528df25b985d8bac4ef454ff25310c963778128d5173d4427bd724f",
+      "member": "tmp/kv9-write-redis3-preflight-first/tool-versions-first.json"
+    }
+  ],
+  "excluded_local_payloads": [
+    {
+      "original_path": "/tmp/kv9-redis3-client-legacy-source-first/kv9-redis-batch-reference",
+      "bytes": 18521888,
+      "sha256": "f26bb4b120ee3e005f604fa817d23756c9e452821a626a7fc61c3124e8357cfb",
+      "reason": "Native executable payload retained at original local path"
+    },
+    {
+      "original_path": "/tmp/kv9-redis3-client-schema-source-first/kv9-redis-batch-reference",
+      "bytes": 18333432,
+      "sha256": "10195f892d8706af545d7e9bdde0e56679ad0fa84a57d8cd41534578cc270a46",
+      "reason": "Native executable payload retained at original local path"
+    }
+  ],
+  "readback_complete": true,
+  "aggregate_published_original_archive_bytes": 63628489
+}

@@ -1,0 +1,246 @@
+{
+  "final_source_matches": true,
+  "source_files": 10,
+  "source_checks": {
+    "complete": true,
+    "commands": [
+      {
+        "name": "compile-tests",
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "--bin",
+          "kv9-redis-batch-reference",
+          "--no-run",
+          "--message-format=json-render-diagnostics"
+        ],
+        "started_ns": 1789250781021980090,
+        "exit_code": 0,
+        "ended_ns": 1789250782187539508
+      },
+      {
+        "name": "tests",
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "--bin",
+          "kv9-redis-batch-reference",
+          "--",
+          "--test-threads=4"
+        ],
+        "started_ns": 1789250782189400135,
+        "exit_code": 0,
+        "ended_ns": 1789250782503775062,
+        "test_results": [
+          [
+            "26",
+            "0",
+            "0"
+          ]
+        ]
+      },
+      {
+        "name": "clippy",
+        "argv": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "--bin",
+          "kv9-redis-batch-reference",
+          "--tests",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "started_ns": 1789250782504376874,
+        "exit_code": 0,
+        "ended_ns": 1789250783070233263
+      },
+      {
+        "name": "build",
+        "argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "--bin",
+          "kv9-redis-batch-reference",
+          "--message-format=json-render-diagnostics"
+        ],
+        "started_ns": 1789250783070659053,
+        "exit_code": 0,
+        "ended_ns": 1789250783835663778,
+        "binary_bytes": 18521888
+      }
+    ]
+  },
+  "source_build": {
+    "version": 1,
+    "revision": "9efe5594c5d386879380ae4d995508d8cdb4c69d",
+    "dirty": true,
+    "source_tree_sha256": "fb2ba85a2c87f0f5bb247ed27d424852b76285d9d9a690bf1b3c45adc3443af5",
+    "binary_sha256": "f26bb4b120ee3e005f604fa817d23756c9e452821a626a7fc61c3124e8357cfb",
+    "profile": "debug",
+    "rustc": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8"
+  },
+  "source_guard": {
+    "complete": true,
+    "argv": [
+      "taskset",
+      "-c",
+      "6-15,22-31",
+      "env",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "PYTHONOPTIMIZE=0",
+      "python3",
+      "/tmp/kv9-redis3-client-legacy-root-first/check-source.py"
+    ],
+    "script_sha256": "70e7757d580b1b34b3edfcd74ea07fe81a964705f9529b7ddb27a1c1e1612c64",
+    "started_ns": 1789250780902317308,
+    "initial_available_bytes": 103760560128,
+    "minimum_available_bytes": 85899345920,
+    "additional_consumption_ceiling_bytes": 17179869184,
+    "accounting": "Conservative decrease in available filesystem bytes, including unrelated host writers; 5-second samples",
+    "samples": [
+      {
+        "unix_ns": 1789250780902688355,
+        "available_bytes": 103760556032
+      }
+    ],
+    "pid": 74121,
+    "exit_code": 0,
+    "ended_ns": 1789250783919994491
+  },
+  "final_client_process": {
+    "complete": true,
+    "scope": "Debug client correctness only; no performance acceptance",
+    "cases": [
+      {
+        "label": "b1-wait1",
+        "argv": [
+          "taskset",
+          "-c",
+          "6-15,22-31",
+          "/tmp/kv9-redis3-client-legacy-source-first/kv9-redis-batch-reference",
+          "--config",
+          "/tmp/kv9-redis3-client-final-process-first/b1-wait1.config.json",
+          "--output",
+          "/tmp/kv9-redis3-client-final-process-first/b1-wait1",
+          "--build-manifest",
+          "/tmp/kv9-redis3-client-legacy-source-first/build.json"
+        ],
+        "started_ns": 1789250941867437122,
+        "pid": 97950,
+        "exit_code": 0,
+        "ended_ns": 1789250942181372525,
+        "pid_absent_after_reap": true,
+        "measured_successes": 64,
+        "measured_input_items": 64,
+        "confirmation_attempts": 64,
+        "replica_confirmation_replies": [
+          0,
+          36,
+          28
+        ],
+        "matching_keys_per_node": 129,
+        "barrier_replicas": 2
+      },
+      {
+        "label": "b1-wait2",
+        "argv": [
+          "taskset",
+          "-c",
+          "6-15,22-31",
+          "/tmp/kv9-redis3-client-legacy-source-first/kv9-redis-batch-reference",
+          "--config",
+          "/tmp/kv9-redis3-client-final-process-first/b1-wait2.config.json",
+          "--output",
+          "/tmp/kv9-redis3-client-final-process-first/b1-wait2",
+          "--build-manifest",
+          "/tmp/kv9-redis3-client-legacy-source-first/build.json"
+        ],
+        "started_ns": 1789250942185932105,
+        "pid": 98105,
+        "exit_code": 0,
+        "ended_ns": 1789250942449759089,
+        "pid_absent_after_reap": true,
+        "measured_successes": 64,
+        "measured_input_items": 64,
+        "confirmation_attempts": 64,
+        "replica_confirmation_replies": [
+          0,
+          0,
+          64
+        ],
+        "matching_keys_per_node": 129,
+        "barrier_replicas": 2
+      },
+      {
+        "label": "b64-wait1",
+        "argv": [
+          "taskset",
+          "-c",
+          "6-15,22-31",
+          "/tmp/kv9-redis3-client-legacy-source-first/kv9-redis-batch-reference",
+          "--config",
+          "/tmp/kv9-redis3-client-final-process-first/b64-wait1.config.json",
+          "--output",
+          "/tmp/kv9-redis3-client-final-process-first/b64-wait1",
+          "--build-manifest",
+          "/tmp/kv9-redis3-client-legacy-source-first/build.json"
+        ],
+        "started_ns": 1789250942453616580,
+        "pid": 98108,
+        "exit_code": 0,
+        "ended_ns": 1789250942718808036,
+        "pid_absent_after_reap": true,
+        "measured_successes": 64,
+        "measured_input_items": 4096,
+        "confirmation_attempts": 64,
+        "replica_confirmation_replies": [
+          0,
+          34,
+          30
+        ],
+        "matching_keys_per_node": 129,
+        "barrier_replicas": 2
+      },
+      {
+        "label": "b64-wait2",
+        "argv": [
+          "taskset",
+          "-c",
+          "6-15,22-31",
+          "/tmp/kv9-redis3-client-legacy-source-first/kv9-redis-batch-reference",
+          "--config",
+          "/tmp/kv9-redis3-client-final-process-first/b64-wait2.config.json",
+          "--output",
+          "/tmp/kv9-redis3-client-final-process-first/b64-wait2",
+          "--build-manifest",
+          "/tmp/kv9-redis3-client-legacy-source-first/build.json"
+        ],
+        "started_ns": 1789250942722655960,
+        "pid": 98111,
+        "exit_code": 0,
+        "ended_ns": 1789250942987887741,
+        "pid_absent_after_reap": true,
+        "measured_successes": 64,
+        "measured_input_items": 4096,
+        "confirmation_attempts": 64,
+        "replica_confirmation_replies": [
+          0,
+          0,
+          64
+        ],
+        "matching_keys_per_node": 129,
+        "barrier_replicas": 2
+      }
+    ]
+  },
+  "formatting_exit_code": 0,
+  "hosted_ci_triggers": [
+    "workflow_dispatch"
+  ],
+  "hosted_ci_dispatched": false
+}

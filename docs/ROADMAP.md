@@ -1,28 +1,11 @@
 # kv9 development roadmap
 
-> Latest direction: [ThinLTO full72 qualification](RELEASE-THIN-LTO-FULL72.md)
-> improves throughput and mean latency in all 12 point/batch cells and both orders.
-> C64 GET improves 8.465%; loaded BatchPut has a documented p99 tradeoff.
-> [Main integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md) now passes fresh
-> local checks, default-build and recovery confirmation. Consult the
-> [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before another candidate.
-> The [bounded owner-poll screen](OWNER-POLL-PERFORMANCE.md) now rejects the
-> 32-us candidate: every matched workload/order loses throughput and worsens
-> latency, with more server CPU. Main remains on `11113f6`.
-> The [leader-lease proof](LEADER-LEASE-PROOF.md) now establishes a conditional
-> path to zero per-read quorum RTT, with a [proved transition model](LEASE-AUTHORITY-MODEL.md).
-> Implementation, clock qualification and
-> actual lease Chaos acceptance remain ahead of any runtime selection.
-> The [Rust controller component](LEASE-CONTROLLER.md) now passes its local source
-> and integer-timing gates. The [voting adapter](LEASE-VOTE-BINDING.md) now binds
-> durable peer installation and elections. The [renewal adapter](LEASE-RENEWAL-PUBLICATION.md)
-> now binds grants and whole-pump publication. The [read-view integration](LEASE-READ-VIEW.md)
-> passes local source/service/fault controls with default startup still on Safe
-> ReadIndex; clock qualification and actual lease Chaos remain next.
-> The [explicit Linux clock](LEASE-CLOCK.md) now passes sampled-error arithmetic,
-> source tests and actual process-pause expiration. Physical clock/host-suspend
-> qualification and lease-enabled Chaos remain required before selection.
-> Redis read parity and industrial gates remain open.
+> Latest direction: [optimize writes against three-copy Redis](WRITE-PERFORMANCE-NEXT.md).
+> Keep selected ThinLTO and Safe ReadIndex. The version-4 Redis reference client
+> now supports same-connection WAIT 1/2 with bounded deadlines and unknown-write
+> accounting. Local correctness is complete; matched throughput/latency is next.
+> Read optimization and lease qualification are held at the user's request.
+> Proof, actual Chaos Mesh and no-service-critical-singleton gates still apply.
 
 Updated: 2026-09-12. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
 [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md) maps that architecture to the current implementation.
@@ -83,10 +66,11 @@ remains Safe ReadIndex. Expired authority plus unavailable quorum fails closed.
 The [Linux clock adapter](LEASE-CLOCK.md) now checks an explicit drift/error
 contract against the durable policy. Its three arithmetic proof queries and
 three countermodels, 593 library tests and actual process-pause expiration pass.
-Next qualify physical clocks and supported host/VM pauses, then actual fault histories before
-matched throughput/latency comparison. See [the proof and implementation gates](LEADER-LEASE-PROOF.md).
-The product sequence remains memory RawKV read performance, then dynamic
-multi-Raft and automatic splits, without waiving storage/proof/fault prerequisites.
+The held lease path still requires physical clock/host/VM qualification and
+actual fault histories before any lease performance selection. See [the proof and implementation gates](LEADER-LEASE-PROOF.md).
+The current product sequence is write performance against Redis with one primary
+and two replicas, then dynamic multi-Raft and automatic splits, retaining all
+storage/proof/fault prerequisites. Read parity is no longer the active gate.
 Earlier rejected executor/handoff experiments retain their decisions. Evaluate
 throughput and latency together, including mixed-read tails. CI runs locally
 except at releases or explicitly selected key milestones.

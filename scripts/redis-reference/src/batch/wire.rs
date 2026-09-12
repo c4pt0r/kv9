@@ -1,5 +1,6 @@
-//! Bounded RESP2 MGET/MSET exchange; no command replay or pipelining.
-use super::model::{Config, MAX_WIRE};
+//! One logical call per connection, never replayed. Version 4 may send a write
+//! and WAIT together, then consume both replies within the original deadline.
+use super::model::{Config, ReadApi, WriteApi, WriteConfirmation, MAX_WIRE};
 use std::time::{Duration, Instant};
 use tokio::{
     io::{AsyncRead, AsyncReadExt, AsyncWriteExt, BufReader},
@@ -7,6 +8,9 @@ use tokio::{
 };
 
 pub type Connection = BufReader<TcpStream>;
+#[cfg(test)]
+#[path = "confirmation_tests.rs"]
+mod confirmation_tests;
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Failure {
     Deadline,
@@ -14,6 +18,7 @@ pub enum Failure {
     ServerError,
     Protocol,
     DataIntegrity,
+    ReplicationShortfall,
 }
 impl From<std::io::Error> for Failure {
     fn from(_: std::io::Error) -> Self {
@@ -31,15 +36,19 @@ impl Failure {
             Self::ServerError => 3,
             Self::Protocol => 4,
             Self::DataIntegrity => 5,
+            Self::ReplicationShortfall => 6,
         }
     }
 }
 pub enum Reply {
+    Value(Option<Vec<u8>>),
     Values(Vec<Option<Vec<u8>>>),
     Applied,
 }
 pub struct Operation {
     pub read: bool,
+    pub read_api: ReadApi,
+    pub write_api: WriteApi,
     pub keys: Vec<Vec<u8>>,
     pub values: Vec<Vec<u8>>,
 }
@@ -53,11 +62,39 @@ impl Operation {
                 values.push(c.value(i, nonce));
             }
         }
-        Self { read, keys, values }
+        // Setup always uses MGET/MSET, regardless of the measured APIs.
+        Self {
+            read,
+            read_api: ReadApi::Mget,
+            write_api: WriteApi::Mset,
+            keys,
+            values,
+        }
+    }
+
+    pub fn for_traffic(
+        c: &Config,
+        read: bool,
+        indices: impl Iterator<Item = usize>,
+        nonce: u64,
+    ) -> Self {
+        let mut operation = Self::new(c, read, indices, nonce);
+        if read {
+            operation.read_api = c.effective_read_api();
+        } else {
+            operation.write_api = c.effective_write_api();
+        }
+        operation
     }
 }
 pub fn encode(op: &Operation) -> Result<Vec<u8>, Failure> {
-    if op.keys.is_empty() || op.keys.len() > 256 || (!op.read && op.keys.len() != op.values.len()) {
+    if op.keys.is_empty()
+        || op.keys.len() > 256
+        || (!op.read && op.keys.len() != op.values.len())
+        || (op.read && !op.values.is_empty())
+        || (op.read_api == ReadApi::Get && (!op.read || op.keys.len() != 1))
+        || (op.write_api == WriteApi::Set && (op.read || op.keys.len() != 1))
+    {
         return Err(Failure::Protocol);
     }
     let mut bytes =
@@ -71,7 +108,13 @@ pub fn encode(op: &Operation) -> Result<Vec<u8>, Failure> {
         out.extend_from_slice(b"\r\n");
         Ok(())
     }
-    bulk(&mut bytes, if op.read { b"MGET" } else { b"MSET" })?;
+    let command = match (op.read, op.read_api, op.write_api) {
+        (true, ReadApi::Get, _) => b"GET".as_slice(),
+        (true, ReadApi::Mget, _) => b"MGET",
+        (false, _, WriteApi::Set) => b"SET",
+        (false, _, WriteApi::Mset) => b"MSET",
+    };
+    bulk(&mut bytes, command)?;
     for (i, k) in op.keys.iter().enumerate() {
         bulk(&mut bytes, k)?;
         if !op.read {
@@ -110,9 +153,16 @@ async fn line(
 pub async fn decode(
     reader: &mut (impl AsyncRead + Unpin),
     read: bool,
+    read_api: ReadApi,
     count: usize,
     max_value: usize,
 ) -> Result<Reply, Failure> {
+    if !(1..=256).contains(&count)
+        || max_value > MAX_WIRE
+        || (read_api == ReadApi::Get && (!read || count != 1))
+    {
+        return Err(Failure::Protocol);
+    }
     let mut remaining = MAX_WIRE;
     let header = line(reader, &mut remaining).await?;
     if !read {
@@ -122,30 +172,43 @@ pub async fn decode(
             Err(Failure::Protocol)
         };
     }
+    if read_api == ReadApi::Get {
+        return bulk_value(reader, &mut remaining, header, max_value)
+            .await
+            .map(Reply::Value);
+    }
     if header != format!("*{count}\r\n").as_bytes() {
         return Err(Failure::Protocol);
     }
     let mut values = Vec::with_capacity(count);
     for _ in 0..count {
         let header = line(reader, &mut remaining).await?;
-        if header == b"$-1\r\n" {
-            values.push(None);
-            continue;
-        }
-        // This benchmark's populated values have one configured exact size.
-        if header != format!("${max_value}\r\n").as_bytes() || max_value + 2 > remaining {
-            return Err(Failure::Protocol);
-        }
-        remaining -= max_value + 2;
-        let mut value = vec![0; max_value + 2];
-        reader.read_exact(&mut value).await?;
-        if !value.ends_with(b"\r\n") {
-            return Err(Failure::Protocol);
-        }
-        value.truncate(max_value);
-        values.push(Some(value));
+        values.push(bulk_value(reader, &mut remaining, header, max_value).await?);
     }
     Ok(Reply::Values(values))
+}
+
+async fn bulk_value(
+    reader: &mut (impl AsyncRead + Unpin),
+    remaining: &mut usize,
+    header: Vec<u8>,
+    max_value: usize,
+) -> Result<Option<Vec<u8>>, Failure> {
+    if header == b"$-1\r\n" {
+        return Ok(None);
+    }
+    // Populated benchmark values have exactly the configured size.
+    if header != format!("${max_value}\r\n").as_bytes() || max_value + 2 > *remaining {
+        return Err(Failure::Protocol);
+    }
+    *remaining -= max_value + 2;
+    let mut value = vec![0; max_value + 2];
+    reader.read_exact(&mut value).await?;
+    if !value.ends_with(b"\r\n") {
+        return Err(Failure::Protocol);
+    }
+    value.truncate(max_value);
+    Ok(Some(value))
 }
 pub struct Call {
     pub result: Result<Reply, Failure>,
@@ -153,6 +216,8 @@ pub struct Call {
     pub connection_attempts: u64,
     pub connection_failures: u64,
     pub command_attempts: u64,
+    pub confirmation_attempts: u64,
+    pub confirmed_replicas: Option<u8>,
 }
 pub async fn connect(c: &Config) -> Result<Connection, Failure> {
     let stream = TcpStream::connect(c.address).await?;
@@ -164,6 +229,8 @@ pub async fn call(conn: &mut Option<Connection>, c: &Config, op: &Operation) -> 
     let mut connects = 0;
     let mut connect_failures = 0;
     let mut commands = 0;
+    let mut confirmations = 0;
+    let mut confirmed_replicas = None;
     let deadline = tokio::time::Instant::now() + Duration::from_millis(c.deadline_ms);
     let work = async {
         if conn.is_none() {
@@ -176,11 +243,46 @@ pub async fn call(conn: &mut Option<Connection>, c: &Config, op: &Operation) -> 
                 }
             }
         }
-        let bytes = encode(op)?;
+        let mut bytes = encode(op)?;
+        let confirmation = if op.read {
+            None
+        } else {
+            c.confirmation_request()
+        };
+        if let Some(confirm) = &confirmation {
+            bytes.extend_from_slice(confirm);
+            if bytes.len() > MAX_WIRE {
+                return Err(Failure::Protocol);
+            }
+        }
         let connection = conn.as_mut().unwrap();
         commands = 1;
+        confirmations = u64::from(confirmation.is_some());
         connection.get_mut().write_all(&bytes).await?;
-        let result = decode(connection, op.read, op.keys.len(), c.value_bytes).await?;
+        let result = decode(
+            connection,
+            op.read,
+            op.read_api,
+            op.keys.len(),
+            c.value_bytes,
+        )
+        .await?;
+        if let Some(WriteConfirmation::Wait { replicas, .. }) =
+            c.write_confirmation.filter(|_| !op.read)
+        {
+            let mut remaining = 512;
+            let reply = line(connection, &mut remaining).await?;
+            let acknowledged = match reply.as_slice() {
+                b":0\r\n" => 0,
+                b":1\r\n" => 1,
+                b":2\r\n" => 2,
+                _ => return Err(Failure::Protocol),
+            };
+            confirmed_replicas = Some(acknowledged);
+            if acknowledged < replicas {
+                return Err(Failure::ReplicationShortfall);
+            }
+        }
         if !connection.buffer().is_empty() {
             return Err(Failure::Protocol);
         }
@@ -196,7 +298,7 @@ pub async fn call(conn: &mut Option<Connection>, c: &Config, op: &Operation) -> 
         }
     };
     // Discard framing state after any failure. Only the next NEW logical call
-    // may reconnect; this call is never sent again, even after a lost MSET reply.
+    // may reconnect; this call is never sent again, even after a lost SET/MSET reply.
     if result.is_err() {
         *conn = None;
     }
@@ -206,6 +308,8 @@ pub async fn call(conn: &mut Option<Connection>, c: &Config, op: &Operation) -> 
         connection_attempts: connects,
         connection_failures: connect_failures,
         command_attempts: commands,
+        confirmation_attempts: confirmations,
+        confirmed_replicas,
     }
 }
 
@@ -224,6 +328,8 @@ mod tests {
         run(async {
             let op = Operation {
                 read: false,
+                read_api: ReadApi::Mget,
+                write_api: WriteApi::Mset,
                 keys: vec![b"a".to_vec(), b"a".to_vec()],
                 values: vec![b"\0\r\n".to_vec(), b"x".to_vec()],
             };
@@ -232,7 +338,10 @@ mod tests {
                 b"*5\r\n$4\r\nMSET\r\n$1\r\na\r\n$3\r\n\0\r\n\r\n$1\r\na\r\n$1\r\nx\r\n"
             );
             let bytes = b"*3\r\n$3\r\none\r\n$-1\r\n$3\r\ntwo\r\n";
-            match decode(&mut &bytes[..], true, 3, 3).await.unwrap() {
+            match decode(&mut &bytes[..], true, ReadApi::Mget, 3, 3)
+                .await
+                .unwrap()
+            {
                 Reply::Values(v) => {
                     assert_eq!(v, vec![Some(b"one".to_vec()), None, Some(b"two".to_vec())])
                 }
@@ -251,24 +360,24 @@ mod tests {
                 b"*1\r\n:0\r\n",
             ] {
                 assert!(matches!(
-                    decode(&mut &bytes[..], true, 1, 3).await,
+                    decode(&mut &bytes[..], true, ReadApi::Mget, 1, 3).await,
                     Err(Failure::Protocol)
                 ));
             }
             assert!(matches!(
-                decode(&mut &b"-OOM rejected\r\n"[..], false, 1, 3).await,
+                decode(&mut &b"-OOM rejected\r\n"[..], false, ReadApi::Mget, 1, 3).await,
                 Err(Failure::ServerError)
             ));
             assert!(matches!(
-                decode(&mut &b"+QUEUED\r\n"[..], false, 1, 3).await,
+                decode(&mut &b"+QUEUED\r\n"[..], false, ReadApi::Mget, 1, 3).await,
                 Err(Failure::Protocol)
             ));
             assert!(matches!(
-                decode(&mut &b"+OK\r\n"[..], false, 1, 3).await,
+                decode(&mut &b"+OK\r\n"[..], false, ReadApi::Mget, 1, 3).await,
                 Ok(Reply::Applied)
             ));
             assert!(matches!(
-                decode(&mut &b"*1\r\n$3\r\na"[..], true, 1, 3).await,
+                decode(&mut &b"*1\r\n$3\r\na"[..], true, ReadApi::Mget, 1, 3).await,
                 Err(Failure::Io)
             ));
         });
@@ -277,15 +386,299 @@ mod tests {
     fn oversized_and_mismatched_requests_are_bounded() {
         assert!(encode(&Operation {
             read: false,
+            read_api: ReadApi::Mget,
+            write_api: WriteApi::Mset,
             keys: vec![vec![0; MAX_WIRE]],
             values: vec![vec![1; 16]]
         })
         .is_err());
         assert!(encode(&Operation {
             read: false,
+            read_api: ReadApi::Mget,
+            write_api: WriteApi::Mset,
             keys: vec![vec![1]],
             values: vec![]
         })
         .is_err());
+    }
+
+    fn get(key: &[u8]) -> Operation {
+        Operation {
+            read: true,
+            read_api: ReadApi::Get,
+            write_api: WriteApi::Mset,
+            keys: vec![key.to_vec()],
+            values: vec![],
+        }
+    }
+
+    fn set(key: &[u8], value: &[u8]) -> Operation {
+        Operation {
+            read: false,
+            read_api: ReadApi::Mget,
+            write_api: WriteApi::Set,
+            keys: vec![key.to_vec()],
+            values: vec![value.to_vec()],
+        }
+    }
+
+    #[test]
+    fn set_emits_three_arguments_and_legacy_setup_stays_mset() {
+        run(async {
+            assert_eq!(
+                encode(&set(b"a\0\r\n", b"v\0\r\n")).unwrap(),
+                b"*3\r\n$3\r\nSET\r\n$4\r\na\0\r\n\r\n$4\r\nv\0\r\n\r\n"
+            );
+            let mut value = super::super::model::tests::config_json();
+            value["version"] = serde_json::json!(3);
+            value["read_api"] = serde_json::json!("get");
+            value["write_api"] = serde_json::json!("set");
+            value["read_percent"] = serde_json::json!(50);
+            let c: Config = serde_json::from_value(value).unwrap();
+            let sizes = c.validate().unwrap();
+            let setup = Operation::new(&c, false, [0].into_iter(), 0);
+            assert_eq!(setup.write_api, WriteApi::Mset);
+            assert_eq!(encode(&setup).unwrap().len(), sizes.mset_request_bytes);
+            let traffic = Operation::for_traffic(&c, false, [0].into_iter(), 7);
+            assert_eq!(traffic.read_api, ReadApi::Mget);
+            assert_eq!(traffic.write_api, WriteApi::Set);
+            assert_eq!(
+                encode(&traffic).unwrap().len(),
+                sizes.set_request_bytes.unwrap()
+            );
+            assert_eq!(sizes.set_response_bytes, Some(b"+OK\r\n".len()));
+            assert!(matches!(
+                decode(
+                    &mut &b"+OK\r\n"[..],
+                    false,
+                    traffic.read_api,
+                    1,
+                    c.value_bytes
+                )
+                .await,
+                Ok(Reply::Applied)
+            ));
+            for bytes in [
+                b"+QUEUED\r\n".as_slice(),
+                b":1\r\n",
+                b"$-1\r\n",
+                b"+OK\n",
+                b"+ok\r\n",
+            ] {
+                assert!(matches!(
+                    decode(&mut &bytes[..], false, traffic.read_api, 1, c.value_bytes).await,
+                    Err(Failure::Protocol)
+                ));
+            }
+            assert!(matches!(
+                decode(
+                    &mut &b"-ERR failed\r\n"[..],
+                    false,
+                    traffic.read_api,
+                    1,
+                    c.value_bytes
+                )
+                .await,
+                Err(Failure::ServerError)
+            ));
+            let mut multiple = set(b"a", b"v");
+            multiple.keys.push(b"b".to_vec());
+            multiple.values.push(b"w".to_vec());
+            assert!(encode(&multiple).is_err());
+            let mut wrong_kind = set(b"a", b"v");
+            wrong_kind.read = true;
+            wrong_kind.values.clear();
+            assert!(encode(&wrong_kind).is_err());
+        });
+    }
+
+    #[test]
+    fn consumed_set_with_lost_reply_is_unknown_and_only_new_call_reconnects() {
+        run(async {
+            tokio::time::timeout(Duration::from_secs(5), async {
+                let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+                let mut c: Config =
+                    serde_json::from_value(super::super::model::tests::config_json()).unwrap();
+                c.version = 3;
+                c.read_api = Some(ReadApi::Get);
+                c.write_api = Some(WriteApi::Set);
+                c.read_percent = 0;
+                c.address = listener.local_addr().unwrap();
+                c.validate().unwrap();
+                let first = Operation::for_traffic(&c, false, [0].into_iter(), 1);
+                let second = Operation::for_traffic(&c, false, [0].into_iter(), 2);
+                let expected = [encode(&first).unwrap(), encode(&second).unwrap()];
+                let peer = tokio::spawn(async move {
+                    for (index, request) in expected.iter().enumerate() {
+                        let (mut stream, _) = listener.accept().await.unwrap();
+                        let mut actual = vec![0; request.len()];
+                        stream.read_exact(&mut actual).await.unwrap();
+                        assert_eq!(&actual, request, "uncertain SET was replayed");
+                        assert!(actual.starts_with(b"*3\r\n$3\r\nSET\r\n"));
+                        if index == 1 {
+                            stream.write_all(b"+OK\r\n").await.unwrap();
+                        }
+                    }
+                });
+                let mut connection = None;
+                let failed = call(&mut connection, &c, &first).await;
+                assert!(matches!(failed.result, Err(Failure::Io)));
+                assert_eq!(
+                    (failed.connection_attempts, failed.command_attempts),
+                    (1, 1)
+                );
+                assert!(connection.is_none());
+                let succeeded = call(&mut connection, &c, &second).await;
+                assert!(matches!(succeeded.result, Ok(Reply::Applied)));
+                assert_eq!(
+                    (succeeded.connection_attempts, succeeded.command_attempts),
+                    (1, 1)
+                );
+                peer.await.unwrap();
+            })
+            .await
+            .expect("bounded SET peer did not finish");
+        });
+    }
+
+    #[test]
+    fn get_is_a_real_single_bulk_exchange_and_setup_remains_mget() {
+        run(async {
+            assert_eq!(
+                encode(&get(b"a\0\r\n")).unwrap(),
+                b"*2\r\n$3\r\nGET\r\n$4\r\na\0\r\n\r\n"
+            );
+            let mut v = super::super::model::tests::config_json();
+            v["version"] = serde_json::json!(2);
+            v["read_api"] = serde_json::json!("get");
+            let c: Config = serde_json::from_value(v).unwrap();
+            let sizes = c.validate().unwrap();
+            let setup = Operation::new(&c, true, [0].into_iter(), 0);
+            assert_eq!(setup.read_api, ReadApi::Mget);
+            assert_eq!(encode(&setup).unwrap().len(), sizes.mget_request_bytes);
+            assert_eq!(
+                encode(&get(&c.key(0))).unwrap().len(),
+                sizes.get_request_bytes.unwrap()
+            );
+            for (bytes, size, expected) in [
+                (b"$3\r\na\0b\r\n".as_slice(), 3, Some(b"a\0b".to_vec())),
+                (b"$-1\r\n", 3, None),
+                (b"$0\r\n\r\n", 0, Some(vec![])),
+            ] {
+                match decode(&mut &bytes[..], true, ReadApi::Get, 1, size)
+                    .await
+                    .unwrap()
+                {
+                    Reply::Value(actual) => assert_eq!(actual, expected),
+                    _ => panic!("GET was decoded as a batch reply"),
+                }
+            }
+        });
+    }
+
+    #[test]
+    fn get_rejects_array_replies_malformed_bulk_and_invalid_cardinality() {
+        run(async {
+            for bytes in [
+                b"*1\r\n$3\r\nabc\r\n".as_slice(),
+                b"+OK\r\n",
+                b"$-2\r\n",
+                b"$03\r\nabc\r\n",
+                b"$2\r\nab\r\n",
+                b"$3\r\nabcXX",
+                b"$999999999\r\n",
+            ] {
+                assert!(
+                    matches!(
+                        decode(&mut &bytes[..], true, ReadApi::Get, 1, 3).await,
+                        Err(Failure::Protocol)
+                    ),
+                    "accepted {bytes:?}"
+                );
+            }
+            assert!(matches!(
+                decode(&mut &b"$3\r\na"[..], true, ReadApi::Get, 1, 3).await,
+                Err(Failure::Io)
+            ));
+            assert!(matches!(
+                decode(&mut &b"-ERR rejected\r\n"[..], true, ReadApi::Get, 1, 3).await,
+                Err(Failure::ServerError)
+            ));
+            assert!(matches!(
+                decode(&mut &b"$3\r\nabc\r\n"[..], true, ReadApi::Mget, 1, 3).await,
+                Err(Failure::Protocol)
+            ));
+            for count in [0, 2, 257] {
+                assert!(matches!(
+                    decode(&mut &b"$3\r\nabc\r\n"[..], true, ReadApi::Get, count, 3).await,
+                    Err(Failure::Protocol)
+                ));
+                let mut op = get(b"a");
+                op.keys = vec![b"a".to_vec(); count];
+                assert!(encode(&op).is_err());
+            }
+            let mut op = get(b"a");
+            op.values.push(b"unused".to_vec());
+            assert!(encode(&op).is_err());
+            op.read = false;
+            assert!(encode(&op).is_err());
+            assert!(matches!(
+                decode(&mut &b"+OK\r\n"[..], false, ReadApi::Get, 1, 3).await,
+                Err(Failure::Protocol)
+            ));
+        });
+    }
+
+    #[test]
+    fn lost_get_reply_is_not_replayed_and_only_a_new_call_reconnects() {
+        run(async {
+            tokio::time::timeout(Duration::from_secs(5), async {
+                let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+                let mut c: Config =
+                    serde_json::from_value(super::super::model::tests::config_json()).unwrap();
+                c.version = 2;
+                c.read_api = Some(ReadApi::Get);
+                c.address = listener.local_addr().unwrap();
+                let first = get(&c.key(0));
+                let second = get(&c.key(1));
+                let expected = [encode(&first).unwrap(), encode(&second).unwrap()];
+                let value = c.value(1, 0);
+                let sent = value.clone();
+                let peer = tokio::spawn(async move {
+                    for (index, request) in expected.iter().enumerate() {
+                        let (mut stream, _) = listener.accept().await.unwrap();
+                        let mut actual = vec![0; request.len()];
+                        stream.read_exact(&mut actual).await.unwrap();
+                        assert_eq!(&actual, request, "failed logical call was replayed");
+                        if index == 1 {
+                            let mut reply = format!("${}\r\n", sent.len()).into_bytes();
+                            reply.extend_from_slice(&sent);
+                            reply.extend_from_slice(b"\r\n");
+                            stream.write_all(&reply).await.unwrap();
+                        }
+                    }
+                });
+                let mut connection = None;
+                let failed = call(&mut connection, &c, &first).await;
+                assert!(matches!(failed.result, Err(Failure::Io)));
+                assert_eq!(
+                    (failed.connection_attempts, failed.command_attempts),
+                    (1, 1)
+                );
+                assert!(connection.is_none());
+                let successful = call(&mut connection, &c, &second).await;
+                match successful.result {
+                    Ok(Reply::Value(Some(actual))) => assert_eq!(actual, value),
+                    _ => panic!("new logical GET did not reconnect correctly"),
+                }
+                assert_eq!(
+                    (successful.connection_attempts, successful.command_attempts),
+                    (1, 1)
+                );
+                peer.await.unwrap();
+            })
+            .await
+            .expect("bounded owned peer did not finish");
+        });
     }
 }
