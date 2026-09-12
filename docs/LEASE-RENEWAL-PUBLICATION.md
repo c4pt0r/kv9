@@ -109,11 +109,12 @@ before source runs under the original 80 GiB free floor plus 16 GiB reservation.
 
 ## Remaining service and acceptance gates
 
-The server still needs to bind each read's fresh commit frontier to the exact
-retained immutable applied view, validate metadata on that view, and perform a
-final authority/clock check while preserving the original admission, deadline
-and cancellation. No adapter method currently bypasses Safe ReadIndex for a
-service request. Expired authority plus unavailable quorum must refuse the read.
+The subsequent [read-view adapter](LEASE-READ-VIEW.md) now binds each read's
+fresh commit frontier to the exact retained immutable applied view, validates
+metadata on that view, and performs a final authority/clock check while
+preserving the original admission, deadline and cancellation. Its optional
+server path passes local source/service/fault controls; default startup remains
+Safe ReadIndex. Expired authority plus unavailable quorum must refuse the read.
 Writes continue to require Raft majority commitment and the existing durability.
 
 Clock-rate bounds must hold through pauses and supported host suspension modes;

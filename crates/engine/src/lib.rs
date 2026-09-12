@@ -197,6 +197,24 @@ impl<T: ReadView + ?Sized> ReadView for &T {
     }
 }
 
+/// One owned immutable view and the command position captured under the same
+/// engine-state lock. This is a view identity, not Raft authority or a durable
+/// truncation bound. Raft no-op/configuration progress is a separate fact.
+pub struct PositionedReadView {
+    pub(crate) view: Box<dyn ReadView>,
+    pub(crate) position: Option<kv9_common::AppliedPosition>,
+}
+
+impl PositionedReadView {
+    pub fn position(&self) -> Option<kv9_common::AppliedPosition> {
+        self.position
+    }
+
+    pub fn into_view(self) -> Box<dyn ReadView> {
+        self.view
+    }
+}
+
 /// The storage engine trait (DESIGN §6.2).
 ///
 /// Keys and values here are the *physical* (prefix-encoded) keys within a region's

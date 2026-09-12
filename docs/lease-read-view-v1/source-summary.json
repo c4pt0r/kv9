@@ -1,0 +1,162 @@
+{
+  "complete": true,
+  "source_root": "/home/dongxu/kv9",
+  "commands": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "started_ns": 1789246962534053438,
+      "exit_code": 0,
+      "ended_ns": 1789246962948522609
+    },
+    {
+      "name": "default-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-engine",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "started_ns": 1789246963012358005,
+      "exit_code": 0,
+      "ended_ns": 1789246968785617674,
+      "test_binary_sha256": "5cff75a66035bb90c22e87ba8063465413a333adf71ddd9ac1fbfca2ab3ebda6",
+      "retained_binary": "/tmp/kv9-lease-read-service-auth-source-first/raft-tests.gz",
+      "retained_binary_bytes": 40330396,
+      "restoration": "gzip -dc raft-tests.gz > raft-tests; chmod +x raft-tests"
+    },
+    {
+      "name": "default-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-engine",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--",
+        "--test-threads=4"
+      ],
+      "started_ns": 1789246971799573644,
+      "exit_code": 0,
+      "ended_ns": 1789246980274156777,
+      "test_results": [
+        [
+          "136",
+          "0",
+          "0"
+        ],
+        [
+          "243",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "name": "server-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--lib",
+        "--",
+        "--test-threads=4"
+      ],
+      "started_ns": 1789246980351888649,
+      "exit_code": 0,
+      "ended_ns": 1789247017814313595,
+      "test_result": [
+        "207",
+        "0",
+        "1"
+      ]
+    },
+    {
+      "name": "default-restart-probe",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--test",
+        "lease_restart",
+        "--",
+        "--test-threads=1"
+      ],
+      "started_ns": 1789247017877558094,
+      "exit_code": 0,
+      "ended_ns": 1789247020044896084
+    },
+    {
+      "name": "default-server-check",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--message-format=json-render-diagnostics"
+      ],
+      "started_ns": 1789247020107054402,
+      "exit_code": 0,
+      "ended_ns": 1789247023175236855
+    },
+    {
+      "name": "experimental-check",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--features",
+        "experimental-leader-lease",
+        "--message-format=json-render-diagnostics"
+      ],
+      "started_ns": 1789247023243623470,
+      "exit_code": 0,
+      "ended_ns": 1789247025911993609
+    },
+    {
+      "name": "experimental-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "kv9-engine",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--all-targets",
+        "--features",
+        "experimental-leader-lease",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_ns": 1789247025980456246,
+      "exit_code": 0,
+      "ended_ns": 1789247031552375045
+    }
+  ]
+}

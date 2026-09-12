@@ -1,0 +1,627 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--test",
+        "lease_restart",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247134386000716,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247131866884464
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/lease_restart-edc84149e3027761",
+        "feature_disabled_library_refuses_a_durably_marked_lease_voter",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247134465603582,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247134433892082
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247138886176717,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247134465737002
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "async_read::tests::local_fallback_keeps_one_slot_original_context_and_absolute_deadline",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247138957091797,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247138953475294
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::a_read_ticket_from_another_peer_installation_cannot_authorize_a_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247139221116719,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247138957248570
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::a_valid_lease_cannot_bypass_the_existing_read_admission_limit",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247139335243184,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247139221439162
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::expiry_after_snapshot_capture_discards_local_authority_and_queues_fallback",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247139499378745,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247139335524490
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::fresh_commit_frontier_cannot_authorize_an_unapplied_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247139713709320,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247139499690077
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247150947042498,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247139714165643
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_server-0cc6a4539d9bb6b0",
+        "runtime::tests::lease_read_tests::deferred_lease_batch_checks_metadata_and_values_on_its_retained_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247152221826037,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247151056773913
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_server-0cc6a4539d9bb6b0",
+        "runtime::tests::lease_read_tests::deferred_lease_get_checks_metadata_and_values_on_its_retained_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247153337166040,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247152222139664
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_server-0cc6a4539d9bb6b0",
+        "runtime::tests::lease_read_tests::large_lease_batch_defers_copy_without_changing_the_authorized_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247154552739337,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247153337489275
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247155620894764,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247154553185270
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::expiry_after_snapshot_capture_discards_local_authority_and_queues_fallback",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247155855009774,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789247155691071002
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247156920731751,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247155855464424
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::fresh_commit_frontier_cannot_authorize_an_unapplied_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247157203549534,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789247156989479508
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247158119012038,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247157204129889
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::fresh_commit_frontier_cannot_authorize_an_unapplied_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247158402525522,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789247158188560963
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247159318207656,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247158403300291
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::a_read_ticket_from_another_peer_installation_cannot_authorize_a_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247159600557023,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789247159386626027
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247160570296343,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247159605268273
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::a_valid_lease_cannot_bypass_the_existing_read_admission_limit",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247160754298002,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789247160640363848
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247162371126182,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247160754946465
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "async_read::tests::local_fallback_keeps_one_slot_original_context_and_absolute_deadline",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247162444590639,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789247162440904376
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247167216668737,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247162446458602
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_server-0cc6a4539d9bb6b0",
+        "runtime::tests::lease_read_tests::deferred_lease_get_checks_metadata_and_values_on_its_retained_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247168247315079,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789247167332276029
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247171017851088,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247168250277448
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_server-0cc6a4539d9bb6b0",
+        "runtime::tests::lease_read_tests::deferred_lease_batch_checks_metadata_and_values_on_its_retained_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247171998497210,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789247171133812182
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247174769013268,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247172001271798
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_server-0cc6a4539d9bb6b0",
+        "runtime::tests::lease_read_tests::large_lease_batch_defers_copy_without_changing_the_authorized_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247175851455084,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789247174886469628
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247177472628371,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247175856401914
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "async_read::tests::local_fallback_keeps_one_slot_original_context_and_absolute_deadline",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247177547651663,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247177543763913
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::a_read_ticket_from_another_peer_installation_cannot_authorize_a_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247177811931879,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247177547975959
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::a_valid_lease_cannot_bypass_the_existing_read_admission_limit",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247177926152809,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247177812311018
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::expiry_after_snapshot_capture_discards_local_authority_and_queues_fallback",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247178090407450,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247177926462508
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "driver::lease_read::tests::fresh_commit_frontier_cannot_authorize_an_unapplied_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247178304897330,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247178090887468
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-server",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789247182876004363,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247178305325561
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_server-0cc6a4539d9bb6b0",
+        "runtime::tests::lease_read_tests::deferred_lease_batch_checks_metadata_and_values_on_its_retained_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247184109114561,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247182993937535
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_server-0cc6a4539d9bb6b0",
+        "runtime::tests::lease_read_tests::deferred_lease_get_checks_metadata_and_values_on_its_retained_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247185174741921,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247184109614145
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_server-0cc6a4539d9bb6b0",
+        "runtime::tests::lease_read_tests::large_lease_batch_defers_copy_without_changing_the_authorized_view",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789247186290510442,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789247185175256794
+    }
+  ],
+  "complete": true,
+  "controls": [
+    {
+      "assertion": "read succeeded before its required authority/application",
+      "expected_failure_observed": true,
+      "mutant_sha256": "e3102e8ca19862af0f3dbf6c33b8104cedd016df7d1c0c106f3f63a5133317dc",
+      "name": "skip-final-lease-validation",
+      "original_sha256": "12d4cbc7532bca6728d0d8e2c499595449bc5529f22aff9a7542e817ee6ab947",
+      "path": "crates/raft/src/driver/lease_read.rs",
+      "test": "driver::lease_read::tests::expiry_after_snapshot_capture_discards_local_authority_and_queues_fallback"
+    },
+    {
+      "assertion": "cached renewal commit ignored a newer committed write",
+      "expected_failure_observed": true,
+      "mutant_sha256": "e3b42730fe5228d6dcf5c221a19864dcdbf7721c8955c04f38b535bd2ec963b8",
+      "name": "cache-old-commit-frontier",
+      "original_sha256": "d31e118077236711eb0208fa51e849ab567eea883d401bfb8d46a87a808ea825",
+      "path": "crates/raft/src/lease.rs",
+      "test": "driver::lease_read::tests::fresh_commit_frontier_cannot_authorize_an_unapplied_view"
+    },
+    {
+      "assertion": "cached renewal commit ignored a newer committed write",
+      "expected_failure_observed": true,
+      "mutant_sha256": "6409c0276bac63e93e9dcadfa9419e704147a8fb2622644c5c6fd51bca750381",
+      "name": "bypass-apply-coverage",
+      "original_sha256": "d31e118077236711eb0208fa51e849ab567eea883d401bfb8d46a87a808ea825",
+      "path": "crates/raft/src/lease.rs",
+      "test": "driver::lease_read::tests::fresh_commit_frontier_cannot_authorize_an_unapplied_view"
+    },
+    {
+      "assertion": "foreign peer installation authorized a lease view",
+      "expected_failure_observed": true,
+      "mutant_sha256": "7adc15469572044fd1fcaf6ed2a2c6fc0576cb65deb7dd2752cb7ac3f4982327",
+      "name": "foreign-read-installation",
+      "original_sha256": "81124b6fcc92ace6f6ead9794762ff3e16d6195a490387ad46bdd62464b7ed27",
+      "path": "crates/raft/src/rawnode/lease_gate.rs",
+      "test": "driver::lease_read::tests::a_read_ticket_from_another_peer_installation_cannot_authorize_a_view"
+    },
+    {
+      "assertion": "valid lease bypassed the shared read admission limit",
+      "expected_failure_observed": true,
+      "mutant_sha256": "ba3fab430a7ae352745d045c100222201c9e28d582f38b69bc384309e3097485",
+      "name": "unbounded-local-admission",
+      "original_sha256": "03cf4b4c6f046c92bddb38788e80c1e78c14577b7980e85363abf2250c085e39",
+      "path": "crates/raft/src/async_read.rs",
+      "test": "driver::lease_read::tests::a_valid_lease_cannot_bypass_the_existing_read_admission_limit"
+    },
+    {
+      "assertion": "local fallback reset the original request budget",
+      "expected_failure_observed": true,
+      "mutant_sha256": "af31ba5059da40a908d1c8e87225a6da48dced8af4dbdf54db119f2e6948a09d",
+      "name": "reset-fallback-deadline",
+      "original_sha256": "03cf4b4c6f046c92bddb38788e80c1e78c14577b7980e85363abf2250c085e39",
+      "path": "crates/raft/src/async_read.rs",
+      "test": "async_read::tests::local_fallback_keeps_one_slot_original_context_and_absolute_deadline"
+    },
+    {
+      "assertion": "deferred lease read lost its retained metadata authorization",
+      "expected_failure_observed": true,
+      "mutant_sha256": "814e51faf3b51d9ff3315e4d0b76ae2a71fae210be34f6cb72569b13ecdb85f9",
+      "name": "replace-deferred-get-view",
+      "original_sha256": "73c8ba82116a37828ea13fdb37ed72d9caedf6b87e933bf35cb68651676dedc6",
+      "path": "crates/server/src/runtime.rs",
+      "test": "runtime::tests::lease_read_tests::deferred_lease_get_checks_metadata_and_values_on_its_retained_view"
+    },
+    {
+      "assertion": "deferred lease read lost its retained metadata authorization",
+      "expected_failure_observed": true,
+      "mutant_sha256": "e5ee923c8e3eb4a016274b43740532439bdb8eb87f303ea3dae4633664c64c2a",
+      "name": "replace-deferred-batch-view",
+      "original_sha256": "73c8ba82116a37828ea13fdb37ed72d9caedf6b87e933bf35cb68651676dedc6",
+      "path": "crates/server/src/runtime.rs",
+      "test": "runtime::tests::lease_read_tests::deferred_lease_batch_checks_metadata_and_values_on_its_retained_view"
+    },
+    {
+      "assertion": "deferred lease read replaced its authorized metadata/data view",
+      "expected_failure_observed": true,
+      "mutant_sha256": "a65a30fa30ee897cdf291d85e1b2f4531e3eb05417d2595a658c232e5aa3775c",
+      "name": "replace-large-batch-view",
+      "original_sha256": "73c8ba82116a37828ea13fdb37ed72d9caedf6b87e933bf35cb68651676dedc6",
+      "path": "crates/server/src/runtime.rs",
+      "test": "runtime::tests::lease_read_tests::large_lease_batch_defers_copy_without_changing_the_authorized_view"
+    }
+  ],
+  "source_bytes": 3037796,
+  "source_files": 157
+}

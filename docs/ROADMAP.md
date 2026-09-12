@@ -16,7 +16,9 @@
 > The [Rust controller component](LEASE-CONTROLLER.md) now passes its local source
 > and integer-timing gates. The [voting adapter](LEASE-VOTE-BINDING.md) now binds
 > durable peer installation and elections. The [renewal adapter](LEASE-RENEWAL-PUBLICATION.md)
-> now binds grants and whole-pump publication; read-view integration is next.
+> now binds grants and whole-pump publication. The [read-view integration](LEASE-READ-VIEW.md)
+> passes local source/service/fault controls with default startup still on Safe
+> ReadIndex; clock qualification and actual lease Chaos remain next.
 > Redis read parity and industrial gates remain open.
 
 Updated: 2026-09-12. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
@@ -69,8 +71,13 @@ controls and integer-timing proofs. Its [voting adapter](LEASE-VOTE-BINDING.md)
 now binds durable peer installation and actual elections. The
 [renewal adapter](LEASE-RENEWAL-PUBLICATION.md) adds exact envelopes, leader lifetime
 binding and whole-pump certificate publication, with 231 passing Raft tests.
-Next bind each exact immutable read view and its fresh commit frontier. Expired authority plus unavailable
-quorum must fail closed. Qualify the clock and actual fault histories before
+The [read-view integration](LEASE-READ-VIEW.md) now binds fresh commit capture,
+the exact owned applied view, final authority and the original admission budget
+to experimental GET/BatchGet. Its local gate passes 586 tests (one existing
+server test ignored) and nine compiled source fault controls. Unary/streaming
+RPC traversal and deferred same-view metadata/value checks pass. Default startup
+remains Safe ReadIndex. Expired authority plus unavailable quorum fails closed.
+Next qualify the clock and actual fault histories before
 matched throughput/latency comparison. See [the proof and implementation gates](LEADER-LEASE-PROOF.md).
 The product sequence remains memory RawKV read performance, then dynamic
 multi-Raft and automatic splits, without waiving storage/proof/fault prerequisites.

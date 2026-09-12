@@ -526,6 +526,13 @@ impl WalEngine {
     pub fn try_resident_snapshot(&self) -> Option<Box<dyn ReadView>> {
         self.index.try_resident_snapshot()
     }
+
+    /// Capture the command position and owned view atomically. No WAL mutex or
+    /// I/O is needed; a caller must separately establish Raft authority and
+    /// successful driver application before serving this view.
+    pub fn try_positioned_resident_snapshot(&self) -> Option<crate::PositionedReadView> {
+        self.index.try_positioned_resident_snapshot()
+    }
 }
 
 impl Engine for WalEngine {
@@ -645,6 +652,52 @@ mod tests {
         engine
             .write_applied(batch, AppliedPosition { term: 2, index })
             .unwrap();
+    }
+
+    #[test]
+    fn positioned_resident_view_retains_its_data_and_index_without_the_wal_lock() {
+        let dir = tmpdir("positioned-resident-view");
+        let (engine, _) = WalEngine::open(dir.join("catalog.wal")).unwrap();
+        let engine = std::sync::Arc::new(engine);
+        positioned(&engine, 7);
+        let held = engine.wal.lock().unwrap();
+        let (send, receive) = std::sync::mpsc::channel();
+        let reader = engine.clone();
+        let worker = std::thread::spawn(move || {
+            send.send(reader.try_positioned_resident_snapshot())
+                .unwrap();
+        });
+        let result = receive.recv_timeout(std::time::Duration::from_secs(2));
+        drop(held);
+        worker.join().unwrap();
+        let snapshot = result.expect("resident view waited for WAL I/O").unwrap();
+        positioned(&engine, 8);
+        assert_eq!(
+            snapshot.position(),
+            Some(AppliedPosition { term: 2, index: 7 })
+        );
+        let view = snapshot.into_view();
+        for cf in ColumnFamily::ALL {
+            assert_eq!(
+                view.get(cf, &7u64.to_be_bytes()).unwrap(),
+                Some(vec![7; 40])
+            );
+            assert_eq!(view.get(cf, &8u64.to_be_bytes()).unwrap(), None);
+        }
+        let latest = engine.try_positioned_resident_snapshot().unwrap();
+        assert_eq!(
+            latest.position(),
+            Some(AppliedPosition { term: 2, index: 8 })
+        );
+        assert_eq!(
+            latest
+                .into_view()
+                .get(ColumnFamily::Default, &8u64.to_be_bytes())
+                .unwrap(),
+            Some(vec![8; 40])
+        );
+        drop(engine);
+        std::fs::remove_dir_all(dir).unwrap();
     }
 
     #[test]

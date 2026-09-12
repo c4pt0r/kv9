@@ -33,10 +33,13 @@ protobuf.workspace = true
 # `testing` here and nowhere else: with resolver = "2" a dev-dependency feature is not
 # unified into the normal build, so FaultyEngine stays out of the shipped binary.
 kv9-engine = { workspace = true, features = ["testing"] }
-kv9-raft = { workspace = true, features = ["testing"] }
+kv9-raft = { workspace = true, features = ["testing", "experimental-leader-lease"] }
 
 [features]
 # Test-only crash gates, never enabled by default.
 checkpoint-testing = []
 # Isolated transport comparison. Never enabled in the default runtime.
 rpc-experiment = ["dep:tarpc"]
+# Programmatic experimental installation requires an explicitly supplied clock.
+# No default clock or CLI enablement is selected by this feature.
+experimental-leader-lease = ["kv9-raft/experimental-leader-lease"]
