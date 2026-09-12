@@ -13,9 +13,32 @@ WORKLOAD_FIELDS = 'run_id seed workers keys batch_size value_bytes read_percent 
 
 
 def config_check(c):
-    keys(c, ['version', 'address', 'deadline_ms', *WORKLOAD_FIELDS])
-    uint(c['version'], 1, 1)
+    require(type(c) is dict, 'Redis configuration must be an object')
+    version = uint(c.get('version'), 1, 4)
+    keys(c, ['version', 'address', 'deadline_ms', *WORKLOAD_FIELDS,
+             *(['read_api'] if version >= 2 else []),
+             *(['write_api'] if version >= 3 else []),
+             *(['write_confirmation'] if version == 4 else [])])
+    if version >= 2:
+        require(c['read_api'] in ('mget', 'get'), 'invalid Redis read API')
+        if c['read_api'] == 'get':
+            require(c['batch_size'] == 1, 'Redis GET requires batch size one')
+            if version == 2:
+                require(c['read_percent'] == 100, 'version 2 Redis GET requires read-only traffic')
+    if version >= 3:
+        require(c['write_api'] in ('mset', 'set'), 'invalid Redis write API')
+        if c['write_api'] == 'set':
+            require(c['batch_size'] == 1, 'Redis SET requires batch size one')
     uint(c['deadline_ms'], 1, 30_000)
+    if version == 4:
+        confirmation = c['write_confirmation']
+        require(type(confirmation) is dict, 'write confirmation must be an object')
+        if confirmation.get('kind') == 'wait':
+            keys(confirmation, ['kind', 'replicas', 'timeout_ms'])
+            uint(confirmation['replicas'], 1, 2)
+            uint(confirmation['timeout_ms'], 1, c['deadline_ms'])
+        else:
+            equal(confirmation, {'kind': 'async'}, 'invalid write confirmation')
     address = c['address']
     require(type(address) is str and len(address) <= 128, 'invalid Redis address')
     host, port = address.rsplit(':', 1)
@@ -47,7 +70,21 @@ def config_check(c):
                 mget_response_bytes=array(n) + n*bulk(c['value_bytes']),
                 maximum_input_items_in_flight=c['workers']*n,
                 maximum_input_payload_bytes_in_flight=c['workers']*n*(len(c['run_id'])+17+c['value_bytes']))
-    require(max(size[k] for k in ('mget_request_bytes', 'mset_request_bytes', 'mget_response_bytes')) <= 1_048_576,
+    if c.get('read_api') == 'get':
+        size.update(get_request_bytes=array(2)+bulk(3)+bulk(len(c['run_id'])+17),
+                    get_response_bytes=bulk(c['value_bytes']))
+    if c.get('write_api') == 'set':
+        size.update(set_request_bytes=array(3)+bulk(3)+bulk(len(c['run_id'])+17)+bulk(c['value_bytes']),
+                    set_response_bytes=len(b'+OK\r\n'))
+    if c.get('write_confirmation', {}).get('kind') == 'wait':
+        confirmation = c['write_confirmation']
+        size['confirmation_request_bytes'] = (array(3) + bulk(len('WAIT')) +
+                                              bulk(len(str(confirmation['replicas']))) +
+                                              bulk(len(str(confirmation['timeout_ms']))))
+        for field in ('mset_request_bytes', 'set_request_bytes'):
+            require(size.get(field, 0) + size['confirmation_request_bytes'] <= 1_048_576,
+                    'combined Redis write and confirmation exceed bound')
+    require(max(size[k] for k in size if k.endswith(('_request_bytes', '_response_bytes'))) <= 1_048_576,
             'encoded Redis batch exceeds bound')
     require(size['maximum_input_payload_bytes_in_flight'] <= 64*1024*1024, 'pending input exceeds bound')
     return offered, size
@@ -55,17 +92,27 @@ def config_check(c):
 
 def metrics_check(m, c, phase):
     keys(m, ['operations', 'outcomes', 'reasons', 'histogram_subdivisions', 'valid', 'statistics'])
-    equal(m['operations'], ['mget', 'mset'], 'operation vocabulary differs')
+    traffic = phase in ('warmup', 'measurement')
+    point = c.get('read_api') == 'get' and traffic
+    point_write = c.get('write_api') == 'set' and traffic
+    equal(m['operations'], ['get' if point else 'mget', 'set' if point_write else 'mset'],
+          'operation vocabulary differs')
     equal(m['outcomes'], ['success', 'unknown_write', 'read_failure'], 'outcome vocabulary differs')
-    equal(m['reasons'], ['success', 'deadline', 'io', 'server_error', 'protocol', 'data_integrity'], 'reason vocabulary differs')
+    replication = c['version'] == 4
+    confirmation = c.get('write_confirmation', {'kind': 'async'})
+    reason_names = ['success', 'deadline', 'io', 'server_error', 'protocol', 'data_integrity']
+    equal(m['reasons'], reason_names + (['replication_shortfall'] if replication else []), 'reason vocabulary differs')
     uint(m['histogram_subdivisions'], 64, 64)
     require(m['valid'] is True, 'invalid measurement population')
     require(type(m['statistics']) is list and len(m['statistics']) == 2, 'missing operations')
     fixed = phase == 'measurement' and c['load']['kind'] == 'fixed_rate'
     counts = []
     successes = items = commands = 0
+    confirmations = 0
+    replica_replies = [0, 0, 0]
     for kind, op in enumerate(m['statistics']):
-        keys(op, ['populations', 'reasons', 'dispatch_lateness', 'connection_attempts', 'connection_failures', 'command_attempts', 'data_failures'])
+        keys(op, ['populations', 'reasons', 'dispatch_lateness', 'connection_attempts', 'connection_failures', 'command_attempts', 'data_failures',
+                  *(['confirmation_attempts', 'replica_confirmation_replies', 'total_resp_command_attempts'] if replication else [])])
         uint(op['data_failures'], 0, 0)
         require(type(op['populations']) is list and len(op['populations']) == 3, 'missing failure population')
         calls = whole_sum = scheduled_sum = 0
@@ -96,27 +143,54 @@ def metrics_check(m, c, phase):
                     scheduled_buckets[i] += count
             calls += n
             whole_sum += whole['sum_ns']; scheduled_sum += scheduled['sum_ns']
-        reasons = vector(op['reasons'], 6)
+        reasons = vector(op['reasons'], 7 if replication else 6)
         require(sum(reasons) == calls and reasons[0] == op['populations'][0]['calls'], 'terminal reason population differs')
         require(reasons[4] == reasons[5] == 0, 'protocol or data integrity failure')
         connects = uint(op['connection_attempts'], 0, calls)
         failed = uint(op['connection_failures'], 0, connects)
         attempted = uint(op['command_attempts'], 0, calls)
         require(attempted + failed == calls and attempted >= reasons[0] + reasons[3], 'command/connection accounting differs')
+        if replication:
+            confirms = uint(op['confirmation_attempts'], 0, attempted)
+            replies = vector(op['replica_confirmation_replies'], 3)
+            equal(uint(op['total_resp_command_attempts']), attempted + confirms, 'combined RESP attempt count differs')
+            if kind == 1 and confirmation['kind'] == 'wait':
+                required = confirmation['replicas']
+                equal(confirms, attempted, 'write attempt omitted or repeated confirmation')
+                require(sum(replies) <= confirms, 'replica replies exceed confirmation attempts')
+                equal(sum(replies[:required]), reasons[6], 'short acknowledgments must be unknown writes')
+                equal(sum(replies[required:]), reasons[0], 'successful writes lack sufficient replica replies')
+            else:
+                equal(confirms, 0, 'reads or asynchronous writes issued confirmation')
+                equal(replies, [0, 0, 0], 'unexpected replica acknowledgment')
+                equal(reasons[6], 0, 'unexpected replication shortfall')
+            confirmations += confirms
+            replica_replies = [a + b for a, b in zip(replica_replies, replies)]
         late = histogram_check(op['dispatch_lateness'])
+        require(not (c['version'] == 2 and point and kind == 1) or calls == 0,
+                'version 2 point GET stage contains writes')
         require(late['count'] == (calls if fixed else 0), 'dispatch lateness population differs')
         require(scheduled_sum == (whole_sum+late['sum_ns'] if fixed else 0), 'scheduled time omits delayed dispatch')
         if fixed:
             dominance_check(dict(count=calls, buckets=scheduled_buckets, min_ns=min(minima) if minima else None,
                                  max_ns=max(maxima) if maxima else None), late)
         counts.append(calls); successes += reasons[0]; items += op['populations'][0]['input_items']; commands += attempted
-    return dict(calls=counts, successes=successes, successful_items=items, attempts=commands)
+    result = dict(calls=counts, successes=successes, successful_items=items, attempts=commands)
+    if replication:
+        result.update(confirmation_attempts=confirmations, replica_confirmation_replies=replica_replies,
+                      total_resp_command_attempts=commands + confirmations)
+    return result
 
 
 def report_check(r, c, b):
     keys(r, [*REPORT_FIELDS, 'protocol', 'preconnected_workers'])
-    uint(r['version'], 1, 1)
-    require(r['workload_model'] == 'bounded_redis_batch_performance' and r['protocol'] == 'resp2', 'wrong reference protocol/model')
+    uint(r['version'], 1, 4)
+    equal(r['version'], c['version'], 'report and configuration versions differ')
+    model = ('bounded_redis_replication_confirmed_performance' if c['version'] == 4
+             else 'bounded_redis_api_performance' if c['version'] == 3
+             else 'bounded_redis_point_get_diagnostic' if c.get('read_api') == 'get'
+             else 'bounded_redis_batch_performance')
+    require(r['workload_model'] == model and r['protocol'] == 'resp2', 'wrong reference protocol/model')
     require(r['complete'] is True and r['failure'] is None, 'measurement incomplete')
     require(r['full_history_recorded'] is False and r['independently_checked'] is False, 'aggregate client claims history acceptance')
     equal(r['configuration'], c, 'reported configuration differs')
@@ -134,6 +208,10 @@ def report_check(r, c, b):
     metrics = {phase: metrics_check(r['metrics'][phase], c, phase) for phase in PHASES}
     result = cohort_check(r, c, metrics, offered, call_latency='client_call')
     result['command_attempts'] = result.pop('attempts')
+    if c['version'] == 4:
+        for field in ('confirmation_attempts', 'replica_confirmation_replies', 'total_resp_command_attempts'):
+            result[field] = metrics['measurement'][field]
+        result['write_confirmation'] = c['write_confirmation'].copy()
     return result
 
 
@@ -161,10 +239,26 @@ def paired_configuration(redis, native):
     config_check(redis)
     from batch_benchmark_report import config_check as native_config_check
     native_config_check(native)
+    redis_api = redis.get('read_api', 'mget')
+    native_api = native.get('read_api', 'batch_get')
+    require((redis_api, native_api) in (('mget', 'batch_get'), ('get', 'point_get')),
+            'paired read APIs differ')
+    redis_write_api = redis.get('write_api', 'mset')
+    native_write_api = native.get('write_api', 'batch_put')
+    require((redis_write_api, native_write_api) in (('mset', 'batch_put'), ('set', 'point_put')),
+            'paired write APIs differ')
     for field in WORKLOAD_FIELDS:
         equal(redis[field], native[field], 'paired workload differs: '+field)
     equal(redis['deadline_ms'], native['client']['deadline_ms'], 'paired deadlines differ')
-    return {field: redis[field] for field in WORKLOAD_FIELDS}
+    result = {field: redis[field] for field in WORKLOAD_FIELDS}
+    if redis['version'] >= 2 or native['version'] >= 2:
+        result['read_api_pair'] = {'redis': redis_api, 'native': native_api}
+    if redis['version'] >= 3 or native['version'] == 3:
+        result['write_api_pair'] = {'redis': redis_write_api, 'native': native_write_api}
+    if redis['version'] == 4:
+        # Describes the Redis reference only; it does not assert Raft/fsync equivalence.
+        result['redis_write_confirmation'] = redis['write_confirmation'].copy()
+    return result
 
 
 def main():

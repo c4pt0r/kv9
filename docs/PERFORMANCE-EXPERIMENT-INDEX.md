@@ -14,7 +14,8 @@ does not itself imply a selected candidate or full industrial qualification.
 
 The current priority is [write performance against Redis with one primary and
 two replicas](WRITE-PERFORMANCE-NEXT.md). The v4 reference client and local
-correctness checks are complete; independent timing validation is next. Read
+correctness, independent accounting and clean release checks are complete;
+matched timing is next. Read
 optimization is held. No new QPS or lease performance result is established.
 
 The [leader-lease proof](LEADER-LEASE-PROOF.md) is a new design checkpoint:
@@ -42,7 +43,7 @@ adds no throughput, latency or Redis comparison result.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |
-| Slicing-by-eight engine CRC `e5662bb` | Existing isolated candidate to resume for writes on ThinLTO. Source-bound Lean equivalence and ordinary recovery pass on its historical base; no database performance or actual Chaos acceptance yet. [Qualification](https://github.com/c4pt0r/kv9/blob/65511010e2fda8adba04efd831a39bcdca1979a4/docs/CRC32-SLICING-QUALIFICATION.md). |
+| Slicing-by-eight engine CRC `e5662bb`, reapplied as `e748620` | Experimental on selected ThinLTO. Fresh 47-theorem proof, 710 workspace tests/doctests (23 existing ignored), release and 363-operation ordinary recovery pass. No database performance or actual candidate Chaos acceptance yet. [Current qualification](write-reference-qualification-v1/README.md); [historical qualification](https://github.com/c4pt0r/kv9/blob/65511010e2fda8adba04efd831a39bcdca1979a4/docs/CRC32-SLICING-QUALIFICATION.md). |
 | Independent per-request stream tasks `f2c4e85` | Retained; older c64 GET +38.15–38.93%, with better mean/p99. [Original report](https://github.com/c4pt0r/kv9/blob/cf5c87e/docs/PARALLEL-STREAM-GET-PERFORMANCE.md). |
 | Linux jemalloc `629bee4` | Held: older c64 GET +4.47% / +6.24% and better mean/p99, with aggregate mean voter RSS +23.1% / +25.9%. Larger working sets and mixed/write qualification remain necessary. [Report](https://github.com/c4pt0r/kv9/blob/d79ea48/docs/JEMALLOC-SERVER-PERFORMANCE.md). |
 | One RPC runtime worker `711631b` | Rejected for throughput/latency regression. [Report](https://github.com/c4pt0r/kv9/blob/99993db/docs/RPC-WORKER-SCREENING.md). |
