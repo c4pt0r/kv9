@@ -3125,6 +3125,9 @@ impl NodeRuntime {
             // Poll socket readiness while public handlers keep workers busy.
             // Peer messages share this executor with the public RPC service.
             .event_interval(8)
+            // The synchronous Raft owner wakes read/apply waiters remotely.
+            // Check those tasks while local RPC work keeps this executor busy.
+            .global_queue_interval(8)
             .enable_all()
             .build()
             .map_err(|error| Error::Config(format!("create gRPC runtime: {error}")))?;
