@@ -1,0 +1,1147 @@
+{
+  "files": [
+    {
+      "path": "default-source/cache-clean.stderr",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/cache-clean.stderr",
+      "bytes": 6068,
+      "sha256": "4ce4d2aba541836ada026c76d92dcbdd7fdd026c1ad0f4b2a580f9c478af5ab0"
+    },
+    {
+      "path": "default-source/cache-clean.stdout",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "default-source/cache-metadata.json",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/cache-metadata.json",
+      "bytes": 26283,
+      "sha256": "ca3b7b95b45f9db33a35c514c992ccaf3af4fc483b7f10f26c8a5ff1727957d2"
+    },
+    {
+      "path": "default-source/cache-metadata.log",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "default-source/cache-safety.json",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/cache-safety.json",
+      "bytes": 37011,
+      "sha256": "155b323d601f02a270d2420a789397bfd9b6804fe6c7ecb9512ea93728a5134a"
+    },
+    {
+      "path": "default-source/default-clippy.stderr",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/default-clippy.stderr",
+      "bytes": 74298,
+      "sha256": "19745415d8a2356a0fef32cd66c1cb5504e2a3edc840d257b6a8dace08d96db2"
+    },
+    {
+      "path": "default-source/default-clippy.stdout",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/default-clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "default-source/default-compile.stderr",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/default-compile.stderr",
+      "bytes": 62296,
+      "sha256": "90709dfd05c00532768d1af0bf9d46fc185a8d2cb37ae194b6a7379c15b7cb26"
+    },
+    {
+      "path": "default-source/default-compile.stdout",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/default-compile.stdout",
+      "bytes": 229641,
+      "sha256": "b01d7b4964d069a65d939ccb73b17e667b02a3dcbb94a4a26166c255b6a6e4e0"
+    },
+    {
+      "path": "default-source/default-tests.stderr",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/default-tests.stderr",
+      "bytes": 18447,
+      "sha256": "dc5c1212abd92341a863584e6febb5b9c95bd3491e1b63c59c756aed94f96654"
+    },
+    {
+      "path": "default-source/default-tests.stdout",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/default-tests.stdout",
+      "bytes": 63988,
+      "sha256": "8dd4d02778db0818d5aacde352059aace4c82f4b4ccf365bf40d496988dcc6bc"
+    },
+    {
+      "path": "default-source/format.stderr",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "default-source/format.stdout",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/format.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "default-source/owner-poll-focused-tests.stderr",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/owner-poll-focused-tests.stderr",
+      "bytes": 52401,
+      "sha256": "e87a55ab7786a56e6e015642913d369666f01c42707a5f908e383ba73661ffb0"
+    },
+    {
+      "path": "default-source/owner-poll-focused-tests.stdout",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/owner-poll-focused-tests.stdout",
+      "bytes": 839,
+      "sha256": "537d2eb96375173ed7944c6d2cef6b464157c538abf761cc72bbdd5f58e4368d"
+    },
+    {
+      "path": "default-source/read-stage-compile.stderr",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/read-stage-compile.stderr",
+      "bytes": 129,
+      "sha256": "bb5759d216b3e5d218aa7703d91cc550d2b432452090e3abdab21bc8a2beca4c"
+    },
+    {
+      "path": "default-source/read-stage-compile.stdout",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/read-stage-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "default-source/result.json",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/result.json",
+      "bytes": 2066,
+      "sha256": "2bbf713a2347bfbc138536ad5023008a45d99c3ee863789fd5366c33bc4692ea"
+    },
+    {
+      "path": "default-source/sources-before.json",
+      "original_path": "/tmp/kv9-owner-poll-source-after-inventory-fix-first/sources-before.json",
+      "bytes": 79360,
+      "sha256": "dadc5fa7ee9f0f5ad884043783df60fe4cea8c67b0933c3aa8609ed02e32551e"
+    },
+    {
+      "path": "draft-first/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "draft-first/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/OwnerPollProof.tla",
+      "bytes": 2092,
+      "sha256": "0afd7ae8fe10e41140e9bce6262930bac050047e50c00280e809dc471f061ed8"
+    },
+    {
+      "path": "draft-first/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "draft-first/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "draft-first/cache/OwnerPollProof.tlaps/OwnerPollProof.thy",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/cache/OwnerPollProof.tlaps/OwnerPollProof.thy",
+      "bytes": 413,
+      "sha256": "b52d2bb8c315773eda5933b5501715cb7f5faaf51865224e30940859ac8e9755"
+    },
+    {
+      "path": "draft-first/cache/OwnerPollProof.tlaps/fingerprints",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/cache/OwnerPollProof.tlaps/fingerprints",
+      "bytes": 2475,
+      "sha256": "1cd9c2b098a796a22aa2595e6372883da2ff9f61f738431dd48ebe02f5e321b3"
+    },
+    {
+      "path": "draft-first/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_41_29/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_41_29/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "draft-first/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_41_29/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_41_29/OwnerPollProof.tla",
+      "bytes": 2092,
+      "sha256": "0afd7ae8fe10e41140e9bce6262930bac050047e50c00280e809dc471f061ed8"
+    },
+    {
+      "path": "draft-first/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_41_29/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_41_29/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "draft-first/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_41_29/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_41_29/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "draft-first/invocation.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/invocation.json",
+      "bytes": 783,
+      "sha256": "fb87f6b227cab8892a11d267da1e95644a663002d60fdf1ca45dc243480249a9"
+    },
+    {
+      "path": "draft-first/output.log",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/output.log",
+      "bytes": 3996,
+      "sha256": "3e7b32c3674fa6d4a51bffc66f6ac38a6fbfce9f674f866041f94b41c0f30661"
+    },
+    {
+      "path": "draft-first/result.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-first/result.json",
+      "bytes": 837,
+      "sha256": "6ae0a8bf622055fc99b4dda6f72d3bef939604358b8ed9d037faa9ee1fa080d2"
+    },
+    {
+      "path": "draft-second/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "draft-second/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/OwnerPollProof.tla",
+      "bytes": 2115,
+      "sha256": "e8291cf5b5348d0fa6ebd3c515ddb6f3b4aa80b9028cadb29e8e120803f18666"
+    },
+    {
+      "path": "draft-second/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "draft-second/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "draft-second/cache/OwnerPollProof.tlaps/OwnerPollProof.thy",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/cache/OwnerPollProof.tlaps/OwnerPollProof.thy",
+      "bytes": 413,
+      "sha256": "b52d2bb8c315773eda5933b5501715cb7f5faaf51865224e30940859ac8e9755"
+    },
+    {
+      "path": "draft-second/cache/OwnerPollProof.tlaps/fingerprints",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/cache/OwnerPollProof.tlaps/fingerprints",
+      "bytes": 2473,
+      "sha256": "e4936c1e09ea4ebe6a81cb695c74e1645e9fb93e6ad2788fb600bf0be4bd210c"
+    },
+    {
+      "path": "draft-second/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_42_37/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_42_37/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "draft-second/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_42_37/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_42_37/OwnerPollProof.tla",
+      "bytes": 2115,
+      "sha256": "e8291cf5b5348d0fa6ebd3c515ddb6f3b4aa80b9028cadb29e8e120803f18666"
+    },
+    {
+      "path": "draft-second/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_42_37/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_42_37/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "draft-second/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_42_37/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_42_37/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "draft-second/invocation.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/invocation.json",
+      "bytes": 956,
+      "sha256": "0dbbe2512289706a9e105ed69feb063bf30a1fce87dc190657996b063322b597"
+    },
+    {
+      "path": "draft-second/output.log",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/output.log",
+      "bytes": 1751,
+      "sha256": "81aac332cf9f16512add4a33771417505e98bc7e0e23bb23f0e8db704bfd59a6"
+    },
+    {
+      "path": "draft-second/result.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-second/result.json",
+      "bytes": 1010,
+      "sha256": "eb5ea1c863a2566117934abd85152a0a5437a4dc6a1a9d46f6499f9f14b92ae8"
+    },
+    {
+      "path": "draft-third/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "draft-third/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/OwnerPollProof.tla",
+      "bytes": 2300,
+      "sha256": "b9a9d62b02d1712de164cd3e6419fb0f5e306a121fa0784e04b698cc751cfcad"
+    },
+    {
+      "path": "draft-third/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "draft-third/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "draft-third/cache/OwnerPollProof.tlaps/OwnerPollProof.thy",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/cache/OwnerPollProof.tlaps/OwnerPollProof.thy",
+      "bytes": 413,
+      "sha256": "b52d2bb8c315773eda5933b5501715cb7f5faaf51865224e30940859ac8e9755"
+    },
+    {
+      "path": "draft-third/cache/OwnerPollProof.tlaps/fingerprints",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/cache/OwnerPollProof.tlaps/fingerprints",
+      "bytes": 2839,
+      "sha256": "123a634792507b409f3ff276f66c0d1a70adc02b5af6356c12f083a711660bb4"
+    },
+    {
+      "path": "draft-third/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_43_26/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_43_26/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "draft-third/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_43_26/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_43_26/OwnerPollProof.tla",
+      "bytes": 2300,
+      "sha256": "b9a9d62b02d1712de164cd3e6419fb0f5e306a121fa0784e04b698cc751cfcad"
+    },
+    {
+      "path": "draft-third/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_43_26/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_43_26/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "draft-third/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_43_26/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/cache/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_43_26/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "draft-third/invocation.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/invocation.json",
+      "bytes": 927,
+      "sha256": "dfaa50e995d79afb326c88467ff6241edde104153c745c9b886fa0b245b2c77b"
+    },
+    {
+      "path": "draft-third/output.log",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/output.log",
+      "bytes": 393,
+      "sha256": "36ab6ca9246d2989026e072b75dad912eb0fcaad876c9e33cc015244fc7fab8b"
+    },
+    {
+      "path": "draft-third/result.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-draft-third/result.json",
+      "bytes": 979,
+      "sha256": "cde573806e074470045180ca37442916dd211bd03d513cb88bca3ee62eb3c412"
+    },
+    {
+      "path": "proof-root/invocation.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-first/invocation.json",
+      "bytes": 2000,
+      "sha256": "9954b1e3c01d903b2db8e49073634e3cf7df25561d239aa1ddf7bb842731e3f4"
+    },
+    {
+      "path": "proof-root/output.log",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-first/output.log",
+      "bytes": 557,
+      "sha256": "86b79e0dae8e14161d92e2d28a112cc2f0300a309de8f430f495c21d385b414d"
+    },
+    {
+      "path": "proof-root/result.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/proof-first/result.json",
+      "bytes": 2052,
+      "sha256": "7cacccc5d609666f2f9ff0cd5c4476abd6577d11f74b5b4106163bb7658e55c2"
+    },
+    {
+      "path": "proof/Schedule2-fp0/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp0/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "proof/Schedule2-fp0/OwnerPollMC.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp0/OwnerPollMC.tla",
+      "bytes": 627,
+      "sha256": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d"
+    },
+    {
+      "path": "proof/Schedule2-fp0/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp0/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/Schedule2-fp0/Run.cfg",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp0/Run.cfg",
+      "bytes": 185,
+      "sha256": "24581591221ebd0787b9386adc1cb73c3bb1a2fc874517fa471170c332d2aec7"
+    },
+    {
+      "path": "proof/Schedule2-fp0/result.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp0/result.json",
+      "bytes": 1058,
+      "sha256": "45cd0918648941d81bcbfec71f55b08223060ab60a08653b82d062c05a4a62b0"
+    },
+    {
+      "path": "proof/Schedule2-fp0/tlc.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp0/tlc.log",
+      "bytes": 34238,
+      "sha256": "4c7713f8945c57fcc28be54fecf5c7473a3132139c81623d25de1f13d15ff65e"
+    },
+    {
+      "path": "proof/Schedule2-fp1/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp1/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "proof/Schedule2-fp1/OwnerPollMC.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp1/OwnerPollMC.tla",
+      "bytes": 627,
+      "sha256": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d"
+    },
+    {
+      "path": "proof/Schedule2-fp1/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp1/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/Schedule2-fp1/Run.cfg",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp1/Run.cfg",
+      "bytes": 185,
+      "sha256": "24581591221ebd0787b9386adc1cb73c3bb1a2fc874517fa471170c332d2aec7"
+    },
+    {
+      "path": "proof/Schedule2-fp1/result.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp1/result.json",
+      "bytes": 1058,
+      "sha256": "bf3ce3db65bf14947bb18a1005927b8ada810c58297be6d8998b6572c48b5919"
+    },
+    {
+      "path": "proof/Schedule2-fp1/tlc.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule2-fp1/tlc.log",
+      "bytes": 34237,
+      "sha256": "adb7d7aaf77da599a8eef0e923d9d00bc86632eff2491a0216e5937c341ced14"
+    },
+    {
+      "path": "proof/Schedule3-fp0/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp0/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "proof/Schedule3-fp0/OwnerPollMC.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp0/OwnerPollMC.tla",
+      "bytes": 627,
+      "sha256": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d"
+    },
+    {
+      "path": "proof/Schedule3-fp0/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp0/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/Schedule3-fp0/Run.cfg",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp0/Run.cfg",
+      "bytes": 187,
+      "sha256": "6e0593c69ff5d51562e01b427db93905af20b63975d7ae4661b776aa2b2b7245"
+    },
+    {
+      "path": "proof/Schedule3-fp0/result.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp0/result.json",
+      "bytes": 1059,
+      "sha256": "d89633625029d5e139e06628be5bac54c4e208b77d31d33484167d2343a661c8"
+    },
+    {
+      "path": "proof/Schedule3-fp0/tlc.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp0/tlc.log",
+      "bytes": 34334,
+      "sha256": "7f39a347e5268fc2a7fe543ca489f985df6b44be8b12c5a45d4efa5c36cc6f8b"
+    },
+    {
+      "path": "proof/Schedule3-fp1/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp1/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "proof/Schedule3-fp1/OwnerPollMC.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp1/OwnerPollMC.tla",
+      "bytes": 627,
+      "sha256": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d"
+    },
+    {
+      "path": "proof/Schedule3-fp1/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp1/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/Schedule3-fp1/Run.cfg",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp1/Run.cfg",
+      "bytes": 187,
+      "sha256": "6e0593c69ff5d51562e01b427db93905af20b63975d7ae4661b776aa2b2b7245"
+    },
+    {
+      "path": "proof/Schedule3-fp1/result.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp1/result.json",
+      "bytes": 1058,
+      "sha256": "b496ad715f7080653e9d4ae57a0c4b1e7d1caee726e551d2d9289a25b4fd6f80"
+    },
+    {
+      "path": "proof/Schedule3-fp1/tlc.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/Schedule3-fp1/tlc.log",
+      "bytes": 34334,
+      "sha256": "61e5c7eb9b45012fdea9b765a6f0a0af129293b82991e4421dde2442ca1c7534"
+    },
+    {
+      "path": "proof/auditor/ProofAudit.class",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/auditor/ProofAudit.class",
+      "bytes": 6462,
+      "sha256": "5362cc4105112e010aa12dee2414be6860a87fcdcadcb8aae897a4248ca1cd4b"
+    },
+    {
+      "path": "proof/auditor/ProofAudit.java",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/auditor/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "path": "proof/bad-hint-clears-pending/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/bad-hint-clears-pending/OwnerPoll.tla",
+      "bytes": 2038,
+      "sha256": "d025fe502afe7a3fded4f300337ca408c0ecb40ccc06128f16e22d516ff2e8f6"
+    },
+    {
+      "path": "proof/bad-hint-clears-pending/OwnerPollMC.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/bad-hint-clears-pending/OwnerPollMC.tla",
+      "bytes": 627,
+      "sha256": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d"
+    },
+    {
+      "path": "proof/bad-hint-clears-pending/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/bad-hint-clears-pending/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/bad-hint-clears-pending/Run.cfg",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/bad-hint-clears-pending/Run.cfg",
+      "bytes": 148,
+      "sha256": "4eb9123c02e765545c976cfa2dedbfd68873774143126021455133d63efeadb2"
+    },
+    {
+      "path": "proof/bad-hint-clears-pending/result.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/bad-hint-clears-pending/result.json",
+      "bytes": 1080,
+      "sha256": "b85c2d74e8cd7fed49fd3b9d72f7d5539280df72970a8980d7b1ca2ea09e8b61"
+    },
+    {
+      "path": "proof/bad-hint-clears-pending/tlc.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/bad-hint-clears-pending/tlc.log",
+      "bytes": 28986,
+      "sha256": "15df5316567f2a08bdf6c858be9bd8f8033b3299c2eba52f2b0fe3ec69184b3e"
+    },
+    {
+      "path": "proof/proof-assumption/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-assumption/OwnerPoll.tla",
+      "bytes": 1949,
+      "sha256": "2c4e396fe9ff0b5a4331dd294cda443a4a48523f46b7b2066875f25103726a4c"
+    },
+    {
+      "path": "proof/proof-assumption/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-assumption/OwnerPollProof.tla",
+      "bytes": 2300,
+      "sha256": "b9a9d62b02d1712de164cd3e6419fb0f5e306a121fa0784e04b698cc751cfcad"
+    },
+    {
+      "path": "proof/proof-assumption/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-assumption/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/proof-assumption/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-assumption/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "proof/proof-assumption/inventory.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-assumption/inventory.json",
+      "bytes": 2270,
+      "sha256": "d27eb1e0eda490c64918a672771b262d150c403abd8125282b4b7aa9bec97d86"
+    },
+    {
+      "path": "proof/proof-assumption/result.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-assumption/result.json",
+      "bytes": 604,
+      "sha256": "241ae0ce00f2951cd8f9d8f8b90b63da3d5becd303e10f55416d6394806f4ffc"
+    },
+    {
+      "path": "proof/proof-assumption/sany.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-assumption/sany.log",
+      "bytes": 4211,
+      "sha256": "ec2b7aefaa50a0453878e3d9d97306bab4d969ed53885cb8b350c998de1aae53"
+    },
+    {
+      "path": "proof/proof-bad-hint/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/OwnerPoll.tla",
+      "bytes": 2038,
+      "sha256": "d025fe502afe7a3fded4f300337ca408c0ecb40ccc06128f16e22d516ff2e8f6"
+    },
+    {
+      "path": "proof/proof-bad-hint/OwnerPollProof.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/OwnerPollProof.log",
+      "bytes": 2126,
+      "sha256": "e2ed95d7e1e4ae8456e5c44057ee48b77f9d5a384727b7efa92cfe155be738e9"
+    },
+    {
+      "path": "proof/proof-bad-hint/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/OwnerPollProof.tla",
+      "bytes": 2300,
+      "sha256": "b9a9d62b02d1712de164cd3e6419fb0f5e306a121fa0784e04b698cc751cfcad"
+    },
+    {
+      "path": "proof/proof-bad-hint/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/proof-bad-hint/RaftScheduleProof.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/RaftScheduleProof.log",
+      "bytes": 758,
+      "sha256": "c65b8db0b461e91505d4008c8a88c1cff49b7c578fad34289544d60bfd2ca101"
+    },
+    {
+      "path": "proof/proof-bad-hint/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "proof/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/OwnerPollProof.thy",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/OwnerPollProof.thy",
+      "bytes": 413,
+      "sha256": "b52d2bb8c315773eda5933b5501715cb7f5faaf51865224e30940859ac8e9755"
+    },
+    {
+      "path": "proof/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints",
+      "bytes": 2841,
+      "sha256": "33595269ef37e6482719c48753c9592e5b944b6ff3e34efb4ade5104cf1778c6"
+    },
+    {
+      "path": "proof/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_47_03/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_47_03/OwnerPoll.tla",
+      "bytes": 2038,
+      "sha256": "d025fe502afe7a3fded4f300337ca408c0ecb40ccc06128f16e22d516ff2e8f6"
+    },
+    {
+      "path": "proof/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_47_03/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_47_03/OwnerPollProof.tla",
+      "bytes": 2300,
+      "sha256": "b9a9d62b02d1712de164cd3e6419fb0f5e306a121fa0784e04b698cc751cfcad"
+    },
+    {
+      "path": "proof/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_47_03/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_47_03/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_47_03/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_47_03/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "proof/proof-bad-hint/cache/RaftScheduleProof/RaftScheduleProof.tlaps/RaftScheduleProof.thy",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/RaftScheduleProof/RaftScheduleProof.tlaps/RaftScheduleProof.thy",
+      "bytes": 416,
+      "sha256": "ad567a2e3b47ecdd8bcd1ee3f9d72e558c198c281e8a2f1b2c3e7a32b73961e3"
+    },
+    {
+      "path": "proof/proof-bad-hint/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints",
+      "bytes": 15641,
+      "sha256": "0d7031470257fd7e4227602ab46d4c0788140209fa9e5e54a1bbfd73a3a599a3"
+    },
+    {
+      "path": "proof/proof-bad-hint/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-12_08_46_54/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-12_08_46_54/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/proof-bad-hint/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-12_08_46_54/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-12_08_46_54/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "proof/proof-bad-hint/inventory.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/inventory.json",
+      "bytes": 2270,
+      "sha256": "d27eb1e0eda490c64918a672771b262d150c403abd8125282b4b7aa9bec97d86"
+    },
+    {
+      "path": "proof/proof-bad-hint/result.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/result.json",
+      "bytes": 1561,
+      "sha256": "3ffbc2d6b261fb1ae7605bec8700edc79ecdaa47af30ba34f685c25cdf40bb11"
+    },
+    {
+      "path": "proof/proof-bad-hint/sany.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/sany.log",
+      "bytes": 4104,
+      "sha256": "eaa9266d7ed5043ffbabfc33bdd60ee675f6b73312100b1fdbf92c2ca2d48ab3"
+    },
+    {
+      "path": "proof/proof-bad-hint/semantic-audit.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/semantic-audit.json",
+      "bytes": 5425,
+      "sha256": "f46b0fc0e0b8e85128fff4a5c656acae803f5f50b19f1cbd3cd64772966376ab"
+    },
+    {
+      "path": "proof/proof-hole/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-hole/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "proof/proof-hole/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-hole/OwnerPollProof.tla",
+      "bytes": 2264,
+      "sha256": "c72d17e103a1cbb9fc5fe173a825bc90ce1c1fc48af391ac8ab272cccbcf2699"
+    },
+    {
+      "path": "proof/proof-hole/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-hole/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/proof-hole/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-hole/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "proof/proof-hole/inventory.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-hole/inventory.json",
+      "bytes": 2270,
+      "sha256": "d27eb1e0eda490c64918a672771b262d150c403abd8125282b4b7aa9bec97d86"
+    },
+    {
+      "path": "proof/proof-hole/result.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-hole/result.json",
+      "bytes": 601,
+      "sha256": "9ab38ca47caa63dc354b0e6f0a62da63a62133241647ab41c0af14f6247c3cbc"
+    },
+    {
+      "path": "proof/proof-hole/sany.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof-hole/sany.log",
+      "bytes": 4071,
+      "sha256": "c68312dff171557c27b27f0d6598eda5ab7042f171aa2e78fac1e44ae8dcef3f"
+    },
+    {
+      "path": "proof/proof/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "proof/proof/OwnerPollProof.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/OwnerPollProof.log",
+      "bytes": 390,
+      "sha256": "851b256637caa22eca4ca708493de504d3f6daeb75991dd639e79143cc650385"
+    },
+    {
+      "path": "proof/proof/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/OwnerPollProof.tla",
+      "bytes": 2300,
+      "sha256": "b9a9d62b02d1712de164cd3e6419fb0f5e306a121fa0784e04b698cc751cfcad"
+    },
+    {
+      "path": "proof/proof/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/proof/RaftScheduleProof.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/RaftScheduleProof.log",
+      "bytes": 713,
+      "sha256": "8f6c39aadf102625d3561d28244d8bb007594bdfb338348ba1a1bf6e679a10b8"
+    },
+    {
+      "path": "proof/proof/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "proof/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/OwnerPollProof.thy",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/OwnerPollProof.thy",
+      "bytes": 413,
+      "sha256": "b52d2bb8c315773eda5933b5501715cb7f5faaf51865224e30940859ac8e9755"
+    },
+    {
+      "path": "proof/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints",
+      "bytes": 2839,
+      "sha256": "7b84e84d4e19ab871b2200cba58b89a9ef73fc6cae8f4780ed78f8df22777b29"
+    },
+    {
+      "path": "proof/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_46_53/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_46_53/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "proof/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_46_53/OwnerPollProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_46_53/OwnerPollProof.tla",
+      "bytes": 2300,
+      "sha256": "b9a9d62b02d1712de164cd3e6419fb0f5e306a121fa0784e04b698cc751cfcad"
+    },
+    {
+      "path": "proof/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_46_53/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_46_53/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_46_53/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/cache/OwnerPollProof/OwnerPollProof.tlaps/fingerprints.history/2026-09-12_08_46_53/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "proof/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/RaftScheduleProof.thy",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/RaftScheduleProof.thy",
+      "bytes": 416,
+      "sha256": "ad567a2e3b47ecdd8bcd1ee3f9d72e558c198c281e8a2f1b2c3e7a32b73961e3"
+    },
+    {
+      "path": "proof/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints",
+      "bytes": 15641,
+      "sha256": "fe9cabe4acd0d412a10cab3451a841fdee03ec0d6c30ff015909acc0f9df0c62"
+    },
+    {
+      "path": "proof/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-12_08_46_44/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-12_08_46_44/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-12_08_46_44/RaftScheduleProof.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/cache/RaftScheduleProof/RaftScheduleProof.tlaps/fingerprints.history/2026-09-12_08_46_44/RaftScheduleProof.tla",
+      "bytes": 17413,
+      "sha256": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1"
+    },
+    {
+      "path": "proof/proof/inventory.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/inventory.json",
+      "bytes": 2270,
+      "sha256": "d27eb1e0eda490c64918a672771b262d150c403abd8125282b4b7aa9bec97d86"
+    },
+    {
+      "path": "proof/proof/result.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/result.json",
+      "bytes": 1516,
+      "sha256": "5946a9c403a0ea0b1ab2a8907902cfdc126cae4f5c7ef6a456616397a76332b8"
+    },
+    {
+      "path": "proof/proof/sany.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/sany.log",
+      "bytes": 4032,
+      "sha256": "24de8f1d75c49810516c49ea1b812b3855f882461f48f96a2cabe82e0c8d5acd"
+    },
+    {
+      "path": "proof/proof/semantic-audit.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/proof/semantic-audit.json",
+      "bytes": 5389,
+      "sha256": "932408cf3b22f6fbc8d304c5ea15cd493bd961516faf9b75e5188f8e3c3ad36a"
+    },
+    {
+      "path": "proof/service/OwnerPoll.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/service/OwnerPoll.tla",
+      "bytes": 1936,
+      "sha256": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab"
+    },
+    {
+      "path": "proof/service/OwnerPollMC.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/service/OwnerPollMC.tla",
+      "bytes": 627,
+      "sha256": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d"
+    },
+    {
+      "path": "proof/service/RaftSchedule.tla",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/service/RaftSchedule.tla",
+      "bytes": 7405,
+      "sha256": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396"
+    },
+    {
+      "path": "proof/service/Run.cfg",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/service/Run.cfg",
+      "bytes": 194,
+      "sha256": "7d40b39cf49a37b531af30f61084acdd556f47dbccf17d34de2bcc866b1fdb60"
+    },
+    {
+      "path": "proof/service/result.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/service/result.json",
+      "bytes": 1049,
+      "sha256": "3ade391b85163615e9ec849172a04dbfc78a13410ec063ca746cb9535c70b99d"
+    },
+    {
+      "path": "proof/service/tlc.log",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/service/tlc.log",
+      "bytes": 27962,
+      "sha256": "64ff5e814a79bbb5afc0fded5dae327a35524c6ef977af675162c707847fe5da"
+    },
+    {
+      "path": "proof/summary.json",
+      "original_path": "/tmp/kv9-owner-poll-proof-first/summary.json",
+      "bytes": 12571,
+      "sha256": "dc093c530c76fdb0e9f0418d012c9c64842543f13289b11783b568555f2bdd50"
+    },
+    {
+      "path": "read-stage-source/cache-clean.stderr",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/cache-clean.stderr",
+      "bytes": 22926,
+      "sha256": "102e20442ccd190f8110cbd4ead9699cbf7f724682f8e031cb4622a17dd341eb"
+    },
+    {
+      "path": "read-stage-source/cache-clean.stdout",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "read-stage-source/cache-metadata.json",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/cache-metadata.json",
+      "bytes": 26283,
+      "sha256": "ca3b7b95b45f9db33a35c514c992ccaf3af4fc483b7f10f26c8a5ff1727957d2"
+    },
+    {
+      "path": "read-stage-source/cache-metadata.log",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "read-stage-source/cache-safety.json",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/cache-safety.json",
+      "bytes": 22838,
+      "sha256": "7cec7db549f03caefe38a93fc8c5b949d433044179ec6013382e4894e7e116ef"
+    },
+    {
+      "path": "read-stage-source/read-stage-clippy.stderr",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/read-stage-clippy.stderr",
+      "bytes": 51787,
+      "sha256": "831b45e8d7f59924a1f905f0b9e677c53fdb0334ea10b8ce5a54d8d52fdceaa6"
+    },
+    {
+      "path": "read-stage-source/read-stage-clippy.stdout",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/read-stage-clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "read-stage-source/read-stage-compile.stderr",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/read-stage-compile.stderr",
+      "bytes": 42845,
+      "sha256": "1e5fac37c78b131974298d4c650c57ea4d7f65a8da3ee8eb70fda4a9412dd0fa"
+    },
+    {
+      "path": "read-stage-source/read-stage-compile.stdout",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/read-stage-compile.stdout",
+      "bytes": 216475,
+      "sha256": "9d5e9690477104a594c13cf612fd8c01e23e5a7757421ddb8cf95df32c121dd5"
+    },
+    {
+      "path": "read-stage-source/read-stage-tests.stderr",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/read-stage-tests.stderr",
+      "bytes": 11366,
+      "sha256": "181e0f8591fd4a4f6df0b00b67f7dea661f83ccb9dd170c6a78b2537e843792f"
+    },
+    {
+      "path": "read-stage-source/read-stage-tests.stdout",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/read-stage-tests.stdout",
+      "bytes": 39423,
+      "sha256": "775c0b7c572f13210b27ba19b2d493e1b701bdaa98e670485e22cc608d61cf2d"
+    },
+    {
+      "path": "read-stage-source/result.json",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/result.json",
+      "bytes": 1369,
+      "sha256": "2ef70a2b3814c2d31f410bfb9f7ba6f414e235ee184b5d20e09c9607097e0e88"
+    },
+    {
+      "path": "read-stage-source/sources-after.json",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/sources-after.json",
+      "bytes": 79360,
+      "sha256": "dadc5fa7ee9f0f5ad884043783df60fe4cea8c67b0933c3aa8609ed02e32551e"
+    },
+    {
+      "path": "read-stage-source/sources-before.json",
+      "original_path": "/tmp/kv9-owner-poll-read-stage-corrected-first/sources-before.json",
+      "bytes": 79360,
+      "sha256": "dadc5fa7ee9f0f5ad884043783df60fe4cea8c67b0933c3aa8609ed02e32551e"
+    },
+    {
+      "path": "root/check-read-stage-corrected.py",
+      "original_path": "/tmp/kv9-owner-poll-root-first/check-read-stage-corrected.py",
+      "bytes": 2457,
+      "sha256": "b7ba0aa9e8bfb333c0721bfc6f6279e520805a7e1635814f538650dd85195c6b"
+    },
+    {
+      "path": "root/check-source-after-inventory-fix.py",
+      "original_path": "/tmp/kv9-owner-poll-root-first/check-source-after-inventory-fix.py",
+      "bytes": 2449,
+      "sha256": "3381dbd78fc780058ad7a94b91b5ae35f3b4e3bca16e193bb017d207c1f2e371"
+    },
+    {
+      "path": "root/check-source.py",
+      "original_path": "/tmp/kv9-owner-poll-root-first/check-source.py",
+      "bytes": 2429,
+      "sha256": "bdacc6918639aa76a9b9502fb8abe3edf90aef45c14f93802538cf84135a9146"
+    },
+    {
+      "path": "root/commands-read-stage-corrected.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/commands-read-stage-corrected.json",
+      "bytes": 1111,
+      "sha256": "20e5f3d050170192a1d33cc7dc609b42cc4ec52a84ee59d227e97a6358af82a3"
+    },
+    {
+      "path": "root/commands-source.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/commands-source.json",
+      "bytes": 2299,
+      "sha256": "775c8f30078654d74e0f74b03f305fdb4c34a42049ce09818c203a197e978846"
+    },
+    {
+      "path": "root/pending-feature-command-correction.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/pending-feature-command-correction.json",
+      "bytes": 335,
+      "sha256": "11f19d546caba38b03f46cc2ba8eb6014c9e58b37c1165532a198e1a0cfd5d1e"
+    },
+    {
+      "path": "root/publish-source.py",
+      "original_path": "/tmp/kv9-owner-poll-root-first/publish-source.py",
+      "bytes": 6598,
+      "sha256": "e99e407ee52467f03aa826d27137d67d455bb17eabdf8892718b1ee3c13efa34"
+    },
+    {
+      "path": "root/read-stage-corrected-first.log",
+      "original_path": "/tmp/kv9-owner-poll-root-first/read-stage-corrected-first.log",
+      "bytes": 153,
+      "sha256": "8d7310a0caeecccd8ef87b3f0b0c03f9394dc9d5a72000c10bc9f26177be8c09"
+    },
+    {
+      "path": "root/read-stage-corrected-invocation.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/read-stage-corrected-invocation.json",
+      "bytes": 655,
+      "sha256": "e7d52ba21a61beab916b4bbf23f1d7c420d7713d1eadebe9a90299169061f1c7"
+    },
+    {
+      "path": "root/read-stage-corrected-result.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/read-stage-corrected-result.json",
+      "bytes": 2489,
+      "sha256": "d4884b4c8131469c58807209f18bced043910addf653d658c656ec6fe156ff12"
+    },
+    {
+      "path": "root/read-stage-terminal.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/read-stage-terminal.json",
+      "bytes": 73,
+      "sha256": "50fab482544485a142cf0e1b89d84b5eea00761ea7f41b2fba26339264db4de8"
+    },
+    {
+      "path": "root/run-proof.py",
+      "original_path": "/tmp/kv9-owner-poll-root-first/run-proof.py",
+      "bytes": 1818,
+      "sha256": "30bbbb47476c8f5c6db1afcbc30e437ea352d446cd13d433396bf1e3bde571d1"
+    },
+    {
+      "path": "root/run-read-stage-corrected.py",
+      "original_path": "/tmp/kv9-owner-poll-root-first/run-read-stage-corrected.py",
+      "bytes": 1907,
+      "sha256": "7df86ee819e74b98d4ff65b53afcca46e19094b145518b29969671b36caedf2a"
+    },
+    {
+      "path": "root/run-source-after-inventory-fix.py",
+      "original_path": "/tmp/kv9-owner-poll-root-first/run-source-after-inventory-fix.py",
+      "bytes": 1931,
+      "sha256": "a42a3c74d8158023fd2f8f60514bc2ea12e844651bdf2ffb55e8a6fd46419f55"
+    },
+    {
+      "path": "root/run-source.py",
+      "original_path": "/tmp/kv9-owner-poll-root-first/run-source.py",
+      "bytes": 1851,
+      "sha256": "7b35ea2c36be97c0d3453889748c62a71a6618bdd67de0f456b79cc5633a2401"
+    },
+    {
+      "path": "root/source-after-inventory-fix-first.log",
+      "original_path": "/tmp/kv9-owner-poll-root-first/source-after-inventory-fix-first.log",
+      "bytes": 867,
+      "sha256": "0fed3bcb22ddd27791cc635e2108723c208ee9e43ba2e038c9198e32203fc73f"
+    },
+    {
+      "path": "root/source-after-inventory-fix-invocation.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/source-after-inventory-fix-invocation.json",
+      "bytes": 661,
+      "sha256": "62edcff88310d049f7a53a796721d34e9e7facb0dbe21d8ec0af63fdcf3bbdd3"
+    },
+    {
+      "path": "root/source-after-inventory-fix-result.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/source-after-inventory-fix-result.json",
+      "bytes": 4336,
+      "sha256": "d1aba82fc5342641e3c8a5c503fc8ae386cd8fe896305e78d57e449c003b99a9"
+    },
+    {
+      "path": "root/source-first.log",
+      "original_path": "/tmp/kv9-owner-poll-root-first/source-first.log",
+      "bytes": 467,
+      "sha256": "f9f44ae0617560e0d58afc318ea43a131d144db11d5d4f2ca1a308d735049879"
+    },
+    {
+      "path": "root/source-invocation.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/source-invocation.json",
+      "bytes": 641,
+      "sha256": "8b3698690fd669e5c0a46328e494a23bfa46e9d3b6e33cff3afbb6b07943acfa"
+    },
+    {
+      "path": "root/source-result.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/source-result.json",
+      "bytes": 845,
+      "sha256": "4a881fc25f814c0269682034b508776cf5ce8ae9cf4bc3aa163265431a942efc"
+    },
+    {
+      "path": "root/source-terminal.json",
+      "original_path": "/tmp/kv9-owner-poll-root-first/source-terminal.json",
+      "bytes": 199,
+      "sha256": "bc98173bacf5194abc584ef4be4409b500c3b4b94fc88dccc75f46546d5e0332"
+    }
+  ],
+  "archive_bytes": 363051,
+  "archive_sha256": "05948ef0ed9bb1e64c98300855814ae0810bd136b13ea85599d3203682b83ffe",
+  "original_bytes": 2074637
+}

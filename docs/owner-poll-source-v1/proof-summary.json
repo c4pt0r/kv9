@@ -1,0 +1,386 @@
+{
+  "complete": true,
+  "records": [
+    {
+      "name": "Schedule2-fp0",
+      "fingerprint": 0,
+      "temporal": false,
+      "mutant": false,
+      "sources": {
+        "OwnerPoll.tla": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab",
+        "OwnerPollMC.tla": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d",
+        "RaftSchedule.tla": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396",
+        "Run.cfg": "24581591221ebd0787b9386adc1cb73c3bb1a2fc874517fa471170c332d2aec7"
+      },
+      "command": [
+        "java",
+        "-Djava.io.tmpdir=/tmp/kv9-owner-poll-states.y4f2w1tz",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-lncheck",
+        "final",
+        "-metadir",
+        "/tmp/kv9-owner-poll-states.y4f2w1tz",
+        "-coverage",
+        "999",
+        "-config",
+        "Run.cfg",
+        "OwnerPollMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 50113,
+        "distinct": 3368,
+        "queued": 0
+      },
+      "verdict": "accepted",
+      "seconds": 0.7659521829336882
+    },
+    {
+      "name": "Schedule2-fp1",
+      "fingerprint": 1,
+      "temporal": false,
+      "mutant": false,
+      "sources": {
+        "OwnerPoll.tla": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab",
+        "OwnerPollMC.tla": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d",
+        "RaftSchedule.tla": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396",
+        "Run.cfg": "24581591221ebd0787b9386adc1cb73c3bb1a2fc874517fa471170c332d2aec7"
+      },
+      "command": [
+        "java",
+        "-Djava.io.tmpdir=/tmp/kv9-owner-poll-states.h5nhp6p0",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "1",
+        "-lncheck",
+        "final",
+        "-metadir",
+        "/tmp/kv9-owner-poll-states.h5nhp6p0",
+        "-coverage",
+        "999",
+        "-config",
+        "Run.cfg",
+        "OwnerPollMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 50113,
+        "distinct": 3368,
+        "queued": 0
+      },
+      "verdict": "accepted",
+      "seconds": 0.7653150309342891
+    },
+    {
+      "name": "Schedule3-fp0",
+      "fingerprint": 0,
+      "temporal": false,
+      "mutant": false,
+      "sources": {
+        "OwnerPoll.tla": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab",
+        "OwnerPollMC.tla": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d",
+        "RaftSchedule.tla": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396",
+        "Run.cfg": "6e0593c69ff5d51562e01b427db93905af20b63975d7ae4661b776aa2b2b7245"
+      },
+      "command": [
+        "java",
+        "-Djava.io.tmpdir=/tmp/kv9-owner-poll-states.z4n39joh",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-lncheck",
+        "final",
+        "-metadir",
+        "/tmp/kv9-owner-poll-states.z4n39joh",
+        "-coverage",
+        "999",
+        "-config",
+        "Run.cfg",
+        "OwnerPollMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 112438,
+        "distinct": 7284,
+        "queued": 0
+      },
+      "verdict": "accepted",
+      "seconds": 0.8151596351526678
+    },
+    {
+      "name": "Schedule3-fp1",
+      "fingerprint": 1,
+      "temporal": false,
+      "mutant": false,
+      "sources": {
+        "OwnerPoll.tla": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab",
+        "OwnerPollMC.tla": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d",
+        "RaftSchedule.tla": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396",
+        "Run.cfg": "6e0593c69ff5d51562e01b427db93905af20b63975d7ae4661b776aa2b2b7245"
+      },
+      "command": [
+        "java",
+        "-Djava.io.tmpdir=/tmp/kv9-owner-poll-states.b0fyo8aw",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "1",
+        "-lncheck",
+        "final",
+        "-metadir",
+        "/tmp/kv9-owner-poll-states.b0fyo8aw",
+        "-coverage",
+        "999",
+        "-config",
+        "Run.cfg",
+        "OwnerPollMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 112438,
+        "distinct": 7284,
+        "queued": 0
+      },
+      "verdict": "accepted",
+      "seconds": 0.865422222064808
+    },
+    {
+      "name": "service",
+      "fingerprint": 0,
+      "temporal": true,
+      "mutant": false,
+      "sources": {
+        "OwnerPoll.tla": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab",
+        "OwnerPollMC.tla": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d",
+        "RaftSchedule.tla": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396",
+        "Run.cfg": "7d40b39cf49a37b531af30f61084acdd556f47dbccf17d34de2bcc866b1fdb60"
+      },
+      "command": [
+        "java",
+        "-Djava.io.tmpdir=/tmp/kv9-owner-poll-states.xaueqo85",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-lncheck",
+        "final",
+        "-metadir",
+        "/tmp/kv9-owner-poll-states.xaueqo85",
+        "-coverage",
+        "999",
+        "-config",
+        "Run.cfg",
+        "OwnerPollMC.tla"
+      ],
+      "exit_code": 0,
+      "statistics": {
+        "generated": 6565,
+        "distinct": 650,
+        "queued": 0
+      },
+      "verdict": "accepted",
+      "seconds": 0.7156117190606892
+    },
+    {
+      "name": "bad-hint-clears-pending",
+      "fingerprint": 0,
+      "temporal": false,
+      "mutant": true,
+      "sources": {
+        "OwnerPoll.tla": "d025fe502afe7a3fded4f300337ca408c0ecb40ccc06128f16e22d516ff2e8f6",
+        "OwnerPollMC.tla": "3895e16e1a540ad7793a42606cc8a2ed6f6bbd8836a68bb24e8bcf2c7a6ab51d",
+        "RaftSchedule.tla": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396",
+        "Run.cfg": "4eb9123c02e765545c976cfa2dedbfd68873774143126021455133d63efeadb2"
+      },
+      "command": [
+        "java",
+        "-Djava.io.tmpdir=/tmp/kv9-owner-poll-states.hbqmity1",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-lncheck",
+        "final",
+        "-metadir",
+        "/tmp/kv9-owner-poll-states.hbqmity1",
+        "-coverage",
+        "999",
+        "-config",
+        "Run.cfg",
+        "OwnerPollMC.tla"
+      ],
+      "exit_code": 12,
+      "statistics": {
+        "generated": 13657,
+        "distinct": 1531,
+        "queued": 514
+      },
+      "verdict": "expected rejection",
+      "seconds": 0.6650838160421699
+    },
+    {
+      "name": "proof",
+      "sources": {
+        "OwnerPoll.tla": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab",
+        "OwnerPollProof.tla": "b9a9d62b02d1712de164cd3e6419fb0f5e306a121fa0784e04b698cc751cfcad",
+        "RaftSchedule.tla": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396",
+        "RaftScheduleProof.tla": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1",
+        "inventory.json": "d27eb1e0eda490c64918a672771b262d150c403abd8125282b4b7aa9bec97d86"
+      },
+      "modules": [
+        {
+          "module": "RaftScheduleProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-owner-poll-proof-first/proof/cache/RaftScheduleProof",
+            "/tmp/kv9-owner-poll-proof-first/proof/RaftScheduleProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 8.922482594149187,
+          "verdict": "proved",
+          "obligations": 294
+        },
+        {
+          "module": "OwnerPollProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-owner-poll-proof-first/proof/cache/OwnerPollProof",
+            "/tmp/kv9-owner-poll-proof-first/proof/OwnerPollProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 0.6143446939531714,
+          "verdict": "proved",
+          "obligations": 49
+        }
+      ],
+      "verdict": "proved"
+    },
+    {
+      "name": "proof-bad-hint",
+      "sources": {
+        "OwnerPoll.tla": "d025fe502afe7a3fded4f300337ca408c0ecb40ccc06128f16e22d516ff2e8f6",
+        "OwnerPollProof.tla": "b9a9d62b02d1712de164cd3e6419fb0f5e306a121fa0784e04b698cc751cfcad",
+        "RaftSchedule.tla": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396",
+        "RaftScheduleProof.tla": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1",
+        "inventory.json": "d27eb1e0eda490c64918a672771b262d150c403abd8125282b4b7aa9bec97d86"
+      },
+      "modules": [
+        {
+          "module": "RaftScheduleProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/RaftScheduleProof",
+            "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/RaftScheduleProof.tla"
+          ],
+          "exit_code": 0,
+          "seconds": 8.872994618956,
+          "verdict": "proved",
+          "obligations": 294
+        },
+        {
+          "module": "OwnerPollProof",
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/cache/OwnerPollProof",
+            "/tmp/kv9-owner-poll-proof-first/proof-bad-hint/OwnerPollProof.tla"
+          ],
+          "exit_code": 10,
+          "seconds": 5.6199330331292
+        }
+      ],
+      "verdict": "expected rejection",
+      "reason": "OwnerPollProof: TLAPS exit 10"
+    },
+    {
+      "name": "proof-hole",
+      "sources": {
+        "OwnerPoll.tla": "0fd73c94c85a15bb3d568e40d2219b8497a45828066dd4eb117f105556ed7fab",
+        "OwnerPollProof.tla": "c72d17e103a1cbb9fc5fe173a825bc90ce1c1fc48af391ac8ab272cccbcf2699",
+        "RaftSchedule.tla": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396",
+        "RaftScheduleProof.tla": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1",
+        "inventory.json": "d27eb1e0eda490c64918a672771b262d150c403abd8125282b4b7aa9bec97d86"
+      },
+      "verdict": "expected rejection",
+      "reason": "proof hole: OwnerPollProof.OPLocalStutters"
+    },
+    {
+      "name": "proof-assumption",
+      "sources": {
+        "OwnerPoll.tla": "2c4e396fe9ff0b5a4331dd294cda443a4a48523f46b7b2066875f25103726a4c",
+        "OwnerPollProof.tla": "b9a9d62b02d1712de164cd3e6419fb0f5e306a121fa0784e04b698cc751cfcad",
+        "RaftSchedule.tla": "b93a6a5a46a1c908e05283f3b7c21f11760449b1bd2264969bc68906f8072396",
+        "RaftScheduleProof.tla": "442eb32ffd6b1b5ba97874565ae328e7c86131fdfaf1d344ea5f09164a7e45f1",
+        "inventory.json": "d27eb1e0eda490c64918a672771b262d150c403abd8125282b4b7aa9bec97d86"
+      },
+      "verdict": "expected rejection",
+      "reason": "unapproved module assumption: OwnerPoll"
+    }
+  ],
+  "new_theorems": 14,
+  "new_obligations": 49,
+  "dependency_theorems": 33,
+  "dependency_obligations": 294,
+  "proof_output_controls": 3,
+  "scope": "Bounded optional polling refines the original scheduling actions. Advisory hints grant no authority. Original service fairness and monotonic local time are operational assumptions; no clock-derived lease or OS time bound."
+}
