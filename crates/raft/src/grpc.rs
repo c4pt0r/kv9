@@ -1140,14 +1140,15 @@ impl RaftTransport for GrpcTransport {
         // (this and `send`) consult the same mask, giving symmetric isolation.
         #[cfg(any(test, feature = "testing"))]
         self.partition.refresh();
-        let mut out = Vec::new();
-        for msg in self.inbox.drain() {
-            #[cfg(any(test, feature = "testing"))]
-            if self.partition.is_masked(msg.from) {
-                continue;
-            }
-            out.push(msg);
-        }
+        // The inbox already owns this bounded FIFO vector. Move it directly
+        // to the driver instead of allocating another vector for its messages.
+        let out = self.inbox.drain();
+        #[cfg(any(test, feature = "testing"))]
+        let out = {
+            let mut out = out;
+            out.retain(|msg| !self.partition.is_masked(msg.from));
+            out
+        };
         out
     }
 }
