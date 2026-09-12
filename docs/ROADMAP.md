@@ -1,12 +1,13 @@
 # kv9 development roadmap
 
-> Latest direction: consult the [cross-branch experiment index](PERFORMANCE-EXPERIMENT-INDEX.md)
-> before another candidate. Global queue and persistent-handler scheduling have
-> prior rejected screens; repeated prototypes stop before timing. The next
-> distinct experiment tests ThinLTO release code generation with unchanged
-> runtime semantics and fixed clients. Read parity and industrial gates remain open.
+> Latest direction: [ThinLTO qualification](RELEASE-THIN-LTO-PERFORMANCE.md)
+> improves c64 GET 8.511%, c1 GET 6.402% and c64 mixed throughput 10.424%, with
+> better means and p99 in both orders. Freeze `02d0c01` for broader API and actual
+> exact-build Chaos Mesh gates; CRC remains selected. Consult the
+> [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before another candidate.
+> Redis read parity and industrial gates remain open.
 
-Updated: 2026-09-11. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
+Updated: 2026-09-12. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
 [TAKEOVER-AUDIT.md](TAKEOVER-AUDIT.md) maps that architecture to the current implementation.
 
 The execution breakdown is in [DEVELOPMENT-PATH.md](DEVELOPMENT-PATH.md), with 25 work packages,
