@@ -30,7 +30,7 @@ does not itself imply a selected candidate or full industrial qualification.
 | Separate outbound peer executor `36ae89a` | Rejected as the next increment; retain complete latency/throughput tradeoffs. [Report](https://github.com/c4pt0r/kv9/blob/3ed8661/docs/PEER-EXECUTOR-ISOLATION-PERFORMANCE.md). |
 | Coalesced owner notifications `42e0117` | Experimental modest loaded-read/mixed improvement; isolated GET does not improve, broader API/Chaos gates remain. [Report](COALESCED-OWNER-PERFORMANCE.md). |
 | Fixed global queue interval eight on CRC `3338650` | Revisit of `c893834` under newer c1/c64 GET/mixed scope; rejected again, c64 GET -2.390%. [Complete report](GLOBAL-QUEUE-PERFORMANCE.md). |
-| ThinLTO and one release codegen unit `02d0c01` | Favorable complete screen: c1 GET +6.402%, c64 GET +8.511%, c64 mixed +10.424%; means/p99 improve in both orders. Exact-build [21-window Chaos](RELEASE-THIN-LTO-CHAOS.md) accepted; experimental pending broader point/batch performance. [Report](RELEASE-THIN-LTO-PERFORMANCE.md). |
+| ThinLTO and one release codegen unit `02d0c01` | Complete [full72 comparison](RELEASE-THIN-LTO-FULL72.md): all 12 point/batch cells improve throughput/mean in both orders; c1/c64 GET +6.806%/+8.465%. Loaded BatchPut pooled p99 worsens, explicitly retained. Exact-build [21-window Chaos](RELEASE-THIN-LTO-CHAOS.md) accepted; next fresh main integration checks. [Earlier screen](RELEASE-THIN-LTO-PERFORMANCE.md) remains separately scoped. |
 
 ## Latest unmeasured prototypes
 
@@ -52,12 +52,14 @@ neither changes selected runtime or qualifies any original checklist item.
 
 The ThinLTO candidate `02d0c01` now passes full workspace checks (709 tests,
 23 existing ignored, formatting/Clippy), a source-bound default production build,
-359-operation ordinary recovery, all 24 point-read/mixed timing cohorts and the
-21-window actual Chaos matrix with 9,923 complete history operations. Its
-favorable throughput/mean/p99 result is in the table above. Keep the source,
-server and original fixed clients frozen for 36 smoke / 72 timed broader
-point/batch cohorts after local capacity qualification. Selected runtime remains
-CRC until promotion criteria pass. A combination with notification candidate `42e0117` requires its
+359-operation ordinary recovery, the earlier 24-cohort screen, the new complete
+72-cohort point/batch comparison and the 21-window actual Chaos matrix with
+9,923 complete history operations. Full72 accepts 81,648,272 measured successes,
+240 exited lifetimes and 144 drains/bindings. Throughput and mean improve in all
+12 cells, with a loaded BatchPut p99 tradeoff. Keep the exact source and artifacts
+frozen while completing fresh main integration checks. Investigate the write
+tail at a common offered load without discarding the closed-loop result.
+Selected runtime remains CRC until integration completes. A combination with notification candidate `42e0117` requires its
 own matched qualification; historical percentages cannot be added.
 
 After this qualification, use the [quorum-path plan](QUORUM-LATENCY-NEXT.md)

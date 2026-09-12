@@ -8,8 +8,10 @@ the observer is disabled in both production builds. The result belongs to the
 complete pinned candidates, without an instruction-level equivalence claim for
 their default builds. Consensus semantics and the fixed v3 clients are unchanged.
 
-This is a favorable experimental checkpoint. Selected runtime remains CRC
-`ca0002c7` pending broader point/batch performance qualification. The exact build
+This is the earlier favorable 24-cohort screen. The subsequent
+[complete72 point/batch comparison](RELEASE-THIN-LTO-FULL72.md) now passes,
+retaining a loaded batch-write p99 tradeoff. Selected runtime remains CRC
+`ca0002c7` pending fresh main integration checks. The exact build
 now passes the [21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md); that
 correctness run adds no new throughput or latency measurement.
 The read-performance milestone remains open before dynamic multi-Raft and
@@ -85,17 +87,17 @@ their contributions from the source ancestry described above. The retained serve
 16,141,024 bytes versus 20,136,472 for CRC. This is not a cold-build-time or
 runtime-memory comparison. Compiler correctness remains a premise.
 
-1. Freeze this source, binary and complete result. Extend the existing matched
-   protocol to the broader point/batch API matrix, retaining separate operation
-   counts, means, p99 and equivalent acknowledgement boundaries.
+1. The subsequent [complete72 matrix](RELEASE-THIN-LTO-FULL72.md) now provides
+   broader point/batch results with separate operation counts, means, p99 and
+   unchanged acknowledgement boundaries. Preserve both original campaigns.
 2. The exact-build [21-window Chaos gate](RELEASE-THIN-LTO-CHAOS.md) now passes:
    9,923 complete history operations, positive effects, fresh drains and owned
    cleanup. Preserve this scoped result and the original failed delay-selection
    attempt. Dedicated link/FSYNC and broader industrial fault obligations remain
    separate; ordinary process recovery does not substitute for actual injection.
-3. If those gates pass, promote the code-generation setting as its own change;
-   evaluate combination with `42e0117` separately. Its historical notification
-   improvement cannot be added to this percentage.
+3. Advance to fresh main integration checks with the full72 batch-write tail
+   tradeoff disclosed; evaluate combination with `42e0117` separately. Its
+   historical notification improvement cannot be added to this percentage.
 4. Continue reducing isolated read latency with the
    [quorum-path investigation](QUORUM-LATENCY-NEXT.md), using the selected
    implementation. Consult the [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md)
