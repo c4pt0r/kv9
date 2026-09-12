@@ -23,8 +23,10 @@ gates and the selected `11113f6` baseline.
 The subsequent [Rust controller](LEASE-CONTROLLER.md) passes local source/fault
 controls and integer-timing proofs; its feature does not enable a server read path.
 The [voting adapter](LEASE-VOTE-BINDING.md) adds durable policy/epochs and actual
-election gates. Grant publication and the lease read path remain unimplemented;
-there is still no lease performance measurement.
+election gates. The [renewal adapter](LEASE-RENEWAL-PUBLICATION.md) now adds exact
+renewal/grant envelopes and whole-pump certificate publication. The server lease
+read path, clock qualification and actual lease Chaos remain open; there is
+still no lease performance measurement.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |

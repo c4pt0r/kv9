@@ -148,6 +148,34 @@ fn duplicate_acks_do_not_form_a_quorum_and_receipt_does_not_publish() {
 }
 
 #[test]
+fn outbound_renewal_validation_preserves_the_send_anchor_and_exact_round() {
+    let mut f = Fixture::new();
+    let first = f.leader.start(at(100), progress(1)).unwrap();
+    assert_eq!(
+        f.leader.validate_renewal(at(199), progress(1), first),
+        Ok(())
+    );
+    assert_eq!(
+        f.leader.validate_renewal(at(200), progress(1), first),
+        Err(Refused::Expired)
+    );
+    let second = f.leader.start(at(200), progress(1)).unwrap();
+    assert_eq!(
+        f.leader.validate_renewal(at(200), progress(1), first),
+        Err(Refused::WrongRound)
+    );
+    assert_eq!(
+        f.leader.validate_renewal(at(200), progress(1), second),
+        Ok(())
+    );
+    f.leader.revoke();
+    assert_eq!(
+        f.leader.validate_renewal(at(200), progress(1), second),
+        Err(Refused::Revoked)
+    );
+}
+
+#[test]
 fn every_round_identity_field_is_checked_and_nonvoters_are_rejected() {
     let mut f = Fixture::new();
     let renewal = f.leader.start(at(200), progress(1)).unwrap();

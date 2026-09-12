@@ -100,8 +100,8 @@ fn establish_hold(peer: &RaftPeer<DiskRaftStorage>, clock: &TestClock) -> Renewa
         sequence: 1,
         promise_ns: 100,
     };
-    // Only this private test seam establishes a grant. There is no network
-    // envelope or grant-publication adapter yet; no service read can use it.
+    // This voting-only fixture bypasses renewal transport deliberately. The
+    // renewal tests below exercise the production envelope and driver boundary.
     g.lease
         .as_mut()
         .unwrap()
@@ -439,4 +439,402 @@ fn isolated_leader_grant_quorum_blocks_replacement_until_expiry_then_raft_progre
     assert!(reads
         .iter()
         .any(|s| s.request_ctx == b"fresh-safe-read-index" && s.index >= at.0));
+}
+
+// The following helpers inspect algorithm certificates only. They cannot mint
+// a ReadBarrier or an immutable server read view.
+fn certificate(peer: &RaftPeer<DiskRaftStorage>) -> bool {
+    let mut g = peer.lock();
+    let PeerInner { raw, lease, .. } = &mut *g;
+    let lease = lease.as_mut().unwrap();
+    let Ok(now) = lease.synchronize(raw) else {
+        return false;
+    };
+    let progress = lease.progress(raw);
+    lease
+        .leader
+        .as_mut()
+        .is_some_and(|leader| leader.begin_read(now, progress, u64::MAX).is_ok())
+}
+
+struct BoundPeers {
+    drains: Vec<DrainToken<DiskRaftStorage>>,
+    peers: Vec<Arc<RaftPeer<DiskRaftStorage>>>,
+    clocks: Vec<Arc<TestClock>>,
+    _dirs: Vec<Directory>,
+}
+
+impl BoundPeers {
+    fn new() -> Self {
+        let mut peers = Vec::new();
+        let mut clocks = Vec::new();
+        let mut dirs = Vec::new();
+        for node in 1..=3 {
+            let (dir, clock, peer) = fresh(node, &[1, 2, 3]);
+            clock.set(100);
+            peers.push(Arc::new(peer));
+            clocks.push(clock);
+            dirs.push(dir);
+        }
+        peers[0].campaign().unwrap();
+        for _ in 0..12 {
+            for peer in &peers {
+                for m in peer.pump().unwrap() {
+                    peers[(m.to - 1) as usize].step_message(m);
+                }
+            }
+        }
+        assert_eq!(peers[0].role(), Role::Leader);
+        assert!(peers[0].lock().raw.raft.commit_to_current_term());
+        assert!(!certificate(&peers[0]));
+        Self {
+            drains: peers.iter().map(|p| DrainToken::mint(p).unwrap()).collect(),
+            peers,
+            clocks,
+            _dirs: dirs,
+        }
+    }
+
+    fn request(&self) -> Message {
+        let batch = self.drains[0].pump_owned().unwrap();
+        assert!(!batch.messages.iter().any(lease_wire::reserved));
+        self.drains[0]
+            .complete_pump(batch.publication)
+            .unwrap()
+            .into_iter()
+            .find(|m| m.to == 2)
+            .expect("request to voter 2")
+    }
+
+    fn grant(&self, request: Message) -> Message {
+        self.peers[1].step_message(request);
+        let batch = self.drains[1].pump_owned().unwrap();
+        assert!(!batch.messages.iter().any(lease_wire::reserved));
+        let persisted = self.peers[1]
+            .lock()
+            .raw
+            .store()
+            .initial_state()
+            .unwrap()
+            .hard_state;
+        assert_eq!(persisted.term, self.peers[0].term());
+        self.drains[1]
+            .complete_pump(batch.publication)
+            .unwrap()
+            .into_iter()
+            .find(lease_wire::reserved)
+            .expect("durable grant after complete pump")
+    }
+}
+
+#[test]
+fn renewal_certificate_requires_exact_grant_and_successful_owning_pump() {
+    let f = BoundPeers::new();
+    let request = f.request();
+    let mut echo = request.clone();
+    echo.from = 2;
+    echo.to = 1;
+    echo.msg_type = MsgHeartbeatResponse;
+    f.peers[0].step_message(echo.clone());
+    echo.log_term = 0;
+    f.peers[0].step_message(echo);
+    let batch = f.drains[0].pump_owned().unwrap();
+    f.drains[0].complete_pump(batch.publication).unwrap();
+    assert!(
+        !certificate(&f.peers[0]),
+        "heartbeat echo granted authority"
+    );
+
+    f.peers[0].step_message(f.grant(request));
+    assert!(!certificate(&f.peers[0]), "ACK receipt published authority");
+    let batch = f.drains[0].pump_owned().unwrap();
+    assert!(
+        !certificate(&f.peers[0]),
+        "Ready persistence published authority"
+    );
+    f.drains[0].complete_pump(batch.publication).unwrap();
+    assert!(certificate(&f.peers[0]));
+    assert!(
+        f.peers[0].take_read_states().is_empty(),
+        "lease fabricated a Safe ReadIndex receipt"
+    );
+}
+
+#[test]
+fn grant_after_capture_belongs_to_the_next_pump() {
+    let f = BoundPeers::new();
+    let grant = f.grant(f.request());
+    let older = f.drains[0].pump_owned().unwrap();
+    f.peers[0].step_message(grant);
+    f.drains[0].complete_pump(older.publication).unwrap();
+    assert!(
+        !certificate(&f.peers[0]),
+        "later input leaked into an older pump"
+    );
+    let current = f.drains[0].pump_owned().unwrap();
+    f.drains[0].complete_pump(current.publication).unwrap();
+    assert!(certificate(&f.peers[0]));
+}
+
+#[test]
+fn pump_publication_rejects_foreign_peer_and_superseded_turn() {
+    let f = BoundPeers::new();
+    let request = f.request();
+    f.peers[1].step_message(request.clone());
+    let foreign = f.drains[1].pump_owned().unwrap();
+    assert!(f.drains[2].complete_pump(foreign.publication).is_err());
+    f.peers[1].step_message(request);
+    let older = f.drains[1].pump_owned().unwrap();
+    let newer = f.drains[1].pump_owned().unwrap();
+    assert!(f.drains[1].complete_pump(older.publication).is_err());
+    assert!(f.drains[1]
+        .complete_pump(newer.publication)
+        .unwrap()
+        .is_empty());
+    assert!(!certificate(&f.peers[0]));
+}
+
+#[test]
+fn delayed_request_grant_and_quorum_publication_cannot_extend_send_deadline() {
+    let f = BoundPeers::new();
+    let delayed = f.drains[0].pump_owned().unwrap();
+    f.clocks[0].set(200);
+    assert!(f.drains[0]
+        .complete_pump(delayed.publication)
+        .unwrap()
+        .is_empty());
+    assert!(!certificate(&f.peers[0]));
+
+    let f = BoundPeers::new();
+    f.peers[1].step_message(f.request());
+    let delayed = f.drains[1].pump_owned().unwrap();
+    f.clocks[1].set(200);
+    assert!(f.drains[1]
+        .complete_pump(delayed.publication)
+        .unwrap()
+        .is_empty());
+    assert!(
+        f.peers[1].campaign().is_ok(),
+        "duplicate publication extended voter hold"
+    );
+
+    let f = BoundPeers::new();
+    f.peers[0].step_message(f.grant(f.request()));
+    let delayed = f.drains[0].pump_owned().unwrap();
+    f.clocks[0].set(200);
+    assert!(f.drains[0]
+        .complete_pump(delayed.publication)
+        .unwrap()
+        .is_empty());
+    assert!(
+        !certificate(&f.peers[0]),
+        "expired quorum published authority"
+    );
+}
+
+#[test]
+fn old_round_and_old_term_grants_cannot_authorize_a_renewal() {
+    let f = BoundPeers::new();
+    let old = f.grant(f.request());
+    f.clocks[0].set(150);
+    f.clocks[1].set(150);
+    let current = f.request();
+    f.peers[0].step_message(old.clone());
+    let batch = f.drains[0].pump_owned().unwrap();
+    f.drains[0].complete_pump(batch.publication).unwrap();
+    assert!(!certificate(&f.peers[0]));
+    f.peers[0].step_message(f.grant(current));
+    let batch = f.drains[0].pump_owned().unwrap();
+    f.drains[0].complete_pump(batch.publication).unwrap();
+    assert!(certificate(&f.peers[0]));
+    let term = f.peers[0].term();
+    f.peers[0].step_message(message(MsgHeartbeat, 3, 1, term + 1));
+    f.peers[0].step_message(old);
+    let batch = f.drains[0].pump_owned().unwrap();
+    f.drains[0].complete_pump(batch.publication).unwrap();
+    assert!(!certificate(&f.peers[0]));
+    assert_eq!(f.peers[0].role(), Role::Follower);
+}
+
+#[test]
+fn transfer_and_clock_failure_revoke_renewals_without_erasing_voter_hold() {
+    let f = BoundPeers::new();
+    f.peers[0].step_message(f.grant(f.request()));
+    let batch = f.drains[0].pump_owned().unwrap();
+    f.drains[0].complete_pump(batch.publication).unwrap();
+    assert!(certificate(&f.peers[0]));
+    f.peers[0].transfer_leader_for_tests(NodeId(2));
+    assert!(!certificate(&f.peers[0]));
+    assert!(f.peers[0].campaign().is_err());
+    f.clocks[0].set(150);
+    let batch = f.drains[0].pump_owned().unwrap();
+    assert!(f.drains[0]
+        .complete_pump(batch.publication)
+        .unwrap()
+        .is_empty());
+
+    let f = BoundPeers::new();
+    f.peers[0].step_message(f.grant(f.request()));
+    let batch = f.drains[0].pump_owned().unwrap();
+    f.clocks[0].failed.store(true, Ordering::SeqCst);
+    assert!(f.drains[0]
+        .complete_pump(batch.publication)
+        .unwrap()
+        .is_empty());
+    f.clocks[0].failed.store(false, Ordering::SeqCst);
+    f.clocks[0].set(1_000);
+    assert!(!certificate(&f.peers[0]));
+    assert!(f.peers[0].campaign().is_err());
+}
+
+#[test]
+fn failed_driver_apply_never_publishes_staged_grant() {
+    use crate::transport::{InProcHub, RaftTransport};
+    let (_dir, clock, peer) = fresh(2, &[1, 2, 3]);
+    clock.set(100);
+    let peer = Arc::new(peer);
+    let hub = InProcHub::new();
+    let remote = hub.endpoint(NodeId(1));
+    let driver = crate::driver::NodeDriver::new(
+        peer.clone(),
+        Arc::new(hub.endpoint(NodeId(2))),
+        crate::MemStateMachine::new(),
+    )
+    .unwrap();
+    let mut append = message(MsgAppend, 1, 2, 1);
+    append.commit = 1;
+    append.entries.push(raft::eraftpb::Entry {
+        term: 1,
+        index: 1,
+        data: vec![0xff, 0xee, 0xdd].into(),
+        ..Default::default()
+    });
+    let renewal = Renewal {
+        authority: Authority {
+            group: 0,
+            configuration: 7,
+            leader: 1,
+            term: 1,
+            incarnation: 1,
+        },
+        generation: 0,
+        sequence: 1,
+        promise_ns: 100,
+    };
+    remote.send(NodeId(2), append);
+    remote.send(
+        NodeId(2),
+        lease_wire::encode(Kind::Request, renewal, &policy(1, &[1, 2, 3]), 2),
+    );
+    assert!(driver.step().is_err());
+    assert!(driver.status().fatal.is_some());
+    assert!(
+        !remote.drain().iter().any(lease_wire::reserved),
+        "failed application published a grant"
+    );
+    assert!(peer.lock().lease.as_ref().unwrap().fenced);
+    clock.set(1_000);
+    assert!(peer.campaign().is_err());
+
+    // A failing pump must also revoke an already published certificate.
+    let (_single_dir, single_clock, single) = fresh(1, &[1]);
+    single_clock.set(100);
+    let single = Arc::new(single);
+    let single_driver = crate::driver::NodeDriver::new(
+        single.clone(),
+        Arc::new(InProcHub::new().endpoint(NodeId(1))),
+        crate::MemStateMachine::new(),
+    )
+    .unwrap();
+    single.campaign().unwrap();
+    for _ in 0..3 {
+        single_driver.step().unwrap();
+    }
+    assert!(certificate(&single));
+    single.propose_traced(vec![0xff, 0xee, 0xdd]).unwrap();
+    assert!(single_driver.step().is_err());
+    assert!(
+        !certificate(&single),
+        "failed apply retained an active certificate"
+    );
+}
+
+#[test]
+fn actual_drivers_renew_then_refuse_expired_isolated_authority_and_stop_revokes() {
+    use crate::transport::InProcHub;
+    let mut dirs = Vec::new();
+    let mut clocks = Vec::new();
+    let mut drivers = Vec::new();
+    let hub = InProcHub::new();
+    for node in 1..=3 {
+        let (dir, clock, peer) = fresh(node, &[1, 2, 3]);
+        clock.set(100);
+        drivers.push(
+            crate::driver::NodeDriver::new(
+                Arc::new(peer),
+                Arc::new(hub.endpoint(NodeId(node))),
+                crate::MemStateMachine::new(),
+            )
+            .unwrap(),
+        );
+        clocks.push(clock);
+        dirs.push(dir);
+    }
+    drivers[0].peer().campaign().unwrap();
+    for _ in 0..16 {
+        for driver in &drivers {
+            driver.step().unwrap();
+        }
+    }
+    assert!(certificate(drivers[0].peer()));
+    for clock in &clocks {
+        clock.set(150);
+    }
+    for _ in 0..12 {
+        for driver in &drivers {
+            driver.step().unwrap();
+        }
+    }
+    clocks[0].set(249);
+    assert!(
+        certificate(drivers[0].peer()),
+        "renewal did not extend the first certificate"
+    );
+    // No follower driver runs after the cut: queued requests have no ACK.
+    clocks[0].set(250);
+    for _ in 0..4 {
+        drivers[0].step().unwrap();
+    }
+    assert!(
+        !certificate(drivers[0].peer()),
+        "isolated expired leader retained authority"
+    );
+    clocks[1].set(250);
+    clocks[2].set(250);
+    // Drop traffic crossing the partition while preserving messages between
+    // the surviving voters. This tests actual raft-rs elections after holds.
+    use crate::transport::RaftTransport;
+    for node in 2..=3 {
+        hub.endpoint(NodeId(node)).drain();
+    }
+    drivers[1].peer().campaign().unwrap();
+    for _ in 0..64 {
+        for driver in &drivers[1..] {
+            driver.tick_and_step().unwrap();
+        }
+        hub.endpoint(NodeId(1)).drain();
+    }
+    let replacement = drivers[1..]
+        .iter()
+        .find(|driver| driver.peer().role() == Role::Leader)
+        .expect("the surviving quorum elects a replacement after promise expiry");
+    assert!(certificate(replacement.peer()));
+    assert!(!certificate(drivers[0].peer()));
+    replacement.stop();
+    assert!(
+        !certificate(replacement.peer()),
+        "driver stop retained lease authority"
+    );
+    drop(drivers);
+    drop(dirs);
 }

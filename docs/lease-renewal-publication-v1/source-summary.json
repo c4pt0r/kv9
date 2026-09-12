@@ -1,0 +1,112 @@
+{
+  "complete": true,
+  "source_root": "/home/dongxu/kv9",
+  "commands": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "started_ns": 1789243883590396009,
+      "exit_code": 0,
+      "ended_ns": 1789243884004761153
+    },
+    {
+      "name": "default-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "started_ns": 1789243884067565989,
+      "exit_code": 0,
+      "ended_ns": 1789243889539375239,
+      "test_binary_sha256": "0da7be3c916b5d3f18f018ed8b15d1f307c9e3372c3ef977d9c8a03f26ee450f",
+      "retained_binary": "/tmp/kv9-lease-renewal-election-clock-source-first/raft-tests.gz",
+      "retained_binary_bytes": 40037489,
+      "restoration": "gzip -dc raft-tests.gz > raft-tests; chmod +x raft-tests"
+    },
+    {
+      "name": "default-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--",
+        "--test-threads=4"
+      ],
+      "started_ns": 1789243892523021028,
+      "exit_code": 0,
+      "ended_ns": 1789243897543786486,
+      "test_result": [
+        "231",
+        "0",
+        "0"
+      ]
+    },
+    {
+      "name": "default-restart-probe",
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--test",
+        "lease_restart",
+        "--",
+        "--test-threads=1"
+      ],
+      "started_ns": 1789243897619771600,
+      "exit_code": 0,
+      "ended_ns": 1789243899286207902
+    },
+    {
+      "name": "experimental-check",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--features",
+        "experimental-leader-lease",
+        "--message-format=json-render-diagnostics"
+      ],
+      "started_ns": 1789243899348846698,
+      "exit_code": 0,
+      "ended_ns": 1789243900564499863
+    },
+    {
+      "name": "experimental-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--all-targets",
+        "--features",
+        "experimental-leader-lease",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_ns": 1789243900628568694,
+      "exit_code": 0,
+      "ended_ns": 1789243903297046802
+    }
+  ]
+}

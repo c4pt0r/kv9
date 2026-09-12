@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "archive_name": "original-evidence.tar.gz",
+  "bytes": 7989590,
+  "sha256": "8dd36db2191f2d06111b76197a59152118cfd115f6377ab8fb0da74074114a9e",
+  "location": {
+    "kind": "published_git_blob",
+    "repository": "https://github.com/c4pt0r/kv9",
+    "commit": "928b2699751416414a7fc6005ee219431c596e53",
+    "path": "docs/owner-poll-recovery-v1/original-evidence.tar.gz",
+    "git_object": "5a1e30ca729396729413eb58c0957f3c879bc679",
+    "web_url": "https://github.com/c4pt0r/kv9/blob/928b2699751416414a7fc6005ee219431c596e53/docs/owner-poll-recovery-v1/original-evidence.tar.gz",
+    "download_url": "https://raw.githubusercontent.com/c4pt0r/kv9/928b2699751416414a7fc6005ee219431c596e53/docs/owner-poll-recovery-v1/original-evidence.tar.gz"
+  },
+  "original_inventory": {
+    "path": "archive-inventory.json",
+    "sha256": "39474960505ebe9c96dc21cd1d18ce4f72d55c56386f8c1287f451b1f2a2d16d",
+    "member_count": 223,
+    "original_bytes": 23760024
+  },
+  "verification": {
+    "current_duplicate_matches_git_show": true,
+    "matches_original_archive_inventory": true,
+    "published_commit_is_ancestor_of_origin_master": true,
+    "local_origin_reflog_action": "update by push",
+    "network_revalidation_performed": false,
+    "archive_reencoded": false
+  },
+  "scope": "Location of the unchanged historical owner-poll build/recovery archive. Only its current-main duplicate is removed. Original inventories, summaries, Git history and local experiment artifacts are preserved; no current lease acceptance or new audit is claimed."
+}

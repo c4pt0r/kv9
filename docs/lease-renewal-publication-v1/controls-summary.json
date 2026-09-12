@@ -1,0 +1,550 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--test",
+        "lease_restart",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789244110944790772,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244108427430083
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/lease_restart-edc84149e3027761",
+        "feature_disabled_library_refuses_a_durably_marked_lease_voter",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244111023476597,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244110991765817
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789244115243293242,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244111023605448
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::delayed_request_grant_and_quorum_publication_cannot_extend_send_deadline",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244115622659061,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244115308531220
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::failed_driver_apply_never_publishes_staged_grant",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244115686860560,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244115622998145
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::grant_after_capture_belongs_to_the_next_pump",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244115800821131,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244115687037060
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::pump_publication_rejects_foreign_peer_and_superseded_turn",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244115914765040,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244115800993333
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::renewal_certificate_requires_exact_grant_and_successful_owning_pump",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244116028756408,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244115914967228
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::transfer_and_clock_failure_revoke_renewals_without_erasing_voter_hold",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244116243153689,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244116029144694
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_wire::tests::envelope_rejects_wrong_identity_policy_and_raft_payload",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244116246991396,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244116243449402
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_wire::tests::ordinary_heartbeat_echo_and_read_context_never_become_grants",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244116248500728,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244116247142769
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789244117163986100,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244116248771705
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::renewal_certificate_requires_exact_grant_and_successful_owning_pump",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244117345247005,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789244117231320979
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789244118310974642,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244117345695784
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::grant_after_capture_belongs_to_the_next_pump",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244118491984267,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789244118378089239
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789244119408997446,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244118492418178
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::delayed_request_grant_and_quorum_publication_cannot_extend_send_deadline",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244119589950806,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789244119476108015
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789244120505378881,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244119590438848
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::pump_publication_rejects_foreign_peer_and_superseded_turn",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244120686890034,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789244120572956864
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789244122354954798,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244120688259004
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::failed_driver_apply_never_publishes_staged_grant",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244122454807326,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789244122422914635
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789244124073072543,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244122455934083
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::transfer_and_clock_failure_revoke_renewals_without_erasing_voter_hold",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244124255117965,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789244124141249807
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789244125220712273,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244124255679956
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_wire::tests::envelope_rejects_wrong_identity_policy_and_raft_payload",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244125293146858,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789244125289430799
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789244126208875566,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244125293683913
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_wire::tests::ordinary_heartbeat_echo_and_read_context_never_become_grants",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244126280533799,
+      "exit_code": 101,
+      "expected_exit_code": 101,
+      "started_ns": 1789244126276876731
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789244127145751970,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244126280920843
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::delayed_request_grant_and_quorum_publication_cannot_extend_send_deadline",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244127528520642,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244127214203938
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::failed_driver_apply_never_publishes_staged_grant",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244127592992367,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244127529128849
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::grant_after_capture_belongs_to_the_next_pump",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244127707327618,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244127593428803
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::pump_publication_rejects_foreign_peer_and_superseded_turn",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244127821597527,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244127707639491
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::renewal_certificate_requires_exact_grant_and_successful_owning_pump",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244127936264669,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244127822115395
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_gate::tests::transfer_and_clock_failure_revoke_renewals_without_erasing_voter_hold",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244128150617577,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244127936552587
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_wire::tests::envelope_rejects_wrong_identity_policy_and_raft_payload",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244128155029948,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244128151313829
+    },
+    {
+      "argv": [
+        "/home/dongxu/kv9/target/debug/deps/kv9_raft-2e5618ed76f08dc3",
+        "rawnode::lease_wire::tests::ordinary_heartbeat_echo_and_read_context_never_become_grants",
+        "--exact",
+        "--nocapture"
+      ],
+      "ended_ns": 1789244128158997829,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "started_ns": 1789244128155362210
+    }
+  ],
+  "complete": true,
+  "controls": [
+    {
+      "expected_failure_observed": true,
+      "mutant_sha256": "d84e1211b72b31b3aea9285a460ce976a66709c2eb5170846cc34cc4b86eb447",
+      "name": "ack-before-pump",
+      "original_sha256": "4affa4598f4231a825296f5393ff51e907378eb261e1077e6662b27c5f17cb9a",
+      "path": "crates/raft/src/rawnode/lease_gate.rs",
+      "test": "rawnode::lease_gate::tests::renewal_certificate_requires_exact_grant_and_successful_owning_pump"
+    },
+    {
+      "expected_failure_observed": true,
+      "mutant_sha256": "dc6a4c6468de295a874c92452ad186d38675dc186bb3fac1b0292b481fd8c7b3",
+      "name": "later-input-in-old-pump",
+      "original_sha256": "4affa4598f4231a825296f5393ff51e907378eb261e1077e6662b27c5f17cb9a",
+      "path": "crates/raft/src/rawnode/lease_gate.rs",
+      "test": "rawnode::lease_gate::tests::grant_after_capture_belongs_to_the_next_pump"
+    },
+    {
+      "expected_failure_observed": true,
+      "mutant_sha256": "0c9501af2b9b6aeb522e31f7c299b520b25739d1cbcfe1fb3fe512b1841c33d8",
+      "name": "send-after-deadline",
+      "original_sha256": "4affa4598f4231a825296f5393ff51e907378eb261e1077e6662b27c5f17cb9a",
+      "path": "crates/raft/src/rawnode/lease_gate.rs",
+      "test": "rawnode::lease_gate::tests::delayed_request_grant_and_quorum_publication_cannot_extend_send_deadline"
+    },
+    {
+      "expected_failure_observed": true,
+      "mutant_sha256": "153bcb7923e40f35327a8647221b334eb2a8354c453ef9390add256f21acb076",
+      "name": "foreign-pump-publication",
+      "original_sha256": "4affa4598f4231a825296f5393ff51e907378eb261e1077e6662b27c5f17cb9a",
+      "path": "crates/raft/src/rawnode/lease_gate.rs",
+      "test": "rawnode::lease_gate::tests::pump_publication_rejects_foreign_peer_and_superseded_turn"
+    },
+    {
+      "expected_failure_observed": true,
+      "mutant_sha256": "04d7c0d98f9306ff7fd8a75b889e3d277049eade120205c486ca52ca605f6754",
+      "name": "failed-driver-retains-authority",
+      "original_sha256": "b0c46b04b85e87d3648f5fe42b38ae90e900a6154400ce793be3a810abc94f1f",
+      "path": "crates/raft/src/driver.rs",
+      "test": "rawnode::lease_gate::tests::failed_driver_apply_never_publishes_staged_grant"
+    },
+    {
+      "expected_failure_observed": true,
+      "mutant_sha256": "b05c8c85f816e82162ec0abad98303d60885f455635daada4f7c4f70217e17c6",
+      "name": "transfer-retains-authority",
+      "original_sha256": "ac90d0aadb65ccf5a30164140d35f22c2614ed07b603e7c762b0cae127c87939",
+      "path": "crates/raft/src/rawnode.rs",
+      "test": "rawnode::lease_gate::tests::transfer_and_clock_failure_revoke_renewals_without_erasing_voter_hold"
+    },
+    {
+      "expected_failure_observed": true,
+      "mutant_sha256": "e3d6a43e4541c5a4a48acee80efc281d831c31e143d6b6bacfd3da9d66b8d3c5",
+      "name": "policy-mismatch",
+      "original_sha256": "8c35804bb8e80a8413581273171403910fc5c4ddcda2a0994c4c9c387d1dc2b4",
+      "path": "crates/raft/src/rawnode/lease_wire.rs",
+      "test": "rawnode::lease_wire::tests::envelope_rejects_wrong_identity_policy_and_raft_payload"
+    },
+    {
+      "expected_failure_observed": true,
+      "mutant_sha256": "83c5726452f3b00b16ea5684271bc964b2ea3a5e4e2a747f88f77c5511abcec8",
+      "name": "ordinary-echo-as-grant",
+      "original_sha256": "8c35804bb8e80a8413581273171403910fc5c4ddcda2a0994c4c9c387d1dc2b4",
+      "path": "crates/raft/src/rawnode/lease_wire.rs",
+      "test": "rawnode::lease_wire::tests::ordinary_heartbeat_echo_and_read_context_never_become_grants"
+    }
+  ],
+  "source_bytes": 2981642,
+  "source_files": 154
+}
