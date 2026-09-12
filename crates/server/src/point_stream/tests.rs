@@ -394,10 +394,7 @@ async fn one_slot_server(api: Kv9Grpc) -> (StreamServer, SocketAddr, Arc<Semapho
     let permits = Arc::new(Semaphore::new(1));
     let shutdown = CancellationToken::new();
     let service = Service {
-        handler: Handler {
-            api,
-            authenticator: authenticator(),
-        },
+        handler: Handler::new(api, authenticator()),
         streams: permits.clone(),
         shutdown: shutdown.clone(),
     };
@@ -903,10 +900,7 @@ async fn stream_limit_is_held_after_headers_until_response_stream_drop() {
     let address = listener.local_addr().unwrap();
     let permits = Arc::new(Semaphore::new(2));
     let service = Service {
-        handler: Handler {
-            api: Kv9Grpc::new(Arc::new(Backend::default())),
-            authenticator: authenticator(),
-        },
+        handler: Handler::new(Kv9Grpc::new(Arc::new(Backend::default())), authenticator()),
         streams: permits.clone(),
         shutdown: CancellationToken::new(),
     };
@@ -1009,10 +1003,7 @@ async fn completed_but_unconsumed_replies_keep_pending_work_bounded() {
     let release = CancellationToken::new();
     let service = HeldService {
         inner: Service {
-            handler: Handler {
-                api,
-                authenticator: authenticator(),
-            },
+            handler: Handler::new(api, authenticator()),
             streams: permits.clone(),
             shutdown: CancellationToken::new(),
         },
@@ -1222,5 +1213,109 @@ async fn unauthenticated_openings_cannot_reserve_stream_capacity() {
     let read = bounded(stream.raw_get(request(get(b"authenticated")), deadline())).await;
     assert!(read.is_ok());
     assert_eq!(backend.calls.lock().unwrap().len(), 1);
+    stop(server).await;
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn one_stream_observes_custom_auth_identity_changes_and_revocation_per_frame() {
+    use crate::grpc::{AuthContext, Authenticator};
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    struct RotatingAuth {
+        inner: Arc<dyn Authenticator>,
+        generation: AtomicUsize,
+        calls: AtomicUsize,
+        opening_headers: std::sync::Mutex<Vec<bool>>,
+    }
+    impl Authenticator for RotatingAuth {
+        fn authenticate(
+            &self,
+            metadata: &tonic::metadata::MetadataMap,
+        ) -> Result<AuthContext, Status> {
+            self.calls.fetch_add(1, Ordering::SeqCst);
+            self.opening_headers
+                .lock()
+                .unwrap()
+                .push(metadata.get("opening-only").is_some());
+            let mut auth = self.inner.authenticate(metadata)?;
+            match self.generation.load(Ordering::SeqCst) {
+                0 => Ok(auth),
+                1 => {
+                    auth.principal = "bob".into();
+                    Ok(auth)
+                }
+                2 => {
+                    auth.auth_kind = crate::grpc::AuthKind::Node;
+                    Ok(auth)
+                }
+                _ => Err(Status::unauthenticated("credential revoked")),
+            }
+        }
+    }
+
+    let auth = Arc::new(RotatingAuth {
+        inner: authenticator(),
+        generation: AtomicUsize::new(0),
+        calls: AtomicUsize::new(0),
+        opening_headers: std::sync::Mutex::new(Vec::new()),
+    });
+    let backend = Arc::new(Backend::default());
+    let probe = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = probe.local_addr().unwrap();
+    drop(probe);
+    let server = start(address, Kv9Grpc::new(backend.clone()), auth.clone())
+        .await
+        .unwrap();
+    let mut client = wire_client(address).await;
+    let (sender, receiver) = mpsc::channel(4);
+    let mut opening = request(ReceiverStream::new(receiver));
+    opening
+        .metadata_mut()
+        .insert("opening-only", "extra".parse().unwrap());
+    let mut replies = bounded(client.exchange(opening))
+        .await
+        .unwrap()
+        .into_inner();
+    for id in 1..=4 {
+        auth.generation.store(id as usize - 1, Ordering::SeqCst);
+        let (operation, payload) = if id >= 3 {
+            (1, put(b"private", b"must-not-write").encode_to_vec())
+        } else {
+            (0, get(b"key").encode_to_vec())
+        };
+        bounded(sender.send(frame(id, operation, payload)))
+            .await
+            .unwrap();
+        let reply = bounded(replies.message()).await.unwrap().unwrap();
+        assert_eq!(reply.id, id);
+        let reply = reply.reply.unwrap();
+        assert_eq!(
+            reply.code,
+            if id == 3 {
+                Code::PermissionDenied as i32
+            } else if id == 4 {
+                Code::Unauthenticated as i32
+            } else {
+                Code::Ok as i32
+            }
+        );
+        if id == 4 {
+            assert_eq!(reply.message, "credential revoked");
+        }
+    }
+    assert_eq!(auth.calls.load(Ordering::SeqCst), 5); // Opening plus four frames.
+    assert_eq!(
+        *auth.opening_headers.lock().unwrap(),
+        vec![true, false, false, false, false]
+    );
+    {
+        let calls = backend.calls.lock().unwrap();
+        assert_eq!(calls.len(), 2);
+        assert_eq!(calls[0].origin.label(), "alice");
+        assert_eq!(calls[1].origin.label(), "bob");
+        assert!(backend.values.lock().unwrap().is_empty());
+    }
+    drop(sender);
+    drop(replies);
     stop(server).await;
 }

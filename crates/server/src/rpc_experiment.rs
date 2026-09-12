@@ -75,7 +75,7 @@ pub(crate) async fn start(
                     if stream.set_nodelay(true).is_err() { continue; }
                     let transport = tarpc::serde_transport::new(
                         LengthDelimitedCodec::builder().max_frame_length(FRAME_LIMIT).new_framed(stream), Bincode::default());
-                    let handler = Handler { api: api.clone(), authenticator: authenticator.clone() };
+                    let handler = Handler::new(api.clone(), authenticator.clone());
                     connections.spawn(async move {
                         BaseChannel::with_defaults(transport).max_concurrent_requests(CHANNEL_LIMIT)
                             .execute(handler.serve()).for_each_concurrent(Some(CHANNEL_LIMIT), |request| request).await;
