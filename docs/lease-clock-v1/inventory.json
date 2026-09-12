@@ -1,0 +1,2254 @@
+{
+  "complete": true,
+  "source_files_checked": 161,
+  "entries": [
+    {
+      "name": "source/cache-clean.stderr",
+      "original_path": "/tmp/kv9-lease-clock-source-first/cache-clean.stderr",
+      "bytes": 38,
+      "sha256": "503f7e2aea0f00a39107054902f4ed8ce24e6f91bfccff45e5cf56ddba68adf2"
+    },
+    {
+      "name": "source/cache-clean.stdout",
+      "original_path": "/tmp/kv9-lease-clock-source-first/cache-clean.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source/cache-metadata.json",
+      "original_path": "/tmp/kv9-lease-clock-source-first/cache-metadata.json",
+      "bytes": 26067,
+      "sha256": "5a5f0c9a97f2db168a6af3c3e45a81345d68735974192f4b2cb8678277388ac0"
+    },
+    {
+      "name": "source/cache-metadata.log",
+      "original_path": "/tmp/kv9-lease-clock-source-first/cache-metadata.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source/cache-safety.json",
+      "original_path": "/tmp/kv9-lease-clock-source-first/cache-safety.json",
+      "bytes": 30165,
+      "sha256": "f31416e5107de165771b328ed125a15322da4eff0a66914bfe7befecd590a0ea"
+    },
+    {
+      "name": "source/commands.json",
+      "original_path": "/tmp/kv9-lease-clock-source-first/commands.json",
+      "bytes": 2017,
+      "sha256": "7a117b98ff451f20fc16571a077a8a50efba1be978485874af32b206d93f7f58"
+    },
+    {
+      "name": "source/default-compile.stderr",
+      "original_path": "/tmp/kv9-lease-clock-source-first/default-compile.stderr",
+      "bytes": 261,
+      "sha256": "9457b34493f3c5a6e0f93e4b24367d96e6e1b1cd59b11bd9e22104257cb62587"
+    },
+    {
+      "name": "source/default-compile.stdout",
+      "original_path": "/tmp/kv9-lease-clock-source-first/default-compile.stdout",
+      "bytes": 197053,
+      "sha256": "339a0a51fa39edaf49f007d5fa26bdb574415915e4e2d7a4d274c48eac265675"
+    },
+    {
+      "name": "source/default-restart-probe.stderr",
+      "original_path": "/tmp/kv9-lease-clock-source-first/default-restart-probe.stderr",
+      "bytes": 284,
+      "sha256": "0b6ddd8567ba5129320f9d24887d2de35924466a69f1836c3e9b2fdae593e0e6"
+    },
+    {
+      "name": "source/default-restart-probe.stdout",
+      "original_path": "/tmp/kv9-lease-clock-source-first/default-restart-probe.stdout",
+      "bytes": 186,
+      "sha256": "2e05413ea8d436a576325387b73fa9cee7571da98dc8772f8e86d082c6d5569b"
+    },
+    {
+      "name": "source/default-server-check.stderr",
+      "original_path": "/tmp/kv9-lease-clock-source-first/default-server-check.stderr",
+      "bytes": 506,
+      "sha256": "d7915be1c6c01c77b0d58b3fb06ed8a90f84c6673a9c5aa5a9cdeb1e41223593"
+    },
+    {
+      "name": "source/default-server-check.stdout",
+      "original_path": "/tmp/kv9-lease-clock-source-first/default-server-check.stdout",
+      "bytes": 196719,
+      "sha256": "c9eda04479ea512040f2db9c560bfc5a84881bbcaac178209f7bf119a1474ebb"
+    },
+    {
+      "name": "source/default-tests.stderr",
+      "original_path": "/tmp/kv9-lease-clock-source-first/default-tests.stderr",
+      "bytes": 235,
+      "sha256": "66b831517ec285368f61cca886c83a636d39f2b2f52247ca4b54f34895621f3a"
+    },
+    {
+      "name": "source/default-tests.stdout",
+      "original_path": "/tmp/kv9-lease-clock-source-first/default-tests.stdout",
+      "bytes": 32723,
+      "sha256": "ff1ed602b8a50132e6a416f297040f105707e2ec34dc7eb2301b0322297d42bb"
+    },
+    {
+      "name": "source/experimental-check.stderr",
+      "original_path": "/tmp/kv9-lease-clock-source-first/experimental-check.stderr",
+      "bytes": 378,
+      "sha256": "8f9d70d95062085266db3760ba53e4baf994c3fc46d11bb6ede3152ed69b2ce3"
+    },
+    {
+      "name": "source/experimental-check.stdout",
+      "original_path": "/tmp/kv9-lease-clock-source-first/experimental-check.stdout",
+      "bytes": 196906,
+      "sha256": "7277ba29da0e6b648c0d9241c38da350c800cdb2df88a2e859bc072ee4ab799a"
+    },
+    {
+      "name": "source/experimental-clippy.stderr",
+      "original_path": "/tmp/kv9-lease-clock-source-first/experimental-clippy.stderr",
+      "bytes": 506,
+      "sha256": "a7fb3c04b3ae12486f3c61a2f2b5ebcc8e70dd5d29ed4d43850cbc10d0e51748"
+    },
+    {
+      "name": "source/experimental-clippy.stdout",
+      "original_path": "/tmp/kv9-lease-clock-source-first/experimental-clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source/format.stderr",
+      "original_path": "/tmp/kv9-lease-clock-source-first/format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source/format.stdout",
+      "original_path": "/tmp/kv9-lease-clock-source-first/format.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source/real-process-pause.stderr",
+      "original_path": "/tmp/kv9-lease-clock-source-first/real-process-pause.stderr",
+      "bytes": 228,
+      "sha256": "0ec6dab1504e6b56bee44a7a8ef8f7a558feb38575fa64b418bfd46aee990668"
+    },
+    {
+      "name": "source/real-process-pause.stdout",
+      "original_path": "/tmp/kv9-lease-clock-source-first/real-process-pause.stdout",
+      "bytes": 310,
+      "sha256": "8314302f21b4e5a2acf3b2242a55b4098b0baf2cf7317e555dc8435820c68749"
+    },
+    {
+      "name": "source/result.json",
+      "original_path": "/tmp/kv9-lease-clock-source-first/result.json",
+      "bytes": 3848,
+      "sha256": "ddb1a9bf923e01035d8a608aa180b6d03f37337a5f6215b59f71c182ab12297e"
+    },
+    {
+      "name": "source/server-tests.stderr",
+      "original_path": "/tmp/kv9-lease-clock-source-first/server-tests.stderr",
+      "bytes": 526,
+      "sha256": "31f39b3d65dc3aed678aa4dd38c3abe96a99c701b44d07e802a9bef43892b8b5"
+    },
+    {
+      "name": "source/server-tests.stdout",
+      "original_path": "/tmp/kv9-lease-clock-source-first/server-tests.stdout",
+      "bytes": 19080,
+      "sha256": "7d5672123ea81385498a70129e4bec822652ae905ce74bb8fadd962c0decffd7"
+    },
+    {
+      "name": "source/source/Cargo.lock",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/Cargo.lock",
+      "bytes": 72774,
+      "sha256": "8bd642c862b9b12ec45cd16c4ad9b6fe71fd0e6de6a619d0d04ea9a6dd6aee7c"
+    },
+    {
+      "name": "source/source/Cargo.toml",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/Cargo.toml",
+      "bytes": 7515,
+      "sha256": "7f984f583952515c497b81461886e62ce7a181bb68623da1b5bce3eb04cef889"
+    },
+    {
+      "name": "source/source/crates/common/Cargo.toml",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/Cargo.toml",
+      "bytes": 349,
+      "sha256": "fdf22914c01963c5d6209b2c42351c56fa787a63fc4ecaac6140ef3639e70ef5"
+    },
+    {
+      "name": "source/source/crates/common/README.md",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/README.md",
+      "bytes": 517,
+      "sha256": "2695f123dbba5c9f5c984d2e96bf981219e55292e4ae1f7c32b4e873af5e0afe"
+    },
+    {
+      "name": "source/source/crates/common/src/codec.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/codec.rs",
+      "bytes": 11591,
+      "sha256": "da74bbdb8344bec4b63fe1cccd6449d0c2a656b5c44267bc5f07b32599874570"
+    },
+    {
+      "name": "source/source/crates/common/src/config.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/config.rs",
+      "bytes": 4017,
+      "sha256": "06c5eecb36396e69cda59026d67ad12360b3390286ac53b3878b3b8d7ce69d22"
+    },
+    {
+      "name": "source/source/crates/common/src/error.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/error.rs",
+      "bytes": 7404,
+      "sha256": "e6937d6e20101b1870bffc34182916d535ccef2128b160f9212894840773c0ec"
+    },
+    {
+      "name": "source/source/crates/common/src/fs/testing.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/fs/testing.rs",
+      "bytes": 16889,
+      "sha256": "9cb56a1b8449db260e26730c930e3209990edce48bc7687bd7e5abb7c7262dba"
+    },
+    {
+      "name": "source/source/crates/common/src/fs.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/fs.rs",
+      "bytes": 3392,
+      "sha256": "fef060c7e3edb08be323033820cc3609def04fd32d7aadbcd7bfe5e4858cb73b"
+    },
+    {
+      "name": "source/source/crates/common/src/ids.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/ids.rs",
+      "bytes": 8809,
+      "sha256": "ecd584cfd31a0b2766f80bf2628a84e0696e4b568d36eb5b21bc4b358f561e92"
+    },
+    {
+      "name": "source/source/crates/common/src/keyspace.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/keyspace.rs",
+      "bytes": 2389,
+      "sha256": "7b442da7db0c510b2a372d59628a2720d6ef324eedfb2528d123e61560f566cc"
+    },
+    {
+      "name": "source/source/crates/common/src/lib.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/lib.rs",
+      "bytes": 1158,
+      "sha256": "5577ee89e8ea4f643c3fe249253a5aeed1ae610cee141bf4f9796be49cea0256"
+    },
+    {
+      "name": "source/source/crates/common/src/metrics.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/metrics.rs",
+      "bytes": 11306,
+      "sha256": "2889dad19c8cf68c093a3d88f8c04d08830d371ef0d61c2c8e1469e248d8b0e2"
+    },
+    {
+      "name": "source/source/crates/common/src/root.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/root.rs",
+      "bytes": 26229,
+      "sha256": "657fa19d65d4ddcd33511087d5fcb9e6af9e5810976e6e75711eb32dc4826385"
+    },
+    {
+      "name": "source/source/crates/common/src/store_lifecycle.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/store_lifecycle.rs",
+      "bytes": 26607,
+      "sha256": "172a4c2d82548d5fc7314d5b7a248bda0608f7a5c27609941e3001165fe14164"
+    },
+    {
+      "name": "source/source/crates/common/src/time.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/common/src/time.rs",
+      "bytes": 2348,
+      "sha256": "0c8bf57eec8c089fc3cda830dd76ce4f7f58d20186bf0e593be7a1789bf9a490"
+    },
+    {
+      "name": "source/source/crates/engine/Cargo.toml",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/Cargo.toml",
+      "bytes": 1218,
+      "sha256": "1820b514b91ac6124cc6d138074facfb909a67f598fa37a40d76fef3e454411f"
+    },
+    {
+      "name": "source/source/crates/engine/README.md",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/README.md",
+      "bytes": 1116,
+      "sha256": "51e7d6aba4fbd32afa7fb24ed09fc1d4677a7e81e2dea8cb98b3a0cc4dcd6cb7"
+    },
+    {
+      "name": "source/source/crates/engine/examples/segment_publication_probe.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/examples/segment_publication_probe.rs",
+      "bytes": 11332,
+      "sha256": "66e79d18dce6fa50a39485509f68ca8221e6a1d2c9b6020c6ca2e824d9566213"
+    },
+    {
+      "name": "source/source/crates/engine/src/cf.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/cf.rs",
+      "bytes": 1143,
+      "sha256": "fca152624381e4e2ce0df1419af0b933063c0c19eec0c9b2d45c683ab3e9bf3c"
+    },
+    {
+      "name": "source/source/crates/engine/src/checkpoint.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/checkpoint.rs",
+      "bytes": 19337,
+      "sha256": "1d4e503560c50c9b291f2475a867b51557a7dd86147a204f04a3fce4d0e6fc67"
+    },
+    {
+      "name": "source/source/crates/engine/src/flush_journal.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/flush_journal.rs",
+      "bytes": 5844,
+      "sha256": "1a5084cb498e5cbd15958883be93396e69558f0d171d837910a70fb2a74380a0"
+    },
+    {
+      "name": "source/source/crates/engine/src/lib.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/lib.rs",
+      "bytes": 12491,
+      "sha256": "539792a1b71119c1189aea6acc45372e587c52d685dbe8b3b2d3a6961ec529d3"
+    },
+    {
+      "name": "source/source/crates/engine/src/mem.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/mem.rs",
+      "bytes": 35106,
+      "sha256": "5308ffd0df6f89a4e943c7454b7c518b6fba64c2932914e09f7d94ef32e15ef6"
+    },
+    {
+      "name": "source/source/crates/engine/src/minio.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/minio.rs",
+      "bytes": 58131,
+      "sha256": "038a72f8effb3af5d0407b35223d39849ed18f9e8d5818e0b947a7636930f6f4"
+    },
+    {
+      "name": "source/source/crates/engine/src/object_store.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/object_store.rs",
+      "bytes": 11462,
+      "sha256": "4815aba8a5ae7291d3ece61a60316774c716f9f66359eb0dcbeb0033a88bf487"
+    },
+    {
+      "name": "source/source/crates/engine/src/persist.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/persist.rs",
+      "bytes": 48094,
+      "sha256": "0a94ac54a3cf00ae5989e857f158d649c53fdd315b8ce250a44decf84074cd07"
+    },
+    {
+      "name": "source/source/crates/engine/src/replicated.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/replicated.rs",
+      "bytes": 6089,
+      "sha256": "08e0ede336319388608cc79dbe1c9253e37ec1b320cabac70e5c0b74dee5417d"
+    },
+    {
+      "name": "source/source/crates/engine/src/sst.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/sst.rs",
+      "bytes": 43152,
+      "sha256": "7b2276f560ae2588210644a6c6c73e7f1d1c2da0a8cc02fdb9023807ff134aaa"
+    },
+    {
+      "name": "source/source/crates/engine/src/testing.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/testing.rs",
+      "bytes": 11726,
+      "sha256": "a0c4861d2dd54b97df6b30cbe651263a5b3a4fde3d94711c5b94acb77a791801"
+    },
+    {
+      "name": "source/source/crates/engine/src/wal.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/wal.rs",
+      "bytes": 34239,
+      "sha256": "3651e5136ee6117819b27d38f5c788029ae0ec5941bf47ab16565b736c711478"
+    },
+    {
+      "name": "source/source/crates/engine/src/wal_segment.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/wal_segment.rs",
+      "bytes": 31730,
+      "sha256": "8b4dcf628e065390a381cddd82bc9487a53713636f6d2974862e03d3147f1c6b"
+    },
+    {
+      "name": "source/source/crates/engine/src/wal_stream.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/wal_stream.rs",
+      "bytes": 44651,
+      "sha256": "a4d81d291aeed159a6deb881dd18be21cb807495549eb085ae827506f751e998"
+    },
+    {
+      "name": "source/source/crates/engine/src/wal_v2.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/wal_v2.rs",
+      "bytes": 8644,
+      "sha256": "7bcf311600cd56000c91d9bfffa30bf25440d330c50cc79f1de2fb7b572b3295"
+    },
+    {
+      "name": "source/source/crates/engine/src/write_batch.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/src/write_batch.rs",
+      "bytes": 1534,
+      "sha256": "50dfbea56c0ccc007fdf74901ed76d93fd23a817ee529e2091aedd02f933ecee"
+    },
+    {
+      "name": "source/source/crates/engine/tests/batch_atomicity.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/tests/batch_atomicity.rs",
+      "bytes": 7364,
+      "sha256": "cdf89c7cea43de731a3dc3cf84cb044be27a4fe6545d9e459f722088d84f988f"
+    },
+    {
+      "name": "source/source/crates/engine/tests/minio_backend.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/tests/minio_backend.rs",
+      "bytes": 44210,
+      "sha256": "7c7c56d7d71babac1401252db81714dae8c25e018ed98e7dca3593a97833b9e2"
+    },
+    {
+      "name": "source/source/crates/engine/tests/minio_checkpoint.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/tests/minio_checkpoint.rs",
+      "bytes": 10689,
+      "sha256": "0590bdecab160a8f1475dd1b00a55081b1d7ab7d7303fd7a0919d513d6bb5a2b"
+    },
+    {
+      "name": "source/source/crates/engine/tests/object_safety.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/engine/tests/object_safety.rs",
+      "bytes": 3263,
+      "sha256": "ab00f75e2e8475803d61815ce5bb3764164de78d1f62b1a7a1a6af2197700836"
+    },
+    {
+      "name": "source/source/crates/meta/Cargo.toml",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/Cargo.toml",
+      "bytes": 448,
+      "sha256": "dcfca446e6c1065b2c701a4f0c388cc95ec074de6c56fe1e61edbb20d448362b"
+    },
+    {
+      "name": "source/source/crates/meta/README.md",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/README.md",
+      "bytes": 1128,
+      "sha256": "df2baea39657506048c311dcca4ddd13bc0885ac2ea7bb9219ec539fdbccdd8a"
+    },
+    {
+      "name": "source/source/crates/meta/src/admission.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/admission.rs",
+      "bytes": 18974,
+      "sha256": "718535a7469ce715e1eee24e3ae4183b71ef5fb2e3d1a5cc358f3612f63b362c"
+    },
+    {
+      "name": "source/source/crates/meta/src/bootstrap.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/bootstrap.rs",
+      "bytes": 36697,
+      "sha256": "40c5d6fe926006d408735bd3db77f761c45d37ed7226a49d9318943e3adeb96b"
+    },
+    {
+      "name": "source/source/crates/meta/src/catalog.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/catalog.rs",
+      "bytes": 2636,
+      "sha256": "859dfeb00c1d2ad2ff14883e481822886543ef6b7053da2c93032b28e1b1034a"
+    },
+    {
+      "name": "source/source/crates/meta/src/codec.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/codec.rs",
+      "bytes": 20112,
+      "sha256": "60db705f672d53254dff9cb8ada1907837239c54db4bcc07283bc669582416ad"
+    },
+    {
+      "name": "source/source/crates/meta/src/endpoint.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/endpoint.rs",
+      "bytes": 9165,
+      "sha256": "e7760c548786c89e3d8447e1e7e1b19638116ceb6c1588a5c8d93e33831075d5"
+    },
+    {
+      "name": "source/source/crates/meta/src/layered.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/layered.rs",
+      "bytes": 3281,
+      "sha256": "51ec007770bd55ab54ddd733e341c4aa8584edb4885a411fbdfc9875452c996a"
+    },
+    {
+      "name": "source/source/crates/meta/src/leader.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/leader.rs",
+      "bytes": 2695,
+      "sha256": "13b2c23dbadfa73892a1f7c89aaee747cc80135ff4b4a21143ffdacdccd69418"
+    },
+    {
+      "name": "source/source/crates/meta/src/lib.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/lib.rs",
+      "bytes": 2292,
+      "sha256": "d882352ee909bd7534218f23a958284c0114fbbae5b9840d55c2e93aa81c52a5"
+    },
+    {
+      "name": "source/source/crates/meta/src/membership.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/membership.rs",
+      "bytes": 1421,
+      "sha256": "acd860c837bf0664ecae64a356372c81ab01d9a6f8cda94319a3700ed0179f8e"
+    },
+    {
+      "name": "source/source/crates/meta/src/migrate.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/migrate.rs",
+      "bytes": 2793,
+      "sha256": "e637b0a8f6471f71ae05e05d5f6477cf4e473d3a812636e086d21f95ee9c49f7"
+    },
+    {
+      "name": "source/source/crates/meta/src/placement.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/placement.rs",
+      "bytes": 3373,
+      "sha256": "c3f85e79fcac604c3cc06259e6052697736ea461d420bfe7ab0704b9c349eb10"
+    },
+    {
+      "name": "source/source/crates/meta/src/root.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/root.rs",
+      "bytes": 4011,
+      "sha256": "3d623190e1913f0fc27284b5a47b880d192708394fc716b4fceda6ef48004452"
+    },
+    {
+      "name": "source/source/crates/meta/src/routing.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/routing.rs",
+      "bytes": 1460,
+      "sha256": "590e77737f61cc28f4b9223f522d86ad345dc545262eb90136a7038571f52057"
+    },
+    {
+      "name": "source/source/crates/meta/src/schema.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/schema.rs",
+      "bytes": 18359,
+      "sha256": "33b07183ea31e99ae82059338746176e2f8599ea555337afc510dfe5c3b5f658"
+    },
+    {
+      "name": "source/source/crates/meta/src/store.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/store.rs",
+      "bytes": 28826,
+      "sha256": "ec6100e2caab7e028aaf89f18e7095fa161a542b33f30ed4dadf412519e3bc1b"
+    },
+    {
+      "name": "source/source/crates/meta/src/tables.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/tables.rs",
+      "bytes": 17439,
+      "sha256": "8e6ed9c2c0e7701d45df8d1f8632648d8fa79e62adf02ffb92cba499b3124856"
+    },
+    {
+      "name": "source/source/crates/meta/src/tso.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/src/tso.rs",
+      "bytes": 6735,
+      "sha256": "4753fc2c9b364faecc316a4eeaa36bd2caaac436563f30d13e5b0c35ac1f6370"
+    },
+    {
+      "name": "source/source/crates/meta/tests/admission.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/tests/admission.rs",
+      "bytes": 12318,
+      "sha256": "2d2f672b329f1960e52bc72ffe9687cf1fd344442dfc87c0a114b0125ee520b5"
+    },
+    {
+      "name": "source/source/crates/meta/tests/catalog.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/tests/catalog.rs",
+      "bytes": 24527,
+      "sha256": "8a0dbd62c6593f28b47b58457aee269aa974db97c2b43c8390d4c149b92076ed"
+    },
+    {
+      "name": "source/source/crates/meta/tests/catalog_facade.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/tests/catalog_facade.rs",
+      "bytes": 2374,
+      "sha256": "fdc742e22d395fe58602ef5b91dd3fa88035c32680278498509b0c95d06f6271"
+    },
+    {
+      "name": "source/source/crates/meta/tests/endpoint.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/meta/tests/endpoint.rs",
+      "bytes": 15706,
+      "sha256": "796b23be15f515b03a37e3381abcc0afa6482d99495c0d30205a59b83b196260"
+    },
+    {
+      "name": "source/source/crates/raft/Cargo.toml",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/Cargo.toml",
+      "bytes": 1592,
+      "sha256": "ac82a0a4dd28098cae836bb001fabd20b69fd8c8133778e546e4a187abe2242a"
+    },
+    {
+      "name": "source/source/crates/raft/README.md",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/README.md",
+      "bytes": 919,
+      "sha256": "8aa4d1c0d811a26a19edb64c3ec90f59460257e9118fc06be3915ed4dcc1ee21"
+    },
+    {
+      "name": "source/source/crates/raft/build.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/build.rs",
+      "bytes": 479,
+      "sha256": "0e3605bb8c9c19ea980b39d7822d5f24d5697310382ebad8d1991fbf89e7359e"
+    },
+    {
+      "name": "source/source/crates/raft/examples/check-wire-floor.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/examples/check-wire-floor.rs",
+      "bytes": 2066,
+      "sha256": "9c5ee500b2bd76a0e4acdd7c874c7280fa889ce33d471e1f9694eebe13ca802e"
+    },
+    {
+      "name": "source/source/crates/raft/src/async_apply.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/async_apply.rs",
+      "bytes": 11119,
+      "sha256": "73a18d0e02fab720e7138a5b7ac15799742b1018b7226454f0e24b94a2ccc6f5"
+    },
+    {
+      "name": "source/source/crates/raft/src/async_read.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/async_read.rs",
+      "bytes": 40284,
+      "sha256": "03cf4b4c6f046c92bddb38788e80c1e78c14577b7980e85363abf2250c085e39"
+    },
+    {
+      "name": "source/source/crates/raft/src/command.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/command.rs",
+      "bytes": 34898,
+      "sha256": "093647b01c0b4d214ca97f193a7b0ad8afdc7193b6c999ad60759511558aa47b"
+    },
+    {
+      "name": "source/source/crates/raft/src/driver/lease_read/tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/driver/lease_read/tests.rs",
+      "bytes": 12402,
+      "sha256": "91e4528b794a9ec320ea760773800c36dabb516ef21874ea1f6df05f7b30a9c8"
+    },
+    {
+      "name": "source/source/crates/raft/src/driver/lease_read.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/driver/lease_read.rs",
+      "bytes": 6922,
+      "sha256": "12d4cbc7532bca6728d0d8e2c499595449bc5529f22aff9a7542e817ee6ab947"
+    },
+    {
+      "name": "source/source/crates/raft/src/driver.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/driver.rs",
+      "bytes": 155107,
+      "sha256": "0fdc107979a175af9ef8522e3c30531d6236c0bab43f90a60ca2219f1d5bc88e"
+    },
+    {
+      "name": "source/source/crates/raft/src/grpc/endpoint.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/grpc/endpoint.rs",
+      "bytes": 15872,
+      "sha256": "ca0944b0cfca6372baee560ab75668f7c0549cc1e8e2a174426764cb321bead5"
+    },
+    {
+      "name": "source/source/crates/raft/src/grpc.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/grpc.rs",
+      "bytes": 141405,
+      "sha256": "9083374c5ac34abac7ed8eb5967b1c5fdb693b397e6f6570131e9691e422ac25"
+    },
+    {
+      "name": "source/source/crates/raft/src/lease/tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/lease/tests.rs",
+      "bytes": 20416,
+      "sha256": "0cf1891f210843f690953bbf944b1a6dca5cfa67b30804c529a8d60f172c9da3"
+    },
+    {
+      "name": "source/source/crates/raft/src/lease.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/lease.rs",
+      "bytes": 21058,
+      "sha256": "6ee20392b4a7b3e1b3e5a46ca2c5d6e4d9345f07934aeebc49c8524440b3269e"
+    },
+    {
+      "name": "source/source/crates/raft/src/lease_clock/linux.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/lease_clock/linux.rs",
+      "bytes": 5493,
+      "sha256": "7f596e5a9915e86967b54d5cb1f3911e5f9a04c0705827d3b998504f04ca82bc"
+    },
+    {
+      "name": "source/source/crates/raft/src/lease_clock/tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/lease_clock/tests.rs",
+      "bytes": 4061,
+      "sha256": "48faacd70746511d40a3d7309eaa9a0993e24ff9cfed6511454a2fbd1b27e522"
+    },
+    {
+      "name": "source/source/crates/raft/src/lease_clock.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/lease_clock.rs",
+      "bytes": 1962,
+      "sha256": "1b768868f65f3914e9a3e37a17d76eb2ca7038900258acdbccfe29c186ed1e50"
+    },
+    {
+      "name": "source/source/crates/raft/src/lease_policy/tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/lease_policy/tests.rs",
+      "bytes": 1816,
+      "sha256": "ba33b7b84876863392f8f8e43264332cb8f7e77d4aec0ca961cbb9cd50f66fcb"
+    },
+    {
+      "name": "source/source/crates/raft/src/lease_policy.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/lease_policy.rs",
+      "bytes": 4328,
+      "sha256": "82fbc3180e76f7e2da4573285b2f676f6cc2a10abad174757741d16b0c26d560"
+    },
+    {
+      "name": "source/source/crates/raft/src/lib.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/lib.rs",
+      "bytes": 12130,
+      "sha256": "baac37e3a6a670bcfe8b2f19737e242b578b230b4cd3a11a755fe8ef00e07618"
+    },
+    {
+      "name": "source/source/crates/raft/src/rawnode/lease_gate/tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/rawnode/lease_gate/tests.rs",
+      "bytes": 27761,
+      "sha256": "364f0e36dd804e9bb5037981acd6a22a863ad2c3cc13942a539b3cf01abd9546"
+    },
+    {
+      "name": "source/source/crates/raft/src/rawnode/lease_gate.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/rawnode/lease_gate.rs",
+      "bytes": 15733,
+      "sha256": "7bb59ba7cda0bf485f4418b2170822c844ab196fe6739d2cf6ecfb3d34a7ea23"
+    },
+    {
+      "name": "source/source/crates/raft/src/rawnode/lease_wire.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/rawnode/lease_wire.rs",
+      "bytes": 8436,
+      "sha256": "8c35804bb8e80a8413581273171403910fc5c4ddcda2a0994c4c9c387d1dc2b4"
+    },
+    {
+      "name": "source/source/crates/raft/src/rawnode.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/rawnode.rs",
+      "bytes": 60323,
+      "sha256": "855095495b3789c18c551a6cd40f9f50f380dd0809b3b46fbbabb5683656e1b2"
+    },
+    {
+      "name": "source/source/crates/raft/src/read_stage_timing.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/read_stage_timing.rs",
+      "bytes": 4441,
+      "sha256": "b69de8475c251cd55a1297ad593e6e6e170eff4b57057dc52b0b594f996af797"
+    },
+    {
+      "name": "source/source/crates/raft/src/state_machine/raw_group.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/state_machine/raw_group.rs",
+      "bytes": 20676,
+      "sha256": "a6340bbd8bba3471d455501f2081606064b3f3c4d1af58920eebc59b5d154ec4"
+    },
+    {
+      "name": "source/source/crates/raft/src/state_machine.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/state_machine.rs",
+      "bytes": 74877,
+      "sha256": "1b40923564c1304f370f05261bda704b498c001b0ef327e6f4aba653fcb247bd"
+    },
+    {
+      "name": "source/source/crates/raft/src/storage/persistence_model.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/storage/persistence_model.rs",
+      "bytes": 45903,
+      "sha256": "0e84344fd14570bcc53121330f047240d597a20205cd9c4d0e8863520b7e4d9d"
+    },
+    {
+      "name": "source/source/crates/raft/src/storage.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/storage.rs",
+      "bytes": 31637,
+      "sha256": "c21e69c48f5ae1d6439466c577f0f307068af138adba9c02034827163c2c00de"
+    },
+    {
+      "name": "source/source/crates/raft/src/testing.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/testing.rs",
+      "bytes": 19033,
+      "sha256": "552a9b0d34f910ccbb96fbe4c13898c00e489fdcfb877e4ed4f47abd0c1ec967"
+    },
+    {
+      "name": "source/source/crates/raft/src/transport.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/transport.rs",
+      "bytes": 33001,
+      "sha256": "090642e0b487142ef32b3cc9f9d35fcec26fef9d95ba7942664a9e0db9419f58"
+    },
+    {
+      "name": "source/source/crates/raft/src/work.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/src/work.rs",
+      "bytes": 13285,
+      "sha256": "766fe563ceba1f2e398ce14704b9fc232be3b4fa52b0301783036f95f089164a"
+    },
+    {
+      "name": "source/source/crates/raft/tests/driver_lock_order.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/tests/driver_lock_order.rs",
+      "bytes": 5332,
+      "sha256": "8e872177453cc56899a3a50a10331e0ac4fc8c2f03ddef49bd2559bf53d1a479"
+    },
+    {
+      "name": "source/source/crates/raft/tests/frame_bad_input.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/tests/frame_bad_input.rs",
+      "bytes": 10112,
+      "sha256": "7b1a98055fab80c9de6680e6d276e6678e0dbacb8e7a8eddb7b896fc4e062fb3"
+    },
+    {
+      "name": "source/source/crates/raft/tests/lease_clock_pause.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/tests/lease_clock_pause.rs",
+      "bytes": 6903,
+      "sha256": "ef0690b649b45508391419cb93094b432910a0aed0871d7a6b1e7d5b62fb0631"
+    },
+    {
+      "name": "source/source/crates/raft/tests/lease_restart.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/tests/lease_restart.rs",
+      "bytes": 1409,
+      "sha256": "86f329e826075cb97368717b16c57cf712e31127f990ce6fe8a01dc02fa62e94"
+    },
+    {
+      "name": "source/source/crates/raft/tests/membership.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/raft/tests/membership.rs",
+      "bytes": 19456,
+      "sha256": "a1f404f32c22e31d5128c66c2cf816404baf77eaa26a8b65c11e4d377b74de23"
+    },
+    {
+      "name": "source/source/crates/region/Cargo.toml",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/region/Cargo.toml",
+      "bytes": 464,
+      "sha256": "2da3bcc453c0b38b75e291b5f08e1737e6552cb0c3882085dd084933f6b203dc"
+    },
+    {
+      "name": "source/source/crates/region/README.md",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/region/README.md",
+      "bytes": 805,
+      "sha256": "bbb181447bc4eae39c04e822294acdc17bac3fc739cc3076e56990c698145767"
+    },
+    {
+      "name": "source/source/crates/region/src/lib.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/region/src/lib.rs",
+      "bytes": 611,
+      "sha256": "d6d7a3f2b3e69cf59d58838df86cb3590d148e3687ca865774b54fa4b9e5c2c3"
+    },
+    {
+      "name": "source/source/crates/region/src/manifest.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/region/src/manifest.rs",
+      "bytes": 36067,
+      "sha256": "ecbfb593fa561ec88fcadc2471c6f444416cbc3b0546f75fdfc4e46870076c96"
+    },
+    {
+      "name": "source/source/crates/region/src/region.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/region/src/region.rs",
+      "bytes": 1973,
+      "sha256": "4c5d8f78e5771220d6c54fe593d38921e3b4d90154c7b9d24b221d49ae633f26"
+    },
+    {
+      "name": "source/source/crates/region/src/router.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/region/src/router.rs",
+      "bytes": 2567,
+      "sha256": "ab96b6bca6fbfe657e45759989d2563fd1d97f014f0d3af1c1226f21168367d6"
+    },
+    {
+      "name": "source/source/crates/region/src/split_merge.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/region/src/split_merge.rs",
+      "bytes": 3509,
+      "sha256": "bbeea5b25f6c2db7006d7cf471596a76fcd81808a534e02d25165a5966653ffc"
+    },
+    {
+      "name": "source/source/crates/region/src/wal.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/region/src/wal.rs",
+      "bytes": 4608,
+      "sha256": "23be73ccb0385696f8a96d228403dffb988fcd2edfaa1e8b5981d318f8564ea0"
+    },
+    {
+      "name": "source/source/crates/server/Cargo.toml",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/Cargo.toml",
+      "bytes": 1653,
+      "sha256": "4f64c27ffcf74b14faf210a56334eb3453e0c8bfb45967268b4f68ba121e24c6"
+    },
+    {
+      "name": "source/source/crates/server/README.md",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/README.md",
+      "bytes": 798,
+      "sha256": "615a7610078271c0f1bc65570a59de4f90c52a73ed719332c1d8cf84bc300563"
+    },
+    {
+      "name": "source/source/crates/server/build.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/build.rs",
+      "bytes": 378,
+      "sha256": "62c74648de2e6f2fa5f729072ae6cfec12f699d0811cf3676e9f2343bd28758c"
+    },
+    {
+      "name": "source/source/crates/server/examples/admission-pressure.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/examples/admission-pressure.rs",
+      "bytes": 5193,
+      "sha256": "b2cfe3d05f7c8a5421598a7bc8d70ce4aa5dfa66c40831b3b0347bfc635dfbe0"
+    },
+    {
+      "name": "source/source/crates/server/examples/latency-overhead.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/examples/latency-overhead.rs",
+      "bytes": 4390,
+      "sha256": "21a30535d8acb097e0c4363ef0af93b4ae6ff4bfff9a7e90835dd42520d530bc"
+    },
+    {
+      "name": "source/source/crates/server/examples/workload-loopback.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/examples/workload-loopback.rs",
+      "bytes": 8250,
+      "sha256": "e9e4c3b9fd3ab773688b6de276dcb9ab15e61db9c3983776a1c804629fc71862"
+    },
+    {
+      "name": "source/source/crates/server/proto/kv9.proto",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/proto/kv9.proto",
+      "bytes": 9465,
+      "sha256": "b99a43f995d1cc6613978a45e1a3db72929240760b2d6ea6aedb2660e14492ab"
+    },
+    {
+      "name": "source/source/crates/server/proto/point_stream.proto",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/proto/point_stream.proto",
+      "bytes": 711,
+      "sha256": "9018fe0dde6eb20cd987302a74495ef236656aa3043189e267eef585f674c5bd"
+    },
+    {
+      "name": "source/source/crates/server/src/admission.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/admission.rs",
+      "bytes": 21098,
+      "sha256": "edf1065f6e9b08551f3a9ce11559011f47c9131d6110e1fc99a7a7971853e356"
+    },
+    {
+      "name": "source/source/crates/server/src/api.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/api.rs",
+      "bytes": 11951,
+      "sha256": "20ccd2b61baf163fe1fdc60c502ade9ff8773c91726f3a55c1daf933afa812da"
+    },
+    {
+      "name": "source/source/crates/server/src/bin/kv9-batch-benchmark/common.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/bin/kv9-batch-benchmark/common.rs",
+      "bytes": 8032,
+      "sha256": "b98d4a49f9ee2199e183204b72fd52813907574a03c1cf3376cf5d281d7902fd"
+    },
+    {
+      "name": "source/source/crates/server/src/bin/kv9-batch-benchmark/metrics.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/bin/kv9-batch-benchmark/metrics.rs",
+      "bytes": 11334,
+      "sha256": "210d129873ad633ec830481cb5df459102e2bc4f66e60b3444f89c216fa8cff1"
+    },
+    {
+      "name": "source/source/crates/server/src/bin/kv9-batch-benchmark/model.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/bin/kv9-batch-benchmark/model.rs",
+      "bytes": 6351,
+      "sha256": "a4a530d322dee4f949051793762b92110aa6eed80519a76e74bb7e25cfcda7d0"
+    },
+    {
+      "name": "source/source/crates/server/src/bin/kv9-batch-benchmark.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/bin/kv9-batch-benchmark.rs",
+      "bytes": 25469,
+      "sha256": "42b8c21a78158ac8e4cb6e515f33a7105cfce0578c46cb33a1d555fff3a48470"
+    },
+    {
+      "name": "source/source/crates/server/src/bin/kv9-batch-workload/tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/bin/kv9-batch-workload/tests.rs",
+      "bytes": 17371,
+      "sha256": "3a8ef82367bb17027104f85e78c4f930bad7b5dc30622069b086e0eeb1085b68"
+    },
+    {
+      "name": "source/source/crates/server/src/bin/kv9-batch-workload.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/bin/kv9-batch-workload.rs",
+      "bytes": 30120,
+      "sha256": "ee70687c195fd83b097ecfb5a7e5d9bd2ed4704ee6c786bc66c61fb7154d0282"
+    },
+    {
+      "name": "source/source/crates/server/src/bin/kv9-workload.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/bin/kv9-workload.rs",
+      "bytes": 1992,
+      "sha256": "1767199e0b3be51e628e6fe660f6764e96a4c154ed4c7d5968dec600e553f18a"
+    },
+    {
+      "name": "source/source/crates/server/src/client/batch_tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/client/batch_tests.rs",
+      "bytes": 27130,
+      "sha256": "534c4be3f25974cbe682803ce8519616a2aa9c75f3708214cc4948610ff7edcc"
+    },
+    {
+      "name": "source/source/crates/server/src/client/tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/client/tests.rs",
+      "bytes": 37959,
+      "sha256": "a85443cf1d2f8b145d49c574daf9088ca20854c4b1a105af6d3f9dd77e8e158a"
+    },
+    {
+      "name": "source/source/crates/server/src/client.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/client.rs",
+      "bytes": 28628,
+      "sha256": "1926aeb06b3623370d3b3db7451d2c110c843c53c76d0000b197e32728debaab"
+    },
+    {
+      "name": "source/source/crates/server/src/endpoints.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/endpoints.rs",
+      "bytes": 15563,
+      "sha256": "293ebefe2818521550df483702c3e19dcc964767d03e922d89f51322f9af1b06"
+    },
+    {
+      "name": "source/source/crates/server/src/fence.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/fence.rs",
+      "bytes": 16075,
+      "sha256": "58c5c321b84574398691b2ebd1f329669e7b2d0427188d706a6fd2068ef07dba"
+    },
+    {
+      "name": "source/source/crates/server/src/grpc/tests/admission.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/grpc/tests/admission.rs",
+      "bytes": 28111,
+      "sha256": "62807693bb32e37c8410214c2adbf1a0d7057838eb0247f5d1af8162f0d3826a"
+    },
+    {
+      "name": "source/source/crates/server/src/grpc/tests/async_batch_read.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/grpc/tests/async_batch_read.rs",
+      "bytes": 6784,
+      "sha256": "35203ae3c21f6055ca7ad0c8e95b36da8f27318b69e88527bd6250d6f26d26e2"
+    },
+    {
+      "name": "source/source/crates/server/src/grpc.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/grpc.rs",
+      "bytes": 97074,
+      "sha256": "2865df993484a95fd7bcd966d99df3b6b71fbcba970ddd984f5b27ece19706ee"
+    },
+    {
+      "name": "source/source/crates/server/src/lib.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/lib.rs",
+      "bytes": 1174,
+      "sha256": "b75ef42814b7e99caedca02a0d3b65d8a9abd54e9118a325566ecf31b91e158a"
+    },
+    {
+      "name": "source/source/crates/server/src/node.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/node.rs",
+      "bytes": 63836,
+      "sha256": "b072133e04e51c206af0eb51757fc2ed8cf7543bdc62ce7b74fd087cc5c84bc4"
+    },
+    {
+      "name": "source/source/crates/server/src/observability.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/observability.rs",
+      "bytes": 17210,
+      "sha256": "42c016edc99518a86923d6542b90f0187f53be358456d10261671baf9195f494"
+    },
+    {
+      "name": "source/source/crates/server/src/point_stream/tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/point_stream/tests.rs",
+      "bytes": 43774,
+      "sha256": "45dce9814d21af79d83a8f1ef8b88af54cfa95f524c471902acbf63d67dd628e"
+    },
+    {
+      "name": "source/source/crates/server/src/point_stream.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/point_stream.rs",
+      "bytes": 24792,
+      "sha256": "106fd4060394ccb7e9bfcf7d40ed60b41ffb79969aeb58265ead899ad71a7794"
+    },
+    {
+      "name": "source/source/crates/server/src/point_test_support.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/point_test_support.rs",
+      "bytes": 9315,
+      "sha256": "ad314f90f384f1daa114c50ed7af5fad1eb7b15d04f0caeb5680add6e5a2e224"
+    },
+    {
+      "name": "source/source/crates/server/src/point_wire.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/point_wire.rs",
+      "bytes": 9403,
+      "sha256": "efa6fc1b7e20a46d4a9a112f8c6c959707992898a1b8cfb97f953522230d8a93"
+    },
+    {
+      "name": "source/source/crates/server/src/remote_storage.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/remote_storage.rs",
+      "bytes": 10986,
+      "sha256": "13d1b5cee4d614024e2fdd92cf5d70ea47ea02de4cf6dbce65c80d4412feafd0"
+    },
+    {
+      "name": "source/source/crates/server/src/routing.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/routing.rs",
+      "bytes": 1672,
+      "sha256": "d48ef5532621642593d57a7ba3f90161c4f0837e9bc523a48b5c21acd3e5650b"
+    },
+    {
+      "name": "source/source/crates/server/src/rpc_experiment/tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/rpc_experiment/tests.rs",
+      "bytes": 18606,
+      "sha256": "3ecfc5a0f22cd9e21deaed2c1aec1df5d2a9b75929609190a4c964680b77b9fa"
+    },
+    {
+      "name": "source/source/crates/server/src/rpc_experiment.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/rpc_experiment.rs",
+      "bytes": 7866,
+      "sha256": "23dc895be57a6fc0185bf1a56215dec5633c92f7ef7b8e9363ccec447fb2e472"
+    },
+    {
+      "name": "source/source/crates/server/src/runtime/endpoint_recovery.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/runtime/endpoint_recovery.rs",
+      "bytes": 18135,
+      "sha256": "769e2b0ad389d69f44f6b78646d35ba623eb7b5ac3fe23a38d633e3877492235"
+    },
+    {
+      "name": "source/source/crates/server/src/runtime/tests/async_batch_read_tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/runtime/tests/async_batch_read_tests.rs",
+      "bytes": 18125,
+      "sha256": "612f4469185aeb9a2c01243074fddb767d0ab49fb36a9015eff4b27faa9bef8e"
+    },
+    {
+      "name": "source/source/crates/server/src/runtime/tests/lease_read_tests.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/runtime/tests/lease_read_tests.rs",
+      "bytes": 15781,
+      "sha256": "61aad3c9c3e4dd4c8aacda0b346d16c320f7bfc00d907748b98fb35d69941cef"
+    },
+    {
+      "name": "source/source/crates/server/src/runtime.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/runtime.rs",
+      "bytes": 414719,
+      "sha256": "73c8ba82116a37828ea13fdb37ed72d9caedf6b87e933bf35cb68651676dedc6"
+    },
+    {
+      "name": "source/source/crates/server/src/workload/config.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/workload/config.rs",
+      "bytes": 9036,
+      "sha256": "3a104ee86e20a4b599d10c25f8861043f2623d5c454fe6909171d5707029f3e4"
+    },
+    {
+      "name": "source/source/crates/server/src/workload/generator.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/workload/generator.rs",
+      "bytes": 3816,
+      "sha256": "dcd9a7d789b70828a6c1ff61aa3ed2c0941970bf34ce957f7f85973d019a992d"
+    },
+    {
+      "name": "source/source/crates/server/src/workload/metrics.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/workload/metrics.rs",
+      "bytes": 10307,
+      "sha256": "a955927eefe1876a243e53c57faf8d40a1b84e9b147b61285bd754d2e290ee0e"
+    },
+    {
+      "name": "source/source/crates/server/src/workload/recorder.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/workload/recorder.rs",
+      "bytes": 24761,
+      "sha256": "48f12dd05b225b66dba869e0545a88dda7f788e8ab25db69bd754ece4aaf7947"
+    },
+    {
+      "name": "source/source/crates/server/src/workload/runner.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/workload/runner.rs",
+      "bytes": 23938,
+      "sha256": "cbbaca1c5237f69d8065f8c701af9001e1c70828db420f30d1b9ccc9d48516b5"
+    },
+    {
+      "name": "source/source/crates/server/src/workload.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/server/src/workload.rs",
+      "bytes": 374,
+      "sha256": "6af930deed593e66f186f6ee0ab038fb2feb38fc92ae570429f0df0bf48fde43"
+    },
+    {
+      "name": "source/source/crates/txn/Cargo.toml",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/txn/Cargo.toml",
+      "bytes": 334,
+      "sha256": "6a8a7aa3382f495da6f2fe7f6f5f1975aa69662fc240be007cecfbe7a6b3b56b"
+    },
+    {
+      "name": "source/source/crates/txn/README.md",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/txn/README.md",
+      "bytes": 670,
+      "sha256": "e784b3263abced685f667af04eaa989c8fd41cb12f2bf65aba8a90945e0d069f"
+    },
+    {
+      "name": "source/source/crates/txn/src/identity.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/txn/src/identity.rs",
+      "bytes": 9596,
+      "sha256": "2abe6bc3f28b2e09ec3ef21303088be88407a5957cb1a11cb3a9da45c20720dc"
+    },
+    {
+      "name": "source/source/crates/txn/src/lib.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/txn/src/lib.rs",
+      "bytes": 569,
+      "sha256": "bf5e6d32b3cf6a4687274a98804c890a469078f9a6c4d2434b4ce1cafb999933"
+    },
+    {
+      "name": "source/source/crates/txn/src/percolator.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/txn/src/percolator.rs",
+      "bytes": 3800,
+      "sha256": "95eccc4a872ea796df6995e74a3818f32311446da5c3c2ca068e0126cf292f83"
+    },
+    {
+      "name": "source/source/crates/txn/src/raw.rs",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/crates/txn/src/raw.rs",
+      "bytes": 31296,
+      "sha256": "385e26e942cb778491a649bbe6eb87b8d6859f1217fe5bb57da2aad39e9c133e"
+    },
+    {
+      "name": "source/source/proto/kv9_raft.proto",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/proto/kv9_raft.proto",
+      "bytes": 6553,
+      "sha256": "e5f173f6a9ee6499b1c1704ca1068b1386b25480211067d1853f49f7b8e1ae31"
+    },
+    {
+      "name": "source/source/rust-toolchain.toml",
+      "original_path": "/tmp/kv9-lease-clock-source-first/source/rust-toolchain.toml",
+      "bytes": 66,
+      "sha256": "a6a0bbd29ffaa8182dc22d1d9149709f1091e47df40ed96eb8a78a711c66a4ce"
+    },
+    {
+      "name": "source/sources-after.json",
+      "original_path": "/tmp/kv9-lease-clock-source-first/sources-after.json",
+      "bytes": 88524,
+      "sha256": "89814e7ca4c060ea75710818880a5418d69f0c79afe7289dad461a8423b25331"
+    },
+    {
+      "name": "source/sources-before.json",
+      "original_path": "/tmp/kv9-lease-clock-source-first/sources-before.json",
+      "bytes": 88524,
+      "sha256": "89814e7ca4c060ea75710818880a5418d69f0c79afe7289dad461a8423b25331"
+    },
+    {
+      "name": "supervisor/check-source.py",
+      "original_path": "/tmp/kv9-lease-clock-root-first/check-source.py",
+      "bytes": 7001,
+      "sha256": "62ef6bd138055d70aaf78437ebf0536cef357de74956276f51e7f62f154d824e"
+    },
+    {
+      "name": "supervisor/run-source.py",
+      "original_path": "/tmp/kv9-lease-clock-root-first/run-source.py",
+      "bytes": 1852,
+      "sha256": "12e471f15f3917862153b3d46cb8ed04b103f94e819f8beaaf5e6f6911018c22"
+    },
+    {
+      "name": "supervisor/source-first.log",
+      "original_path": "/tmp/kv9-lease-clock-root-first/source-first.log",
+      "bytes": 437,
+      "sha256": "c6d5bc9d2573d0d1fdc143255ed6bf20b330c2d4b2fbff346faa9d2338a92474"
+    },
+    {
+      "name": "supervisor/source-invocation.json",
+      "original_path": "/tmp/kv9-lease-clock-root-first/source-invocation.json",
+      "bytes": 643,
+      "sha256": "b2e9d19b909f57953660bd6fc5d67e64ed4ed6130d6b78f984542707dea4adb1"
+    },
+    {
+      "name": "supervisor/source-result.json",
+      "original_path": "/tmp/kv9-lease-clock-root-first/source-result.json",
+      "bytes": 2032,
+      "sha256": "66a327bee5de02be62d5ae14685ba38d85fe2828c90c5844557e7855b69ad03b"
+    },
+    {
+      "name": "proof/containment-without-error.smt2",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/containment-without-error.smt2",
+      "bytes": 759,
+      "sha256": "0ec23cb0d071378ac7d6012e88670c0fe3eadddbb69e60d4545fdf0cffd264cf"
+    },
+    {
+      "name": "proof/containment-without-error.stderr",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/containment-without-error.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "proof/containment-without-error.stdout",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/containment-without-error.stdout",
+      "bytes": 399,
+      "sha256": "5e74c11991cdd57924588e65a879c388d5892032641259fe3d977d7546fec4fd"
+    },
+    {
+      "name": "proof/containment.smt2",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/containment.smt2",
+      "bytes": 783,
+      "sha256": "ef357ac2a8bf6ca914f544684928dba0e4d0c842405ae5a304d305c893c52812"
+    },
+    {
+      "name": "proof/containment.stderr",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/containment.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "proof/containment.stdout",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/containment.stdout",
+      "bytes": 6,
+      "sha256": "5c17dfcc2a8f1f30d9e96df6a9825a5030ade046d560332c19de74d93d591a18"
+    },
+    {
+      "name": "proof/leader-only-margin.smt2",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/leader-only-margin.smt2",
+      "bytes": 625,
+      "sha256": "2364255be2bfe3da207fc1db5294d0ce713391938e974c7f8fb556430e075f44"
+    },
+    {
+      "name": "proof/leader-only-margin.stderr",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/leader-only-margin.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "proof/leader-only-margin.stdout",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/leader-only-margin.stdout",
+      "bytes": 285,
+      "sha256": "be378b03a265a6c000c317293e8511b4bdf405fb74802b4c6f2163761e6c643a"
+    },
+    {
+      "name": "proof/margin.smt2",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/margin.smt2",
+      "bytes": 613,
+      "sha256": "e37e6694ee0b641e30c180ba560489864dae362b1529697c03efb6654b3b2155"
+    },
+    {
+      "name": "proof/margin.stderr",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/margin.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "proof/margin.stdout",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/margin.stdout",
+      "bytes": 6,
+      "sha256": "5c17dfcc2a8f1f30d9e96df6a9825a5030ade046d560332c19de74d93d591a18"
+    },
+    {
+      "name": "proof/recovery-without-error.smt2",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/recovery-without-error.smt2",
+      "bytes": 693,
+      "sha256": "b8c37af2c4cf7f2d6cb131d4471b5f8b47efbd3591cfba178adba7c01e4b8412"
+    },
+    {
+      "name": "proof/recovery-without-error.stderr",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/recovery-without-error.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "proof/recovery-without-error.stdout",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/recovery-without-error.stdout",
+      "bytes": 392,
+      "sha256": "8acebc2587ca6f2fb6bebb6d3afe6554433a4abdd4c7fa23e3381a0b0ad62d29"
+    },
+    {
+      "name": "proof/recovery.smt2",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/recovery.smt2",
+      "bytes": 717,
+      "sha256": "78769781aded505eeefa179dc2a439d7112ab8d8077afa2a5e8da329278cb973"
+    },
+    {
+      "name": "proof/recovery.stderr",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/recovery.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "proof/recovery.stdout",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/recovery.stdout",
+      "bytes": 6,
+      "sha256": "5c17dfcc2a8f1f30d9e96df6a9825a5030ade046d560332c19de74d93d591a18"
+    },
+    {
+      "name": "proof/result.json",
+      "original_path": "/tmp/kv9-lease-clock-proof-first/result.json",
+      "bytes": 2720,
+      "sha256": "199bf65f1e8b2baa76c019aa084344115a458870227973149c7b045243065a90"
+    },
+    {
+      "name": "cold/00-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/00-evicted.json",
+      "bytes": 1978,
+      "sha256": "286b3c63468ffcf0deb3d21ff2e4636c12e8b36553ce0430ccd7868bd8503c23"
+    },
+    {
+      "name": "cold/00-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/00-eviction-intent.json",
+      "bytes": 2123,
+      "sha256": "f4f6d20f36999264356c575d2ac2dcea89159bbe9c44ff299d643a57c593f783"
+    },
+    {
+      "name": "cold/00-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/00-references-before-unlink.json",
+      "bytes": 822,
+      "sha256": "e07a608eadbe4dc3802f4a63edd81874e7cafab40dbade7e9a6912db790d6741"
+    },
+    {
+      "name": "cold/00-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/00-references-before.json",
+      "bytes": 822,
+      "sha256": "51ac18f699d2b7053eef7c03bd9ddcea7f036e722f2185405a51726c1068f6a8"
+    },
+    {
+      "name": "cold/00-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/00-verified.json",
+      "bytes": 1940,
+      "sha256": "4004e9bba399f6ad0e7484bbb9511fc28917ad8857c6a9aa271692ddb50ff26b"
+    },
+    {
+      "name": "cold/01-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/01-evicted.json",
+      "bytes": 1461,
+      "sha256": "38db440be286f7dacf8258864e7a24c87593e8c6f6a6898d38047d866c1cf967"
+    },
+    {
+      "name": "cold/01-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/01-eviction-intent.json",
+      "bytes": 1568,
+      "sha256": "ee03aad6429305a2f6aaca978fe6eda2dddc14c7d732a1a241c1838c4e4a2617"
+    },
+    {
+      "name": "cold/01-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/01-references-before-unlink.json",
+      "bytes": 815,
+      "sha256": "79136833fdaab7d6150e2f4437ff918547f341c99f9f57e6bc50b7175e90e81c"
+    },
+    {
+      "name": "cold/01-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/01-references-before.json",
+      "bytes": 815,
+      "sha256": "da1e8461198886efaa1789e0b4194869f8e2120d35c3dee263efabc29636e922"
+    },
+    {
+      "name": "cold/01-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/01-verified.json",
+      "bytes": 1423,
+      "sha256": "e4045bbdbea70f48dfa0eeb9752dcb168b3a785910404d53558238d9c269314d"
+    },
+    {
+      "name": "cold/02-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/02-evicted.json",
+      "bytes": 1431,
+      "sha256": "390b01c56b9ff7fafc5b3c6d7f50c4ff799e03a0fef72e19b44fbab60e87082b"
+    },
+    {
+      "name": "cold/02-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/02-eviction-intent.json",
+      "bytes": 1538,
+      "sha256": "dc0b4bea34f3803edf63ed51591efdd2fd234ba0dc6b874e6a893bad51ed67c4"
+    },
+    {
+      "name": "cold/02-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/02-references-before-unlink.json",
+      "bytes": 800,
+      "sha256": "d509e4f68419e160ef990d810dff6a0baafac1d28a19b686023c5c37a9820a41"
+    },
+    {
+      "name": "cold/02-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/02-references-before.json",
+      "bytes": 800,
+      "sha256": "20bf306a1d187b5e7334f90ed66b79f3af611bacdbdfbf057f96dc017155cc1c"
+    },
+    {
+      "name": "cold/02-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/02-verified.json",
+      "bytes": 1393,
+      "sha256": "5234ac34ece841f6e39c5bca2cafde0ee23d39f80b33a9f82ba504261be78bfb"
+    },
+    {
+      "name": "cold/03-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/03-evicted.json",
+      "bytes": 2257,
+      "sha256": "c9f91d08d87a3fa0db09cad6f0742e2c85c508cc01a236a220c7d7dcd0418af7"
+    },
+    {
+      "name": "cold/03-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/03-eviction-intent.json",
+      "bytes": 2416,
+      "sha256": "d1c0185725c34e85100c5e9fe6e2070ba6c9f2f74dff60ffc41e78002ee6ad2c"
+    },
+    {
+      "name": "cold/03-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/03-references-before-unlink.json",
+      "bytes": 804,
+      "sha256": "b2e8253e8789ce86bfd0385551daedfd017af4df955c2a206fcdf00f50a93d27"
+    },
+    {
+      "name": "cold/03-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/03-references-before.json",
+      "bytes": 804,
+      "sha256": "b754e4ce04965a76d7562f58495d0a223803ee6abb5bf7e5233e3376d1d094ce"
+    },
+    {
+      "name": "cold/03-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/03-verified.json",
+      "bytes": 2219,
+      "sha256": "635880c0c9a581e8573cafc67d90e71dd47adac8f92a181e9c12297777fd8746"
+    },
+    {
+      "name": "cold/04-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/04-evicted.json",
+      "bytes": 2313,
+      "sha256": "0131a5c4d98d3ae5ae9d1e3c69e3b4a3a60f035876282eb8ab12f58b137031af"
+    },
+    {
+      "name": "cold/04-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/04-eviction-intent.json",
+      "bytes": 2472,
+      "sha256": "6c8bdda784a43d7dbee21b7a344ec01af5e169ce7e041c6d79578401f60b8c13"
+    },
+    {
+      "name": "cold/04-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/04-references-before-unlink.json",
+      "bytes": 818,
+      "sha256": "a35ddca9fb121a4f3d609d6af832c049f2cbeb1651d024ac5551fef6da220a9d"
+    },
+    {
+      "name": "cold/04-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/04-references-before.json",
+      "bytes": 818,
+      "sha256": "9379fe4b183b025f194857dcfbc7d21b959c130c8abebfad54f7f44f7c1ebd19"
+    },
+    {
+      "name": "cold/04-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/04-verified.json",
+      "bytes": 2275,
+      "sha256": "4b762dc3b86007c9ebd5126c8990bfbd165e944aee076e824654617237f9ee2a"
+    },
+    {
+      "name": "cold/05-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/05-evicted.json",
+      "bytes": 2113,
+      "sha256": "133b887b0f1b1342cae43f41f5674729c950341f8fb347fa7bcd0c0ecf6ff8df"
+    },
+    {
+      "name": "cold/05-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/05-eviction-intent.json",
+      "bytes": 2262,
+      "sha256": "4d519422a4fce88cbe28f3d425ecb43f893e4ced474012e7277ba60248ce0ccd"
+    },
+    {
+      "name": "cold/05-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/05-references-before-unlink.json",
+      "bytes": 822,
+      "sha256": "3f74c2097c51dac8bb5c5f3864439888bf8c379b99b61be2aa8971d862fba287"
+    },
+    {
+      "name": "cold/05-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/05-references-before.json",
+      "bytes": 822,
+      "sha256": "2c306589b12f8fe0e8d175caa00637449ddb99e66af356f8d3026821f5714d06"
+    },
+    {
+      "name": "cold/05-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/05-verified.json",
+      "bytes": 2075,
+      "sha256": "21dbee419b351dd14c3f4f232ef2f16aeb571fb1372bfcff2b7c21a89599a2e6"
+    },
+    {
+      "name": "cold/06-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/06-evicted.json",
+      "bytes": 2257,
+      "sha256": "156f594f99fda456fc4323c1e3128660491a1cc372afdb33a96afadd9cd09b28"
+    },
+    {
+      "name": "cold/06-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/06-eviction-intent.json",
+      "bytes": 2416,
+      "sha256": "444829de45152de925061e1acb715133dabc106dd71500e5301ad499b0067fb7"
+    },
+    {
+      "name": "cold/06-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/06-references-before-unlink.json",
+      "bytes": 804,
+      "sha256": "1005960cd40442f3f290119592d180541fbf84a2555b270be8f4d94092fc48e3"
+    },
+    {
+      "name": "cold/06-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/06-references-before.json",
+      "bytes": 804,
+      "sha256": "d2cdaa235b72344c48a2590040d4f47947504f6e01a3c515b0279e059d33cf7a"
+    },
+    {
+      "name": "cold/06-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/06-verified.json",
+      "bytes": 2219,
+      "sha256": "a2951aa7e5e139e182b9e81c1595828061c0a5c583f2a2cf75135578ac2660e6"
+    },
+    {
+      "name": "cold/07-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/07-evicted.json",
+      "bytes": 2313,
+      "sha256": "60967cee3267b2970b18d89a481342d56f2209f61acdd52d5a9e169684087d06"
+    },
+    {
+      "name": "cold/07-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/07-eviction-intent.json",
+      "bytes": 2472,
+      "sha256": "f2d04f52236389ee7f593d2082ac82c4da1962466d7624538df9b0ec86a6b518"
+    },
+    {
+      "name": "cold/07-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/07-references-before-unlink.json",
+      "bytes": 818,
+      "sha256": "55b79c5f8a871b22951c783b3880f2beebc3a80aa065b7001ed53af7a3bd93eb"
+    },
+    {
+      "name": "cold/07-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/07-references-before.json",
+      "bytes": 818,
+      "sha256": "acfdfcb4995658c53190626d92012a7102f0f1bbe21acf02201ad94808726360"
+    },
+    {
+      "name": "cold/07-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/07-verified.json",
+      "bytes": 2275,
+      "sha256": "1ab322611135df8a70934f3bfefceea024b33957d08f2669cfb06257a19b62cf"
+    },
+    {
+      "name": "cold/08-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/08-evicted.json",
+      "bytes": 2113,
+      "sha256": "a40352348355fb94661589ef4c876a9b37354fdec6c0e683b24b4414026eb60e"
+    },
+    {
+      "name": "cold/08-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/08-eviction-intent.json",
+      "bytes": 2262,
+      "sha256": "eb7ad505c788a8d2c6504a496a33625d4162521f798f3e3fe5ced31d9e570277"
+    },
+    {
+      "name": "cold/08-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/08-references-before-unlink.json",
+      "bytes": 822,
+      "sha256": "92c7b970038b6e4513ce684748ddd579be01cc5024a618b3bf4c38b390fa81b2"
+    },
+    {
+      "name": "cold/08-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/08-references-before.json",
+      "bytes": 822,
+      "sha256": "ca01ed2198205b16d1553668ee7f3f3f5e8e20583328a592bbeb9a67de439c85"
+    },
+    {
+      "name": "cold/08-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/08-verified.json",
+      "bytes": 2075,
+      "sha256": "8a78501fc3dbf9f433345e3eddc5de98422bff4c356876c307ec3afc83e4f39d"
+    },
+    {
+      "name": "cold/09-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/09-evicted.json",
+      "bytes": 1461,
+      "sha256": "fd4e2c270f95c14a03bb9f2bc39d95167bd1bd7e9e238d74c113e9e70423051e"
+    },
+    {
+      "name": "cold/09-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/09-eviction-intent.json",
+      "bytes": 1568,
+      "sha256": "1d4cbad9304c35b9e0240de96e6b79c98f7902cd4a512935bbf18f1d82ba452e"
+    },
+    {
+      "name": "cold/09-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/09-references-before-unlink.json",
+      "bytes": 815,
+      "sha256": "17dce8cdc8cde5edaa437707da7cbff3ed771b3e153642f892fd972e9a404a7d"
+    },
+    {
+      "name": "cold/09-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/09-references-before.json",
+      "bytes": 815,
+      "sha256": "de200d626099e6efd0884b986d132824f9a026f4fb88ef075e7753685f73e92b"
+    },
+    {
+      "name": "cold/09-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/09-verified.json",
+      "bytes": 1423,
+      "sha256": "c38e6c0b88eab6b19ca3b64a64bec90f6cb68b33a7b8e176903ff1b421814aa3"
+    },
+    {
+      "name": "cold/10-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/10-evicted.json",
+      "bytes": 1431,
+      "sha256": "ea56d7a8e527e17c4b5b2949c128df088f1659d81127d57b1792050f4ebcdf88"
+    },
+    {
+      "name": "cold/10-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/10-eviction-intent.json",
+      "bytes": 1538,
+      "sha256": "e39d5a2a1225fec61b2513f9b5671b530e415c3699110a02d17b21126a8344dc"
+    },
+    {
+      "name": "cold/10-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/10-references-before-unlink.json",
+      "bytes": 800,
+      "sha256": "54dd3b1f2034c4993ad8f219bb6325e7e1922fbbad5f639f1e60d56ae5f72970"
+    },
+    {
+      "name": "cold/10-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/10-references-before.json",
+      "bytes": 800,
+      "sha256": "a23bca24d630ad42cd56f2ab69f3edcd704a313d4d68b224a3dad3aeccdac94d"
+    },
+    {
+      "name": "cold/10-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/10-verified.json",
+      "bytes": 1393,
+      "sha256": "a03bd4707b3851633dbd31db5d46d0885ebaa8374e1875e23fefbca7d847fb73"
+    },
+    {
+      "name": "cold/11-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/11-evicted.json",
+      "bytes": 2280,
+      "sha256": "ac8ed887aab513eb2c389d95bbb238f6af944894ffc6d8f1a834a8aca9e87f1f"
+    },
+    {
+      "name": "cold/11-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/11-eviction-intent.json",
+      "bytes": 2439,
+      "sha256": "20d38fbd8a899d2ca33e299bee8f5c401e5278d7e9dcea1c7c4795451ac8b644"
+    },
+    {
+      "name": "cold/11-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/11-references-before-unlink.json",
+      "bytes": 806,
+      "sha256": "519946c2d83f4bbd42b6c7bba3feb4099f0e7af5bf64c015b24474f1991e17c0"
+    },
+    {
+      "name": "cold/11-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/11-references-before.json",
+      "bytes": 806,
+      "sha256": "144acdf75bace45e6a5e0a3fbda6ad288e5853187e63564b9e4dc326e5852fec"
+    },
+    {
+      "name": "cold/11-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/11-verified.json",
+      "bytes": 2242,
+      "sha256": "ca7a32a1d30e4ebc8efa701d91bf1f2d0de5e51d8320563ad24383b54979d121"
+    },
+    {
+      "name": "cold/12-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/12-evicted.json",
+      "bytes": 2336,
+      "sha256": "a9627f39029cd889b81a86ede1ec8a50788e177aa9d229a50a068b34e45a3835"
+    },
+    {
+      "name": "cold/12-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/12-eviction-intent.json",
+      "bytes": 2495,
+      "sha256": "70358300763dc03e6029f824d642af84f0b33d498f4e6b3bde54cddb1f811174"
+    },
+    {
+      "name": "cold/12-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/12-references-before-unlink.json",
+      "bytes": 820,
+      "sha256": "ce61f3e357a68b3431873b86466490c4742df4c78d2e05777c7f13d2fd1de497"
+    },
+    {
+      "name": "cold/12-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/12-references-before.json",
+      "bytes": 820,
+      "sha256": "d2df38795ba1b7c5e7faf77657d6e76dfd94498511a38e1c0212b19079f83f74"
+    },
+    {
+      "name": "cold/12-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/12-verified.json",
+      "bytes": 2298,
+      "sha256": "b8e635db3fdcfab020162e384dadd0243e207f27762ee4c55a2794e149c29ff2"
+    },
+    {
+      "name": "cold/13-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/13-evicted.json",
+      "bytes": 2132,
+      "sha256": "e00609d115f9b6a4a9be03949989270dc7b5560d35321cf416702c6b4b7944d3"
+    },
+    {
+      "name": "cold/13-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/13-eviction-intent.json",
+      "bytes": 2281,
+      "sha256": "1877083adfbc2efd9810ca55b70fdd5e79a429dfa5d8f8d7b77cb9f327b358c3"
+    },
+    {
+      "name": "cold/13-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/13-references-before-unlink.json",
+      "bytes": 824,
+      "sha256": "3ad8014d79b4effdfff7429ea01210ddc1bce97b1058011f5e48a27b665696f8"
+    },
+    {
+      "name": "cold/13-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/13-references-before.json",
+      "bytes": 824,
+      "sha256": "d675a6b8b75d46fd3c791880d94bc4526d9a888ecf76d9585720db06d33eca76"
+    },
+    {
+      "name": "cold/13-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/13-verified.json",
+      "bytes": 2094,
+      "sha256": "f847c83082472abbc773632516a4f69ebc0f631faf76b854560bce987aa6221a"
+    },
+    {
+      "name": "cold/14-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/14-evicted.json",
+      "bytes": 2146,
+      "sha256": "125d1a189119f2ce6c1275a92816f98746f86a62c74cd3c57b4c20f5d5fa6b07"
+    },
+    {
+      "name": "cold/14-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/14-eviction-intent.json",
+      "bytes": 2295,
+      "sha256": "cefefd10a571e6f42a28a6802f4d7f36ceab2af2a7c531c9ca5024d052b654b0"
+    },
+    {
+      "name": "cold/14-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/14-references-before-unlink.json",
+      "bytes": 830,
+      "sha256": "1e427926c2f304af4bb009347d259a92463439ffcaa08bd4f425b2349fa47565"
+    },
+    {
+      "name": "cold/14-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/14-references-before.json",
+      "bytes": 830,
+      "sha256": "4347c72c36fb7dbeeda3774a8c8068c9b15a8b0fc2dfaf3c8a36907d7c910a71"
+    },
+    {
+      "name": "cold/14-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/14-verified.json",
+      "bytes": 2108,
+      "sha256": "b09f6f07945075c51d888a39e4162513120df0559fade369dea1f91c5046aa56"
+    },
+    {
+      "name": "cold/15-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/15-evicted.json",
+      "bytes": 2002,
+      "sha256": "c776766ca2e4f61dd87cfc4d88ace545ebf88a4137b8cfdfdfb5cd356bb27238"
+    },
+    {
+      "name": "cold/15-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/15-eviction-intent.json",
+      "bytes": 2149,
+      "sha256": "7c6f30e664b276b8f7b77b9a3e99a7f2017ea7ddf117e37d29a834b979a0ff61"
+    },
+    {
+      "name": "cold/15-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/15-references-before-unlink.json",
+      "bytes": 805,
+      "sha256": "cec7994733984550669d151fb267cecb25443734599cbb0f45bc79935ec406be"
+    },
+    {
+      "name": "cold/15-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/15-references-before.json",
+      "bytes": 805,
+      "sha256": "4333e62a71ad88ddee15b3fae85eb4c4e8ec44ab00cd6d834b3ef9fcef1e8a3f"
+    },
+    {
+      "name": "cold/15-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/15-verified.json",
+      "bytes": 1964,
+      "sha256": "c1b118e069b00d2b5f94257df9de9814348e3b6fe47e7f791b27259b883c35c6"
+    },
+    {
+      "name": "cold/16-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/16-evicted.json",
+      "bytes": 2136,
+      "sha256": "5fa3e0d918826424632c3e4da257770dd8e302028cfb184cdec665890df72d62"
+    },
+    {
+      "name": "cold/16-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/16-eviction-intent.json",
+      "bytes": 2285,
+      "sha256": "df3d640f1446ca63fc1e864d87b16fda3e2553c836c570f56b3ee7c3ed6600a0"
+    },
+    {
+      "name": "cold/16-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/16-references-before-unlink.json",
+      "bytes": 829,
+      "sha256": "f819e85fc4c7562abee9edf81824eca0265bfcbb8afbc891113bf7c845bf96bd"
+    },
+    {
+      "name": "cold/16-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/16-references-before.json",
+      "bytes": 829,
+      "sha256": "156849081b112d75dc4421a8a78cdc0f4d3a12178e223bd8ba902ce482292424"
+    },
+    {
+      "name": "cold/16-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/16-verified.json",
+      "bytes": 2098,
+      "sha256": "ae9af5344e289dafe4c65ed44900b2079c2f8767c19affeeb4842db2e4b1bff5"
+    },
+    {
+      "name": "cold/17-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/17-evicted.json",
+      "bytes": 2281,
+      "sha256": "b8624b53615123e2ebdba4fe50cc04387c7ad8b5cf1807debe3616c9d9c16e7f"
+    },
+    {
+      "name": "cold/17-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/17-eviction-intent.json",
+      "bytes": 2440,
+      "sha256": "6d03402001a3c940bf4c6c2951500b8c679db6fb8c2bbfccb86da08a78470691"
+    },
+    {
+      "name": "cold/17-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/17-references-before-unlink.json",
+      "bytes": 806,
+      "sha256": "d48cf2bce9efc3da9a506b21f282a32e24dfde0115307bdda8b26be36286d40a"
+    },
+    {
+      "name": "cold/17-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/17-references-before.json",
+      "bytes": 806,
+      "sha256": "659801b0e18c39a336598a998d4c5bbed233e8091dcd564e310ec78617b71267"
+    },
+    {
+      "name": "cold/17-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/17-verified.json",
+      "bytes": 2243,
+      "sha256": "c3cb7fbb922bef0054cc45d3257c0ce7ddfe3928f16bc8deba2531fac4153b09"
+    },
+    {
+      "name": "cold/18-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/18-evicted.json",
+      "bytes": 2337,
+      "sha256": "870738e53487d9cb3d7f7cb6664d9aed586f5947e6daee933a530efa843cd137"
+    },
+    {
+      "name": "cold/18-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/18-eviction-intent.json",
+      "bytes": 2496,
+      "sha256": "5b08ebf41aa2bc5f2c8adb8e4f62b0d8924a9628799d2ff88b4e57eeea66128b"
+    },
+    {
+      "name": "cold/18-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/18-references-before-unlink.json",
+      "bytes": 820,
+      "sha256": "38872de4e2a64db0bbd707f6be40c8bea44d305226c14165948029a8aa5db032"
+    },
+    {
+      "name": "cold/18-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/18-references-before.json",
+      "bytes": 820,
+      "sha256": "f51b92acdfbdea73189f7f0c03dcd503443ccef06f862597ef5391cb517f07cb"
+    },
+    {
+      "name": "cold/18-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/18-verified.json",
+      "bytes": 2299,
+      "sha256": "e4c8442af178e8cfa629b82cf6593330b2c7240e3d05c90675ee2f76aff0ad0f"
+    },
+    {
+      "name": "cold/19-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/19-evicted.json",
+      "bytes": 2133,
+      "sha256": "6bd87a91b089297963207d3e9ddc42e3942350586b90f2081a82af37fe2d3082"
+    },
+    {
+      "name": "cold/19-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/19-eviction-intent.json",
+      "bytes": 2282,
+      "sha256": "9b7bee169519b95b802b326047b1f08aae6df3583fa3efdbdc0ef01ea3cfeb5d"
+    },
+    {
+      "name": "cold/19-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/19-references-before-unlink.json",
+      "bytes": 824,
+      "sha256": "dd29dbcb2a004506dd520a7df67a7097c4c29fb5bb07f2686b16de0beee16b92"
+    },
+    {
+      "name": "cold/19-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/19-references-before.json",
+      "bytes": 824,
+      "sha256": "444d717d19d5123a4b9e8cc8b6dbabf2858d770d2a7f91907878a02bf051f912"
+    },
+    {
+      "name": "cold/19-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/19-verified.json",
+      "bytes": 2095,
+      "sha256": "77b631499b726977e08c94a5e33e5e3b3c9ae271750d0eb1d868e9f59b2c5477"
+    },
+    {
+      "name": "cold/20-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/20-evicted.json",
+      "bytes": 2095,
+      "sha256": "85d771481610a83a617a9b4f9d458215b7f9137f6163be536336fb012004241e"
+    },
+    {
+      "name": "cold/20-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/20-eviction-intent.json",
+      "bytes": 2244,
+      "sha256": "b493712b345a8865a54a399850bc700b16b47e74a11f3c506c31f3cc7f6881f6"
+    },
+    {
+      "name": "cold/20-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/20-references-before-unlink.json",
+      "bytes": 819,
+      "sha256": "a332f3d8f3a39106f9f9c81cf18fd854779aa4c37722dfdbce38f20608be33d9"
+    },
+    {
+      "name": "cold/20-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/20-references-before.json",
+      "bytes": 819,
+      "sha256": "36f869e85c8e21120d2a769976be7a97a10847a281cc8ce99d6a042a98bc56c1"
+    },
+    {
+      "name": "cold/20-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/20-verified.json",
+      "bytes": 2057,
+      "sha256": "bc26702c07ce37028773a5418edc6fd5a58d3cea6d58335c69f4774f90864166"
+    },
+    {
+      "name": "cold/21-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/21-evicted.json",
+      "bytes": 2023,
+      "sha256": "07a5e2ee4075fb9be5b7161cbca6d42b2f1ebc656666e0fa159675cf10f65a43"
+    },
+    {
+      "name": "cold/21-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/21-eviction-intent.json",
+      "bytes": 2174,
+      "sha256": "f2cdd1ddb21d937b3a49c530b203c3ec43f406ee23db73b1536d19ce04d77190"
+    },
+    {
+      "name": "cold/21-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/21-references-before-unlink.json",
+      "bytes": 806,
+      "sha256": "88c6fc15bb0d37fb2fb11cd2a2bd80bca9583c70c50b777db93b192675d96f16"
+    },
+    {
+      "name": "cold/21-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/21-references-before.json",
+      "bytes": 806,
+      "sha256": "adb9a75e6038690184f11d4729ef6cda6a568c74012bbaae2e949be3c9378933"
+    },
+    {
+      "name": "cold/21-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/21-verified.json",
+      "bytes": 1985,
+      "sha256": "607421dfa84e6eabb423ae237a21d4f355036f889cee0226872b6cf053eac965"
+    },
+    {
+      "name": "cold/22-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/22-evicted.json",
+      "bytes": 2168,
+      "sha256": "8dc25442b789614aa3c77f58b53cb1b38bd1de7eac721f00345edbd07b5f54f6"
+    },
+    {
+      "name": "cold/22-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/22-eviction-intent.json",
+      "bytes": 2321,
+      "sha256": "ad1685159d546b12de3d288bebb72f55399f45bc1add4897d58bddce46e42772"
+    },
+    {
+      "name": "cold/22-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/22-references-before-unlink.json",
+      "bytes": 824,
+      "sha256": "b38818d447341c20c843b94dc52cb703b3aad08b6eb1e73640a7491d7cec2213"
+    },
+    {
+      "name": "cold/22-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/22-references-before.json",
+      "bytes": 824,
+      "sha256": "0cf55ec59d3800d5b027c176e4188a3abc40083a66e6a93ba416b45b1f461494"
+    },
+    {
+      "name": "cold/22-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/22-verified.json",
+      "bytes": 2130,
+      "sha256": "7f957248071813898d756ecfd681e48c83e08ca0b401ddc939cef5e9fd005675"
+    },
+    {
+      "name": "cold/23-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/23-evicted.json",
+      "bytes": 2030,
+      "sha256": "720a8043727cdfe65ff641d96c63348954c69b527dafc52df8619fac1ea75d26"
+    },
+    {
+      "name": "cold/23-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/23-eviction-intent.json",
+      "bytes": 2181,
+      "sha256": "90495f4ec5c7495338742e5f119b6c235d90bae45cd0d61b1c8007fc4e40eab9"
+    },
+    {
+      "name": "cold/23-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/23-references-before-unlink.json",
+      "bytes": 807,
+      "sha256": "342c91d9d13fbc12afe84d46fad18bfdf10122bdc998f234754a094f37c16ba5"
+    },
+    {
+      "name": "cold/23-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/23-references-before.json",
+      "bytes": 807,
+      "sha256": "15215c84630d3e6b0badabffdda4ee378994dc653f236d3e5dcb7f71645984f4"
+    },
+    {
+      "name": "cold/23-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/23-verified.json",
+      "bytes": 1992,
+      "sha256": "95b8e899a1b67c3c8c2ae10f9695e1921e5819bdab7474dfe88d303198bff6ae"
+    },
+    {
+      "name": "cold/24-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/24-evicted.json",
+      "bytes": 2176,
+      "sha256": "69b3e317b7edf24ac1e91db97d5cce7dec9146c74d9cf9f334cf3216bb5d61af"
+    },
+    {
+      "name": "cold/24-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/24-eviction-intent.json",
+      "bytes": 2329,
+      "sha256": "106a06f1ab1df5f8e757cf7dfae28e4e96d6215e80c3dfa69d9ef494df22169f"
+    },
+    {
+      "name": "cold/24-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/24-references-before-unlink.json",
+      "bytes": 825,
+      "sha256": "bc8fe47ad63fb3a0f5eac4e661a911fdf07544412010441227684b7f87919e6f"
+    },
+    {
+      "name": "cold/24-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/24-references-before.json",
+      "bytes": 825,
+      "sha256": "ededcff04b93b967e45741ee4cd75a0fa22e8a2a9c5f43f0a6553a0cef03a071"
+    },
+    {
+      "name": "cold/24-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/24-verified.json",
+      "bytes": 2138,
+      "sha256": "da89f8a17520ae358ed67f7d6132b159d02b6f983280f70999c028dfacc27c81"
+    },
+    {
+      "name": "cold/25-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/25-evicted.json",
+      "bytes": 1948,
+      "sha256": "bcf9722544bbc3cdbd74d9e65dd66f4a662ccb197f78c8fe561c3248e71fbe1d"
+    },
+    {
+      "name": "cold/25-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/25-eviction-intent.json",
+      "bytes": 2093,
+      "sha256": "4269b675c47f87a878720e8b159bef277846c239acbab0b4b12f4b5f1d7725af"
+    },
+    {
+      "name": "cold/25-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/25-references-before-unlink.json",
+      "bytes": 818,
+      "sha256": "dfd7c406d8f8024f3d701f20c05ebb349cd7befd4af90ac3938103d4cab07ad8"
+    },
+    {
+      "name": "cold/25-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/25-references-before.json",
+      "bytes": 818,
+      "sha256": "34b8fafea8c109870fe34928f2218726f581b0ac20d6d708b1c86c6724c1ff18"
+    },
+    {
+      "name": "cold/25-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/25-verified.json",
+      "bytes": 1910,
+      "sha256": "8b46e7a9da8ab15e0bd080e00fc0e258196870c1543ee3e46c79f2b31e1f9298"
+    },
+    {
+      "name": "cold/26-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/26-evicted.json",
+      "bytes": 1967,
+      "sha256": "6864ef4d4e513f9a29c8d73772644f61cefa31299bd4cb60324c789bb91c848c"
+    },
+    {
+      "name": "cold/26-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/26-eviction-intent.json",
+      "bytes": 2118,
+      "sha256": "9d7c0734d0f1fb98d6dd4d43784a604e7b2862c8a447eb95710d6c29799a874c"
+    },
+    {
+      "name": "cold/26-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/26-references-before-unlink.json",
+      "bytes": 799,
+      "sha256": "3a9ec04ed522cc4db2d15895347908a049da89d4f62402a20f87b47582215c4d"
+    },
+    {
+      "name": "cold/26-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/26-references-before.json",
+      "bytes": 799,
+      "sha256": "509679ae0f2e44d7b928f6d98764243fa05c43f6614f304cc3c6419ee2f59a42"
+    },
+    {
+      "name": "cold/26-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/26-verified.json",
+      "bytes": 1929,
+      "sha256": "2d0dafe997f71713888adbab737c25ae7b823af6da61316033d8ebb61c9f13d3"
+    },
+    {
+      "name": "cold/27-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/27-evicted.json",
+      "bytes": 2105,
+      "sha256": "9b0d34ca8f58ebd56f1df1a8d319476f2ecc77be64809977f21e191db2eb0195"
+    },
+    {
+      "name": "cold/27-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/27-eviction-intent.json",
+      "bytes": 2258,
+      "sha256": "f891090fbc14b3a8112d0208762ec732e0eb3e3f40adb6d4643124ce5209997e"
+    },
+    {
+      "name": "cold/27-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/27-references-before-unlink.json",
+      "bytes": 817,
+      "sha256": "6f92ba225bb490a1717ac8dd0f59173bec4fb998f23b4fb150c5b1741e9ddb5e"
+    },
+    {
+      "name": "cold/27-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/27-references-before.json",
+      "bytes": 817,
+      "sha256": "69ca4a3ed2518c05ef085fe093cb9185dcc6bc741e0d4d9a0b0ccaa793656bf1"
+    },
+    {
+      "name": "cold/27-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/27-verified.json",
+      "bytes": 2067,
+      "sha256": "0bd256d4736c7e23ad81db413dd1e70fee079f1a95e7a6827461501438aa247e"
+    },
+    {
+      "name": "cold/28-evicted.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/28-evicted.json",
+      "bytes": 2041,
+      "sha256": "5c730092b735d85d65d623a83ee92af88cbddeac6843be742adb3f9291c8f219"
+    },
+    {
+      "name": "cold/28-eviction-intent.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/28-eviction-intent.json",
+      "bytes": 2190,
+      "sha256": "18a00a03430c864461dda6cef3bac9efb7432950207652d2d7e9da4a4e5ab17c"
+    },
+    {
+      "name": "cold/28-references-before-unlink.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/28-references-before-unlink.json",
+      "bytes": 813,
+      "sha256": "51a313e5cbfb9cfc328165b3e81944bffe8108e9354e49290a2a0480067b4981"
+    },
+    {
+      "name": "cold/28-references-before.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/28-references-before.json",
+      "bytes": 813,
+      "sha256": "d69459e76970b14aed1d4620a80fdf372d4e6e7d5844dad0578ac2affeefef23"
+    },
+    {
+      "name": "cold/28-verified.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/28-verified.json",
+      "bytes": 2003,
+      "sha256": "ddc3e2b7a6486bdc779f96d3a7dbbdeb3647f6eb6c4f5d14d7c7336139f315e3"
+    },
+    {
+      "name": "cold/README.md",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/README.md",
+      "bytes": 10005,
+      "sha256": "72aa94de4034544b898c1b86bd4c22d4f4b1026d6512c72182e153ad0f073388"
+    },
+    {
+      "name": "cold/cold.py",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/cold.py",
+      "bytes": 12443,
+      "sha256": "2de62d13338117a18dc2ac249e47fde0723fed632cfd06c9c6c8dd918a9cf3a4"
+    },
+    {
+      "name": "cold/inventory.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/inventory.json",
+      "bytes": 37395,
+      "sha256": "65ad832c8662b46e6f0eaaf8f71f43645e51553a4c4c564abd2557226e9c4ad7"
+    },
+    {
+      "name": "cold/invocation-first.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/invocation-first.json",
+      "bytes": 101430,
+      "sha256": "0728e98a0fe944ce26b69c4f714b20c0180d5f1084e03317bde70d848e4b5f5b"
+    },
+    {
+      "name": "cold/lineage.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/lineage.json",
+      "bytes": 850,
+      "sha256": "efc5f36ffb682b7ae4e29c477d90f7b9124527da4bd659b4301685823d310660"
+    },
+    {
+      "name": "cold/live-handle-first.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/live-handle-first.json",
+      "bytes": 206,
+      "sha256": "c9ad224baa9a4a97804a5d0583925595a689e201b8831873f7c1ac5f48f4502e"
+    },
+    {
+      "name": "cold/output-first.log",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/output-first.log",
+      "bytes": 4778,
+      "sha256": "4131d8400fca71b9683e6502865952441d4d1fa041c5631fe7ec74220d2da23e"
+    },
+    {
+      "name": "cold/restore-catalog.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/restore-catalog.json",
+      "bytes": 39136,
+      "sha256": "0f1c627be7dbe0368613ce5d8cd2ce782c9b27a2bc60406e14d33712ee48ea8d"
+    },
+    {
+      "name": "cold/result-first.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/result-first.json",
+      "bytes": 67869,
+      "sha256": "a6e8277dd0e58fdaab9c47075b2804ad8c7362c283c92d0d4d6a6d9ad04d231d"
+    },
+    {
+      "name": "cold/terminal-first.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-cold-first/terminal-first.json",
+      "bytes": 543,
+      "sha256": "bc596f4ef6fe725e25c53545190152a7448408e010589e9f149ce5779caa3cd1"
+    },
+    {
+      "name": "cold-inventory/README.md",
+      "original_path": "/tmp/kv9-lease-clock-storage-inventory-first/README.md",
+      "bytes": 7673,
+      "sha256": "168cb19e0ed929eae2b6f9c8b93a31a59b688a2cb369dfce0556249b03d35383"
+    },
+    {
+      "name": "cold-inventory/candidate-inventory.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-inventory-first/candidate-inventory.json",
+      "bytes": 76824,
+      "sha256": "75a303b8f167e7640d4aa1a8b75b68af7e8222dca97e0e584ce051889b9e1d0f"
+    },
+    {
+      "name": "cold-inventory/capacity-estimates.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-inventory-first/capacity-estimates.json",
+      "bytes": 7459,
+      "sha256": "cee970079b005db51e28a5206e4a00027695c6fbb49b4e573bfbe89eb68c6416"
+    },
+    {
+      "name": "cold-inventory/current-reference-matches.txt",
+      "original_path": "/tmp/kv9-lease-clock-storage-inventory-first/current-reference-matches.txt",
+      "bytes": 709,
+      "sha256": "5f004fcc4eb79130e3b42436d516010946162fd8fdac484d5300d0e12ef8819d"
+    },
+    {
+      "name": "cold-inventory/inventory.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-inventory-first/inventory.json",
+      "bytes": 1394,
+      "sha256": "35c25d3edb7d80adecc3022492dd0be88c6bafcbd0d1e4123b1b51d2aaa09657"
+    },
+    {
+      "name": "cold-inventory/process-references.json",
+      "original_path": "/tmp/kv9-lease-clock-storage-inventory-first/process-references.json",
+      "bytes": 1369,
+      "sha256": "04f198e21b568ccd4a46f4c63794fac31484021d3b2eefd7abf6e6732ff063d0"
+    },
+    {
+      "name": "cold-inventory/reference-patterns.txt",
+      "original_path": "/tmp/kv9-lease-clock-storage-inventory-first/reference-patterns.txt",
+      "bytes": 679,
+      "sha256": "199c1f831e663096a4e65c396182600f01601b8082e5208ed680dd30798b1fb7"
+    }
+  ],
+  "archive_bytes": 964795,
+  "archive_sha256": "8cb3dd9c535f84258cf57798eb402cf8c7c246f035be7c8ae7082f8a8895cab0",
+  "aggregate_published_archive_bytes": 61612270,
+  "excluded_payloads": "The source test executable and 29 cold executable gzip objects remain at their original retained paths; hashes and restoration metadata are included."
+}

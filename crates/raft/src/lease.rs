@@ -19,6 +19,7 @@ pub enum Refused {
     Overflow,
     ClockChanged,
     ClockRegressed,
+    ClockUnavailable,
     Fenced,
     Revoked,
     WrongAuthority,

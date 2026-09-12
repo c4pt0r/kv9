@@ -11,6 +11,13 @@ use crate::lease::{
 /// not establish the required real-time rate bound (including process pauses).
 /// Sampling failures permanently fence voting in this peer incarnation.
 pub trait LeaseClock: Send + Sync {
+    /// Check the deployment's timing declaration before durable opt-in. Custom
+    /// clocks must themselves establish that this policy covers their errors;
+    /// the default preserves the explicit trusted-clock interface.
+    fn validate_policy(&self, _policy: &LeasePolicy) -> crate::lease::Result<()> {
+        Ok(())
+    }
+
     /// Sampling on a resident read must not perform I/O or block. Concrete
     /// platform qualification must establish this and the elapsed-rate bounds.
     fn sample(&self) -> crate::lease::Result<ClockReading>;
@@ -68,6 +75,7 @@ impl InstalledLease {
         if !matches_configuration(raw, &policy) {
             return Err(refusal(Refused::InvalidConfiguration));
         }
+        clock.validate_policy(&policy).map_err(refusal)?;
         // The exact durable epoch is minted by the exclusively owned store,
         // never supplied as a reusable constructor argument. A failed clock
         // sample leaves the durable opt-in, so ordinary reopen still refuses.

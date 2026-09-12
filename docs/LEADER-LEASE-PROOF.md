@@ -6,6 +6,9 @@ selected runtime `11113f6` still uses Safe ReadIndex. This document does not
 enable lease reads, qualify a clock platform, or establish a performance result.
 The subsequent [transition model and inductive proof](LEASE-AUTHORITY-MODEL.md)
 make acquisition, renewal, revocation, recovery and local read steps executable.
+The [sampled-clock refinement](LEASE-CLOCK.md) now accounts explicitly for
+quantization/error in both leader duration and recovery quarantine, and supplies
+an opt-in Linux BOOTTIME adapter. Physical platform qualification remains open.
 
 **Claim.** A leader with a correctly acquired, unexpired lease can serve
 linearizable reads using only local operations after request arrival. Acquiring

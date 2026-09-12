@@ -117,6 +117,45 @@ fn forced_vote(to: u64, term: u64) -> Message {
     m
 }
 
+#[cfg(target_os = "linux")]
+#[test]
+fn clock_contract_is_rechecked_before_the_durable_installation() {
+    use crate::lease_clock::{ClockBounds, LinuxBoottimeClock};
+    let dir = Directory(
+        std::env::temp_dir().join(format!("kv9-lease-clock-policy-{}", std::process::id())),
+    );
+    std::fs::create_dir(&dir.0).unwrap();
+    let mut p = policy(1, &[1]);
+    p.promise_ns = 1_000_000_000;
+    p.drift_ppb = 1_000_000;
+    p.margin_ns = 4_005;
+    let clock = Arc::new(
+        LinuxBoottimeClock::new(
+            &p,
+            ClockBounds {
+                drift_ppb: 1_000_000,
+                error_ns: 1_000,
+            },
+        )
+        .unwrap(),
+    );
+    p.margin_ns -= 1;
+    let (storage, _) = DiskRaftStorage::open(&dir.0, &[1]).unwrap();
+    assert!(
+        matches!(RaftPeer::with_lease_storage(NodeId(1), RegionId(0), storage, p, clock),
+        Err(Error::Raft(ref cause)) if cause.contains("InvalidTiming")),
+        "installation accepted a clock whose error exceeds its policy margin"
+    );
+    let storage = DiskRaftStorage::recover(&dir.0).unwrap();
+    assert_eq!(
+        storage.recovered_lease_epoch(),
+        None,
+        "invalid clock policy durably opted the peer into leases"
+    );
+    let peer = RaftPeer::with_storage(NodeId(1), RegionId(0), storage).unwrap();
+    drop(peer);
+}
+
 #[test]
 fn quarantine_blocks_campaign_ticks_timeout_and_forced_vote_until_exact_boundary() {
     let (_dir, clock, peer) = fresh(2, &[1, 2, 3]);

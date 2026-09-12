@@ -17,7 +17,7 @@ eight TLAPS lemmas / 23 obligations plus real-clock containment show how to
 remove per-read quorum RTT under explicit additional premises. The subsequent
 [transition proof](LEASE-AUTHORITY-MODEL.md) adds 27 theorems / 348 obligations,
 finite fault-model evidence and the fail-closed expiration contract. There is no
-lease-enabled runtime or performance result yet. Do not relabel earlier Safe
+selected lease-enabled runtime or performance result yet. Do not relabel earlier Safe
 ReadIndex timings as lease performance; preserve the implementation/proof/Chaos
 gates and the selected `11113f6` baseline.
 The subsequent [Rust controller](LEASE-CONTROLLER.md) passes local source/fault
@@ -30,6 +30,10 @@ fault controls for experimental GET/BatchGet over one retained applied view,
 including real unary and streaming RPCs. Default startup remains Safe ReadIndex;
 clock qualification and actual lease Chaos remain open. There is still no lease
 performance measurement; existing selected-versus-Redis results remain the baseline.
+The [explicit Linux clock](LEASE-CLOCK.md) now passes sampled-time arithmetic,
+593 library tests and actual process-pause expiration. Its declared bounds still
+require physical platform qualification and lease-enabled Chaos; this checkpoint
+adds no throughput, latency or Redis comparison result.
 
 | Change / source | Recorded decision and evidence |
 | --- | --- |

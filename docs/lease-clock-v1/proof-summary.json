@@ -1,0 +1,86 @@
+{
+  "complete": true,
+  "solver": "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+  "solver_sha256": "4321b0c0db1574a1e90881d9e097f12b8753d0c3e78b21a0155c77005a631436",
+  "solver_version": "Z3 version 4.8.9 - 64 bit",
+  "cases": [
+    {
+      "name": "containment",
+      "source_sha256": "ef357ac2a8bf6ca914f544684928dba0e4d0c842405ae5a304d305c893c52812",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:5",
+        "-smt2",
+        "/tmp/kv9-lease-clock-proof-first/containment.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "unsat",
+      "verified": true
+    },
+    {
+      "name": "recovery",
+      "source_sha256": "78769781aded505eeefa179dc2a439d7112ab8d8077afa2a5e8da329278cb973",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:5",
+        "-smt2",
+        "/tmp/kv9-lease-clock-proof-first/recovery.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "unsat",
+      "verified": true
+    },
+    {
+      "name": "margin",
+      "source_sha256": "e37e6694ee0b641e30c180ba560489864dae362b1529697c03efb6654b3b2155",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:5",
+        "-smt2",
+        "/tmp/kv9-lease-clock-proof-first/margin.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "unsat",
+      "verified": true
+    },
+    {
+      "name": "containment-without-error",
+      "source_sha256": "0ec23cb0d071378ac7d6012e88670c0fe3eadddbb69e60d4545fdf0cffd264cf",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:5",
+        "-smt2",
+        "/tmp/kv9-lease-clock-proof-first/containment-without-error.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "sat",
+      "verified": true
+    },
+    {
+      "name": "recovery-without-error",
+      "source_sha256": "b8c37af2c4cf7f2d6cb131d4471b5f8b47efbd3591cfba178adba7c01e4b8412",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:5",
+        "-smt2",
+        "/tmp/kv9-lease-clock-proof-first/recovery-without-error.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "sat",
+      "verified": true
+    },
+    {
+      "name": "leader-only-margin",
+      "source_sha256": "2364255be2bfe3da207fc1db5294d0ce713391938e974c7f8fb556430e075f44",
+      "argv": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:5",
+        "-smt2",
+        "/tmp/kv9-lease-clock-proof-first/leader-only-margin.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "sat",
+      "verified": true
+    }
+  ]
+}
