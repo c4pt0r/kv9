@@ -3,9 +3,12 @@
 > Latest direction: [optimize writes against three-copy Redis](WRITE-PERFORMANCE-NEXT.md).
 > Keep selected ThinLTO and Safe ReadIndex. The version-4 Redis reference client
 > now supports same-connection WAIT 1/2 with bounded deadlines and unknown-write
-> accounting. Its independent reader and clean release are qualified. The isolated
-> CRC reapplication passes source/proof/release/ordinary recovery; matched
-> throughput/latency and actual candidate Chaos Mesh remain next.
+> accounting. The [matched write baseline](WRITE-REDIS3-BASELINE.md) now passes
+> 12 smoke/24 timed cohorts and independent audit: all 18,993,624 measured calls
+> succeed once. At c64, Redis is about 1.7× faster for point writes and 4.5×
+> for batches; KV9 loaded batch p99 remains 9.437–9.568 ms. The isolated CRC
+> reapplication passes source/proof/release/ordinary recovery and image checks;
+> candidate A/B throughput/latency and actual Chaos Mesh remain next.
 > Read optimization and lease qualification are held at the user's request.
 > Proof, actual Chaos Mesh and no-service-critical-singleton gates still apply.
 
