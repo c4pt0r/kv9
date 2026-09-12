@@ -10,7 +10,8 @@
 > 32-us candidate: every matched workload/order loses throughput and worsens
 > latency, with more server CPU. Main remains on `11113f6`.
 > The [leader-lease proof](LEADER-LEASE-PROOF.md) now establishes a conditional
-> path to zero per-read quorum RTT; implementation, clock qualification and
+> path to zero per-read quorum RTT, with a [proved transition model](LEASE-AUTHORITY-MODEL.md).
+> Implementation, clock qualification and
 > actual lease Chaos acceptance remain ahead of any runtime selection.
 > Redis read parity and industrial gates remain open.
 
@@ -56,9 +57,11 @@ Preserve fresh quorum reads, sealed groups, successful pump/apply/view fences
 and durable acknowledgements.
 The separately requested lease path now has a complete conditional mathematical
 argument, eight checked TLAPS lemmas / 23 obligations and real-clock SMT
-containment. Next specify fixed-configuration acquisition/renewal/revocation,
-voter restart promises and the exact local view gate, then prove the transition
-model and implementation refinement. Qualify actual fault histories before
+containment. The [fixed-configuration transition proof](LEASE-AUTHORITY-MODEL.md)
+adds 27 theorems / 348 obligations and bounded fault-model evidence for renewal,
+revocation, restart promises and the local view gate. Next implement and refine
+the controller and actual voting/read paths. Expired authority plus unavailable
+quorum must fail closed. Qualify the clock and actual fault histories before
 matched throughput/latency comparison. See [the proof and implementation gates](LEADER-LEASE-PROOF.md).
 The product sequence remains memory RawKV read performance, then dynamic
 multi-Raft and automatic splits, without waiving storage/proof/fault prerequisites.

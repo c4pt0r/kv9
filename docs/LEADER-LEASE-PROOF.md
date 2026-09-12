@@ -2,8 +2,10 @@
 
 Tracking: [#9](https://github.com/c4pt0r/kv9/issues/9), #20.
 This is a conditional algorithm proof and an implementation contract. The
-production server at `c2fc693` still uses Safe ReadIndex. This document does not
+selected runtime `11113f6` still uses Safe ReadIndex. This document does not
 enable lease reads, qualify a clock platform, or establish a performance result.
+The subsequent [transition model and inductive proof](LEASE-AUTHORITY-MODEL.md)
+make acquisition, renewal, revocation, recovery and local read steps executable.
 
 **Claim.** A leader with a correctly acquired, unexpired lease can serve
 linearizable reads using only local operations after request arrival. Acquiring
@@ -134,6 +136,22 @@ After a read invocation, the leader performs the following local steps:
    queried after validation because its contents cannot change. An unrelated
    fresh view cannot be substituted after the lease expires.
 
+**Fail-closed service rule:** once the lease has expired, no new successful
+local read is authorized by it. A read may proceed only after acquiring a new
+valid lease or completing a fresh Safe ReadIndex and its apply/view fence.
+If the node cannot obtain the required quorum confirmation, it returns typed
+unavailability or the original request's timeout. It must not return cached
+data, an empty success, or extend the deadline locally. Writes still require
+Raft quorum commitment. Contact with one peer is useful only if the resulting
+voting set is a valid quorum; merely reaching a peer establishes no authority.
+
+This rule is necessary but does not replace the clock, vote and restart
+premises: without them another leader could already exist while the old leader
+incorrectly believes its lease is live. A response delayed after the successful
+final validation can still be linearizable because it uses the retained view
+and the operation overlaps the later change; network delivery time is not a
+new authorization event.
+
 Every write that completed before the read invocation belongs to a committed
 prefix known through `c`: leader completeness and the current-term commit fence
 cover earlier terms, and the active leader's commit frontier covers its own
@@ -143,24 +161,35 @@ writes before this read's valid check. Therefore each such write has index
 prefix. Conversely, a write invoked after the read response cannot already be
 in this view. The snapshot contains only a committed prefix.
 
-More explicitly, place writes in their agreed Raft log order and place the read
-immediately after prefix `j`. Let `k_j` denote the commitment time of entry `j`
-and, if it exists, `k_next` that of entry `j+1`. Commitment times are nondecreasing;
-entries committed together can be ordered within the same time instant.
-Entry `j` was committed before the snapshot. Entry `j+1` cannot have committed
-strictly before this read's invocation: the current-term fence and fresh `c`
-would then require `j >= c >= j+1`. Thus the interval between invocation and
-response overlaps the logical cut between these entries. Choose a linearization
-point in that intersection, respecting log order for ties. With no next entry,
-there is no upper cut constraint.
+For a precise history construction, first include the pending writes whose
+committed entries appear in returned views, completing those pending operations
+in the history extension permitted by linearizability. Other pending operations
+may be omitted. Order writes by their agreed log positions and place each read
+immediately after its view's prefix `j`. Reads at the same prefix are ordered
+by their real-time precedence. The following four facts establish every possible
+kind of real-time edge:
 
-A later, non-overlapping read also captures a frontier covering this read's
-committed prefix, including after a legal leader change. Reads at the same
-prefix can be ordered by their real-time precedence. Hence all completed
-operations admit a single sequential history that respects real-time order
-and returns exactly the values of the replicated state machine: linearizability.
-Concurrent writes may be placed before or after a read as permitted by its
-prefix. The physical snapshot time need not be the read's linearization point.
+- A write completed before another write began has an earlier log position,
+  by Raft's ordered proposal/commit and leader-completeness guarantees.
+- A write completed before a read began has position at most `j`, by the fresh
+  frontier argument above.
+- A read completed before a write began has `j` smaller than that write's
+  position: a not-yet-invoked write cannot already be in the retained view.
+- If one read completed before another began, the latter's prefix cannot be
+  smaller. On the same leader its fresh frontier covers the previously observed
+  prefix; across leaders, leader completeness and the new term's commit fence
+  preserve that already committed prefix.
+
+Thus the resulting total order extends the real-time order and each operation
+returns the state-machine result at its position. This is linearizability.
+The argument does **not** fix each write's linearization point at the instant
+its bytes first reach a physical majority. An entry might already be on a
+majority while its leader has not processed the acknowledgements and the write
+is still pending. A concurrent read can legally precede that pending write.
+Consequently, the leader's locally known `commit_index` must cover earlier
+completed operations; it need not equal an omniscient observer's physical
+replication frontier at every instant. The physical snapshot time also need not
+be the read's linearization point.
 
 The final check conservatively fences arbitrary **process scheduling pauses**
 when the clock continues to meet its rate bound. A pause between an initial
@@ -244,10 +273,11 @@ Source inspected at `c2fc693`, using pinned raft-rs `0.7.0`:
   path needs a distinct, non-forgeable authority type and a source refinement;
   it must not fabricate a successful Safe ReadIndex confirmation.
 
-The next implementation gate is a fixed-configuration lease state machine with
-explicit acquisition, renewal, suspect/revoked/expired states, bounded arithmetic,
-restart quarantine and local read-view validation. Follow it with parameterized
-transition/refinement proofs and fault-revealing model controls. Local Rust tests
+The [fixed-configuration transition model](LEASE-AUTHORITY-MODEL.md) now specifies
+acquisition, renewal, revocation/expiration, generation exhaustion, restart
+quarantine and local read-view validation, with a parameterized inductive proof
+and fault controls. The next gate is its Rust implementation and source refinement,
+including bounded clock arithmetic and actual voting/publication bindings. Local Rust tests
 must exercise delayed ACKs, stale rounds, application stalls, cancellation and
 the check/snapshot/revoke races. Actual Chaos Mesh E2E must include bidirectional
 and asymmetric partitions, delayed/reordered renewal traffic, process pause,
@@ -268,9 +298,10 @@ parameterized lemmas for clock-horizon containment, delayed grants, historical
 and future vote exclusion, intersecting election quorums, completed-write prefix
 coverage and final expiry rejection. Its arithmetic specialization uses unbounded
 integers with arbitrary scaling; the real-time inequalities and the full
-history/linearization argument are proved above. Passing these lemmas is not a
-machine-checked Rust translation, a full lease transition-system proof, a clock
-qualification, or E2E acceptance. Retained commands, audit, negative controls and
+history/linearization argument are proved above. The separate
+[transition proof](LEASE-AUTHORITY-MODEL.md) adds acquisition/recovery/read actions.
+Neither proof is a machine-checked Rust translation, clock qualification, or E2E
+acceptance. Retained commands, audit, negative controls and
 initial proof-development failures are linked in the validation record.
 
 [`clock-containment.smt2`](../proofs/tlaps/leader_lease/clock-containment.smt2)

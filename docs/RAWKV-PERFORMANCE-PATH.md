@@ -59,7 +59,10 @@ The more recent [owner-poll screen](OWNER-POLL-PERFORMANCE.md) rejects polling;
 its same-run selected controls deliver c1/c64 GET 28,252.671 / 374,812.758 calls/s
 against Redis 173,925.251 / 511,910.764. No new speedup is claimed. The requested
 [lease proof](LEADER-LEASE-PROOF.md) now separates the zero-consensus-RTT theorem
-from the missing implementation/clock/recovery/Chaos gates. Production keeps
+from the missing implementation/clock/Chaos gates. Its
+[transition proof](LEASE-AUTHORITY-MODEL.md) covers fixed-configuration renewal,
+revocation, voter recovery promises and local reads. Expiration without quorum
+confirmation must fail closed. Production keeps
 Safe ReadIndex. Separate notification candidate
 `42e0117` remains experimental; combining it with ThinLTO requires a distinct
 matched qualification. Fresh ReadIndex, sealed groups, successful pump/apply/view

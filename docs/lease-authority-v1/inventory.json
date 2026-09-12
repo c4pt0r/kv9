@@ -1,0 +1,1284 @@
+{
+  "archive": "original-evidence.tar.gz",
+  "archive_bytes": 161518,
+  "archive_sha256": "3b8f4032321bd5d6c2e87c9ce170c88fbb8e476ac768715b5ce6449581e10016",
+  "files": 255,
+  "members": [
+    {
+      "name": "acceptance/LANoApplyGapWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/LANoApplyGapWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/LANoApplyGapWitness/Run.cfg",
+      "bytes": 364,
+      "sha256": "48849091052575a716af69855e32f2420f9b10891051f0caf5201cf086836a58"
+    },
+    {
+      "name": "acceptance/LANoApplyGapWitness/result.json",
+      "bytes": 907,
+      "sha256": "9c589da34f728b5740c6b01c871e0d68b58291cb563dceb0406102c4995614fd"
+    },
+    {
+      "name": "acceptance/LANoApplyGapWitness/tlc.log",
+      "bytes": 3554,
+      "sha256": "95c341a3924be6c31bd6141dbe2fe8786f16cee554404c26555dd08c8f6a8659"
+    },
+    {
+      "name": "acceptance/LANoExpiredCertificateWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/LANoExpiredCertificateWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/LANoExpiredCertificateWitness/Run.cfg",
+      "bytes": 374,
+      "sha256": "ba0e00c834f062cde4fa7d17133cf7e59189957dc56505f7dd3759d0cd60f378"
+    },
+    {
+      "name": "acceptance/LANoExpiredCertificateWitness/result.json",
+      "bytes": 949,
+      "sha256": "2b55db279934c60f247c1028b05d931dbf5c141e930cdf678763a3f98b8fcafc"
+    },
+    {
+      "name": "acceptance/LANoExpiredCertificateWitness/tlc.log",
+      "bytes": 8363,
+      "sha256": "f967d47453b4d8027f143d0c0eb473bdfaab347ae311c7537ba2610130657314"
+    },
+    {
+      "name": "acceptance/LANoOldGenerationWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/LANoOldGenerationWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/LANoOldGenerationWitness/Run.cfg",
+      "bytes": 369,
+      "sha256": "c044940f2f8a8bebe1274abef12946b384fa9955f895fc04331e2df89d982031"
+    },
+    {
+      "name": "acceptance/LANoOldGenerationWitness/result.json",
+      "bytes": 934,
+      "sha256": "f4d789657146e83c0e9ea0ec22ebadcaecaa2be115591c03d3467ef3fa0eeeeb"
+    },
+    {
+      "name": "acceptance/LANoOldGenerationWitness/tlc.log",
+      "bytes": 8348,
+      "sha256": "079a09b5434a543bf872d3aac4c793c61be73f220eafab83ff039e29a92e8f75"
+    },
+    {
+      "name": "acceptance/LANoRenewalWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/LANoRenewalWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/LANoRenewalWitness/LeaseAuthorityRenewal.tla",
+      "bytes": 1326,
+      "sha256": "0a7742f10f4ff6d5fe56542e4112ef177b24d33d369fe41b79839d5f687eb6e1"
+    },
+    {
+      "name": "acceptance/LANoRenewalWitness/Run.cfg",
+      "bytes": 376,
+      "sha256": "27202c457f7b4e4503de1402e4ad16bf001497d77282b2f20e0e6d0ec9d572f9"
+    },
+    {
+      "name": "acceptance/LANoRenewalWitness/result.json",
+      "bytes": 1012,
+      "sha256": "a4067e9cfc76c46c8660ec9527d1c219aeab7183c1a9a658f471a432f43904dd"
+    },
+    {
+      "name": "acceptance/LANoRenewalWitness/tlc.log",
+      "bytes": 16723,
+      "sha256": "6fb361051fb40802165e5e7672b20403792d3437518de592e37fa292cc53795d"
+    },
+    {
+      "name": "acceptance/LANoReplacementWriteWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/LANoReplacementWriteWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/LANoReplacementWriteWitness/Run.cfg",
+      "bytes": 372,
+      "sha256": "8c9b8ba4b483ed69a773a4040c7c70c6b34ccff74ed6820af25ea85c064186c9"
+    },
+    {
+      "name": "acceptance/LANoReplacementWriteWitness/result.json",
+      "bytes": 938,
+      "sha256": "d11abc3623d612702ce72a627c42d245f5b7fe1181cfeb95c597e9f7e2598a6b"
+    },
+    {
+      "name": "acceptance/LANoReplacementWriteWitness/tlc.log",
+      "bytes": 6034,
+      "sha256": "0f49acf5f1517dfa5106f1f147827d35e98a45c7bd2777ff868cfbf9482d65f3"
+    },
+    {
+      "name": "acceptance/LANoRestartPromiseWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/LANoRestartPromiseWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/LANoRestartPromiseWitness/Run.cfg",
+      "bytes": 370,
+      "sha256": "4452eef5bcfb1c80a206aea4d26da93acd28a9843a2a41b0e7853f2f879036b9"
+    },
+    {
+      "name": "acceptance/LANoRestartPromiseWitness/result.json",
+      "bytes": 932,
+      "sha256": "920d5b66939be112b92897ea32878e5a31d3a8dc75a79a168a330908f11240f0"
+    },
+    {
+      "name": "acceptance/LANoRestartPromiseWitness/tlc.log",
+      "bytes": 6021,
+      "sha256": "de01f6da8b50a4f2cd73d1a13c61e16dcdeebef84e535f7a4f12075bda3a3d75"
+    },
+    {
+      "name": "acceptance/LANoSuccessfulReadWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/LANoSuccessfulReadWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/LANoSuccessfulReadWitness/Run.cfg",
+      "bytes": 370,
+      "sha256": "071d19f2146e08fd8b0f2182534687fcfac71f461469aa9e54516bf545b84662"
+    },
+    {
+      "name": "acceptance/LANoSuccessfulReadWitness/result.json",
+      "bytes": 937,
+      "sha256": "5c5a417a20e64dd17a5dbf1c7b5b563c348840e150086f39b3e06048a7c154c3"
+    },
+    {
+      "name": "acceptance/LANoSuccessfulReadWitness/tlc.log",
+      "bytes": 9897,
+      "sha256": "aea440ae626236fc7ef3c36bd38e3e5c4b476a0ee24950af741572a6c42cef84"
+    },
+    {
+      "name": "acceptance/false-assumption/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/false-assumption/LeaseAuthorityProof.tla",
+      "bytes": 20540,
+      "sha256": "58e2eafe536dd7289fb14fbc0e10b00726c80f336c9f54611e1d9e5b41afef68"
+    },
+    {
+      "name": "acceptance/false-assumption/inventory.json",
+      "bytes": 1565,
+      "sha256": "a495af81f6e8317221b672dbb22f75b2c1c5daec16498528dbf950f482b4854c"
+    },
+    {
+      "name": "acceptance/false-assumption/result.json",
+      "bytes": 502,
+      "sha256": "d3be51a1816f7af936e2e47051f7f5e4f0dcff5a2839883cbb71b20b1216ed21"
+    },
+    {
+      "name": "acceptance/false-assumption/sany.log",
+      "bytes": 2841,
+      "sha256": "59487b4c3f5f0ceb866b05d0910d1484afd2ca36096727a67523e344161bba61"
+    },
+    {
+      "name": "acceptance/full-three-voters/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/full-three-voters/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/full-three-voters/Run.cfg",
+      "bytes": 343,
+      "sha256": "93180011a31bab5ca16f94a4ac7a073e92513b4e795583e9fc7249481ce4572d"
+    },
+    {
+      "name": "acceptance/full-three-voters/result.json",
+      "bytes": 884,
+      "sha256": "793f6c4437ee8b971a91822cfe3f0fe1b9af69397c3026142a7a91748cc3003e"
+    },
+    {
+      "name": "acceptance/full-three-voters/tlc.log",
+      "bytes": 3093,
+      "sha256": "bbebf890e19bf2ba99a55f1100b0f8aaace437c55a318595fb417e3e3d381966"
+    },
+    {
+      "name": "acceptance/grant-after-higher-vote/LeaseAuthority.tla",
+      "bytes": 16043,
+      "sha256": "92dcd12b27dea76266f214069b3f91f967b1d9bf6d343cf61aea839eafe46c02"
+    },
+    {
+      "name": "acceptance/grant-after-higher-vote/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/grant-after-higher-vote/Run.cfg",
+      "bytes": 345,
+      "sha256": "6acae9c5691a2d5aeb7bc68e86409d02f0c119383b3cfd7d75f24fec6f87bb77"
+    },
+    {
+      "name": "acceptance/grant-after-higher-vote/result.json",
+      "bytes": 915,
+      "sha256": "a41dbe7d002fa46a877e5b73d465356f28e9e081fbd31c3ea05fe84dd8f78679"
+    },
+    {
+      "name": "acceptance/grant-after-higher-vote/tlc.log",
+      "bytes": 5251,
+      "sha256": "04c18eb635cc993446a8dfb49d2c5cd16cd7124acc5de9c3d9a3a1cb46122a1d"
+    },
+    {
+      "name": "acceptance/lost-restart-quarantine/LeaseAuthority.tla",
+      "bytes": 16042,
+      "sha256": "b2007318ddb06a60b0da2e4b4b7d5d1731f4e065f4b977ad3e358d3c08e07637"
+    },
+    {
+      "name": "acceptance/lost-restart-quarantine/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/lost-restart-quarantine/Run.cfg",
+      "bytes": 351,
+      "sha256": "2f1aa3d70c9d95160a7ee9ab7fc56311d1c30cd48053b64de4226f9d32165b37"
+    },
+    {
+      "name": "acceptance/lost-restart-quarantine/result.json",
+      "bytes": 922,
+      "sha256": "ee018f581a4268b6bc9faa2e21e5d445d753309503fe517fcd6af774ad3576f9"
+    },
+    {
+      "name": "acceptance/lost-restart-quarantine/tlc.log",
+      "bytes": 6012,
+      "sha256": "59367be1e5263b543da967bc9471bbd540e05a336b069ceb9edf2449fd5949a3"
+    },
+    {
+      "name": "acceptance/omitted-proof/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/omitted-proof/LeaseAuthorityProof.tla",
+      "bytes": 20489,
+      "sha256": "e75909df98a70f5abbb544e4942fe373ab4dbf227faf8768bf8b6a38c585c005"
+    },
+    {
+      "name": "acceptance/omitted-proof/inventory.json",
+      "bytes": 1565,
+      "sha256": "a495af81f6e8317221b672dbb22f75b2c1c5daec16498528dbf950f482b4854c"
+    },
+    {
+      "name": "acceptance/omitted-proof/result.json",
+      "bytes": 499,
+      "sha256": "0a8cd4b228ffc8ed7ac29e332160c7eaaaa810e2e3a76f67bee5da6457e0eb7c"
+    },
+    {
+      "name": "acceptance/omitted-proof/sany.log",
+      "bytes": 2737,
+      "sha256": "7c62a7460f4d1a419b2e28d8a28729747e562e25249de148c5ded7f248a900a5"
+    },
+    {
+      "name": "acceptance/proof-baseline/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/proof-baseline/LeaseAuthorityProof.log",
+      "bytes": 533,
+      "sha256": "cdb08057ce390f7e5bc211bacdd1e67a48e53ba76634690f489a10e8bdedd9da"
+    },
+    {
+      "name": "acceptance/proof-baseline/LeaseAuthorityProof.tla",
+      "bytes": 20527,
+      "sha256": "eb6f723261e1b0b68cd31b1214e4c0cb6dbf7f6dcbacb9ca943ae7f0da549372"
+    },
+    {
+      "name": "acceptance/proof-baseline/inventory.json",
+      "bytes": 1565,
+      "sha256": "a495af81f6e8317221b672dbb22f75b2c1c5daec16498528dbf950f482b4854c"
+    },
+    {
+      "name": "acceptance/proof-baseline/result.json",
+      "bytes": 966,
+      "sha256": "907d814a043728923dde0eaeb61f62ee3e91ba4180b707644382f8b17f6401b3"
+    },
+    {
+      "name": "acceptance/proof-baseline/sany.log",
+      "bytes": 2742,
+      "sha256": "dc6ec3294f84e33109f06b937561fad6a6b15ae45a207ebcc38cf6fcd4275c36"
+    },
+    {
+      "name": "acceptance/proof-baseline/semantic-audit.json",
+      "bytes": 3456,
+      "sha256": "2ea9107ee9da49eb721a2ee3147c3de866629b0cbf67a1cf3d71d5b171295ec9"
+    },
+    {
+      "name": "acceptance/proof-restored/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "acceptance/proof-restored/LeaseAuthorityProof.log",
+      "bytes": 533,
+      "sha256": "ee166b5c2f00cdd3f101aaf324b286f901ad5a74971f98e136b71132336e9c3e"
+    },
+    {
+      "name": "acceptance/proof-restored/LeaseAuthorityProof.tla",
+      "bytes": 20527,
+      "sha256": "eb6f723261e1b0b68cd31b1214e4c0cb6dbf7f6dcbacb9ca943ae7f0da549372"
+    },
+    {
+      "name": "acceptance/proof-restored/inventory.json",
+      "bytes": 1565,
+      "sha256": "a495af81f6e8317221b672dbb22f75b2c1c5daec16498528dbf950f482b4854c"
+    },
+    {
+      "name": "acceptance/proof-restored/result.json",
+      "bytes": 966,
+      "sha256": "f5d1180be96d23b036c462228833f46435700451d1aae29b646fc4844118da64"
+    },
+    {
+      "name": "acceptance/proof-restored/sany.log",
+      "bytes": 2742,
+      "sha256": "c3fdc74d90a85cf36aae9238eb0e71a14338e9cef03aef5182f8e9f4040c1f81"
+    },
+    {
+      "name": "acceptance/proof-restored/semantic-audit.json",
+      "bytes": 3456,
+      "sha256": "4c24239ecdd8656a59a6c52a983be57dc89bae2e98c0c4112504e5cab0775392"
+    },
+    {
+      "name": "acceptance/publish-without-quorum/LeaseAuthority.tla",
+      "bytes": 16038,
+      "sha256": "b917d497bcc0b99e2ca5a04b8b380e32b27694723b2a7bbcedc4bae2c416ea02"
+    },
+    {
+      "name": "acceptance/publish-without-quorum/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/publish-without-quorum/Run.cfg",
+      "bytes": 343,
+      "sha256": "2e2daab166821affb9601dcb7f3fe8274a234db67836aae1e870dbbad5cdd6df"
+    },
+    {
+      "name": "acceptance/publish-without-quorum/result.json",
+      "bytes": 908,
+      "sha256": "9cb14307a46aaab856e539a6a7fde47e689e9c9333e831cca25dee19ff915187"
+    },
+    {
+      "name": "acceptance/publish-without-quorum/tlc.log",
+      "bytes": 4480,
+      "sha256": "c59d44942cfbe415c81e57ece2bfedf10ec1331bd054eefe0d9c55a6386cd87d"
+    },
+    {
+      "name": "acceptance/read-before-apply/LeaseAuthority.tla",
+      "bytes": 16037,
+      "sha256": "2ac9f62420d8529c9ca91554a339bb0a06d60921e20a70d3a570c0eeec2d2b35"
+    },
+    {
+      "name": "acceptance/read-before-apply/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/read-before-apply/Run.cfg",
+      "bytes": 346,
+      "sha256": "1c4296c8e2b9637149b292c920729f0a1b61f77c9f482b85a5b38623a17c8790"
+    },
+    {
+      "name": "acceptance/read-before-apply/result.json",
+      "bytes": 911,
+      "sha256": "5d2842a12bd86f970970f74565b4269861cd5b0ee0c9b4d546eb137bcd026dab"
+    },
+    {
+      "name": "acceptance/read-before-apply/tlc.log",
+      "bytes": 9851,
+      "sha256": "65240d4fc2e65cc3f93e1a23ff9ec7776218f79f32ca1d5feff93667fbf23301"
+    },
+    {
+      "name": "acceptance/runner.log",
+      "bytes": 1854,
+      "sha256": "0d2b7de86cd5260e4720acf8a5e047cdf7d7419fe3f604a67574705c40608076"
+    },
+    {
+      "name": "acceptance/stale-read-frontier/LeaseAuthority.tla",
+      "bytes": 16063,
+      "sha256": "d4333e375e0e55ff44ea511ca14da79ce42794a3d3e7207cc10e510b62ce1513"
+    },
+    {
+      "name": "acceptance/stale-read-frontier/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/stale-read-frontier/Run.cfg",
+      "bytes": 346,
+      "sha256": "1c4296c8e2b9637149b292c920729f0a1b61f77c9f482b85a5b38623a17c8790"
+    },
+    {
+      "name": "acceptance/stale-read-frontier/result.json",
+      "bytes": 915,
+      "sha256": "5554b20dc08874137ff23d476bc0e093cd928e43c2ede708cd2b52869cf968ea"
+    },
+    {
+      "name": "acceptance/stale-read-frontier/tlc.log",
+      "bytes": 9084,
+      "sha256": "89dd0fe8d4528ce8abc5297dbad1c848df475331658f08c71bfd89187b26fa45"
+    },
+    {
+      "name": "acceptance/summary.json",
+      "bytes": 20016,
+      "sha256": "e638524586575c9bfe28412a6c87bb6fd1523c5de933b791d94a3174943ebec6"
+    },
+    {
+      "name": "acceptance/vote-during-promise/LeaseAuthority.tla",
+      "bytes": 16047,
+      "sha256": "5f1fd2241de9b7050279daeb45cb9dbb0e0130003b3a22d4cb2eb11793da349c"
+    },
+    {
+      "name": "acceptance/vote-during-promise/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "acceptance/vote-during-promise/Run.cfg",
+      "bytes": 345,
+      "sha256": "6acae9c5691a2d5aeb7bc68e86409d02f0c119383b3cfd7d75f24fec6f87bb77"
+    },
+    {
+      "name": "acceptance/vote-during-promise/result.json",
+      "bytes": 907,
+      "sha256": "4285a9fe83e1d1d6b6842e551dc05150fce436190d58c91816dda6479f939ffc"
+    },
+    {
+      "name": "acceptance/vote-during-promise/tlc.log",
+      "bytes": 5243,
+      "sha256": "876aa70aa33aac5803384ff99c71a8016fcd50e4753b84dd1660a629da7114ef"
+    },
+    {
+      "name": "chaos-fixture-review/README.md",
+      "bytes": 10115,
+      "sha256": "639c976e7797c0652b84f84db03b57731db144fd97a9d765abedc42b8df1b5ef"
+    },
+    {
+      "name": "chaos-fixture-review/availability.json",
+      "bytes": 2412,
+      "sha256": "913b2af6125d0ceae195cf9ec566a75ad94dd162f687a1035a74d4a334b7466c"
+    },
+    {
+      "name": "chaos-fixture-review/commands.json",
+      "bytes": 5123,
+      "sha256": "6c6b69f76298d4ff276da85bf52bd1aeb62245569d5b054d001f972ddb01a040"
+    },
+    {
+      "name": "chaos-fixture-review/inventory.json",
+      "bytes": 832,
+      "sha256": "b5d86686c4d45173bc21c402165467d92c557461a0c2404e737a7514d71756af"
+    },
+    {
+      "name": "chaos-fixture-review/readiness.json",
+      "bytes": 773,
+      "sha256": "f50fcf050755c61ac4872d495d2784529115723d0fe23ce635fc8df40564fa32"
+    },
+    {
+      "name": "chaos-fixture-review/source-inputs.json",
+      "bytes": 9627,
+      "sha256": "957b58112e8a1f3c012aada0260e83115d1259615f0ee7d7734572a0db599cb0"
+    },
+    {
+      "name": "development/kv9-lease-authority-instant-model-first/Instant.cfg",
+      "bytes": 313,
+      "sha256": "91f602d21e9f9964ed42579b032a93262cb5cc4eb04de9003c5787da8cf60cc4"
+    },
+    {
+      "name": "development/kv9-lease-authority-instant-model-first/LeaseAuthority.tla",
+      "bytes": 16565,
+      "sha256": "3c6328a21bfda0bf69e403ef9771dc2f00cd223a9500efafb63aab99aff68f87"
+    },
+    {
+      "name": "development/kv9-lease-authority-instant-model-first/LeaseAuthorityMC.tla",
+      "bytes": 902,
+      "sha256": "540b01066f2b179510acb77dba2db65aa8f49f8f155e2203bfe4f2373c716c9f"
+    },
+    {
+      "name": "development/kv9-lease-authority-instant-model-first/inputs.json",
+      "bytes": 274,
+      "sha256": "4bb30fba9c9959e9bd8f9d9b33a91990525739c8be4d71072460b41ec7c26eff"
+    },
+    {
+      "name": "development/kv9-lease-authority-instant-model-first/tlc.log",
+      "bytes": 2154,
+      "sha256": "4136b55d608d6ee70fbb9f42e7b772e479099d877b19da78d4bd2478c30aec46"
+    },
+    {
+      "name": "development/kv9-lease-authority-inventory-first/sany.log",
+      "bytes": 1047,
+      "sha256": "ae5f1a1aa4d6642dd580b3d9519d5863a3134bb26898515baaa1b05dd0962450"
+    },
+    {
+      "name": "development/kv9-lease-authority-inventory-second/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "development/kv9-lease-authority-inventory-second/LeaseAuthorityProof.tla",
+      "bytes": 20527,
+      "sha256": "eb6f723261e1b0b68cd31b1214e4c0cb6dbf7f6dcbacb9ca943ae7f0da549372"
+    },
+    {
+      "name": "development/kv9-lease-authority-inventory-second/sany.log",
+      "bytes": 2610,
+      "sha256": "8c65cc8f413ebcfa247f3942cf7f877b25d00b6771388134703c3172a36c2b2a"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-draft1/Lease3.cfg",
+      "bytes": 313,
+      "sha256": "3a2c3eeafd0b8605c205b1d6a18bdd14020063d57dcdffd2ec39f43c276f289a"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-draft1/LeaseAuthority.tla",
+      "bytes": 16565,
+      "sha256": "3c6328a21bfda0bf69e403ef9771dc2f00cd223a9500efafb63aab99aff68f87"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-draft1/LeaseAuthorityMC.tla",
+      "bytes": 902,
+      "sha256": "540b01066f2b179510acb77dba2db65aa8f49f8f155e2203bfe4f2373c716c9f"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-draft1/Renew3.cfg",
+      "bytes": 316,
+      "sha256": "8895fa9b8b7cbd9a495e383e1fc187370ffa6af21c709174efdc3154864685c9"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-draft1/input.json",
+      "bytes": 357,
+      "sha256": "496b7b5c1ff5b29f4a4ba6559f382b4f418bc3c46d1aa7059e4bf93783e4281a"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-draft1/tlc.log",
+      "bytes": 1814,
+      "sha256": "436e5db6938183096e155507307a6f1b8909a7b69692e0561e77c0aad8fd46e4"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-projection-first/Lease3.cfg",
+      "bytes": 313,
+      "sha256": "3a2c3eeafd0b8605c205b1d6a18bdd14020063d57dcdffd2ec39f43c276f289a"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-projection-first/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-projection-first/LeaseAuthorityMC.tla",
+      "bytes": 902,
+      "sha256": "540b01066f2b179510acb77dba2db65aa8f49f8f155e2203bfe4f2373c716c9f"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-projection-first/Renew3.cfg",
+      "bytes": 316,
+      "sha256": "8895fa9b8b7cbd9a495e383e1fc187370ffa6af21c709174efdc3154864685c9"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-projection-first/inputs.json",
+      "bytes": 357,
+      "sha256": "9b3c60a079a51c73a9504b95aa8061e78bf619b93a86f3d38ec13a323461bd57"
+    },
+    {
+      "name": "development/kv9-lease-authority-model-projection-first/tlc.log",
+      "bytes": 1848,
+      "sha256": "5e904b91f3dfa01f2a167170dbfedac96a6457bd547f547435fdde97b837dae9"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft1/LeaseAuthority.tla",
+      "bytes": 16565,
+      "sha256": "3c6328a21bfda0bf69e403ef9771dc2f00cd223a9500efafb63aab99aff68f87"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft1/LeaseAuthorityProof.tla",
+      "bytes": 7774,
+      "sha256": "2ce8a90e8975f779a57b849adfa82b287fbf36698617bd83be01858c421f3f6f"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft1/inputs.json",
+      "bytes": 192,
+      "sha256": "191d010f98b5fbb360f4c3ec76c4229f388d5e7accab36f6a20d9db7de986284"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft1/tlaps.log",
+      "bytes": 35181,
+      "sha256": "01049ce47da44a9a38e9db162d4f1e094be86f891a580b87171ea9d2b1e55f16"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft2/LeaseAuthority.tla",
+      "bytes": 16565,
+      "sha256": "3c6328a21bfda0bf69e403ef9771dc2f00cd223a9500efafb63aab99aff68f87"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft2/LeaseAuthorityProof.tla",
+      "bytes": 8461,
+      "sha256": "8b0c1b46a1cb539d9be3286d21860b438bf47df33a0195665252c4cc91277fec"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft2/inputs.json",
+      "bytes": 192,
+      "sha256": "1c9032d7bdb1e0581e165d3ffb04edab9692c9ce3043ff83e66c8a31e8f4598b"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft2/tlaps.log",
+      "bytes": 38418,
+      "sha256": "d1ad9dd7e9f9445c3eb5402985def7ed75c51a68a5e216723793105de7cae2bb"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft3/LeaseAuthority.tla",
+      "bytes": 16565,
+      "sha256": "3c6328a21bfda0bf69e403ef9771dc2f00cd223a9500efafb63aab99aff68f87"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft3/LeaseAuthorityProof.tla",
+      "bytes": 8847,
+      "sha256": "655f01a8d0637b649c904456c91a29541845e6020412adb9e83bc2efbfd28f80"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft3/inputs.json",
+      "bytes": 192,
+      "sha256": "1fc56aaadba6cae87863f95f2f807e727f428a9580779106f3a73c8ff556075a"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft3/tlaps.log",
+      "bytes": 35646,
+      "sha256": "965cfe05ea2a34a40f217766a27ef631c6360ab3393316ee735e96b3c410e5ca"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft4/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft4/LeaseAuthorityProof.tla",
+      "bytes": 17399,
+      "sha256": "7c9157fedd3e3cb11afa1e4b775b46ab3c5b9e8fb71e55182a827560dad0aeb8"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft4/inputs.json",
+      "bytes": 192,
+      "sha256": "276328fe01d8273ac9f9873169d271c7078b4b20801bd54a44e8ce4a0cf56a62"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft4/tlaps.log",
+      "bytes": 31720,
+      "sha256": "b2580981b45863d0916ebbbb7b20774d73119265dcdb3abad10459f25c379e2d"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft5/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft5/LeaseAuthorityProof.tla",
+      "bytes": 19451,
+      "sha256": "9b9aefee94f3e08fe0f21698245d0fb5cbc39a59d77fe8195a273d8900c3a7a3"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft5/inputs.json",
+      "bytes": 192,
+      "sha256": "2dc290f38c1e5f28dff760202522072379f30231cb0b62118a8ac3755448387a"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft5/tlaps.log",
+      "bytes": 382,
+      "sha256": "524b9bdff169965072c8819e1382645f54d9b382600e07b860463fcf3e137d02"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft6/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft6/LeaseAuthorityProof.tla",
+      "bytes": 20511,
+      "sha256": "9c886e79f152627b3d200185a6eff2d3e9975245167b1119870b995fd6feb7fe"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft6/inputs.json",
+      "bytes": 192,
+      "sha256": "43ba0e691b859e787e055522261f605b3d9c82e3a8b055d2d42a839c7d0f7bca"
+    },
+    {
+      "name": "development/kv9-lease-authority-proof-draft6/tlaps.log",
+      "bytes": 382,
+      "sha256": "b6a0051617be79a875e65191a2ba0adc75ca1baf07da3ea89db8071fdc687e61"
+    },
+    {
+      "name": "development/kv9-lease-authority-symmetric-model-first/Lease3.cfg",
+      "bytes": 313,
+      "sha256": "3a2c3eeafd0b8605c205b1d6a18bdd14020063d57dcdffd2ec39f43c276f289a"
+    },
+    {
+      "name": "development/kv9-lease-authority-symmetric-model-first/Lease3Symmetric.cfg",
+      "bytes": 343,
+      "sha256": "93180011a31bab5ca16f94a4ac7a073e92513b4e795583e9fc7249481ce4572d"
+    },
+    {
+      "name": "development/kv9-lease-authority-symmetric-model-first/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "development/kv9-lease-authority-symmetric-model-first/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "development/kv9-lease-authority-symmetric-model-first/Renew3.cfg",
+      "bytes": 316,
+      "sha256": "8895fa9b8b7cbd9a495e383e1fc187370ffa6af21c709174efdc3154864685c9"
+    },
+    {
+      "name": "development/kv9-lease-authority-symmetric-model-first/inputs.json",
+      "bytes": 450,
+      "sha256": "c4357203e78be260401c81e8fd2cef5eda2282e32d784a09f69d8361485bf448"
+    },
+    {
+      "name": "development/kv9-lease-authority-symmetric-model-first/tlc.log",
+      "bytes": 3201,
+      "sha256": "e7167679de951d63d0f6c96e84df793978c3947895abf5e8205906e8c31b5826"
+    },
+    {
+      "name": "first-campaign/LANoApplyGapWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "first-campaign/LANoApplyGapWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/LANoApplyGapWitness/Run.cfg",
+      "bytes": 364,
+      "sha256": "48849091052575a716af69855e32f2420f9b10891051f0caf5201cf086836a58"
+    },
+    {
+      "name": "first-campaign/LANoApplyGapWitness/result.json",
+      "bytes": 889,
+      "sha256": "0e8606fd4ad82301268ada68f4b506725e06da1228293eaf15e88b4132f9e0b8"
+    },
+    {
+      "name": "first-campaign/LANoApplyGapWitness/tlc.log",
+      "bytes": 3518,
+      "sha256": "364a6a05ab801c310db6611e6767b21670a4e6326c2e686750770e0f985dc731"
+    },
+    {
+      "name": "first-campaign/LANoExpiredCertificateWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "first-campaign/LANoExpiredCertificateWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/LANoExpiredCertificateWitness/Run.cfg",
+      "bytes": 374,
+      "sha256": "ba0e00c834f062cde4fa7d17133cf7e59189957dc56505f7dd3759d0cd60f378"
+    },
+    {
+      "name": "first-campaign/LANoExpiredCertificateWitness/result.json",
+      "bytes": 930,
+      "sha256": "0c4e8e7f335860b1e2620c93bce6c4c5423dd4dc602cfd8551cb5c8de3970ab9"
+    },
+    {
+      "name": "first-campaign/LANoExpiredCertificateWitness/tlc.log",
+      "bytes": 8326,
+      "sha256": "e976187ca73de7969e0d7a51184a314d62ad822c09b2c463e467fdc52ab7b099"
+    },
+    {
+      "name": "first-campaign/LANoOldGenerationWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "first-campaign/LANoOldGenerationWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/LANoOldGenerationWitness/Run.cfg",
+      "bytes": 369,
+      "sha256": "c044940f2f8a8bebe1274abef12946b384fa9955f895fc04331e2df89d982031"
+    },
+    {
+      "name": "first-campaign/LANoOldGenerationWitness/result.json",
+      "bytes": 916,
+      "sha256": "59150f22619f311c68314446a5b5df53cc6527529e35ce7c97fa87112425cc42"
+    },
+    {
+      "name": "first-campaign/LANoOldGenerationWitness/tlc.log",
+      "bytes": 8313,
+      "sha256": "091c8c3b70c4be9e7d025349868d40e5f587099e9ea235dbc8f2c5e5c12bed7d"
+    },
+    {
+      "name": "first-campaign/LANoRenewalWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "first-campaign/LANoRenewalWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/LANoRenewalWitness/Run.cfg",
+      "bytes": 366,
+      "sha256": "9f25f507c6a568e63e1afefb7beba8c62212c9869a1b7ea4f4ed9c0067f5475c"
+    },
+    {
+      "name": "first-campaign/LANoRenewalWitness/result.json",
+      "bytes": 779,
+      "sha256": "c6038e4ecac20579709bb7db9e5ea3e3a372bcb46d0d38a2e095a061ce5b3ac4"
+    },
+    {
+      "name": "first-campaign/LANoRenewalWitness/tlc.log",
+      "bytes": 2034,
+      "sha256": "5164f9b73662c4015716e2f34b85652de0e8fc15182daa31bce0357fe95c26eb"
+    },
+    {
+      "name": "first-campaign/LANoReplacementWriteWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "first-campaign/LANoReplacementWriteWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/LANoReplacementWriteWitness/Run.cfg",
+      "bytes": 372,
+      "sha256": "8c9b8ba4b483ed69a773a4040c7c70c6b34ccff74ed6820af25ea85c064186c9"
+    },
+    {
+      "name": "first-campaign/LANoReplacementWriteWitness/result.json",
+      "bytes": 920,
+      "sha256": "c5a0be838b45654854e184310d30281511eb243d27ff2148c4b5d850bc75395f"
+    },
+    {
+      "name": "first-campaign/LANoReplacementWriteWitness/tlc.log",
+      "bytes": 5996,
+      "sha256": "7e80dea9088d36d7870b9cdd82eb747b562a174f4cb6c5b4dc71da1c86772688"
+    },
+    {
+      "name": "first-campaign/LANoRestartPromiseWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "first-campaign/LANoRestartPromiseWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/LANoRestartPromiseWitness/Run.cfg",
+      "bytes": 370,
+      "sha256": "4452eef5bcfb1c80a206aea4d26da93acd28a9843a2a41b0e7853f2f879036b9"
+    },
+    {
+      "name": "first-campaign/LANoRestartPromiseWitness/result.json",
+      "bytes": 914,
+      "sha256": "70db75641fb8145671b5779a254e394715d5481880a04395e2340b5d3401ec38"
+    },
+    {
+      "name": "first-campaign/LANoRestartPromiseWitness/tlc.log",
+      "bytes": 5985,
+      "sha256": "94a3530d567f14cb77c352e76347b70ce0b02d811c990d7597975d95752a7827"
+    },
+    {
+      "name": "first-campaign/LANoSuccessfulReadWitness/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "first-campaign/LANoSuccessfulReadWitness/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/LANoSuccessfulReadWitness/Run.cfg",
+      "bytes": 370,
+      "sha256": "071d19f2146e08fd8b0f2182534687fcfac71f461469aa9e54516bf545b84662"
+    },
+    {
+      "name": "first-campaign/LANoSuccessfulReadWitness/result.json",
+      "bytes": 920,
+      "sha256": "d526ff2189bc4c05865fe2693d78361a4b4e7fe815c171c5b01f575a8c2bb387"
+    },
+    {
+      "name": "first-campaign/LANoSuccessfulReadWitness/tlc.log",
+      "bytes": 9861,
+      "sha256": "66d783a06c42a14d24398e7e50ed949ece8495d18d827fba7d4acd11d74200ee"
+    },
+    {
+      "name": "first-campaign/false-assumption/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "first-campaign/false-assumption/LeaseAuthorityProof.tla",
+      "bytes": 20540,
+      "sha256": "58e2eafe536dd7289fb14fbc0e10b00726c80f336c9f54611e1d9e5b41afef68"
+    },
+    {
+      "name": "first-campaign/false-assumption/inventory.json",
+      "bytes": 1565,
+      "sha256": "a495af81f6e8317221b672dbb22f75b2c1c5daec16498528dbf950f482b4854c"
+    },
+    {
+      "name": "first-campaign/false-assumption/result.json",
+      "bytes": 502,
+      "sha256": "d3be51a1816f7af936e2e47051f7f5e4f0dcff5a2839883cbb71b20b1216ed21"
+    },
+    {
+      "name": "first-campaign/false-assumption/sany.log",
+      "bytes": 2769,
+      "sha256": "8a355dbacacda73d0738ed15d52995da8335249b23a076a9ea73882a09898a93"
+    },
+    {
+      "name": "first-campaign/full-three-voters/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "first-campaign/full-three-voters/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/full-three-voters/Run.cfg",
+      "bytes": 343,
+      "sha256": "93180011a31bab5ca16f94a4ac7a073e92513b4e795583e9fc7249481ce4572d"
+    },
+    {
+      "name": "first-campaign/full-three-voters/result.json",
+      "bytes": 866,
+      "sha256": "41e48ccf3b0b1c074582a90e41da26dd4745dfb9f497250893f7057fc85b83d2"
+    },
+    {
+      "name": "first-campaign/full-three-voters/tlc.log",
+      "bytes": 3058,
+      "sha256": "c45ea4eadcbd56d0038030b6cf85cba0a1e06c236a95488ee73ea6ef3a46ad89"
+    },
+    {
+      "name": "first-campaign/grant-after-higher-vote/LeaseAuthority.tla",
+      "bytes": 16043,
+      "sha256": "92dcd12b27dea76266f214069b3f91f967b1d9bf6d343cf61aea839eafe46c02"
+    },
+    {
+      "name": "first-campaign/grant-after-higher-vote/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/grant-after-higher-vote/Run.cfg",
+      "bytes": 345,
+      "sha256": "6acae9c5691a2d5aeb7bc68e86409d02f0c119383b3cfd7d75f24fec6f87bb77"
+    },
+    {
+      "name": "first-campaign/grant-after-higher-vote/result.json",
+      "bytes": 897,
+      "sha256": "721183c672a99096678ce85eaada4a3d309c72cba9f3bf38009dfd97df4ec100"
+    },
+    {
+      "name": "first-campaign/grant-after-higher-vote/tlc.log",
+      "bytes": 5214,
+      "sha256": "1a387183e74f45a1848ae17efd91f927468a156386aecf19c67d0682d02c06ed"
+    },
+    {
+      "name": "first-campaign/lost-restart-quarantine/LeaseAuthority.tla",
+      "bytes": 16042,
+      "sha256": "b2007318ddb06a60b0da2e4b4b7d5d1731f4e065f4b977ad3e358d3c08e07637"
+    },
+    {
+      "name": "first-campaign/lost-restart-quarantine/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/lost-restart-quarantine/Run.cfg",
+      "bytes": 351,
+      "sha256": "2f1aa3d70c9d95160a7ee9ab7fc56311d1c30cd48053b64de4226f9d32165b37"
+    },
+    {
+      "name": "first-campaign/lost-restart-quarantine/result.json",
+      "bytes": 904,
+      "sha256": "3734bc16bc1f14a0b661857f3874c2a9823593e4460dee247d47a85ea452ab5d"
+    },
+    {
+      "name": "first-campaign/lost-restart-quarantine/tlc.log",
+      "bytes": 5975,
+      "sha256": "b328de9dd762091b4a5a336b900bbc6740093715389bbbfb6d648217b9924904"
+    },
+    {
+      "name": "first-campaign/omitted-proof/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "first-campaign/omitted-proof/LeaseAuthorityProof.tla",
+      "bytes": 20489,
+      "sha256": "e75909df98a70f5abbb544e4942fe373ab4dbf227faf8768bf8b6a38c585c005"
+    },
+    {
+      "name": "first-campaign/omitted-proof/inventory.json",
+      "bytes": 1565,
+      "sha256": "a495af81f6e8317221b672dbb22f75b2c1c5daec16498528dbf950f482b4854c"
+    },
+    {
+      "name": "first-campaign/omitted-proof/result.json",
+      "bytes": 499,
+      "sha256": "0a8cd4b228ffc8ed7ac29e332160c7eaaaa810e2e3a76f67bee5da6457e0eb7c"
+    },
+    {
+      "name": "first-campaign/omitted-proof/sany.log",
+      "bytes": 2665,
+      "sha256": "14d7a163bbe393b090116571fd95fcf588244966ba5ea90ca007514728727ffc"
+    },
+    {
+      "name": "first-campaign/proof-baseline/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "first-campaign/proof-baseline/LeaseAuthorityProof.log",
+      "bytes": 479,
+      "sha256": "97f5cb6abfba8326518f5047acc83c0ae87e0a52773b492583ff44f7239c24c9"
+    },
+    {
+      "name": "first-campaign/proof-baseline/LeaseAuthorityProof.tla",
+      "bytes": 20527,
+      "sha256": "eb6f723261e1b0b68cd31b1214e4c0cb6dbf7f6dcbacb9ca943ae7f0da549372"
+    },
+    {
+      "name": "first-campaign/proof-baseline/inventory.json",
+      "bytes": 1565,
+      "sha256": "a495af81f6e8317221b672dbb22f75b2c1c5daec16498528dbf950f482b4854c"
+    },
+    {
+      "name": "first-campaign/proof-baseline/result.json",
+      "bytes": 930,
+      "sha256": "5db8410f7b8907618b64f394fcc944d2e0da35dd6a5dd5feef24c5e06b8ddc7e"
+    },
+    {
+      "name": "first-campaign/proof-baseline/sany.log",
+      "bytes": 2670,
+      "sha256": "1b3ae39563d16d6d8ab41b7c26660452f73a18b2e8159e86a5ee8a0123402ba4"
+    },
+    {
+      "name": "first-campaign/proof-baseline/semantic-audit.json",
+      "bytes": 3420,
+      "sha256": "f2982a5a2eef3832cca12f3dd0977e35856099b4087c67b97717b0989e22a3d2"
+    },
+    {
+      "name": "first-campaign/publish-without-quorum/LeaseAuthority.tla",
+      "bytes": 16038,
+      "sha256": "b917d497bcc0b99e2ca5a04b8b380e32b27694723b2a7bbcedc4bae2c416ea02"
+    },
+    {
+      "name": "first-campaign/publish-without-quorum/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/publish-without-quorum/Run.cfg",
+      "bytes": 343,
+      "sha256": "2e2daab166821affb9601dcb7f3fe8274a234db67836aae1e870dbbad5cdd6df"
+    },
+    {
+      "name": "first-campaign/publish-without-quorum/result.json",
+      "bytes": 890,
+      "sha256": "d5858472e4782ba2399e7a51daf5793d78185078925180cc04ad2311ceecfa0a"
+    },
+    {
+      "name": "first-campaign/publish-without-quorum/tlc.log",
+      "bytes": 4445,
+      "sha256": "4fb2bdc2d473b10a018b6728a783d20875e80845ba6ef1c40ea6c09fefa55cae"
+    },
+    {
+      "name": "first-campaign/read-before-apply/LeaseAuthority.tla",
+      "bytes": 16037,
+      "sha256": "2ac9f62420d8529c9ca91554a339bb0a06d60921e20a70d3a570c0eeec2d2b35"
+    },
+    {
+      "name": "first-campaign/read-before-apply/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/read-before-apply/Run.cfg",
+      "bytes": 346,
+      "sha256": "1c4296c8e2b9637149b292c920729f0a1b61f77c9f482b85a5b38623a17c8790"
+    },
+    {
+      "name": "first-campaign/read-before-apply/result.json",
+      "bytes": 893,
+      "sha256": "339ee242737713bfd4c2184cd35a0c30662be57ea531d38399f8155ae669f0b8"
+    },
+    {
+      "name": "first-campaign/read-before-apply/tlc.log",
+      "bytes": 9815,
+      "sha256": "b3f53d719049ae9e3e43fffc056207e899bc1885faa9f5fe0a69839847e918f7"
+    },
+    {
+      "name": "first-campaign/runner-original.py",
+      "bytes": 9117,
+      "sha256": "9c9097296607c89948ff5c43d8af93ed5604f27525fb25d55d73b2b880f33981"
+    },
+    {
+      "name": "first-campaign/runner.log",
+      "bytes": 1575,
+      "sha256": "65c619212ca24b743eefd2604d877268e7a7d7b4cd7985acc287f137907e073e"
+    },
+    {
+      "name": "first-campaign/stale-read-frontier/LeaseAuthority.tla",
+      "bytes": 16063,
+      "sha256": "d4333e375e0e55ff44ea511ca14da79ce42794a3d3e7207cc10e510b62ce1513"
+    },
+    {
+      "name": "first-campaign/stale-read-frontier/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/stale-read-frontier/Run.cfg",
+      "bytes": 346,
+      "sha256": "1c4296c8e2b9637149b292c920729f0a1b61f77c9f482b85a5b38623a17c8790"
+    },
+    {
+      "name": "first-campaign/stale-read-frontier/result.json",
+      "bytes": 897,
+      "sha256": "1f083e9eb84b399b32adba732e0559d5ef063476b3d518eeeccc00d2eaee5ee4"
+    },
+    {
+      "name": "first-campaign/stale-read-frontier/tlc.log",
+      "bytes": 9047,
+      "sha256": "1697befa7198bacbfeb0e56177432de340a2f720d065edc75f7a98cad936fa49"
+    },
+    {
+      "name": "first-campaign/vote-during-promise/LeaseAuthority.tla",
+      "bytes": 16047,
+      "sha256": "5f1fd2241de9b7050279daeb45cb9dbb0e0130003b3a22d4cb2eb11793da349c"
+    },
+    {
+      "name": "first-campaign/vote-during-promise/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "first-campaign/vote-during-promise/Run.cfg",
+      "bytes": 345,
+      "sha256": "6acae9c5691a2d5aeb7bc68e86409d02f0c119383b3cfd7d75f24fec6f87bb77"
+    },
+    {
+      "name": "first-campaign/vote-during-promise/result.json",
+      "bytes": 888,
+      "sha256": "ff740831f34442e1e311fc14d5c638d5c0d91904877ddd5ef9e7cb6d82f2ce5c"
+    },
+    {
+      "name": "first-campaign/vote-during-promise/tlc.log",
+      "bytes": 5206,
+      "sha256": "a8c3f1f7dccf7c52fb45f13feb0b7383df99ab5e302266b6f1876f82c6b47283"
+    },
+    {
+      "name": "publication/publish.py",
+      "bytes": 3912,
+      "sha256": "78a48f26779499f5512808dac0c06a2d13ed0f6f1452a78364c84e996a598cd1"
+    },
+    {
+      "name": "source/proofs/tla/leader_lease/Lease3Symmetric.cfg",
+      "bytes": 343,
+      "sha256": "93180011a31bab5ca16f94a4ac7a073e92513b4e795583e9fc7249481ce4572d"
+    },
+    {
+      "name": "source/proofs/tla/leader_lease/LeaseAuthority.tla",
+      "bytes": 16061,
+      "sha256": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68"
+    },
+    {
+      "name": "source/proofs/tla/leader_lease/LeaseAuthorityMC.tla",
+      "bytes": 956,
+      "sha256": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897"
+    },
+    {
+      "name": "source/proofs/tla/leader_lease/LeaseAuthorityRenewal.tla",
+      "bytes": 1326,
+      "sha256": "0a7742f10f4ff6d5fe56542e4112ef177b24d33d369fe41b79839d5f687eb6e1"
+    },
+    {
+      "name": "source/proofs/tlaps/lease_authority/LeaseAuthorityProof.tla",
+      "bytes": 20527,
+      "sha256": "eb6f723261e1b0b68cd31b1214e4c0cb6dbf7f6dcbacb9ca943ae7f0da549372"
+    },
+    {
+      "name": "source/proofs/tlaps/lease_authority/inventory.json",
+      "bytes": 1565,
+      "sha256": "362936dcd38bfba176f5a52e28d739fdbb7fd598397d715ce104a2eb9d6accd7"
+    },
+    {
+      "name": "source/scripts/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "name": "source/scripts/check-lease-authority.py",
+      "bytes": 9625,
+      "sha256": "eabff3da00d33c527dd593c21e7aeb49d834d86fa37ca1e55be43ec1a069bc07"
+    },
+    {
+      "name": "source/scripts/check-tla.py",
+      "bytes": 13049,
+      "sha256": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70"
+    },
+    {
+      "name": "source/scripts/check-tlaps.py",
+      "bytes": 16239,
+      "sha256": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8"
+    }
+  ],
+  "scope": "Original source/log/audit/result files; TLC state stores and TLAPS caches excluded"
+}

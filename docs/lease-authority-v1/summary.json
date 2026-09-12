@@ -1,0 +1,619 @@
+{
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "jar_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+  "model_fault_controls": 6,
+  "obligations": 348,
+  "output_controls": 3,
+  "proof_integrity_controls": 2,
+  "reachability_witnesses": 7,
+  "records": [
+    {
+      "expected": null,
+      "modules": [
+        {
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/proof-baseline/cache/LeaseAuthorityProof",
+            "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/proof-baseline/LeaseAuthorityProof.tla"
+          ],
+          "exit_code": 0,
+          "module": "LeaseAuthorityProof",
+          "obligations": 348,
+          "seconds": 23.345363188069314,
+          "verdict": "proved"
+        }
+      ],
+      "name": "proof-baseline",
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityProof.tla": "eb6f723261e1b0b68cd31b1214e4c0cb6dbf7f6dcbacb9ca943ae7f0da549372",
+        "inventory.json": "a495af81f6e8317221b672dbb22f75b2c1c5daec16498528dbf950f482b4854c"
+      },
+      "verdict": "proved"
+    },
+    {
+      "expected": "proof hole: LeaseAuthorityProof.LAInvariantAlways",
+      "name": "omitted-proof",
+      "reason": "proof hole: LeaseAuthorityProof.LAInvariantAlways",
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityProof.tla": "e75909df98a70f5abbb544e4942fe373ab4dbf227faf8768bf8b6a38c585c005",
+        "inventory.json": "a495af81f6e8317221b672dbb22f75b2c1c5daec16498528dbf950f482b4854c"
+      },
+      "verdict": "expected rejection"
+    },
+    {
+      "expected": "unapproved module assumption: LeaseAuthorityProof",
+      "name": "false-assumption",
+      "reason": "unapproved module assumption: LeaseAuthorityProof",
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityProof.tla": "58e2eafe536dd7289fb14fbc0e10b00726c80f336c9f54611e1d9e5b41afef68",
+        "inventory.json": "a495af81f6e8317221b672dbb22f75b2c1c5daec16498528dbf950f482b4854c"
+      },
+      "verdict": "expected rejection"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/full-three-voters/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 0,
+      "expected": null,
+      "name": "full-three-voters",
+      "seconds": 165.60254331096075,
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "93180011a31bab5ca16f94a4ac7a073e92513b4e795583e9fc7249481ce4572d"
+      },
+      "statistics": {
+        "distinct": 9674978,
+        "generated": 56919883,
+        "queued": 0
+      },
+      "verdict": "exhausted"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/lost-restart-quarantine/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LAPromiseProtection",
+      "name": "lost-restart-quarantine",
+      "seconds": 0.6645915841218084,
+      "sources": {
+        "LeaseAuthority.tla": "b2007318ddb06a60b0da2e4b4b7d5d1731f4e065f4b977ad3e358d3c08e07637",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "2f1aa3d70c9d95160a7ee9ab7fc56311d1c30cd48053b64de4226f9d32165b37"
+      },
+      "statistics": {
+        "distinct": 608,
+        "generated": 1537,
+        "queued": 445
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/grant-after-higher-vote/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LAVoteHistory",
+      "name": "grant-after-higher-vote",
+      "seconds": 0.6143049870152026,
+      "sources": {
+        "LeaseAuthority.tla": "92dcd12b27dea76266f214069b3f91f967b1d9bf6d343cf61aea839eafe46c02",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "6acae9c5691a2d5aeb7bc68e86409d02f0c119383b3cfd7d75f24fec6f87bb77"
+      },
+      "statistics": {
+        "distinct": 183,
+        "generated": 361,
+        "queued": 145
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/vote-during-promise/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LAVoteHistory",
+      "name": "vote-during-promise",
+      "seconds": 0.6144800400361419,
+      "sources": {
+        "LeaseAuthority.tla": "5f1fd2241de9b7050279daeb45cb9dbb0e0130003b3a22d4cb2eb11793da349c",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "6acae9c5691a2d5aeb7bc68e86409d02f0c119383b3cfd7d75f24fec6f87bb77"
+      },
+      "statistics": {
+        "distinct": 167,
+        "generated": 334,
+        "queued": 132
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/publish-without-quorum/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LAAuthority",
+      "name": "publish-without-quorum",
+      "seconds": 0.6143640480004251,
+      "sources": {
+        "LeaseAuthority.tla": "b917d497bcc0b99e2ca5a04b8b380e32b27694723b2a7bbcedc4bae2c416ea02",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "2e2daab166821affb9601dcb7f3fe8274a234db67836aae1e870dbbad5cdd6df"
+      },
+      "statistics": {
+        "distinct": 34,
+        "generated": 47,
+        "queued": 28
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/stale-read-frontier/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LAReadCoverage",
+      "name": "stale-read-frontier",
+      "seconds": 0.9653536910191178,
+      "sources": {
+        "LeaseAuthority.tla": "d4333e375e0e55ff44ea511ca14da79ce42794a3d3e7207cc10e510b62ce1513",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "1c4296c8e2b9637149b292c920729f0a1b61f77c9f482b85a5b38623a17c8790"
+      },
+      "statistics": {
+        "distinct": 37070,
+        "generated": 117777,
+        "queued": 22904
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/read-before-apply/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LAReadCoverage",
+      "name": "read-before-apply",
+      "seconds": 1.4157184548676014,
+      "sources": {
+        "LeaseAuthority.tla": "2ac9f62420d8529c9ca91554a339bb0a06d60921e20a70d3a570c0eeec2d2b35",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "1c4296c8e2b9637149b292c920729f0a1b61f77c9f482b85a5b38623a17c8790"
+      },
+      "statistics": {
+        "distinct": 90330,
+        "generated": 297988,
+        "queued": 53259
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/LANoSuccessfulReadWitness/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LANoSuccessfulReadWitness",
+      "name": "LANoSuccessfulReadWitness",
+      "seconds": 1.91621830384247,
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "071d19f2146e08fd8b0f2182534687fcfac71f461469aa9e54516bf545b84662"
+      },
+      "statistics": {
+        "distinct": 108483,
+        "generated": 362463,
+        "queued": 63218
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/LANoReplacementWriteWitness/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LANoReplacementWriteWitness",
+      "name": "LANoReplacementWriteWitness",
+      "seconds": 0.6645859060809016,
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "8c9b8ba4b483ed69a773a4040c7c70c6b34ccff74ed6820af25ea85c064186c9"
+      },
+      "statistics": {
+        "distinct": 537,
+        "generated": 1285,
+        "queued": 397
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/LANoExpiredCertificateWitness/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LANoExpiredCertificateWitness",
+      "name": "LANoExpiredCertificateWitness",
+      "seconds": 0.8648727422114462,
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "ba0e00c834f062cde4fa7d17133cf7e59189957dc56505f7dd3759d0cd60f378"
+      },
+      "statistics": {
+        "distinct": 17566,
+        "generated": 54323,
+        "queued": 11222
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/LANoRestartPromiseWitness/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LANoRestartPromiseWitness",
+      "name": "LANoRestartPromiseWitness",
+      "seconds": 0.6645352030172944,
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "4452eef5bcfb1c80a206aea4d26da93acd28a9843a2a41b0e7853f2f879036b9"
+      },
+      "statistics": {
+        "distinct": 645,
+        "generated": 1569,
+        "queued": 478
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/LANoApplyGapWitness/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LANoApplyGapWitness",
+      "name": "LANoApplyGapWitness",
+      "seconds": 0.6145890541374683,
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "48849091052575a716af69855e32f2420f9b10891051f0caf5201cf086836a58"
+      },
+      "statistics": {
+        "distinct": 4,
+        "generated": 4,
+        "queued": 2
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/LANoOldGenerationWitness/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityMC.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LANoOldGenerationWitness",
+      "name": "LANoOldGenerationWitness",
+      "seconds": 0.8648616641294211,
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "Run.cfg": "c044940f2f8a8bebe1274abef12946b384fa9955f895fc04331e2df89d982031"
+      },
+      "statistics": {
+        "distinct": 17567,
+        "generated": 54324,
+        "queued": 11223
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "command": [
+        "java",
+        "-XX:+UseParallelGC",
+        "-Xmx512m",
+        "-cp",
+        "/tmp/kv9-p0-tools/tla2tools-v1.7.4.jar",
+        "tlc2.TLC",
+        "-tool",
+        "-workers",
+        "1",
+        "-fp",
+        "0",
+        "-metadir",
+        "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/LANoRenewalWitness/states",
+        "-config",
+        "Run.cfg",
+        "LeaseAuthorityRenewal.tla"
+      ],
+      "exit_code": 12,
+      "expected": "LANoRenewalWitness",
+      "name": "LANoRenewalWitness",
+      "seconds": 0.6144721480086446,
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+        "LeaseAuthorityRenewal.tla": "0a7742f10f4ff6d5fe56542e4112ef177b24d33d369fe41b79839d5f687eb6e1",
+        "Run.cfg": "27202c457f7b4e4503de1402e4ad16bf001497d77282b2f20e0e6d0ec9d572f9"
+      },
+      "statistics": {
+        "distinct": 17,
+        "generated": 17,
+        "queued": 0
+      },
+      "verdict": "expected counterexample"
+    },
+    {
+      "expected": null,
+      "modules": [
+        {
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/proof-restored/cache/LeaseAuthorityProof",
+            "/tmp/kv9-lease-authority-acceptance-scheduled-witness-first/proof-restored/LeaseAuthorityProof.tla"
+          ],
+          "exit_code": 0,
+          "module": "LeaseAuthorityProof",
+          "obligations": 348,
+          "seconds": 23.346573482034728,
+          "verdict": "proved"
+        }
+      ],
+      "name": "proof-restored",
+      "sources": {
+        "LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+        "LeaseAuthorityProof.tla": "eb6f723261e1b0b68cd31b1214e4c0cb6dbf7f6dcbacb9ca943ae7f0da549372",
+        "inventory.json": "a495af81f6e8317221b672dbb22f75b2c1c5daec16498528dbf950f482b4854c"
+      },
+      "verdict": "proved"
+    }
+  ],
+  "scope": "Fixed-configuration lease transition safety; no Rust/clock refinement or E2E acceptance",
+  "sources": {
+    "proofs/tla/leader_lease/Lease3Symmetric.cfg": "93180011a31bab5ca16f94a4ac7a073e92513b4e795583e9fc7249481ce4572d",
+    "proofs/tla/leader_lease/LeaseAuthority.tla": "08ea82595a87f7ef0583092ab638f6d128918ac883594c0d60e7f864aa275e68",
+    "proofs/tla/leader_lease/LeaseAuthorityMC.tla": "f2f9f9a547fe69e79569afe6fcc47da16bc121162c78b966d546cecf0a40e897",
+    "proofs/tla/leader_lease/LeaseAuthorityRenewal.tla": "0a7742f10f4ff6d5fe56542e4112ef177b24d33d369fe41b79839d5f687eb6e1",
+    "proofs/tlaps/lease_authority/LeaseAuthorityProof.tla": "eb6f723261e1b0b68cd31b1214e4c0cb6dbf7f6dcbacb9ca943ae7f0da549372",
+    "proofs/tlaps/lease_authority/inventory.json": "362936dcd38bfba176f5a52e28d739fdbb7fd598397d715ce104a2eb9d6accd7",
+    "scripts/ProofAudit.java": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a",
+    "scripts/check-lease-authority.py": "eabff3da00d33c527dd593c21e7aeb49d834d86fa37ca1e55be43ec1a069bc07",
+    "scripts/check-tla.py": "31c00a506b24e75a77c76f51e7d8c1f8235d143ca52b2cafaa31ef809f81cb70",
+    "scripts/check-tlaps.py": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8"
+  },
+  "theorems": 27,
+  "tlapm_sha256": "1de5983ac393658362fe61882e270b65648fa07945453e971fcf9eeabf5ec579",
+  "tlapm_version": "4600b24"
+}
