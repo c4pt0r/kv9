@@ -1,0 +1,79 @@
+{
+  "complete": true,
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "CARGO_TARGET_DIR=/home/dongxu/kv9/target",
+    "CARGO_BUILD_JOBS=4",
+    "CARGO_NET_OFFLINE=true",
+    "CARGO_TERM_VERBOSE=true",
+    "python3",
+    "/tmp/kv9-quorum-trace-source-root-first/build-release.py",
+    "--output",
+    "/tmp/kv9-quorum-trace-release-first",
+    "--release"
+  ],
+  "script_sha256": "ada8e2b4d0ef3a7a15cc3e36bd90fce200c1c7afa636fb39c4b3e13377f5dbcc",
+  "started_ns": 1789224064916265103,
+  "initial_available_bytes": 111623839744,
+  "minimum_available_bytes": 85899345920,
+  "additional_consumption_ceiling_bytes": 17179869184,
+  "accounting": "Conservative decrease in available filesystem bytes, including unrelated host writers; 5-second samples",
+  "samples": [
+    {
+      "unix_ns": 1789224064916604829,
+      "available_bytes": 111623835648
+    },
+    {
+      "unix_ns": 1789224069916730714,
+      "available_bytes": 112014323712
+    },
+    {
+      "unix_ns": 1789224074916824781,
+      "available_bytes": 112009142272
+    },
+    {
+      "unix_ns": 1789224079916921283,
+      "available_bytes": 112009138176
+    },
+    {
+      "unix_ns": 1789224084917014433,
+      "available_bytes": 111993434112
+    },
+    {
+      "unix_ns": 1789224089917129607,
+      "available_bytes": 111993372672
+    },
+    {
+      "unix_ns": 1789224094917240258,
+      "available_bytes": 111960666112
+    },
+    {
+      "unix_ns": 1789224099917337108,
+      "available_bytes": 111948722176
+    },
+    {
+      "unix_ns": 1789224104917438965,
+      "available_bytes": 111948726272
+    },
+    {
+      "unix_ns": 1789224109917533165,
+      "available_bytes": 111948967936
+    },
+    {
+      "unix_ns": 1789224114917638545,
+      "available_bytes": 111933116416
+    },
+    {
+      "unix_ns": 1789224119917739646,
+      "available_bytes": 111918505984
+    }
+  ],
+  "pid": 399685,
+  "exit_code": 0,
+  "ended_ns": 1789224124286845615
+}

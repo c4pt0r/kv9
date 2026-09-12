@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": {
+      "bytes": 1278,
+      "sha256": "7ba54af631ba7961e05347372a4702430c74c4c3d7695fe51088f41449693c64"
+    },
+    "build/build.json": {
+      "bytes": 84417,
+      "sha256": "7a092f92546de9a6f1f2094c37346b29439917f27f83f52865de272b00392f93"
+    },
+    "build/cache-clean.stderr": {
+      "bytes": 42775,
+      "sha256": "f2f27e4e35991d01c43923d3c31dfd163fdc9c536ee26e045cecd67f6ddf4a0b"
+    },
+    "build/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build/cache-metadata.json": {
+      "bytes": 26804,
+      "sha256": "778df97dd71804c106192c48dbec660782c65b1d76a853d7c6134685ac83e4f0"
+    },
+    "build/cache-metadata.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build/cache-safety.json": {
+      "bytes": 21357,
+      "sha256": "1217ccc4cab0f1c5a02a558168515f5343a1cb3adc9ca4b0ffeb1c9b2487f907"
+    },
+    "build/kv9-build.log": {
+      "bytes": 17322,
+      "sha256": "bf221fbbb6d267978a3f69e1a085e6ece7fcb11b889c21283dea20f5f57c8400"
+    },
+    "build/kv9-cargo.jsonl": {
+      "bytes": 211855,
+      "sha256": "e3ab5a341a34de138af4f338935e501d924c7cea135d07babe64e88262a590d0"
+    },
+    "root/build-release.py": {
+      "bytes": 3522,
+      "sha256": "ada8e2b4d0ef3a7a15cc3e36bd90fce200c1c7afa636fb39c4b3e13377f5dbcc"
+    },
+    "root/publication-check.json": {
+      "bytes": 359,
+      "sha256": "4479bd36577c6ad2f2c0202215eaa3182d0e1ba471c8f44d6dc98103cf1fc3d6"
+    },
+    "root/release-binding.json": {
+      "bytes": 772,
+      "sha256": "025812f4ea0bc7a6396ac3dca5d4f6bb40b48f841ccffe6aa661ca45a5d4b9b0"
+    },
+    "root/release-first.log": {
+      "bytes": 170,
+      "sha256": "b78ffa969b551b2e322e63e43900a088db49b548c5135560b1dac5805a090420"
+    },
+    "root/release-invocation.json": {
+      "bytes": 862,
+      "sha256": "395ac8922645242b3502fd9af81aef656ce2527be02c7290289cacad5f95383b"
+    },
+    "root/release-result.json": {
+      "bytes": 1984,
+      "sha256": "a5900f08fe8ce220ff0d61115f377c34b813bd96bd6a61765352a3b422e2c88e"
+    },
+    "root/run-release.py": {
+      "bytes": 2053,
+      "sha256": "7236d0e823748566721686e91de8468ee2093f6ee6852c93c10bed621cd157c1"
+    }
+  }
+}

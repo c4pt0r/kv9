@@ -1,0 +1,27 @@
+{
+  "complete": true,
+  "session_id": 29173,
+  "exit_code": 0,
+  "receipt": "c008fd",
+  "source": "/tmp/kv9-quorum-message-trace",
+  "revision": "1875e74141753cc6a55f025384b480b71ee84c1a",
+  "output": "/tmp/kv9-quorum-trace-release-first",
+  "binary_sha256": "fe19660ed7182541c012f008a91eb532fc4e92f61be4103192dd53ae66b56762",
+  "manifest_sha256": "7a092f92546de9a6f1f2094c37346b29439917f27f83f52865de272b00392f93",
+  "cache_sha256": "1217ccc4cab0f1c5a02a558168515f5343a1cb3adc9ca4b0ffeb1c9b2487f907",
+  "source_count": 738,
+  "features": {
+    "kv9": [
+      "quorum-trace"
+    ],
+    "kv9_server": [
+      "quorum-trace"
+    ],
+    "kv9_raft": [
+      "quorum-trace",
+      "read-stage-timing"
+    ],
+    "kv9_engine": []
+  },
+  "benchmark_or_runtime_executed": false
+}

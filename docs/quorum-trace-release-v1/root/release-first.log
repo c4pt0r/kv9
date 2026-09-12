@@ -1,0 +1,2 @@
+PASS: retained workload executable and build provenance in /tmp/kv9-quorum-trace-release-first/workload
+PASS: retained native batch workload and diagnostic server builds

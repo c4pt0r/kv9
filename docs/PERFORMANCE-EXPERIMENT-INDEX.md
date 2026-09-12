@@ -52,6 +52,12 @@ neither changes selected runtime or qualifies any original checklist item.
 
 ## Current direction and reuse rule
 
+The [quorum-message trace source checkpoint](QUORUM-MESSAGE-TRACE.md) now
+implements bounded local stage/ticket observations on diagnostic branch
+`1875e74`. Source checks and 17 reader controls pass; actual trace capture and
+uninstrumented overhead control remain pending. This does not revisit or
+reverse any rejected optimization and adds no new performance result.
+
 The ThinLTO candidate `02d0c01` now passes full workspace checks (709 tests,
 23 existing ignored, formatting/Clippy), a source-bound default production build,
 359-operation ordinary recovery, the earlier 24-cohort screen, the new complete

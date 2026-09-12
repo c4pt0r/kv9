@@ -1,0 +1,7 @@
+{
+  "commit": "1875e74",
+  "first_commit_receipt": "476581",
+  "full_diff_check": "Four retained Cargo stdout logs have trailing blank lines; original bytes were intentionally retained",
+  "source_and_guide_diff_check": "passed when only raw evidence is excluded",
+  "source_qualification": "All 12 original commands passed; no source test/build was rerun"
+}
