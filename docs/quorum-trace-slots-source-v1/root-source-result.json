@@ -1,0 +1,104 @@
+{
+  "complete": true,
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "python3",
+    "/tmp/kv9-quorum-trace-slots-root-first/check-source.py"
+  ],
+  "script_sha256": "48a89e1287d6dad2dae678e53c46d92b54888770c99736aef05130e4b004be20",
+  "started_ns": 1789225963947920342,
+  "initial_available_bytes": 111693959168,
+  "minimum_available_bytes": 85899345920,
+  "additional_consumption_ceiling_bytes": 17179869184,
+  "accounting": "Conservative decrease in available filesystem bytes, including unrelated host writers; 5-second samples",
+  "samples": [
+    {
+      "unix_ns": 1789225963948220693,
+      "available_bytes": 111693955072
+    },
+    {
+      "unix_ns": 1789225968948328050,
+      "available_bytes": 111787130880
+    },
+    {
+      "unix_ns": 1789225973948441016,
+      "available_bytes": 111776256000
+    },
+    {
+      "unix_ns": 1789225978948548057,
+      "available_bytes": 111779500032
+    },
+    {
+      "unix_ns": 1789225983948629788,
+      "available_bytes": 111777730560
+    },
+    {
+      "unix_ns": 1789225988948746072,
+      "available_bytes": 111752675328
+    },
+    {
+      "unix_ns": 1789225993948853225,
+      "available_bytes": 111755829248
+    },
+    {
+      "unix_ns": 1789225998948967801,
+      "available_bytes": 111750242304
+    },
+    {
+      "unix_ns": 1789226003949087332,
+      "available_bytes": 111734931456
+    },
+    {
+      "unix_ns": 1789226008949194047,
+      "available_bytes": 111722713088
+    },
+    {
+      "unix_ns": 1789226013949296950,
+      "available_bytes": 111747743744
+    },
+    {
+      "unix_ns": 1789226018949403156,
+      "available_bytes": 111733690368
+    },
+    {
+      "unix_ns": 1789226023949526857,
+      "available_bytes": 111724744704
+    },
+    {
+      "unix_ns": 1789226028949628394,
+      "available_bytes": 111716818944
+    },
+    {
+      "unix_ns": 1789226033949727318,
+      "available_bytes": 111702769664
+    },
+    {
+      "unix_ns": 1789226038949812636,
+      "available_bytes": 111713480704
+    },
+    {
+      "unix_ns": 1789226043949906342,
+      "available_bytes": 111713427456
+    },
+    {
+      "unix_ns": 1789226048950016477,
+      "available_bytes": 111707488256
+    },
+    {
+      "unix_ns": 1789226053950122718,
+      "available_bytes": 111713325056
+    },
+    {
+      "unix_ns": 1789226058950242303,
+      "available_bytes": 111688560640
+    }
+  ],
+  "pid": 540868,
+  "exit_code": 0,
+  "ended_ns": 1789226060966424635
+}

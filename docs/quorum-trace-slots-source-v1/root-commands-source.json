@@ -1,0 +1,86 @@
+{
+  "source_gate": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "trace-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "check_cargo_artifacts": true
+    },
+    {
+      "name": "trace-focused-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace",
+        "trace_"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "trace-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace"
+      ],
+      "check_cargo_artifacts": false
+    },
+    {
+      "name": "trace-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--all-targets",
+        "--features",
+        "kv9-server/quorum-trace",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "check_cargo_artifacts": false
+    }
+  ]
+}

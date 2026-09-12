@@ -1,0 +1,872 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "clean",
+        "--locked",
+        "--manifest-path",
+        "/tmp/kv9-quorum-trace-slots/Cargo.toml",
+        "--target-dir",
+        "/home/dongxu/kv9/target",
+        "--profile",
+        "release",
+        "-p",
+        "kv9",
+        "-p",
+        "kv9-common",
+        "-p",
+        "kv9-engine",
+        "-p",
+        "kv9-meta",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-region",
+        "-p",
+        "kv9-server",
+        "-p",
+        "kv9-txn"
+      ],
+      "ended_ns": 1789225964220886795,
+      "exit_code": 0,
+      "started_ns": 1789225964107063074
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "ended_ns": 1789225964585624920,
+      "exit_code": 0,
+      "started_ns": 1789225964221415774
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "ended_ns": 1789226037181018395,
+      "exit_code": 0,
+      "started_ns": 1789225964624535635
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace",
+        "trace_"
+      ],
+      "ended_ns": 1789226037338628127,
+      "exit_code": 0,
+      "started_ns": 1789226037224268117
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace"
+      ],
+      "ended_ns": 1789226056131574046,
+      "exit_code": 0,
+      "started_ns": 1789226037377180922
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--all-targets",
+        "--features",
+        "kv9-server/quorum-trace",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "ended_ns": 1789226060841446054,
+      "exit_code": 0,
+      "started_ns": 1789226056170744236
+    }
+  ],
+  "complete": true,
+  "ended_ns": 1789226060878258646,
+  "first_party_artifacts": [
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace",
+        "read-stage-timing",
+        "testing"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/build/kv9-raft-6e5772ac17be9182/build-script-build"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/raft#kv9-raft@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "0",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": false,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "custom-build"
+        ],
+        "name": "build-script-build",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/raft/build.rs",
+        "test": false
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/build/kv9-server-8fd92e79a9943b7f/build-script-build"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/server#kv9-server@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "0",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": false,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "custom-build"
+        ],
+        "name": "build-script-build",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/server/build.rs",
+        "test": false
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "testing"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rlib",
+        "/home/dongxu/kv9/target/release/deps/libkv9_common-6f43a4921a76199a.rmeta"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/common#kv9-common@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "doc": true,
+        "doctest": true,
+        "edition": "2021",
+        "kind": [
+          "lib"
+        ],
+        "name": "kv9_common",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/common/src/lib.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rlib",
+        "/home/dongxu/kv9/target/release/deps/libkv9_region-8c9504311a401867.rmeta"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/region#kv9-region@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "doc": true,
+        "doctest": true,
+        "edition": "2021",
+        "kind": [
+          "lib"
+        ],
+        "name": "kv9_region",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/region/src/lib.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/libkv9_txn-5cf1d2f6c462d25d.rlib",
+        "/home/dongxu/kv9/target/release/deps/libkv9_txn-5cf1d2f6c462d25d.rmeta"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/txn#kv9-txn@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "doc": true,
+        "doctest": true,
+        "edition": "2021",
+        "kind": [
+          "lib"
+        ],
+        "name": "kv9_txn",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/txn/src/lib.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/libkv9_meta-a7524a7a162c75d2.rlib",
+        "/home/dongxu/kv9/target/release/deps/libkv9_meta-a7524a7a162c75d2.rmeta"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/meta#kv9-meta@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "doc": true,
+        "doctest": true,
+        "edition": "2021",
+        "kind": [
+          "lib"
+        ],
+        "name": "kv9_meta",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/meta/src/lib.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "testing"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rlib",
+        "/home/dongxu/kv9/target/release/deps/libkv9_engine-831163ec49c60d58.rmeta"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/engine#kv9-engine@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "doc": true,
+        "doctest": true,
+        "edition": "2021",
+        "kind": [
+          "lib"
+        ],
+        "name": "kv9_engine",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/engine/src/lib.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace",
+        "read-stage-timing",
+        "testing"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rlib",
+        "/home/dongxu/kv9/target/release/deps/libkv9_raft-ee420a0c0f361eb2.rmeta"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/raft#kv9-raft@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "doc": true,
+        "doctest": true,
+        "edition": "2021",
+        "kind": [
+          "lib"
+        ],
+        "name": "kv9_raft",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/raft/src/lib.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace",
+        "read-stage-timing",
+        "testing"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/frame_bad_input-6d269ec3400137c5"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/raft#kv9-raft@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": true
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": false,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "test"
+        ],
+        "name": "frame_bad_input",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/raft/tests/frame_bad_input.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/libkv9_server-3714563a16eb0de3.rlib",
+        "/home/dongxu/kv9/target/release/deps/libkv9_server-3714563a16eb0de3.rmeta"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/server#kv9-server@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "doc": true,
+        "doctest": true,
+        "edition": "2021",
+        "kind": [
+          "lib"
+        ],
+        "name": "kv9_server",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/server/src/lib.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace",
+        "read-stage-timing",
+        "testing"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/membership-b5cb8e3957c774f8"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/raft#kv9-raft@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": true
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": false,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "test"
+        ],
+        "name": "membership",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/raft/tests/membership.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/examples/latency-overhead"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/server#kv9-server@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": false,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "example"
+        ],
+        "name": "latency-overhead",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/server/examples/latency-overhead.rs",
+        "test": false
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/kv9_batch_workload-becceb623d1e270a"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/server#kv9-server@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": true
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": true,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "bin"
+        ],
+        "name": "kv9-batch-workload",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/server/src/bin/kv9-batch-workload.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/kv9_workload-8ab6752b78810856"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/server#kv9-server@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": true
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": true,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "bin"
+        ],
+        "name": "kv9-workload",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/server/src/bin/kv9-workload.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/kv9_batch_benchmark-3efe2d123c470e1f"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/server#kv9-server@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": true
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": true,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "bin"
+        ],
+        "name": "kv9-batch-benchmark",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/server/src/bin/kv9-batch-benchmark.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace",
+        "read-stage-timing",
+        "testing"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/kv9_raft-617406db5687a66f"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/raft#kv9-raft@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": true
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "doc": true,
+        "doctest": true,
+        "edition": "2021",
+        "kind": [
+          "lib"
+        ],
+        "name": "kv9_raft",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/raft/src/lib.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/examples/admission-pressure"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/server#kv9-server@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": false,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "example"
+        ],
+        "name": "admission-pressure",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/server/examples/admission-pressure.rs",
+        "test": false
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace",
+        "read-stage-timing",
+        "testing"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/driver_lock_order-5bfd343bb8e68a80"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/raft#kv9-raft@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": true
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": false,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "test"
+        ],
+        "name": "driver_lock_order",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/raft/tests/driver_lock_order.rs",
+        "test": true
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/examples/workload-loopback"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/server#kv9-server@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": false,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "example"
+        ],
+        "name": "workload-loopback",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/server/examples/workload-loopback.rs",
+        "test": false
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace",
+        "read-stage-timing",
+        "testing"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/examples/check-wire-floor"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/raft#kv9-raft@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "bin"
+        ],
+        "doc": false,
+        "doctest": false,
+        "edition": "2021",
+        "kind": [
+          "example"
+        ],
+        "name": "check-wire-floor",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/raft/examples/check-wire-floor.rs",
+        "test": false
+      }
+    },
+    {
+      "cargo_json": "/tmp/kv9-quorum-trace-slots-source-first/trace-compile.stdout",
+      "features": [
+        "quorum-trace"
+      ],
+      "filenames": [
+        "/home/dongxu/kv9/target/release/deps/kv9_server-fb8945974548204d"
+      ],
+      "fresh": false,
+      "package_id": "path+file:///tmp/kv9-quorum-trace-slots/crates/server#kv9-server@0.0.0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": true
+      },
+      "seen_after_invalidation": false,
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "doc": true,
+        "doctest": true,
+        "edition": "2021",
+        "kind": [
+          "lib"
+        ],
+        "name": "kv9_server",
+        "src_path": "/tmp/kv9-quorum-trace-slots/crates/server/src/lib.rs",
+        "test": true
+      }
+    }
+  ],
+  "first_party_packages": [
+    "kv9",
+    "kv9-common",
+    "kv9-engine",
+    "kv9-meta",
+    "kv9-raft",
+    "kv9-region",
+    "kv9-server",
+    "kv9-txn"
+  ],
+  "invalidation_complete": true,
+  "lock_acquired_ns": 1789225964106990919,
+  "lock_identity": [
+    66306,
+    108829546
+  ],
+  "lock_path": "/home/dongxu/kv9/target/.kv9-retained-build.lock",
+  "manifest": "/tmp/kv9-quorum-trace-slots/Cargo.toml",
+  "metadata_command": [
+    "cargo",
+    "metadata",
+    "--locked",
+    "--no-deps",
+    "--format-version",
+    "1",
+    "--manifest-path",
+    "/tmp/kv9-quorum-trace-slots/Cargo.toml"
+  ],
+  "metadata_exit_code": 0,
+  "pid": 540868,
+  "profile": "release",
+  "scope": "Cooperating retained-build helpers; raw Cargo still requires external coordination",
+  "source_identity_sha256": "ae5b02f6aef11baad8dd78669bb5bdf914542d74330bd33490008fd909db3e3c",
+  "source_root": "/tmp/kv9-quorum-trace-slots",
+  "started_ns": 1789225964074923352,
+  "target_directory": "/home/dongxu/kv9/target",
+  "version": 1
+}

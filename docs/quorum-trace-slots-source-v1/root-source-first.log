@@ -1,0 +1,10 @@
+format started
+format passed
+trace-compile started
+trace-compile passed
+trace-focused-tests started
+trace-focused-tests passed
+trace-tests started
+trace-tests passed
+trace-clippy started
+trace-clippy passed

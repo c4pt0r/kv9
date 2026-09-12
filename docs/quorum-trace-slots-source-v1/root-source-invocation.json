@@ -1,0 +1,21 @@
+{
+  "complete": false,
+  "argv": [
+    "taskset",
+    "-c",
+    "6-15,22-31",
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONOPTIMIZE=0",
+    "python3",
+    "/tmp/kv9-quorum-trace-slots-root-first/check-source.py"
+  ],
+  "script_sha256": "48a89e1287d6dad2dae678e53c46d92b54888770c99736aef05130e4b004be20",
+  "started_ns": 1789225963947920342,
+  "initial_available_bytes": 111693959168,
+  "minimum_available_bytes": 85899345920,
+  "additional_consumption_ceiling_bytes": 17179869184,
+  "accounting": "Conservative decrease in available filesystem bytes, including unrelated host writers; 5-second samples",
+  "samples": [],
+  "pid": 540868
+}

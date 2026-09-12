@@ -1,11 +1,11 @@
 //! Bounded, opt-in observations of existing quorum boundaries.
 //!
 //! No event, ticket, counter or capture result is a Raft receipt. Recording
-//! takes at most one observer try_lock, never waits for a protocol lock, and
-//! returns no decision to consensus. Capture closes observation only.
+//! reserves one immutable slot without a mutex, never waits for a protocol
+//! lock, and returns no decision to consensus. Capture closes observation only.
 
 use std::sync::atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering};
-use std::sync::{Arc, Mutex, TryLockError};
+use std::sync::{Arc, OnceLock};
 use std::time::{Duration, Instant};
 
 use raft::prelude::{Message, MessageType};
@@ -141,12 +141,6 @@ struct RetainedEvent {
     _route: Option<Route>,
 }
 #[derive(Default)]
-struct State {
-    events: Vec<RetainedEvent>,
-    next_ticket: u64,
-}
-
-#[derive(Default)]
 struct Counts {
     offered: AtomicU64,
     selected: AtomicU64,
@@ -201,7 +195,8 @@ pub struct QuorumTrace {
     node: u64,
     region: u64,
     started: Instant,
-    state: Mutex<State>,
+    events: Box<[OnceLock<RetainedEvent>]>,
+    reserved: AtomicUsize,
     counts: [Counts; STAGES],
     counter_overflow: AtomicBool,
     closed: AtomicBool,
@@ -221,15 +216,15 @@ impl QuorumTrace {
     }
 
     fn with_capacity(node: u64, region: u64, capacity: usize) -> Arc<Self> {
+        assert!(capacity <= MAX_EVENTS);
         Arc::new(Self {
             node,
             region,
             started: Instant::now(),
-            state: Mutex::new(State {
-                // The request path does not grow the event allocation.
-                events: Vec::with_capacity(capacity),
-                next_ticket: 0,
-            }),
+            // Every reservation owns a different cell. Initializing an owned
+            // OnceLock cannot wait for another writer; capture only reads it.
+            events: (0..capacity).map(|_| OnceLock::new()).collect(),
+            reserved: AtomicUsize::new(0),
             counts: std::array::from_fn(|_| Counts::default()),
             counter_overflow: AtomicBool::new(false),
             closed: AtomicBool::new(false),
@@ -274,34 +269,44 @@ impl QuorumTrace {
             return None;
         };
         event.at_ns = at;
-        let mut state = match self.state.try_lock() {
-            Ok(state) => state,
-            Err(TryLockError::WouldBlock) => {
-                self.increment(&count.contended);
+        // The cursor never wraps or resets. Each failed strong CAS implies
+        // another reservation advanced it; at most capacity such advances
+        // exist over this recorder's lifetime. No lock holder can stall us.
+        let mut slot = self.reserved.load(Ordering::Relaxed);
+        loop {
+            if slot == self.capacity {
+                self.increment(&count.full);
                 return None;
             }
-            Err(TryLockError::Poisoned(_)) => {
-                self.increment(&count.poisoned);
-                return None;
+            match self.reserved.compare_exchange(
+                slot,
+                slot + 1,
+                Ordering::Relaxed,
+                Ordering::Relaxed,
+            ) {
+                Ok(_) => break,
+                Err(actual) => slot = actual,
             }
-        };
-        if state.events.len() == self.capacity {
-            self.increment(&count.full);
-            return None;
         }
         if mint_ticket {
-            let Some(next) = state.next_ticket.checked_add(1) else {
-                self.increment(&count.exhausted);
-                return None;
-            };
-            state.next_ticket = next;
-            event.local_ticket = Some(next);
+            // A ticket names its unique originating event slot. Gaps from
+            // non-ticket events are intentional; zero remains the sentinel.
+            event.local_ticket = Some(slot as u64 + 1);
         }
         let ticket = event.local_ticket;
-        state.events.push(RetainedEvent {
-            event,
-            _route: route,
-        });
+        if self.events[slot]
+            .set(RetainedEvent {
+                event,
+                _route: route,
+            })
+            .is_err()
+        {
+            // Unreachable under exclusive slot ownership. Fail accounting
+            // closed instead of turning an observer invariant into Raft panic.
+            self.counter_overflow.store(true, Ordering::Relaxed);
+            self.increment(&count.exhausted);
+            return None;
+        }
         self.increment(&count.recorded);
         // Zero is a non-ticket success sentinel, never a serialized ticket.
         Some(ticket.unwrap_or(0))
@@ -371,7 +376,7 @@ impl QuorumTrace {
 
     /// One finite prefix; later observations are outside the capture domain.
     /// Run only after timed client work, since serialization perturbs scheduling.
-    /// A timeout or poisoned observer yields no usable snapshot and never an
+    /// A timeout or incomplete slot yields no usable snapshot and never an
     /// error to the database. Capture cannot reopen or drain protocol queues.
     pub fn capture(&self) -> Option<Snapshot> {
         if self.closed.swap(true, Ordering::SeqCst) {
@@ -384,7 +389,10 @@ impl QuorumTrace {
             }
             std::thread::yield_now();
         }
-        let state = self.state.try_lock().ok()?;
+        let events = self.events[..self.reserved.load(Ordering::Relaxed)]
+            .iter()
+            .map(|slot| slot.get().map(|retained| retained.event.clone()))
+            .collect::<Option<Vec<_>>>()?;
         let captured_at_ns = self.started.elapsed().as_nanos().try_into().ok()?;
         Some(Snapshot {
             schema_version: 1, node: self.node, region: self.region, process_id: std::process::id(),
@@ -394,7 +402,7 @@ impl QuorumTrace {
             scope: "Finite observation prefix; capture is not process shutdown. Ticket ids and retained route allocations are local only. Missing/duplicate/lost context matches are unknown; no cross-process clock subtraction. Group term is unobserved. Stage offers count observer invocations, including repeated contexts; ticket continuation stages cover selected tickets only.",
             stage_names: STAGE_NAMES.to_vec(),
             stage_counts: self.counts.iter().map(Counts::snapshot).collect(),
-            events: state.events.iter().map(|e| e.event.clone()).collect(),
+            events,
         })
     }
 }
@@ -509,31 +517,35 @@ pub(crate) mod tests {
     }
 
     #[test]
-    fn trace_full_contention_and_ticket_exhaustion_have_separate_loss_counts() {
-        let trace = QuorumTrace::with_capacity(1, 0, 1);
+    fn trace_full_slots_never_reuse_ticket_ids() {
+        let trace = QuorumTrace::with_capacity(1, 0, 3);
         let message = heartbeat(0);
-        let guard = trace.state.lock().unwrap();
-        trace.message(Stage::DriverStep, &message); // A single failed try_lock.
-        drop(guard);
-        trace.state.lock().unwrap().next_ticket = u64::MAX;
+        let first = trace
+            .queue(Stage::InboxOffered, Key::message(&message).unwrap(), None)
+            .unwrap();
+        trace.message(Stage::DriverStep, &message);
+        let last = trace
+            .queue(Stage::InboxOffered, Key::message(&message).unwrap(), None)
+            .unwrap();
+        assert_eq!((first.point.id, last.point.id), (1, 3));
         assert!(trace
             .queue(Stage::InboxOffered, Key::message(&message).unwrap(), None)
             .is_none());
-        trace.message(Stage::DriverStep, &message);
-        trace.message(Stage::DriverStep, &message);
+        drop(first);
+        drop(last);
         let snapshot = trace.capture().unwrap();
         conserved(&snapshot);
-        let driver = &snapshot.stage_counts[Stage::DriverStep as usize];
-        assert_eq!((driver.contended, driver.recorded, driver.full), (1, 1, 1));
+        assert_eq!(snapshot.stage_counts[Stage::InboxOffered as usize].full, 1);
         assert_eq!(
-            snapshot.stage_counts[Stage::InboxOffered as usize].exhausted,
-            1
+            snapshot.stage_counts[Stage::QueueAbandoned as usize].full,
+            2
         );
-        assert_eq!(snapshot.events.len(), 1);
+        assert_eq!(snapshot.events.len(), 3);
+        assert_eq!(trace.reserved.load(Ordering::Relaxed), 3);
     }
 
     #[test]
-    fn trace_counter_overflow_is_invalid_and_poison_never_escapes_to_consensus() {
+    fn trace_counter_overflow_is_invalid_and_incomplete_slots_fail_closed() {
         let trace = QuorumTrace::with_capacity(1, 0, 2);
         trace.counts[Stage::DriverStep as usize]
             .offered
@@ -541,22 +553,92 @@ pub(crate) mod tests {
         trace.message(Stage::DriverStep, &heartbeat(0));
         assert!(!trace.capture().unwrap().counters_valid);
         let trace = QuorumTrace::with_capacity(1, 0, 2);
-        let copy = trace.clone();
-        assert!(std::thread::spawn(move || {
-            let _guard = copy.state.lock().unwrap();
-            panic!("deliberate observer poison");
-        })
-        .join()
-        .is_err());
-        trace.message(Stage::DriverStep, &heartbeat(0));
-        assert_eq!(
-            trace.counts[Stage::DriverStep as usize]
-                .poisoned
-                .load(Ordering::Relaxed),
-            1
-        );
+        // Simulate an observer that unwound after reservation but before
+        // initialization. Capture must not silently omit that reservation.
+        trace.reserved.store(1, Ordering::Relaxed);
         assert!(trace.capture().is_none());
         assert!(trace.closed.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn trace_concurrent_writers_keep_all_events_and_unique_ticket_chains() {
+        let trace = QuorumTrace::with_capacity(1, 0, 2048);
+        let barrier = Arc::new(std::sync::Barrier::new(8));
+        std::thread::scope(|scope| {
+            for _ in 0..8 {
+                let trace = &trace;
+                let barrier = &barrier;
+                scope.spawn(move || {
+                    let key = Key::message(&heartbeat(0)).unwrap();
+                    barrier.wait();
+                    for _ in 0..64 {
+                        let mut ticket = trace.queue(Stage::OutboundOffered, key, None).unwrap();
+                        ticket.point.record(Stage::OutboundAccepted);
+                        ticket.finish(Stage::OutboundDequeued);
+                    }
+                });
+            }
+        });
+        let snapshot = trace.capture().unwrap();
+        conserved(&snapshot);
+        assert_eq!(snapshot.events.len(), 1536);
+        let mut chains = std::collections::BTreeMap::<_, Vec<_>>::new();
+        for event in &snapshot.events {
+            chains
+                .entry(event.local_ticket.unwrap())
+                .or_default()
+                .push(event.stage);
+        }
+        assert_eq!(chains.len(), 512);
+        for stages in chains.values() {
+            assert_eq!(
+                stages,
+                &[
+                    Stage::OutboundOffered,
+                    Stage::OutboundAccepted,
+                    Stage::OutboundDequeued
+                ]
+            );
+        }
+        for counts in &snapshot.stage_counts {
+            assert_eq!(counts.selected, counts.recorded);
+            assert_eq!(
+                counts.contended + counts.poisoned + counts.full + counts.exhausted,
+                0
+            );
+        }
+    }
+
+    #[test]
+    fn trace_concurrent_saturation_has_exact_capacity_and_loss_accounting() {
+        let trace = QuorumTrace::with_capacity(1, 0, 128);
+        let barrier = Arc::new(std::sync::Barrier::new(8));
+        std::thread::scope(|scope| {
+            for _ in 0..8 {
+                let trace = &trace;
+                let barrier = &barrier;
+                scope.spawn(move || {
+                    barrier.wait();
+                    for _ in 0..256 {
+                        trace.message(Stage::DriverStep, &heartbeat(0));
+                    }
+                });
+            }
+        });
+        let snapshot = trace.capture().unwrap();
+        conserved(&snapshot);
+        assert_eq!(snapshot.events.len(), 128);
+        let counts = &snapshot.stage_counts[Stage::DriverStep as usize];
+        assert_eq!(
+            (
+                counts.offered,
+                counts.selected,
+                counts.recorded,
+                counts.full
+            ),
+            (2048, 2048, 128, 1920)
+        );
+        assert_eq!(counts.contended + counts.poisoned + counts.exhausted, 0);
     }
 
     #[test]

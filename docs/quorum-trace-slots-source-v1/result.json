@@ -1,0 +1,98 @@
+{
+  "complete": true,
+  "source_root": "/tmp/kv9-quorum-trace-slots",
+  "commands": [
+    {
+      "name": "format",
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "started_ns": 1789225964221265012,
+      "exit_code": 0,
+      "ended_ns": 1789225964585841254
+    },
+    {
+      "name": "trace-compile",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "started_ns": 1789225964624434346,
+      "exit_code": 0,
+      "ended_ns": 1789226037181222158
+    },
+    {
+      "name": "trace-focused-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace",
+        "trace_"
+      ],
+      "started_ns": 1789226037224085033,
+      "exit_code": 0,
+      "ended_ns": 1789226037339073365
+    },
+    {
+      "name": "trace-tests",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--features",
+        "kv9-server/quorum-trace"
+      ],
+      "started_ns": 1789226037377082967,
+      "exit_code": 0,
+      "ended_ns": 1789226056132274574
+    },
+    {
+      "name": "trace-clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "-p",
+        "kv9-raft",
+        "-p",
+        "kv9-server",
+        "--all-targets",
+        "--features",
+        "kv9-server/quorum-trace",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_ns": 1789226056170615244,
+      "exit_code": 0,
+      "ended_ns": 1789226060842180766
+    }
+  ]
+}

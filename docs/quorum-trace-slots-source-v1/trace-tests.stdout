@@ -1,0 +1,506 @@
+
+running 197 tests
+test async_apply::tests::owner_destruction_resolves_pending_receivers ... ok
+test async_apply::tests::admission_covers_unsubmitted_and_extracted_waits ... ok
+test async_read::tests::canceled_representative_leaves_group_identity_for_its_live_members ... ok
+test async_read::tests::callback_unwind_and_owner_destruction_complete_live_receivers ... ok
+test async_read::tests::exact_first_confirmation_and_apply_coverage_are_both_required ... ok
+test async_read::tests::sealed_members_share_one_confirmation_and_late_arrivals_require_another ... ok
+test async_read::tests::cancellation_never_submits_and_capacity_is_bounded_until_owner_cleanup ... ok
+test async_read::tests::selected_completion_survives_later_stop_and_late_observation ... ok
+test async_read::tests::full_queue_emits_two_bounded_groups_and_retains_every_member ... ok
+test async_read::tests::timing_requires_the_same_sealed_confirmation_apply_and_successful_delivery ... ok
+test command::tests::decode_rejects_a_nested_fence ... ok
+test async_read::tests::deferred_admission_has_a_finite_turn_and_does_not_self_spin ... ok
+test command::tests::decode_rejects_corrupt_op_count ... ok
+test command::tests::decode_rejects_unfenceable_inner_tags ... ok
+test command::tests::decode_rejects_unknown_tag_and_op_tag ... ok
+test async_read::tests::stop_reaches_unclaimed_suffix_while_one_callback_is_blocked ... ok
+test command::tests::decode_rejects_truncation_and_trailing_bytes ... ok
+test command::tests::decode_rejects_unknown_version ... ok
+test command::tests::fenced_and_unfenced_write_are_distinct_on_the_wire ... ok
+test command::tests::encode_decode_roundtrip_all_variants ... ok
+test command::tests::fenced_decode_rejects_truncation_and_trailing_bytes ... ok
+test command::tests::fenced_refuses_the_generic_lowering_path ... ok
+test command::tests::fenced_write_roundtrips_with_the_exact_fence ... ok
+test command::tests::write_and_catalog_txn_are_distinct_on_the_wire ... ok
+test driver::tests::a_fence_rejected_write_reports_its_verdict_not_success ... ok
+test driver::tests::a_poisoned_driver_answers_failed_not_unconfirmed ... ok
+test driver::tests::apply_lag_requires_stable_commit_and_term_and_a_compatible_watermark ... ok
+test driver::tests::a_position_taken_by_another_leaders_command_is_replaced_not_applied ... ok
+test driver::tests::async_apply_capacity_is_reserved_before_any_proposal ... ok
+test driver::tests::async_apply_preserves_term_fence_manifest_and_fatal_outcomes ... ok
+test driver::tests::async_read_cannot_succeed_when_a_confirmed_ready_fails_apply ... ok
+test driver::tests::async_read_refuses_actual_follower_and_shared_context_counter_never_wraps ... ok
+test driver::tests::control_healthy_driver_applies_and_reports_success ... ok
+test async_read::tests::group_members_keep_independent_deadlines_and_capacity ... ok
+test driver::tests::async_apply_eviction_is_unknown_even_when_the_watermark_passed ... ok
+test driver::tests::a_proposal_replaced_by_an_election_barrier_reports_replaced_not_deadline ... ok
+test driver::tests::driver_applied_advances_through_all_three_entry_kinds ... ok
+test driver::tests::async_read_waits_for_unified_apply_and_keeps_its_exact_context ... ok
+test driver::tests::async_read_deferred_before_election_commit_progresses_without_a_tick ... ok
+test driver::tests::async_apply_registration_after_publication_wakes_an_idle_owner ... ok
+test driver::tests::async_apply_requires_application_and_preserves_the_exact_receipt ... ok
+test driver::tests::failed_apply_poisons_the_driver ... ok
+test driver::tests::driver_applied_never_advances_past_a_failed_item ... ok
+test driver::tests::read_barrier_on_a_follower_is_typed_not_leader ... ok
+test driver::tests::fatal_application_wakes_a_parked_completion_waiter ... ok
+test driver::tests::completion_notifications_require_the_exact_applied_receipt ... ok
+test driver::tests::read_barrier_on_a_healthy_leader_covers_committed_writes ... ok
+test driver::tests::undecodable_committed_entry_poisons_the_driver ... ok
+test grpc::endpoint::tests::confirmation_receipt_binds_root_subject_responder_and_exact_position ... ok
+test driver::tests::parked_owner_serves_a_read_before_its_next_tick_and_refuses_a_second_owner ... ok
+test driver::tests::watermark_publication_refuses_a_regressing_candidate ... ok
+test driver::tests::pump_service_finishes_only_after_the_actual_transport_drain_returns ... ok
+test grpc::endpoint::tests::contradictory_or_malformed_endpoint_hints_remain_unconfirmed ... ok
+test async_read::tests::deadlines_keep_quorum_and_apply_phases_without_renewal ... ok
+test driver::tests::sealed_read_groups_use_one_heartbeat_per_follower_and_fence_late_reads ... ok
+test driver::tests::transport_and_campaign_wake_every_voter_without_election_tick_polling ... ok
+test driver::tests::failed_background_pump_records_error_without_another_idle_wait ... ok
+test grpc::tests::cluster_listener_handoff_keeps_endpoints_reserved_before_async_poll ... ok
+test async_read::tests::trace_preserves_refusal_cancellation_and_owner_close_without_success ... ok
+test async_read::tests::trace_requires_exact_confirmation_and_apply_fence_for_the_sealed_group ... ok
+test driver::tests::an_index_below_the_ring_floor_is_unconfirmed_not_replaced ... ok
+test grpc::tests::cancelled_registration_keeps_capacity_until_backend_completion ... ok
+test driver::tests::read_barrier_survives_submission_before_current_term_commit ... ok
+test grpc::endpoint::tests::endpoint_confirmation_rejects_foreign_root_or_subject_before_backend_admission ... ok
+test driver::tests::background_pump_records_returned_waits_and_no_first_spacing_sample ... ok
+test grpc::tests::queued_batch_bounds_stale_work_and_keeps_same_address_generations_separate ... ok
+test grpc::tests::queued_batch_flushes_available_work_and_preserves_fifo_at_count_and_byte_bounds ... ok
+test grpc::tests::certified_route_generation_never_regresses_or_reinterprets_an_address ... ok
+test grpc::tests::partition_mask_drops_inbound_from_masked_peer_only ... ok
+test async_apply::tests::cancellation_timeout_and_close_drain_without_fabricated_receipts ... ok
+test grpc::tests::registration_wait_does_not_starve_the_async_executor ... ok
+test driver::tests::deferred_read_admission_respects_the_original_deadline ... ok
+test grpc::tests::route_generation_filter_rejects_old_queue_entries_even_after_address_reuse ... ok
+test grpc::tests::route_updates_keep_one_owned_worker_and_same_address_is_idempotent ... ok
+test grpc::tests::registered_address_change_replaces_live_peer_stream ... ok
+test grpc::tests::trace_keeps_repeated_contexts_and_replaced_routes_distinct ... ok
+test grpc::tests::trace_records_queue_rejection_and_unknown_peer_without_delivery_changes ... ok
+test quorum_trace::tests::trace_capture_conserves_concurrent_observations ... ok
+test quorum_trace::tests::trace_capture_is_a_finite_prefix_not_a_queue_drain ... ok
+test quorum_trace::tests::trace_concurrent_saturation_has_exact_capacity_and_loss_accounting ... ok
+test quorum_trace::tests::trace_concurrent_writers_keep_all_events_and_unique_ticket_chains ... ok
+test quorum_trace::tests::trace_counter_overflow_is_invalid_and_incomplete_slots_fail_closed ... ok
+test quorum_trace::tests::trace_full_slots_never_reuse_ticket_ids ... ok
+test quorum_trace::tests::trace_retains_actual_route_allocation_and_records_abandonment ... ok
+test quorum_trace::tests::trace_samples_exact_contexts_and_preserves_repeated_emissions ... ok
+test rawnode::tests::catalog_proposal_checks_planning_term_before_append ... ok
+test rawnode::tests::drain_token_mints_exactly_once_per_peer ... ok
+test rawnode::tests::follower_rejects_propose ... ok
+test rawnode::tests::light_ready_commit_is_reflected_in_storage_before_delivery ... ok
+test rawnode::tests::single_node_propose_apply_get ... ok
+test rawnode::tests::three_node_replication_and_failover ... ok
+test rawnode::tests::uncommitted_proposal_is_overwritten_not_committed ... ok
+test read_stage_timing::tests::matched_stages_conserve_the_exact_successful_wait ... ok
+test read_stage_timing::tests::missing_or_reversed_boundaries_are_errors_without_success_samples ... ok
+test state_machine::raw_group::tests::failed_group_returns_no_receipts_even_if_durable_effect_occurred ... ok
+test state_machine::raw_group::tests::grouping_refuses_hidden_metadata_and_non_opted_in_adjudicators ... ok
+test state_machine::raw_group::tests::invalid_intermediate_position_cannot_hide_behind_valid_tail ... ok
+test state_machine::raw_group::tests::ordered_group_preserves_overwrites_deletes_and_exact_tail ... ok
+test state_machine::raw_group::tests::real_driver_bounds_entry_count_and_encoded_bytes_without_waiting ... ok
+test state_machine::raw_group::tests::real_driver_group_failure_keeps_receipts_and_driver_watermark_unpublished ... ok
+test state_machine::raw_group::tests::real_driver_splits_at_catalog_epoch_change_and_preserves_receipt_verdict ... ok
+test state_machine::raw_group::tests::real_driver_system_mutation_inside_fenced_write_remains_an_epoch_barrier ... ok
+test driver::tests::driver_applied_catches_up_across_restart_by_replay ... ok
+test state_machine::raw_group::tests::stale_verdict_is_retained_and_later_read_error_publishes_nothing ... ok
+test state_machine::tests::a_failed_adjudicator_read_consumes_nothing ... ok
+test state_machine::tests::a_fresh_fence_applies_the_inner_ops ... ok
+test state_machine::tests::a_matching_manifest_cas_applies_and_advances_the_pair ... ok
+test state_machine::tests::a_rejected_fence_advances_the_watermark_and_writes_nothing ... ok
+test state_machine::tests::a_repeated_manifest_identity_is_already_applied_never_newly_accepted ... ok
+test state_machine::tests::a_stale_manifest_predecessor_refuses_typed_and_writes_nothing ... ok
+test state_machine::tests::a_watermark_at_or_beyond_own_entry_is_invalid ... ok
+test state_machine::tests::already_applied_requires_the_full_predecessor_window ... ok
+test state_machine::tests::an_adjudicator_read_failure_is_an_apply_error_not_a_verdict ... ok
+test state_machine::tests::an_empty_identity_never_matches_virgin_state ... ok
+test state_machine::tests::applied_position_recovers_with_the_engine ... ok
+test state_machine::tests::checkpoint_effect_query_retains_positive_history_without_inferring_absence ... ok
+test state_machine::tests::checkpoint_requires_canonical_identity_and_current_epoch_in_ordered_apply ... ok
+test state_machine::tests::empty_batch_commands_persist_the_position ... ok
+test state_machine::tests::generation_boundaries_are_checked_not_panics ... ok
+test state_machine::tests::manifest_pair_decode_rejects_impossible_states ... ok
+test state_machine::tests::manifest_pairs_are_per_region ... ok
+test state_machine::tests::position_read_failure_refuses_to_open ... ok
+test state_machine::tests::propose_put_apply_get_roundtrip ... ok
+test state_machine::tests::propose_put_apply_get_roundtrip_typed ... ok
+test state_machine::tests::reconciliation_behind_pair_is_unknown ... ok
+test state_machine::tests::reconciliation_empty_identity_is_unknown ... ok
+test state_machine::tests::reconciliation_exact_window_mine_is_my_change_applied ... ok
+test state_machine::tests::reconciliation_exact_window_non_mine_is_known_not_applied ... ok
+test state_machine::tests::reconciliation_pending_generation_is_unknown ... ok
+test state_machine::tests::reconciliation_superwindow_is_unknown ... ok
+test state_machine::tests::replayed_entries_below_the_skip_state_are_skipped ... ok
+test state_machine::tests::retained_checkpoint_transition_names_the_actual_winner_past_the_latest_pair ... ok
+test state_machine::tests::sequential_manifest_changes_chain_generations ... ok
+test state_machine::tests::volatile_recovery_starts_at_zero_and_cannot_silently_rewrite ... ok
+test state_machine::tests::without_an_adjudicator_a_fence_is_a_typed_apply_error ... ok
+test storage::persistence_model::acknowledged_vote_survives_loss_of_unsynced_namespace ... ok
+test storage::persistence_model::append_batch_ack_survives_loss_of_unsynced_bytes ... ok
+test storage::persistence_model::append_slice_uses_one_sync_and_empty_slices_do_no_io ... ok
+test storage::persistence_model::combined_follower_ready_never_sends_an_append_ack_after_any_persistence_failure ... ok
+test storage::persistence_model::driver_persistence_failures_stop_without_poisoning_observation_locks ... ok
+test storage::persistence_model::every_append_batch_cut_fences_publication_and_preserves_a_recoverable_prefix ... ok
+test storage::persistence_model::every_initialization_io_cut_refuses_then_recovers ... ok
+test grpc::tests::dropping_transport_terminates_a_retrying_worker ... ok
+test storage::persistence_model::original_ready_ack_survives_loss_of_unsynced_bytes ... ok
+test storage::persistence_model::original_ready_synchronizes_entries_and_hardstate_once_and_empty_does_no_io ... ok
+test storage::persistence_model::partial_append_failure_prevents_later_acknowledgment ... ok
+test storage::persistence_model::real_ready_combines_election_records_but_keeps_light_commit_durable ... ok
+test storage::persistence_model::recovered_unsynced_tail_is_durable_before_a_repeated_crash ... ok
+test storage::persistence_model::recovery_only_faults_preserve_votes_across_repeated_power_loss ... ok
+test storage::persistence_model::every_ready_group_failure_preserves_a_valid_recovery_prefix_and_commit ... ok
+test storage::persistence_model::three_voter_applied_positions_survive_an_immediate_power_loss ... ok
+test storage::persistence_model::wal_observation_preserves_write_sync_short_circuit_and_writer_poison ... ok
+test storage::persistence_model::write_and_sync_errors_preserve_acknowledged_prefix_for_seeded_crashes ... ok
+test storage::persistence_model::replacement_batch_cuts_preserve_committed_prefix_and_valid_suffix_identity ... ok
+test grpc::tests::initialized_discovery_must_name_its_cluster ... ok
+test grpc::tests::a_mismatched_root_digest_is_rejected_on_the_batch_stream ... ok
+test grpc::tests::grpc_discovery_answers_and_silence_is_err ... ok
+test grpc::tests::misrouted_envelope_errors_the_stream ... ok
+test grpc::tests::cluster_token_gates_the_service ... ok
+test grpc::tests::register_enforces_identity_and_backend_presence ... ok
+test testing::tests::masks_only_the_named_peers ... ok
+test testing::tests::parse_rejects_any_bad_token_rather_than_partial ... ok
+test grpc::tests::register_not_leader_redirect_is_machine_readable ... ok
+test testing::tests::refresh_is_fail_closed_and_latches ... ok
+test testing::tests::writer_rejects_unmaskable_ids_without_touching_the_file ... ok
+test transport::tests::frame_decode_rejects_bad_input ... ok
+test transport::tests::frame_roundtrip_all_kinds ... ok
+test transport::tests::initialized_byte_rejects_non_boolean ... ok
+test transport::tests::dropping_tcp_transport_closes_its_listener ... ok
+test storage::tests::checksum_valid_unknown_kind_refuses_to_open ... ok
+test transport::tests::voter_fingerprint_binds_the_declaration ... ok
+test work::tests::completion_between_lookup_and_wait_is_retained_and_exhaustion_cannot_wrap ... ok
+test work::tests::inbox_bounds_and_retained_prefix_force_another_turn ... ok
+test transport::tests::three_nodes_over_real_tcp_elect_replicate_and_discover ... ok
+test work::tests::notification_survives_drain_and_coalescing_and_cannot_restart_a_stopped_owner ... ok
+test work::tests::one_completion_wakes_all_registered_waiters ... ok
+test work::tests::trace_closed_observer_does_not_close_inbox_or_change_queued_messages ... ok
+test work::tests::traffic_does_not_accelerate_or_postpone_tick_deadlines ... ok
+test work::tests::trace_shadow_queue_preserves_admission_order_and_rejected_messages ... ok
+test transport::tests::tcp_address_update_moves_delivery_and_shutdown_drops_connections ... ok
+test storage::tests::control_corrupt_middle_record_stops_replay ... ok
+test driver::tests::deferred_read_admission_refuses_a_deposed_leader ... ok
+test state_machine::raw_group::tests::real_legacy_and_segmented_wals_sync_once_and_recover_the_composed_group ... ok
+test storage::tests::hardstate_and_log_survive_reopen ... ok
+test storage::tests::activated_store_recovery_never_creates_or_reinitializes_a_log ... ok
+test storage::tests::raft_peer_state_survives_restart ... ok
+test storage::tests::light_ready_commit_survives_immediate_reopen ... ok
+test storage::tests::torn_tail_is_tolerated_and_truncated ... ok
+test grpc::tests::partition_mask_drops_outbound_to_masked_peer_only ... ok
+test grpc::tests::pod_failure_recovery_then_two_one_partition_elects_the_majority_side ... ok
+test grpc::tests::three_nodes_over_grpc_elect_replicate_failover ... ok
+test driver::tests::an_isolated_leader_cannot_confirm_a_read_barrier ... ok
+test driver::tests::a_read_barrier_waits_for_apply_not_just_confirmation ... ok
+test grpc::tests::route_change_escapes_a_frozen_reader_at_a_distinct_address ... ok
+test grpc::tests::connect_budget_escapes_a_backlog_flooded_endpoint ... ok
+test grpc::tests::peer_worker_escapes_established_blackhole_and_reaches_replacement ... ok
+test grpc::tests::peer_worker_escapes_a_frozen_reader_and_reaches_replacement ... ok
+
+test result: ok. 197 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.44s
+
+
+running 1 test
+test concurrent_status_and_apply_never_deadlock ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 13 tests
+test a_frame_does_not_consume_the_next_one ... ok
+test arbitrary_garbage_never_panics ... ok
+test bad_magic_is_rejected ... ok
+test every_kind_round_trips ... ok
+test garbled_initialized_byte_is_an_error_not_an_answer ... ok
+test lying_length_prefix_is_rejected ... ok
+test oversized_discovery_is_refused_before_reading_payload ... ok
+test oversized_raft_length_is_rejected ... ok
+test truncated_header_is_rejected ... ok
+test unknown_discovery_payload_version_is_rejected ... ok
+test unknown_kind_is_rejected ... ok
+test unknown_version_is_rejected ... ok
+test wrong_discovery_lengths_are_rejected ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test stale_conf_entry_replay_is_skipped_not_reapplied ... ok
+test unadmitted_joiner_reports_unconfigured_not_follower ... ok
+test learner_joins_catches_up_promotes_and_survives_failover ... ok
+test reopen_recovers_conf_state_without_reapplying ... ok
+test status_pair_stays_command_sourced_across_conf_changes ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.00s
+
+
+running 206 tests
+test admission::tests::admission_configuration_rejects_zero_invalid_and_overflow ... ok
+test admission::tests::admission_checks_aggregate_bytes_count_and_oversized_requests ... ok
+test admission::tests::admission_timing_separates_queue_execution_and_unsubmitted_release ... ok
+test admission::tests::admission_limits_do_not_overflow_at_machine_maximum ... ok
+test admission::tests::admission_saturating_counters_do_not_control_capacity ... ok
+test client::batch_tests::batch_item_count_limit_allows_256_items_in_one_write ... ok
+test client::batch_tests::batch_put_lost_applied_reply_is_unknown_and_never_replayed ... ok
+test client::tests::marker_decoder_fails_closed_and_keeps_read_failures_distinct ... ok
+test client::tests::persistent_response_loss_history_fixture ... ignored, requires an isolated output path and independent history verification
+test client::tests::limits_reject_before_any_rpc ... ok
+test client::tests::dead_seed_does_not_prevent_later_operations_on_survivors ... ok
+test client::batch_tests::batch_input_bounds_reject_locally_without_dispatch_or_splitting ... ok
+test client::batch_tests::batch_read_encoded_response_limit_is_enforced_without_retry ... ok
+test endpoints::tests::endpoint_decoder_refuses_foreign_or_incomplete_mutation_and_confirmation_receipts ... ok
+test fence::read_failure_tests::a_failed_catalog_read_is_an_error_not_a_verdict ... ok
+test fence::read_failure_tests::a_failed_read_yields_no_verdict_at_all ... ok
+test fence::read_failure_tests::a_failure_to_open_the_snapshot_is_also_an_error_not_a_verdict ... ok
+test fence::tests::an_absent_region_is_a_rejection_not_a_read_failure ... ok
+test fence::tests::an_epoch_older_in_either_component_is_stale ... ok
+test fence::tests::the_comparison_is_oriented_proposer_against_catalog ... ok
+test fence::tests::the_current_epoch_is_fresh ... ok
+test grpc::tests::a_partial_receipt_round_trips_and_a_missing_field_is_a_protocol_error ... ok
+test grpc::tests::admission::admission_cancelled_read_preparation_drops_future_without_starting_engine ... ok
+test grpc::tests::admission::admission_cancelled_running_and_queued_jobs_retain_their_reservations ... ok
+test grpc::tests::admission::admission_covers_every_public_handler_before_preparation ... ok
+test grpc::tests::admission::admission_marker_is_exclusive_and_fail_closed ... ok
+test client::batch_tests::batch_preserves_input_order_duplicates_missing_and_empty_values_with_one_receipt ... ok
+test client::batch_tests::batch_put_invalid_whole_receipt_is_unknown_without_retry ... ok
+test grpc::tests::admission::admission_releases_budget_on_backend_panic ... ok
+test grpc::tests::admission::admission_releases_validation_error_and_backend_error ... ok
+test grpc::tests::admission::cancelled_prepared_write_keeps_capacity_across_queue_and_async_wait ... ok
+test grpc::tests::admission::completed_public_get_does_not_wait_for_the_blocking_pool ... ok
+test grpc::tests::admission::prepared_write_panic_releases_budget_in_both_phases ... ok
+test grpc::tests::an_ordinary_abort_is_not_read_as_a_partial_write ... ok
+test grpc::tests::async_batch_read::cancelled_batch_preparation_drops_the_wait_without_starting_engine_work ... ok
+test grpc::tests::async_batch_read::cancelled_blocking_batch_keeps_its_whole_request_reservation ... ok
+test grpc::tests::async_batch_read::completed_batch_read_bypasses_a_saturated_blocking_pool ... ok
+test grpc::tests::blocking_membership_clients_preserve_real_wire_refusals ... ok
+test grpc::tests::errors_map_to_stable_grpc_codes ... ok
+test grpc::tests::malformed_context_and_not_implemented_are_typed_statuses ... ok
+test grpc::tests::membership_refusal_rejects_ambiguous_wire_metadata ... ok
+test grpc::tests::not_leader_maps_to_failed_precondition_and_carries_the_hint_only_when_known ... ok
+test grpc::tests::partial_delete_range_maps_to_aborted_with_the_full_receipt ... ok
+test grpc::tests::read_unconfirmed_roundtrips_typed_in_both_phases ... ok
+test client::tests::unknown_write_is_not_replayed_after_an_intervening_read_and_write ... ok
+test client::batch_tests::batch_uses_one_logical_client_permit_until_terminal_observation ... ok
+test client::tests::exclusive_refusal_follows_only_a_configured_identity ... ok
+test grpc::tests::the_not_leader_marker_must_say_true_not_merely_exist ... ok
+test grpc::tests::the_partial_marker_must_say_true_not_merely_exist ... ok
+test grpc::tests::token_authenticator_rejects_missing_and_bad_tokens ... ok
+test grpc::tests::transaction_descriptor_conversion_preserves_every_identity_coordinate ... ok
+test grpc::tests::transaction_descriptor_rejects_missing_or_mismatched_qualified_identity ... ok
+test grpc::tests::transaction_status_has_three_explicit_wire_decisions ... ok
+test grpc::tests::trusted_principal_reaches_backend_and_missing_identity_is_rejected ... ok
+test node::tests::bootstrap_elect_then_create_keyspace ... ok
+test client::batch_tests::batch_put_exact_encoded_request_boundary_is_inclusive ... ok
+test node::tests::committed_identity_with_lost_marker_recovers_not_wedges ... ok
+test node::tests::create_keyspace_constraints_and_raw_group_semantics ... ok
+test node::tests::concurrent_creates_allocate_distinct_ids ... ok
+test node::tests::later_phase_split_returns_typed_error ... ok
+test node::tests::meta_raft_applies_the_encoded_committed_command ... ok
+test node::tests::server_bootstrap_requires_seed_quorum_and_refuses_reinitialization ... ok
+test node::tests::server_routing_preserves_overlay_and_exact_boundary_semantics ... ok
+test node::tests::transaction_descriptor_is_checked_against_request_and_catalog_group ... ok
+test node::tests::three_node_admin_e2e_failover_and_orphan_rejection ... ok
+test observability::tests::process_identity_distinguishes_reused_pid_and_rejects_missing_evidence ... ok
+test client::tests::persistent_channel_reconnects_after_server_restart ... ok
+test observability::tests::status_identity_is_captured_once_and_matches_the_running_process ... ok
+test client::batch_tests::batch_get_exact_encoded_request_boundary_is_inclusive ... ok
+test observability::tests::trace_export_requires_marker_and_binds_one_process_lifetime ... ok
+test observability::tests::trace_failed_capture_and_publication_are_terminal_observation_failures ... ok
+test observability::tests::trace_marker_must_be_an_empty_regular_file ... ok
+test point_stream::tests::canceled_batch_keeps_the_whole_admission_until_settlement ... ok
+test client::tests::persistent_connections_are_observed_by_the_server ... ok
+test observability::tests::failed_metrics_publication_does_not_prevent_driver_progress ... ok
+test observability::tests::export_inventory_is_fixed_and_worst_case_document_fits_the_cap ... ok
+test point_stream::tests::canceled_stream_write_keeps_its_original_admission_until_settlement ... ok
+test grpc::tests::admission::admission_real_wire_aggregate_bytes_are_charged_by_encoded_length ... ok
+test point_stream::tests::dropping_client_releases_cached_generation_and_pending_transport ... ok
+test point_stream::tests::duplicate_or_decreasing_request_id_never_reexecutes_a_write ... ok
+test client::tests::malformed_responses_and_admission_are_terminal ... ok
+test point_stream::tests::handler_panic_closes_generation_and_cancels_reads_but_retains_prepared_write ... ok
+test point_stream::tests::id_exhaustion_closes_generation_instead_of_reusing_an_identifier ... ok
+test point_stream::tests::idle_generation_restart_allows_new_calls_without_replay ... ok
+test point_stream::tests::invalid_server_frames_close_the_stream_before_backend_dispatch ... ok
+test client::batch_tests::batch_read_malformed_vectors_are_terminal_read_failures ... ok
+test grpc::tests::admission::admission_real_wire_count_refusal_keeps_raft_discovery_live ... ok
+test point_stream::tests::oversized_batch_response_is_failure_without_a_partial_result ... ok
+test point_stream::tests::real_stream_point_operations_and_per_frame_auth_share_handler_contracts ... ok
+test client::batch_tests::batch_not_leader_retries_the_whole_payload_only_after_typed_refusal ... ok
+test grpc::tests::real_grpc_wire_enforces_token_and_propagates_principal ... ok
+test point_stream::tests::stream_wire_debug_redacts_authentication_and_payloads ... ok
+test point_stream::tests::unauthenticated_openings_cannot_reserve_stream_capacity ... ok
+test point_stream::tests::client_cancellation_aborts_read_waiter_and_retains_slot_until_task_cleanup ... ok
+test point_stream::tests::duplicate_reply_does_not_complete_a_different_pending_request ... ok
+test client::tests::all_refused_attempts_remain_refused_when_hops_or_time_run_out ... ok
+test node::tests::persistent_node_reopens_the_catalog_engine_used_by_apply ... ok
+test point_stream::tests::out_of_order_replies_correlate_to_exact_requests_on_one_generation ... ok
+test point_stream::tests::short_or_extra_batch_results_close_the_generation_without_replay ... ok
+test point_stream::tests::stream_limit_is_held_after_headers_until_response_stream_drop ... ok
+test point_stream::tests::canceling_one_call_closes_only_its_generation_and_all_collateral_waiters ... ok
+test runtime::tests::a_batch_spanning_two_regions_is_refused ... ok
+test point_stream::tests::default_client_batches_and_unary_share_one_normal_endpoint ... ok
+test runtime::tests::a_cursor_landing_exactly_on_end_completes_instead_of_revalidating ... ok
+test runtime::tests::a_failed_catalog_read_rejects_and_never_falls_back_to_the_window ... ok
+test runtime::tests::a_failure_at_the_second_chunk_commits_exactly_the_first_chunk ... ok
+test runtime::tests::a_failure_on_the_very_first_chunk_is_not_partial_and_changes_nothing ... ok
+test runtime::tests::a_failure_while_planning_the_next_chunk_still_reports_what_committed ... ok
+test client::tests::expired_write_remains_unknown_and_releases_only_client_capacity ... ok
+test runtime::tests::a_hint_cycle_is_a_typed_terminal_distinct_from_the_cap ... ok
+test runtime::tests::a_novel_leader_hint_precedes_a_blackholed_remaining_seed ... ok
+test runtime::tests::a_propose_error_surfaces_verbatim ... ok
+test runtime::endpoint_recovery::tests::endpoint_publication_failure_never_returns_authority_and_reopen_stabilizes_visible_record ... ok
+test point_stream::tests::malformed_or_unknown_reply_closes_all_pending_calls_without_retry ... ok
+test runtime::tests::a_stale_authorisation_stops_the_range_and_reports_a_partial_receipt ... ok
+test runtime::tests::a_stale_epoch_is_refused_and_names_the_region ... ok
+test runtime::tests::a_stale_hint_is_one_hop_then_the_fresh_hint_wins ... ok
+test runtime::tests::accepted_grpc_sockets_disable_nagle_without_rebinding ... ok
+test client::tests::warmup_failure_preserves_attempts_and_does_not_start_measurement ... ok
+test point_stream::tests::completed_but_unconsumed_replies_keep_pending_work_bounded ... ok
+test runtime::tests::advertised_endpoint_status_proves_a_network_attempt_or_declares_absence ... ok
+test runtime::tests::an_addressless_hint_is_recorded_not_swallowed ... ok
+test client::tests::logical_deadline_is_not_reset_by_refusals ... ok
+test runtime::tests::an_empty_range_succeeds_with_a_zero_receipt ... ok
+test runtime::endpoint_recovery::tests::endpoint_record_rejects_corruption_foreign_binding_and_invalid_receipts ... ok
+test runtime::tests::an_expired_window_ends_the_pass_before_any_dial ... ok
+test runtime::tests::an_explicit_revocation_beats_the_catchup_window ... ok
+test runtime::tests::an_initially_empty_bounded_range_completes_without_consulting_the_validator ... ok
+test runtime::fence_firing_tests::an_adopted_listener_decides_the_recorded_address_not_the_config ... ok
+test runtime::tests::an_unbounded_range_end_is_only_legal_in_the_trailing_region ... ok
+test runtime::fence_firing_tests::initialization_adopts_a_committed_catalog_without_its_original_receipt ... ok
+test client::tests::spaced_refusals_can_succeed_on_the_last_bounded_attempt ... ok
+test runtime::fence_firing_tests::initialization_waits_for_apply_before_planning_a_seed ... ok
+test point_stream::tests::deadline_stream_write_is_unknown_and_keeps_its_original_admission ... ok
+test point_stream::tests::deadline_batch_keeps_the_whole_admission_without_replay ... ok
+test runtime::tests::async_replacement_reuses_one_command_and_deadline_and_returns_the_receipt ... ok
+test runtime::tests::async_terminal_outcomes_and_expired_replacements_are_never_retried ... ok
+test runtime::tests::borrowed_batches_preserve_region_coverage_and_error_order ... ok
+test runtime::fence_firing_tests::a_real_raw_put_fences_with_the_region_and_epoch_the_gate_resolved ... ok
+test runtime::tests::cluster_auth_requires_token_and_declared_voter_identity ... ok
+test runtime::tests::catalog_planning_barrier_drains_an_earlier_unconfirmed_command ... ok
+test runtime::fence_firing_tests::a_multi_chunk_delete_range_emits_one_fence_per_chunk_with_the_gate_resolved_values ... ok
+test runtime::tests::dial_error_classes_survive_to_the_walk_terminal_unmerged ... ok
+test runtime::tests::discovery_observations_are_bounded_single_line_and_saturating ... ok
+test runtime::tests::discovery_observations_distinguish_acceptance_and_both_rejections ... ok
+test runtime::tests::discovery_vote_requires_both_declared_identity_and_voter_set ... ok
+test runtime::tests::driver_applied_renders_as_labeled_pair_never_mixed ... ok
+test runtime::tests::every_chunk_committing_reports_the_last_position_and_empties_the_range ... ok
+test runtime::tests::every_public_request_is_meta_not_ready_before_planning ... ok
+test runtime::tests::failed_is_never_retried ... ok
+test client::batch_tests::batch_redirect_preserves_original_deadline_for_reads_and_writes ... ok
+test runtime::tests::fence_rejected_is_stale_epoch_immediately_and_never_retried ... ok
+test runtime::fence_firing_tests::prepared_point_and_batch_writes_preserve_apply_fences_and_effects ... ok
+test runtime::tests::hint_chains_terminate_on_the_hop_cap_with_a_typed_terminal ... ok
+test runtime::tests::local_seed_is_explicitly_not_a_network_attempt ... ok
+test runtime::tests::logical_observer_keeps_one_sample_across_retries_and_preserves_unknowns ... ok
+test runtime::tests::a_follower_refuses_an_establishing_read_with_a_typed_hint ... ok
+test client::tests::workload_stop_drains_an_applied_write_until_its_terminal_response ... ok
+test runtime::tests::range_boundaries_are_enforced_by_the_gate ... ok
+test runtime::tests::registration_budget_allows_durable_work_beyond_a_discovery_probe ... ok
+test runtime::tests::registration_observation_preserves_typed_reasons_without_diagnostic_text ... ok
+test runtime::tests::an_async_prepared_read_serves_the_committed_but_unapplied_write ... ok
+test runtime::tests::failed_listener_bind_releases_every_store_owner_before_unlocking ... ok
+test runtime::tests::registration_seed_rotation_covers_every_position_from_every_start ... ok
+test runtime::tests::repeated_registration_passes_reach_a_healthy_seed_after_a_blackhole ... ok
+test runtime::tests::an_established_read_serves_the_committed_but_unapplied_write ... ok
+test runtime::tests::async_batch_read_tests::async_batch_preserves_input_order_duplicates_missing_and_empty ... ok
+test runtime::tests::replaced_then_applied_returns_the_waits_receipt ... ok
+test runtime::tests::status_membership_is_canonical_regardless_of_source_order ... ok
+test runtime::tests::superseded_ticket_preserves_only_existing_member_authentication ... ok
+test runtime::tests::replaced_reproposes_within_the_original_budget_only ... ok
+test runtime::tests::takeover_gate_refuses_a_stale_term_watermark ... ok
+test runtime::tests::the_catchup_window_admits_receipt_members_and_only_receipt_members ... ok
+test runtime::tests::the_pass_budget_is_one_absolute_window_hints_never_enlarge_it ... ok
+test runtime::tests::the_walk_follows_a_not_leader_hint_to_a_non_seed_leader ... ok
+test runtime::tests::unconfirmed_is_never_retried ... ok
+test runtime::tests::wal_apply_failure_poisons_the_driver_without_false_success ... ok
+test runtime::tests::walk_terminal_precedence_is_fixed ... ok
+test workload::config::tests::configuration_rejects_unbounded_and_wrong_scope_inputs ... ok
+test workload::config::tests::configuration_reserves_complete_history_and_all_phases ... ok
+test workload::generator::tests::deterministic_workload_excludes_the_sentinel_and_retains_write_identity ... ok
+test workload::metrics::tests::refused_and_unknown_calls_remain_in_counts_and_latency_populations ... ok
+test workload::recorder::tests::byte_guard_refuses_new_invocation_and_preserves_pending_terminal_space ... ok
+test runtime::tests::takeover_gate_waits_for_the_current_term_barrier ... ok
+test workload::recorder::tests::maximum_configured_values_fit_pair_reservations ... ok
+test workload::recorder::tests::complete_history_preserves_unknowns_and_out_of_order_terminals ... ok
+test workload::recorder::tests::performance_mode_reports_accounting_without_claiming_full_history ... ok
+test runtime::tests::async_batch_read_tests::async_batch_waits_for_the_whole_committed_but_unapplied_write ... ok
+test workload::recorder::tests::pending_or_empty_history_cannot_be_finalized_as_complete ... ok
+test runtime::tests::a_contended_prepared_read_checks_the_epoch_when_its_engine_job_runs ... ok
+test runtime::tests::a_resident_prepared_read_finishes_on_one_authorized_version ... ok
+test runtime::tests::delayed_catalog_snapshot_cannot_restore_an_older_live_route ... ok
+test runtime::tests::async_batch_read_tests::contended_batch_checks_both_epoch_halves_when_the_job_executes ... ok
+test runtime::tests::an_isolated_leader_fails_establishing_typed_in_both_phases ... ok
+test runtime::tests::committed_endpoint_change_revokes_registration_and_rejects_its_retry ... ok
+test runtime::tests::async_batch_read_tests::resident_batch_keeps_its_authorized_values_after_both_epoch_changes ... ok
+test runtime::tests::async_batch_read_tests::oversized_resident_batch_moves_its_captured_authorized_view_into_the_job ... ok
+test runtime::tests::fresh_joiner_rejects_stale_heartbeat_before_raft_owner_starts ... ok
+test runtime::tests::active_store_restart_at_the_same_endpoint_needs_no_registration ... ok
+test runtime::tests::active_store_restart_at_a_changed_endpoint_waits_for_committed_route ... ok
+test runtime::tests::registration_response_fallback_defers_to_the_applied_directory ... ok
+test runtime::tests::a_real_joiner_follows_the_wire_hint_to_a_non_seed_leader_end_to_end ... ok
+test runtime::tests::public_endpoint_cas_returns_distinct_exact_mutation_and_confirmation_receipts ... ok
+test runtime::tests::registration_refusals_preserve_routes_and_renewed_tickets_cannot_rebind ... ok
+test runtime::tests::root_voter_rejects_another_disk_and_missing_activated_log_before_starting ... ok
+test runtime::tests::original_stores_resume_formation_after_each_pre_catalog_crash_cut ... ok
+
+test result: ok. 205 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 6.88s
+
+
+running 7 tests
+test common::tests::every_bucket_boundary_round_trips_including_u64_max ... ok
+test common::tests::overflow_cannot_publish_a_quantile ... ok
+test common::tests::quantiles_cover_independently_sorted_samples_and_merge ... ok
+test tests::dataset_validation_binds_key_position_and_full_value_bytes ... ok
+test tests::fixed_rate_slots_use_integer_boundaries_and_do_not_hide_missed_work ... ok
+test metrics::tests::unknown_whole_batches_and_retry_attempts_keep_separate_populations ... ok
+test tests::oversized_batch_and_offered_load_are_rejected_before_network_work ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 9 tests
+test tests::duplicate_batch_items_have_one_logical_latency_sample_and_one_whole_receipt ... ok
+test tests::former_hundred_key_mix_counterexample_now_has_shared_read_and_write_keys ... ok
+test tests::generated_values_retain_unique_call_and_item_identity_and_exclude_the_empty_sentinel ... ok
+test tests::batch_history_distinguishes_missing_empty_and_duplicate_read_positions ... ok
+test tests::failed_return_append_preserves_outstanding_accounting_and_zero_metrics ... ok
+test tests::unknown_batch_retains_all_input_items_as_uncertain_without_a_receipt ... ok
+test tests::initialization_and_verification_alone_cannot_satisfy_the_traffic_guard ... ok
+test tests::invalid_whole_receipt_keeps_the_invocation_and_terminal_reservation ... ok
+test tests::unmatched_and_duplicate_terminals_cannot_create_history_or_metric_entries ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 12 tests
+test crates/raft/src/command.rs - command::ManifestChangePayload (line 86) - compile fail ... ok
+test crates/raft/src/lib.rs - ReadyConsume (line 200) - compile fail ... ok
+test crates/raft/src/lib.rs - RaftGroup::propose (line 128) - compile fail ... ok
+test crates/raft/src/lib.rs - ReadyConsume (line 177) - compile fail ... ok
+test crates/raft/src/lib.rs - ReadyConsume (line 188) - compile fail ... ok
+test crates/raft/src/state_machine.rs - state_machine::ApplyStore (line 42) - compile fail ... ok
+test crates/raft/src/state_machine.rs - state_machine::ApplyStore (line 57) - compile fail ... ok
+test crates/raft/src/state_machine.rs - state_machine::ApplyStore (line 51) ... ok
+test crates/raft/src/command.rs - command::ManifestChangePayload (line 100) ... ok
+test crates/raft/src/state_machine.rs - state_machine::ApplyStore (line 62) ... ok
+test crates/raft/src/lib.rs - ReadyConsume (line 224) ... ok
+test crates/raft/src/lib.rs - RaftGroup::propose (line 136) ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.04s
+
+
+running 6 tests
+test crates/server/src/node.rs - node::Node (line 227) - compile fail ... ok
+test crates/server/src/node.rs - node::MetaRaft (line 84) - compile fail ... ok
+test crates/server/src/node.rs - node::Node (line 221) - compile fail ... ok
+test crates/server/src/node.rs - node::Node (line 236) ... ok
+test crates/server/src/node.rs - node::MetaRaft (line 94) ... ok
+test crates/server/src/node.rs - node::Node (line 248) ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.91s
+
