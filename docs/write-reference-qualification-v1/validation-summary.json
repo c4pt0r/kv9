@@ -1,0 +1,314 @@
+{
+  "version": 1,
+  "complete": true,
+  "scope": "Report accounting and experimental CRC correctness/recovery; no new performance or Chaos Mesh acceptance",
+  "reader": {
+    "complete": true,
+    "source_files": {
+      "scripts/redis_batch_report.py": "786c5aadcf65888deb07e88ba093e3d7a95f1151941997a84aa8658eb621d052",
+      "scripts/batch_benchmark_report.py": "56cd11ddc7475a44ff1cf420f2086b4eefb19aa424c7270b95d4141920a40a96",
+      "scripts/workload_report.py": "7b4b7abd1257c3bed790c7c5c3b5eaae021b6633b3cc261140050354fbcede78",
+      "scripts/test_redis_batch_report.py": "a722d7806b5fd48b1c136414e6b17a41bfc898b036b3f8ab17418f7f95c3429f",
+      "scripts/test_batch_benchmark_report.py": "c7572a5186e69c9e209234fa7daae0e9ba0f450af9ee1d7c40f143a5211a81f9",
+      "scripts/test_redis_replication_report.py": "557cc29a9a4dff11c63597952951e21f248b1f165ed88872c8d240d79915f55f"
+    },
+    "tests": {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_redis_batch_report",
+        "test_batch_benchmark_report",
+        "test_redis_replication_report"
+      ],
+      "cwd": "/home/dongxu/kv9/scripts",
+      "passed": 44,
+      "failures": 0,
+      "terminal": "73352/1f6e9a/0"
+    },
+    "original_report_arithmetic": {
+      "reports": 4,
+      "result_path": "/tmp/kv9-redis3-reader-artifact-first/result.json",
+      "terminal": "5d8d70/0"
+    },
+    "invalid_original_report_copies": {
+      "rejected": 32,
+      "result_path": "/tmp/kv9-redis3-reader-artifact-controls-first/result.json",
+      "terminal": "6e93de/0"
+    },
+    "initial_regression": {
+      "passed": 36,
+      "terminal": "29760/e01d62/0",
+      "scope": "Preliminary restored v3 coverage; overlaps final44 tests"
+    },
+    "scope": "Independent accounting, sizing, source/build binding and rejected false evidence; no new database benchmark result"
+  },
+  "redis_release": {
+    "complete": true,
+    "scope": "Original clean release provenance, actual executable bytes and all retained source hashes; not runtime/performance acceptance",
+    "build": {
+      "binary_sha256": "504c55e2ef0ddf350753e380171f1e418ea5070dbd25752f42dc75fec913b9de",
+      "dirty": false,
+      "profile": "release",
+      "revision": "fc07bd64f02e4079e248388062d9ffc7148c295c",
+      "rustc": "rustc 1.94.0 (4a4ef493e 2026-03-02)\nbinary: rustc\ncommit-hash: 4a4ef493e3a1488c6e321570238084b38948f6db\ncommit-date: 2026-03-02\nhost: x86_64-unknown-linux-gnu\nrelease: 1.94.0\nLLVM version: 21.1.8\n",
+      "source_tree_sha256": "7bd75190de90d3b81bbbc5144cab1604b3a0c6cd8f6ddbee5e4391289d2b234b",
+      "version": 1
+    },
+    "cargo_features": [],
+    "source_files_verified": 802,
+    "release_terminal": "4e99d7/0",
+    "reader_terminal": "e01d62/0 for 36 preliminary regression tests; 1f6e9a/0 for final44 tests"
+  },
+  "crc_workspace": {
+    "complete": true,
+    "commands": [
+      {
+        "name": "compile-tests",
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "--workspace",
+          "--no-run",
+          "--message-format=json-render-diagnostics"
+        ],
+        "started_ns": 1789252667417953130,
+        "exit_code": 0,
+        "ended_ns": 1789252691721730490
+      },
+      {
+        "name": "workspace-tests",
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "--workspace",
+          "--",
+          "--test-threads=4"
+        ],
+        "started_ns": 1789252691768399234,
+        "exit_code": 0,
+        "ended_ns": 1789252733176786598,
+        "test_results": [
+          [
+            "4",
+            "0",
+            "0"
+          ],
+          [
+            "29",
+            "0",
+            "0"
+          ],
+          [
+            "135",
+            "0",
+            "0"
+          ],
+          [
+            "5",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "18"
+          ],
+          [
+            "0",
+            "0",
+            "4"
+          ],
+          [
+            "2",
+            "0",
+            "0"
+          ],
+          [
+            "24",
+            "0",
+            "0"
+          ],
+          [
+            "9",
+            "0",
+            "0"
+          ],
+          [
+            "23",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "13",
+            "0",
+            "0"
+          ],
+          [
+            "180",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "13",
+            "0",
+            "0"
+          ],
+          [
+            "5",
+            "0",
+            "0"
+          ],
+          [
+            "10",
+            "0",
+            "0"
+          ],
+          [
+            "202",
+            "0",
+            "1"
+          ],
+          [
+            "7",
+            "0",
+            "0"
+          ],
+          [
+            "9",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "17",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "2",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "12",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "6",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ]
+        ],
+        "passed": 710,
+        "ignored": 23
+      },
+      {
+        "name": "clippy",
+        "argv": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "started_ns": 1789252733213689477,
+        "exit_code": 0,
+        "ended_ns": 1789252746947803111
+      }
+    ]
+  },
+  "crc_release": {
+    "complete": true,
+    "revision": "e748620a7b0ba326ac5f4fa8e3a6b1ff48553c6a",
+    "source_files": 660,
+    "server_sha256": "616eed1b823dfaa192a22b2b03a3e7d778bf71efdad7d2b875a49c4bfc94e476",
+    "workload_sha256": "bd18336b5da137adbe008bc69db15dbf7769b73a74a876b9461c493665086d83",
+    "default_production_codegen": [
+      {
+        "path": "/tmp/kv9-write-crc-slicing8-release-first/kv9-build.log",
+        "sha256": "a8c5db80626d49a0485c5cca54ef625e554048f338c77591bcb8edfe2f1668e4",
+        "rustc_command": "     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9 --edition=2021 src/main.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values(\"checkpoint-testing\", \"partition-testing\", \"rpc-experiment\"))' -C metadata=1b50693f5acb5827 -C extra-filename=-af9461c89a2d58b0 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-256e539b8af1ba35.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-a138971bf33a8003.rlib --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-ae2e043020e88854.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-e654441b3b467806.rlib --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-35b7efff56aa0737.rlib --extern kv9_server=/home/dongxu/kv9/target/release/deps/libkv9_server-18898ef7238a6e9e.rlib --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-731d723f8417c1e0.rlib --extern tikv_jemallocator=/home/dongxu/kv9/target/release/deps/libtikv_jemallocator-5ed8c615b51a6d32.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out -L native=/home/dongxu/kv9/target/release/build/tikv-jemalloc-sys-6b1888eb065cfaf0/out/build/lib`"
+      },
+      {
+        "path": "/tmp/kv9-write-crc-slicing8-release-first/workload/build.log",
+        "sha256": "742d2abf55c60a1a5d718c82d39cef63640d22cb220b9adca0d3912d2bc82f25",
+        "rustc_command": "     Running `/home/dongxu/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name kv9_batch_workload --edition=2021 crates/server/src/bin/kv9-batch-workload.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C opt-level=3 -C lto=thin -C codegen-units=1 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values(\"checkpoint-testing\", \"rpc-experiment\"))' -C metadata=c1c4be1947098917 -C extra-filename=-c7633d499c27a672 --out-dir /home/dongxu/kv9/target/release/deps -C strip=debuginfo -L dependency=/home/dongxu/kv9/target/release/deps --extern futures_util=/home/dongxu/kv9/target/release/deps/libfutures_util-455d1842c1ed6ddf.rlib --extern kv9_common=/home/dongxu/kv9/target/release/deps/libkv9_common-256e539b8af1ba35.rlib --extern kv9_engine=/home/dongxu/kv9/target/release/deps/libkv9_engine-a138971bf33a8003.rlib --extern kv9_meta=/home/dongxu/kv9/target/release/deps/libkv9_meta-ae2e043020e88854.rlib --extern kv9_raft=/home/dongxu/kv9/target/release/deps/libkv9_raft-e654441b3b467806.rlib --extern kv9_region=/home/dongxu/kv9/target/release/deps/libkv9_region-35b7efff56aa0737.rlib --extern kv9_server=/home/dongxu/kv9/target/release/deps/libkv9_server-18898ef7238a6e9e.rlib --extern kv9_txn=/home/dongxu/kv9/target/release/deps/libkv9_txn-731d723f8417c1e0.rlib --extern prost=/home/dongxu/kv9/target/release/deps/libprost-227e46d31a4c3c3b.rlib --extern serde=/home/dongxu/kv9/target/release/deps/libserde-0dda36f05aa0261c.rlib --extern serde_json=/home/dongxu/kv9/target/release/deps/libserde_json-87d58736268df41f.rlib --extern sha2=/home/dongxu/kv9/target/release/deps/libsha2-3222cd247b380c5d.rlib --extern tokio=/home/dongxu/kv9/target/release/deps/libtokio-f8bd00cda329119c.rlib --extern tokio_stream=/home/dongxu/kv9/target/release/deps/libtokio_stream-a21724dcd9836f82.rlib --extern tokio_util=/home/dongxu/kv9/target/release/deps/libtokio_util-525f24cfb5646704.rlib --extern tonic=/home/dongxu/kv9/target/release/deps/libtonic-6068a496acef1cc7.rlib --extern tonic_prost=/home/dongxu/kv9/target/release/deps/libtonic_prost-2b7cdc135de33403.rlib -L native=/home/dongxu/kv9/target/release/build/aws-lc-sys-1eb05279d79a7ec6/out`"
+      }
+    ],
+    "release_terminal": "21162/d77464/0",
+    "helper_reuse": "Only process runner source path changes; independent audit remains byte-identical to qualified predecessor",
+    "helpers": {
+      "process-runner.py": "b7c71d7fe1392d53cb26dfd6b9926fd8fbc964813974d3b488b1da2edaf7335a",
+      "audit.py": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5"
+    }
+  },
+  "crc_recovery": {
+    "revision": "e748620a7b0ba326ac5f4fa8e3a6b1ff48553c6a",
+    "server_sha256": "616eed1b823dfaa192a22b2b03a3e7d778bf71efdad7d2b875a49c4bfc94e476",
+    "client_sha256": "bd18336b5da137adbe008bc69db15dbf7769b73a74a876b9461c493665086d83",
+    "accepted": true,
+    "complete": true,
+    "source_unchanged": true,
+    "original_inputs_unchanged": true,
+    "owned_lifetimes_exited": true,
+    "client_lifetimes": 2,
+    "server_lifetimes": 5,
+    "source_tree_sha256": "bffee183d7ac80161f44bd67c4b1e391bd7914fe9d6c0ed174bbd94305bbfa01"
+  },
+  "crc_history_operations": 363,
+  "crc_successful_outcomes": 337,
+  "crc_unknown_outcomes": 26,
+  "crc_fresh_voter_drains": 6,
+  "hosted_ci_dispatched": false,
+  "terminals": {
+    "crc_workspace": "18600/274df2/0",
+    "crc_release": "21162/d77464/0",
+    "crc_process": "28738/26695b/0",
+    "crc_process_audit": "c3e060/0",
+    "crc_release_readback": "cad8e5/0",
+    "redis_release": "12203/4e99d7/0",
+    "redis_release_readback": "deb482/0"
+  }
+}

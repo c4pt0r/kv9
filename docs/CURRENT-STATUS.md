@@ -6,6 +6,13 @@ latency approaching Redis with one primary and two replicas. Reads stay at the
 selected baseline; read parity is not a prerequisite for this write phase.
 See the [write comparison contract and executable plan](WRITE-PERFORMANCE-NEXT.md).
 
+The [latest write qualification](write-reference-qualification-v1/README.md)
+completes the independent Redis v4 reader and clean release. The isolated CRC
+candidate `e748620` passes fresh proof, 710 workspace tests/doctests (23 existing
+ignored), Clippy and ordinary recovery: 363 complete operations, including 26
+unknowns. Matched performance and actual candidate Chaos Mesh remain pending;
+there is no new accepted QPS result or default runtime change.
+
 ## Delivered foundation and product limits
 
 The current foundation provides three-voter RawKV, self-hosted metadata,
@@ -258,9 +265,11 @@ isolated GET improvement. Original setup/reader failures remain published.
 1. **Establish the three-copy write reference:** the version-4 Redis client adds
    same-connection SET/MSET plus WAIT 1/2, one deadline and no uncertain-write
    replay. [Local correctness evidence](redis-replication-reference-v1/README.md)
-   is complete; independent v4 performance validation and matched timing are next.
-2. **Optimize writes on selected ThinLTO:** reuse the proved slicing-by-eight CRC
-   experiment, then measured allocation/batching/replication costs. Existing
+   is complete. The independent v4 reader and clean release now pass; fresh
+   matched release-client smokes and timing are next.
+2. **Optimize writes on selected ThinLTO:** the reapplied slicing-by-eight CRC
+   experiment now passes fresh source/proof/release/ordinary-recovery checks.
+   Measure it before proceeding to allocation/batching/replication costs. Existing
    engine and Raft Ready group commit remain in place. Preserve the documented
    batch-write p99 problem and fixed-rate client drops.
 3. **Qualify improvements before promotion:** exact source proofs, complete API

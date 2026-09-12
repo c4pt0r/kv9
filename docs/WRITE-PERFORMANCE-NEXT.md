@@ -71,12 +71,14 @@ which was already used by the retained matched point measurements.
 cover real three-process SET/MSET confirmation, replica pause/shortfall controls,
 unknown-write/deadline/framing tests and backward report compatibility. This
 checkpoint provides no new QPS result and changes no KV9 runtime algorithm.
-The v4 independent performance-report reader and matched timing remain next.
+The [independent v4 reader and clean release](write-reference-qualification-v1/README.md)
+now pass 44 Python tests, all four original client reports and 32 rejection
+controls. Fresh matched release smokes and timing remain next.
 
 ## Executable development order
 
-1. Extend the independent report reader for v4 accounting and rejection controls.
-   Freeze a clean release client, the selected KV9 binary, Redis executable,
+1. The independent v4 reader and clean release client are qualified for accounting
+   and build provenance. Finish freezing the selected KV9 binary, Redis executable,
    three-node configuration, CPU allocation and finite workload protocol.
    Reuse the current source-bound build lock and retention/disk guards.
 2. Run SET/Put and MSET/BatchPut(64), concurrency 1 and 64, 128-byte values,
@@ -85,11 +87,15 @@ The v4 independent performance-report reader and matched timing remain next.
    Preserve every attempted cohort. Report successful calls/s, items/s,
    mean/p50/p95/p99, unknown writes, errors, drops and client/server CPU.
    No build, profiling or artifact compression may overlap timing.
-3. Resume the existing [slicing-by-eight CRC candidate and proof](https://github.com/c4pt0r/kv9/blob/65511010e2fda8adba04efd831a39bcdca1979a4/docs/CRC32-SLICING-QUALIFICATION.md).
+3. The existing [slicing-by-eight CRC candidate and proof](https://github.com/c4pt0r/kv9/blob/65511010e2fda8adba04efd831a39bcdca1979a4/docs/CRC32-SLICING-QUALIFICATION.md)
+   is now reapplied to selected ThinLTO as experimental `e748620`.
    It preserves the checksum polynomial and WAL bytes; it already has a
    source-bound Lean equivalence proof and ordinary recovery evidence on its
-   historical base. Rebase the isolated change onto selected ThinLTO and check
-   the exact new source. Historical kernel timings are not a database speedup.
+   historical base. Fresh exact-source checks now pass 47 distinct Lean theorem
+   statements, 710 workspace tests/doctests (23 existing ignored), Clippy, a clean
+   release and ordinary recovery with 363 complete operations and 26 unknowns.
+   [Original qualification evidence](write-reference-qualification-v1/README.md)
+   preserves the separate populations. Historical kernel timings are not a database speedup.
    Existing engine and Raft Ready group commit must not be reimplemented.
 4. Compare the isolated candidate with the frozen write baseline. Qualify useful
    improvements with full point/batch regression coverage, applicable exact

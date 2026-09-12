@@ -3,7 +3,9 @@
 > Latest direction: [optimize writes against three-copy Redis](WRITE-PERFORMANCE-NEXT.md).
 > Keep selected ThinLTO and Safe ReadIndex. The version-4 Redis reference client
 > now supports same-connection WAIT 1/2 with bounded deadlines and unknown-write
-> accounting. Local correctness is complete; matched throughput/latency is next.
+> accounting. Its independent reader and clean release are qualified. The isolated
+> CRC reapplication passes source/proof/release/ordinary recovery; matched
+> throughput/latency and actual candidate Chaos Mesh remain next.
 > Read optimization and lease qualification are held at the user's request.
 > Proof, actual Chaos Mesh and no-service-critical-singleton gates still apply.
 
