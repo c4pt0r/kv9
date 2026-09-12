@@ -33,7 +33,7 @@ does not itself imply a selected candidate or full industrial qualification.
 | Fixed global queue interval eight on CRC `3338650` | Revisit of `c893834` under newer c1/c64 GET/mixed scope; rejected again, c64 GET -2.390%. [Complete report](GLOBAL-QUEUE-PERFORMANCE.md). |
 | ThinLTO and one release codegen unit `02d0c01` | Complete [full72 comparison](RELEASE-THIN-LTO-FULL72.md): all 12 point/batch cells improve throughput/mean in both orders; c1/c64 GET +6.806%/+8.465%. Loaded BatchPut pooled p99 worsens, explicitly retained. Exact-build [21-window Chaos](RELEASE-THIN-LTO-CHAOS.md) accepted; [fresh main integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md) now passes. [Earlier screen](RELEASE-THIN-LTO-PERFORMANCE.md) remains separately scoped. |
 | Fixed-rate BatchPut tail diagnosis on CRC / selected `11113f6` | [Eight accepted cohorts](BATCH-WRITE-FIXED-RATE-RESULTS.md): ThinLTO whole-call and scheduled p99 remain higher at 8k/12k offered calls/s in both orders. All 797,956 issued calls succeed; 2,044 dropped slots prevent strict equal-work attribution. No runtime change or performance rerun. |
-| Bounded 32-us owner polling `2ca5fcc` | [Source/proof checkpoint](https://github.com/c4pt0r/kv9/blob/2ca5fccb157b26b6c3c79eb52f7c7838f10a5c8c/docs/BOUNDED-OWNER-POLL.md): 14 new TLAPS theorems / 49 obligations; 714 default and 443 diagnostic tests, overlapping populations. Complete original failures retained. [Clean release/recovery](OWNER-POLL-RECOVERY.md) now pass: 363 complete operations, 334 OK / 29 unknown. The 24-cohort fixed-client screen remains pending. No measured gain or selected runtime change. |
+| Bounded 32-us owner polling `2ca5fcc` | Rejected by the [complete 24-cohort screen](OWNER-POLL-PERFORMANCE.md): all eight matched workload/order comparisons regress QPS, mean and p99; all pooled workloads use more server CPU. C1/c64 GET QPS -18.963% / -25.251%; c1 CPU 1.6084 → 3.3527 estimated cores. Source/proof and ordinary recovery remain separately scoped. No retune, cohort rerun, promotion or new Chaos run. |
 
 ## Latest unmeasured prototypes
 
@@ -60,14 +60,17 @@ The observed leader-local round-trip means are 17.286 / 17.102 us, with local
 follower inbox admission-to-drain means 1.752–1.817 us. These are sampled
 lifecycle populations, not pure network or parked-thread durations.
 
-The isolated candidate `2ca5fcc` implements one bounded 32-us owner-poll budget before
-the existing condition-variable wait. No earlier listed experiment tested that
-mechanism. It preserves the authoritative mutex predicate, all notifications
-and the original deadline; it does not combine `42e0117` or retune Tokio workers,
-global queues, peer executors or request-body channels. Extra CPU and shared-core
-regression are explicit rejection risks. Require scheduling refinement and
-race/recovery checks before an uninstrumented c1/c64/mixed screen with both orders.
-This hypothesis is not an established removable cost or projected speedup.
+The isolated 32-us owner-poll candidate `2ca5fcc` is now rejected by its
+[complete screen](OWNER-POLL-PERFORMANCE.md). All eight workload/order comparisons
+lose throughput and worsen mean/p99, with more server CPU in every pooled cell.
+The original predicate, notifications, tick deadline and all Raft fences remain
+unchanged; successful source/proof/recovery gates do not predict performance.
+No poll-budget sweep, coalescing combination or losing-cohort replacement follows.
+
+Next reuse the existing traces and all-branch profiles before a bounded CPU/
+call-stack observation on the exact selected build, outside timing. Identify a
+concrete cost before another scheduling/transport change. The higher CPU use is
+consistent with shared-core contention but does not itself locate a hot stack.
 
 The ThinLTO candidate `02d0c01` now passes full workspace checks (709 tests,
 23 existing ignored, formatting/Clippy), a source-bound default production build,
@@ -86,9 +89,9 @@ is the single-GET quorum path. A combination with notification candidate
 `42e0117` requires its own matched qualification; historical percentages cannot
 be added.
 
-After this qualification, use the [quorum-path plan](QUORUM-LATENCY-NEXT.md)
-to localize isolated-read latency. Reuse the existing body-handoff measurement;
-new observation must resolve a remaining boundary before another rewrite.
+Use the [quorum-path plan](QUORUM-LATENCY-NEXT.md) and its completed captures
+before adding another observation. Existing body-handoff measurements remain
+reusable; new evidence must resolve a remaining cost before another rewrite.
 
 Before revisiting any row, state the new evidence and changed variable that
 could invalidate its old conclusion. A fresh branch, renamed helper or repeated
