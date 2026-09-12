@@ -4,6 +4,7 @@ use std::sync::Mutex;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use kv9_common::metrics::{NamedLatency, WalIoMetrics, BUCKETS};
+use kv9_raft::body_profile::BodySnapshot;
 use kv9_raft::driver::{ApplyLagObservation, NodeDriver};
 use serde::Serialize;
 
@@ -54,6 +55,7 @@ struct Document<'a> {
     export_failures_saturated: bool,
     apply_lag: ApplyLag,
     metrics: Vec<NamedLatency>,
+    raft_request_body_handoff: Option<BodySnapshot>,
 }
 
 struct ExportState {
@@ -184,7 +186,7 @@ impl MetricsExporter {
     pub(crate) fn export(
         &self,
         force: bool,
-        capture: impl FnOnce() -> (Vec<NamedLatency>, ApplyLagObservation),
+        capture: impl FnOnce() -> (Vec<NamedLatency>, ApplyLagObservation, Option<BodySnapshot>),
     ) {
         let (failures, saturated) = {
             let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
@@ -195,7 +197,7 @@ impl MetricsExporter {
             state.next = now + INTERVAL;
             (state.failures, state.failures_saturated)
         };
-        let (metrics, lag) = capture();
+        let (metrics, lag, raft_request_body_handoff) = capture();
         let document = Document {
             schema_version: 2,
             node_id: self.node_id,
@@ -213,6 +215,7 @@ impl MetricsExporter {
             export_failures_saturated: saturated,
             apply_lag: lag.into(),
             metrics,
+            raft_request_body_handoff,
         };
         let outcome = self.write_document(&document);
         let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
@@ -260,7 +263,7 @@ pub(crate) fn capture<S, E>(
     driver: &NodeDriver<S, E>,
     raft: &WalIoMetrics,
     engine: &WalIoMetrics,
-) -> (Vec<NamedLatency>, ApplyLagObservation)
+) -> (Vec<NamedLatency>, ApplyLagObservation, Option<BodySnapshot>)
 where
     S: kv9_raft::rawnode::PersistentRaftStorage,
     E: kv9_raft::ApplyStore + 'static,
@@ -279,7 +282,11 @@ where
     ] {
         metrics.push(NamedLatency::new(name, latency));
     }
-    (metrics, driver.apply_lag_observation())
+    (
+        metrics,
+        driver.apply_lag_observation(),
+        driver.body_handoff_snapshot(),
+    )
 }
 
 #[cfg(test)]
@@ -371,7 +378,9 @@ mod tests {
     fn export_inventory_is_fixed_and_worst_case_document_fits_the_cap() {
         let (admission, driver) = fixture();
         let io = WalIoMetrics::default();
-        let (mut metrics, lag) = capture(&admission, &driver, &io, &io);
+        let (mut metrics, lag, no_body) = capture(&admission, &driver, &io, &io);
+        assert!(no_body.is_none());
+        let mut body = kv9_raft::body_profile::BodyProfile::default().snapshot();
         assert_eq!(metrics.len(), METRIC_COUNT);
         let names: std::collections::BTreeSet<_> = metrics.iter().map(|m| m.name).collect();
         assert_eq!(names.len(), METRIC_COUNT);
@@ -381,22 +390,28 @@ mod tests {
         assert!(names.contains("raft_pump_idle_wait"));
         assert!(names.contains("raft_pump_iteration_spacing"));
         assert!(names.contains("engine_wal_record_sync"));
-        for metric in &mut metrics {
-            for h in &mut metric.latency.outcomes {
-                assert_eq!(h.buckets.len(), 65);
-                h.buckets.fill(u64::MAX);
-                h.count = u64::MAX;
-                h.sum_ns = u64::MAX;
-                h.min_ns = Some(u64::MAX);
-                h.max_ns = Some(u64::MAX);
-                let bounds = Some(BucketBounds {
-                    lower_ns: u64::MAX,
-                    upper_ns: u64::MAX,
-                });
-                h.p50 = bounds;
-                h.p95 = bounds;
-                h.p99 = bounds;
-            }
+        let original = metrics.iter_mut().flat_map(|m| &mut m.latency.outcomes);
+        // Only request-body yielding records a duration; all other outcomes
+        // remain schema-complete empty histograms. Drops have unknown duration.
+        let extension = body
+            .classes
+            .iter_mut()
+            .flat_map(|row| &mut row.latency.outcomes)
+            .filter(|h| h.outcome == Outcome::Success);
+        for h in original.chain(extension) {
+            assert_eq!(h.buckets.len(), 65);
+            h.buckets.fill(u64::MAX);
+            h.count = u64::MAX;
+            h.sum_ns = u64::MAX;
+            h.min_ns = Some(u64::MAX);
+            h.max_ns = Some(u64::MAX);
+            let bounds = Some(BucketBounds {
+                lower_ns: u64::MAX,
+                upper_ns: u64::MAX,
+            });
+            h.p50 = bounds;
+            h.p95 = bounds;
+            h.p99 = bounds;
         }
         let dir = std::env::temp_dir().join(format!(
             "kv9-metrics-bound-{}-{}",
@@ -405,7 +420,18 @@ mod tests {
         ));
         std::fs::create_dir(&dir).unwrap();
         let exporter = MetricsExporter::new(&dir, u64::MAX);
-        exporter.export(true, || (metrics, lag));
+        for row in &mut body.classes {
+            row.offered_batches = u64::MAX;
+            row.selected_from_offers = u64::MAX;
+            row.offered_message_counts.fill(u64::MAX);
+            row.yielded_sample_message_counts.fill(u64::MAX);
+            row.abandoned_sample_message_counts.fill(u64::MAX);
+            row.abandoned_unknown_duration = u64::MAX;
+        }
+        for event in &mut body.session_events {
+            event.count = u64::MAX;
+        }
+        exporter.export(true, || (metrics, lag, Some(body)));
         let bytes = std::fs::read(dir.join("metrics.json")).unwrap();
         assert!(
             bytes.len() < MAX_EXPORT_BYTES - 4096,
@@ -413,6 +439,13 @@ mod tests {
         );
         let value: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
         assert_eq!(value["schema_version"], 2);
+        assert_eq!(
+            value["raft_request_body_handoff"]["classes"]
+                .as_array()
+                .unwrap()
+                .len(),
+            8
+        );
         assert_eq!(value["metrics"].as_array().unwrap().len(), METRIC_COUNT);
         assert!(value["apply_lag"]["lag_entries"].is_null());
         exporter.export(false, || panic!("rate-limited export must not collect"));

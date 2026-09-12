@@ -29,6 +29,7 @@ use tonic::{Request, Response, Status, Streaming};
 
 use kv9_common::{BootstrapGeneration, ClusterId, Error, NodeId, RootDigest, StoreIncarnation};
 
+use crate::body_profile::{self, BodyProfile, Composition, Event, ObservedBatch, ObservedStream};
 use crate::transport::RaftTransport;
 
 /// Generated protobuf/tonic types for `proto/kv9_raft.proto`.
@@ -907,6 +908,7 @@ struct PeerDestination {
 }
 
 struct OutboundMessage {
+    kind: usize,
     destination: Arc<PeerDestination>,
     envelope: pb::RaftEnvelope,
 }
@@ -952,6 +954,7 @@ pub struct GrpcTransport {
     /// recovery (which, in-process, would revive the wedged socket itself and
     /// erase the old/new discrimination).
     connect_attempts: Arc<AtomicU64>,
+    body_profile: Arc<BodyProfile>,
     /// Deterministic partition injection (task #28). Consulted symmetrically:
     /// `send` drops outbound to a masked peer, `drain` drops inbound from one —
     /// both check this single mask, so one process isolates a peer in both
@@ -981,6 +984,7 @@ impl GrpcTransport {
             inbox,
             root_digest,
             connect_attempts: Arc::new(AtomicU64::new(0)),
+            body_profile: Arc::default(),
             #[cfg(any(test, feature = "testing"))]
             partition: crate::testing::PartitionState::from_env(),
         })
@@ -1065,7 +1069,7 @@ impl GrpcTransport {
         self.connect_attempts.load(Ordering::Relaxed)
     }
 
-    fn enqueue(&self, to: NodeId, envelope: pb::RaftEnvelope) {
+    fn enqueue_with_kind(&self, to: NodeId, envelope: pb::RaftEnvelope, kind: usize) {
         let mut peers = self.peers.lock().expect("peers poisoned");
         let Some(peer) = peers.get_mut(&to.0) else {
             return; // unknown peer: Raft retransmits after registration
@@ -1084,6 +1088,7 @@ impl GrpcTransport {
                 rx,
                 updates,
                 self.connect_attempts.clone(),
+                self.body_profile.clone(),
             ));
             peer.sender = Some(PeerSender {
                 queue,
@@ -1099,6 +1104,7 @@ impl GrpcTransport {
             .unwrap()
             .queue
             .try_send(OutboundMessage {
+                kind,
                 destination: peer.destination.clone(),
                 envelope,
             });
@@ -1106,6 +1112,9 @@ impl GrpcTransport {
 }
 
 impl RaftTransport for GrpcTransport {
+    fn body_handoff_snapshot(&self) -> Option<body_profile::BodySnapshot> {
+        Some(self.body_profile.snapshot())
+    }
     fn set_work_signal(&self, signal: Arc<crate::work::WorkSignal>) {
         self.inbox.set_signal(signal);
     }
@@ -1128,7 +1137,7 @@ impl RaftTransport for GrpcTransport {
             epoch_conf_ver: 0,
             epoch_version: 0,
         };
-        self.enqueue(to, env);
+        self.enqueue_with_kind(to, env, body_profile::kind(&msg));
     }
 
     fn drain(&self) -> Vec<Message> {
@@ -1161,6 +1170,7 @@ async fn peer_worker(
     mut rx: mpsc::Receiver<OutboundMessage>,
     mut updates: watch::Receiver<Arc<PeerDestination>>,
     connect_attempts: Arc<AtomicU64>,
+    profile: Arc<BodyProfile>,
 ) {
     loop {
         // Clone and release the watch borrow before any await or route lock.
@@ -1168,10 +1178,14 @@ async fn peer_worker(
         tokio::select! {
             biased;
             changed = updates.changed() => {
-                if changed.is_err() { return; }
+                if changed.is_err() {
+                    profile.event(Event::RouteWatchClosed);
+                    return;
+                }
+                profile.event(Event::RouteChanged);
             }
             _ = peer_session(me, &token, root_digest, &mut rx, &destination,
-                             &connect_attempts) => return,
+                             &connect_attempts, &profile) => return,
         }
     }
 }
@@ -1180,11 +1194,11 @@ async fn peer_worker(
 async fn receive_for_destination(
     rx: &mut mpsc::Receiver<OutboundMessage>,
     destination: &Arc<PeerDestination>,
-) -> Option<pb::RaftEnvelope> {
+) -> Option<(pb::RaftEnvelope, usize)> {
     let mut discarded = 0;
     while let Some(message) = rx.recv().await {
         if Arc::ptr_eq(&message.destination, destination) {
-            return Some(message.envelope);
+            return Some((message.envelope, message.kind));
         }
         discarded += 1;
         if discarded == MAX_BATCH_MSGS {
@@ -1202,11 +1216,14 @@ async fn receive_for_destination(
 /// producer cannot monopolize a Tokio turn. A single legal message may cross
 /// the byte target, as in the existing transport contract.
 fn coalesce_queued(
-    first: pb::RaftEnvelope,
+    first: (pb::RaftEnvelope, usize),
     root_digest: RootDigest,
     rx: &mut mpsc::Receiver<OutboundMessage>,
     destination: &Arc<PeerDestination>,
-) -> pb::BatchRaftMessage {
+) -> (pb::BatchRaftMessage, Composition) {
+    let (first, kind) = first;
+    let mut composition = [0; 7];
+    composition[kind] = 1;
     let mut bytes = first.raft_message.len();
     let mut batch = pb::BatchRaftMessage {
         msgs: vec![first],
@@ -1222,10 +1239,11 @@ fn coalesce_queued(
         };
         if Arc::ptr_eq(&message.destination, destination) {
             bytes += message.envelope.raft_message.len();
+            composition[message.kind] += 1;
             batch.msgs.push(message.envelope);
         }
     }
-    batch
+    (batch, composition)
 }
 
 /// Batch one route generation by queued count/bytes and reconnect with backoff.
@@ -1236,6 +1254,7 @@ async fn peer_session(
     rx: &mut mpsc::Receiver<OutboundMessage>,
     destination: &Arc<PeerDestination>,
     connect_attempts: &AtomicU64,
+    profile: &BodyProfile,
 ) {
     let url = format!("http://{}", destination.addr);
     let mut backoff = RECONNECT_MIN;
@@ -1262,6 +1281,7 @@ async fn peer_session(
             // Either way: drain whatever queued during the outage (drop:
             // best-effort), back off, retry.
             Ok(Err(_)) | Err(_) => {
+                profile.event(Event::ConnectFailedOrTimedOut);
                 for _ in 0..PEER_QUEUE {
                     if rx.try_recv().is_err() {
                         break;
@@ -1274,8 +1294,8 @@ async fn peer_session(
         };
 
         // One stream per connection; the receiver task of `outbound` feeds it.
-        let (batch_tx, batch_rx) = mpsc::channel::<pb::BatchRaftMessage>(16);
-        let stream = tokio_stream::wrappers::ReceiverStream::new(batch_rx);
+        let (batch_tx, batch_rx) = mpsc::channel::<ObservedBatch>(16);
+        let stream = ObservedStream::new(tokio_stream::wrappers::ReceiverStream::new(batch_rx));
         let mut stream_req = Request::new(stream);
         attach_auth(&mut stream_req, token, me);
         let rpc = client.batch_raft(stream_req);
@@ -1286,12 +1306,18 @@ async fn peer_session(
             let first = tokio::select! {
                 m = receive_for_destination(rx, destination) => match m {
                     Some(m) => m,
-                    None => return, // transport dropped: shut down worker
+                    None => {
+                        profile.event(Event::OutboundQueueClosed);
+                        return; // transport dropped: shut down worker
+                    },
                 },
                 // The RPC resolving means the server closed our stream.
-                _ = &mut rpc => break 'batching,
+                _ = &mut rpc => {
+                    profile.event(Event::RpcResolvedBeforeBatch);
+                    break 'batching;
+                },
             };
-            let batch = coalesce_queued(first, root_digest, rx, destination);
+            let (batch, composition) = coalesce_queued(first, root_digest, rx, destination);
             // Three-way select: the send may complete (normal path), the RPC
             // may resolve (server closed the stream — reconnect), or neither
             // within STREAM_PROGRESS_BUDGET (established stream stopped
@@ -1300,14 +1326,20 @@ async fn peer_session(
             // its h2 layer still acks PINGs — reconnect). A bare send, or a
             // send/rpc select without a clock, are the two- and one-arm
             // versions of the same wedge as the unbudgeted connect.
+            let batch = profile.offer(batch, composition);
             tokio::select! {
                 sent = batch_tx.send(batch) => {
                     if sent.is_err() {
+                        profile.event(Event::BatchChannelClosed);
                         break 'batching; // stream side gone: reconnect
                     }
                 }
-                _ = &mut rpc => break 'batching,
+                _ = &mut rpc => {
+                    profile.event(Event::RpcResolvedDuringOffer);
+                    break 'batching;
+                },
                 _ = tokio::time::sleep(STREAM_PROGRESS_BUDGET) => {
+                    profile.event(Event::ProgressBudgetExpired);
                     break 'batching; // stream stalled: drop it, reconnect
                 }
             }
@@ -1768,6 +1800,7 @@ mod tests {
             let (tx, mut rx) = mpsc::channel(4);
             for (destination, from_node) in [(a, 10), (b, 20), (new_a.clone(), 30)] {
                 tx.send(OutboundMessage {
+                    kind: 6,
                     destination,
                     envelope: pb::RaftEnvelope {
                         from_node,
@@ -1782,6 +1815,7 @@ mod tests {
                 receive_for_destination(&mut rx, &new_a)
                     .await
                     .unwrap()
+                    .0
                     .from_node,
                 30
             );
@@ -1800,6 +1834,7 @@ mod tests {
         let (tx, mut rx) = mpsc::channel(MAX_BATCH_MSGS * 2);
         for index in 0..MAX_BATCH_MSGS {
             tx.try_send(OutboundMessage {
+                kind: 6,
                 destination: stale.clone(),
                 envelope: pb::RaftEnvelope {
                     from_node: index as u64 + 2,
@@ -1809,6 +1844,7 @@ mod tests {
             .unwrap();
         }
         tx.try_send(OutboundMessage {
+            kind: 6,
             destination: destination.clone(),
             envelope: pb::RaftEnvelope {
                 from_node: 999,
@@ -1816,15 +1852,19 @@ mod tests {
             },
         })
         .unwrap();
-        let batch = coalesce_queued(
-            pb::RaftEnvelope {
-                from_node: 1,
-                ..Default::default()
-            },
+        let (batch, composition) = coalesce_queued(
+            (
+                pb::RaftEnvelope {
+                    from_node: 1,
+                    ..Default::default()
+                },
+                6,
+            ),
             RootDigest::from_bytes([1; 32]),
             &mut rx,
             &destination,
         );
+        assert_eq!(composition, [0, 0, 0, 0, 0, 0, 1]);
         assert_eq!(
             batch.msgs.len(),
             1,
@@ -1846,12 +1886,13 @@ mod tests {
             raft_message: vec![7; size],
             ..Default::default()
         };
-        let empty = coalesce_queued(
-            envelope(0, 0),
+        let (empty, composition) = coalesce_queued(
+            (envelope(0, 0), 6),
             RootDigest::from_bytes([0; 32]),
             &mut rx,
             &destination,
         );
+        assert_eq!(composition, [0, 0, 0, 0, 0, 0, 1]);
         assert_eq!(
             empty.msgs.len(),
             1,
@@ -1859,17 +1900,19 @@ mod tests {
         );
         for index in 1..=MAX_BATCH_MSGS {
             tx.try_send(OutboundMessage {
+                kind: 6,
                 destination: destination.clone(),
                 envelope: envelope(index as u64, 0),
             })
             .unwrap();
         }
-        let full = coalesce_queued(
-            envelope(0, 0),
+        let (full, composition) = coalesce_queued(
+            (envelope(0, 0), 6),
             RootDigest::from_bytes([0; 32]),
             &mut rx,
             &destination,
         );
+        assert_eq!(composition, [0, 0, 0, 0, 0, 0, MAX_BATCH_MSGS as u64]);
         assert_eq!(
             full.msgs.iter().map(|m| m.from_node).collect::<Vec<_>>(),
             (0..MAX_BATCH_MSGS as u64).collect::<Vec<_>>()
@@ -1880,19 +1923,69 @@ mod tests {
         );
         for id in 1..=2 {
             tx.try_send(OutboundMessage {
+                kind: 6,
                 destination: destination.clone(),
                 envelope: envelope(id, MAX_BATCH_BYTES / 2 + 1),
             })
             .unwrap();
         }
-        let bytes = coalesce_queued(
-            envelope(0, MAX_BATCH_BYTES / 2),
+        let (bytes, composition) = coalesce_queued(
+            (envelope(0, MAX_BATCH_BYTES / 2), 6),
             RootDigest::from_bytes([0; 32]),
             &mut rx,
             &destination,
         );
+        assert_eq!(composition, [0, 0, 0, 0, 0, 0, 2]);
         assert_eq!(bytes.msgs.len(), 2);
         assert_eq!(rx.try_recv().unwrap().envelope.from_node, 2);
+    }
+
+    #[test]
+    fn mixed_batch_composition_counts_only_delivered_generation_members() {
+        let destination = Arc::new(PeerDestination {
+            addr: "127.0.0.1:1".parse().unwrap(),
+        });
+        let stale = Arc::new(PeerDestination {
+            addr: destination.addr,
+        });
+        let envelope = |id| pb::RaftEnvelope {
+            from_node: id,
+            ..Default::default()
+        };
+        let (tx, mut rx) = mpsc::channel(16);
+        for (route, id, kind) in [
+            (destination.clone(), 2, 2),
+            (stale, 3, 1),
+            (destination.clone(), 4, 0),
+        ] {
+            tx.try_send(OutboundMessage {
+                destination: route,
+                envelope: envelope(id),
+                kind,
+            })
+            .unwrap();
+        }
+        let (batch, composition) = coalesce_queued(
+            (envelope(1), 0),
+            RootDigest::from_bytes([0; 32]),
+            &mut rx,
+            &destination,
+        );
+        assert_eq!(
+            batch.msgs.iter().map(|m| m.from_node).collect::<Vec<_>>(),
+            vec![1, 2, 4]
+        );
+        assert_eq!(composition, [2, 0, 1, 0, 0, 0, 0]);
+        let profile = BodyProfile::default();
+        let offered = profile.offer(batch, composition);
+        let snapshot = profile.snapshot();
+        assert_eq!(snapshot.classes[7].offered_batches, 1);
+        assert_eq!(snapshot.classes[7].offered_message_counts, composition);
+        drop(offered);
+        assert_eq!(
+            profile.snapshot().classes[7].abandoned_sample_message_counts,
+            composition
+        );
     }
 
     #[test]

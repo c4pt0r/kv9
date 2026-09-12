@@ -12,6 +12,7 @@
 
 mod async_apply;
 mod async_read;
+pub mod body_profile;
 pub mod command;
 pub mod driver;
 pub mod grpc;
