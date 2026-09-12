@@ -18,6 +18,23 @@ core-protocol implementation proofs, the full actual Chaos Mesh failure matrix,
 independent host-failure acceptance, dynamic data groups and automatic splits
 remain open. An abstract proof or one-host fault run does not close these gates.
 
+## Current read-latency implementation
+
+The [bounded quorum-message trace](QUORUM-MESSAGE-TRACE.md) is implemented on
+isolated diagnostic branch `codex/quorum-message-trace` at `1875e74`. It preserves
+existing contexts, local route lifetimes and all consensus/apply fences, with
+bounded sampling, explicit loss and one-shot post-measurement export.
+Local source checks pass: 709 default tests, 453 diagnostic tests, 438 existing
+read-stage tests, all three Clippy configurations, and 17 synthetic reader
+controls. Test populations overlap; existing ignored tests remain documented.
+A complete local chain requires intermediate queue observations, and repeated
+contexts or observation loss cannot authorize full message attribution.
+
+The first clean diagnostic release (`fe19660e`) and its source/feature binding
+also pass. Actual trace capture and an uninstrumented overhead comparison are next. There
+is no new GET QPS, runtime optimization, recovery or Chaos acceptance in this
+source checkpoint. The qualified default runtime remains selected.
+
 ## Latest fixed-rate write diagnosis
 
 The [eight-cohort fixed-rate result](BATCH-WRITE-FIXED-RATE-RESULTS.md) is now
@@ -32,7 +49,7 @@ Four smoke/eight timed cohorts, 32 exited timed lifetimes, 24 fresh drains and
 all twelve byte-retention records pass independent readback. The first reader's
 obsolete Redis pairing lookup failed after all eight per-cohort checks; its
 six-line repair and original failure remain published. No cohort was rerun.
-The next main implementation investigation is the exact single-GET quorum path.
+The quorum-path recorder now passes source checks; actual diagnosis is next.
 
 ## Latest completed optimization experiment
 

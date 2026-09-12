@@ -25,8 +25,12 @@ regression. The [completed fixed-rate diagnosis](BATCH-WRITE-FIXED-RATE-RESULTS.
 retains higher whole-call and scheduled p99 at both offered rates and both
 orders, with 2,044 client-dropped slots preventing strict matched-work inference.
 All 797,956 issued calls succeed; no performance cohort was rerun. Client timer
-calibration is a separate environment question. The main next work is the
-single-GET quorum-path diagnostic, with no premature server-cause claim.
+calibration is a separate environment question. The [quorum-message recorder](QUORUM-MESSAGE-TRACE.md)
+now passes local source checks on isolated branch `1875e74`; its 17 offline
+reader controls and the first production diagnostic build also pass. Next,
+capture the three-voter c1 GET experiment
+and quantify observer overhead before changing the measured source boundary.
+No new GET performance or server-cause claim follows from source qualification.
 Keep notification candidate `42e0117` separate; its gains cannot be added to
 ThinLTO's measurements. The [next latency investigation](QUORUM-LATENCY-NEXT.md)
 targets unresolved intervals inside a fresh quorum round, reusing completed
