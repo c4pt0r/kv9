@@ -41,11 +41,22 @@ lifetimes, 12 drains and source/listener/retention/restoration checks pass.
 This completes diagnosis, not a database speedup or new Chaos acceptance.
 Selected default runtime remains `11113f6`.
 
-Next, test bounded owner polling against the observed inbox residence, keeping
-the original mutex/condition-variable predicate and tick deadline. One fixed
-32-us poll budget needs scheduling refinement/race checks, clean build/recovery,
-and uninstrumented c1/c64/mixed comparisons with CPU cost and read/write tails.
-Notification coalescing stays separate; no result or promotion is assumed.
+The isolated [bounded owner-poll candidate `2ca5fcc`](https://github.com/c4pt0r/kv9/blob/2ca5fccb157b26b6c3c79eb52f7c7838f10a5c8c/docs/BOUNDED-OWNER-POLL.md) now implements
+one fixed 32-us optional poll before the original mutex/condition-variable wait.
+Its 14 new TLAPS theorems / 49 obligations, finite safety/service models and
+negative proof controls pass. Five new race controls, 714 default workspace
+tests (23 existing ignored), 443 standalone read-stage tests (one ignored),
+formatting and Clippy pass; test populations overlap. The original proof drafts,
+pre-Cargo inventory failure and misnamed diagnostic-feature command are retained.
+[Build inventory repair `2ccb478`](BUILD-CACHE-SAFETY.md#retained-evidence-in-source-inventories)
+now hashes published archives under a separate bounded allowance.
+
+A clean default release, ordinary recovery and the uninstrumented c1/c64 GET/mixed
+screen remain pending. The screen preserves 12 two-second smoke / 24 ten-second
+timed cohorts, Redis and both full run orders. CPU cost and read/write tails are
+mandatory; notification coalescing stays separate. No new performance result,
+selected runtime change, Chaos acceptance or original checklist closure follows.
+Production still uses leader Safe ReadIndex; no lease-read shortcut is enabled.
 
 ## Latest fixed-rate write diagnosis
 
@@ -61,7 +72,8 @@ Four smoke/eight timed cohorts, 32 exited timed lifetimes, 24 fresh drains and
 all twelve byte-retention records pass independent readback. The first reader's
 obsolete Redis pairing lookup failed after all eight per-cohort checks; its
 six-line repair and original failure remain published. No cohort was rerun.
-The quorum-path diagnosis is now complete; a bounded owner-poll candidate is next.
+The quorum-path diagnosis is complete; the owner-poll candidate has passed its
+source/proof checkpoint and awaits runtime qualification.
 
 ## Latest completed optimization experiment
 

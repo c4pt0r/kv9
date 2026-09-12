@@ -34,6 +34,8 @@ does not itself imply a selected candidate or full industrial qualification.
 | ThinLTO and one release codegen unit `02d0c01` | Complete [full72 comparison](RELEASE-THIN-LTO-FULL72.md): all 12 point/batch cells improve throughput/mean in both orders; c1/c64 GET +6.806%/+8.465%. Loaded BatchPut pooled p99 worsens, explicitly retained. Exact-build [21-window Chaos](RELEASE-THIN-LTO-CHAOS.md) accepted; [fresh main integration `11113f6`](RELEASE-THIN-LTO-MAIN-INTEGRATION.md) now passes. [Earlier screen](RELEASE-THIN-LTO-PERFORMANCE.md) remains separately scoped. |
 | Fixed-rate BatchPut tail diagnosis on CRC / selected `11113f6` | [Eight accepted cohorts](BATCH-WRITE-FIXED-RATE-RESULTS.md): ThinLTO whole-call and scheduled p99 remain higher at 8k/12k offered calls/s in both orders. All 797,956 issued calls succeed; 2,044 dropped slots prevent strict equal-work attribution. No runtime change or performance rerun. |
 
+| Bounded 32-us owner polling `2ca5fcc` | [Source/proof checkpoint](https://github.com/c4pt0r/kv9/blob/2ca5fccb157b26b6c3c79eb52f7c7838f10a5c8c/docs/BOUNDED-OWNER-POLL.md): 14 new TLAPS theorems / 49 obligations; 714 default and 443 diagnostic tests, overlapping populations. Complete original failures retained. Clean release, recovery and the 24-cohort fixed-client screen remain pending. No measured gain or selected runtime change. |
+
 ## Latest unmeasured prototypes
 
 `d94cdee` returned handler polling to the stream owner. It passed 436 local
@@ -59,7 +61,7 @@ The observed leader-local round-trip means are 17.286 / 17.102 us, with local
 follower inbox admission-to-drain means 1.752–1.817 us. These are sampled
 lifecycle populations, not pure network or parked-thread durations.
 
-The next isolated candidate tests one bounded 32-us owner-poll budget before
+The isolated candidate `2ca5fcc` implements one bounded 32-us owner-poll budget before
 the existing condition-variable wait. No earlier listed experiment tested that
 mechanism. It preserves the authoritative mutex predicate, all notifications
 and the original deadline; it does not combine `42e0117` or retune Tokio workers,

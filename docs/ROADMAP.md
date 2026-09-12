@@ -31,9 +31,13 @@ repair. Six repaired prefixes have zero loss, 2,318 matched leader-local round-t
 candidates and 1,159 exact group chains. The 17.286 / 17.102-us round-trip means
 include transport and remote work; 0.285 / 0.297-us confirmation-to-eligibility
 means retain the original successful pump/apply fence. This is diagnosis, not
-a new selected runtime speedup. Next test one bounded 32-us owner-poll budget
-against observed inbox residence, with scheduling refinement, race/recovery
-checks and fixed-client c1/c64/mixed throughput, latency and CPU-cost acceptance.
+a new selected runtime speedup. The [32-us owner-poll source checkpoint](https://github.com/c4pt0r/kv9/blob/2ca5fccb157b26b6c3c79eb52f7c7838f10a5c8c/docs/BOUNDED-OWNER-POLL.md)
+now passes 14 new TLAPS theorems / 49 obligations, model/negative controls,
+714 default tests and 443 standalone read-stage tests, with overlapping
+populations. Original failed drafts and command/build-inventory failures remain
+retained. Next qualify the clean default release and ordinary recovery before
+the fixed-client 24-cohort c1/c64 GET/mixed screen, including Redis, both orders,
+latency and CPU cost. Main still selects `11113f6`; no speedup is assumed.
 Keep notification candidate `42e0117` separate; its gains cannot be added to
 ThinLTO's measurements. The [next latency investigation](QUORUM-LATENCY-NEXT.md)
 targets unresolved intervals inside a fresh quorum round, reusing completed
