@@ -56,8 +56,9 @@ isolated GET mean is 35.226 us, about 6.21 times the same-run Redis mean.
 The exact `02d0c01` build now passes the [21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md),
 with 9,923 complete history operations and all observed server lifetimes exited.
 Next qualify 36 smoke / 72 timed point/batch cohorts with the fixed clients.
-Local capacity and large-file retention qualification precede that campaign;
-its duration, workloads and acceptance predicates remain fixed.
+Large-file compression/decode/restore qualification and a real historical WAL
+restore pilot pass. Further local capacity precedes that campaign; its duration,
+workloads and acceptance predicates remain fixed.
 [Source and ordinary recovery validation](RELEASE-THIN-LTO-VALIDATION.md) also
 passes within its documented scope. Separate notification candidate
 `42e0117` remains experimental; combining it with ThinLTO requires a distinct

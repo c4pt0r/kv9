@@ -121,6 +121,13 @@ retain metadata failures and subsequent bounded cache reclamation. Current
 ThinLTO originals remain resident. No benchmark predicate or storage floor was
 lowered; no old payload was discarded.
 
+[Further CRC72 retention and large-file qualification](https://github.com/c4pt0r/kv9/blob/7d869009602919748a8cd8e920dade305e3072fb/docs/thin-lto-capacity-v1/README.md)
+records 554 additional cold files, the seven-file real restore pilot and actual
+1 GiB-plus synthetic qualification. Those old CRC72 full audits now require
+rehydration; current ThinLTO timing evidence remains resident. This environment
+work supplies no new performance measurement and does not establish full-matrix
+storage capacity.
+
 Evidence lives on a separate immutable commit so subsequent main source
 snapshots do not repeatedly absorb another archive. Reports and the experiment
 index keep the cross-branch evidence discoverable.
