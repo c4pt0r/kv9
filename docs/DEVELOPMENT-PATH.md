@@ -2,8 +2,10 @@
 
 > Latest direction: [ThinLTO qualification](RELEASE-THIN-LTO-PERFORMANCE.md)
 > improves c64 GET 8.511%, c1 GET 6.402% and c64 mixed throughput 10.424%, with
-> better means and p99 in both orders. Freeze `02d0c01` for broader API and actual
-> exact-build Chaos Mesh gates; CRC remains selected. Consult the
+> better means and p99 in both orders. The exact build now passes the
+> [21-window Chaos matrix](RELEASE-THIN-LTO-CHAOS.md), including 9,923 complete
+> history operations. Broader point/batch performance remains next; CRC stays
+> selected. Consult the
 > [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before another candidate.
 > Redis read parity and industrial gates remain open.
 

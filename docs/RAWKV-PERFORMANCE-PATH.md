@@ -2,8 +2,10 @@
 
 > Latest direction: [ThinLTO qualification](RELEASE-THIN-LTO-PERFORMANCE.md)
 > improves c64 GET 8.511%, c1 GET 6.402% and c64 mixed throughput 10.424%, with
-> better means and p99 in both orders. Freeze `02d0c01` for broader API and actual
-> exact-build Chaos Mesh gates; CRC remains selected. Consult the
+> better means and p99 in both orders. The exact build now passes the
+> [21-window Chaos matrix](RELEASE-THIN-LTO-CHAOS.md), including 9,923 complete
+> history operations. Broader point/batch performance remains next; CRC stays
+> selected. Consult the
 > [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before another candidate.
 > Redis read parity and industrial gates remain open.
 
@@ -51,9 +53,13 @@ throughput +13.891% at c1 / +10.424% at c64. Mean/p99 improve in both orders,
 including separate mixed GET/PUT. The candidate reaches 376,202 GET/s at c64;
 isolated GET mean is 35.226 us, about 6.21 times the same-run Redis mean.
 
-Freeze `02d0c01` for broader point/batch API checks and actual exact-build Chaos
-Mesh. Its [source and ordinary recovery validation](RELEASE-THIN-LTO-VALIDATION.md)
-is complete within the documented scope. Separate notification candidate
+The exact `02d0c01` build now passes the [21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md),
+with 9,923 complete history operations and all observed server lifetimes exited.
+Next qualify 36 smoke / 72 timed point/batch cohorts with the fixed clients.
+Local capacity and large-file retention qualification precede that campaign;
+its duration, workloads and acceptance predicates remain fixed.
+[Source and ordinary recovery validation](RELEASE-THIN-LTO-VALIDATION.md) also
+passes within its documented scope. Separate notification candidate
 `42e0117` remains experimental; combining it with ThinLTO requires a distinct
 matched qualification. Fresh ReadIndex, sealed groups, successful pump/apply/view
 fences and durable writes remain mandatory. Historical rejected scheduling

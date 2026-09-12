@@ -45,8 +45,13 @@ and ordinary recovery histories with 359 operations (326 OK / 33 unknown).
 The production compiler flags/default feature graph and source identity are
 verified separately from the workspace test graph.
 
-Candidate `02d0c01` remains experimental pending broader API and actual
-exact-build Chaos Mesh qualification. Selected runtime remains CRC. The result
+Candidate `02d0c01` now passes the [21-window actual Chaos matrix](RELEASE-THIN-LTO-CHAOS.md):
+**9,923 complete history operations** (9,371 OK / 35 refused / 517 unknown),
+with positive fault effects, four fresh final replica drains and **33 observed
+server lifetimes / 25 containers** confirmed exited or removed. The original
+delay-selector failure and its tested correction remain separately retained.
+Broader point/batch performance qualification is pending; selected runtime
+remains CRC. This correctness run adds no new QPS measurement. The result
 reaches 73.635% of Redis c64 GET throughput; isolated GET mean is still about
 6.21 times Redis. Read parity is not complete.
 
@@ -71,10 +76,13 @@ The [cross-branch experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) now links
 prior decisions, including earlier global-queue and persistent-stream-worker
 regressions. The latest single-owner and two-worker revisits stop before timing;
 they provide no new performance result. Scheduling rewrites require a new cause.
-The ThinLTO candidate now passes source, ordinary recovery and the complete
-point-read/mixed screen above. Next complete its broader API and actual
-exact-build fault gates before considering default promotion. Do not add its
-percentage to the separate notification candidate's historical improvement.
+The ThinLTO candidate now passes source, ordinary recovery, the complete
+point-read/mixed screen above and the 21-window actual exact-build fault gate.
+Next complete 36 smoke / 72 timed broader point/batch cohorts. A post-process
+compressed-retention preparation passes 53 helper controls; large-file and
+actual capacity qualification are still required before runtime. Storage floors
+and workloads remain unchanged. Finish these gates before default promotion.
+Do not add its percentage to the separate notification candidate's historical improvement.
 The read milestone remains open before dynamic multi-Raft and automatic splits.
 
 The earlier [notification comparison](COALESCED-OWNER-PERFORMANCE.md) remains
@@ -122,9 +130,10 @@ isolated GET improvement. Original setup/reader failures remain published.
 
 ## Next development steps
 
-1. **Finish the strongest current candidate:** freeze `02d0c01` and extend its
-   complete favorable screen to broader point/batch measurements and actual
-   exact-build Chaos Mesh. Keep `42e0117` separate; any combined candidate needs
+1. **Finish the strongest current candidate:** keep `02d0c01` frozen after its
+   favorable screen and accepted 21-window exact-build Chaos matrix. Qualify
+   local retention capacity, then execute 36 smoke / 72 timed point/batch cohorts.
+   Keep `42e0117` separate; any combined candidate needs
    its own source mapping and matched qualification. A short screen alone does
    not justify default promotion.
 2. **Reduce isolated GET latency:** localize serial RPC, owner-service and
