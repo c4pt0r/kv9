@@ -3124,7 +3124,7 @@ impl NodeRuntime {
             .worker_threads(2)
             // Poll socket readiness while public handlers keep workers busy.
             // Peer messages share this executor with the public RPC service.
-            .event_interval(8)
+            .event_interval(1)
             .enable_all()
             .build()
             .map_err(|error| Error::Config(format!("create gRPC runtime: {error}")))?;
