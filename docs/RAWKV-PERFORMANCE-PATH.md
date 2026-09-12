@@ -70,8 +70,10 @@ fences and durable writes remain mandatory. Historical rejected scheduling
 screens remain rejected; review the index and all branch history first.
 The [Rust controller component](LEASE-CONTROLLER.md) now passes local source and
 integer-timing checks. The [voting adapter](LEASE-VOTE-BINDING.md) now binds durable
-peer installation and election gates. Grant/pump/read-view integration and
-qualification remain ahead of any new lease throughput/latency comparison.
+peer installation and election gates. The [renewal adapter](LEASE-RENEWAL-PUBLICATION.md)
+now binds exact grants and whole-pump publication. Read-view integration, clock
+qualification and actual lease Chaos remain ahead of any new lease
+throughput/latency comparison.
 
 ## Earlier development evidence
 

@@ -394,9 +394,20 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         // Waiters still validate their exact identity and original deadline.
         if let Err(cause) = self.completion.publish() {
             if result.is_ok() {
+                self.drain.abort_lease();
                 return Err(self.poison_persistence(&cause));
             }
         }
+        let result = result.and_then(|publication| {
+            let messages = self
+                .drain
+                .complete_pump(publication)
+                .map_err(|cause| self.poison_persistence(&cause))?;
+            for message in messages {
+                self.transport.send(NodeId(message.to), message);
+            }
+            Ok(())
+        });
         if result.is_ok() {
             self.async_applies
                 .service(|at, waited| self.inspect_applied(at, waited));
@@ -409,13 +420,14 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
                 self.peer.work_signal.notify();
             }
         } else {
+            self.drain.abort_lease();
             self.async_applies.close();
             self.async_reads.close();
         }
         result
     }
 
-    fn step_inner(&self) -> Result<()> {
+    fn step_inner(&self) -> Result<crate::rawnode::PumpPublication> {
         if let Some(f) = self.fatal.lock().expect("fatal poisoned").as_ref() {
             return Err(Error::Raft(f.clone()));
         }
@@ -424,9 +436,12 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         }
         self.async_reads
             .submit(|context| self.peer.read_index(context));
-        let messages = self
-            .peer
-            .pump()
+        let crate::rawnode::OwnedPump {
+            messages,
+            publication,
+        } = self
+            .drain
+            .pump_owned()
             .map_err(|cause| self.poison_persistence(&cause))?;
         for msg in messages {
             let to = NodeId(msg.to);
@@ -451,14 +466,14 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             // Apply frozen: leave committed entries queued (they drain in
             // order on unpause). Raft above keeps running — elections and
             // commits proceed, driver_applied does not.
-            return Ok(());
+            return Ok(publication);
         }
         let entries = self
             .drain
             .take_ready()
             .map_err(|cause| self.poison_persistence(&cause))?;
         if entries.is_empty() {
-            return Ok(());
+            return Ok(publication);
         }
         // Items are processed strictly in log order. Locks are taken per apply group
         // (always `applied` then `sm`, per the declared order) and NEVER held
@@ -629,7 +644,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
             term: last_term,
             index: last_seen,
         });
-        Ok(())
+        Ok(publication)
     }
 
     /// The unified driver-applied watermark, as one atomic snapshot. `None`
@@ -1184,6 +1199,7 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
     }
 
     pub fn stop(&self) {
+        self.drain.abort_lease();
         self.async_applies.close();
         self.async_reads.close();
         self.stop.store(true, Ordering::Relaxed);

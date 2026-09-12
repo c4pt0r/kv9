@@ -35,6 +35,8 @@ use crate::{CommittedEntry, EntryKind, LogIndex, RaftGroup, Role};
 #[cfg(any(test, feature = "experimental-leader-lease"))]
 mod lease_gate;
 #[cfg(any(test, feature = "experimental-leader-lease"))]
+mod lease_wire;
+#[cfg(any(test, feature = "experimental-leader-lease"))]
 pub use lease_gate::LeaseClock;
 
 /// A raft-rs [`raft::Storage`] that can also **persist** what the Ready loop
@@ -498,8 +500,18 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     fn step(&self, msg: Message) {
         let mut g = self.lock();
         #[cfg(any(test, feature = "experimental-leader-lease"))]
+        if g.alive && lease_wire::reserved(&msg) {
+            // Even an uninstalled peer must not turn a lease request into an
+            // ordinary heartbeat echo that a later adapter could misinterpret.
+            g.receive_lease(msg);
+            return;
+        }
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
         if g.alive && g.lease.is_some() {
             use raft::eraftpb::MessageType::*;
+            if msg.get_msg_type() == MsgTransferLeader {
+                g.lease.as_mut().expect("installed").revoke_leader();
+            }
             // A winning PreVote response calls campaign(ELECTION) inside
             // raft-rs; filtering only RequestVote/TimeoutNow misses that path.
             let election = matches!(
@@ -531,8 +543,13 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
 
     /// Persist `Ready` and any commit advance from `LightReady` before publishing
     /// messages, committed entries or read states. Application is reported later.
+    #[cfg(any(test, feature = "testing"))]
     fn process_ready(&self) -> Result<()> {
         let mut g = self.lock();
+        Self::persist_locked(&mut g)
+    }
+
+    fn persist_locked(g: &mut PeerInner<S>) -> Result<()> {
         g.check_fatal()?;
         if !g.alive || !g.raw.has_ready() {
             return Ok(());
@@ -759,8 +776,9 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     /// transport. Persistence happens inside, before messages are returned.
     /// An error emits nothing and permanently stops this peer until recovery.
     pub fn pump(&self) -> Result<Vec<Message>> {
-        self.process_ready()?;
-        Ok(std::mem::take(&mut self.lock().outbox))
+        let mut g = self.lock();
+        Self::persist_locked(&mut g)?;
+        Ok(std::mem::take(&mut g.outbox))
     }
 
     pub(crate) fn has_pending_ready(&self) -> bool {
@@ -779,6 +797,10 @@ impl<S: PersistentRaftStorage> RaftPeer<S> {
     #[cfg(any(test, feature = "testing"))]
     pub fn transfer_leader_for_tests(&self, transferee: NodeId) {
         let mut g = self.lock();
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        if let Some(lease) = &mut g.lease {
+            lease.revoke_leader();
+        }
         #[cfg(any(test, feature = "experimental-leader-lease"))]
         if g.lease_may_vote().is_err() {
             return;
@@ -858,7 +880,72 @@ pub struct DrainToken<S: PersistentRaftStorage = MemStorage> {
     peer: Arc<RaftPeer<S>>,
 }
 
+/// Internal, linear capability for one persisted pump's lease decisions.
+pub(crate) struct PumpPublication {
+    #[cfg(any(test, feature = "experimental-leader-lease"))]
+    lease: Option<lease_gate::LeaseBatch>,
+}
+
+pub(crate) struct OwnedPump {
+    pub(crate) messages: Vec<Message>,
+    pub(crate) publication: PumpPublication,
+}
+
 impl<S: PersistentRaftStorage> DrainToken<S> {
+    /// Stage only work preceding this exact persistence boundary. Inbound
+    /// traffic after the lock is released belongs to a later pump publication.
+    pub(crate) fn pump_owned(&self) -> Result<OwnedPump> {
+        let mut g = self.peer.lock();
+        g.check_fatal()?;
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        if g.alive {
+            g.prepare_lease();
+        }
+        RaftPeer::persist_locked(&mut g)?;
+        Ok(OwnedPump {
+            messages: std::mem::take(&mut g.outbox),
+            publication: PumpPublication {
+                #[cfg(any(test, feature = "experimental-leader-lease"))]
+                lease: if g.alive {
+                    g.lease.as_mut().and_then(|lease| lease.capture())
+                } else {
+                    None
+                },
+            },
+        })
+    }
+
+    /// Call only after the owning driver successfully applies this turn and
+    /// publishes completion. Expiry discards the optimization; a foreign batch
+    /// is a programming error and must not authorize any output.
+    pub(crate) fn complete_pump(&self, publication: PumpPublication) -> Result<Vec<Message>> {
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        {
+            let mut g = self.peer.lock();
+            g.check_fatal()?;
+            if !g.alive {
+                return Ok(Vec::new());
+            }
+            if let Some(batch) = publication.lease {
+                let PeerInner { raw, lease, .. } = &mut *g;
+                let lease = lease.as_mut().ok_or_else(|| {
+                    Error::Raft("lease publication has no installed voter".into())
+                })?;
+                return lease.complete(raw, batch);
+            }
+        }
+        #[cfg(not(any(test, feature = "experimental-leader-lease")))]
+        let _ = publication;
+        Ok(Vec::new())
+    }
+
+    pub(crate) fn abort_lease(&self) {
+        #[cfg(any(test, feature = "experimental-leader-lease"))]
+        if let Some(lease) = &mut self.peer.lock().lease {
+            lease.fence();
+        }
+    }
+
     /// Mint the single drain token for `peer`. Crate-internal: an external
     /// `RaftPeer` holder must not be able to mint first — that would make it
     /// the production consumer and turn the real `NodeDriver::new` into a
@@ -881,6 +968,20 @@ impl<S: PersistentRaftStorage> DrainToken<S> {
         Ok(DrainToken { peer: peer.clone() })
     }
 }
+
+// A public peer holder must not duplicate a completed or pending pump receipt.
+#[allow(dead_code)]
+const _: () = {
+    struct Probe<T>(core::marker::PhantomData<T>);
+    trait Fallback {
+        const CHECK: () = ();
+    }
+    impl<T> Fallback for Probe<T> {}
+    impl<T: Clone> Probe<T> {
+        const CHECK: () = panic!("PumpPublication must be neither Clone nor Copy");
+    }
+    Probe::<PumpPublication>::CHECK
+};
 
 impl<S: PersistentRaftStorage> crate::ReadyConsume for DrainToken<S> {
     fn take_ready(&self) -> Result<Vec<CommittedEntry>> {

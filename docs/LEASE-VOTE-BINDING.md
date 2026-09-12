@@ -2,11 +2,15 @@
 
 Tracking: [#9](https://github.com/c4pt0r/kv9/issues/9), #20.
 
+This report records checkpoint `4c340cb`. The subsequent
+[renewal/publication adapter](LEASE-RENEWAL-PUBLICATION.md) implements the next
+leader-lifetime and grant/pump stage; service read views remain open.
+
 The experimental adapter now installs the [lease voter component](LEASE-CONTROLLER.md)
 inside `RaftPeer` and gates actual raft-rs election entry points. The ordinary
 constructor still selects Safe ReadIndex. There is no renewal-message codec,
 leader certificate publication, server lease configuration or lease read path
-yet. This stage does not provide a new performance or actual Chaos Mesh result.
+at this checkpoint. This stage does not provide a new performance or actual Chaos Mesh result.
 
 ## Durable installation and restart
 

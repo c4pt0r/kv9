@@ -454,6 +454,27 @@ impl LeaderLease {
         Ok(())
     }
 
+    /// Check an outbound request against its original pending round/deadline.
+    /// A delayed pump may consume all usable time before any send is allowed.
+    pub fn validate_renewal(
+        &mut self,
+        now: ClockReading,
+        progress: Progress,
+        renewal: Renewal,
+    ) -> Result<()> {
+        let time = self.observe(now)?;
+        self.progress(progress)?;
+        self.live()?;
+        let pending = self.pending.as_ref().ok_or(Refused::WrongRound)?;
+        if pending.certificate.renewal != renewal {
+            return Err(Refused::WrongRound);
+        }
+        if time >= pending.certificate.end {
+            return Err(Refused::Expired);
+        }
+        Ok(())
+    }
+
     pub fn begin_read(
         &mut self,
         now: ClockReading,

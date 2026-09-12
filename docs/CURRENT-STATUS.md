@@ -89,8 +89,13 @@ self-votes after PreVote responses. Its first local gate passes 219 Raft tests,
 including a three-voter partition/expiry election test and 180 filesystem fault
 combinations. A default-feature restart probe and eight compiled source fault
 controls also pass; the original capsule's missing-protobuf failure is preserved.
-Next bind leader lifetime, grant/pump publication and the exact read
-view before qualifying clocks and actual fault histories.
+The [renewal adapter](LEASE-RENEWAL-PUBLICATION.md) now binds each leader lifetime,
+exact renewal/grant envelopes and certificate activation after the whole owning
+pump succeeds. Its local gate passes 231 Raft library tests (12 new), the
+default-feature restart probe, experimental-feature Clippy and eight compiled
+source fault controls. Exact immutable
+read views, clock qualification and actual lease Chaos remain next; the server
+still uses Safe ReadIndex and there is no lease performance result.
 
 ## Latest fixed-rate write diagnosis
 

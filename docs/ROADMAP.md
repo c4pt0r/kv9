@@ -15,7 +15,8 @@
 > actual lease Chaos acceptance remain ahead of any runtime selection.
 > The [Rust controller component](LEASE-CONTROLLER.md) now passes its local source
 > and integer-timing gates. The [voting adapter](LEASE-VOTE-BINDING.md) now binds
-> durable peer installation and elections; grant/pump/read-view integration is next.
+> durable peer installation and elections. The [renewal adapter](LEASE-RENEWAL-PUBLICATION.md)
+> now binds grants and whole-pump publication; read-view integration is next.
 > Redis read parity and industrial gates remain open.
 
 Updated: 2026-09-12. This file defines delivery order. `DESIGN.md` preserves the long-term architecture;
@@ -65,8 +66,10 @@ adds 27 theorems / 348 obligations and bounded fault-model evidence for renewal,
 revocation, restart promises and the local view gate. The
 [Rust component](LEASE-CONTROLLER.md) passes 205 Raft library tests, source fault
 controls and integer-timing proofs. Its [voting adapter](LEASE-VOTE-BINDING.md)
-now binds durable peer installation and actual elections. Next bind leader
-lifetime, grant/pump publication and read views. Expired authority plus unavailable
+now binds durable peer installation and actual elections. The
+[renewal adapter](LEASE-RENEWAL-PUBLICATION.md) adds exact envelopes, leader lifetime
+binding and whole-pump certificate publication, with 231 passing Raft tests.
+Next bind each exact immutable read view and its fresh commit frontier. Expired authority plus unavailable
 quorum must fail closed. Qualify the clock and actual fault histories before
 matched throughput/latency comparison. See [the proof and implementation gates](LEADER-LEASE-PROOF.md).
 The product sequence remains memory RawKV read performance, then dynamic
