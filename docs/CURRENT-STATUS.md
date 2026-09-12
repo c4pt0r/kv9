@@ -67,6 +67,16 @@ no poll budget is retuned and no cohort is rerun. There is no selected runtime
 change, new Chaos acceptance or original checklist closure.
 Production still uses leader Safe ReadIndex; no lease-read shortcut is enabled.
 
+The requested [leader-lease proof](LEADER-LEASE-PROOF.md) now establishes how
+valid leases eliminate per-read quorum RTT under explicit clock-rate, voting,
+restart and quorum-intersection premises. Eight TLAPS lemmas / 23 obligations
+and real-clock SMT containment pass, with negative proof controls and three
+clock countermodels. The complete linearizability argument and current source
+gaps are documented. This is a design proof, not a Rust refinement, clock-platform
+qualification, new performance measurement or lease Chaos acceptance. The next
+lease gate is a fixed-configuration transition model and implementation contract;
+Safe ReadIndex remains selected until implementation/proof/actual Chaos gates pass.
+
 ## Latest fixed-rate write diagnosis
 
 The [eight-cohort fixed-rate result](BATCH-WRITE-FIXED-RATE-RESULTS.md) is now
@@ -206,11 +216,12 @@ isolated GET improvement. Original setup/reader failures remain published.
 
 ## Next development steps
 
-1. **Reduce isolated GET latency:** localize serial RPC, owner-service and
-   completion-wait costs with the bounded quorum-path diagnostic. Preserve the
-   selected shared executor and consensus boundaries; current evidence does not
-   justify another worker-count or transport sweep. Keep repeated-context and
-   route-generation ambiguity explicit; do not repeat screens without a cause.
+1. **Reduce isolated GET latency:** turn the [conditional lease proof](LEADER-LEASE-PROOF.md)
+   into a fixed-configuration transition/refinement contract before implementing
+   a lease candidate. Preserve the selected Safe ReadIndex baseline. For its
+   existing path, reuse the selected-build CPU-profile fixture and completed
+   quorum trace before another rewrite. Current evidence does not justify
+   another worker-count/transport sweep or a repeat of the rejected poll budget.
 2. **Retain the write-tail problem and separate arrival calibration:** the fixed
    offered-load diagnosis is complete, with higher ThinLTO p99 and nonzero client
    drops. Check the pinned client's timer/strided-slot fidelity separately before

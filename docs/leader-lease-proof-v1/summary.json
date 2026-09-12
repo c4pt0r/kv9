@@ -1,0 +1,337 @@
+{
+  "cpu_affinity": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "obligations": 23,
+  "output_controls": 3,
+  "proof_controls": 8,
+  "proof_runs": [
+    {
+      "expected": null,
+      "modules": [
+        {
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/baseline/cache/LeaderLeaseProof",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/baseline/LeaderLeaseProof.tla"
+          ],
+          "exit_code": 0,
+          "module": "LeaderLeaseProof",
+          "obligations": 23,
+          "seconds": 0.2138759340159595,
+          "verdict": "proved"
+        }
+      ],
+      "name": "baseline",
+      "source_sha256": "a851fe9a348f639eb5be39249d296d2c21373296bd0370182eddade7360289be",
+      "verdict": "proved"
+    },
+    {
+      "expected": {
+        "formula": "t - g < H",
+        "reason": "LeaderLeaseProof: TLAPS exit 10"
+      },
+      "modules": [
+        {
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/missing-send-order/cache/LeaderLeaseProof",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/missing-send-order/LeaderLeaseProof.tla"
+          ],
+          "exit_code": 10,
+          "module": "LeaderLeaseProof",
+          "seconds": 5.21930030384101
+        }
+      ],
+      "name": "missing-send-order",
+      "reason": "LeaderLeaseProof: TLAPS exit 10",
+      "source_sha256": "a7ab1b9d0a91e055fe06d1857ee8afd2cff308a3dd69582842ef2c1cb0530229",
+      "verdict": "expected rejection"
+    },
+    {
+      "expected": {
+        "formula": "v =< t => FALSE",
+        "reason": "LeaderLeaseProof: TLAPS exit 10"
+      },
+      "modules": [
+        {
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/missing-prior-vote-fence/cache/LeaderLeaseProof",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/missing-prior-vote-fence/LeaderLeaseProof.tla"
+          ],
+          "exit_code": 10,
+          "module": "LeaderLeaseProof",
+          "seconds": 5.219469179166481
+        }
+      ],
+      "name": "missing-prior-vote-fence",
+      "reason": "LeaderLeaseProof: TLAPS exit 10",
+      "source_sha256": "9887bd30ef11c8285a5b73d0302257ce133bf106530f99bb0ffa6589535bdf2a",
+      "verdict": "expected rejection"
+    },
+    {
+      "expected": {
+        "formula": "v =< t => FALSE",
+        "reason": "LeaderLeaseProof: TLAPS exit 10"
+      },
+      "modules": [
+        {
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/missing-promise/cache/LeaderLeaseProof",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/missing-promise/LeaderLeaseProof.tla"
+          ],
+          "exit_code": 10,
+          "module": "LeaderLeaseProof",
+          "seconds": 5.219817309873179
+        }
+      ],
+      "name": "missing-promise",
+      "reason": "LeaderLeaseProof: TLAPS exit 10",
+      "source_sha256": "4b7f70537adcd69dcf6d8719d653c3274de81aebd28bdcbd4dc8f3b3175bdc85",
+      "verdict": "expected rejection"
+    },
+    {
+      "expected": {
+        "formula": "PROVE  ~(\\A q \\in V",
+        "reason": "LeaderLeaseProof: TLAPS exit 10"
+      },
+      "modules": [
+        {
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/disjoint-quorums/cache/LeaderLeaseProof",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/disjoint-quorums/LeaderLeaseProof.tla"
+          ],
+          "exit_code": 10,
+          "module": "LeaderLeaseProof",
+          "seconds": 5.221163057023659
+        }
+      ],
+      "name": "disjoint-quorums",
+      "reason": "LeaderLeaseProof: TLAPS exit 10",
+      "source_sha256": "d0efb2275e21a1d951059ccda3b4291193aa7dbd7577ff5d419d7ec73a03f20b",
+      "verdict": "expected rejection"
+    },
+    {
+      "expected": {
+        "formula": "index[w] =< j",
+        "reason": "LeaderLeaseProof: TLAPS exit 10"
+      },
+      "modules": [
+        {
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/missing-apply-fence/cache/LeaderLeaseProof",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/missing-apply-fence/LeaderLeaseProof.tla"
+          ],
+          "exit_code": 10,
+          "module": "LeaderLeaseProof",
+          "seconds": 5.219128760974854
+        }
+      ],
+      "name": "missing-apply-fence",
+      "reason": "LeaderLeaseProof: TLAPS exit 10",
+      "source_sha256": "51829c082a3a4a3259328cac435d33749251bc280a2d9b28f33240c988b4bfbb",
+      "verdict": "expected rejection"
+    },
+    {
+      "expected": {
+        "formula": "PROVE  ~LLFinalGuard",
+        "reason": "LeaderLeaseProof: TLAPS exit 10"
+      },
+      "modules": [
+        {
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/missing-expiry-check/cache/LeaderLeaseProof",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/missing-expiry-check/LeaderLeaseProof.tla"
+          ],
+          "exit_code": 10,
+          "module": "LeaderLeaseProof",
+          "seconds": 5.218948833877221
+        }
+      ],
+      "name": "missing-expiry-check",
+      "reason": "LeaderLeaseProof: TLAPS exit 10",
+      "source_sha256": "45c658ba3fcb622d70255bb15ab779bb20bce599601cb197d487239fff2f4f32",
+      "verdict": "expected rejection"
+    },
+    {
+      "expected": {
+        "reason": "proof hole: LeaderLeaseProof.LLExpiredFinalCheckRejects"
+      },
+      "name": "omitted-proof",
+      "reason": "proof hole: LeaderLeaseProof.LLExpiredFinalCheckRejects",
+      "source_sha256": "b3a23b0a9dd15d9b97ed2c705c80b916a6118306cb6508cf98b7ea18ae073571",
+      "verdict": "expected rejection"
+    },
+    {
+      "expected": {
+        "reason": "unapproved module assumption: LeaderLeaseProof"
+      },
+      "name": "false-module-assumption",
+      "reason": "unapproved module assumption: LeaderLeaseProof",
+      "source_sha256": "749775ff27443e87bfec17849026b7001dad6b3ce7d81dfb39e353103862853a",
+      "verdict": "expected rejection"
+    },
+    {
+      "expected": null,
+      "modules": [
+        {
+          "command": [
+            "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/bin/tlapm",
+            "--strict",
+            "--nofp",
+            "--threads",
+            "1",
+            "--cache-dir",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/restored/cache/LeaderLeaseProof",
+            "/tmp/kv9-leader-lease-proof-acceptance-first/restored/LeaderLeaseProof.tla"
+          ],
+          "exit_code": 0,
+          "module": "LeaderLeaseProof",
+          "obligations": 23,
+          "seconds": 0.21390835591591895,
+          "verdict": "proved"
+        }
+      ],
+      "name": "restored",
+      "source_sha256": "a851fe9a348f639eb5be39249d296d2c21373296bd0370182eddade7360289be",
+      "verdict": "proved"
+    }
+  ],
+  "real_countermodels": 3,
+  "real_runs": [
+    {
+      "command": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:5",
+        "-smt2",
+        "/tmp/kv9-leader-lease-proof-acceptance-first/real-baseline/clock.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "unsat",
+      "name": "baseline",
+      "source_sha256": "e25344def48dac8dfa45344ac6fa31dc963c16b87252dd2e51e52e78bd7e3eb7"
+    },
+    {
+      "command": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:5",
+        "-smt2",
+        "/tmp/kv9-leader-lease-proof-acceptance-first/real-late-anchor/clock.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "sat",
+      "name": "late-anchor",
+      "source_sha256": "822454c26bff83f3484f128468e3457a4f2406840f7d5f4484c949f590e411f4"
+    },
+    {
+      "command": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:5",
+        "-smt2",
+        "/tmp/kv9-leader-lease-proof-acceptance-first/real-paused-clock/clock.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "sat",
+      "name": "paused-clock",
+      "source_sha256": "694ce8edf54b004e78e5903f474e968dd8c0ce881d9dc6a2f0fdd9f78f8fac71"
+    },
+    {
+      "command": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:5",
+        "-smt2",
+        "/tmp/kv9-leader-lease-proof-acceptance-first/real-missing-drift-margin/clock.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "sat",
+      "name": "missing-drift-margin",
+      "source_sha256": "e976d66f35c93a1530fb46df130cf223591ac9eb87277b86f1c52f10cd59a0fb"
+    },
+    {
+      "command": [
+        "/tmp/kv9-p0-tools/tlapm-1.6.0-pre-20260731/lib/tlapm/backends/bin/z3",
+        "-T:5",
+        "-smt2",
+        "/tmp/kv9-leader-lease-proof-acceptance-first/real-restored/clock.smt2"
+      ],
+      "exit_code": 0,
+      "expected": "unsat",
+      "name": "restored",
+      "source_sha256": "e25344def48dac8dfa45344ac6fa31dc963c16b87252dd2e51e52e78bd7e3eb7"
+    }
+  ],
+  "sany_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88",
+  "scope": "Conditional lease lemmas; no Rust refinement or E2E acceptance",
+  "sources": {
+    "proofs/tlaps/leader_lease/LeaderLeaseProof.tla": "a851fe9a348f639eb5be39249d296d2c21373296bd0370182eddade7360289be",
+    "proofs/tlaps/leader_lease/clock-containment.smt2": "e25344def48dac8dfa45344ac6fa31dc963c16b87252dd2e51e52e78bd7e3eb7",
+    "proofs/tlaps/leader_lease/inventory.json": "d43e42b1e6873ef46d738df9480beaa7e68c6ac6c5b78199534d49f7443c2c3d",
+    "scripts/ProofAudit.java": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a",
+    "scripts/check-leader-lease-proof.py": "53943486fe593827008a33c13f1a3db88cac7092768095604e5f1f36665c0caf",
+    "scripts/check-tlaps.py": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8"
+  },
+  "theorems": 8,
+  "tlapm_sha256": "1de5983ac393658362fe61882e270b65648fa07945453e971fcf9eeabf5ec579",
+  "tlapm_version": "4600b24",
+  "z3_sha256": "4321b0c0db1574a1e90881d9e097f12b8753d0c3e78b21a0155c77005a631436",
+  "z3_version": "Z3 version 4.8.9 - 64 bit"
+}

@@ -1,0 +1,763 @@
+{
+  "archive": "original-evidence.tar.gz",
+  "archive_bytes": 204118,
+  "archive_sha256": "89a7da554a69e0dc57550a05e13bebe9b1dcf8b4a3aff711b93d758a5edf7ac5",
+  "files": 151,
+  "members": [
+    {
+      "path": "runs/kv9-leader-lease-proof-draft1/LeaderLeaseProof.tla",
+      "bytes": 3814,
+      "sha256": "4efc25031e76389cda6e40f3b6e3469d66f42c4ea2e08a5ed868dabe22fd19fc"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft1/proof.log",
+      "bytes": 809,
+      "sha256": "1cf7d96f8594921543e70846c1ad8774cc2ac645208f250de6a4bb7723e86276"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft1/source.json",
+      "bytes": 143,
+      "sha256": "c2158c8fd504e907d978f790df9c9532b1b8a78b2a4c3e7b73f27549efa7b37e"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft2/LeaderLeaseProof.tla",
+      "bytes": 3817,
+      "sha256": "7b36597f05f6c4fc478b213ac91b47e14a0ab07140c9d208eca959ec0584b57f"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft2/cache/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft2/cache/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 1935,
+      "sha256": "e3e7516acf58bf3ad7ebaca2ec37f8c534c7e8229354acd4fc2ae9655a720b48"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft2/proof.log",
+      "bytes": 3973,
+      "sha256": "5fe72bca37052603ecfb815dc2604c9756d96ef8d1a482b35c6fbba05eaf638b"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft2/source.json",
+      "bytes": 143,
+      "sha256": "5df6cf9d32afbab54843bbf862cb2dc32ae0aec52da3f2ef441a629bb8abfcfc"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft3/LeaderLeaseProof.tla",
+      "bytes": 3944,
+      "sha256": "aaef6e16102ab351a073e26accc5d1319f34d5d9682874751b6a936245831a7e"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft3/cache/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft3/cache/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 1643,
+      "sha256": "5ab56e3789e03c90825eb8f39cb9d01445d70146986eb334a1850625bf1cf8cc"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft3/proof.log",
+      "bytes": 940,
+      "sha256": "7380c3ccc7ea48b8ca02057b493979383ea48b0c108d5bc489c83ea26bbcfbbe"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft3/source.json",
+      "bytes": 143,
+      "sha256": "38320d62c9c67492bd4ac9fb020f1ba1b53243af9b07f815bff7e5c2f1b3af44"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft4/LeaderLeaseProof.tla",
+      "bytes": 4032,
+      "sha256": "a782505bc048912cde59d871366b699d3234cf0ab4f4294a14e48fa707d412d3"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft4/cache/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft4/cache/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 1974,
+      "sha256": "bb13f80f9be7edeee364947a22ae32144d1bf5274ba2de6996af3878158983c3"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft4/proof.log",
+      "bytes": 950,
+      "sha256": "d02ff7a9bcbf5d62221b00b20c65158417df16a2c28f199156ea69ed9e0a9bf3"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft4/source.json",
+      "bytes": 143,
+      "sha256": "8fb00c9e2457d1e25acfc6fac7991d3747144889deedba1578cee272b4318f2c"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft5/LeaderLeaseProof.tla",
+      "bytes": 4083,
+      "sha256": "d3f4fac0849eb0cf1079ec4b96f7c416bf14e94cac1e70778d89e83929f9d0b8"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft5/cache/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft5/cache/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 2158,
+      "sha256": "06ebe6e54d831d30da350eee642c316e0d4d1657efeae4312bb2b5c1d67a30dd"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft5/proof.log",
+      "bytes": 975,
+      "sha256": "4724dc17f761e4438027e45c80f01b5a1587a4ed2b6fb42aed52f16c05cf2411"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft5/source.json",
+      "bytes": 143,
+      "sha256": "d1604b08ac161c1e723855efd070dcf603a681c6f308da3a94ecbdbe2738fa74"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft6/LeaderLeaseProof.tla",
+      "bytes": 4083,
+      "sha256": "f390b0b87de6e0c7e6181cbd7f388d52a14bb61c3b35deb6791cb3fa60d3c135"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft6/cache/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft6/cache/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 2164,
+      "sha256": "1812b6f97d8d9b0e9a18e8cd7337833624395b41f8c02c0a2a2e84d5f926618c"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft6/proof.log",
+      "bytes": 975,
+      "sha256": "76bb7e7c0802e705bec8419e02fc857c1d2813f9bfa48f6efd1f23415afe46a2"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft6/source.json",
+      "bytes": 143,
+      "sha256": "4b6aeb6f456e2dc1ea1d9c9cc661dd9c2035214f1edcb04c34c94566bc623a83"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft7/LeaderLeaseProof.tla",
+      "bytes": 4153,
+      "sha256": "a851fe9a348f639eb5be39249d296d2c21373296bd0370182eddade7360289be"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft7/cache/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft7/cache/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 2193,
+      "sha256": "b55370fb10650aa3a720e7f6d6377ddea93c6fc87d9848be488a17f6dcee54d2"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft7/proof.log",
+      "bytes": 359,
+      "sha256": "6de72826abef893884891b3d95c80c33fca69b4b651cdeae8da9554810adc731"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-draft7/source.json",
+      "bytes": 143,
+      "sha256": "ddd16d0dce908bfaa4bead285d74e1137e82f02e3e39a8f1b8e4bf2811fe551d"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-backend-diagnosis-first/LeaderLeaseProof.tla",
+      "bytes": 4083,
+      "sha256": "d3f4fac0849eb0cf1079ec4b96f7c416bf14e94cac1e70778d89e83929f9d0b8"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-backend-diagnosis-first/cache/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-backend-diagnosis-first/cache/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 798,
+      "sha256": "a01ecb2bc1ccc082a80ce65c3ed13d20ae65751b8608b55de231ed6d4cbc2096"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-backend-diagnosis-first/proof.log",
+      "bytes": 48639,
+      "sha256": "9063c5e4738937e701af98cde342cac816069c2eb89d08a4b3570bdfc58171dc"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/auditor/ProofAudit.class",
+      "bytes": 6462,
+      "sha256": "5362cc4105112e010aa12dee2414be6860a87fcdcadcb8aae897a4248ca1cd4b"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/auditor/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/baseline/LeaderLeaseProof.log",
+      "bytes": 450,
+      "sha256": "590d7e74b73b41bde95b4c821f00da0aebcba06ecc6940ad7b77a0d67a811299"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/baseline/LeaderLeaseProof.tla",
+      "bytes": 4153,
+      "sha256": "a851fe9a348f639eb5be39249d296d2c21373296bd0370182eddade7360289be"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/baseline/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/baseline/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 2193,
+      "sha256": "cd8ff6ddfddc6d3c83c7f90aa6a47c76846b6e09e8383986dc48cbfe71f65720"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/baseline/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints.history/2026-09-12_10_13_20/LeaderLeaseProof.tla",
+      "bytes": 4153,
+      "sha256": "a851fe9a348f639eb5be39249d296d2c21373296bd0370182eddade7360289be"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/baseline/inventory.json",
+      "bytes": 944,
+      "sha256": "c4a452bd83e2adde77c25a3a5b60524da0cb38202216436d7466faf34bea9f13"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/baseline/result.json",
+      "bytes": 693,
+      "sha256": "d0da3322be9bc997616493435a221691f48d87ef2d90a6f2b4d023aedb5a9dbc"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/baseline/sany.log",
+      "bytes": 1747,
+      "sha256": "8279d96be8eb0f2486263b09793f808772e0971a8b505ac1423696c0d0320a9d"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/baseline/semantic-audit.json",
+      "bytes": 1885,
+      "sha256": "076f3c3d3d264e5a13250baa793e4ea6dcaed6efc4c92cbbb0ba5c313dbba897"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/disjoint-quorums/LeaderLeaseProof.log",
+      "bytes": 1189,
+      "sha256": "2dee8397d662d26db00884f41b5b08cc2820e26ff5d9945c7348d3b3eb001a46"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/disjoint-quorums/LeaderLeaseProof.tla",
+      "bytes": 4144,
+      "sha256": "d0efb2275e21a1d951059ccda3b4291193aa7dbd7577ff5d419d7ec73a03f20b"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/disjoint-quorums/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/disjoint-quorums/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 2195,
+      "sha256": "34e635caa9d1dc702a95db2adbe2a999e84e1b3cf51c5c9f12c1dea4d400db5c"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/disjoint-quorums/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints.history/2026-09-12_10_13_36/LeaderLeaseProof.tla",
+      "bytes": 4144,
+      "sha256": "d0efb2275e21a1d951059ccda3b4291193aa7dbd7577ff5d419d7ec73a03f20b"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/disjoint-quorums/inventory.json",
+      "bytes": 944,
+      "sha256": "c4a452bd83e2adde77c25a3a5b60524da0cb38202216436d7466faf34bea9f13"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/disjoint-quorums/result.json",
+      "bytes": 813,
+      "sha256": "6b191ffe5eff976b2c368e1dc64a9a6d62c2bc906085711d656cd56537b03ee3"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/disjoint-quorums/sany.log",
+      "bytes": 1763,
+      "sha256": "88a2e5acc9974b95c3d157394198ce6b731a7d548c502178065cac9e710acbbb"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/disjoint-quorums/semantic-audit.json",
+      "bytes": 1893,
+      "sha256": "9a814812771578c66216d5bc399d241f29f7dfd04754121632cdad7e0ff74b4d"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/false-module-assumption/LeaderLeaseProof.tla",
+      "bytes": 4166,
+      "sha256": "749775ff27443e87bfec17849026b7001dad6b3ce7d81dfb39e353103862853a"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/false-module-assumption/inventory.json",
+      "bytes": 944,
+      "sha256": "c4a452bd83e2adde77c25a3a5b60524da0cb38202216436d7466faf34bea9f13"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/false-module-assumption/result.json",
+      "bytes": 308,
+      "sha256": "791aec8313fee4d0b88e6709d8958473e32ded955e791b61d4684d32e44429d6"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/false-module-assumption/sany.log",
+      "bytes": 1868,
+      "sha256": "379db6997a09195158ed8ff4622fdf362e7060c37f2cef3bc011239642519ab6"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-apply-fence/LeaderLeaseProof.log",
+      "bytes": 1052,
+      "sha256": "288abbd54f09ef2db2f304c6cb773a37649e99b03baf016ee28e7044af289a6b"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-apply-fence/LeaderLeaseProof.tla",
+      "bytes": 4151,
+      "sha256": "51829c082a3a4a3259328cac435d33749251bc280a2d9b28f33240c988b4bfbb"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-apply-fence/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-apply-fence/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 2195,
+      "sha256": "7ef8ee796be4ce1ab34d2cc26e6a1ba6674b43c07226cbd4c0508e373ff06540"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-apply-fence/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints.history/2026-09-12_10_13_42/LeaderLeaseProof.tla",
+      "bytes": 4151,
+      "sha256": "51829c082a3a4a3259328cac435d33749251bc280a2d9b28f33240c988b4bfbb"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-apply-fence/inventory.json",
+      "bytes": 944,
+      "sha256": "c4a452bd83e2adde77c25a3a5b60524da0cb38202216436d7466faf34bea9f13"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-apply-fence/result.json",
+      "bytes": 814,
+      "sha256": "8a6e6902d623c2ed7b2e3694b83a0d4a2390aa00f92230f9ccf18cbac1497472"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-apply-fence/sany.log",
+      "bytes": 1769,
+      "sha256": "4d3944834bf845d2ba7a0fc28c353f0f3de28bf211dd6229aadfa2cec716eb0f"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-apply-fence/semantic-audit.json",
+      "bytes": 1896,
+      "sha256": "b7810caf84b20a43023d309b16b9132a4f7660fe73d3a5d3d844c98a5d28dadf"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-expiry-check/LeaderLeaseProof.log",
+      "bytes": 1411,
+      "sha256": "7bce9dd3a897f924ebfb6a5cf5f8dcb41fc8f33a905422d173de93030bbdef8b"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-expiry-check/LeaderLeaseProof.tla",
+      "bytes": 4148,
+      "sha256": "45c658ba3fcb622d70255bb15ab779bb20bce599601cb197d487239fff2f4f32"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-expiry-check/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-expiry-check/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 2195,
+      "sha256": "34f0f0b912e86a0ff4eab85e0fa4372c4ae91122ed1e117fee90e6a802d788d3"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-expiry-check/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints.history/2026-09-12_10_13_47/LeaderLeaseProof.tla",
+      "bytes": 4148,
+      "sha256": "45c658ba3fcb622d70255bb15ab779bb20bce599601cb197d487239fff2f4f32"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-expiry-check/inventory.json",
+      "bytes": 944,
+      "sha256": "c4a452bd83e2adde77c25a3a5b60524da0cb38202216436d7466faf34bea9f13"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-expiry-check/result.json",
+      "bytes": 824,
+      "sha256": "e7369b7ad45693e67f37de96e41dc8dc9a5fe899a7a66c5b3c25a51b052677a0"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-expiry-check/sany.log",
+      "bytes": 1771,
+      "sha256": "b7cbc0812ba5af6269341ad582f4d099ce3eaf1e981b5ba53e864be42346d686"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-expiry-check/semantic-audit.json",
+      "bytes": 1897,
+      "sha256": "7ac02082612fea81ef497274428c685dcb3dd1c0eb3bcc4062f184b0f8080dcd"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-prior-vote-fence/LeaderLeaseProof.log",
+      "bytes": 1199,
+      "sha256": "3194b6dd3ff8cba3fa0d2408e19e69219df2503946a5e4995432976cbbaabd1c"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-prior-vote-fence/LeaderLeaseProof.tla",
+      "bytes": 4152,
+      "sha256": "9887bd30ef11c8285a5b73d0302257ce133bf106530f99bb0ffa6589535bdf2a"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-prior-vote-fence/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-prior-vote-fence/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 2195,
+      "sha256": "18ae6a85673aceecc0d1dd4cb29390ce2576ce6fc8cccfe5ea9f5f0ec84addaf"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-prior-vote-fence/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints.history/2026-09-12_10_13_26/LeaderLeaseProof.tla",
+      "bytes": 4152,
+      "sha256": "9887bd30ef11c8285a5b73d0302257ce133bf106530f99bb0ffa6589535bdf2a"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-prior-vote-fence/inventory.json",
+      "bytes": 944,
+      "sha256": "c4a452bd83e2adde77c25a3a5b60524da0cb38202216436d7466faf34bea9f13"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-prior-vote-fence/result.json",
+      "bytes": 831,
+      "sha256": "10d0cda90d88bd965ce8f9c922e76abfe1a40e64a95a6e62b80b4b67112e489d"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-prior-vote-fence/sany.log",
+      "bytes": 1779,
+      "sha256": "bd4b47d9774cf2697607bed20088387fe4984f92f62a9f919e774690108327f9"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-prior-vote-fence/semantic-audit.json",
+      "bytes": 1901,
+      "sha256": "6b4beb6f1a9c87e797c2cf914159fa504dd3f8d271859ae03ec5669dcd38dfe6"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-promise/LeaderLeaseProof.log",
+      "bytes": 1163,
+      "sha256": "d0f9f6e847ae376116e6b8ae2bc1b62c3de8e0810ab837ca0d15b867a3fe876f"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-promise/LeaderLeaseProof.tla",
+      "bytes": 4152,
+      "sha256": "4b7f70537adcd69dcf6d8719d653c3274de81aebd28bdcbd4dc8f3b3175bdc85"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-promise/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-promise/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 2195,
+      "sha256": "4e7fad966a99758731026e06292719dc0304c48d0a36c8b279bc3b38d77d83e8"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-promise/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints.history/2026-09-12_10_13_31/LeaderLeaseProof.tla",
+      "bytes": 4152,
+      "sha256": "4b7f70537adcd69dcf6d8719d653c3274de81aebd28bdcbd4dc8f3b3175bdc85"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-promise/inventory.json",
+      "bytes": 944,
+      "sha256": "c4a452bd83e2adde77c25a3a5b60524da0cb38202216436d7466faf34bea9f13"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-promise/result.json",
+      "bytes": 804,
+      "sha256": "9d3a3e1ca59b62bee0856c5eca930420849981636dacd534f0ed0f4afd6372ce"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-promise/sany.log",
+      "bytes": 1761,
+      "sha256": "375cf6aeaa42bde7ca97a89b2bb284388fa6ac9af4035b45c22d6d1856eb2aeb"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-promise/semantic-audit.json",
+      "bytes": 1892,
+      "sha256": "9fcbdca60e956e3e95f955d6dbeea3523c27c1ffc92d25d6cf5b17446bbbe977"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-send-order/LeaderLeaseProof.log",
+      "bytes": 999,
+      "sha256": "1c48e957532a165a69a6c2dfefabcb7ff666f6770b8b7f0463cde44e8a708604"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-send-order/LeaderLeaseProof.tla",
+      "bytes": 4151,
+      "sha256": "a7ab1b9d0a91e055fe06d1857ee8afd2cff308a3dd69582842ef2c1cb0530229"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-send-order/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-send-order/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 2195,
+      "sha256": "96dd3c5711d5be90c3a5c6b43175ac49e19e815189d2474e29549805f0ffcc35"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-send-order/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints.history/2026-09-12_10_13_20/LeaderLeaseProof.tla",
+      "bytes": 4151,
+      "sha256": "a7ab1b9d0a91e055fe06d1857ee8afd2cff308a3dd69582842ef2c1cb0530229"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-send-order/inventory.json",
+      "bytes": 944,
+      "sha256": "c4a452bd83e2adde77c25a3a5b60524da0cb38202216436d7466faf34bea9f13"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-send-order/result.json",
+      "bytes": 806,
+      "sha256": "019bdf277232ca6bbfe5bccfff4ad5707a3aa6174d9af6a892338315052205e0"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-send-order/sany.log",
+      "bytes": 1767,
+      "sha256": "f3b64971d22e3177b35bcdb19914b8f1cc80681ac8ec262e0c122760cf0e4097"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/missing-send-order/semantic-audit.json",
+      "bytes": 1895,
+      "sha256": "221ee2149d6944400decf2f21a17a5ebdd7dc8d16b49527aa04801f4cbb6e569"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/omitted-proof/LeaderLeaseProof.tla",
+      "bytes": 4143,
+      "sha256": "b3a23b0a9dd15d9b97ed2c705c80b916a6118306cb6508cf98b7ea18ae073571"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/omitted-proof/inventory.json",
+      "bytes": 944,
+      "sha256": "c4a452bd83e2adde77c25a3a5b60524da0cb38202216436d7466faf34bea9f13"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/omitted-proof/result.json",
+      "bytes": 316,
+      "sha256": "7baa15625545a6426a74d4e7bdfb1018161fda8d9f2f8bf090b352671d4e8a8e"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/omitted-proof/sany.log",
+      "bytes": 1756,
+      "sha256": "d330433a0ac3f86b111dff431d954790cca1f1710951b195e9626b010298017b"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-baseline/clock.smt2",
+      "bytes": 873,
+      "sha256": "e25344def48dac8dfa45344ac6fa31dc963c16b87252dd2e51e52e78bd7e3eb7"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-baseline/result.json",
+      "bytes": 350,
+      "sha256": "48ff61fbe2103665034914c54c4b9952aee2e7d5f5ac64d1a8d563f7c628db6c"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-baseline/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-baseline/stdout.log",
+      "bytes": 6,
+      "sha256": "5c17dfcc2a8f1f30d9e96df6a9825a5030ade046d560332c19de74d93d591a18"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-late-anchor/clock.smt2",
+      "bytes": 881,
+      "sha256": "822454c26bff83f3484f128468e3457a4f2406840f7d5f4484c949f590e411f4"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-late-anchor/result.json",
+      "bytes": 354,
+      "sha256": "caabc3124b5d802ba4851079de1628eb5a5491fbd71e688b4d1c34822a7d808f"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-late-anchor/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-late-anchor/stdout.log",
+      "bytes": 356,
+      "sha256": "462b831721088c72453e60309702206845fa54438d9237d986b41be31cf0f7ec"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-missing-drift-margin/clock.smt2",
+      "bytes": 873,
+      "sha256": "e976d66f35c93a1530fb46df130cf223591ac9eb87277b86f1c52f10cd59a0fb"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-missing-drift-margin/result.json",
+      "bytes": 372,
+      "sha256": "0f175f6d6605cf67d3471b744833896736bed87a67644eb117010e8d9aa344b2"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-missing-drift-margin/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-missing-drift-margin/stdout.log",
+      "bytes": 387,
+      "sha256": "bfcdef8a0b837f4b08c66f54be5f2dbebded0b58f8afb553b5655d0f6ebd1604"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-paused-clock/clock.smt2",
+      "bytes": 856,
+      "sha256": "694ce8edf54b004e78e5903f474e968dd8c0ce881d9dc6a2f0fdd9f78f8fac71"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-paused-clock/result.json",
+      "bytes": 356,
+      "sha256": "0067f88f71f81128f517c91743e96e504eb9975801382ce7b2cc9d5537e5fa30"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-paused-clock/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-paused-clock/stdout.log",
+      "bytes": 372,
+      "sha256": "8b5d914059a4924948a09ee0b809dfe1a99562a0b00754606977eec427ebb1ac"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-restored/clock.smt2",
+      "bytes": 873,
+      "sha256": "e25344def48dac8dfa45344ac6fa31dc963c16b87252dd2e51e52e78bd7e3eb7"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-restored/result.json",
+      "bytes": 350,
+      "sha256": "f85c60308ebc739ad3188a20b44536d5194d7ef6d162275972f30c0376e020c0"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-restored/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/real-restored/stdout.log",
+      "bytes": 6,
+      "sha256": "5c17dfcc2a8f1f30d9e96df6a9825a5030ade046d560332c19de74d93d591a18"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/restored/LeaderLeaseProof.log",
+      "bytes": 450,
+      "sha256": "e9ba4770dd2ca983e6be8a46183d2aa889adf262a822b77113d4a7c4b30a6bed"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/restored/LeaderLeaseProof.tla",
+      "bytes": 4153,
+      "sha256": "a851fe9a348f639eb5be39249d296d2c21373296bd0370182eddade7360289be"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/restored/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/LeaderLeaseProof.thy",
+      "bytes": 415,
+      "sha256": "41e0b4ae3868402ab0c1ed0ae32122deb0f8f2a87e787bd1768604c491ec5d68"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/restored/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints",
+      "bytes": 2193,
+      "sha256": "31750d1a56da9d7c10f733b58869ca132e5e30255a14c7824cea01893c7e33ad"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/restored/cache/LeaderLeaseProof/LeaderLeaseProof.tlaps/fingerprints.history/2026-09-12_10_13_53/LeaderLeaseProof.tla",
+      "bytes": 4153,
+      "sha256": "a851fe9a348f639eb5be39249d296d2c21373296bd0370182eddade7360289be"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/restored/inventory.json",
+      "bytes": 944,
+      "sha256": "c4a452bd83e2adde77c25a3a5b60524da0cb38202216436d7466faf34bea9f13"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/restored/result.json",
+      "bytes": 694,
+      "sha256": "352caa5fa71540bcd47da6bd98aac4df327dafc80358f2a07eac295b450b516b"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/restored/sany.log",
+      "bytes": 1747,
+      "sha256": "bd93ab7c0429e647c1ec2a1c226e7345a6027d84ee931940421cfeeb22cc9c8b"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/restored/semantic-audit.json",
+      "bytes": 1885,
+      "sha256": "23a8c856a779e1545f7807fb018868fa6d4c195b302b60355631e0e50e4b1c85"
+    },
+    {
+      "path": "runs/kv9-leader-lease-proof-acceptance-first/summary.json",
+      "bytes": 11293,
+      "sha256": "ca4584ff7bc9e2254803d1b5c84ded09bf37288876af3f9fd17c832f53c894d5"
+    },
+    {
+      "path": "runs/acceptance.log",
+      "bytes": 777,
+      "sha256": "441f1a851107fdce22d23f96c9324bde0a604abe435e6fc8c8de15f2074d819b"
+    },
+    {
+      "path": "source/proofs/tlaps/leader_lease/LeaderLeaseProof.tla",
+      "bytes": 4153,
+      "sha256": "a851fe9a348f639eb5be39249d296d2c21373296bd0370182eddade7360289be"
+    },
+    {
+      "path": "source/proofs/tlaps/leader_lease/clock-containment.smt2",
+      "bytes": 873,
+      "sha256": "e25344def48dac8dfa45344ac6fa31dc963c16b87252dd2e51e52e78bd7e3eb7"
+    },
+    {
+      "path": "source/proofs/tlaps/leader_lease/inventory.json",
+      "bytes": 936,
+      "sha256": "d43e42b1e6873ef46d738df9480beaa7e68c6ac6c5b78199534d49f7443c2c3d"
+    },
+    {
+      "path": "source/scripts/ProofAudit.java",
+      "bytes": 4578,
+      "sha256": "eb212d33bf66920104da1650494163f4bccac430cdf8521a5f35f65c423e3b4a"
+    },
+    {
+      "path": "source/scripts/check-leader-lease-proof.py",
+      "bytes": 7992,
+      "sha256": "53943486fe593827008a33c13f1a3db88cac7092768095604e5f1f36665c0caf"
+    },
+    {
+      "path": "source/scripts/check-tlaps.py",
+      "bytes": 16239,
+      "sha256": "f10b25f1776673cca27f40a1653ed42302467a3a662efae6b4dbd5bc27404fa8"
+    },
+    {
+      "path": "inspected-current-source/crates/raft/src/rawnode.rs",
+      "bytes": 50319,
+      "sha256": "a2f19979dacc1942a760e2fe46fd82183fe4fbfbcde2d3fe6de6fe087efcdee3"
+    },
+    {
+      "path": "inspected-current-source/crates/raft/src/work.rs",
+      "bytes": 13285,
+      "sha256": "766fe563ceba1f2e398ce14704b9fc232be3b4fa52b0301783036f95f089164a"
+    },
+    {
+      "path": "inspected-current-source/crates/raft/src/driver.rs",
+      "bytes": 153921,
+      "sha256": "a1f1a63a39a68194bdeaa2811e920d2bbada18deccda93f81f083293c3b15086"
+    },
+    {
+      "path": "inspected-current-source/crates/server/src/runtime.rs",
+      "bytes": 409257,
+      "sha256": "a33a8b8935f1dc3215fd5bd24711af78f355eafbc9b2ef4e75b464c77cecdb45"
+    }
+  ]
+}
