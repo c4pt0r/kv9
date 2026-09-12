@@ -1102,6 +1102,10 @@ impl<S: PersistentRaftStorage, E: crate::ApplyStore + 'static> NodeDriver<S, E> 
         self.read_seq.load(std::sync::atomic::Ordering::Relaxed)
     }
 
+    pub fn body_handoff_snapshot(&self) -> Option<crate::body_profile::BodySnapshot> {
+        self.transport.body_handoff_snapshot()
+    }
+
     pub fn metrics(&self) -> &DriverMetrics {
         &self.metrics
     }

@@ -238,6 +238,11 @@ pub trait DiscoveryState: Send + Sync {
 /// `send` is non-blocking best-effort; `drain` returns messages delivered to
 /// this node since the last drain, in arrival order.
 pub trait RaftTransport: Send + Sync {
+    /// Optional local request-body observation; never a delivery receipt.
+    fn body_handoff_snapshot(&self) -> Option<crate::body_profile::BodySnapshot> {
+        None
+    }
+
     /// Bind the exclusive driver wakeup. Custom harness transports may retain
     /// periodic delivery; all built-in transports notify admitted work.
     fn set_work_signal(&self, _signal: Arc<crate::work::WorkSignal>) {}
