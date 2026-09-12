@@ -17,6 +17,13 @@ license = "Apache-2.0"
 repository = "https://github.com/kv9/kv9"
 description = "kv9 — a single-binary, multi-tenant distributed key-value engine."
 
+# Candidate release-code generation only. Keep unwind panic behavior, target
+# portability and every runtime protocol unchanged; measure server gains using
+# the same retained clients before selecting this build configuration.
+[profile.release]
+lto = "thin"
+codegen-units = 1
+
 # Runtime dependencies. gRPC `.proto` sources are compiled with the pinned protoc
 # toolchain; raft-rs stays on `protobuf-codec` independently.
 #

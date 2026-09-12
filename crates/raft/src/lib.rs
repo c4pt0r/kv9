@@ -16,6 +16,8 @@ pub mod command;
 pub mod driver;
 pub mod grpc;
 pub mod rawnode;
+#[cfg(feature = "read-stage-timing")]
+mod read_stage_timing;
 pub mod state_machine;
 pub mod storage;
 #[cfg(any(test, feature = "testing"))]

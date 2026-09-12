@@ -9,7 +9,7 @@ use serde::Serialize;
 
 const INTERVAL: Duration = Duration::from_secs(1);
 pub(crate) const MAX_EXPORT_BYTES: usize = 512 * 1024;
-pub(crate) const METRIC_COUNT: usize = 26;
+pub(crate) const METRIC_COUNT: usize = 18 + kv9_raft::driver::DriverMetrics::COUNT;
 
 #[derive(Serialize)]
 struct ApplyLag {
