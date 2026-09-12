@@ -95,8 +95,12 @@ pub struct WorkSignal {
 impl WorkSignal {
     pub fn notify(&self) {
         let mut state = self.state.lock().expect("work signal poisoned");
-        if !state.stopped {
+        if !state.stopped && !state.pending {
             state.pending = true;
+            // One pending notification already prevents the owner from parking.
+            // If it was parked, the false-to-true transition already woke it.
+            // begin_turn consumes the bit under this same mutex before draining,
+            // so a later producer still leaves a notification for another turn.
             self.changed.notify_one();
         }
     }
@@ -250,6 +254,10 @@ impl RaftInbox {
         out
     }
 }
+
+#[cfg(test)]
+#[path = "work_signal_tests.rs"]
+mod notification_tests;
 
 #[cfg(test)]
 mod tests {
