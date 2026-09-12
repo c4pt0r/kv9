@@ -60,6 +60,10 @@ point/batch cohorts after local capacity qualification. Selected runtime remains
 CRC until promotion criteria pass. A combination with notification candidate `42e0117` requires its
 own matched qualification; historical percentages cannot be added.
 
+After this qualification, use the [quorum-path plan](QUORUM-LATENCY-NEXT.md)
+to localize isolated-read latency. Reuse the existing body-handoff measurement;
+new observation must resolve a remaining boundary before another rewrite.
+
 Before revisiting any row, state the new evidence and changed variable that
 could invalidate its old conclusion. A fresh branch, renamed helper or repeated
 latency symptom is insufficient on its own. Check all branch history and the

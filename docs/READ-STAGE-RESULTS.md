@@ -1,5 +1,13 @@
 # Asynchronous read latency diagnosis — 2026-09-11
 
+This is a historical diagnosis of the instrumented CRC runtime. The proposed
+global-queue experiment below has since [completed and been rejected](GLOBAL-QUEUE-PERFORMANCE.md).
+The current candidate is [ThinLTO](RELEASE-THIN-LTO-PERFORMANCE.md), with
+broader point/batch qualification pending. These stage measurements have not
+been repeated on ThinLTO and must not be presented as its current profile.
+Consult the [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md) before revisiting
+the historical proposals.
+
 The successful asynchronous read's largest observed interval is quorum
 confirmation. Under c64 load, completion-to-receiver resumption is also large.
 The next experiment explicitly polls the RPC executor's global task queue every
@@ -50,7 +58,13 @@ tail estimate is derived from a bucket.
 
 Default Raft/Server checks pass **435 tests/doctests**, diagnostic checks pass
 **438**, with one existing ignored test in each invocation. Formatting and
-both all-target Clippy variants pass with warnings denied. New tests cover
+default all-target Clippy pass with warnings denied. The original command named
+`diagnostic-clippy` actually selected `kv9-raft/testing`, not
+`kv9-raft/read-stage-timing`; its success does not establish Clippy coverage of
+the observer. That feature-specific check remains pending. The unchanged
+[original command receipt](read-stage-diagnostic-v1/README.md) has SHA256
+`28e2fe41c5441097c1d138532aa0417fb18ba0a6e706d86effeb9f78711de506`.
+New tests cover
 stage arithmetic, malformed timestamps, and actual sealed-group confirmation,
 apply coverage, cancellation and successful delivery. The observer is absent
 from default builds and does not participate in any correctness decision.
@@ -89,7 +103,7 @@ Original-byte reporting evidence is in [read-stage-diagnostic-v1](read-stage-dia
 Original binaries, WALs and full local output remain under the retained paths.
 Integrity checks do not replace the independent runtime acceptance predicates.
 
-## Next performance work
+## Historical follow-up plan
 
 1. Test `.global_queue_interval(8)` on the existing two-worker RPC executor,
    preserving socket event interval eight. This targets remote Raft completion
@@ -106,6 +120,6 @@ Integrity checks do not replace the independent runtime acceptance predicates.
    API and actual Chaos gates. The test-environment agent has prepared distinct
    network, Pod/WRITE-errno and follower-FSYNC scopes; preparation is not a run.
 
-Selected runtime remains CRC `ca0002c7`. The previous uninstrumented
-[notification comparison](COALESCED-OWNER-PERFORMANCE.md) remains the latest
-accepted performance comparison until the next complete screen finishes.
+At the time of this diagnosis, selected runtime was CRC `ca0002c7`, and the
+uninstrumented [notification comparison](COALESCED-OWNER-PERFORMANCE.md) was the
+latest accepted performance comparison. The current checkpoint is linked above.

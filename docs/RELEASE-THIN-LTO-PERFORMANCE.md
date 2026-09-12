@@ -1,9 +1,12 @@
 # ThinLTO improves point-read and mixed performance
 
 Candidate `02d0c01024b65a84b220c6948ff2224bfa7900bc` improves throughput,
-mean latency and p99 in all four measured cells and both run orders. It changes
-release code generation only: ThinLTO and one codegen unit. Runtime source,
-consensus semantics and the fixed v3 measurement clients remain unchanged.
+mean latency and p99 in all four measured cells and both run orders. Its change
+from parent `40f014f` is release code generation: ThinLTO and one codegen unit.
+The measured CRC control predates that parent's opt-in read-stage observer;
+the observer is disabled in both production builds. The result belongs to the
+complete pinned candidates, without an instruction-level equivalence claim for
+their default builds. Consensus semantics and the fixed v3 clients are unchanged.
 
 This is a favorable experimental checkpoint. Selected runtime remains CRC
 `ca0002c7` pending broader point/batch performance qualification. The exact build
@@ -76,9 +79,9 @@ statistics preparation contract pass. The unchanged statistics core binds all
 
 ## Interpretation and next work
 
-The changed variable supports a compiler-configuration improvement. Smaller
-generated code and cross-unit optimization are plausible mechanisms; no new
-CPU profile establishes their individual contributions. The retained server is
+The result supports this release-build candidate. Smaller generated code and
+cross-unit optimization are plausible mechanisms; no new CPU profile isolates
+their contributions from the source ancestry described above. The retained server is
 16,141,024 bytes versus 20,136,472 for CRC. This is not a cold-build-time or
 runtime-memory comparison. Compiler correctness remains a premise.
 
@@ -93,7 +96,8 @@ runtime-memory comparison. Compiler correctness remains a premise.
 3. If those gates pass, promote the code-generation setting as its own change;
    evaluate combination with `42e0117` separately. Its historical notification
    improvement cannot be added to this percentage.
-4. Continue reducing isolated read latency using evidence from the selected
+4. Continue reducing isolated read latency with the
+   [quorum-path investigation](QUORUM-LATENCY-NEXT.md), using the selected
    implementation. Consult the [experiment index](PERFORMANCE-EXPERIMENT-INDEX.md)
    before another scheduling experiment. Preserve fresh Safe ReadIndex, sealed
    groups, exact contexts, successful whole-pump completion, apply/view fences,
