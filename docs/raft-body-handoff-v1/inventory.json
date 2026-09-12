@@ -1,0 +1,1626 @@
+{
+  "files": {
+    "fixture-preparation/FINAL-BINDING.md": {
+      "bytes": 1252,
+      "sha256": "c395cd51e548d31fe5a23bc5686b1b6c0ed9b770c6c395ca4e91c60aa9e6c0d6",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/FINAL-BINDING.md"
+    },
+    "fixture-preparation/READINESS.json": {
+      "bytes": 1575,
+      "sha256": "8bdc20c1c0675c61b3861ea8eb8650000542f22820ccfd8256dfcfa5c5af7392",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/READINESS.json"
+    },
+    "fixture-preparation/READINESS.pending.json": {
+      "bytes": 2722,
+      "sha256": "7fac71aee626ee90f0244d97d7a2b4c8b558c091d46797cdd98a57e29a84fe50",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/READINESS.pending.json"
+    },
+    "fixture-preparation/README.md": {
+      "bytes": 6987,
+      "sha256": "a2e68b574773099ff4e497a61cef98c3911075ceaf3100c004b50c8d8cebbbc2",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/README.md"
+    },
+    "fixture-preparation/body_handoff.py": {
+      "bytes": 9867,
+      "sha256": "d665f7e59805d05760d3956d2c7d89cf1c30406ff1a13816976334f7379a7be4",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/body_handoff.py"
+    },
+    "fixture-preparation/commands.json": {
+      "bytes": 2163,
+      "sha256": "150e1a6c8d05c7158f6a71d35534ac62dce2f4c0905c1d386299b69eb1d40e41",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/commands.json"
+    },
+    "fixture-preparation/common.py": {
+      "bytes": 5540,
+      "sha256": "7d22ddc7a194978a2060de172490292e8ccde574b6eadd77470346e975248b15",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/common.py"
+    },
+    "fixture-preparation/contract.py": {
+      "bytes": 4579,
+      "sha256": "b99f0b53c6c77dd85ae781c37b9c4b6caf256fe168cbbf78c6b2d9263bf52a16",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/contract.py"
+    },
+    "fixture-preparation/diffs/body_handoff.py.diff": {
+      "bytes": 11107,
+      "sha256": "de009f0daf96a2158ee470c5a317ed1da133d3b5829ea365b319d1fc977a17b7",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/body_handoff.py.diff"
+    },
+    "fixture-preparation/diffs/commands.json.diff": {
+      "bytes": 2962,
+      "sha256": "d6c58bc32e83ac82576bcf04db04fc176b0eb1dbe7a0b4f6d36888bb72386c2d",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/commands.json.diff"
+    },
+    "fixture-preparation/diffs/common.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/common.py.diff"
+    },
+    "fixture-preparation/diffs/contract.py.diff": {
+      "bytes": 866,
+      "sha256": "f4269bba88242ffcf84a52bef4fcf2c1062da5bb5bc4d2ffd5d414d51c17f287",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/contract.py.diff"
+    },
+    "fixture-preparation/diffs/driver-arguments.json.diff": {
+      "bytes": 375,
+      "sha256": "8ee57ea599a30f252ab67f4e720b1b49e7a76b7f273e7ad9e381eb31e2253853",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/driver-arguments.json.diff"
+    },
+    "fixture-preparation/diffs/fixture-origin.json.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/fixture-origin.json.diff"
+    },
+    "fixture-preparation/diffs/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/isolate-and-run.py.diff"
+    },
+    "fixture-preparation/diffs/metrics26.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/metrics26.py.diff"
+    },
+    "fixture-preparation/diffs/metrics26.sha256.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/metrics26.sha256.diff"
+    },
+    "fixture-preparation/diffs/native_checks.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/native_checks.py.diff"
+    },
+    "fixture-preparation/diffs/outer_checks.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/outer_checks.py.diff"
+    },
+    "fixture-preparation/diffs/preflight.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/preflight.py.diff"
+    },
+    "fixture-preparation/diffs/readback.py.diff": {
+      "bytes": 2718,
+      "sha256": "980b5e4b896da9e131a346bd1d24fbc5d2abc9faf8e0122ca6e76fa8591c164b",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/readback.py.diff"
+    },
+    "fixture-preparation/diffs/root-build-bindings.final.diff": {
+      "bytes": 1059,
+      "sha256": "552e51b14b112d1388c30d1520d5a1fe15d008210c0e74bcdc62ccc6c72a6e8a",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/root-build-bindings.final.diff"
+    },
+    "fixture-preparation/diffs/root-build-bindings.pending.json.diff": {
+      "bytes": 390,
+      "sha256": "d56a32ebc552365ac8f537f875c7caaf407cd7e4bb521b99293476e3451c0b1e",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/root-build-bindings.pending.json.diff"
+    },
+    "fixture-preparation/diffs/run.py.diff": {
+      "bytes": 1735,
+      "sha256": "d47da5bc55423ca110b8221eb8622fe9275916460742c481e47fd7c88e7144b2",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/run.py.diff"
+    },
+    "fixture-preparation/diffs/test_body_handoff.py.diff": {
+      "bytes": 17367,
+      "sha256": "3d19d6a72137c9709ebb8f6e6ceccafff835f08a1e13ec674426482872f3156e",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/test_body_handoff.py.diff"
+    },
+    "fixture-preparation/diffs/test_fixture_contract.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/test_fixture_contract.py.diff"
+    },
+    "fixture-preparation/diffs/transport_checks.py.diff": {
+      "bytes": 3053,
+      "sha256": "1a40a6f1ea09426e6d0b93f6c0d29dc94b527f2c56b9356c833314207d06e1af",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/transport_checks.py.diff"
+    },
+    "fixture-preparation/diffs/v3_fixture.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/diffs/v3_fixture.py.diff"
+    },
+    "fixture-preparation/driver-arguments.json": {
+      "bytes": 102,
+      "sha256": "7e92eb0ba67c26bb23bb81d86b7257a9d26773b526bfe147f19331acf26b8188",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/driver-arguments.json"
+    },
+    "fixture-preparation/finalization.json": {
+      "bytes": 859,
+      "sha256": "d1beb90663f148f8b3bf6df4be51c91df26e3a29f641d9f9765ced6bff09389c",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/finalization.json"
+    },
+    "fixture-preparation/fixture-origin.json": {
+      "bytes": 742,
+      "sha256": "b2decaff008ae13305a68c026782114cf48f1ff057b390eb9865a565dc64eeb1",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/fixture-origin.json"
+    },
+    "fixture-preparation/fixtures/metrics26-base.json": {
+      "bytes": 279300,
+      "sha256": "681c7caa37c787bd32028fbaf5d6b3796da3331347f66f2a1863268011d0a04b",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/fixtures/metrics26-base.json"
+    },
+    "fixture-preparation/inventory.json": {
+      "bytes": 10483,
+      "sha256": "c6c14e1a74d89d1b2ec215b8a07a6a9181eee7da8eab9bb86e0f1ba1fdc099df",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/inventory.json"
+    },
+    "fixture-preparation/inventory.pending.json": {
+      "bytes": 9317,
+      "sha256": "362ff6e30cc6e6d48a9c86f85c6513dd621bc760bf45005f43569cc625fb5601",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/inventory.pending.json"
+    },
+    "fixture-preparation/isolate-and-run.py": {
+      "bytes": 12536,
+      "sha256": "7dcab2745b1e3fbc6a04bcc0d155b1c1c5a0cd3b91ae23bcab359bf47e36f1d2",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/isolate-and-run.py"
+    },
+    "fixture-preparation/metrics26.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/metrics26.py"
+    },
+    "fixture-preparation/metrics26.sha256": {
+      "bytes": 65,
+      "sha256": "8429e798d9114d9f0904312b2784b8cf5cc14638e6f4068aaf11e5cae180ced5",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/metrics26.sha256"
+    },
+    "fixture-preparation/native_checks.py": {
+      "bytes": 23685,
+      "sha256": "826deff55f373f38b5c7a87d14a341a4232704a8e9d64e39a9b1a241351e9d07",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/native_checks.py"
+    },
+    "fixture-preparation/originals/commands.json": {
+      "bytes": 2191,
+      "sha256": "fa88e6842399b001aca942136a89fc4871bbb7e312f8b43ffce4a1cff79a91d1",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/commands.json"
+    },
+    "fixture-preparation/originals/common.py": {
+      "bytes": 5540,
+      "sha256": "7d22ddc7a194978a2060de172490292e8ccde574b6eadd77470346e975248b15",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/common.py"
+    },
+    "fixture-preparation/originals/contract.py": {
+      "bytes": 4583,
+      "sha256": "97bf2b23a35d0458c3ebb298dbc96448b8add2a4f55aacb5ec300fcdfc995595",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/contract.py"
+    },
+    "fixture-preparation/originals/driver-arguments.json": {
+      "bytes": 104,
+      "sha256": "91be137757e27ee379f619224766d77f97340703fead4d6cc5a4a70ee1f65069",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/driver-arguments.json"
+    },
+    "fixture-preparation/originals/fixture-origin.json": {
+      "bytes": 742,
+      "sha256": "b2decaff008ae13305a68c026782114cf48f1ff057b390eb9865a565dc64eeb1",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/fixture-origin.json"
+    },
+    "fixture-preparation/originals/fixtures/metrics26-base.json": {
+      "bytes": 279300,
+      "sha256": "681c7caa37c787bd32028fbaf5d6b3796da3331347f66f2a1863268011d0a04b",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/fixtures/metrics26-base.json"
+    },
+    "fixture-preparation/originals/isolate-and-run.py": {
+      "bytes": 12536,
+      "sha256": "7dcab2745b1e3fbc6a04bcc0d155b1c1c5a0cd3b91ae23bcab359bf47e36f1d2",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/isolate-and-run.py"
+    },
+    "fixture-preparation/originals/metrics26.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/metrics26.py"
+    },
+    "fixture-preparation/originals/metrics26.sha256": {
+      "bytes": 65,
+      "sha256": "8429e798d9114d9f0904312b2784b8cf5cc14638e6f4068aaf11e5cae180ced5",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/metrics26.sha256"
+    },
+    "fixture-preparation/originals/native_checks.py": {
+      "bytes": 23685,
+      "sha256": "826deff55f373f38b5c7a87d14a341a4232704a8e9d64e39a9b1a241351e9d07",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/native_checks.py"
+    },
+    "fixture-preparation/originals/outer_checks.py": {
+      "bytes": 4428,
+      "sha256": "b5b00ce102aba5694c6c123cd33406876cdfb9fcbbd5c458b7f752e5aae41757",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/outer_checks.py"
+    },
+    "fixture-preparation/originals/preflight.py": {
+      "bytes": 1346,
+      "sha256": "6b6e6546d1bc9198e5fcc755fc59f5952cbfe15177ba26f9e2566ccaccd780b7",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/preflight.py"
+    },
+    "fixture-preparation/originals/readback.py": {
+      "bytes": 6483,
+      "sha256": "25c928f0de07a63fc6b59f4e6985f37e8a5edc4ed61098a0675a40a31317c9a9",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/readback.py"
+    },
+    "fixture-preparation/originals/root-build-bindings.pending.json": {
+      "bytes": 312,
+      "sha256": "984d6c95fe18afd10303215df7260036f152b3a4517e18cd1cd1fc0640e48227",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/root-build-bindings.pending.json"
+    },
+    "fixture-preparation/originals/run.py": {
+      "bytes": 6169,
+      "sha256": "b8da6263130f405912cf069e48517455b27ff73bfdd91b61e639a93df94e79dd",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/run.py"
+    },
+    "fixture-preparation/originals/test_fixture_contract.py": {
+      "bytes": 3857,
+      "sha256": "801993d2ca3975d3b46491c42cd9fdbee10e5a1fdeb6e4a60530ccc2f80e8c88",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/test_fixture_contract.py"
+    },
+    "fixture-preparation/originals/test_transport_wait.py": {
+      "bytes": 8118,
+      "sha256": "50262fa35ca37bf038fa4297897662b7795fc64926029bf907bc8b49cb7afb58",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/test_transport_wait.py"
+    },
+    "fixture-preparation/originals/transport_checks.py": {
+      "bytes": 6922,
+      "sha256": "cc168411230f912a8ada303ff0d9b5deebf686691906fb73db358236a6a34fe1",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/transport_checks.py"
+    },
+    "fixture-preparation/originals/transport_wait.py": {
+      "bytes": 8079,
+      "sha256": "548e06f6c6650b0866875e0508d886b96d81c079f487fa2c48d2709ef1b67282",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/transport_wait.py"
+    },
+    "fixture-preparation/originals/v3_fixture.py": {
+      "bytes": 51967,
+      "sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/originals/v3_fixture.py"
+    },
+    "fixture-preparation/outer_checks.py": {
+      "bytes": 4428,
+      "sha256": "b5b00ce102aba5694c6c123cd33406876cdfb9fcbbd5c458b7f752e5aae41757",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/outer_checks.py"
+    },
+    "fixture-preparation/preflight.py": {
+      "bytes": 1346,
+      "sha256": "6b6e6546d1bc9198e5fcc755fc59f5952cbfe15177ba26f9e2566ccaccd780b7",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/preflight.py"
+    },
+    "fixture-preparation/readback.py": {
+      "bytes": 6495,
+      "sha256": "63a5f0be223e96a941dc755599ba93e850f937134c87167950334f82df853a5c",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/readback.py"
+    },
+    "fixture-preparation/release-readback.json": {
+      "bytes": 849,
+      "sha256": "98b73006c590d63fefe99926e4f8faf4d35e3ea63b3aa645103a2f9ba776fe63",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/release-readback.json"
+    },
+    "fixture-preparation/results-first/analysis.json": {
+      "bytes": 837166,
+      "sha256": "1018c96678dcd6cf0856582a3fd55afe5820d5c91ee79626eebdd269fd28fac9",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/results-first/analysis.json"
+    },
+    "fixture-preparation/results-first/input-inventory.json": {
+      "bytes": 38314,
+      "sha256": "b7094db0c0a4963b614627d47533b048add4fd20ba9b414ff7542537d0af96b3",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/results-first/input-inventory.json"
+    },
+    "fixture-preparation/root-build-bindings.json": {
+      "bytes": 565,
+      "sha256": "f7b412c17319a86df41981541e124557f2a9b7011e17d68ee5435fd834a3b5ba",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/root-build-bindings.json"
+    },
+    "fixture-preparation/root-build-bindings.pending.json": {
+      "bytes": 310,
+      "sha256": "714f24e2670d14684e8ee952f07c8f8da77f6051624e04a69d24dadf13bba21d",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/root-build-bindings.pending.json"
+    },
+    "fixture-preparation/run.py": {
+      "bytes": 6207,
+      "sha256": "f8ed2536d20352cfa723aeb30be87334913a01ee6a766134a4aaa34a402fc3ed",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/run.py"
+    },
+    "fixture-preparation/source-gate-followup.md": {
+      "bytes": 651,
+      "sha256": "14ad306b05d48c2598942337fb14a73833c030e33ae49cbd790ce0e7ed022135",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/source-gate-followup.md"
+    },
+    "fixture-preparation/source-schema-observation.json": {
+      "bytes": 613,
+      "sha256": "12e14ea63baffb550ed34c76d07985560ed2bb435eb9590c0c5bc21df50ce4d9",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/source-schema-observation.json"
+    },
+    "fixture-preparation/substitutions.json": {
+      "bytes": 439,
+      "sha256": "89edf8e8e9342703db4de3807f047d04fc729460aec97543487b8d759f29fce3",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/substitutions.json"
+    },
+    "fixture-preparation/test_body_handoff.py": {
+      "bytes": 10819,
+      "sha256": "2329bfe891c7e055cdeb547787a8b08dfa99429a0c3dd533b231dcc4cc796339",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/test_body_handoff.py"
+    },
+    "fixture-preparation/test_fixture_contract.py": {
+      "bytes": 3857,
+      "sha256": "801993d2ca3975d3b46491c42cd9fdbee10e5a1fdeb6e4a60530ccc2f80e8c88",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/test_fixture_contract.py"
+    },
+    "fixture-preparation/transport_checks.py": {
+      "bytes": 6867,
+      "sha256": "2bf9233d51b954db9f2a937d353e488321f2f6f3506e66d9ef7d9a9b35bf9c00",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/transport_checks.py"
+    },
+    "fixture-preparation/v3_fixture.py": {
+      "bytes": 51967,
+      "sha256": "cbbd6db65e668db0c46d0a2b564693f551e2a4137127bae3ed58897d633ad195",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/v3_fixture.py"
+    },
+    "fixture-preparation/validator-subset-first.json": {
+      "bytes": 1128,
+      "sha256": "80194a0fa5a0dd812e7cc400923a37714600db9955ea7bceb45a369a9c2ea03e",
+      "source": "/tmp/kv9-raft-body-handoff-fixture-preparation-first/validator-subset-first.json"
+    },
+    "process-preparation/READINESS.json": {
+      "bytes": 1150,
+      "sha256": "fef67868ab9afddee51b67aaac7092c63fa9d7836ef4d3fa1048fbbafc3ffa62",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/READINESS.json"
+    },
+    "process-preparation/READINESS.json.final-binding.diff": {
+      "bytes": 1756,
+      "sha256": "f1ce0c796cf2798d43536c50b47d5596acc25d08166f23fbb807ef47a1f1a799",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/READINESS.json.final-binding.diff"
+    },
+    "process-preparation/README.md": {
+      "bytes": 5197,
+      "sha256": "38c5453ff4ea13cc880c9272aa54f27f424ad2e06335e00f2554564808252bdc",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/README.md"
+    },
+    "process-preparation/README.md.final-binding.diff": {
+      "bytes": 1138,
+      "sha256": "99641256dd81eb667ad8c8bd559160ce45ca320f2e45507eeb1ba6b926a1017d",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/README.md.final-binding.diff"
+    },
+    "process-preparation/SOURCE-RELEASE-BOUND.md": {
+      "bytes": 2115,
+      "sha256": "242a90a33e791f77199afb2df58b5b650fee8d99f61ac591befd24ac41d63e85",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/SOURCE-RELEASE-BOUND.md"
+    },
+    "process-preparation/audit.py": {
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/audit.py"
+    },
+    "process-preparation/binding.final.json": {
+      "bytes": 6210,
+      "sha256": "cce9d9dad45196767d611081fd4a65b9d459e565506082204da626d140ecf554",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/binding.final.json"
+    },
+    "process-preparation/binding.pending.json": {
+      "bytes": 937,
+      "sha256": "5bbfc533fd9c564e4e7fb14f3d79f7c1fc57e63737e201933d0fd3b40d5026de",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/binding.pending.json"
+    },
+    "process-preparation/binding.pending.json.diff": {
+      "bytes": 1313,
+      "sha256": "ba1d5b7f9dd43f8d26ab7e31fedc43cbca90004790304901593651685fa2de96",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/binding.pending.json.diff"
+    },
+    "process-preparation/commands.json": {
+      "bytes": 1747,
+      "sha256": "ceba053be5efd5f494ba72a8fc3853004cac264cc8ad690ff4de20a8bac582ff",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/commands.json"
+    },
+    "process-preparation/commands.json.final-binding.diff": {
+      "bytes": 1109,
+      "sha256": "191d303c1dc2715f21b137609a171c7f12703895299c1550bc855279bb33821c",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/commands.json.final-binding.diff"
+    },
+    "process-preparation/commands.pending.json": {
+      "bytes": 1356,
+      "sha256": "881a21bcf4155f304e40f6596bc13bda74aa87b061445e43bb87c09f706e78d0",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/commands.pending.json"
+    },
+    "process-preparation/commands.pending.json.diff": {
+      "bytes": 1839,
+      "sha256": "dac6887cb31a6d78fd5275852a314301ebe614b6015b64515c2a428f866f3506",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/commands.pending.json.diff"
+    },
+    "process-preparation/diagnostic-doc-final.md": {
+      "bytes": 6866,
+      "sha256": "d310fd90229a4a7e8f6e2d5fa234c85a179bf17608ae0b237d9e7655749a0b5b",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/diagnostic-doc-final.md"
+    },
+    "process-preparation/diagnostic-doc-observed.md": {
+      "bytes": 6866,
+      "sha256": "d310fd90229a4a7e8f6e2d5fa234c85a179bf17608ae0b237d9e7655749a0b5b",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/diagnostic-doc-observed.md"
+    },
+    "process-preparation/fixtures/check-latency-metrics.py": {
+      "bytes": 9330,
+      "sha256": "4c6b7dee7616052ebf533688e16025fb07c0e3383598fbd305a0cb484248ac43",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/fixtures/check-latency-metrics.py"
+    },
+    "process-preparation/fixtures/original-metrics.json": {
+      "bytes": 62587,
+      "sha256": "6d635f0a7928080081af6940fa75af61e51551af29ee1ea5c0b10e18389c03a7",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/fixtures/original-metrics.json"
+    },
+    "process-preparation/fixtures/predecessor-process-runner.py": {
+      "bytes": 717,
+      "sha256": "45123a9873927719fb874c65e49cb49253c65c5a01d6a6146db418fefe8d8ef2",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/fixtures/predecessor-process-runner.py"
+    },
+    "process-preparation/inventory.json": {
+      "bytes": 7048,
+      "sha256": "f420d67bcac72f8b43e5e81b79bcf01aadfa9675a3b0aa7430975cf6d28c9a25",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/inventory.json"
+    },
+    "process-preparation/inventory.pending.json": {
+      "bytes": 3158,
+      "sha256": "d08206f8f03bae25f9f346c2fbf36e71a22a889df03b9a468c91c29c35a981af",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/inventory.pending.json"
+    },
+    "process-preparation/lineage.json": {
+      "bytes": 4795,
+      "sha256": "cc7b6eff85d73434c2077bdac6955b2232c78511e05e776fc28a816b96e08430",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/lineage.json"
+    },
+    "process-preparation/pending-before-final-binding-first/READINESS.json": {
+      "bytes": 1015,
+      "sha256": "11f91ac7cdf4a0587f0c1fc021631245e401afce1970d3c6cd4818c1df2cb0d5",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/READINESS.json"
+    },
+    "process-preparation/pending-before-final-binding-first/README.md": {
+      "bytes": 4704,
+      "sha256": "20b541334e1ee4f409e702c104c1010ec0939feefbee202376bfc49018a78fae",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/README.md"
+    },
+    "process-preparation/pending-before-final-binding-first/audit.py": {
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/audit.py"
+    },
+    "process-preparation/pending-before-final-binding-first/binding.pending.json": {
+      "bytes": 937,
+      "sha256": "5bbfc533fd9c564e4e7fb14f3d79f7c1fc57e63737e201933d0fd3b40d5026de",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/binding.pending.json"
+    },
+    "process-preparation/pending-before-final-binding-first/binding.pending.json.diff": {
+      "bytes": 1313,
+      "sha256": "ba1d5b7f9dd43f8d26ab7e31fedc43cbca90004790304901593651685fa2de96",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/binding.pending.json.diff"
+    },
+    "process-preparation/pending-before-final-binding-first/commands.json": {
+      "bytes": 1356,
+      "sha256": "881a21bcf4155f304e40f6596bc13bda74aa87b061445e43bb87c09f706e78d0",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/commands.json"
+    },
+    "process-preparation/pending-before-final-binding-first/commands.pending.json": {
+      "bytes": 1356,
+      "sha256": "881a21bcf4155f304e40f6596bc13bda74aa87b061445e43bb87c09f706e78d0",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/commands.pending.json"
+    },
+    "process-preparation/pending-before-final-binding-first/commands.pending.json.diff": {
+      "bytes": 1839,
+      "sha256": "dac6887cb31a6d78fd5275852a314301ebe614b6015b64515c2a428f866f3506",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/commands.pending.json.diff"
+    },
+    "process-preparation/pending-before-final-binding-first/diagnostic-doc-observed.md": {
+      "bytes": 6866,
+      "sha256": "d310fd90229a4a7e8f6e2d5fa234c85a179bf17608ae0b237d9e7655749a0b5b",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/diagnostic-doc-observed.md"
+    },
+    "process-preparation/pending-before-final-binding-first/inventory.json": {
+      "bytes": 3158,
+      "sha256": "d08206f8f03bae25f9f346c2fbf36e71a22a889df03b9a468c91c29c35a981af",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/inventory.json"
+    },
+    "process-preparation/pending-before-final-binding-first/inventory.pending.json": {
+      "bytes": 3158,
+      "sha256": "d08206f8f03bae25f9f346c2fbf36e71a22a889df03b9a468c91c29c35a981af",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/inventory.pending.json"
+    },
+    "process-preparation/pending-before-final-binding-first/lineage.json": {
+      "bytes": 4795,
+      "sha256": "cc7b6eff85d73434c2077bdac6955b2232c78511e05e776fc28a816b96e08430",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/lineage.json"
+    },
+    "process-preparation/pending-before-final-binding-first/process-runner.py": {
+      "bytes": 715,
+      "sha256": "d7570502eab8e76346658556db8020fbf7ecd68e7bef1b9f666b1505aaf18105",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/process-runner.py"
+    },
+    "process-preparation/pending-before-final-binding-first/process-runner.py.diff": {
+      "bytes": 553,
+      "sha256": "f95362df84a227e3a3a44211948c88e947e5293502c9f2b2078d6e4983964ab6",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/process-runner.py.diff"
+    },
+    "process-preparation/pending-before-final-binding-first/test_contract.py": {
+      "bytes": 3775,
+      "sha256": "7202d0cef3d2f3d61933ad2e75df370f6a7eab2089bbb484cd4b8f4630806f9d",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/test_contract.py"
+    },
+    "process-preparation/pending-before-final-binding-first/test_contract.py.diff": {
+      "bytes": 2269,
+      "sha256": "a9535e55942567ff4f129da2b74305968856d2a2b63570ee6e796b3575dfd10b",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/pending-before-final-binding-first/test_contract.py.diff"
+    },
+    "process-preparation/predecessor-inputs/audit.py": {
+      "bytes": 22195,
+      "sha256": "64aa248892c538c82ddbb1f2469dbefac8b2ad97f29dd2a04bfb58d44b1f6dc5",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/predecessor-inputs/audit.py"
+    },
+    "process-preparation/predecessor-inputs/binding.pending.json": {
+      "bytes": 945,
+      "sha256": "9ea79968fed00a4ec953944163627ec9cb75fc107df6aaedf865b42b4b3d955b",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/predecessor-inputs/binding.pending.json"
+    },
+    "process-preparation/predecessor-inputs/commands.pending.json": {
+      "bytes": 1374,
+      "sha256": "02dba42952afa0a5d7c16003ae79ae760b12d856eac3e9e30db870f83d9a70e4",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/predecessor-inputs/commands.pending.json"
+    },
+    "process-preparation/predecessor-inputs/lineage.json": {
+      "bytes": 4044,
+      "sha256": "3e1b46c2093a121b4e1f0f58c6a96ce89a84440dc7d43a5eb339ad988b617149",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/predecessor-inputs/lineage.json"
+    },
+    "process-preparation/predecessor-inputs/process-runner.py": {
+      "bytes": 717,
+      "sha256": "45123a9873927719fb874c65e49cb49253c65c5a01d6a6146db418fefe8d8ef2",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/predecessor-inputs/process-runner.py"
+    },
+    "process-preparation/predecessor-inputs/test_contract.py": {
+      "bytes": 3755,
+      "sha256": "2cb4a22fd62b16af11f4c9ec38a8d8263798b355977268ed421260d1a10f213a",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/predecessor-inputs/test_contract.py"
+    },
+    "process-preparation/process-runner.py": {
+      "bytes": 715,
+      "sha256": "d7570502eab8e76346658556db8020fbf7ecd68e7bef1b9f666b1505aaf18105",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/process-runner.py"
+    },
+    "process-preparation/process-runner.py.diff": {
+      "bytes": 553,
+      "sha256": "f95362df84a227e3a3a44211948c88e947e5293502c9f2b2078d6e4983964ab6",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/process-runner.py.diff"
+    },
+    "process-preparation/release-readback.json": {
+      "bytes": 849,
+      "sha256": "98b73006c590d63fefe99926e4f8faf4d35e3ea63b3aa645103a2f9ba776fe63",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/release-readback.json"
+    },
+    "process-preparation/results-first/audit.json": {
+      "bytes": 10559,
+      "sha256": "607bd7f6e0bbea547aedbd92210555b2f7805c2973381417ee6e7d6d6aa8c63b",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/audit.json"
+    },
+    "process-preparation/results-first/batch-tonic-stream-history-checked.json": {
+      "bytes": 19866,
+      "sha256": "578edea50ba5131f8229ca845495fde95cd3b327ca0f0143d7c93ce1bcb09c34",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/batch-tonic-stream-history-checked.json"
+    },
+    "process-preparation/results-first/batch-tonic-stream-raw-history.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/batch-tonic-stream-raw-history.stderr"
+    },
+    "process-preparation/results-first/batch-tonic-stream-raw-history.stdout": {
+      "bytes": 633,
+      "sha256": "4704a15e981f3af612ba2be0de78ab98592d6c79c8561da3ced458f1b2ccbf68",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/batch-tonic-stream-raw-history.stdout"
+    },
+    "process-preparation/results-first/batch-tonic-stream-report-checked.json": {
+      "bytes": 22756,
+      "sha256": "28386dad0c36441ed39bd38b42904ffb41b5c1b4a44d0b6cef4b915fd2974693",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/batch-tonic-stream-report-checked.json"
+    },
+    "process-preparation/results-first/batch-tonic-unary-history-checked.json": {
+      "bytes": 19152,
+      "sha256": "076b6867cdc044128317a091d2911ea1e7dcce825c81f93a8e2da9b5fe0f55d7",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/batch-tonic-unary-history-checked.json"
+    },
+    "process-preparation/results-first/batch-tonic-unary-raw-history.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/batch-tonic-unary-raw-history.stderr"
+    },
+    "process-preparation/results-first/batch-tonic-unary-raw-history.stdout": {
+      "bytes": 751,
+      "sha256": "598228cc9239a1c77dfa7947a01d02f6d88d3c01c2af396a39917cba16046ac9",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/batch-tonic-unary-raw-history.stdout"
+    },
+    "process-preparation/results-first/batch-tonic-unary-report-checked.json": {
+      "bytes": 21944,
+      "sha256": "ab08d033db6c66285197503a0514b635c70c20bfb5c9302d333d6c46a78bbcee",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/batch-tonic-unary-report-checked.json"
+    },
+    "process-preparation/results-first/commands.json": {
+      "bytes": 1915,
+      "sha256": "b64e341839f9e2755f56aeff74da2045b177bebfa6cb423b45eae9ab5914b60b",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/commands.json"
+    },
+    "process-preparation/results-first/original-inputs.json": {
+      "bytes": 12624,
+      "sha256": "11e690747c0bf610fb19a8fe6e99773f79072262f2003fe2d19d39eb593ac840",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/original-inputs.json"
+    },
+    "process-preparation/results-first/source-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/source-head.stderr"
+    },
+    "process-preparation/results-first/source-head.stdout": {
+      "bytes": 41,
+      "sha256": "e8eb8d7ae348be66e1099628fe8e8687aab9bd32d8552ad22a771d06c76e9f48",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/source-head.stdout"
+    },
+    "process-preparation/results-first/source-status.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/source-status.stderr"
+    },
+    "process-preparation/results-first/source-status.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/results-first/source-status.stdout"
+    },
+    "process-preparation/source-gate-followup.md": {
+      "bytes": 651,
+      "sha256": "14ad306b05d48c2598942337fb14a73833c030e33ae49cbd790ce0e7ed022135",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/source-gate-followup.md"
+    },
+    "process-preparation/test_contract.py": {
+      "bytes": 3775,
+      "sha256": "7202d0cef3d2f3d61933ad2e75df370f6a7eab2089bbb484cd4b8f4630806f9d",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/test_contract.py"
+    },
+    "process-preparation/test_contract.py.diff": {
+      "bytes": 2269,
+      "sha256": "a9535e55942567ff4f129da2b74305968856d2a2b63570ee6e796b3575dfd10b",
+      "source": "/tmp/kv9-raft-body-handoff-process-preparation-first/test_contract.py.diff"
+    },
+    "process/batch-tonic-stream-checked.json": {
+      "bytes": 22756,
+      "sha256": "28386dad0c36441ed39bd38b42904ffb41b5c1b4a44d0b6cef4b915fd2974693",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-stream-checked.json"
+    },
+    "process/batch-tonic-stream-config.json": {
+      "bytes": 787,
+      "sha256": "4d0a059d7348f0b9e7c6365e3a9d42ba08e64b86d9d5943ee0ab6b842b7dbf5a",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-stream-config.json"
+    },
+    "process/batch-tonic-stream/build.json": {
+      "bytes": 487,
+      "sha256": "f8f2db23332a78cdce29a2bac746affb34bfc286fa8635b1ccd610d44aeb0965",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-stream/build.json"
+    },
+    "process/batch-tonic-stream/config.json": {
+      "bytes": 821,
+      "sha256": "bc8bc62ead4eaf446b3d43585a81ed3986e26e450174a222a5620d61e2935992",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-stream/config.json"
+    },
+    "process/batch-tonic-stream/history.jsonl": {
+      "bytes": 434738,
+      "sha256": "49d93bc7ac20d45018e0def6b693074be65da2ae24a148b0beb78bb15e40d98b",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-stream/history.jsonl"
+    },
+    "process/batch-tonic-stream/progress.json": {
+      "bytes": 720,
+      "sha256": "e6890717d5840130694d688db3dae0803f01a760b759a51326fa9a19f55198d5",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-stream/progress.json"
+    },
+    "process/batch-tonic-stream/ready.json": {
+      "bytes": 70,
+      "sha256": "7492321a4fbd4d8404498b4ff3a47e1e66ca00211e1718ad54c42d44aa1a63a0",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-stream/ready.json"
+    },
+    "process/batch-tonic-stream/report.json": {
+      "bytes": 200870,
+      "sha256": "ced5df33c26bc186435805621499839baf7abd8f6943557ed3d235d264593443",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-stream/report.json"
+    },
+    "process/batch-tonic-unary-checked.json": {
+      "bytes": 21944,
+      "sha256": "ab08d033db6c66285197503a0514b635c70c20bfb5c9302d333d6c46a78bbcee",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-unary-checked.json"
+    },
+    "process/batch-tonic-unary-config.json": {
+      "bytes": 819,
+      "sha256": "1d090f9a242862b623e90bd6e5a76cc520d798385cc1588f85e6fa2116754717",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-unary-config.json"
+    },
+    "process/batch-tonic-unary/build.json": {
+      "bytes": 487,
+      "sha256": "f8f2db23332a78cdce29a2bac746affb34bfc286fa8635b1ccd610d44aeb0965",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-unary/build.json"
+    },
+    "process/batch-tonic-unary/config.json": {
+      "bytes": 818,
+      "sha256": "83f8fd3a11efd348cfe4b79abf2a71136ab233e35c982bed895aa18c47df1bcd",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-unary/config.json"
+    },
+    "process/batch-tonic-unary/history.jsonl": {
+      "bytes": 414547,
+      "sha256": "714cc413b68973b69214580dc646a524571a68894d6efaed8900e9552736dde5",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-unary/history.jsonl"
+    },
+    "process/batch-tonic-unary/progress.json": {
+      "bytes": 720,
+      "sha256": "b59621749658cc5fb53e9932f5d28c66dad21bcd48708f94195280381939e86e",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-unary/progress.json"
+    },
+    "process/batch-tonic-unary/ready.json": {
+      "bytes": 70,
+      "sha256": "70aaf83b6777a481950b9d49c6d14f6c2834698f53947fe99b20c2bdc40876a4",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-unary/ready.json"
+    },
+    "process/batch-tonic-unary/report.json": {
+      "bytes": 200888,
+      "sha256": "df0f15a726fbfcbe07f3230e6cb2e3cd59cb96bd8c0687223b00327575d34da8",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/batch-tonic-unary/report.json"
+    },
+    "process/fixture/command-000.json": {
+      "bytes": 339,
+      "sha256": "a75487c61c94d63e2ce9b5aea4aae272aeeb6da2251fe11c410b871fe1b74d78",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/fixture/command-000.json"
+    },
+    "process/fixture/command-001.json": {
+      "bytes": 339,
+      "sha256": "93f38021f11c646e94cd3886edff0adba68a8e7162aafc6cc9d9a34b699bfa18",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/fixture/command-001.json"
+    },
+    "process/fixture/command-002.json": {
+      "bytes": 339,
+      "sha256": "39845f3aa8b42b83a927a6dd3459c124dc036af286673e0a1ce73b182b5fe61d",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/fixture/command-002.json"
+    },
+    "process/fixture/command-003.json": {
+      "bytes": 951,
+      "sha256": "ef110b8aac3807fc36a2c7e270889175f216e212ce76c0e2e417042539789417",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/fixture/command-003.json"
+    },
+    "process/fixture/command-004.json": {
+      "bytes": 617,
+      "sha256": "95ffe22b035b6ff4e47b304aa640782b641d810ab7569918afe7065ec0fda5c4",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/fixture/command-004.json"
+    },
+    "process/fixture/command-005.json": {
+      "bytes": 617,
+      "sha256": "6705d48b1e50a72765adbd11c2341e752d6bc4cefba01ecf3ac8ee1426f07baa",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/fixture/command-005.json"
+    },
+    "process/fixture/command-006.json": {
+      "bytes": 617,
+      "sha256": "b28314f4ec0731d15c9dc2ad63eb253ac18a4b19499e35aa76ec68e792bb4390",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/fixture/command-006.json"
+    },
+    "process/fixture/command-007.json": {
+      "bytes": 319,
+      "sha256": "48bb553580e3f8b94416582763bb86179305b5cad043c4553d9dd6a6588b90a2",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/fixture/command-007.json"
+    },
+    "process/fixture/command-008.json": {
+      "bytes": 320,
+      "sha256": "d868112bfd5375e08cb5c7c4a29d2fbb6b7e47f98ddb2b559c8d485e5ef6c56b",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/fixture/command-008.json"
+    },
+    "process/fixture/fixture.json": {
+      "bytes": 3192,
+      "sha256": "0322a5d69f48ae5a60468d72cae8e75b64ff8a55e283c85c2716a35e11f2dc84",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/fixture/fixture.json"
+    },
+    "process/summary.json": {
+      "bytes": 202773,
+      "sha256": "402f8addb5cf3ae79492fe7c64f2124a371da163f34a7daa8672d748fc1f447c",
+      "source": "/tmp/kv9-raft-body-handoff-process-e2e-first/summary.json"
+    },
+    "recording/000-crc-c1/after-metrics.json": {
+      "bytes": 1261588,
+      "sha256": "ccd7cef1d12e4b7aa4e825947d98b2e2a2a036f3020772ee4ed69daf66139b7a",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/after-metrics.json"
+    },
+    "recording/000-crc-c1/after-resources.json": {
+      "bytes": 1761,
+      "sha256": "68240bca6bf5ba90934a010ab368414a4762b3a22ac36469033d36910f113fb6",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/after-resources.json"
+    },
+    "recording/000-crc-c1/after-status.json": {
+      "bytes": 12822,
+      "sha256": "347f46e358f7abcd4bbb186046abe5b8ddb4949c0e3e4958b6394f732ff7e4eb",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/after-status.json"
+    },
+    "recording/000-crc-c1/background-before.json": {
+      "bytes": 26775,
+      "sha256": "6f9736b7abc88b7a00d63a7c37a8a349387816b35d0cf8321202f9c2fc605262",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/background-before.json"
+    },
+    "recording/000-crc-c1/before-allocator-provenance.json": {
+      "bytes": 4092,
+      "sha256": "48b2b36c76e7832bb5651c0e9b8efc0b7f0afcb8831ed8bca8bf0cd19c1fa9c1",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/before-allocator-provenance.json"
+    },
+    "recording/000-crc-c1/before-fresh-drain.json": {
+      "bytes": 40548,
+      "sha256": "7af862a6e3e774e8922627e2aff1dc7f99c9b01eaccd73a783575455ef902b6f",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/before-fresh-drain.json"
+    },
+    "recording/000-crc-c1/before-metrics.json": {
+      "bytes": 1258240,
+      "sha256": "f3d91ef7f927a590ca43402cd863d44b1e305224944b5c3a62ecf2636e6ae4ca",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/before-metrics.json"
+    },
+    "recording/000-crc-c1/before-resources.json": {
+      "bytes": 1736,
+      "sha256": "860b67ba8a3f8c26087e28b9772d3d79b8cd4c68f93dcfafc925f496dc67d9c7",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/before-resources.json"
+    },
+    "recording/000-crc-c1/before-status.json": {
+      "bytes": 12745,
+      "sha256": "89a3b505430b3f371b37d8b30d3c9cf913e7b3c141a14cad9f35eee5334b9006",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/before-status.json"
+    },
+    "recording/000-crc-c1/cleanup.json": {
+      "bytes": 6137,
+      "sha256": "c8d59f02154e2eb240184a050c7284727ce9accc2b82e70cc5595918ea71e7fc",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/cleanup.json"
+    },
+    "recording/000-crc-c1/client-exit.json": {
+      "bytes": 64,
+      "sha256": "1a7a71302c017281ec7eeb23bfb2e384c4b6b48ffc0b35c67a583a322695bcb2",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/client-exit.json"
+    },
+    "recording/000-crc-c1/client-identity.json": {
+      "bytes": 903,
+      "sha256": "7366555578b19e8731f5bd04115fb94de1162776e1690c76c23f7ba65756f911",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/client-identity.json"
+    },
+    "recording/000-crc-c1/fixture-result.json": {
+      "bytes": 21590,
+      "sha256": "8cf8cc2bce02455a018673d4a4360577c9587d5b3c0f9b042755b603116191ad",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/fixture-result.json"
+    },
+    "recording/000-crc-c1/host-after.json": {
+      "bytes": 10792,
+      "sha256": "d337cda4024493e2c2facf3b6a91f52eb77f1ac332f3ffbd76b252bedc9c78ea",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/host-after.json"
+    },
+    "recording/000-crc-c1/host-before.json": {
+      "bytes": 10792,
+      "sha256": "ac01a087c33f4e7f7feb8c79ebb5e614e2839f9872bc268d206f45ce6254fb8d",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/host-before.json"
+    },
+    "recording/000-crc-c1/host-resource-samples.json": {
+      "bytes": 1286734,
+      "sha256": "13b035257cf2b4184354e02e1846b5b7e4277fe90bfe378e393b6750361df840",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/host-resource-samples.json"
+    },
+    "recording/000-crc-c1/listener-after.json": {
+      "bytes": 933,
+      "sha256": "772cb2fa1219af8c963c836c06020f82612fa4aa46126846c2a85eaab3387479",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/listener-after.json"
+    },
+    "recording/000-crc-c1/listener-before.json": {
+      "bytes": 933,
+      "sha256": "93fcafb00fd0b325e707e80a8938977e0aa6f50521f3571a73734672fa70b304",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/listener-before.json"
+    },
+    "recording/000-crc-c1/post-client-allocator-provenance.json": {
+      "bytes": 4117,
+      "sha256": "86e577dad1e6283207c5c3fc579cedbca8228948c3783bc4095f11f0ab45f985",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/post-client-allocator-provenance.json"
+    },
+    "recording/000-crc-c1/post-client-fresh-drain.json": {
+      "bytes": 40781,
+      "sha256": "e9f446bac99d0342efdb6661c77375ba64dcbb0144266197eddfff1ab6b0581f",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/post-client-fresh-drain.json"
+    },
+    "recording/000-crc-c1/post-readback-fresh-drain.json": {
+      "bytes": 40784,
+      "sha256": "b479b426446b5af23f24356e1210d5bcf61875101d05f47719536c2ea6c21d5f",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/post-readback-fresh-drain.json"
+    },
+    "recording/000-crc-c1/pre-cleanup.json": {
+      "bytes": 21563,
+      "sha256": "d19003529b2fd2334f3412bc0a65e48c6b6f8578e22f9d79231f42bd39673676",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/pre-cleanup.json"
+    },
+    "recording/000-crc-c1/profile-plan.json": {
+      "bytes": 466,
+      "sha256": "28e8f12055e2720fe21f87dbddcff08e4fdd825e0f2e7903425e8a56d4ea0066",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/profile-plan.json"
+    },
+    "recording/000-crc-c1/requested-config.json": {
+      "bytes": 808,
+      "sha256": "a0b3158694c60db52e0f51da0d3e06ddd94370b8e07ada5c2690551fec57df52",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/requested-config.json"
+    },
+    "recording/000-crc-c1/resource-coverage.json": {
+      "bytes": 1638,
+      "sha256": "fe1826e6f8708bebb2039f387b0cb45aa8ecf2e1ece258a10d5c4841aeafc943",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/resource-coverage.json"
+    },
+    "recording/000-crc-c1/resource-samples.json": {
+      "bytes": 794157,
+      "sha256": "998ef64583cc21f5b279d1174641e12810dbe1827e859aade43cbe82edfe7217",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/resource-samples.json"
+    },
+    "recording/000-crc-c1/run/build.json": {
+      "bytes": 487,
+      "sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/run/build.json"
+    },
+    "recording/000-crc-c1/run/config.json": {
+      "bytes": 808,
+      "sha256": "a0b3158694c60db52e0f51da0d3e06ddd94370b8e07ada5c2690551fec57df52",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/run/config.json"
+    },
+    "recording/000-crc-c1/run/report.json": {
+      "bytes": 1431873,
+      "sha256": "a880a00b90cea9e6d0f330fbb04ab669b57b213c2ad7b1ae6a0a8b7ac14e32ae",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/run/report.json"
+    },
+    "recording/000-crc-c1/sample-calls.json": {
+      "bytes": 633245,
+      "sha256": "630dce9657d49646943dd1f76dd9cbb5789ecbb65bc330a96c76f1666ccdcf62",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/sample-calls.json"
+    },
+    "recording/000-crc-c1/storage-mounts.json": {
+      "bytes": 828,
+      "sha256": "8d80065803db2c54fee271388a123c1831ee367b8aa9a0bed8e4f092f8455d5b",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/storage-mounts.json"
+    },
+    "recording/000-crc-c1/storage-preflight.json": {
+      "bytes": 630,
+      "sha256": "72d9d2e0012f96a0f92fcd9dcfb7d60cd21dbecc8c44d88f4b833371cff51e4b",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/storage-preflight.json"
+    },
+    "recording/000-crc-c1/storage-resource-samples.json": {
+      "bytes": 76730,
+      "sha256": "147f18e591352c777bdc1d298949088b285cf457096b21989e0ecf4e2d4dbc12",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/storage-resource-samples.json"
+    },
+    "recording/000-crc-c1/summary.json": {
+      "bytes": 21590,
+      "sha256": "8cf8cc2bce02455a018673d4a4360577c9587d5b3c0f9b042755b603116191ad",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/000-crc-c1/summary.json"
+    },
+    "recording/001-crc-c64/after-metrics.json": {
+      "bytes": 1262563,
+      "sha256": "f81e54214f39e4db47546c9f9a99fce389053480010e3e6c0964428cd8f30bee",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/after-metrics.json"
+    },
+    "recording/001-crc-c64/after-resources.json": {
+      "bytes": 1772,
+      "sha256": "4c7bfe968f84cda92e6dbc4cceaa5a44eb41db3c7cf4abb1fece3ec7cb7f6bf1",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/after-resources.json"
+    },
+    "recording/001-crc-c64/after-status.json": {
+      "bytes": 12853,
+      "sha256": "d9494831fd57e3b695b34a1ce73d7e3b1249575337028d9c080151210ac61887",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/after-status.json"
+    },
+    "recording/001-crc-c64/background-before.json": {
+      "bytes": 26775,
+      "sha256": "d0d4fe07965a60110ab0477172d3b66220a6c853f4e20f923c3cea8fa1ad43d9",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/background-before.json"
+    },
+    "recording/001-crc-c64/before-allocator-provenance.json": {
+      "bytes": 4112,
+      "sha256": "866dc870344bd9dee571394c5605586957b574a0e6a798d3bd8ada4c70fd6eaf",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/before-allocator-provenance.json"
+    },
+    "recording/001-crc-c64/before-fresh-drain.json": {
+      "bytes": 40547,
+      "sha256": "cd8971f338b1dc5bf574f50439ef3fd3ef8d1dcded63828981c4b8f5d51cb254",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/before-fresh-drain.json"
+    },
+    "recording/001-crc-c64/before-metrics.json": {
+      "bytes": 1258367,
+      "sha256": "3f66f8c93b5972d0dac41a0788292bfc1a27cf24c0ded9855f68c216d060ce5d",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/before-metrics.json"
+    },
+    "recording/001-crc-c64/before-resources.json": {
+      "bytes": 1736,
+      "sha256": "c711fddfc22df685a822ad1fc0101e1f65082f71d8f339fcdb584d769a974e1d",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/before-resources.json"
+    },
+    "recording/001-crc-c64/before-status.json": {
+      "bytes": 12745,
+      "sha256": "9a9fe864f542b6d895738d9b921b857f050f94c5b60d0789871d2cf82b50005d",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/before-status.json"
+    },
+    "recording/001-crc-c64/cleanup.json": {
+      "bytes": 5824,
+      "sha256": "2d54bf9e44518f8dd5f2d41eee7b213ebd8a6ecddcc83d923a152bc4a8be51c3",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/cleanup.json"
+    },
+    "recording/001-crc-c64/client-exit.json": {
+      "bytes": 64,
+      "sha256": "57dbbecafe38ca8049e13977dca9101222ad2249d2ffcd4178e21f152ade5407",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/client-exit.json"
+    },
+    "recording/001-crc-c64/client-identity.json": {
+      "bytes": 902,
+      "sha256": "90b56b559b77ab86f0511bf6cfeb7f14f55d99ba981f6c22f723db88d5da8806",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/client-identity.json"
+    },
+    "recording/001-crc-c64/fixture-result.json": {
+      "bytes": 22520,
+      "sha256": "e993bce2ce53f2ae3331f3bcb0180554a00dfaf9fc55caa2d97217966fa337ac",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/fixture-result.json"
+    },
+    "recording/001-crc-c64/host-after.json": {
+      "bytes": 10793,
+      "sha256": "bcb8b5dda86dfcfce61f76b342ad29a5cea9f518a1b9c778d58689c820bede68",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/host-after.json"
+    },
+    "recording/001-crc-c64/host-before.json": {
+      "bytes": 10792,
+      "sha256": "acc20cec7c5565353353da508f196f575e079bd2340f58d600e72afa4954a024",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/host-before.json"
+    },
+    "recording/001-crc-c64/host-resource-samples.json": {
+      "bytes": 1264048,
+      "sha256": "5b7c03a89c50bb6896087575b0dc01925de7e7114f41e72748970330612f7a79",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/host-resource-samples.json"
+    },
+    "recording/001-crc-c64/listener-after.json": {
+      "bytes": 933,
+      "sha256": "e432b7727130b548524ee1756c0a7dbc9daeb9ac26cda6caa8953de65f513ccf",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/listener-after.json"
+    },
+    "recording/001-crc-c64/listener-before.json": {
+      "bytes": 933,
+      "sha256": "925bcd836c321bc549b5fc95bdadeff3b7544b8be27072a414c4ad719f500c75",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/listener-before.json"
+    },
+    "recording/001-crc-c64/post-client-allocator-provenance.json": {
+      "bytes": 4155,
+      "sha256": "c359f8580ce1ce819d4c83ae8991c614a71235534e5e48da70c10a20fcdebe96",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/post-client-allocator-provenance.json"
+    },
+    "recording/001-crc-c64/post-client-fresh-drain.json": {
+      "bytes": 40874,
+      "sha256": "4474495cfa2955dbe77161c95525b2dbeef4918985a36504617dd918b9149f9f",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/post-client-fresh-drain.json"
+    },
+    "recording/001-crc-c64/post-readback-fresh-drain.json": {
+      "bytes": 40877,
+      "sha256": "4b6f9d98a4a90ffb88cc951e0f7aa436778ab7b8af2dbe9474c1e1a55fe5f10e",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/post-readback-fresh-drain.json"
+    },
+    "recording/001-crc-c64/pre-cleanup.json": {
+      "bytes": 22493,
+      "sha256": "0d64a62b0b5375c86623c6053ac8941659f1e6f3c817f8ecabf63d0117d47307",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/pre-cleanup.json"
+    },
+    "recording/001-crc-c64/profile-plan.json": {
+      "bytes": 468,
+      "sha256": "e213adcaeaf0ac4f75c05931109dafc5b5db045fc0cec42ce6a37b752411d6ff",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/profile-plan.json"
+    },
+    "recording/001-crc-c64/requested-config.json": {
+      "bytes": 809,
+      "sha256": "937b33bccea329ca9dba3cc52931b89b5dac80df2115f5783038e8ce399d9dac",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/requested-config.json"
+    },
+    "recording/001-crc-c64/resource-coverage.json": {
+      "bytes": 2975,
+      "sha256": "3c87a02ea6db20d19495def08919f60fbce4872ff8b07861d1eca92c799386a2",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/resource-coverage.json"
+    },
+    "recording/001-crc-c64/resource-samples.json": {
+      "bytes": 1478945,
+      "sha256": "b964c42dc92cf19fa5a633b49a6162d32c4f1046e6bd729331f50ac24a9dbd8f",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/resource-samples.json"
+    },
+    "recording/001-crc-c64/run/build.json": {
+      "bytes": 487,
+      "sha256": "eb8b4e1421dd4e64dcca59fcc7829926d5789611f6b3748d07c4090f634f2c4c",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/run/build.json"
+    },
+    "recording/001-crc-c64/run/config.json": {
+      "bytes": 809,
+      "sha256": "937b33bccea329ca9dba3cc52931b89b5dac80df2115f5783038e8ce399d9dac",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/run/config.json"
+    },
+    "recording/001-crc-c64/run/report.json": {
+      "bytes": 1953588,
+      "sha256": "d62d2652ecb132c8a0b5fef3db1474b6ba49e39e3ff95175f2ec2562e3ca885d",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/run/report.json"
+    },
+    "recording/001-crc-c64/sample-calls.json": {
+      "bytes": 1180001,
+      "sha256": "80cb8e90abb3c67427571b1adbb5d4065a3ce7fd7cdc620757f57caf42b4ca96",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/sample-calls.json"
+    },
+    "recording/001-crc-c64/storage-mounts.json": {
+      "bytes": 828,
+      "sha256": "dd33b9ebf338ea1ed31493985d39c47848e1dc6ab6fd94612f50824c20c03f5f",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/storage-mounts.json"
+    },
+    "recording/001-crc-c64/storage-preflight.json": {
+      "bytes": 631,
+      "sha256": "c6203a9d2bae5438141b29905a8407e4bc8b96050ac09d196005f673ec396a65",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/storage-preflight.json"
+    },
+    "recording/001-crc-c64/storage-resource-samples.json": {
+      "bytes": 75483,
+      "sha256": "3c7a23f51a73738cec1798fa0f61c93a2636264bd4f865cf72d4f064c312d2f4",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/storage-resource-samples.json"
+    },
+    "recording/001-crc-c64/summary.json": {
+      "bytes": 22520,
+      "sha256": "e993bce2ce53f2ae3331f3bcb0180554a00dfaf9fc55caa2d97217966fa337ac",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/001-crc-c64/summary.json"
+    },
+    "recording/build-bindings.json": {
+      "bytes": 565,
+      "sha256": "f7b412c17319a86df41981541e124557f2a9b7011e17d68ee5435fd834a3b5ba",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/build-bindings.json"
+    },
+    "recording/driver.py": {
+      "bytes": 6207,
+      "sha256": "f8ed2536d20352cfa723aeb30be87334913a01ee6a766134a4aaa34a402fc3ed",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/driver.py"
+    },
+    "recording/isolation-snapshot.json": {
+      "bytes": 2107,
+      "sha256": "1dbfe29adcf6e541cb20c41c723e0870ba0be66b753cdd003becfbe3d28a9fbb",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/isolation-snapshot.json"
+    },
+    "recording/protocol.json": {
+      "bytes": 150407,
+      "sha256": "cadd1b0d3e2d7ccec1972cf3e03168f24cdadcd6b91d9c4517c8fe8452c4388d",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/protocol.json"
+    },
+    "recording/summary.json": {
+      "bytes": 52703,
+      "sha256": "6ba1cd6dafad3dd2fc19edcbd92f6079b5dac638a33ab60c916e21e700022c70",
+      "source": "/tmp/kv9-raft-body-handoff-isolation-first/cohorts/summary.json"
+    },
+    "release/build.json": {
+      "bytes": 65911,
+      "sha256": "225b8f7e051a88751faf5f956db8681e9801f9f9840a50ee470ee4dbd4f67316",
+      "source": "/tmp/kv9-raft-body-handoff-release-first/build.json"
+    },
+    "release/cache-clean.stderr": {
+      "bytes": 38,
+      "sha256": "0499e9a8a6a048f4b033c9ef535522051a4cbfee4e1bd1419e6f58d66b37d310",
+      "source": "/tmp/kv9-raft-body-handoff-release-first/cache-clean.stderr"
+    },
+    "release/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-release-first/cache-clean.stdout"
+    },
+    "release/cache-safety.json": {
+      "bytes": 21059,
+      "sha256": "dd8cf08dcf6811b6822106e582e2c9a7ef41933dc4598b686950f35dfe02bdf1",
+      "source": "/tmp/kv9-raft-body-handoff-release-first/cache-safety.json"
+    },
+    "release/kv9-build.log": {
+      "bytes": 115,
+      "sha256": "9371304ccd5e33ac7e6ae43ffcfae1c1223ca164ed0d85a145b5c9e76e132775",
+      "source": "/tmp/kv9-raft-body-handoff-release-first/kv9-build.log"
+    },
+    "release/kv9-cargo.jsonl": {
+      "bytes": 211642,
+      "sha256": "3f1661fa45cdbdf512171dec3a13671beeadea3cd17ae030b6853ab7fed037b1",
+      "source": "/tmp/kv9-raft-body-handoff-release-first/kv9-cargo.jsonl"
+    },
+    "release/workload/build.json": {
+      "bytes": 487,
+      "sha256": "f8f2db23332a78cdce29a2bac746affb34bfc286fa8635b1ccd610d44aeb0965",
+      "source": "/tmp/kv9-raft-body-handoff-release-first/workload/build.json"
+    },
+    "release/workload/build.log": {
+      "bytes": 567,
+      "sha256": "0b1f715c1cc8ade6795be28f65fa1fe0f17b40bdb14fe9e608dffe0296bfa820",
+      "source": "/tmp/kv9-raft-body-handoff-release-first/workload/build.log"
+    },
+    "release/workload/cargo.jsonl": {
+      "bytes": 208630,
+      "sha256": "06e05328d2a82f309f4792c190a640e745cffe5bb13a0805b965e86e8c92d668",
+      "source": "/tmp/kv9-raft-body-handoff-release-first/workload/cargo.jsonl"
+    },
+    "release/workload/sources.json": {
+      "bytes": 61912,
+      "sha256": "9617cccaf50d4de266061d28d481561ae610308f4fd0efcae1e48900ae834041",
+      "source": "/tmp/kv9-raft-body-handoff-release-first/workload/sources.json"
+    },
+    "root/build-release.py": {
+      "bytes": 1006,
+      "sha256": "ff8ecd8bd0e1adbfa9a3557ff39ba756333d72716c359dbce5edb8b01ff619fd",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/build-release.py"
+    },
+    "root/check-source-second.py": {
+      "bytes": 2471,
+      "sha256": "b17f92fb02945dc6a75be14c6886414df508e1fbe2af56cab813f87bd10b774b",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/check-source-second.py"
+    },
+    "root/check-source.py": {
+      "bytes": 3049,
+      "sha256": "efb08486196cbbe419d41e077bf358dc1e8fa47015327515d985dafa7e827106",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/check-source.py"
+    },
+    "root/committed-source.json": {
+      "bytes": 65157,
+      "sha256": "1a7a7e466eeff90a643553b1bd2ed8e91c49d772afcb517df4e1fb8e9a73f8a9",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/committed-source.json"
+    },
+    "root/derive-readout.py": {
+      "bytes": 2890,
+      "sha256": "5a6d541f9616473575dbfda3866602ccc923a2bea367f54e2baf4851d1d071d0",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/derive-readout.py"
+    },
+    "root/diagnostic-first/invocation.json": {
+      "bytes": 751,
+      "sha256": "6740c9ed2deb3549b230cf3ff54421d9a1a4d50381dc3128fdf2b92ad2a1dd49",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/diagnostic-first/invocation.json"
+    },
+    "root/diagnostic-first/output.log": {
+      "bytes": 315,
+      "sha256": "230eb178eb16f0808cfc9d4c9122eeaebeed28f34d44836f6e7c07eab8eb799c",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/diagnostic-first/output.log"
+    },
+    "root/diagnostic-first/result.json": {
+      "bytes": 803,
+      "sha256": "b9cab0f878277f1aa1998b1a10cdac18f4913a9458d2cd36952bb54cba5d2ac1",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/diagnostic-first/result.json"
+    },
+    "root/diagnostic-readback-first/invocation.json": {
+      "bytes": 814,
+      "sha256": "ad5947eb5a9a08c7d00418a98df623eb19080691e01e2698a51696fcfbbcacc5",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/diagnostic-readback-first/invocation.json"
+    },
+    "root/diagnostic-readback-first/output.log": {
+      "bytes": 139838,
+      "sha256": "abc6ade4e5be857e4be7705774b4282a6ca1adb12c1214941cfb63ed856c5036",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/diagnostic-readback-first/output.log"
+    },
+    "root/diagnostic-readback-first/result.json": {
+      "bytes": 866,
+      "sha256": "efd455822da1bedac8ab4c0d71204d3001af775d8af0a56b84aada33187ad46e",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/diagnostic-readback-first/result.json"
+    },
+    "root/extension-contracts-first/invocation.json": {
+      "bytes": 491,
+      "sha256": "0a69bd0a8b3c64c4605a871f099b1f7509ab61da3b84eb01dd6337cb6495c441",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/extension-contracts-first/invocation.json"
+    },
+    "root/extension-contracts-first/output.log": {
+      "bytes": 2243,
+      "sha256": "52e0076d8a03c1c8c7bf333fe42acf5cfb5b207ba1ce025914ea1f382f1cf9a6",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/extension-contracts-first/output.log"
+    },
+    "root/extension-contracts-first/result.json": {
+      "bytes": 543,
+      "sha256": "c04537a553237417f0a64867cfbe3665efd7f4735449ce908e03cbb3d59a341e",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/extension-contracts-first/result.json"
+    },
+    "root/fixture-contracts-first/invocation.json": {
+      "bytes": 495,
+      "sha256": "6567e84e10917c0c8866e9ace04483f4e770029511029a001d0ba258bc0aa05c",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/fixture-contracts-first/invocation.json"
+    },
+    "root/fixture-contracts-first/output.log": {
+      "bytes": 644,
+      "sha256": "ba0bcf99bbb8952b54ff8223f480f31ca0c1bbeb8f3e92fc8a6a656a9a0fdb35",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/fixture-contracts-first/output.log"
+    },
+    "root/fixture-contracts-first/result.json": {
+      "bytes": 547,
+      "sha256": "f384369c7a7c9ab5b59d7ad30b8e5eada58e0b1df0b55c512bcfce1bbdbfc626",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/fixture-contracts-first/result.json"
+    },
+    "root/fixture-preflight-first.json": {
+      "bytes": 143873,
+      "sha256": "c6f07e04c366e7892492947eb94f7f0c4960b860e6dc7fbd068d0af444dae695",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/fixture-preflight-first.json"
+    },
+    "root/process-audit-first/invocation.json": {
+      "bytes": 804,
+      "sha256": "dcac23a7bb011e36cbc5787e4fc767d06049abab7c95c26ca460c62947a94511",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/process-audit-first/invocation.json"
+    },
+    "root/process-audit-first/output.log": {
+      "bytes": 2725,
+      "sha256": "26487bd4dc2c86fa5228707ed5c52b97cb4d3e158ecde4a69a089367a3c0e8f6",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/process-audit-first/output.log"
+    },
+    "root/process-audit-first/result.json": {
+      "bytes": 856,
+      "sha256": "f04da04390e76da2a1f8706f52a706d8ac88e19be45ed3f0ccab1361969804ae",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/process-audit-first/result.json"
+    },
+    "root/process-contracts-first/invocation.json": {
+      "bytes": 488,
+      "sha256": "08d99371564867e1f7cb8a83ec9ddd9b33e48f7c75df77874400ef53923e7d9b",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/process-contracts-first/invocation.json"
+    },
+    "root/process-contracts-first/output.log": {
+      "bytes": 822,
+      "sha256": "606a82b71078226576a203206fcbcd12d3758755bbf0f918b89bac0c742a6079",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/process-contracts-first/output.log"
+    },
+    "root/process-contracts-first/result.json": {
+      "bytes": 540,
+      "sha256": "b350892178d896e58e0b5416940d4c6cbd96a32c0aa3807fa92c78a7ab7b8315",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/process-contracts-first/result.json"
+    },
+    "root/process-first/invocation.json": {
+      "bytes": 610,
+      "sha256": "d70f8bf30524ad6e1e689ac0c82a6da830698117eb7a090f7249fd09ba947f5a",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/process-first/invocation.json"
+    },
+    "root/process-first/output.log": {
+      "bytes": 288,
+      "sha256": "721ea9c7550f9d3cad200cd50684869195f8787996b6b8faa7fa448804881ebd",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/process-first/output.log"
+    },
+    "root/process-first/result.json": {
+      "bytes": 662,
+      "sha256": "6db2f28311e63d3176e9961bcec4fc5454088d0bf79904ea78ed8defd9057284",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/process-first/result.json"
+    },
+    "root/readback-release.pending.py": {
+      "bytes": 2455,
+      "sha256": "c95fb95f6fe2f4d92b42a90413b112695ef357a1f62a56890921792a602a47e8",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/readback-release.pending.py"
+    },
+    "root/readback-release.py": {
+      "bytes": 2445,
+      "sha256": "301e415aed1ea59431bc3efed4f28530824d0083eabbcc4811a792da8e12af27",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/readback-release.py"
+    },
+    "root/readout-first/classes.csv": {
+      "bytes": 2737,
+      "sha256": "1b8fb34447a3e01c37f8b7910a1baccf3baecf7dce3756375f5c0189cfb08de7",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/readout-first/classes.csv"
+    },
+    "root/readout-first/readout.json": {
+      "bytes": 17706,
+      "sha256": "34692ecabf155c6329979989ffd3e0f6ab580707ad860465582c75dd5fb0af51",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/readout-first/readout.json"
+    },
+    "root/release-first.log": {
+      "bytes": 172,
+      "sha256": "c19127dcd257321c713f5bce719a8949709c5a25d059043d42d7e6176da3aa6f",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/release-first.log"
+    },
+    "root/release-invocation.json": {
+      "bytes": 470,
+      "sha256": "52aeea9f618917432a28cd8615940bb569a12c9544bbed073519d7cc7ddd95e4",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/release-invocation.json"
+    },
+    "root/release-readback.json": {
+      "bytes": 849,
+      "sha256": "98b73006c590d63fefe99926e4f8faf4d35e3ea63b3aa645103a2f9ba776fe63",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/release-readback.json"
+    },
+    "root/release-result.json": {
+      "bytes": 544,
+      "sha256": "66d40ab7b879ec66da38a08c68442a4f64a60bc467499064430e8de2d66142e4",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/release-result.json"
+    },
+    "root/run-stage.py": {
+      "bytes": 2023,
+      "sha256": "35f3dc8614af1549b38fdd048e795826e43d1f14b4c893fc54f506df71ed8fae",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/run-stage.py"
+    },
+    "root/source-gate-followup.md": {
+      "bytes": 651,
+      "sha256": "14ad306b05d48c2598942337fb14a73833c030e33ae49cbd790ce0e7ed022135",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/source-gate-followup.md"
+    },
+    "root/source-preflight-first/invocation.json": {
+      "bytes": 676,
+      "sha256": "4cd056bcf8806f8938939dc53e76a27670a8fd2749ba3346e03df21635fe2041",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/source-preflight-first/invocation.json"
+    },
+    "root/source-preflight-first/output.log": {
+      "bytes": 93,
+      "sha256": "d28444c06bfb03c36a90d0c8afd0a1ae04551c25d528684b3c8327ead5c94ae9",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/source-preflight-first/output.log"
+    },
+    "root/source-preflight-first/result.json": {
+      "bytes": 728,
+      "sha256": "bd422764f6e8aabd6d7529bcd11059a7b8703025329bd09ebe731064ec9b4533",
+      "source": "/tmp/kv9-raft-body-handoff-root-first/source-preflight-first/result.json"
+    },
+    "source-checks/first/cache-clean.stderr": {
+      "bytes": 38,
+      "sha256": "b866b8b2bf1c98836ebfc3141ec272a1493b4c3e05edffe86a674ccdf456a7bb",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/cache-clean.stderr"
+    },
+    "source-checks/first/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/cache-clean.stdout"
+    },
+    "source-checks/first/cache-metadata.json": {
+      "bytes": 26391,
+      "sha256": "774cb5af75401ff5713fd9c21e1d9000f5e0bd1832476dbed56469836e53cc91",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/cache-metadata.json"
+    },
+    "source-checks/first/cache-metadata.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/cache-metadata.log"
+    },
+    "source-checks/first/cache-safety.json": {
+      "bytes": 23107,
+      "sha256": "14c127b9b6107951dfbd54f77c40ee0c4976f78d20a3ff22df9db9edd10b780e",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/cache-safety.json"
+    },
+    "source-checks/first/clippy.stderr": {
+      "bytes": 2371,
+      "sha256": "a133086274211019da20efcab90534f9023d6aceb51e88854f94dcd5c9dee825",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/clippy.stderr"
+    },
+    "source-checks/first/clippy.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/clippy.stdout"
+    },
+    "source-checks/first/compile.stderr": {
+      "bytes": 969,
+      "sha256": "3d98f8ce523b4eb850fd46af30fdf8c2dd62e1add1d8c7b042e3ccbc05ceb26c",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/compile.stderr"
+    },
+    "source-checks/first/compile.stdout": {
+      "bytes": 216270,
+      "sha256": "450587fd979964964508751c8df1f8550f4498d76f9196ee6eda3f8cbac6334f",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/compile.stdout"
+    },
+    "source-checks/first/experimental-tests.stderr": {
+      "bytes": 1066,
+      "sha256": "887581fe48912eb04af690410cde331ca1e9a7189efea4efe6ea5f2f858eece2",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/experimental-tests.stderr"
+    },
+    "source-checks/first/experimental-tests.stdout": {
+      "bytes": 21838,
+      "sha256": "f729657beb2d0adc337449bfd0342840884f08202396e5f7fd09bb0c52116e37",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/experimental-tests.stdout"
+    },
+    "source-checks/first/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/format.stderr"
+    },
+    "source-checks/first/format.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/format.stdout"
+    },
+    "source-checks/first/result.json": {
+      "bytes": 2192,
+      "sha256": "8b9dd9ecc879fd11d45127ac8a6c95610b289d35a9cc7966ad96c120d71bf346",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/result.json"
+    },
+    "source-checks/first/sources-before.json": {
+      "bytes": 65156,
+      "sha256": "d64d77fd909e5d925ca8785af238cc6898afd997154ce560b0d4e132eb95988f",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/sources-before.json"
+    },
+    "source-checks/first/testing-feature-partition-tests.stderr": {
+      "bytes": 1032,
+      "sha256": "90930e3f2141f8cce82351036c41fb6846e9fed7de26247e7d38497897605386",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/testing-feature-partition-tests.stderr"
+    },
+    "source-checks/first/testing-feature-partition-tests.stdout": {
+      "bytes": 606,
+      "sha256": "1128b408b683ff3d1fb82cc59110e007aa3a805942ae422303469c4c0cf33ca4",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/testing-feature-partition-tests.stdout"
+    },
+    "source-checks/first/tests.stderr": {
+      "bytes": 1408,
+      "sha256": "c58daafea24d3ca4c8ea6e90b5ef82ee302da8d0b296d64458e93fca741d98ac",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/tests.stderr"
+    },
+    "source-checks/first/tests.stdout": {
+      "bytes": 39361,
+      "sha256": "cd8e507971245c763183e1e43acdb7f6c6fe139810243268e410598a0c048657",
+      "source": "/tmp/kv9-raft-body-handoff-source-first/tests.stdout"
+    },
+    "source-checks/second/cache-clean.stderr": {
+      "bytes": 39,
+      "sha256": "0bd3932aa0f8fffd6de221f2d47353c6c017441ab7257db3dc392ed1d30fabe5",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/cache-clean.stderr"
+    },
+    "source-checks/second/cache-clean.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/cache-clean.stdout"
+    },
+    "source-checks/second/cache-metadata.json": {
+      "bytes": 26391,
+      "sha256": "774cb5af75401ff5713fd9c21e1d9000f5e0bd1832476dbed56469836e53cc91",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/cache-metadata.json"
+    },
+    "source-checks/second/cache-metadata.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/cache-metadata.log"
+    },
+    "source-checks/second/cache-safety.json": {
+      "bytes": 2403,
+      "sha256": "fcdd77d12868fe13a41d2180f426814088600c279ca2c4060d05aaaf10d8da4e",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/cache-safety.json"
+    },
+    "source-checks/second/clippy.stderr": {
+      "bytes": 566,
+      "sha256": "3df3fcffd6c485fdd6c6cb67a5e0037153b5abf30b2f210c191f0d47821a1f0b",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/clippy.stderr"
+    },
+    "source-checks/second/clippy.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/clippy.stdout"
+    },
+    "source-checks/second/format.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/format.stderr"
+    },
+    "source-checks/second/format.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/format.stdout"
+    },
+    "source-checks/second/result.json": {
+      "bytes": 780,
+      "sha256": "48c96c3bd5d11f242e273b50b66bb68fdb5cb1a4c562ab6f9d3a8ad2edbcfbda",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/result.json"
+    },
+    "source-checks/second/sources-after.json": {
+      "bytes": 65156,
+      "sha256": "0439c776b6300068a807c79282e5b96214776a982d7014a80fe7cb687595938f",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/sources-after.json"
+    },
+    "source-checks/second/sources-before.json": {
+      "bytes": 65156,
+      "sha256": "0439c776b6300068a807c79282e5b96214776a982d7014a80fe7cb687595938f",
+      "source": "/tmp/kv9-raft-body-handoff-source-second/sources-before.json"
+    }
+  },
+  "parts": [
+    {
+      "bytes": 1012106,
+      "name": "evidence.tar.gz.001",
+      "sha256": "a2f58566bf6ac5ce026b8615f697fd0a4ab94f2d9b6ab3e9d1f093f4d173818d"
+    }
+  ],
+  "scope": "Original-byte compact reporting selection; integrity verification only. Raw WAL, binaries and bulky host observations remain local under original audit inventories.",
+  "top_level": {
+    "analysis.json": {
+      "bytes": 837166,
+      "sha256": "1018c96678dcd6cf0856582a3fd55afe5820d5c91ee79626eebdd269fd28fac9"
+    },
+    "classes.csv": {
+      "bytes": 2737,
+      "sha256": "1b8fb34447a3e01c37f8b7910a1baccf3baecf7dce3756375f5c0189cfb08de7"
+    },
+    "readout.json": {
+      "bytes": 17706,
+      "sha256": "34692ecabf155c6329979989ffd3e0f6ab580707ad860465582c75dd5fb0af51"
+    }
+  }
+}
