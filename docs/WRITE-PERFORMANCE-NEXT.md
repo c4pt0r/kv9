@@ -117,7 +117,9 @@ original failed audit and schema repair remain retained without workload reruns.
    limitations; an aggregate throughput gain alone is insufficient.
    The [full regression preparation](write-crc-full-regression-plan-v1/README.md)
    specifies 24 smokes and 48 timed native cohorts, with point/batch APIs,
-   0/50/100% reads, c1/c64 and two complete opposite orders. Its empirical
+   0/50/100% reads, c1/c64 and two complete opposite orders. The [executable
+   tooling](WRITE-CRC-FULL-REGRESSION-TOOLS.md) now passes 35 runtime-tool and
+   13 reporting controls; the complete workload remains unrun. Its empirical
    storage reservation is about 202.38 GB against 121.50 GB observed free,
    leaving about 80.88 GB to qualify. This is a planning scenario, not a fit
    guarantee or runtime-ready release. Keep all original caps/floors. The separate
@@ -141,6 +143,12 @@ original failed audit and schema repair remain retained without workload reruns.
    needs 170.15 GB available against 120.13 GB observed, a 50.02 GB gap.
    Resolve capacity, run the complete comparison, then qualify full regressions.
    Keep these gates separate from CRC; no frame-buffer speedup is established.
+   The separate [segmented-WAL vectored-write candidate `cfd9c92`](https://github.com/c4pt0r/kv9/blob/cfd9c927f8ecd33974100f696e6b08b227d25a41/docs/WRITE-SEGMENT-VECTORED.md)
+   now preserves the frame stream through a short-write-aware vectored loop.
+   Three SMT checks, three countermodels, 714 tests/doctests, formatting and
+   Clippy pass; an actual file probe confirms one `writev` and following `fsync`
+   per frame. Qualify its exact release, ordinary recovery, actual Chaos and
+   performance separately before promotion. No throughput gain is assumed.
    Use the retained profiles before collecting a necessary current-source profile;
    do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.

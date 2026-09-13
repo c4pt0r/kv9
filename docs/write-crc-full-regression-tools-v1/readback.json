@@ -1,0 +1,10 @@
+{
+  "complete": true,
+  "archive_sha256": "a36c3ef4979e042d27925bbf91e36d5e996cfaa4a0f9a875f071d6147b464af7",
+  "original_members_verified": 186,
+  "decoded_bytes": 2258294,
+  "runtime_controls_passed": 35,
+  "reporting_controls_passed": 13,
+  "publication_terminal": "8e7352/0",
+  "runtime_executed": false
+}

@@ -15,6 +15,19 @@ to **139,402.831 calls/s**. Both orders improve throughput and mean in all
 four workload cells. Full read/mixed regressions remain before promotion;
 selected runtime stays `11113f6`.
 
+The [full CRC regression tools](WRITE-CRC-FULL-REGRESSION-TOOLS.md) now pass
+48 local controls: 35 driver/auditor/smoke controls and 13 reporting controls.
+The complete 24-smoke/48-timed point/batch/read/mixed matrix remains unrun
+pending fresh capacity and environment qualification.
+
+A separate [segmented-WAL vectored-write candidate `cfd9c92`](https://github.com/c4pt0r/kv9/blob/cfd9c927f8ecd33974100f696e6b08b227d25a41/docs/WRITE-SEGMENT-VECTORED.md)
+replaces three frame-buffer writes with a vectored loop while preserving the
+sync and failed-writer fences. Three universal SMT checks, three countermodels,
+714 workspace tests/doctests, formatting and Clippy pass (23 existing ignored).
+A file/replay probe records three frame `writev` calls, each followed by `fsync`.
+Exact release, ordinary recovery, actual Chaos and performance remain pending;
+this is a source checkpoint, not a measured speedup or selected runtime change.
+
 The [three-node Redis write comparison](WRITE-REDIS3-BASELINE.md) now passes
 12 smoke and 24 timed cohorts: 18,993,624 measured successful calls, all with
 one data-command attempt, no errors, unknown writes or dropped slots. At c64,

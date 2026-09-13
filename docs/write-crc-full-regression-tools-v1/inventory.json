@@ -1,0 +1,758 @@
+{
+  "archive_bytes": 563357,
+  "archive_sha256": "a36c3ef4979e042d27925bbf91e36d5e996cfaa4a0f9a875f071d6147b464af7",
+  "capacity_qualified": false,
+  "decoded_bytes": 2258294,
+  "inputs": {
+    "/tmp/kv9-write-crc-slicing8-full-regression-contract-root-first/0.stderr": {
+      "bytes": 106,
+      "sha256": "05408cb8567c60add6c4bd9211596dfa2f1599c4df9128980ff71a1b1571b592"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-contract-root-first/0.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-contract-root-first/1.stderr": {
+      "bytes": 2083,
+      "sha256": "65e4b6374a28d4ef4367d9a4d308c1eaa0c6140daa057b078d59894765c2c73d"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-contract-root-first/1.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-contract-root-first/2.stderr": {
+      "bytes": 644,
+      "sha256": "bd30cc636d997bfc3fb1bf5cb1a2d85204bfe0bc7b38b4a7c9eee4736c95c01e"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-contract-root-first/2.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-contract-root-first/3.stderr": {
+      "bytes": 1219,
+      "sha256": "3ed3c65be3cb15a7c8677c335843cde236b4d7854d9aa7396b9e516f93bb1a41"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-contract-root-first/3.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-contract-root-first/result.json": {
+      "bytes": 2188,
+      "sha256": "a380a500780c413546b58bdfed5e7bf537d8a7b24182e6603c2436b67857302c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-contract-root-first/run.py": {
+      "bytes": 1466,
+      "sha256": "ad752d62be94e5ca557efa573bcfdeee3d2f5d8b68240b6753b16bc75a209054"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-contract-root-first/terminal.json": {
+      "bytes": 226,
+      "sha256": "e5ff172362c1ffc0d802875604844043ba21b5c39f9299edc9ee933854168bc8"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-contract-root-first/0.stderr": {
+      "bytes": 1897,
+      "sha256": "d4f39c7c4b721d420d74a1425b928025d21c48849db180d8a87025d1aa674fde"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-contract-root-first/0.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-contract-root-first/result.json": {
+      "bytes": 840,
+      "sha256": "e6c51f2b54558dc8579c59ec1c14b8105bbfef99ce0bfc04fa150f617ea9e3fd"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-contract-root-first/run.py": {
+      "bytes": 1466,
+      "sha256": "fd9aaa83a10946e2734f88c6996e28b19bc76bf1787b79d431e867c164789854"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-contract-root-first/terminal.json": {
+      "bytes": 205,
+      "sha256": "c80d6f6c0c55c265a331945e767c88d7e16469e47b9d77e991f4641ccb74c549"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/READINESS.json": {
+      "bytes": 1384,
+      "sha256": "1271e57840a6a81f72caa0d965f2023ef7ec632dde5f67235c1b8e5b8b19c2b9"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/README.md": {
+      "bytes": 3823,
+      "sha256": "00e11e51f21dd496125508ec6e20c400626bac7ade9a7dac4f04ae255d20bfaf"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/audit-terminal-required-schema.json": {
+      "bytes": 823,
+      "sha256": "f463917b00411e4a6069b0487f006cb517e6dff9787ec5077e98e4837b61ad35"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/binding-review.json": {
+      "bytes": 535,
+      "sha256": "7ea86d0d0aed8c22a8f6e415444f4305d098db7402a18d8331cc6fa75d57c43e"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/commands.json": {
+      "bytes": 1352,
+      "sha256": "f77835729da198e20f1c54d8959d228e680462b60c8fb26eab1207f8b110ecaa"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/core-origin.json": {
+      "bytes": 382,
+      "sha256": "72ea49fb6055b523c541840fd86f80aa90189357649e27148333527ac62eb660"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/core.py": {
+      "bytes": 6438,
+      "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/cpu.py": {
+      "bytes": 1561,
+      "sha256": "fafa22c1e2a6e0f391e378232b8e3f2135b23019dde3ce2bc14f6b8392ce3e95"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/diffs/binding-review.diff": {
+      "bytes": 1642,
+      "sha256": "cd4fa92aff331b6fbffa080158d45308f5702e080876228ca0bb58cfaed22fb5"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/diffs/core.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/diffs/gates.diff": {
+      "bytes": 11230,
+      "sha256": "c0d97eaf3311423892a53e466f60ddfbb3e3bf9061cbb662f4932864cd677e63"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/diffs/report.diff": {
+      "bytes": 36003,
+      "sha256": "3e808eede0539e3d3947b4c2d3d6aab255040194fd1a583b7c6c1d5e4d5024d9"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/draft-before-binding-review/gates.py": {
+      "bytes": 6917,
+      "sha256": "e5f71543bfa565abb0a2a59ecc3f64ad38f8b15f84f5b3fb79f0b710d6552933"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/draft-before-binding-review/report.py": {
+      "bytes": 19996,
+      "sha256": "56897fb8c2ab0bcc8c4d42176eee48ec6e9967acd2bc67b9eecd832408151f31"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/draft-before-binding-review/test_reporting.py": {
+      "bytes": 11060,
+      "sha256": "a4df72125e1b23ab880a5d53b0d5cdc1e0af7746cc1431b5eff0fe42ee9c276c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/gates.py": {
+      "bytes": 6973,
+      "sha256": "3f6090a886abdf296a96728f5531ed415e1c97f5a6b3715db33418fb9659c669"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/input-bindings.json": {
+      "bytes": 1036,
+      "sha256": "e8121759d3f86c9a53e208794426a7a12d2c906eb7e46369b8f279ab6ed9b2c4"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/inventory.json": {
+      "bytes": 3837,
+      "sha256": "5a8442e35eb3237cda2d64c74d98a674e48319215bfab8c4bec007cb174297a6"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/originals/core.py": {
+      "bytes": 6438,
+      "sha256": "827110ec99b2ae82f042e40fc81844263eefe4c484680ef6d8ab54653515b17f"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/originals/derive.py": {
+      "bytes": 15075,
+      "sha256": "ff6c8c70c79e6ff3e5f2dd2d0a82d4563d38f06aa13c61fd57585b51dee41226"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/originals/gates.py": {
+      "bytes": 4260,
+      "sha256": "337c6784ee38ae1407ecfb7cb493fba2c1026bd198ddf9a26814a0e59e568a71"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/originals/native16-summarize.py": {
+      "bytes": 19024,
+      "sha256": "631f385f4f3d6ef2a9ce3ce2ec45dab98e18972004cb1eca4bfa46df7bb8dd2c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/reader-pins.json": {
+      "bytes": 675,
+      "sha256": "6bb0839499bed5759fb04c3596993c61d46855848d437ca5cda6ab10f27fa359"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/report.py": {
+      "bytes": 20531,
+      "sha256": "c5b06246a08d4579e220bb520c720f2b760c70a4811d8c3788bc5621896dc7c3"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/runtime-binding.json": {
+      "bytes": 772,
+      "sha256": "052b45ca7ab655c7bf38433725fb34c2041aed41b677fc1ad5e6af011e863325"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/static-review.json": {
+      "bytes": 1351,
+      "sha256": "f1f92adc6b928aa35a33103eae0e73a448ea179f894fb886cf6cb799fa548747"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-reporting-preparation-first/test_reporting.py": {
+      "bytes": 11881,
+      "sha256": "399596e8a06358b3b6b7b59e88882d095940eeb5f101011abf728517e4caf2ce"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/HANDOFF.json": {
+      "bytes": 1999,
+      "sha256": "312b9de9d007cea8899067bb56c5d0c012729b130b2083f0c426dfb954add9c0"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/READINESS.json": {
+      "bytes": 1091,
+      "sha256": "bc11c099ca945e9f2bfc16749fe5a437074265395ffbfd8e8fb3fe54cb770683"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/README.md": {
+      "bytes": 6069,
+      "sha256": "d4ef6808234721bd7c93d1f35488b31d8b1544544f0fe06cf385c5ac94666210"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/STATIC.json": {
+      "bytes": 1945,
+      "sha256": "9108f1cfc33548b7c0a33a11c9b7ab6a36745ff0e3810ad2d9bb73d4514a33ca"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/audit.py": {
+      "bytes": 56503,
+      "sha256": "8e8c091c2c0dc4b7bbadde6590400dff9994175e3585b4d67bedd3f5a0395962"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/audit.py.diff": {
+      "bytes": 12000,
+      "sha256": "2a039a93e6336b380e7020f823417f570ed5e117fe4f9089a333f43216540705"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/build-bindings.json": {
+      "bytes": 3958,
+      "sha256": "fba7133d4b9d8c556ad09e6d0eb27ce6a58bce4c3988afdac406b6d256f7f9b9"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/capacity.json": {
+      "bytes": 11134,
+      "sha256": "af1c6e13b37322708d516ff910d96b1f396f0d40548a7db3964e0ebfd07dc6d2"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/check-smoke-corrected.py": {
+      "bytes": 4609,
+      "sha256": "e552474282b18348e9c403fc11904777b8ba99381ecbbc5a4eb52af1a587d6e3"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/check-smoke-corrected.py.diff": {
+      "bytes": 2693,
+      "sha256": "eb50442abf0f5a71fb31e218376a50f2732fedb4489ae9888e5879b424f283d9"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/commands.json": {
+      "bytes": 4819,
+      "sha256": "332c6c0c9271b301570379bcfea2585a2e413df878960715f4291e745af9d504"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/compressed_retention.py": {
+      "bytes": 24626,
+      "sha256": "4ae7e44d2f801307547cccb5cfb0db27dbf1a27193fc9b3d393238a65631e0fd"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/compressed_retention.py.diff": {
+      "bytes": 866,
+      "sha256": "488c972a53ac2a6148f6941426b1f07c6816439f54f0fe2084143676389e67ac"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/driver-arguments.json": {
+      "bytes": 539,
+      "sha256": "cf44d832cc43b83ab8c8487c0901661f78216526bf047750ce0a9190a96c98b1"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/expected-descriptors.json": {
+      "bytes": 41893,
+      "sha256": "646404b24b9118166c903e3206ecb11bee4504fd0264ea77ab05b598d1e9c44f"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/input-hashes.json": {
+      "bytes": 25431,
+      "sha256": "6ab8e729287a4ac385123ef9dcde0ee68b090201de422d1f4432a7875e72ff6d"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/inventory.json": {
+      "bytes": 24545,
+      "sha256": "392d842332f324d8689b8bf09c7aa46a4f058495d943f91ba3dfd1e25caf15dd"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/matched-driver.py": {
+      "bytes": 52007,
+      "sha256": "71eb72b7d6c68475fb51db2aac6558f0da50e5f1b68c80087ffa65c527121e61"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/matched-driver.py.diff": {
+      "bytes": 3499,
+      "sha256": "50ee5b714cea4c02e405d4675b00c134d7baeeb1bd05d0bf327b02d4659182a0"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/native-dependency-bindings.json": {
+      "bytes": 1447,
+      "sha256": "0fe72334861e3c525464430e27b0abe66e1b2a62a48d8d08da646e70b77fe8e1"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/original-input-pins.json": {
+      "bytes": 2136,
+      "sha256": "ae4f709907c642629ae90f3ff7fbaa775003b487bb3f33b19d3aac21a9bc4124"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/READINESS.json": {
+      "bytes": 1232,
+      "sha256": "455ed24e3f232eb664820e1b94e2b1c4d59a4fa027be6455b492fa404f3e7f67"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/README.md": {
+      "bytes": 6133,
+      "sha256": "721a57ea9bfe30629460b16de86996b8384615745a6ed5edef35f62c59f26e73"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/STATIC.json": {
+      "bytes": 890,
+      "sha256": "7ebdd75a6cca989688ff6e3049bad2768ac1cfbd29261ba8615b8d7ccfd3aea2"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/audit.py": {
+      "bytes": 56318,
+      "sha256": "391df0c4d2a032152d36a8a70767784e07fb09c3fe42848bc733733ca05f53ca"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/audit.py.diff": {
+      "bytes": 18318,
+      "sha256": "39dcb7852d73088c18271748c8625089a628782e876efbbf2c9575da3bd04c64"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/build-bindings.json": {
+      "bytes": 3958,
+      "sha256": "fba7133d4b9d8c556ad09e6d0eb27ce6a58bce4c3988afdac406b6d256f7f9b9"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/capacity.json": {
+      "bytes": 2809,
+      "sha256": "c588e029548d85e1dd019577712b19d3864ce3558b0853bc24a058b0f0ce6bee"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/commands.json": {
+      "bytes": 3598,
+      "sha256": "e4eeef82b0c7987d4a8ca2306bf19717327ed24fa20a9ff8a51fccbc347e7ffd"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/compressed_retention.py": {
+      "bytes": 24600,
+      "sha256": "8d9647f0b90cc9d6bad30443613ac4971371755bbe9231f3bb11d068a7159fca"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/compressed_retention.py.diff": {
+      "bytes": 849,
+      "sha256": "d2bb7735c513643381d3fca91dbb34902f36020070386d254c86ebe5fd670baf"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/driver-arguments.json": {
+      "bytes": 539,
+      "sha256": "cf44d832cc43b83ab8c8487c0901661f78216526bf047750ce0a9190a96c98b1"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/expected-descriptors.json": {
+      "bytes": 14156,
+      "sha256": "fc1b5434c94d2279498734da5f85fedf2f801ae1da5009a697cb3a89f349d05c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/function-delta.json": {
+      "bytes": 2671,
+      "sha256": "62943b11a9b53b00da0460599c057e5da8a00569e86b79ca9a0101d88d5dff49"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/inventory.json": {
+      "bytes": 12810,
+      "sha256": "de26af8d419cc7c1693259098bad1e51e47f81468d54a7a9034d215f9e1105ab"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/matched-driver.py": {
+      "bytes": 51902,
+      "sha256": "537eeb3bb0e1fb533ec5648b5b114c123d2d71b791085097274414442fb77f40"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/matched-driver.py.diff": {
+      "bytes": 14222,
+      "sha256": "a7285bbaf330fb980216d0596d3e9a9f8b6e662398d0da6cc02723d1c473786a"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/matched-driver.py.review-correction.diff": {
+      "bytes": 632,
+      "sha256": "2cbfc7b19afc0658ca415299bd7b48b4bec19043c1c0a99e1b3ff8792ead2e31"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/original-input-pins.json": {
+      "bytes": 2136,
+      "sha256": "ae4f709907c642629ae90f3ff7fbaa775003b487bb3f33b19d3aac21a9bc4124"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/origins/audit.py": {
+      "bytes": 53922,
+      "sha256": "df404e04068244303af20bf3bb46ebee013ad63693ff9e6759f775389c5044b0"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/origins/compressed_retention.py": {
+      "bytes": 24620,
+      "sha256": "1d7cc22cb071516504832822dcc01b7f132ee768671584eda1087844846ac8cf"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/origins/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/origins/matched-driver.py": {
+      "bytes": 53069,
+      "sha256": "c4006da61bca0327075a3a60e427ebcf1541e0ed60fc2576647931ccd24f00ab"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/origins/repaired-redis3-audit.py": {
+      "bytes": 56523,
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/origins/retention_audit.py": {
+      "bytes": 16410,
+      "sha256": "5efc08b0a73a2ce02138822899b9765e6b66a49df936eb2f526a3987c1050c4b"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/origins/test_audit_contract.py": {
+      "bytes": 17678,
+      "sha256": "fb0109a4228ef268545ee97529c7e52cd06c226ddedcc376e8b10b1a7019f0ea"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/origins/test_driver.py": {
+      "bytes": 9932,
+      "sha256": "ad24bd29bdaa9df48b50b4c68998c1e6ec2a1c2d9aee9c66c8af4b6dc01983be"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/origins/test_smoke_schema_repair.py": {
+      "bytes": 4790,
+      "sha256": "5ce18518bb5a3b6ca6ddf5bb70ea9b6b6866bb63edd96d0111a70d0058479ad1"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/preparation-read-observation.json": {
+      "bytes": 353,
+      "sha256": "509759a54f7fd11b12a0e72870eaf35a95defd48e0af00d6d4795a22726ab5e7"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/preparation-terminal.json": {
+      "bytes": 611,
+      "sha256": "34b94afdae91eed91c00584f1bccfc05ba8cc74a60e33e06425efef56f39ea68"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/prepare.py": {
+      "bytes": 16412,
+      "sha256": "eaa4c40a3d2d091dabf2aa717ed340712410c617e0d9749cab97f08c313a96ee"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/protocol.json": {
+      "bytes": 20029,
+      "sha256": "49243195c106b935d834685394eb2ccb1db8725662e757e8cc8f4a62e4e505a5"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/retention_audit.py": {
+      "bytes": 16390,
+      "sha256": "4d353e003d3ed044359c544b0f2587937b25a1a069b6de8c79586a545e3f8cc2"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/retention_audit.py.diff": {
+      "bytes": 902,
+      "sha256": "411e55bf391f3bc089ae5e0cb818ce555a414ea1334fd76237858e54e1815883"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/READINESS.json": {
+      "bytes": 997,
+      "sha256": "05f1e19baa0fcc8136a5534871778f1969ca74e97f0e9362824a09013396802c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/README.md": {
+      "bytes": 5788,
+      "sha256": "3f26f7062ca293f791933e985f6b104ff0951d7ab2faa8b70ce02477351a0634"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/ROOT-REVIEW-REJECTION.json": {
+      "bytes": 321,
+      "sha256": "b380019d5ab23338237b4f05aaba42c715f59e6ff04b49f91b1a21b169e9b341"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/STATIC.json": {
+      "bytes": 655,
+      "sha256": "4eec17f568e6ba8c70e4228142311727dd5094777ca7085a0f2357f396a0314c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/audit.py": {
+      "bytes": 56318,
+      "sha256": "391df0c4d2a032152d36a8a70767784e07fb09c3fe42848bc733733ca05f53ca"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/audit.py.diff": {
+      "bytes": 18318,
+      "sha256": "39dcb7852d73088c18271748c8625089a628782e876efbbf2c9575da3bd04c64"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/build-bindings.json": {
+      "bytes": 3958,
+      "sha256": "fba7133d4b9d8c556ad09e6d0eb27ce6a58bce4c3988afdac406b6d256f7f9b9"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/capacity.json": {
+      "bytes": 2809,
+      "sha256": "c588e029548d85e1dd019577712b19d3864ce3558b0853bc24a058b0f0ce6bee"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/commands.json": {
+      "bytes": 3598,
+      "sha256": "94657a659c253f64dea704ad3e52ed7a9e084547a24e5aedc4cd289067f1cce0"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/compressed_retention.py": {
+      "bytes": 24600,
+      "sha256": "8d9647f0b90cc9d6bad30443613ac4971371755bbe9231f3bb11d068a7159fca"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/compressed_retention.py.diff": {
+      "bytes": 849,
+      "sha256": "d2bb7735c513643381d3fca91dbb34902f36020070386d254c86ebe5fd670baf"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/driver-arguments.json": {
+      "bytes": 539,
+      "sha256": "cf44d832cc43b83ab8c8487c0901661f78216526bf047750ce0a9190a96c98b1"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/expected-descriptors.json": {
+      "bytes": 14156,
+      "sha256": "fc1b5434c94d2279498734da5f85fedf2f801ae1da5009a697cb3a89f349d05c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/function-delta.json": {
+      "bytes": 2671,
+      "sha256": "62943b11a9b53b00da0460599c057e5da8a00569e86b79ca9a0101d88d5dff49"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/inventory.json": {
+      "bytes": 5763,
+      "sha256": "b0735a5670e9ed972869a2031212ed945d176af804cb2a1ffec470dd98a17087"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/isolate-and-run.py.diff": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/matched-driver.py": {
+      "bytes": 51912,
+      "sha256": "721c80deab05be00767d2a61611df43837b5d4a217b6e9edd953737c33d65e6c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/matched-driver.py.diff": {
+      "bytes": 14234,
+      "sha256": "dbb24a00f74a75c2c5de1eb3618eeaaceee3db71a2ed413a26c80613b5e3c2a5"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/original-input-pins.json": {
+      "bytes": 2136,
+      "sha256": "ae4f709907c642629ae90f3ff7fbaa775003b487bb3f33b19d3aac21a9bc4124"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/audit.py": {
+      "bytes": 53922,
+      "sha256": "df404e04068244303af20bf3bb46ebee013ad63693ff9e6759f775389c5044b0"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/compressed_retention.py": {
+      "bytes": 24620,
+      "sha256": "1d7cc22cb071516504832822dcc01b7f132ee768671584eda1087844846ac8cf"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/matched-driver.py": {
+      "bytes": 53069,
+      "sha256": "c4006da61bca0327075a3a60e427ebcf1541e0ed60fc2576647931ccd24f00ab"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/repaired-redis3-audit.py": {
+      "bytes": 56523,
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/retention_audit.py": {
+      "bytes": 16410,
+      "sha256": "5efc08b0a73a2ce02138822899b9765e6b66a49df936eb2f526a3987c1050c4b"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/test_audit_contract.py": {
+      "bytes": 17678,
+      "sha256": "fb0109a4228ef268545ee97529c7e52cd06c226ddedcc376e8b10b1a7019f0ea"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/test_driver.py": {
+      "bytes": 9932,
+      "sha256": "ad24bd29bdaa9df48b50b4c68998c1e6ec2a1c2d9aee9c66c8af4b6dc01983be"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/origins/test_smoke_schema_repair.py": {
+      "bytes": 4790,
+      "sha256": "5ce18518bb5a3b6ca6ddf5bb70ea9b6b6866bb63edd96d0111a70d0058479ad1"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/preparation-read-observation.json": {
+      "bytes": 353,
+      "sha256": "509759a54f7fd11b12a0e72870eaf35a95defd48e0af00d6d4795a22726ab5e7"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/preparation-terminal.json": {
+      "bytes": 402,
+      "sha256": "96300ca437e1bf249e4d0b84a4c99d0b7fa40437b415041b570793996307100a"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/prepare.py": {
+      "bytes": 16317,
+      "sha256": "933cec573f9c6b2c4ecad01ffc439608ddf7408acf37c60877b84c5bbfef4030"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/protocol.json": {
+      "bytes": 20029,
+      "sha256": "01bc61540e9f4fbdd1678116b39686414e5346f2d900cbd083bd99edb787dae3"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/retention_audit.py": {
+      "bytes": 16390,
+      "sha256": "4d353e003d3ed044359c544b0f2587937b25a1a069b6de8c79586a545e3f8cc2"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/retention_audit.py.diff": {
+      "bytes": 902,
+      "sha256": "411e55bf391f3bc089ae5e0cb818ce555a414ea1334fd76237858e54e1815883"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/seal.py": {
+      "bytes": 13713,
+      "sha256": "6002c3de7742cbada94e7029ae468328982bbf4fdd6ed27c25d13440316a25d3"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_audit_contract.py": {
+      "bytes": 17701,
+      "sha256": "6a4ac4784a90e2fd90942569d422f3523f34d8fc921b0e0ed4222ddd7ed2ea89"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_audit_contract.py.diff": {
+      "bytes": 6999,
+      "sha256": "a516252d0426ec0c3828328737dcf0e0b3bb966f6da0b1ae05e8e3485461727c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_driver.py": {
+      "bytes": 9848,
+      "sha256": "61e9825828dce974f331fa2d8b674d1f05e635e7ccd0ba4c4801150cfb3b15e9"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_driver.py.diff": {
+      "bytes": 4975,
+      "sha256": "d890a046361ce38854b58fa6583b8b48e126229fd0c1c6dc5cff3633169a9f5b"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/review-rejected-first/test_smoke_schema.py": {
+      "bytes": 3647,
+      "sha256": "01cf54d815177859301c51288ba92210db6283dff9f24fe6f79656f381cdbe1b"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/seal.py": {
+      "bytes": 13713,
+      "sha256": "4f69a20c59c1bafdeab2bb01ff1be489df7e528ed99f9da6b5f440b1a13208e6"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/test_audit_contract.py": {
+      "bytes": 17701,
+      "sha256": "6a4ac4784a90e2fd90942569d422f3523f34d8fc921b0e0ed4222ddd7ed2ea89"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/test_audit_contract.py.diff": {
+      "bytes": 6999,
+      "sha256": "a516252d0426ec0c3828328737dcf0e0b3bb966f6da0b1ae05e8e3485461727c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/test_driver.py": {
+      "bytes": 10631,
+      "sha256": "4b973d4cf5a528faed00f5a3f06b86503c73a634abc5680616c4d4c905a3f3c3"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/test_driver.py.diff": {
+      "bytes": 5768,
+      "sha256": "0d60c6a044b8fe7b0e7d280aa6a3f8eea4d76196e14c828dd99522cdcf669a6c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/test_driver.py.review-correction.diff": {
+      "bytes": 1229,
+      "sha256": "77d5c628f7f8ae964df3abd1065e72bbc28264bc56f55da9e9123a4cef56b7cf"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/accepted-crc-preparation/test_smoke_schema.py": {
+      "bytes": 3647,
+      "sha256": "01cf54d815177859301c51288ba92210db6283dff9f24fe6f79656f381cdbe1b"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/audit.py": {
+      "bytes": 53922,
+      "sha256": "df404e04068244303af20bf3bb46ebee013ad63693ff9e6759f775389c5044b0"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/compressed_retention.py": {
+      "bytes": 24620,
+      "sha256": "1d7cc22cb071516504832822dcc01b7f132ee768671584eda1087844846ac8cf"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/full-regression-plan/PLAN.md": {
+      "bytes": 8424,
+      "sha256": "8d45db059c74e77c38820c85ce089d54b07770e1f23e120e505d3bbd25132b49"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/full-regression-plan/READINESS.json": {
+      "bytes": 1318,
+      "sha256": "d0f529da2f706130c87b6382c0e4520e47148e5ef7fca4094cfbf562ba85d891"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/full-regression-plan/capacity-scenario.json": {
+      "bytes": 9869,
+      "sha256": "8437b510f96a8de13bf0741b018940cce20344ebd338cc262734920fc25bcff3"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/full-regression-plan/inventory.json": {
+      "bytes": 1220,
+      "sha256": "56e47d918789acff8ae52c0699ad61e0b191f9c4c095506c64bbc63151764177"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/full-regression-plan/protocol-plan.json": {
+      "bytes": 44808,
+      "sha256": "377dd787054c2141f8f18a40cd442df91e81089aa2d938c3dd68e8ae68715f28"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/isolate-and-run.py": {
+      "bytes": 12873,
+      "sha256": "e922939e675d722fe36c3b0890d31d6329be810dd7567b2e369643d10e2137fb"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/matched-driver.py": {
+      "bytes": 53069,
+      "sha256": "c4006da61bca0327075a3a60e427ebcf1541e0ed60fc2576647931ccd24f00ab"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/repaired-redis3-audit.py": {
+      "bytes": 56523,
+      "sha256": "db05ffe17acd8bd41f490dcdfd7bbdff4115439eada27d86b394c679668153ab"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/retention_audit.py": {
+      "bytes": 16410,
+      "sha256": "5efc08b0a73a2ce02138822899b9765e6b66a49df936eb2f526a3987c1050c4b"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/smoke-import-repair/check-smoke-corrected.py": {
+      "bytes": 4574,
+      "sha256": "db6f7c1b8ff12534b96cb0d1b24d9470a0c60989f992b04bd14ed92857c2136a"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/smoke-import-repair/check-smoke.py": {
+      "bytes": 4386,
+      "sha256": "269066c76abe25c2a0c08c2d0806eafe580d5aab5ee5a453a28435821f765b29"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/smoke-import-repair/smoke-checker-import-repair.json": {
+      "bytes": 808,
+      "sha256": "688a5dc54e886791a044f4dc96aedf53cb75599340031cd729781df803c52635"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/test_audit_contract.py": {
+      "bytes": 17678,
+      "sha256": "fb0109a4228ef268545ee97529c7e52cd06c226ddedcc376e8b10b1a7019f0ea"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/test_driver.py": {
+      "bytes": 9932,
+      "sha256": "ad24bd29bdaa9df48b50b4c68998c1e6ec2a1c2d9aee9c66c8af4b6dc01983be"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/origins/test_smoke_schema_repair.py": {
+      "bytes": 4790,
+      "sha256": "5ce18518bb5a3b6ca6ddf5bb70ea9b6b6866bb63edd96d0111a70d0058479ad1"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/preparation-observations.json": {
+      "bytes": 606,
+      "sha256": "2742f9d7be15c4c7d6a263b22bdfacf34908c8df5318f4298587da256fcf5a81"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/prepare.py": {
+      "bytes": 11664,
+      "sha256": "2986f605cb49a9b4f35495d51cd8704d04886df11be9001333289f14cc4f519f"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/protocol.json": {
+      "bytes": 48237,
+      "sha256": "b849b46085787a7a4512b771fd3d9bd967722b25cd0149f1d4cbdfe234445fd8"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/retention_audit.py": {
+      "bytes": 16416,
+      "sha256": "7fe7cdf063c331be5a53a2cc2838e587d85f5b89203d9fb29e3626ab9ac6bfc0"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/retention_audit.py.diff": {
+      "bytes": 919,
+      "sha256": "d4b91a7a7344a32ea36b198719af47a660205e1a539d3b01cd10ca4c3df01245"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/source-delta.json": {
+      "bytes": 5284,
+      "sha256": "5b973f7ad5f549478058104d85f536d6f862a77312ec00498d0b8d0930de09a1"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/static-review-first/check-smoke-corrected.py": {
+      "bytes": 4609,
+      "sha256": "46a36828fbec04ef660b26cbc2de363e93a90da99d67215e79f5b6a81bffa82f"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/static-review-first/check-smoke-corrected.py.diff": {
+      "bytes": 2693,
+      "sha256": "bdeb1c3e2364d4fd3b1afd446f74e14652d6e3e38b173032667fcad401de0a5f"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/static-review-first/matched-driver.py": {
+      "bytes": 52001,
+      "sha256": "ae1035159e04773821496de90cec49f9a39e2b9aab395addf5d14e02521dec26"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/static-review-first/matched-driver.py.diff": {
+      "bytes": 3244,
+      "sha256": "0220282b852c456a07df15a736c1f9ef2e7ba99b8fdeb7c30d615a646f5dd247"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/static-review-first/observation.json": {
+      "bytes": 446,
+      "sha256": "db121abec8667d7a5d01009ba06f078e4b8048194672b64d20936e8fbf1bfb79"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/static-review-first/protocol.json": {
+      "bytes": 48237,
+      "sha256": "72cd22ca64f2480ef2d7a16466a8e935a92036f97a6d38ac347c3e4a2a5e202d"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/static-review-first/source-delta.json": {
+      "bytes": 5284,
+      "sha256": "4d0ff77b036896564810df801729fe026aacdb4d154ab0729e42ef7c12ea5a26"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/test_audit_contract.py": {
+      "bytes": 17672,
+      "sha256": "c04883c06cd1263670efc0cf4d954b1c6bde9ce21a8b12f33b7c3d5ccbd9ab9e"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/test_audit_contract.py.diff": {
+      "bytes": 4539,
+      "sha256": "6cc5369d4a1ca49852b676823f07bc108a125dac7ef40a7f1ac05d83f5ee3587"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/test_driver.py": {
+      "bytes": 10659,
+      "sha256": "58c06456853d654e934e0f29b542685b29deb09a668d04baf1a0e3a09326974c"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/test_driver.py.diff": {
+      "bytes": 2040,
+      "sha256": "95d2a80362e7df99b2076bb9df445a88a3559770782fd3934f566e6e201d8a9e"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/test_full_regression_contract.py": {
+      "bytes": 11398,
+      "sha256": "6c4d5c98b38d47f40191c93e80c0a38223524a5dc85f183b1e0b380794bec71d"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/test_smoke_schema.py": {
+      "bytes": 3648,
+      "sha256": "b2a5b08632baa4f7d3133c8b986fd193267596e9bb02161dd5332fa29010b863"
+    },
+    "/tmp/kv9-write-crc-slicing8-full-regression-runtime-preparation-first/test_smoke_schema.py.diff": {
+      "bytes": 1017,
+      "sha256": "99e039fb3005e8a08132bcd7019a8094c54be4887b261f4e29abf23df8d9fcb1"
+    }
+  },
+  "main_original_evidence_allowance_bytes": 67108864,
+  "main_original_evidence_bytes_after": 65930616,
+  "member_count": 186,
+  "reporting_controls_passed": 13,
+  "runtime_controls_passed": 35,
+  "runtime_executed": false
+}
