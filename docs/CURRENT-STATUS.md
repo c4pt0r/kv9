@@ -25,8 +25,11 @@ replaces three frame-buffer writes with a vectored loop while preserving the
 sync and failed-writer fences. Three universal SMT checks, three countermodels,
 714 workspace tests/doctests, formatting and Clippy pass (23 existing ignored).
 A file/replay probe records three frame `writev` calls, each followed by `fsync`.
-Exact release, ordinary recovery, actual Chaos and performance remain pending;
-this is a source checkpoint, not a measured speedup or selected runtime change.
+Its [exact release and ordinary recovery](WRITE-SEGMENT-VECTORED-RECOVERY.md)
+now pass: 352 complete operations, 323 OK / 29 unknown, six fresh drains and
+seven exited lifetimes. The original default ThinLTO release binds 661 source
+files and fresh first-party compilation. Actual Chaos and performance remain
+pending; no measured speedup or selected runtime change is established.
 
 The [three-node Redis write comparison](WRITE-REDIS3-BASELINE.md) now passes
 12 smoke and 24 timed cohorts: 18,993,624 measured successful calls, all with

@@ -147,8 +147,10 @@ original failed audit and schema repair remain retained without workload reruns.
    now preserves the frame stream through a short-write-aware vectored loop.
    Three SMT checks, three countermodels, 714 tests/doctests, formatting and
    Clippy pass; an actual file probe confirms one `writev` and following `fsync`
-   per frame. Qualify its exact release, ordinary recovery, actual Chaos and
-   performance separately before promotion. No throughput gain is assumed.
+   per frame. Its [exact release and ordinary recovery](WRITE-SEGMENT-VECTORED-RECOVERY.md)
+   now pass: 352 complete operations, 29 unknowns, six fresh drains and seven
+   exited lifetimes. Qualify actual Chaos and performance separately before
+   promotion. No throughput gain is assumed.
    Use the retained profiles before collecting a necessary current-source profile;
    do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.
