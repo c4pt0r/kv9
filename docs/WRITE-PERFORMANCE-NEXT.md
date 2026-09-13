@@ -103,8 +103,10 @@ original failed audit and schema repair remain retained without workload reruns.
    native v3 client: point Put/BatchPut(64), c1/c64, two opposite orders, eight
    two-second smokes and sixteen ten-second timed cohorts. Reserve capacity
    before launch; retain original 96-GiB preflight and every storage cap/floor.
-   Its exact-source Chaos image is built, probed and loaded; run and independently
-   audit the actual candidate fault histories. Qualify useful
+   Its [actual 21-window Chaos histories](WRITE-CRC-CHAOS.md), independent audit
+   and cleanup now pass: 9,833 complete operations, 600 unknowns and 28 refusals.
+   Twenty-eight A/B environment controls pass; no A/B workload has run.
+   Qualify useful
    improvements with full point/batch and mixed-read regression coverage, applicable exact
    source proofs, ordinary recovery and actual Chaos Mesh fault histories before
    default promotion. Preserve loaded batch-write p99 and fixed-rate client-drop
@@ -120,4 +122,4 @@ original failed audit and schema repair remain retained without workload reruns.
    be a service-critical singleton.
 
 CI remains local. GitHub CI is reserved for releases or explicitly selected key
-milestones. This client checkpoint closes no original industrial work package.
+milestones. These write checkpoints close no original industrial work package.

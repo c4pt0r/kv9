@@ -7,8 +7,11 @@
 > 12 smoke/24 timed cohorts and independent audit: all 18,993,624 measured calls
 > succeed once. At c64, Redis is about 1.7× faster for point writes and 4.5×
 > for batches; KV9 loaded batch p99 remains 9.437–9.568 ms. The isolated CRC
-> reapplication passes source/proof/release/ordinary recovery and image checks;
-> candidate A/B throughput/latency and actual Chaos Mesh remain next.
+> reapplication now passes source/proof/release/ordinary recovery and its
+> [actual 21-window Chaos campaign](WRITE-CRC-CHAOS.md): 9,833 complete operations,
+> including 600 unknowns and 28 refusals, with independent audit and cleanup.
+> Qualify capacity, then run candidate A/B throughput/latency; 28 environment
+> controls pass, but no candidate timing or speedup is established.
 > Read optimization and lease qualification are held at the user's request.
 > Proof, actual Chaos Mesh and no-service-critical-singleton gates still apply.
 
