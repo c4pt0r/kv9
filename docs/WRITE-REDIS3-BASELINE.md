@@ -135,8 +135,9 @@ large local WAL objects and executables remain separately hash-bound.
 Next, compare the isolated CRC slicing candidate `e748620` with this selected
 server using the same fixed native client and write protocol. Its source-mapped
 proof, workspace tests, clean release and ordinary recovery already pass;
-its four-binary Chaos image is built, probed and loaded into Kind. Actual
-candidate Chaos Mesh histories and matched A/B performance remain pending.
+its [actual 21-window Chaos Mesh histories](WRITE-CRC-CHAOS.md), independent
+audit and cleanup now pass with 9,833 complete operations. Matched A/B
+performance remains pending capacity qualification; 28 environment controls pass.
 A write-only screen must be followed by full point/batch and mixed-read
 regressions and actual fault acceptance before default promotion. Preserve
 Raft, synchronization, unknown outcomes and loaded p99. Reads remain at

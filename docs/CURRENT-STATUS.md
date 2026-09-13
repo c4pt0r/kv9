@@ -17,9 +17,11 @@ single-host volatile-storage comparisons, without equal durability.
 The [isolated CRC qualification](write-reference-qualification-v1/README.md)
 retains fresh proof, 710 workspace tests/doctests (23 existing ignored), Clippy
 and ordinary recovery: 363 complete operations, including 26 unknowns.
-Its exact-source point/pressure tools and four-binary Chaos image now build,
-probe and load successfully. Candidate A/B timing and actual Chaos Mesh remain
-pending; the selected runtime is unchanged. The baseline audit's smoke-schema
+Its [actual 21-window Chaos Mesh campaign](WRITE-CRC-CHAOS.md), independent
+audit and cleanup now pass: 9,833 complete operations, including 600 unknowns
+and 28 refusals; all 34 observed server lifetimes have exited. Candidate A/B
+timing remains pending capacity qualification; 28 environment controls pass.
+The selected runtime is unchanged. The baseline audit's smoke-schema
 repair and all original failures remain retained; no workload was rerun.
 
 ## Delivered foundation and product limits
@@ -274,11 +276,13 @@ isolated GET improvement. Original setup/reader failures remain published.
 1. **Establish the three-copy write reference:** the version-4 Redis client adds
    same-connection SET/MSET plus WAIT 1/2, one deadline and no uncertain-write
    replay. [Local correctness evidence](redis-replication-reference-v1/README.md)
-   is complete. The independent v4 reader and clean release now pass; fresh
-   matched release-client smokes and timing are next.
+   is complete. The [matched baseline](WRITE-REDIS3-BASELINE.md) now passes
+   all 12 smoke/24 timed cohorts and independent audit; use its retained results.
 2. **Optimize writes on selected ThinLTO:** the reapplied slicing-by-eight CRC
-   experiment now passes fresh source/proof/release/ordinary-recovery checks.
-   Measure it before proceeding to allocation/batching/replication costs. Existing
+   experiment now passes fresh source/proof/release/ordinary recovery and the
+   [actual Chaos campaign](WRITE-CRC-CHAOS.md). Qualify retained-storage capacity,
+   then run its eight-smoke/sixteen-timed write A/B before proceeding to
+   allocation/batching/replication costs. Existing
    engine and Raft Ready group commit remain in place. Preserve the documented
    batch-write p99 problem and fixed-rate client drops.
 3. **Qualify improvements before promotion:** exact source proofs, complete API
@@ -294,7 +298,7 @@ isolated GET improvement. Original setup/reader failures remain published.
 
 The [write plan](WRITE-PERFORMANCE-NEXT.md) defines the 24-cohort comparison and
 separates replication confirmation from fsync and Raft consistency. Read/lease
-optimization is held; no lease performance or new Redis QPS result is claimed.
+optimization is held; no lease performance or CRC speedup is claimed.
 
 Earlier held [inbox-vector](https://github.com/c4pt0r/kv9/blob/51efc6598324c10c1e27cd6fef869d4b9a39e7c4/docs/INBOX-VECTOR-REUSE-PERFORMANCE.md),
 [Append-payload](https://github.com/c4pt0r/kv9/blob/381d0973c078522d3698a922ecac8594cc9df348/docs/RAFT-APPEND-PAYLOAD-PERFORMANCE.md),

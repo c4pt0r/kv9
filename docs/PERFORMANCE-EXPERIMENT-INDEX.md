@@ -19,7 +19,10 @@ KV9 reaches 136,519.558 point writes/s and 887,520.285 BatchPut(64) items/s;
 Redis WAIT 1/2 reach 229,760.166 / 232,465.084 point writes/s and about four
 million batch items/s. Preserve KV9's 9.437–9.568-ms loaded batch p99 and the
 volatile-storage/durability limits. This is a baseline, not a selected speedup.
-The CRC reapplication needs matched A/B and actual Chaos acceptance. Read
+The CRC reapplication passes its [actual 21-window Chaos campaign](WRITE-CRC-CHAOS.md)
+and independent audit/cleanup: 9,833 complete operations. Twenty-eight A/B
+environment controls pass; matched candidate timing still awaits qualified
+capacity. No CRC speedup or default promotion is established. Read
 optimization remains held; no lease performance result is established.
 
 The [leader-lease proof](LEADER-LEASE-PROOF.md) is a new design checkpoint:
