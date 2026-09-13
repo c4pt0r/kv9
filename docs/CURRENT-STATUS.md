@@ -24,6 +24,16 @@ timing remains pending capacity qualification; 28 environment controls pass.
 The selected runtime is unchanged. The baseline audit's smoke-schema
 repair and all original failures remain retained; no workload was rerun.
 
+The separate [single-buffer Raft WAL experiment `01d128f`](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md)
+removes one allocation and body copy per record. Three source-bound universal
+SMT checks and three counterexample controls pass, as do 710 workspace tests/
+doctests, formatting and Clippy (23 existing tests ignored). Its new compatibility
+test covers 3,840 frames. Exact release, ordinary recovery, actual Chaos Mesh and
+matched performance remain pending; it is separate from the CRC comparison.
+The first capacity tranche completed 387 batches and reports 30,684,045,312 bytes
+of conservative recovery. Independent readback stopped at a process-reference
+check; that failure remains under investigation, so capacity is not released.
+
 ## Delivered foundation and product limits
 
 The current foundation provides three-voter RawKV, self-hosted metadata,

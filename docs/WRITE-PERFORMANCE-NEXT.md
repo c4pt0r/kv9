@@ -112,6 +112,13 @@ original failed audit and schema repair remain retained without workload reruns.
    default promotion. Preserve loaded batch-write p99 and fixed-rate client-drop
    limitations; an aggregate throughput gain alone is insufficient.
 5. Continue with measured checksum, allocation, batching and replication costs.
+   The isolated [single-buffer Raft WAL experiment `01d128f`](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md)
+   removes a body allocation/copy without changing frame bytes, checksums, sync
+   or response fences. Three universal SMT checks, three counterexample controls,
+   710 workspace tests/doctests, formatting and Clippy pass. Its 23 ignored tests
+   are existing; the new writer/replay compatibility case covers 3,840 frames.
+   Keep its exact release, recovery, actual Chaos and performance qualification
+   separate from the frozen CRC A/B screen; no speedup is established.
    Use the retained profiles before collecting a necessary current-source profile;
    do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.
