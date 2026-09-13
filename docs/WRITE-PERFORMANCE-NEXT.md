@@ -135,8 +135,12 @@ original failed audit and schema repair remain retained without workload reruns.
    and repaired independent audit now pass: 9,818 operations, 9,250 OK / 539 unknown /
    29 refused, four fresh drains and all 34 recorded server lifetimes exited.
    The original missing-receipt audit failure is retained; no workload was rerun.
-   Next qualify matched performance and full regressions. Keep these gates
-   separate from CRC; no frame-buffer speedup is established.
+   Its [matched write preparation](WRITE-RAFT-FRAME-BUFFER-PERFORMANCE-PLAN.md)
+   passes all 28 local driver/auditor/smoke-schema controls. Eight smokes and
+   sixteen timed cohorts remain unrun: the unchanged retention/restore scenario
+   needs 170.15 GB available against 120.13 GB observed, a 50.02 GB gap.
+   Resolve capacity, run the complete comparison, then qualify full regressions.
+   Keep these gates separate from CRC; no frame-buffer speedup is established.
    Use the retained profiles before collecting a necessary current-source profile;
    do not repeat rejected worker/transport sweeps. DPDK requires cross-host/NIC
    evidence. A real-disk panel must retain every sync and acknowledgment rule.
