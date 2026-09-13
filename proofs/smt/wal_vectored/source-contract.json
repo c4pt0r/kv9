@@ -1,0 +1,5 @@
+{
+  "ancestor": "11113f68f6a5df77da1ffb4fcec850953716ffa3",
+  "helper_sha256": "4236fef07248842bc7f0ef4ea82a57700d1f6cb104a94817ee400a737a70f6a2",
+  "scope": "Exact three-buffer order and loop, with unchanged caller sync/poison/publication and original module outside declared import/call/helper additions."
+}
