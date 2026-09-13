@@ -12,6 +12,9 @@
 > including 600 unknowns and 28 refusals, with independent audit and cleanup.
 > Qualify capacity, then run candidate A/B throughput/latency; 28 environment
 > controls pass, but no candidate timing or speedup is established.
+> A separate [single-buffer Raft WAL experiment](https://github.com/c4pt0r/kv9/blob/01d128fd771dfbf0e6826ee5b6821411afac1fec/docs/WRITE-RAFT-FRAME-BUFFER.md)
+> now passes source-bound layout proofs, 710 local tests/doctests and lint checks.
+> Release, recovery, actual Chaos and performance gates remain open for it.
 > Read optimization and lease qualification are held at the user's request.
 > Proof, actual Chaos Mesh and no-service-critical-singleton gates still apply.
 
