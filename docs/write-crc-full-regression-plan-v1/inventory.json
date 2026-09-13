@@ -1,0 +1,38 @@
+{
+  "files": {
+    "PLAN.md": {
+      "bytes": 8424,
+      "sha256": "8d45db059c74e77c38820c85ce089d54b07770e1f23e120e505d3bbd25132b49"
+    },
+    "READINESS.json": {
+      "bytes": 1318,
+      "sha256": "d0f529da2f706130c87b6382c0e4520e47148e5ef7fca4094cfbf562ba85d891"
+    },
+    "capacity-scenario.json": {
+      "bytes": 9869,
+      "sha256": "8437b510f96a8de13bf0741b018940cce20344ebd338cc262734920fc25bcff3"
+    },
+    "input-hashes.json": {
+      "bytes": 4216,
+      "sha256": "6ca47880f46aff68ddc738e9f1b5bc2a5c664c5a068d8870bb66bf69f9005036"
+    },
+    "inventory.before-readiness.json": {
+      "bytes": 934,
+      "sha256": "16e323ebc558ccbe88739018b68da58113a1ad09a3ceca5902623462d27f4852"
+    },
+    "prospective-commands.json": {
+      "bytes": 3944,
+      "sha256": "28b51c0efa69d995cc70441e3d8f9e47f529fc8189c6b2ab3d5b86e9fd2c7c9a"
+    },
+    "protocol-plan.json": {
+      "bytes": 44808,
+      "sha256": "377dd787054c2141f8f18a40cd442df91e81089aa2d938c3dd68e8ae68715f28"
+    },
+    "retained-artifact-observation.json": {
+      "bytes": 912,
+      "sha256": "db81317237803c10615c3edbaf49399004c04b39c78763e7cd5133f347b10972"
+    }
+  },
+  "state": "frozen_plan_only_not_runtime_ready",
+  "version": 1
+}

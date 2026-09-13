@@ -1,0 +1,25 @@
+{
+  "all_original_resource_caps_and_floors_unchanged": true,
+  "blocked_scope": "Only proposed24-smoke/48-timed performance regression capacity and helper qualification; other source/release/recovery work may continue independently",
+  "current_capacity_observation_unix_ns": 1789268261868887226,
+  "deliverable": "Metadata-only plan; executable helper derivation is not included",
+  "empirical_not_guaranteed_bound": true,
+  "empirical_scenario_additional_bytes_needed": 80877257647,
+  "empirical_scenario_required_available_bytes": 202375414703,
+  "historical64GiB_target_credit_bytes": 0,
+  "pending": [
+    "Finite helper/path/count/mixed-reporting adaptations and frozen original/diff/hash closure",
+    "Root changed-closure contracts and actual source/build/client/tool/host identity readback",
+    "Root separately reviewed actual capacity sufficient for the full retained campaign with original guards",
+    "Fresh complete24-smoke acceptance, full48timing, independent audit and source-bound reporting"
+  ],
+  "preparation_complete": true,
+  "runtime_ready": false,
+  "smoke_cohorts_proposed": 24,
+  "source_and_build_pins_unchanged": true,
+  "source_or_payload_validators_executed": false,
+  "tests_executed": false,
+  "timed_cohorts_proposed": 48,
+  "version": 1,
+  "workloads_or_codecs_executed": false
+}

@@ -132,13 +132,17 @@ The [evidence inventory and readback](https://github.com/c4pt0r/kv9/blob/be60c4e
 original reports, helpers, topology/dataset observations and audit outputs;
 large local WAL objects and executables remain separately hash-bound.
 
-Next, compare the isolated CRC slicing candidate `e748620` with this selected
-server using the same fixed native client and write protocol. Its source-mapped
+The subsequent [CRC A/B](WRITE-CRC-PERFORMANCE.md) now compares isolated
+candidate `e748620` with this selected server using the same fixed native client
+and write protocol. It accepts 7,126,939 measured single-attempt successes:
+loaded batch improves 18.807% to 1,063,493.134 items/s and p99 falls to
+6.947–7.012 ms; loaded point writes improve 2.786% to 139,402.831 calls/s.
+Redis was not rerun in that native-only screen. The candidate's source-mapped
 proof, workspace tests, clean release and ordinary recovery already pass;
 its [actual 21-window Chaos Mesh histories](WRITE-CRC-CHAOS.md), independent
 audit and cleanup now pass with 9,833 complete operations. Matched A/B
-performance remains pending capacity qualification; 28 environment controls pass.
-A write-only screen must be followed by full point/batch and mixed-read
+performance and its independent audit pass; 28 environment controls pass.
+This write-only screen must be followed by full point/batch and mixed-read
 regressions and actual fault acceptance before default promotion. Preserve
 Raft, synchronization, unknown outcomes and loaded p99. Reads remain at
 ThinLTO/Safe ReadIndex. Dynamic multi-Raft and automatic range splits follow

@@ -1,0 +1,334 @@
+{
+  "by_added_cell": [
+    {
+      "concurrency": 1,
+      "selected_historical_rows": [
+        {
+          "compressed_bytes": 16342772,
+          "concurrency": 1,
+          "logical_bytes": 27004459,
+          "phase": "smoke",
+          "repeat": 0,
+          "role": "new",
+          "workload": "point-r050"
+        },
+        {
+          "compressed_bytes": 89452003,
+          "concurrency": 1,
+          "logical_bytes": 146435421,
+          "phase": "timing",
+          "repeat": 0,
+          "role": "new",
+          "workload": "point-r050"
+        },
+        {
+          "compressed_bytes": 90250051,
+          "concurrency": 1,
+          "logical_bytes": 147734489,
+          "phase": "timing",
+          "repeat": 1,
+          "role": "new",
+          "workload": "point-r050"
+        }
+      ],
+      "two_roles_compressed_bytes": 392089652,
+      "two_roles_logical_bytes": 642348738,
+      "workload": "point-r050"
+    },
+    {
+      "concurrency": 1,
+      "selected_historical_rows": [
+        {
+          "compressed_bytes": 3169298,
+          "concurrency": 1,
+          "logical_bytes": 5547009,
+          "phase": "smoke",
+          "repeat": 0,
+          "role": "new",
+          "workload": "point-r100"
+        },
+        {
+          "compressed_bytes": 3167754,
+          "concurrency": 1,
+          "logical_bytes": 5547051,
+          "phase": "timing",
+          "repeat": 0,
+          "role": "new",
+          "workload": "point-r100"
+        },
+        {
+          "compressed_bytes": 3168828,
+          "concurrency": 1,
+          "logical_bytes": 5547061,
+          "phase": "timing",
+          "repeat": 1,
+          "role": "new",
+          "workload": "point-r100"
+        }
+      ],
+      "two_roles_compressed_bytes": 19011760,
+      "two_roles_logical_bytes": 33282242,
+      "workload": "point-r100"
+    },
+    {
+      "concurrency": 1,
+      "selected_historical_rows": [
+        {
+          "compressed_bytes": 261984831,
+          "concurrency": 1,
+          "logical_bytes": 370723146,
+          "phase": "smoke",
+          "repeat": 0,
+          "role": "new",
+          "workload": "batch64-r050"
+        },
+        {
+          "compressed_bytes": 1575041460,
+          "concurrency": 1,
+          "logical_bytes": 2227265406,
+          "phase": "timing",
+          "repeat": 0,
+          "role": "new",
+          "workload": "batch64-r050"
+        },
+        {
+          "compressed_bytes": 1589133782,
+          "concurrency": 1,
+          "logical_bytes": 2247196735,
+          "phase": "timing",
+          "repeat": 1,
+          "role": "new",
+          "workload": "batch64-r050"
+        }
+      ],
+      "two_roles_compressed_bytes": 6852320146,
+      "two_roles_logical_bytes": 9690370574,
+      "workload": "batch64-r050"
+    },
+    {
+      "concurrency": 1,
+      "selected_historical_rows": [
+        {
+          "compressed_bytes": 2880562,
+          "concurrency": 1,
+          "logical_bytes": 4289233,
+          "phase": "smoke",
+          "repeat": 0,
+          "role": "new",
+          "workload": "batch64-r100"
+        },
+        {
+          "compressed_bytes": 2880619,
+          "concurrency": 1,
+          "logical_bytes": 4289266,
+          "phase": "timing",
+          "repeat": 0,
+          "role": "new",
+          "workload": "batch64-r100"
+        },
+        {
+          "compressed_bytes": 2880640,
+          "concurrency": 1,
+          "logical_bytes": 4289271,
+          "phase": "timing",
+          "repeat": 1,
+          "role": "new",
+          "workload": "batch64-r100"
+        }
+      ],
+      "two_roles_compressed_bytes": 17283642,
+      "two_roles_logical_bytes": 25735540,
+      "workload": "batch64-r100"
+    },
+    {
+      "concurrency": 64,
+      "selected_historical_rows": [
+        {
+          "compressed_bytes": 181773364,
+          "concurrency": 64,
+          "logical_bytes": 279736640,
+          "phase": "smoke",
+          "repeat": 0,
+          "role": "new",
+          "workload": "point-r050"
+        },
+        {
+          "compressed_bytes": 718910362,
+          "concurrency": 64,
+          "logical_bytes": 1101002148,
+          "phase": "timing",
+          "repeat": 0,
+          "role": "new",
+          "workload": "point-r050"
+        },
+        {
+          "compressed_bytes": 722371918,
+          "concurrency": 64,
+          "logical_bytes": 1106301655,
+          "phase": "timing",
+          "repeat": 1,
+          "role": "new",
+          "workload": "point-r050"
+        }
+      ],
+      "two_roles_compressed_bytes": 3246111288,
+      "two_roles_logical_bytes": 4974080886,
+      "workload": "point-r050"
+    },
+    {
+      "concurrency": 64,
+      "selected_historical_rows": [
+        {
+          "compressed_bytes": 3170028,
+          "concurrency": 64,
+          "logical_bytes": 5547188,
+          "phase": "smoke",
+          "repeat": 0,
+          "role": "new",
+          "workload": "point-r100"
+        },
+        {
+          "compressed_bytes": 3172399,
+          "concurrency": 64,
+          "logical_bytes": 5547314,
+          "phase": "timing",
+          "repeat": 0,
+          "role": "new",
+          "workload": "point-r100"
+        },
+        {
+          "compressed_bytes": 3168818,
+          "concurrency": 64,
+          "logical_bytes": 5547328,
+          "phase": "timing",
+          "repeat": 1,
+          "role": "new",
+          "workload": "point-r100"
+        }
+      ],
+      "two_roles_compressed_bytes": 19022490,
+      "two_roles_logical_bytes": 33283660,
+      "workload": "point-r100"
+    },
+    {
+      "concurrency": 64,
+      "selected_historical_rows": [
+        {
+          "compressed_bytes": 1355746030,
+          "concurrency": 64,
+          "logical_bytes": 1914999495,
+          "phase": "smoke",
+          "repeat": 0,
+          "role": "new",
+          "workload": "batch64-r050"
+        },
+        {
+          "compressed_bytes": 4781545181,
+          "concurrency": 64,
+          "logical_bytes": 6752752134,
+          "phase": "timing",
+          "repeat": 0,
+          "role": "new",
+          "workload": "batch64-r050"
+        },
+        {
+          "compressed_bytes": 4851926001,
+          "concurrency": 64,
+          "logical_bytes": 6852288401,
+          "phase": "timing",
+          "repeat": 1,
+          "role": "new",
+          "workload": "batch64-r050"
+        }
+      ],
+      "two_roles_compressed_bytes": 21978434424,
+      "two_roles_logical_bytes": 31040080060,
+      "workload": "batch64-r050"
+    },
+    {
+      "concurrency": 64,
+      "selected_historical_rows": [
+        {
+          "compressed_bytes": 2880608,
+          "concurrency": 64,
+          "logical_bytes": 4289420,
+          "phase": "smoke",
+          "repeat": 0,
+          "role": "new",
+          "workload": "batch64-r100"
+        },
+        {
+          "compressed_bytes": 2880725,
+          "concurrency": 64,
+          "logical_bytes": 4289490,
+          "phase": "timing",
+          "repeat": 0,
+          "role": "new",
+          "workload": "batch64-r100"
+        },
+        {
+          "compressed_bytes": 2880835,
+          "concurrency": 64,
+          "logical_bytes": 4289537,
+          "phase": "timing",
+          "repeat": 1,
+          "role": "new",
+          "workload": "batch64-r100"
+        }
+      ],
+      "two_roles_compressed_bytes": 17284336,
+      "two_roles_logical_bytes": 25736894,
+      "workload": "batch64-r100"
+    }
+  ],
+  "capacity_ready": false,
+  "caveats": [
+    "A faster writer or different mixed schedule can grow more data; this is not an upper bound.",
+    "Compressed totals exclude non-object allocation; inherited1GiB metadata margin and16GiB transient/restore reserve are planning values subject to fresh root release.",
+    "All128GiB combined logical,16GiB cohort,8GiB member and current full per-member temporary-space reservations remain enforced.",
+    "The10M call cap is not a proven storage bound. Cap/floor intervention retains failure, never partial campaign acceptance or automatic retry.",
+    "No additional data, cache or unrelated artifact transformation is proposed or authorized."
+  ],
+  "estimated_combined_compressed_bytes": 81042588591,
+  "estimated_combined_logical_bytes": 115712043863,
+  "guaranteed_fit": false,
+  "historical_complete_native48plus24_compressed_bytes": 76153708812,
+  "historical_complete_native48plus24_logical_bytes": 108740443661,
+  "historical_retention_target_credited_bytes": 0,
+  "historical_selected_read_mixed_doubled_compressed_bytes": 32541557738,
+  "historical_selected_read_mixed_doubled_logical_bytes": 46464918594,
+  "largest_current_write_cohort_logical_bytes": 10656683223,
+  "limits": {
+    "campaign_bytes": 137438953472,
+    "codec_seconds": 600,
+    "cohort_bytes": 17179869184,
+    "cohort_seconds": 1800,
+    "decode_memory_bytes": 67108864,
+    "files": 65536,
+    "io_bytes": 1048576,
+    "member_bytes": 8589934592,
+    "metadata_bytes": 8388608,
+    "retention_floor_bytes": 103079215104
+  },
+  "metadata_scenario_margin_bytes": 1073741824,
+  "observed_unix_ns": 1789268261868887226,
+  "one_full_cohort_restore_reserve_bytes": 17179869184,
+  "remaining_logical_campaign_cap_after_scenario_bytes": 21726909609,
+  "retention_floor_bytes": 103079215104,
+  "scenario_additional_bytes_needed": 80877257647,
+  "scenario_required_available_bytes": 202375414703,
+  "scenario_scope": "Actual current pure-write16 timing+8 smoke retention, plus two copies of historical selected-identical-binary read/mixed populations. Only storage arithmetic; no throughput/results pooling or attribution to unrun candidate reads.",
+  "space": {
+    "/dev/shm": {
+      "available_bytes": 66274996224,
+      "device": 29
+    },
+    "/tmp": {
+      "available_bytes": 121498157056,
+      "device": 66306
+    }
+  },
+  "version": 1,
+  "write_screen_compressed_bytes": 48501030853,
+  "write_screen_logical_bytes": 69247125269
+}

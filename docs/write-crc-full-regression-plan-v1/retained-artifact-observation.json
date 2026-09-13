@@ -1,0 +1,23 @@
+{
+  "client": {
+    "binary_path": "/tmp/kv9-point-write-v3-release-first/native/kv9-batch-benchmark",
+    "fresh_binary_hash_not_executed": true,
+    "present_regular_file": true,
+    "sha256_from_frozen_protocol_only": "8da9af469f962a938027d1970141bbe4622f7d42b2b795f720e288fb3f8d5957",
+    "size": 5594104
+  },
+  "new": {
+    "binary_path": "/tmp/kv9-write-crc-slicing8-release-first/kv9",
+    "fresh_binary_hash_not_executed": true,
+    "present_regular_file": true,
+    "sha256_from_frozen_protocol_only": "616eed1b823dfaa192a22b2b03a3e7d778bf71efdad7d2b875a49c4bfc94e476",
+    "size": 16149656
+  },
+  "old": {
+    "binary_path": "/tmp/kv9-thin-lto-main-integration-release-verbose-first/kv9",
+    "fresh_binary_hash_not_executed": true,
+    "present_regular_file": true,
+    "sha256_from_frozen_protocol_only": "dd028cb2f61633dda133b05d814a6d173a79a83145d8ced2f81dc0cf8e0f33bc",
+    "size": 16141024
+  }
+}
